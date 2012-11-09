@@ -2,12 +2,14 @@ package btrplace.instance.json;
 
 import btrplace.instance.DefaultIntResource;
 import btrplace.instance.IntResource;
+import junit.framework.Assert;
 import org.testng.annotations.Test;
 
 import java.util.UUID;
 
 /**
  * Unit tests for {@link JSONIntResource}.
+ *
  * @author Fabien Hermenier
  */
 public class JSONIntResourceTest {
@@ -20,11 +22,13 @@ public class JSONIntResourceTest {
         rc.set(UUID.randomUUID(), 5);
         rc.set(UUID.randomUUID(), 6);
         JSONIntResource s = new JSONIntResource();
-        String str = s.toJSON(rc);
+        String str = s.toJSON(rc).toString();
         IntResource rc2 = s.fromJSON(str);
-        System.out.println(s.toJSON(rc));
-        System.out.println(str);
-        System.out.println(rc2);
 
+        Assert.assertEquals(rc.identifier(), rc2.identifier());
+        Assert.assertEquals(rc.getDefined(), rc2.getDefined());
+        for (UUID u : rc.getDefined()) {
+            Assert.assertEquals(rc.get(u), rc2.get(u));
+        }
     }
 }

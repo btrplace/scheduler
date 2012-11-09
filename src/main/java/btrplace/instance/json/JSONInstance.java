@@ -25,7 +25,7 @@ public class JSONInstance {
 
         JSONIntResource jrc = new JSONIntResource();
         for (IntResource rc : i.getResources()) {
-            rcs.add(jrc.toJSONObject(rc));
+            rcs.add(jrc.toJSON(rc));
         }
 
         JSONConfiguration jcfg = new JSONConfiguration();
