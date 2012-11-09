@@ -1,18 +1,43 @@
 package btrplace.instance.json;
 
 import btrplace.instance.Instance;
+import btrplace.instance.IntResource;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 /**
- * Created with IntelliJ IDEA.
- * User: fhermeni
- * Date: 08/11/12
- * Time: 23:05
- * To change this template use File | Settings | File Templates.
+ * Class to serialize/unserialize an Instance using the JSON format.
+ *
+ * @author Fabien Hermenier
  */
 public class JSONInstance {
 
+    private JSONParser p;
+
+    public JSONInstance() {
+        p = new JSONParser();
+
+    }
+
+    public JSONObject toJSONObject(Instance i) {
+        JSONArray rcs = new JSONArray();
+
+        JSONIntResource jrc = new JSONIntResource();
+        for (IntResource rc : i.getResources()) {
+            rcs.add(jrc.toJSONObject(rc));
+        }
+
+        JSONConfiguration jcfg = new JSONConfiguration();
+
+        JSONObject o = new JSONObject();
+        o.put("configuration", jcfg.toJSONObject(i.getConfiguration()));
+        o.put("resources", rcs);
+        return o;
+    }
+
     public String toJSON(Instance i) {
-        return "";
+        return toJSONObject(i).toString();
     }
 
     public Instance fromJSON(String buf) {
