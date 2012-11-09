@@ -1,12 +1,14 @@
-package plan;
+package btrplace.plan;
 
 import btrplace.instance.Instance;
-import plan.actions.Action;
-import java.util.Set;
+import btrplace.plan.actions.Action;
+
+import java.util.List;
 
 /**
  * A reconfiguration plan is a set of actions to execute
  * to reconfigure an infrastructure starting from a given instance.
+ *
  * @author Fabien Hermenier
  */
 public interface ReconfigurationPlan extends Iterable<Action> {
@@ -45,5 +47,5 @@ public interface ReconfigurationPlan extends Iterable<Action> {
      *
      * @return a list of actions. May be empty
      */
-    Set<Action> getActions();
+    List<Action> getActions();
 }
