@@ -2,16 +2,16 @@ package btrplace.instance.json;
 
 import btrplace.instance.Configuration;
 import btrplace.instance.DefaultConfiguration;
+import junit.framework.Assert;
+import org.json.simple.JSONObject;
 import org.testng.annotations.Test;
 
 import java.util.UUID;
 
 /**
- * Created with IntelliJ IDEA.
- * User: fhermeni
- * Date: 08/11/12
- * Time: 22:50
- * To change this template use File | Settings | File Templates.
+ * Unit tests for {@link JSONConfiguration}.
+ *
+ * @author Fabien Hermenier
  */
 public class JSONConfigurationTest {
 
@@ -25,6 +25,8 @@ public class JSONConfigurationTest {
         c.addWaitingVM(UUID.randomUUID());
         c.addWaitingVM(UUID.randomUUID());
         JSONConfiguration json = new JSONConfiguration();
-        System.out.println(json.toJSON(c));
+        JSONObject ob = json.toJSON(c);
+        Configuration c2 = json.fromJSON(ob.toJSONString());
+        Assert.assertEquals(c, c2);
     }
 }

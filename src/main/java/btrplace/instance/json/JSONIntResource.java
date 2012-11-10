@@ -81,10 +81,16 @@ public class JSONIntResource {
      * @return the resulting resource or {@code null} in case of error
      */
     public IntResource fromJSON(String s) {
+        StringReader r = null;
         try {
-            return fromJSON(new StringReader(s));
+            r = new StringReader(s);
+            return fromJSON(r);
         } catch (IOException ex) {
             return null;
+        } finally {
+            if (r != null) {
+                r.close();
+            }
         }
     }
 }

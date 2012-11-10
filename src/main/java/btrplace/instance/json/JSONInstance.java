@@ -31,7 +31,7 @@ public class JSONInstance {
         JSONConfiguration jcfg = new JSONConfiguration();
 
         JSONObject o = new JSONObject();
-        o.put("configuration", jcfg.toJSONObject(i.getConfiguration()));
+        o.put("configuration", jcfg.toJSON(i.getConfiguration()));
         o.put("resources", rcs);
         return o;
     }
