@@ -32,7 +32,7 @@ public class JSONSatConstraintsTest {
         Running s = new Running(randomSet());
         JSONSatConstraints x = new JSONSatConstraints();
         JSONObject o = x.runningToJSON(s);
-        Running s2 = x.runningFromJSON((JSONObject) o.get("params"));
+        Running s2 = x.runningFromJSON(o);
         Assert.assertEquals(s, s2);
     }
 

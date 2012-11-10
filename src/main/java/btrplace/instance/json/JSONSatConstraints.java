@@ -216,7 +216,7 @@ public class JSONSatConstraints {
         }
         JSONObject params = (JSONObject) o.get("params");
 
-        return new Preserve(Utils.fromJSON((JSONArray) params.get("vms")), (String) params.get("rc"), Integer.parseInt((String) params.get("amount")));
+        return new Preserve(Utils.fromJSON((JSONArray) params.get("vms")), (String) params.get("rc"), (Integer) params.get("amount"));
     }
 
     public JSONObject rootToJSON(Root s) {
