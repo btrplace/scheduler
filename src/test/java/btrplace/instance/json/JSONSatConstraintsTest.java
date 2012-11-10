@@ -136,6 +136,15 @@ public class JSONSatConstraintsTest {
     }
 
     @Test
+    public void testOversubscription() {
+        Oversubscription s = new Oversubscription(randomSet(), "bar", 3);
+        JSONSatConstraints x = new JSONSatConstraints();
+        JSONObject o = x.oversubscriptionToJSON(s);
+        Oversubscription s2 = x.oversubscriptionFromJSON(o);
+        Assert.assertEquals(s, s2);
+    }
+
+    @Test
     public void testSplitAmong() {
         Set<Set<UUID>> ss = new HashSet<Set<UUID>>();
         ss.add(randomSet());
