@@ -161,14 +161,14 @@ public class JSONSatConstraints {
 
         JSONObject ps = new JSONObject();
         ps.put("vms", p.getInvolvedVMs());
+        ps.put("rc", p.getResource());
         ps.put("amount", p.getAmount());
         o.put("params", ps);
         return o;
     }
 
     public Preserve preserveFromJSON(JSONObject params) {
-        //FIX !!
-        return new Preserve(Utils.fromJSON((JSONArray) params.get("vms")), null, Integer.parseInt((String) params.get("amount")));
+        return new Preserve(Utils.fromJSON((JSONArray) params.get("vms")), (String) params.get("rc"), Integer.parseInt((String) params.get("amount")));
     }
 
     public JSONObject rootToJSON(Root s) {
