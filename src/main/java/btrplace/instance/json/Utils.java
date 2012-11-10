@@ -7,11 +7,9 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Created with IntelliJ IDEA.
- * User: fhermeni
- * Date: 09/11/12
- * Time: 23:40
- * To change this template use File | Settings | File Templates.
+ * Tools to help at converting object to JSON.
+ *
+ * @author Fabien Hermenier
  */
 public class Utils {
 
@@ -24,5 +22,13 @@ public class Utils {
             s.add(UUID.fromString((String) o));
         }
         return s;
+    }
+
+    public static JSONArray toJSON(Set<UUID> s) {
+        JSONArray a = new JSONArray();
+        for (UUID u : s) {
+            a.add(u.toString());
+        }
+        return a;
     }
 }
