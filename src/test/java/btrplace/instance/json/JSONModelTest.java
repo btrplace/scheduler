@@ -26,11 +26,11 @@ import org.testng.annotations.Test;
 import java.util.UUID;
 
 /**
- * Unit tests for {@link JSONInstance}.
+ * Unit tests for {@link JSONModel}.
  *
  * @author Fabien Hermenier
  */
-public class JSONInstanceTest {
+public class JSONModelTest {
 
     @Test
     public void testSimple() {
@@ -53,7 +53,7 @@ public class JSONInstanceTest {
         i.attach(rc1);
         i.attach(rc2);
 
-        JSONInstance j = new JSONInstance();
+        JSONModel j = new JSONModel();
         JSONObject o = j.toJSON(i);
         Model i2 = j.fromJSON(o.toJSONString());
         Assert.assertEquals(i, i2);

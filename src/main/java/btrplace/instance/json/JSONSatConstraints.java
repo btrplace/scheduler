@@ -344,48 +344,85 @@ public class JSONSatConstraints {
         return new SplitAmong(ss, ss2);
     }
 
+    public SatConstraint fromJSON(JSONObject o) {
+
+        if (!o.containsKey("id") || !o.containsKey("params")) {
+            return null;
+        }
+        String id = (String) o.get("id");
+
+        if ("ban".equals(id)) {
+            return banFromJSON(o);
+        } else if ("destroyed".equals(id)) {
+            return destroyedFromJSON(o);
+        } else if ("fence".equals(id)) {
+            return fenceFromJSON(o);
+        } else if ("offline".equals(id)) {
+            return offlineFromJSON(o);
+        } else if ("online".equals(id)) {
+            return onlineFromJSON(o);
+        } else if ("preserve".equals(id)) {
+            return preserveFromJSON(o);
+        } else if ("root".equals(id)) {
+            return rootFromJSON(o);
+        } else if ("running".equals(id)) {
+            return runningFromJSON(o);
+        } else if ("sleeping".equals(id)) {
+            return sleepingFromJSON(o);
+        } else if ("split".equals(id)) {
+            return splitFromJSON(o);
+        } else if ("splitAmong".equals(id)) {
+            return splitAmongFromJSON(o);
+        } else if ("spread".equals(id)) {
+            return spreadFromJSON(o);
+        } else if ("waiting".equals(id)) {
+            return waitingFromJSON(o);
+        } else if ("oversubscription".equals(id)) {
+            return oversubscriptionFromJSON(o);
+        } else { //Unknown constraint
+            return null;
+        }
+    }
+
     public SatConstraint fromJSON(Reader in) throws IOException {
         try {
             JSONObject o = (JSONObject) p.parse(in);
-
-            if (!o.containsKey("id") || !o.containsKey("params")) {
-                return null;
-            }
-            String id = (String) o.get("id");
-
-            if ("ban".equals(id)) {
-                return banFromJSON(o);
-            } else if ("destroyed".equals(id)) {
-                return destroyedFromJSON(o);
-            } else if ("fence".equals(id)) {
-                return fenceFromJSON(o);
-            } else if ("offline".equals(id)) {
-                return offlineFromJSON(o);
-            } else if ("online".equals(id)) {
-                return onlineFromJSON(o);
-            } else if ("preserve".equals(id)) {
-                return preserveFromJSON(o);
-            } else if ("root".equals(id)) {
-                return rootFromJSON(o);
-            } else if ("running".equals(id)) {
-                return runningFromJSON(o);
-            } else if ("sleeping".equals(id)) {
-                return sleepingFromJSON(o);
-            } else if ("split".equals(id)) {
-                return splitFromJSON(o);
-            } else if ("splitAmong".equals(id)) {
-                return splitAmongFromJSON(o);
-            } else if ("spread".equals(id)) {
-                return spreadFromJSON(o);
-            } else if ("waiting".equals(id)) {
-                return waitingFromJSON(o);
-            } else if ("oversubscription".equals(id)) {
-                return oversubscriptionFromJSON(o);
-            } else { //Unknown constraint
-                return null;
-            }
-
+            return fromJSON(o);
         } catch (ParseException ex) {
+            return null;
+        }
+    }
+
+    public JSONObject toJSON(SatConstraint o) {
+        if (o instanceof Ban) {
+            return banToJSON((Ban) o);
+        } else if (o instanceof Destroyed) {
+            return destroyedToJSON((Destroyed) o);
+        } else if (o instanceof Fence) {
+            return fenceToJSON((Fence) o);
+        } else if (o instanceof Offline) {
+            return offlineToJSON((Offline) o);
+        } else if (o instanceof Online) {
+            return onlineToJSON((Online) o);
+        } else if (o instanceof Preserve) {
+            return preserveToJSON((Preserve) o);
+        } else if (o instanceof Root) {
+            return rootToJSON((Root) o);
+        } else if (o instanceof Running) {
+            return runningToJSON((Running) o);
+        } else if (o instanceof Sleeping) {
+            return sleepingToJSON((Sleeping) o);
+        } else if (o instanceof Split) {
+            return splitToJSON((Split) o);
+        } else if (o instanceof SplitAmong) {
+            return splitAmongToJSON((SplitAmong) o);
+        } else if (o instanceof Spread) {
+            return spreadToJSON((Spread) o);
+        } else if (o instanceof Waiting) {
+            return waitingToJSON((Waiting) o);
+        } else if (o instanceof Oversubscription) {
+            return oversubscriptionToJSON((Oversubscription) o);
+        } else { //Unknown constraint
             return null;
         }
     }

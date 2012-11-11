@@ -18,10 +18,7 @@
 
 package btrplace.instance.json;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.IntResource;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -32,11 +29,11 @@ import java.io.Reader;
 import java.io.StringReader;
 
 /**
- * Class to serialize/unserialize an Instance using the JSON format.
+ * Class to serialize/unserialize a model using the JSON format.
  *
  * @author Fabien Hermenier
  */
-public class JSONInstance {
+public class JSONModel {
 
     private JSONParser p;
 
@@ -44,11 +41,13 @@ public class JSONInstance {
 
     private JSONIntResource intRcParser;
 
-    public JSONInstance() {
+    private JSONSatConstraints cstrParser;
+
+    public JSONModel() {
         p = new JSONParser();
         cfgParser = new JSONMapping();
         intRcParser = new JSONIntResource();
-
+        cstrParser = new JSONSatConstraints();
     }
 
     public JSONObject toJSON(Model i) {
@@ -61,6 +60,12 @@ public class JSONInstance {
         JSONObject o = new JSONObject();
         o.put("mapping", cfgParser.toJSON(i.getMapping()));
         o.put("resources", rcs);
+
+        JSONArray jcstrs = new JSONArray();
+        for (SatConstraint cstr : i.getContstraints()) {
+            jcstrs.add(cstrParser.toJSON(cstr));
+        }
+        o.put("constraints", jcstrs);
         return o;
     }
 
@@ -78,6 +83,12 @@ public class JSONInstance {
             for (Object ob : jrc) {
                 i.attach(intRcParser.fromJSON(((JSONObject) ob).toJSONString()));
             }
+
+            JSONArray jcstrs = (JSONArray) o.get("constraints");
+            for (Object ob : jcstrs) {
+                i.attach(cstrParser.fromJSON((JSONObject) ob));
+            }
+
             return i;
         } catch (ParseException e) {
             return null;
