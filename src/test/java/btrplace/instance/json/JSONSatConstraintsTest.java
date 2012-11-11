@@ -18,7 +18,7 @@
 
 package btrplace.instance.json;
 
-import btrplace.instance.constraint.*;
+import btrplace.model.constraint.*;
 import junit.framework.Assert;
 import org.json.simple.JSONObject;
 import org.testng.annotations.Test;

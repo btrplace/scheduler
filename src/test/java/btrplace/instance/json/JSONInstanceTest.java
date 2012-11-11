@@ -18,7 +18,7 @@
 
 package btrplace.instance.json;
 
-import btrplace.instance.*;
+import btrplace.model.*;
 import org.json.simple.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -44,18 +44,18 @@ public class JSONInstanceTest {
         rc2.set(UUID.randomUUID(), 5);
         rc2.set(UUID.randomUUID(), 6);
 
-        Configuration cfg = new DefaultConfiguration();
+        Mapping cfg = new DefaultMapping();
         cfg.addOnlineNode(UUID.randomUUID());
         cfg.addOnlineNode(UUID.randomUUID());
         cfg.addOfflineNode(UUID.randomUUID());
         cfg.addWaitingVM(UUID.randomUUID());
-        Instance i = new DefaultInstance(cfg);
+        Model i = new DefaultModel(cfg);
         i.attach(rc1);
         i.attach(rc2);
 
         JSONInstance j = new JSONInstance();
         JSONObject o = j.toJSON(i);
-        Instance i2 = j.fromJSON(o.toJSONString());
+        Model i2 = j.fromJSON(o.toJSONString());
         Assert.assertEquals(i, i2);
 
     }

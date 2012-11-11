@@ -18,10 +18,10 @@
 
 package btrplace.instance.json;
 
-import btrplace.instance.Configuration;
-import btrplace.instance.DefaultInstance;
-import btrplace.instance.Instance;
-import btrplace.instance.IntResource;
+import btrplace.model.DefaultModel;
+import btrplace.model.IntResource;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -40,18 +40,18 @@ public class JSONInstance {
 
     private JSONParser p;
 
-    private JSONConfiguration cfgParser;
+    private JSONMapping cfgParser;
 
     private JSONIntResource intRcParser;
 
     public JSONInstance() {
         p = new JSONParser();
-        cfgParser = new JSONConfiguration();
+        cfgParser = new JSONMapping();
         intRcParser = new JSONIntResource();
 
     }
 
-    public JSONObject toJSON(Instance i) {
+    public JSONObject toJSON(Model i) {
         JSONArray rcs = new JSONArray();
 
         for (IntResource rc : i.getResources()) {
@@ -59,21 +59,21 @@ public class JSONInstance {
         }
 
         JSONObject o = new JSONObject();
-        o.put("configuration", cfgParser.toJSON(i.getConfiguration()));
+        o.put("mapping", cfgParser.toJSON(i.getMapping()));
         o.put("resources", rcs);
         return o;
     }
 
-    public Instance fromJSON(Reader in) throws IOException {
+    public Model fromJSON(Reader in) throws IOException {
         try {
             JSONObject o = (JSONObject) p.parse(in);
-            if (!o.containsKey("configuration") || !o.containsKey("resources")) {
+            if (!o.containsKey("mapping") || !o.containsKey("resources")) {
                 return null;
             }
-            JSONObject jc = (JSONObject) o.get("configuration");
-            Configuration cfg = cfgParser.fromJSON(jc.toJSONString());
+            JSONObject jc = (JSONObject) o.get("mapping");
+            Mapping cfg = cfgParser.fromJSON(jc.toJSONString());
 
-            Instance i = new DefaultInstance(cfg);
+            Model i = new DefaultModel(cfg);
             JSONArray jrc = (JSONArray) o.get("resources");
             for (Object ob : jrc) {
                 i.attach(intRcParser.fromJSON(((JSONObject) ob).toJSONString()));
@@ -84,7 +84,7 @@ public class JSONInstance {
         }
     }
 
-    public Instance fromJSON(String str) {
+    public Model fromJSON(String str) {
         StringReader in = null;
         try {
             in = new StringReader(str);

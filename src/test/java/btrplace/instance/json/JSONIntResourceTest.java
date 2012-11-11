@@ -18,8 +18,8 @@
 
 package btrplace.instance.json;
 
-import btrplace.instance.DefaultIntResource;
-import btrplace.instance.IntResource;
+import btrplace.model.DefaultIntResource;
+import btrplace.model.IntResource;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 

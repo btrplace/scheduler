@@ -18,7 +18,8 @@
 
 package btrplace.instance.json;
 
-import btrplace.instance.constraint.*;
+import btrplace.model.SatConstraint;
+import btrplace.model.constraint.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;

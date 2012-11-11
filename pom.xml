@@ -23,10 +23,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>btrplace</groupId>
-    <artifactId>instance-json</artifactId>
+    <artifactId>model-json</artifactId>
     <version>0.1-SNAPSHOT</version>
 
-    <description>Serialization / un-serialization to JSON</description>
+    <description>Read and write model according to the JSON format</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -39,6 +39,13 @@
     </developers>
 
     <build>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh-external</artifactId>
+                <version>2.0</version>
+            </extension>
+        </extensions>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -63,7 +70,7 @@
         </dependency>
         <dependency>
             <groupId>btrplace</groupId>
-            <artifactId>instance</artifactId>
+            <artifactId>model</artifactId>
             <version>0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
@@ -74,9 +81,9 @@
     </dependencies>
 
     <scm>
-        <connection>scm:git:git://github.com/fhermeni/btrplace-instanceJSON.git</connection>
-        <url>scm:git:git@github.com:fhermeni/btrplace-instanceJSON</url>
-        <developerConnection>scm:git:git@github.com:fhermeni/btrplace-instanceJSON.git</developerConnection>
+        <connection>scm:git:git://github.com/fhermeni/btrplace-model-json.git</connection>
+        <url>scm:git:git@github.com:fhermeni/btrplace-model-json</url>
+        <developerConnection>scm:git:git@github.com:fhermeni/btrplace-model-json.git</developerConnection>
     </scm>
 
     <distributionManagement>

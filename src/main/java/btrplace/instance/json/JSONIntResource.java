@@ -18,8 +18,8 @@
 
 package btrplace.instance.json;
 
-import btrplace.instance.DefaultIntResource;
-import btrplace.instance.IntResource;
+import btrplace.model.DefaultIntResource;
+import btrplace.model.IntResource;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -31,7 +31,7 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Serialize/Un-serialize an {@link IntResource}.
+ * Serialize/Un-serialize an {@link btrplace.model.IntResource}.
  *
  * @author Fabien Hermenier
  */
