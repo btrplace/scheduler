@@ -250,6 +250,27 @@ public class JSONSatConstraints {
         return o;
     }
 
+    public SingleCapacity singleCapacityFromJSON(JSONObject o) {
+        if (!"singleCapacity".equals(o.get("id")) || o.get("params") == null) {
+            return null;
+        }
+        JSONObject params = (JSONObject) o.get("params");
+
+        return new SingleCapacity(Utils.fromJSON((JSONArray) params.get("nodes")), (String) params.get("rc"), (Integer) params.get("amount"));
+    }
+
+    public JSONObject singleCapacityToJSON(SingleCapacity p) {
+        JSONObject o = new JSONObject();
+        o.put("id", "singleCapacity");
+
+        JSONObject ps = new JSONObject();
+        ps.put("nodes", Utils.toJSON(p.getInvolvedNodes()));
+        ps.put("rc", p.getResource());
+        ps.put("amount", p.getAmount());
+        o.put("params", ps);
+        return o;
+    }
+
     public Preserve preserveFromJSON(JSONObject o) {
         if (!"preserve".equals(o.get("id")) || o.get("params") == null) {
             return null;
@@ -379,6 +400,8 @@ public class JSONSatConstraints {
             return waitingFromJSON(o);
         } else if ("oversubscription".equals(id)) {
             return oversubscriptionFromJSON(o);
+        } else if ("singleCapacity".equals(id)) {
+            return singleCapacityFromJSON(o);
         } else { //Unknown constraint
             return null;
         }
@@ -422,6 +445,8 @@ public class JSONSatConstraints {
             return waitingToJSON((Waiting) o);
         } else if (o instanceof Oversubscription) {
             return oversubscriptionToJSON((Oversubscription) o);
+        } else if (o instanceof SingleCapacity) {
+            return singleCapacityToJSON((SingleCapacity) o);
         } else { //Unknown constraint
             return null;
         }
