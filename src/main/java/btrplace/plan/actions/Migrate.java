@@ -1,7 +1,8 @@
 package btrplace.plan.actions;
 
-import btrplace.instance.Configuration;
-import btrplace.instance.Instance;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
+import btrplace.plan.Action;
 
 import java.util.UUID;
 
@@ -36,8 +37,8 @@ public class Migrate implements Action {
     }
 
     @Override
-    public boolean apply(Instance i) {
-        Configuration c = i.getConfiguration();
+    public boolean apply(Model i) {
+        Mapping c = i.getMapping();
         if (c.getOnlineNodes().contains(src)
                 && c.getOnlineNodes().contains(dst)
                 && c.getRunningVMs().contains(vm)) {

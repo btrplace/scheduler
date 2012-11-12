@@ -1,25 +1,24 @@
 package btrplace.plan;
 
-import btrplace.instance.Instance;
-import btrplace.plan.actions.Action;
+import btrplace.model.Model;
 
 import java.util.List;
 
 /**
  * A reconfiguration plan is a set of actions to execute
- * to reconfigure an infrastructure starting from a given instance.
+ * to reconfigure an infrastructure starting from a given model.
  *
  * @author Fabien Hermenier
  */
 public interface ReconfigurationPlan extends Iterable<Action> {
 
     /**
-     * Get the instance that is used as a starting point
+     * Get the model that is used as a starting point
      * to perform the reconfiguration
      *
-     * @return the source configuration
+     * @return the source model
      */
-    Instance getSource();
+    Model getSource();
 
     /**
      * Add a new action to a plan.

@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>btrplace</groupId>
-    <artifactId>place-core</artifactId>
-    <version>1.0</version>
+    <artifactId>solver-api</artifactId>
+    <version>0.1-SNAPSHOT</version>
 
     <description>Core components for a reconfiguration algorithm</description>
     <properties>
@@ -21,6 +21,14 @@
     </developers>
 
     <build>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh-external</artifactId>
+                <version>2.0</version>
+            </extension>
+        </extensions>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -45,9 +53,36 @@
         </dependency>
         <dependency>
             <groupId>btrplace</groupId>
-            <artifactId>instance</artifactId>
-            <version>1.0</version>
+            <artifactId>model</artifactId>
+            <version>0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
-    
+
+    <scm>
+        <connection>scm:git:git://github.com/fhermeni/btrplace-solver-api.git</connection>
+        <url>scm:git:git@github.com:fhermeni/btrplace-solver-api</url>
+        <developerConnection>scm:git:git@github.com:fhermeni/btrplace-solver-api.git</developerConnection>
+    </scm>
+
+
+    <distributionManagement>
+        <repository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>btrp</id>
+            <name>Corporate Repository</name>
+            <url>
+                scpexe://btrp.inria.fr:/home/maven/repos/releases
+            </url>
+            <layout>default</layout>
+        </repository>
+        <snapshotRepository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>btrp</id>
+            <name>Corporate Repository</name>
+            <url>
+                scpexe://btrp.inria.fr:/home/maven/repos/snapshot-releases
+            </url>
+            <layout>default</layout>
+        </snapshotRepository>
+    </distributionManagement>
 </project>

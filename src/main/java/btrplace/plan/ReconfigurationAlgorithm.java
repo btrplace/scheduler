@@ -1,9 +1,6 @@
 package btrplace.plan;
 
-import btrplace.instance.Instance;
-import btrplace.instance.constraint.SatConstraint;
-
-import java.util.Collection;
+import btrplace.model.Model;
 
 /**
  * Basic interface for a reconfiguration algorithm.
@@ -13,12 +10,10 @@ import java.util.Collection;
 public interface ReconfigurationAlgorithm {
 
     /**
-     * Compute a reconfiguration plan to reach a new instance
-     * that satisfy all the constraints.
+     * Compute a reconfiguration plan to reach a solution to the model
      *
-     * @param i           the current instance
-     * @param constraints the constraints to satisfy
+     * @param i the current model
      * @return the plan to execute to reach the new solution
      */
-    ReconfigurationAlgorithm compute(Instance i, Collection<SatConstraint> constraints);
+    ReconfigurationPlan solve(Model i);
 }

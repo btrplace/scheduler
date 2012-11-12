@@ -1,7 +1,6 @@
 package btrplace.plan;
 
-import btrplace.instance.Instance;
-import btrplace.plan.actions.Action;
+import btrplace.model.Model;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,17 +13,17 @@ import java.util.List;
  */
 public class DefaultReconfigurationPlan implements ReconfigurationPlan {
 
-    private Instance src;
+    private Model src;
 
     private List<Action> actions;
 
-    public DefaultReconfigurationPlan(Instance src) {
+    public DefaultReconfigurationPlan(Model src) {
         this.src = src;
         this.actions = new ArrayList<Action>();
     }
 
     @Override
-    public Instance getSource() {
+    public Model getSource() {
         return src;
     }
 
