@@ -41,7 +41,7 @@ public class SolverException extends Exception {
     }
 
     /**
-     * Get the model at the source of the exception
+     * Get the model at the source of the exception.
      *
      * @return a Model
      */
