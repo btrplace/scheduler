@@ -58,5 +58,9 @@ public class JSONModelTest {
         Model i2 = j.fromJSON(o.toJSONString());
         Assert.assertEquals(i, i2);
 
+        i2.getMapping().addOfflineNode(UUID.randomUUID());
+        Assert.assertNotEquals(i, i2);
+        Assert.assertNotEquals(i.hashCode(), i2.hashCode());
+
     }
 }
