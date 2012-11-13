@@ -20,49 +20,32 @@ package btrplace.plan;
 
 import btrplace.model.Model;
 
-import java.util.List;
-
 /**
- * A reconfiguration plan is a set of actions to execute
- * to reconfigure an infrastructure starting from a given model.
+ * An exception that indicate an error in the reconfiguration algorithm.
  *
  * @author Fabien Hermenier
  */
-public interface ReconfigurationPlan extends Iterable<Action> {
+public class SolverException extends Exception {
+
+    private Model model;
 
     /**
-     * Get the model that is used as a starting point
-     * to perform the reconfiguration
+     * Make a new exception.
      *
-     * @return the source model
+     * @param m   the model that lead to the exception
+     * @param msg the error message
      */
-    Model getSource();
+    public SolverException(Model m, String msg) {
+        super(msg);
+        model = m;
+    }
 
     /**
-     * Add a new action to a plan.
+     * Get the model at the source of the exception
      *
-     * @param a the action to add
+     * @return a Model
      */
-    void add(Action a);
-
-    /**
-     * Get the number of action in the plan.
-     *
-     * @return a positive integer
-     */
-    int size();
-
-    /**
-     * Return the theoretical duration of a reconfiguration plan.
-     *
-     * @return the finish moment of the last action to execute
-     */
-    int getDuration();
-
-    /**
-     * Get all the actions to perform.
-     *
-     * @return a list of actions. May be empty
-     */
-    List<Action> getActions();
+    public Model getModel() {
+        return model;
+    }
 }
