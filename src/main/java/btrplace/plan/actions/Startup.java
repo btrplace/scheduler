@@ -42,6 +42,7 @@ public class Startup extends Action {
      */
     public Startup(UUID n, int s, int f) {
         super(s, f);
+        this.node = n;
     }
 
     /**
