@@ -62,7 +62,7 @@ public class JSONModel {
         o.put("resources", rcs);
 
         JSONArray jcstrs = new JSONArray();
-        for (SatConstraint cstr : i.getContstraints()) {
+        for (SatConstraint cstr : i.getConstraints()) {
             jcstrs.add(cstrParser.toJSON(cstr));
         }
         o.put("constraints", jcstrs);
