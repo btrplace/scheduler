@@ -20,7 +20,7 @@ package btrplace.plan;
 
 import btrplace.model.Model;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * A reconfiguration plan is a set of actions to execute
@@ -64,5 +64,12 @@ public interface ReconfigurationPlan extends Iterable<Action> {
      *
      * @return a list of actions. May be empty
      */
-    List<Action> getActions();
+    Set<Action> getActions();
+
+    /**
+     * Get the resulting model once all the actions are executed.
+     *
+     * @return the resulting model or {@code null} if an error occurred.
+     */
+    Model getResult();
 }

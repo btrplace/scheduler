@@ -20,9 +20,10 @@ package btrplace.plan;
 
 import btrplace.model.Model;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Default implementation for {@link ReconfigurationPlan}.
@@ -33,11 +34,21 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
 
     private Model src;
 
-    private List<Action> actions;
+    private Set<Action> actions;
+
+    /**
+     * A comparator to sort the actions in the increasing order of their end moment.
+     */
+    private static Comparator<Action> endFirstComparator = new Comparator<Action>() {
+        @Override
+        public int compare(Action a1, Action a2) {
+            return a1.getEnd() - a2.getEnd();
+        }
+    };
 
     public DefaultReconfigurationPlan(Model src) {
         this.src = src;
-        this.actions = new ArrayList<Action>();
+        this.actions = new TreeSet<Action>(endFirstComparator);
     }
 
     @Override
@@ -67,12 +78,23 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
     }
 
     @Override
-    public List<Action> getActions() {
+    public Set<Action> getActions() {
         return actions;
     }
 
     @Override
     public Iterator<Action> iterator() {
         return actions.iterator();
+    }
+
+    @Override
+    public Model getResult() {
+        Model res = src.clone();
+        for (Action a : actions) {
+            if (!a.apply(res)) {
+                return null;
+            }
+        }
+        return res;
     }
 }

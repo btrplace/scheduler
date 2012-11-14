@@ -25,7 +25,16 @@ import btrplace.model.Model;
  *
  * @author Fabien Hermenier
  */
-public interface Action {
+public abstract class Action {
+
+    private int start;
+
+    private int stop;
+
+    public Action(int st, int ed) {
+        this.start = st;
+        this.stop = ed;
+    }
 
     /**
      * Apply the action on an instance.
@@ -33,19 +42,23 @@ public interface Action {
      * @param i the instance to alter with the action
      * @return {@code true} if the action was applied successfully
      */
-    boolean apply(Model i);
+    public abstract boolean apply(Model i);
 
     /**
      * Get the moment the action starts.
      *
      * @return a positive integer
      */
-    int getStart();
+    public int getStart() {
+        return start;
+    }
 
     /**
      * Get the moment the action ends.
      *
      * @return a positive integer
      */
-    int getEnd();
+    public int getEnd() {
+        return stop;
+    }
 }

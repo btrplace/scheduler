@@ -15,61 +15,63 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package btrplace.plan.actions;
 
-import btrplace.model.Mapping;
+
 import btrplace.model.Model;
 import btrplace.plan.Action;
 
 import java.util.UUID;
 
 /**
- * Migrate a running VM from one online node to another one.
+ * An action that demand to run a virtual machine on an online node. The virtual machine comes to the state "running" for "waiting".
  *
  * @author Fabien Hermenier
  */
-public class Migrate extends Action {
+public class Run extends Action {
 
     private UUID vm;
 
-    private UUID src, dst;
-
+    private UUID node;
 
     /**
-     * Make a new action.
+     * Make a new time-bounded run.
      *
-     * @param vm  the VM to migrate
-     * @param src the node the VM is currently running on
-     * @param dst the node where to place the VM
-     * @param st  the moment the action will start
-     * @param ed  the moment the action will stop
+     * @param vm  the virtual machine to run
+     * @param to  the destination node
+     * @param st  the moment the action starts.
+     * @param end the moment the action finish
      */
-    public Migrate(UUID vm, UUID src, UUID dst, int st, int ed) {
-        super(st, ed);
+    public Run(UUID vm, UUID to, int st, int end) {
+        super(st, end);
         this.vm = vm;
-        this.src = src;
-        this.dst = dst;
+        this.node = to;
+    }
+
+    /**
+     * Textual representation of the action.
+     *
+     * @return a String
+     */
+    @Override
+    public String toString() {
+        return new StringBuilder("run(")
+                .append(vm)
+                .append(',')
+                .append(node).append(')').toString();
     }
 
     @Override
-    public boolean apply(Model i) {
-        Mapping c = i.getMapping();
-        if (c.getOnlineNodes().contains(src)
-                && c.getOnlineNodes().contains(dst)
-                && c.getRunningVMs().contains(vm)) {
-            c.setVMRunOn(vm, dst);
-            return true;
-        }
-        return false;
+    public boolean apply(Model c) {
+        return c.getMapping().setVMRunOn(vm, node);
     }
 
     /**
      * Test if this action is equals to another object.
      *
      * @param o the object to compare with
-     * @return true if ref is an instance of Instantiate and if both
-     *         instance involve the same virtual machine
+     * @return true if ref is an instanceof Run and if both
+     *         instance involve the same virtual machine and the same nodes
      */
     @Override
     public boolean equals(Object o) {
@@ -78,10 +80,9 @@ public class Migrate extends Action {
         } else if (o == this) {
             return true;
         } else if (o.getClass() == this.getClass()) {
-            Migrate that = (Migrate) o;
+            Run that = (Run) o;
             return this.vm.equals(that.vm) &&
-                    this.src.equals(that.src) &&
-                    this.dst.equals(that.dst) &&
+                    this.node.equals(that.node) &&
                     this.getStart() == that.getStart() &&
                     this.getEnd() == that.getEnd();
         }
@@ -92,22 +93,7 @@ public class Migrate extends Action {
     public int hashCode() {
         int res = getEnd();
         res = getStart() + 31 * res;
-        res = src.hashCode() + 31 * res;
-        res = 31 * res + dst.hashCode();
-        return 31 * res + src.hashCode();
-    }
-
-    /**
-     * Get the VM to instantiate.
-     *
-     * @return the VM identifier
-     */
-    public UUID getVM() {
-        return vm;
-    }
-
-    @Override
-    public String toString() {
-        return new StringBuilder("migrate(").append(vm).append(')').toString();
+        res = vm.hashCode() + 31 * res;
+        return 31 * res + node.hashCode();
     }
 }

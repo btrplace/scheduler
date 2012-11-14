@@ -18,59 +18,63 @@
 
 package btrplace.plan.actions;
 
-import btrplace.model.Mapping;
+
 import btrplace.model.Model;
 import btrplace.plan.Action;
 
 import java.util.UUID;
 
 /**
- * Migrate a running VM from one online node to another one.
+ * An action that suspend a running virtual machine to disk.
  *
  * @author Fabien Hermenier
  */
-public class Migrate extends Action {
+public class Suspend extends Action {
 
     private UUID vm;
 
     private UUID src, dst;
 
-
     /**
-     * Make a new action.
+     * Make a new time-bounded suspend action.
      *
-     * @param vm  the VM to migrate
-     * @param src the node the VM is currently running on
-     * @param dst the node where to place the VM
-     * @param st  the moment the action will start
-     * @param ed  the moment the action will stop
+     * @param vm   the virtual machine to suspend
+     * @param from The node that host the virtual machine
+     * @param to   the destination node.
+     * @param s    the moment the action starts.
+     * @param f    the moment the action finish
      */
-    public Migrate(UUID vm, UUID src, UUID dst, int st, int ed) {
-        super(st, ed);
+    public Suspend(UUID vm, UUID from, UUID to, int s, int f) {
+        super(s, f);
         this.vm = vm;
-        this.src = src;
-        this.dst = dst;
-    }
+        this.src = from;
+        this.dst = to;
 
-    @Override
-    public boolean apply(Model i) {
-        Mapping c = i.getMapping();
-        if (c.getOnlineNodes().contains(src)
-                && c.getOnlineNodes().contains(dst)
-                && c.getRunningVMs().contains(vm)) {
-            c.setVMRunOn(vm, dst);
-            return true;
-        }
-        return false;
     }
 
     /**
-     * Test if this action is equals to another object.
+     * Get a textual representation of the action.
      *
-     * @param o the object to compare with
-     * @return true if ref is an instance of Instantiate and if both
-     *         instance involve the same virtual machine
+     * @return a String!
      */
+    @Override
+    public String toString() {
+        return new StringBuilder("suspend(")
+                .append(vm)
+                .append(',')
+                .append(dst).append(')').toString();
+    }
+
+    /**
+     * Apply the action by putting the virtual machine into sleep on its destination node for a specified configuration.
+     *
+     * @param m the model
+     */
+    @Override
+    public boolean apply(Model m) {
+        return m.getMapping().setVMSleepOn(vm, dst);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null) {
@@ -78,7 +82,7 @@ public class Migrate extends Action {
         } else if (o == this) {
             return true;
         } else if (o.getClass() == this.getClass()) {
-            Migrate that = (Migrate) o;
+            Suspend that = (Suspend) o;
             return this.vm.equals(that.vm) &&
                     this.src.equals(that.src) &&
                     this.dst.equals(that.dst) &&
@@ -95,19 +99,5 @@ public class Migrate extends Action {
         res = src.hashCode() + 31 * res;
         res = 31 * res + dst.hashCode();
         return 31 * res + src.hashCode();
-    }
-
-    /**
-     * Get the VM to instantiate.
-     *
-     * @return the VM identifier
-     */
-    public UUID getVM() {
-        return vm;
-    }
-
-    @Override
-    public String toString() {
-        return new StringBuilder("migrate(").append(vm).append(')').toString();
     }
 }
