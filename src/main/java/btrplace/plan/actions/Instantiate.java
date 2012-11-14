@@ -1,20 +1,19 @@
 /*
- * Copyright (c) Fabien Hermenier
+ * Copyright (c) 2012 University of Nice Sophia-Antipolis
  *
- *        This file is part of Entropy.
+ * This file is part of btrplace.
  *
- *        Entropy is free software: you can redistribute it and/or modify
- *        it under the terms of the GNU Lesser General Public License as published by
- *        the Free Software Foundation, either version 3 of the License, or
- *        (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *        Entropy is distributed in the hope that it will be useful,
- *        but WITHOUT ANY WARRANTY; without even the implied warranty of
- *        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *        GNU Lesser General Public License for more details.
- *
- *        You should have received a copy of the GNU Lesser General Public License
- *        along with Entropy.  If not, see <http://www.gnu.org/licenses/>.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package btrplace.plan.actions;
@@ -26,7 +25,7 @@ import btrplace.plan.Action;
 import java.util.UUID;
 
 /**
- * Create a VM that will be able to be booted after. The action may be
+ * Prepare a VM for being deployed. The action may be
  * a standalone action, or attached to a boot action in the same plan.
  * <p/>
  * If it is standalone, then the VM is not a part of the source configuration
@@ -100,6 +99,6 @@ public class Instantiate extends Action {
 
     @Override
     public String toString() {
-        return new StringBuilder("instantiate(").append(id).append(')').toString();
+        return new StringBuilder("instantiate(vm=").append(id).append(')').toString();
     }
 }

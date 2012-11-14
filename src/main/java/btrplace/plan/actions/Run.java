@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package btrplace.plan.actions;
 
 
@@ -24,7 +25,8 @@ import btrplace.plan.Action;
 import java.util.UUID;
 
 /**
- * An action that demand to run a virtual machine on an online node. The virtual machine comes to the state "running" for "waiting".
+ * An action that demand to run a virtual machine on an online node.
+ * The virtual machine is originally in the state 'waiting'.
  *
  * @author Fabien Hermenier
  */
@@ -48,17 +50,12 @@ public class Run extends Action {
         this.node = to;
     }
 
-    /**
-     * Textual representation of the action.
-     *
-     * @return a String
-     */
     @Override
     public String toString() {
         return new StringBuilder("run(")
-                .append(vm)
-                .append(',')
-                .append(node).append(')').toString();
+                .append("vm=").append(vm)
+                .append(", on=").append(node)
+                .append(')').toString();
     }
 
     @Override

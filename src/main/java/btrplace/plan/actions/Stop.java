@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package btrplace.plan.actions;
 
 
@@ -35,7 +36,7 @@ public class Stop extends Action {
     private UUID node;
 
     /**
-     * Make a new time-bounded action.
+     * Make a new action.
      *
      * @param vm the virtual machine to stop
      * @param to the hosting node
@@ -59,16 +60,11 @@ public class Stop extends Action {
         return true;
     }
 
-    /**
-     * Textual representation of the action.
-     *
-     * @return a String
-     */
+    @Override
     public String toString() {
         return new StringBuilder("stop(")
-                .append(vm)
-                .append(',')
-                .append(node).append(')').toString();
+                .append("vm=").append(vm)
+                .append(", on=").append(node).append(')').toString();
     }
 
 

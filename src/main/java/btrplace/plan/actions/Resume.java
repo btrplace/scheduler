@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package btrplace.plan.actions;
 
 
@@ -25,7 +26,8 @@ import btrplace.plan.Action;
 import java.util.UUID;
 
 /**
- * An action to resume a VirtualMachine on an online node. The state of the virtual machine comes to "sleeping" to "running".
+ * An action to resume a VirtualMachine on an online node.
+ * The state of the virtual machine comes to "sleeping" to "running".
  *
  * @author Fabien Hermenier
  */
@@ -51,16 +53,12 @@ public class Resume extends Action {
         this.dst = to;
     }
 
-    /**
-     * Textual representation of the action.
-     *
-     * @return a String!
-     */
     @Override
     public String toString() {
         return new StringBuilder("resume(")
-                .append(vm)
-                .append(',')
+                .append("vm=").append(vm)
+                .append(", from=").append(src)
+                .append(", to=")
                 .append(dst).append(')').toString();
     }
 

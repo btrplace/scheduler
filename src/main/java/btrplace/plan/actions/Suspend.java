@@ -36,7 +36,7 @@ public class Suspend extends Action {
     private UUID src, dst;
 
     /**
-     * Make a new time-bounded suspend action.
+     * Make a new suspend action.
      *
      * @param vm   the virtual machine to suspend
      * @param from The node that host the virtual machine
@@ -52,17 +52,12 @@ public class Suspend extends Action {
 
     }
 
-    /**
-     * Get a textual representation of the action.
-     *
-     * @return a String!
-     */
     @Override
     public String toString() {
         return new StringBuilder("suspend(")
-                .append(vm)
-                .append(',')
-                .append(dst).append(')').toString();
+                .append("vm=").append(vm)
+                .append(", from=").append(src)
+                .append(", to=").append(dst).append(')').toString();
     }
 
     /**

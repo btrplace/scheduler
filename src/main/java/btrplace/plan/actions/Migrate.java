@@ -98,7 +98,7 @@ public class Migrate extends Action {
     }
 
     /**
-     * Get the VM to instantiate.
+     * Get the VM to migrate.
      *
      * @return the VM identifier
      */
@@ -106,8 +106,29 @@ public class Migrate extends Action {
         return vm;
     }
 
+    /**
+     * Get the node that is currently hosting the VM.
+     *
+     * @return the node identifier
+     */
+    public UUID getOrigin() {
+        return this.src;
+    }
+
+    /**
+     * Get the node that will receive the VM.
+     *
+     * @return the node identifier
+     */
+    public UUID getDestination() {
+        return this.dst;
+    }
+
     @Override
     public String toString() {
-        return new StringBuilder("migrate(").append(vm).append(')').toString();
+        return new StringBuilder("migrate(vm=").append(vm)
+                .append(", from=").append(src)
+                .append(", to=").append(dst)
+                .append(')').toString();
     }
 }

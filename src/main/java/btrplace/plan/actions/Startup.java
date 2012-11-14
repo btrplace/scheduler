@@ -19,39 +19,29 @@
 package btrplace.plan.actions;
 
 
-import entropy.configuration.Configuration;
-import entropy.configuration.Node;
-import entropy.execution.TimedExecutionGraph;
-import entropy.plan.parser.TimedReconfigurationPlanSerializer;
-import entropy.plan.visualization.PlanVisualizer;
+import btrplace.model.Model;
+import btrplace.plan.Action;
 
-import java.io.IOException;
+import java.util.UUID;
 
 /**
  * An action to start an offline node. Once the execution is finished, the node is online.
  *
  * @author Fabien Hermenier
  */
-public class Startup extends NodeAction {
+public class Startup extends Action {
+
+    private UUID node;
 
     /**
-     * Create a new time-unbounded startup action on an offline node.
-     *
-     * @param n The node to start
-     */
-    public Startup(Node n) {
-        this(n, 0, 0);
-    }
-
-    /**
-     * Create a new time-bounded startup action on an offline node.
+     * Create a new startup action on an offline node.
      *
      * @param n The node to start
      * @param s the moment the action starts
      * @param f the moment the action is finished
      */
-    public Startup(Node n, int s, int f) {
-        super(n, s, f);
+    public Startup(UUID n, int s, int f) {
+        super(s, f);
     }
 
     /**
@@ -67,26 +57,25 @@ public class Startup extends NodeAction {
         } else if (obj == this) {
             return true;
         } else if (obj.getClass() == this.getClass()) {
-            return this.getNode().equals(((Startup) obj).getNode());
+            Startup that = (Startup) obj;
+            return this.node.equals(that.node) &&
+                    this.getStart() == that.getStart() &&
+                    this.getEnd() == that.getEnd();
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return this.getNode().hashCode();
+        int res = getEnd();
+        res = getStart() + 31 * res;
+        return 31 * res + node.hashCode();
     }
 
-    /**
-     * Textual representation of the startup action.
-     *
-     * @return a String
-     */
     @Override
     public String toString() {
         StringBuilder buffer = new StringBuilder("startup(");
-        buffer.append(this.getNode().getName());
-        buffer.append(")");
+        buffer.append("node=").append(node).append(")");
         return buffer.toString();
     }
 
@@ -96,56 +85,8 @@ public class Startup extends NodeAction {
      * @param c the configuration
      */
     @Override
-    public boolean apply(Configuration c) {
-        c.addOnline(this.getNode());
+    public boolean apply(Model c) {
+        c.getMapping().addOnlineNode(node);
         return true;
     }
-
-    /**
-     * Check the compatibility of the action with a source configuration.
-     * The hosting node must be offline
-     *
-     * @param src the configuration to check
-     * @return {@code true} if the action is compatible
-     */
-    @Override
-    public boolean isCompatibleWith(Configuration src) {
-        return (src.isOffline(getNode()));
-    }
-
-
-    /**
-     * Check the compatibility of the action with a source and a destination configuration.
-     * The node must be offline in the source configuration and online is the destination configuration.
-     *
-     * @param src the source configuration
-     * @param dst the configuration to reach
-     * @return true if the action is compatible with the configurations
-     */
-    @Override
-    public boolean isCompatibleWith(Configuration src, Configuration dst) {
-        return (!src.isOffline(getNode()) || !dst.isOnline(getNode()));
-    }
-
-    /**
-     * Insert the action as an outgoing action. In creates resources!
-     *
-     * @param g the graph to use
-     * @return true if the insertion succeed
-     */
-    @Override
-    public boolean insertIntoGraph(TimedExecutionGraph g) {
-        return g.getUnlockings(this.getNode()).add(this);
-    }
-
-    @Override
-    public void injectToVisualizer(PlanVisualizer vis) {
-        vis.inject(this);
-    }
-
-    @Override
-    public void serialize(TimedReconfigurationPlanSerializer s) throws IOException {
-        s.serialize(this);
-    }
-
 }

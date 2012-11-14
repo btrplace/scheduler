@@ -1,92 +1,84 @@
 /*
- * Copyright (c) 2010 Ecole des Mines de Nantes.
+ * Copyright (c) 2012 University of Nice Sophia-Antipolis
  *
- *      This file is part of Entropy.
+ * This file is part of btrplace.
  *
- *      Entropy is free software: you can redistribute it and/or modify
- *      it under the terms of the GNU Lesser General Public License as published by
- *      the Free Software Foundation, either version 3 of the License, or
- *      (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *      Entropy is distributed in the hope that it will be useful,
- *      but WITHOUT ANY WARRANTY; without even the implied warranty of
- *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *      GNU Lesser General Public License for more details.
- *
- *      You should have received a copy of the GNU Lesser General Public License
- *      along with Entropy.  If not, see <http://www.gnu.org/licenses/>.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package btrplace.plan.actions;
 
+import btrplace.model.Mapping;
+import btrplace.model.Model;
+import btrplace.plan.Action;
 
-import entropy.configuration.Configuration;
-import entropy.configuration.Node;
-import entropy.execution.TimedExecutionGraph;
-import entropy.plan.parser.TimedReconfigurationPlanSerializer;
-import entropy.plan.visualization.PlanVisualizer;
-
-import java.io.IOException;
+import java.util.UUID;
 
 /**
  * An action to shutdown an online node.
+ * The node will be in the offline state once the action applied.
  *
  * @author Fabien Hermenier
  */
-public class Shutdown extends NodeAction {
+public class Shutdown extends Action {
+
+    private UUID node;
 
     /**
-     * Create a new time-unbounded shutdown action on an online node.
-     *
-     * @param n the node to halt
-     */
-    public Shutdown(Node n) {
-        super(n, 0, 0);
-    }
-
-    /**
-     * Create a new time-bounded shutdown action on an online node.
+     * Create a new shutdown action on an online node.
      *
      * @param n The node to stop
      * @param s the moment the action starts
      * @param f the moment the action is finished
      */
-    public Shutdown(Node n, int s, int f) {
-        super(n, s, f);
+    public Shutdown(UUID n, int s, int f) {
+        super(s, f);
+        this.node = n;
     }
 
     /**
      * Test the equality with another object.
      *
-     * @param obj The object to compare with
+     * @param o The object to compare with
      * @return true if o is an instance of Shutdown and if both actions act on the same node
      */
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
+    public boolean equals(Object o) {
+        if (o == null) {
             return false;
-        } else if (obj == this) {
+        } else if (o == this) {
             return true;
-        } else if (obj.getClass() == this.getClass()) {
-            return this.getNode().equals(((Shutdown) obj).getNode());
+        } else if (o.getClass() == this.getClass()) {
+            Shutdown that = (Shutdown) o;
+            return this.node.equals(that.node) &&
+                    this.getStart() == that.getStart() &&
+                    this.getEnd() == that.getEnd();
+
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return this.getNode().hashCode();
+        int res = getEnd();
+        res = getStart() + 31 * res;
+        return 31 * res + node.hashCode();
     }
 
-    /**
-     * Textual representation of the action.
-     *
-     * @return a String
-     */
     @Override
     public String toString() {
         StringBuilder buffer = new StringBuilder("shutdown(");
-        buffer.append(this.getNode().getName());
+        buffer.append("node=").append(node);
         buffer.append(")");
         return buffer.toString();
     }
@@ -98,59 +90,8 @@ public class Shutdown extends NodeAction {
      * @return {@code true} if the node was online and is set offline. {@code false} otherwise
      */
     @Override
-    public boolean apply(Configuration c) {
-        if (c.isOffline(this.getNode())) {
-            return false;
-        }
-        return c.addOffline(this.getNode());
+    public boolean apply(Model c) {
+        Mapping map = c.getMapping();
+        return (!map.getOfflineNodes().contains(node) && map.addOfflineNode(node));
     }
-
-
-    /**
-     * Check the compatibility of the action with a source configuration.
-     * The hosting node must be online.
-     *
-     * @param src the configuration to check
-     * @return {@code true} if the action is compatible
-     */
-    @Override
-    public boolean isCompatibleWith(Configuration src) {
-        return src.isOnline(getNode());
-    }
-
-
-    /**
-     * Check the compatibility of the action with a source and a destination configuration.
-     * The node must be online in the source configuration and offline is the destination configuration.
-     *
-     * @param src the source configuration
-     * @param dst the configuration to reach
-     * @return true if the action is compatible with the configurations
-     */
-    @Override
-    public boolean isCompatibleWith(Configuration src, Configuration dst) {
-        return (!src.isOnline(getNode()) || !dst.isOffline(getNode()));
-    }
-
-    /**
-     * Insert the action as an incoming action.
-     *
-     * @param g the graph to use
-     * @return true if the insertion succeed
-     */
-    @Override
-    public boolean insertIntoGraph(TimedExecutionGraph g) {
-        return g.getLockables(getNode()).add(this);
-    }
-
-    @Override
-    public void injectToVisualizer(PlanVisualizer vis) {
-        vis.inject(this);
-    }
-
-    @Override
-    public void serialize(TimedReconfigurationPlanSerializer s) throws IOException {
-        s.serialize(this);
-    }
-
 }
