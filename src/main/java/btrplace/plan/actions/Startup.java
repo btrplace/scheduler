@@ -80,9 +80,9 @@ public class Startup extends Action {
     }
 
     /**
-     * Put the node online on a specific configuration.
+     * Put the node online on the model.
      *
-     * @param c the configuration
+     * @param c the model to alter
      */
     @Override
     public boolean apply(Model c) {

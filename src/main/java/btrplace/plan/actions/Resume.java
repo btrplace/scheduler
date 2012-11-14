@@ -38,7 +38,7 @@ public class Resume extends Action {
     private UUID src, dst;
 
     /**
-     * Make a new time-bounded resume.
+     * Make a new resume action.
      *
      * @param vm   the virtual machine to resume
      * @param from the source node

@@ -50,9 +50,10 @@ public class Stop extends Action {
     }
 
     /**
-     * Apply the action by removing the virtual machine from a specified configuration.
+     * Apply the action by removing the virtual machine from the model.
      *
-     * @param m the mapping
+     * @param m the model to alter
+     * @return {@code true}
      */
     @Override
     public boolean apply(Model m) {

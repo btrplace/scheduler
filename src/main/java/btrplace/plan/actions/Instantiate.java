@@ -28,9 +28,9 @@ import java.util.UUID;
  * Prepare a VM for being deployed. The action may be
  * a standalone action, or attached to a boot action in the same plan.
  * <p/>
- * If it is standalone, then the VM is not a part of the source configuration
+ * If it is standalone, then the VM is not a part of the current model
  * will be in the waiting state at the end of the reconfiguration.
- * Otherwise, the VM is not a part of the source configuration and will be
+ * Otherwise, the VM is not a part of the model and will be
  * in the running state at the end of the reconfiguration.
  *
  * @author Fabien Hermenier
@@ -49,6 +49,12 @@ public class Instantiate extends Action {
         this.id = vm;
     }
 
+    /**
+     * Put the VM in the waiting state if possible.
+     *
+     * @param m the model to modify
+     * @return
+     */
     @Override
     public boolean apply(Model m) {
         Mapping map = m.getMapping();

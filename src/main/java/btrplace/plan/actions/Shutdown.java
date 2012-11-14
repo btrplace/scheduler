@@ -84,9 +84,9 @@ public class Shutdown extends Action {
     }
 
     /**
-     * Put the node offline on a specified configuration.
+     * Put the node offline on a model
      *
-     * @param c the configuration
+     * @param c the model
      * @return {@code true} if the node was online and is set offline. {@code false} otherwise
      */
     @Override

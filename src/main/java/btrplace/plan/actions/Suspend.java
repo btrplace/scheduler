@@ -61,9 +61,11 @@ public class Suspend extends Action {
     }
 
     /**
-     * Apply the action by putting the virtual machine into sleep on its destination node for a specified configuration.
+     * Apply the action by putting the VM
+     * into the sleeping state on its destination node in a given model
      *
-     * @param m the model
+     * @param m the model to alter
+     * @return {@code true} iff the VM is now sleeping on the destination node
      */
     @Override
     public boolean apply(Model m) {

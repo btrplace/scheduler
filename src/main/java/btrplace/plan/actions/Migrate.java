@@ -37,7 +37,7 @@ public class Migrate extends Action {
 
 
     /**
-     * Make a new action.
+     * Make a new migrate action.
      *
      * @param vm  the VM to migrate
      * @param src the node the VM is currently running on
@@ -52,6 +52,13 @@ public class Migrate extends Action {
         this.dst = dst;
     }
 
+    /**
+     * Make the VM running on the destination node
+     * in the given model.
+     *
+     * @param i the model to alter with the action
+     * @return {@code true} iff the vm if running on the destination node
+     */
     @Override
     public boolean apply(Model i) {
         Mapping c = i.getMapping();
