@@ -18,8 +18,9 @@
 
 package btrplace.solver.choco;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Statistics related to a solving process.
@@ -46,15 +47,30 @@ public class SolvingStatistics {
      */
     private boolean timeout;
 
-    private List<SolutionStatistics> solutions;
+    private Set<SolutionStatistics> solutions;
 
     private boolean doOptimize;
 
-    public SolvingStatistics(int nbN, int nbB, boolean to) {
+    private static Comparator<SolutionStatistics> solutionsCmp = new Comparator<SolutionStatistics>() {
+        @Override
+        public int compare(SolutionStatistics sol1, SolutionStatistics sol2) {
+            if (sol1.getTime() == sol2.getTime()) {
+                //Compare wrt. the number of nodes or backtracks
+                if (sol1.getNbNodes() == sol2.getNbNodes()) {
+                    return sol1.getNbBacktracks() - sol2.getNbBacktracks();
+                }
+                return sol1.getNbNodes() - sol2.getNbNodes();
+            }
+            return sol1.getTime() - sol2.getTime();
+        }
+    };
+
+    public SolvingStatistics(int t, int nbN, int nbB, boolean to) {
+        time = t;
         nbNodes = nbN;
         nbBacktracks = nbB;
         timeout = to;
-        solutions = new ArrayList<SolutionStatistics>();
+        solutions = new TreeSet<SolutionStatistics>(solutionsCmp);
     }
 
     public int getNbNodes() {
@@ -73,7 +89,7 @@ public class SolvingStatistics {
         this.solutions.add(so);
     }
 
-    public List<SolutionStatistics> getSolutions() {
+    public Set<SolutionStatistics> getSolutions() {
         return solutions;
     }
 

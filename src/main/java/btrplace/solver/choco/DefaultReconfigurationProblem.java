@@ -20,10 +20,14 @@ package btrplace.solver.choco;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.plan.Action;
+import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.SolverException;
 import btrplace.solver.choco.actionModel.*;
 import choco.cp.solver.CPSolver;
+import choco.kernel.solver.Solution;
+import choco.kernel.solver.search.measure.IMeasures;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.map.hash.TObjectIntHashMap;
 
@@ -59,8 +63,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private List<Slice> dSlices;
     private List<Slice> cSlices;
-
-    private SolvingStatistics stats;
 
     public DefaultReconfigurationProblem(Model m, Set<UUID> toWait,
                                          Set<UUID> toRun,
@@ -261,6 +263,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
+    public ActionModel[] getVMActions(Set<UUID> id) {
+        return vmActions;
+    }
+
+    @Override
     public ActionModel getVMAction(int vmIdx) {
         return vmActions[vmIdx];
     }
@@ -291,23 +298,62 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public ActionModel[] getVMActions(Set<UUID> id) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public IntDomainVar getTimeVMReady(UUID vm) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
     public ReconfigurationPlan extractSolution() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        //TODO: check if solution is found
+        //Configuration dst = extractConfiguration();
+        DefaultReconfigurationPlan plan = new DefaultReconfigurationPlan(model);
+        for (ActionModel action : nodeActions) {
+            for (Action a : action.getResultingActions(this)) {
+                plan.add(a);
+            }
+
+        }
+        for (ActionModel action : vmActions) {
+            for (Action a : action.getResultingActions(this)) {
+                plan.add(a);
+            }
+
+        }
+        /*for (Action a : plan) {
+            if (a.getStartMoment() == a.getFinishMoment()) {
+                Plan.logger.error("Action " + a + " has a duration equals to 0");
+                throw new RuntimeException();
+            }
+        }
+
+        if (plan.getDuration() != end.getVal()) {
+            //Plan.logger.error("Theoretical duration (" + end.getVal() + ") and plan duration (" + plan.getDuration() + ") mismatch");
+            return null;
+        }             */
+        return plan;
     }
+
 
     @Override
     public SolvingStatistics getSolvingStatistics() {
-        return stats;
+        SolvingStatistics st = new SolvingStatistics(
+                solver.getTimeCount(),
+                solver.getNodeCount(),
+                solver.getBackTrackCount(),
+                solver.isEncounteredLimit());
+
+        for (Solution s : solver.getSearchStrategy().getStoredSolutions()) {
+            IMeasures m = s.getMeasures();
+            SolutionStatistics sol;
+            if (m.getObjectiveValue() != null) {
+                sol = new SolutionStatistics(m.getNodeCount(),
+                        m.getBackTrackCount(),
+                        m.getTimeCount(),
+                        m.getObjectiveValue().intValue());
+            } else {
+                sol = new SolutionStatistics(m.getNodeCount(),
+                        m.getBackTrackCount(),
+                        m.getTimeCount());
+            }
+            st.addSolution(sol);
+
+        }
+        return st;
     }
 
     @Override

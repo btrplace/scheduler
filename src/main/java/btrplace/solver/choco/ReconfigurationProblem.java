@@ -207,14 +207,6 @@ public interface ReconfigurationProblem {
     List<Slice> getCSlices();
 
     /**
-     * Get the moment the virtual machine is ready to be running.
-     *
-     * @param vm the virtual machine
-     * @return {@code null} if the VM is already ready, a variable otherwise
-     */
-    IntDomainVar getTimeVMReady(UUID vm);
-
-    /**
      * Extract the resulting reconfiguration plan if the
      * solving process succeeded.
      *
