@@ -18,12 +18,12 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.solver.choco.*;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Spread;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.solver.choco.*;
 import choco.cp.solver.constraints.reified.ReifiedFactory;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -34,6 +34,7 @@ import java.util.UUID;
 
 /**
  * Continuous implementation of {@link Spread}.
+ *
  * @author Fabien Hermenier
  */
 public class ChocoContinuousSpread implements ChocoConstraint {
@@ -70,13 +71,13 @@ public class ChocoContinuousSpread implements ChocoConstraint {
         if (!onlyRunnings.isEmpty()) {
             //The lazy spread implementation for the placement
             new ChocoLazySpread(cstr).inject(rp);
-            UUID [] vms = onlyRunnings.toArray(new UUID[onlyRunnings.size()]);
-            for (int i = 0; i <vms.length; i++) {
+            UUID[] vms = onlyRunnings.toArray(new UUID[onlyRunnings.size()]);
+            for (int i = 0; i < vms.length; i++) {
                 UUID vm = vms[i];
-                ActionModel aI = rp.getVMAction(vm);
+                ActionModel aI = rp.getVMAction(rp.getVM(vm));
                 for (int j = 0; j < i; j++) {
                     UUID vmJ = vms[j];
-                    ActionModel aJ = rp.getVMAction(vmJ);
+                    ActionModel aJ = rp.getVMAction(rp.getVM(vm));
                     Slice d = aI.getDSlice();
                     Slice c = aJ.getCSlice();
                     if (d != null && c != null) {

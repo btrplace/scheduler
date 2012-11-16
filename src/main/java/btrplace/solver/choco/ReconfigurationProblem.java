@@ -20,7 +20,7 @@ package btrplace.solver.choco;
 
 import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlan;
-import choco.kernel.solver.Solver;
+import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.List;
@@ -29,6 +29,7 @@ import java.util.UUID;
 
 /**
  * Interface for the Reconfiguration Problem.
+ *
  * @author Fabien Hermenier
  */
 public interface ReconfigurationProblem {
@@ -97,23 +98,7 @@ public interface ReconfigurationProblem {
      *
      * @return a set, may be empty
      */
-    Set<UUID> getFutureTerminated();
-
-    /**
-     * Get the nodes that will be in the online state at the
-     * end of the reconfiguration process.
-     *
-     * @return a set, may be empty
-     */
-    Set<UUID> getFutureOnlines();
-
-    /**
-     * Get the nodes that will be in the offline state at the
-     * end of the reconfiguration process.
-     *
-     * @return a set, may be empty
-     */
-    Set<UUID> getFutureOfflines();
+    Set<UUID> getFutureDestroyed();
 
     /**
      * Get the starting moment of the reconfiguration.
@@ -171,14 +156,6 @@ public interface ReconfigurationProblem {
     /**
      * Get the action associated to a virtual machine.
      *
-     * @param vm the virtual machine
-     * @return the action associated to the virtual machine.
-     */
-    ActionModel getVMAction(UUID vm);
-
-    /**
-     * Get the action associated to a virtual machine.
-     *
      * @param vmIdx the index of the virtual machine
      * @return the action associated to the virtual machine.
      */
@@ -194,10 +171,10 @@ public interface ReconfigurationProblem {
     /**
      * Get the action associated to a node.
      *
-     * @param n the node
+     * @param nId the node index
      * @return the associated action, may be null
      */
-    ActionModel getNodeAction(UUID n);
+    ActionModel getNodeAction(int nId);
 
     /**
      * Get the evaluator to estimate the duration of the actions.
@@ -251,5 +228,5 @@ public interface ReconfigurationProblem {
      */
     SolvingStatistics getSolvingStatistics();
 
-    Solver getSolver();
+    CPSolver getSolver();
 }

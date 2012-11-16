@@ -26,11 +26,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created with IntelliJ IDEA.
- * User: fhermeni
- * Date: 15/11/12
- * Time: 21:44
- * To change this template use File | Settings | File Templates.
+ * Mapper that allow to convert {@link SatConstraint} to {@link ChocoConstraint}.
+ *
+ * @author Fabien Hermenier
  */
 public class SatConstraintMapper {
 
