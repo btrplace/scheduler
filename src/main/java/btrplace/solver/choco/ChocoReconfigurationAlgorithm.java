@@ -22,6 +22,7 @@ import btrplace.plan.ReconfigurationAlgorithm;
 
 /**
  * A reconfiguration algorithm based on the Choco constraint solver.
+ *
  * @author Fabien Hermenier
  */
 public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm {
@@ -36,4 +37,11 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm 
     int getTimeLimit();
 
     SatConstraintMapper getSatConstraintMapper();
+
+    /**
+     * Get statistics about the solving process
+     *
+     * @return some statistics
+     */
+    SolvingStatistics getSolvingStatistics();
 }

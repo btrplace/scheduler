@@ -26,8 +26,6 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.SolverException;
 import btrplace.solver.choco.actionModel.*;
 import choco.cp.solver.CPSolver;
-import choco.kernel.solver.Solution;
-import choco.kernel.solver.search.measure.IMeasures;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.map.hash.TObjectIntHashMap;
 
@@ -35,6 +33,9 @@ import java.util.*;
 
 /**
  * Default implementation of {@link ReconfigurationProblem}.
+ * TODO: resource capacity
+ * TODO: actions model
+ * TODO: duration evaluator
  *
  * @author Fabien Hermenier
  */
@@ -299,7 +300,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public ReconfigurationPlan extractSolution() {
-        //TODO: check if solution is found
+        if (!Boolean.TRUE.equals(solver.isFeasible())) {
+            return null;
+        }
         //Configuration dst = extractConfiguration();
         DefaultReconfigurationPlan plan = new DefaultReconfigurationPlan(model);
         for (ActionModel action : nodeActions) {
@@ -314,46 +317,17 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             }
 
         }
-        /*for (Action a : plan) {
-            if (a.getStartMoment() == a.getFinishMoment()) {
-                Plan.logger.error("Action " + a + " has a duration equals to 0");
-                throw new RuntimeException();
-            }
-        }
-
-        if (plan.getDuration() != end.getVal()) {
-            //Plan.logger.error("Theoretical duration (" + end.getVal() + ") and plan duration (" + plan.getDuration() + ") mismatch");
-            return null;
-        }             */
+        assert checkConsistency(plan);
         return plan;
     }
 
-
-    @Override
-    public SolvingStatistics getSolvingStatistics() {
-        SolvingStatistics st = new SolvingStatistics(
-                solver.getTimeCount(),
-                solver.getNodeCount(),
-                solver.getBackTrackCount(),
-                solver.isEncounteredLimit());
-
-        for (Solution s : solver.getSearchStrategy().getStoredSolutions()) {
-            IMeasures m = s.getMeasures();
-            SolutionStatistics sol;
-            if (m.getObjectiveValue() != null) {
-                sol = new SolutionStatistics(m.getNodeCount(),
-                        m.getBackTrackCount(),
-                        m.getTimeCount(),
-                        m.getObjectiveValue().intValue());
-            } else {
-                sol = new SolutionStatistics(m.getNodeCount(),
-                        m.getBackTrackCount(),
-                        m.getTimeCount());
+    private boolean checkConsistency(ReconfigurationPlan p) {
+        for (Action a : p) {
+            if (a.getStart() == a.getEnd()) {
+                return false;
             }
-            st.addSolution(sol);
-
         }
-        return st;
+        return p.getDuration() == end.getVal();
     }
 
     @Override

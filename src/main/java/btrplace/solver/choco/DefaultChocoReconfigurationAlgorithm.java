@@ -26,17 +26,15 @@ import btrplace.model.constraint.Sleeping;
 import btrplace.model.constraint.Waiting;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.SolverException;
+import choco.kernel.solver.Solution;
+import choco.kernel.solver.search.measure.IMeasures;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
- * Created with IntelliJ IDEA.
- * User: fhermeni
- * Date: 15/11/12
- * Time: 13:35
- * To change this template use File | Settings | File Templates.
+ * Default implementation of {@link ChocoReconfigurationAlgorithm}.
+ *
+ * @author Fabien Hermenier
  */
 public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfigurationAlgorithm {
 
@@ -45,6 +43,8 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     private boolean optimize = false;
 
     private int timeLimit;
+
+    private ReconfigurationProblem rp;
 
     public DefaultChocoReconfigurationAlgorithm() {
         cstrMapper = new SatConstraintMapper();
@@ -73,6 +73,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     @Override
     public ReconfigurationPlan solve(Model i) throws SolverException {
 
+        rp = null;
         //Build the RP. As VM state management is not possible
         //We extract VM-state related constraints first.
         //For other constraint, we just create the right choco constraint
@@ -81,6 +82,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         Set<UUID> toDestroy = new HashSet<UUID>();
         Set<UUID> toSleep = new HashSet<UUID>();
 
+        List<ChocoConstraint> cConstraints = new ArrayList<ChocoConstraint>();
         for (SatConstraint cstr : i.getConstraints()) {
             if (cstr instanceof Running) {
                 toRun.addAll(cstr.getInvolvedVMs());
@@ -96,17 +98,69 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
                     throw new SolverException(i, "Unable to map constraint '" + cstr.getClass().getSimpleName() + "'");
                 }
                 ChocoConstraint ccstr = ccstrb.build(cstr);
+                if (ccstr == null) {
+                    throw new SolverException(i, "Error while mapping the constraint '" + cstr.getClass().getSimpleName() + "'");
+                } else {
+                    cConstraints.add(ccstr);
+                }
             }
         }
 
         //Make the core-RP
-        ReconfigurationProblem rp = new DefaultReconfigurationProblem(i, toWait, toRun, toSleep, toDestroy);
+        rp = new DefaultReconfigurationProblem(i, toWait, toRun, toSleep, toDestroy);
 
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        //Customize with the constraints
+        for (ChocoConstraint ccstr : cConstraints) {
+            ccstr.inject(rp);
+        }
+
+        //The objective
+
+        //The heuristics
+
+        //Let's rock
+        Boolean ret = rp.getSolver().solve();
+        if (Boolean.TRUE.equals(ret)) {
+            return rp.extractSolution();
+        } else if (Boolean.FALSE.equals(ret)) {
+            return null;
+        } else {
+            throw new SolverException(i, "Unable to state about the feasibility of the problem");
+        }
     }
 
     @Override
     public SatConstraintMapper getSatConstraintMapper() {
         return cstrMapper;
+    }
+
+    @Override
+    public SolvingStatistics getSolvingStatistics() {
+        if (rp == null) {
+            return new SolvingStatistics(0, 0, 0, false);
+        }
+        SolvingStatistics st = new SolvingStatistics(
+                rp.getSolver().getTimeCount(),
+                rp.getSolver().getNodeCount(),
+                rp.getSolver().getBackTrackCount(),
+                rp.getSolver().isEncounteredLimit());
+
+        for (Solution s : rp.getSolver().getSearchStrategy().getStoredSolutions()) {
+            IMeasures m = s.getMeasures();
+            SolutionStatistics sol;
+            if (m.getObjectiveValue() != null) {
+                sol = new SolutionStatistics(m.getNodeCount(),
+                        m.getBackTrackCount(),
+                        m.getTimeCount(),
+                        m.getObjectiveValue().intValue());
+            } else {
+                sol = new SolutionStatistics(m.getNodeCount(),
+                        m.getBackTrackCount(),
+                        m.getTimeCount());
+            }
+            st.addSolution(sol);
+
+        }
+        return st;
     }
 }

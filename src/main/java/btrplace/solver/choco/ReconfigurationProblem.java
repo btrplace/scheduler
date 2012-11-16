@@ -214,12 +214,5 @@ public interface ReconfigurationProblem {
      */
     ReconfigurationPlan extractSolution();
 
-    /**
-     * Get statistics about the solving process
-     *
-     * @return some statistics
-     */
-    SolvingStatistics getSolvingStatistics();
-
     CPSolver getSolver();
 }
