@@ -151,7 +151,7 @@ public interface ReconfigurationProblem {
      *
      * @return a list of actions.
      */
-    List<ActionModel> getVMActions();
+    ActionModel[] getVMActions();
 
     /**
      * Get the action associated to a virtual machine.
@@ -162,11 +162,20 @@ public interface ReconfigurationProblem {
     ActionModel getVMAction(int vmIdx);
 
     /**
+     * Get all the actions associated to a list of virtual machines.
+     *
+     * @param id the virtual machines
+     * @return a list of actions. The order is the same than the order of the VMs.
+     */
+    ActionModel[] getVMActions(Set<UUID> id);
+
+
+    /**
      * Get all the actions related to nodes.
      *
      * @return a list of actions.
      */
-    List<ActionModel> getNodeActions();
+    ActionModel[] getNodeActions();
 
     /**
      * Get the action associated to a node.
@@ -196,14 +205,6 @@ public interface ReconfigurationProblem {
      * @return a list of slice. May be empty
      */
     List<Slice> getCSlices();
-
-    /**
-     * Get all the actions associated to a list of virtual machines.
-     *
-     * @param id the virtual machines
-     * @return a list of actions. The order is the same than the order of the VMs.
-     */
-    List<ActionModel> getVMActions(Set<UUID> id);
 
     /**
      * Get the moment the virtual machine is ready to be running.

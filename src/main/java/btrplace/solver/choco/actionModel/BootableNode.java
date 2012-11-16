@@ -28,13 +28,12 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Created with IntelliJ IDEA.
- * User: fhermeni
- * Date: 15/11/12
- * Time: 13:09
- * To change this template use File | Settings | File Templates.
+ * Model an action that allow a node to be booted if necessary.
+ *
+ * @author Fabien Hermenier
  */
-public class MigratableAM extends ActionModel {
+public class BootableNode extends ActionModel {
+
     @Override
     public IntDomainVar getStart() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
