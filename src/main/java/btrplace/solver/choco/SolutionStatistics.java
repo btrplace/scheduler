@@ -18,39 +18,42 @@
 
 package btrplace.solver.choco;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * Statistics related to a solving process.
+ * Store statistics about a solution.
  *
  * @author Fabien Hermenier
  */
-public class SolvingStatistics {
-
+public class SolutionStatistics {
 
     /**
-     * The total number of opened nodes.
+     * The number of opened nodes at this point.
      */
     private int nbNodes;
 
     /**
-     * The total number of backtracks.
+     * The number of backtracks at this point.
      */
     private int nbBacktracks;
 
     /**
-     * Indicates whether or not the solver hits the timeout.
+     * The moment the solver computed the solution.
      */
-    private boolean timeout;
+    private int time;
 
-    private List<SolutionStatistics> solutions;
+    /**
+     * The objective value if an objective was designed.
+     */
+    private int optValue;
 
-    public SolvingStatistics(int nbN, int nbB, boolean to) {
+    public SolutionStatistics(int nbN, int nbB, int t) {
+        this(nbN, nbB, t, -1);
+    }
+
+    public SolutionStatistics(int nbN, int nbB, int t, int o) {
         nbNodes = nbN;
         nbBacktracks = nbB;
-        timeout = to;
-        solutions = new ArrayList<SolutionStatistics>();
+        time = t;
+        optValue = o;
     }
 
     public int getNbNodes() {
@@ -61,15 +64,11 @@ public class SolvingStatistics {
         return nbBacktracks;
     }
 
-    public boolean isTimeout() {
-        return timeout;
+    public int getTime() {
+        return time;
     }
 
-    public void addSolution(SolutionStatistics so) {
-        this.solutions.add(so);
-    }
-
-    public List<SolutionStatistics> getSolutions() {
-        return solutions;
+    public int getOptValue() {
+        return optValue;
     }
 }
