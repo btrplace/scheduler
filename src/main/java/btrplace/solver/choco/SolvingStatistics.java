@@ -29,6 +29,8 @@ import java.util.List;
 public class SolvingStatistics {
 
 
+    private int time;
+
     /**
      * The total number of opened nodes.
      */
@@ -45,6 +47,8 @@ public class SolvingStatistics {
     private boolean timeout;
 
     private List<SolutionStatistics> solutions;
+
+    private boolean doOptimize;
 
     public SolvingStatistics(int nbN, int nbB, boolean to) {
         nbNodes = nbN;
@@ -71,5 +75,32 @@ public class SolvingStatistics {
 
     public List<SolutionStatistics> getSolutions() {
         return solutions;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+        b.append("After ").append(time).append("ms");
+        if (timeout) {
+            b.append(" (timeout)");
+        } else {
+            b.append(" (terminated)");
+        }
+        b.append(": ")
+                .append(nbNodes).append(" nodes, ")
+                .append(nbBacktracks).append(" backtracks, ")
+                .append(solutions.size()).append(" solutions:\n");
+        int i = 0;
+        for (SolutionStatistics st : solutions) {
+            b.append("\t").append(i).append(")")
+                    .append(" at ").append(st.getTime()).append("ms: ")
+                    .append(st.getNbNodes()).append(" nodes, ")
+                    .append(st.getNbBacktracks()).append(" backtracks");
+            if (st.hasObjective()) {
+                b.append(", obj: ").append(st.getOptValue());
+            }
+            b.append("\n");
+        }
+        return b.toString();
     }
 }

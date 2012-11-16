@@ -45,8 +45,11 @@ public class SolutionStatistics {
      */
     private int optValue;
 
+    private boolean hasObjective = true;
+
     public SolutionStatistics(int nbN, int nbB, int t) {
         this(nbN, nbB, t, -1);
+        hasObjective = false;
     }
 
     public SolutionStatistics(int nbN, int nbB, int t, int o) {
@@ -70,5 +73,9 @@ public class SolutionStatistics {
 
     public int getOptValue() {
         return optValue;
+    }
+
+    public boolean hasObjective() {
+        return hasObjective;
     }
 }

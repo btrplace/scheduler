@@ -21,8 +21,6 @@ package btrplace.solver.choco.actionModel;
 import btrplace.plan.Action;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.Slice;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.List;
 import java.util.UUID;
@@ -32,39 +30,8 @@ import java.util.UUID;
  */
 public class SuspendVM extends ActionModel {
 
-    @Override
-    public IntDomainVar getStart() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public IntDomainVar getEnd() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public IntDomainVar getDuration() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public IntDomainVar getGlobalCost() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public Slice getCSlice() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public Slice getDSlice() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public UUID getSubject() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public SuspendVM(UUID e) {
+        super(e);
     }
 
     @Override

@@ -31,19 +31,52 @@ import java.util.UUID;
  */
 public abstract class ActionModel {
 
-    public abstract IntDomainVar getStart();
+    protected UUID subject;
 
-    public abstract IntDomainVar getEnd();
+    protected IntDomainVar start;
 
-    public abstract IntDomainVar getDuration();
+    protected IntDomainVar end;
 
-    public abstract IntDomainVar getGlobalCost();
+    protected IntDomainVar duration;
 
-    public abstract Slice getCSlice();
+    protected Slice cSlice;
 
-    public abstract Slice getDSlice();
+    protected Slice dSlice;
 
-    public abstract UUID getSubject();
+    protected IntDomainVar cost;
+
+    public ActionModel(UUID e) {
+        this.subject = e;
+    }
+
+    public IntDomainVar getStart() {
+        return start;
+    }
+
+    public IntDomainVar getEnd() {
+        return end;
+    }
+
+    public IntDomainVar getDuration() {
+        return duration;
+    }
+
+    public Slice getCSlice() {
+        return cSlice;
+    }
+
+    public Slice getDSlice() {
+        return dSlice;
+    }
+
+    public UUID getSubject() {
+        return subject;
+    }
+
+    public IntDomainVar getGlobalCost() {
+        return cost;
+    }
 
     public abstract List<Action> getResultingActions(ReconfigurationProblem rp);
+
 }

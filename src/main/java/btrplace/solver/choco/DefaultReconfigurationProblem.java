@@ -22,6 +22,7 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.SolverException;
+import btrplace.solver.choco.actionModel.*;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.map.hash.TObjectIntHashMap;
@@ -44,53 +45,38 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private Set<UUID> sleepings;
     private Set<UUID> destroyed;
 
-    private UUID [] vms;
+    private UUID[] vms;
     private TObjectIntHashMap<UUID> revVMs;
 
-    private UUID [] nodes;
+    private UUID[] nodes;
     private TObjectIntHashMap<UUID> revNodes;
 
     private IntDomainVar start;
     private IntDomainVar end;
 
-    private ActionModel [] vmActions;
-    private ActionModel [] nodeActions;
+    private ActionModel[] vmActions;
+    private ActionModel[] nodeActions;
+
+    private List<Slice> dSlices;
+    private List<Slice> cSlices;
 
     private SolvingStatistics stats;
 
     public DefaultReconfigurationProblem(Model m, Set<UUID> toWait,
-                                                  Set<UUID> toRun,
-                                                  Set<UUID> toSleep,
-                                                  Set<UUID> toDestroy) throws SolverException {
+                                         Set<UUID> toRun,
+                                         Set<UUID> toSleep,
+                                         Set<UUID> toDestroy) throws SolverException {
         waitings = toWait;
         runnings = toRun;
         sleepings = toSleep;
         destroyed = toDestroy;
         model = m;
 
-        checkDisjointSet();
+        cSlices = new ArrayList<Slice>();
+        dSlices = new ArrayList<Slice>();
 
-
-        Set<UUID> allVMs = new HashSet<UUID>(m.getMapping().getAllVMs());
-        allVMs.addAll(toWait); //The only VMs that may not appear in the mapping
-        vms = new UUID[allVMs.size()];
-        revVMs = new TObjectIntHashMap<UUID>(allVMs.size(), 0.5f, -1); //0.5f is the default load factor
-        int i = 0;
-
-        for (UUID vmId : allVMs) {
-            vms[i] = vmId;
-            revVMs.put(vmId, i++);
-        }
-
-
-        i = 0;
-        Set<UUID> s = model.getMapping().getAllNodes();
-        nodes = new UUID[s.size()];
-        revNodes = new TObjectIntHashMap<UUID>(s.size(), 0.5f, -1);
-        for (UUID nId : s) {
-            nodes[i] = nId;
-            revNodes.put(nId, i++);
-        }
+        makeVMActionModels();
+        makeNodeActionModels();
 
         solver = new CPSolver();
         start = solver.makeConstantIntVar(0);
@@ -98,18 +84,99 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         solver.post(solver.geq(end, start));
     }
 
-    private void checkDisjointSet() throws SolverException {
+    private void makeVMActionModels() throws SolverException {
+        Set<UUID> allVMs = new HashSet<UUID>(model.getMapping().getAllVMs());
+        allVMs.addAll(waitings); //The only VMs that may not appear in the mapping
+
+        vms = new UUID[allVMs.size()];
+        revVMs = new TObjectIntHashMap<UUID>(allVMs.size(), 0.5f, -1); //0.5f is the default load factor
+        int i = 0;
         Mapping map = model.getMapping();
-        for (UUID vmId : map.getAllVMs()) {
-            int nbIn = runnings.contains(vmId) ? 1 : 0;
-            if (waitings.contains(vmId)) {nbIn++;}
-            if (sleepings.contains(vmId)) {nbIn++;}
-            if (destroyed.contains(vmId)) {nbIn++;}
-            if (nbIn == 0) {
-                throw new SolverException(model, "Next state for VM '" + vmId + "' is unknown.");
-            } else if (nbIn > 1) {
-                throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
+        vmActions = new ActionModel[allVMs.size()];
+        for (UUID vmId : allVMs) {
+            if (runnings.contains(vmId)) {
+                if (map.getSleepingVMs().contains(vmId)) {
+                    vmActions[i] = new ResumeVM(vmId);
+                } else if (map.getRunningVMs().contains(vmId)) {
+                    vmActions[i] = new MigratableVM(vmId);
+                } else if (map.getWaitingVMs().contains(vmId)) {
+                    vmActions[i] = new RunVM(vmId);
+                } else {
+                    throw new SolverException(model, "Unable to set VM '" + vmId + "' running: not instantiated");
+                }
             }
+            if (waitings.contains(vmId)) {
+                if (vmActions[i] != null) {
+                    throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
+                } else if (!map.getAllVMs().contains(vmId)) {
+                    vmActions[i] = new InstantiateVM(vmId);
+                } else {
+                    throw new SolverException(model, "Unable to set VM '" + vmId + "' waiting: already instantiated or unknown");
+                }
+            }
+            if (sleepings.contains(vmId)) {
+                if (vmActions[i] != null) {
+                    throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
+                } else if (map.getRunningVMs().contains(vmId)) {
+                    vmActions[i] = new SuspendVM(vmId);
+                } else if (!map.getSleepingVMs().contains(vmId)) {
+                    throw new SolverException(model, "Unable to set VM '" + vmId + "' sleeping: should be running");
+                }
+            }
+            if (destroyed.contains(vmId)) {
+                if (vmActions[i] != null) {
+                    throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
+                } else if (map.getRunningVMs().contains(vmId)) {
+                    vmActions[i] = new StopVM(vmId);
+                } else {
+                    throw new SolverException(model, "Unable to halt VM '" + vmId + "': should be running");
+                }
+            } else {
+                throw new SolverException(model, "Next state for VM '" + vmId + "' is undefined");
+            }
+            Slice s = vmActions[i].getCSlice();
+            if (s != null) {
+                cSlices.add(s);
+            }
+
+            s = vmActions[i].getDSlice();
+            if (s != null) {
+                dSlices.add(s);
+            }
+            vms[i] = vmId;
+            revVMs.put(vmId, i++);
+        }
+    }
+
+    private void makeNodeActionModels() throws SolverException {
+        nodes = new UUID[model.getMapping().getAllNodes().size()];
+        revNodes = new TObjectIntHashMap<UUID>(nodes.length, 0.5f, -1);
+
+        Mapping m = model.getMapping();
+        int i = 0;
+        for (UUID nId : model.getMapping().getAllNodes()) {
+            if (m.getOfflineNodes().contains(nId)) {
+                nodeActions[i] = new BootableNode(nId);
+            }
+            if (m.getOfflineNodes().contains(nId)) {
+                if (nodeActions[i] != null) {
+                    throw new SolverException(model, "Next state for node '" + nId + "' is ambiguous");
+                }
+                nodeActions[i] = new ShutdownableNode(nId);
+            }
+
+            Slice s = nodeActions[i].getCSlice();
+            if (s != null) {
+                cSlices.add(s);
+            }
+
+            s = nodeActions[i].getDSlice();
+            if (s != null) {
+                dSlices.add(s);
+            }
+
+            nodes[i] = nId;
+            revNodes.put(nId, i++);
         }
     }
 
@@ -189,7 +256,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public ActionModel [] getVMActions() {
+    public ActionModel[] getVMActions() {
         return vmActions;
     }
 
@@ -199,7 +266,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public ActionModel [] getNodeActions() {
+    public ActionModel[] getNodeActions() {
         return nodeActions;
     }
 
@@ -215,16 +282,16 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public List<Slice> getDSlices() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return dSlices;
     }
 
     @Override
     public List<Slice> getCSlices() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return cSlices;
     }
 
     @Override
-    public ActionModel [] getVMActions(Set<UUID> id) {
+    public ActionModel[] getVMActions(Set<UUID> id) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
