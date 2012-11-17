@@ -68,6 +68,14 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private ActionsDuration durEval;
 
     public DefaultReconfigurationProblem(Model m,
+                                         Set<UUID> toWait,
+                                         Set<UUID> toRun,
+                                         Set<UUID> toSleep,
+                                         Set<UUID> toDestroy) throws SolverException {
+        this(m, new ActionsDuration(), toWait, toRun, toSleep, toDestroy);
+    }
+
+    public DefaultReconfigurationProblem(Model m,
                                          ActionsDuration dEval,
                                          Set<UUID> toWait,
                                          Set<UUID> toRun,

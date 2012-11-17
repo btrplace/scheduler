@@ -49,6 +49,9 @@ public class SolvingStatistics {
 
     private Set<SolutionStatistics> solutions;
 
+    /**
+     * Compare the solution by their moment. If equal, the number of nodes then the number of backtracks.
+     */
     private static Comparator<SolutionStatistics> solutionsCmp = new Comparator<SolutionStatistics>() {
         @Override
         public int compare(SolutionStatistics sol1, SolutionStatistics sol2) {
@@ -63,6 +66,14 @@ public class SolvingStatistics {
         }
     };
 
+    /**
+     * Make new statistics.
+     *
+     * @param t   the moment in milliseconds
+     * @param nbN the number of opened nodes at the moment
+     * @param nbB the number of backtracks at the moment
+     * @param to  {@code true} to indicate the solver hit a timeout
+     */
     public SolvingStatistics(int t, int nbN, int nbB, boolean to) {
         time = t;
         nbNodes = nbN;
@@ -71,22 +82,56 @@ public class SolvingStatistics {
         solutions = new TreeSet<SolutionStatistics>(solutionsCmp);
     }
 
+    /**
+     * Get the time since the beginning of the solving process.
+     *
+     * @return a duration in milliseconds
+     */
+    public int getTime() {
+        return time;
+    }
+
+    /**
+     * Get the number of opened nodes.
+     *
+     * @return a positive number
+     */
     public int getNbNodes() {
         return nbNodes;
     }
 
+    /**
+     * Get the number of backtracks.
+     *
+     * @return a positive number
+     */
     public int getNbBacktracks() {
         return nbBacktracks;
     }
 
+    /**
+     * Indicates if the solver hit a timeout.
+     *
+     * @return {@code true} iff the solver hit a timeout
+     */
     public boolean isTimeout() {
         return timeout;
     }
 
+    /**
+     * Add a solution to the statistics.
+     *
+     * @param so the solution to add
+     */
     public void addSolution(SolutionStatistics so) {
         this.solutions.add(so);
     }
 
+    /**
+     * Get all the computed solutions ordered by time.
+     *
+     * @return a list of solutions that may be empty
+     */
     public Set<SolutionStatistics> getSolutions() {
         return solutions;
     }

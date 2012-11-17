@@ -35,6 +35,9 @@ public class ActionsDuration {
 
     private Map<Class, DurationEvaluator> durations;
 
+    /**
+     * Make a new mapper.
+     */
     public ActionsDuration() {
         durations = new HashMap<Class, DurationEvaluator>();
 
@@ -50,10 +53,24 @@ public class ActionsDuration {
         durations.put(BootNode.class, new ConstantDuration(BootNode.class, 1));
     }
 
+    /**
+     * Register a new {@link DurationEvaluator}.
+     *
+     * @param e the evaluator to register
+     * @return {@code false} if this action delete a previous evaluator for that action
+     */
     public boolean register(DurationEvaluator e) {
         return durations.put(e.getKey(), e) != null;
     }
 
+    /**
+     * Get the {@link DurationEvaluator} associated to the given class.
+     * The class is supposed to inherit from {@link btrplace.plan.Action}.
+     *
+     * @param cl the action class
+     * @return the associated {@link DurationEvaluator} or {@code null} if no {@link DurationEvaluator} was registered
+     *         for that action
+     */
     public DurationEvaluator getEvaluator(Class cl) {
         return durations.get(cl);
     }

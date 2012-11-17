@@ -34,20 +34,41 @@ public class SatConstraintMapper {
 
     private Map<Class, ChocoConstraintBuilder> builders;
 
+    /**
+     * Make a new mapper.
+     */
     public SatConstraintMapper() {
         builders = new HashMap<Class, ChocoConstraintBuilder>();
 
         builders.put(Spread.class, new ChocoContinuousSpread.ChocoContinuousSpreadBuilder());
     }
 
+    /**
+     * Register a constraint builder.
+     *
+     * @param ccb the builder to register
+     * @return {@code false} if no builder previously registered for the given constraint was deleted
+     */
     public boolean register(ChocoConstraintBuilder ccb) {
         return builders.put(ccb.getKey(), ccb) != null;
     }
 
+    /**
+     * Un-register the builder associated to a given {@link SatConstraint}.
+     *
+     * @param c the class of the {@link SatConstraint} to un-register
+     * @return {@code true} if a builder was registered
+     */
     public boolean unregister(Class c) {
         return builders.remove(c) != null;
     }
 
+    /**
+     * Get the builder associated to a {@link SatConstraint}.
+     *
+     * @param c the constraint
+     * @return the associated builder if exists. {@code null} otherwise
+     */
     public ChocoConstraintBuilder get(SatConstraint c) {
         return builders.get(c);
     }

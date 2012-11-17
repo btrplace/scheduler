@@ -22,11 +22,9 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
 /**
- * Created with IntelliJ IDEA.
- * User: fhermeni
- * Date: 15/11/12
- * Time: 13:13
- * To change this template use File | Settings | File Templates.
+ * Model a period where an element is hosted on a node.
+ *
+ * @author Fabien Hermenier
  */
 public class Slice {
 

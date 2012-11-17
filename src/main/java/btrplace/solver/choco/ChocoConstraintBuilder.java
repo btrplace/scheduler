@@ -30,13 +30,15 @@ public interface ChocoConstraintBuilder {
 
     /**
      * Get the class of the SatConstraint associated to the builder.
+     *
      * @return a Class
      */
     public Class getKey();
 
     /**
-     * Build the ChocoConstraint associated to the SatConstraint
+     * Build the ChocoConstraint associated to the {@link SatConstraint}
      * identified as key.
+     *
      * @param cstr the model constraint
      * @return the associated ChocoConstraint or {@code null} if an error occurred
      */

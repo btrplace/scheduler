@@ -47,11 +47,26 @@ public class SolutionStatistics {
 
     private boolean hasObjective = true;
 
+    /**
+     * Make a new statistics.
+     *
+     * @param nbN the number of opened nodes
+     * @param nbB the number of backtracks
+     * @param t   the time in milliseconds
+     */
     public SolutionStatistics(int nbN, int nbB, int t) {
         this(nbN, nbB, t, -1);
         hasObjective = false;
     }
 
+    /**
+     * Make a new statistics.
+     *
+     * @param nbN the number of opened nodes
+     * @param nbB the number of backtracks
+     * @param t   the time in milliseconds
+     * @param o   the value of the optimization variable
+     */
     public SolutionStatistics(int nbN, int nbB, int t, int o) {
         nbNodes = nbN;
         nbBacktracks = nbB;
@@ -59,22 +74,47 @@ public class SolutionStatistics {
         optValue = o;
     }
 
+    /**
+     * Get the number of opened nodes.
+     *
+     * @return a positive number
+     */
     public int getNbNodes() {
         return nbNodes;
     }
 
+    /**
+     * Get the number of backtracks.
+     *
+     * @return a positive number
+     */
     public int getNbBacktracks() {
         return nbBacktracks;
     }
 
+    /**
+     * Get the time since the beginning of the solving process.
+     *
+     * @return a time in milliseconds
+     */
     public int getTime() {
         return time;
     }
 
+    /**
+     * Get the value of the optimization variable.
+     *
+     * @return an integer
+     */
     public int getOptValue() {
         return optValue;
     }
 
+    /**
+     * Indicates the presence of an optimization variable.
+     *
+     * @return {@code true} if there is an optimization variable
+     */
     public boolean hasObjective() {
         return hasObjective;
     }
