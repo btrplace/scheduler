@@ -16,7 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.durationEvaluator;
+
+import btrplace.solver.choco.DurationEvaluator;
 
 import java.util.UUID;
 
@@ -27,24 +29,15 @@ import java.util.UUID;
  */
 public class ConstantDuration implements DurationEvaluator {
 
-    private Class cl;
-
     private int duration;
 
     /**
      * Make a new evaluator.
      *
-     * @param c the class of the action to consider
-     * @param d the estimated duration to accomplish the action
+     * @param d the estimated duration to accomplish the action. Must be strictly positive
      */
-    public ConstantDuration(Class c, int d) {
-        this.cl = c;
+    public ConstantDuration(int d) {
         this.duration = d;
-    }
-
-    @Override
-    public Class getKey() {
-        return cl;
     }
 
     @Override

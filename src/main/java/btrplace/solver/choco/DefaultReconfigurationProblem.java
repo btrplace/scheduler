@@ -65,18 +65,18 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private List<Slice> dSlices;
     private List<Slice> cSlices;
 
-    private ActionsDuration durEval;
+    private DurationEvaluators durEval;
 
     public DefaultReconfigurationProblem(Model m,
                                          Set<UUID> toWait,
                                          Set<UUID> toRun,
                                          Set<UUID> toSleep,
                                          Set<UUID> toDestroy) throws SolverException {
-        this(m, new ActionsDuration(), toWait, toRun, toSleep, toDestroy);
+        this(m, new DurationEvaluators(), toWait, toRun, toSleep, toDestroy);
     }
 
     public DefaultReconfigurationProblem(Model m,
-                                         ActionsDuration dEval,
+                                         DurationEvaluators dEval,
                                          Set<UUID> toWait,
                                          Set<UUID> toRun,
                                          Set<UUID> toSleep,
@@ -297,7 +297,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public ActionsDuration getDurationEvaluator() {
+    public DurationEvaluators getDurationEvaluator() {
         return durEval;
     }
 

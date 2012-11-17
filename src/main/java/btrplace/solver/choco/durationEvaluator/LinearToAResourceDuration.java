@@ -16,22 +16,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.durationEvaluator;
+
+import btrplace.model.IntResource;
+import btrplace.solver.choco.DurationEvaluator;
 
 import java.util.UUID;
 
 /**
- * Interface to specify the duration evaluator for a possible action on an element.
+ * Evaluate the duration of an action on an element
+ * linearly from a given resource.
  *
  * @author Fabien Hermenier
  */
-public interface DurationEvaluator {
+public class LinearToAResourceDuration implements DurationEvaluator {
 
-    /**
-     * Evaluate the duration of the action on a given element.
-     *
-     * @param e the element
-     * @return a positive integer
-     */
-    int evaluate(UUID e);
+    private IntResource rc;
+
+    private int a;
+
+    private int b;
+
+    public LinearToAResourceDuration(IntResource rc, int a) {
+        this(rc, a, 0);
+    }
+
+    public LinearToAResourceDuration(IntResource rc, int a, int b) {
+        this.rc = rc;
+        this.a = a;
+        this.b = b;
+    }
+
+    @Override
+    public int evaluate(UUID e) {
+        int x = rc.get(e);
+        return a * x + b;
+    }
 }

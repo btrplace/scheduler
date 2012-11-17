@@ -188,7 +188,7 @@ public interface ReconfigurationProblem {
     /**
      * Get the evaluator to estimate the duration of the actions.
      */
-    ActionsDuration getDurationEvaluator();
+    DurationEvaluators getDurationEvaluator();
 
     /**
      * Get  all the demanding slices in the model.

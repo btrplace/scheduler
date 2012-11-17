@@ -46,12 +46,12 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
     private ReconfigurationProblem rp;
 
-    private ActionsDuration actionsDuration;
+    private DurationEvaluators durationEvaluators;
 
     public DefaultChocoReconfigurationAlgorithm() {
         cstrMapper = new SatConstraintMapper();
 
-        actionsDuration = new ActionsDuration();
+        durationEvaluators = new DurationEvaluators();
     }
 
     @Override
@@ -111,7 +111,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         }
 
         //Make the core-RP
-        rp = new DefaultReconfigurationProblem(i, actionsDuration, toWait, toRun, toSleep, toDestroy);
+        rp = new DefaultReconfigurationProblem(i, durationEvaluators, toWait, toRun, toSleep, toDestroy);
 
         //Customize with the constraints
         for (ChocoConstraint ccstr : cConstraints) {

@@ -38,7 +38,7 @@ import java.util.UUID;
  */
 public class ChocoLazySpread implements ChocoConstraint {
 
-    public static class ChocoContinuousSpreadBuilder implements ChocoConstraintBuilder {
+    public static class ChocoLazySpreadBuilder implements ChocoConstraintBuilder {
         @Override
         public Class getKey() {
             return Spread.class;
@@ -53,6 +53,7 @@ public class ChocoLazySpread implements ChocoConstraint {
     public ChocoLazySpread(Spread s) {
 
     }
+
     @Override
     public void inject(ReconfigurationProblem rp) {
         //To change body of implemented methods use File | Settings | File Templates.
