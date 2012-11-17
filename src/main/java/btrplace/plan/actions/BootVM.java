@@ -18,39 +18,57 @@
 
 package btrplace.plan.actions;
 
-import btrplace.model.Mapping;
+
 import btrplace.model.Model;
 import btrplace.plan.Action;
 
 import java.util.UUID;
 
 /**
- * An action to shutdown an online node.
- * The node will be in the offline state once the action applied.
+ * An action that demand to run a virtual machine on an online node.
+ * The virtual machine is originally in the state 'waiting'.
  *
  * @author Fabien Hermenier
  */
-public class Shutdown extends Action {
+public class BootVM extends Action {
+
+    private UUID vm;
 
     private UUID node;
 
     /**
-     * Create a new shutdown action on an online node.
+     * Make a new time-bounded run.
      *
-     * @param n The node to stop
-     * @param s the moment the action starts
-     * @param f the moment the action is finished
+     * @param vm  the virtual machine to run
+     * @param to  the destination node
+     * @param st  the moment the action starts.
+     * @param end the moment the action finish
      */
-    public Shutdown(UUID n, int s, int f) {
-        super(s, f);
-        this.node = n;
+    public BootVM(UUID vm, UUID to, int st, int end) {
+        super(st, end);
+        this.vm = vm;
+        this.node = to;
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuilder("run(")
+                .append("vm=").append(vm)
+                .append(", on=").append(node)
+                .append(')').toString();
+    }
+
+    @Override
+    public boolean apply(Model c) {
+        return c.getMapping().setVMRunOn(vm, node);
     }
 
     /**
-     * Test the equality with another object.
+     * Test if this action is equals to another object.
      *
-     * @param o The object to compare with
-     * @return true if o is an instance of Shutdown and if both actions act on the same node
+     * @param o the object to compare with
+     * @return true if ref is an instanceof Run and if both
+     *         instance involve the same virtual machine and the same nodes
      */
     @Override
     public boolean equals(Object o) {
@@ -59,11 +77,11 @@ public class Shutdown extends Action {
         } else if (o == this) {
             return true;
         } else if (o.getClass() == this.getClass()) {
-            Shutdown that = (Shutdown) o;
-            return this.node.equals(that.node) &&
+            BootVM that = (BootVM) o;
+            return this.vm.equals(that.vm) &&
+                    this.node.equals(that.node) &&
                     this.getStart() == that.getStart() &&
                     this.getEnd() == that.getEnd();
-
         }
         return false;
     }
@@ -72,26 +90,7 @@ public class Shutdown extends Action {
     public int hashCode() {
         int res = getEnd();
         res = getStart() + 31 * res;
+        res = vm.hashCode() + 31 * res;
         return 31 * res + node.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder buffer = new StringBuilder("shutdown(");
-        buffer.append("node=").append(node);
-        buffer.append(")");
-        return buffer.toString();
-    }
-
-    /**
-     * Put the node offline on a model
-     *
-     * @param c the model
-     * @return {@code true} if the node was online and is set offline. {@code false} otherwise
-     */
-    @Override
-    public boolean apply(Model c) {
-        Mapping map = c.getMapping();
-        return (!map.getOfflineNodes().contains(node) && map.addOfflineNode(node));
     }
 }

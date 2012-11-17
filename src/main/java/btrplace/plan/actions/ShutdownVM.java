@@ -25,41 +25,60 @@ import btrplace.plan.Action;
 import java.util.UUID;
 
 /**
- * An action to start an offline node. Once the execution is finished, the node is online.
+ * An action to stop a virtual machine running on an online node.
  *
  * @author Fabien Hermenier
  */
-public class Startup extends Action {
+public class ShutdownVM extends Action {
+
+    private UUID vm;
 
     private UUID node;
 
     /**
-     * Create a new startup action on an offline node.
+     * Make a new action.
      *
-     * @param n The node to start
-     * @param s the moment the action starts
-     * @param f the moment the action is finished
+     * @param vm the virtual machine to stop
+     * @param to the hosting node
+     * @param s  the moment the action start.
+     * @param f  the moment the action finish
      */
-    public Startup(UUID n, int s, int f) {
+    public ShutdownVM(UUID vm, UUID to, int s, int f) {
         super(s, f);
-        this.node = n;
+        this.vm = vm;
+        this.node = to;
     }
 
     /**
-     * Test the equality with another object.
+     * Apply the action by removing the virtual machine from the model.
      *
-     * @param obj The object to compare with
-     * @return true if o is an instance of Startup and if both actions act on the same node
+     * @param m the model to alter
+     * @return {@code true}
      */
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
+    public boolean apply(Model m) {
+        m.getMapping().removeVM(vm);
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuilder("stop(")
+                .append("vm=").append(vm)
+                .append(", on=").append(node).append(')').toString();
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
             return false;
-        } else if (obj == this) {
+        } else if (o == this) {
             return true;
-        } else if (obj.getClass() == this.getClass()) {
-            Startup that = (Startup) obj;
-            return this.node.equals(that.node) &&
+        } else if (o.getClass() == this.getClass()) {
+            ShutdownVM that = (ShutdownVM) o;
+            return this.vm.equals(that.vm) &&
+                    this.node.equals(that.node) &&
                     this.getStart() == that.getStart() &&
                     this.getEnd() == that.getEnd();
         }
@@ -70,24 +89,7 @@ public class Startup extends Action {
     public int hashCode() {
         int res = getEnd();
         res = getStart() + 31 * res;
+        res = vm.hashCode() + 31 * res;
         return 31 * res + node.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder buffer = new StringBuilder("startup(");
-        buffer.append("node=").append(node).append(")");
-        return buffer.toString();
-    }
-
-    /**
-     * Put the node online on the model.
-     *
-     * @param c the model to alter
-     */
-    @Override
-    public boolean apply(Model c) {
-        c.getMapping().addOnlineNode(node);
-        return true;
     }
 }

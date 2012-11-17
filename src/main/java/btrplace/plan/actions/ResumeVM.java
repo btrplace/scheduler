@@ -19,57 +19,55 @@
 package btrplace.plan.actions;
 
 
+import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.plan.Action;
 
 import java.util.UUID;
 
 /**
- * An action that demand to run a virtual machine on an online node.
- * The virtual machine is originally in the state 'waiting'.
+ * An action to resume a VirtualMachine on an online node.
+ * The state of the virtual machine comes to "sleeping" to "running".
  *
  * @author Fabien Hermenier
  */
-public class Run extends Action {
+public class ResumeVM extends Action {
 
     private UUID vm;
 
-    private UUID node;
+    private UUID src, dst;
 
     /**
-     * Make a new time-bounded run.
+     * Make a new resume action.
      *
-     * @param vm  the virtual machine to run
-     * @param to  the destination node
-     * @param st  the moment the action starts.
-     * @param end the moment the action finish
+     * @param vm   the virtual machine to resume
+     * @param from the source node
+     * @param to   the destination node
+     * @param st   the moment the action starts.
+     * @param end  the moment the action finish
      */
-    public Run(UUID vm, UUID to, int st, int end) {
+    public ResumeVM(UUID vm, UUID from, UUID to, int st, int end) {
         super(st, end);
         this.vm = vm;
-        this.node = to;
+        this.src = from;
+        this.dst = to;
     }
 
     @Override
     public String toString() {
-        return new StringBuilder("run(")
+        return new StringBuilder("resume(")
                 .append("vm=").append(vm)
-                .append(", on=").append(node)
-                .append(')').toString();
+                .append(", from=").append(src)
+                .append(", to=")
+                .append(dst).append(')').toString();
     }
 
     @Override
-    public boolean apply(Model c) {
-        return c.getMapping().setVMRunOn(vm, node);
+    public boolean apply(Model m) {
+        Mapping map = m.getMapping();
+        return map.setVMRunOn(vm, dst);
     }
 
-    /**
-     * Test if this action is equals to another object.
-     *
-     * @param o the object to compare with
-     * @return true if ref is an instanceof Run and if both
-     *         instance involve the same virtual machine and the same nodes
-     */
     @Override
     public boolean equals(Object o) {
         if (o == null) {
@@ -77,9 +75,10 @@ public class Run extends Action {
         } else if (o == this) {
             return true;
         } else if (o.getClass() == this.getClass()) {
-            Run that = (Run) o;
+            ResumeVM that = (ResumeVM) o;
             return this.vm.equals(that.vm) &&
-                    this.node.equals(that.node) &&
+                    this.src.equals(that.src) &&
+                    this.dst.equals(that.dst) &&
                     this.getStart() == that.getStart() &&
                     this.getEnd() == that.getEnd();
         }
@@ -90,7 +89,8 @@ public class Run extends Action {
     public int hashCode() {
         int res = getEnd();
         res = getStart() + 31 * res;
-        res = vm.hashCode() + 31 * res;
-        return 31 * res + node.hashCode();
+        res = src.hashCode() + 31 * res;
+        res = 31 * res + dst.hashCode();
+        return 31 * res + src.hashCode();
     }
 }

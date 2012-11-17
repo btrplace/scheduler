@@ -18,57 +18,40 @@
 
 package btrplace.plan.actions;
 
-
+import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.plan.Action;
 
 import java.util.UUID;
 
 /**
- * An action to stop a virtual machine running on an online node.
+ * An action to shutdown an online node.
+ * The node will be in the offline state once the action applied.
  *
  * @author Fabien Hermenier
  */
-public class Stop extends Action {
-
-    private UUID vm;
+public class ShutdownNode extends Action {
 
     private UUID node;
 
     /**
-     * Make a new action.
+     * Create a new shutdown action on an online node.
      *
-     * @param vm the virtual machine to stop
-     * @param to the hosting node
-     * @param s  the moment the action start.
-     * @param f  the moment the action finish
+     * @param n The node to stop
+     * @param s the moment the action starts
+     * @param f the moment the action is finished
      */
-    public Stop(UUID vm, UUID to, int s, int f) {
+    public ShutdownNode(UUID n, int s, int f) {
         super(s, f);
-        this.vm = vm;
-        this.node = to;
+        this.node = n;
     }
 
     /**
-     * Apply the action by removing the virtual machine from the model.
+     * Test the equality with another object.
      *
-     * @param m the model to alter
-     * @return {@code true}
+     * @param o The object to compare with
+     * @return true if o is an instance of Shutdown and if both actions act on the same node
      */
-    @Override
-    public boolean apply(Model m) {
-        m.getMapping().removeVM(vm);
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return new StringBuilder("stop(")
-                .append("vm=").append(vm)
-                .append(", on=").append(node).append(')').toString();
-    }
-
-
     @Override
     public boolean equals(Object o) {
         if (o == null) {
@@ -76,11 +59,11 @@ public class Stop extends Action {
         } else if (o == this) {
             return true;
         } else if (o.getClass() == this.getClass()) {
-            Stop that = (Stop) o;
-            return this.vm.equals(that.vm) &&
-                    this.node.equals(that.node) &&
+            ShutdownNode that = (ShutdownNode) o;
+            return this.node.equals(that.node) &&
                     this.getStart() == that.getStart() &&
                     this.getEnd() == that.getEnd();
+
         }
         return false;
     }
@@ -89,7 +72,26 @@ public class Stop extends Action {
     public int hashCode() {
         int res = getEnd();
         res = getStart() + 31 * res;
-        res = vm.hashCode() + 31 * res;
         return 31 * res + node.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder buffer = new StringBuilder("shutdown(");
+        buffer.append("node=").append(node);
+        buffer.append(")");
+        return buffer.toString();
+    }
+
+    /**
+     * Put the node offline on a model
+     *
+     * @param c the model
+     * @return {@code true} if the node was online and is set offline. {@code false} otherwise
+     */
+    @Override
+    public boolean apply(Model c) {
+        Mapping map = c.getMapping();
+        return (!map.getOfflineNodes().contains(node) && map.addOfflineNode(node));
     }
 }

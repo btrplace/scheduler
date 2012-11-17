@@ -35,7 +35,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class Instantiate extends Action {
+public class InstantiateVM extends Action {
 
     private UUID id;
 
@@ -44,7 +44,7 @@ public class Instantiate extends Action {
      *
      * @param vm the VM to instantiate.
      */
-    public Instantiate(UUID vm, int st, int ed) {
+    public InstantiateVM(UUID vm, int st, int ed) {
         super(st, ed);
         this.id = vm;
     }
@@ -81,7 +81,7 @@ public class Instantiate extends Action {
         } else if (o == this) {
             return true;
         } else if (o.getClass() == this.getClass()) {
-            Instantiate that = (Instantiate) o;
+            InstantiateVM that = (InstantiateVM) o;
             return this.id.equals(that.id);
         }
         return false;

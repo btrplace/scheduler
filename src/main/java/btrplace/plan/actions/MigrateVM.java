@@ -29,7 +29,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class Migrate extends Action {
+public class MigrateVM extends Action {
 
     private UUID vm;
 
@@ -45,7 +45,7 @@ public class Migrate extends Action {
      * @param st  the moment the action will start
      * @param ed  the moment the action will stop
      */
-    public Migrate(UUID vm, UUID src, UUID dst, int st, int ed) {
+    public MigrateVM(UUID vm, UUID src, UUID dst, int st, int ed) {
         super(st, ed);
         this.vm = vm;
         this.src = src;
@@ -85,7 +85,7 @@ public class Migrate extends Action {
         } else if (o == this) {
             return true;
         } else if (o.getClass() == this.getClass()) {
-            Migrate that = (Migrate) o;
+            MigrateVM that = (MigrateVM) o;
             return this.vm.equals(that.vm) &&
                     this.src.equals(that.src) &&
                     this.dst.equals(that.dst) &&

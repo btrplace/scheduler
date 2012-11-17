@@ -19,53 +19,57 @@
 package btrplace.plan.actions;
 
 
-import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.plan.Action;
 
 import java.util.UUID;
 
 /**
- * An action to resume a VirtualMachine on an online node.
- * The state of the virtual machine comes to "sleeping" to "running".
+ * An action that suspend a running virtual machine to disk.
  *
  * @author Fabien Hermenier
  */
-public class Resume extends Action {
+public class SuspendVM extends Action {
 
     private UUID vm;
 
     private UUID src, dst;
 
     /**
-     * Make a new resume action.
+     * Make a new suspend action.
      *
-     * @param vm   the virtual machine to resume
-     * @param from the source node
-     * @param to   the destination node
-     * @param st   the moment the action starts.
-     * @param end  the moment the action finish
+     * @param vm   the virtual machine to suspend
+     * @param from The node that host the virtual machine
+     * @param to   the destination node.
+     * @param s    the moment the action starts.
+     * @param f    the moment the action finish
      */
-    public Resume(UUID vm, UUID from, UUID to, int st, int end) {
-        super(st, end);
+    public SuspendVM(UUID vm, UUID from, UUID to, int s, int f) {
+        super(s, f);
         this.vm = vm;
         this.src = from;
         this.dst = to;
+
     }
 
     @Override
     public String toString() {
-        return new StringBuilder("resume(")
+        return new StringBuilder("suspend(")
                 .append("vm=").append(vm)
                 .append(", from=").append(src)
-                .append(", to=")
-                .append(dst).append(')').toString();
+                .append(", to=").append(dst).append(')').toString();
     }
 
+    /**
+     * Apply the action by putting the VM
+     * into the sleeping state on its destination node in a given model
+     *
+     * @param m the model to alter
+     * @return {@code true} iff the VM is now sleeping on the destination node
+     */
     @Override
     public boolean apply(Model m) {
-        Mapping map = m.getMapping();
-        return map.setVMRunOn(vm, dst);
+        return m.getMapping().setVMSleepOn(vm, dst);
     }
 
     @Override
@@ -75,7 +79,7 @@ public class Resume extends Action {
         } else if (o == this) {
             return true;
         } else if (o.getClass() == this.getClass()) {
-            Resume that = (Resume) o;
+            SuspendVM that = (SuspendVM) o;
             return this.vm.equals(that.vm) &&
                     this.src.equals(that.src) &&
                     this.dst.equals(that.dst) &&
