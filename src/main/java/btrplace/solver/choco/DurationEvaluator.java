@@ -21,13 +21,24 @@ package btrplace.solver.choco;
 import java.util.UUID;
 
 /**
- * Interface to specify the duration evaluator for a possible action.
+ * Interface to specify the duration evaluator for a possible action on an element.
  *
  * @author Fabien Hermenier
  */
 public interface DurationEvaluator {
 
+    /**
+     * The class name of the considered action.
+     *
+     * @return a class
+     */
     public Class getKey();
 
+    /**
+     * Evaluate the duration of the action on a given element.
+     *
+     * @param e the element
+     * @return a positive integer
+     */
     int evaluate(UUID e);
 }

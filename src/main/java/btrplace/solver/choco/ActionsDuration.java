@@ -18,15 +18,17 @@
 
 package btrplace.solver.choco;
 
-import btrplace.plan.actions.Migrate;
-import btrplace.plan.actions.Shutdown;
-import btrplace.plan.actions.Startup;
+import btrplace.plan.actions.BootNode;
+import btrplace.plan.actions.MigrateVM;
+import btrplace.plan.actions.ShutdownNode;
 import btrplace.solver.choco.actionModel.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Class to store the {@link DurationEvaluator} associated to each of the possible actions.
+ *
  * @author Fabien Hermenier
  */
 public class ActionsDuration {
@@ -36,14 +38,16 @@ public class ActionsDuration {
     public ActionsDuration() {
         durations = new HashMap<Class, DurationEvaluator>();
 
-        register(new ConstantDuration(Migrate.class, 1));
-        register(new ConstantDuration(RunVM.class, 1));
-        register(new ConstantDuration(StopVM.class, 1));
-        register(new ConstantDuration(SuspendVM.class, 1));
-        register(new ConstantDuration(ResumeVM.class, 1));
-        register(new ConstantDuration(InstantiateVM.class, 1));
-        register(new ConstantDuration(Shutdown.class, 1));
-        register(new ConstantDuration(Startup.class, 1));
+
+        //Default constructors
+        durations.put(MigrateVM.class, new ConstantDuration(MigrateVM.class, 1));
+        durations.put(RunVM.class, new ConstantDuration(RunVM.class, 1));
+        durations.put(StopVM.class, new ConstantDuration(StopVM.class, 1));
+        durations.put(SuspendVM.class, new ConstantDuration(SuspendVM.class, 1));
+        durations.put(ResumeVM.class, new ConstantDuration(ResumeVM.class, 1));
+        durations.put(InstantiateVM.class, new ConstantDuration(InstantiateVM.class, 1));
+        durations.put(ShutdownNode.class, new ConstantDuration(ShutdownNode.class, 1));
+        durations.put(BootNode.class, new ConstantDuration(BootNode.class, 1));
     }
 
     public boolean register(DurationEvaluator e) {

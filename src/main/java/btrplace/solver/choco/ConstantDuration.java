@@ -21,7 +21,7 @@ package btrplace.solver.choco;
 import java.util.UUID;
 
 /**
- * Evaluate the duration of an action to a constant.
+ * Evaluate an action duration to a constant.
  *
  * @author Fabien Hermenier
  */
@@ -31,6 +31,12 @@ public class ConstantDuration implements DurationEvaluator {
 
     private int duration;
 
+    /**
+     * Make a new evaluator.
+     *
+     * @param c the class of the action to consider
+     * @param d the estimated duration to accomplish the action
+     */
     public ConstantDuration(Class c, int d) {
         this.cl = c;
         this.duration = d;
