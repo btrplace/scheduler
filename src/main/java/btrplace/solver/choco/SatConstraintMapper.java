@@ -41,7 +41,7 @@ public class SatConstraintMapper {
     }
 
     public boolean register(ChocoConstraintBuilder ccb) {
-        return builders.put(ccb.getClass(), ccb) != null;
+        return builders.put(ccb.getKey(), ccb) != null;
     }
 
     public boolean unregister(Class c) {

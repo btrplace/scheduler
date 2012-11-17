@@ -65,7 +65,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private List<Slice> dSlices;
     private List<Slice> cSlices;
 
-    public DefaultReconfigurationProblem(Model m, Set<UUID> toWait,
+    private ActionsDuration durEval;
+
+    public DefaultReconfigurationProblem(Model m,
+                                         ActionsDuration dEval,
+                                         Set<UUID> toWait,
                                          Set<UUID> toRun,
                                          Set<UUID> toSleep,
                                          Set<UUID> toDestroy) throws SolverException {
@@ -74,6 +78,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         sleepings = toSleep;
         destroyed = toDestroy;
         model = m;
+        durEval = dEval;
 
         cSlices = new ArrayList<Slice>();
         dSlices = new ArrayList<Slice>();
@@ -284,8 +289,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public DurationEvaluator getDurationEvaluator() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public ActionsDuration getDurationEvaluator() {
+        return durEval;
     }
 
     @Override
@@ -303,7 +308,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (!Boolean.TRUE.equals(solver.isFeasible())) {
             return null;
         }
-        //Configuration dst = extractConfiguration();
+
         DefaultReconfigurationPlan plan = new DefaultReconfigurationPlan(model);
         for (ActionModel action : nodeActions) {
             for (Action a : action.getResultingActions(this)) {

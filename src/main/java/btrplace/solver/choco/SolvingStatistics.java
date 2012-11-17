@@ -49,8 +49,6 @@ public class SolvingStatistics {
 
     private Set<SolutionStatistics> solutions;
 
-    private boolean doOptimize;
-
     private static Comparator<SolutionStatistics> solutionsCmp = new Comparator<SolutionStatistics>() {
         @Override
         public int compare(SolutionStatistics sol1, SolutionStatistics sol2) {

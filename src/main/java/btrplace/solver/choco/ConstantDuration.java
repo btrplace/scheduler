@@ -21,13 +21,28 @@ package btrplace.solver.choco;
 import java.util.UUID;
 
 /**
- * Interface to specify the duration evaluator for a possible action.
+ * Evaluate the duration of an action to a constant.
  *
  * @author Fabien Hermenier
  */
-public interface DurationEvaluator {
+public class ConstantDuration implements DurationEvaluator {
 
-    public Class getKey();
+    private Class cl;
 
-    int evaluate(UUID e);
+    private int duration;
+
+    public ConstantDuration(Class c, int d) {
+        this.cl = c;
+        this.duration = d;
+    }
+
+    @Override
+    public Class getKey() {
+        return cl;
+    }
+
+    @Override
+    public int evaluate(UUID e) {
+        return duration;
+    }
 }

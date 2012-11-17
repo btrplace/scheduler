@@ -21,28 +21,24 @@ package btrplace.solver.choco;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
- * Created with IntelliJ IDEA.
- * User: fhermeni
- * Date: 15/11/12
- * Time: 13:24
- * To change this template use File | Settings | File Templates.
+ * Utility methods to extract variables from slices.
+ *
+ * @author Fabien Hermenier
  */
-public class Slices {
+public final class Slices {
 
-    private Slices() {}
+    private Slices() {
+    }
 
-    public static IntDomainVar [] extractHosters() {
+    public static IntDomainVar[] extractHosters() {
         return null;
     }
 
-    public static IntDomainVar [] extractStarts() {
+    public static IntDomainVar[] extractStarts() {
         return null;
     }
 
-    public static IntDomainVar [] extractEnds() {
+    public static IntDomainVar[] extractEnds() {
         return null;
     }
-
-
-
 }
