@@ -53,6 +53,34 @@ public class ResumeVM extends Action {
         this.dst = to;
     }
 
+    /**
+     * Get the VM to resume.
+     *
+     * @return the VM identifier
+     */
+    public UUID getVM() {
+        return vm;
+    }
+
+    /**
+     * Get the destination node.
+     *
+     * @return the node identifier
+     */
+    public UUID getDestinationNode() {
+        return dst;
+    }
+
+    /**
+     * Get the source node that is currently hosting the VM.
+     *
+     * @return the node identifier
+     */
+    public UUID getSourceNode() {
+        return dst;
+    }
+
+
     @Override
     public String toString() {
         return new StringBuilder("resume(")

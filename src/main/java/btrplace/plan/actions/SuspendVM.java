@@ -97,4 +97,31 @@ public class SuspendVM extends Action {
         res = 31 * res + dst.hashCode();
         return 31 * res + src.hashCode();
     }
+
+    /**
+     * Get the destination node.
+     *
+     * @return the node identifier
+     */
+    public UUID getDestinationNode() {
+        return dst;
+    }
+
+    /**
+     * Get the source node that is currently hosting the VM.
+     *
+     * @return the node identifier
+     */
+    public UUID getSourceNode() {
+        return dst;
+    }
+
+    /**
+     * Get the VM to suspend.
+     *
+     * @return the VM identifier
+     */
+    public UUID getVM() {
+        return vm;
+    }
 }

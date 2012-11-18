@@ -58,6 +58,25 @@ public class BootVM extends Action {
                 .append(')').toString();
     }
 
+    /**
+     * Get the destination node.
+     *
+     * @return the node identifier
+     */
+    public UUID getDestinationNode() {
+        return node;
+    }
+
+    /**
+     * Get the VM to boot.
+     *
+     * @return the VM identifier
+     */
+    public UUID getVM() {
+        return vm;
+    }
+
+
     @Override
     public boolean apply(Model c) {
         return c.getMapping().setVMRunOn(vm, node);

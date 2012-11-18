@@ -66,6 +66,15 @@ public class BootNode extends Action {
         return false;
     }
 
+    /**
+     * Get the node to boot.
+     *
+     * @return the node identifier
+     */
+    public UUID getNode() {
+        return node;
+    }
+
     @Override
     public int hashCode() {
         int res = getEnd();

@@ -53,6 +53,33 @@ public class MigrateVM extends Action {
     }
 
     /**
+     * Get the destination node.
+     *
+     * @return the node identifier
+     */
+    public UUID getDestinationNode() {
+        return dst;
+    }
+
+    /**
+     * Get the source node that is currently hosting the VM.
+     *
+     * @return the node identifier
+     */
+    public UUID getSourceNode() {
+        return dst;
+    }
+
+    /**
+     * Get the VM to migrate.
+     *
+     * @return the VM identifier
+     */
+    public UUID getVM() {
+        return vm;
+    }
+
+    /**
      * Make the VM running on the destination node
      * in the given model.
      *
@@ -102,33 +129,6 @@ public class MigrateVM extends Action {
         res = src.hashCode() + 31 * res;
         res = 31 * res + dst.hashCode();
         return 31 * res + src.hashCode();
-    }
-
-    /**
-     * Get the VM to migrate.
-     *
-     * @return the VM identifier
-     */
-    public UUID getVM() {
-        return vm;
-    }
-
-    /**
-     * Get the node that is currently hosting the VM.
-     *
-     * @return the node identifier
-     */
-    public UUID getOrigin() {
-        return this.src;
-    }
-
-    /**
-     * Get the node that will receive the VM.
-     *
-     * @return the node identifier
-     */
-    public UUID getDestination() {
-        return this.dst;
     }
 
     @Override

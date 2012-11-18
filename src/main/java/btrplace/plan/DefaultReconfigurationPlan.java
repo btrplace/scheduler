@@ -46,6 +46,11 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
         }
     };
 
+    /**
+     * Make a new plan that starts for a given model.
+     *
+     * @param src the source model
+     */
     public DefaultReconfigurationPlan(Model src) {
         this.src = src;
         this.actions = new TreeSet<Action>(endFirstComparator);

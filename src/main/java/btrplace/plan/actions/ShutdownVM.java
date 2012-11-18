@@ -39,15 +39,16 @@ public class ShutdownVM extends Action {
      * Make a new action.
      *
      * @param vm the virtual machine to stop
-     * @param to the hosting node
+     * @param on the hosting node
      * @param s  the moment the action start.
      * @param f  the moment the action finish
      */
-    public ShutdownVM(UUID vm, UUID to, int s, int f) {
+    public ShutdownVM(UUID vm, UUID on, int s, int f) {
         super(s, f);
         this.vm = vm;
-        this.node = to;
+        this.node = on;
     }
+
 
     /**
      * Apply the action by removing the virtual machine from the model.
@@ -91,5 +92,23 @@ public class ShutdownVM extends Action {
         res = getStart() + 31 * res;
         res = vm.hashCode() + 31 * res;
         return 31 * res + node.hashCode();
+    }
+
+    /**
+     * Get the VM to shutdown.
+     *
+     * @return the VM identifier
+     */
+    public UUID getVM() {
+        return vm;
+    }
+
+    /**
+     * Get the node hosting the VM.
+     *
+     * @return the node identifier
+     */
+    public UUID getNode() {
+        return node;
     }
 }

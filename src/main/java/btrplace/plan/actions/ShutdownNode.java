@@ -47,6 +47,16 @@ public class ShutdownNode extends Action {
     }
 
     /**
+     * Get the node to shutdown.
+     *
+     * @return the node identifier
+     */
+    public UUID getNode() {
+        return node;
+    }
+
+
+    /**
      * Test the equality with another object.
      *
      * @param o The object to compare with
