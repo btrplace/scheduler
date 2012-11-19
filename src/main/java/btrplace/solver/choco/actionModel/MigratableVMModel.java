@@ -26,13 +26,13 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Model an action that instantiate a VM to let it into the waiting state.
+ * Model an action that allow a VM to be migrated if necessary.
  *
  * @author Fabien Hermenier
  */
-public class InstantiateVM extends ActionModel {
+public class MigratableVMModel extends ActionModel {
 
-    public InstantiateVM(UUID e) {
+    public MigratableVMModel(UUID e) {
         super(e);
     }
 

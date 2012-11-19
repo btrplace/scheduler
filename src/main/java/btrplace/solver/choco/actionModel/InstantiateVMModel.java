@@ -26,13 +26,13 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Model an action that resume a sleeping VM.
+ * Model an action that instantiate a VM to let it into the waiting state.
  *
  * @author Fabien Hermenier
  */
-public class ResumeVM extends ActionModel {
+public class InstantiateVMModel extends ActionModel {
 
-    public ResumeVM(UUID e) {
+    public InstantiateVMModel(UUID e) {
         super(e);
     }
 

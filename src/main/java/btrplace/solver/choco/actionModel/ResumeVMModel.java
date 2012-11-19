@@ -26,14 +26,14 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Model an action that allow a node to be booted if necessary.
+ * Model an action that resume a sleeping VM.
  *
  * @author Fabien Hermenier
  */
-public class BootableNode extends ActionModel {
+public class ResumeVMModel extends ActionModel {
 
-    public BootableNode(UUID nId) {
-        super(nId);
+    public ResumeVMModel(UUID e) {
+        super(e);
     }
 
     @Override

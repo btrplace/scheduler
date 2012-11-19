@@ -26,14 +26,11 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Model an action that boot a VM in the waiting state.
- *
  * @author Fabien Hermenier
  */
-public class RunVM extends ActionModel {
+public class SuspendVMModel extends ActionModel {
 
-
-    public RunVM(UUID e) {
+    public SuspendVMModel(UUID e) {
         super(e);
     }
 

@@ -26,14 +26,14 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Model an action that stop a running VM.
+ * Model an action that let a node offline.
  *
  * @author Fabien Hermenier
  */
-public class StopVM extends ActionModel {
+public class StayOfflineNodeModel extends ActionModel {
 
-    public StopVM(UUID e) {
-        super(e);
+    public StayOfflineNodeModel(UUID e) {
+        super(e);    //To change body of overridden methods use File | Settings | File Templates.
     }
 
     @Override

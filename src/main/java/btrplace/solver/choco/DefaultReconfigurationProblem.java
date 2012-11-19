@@ -112,11 +112,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         for (UUID vmId : allVMs) {
             if (runnings.contains(vmId)) {
                 if (map.getSleepingVMs().contains(vmId)) {
-                    vmActions[i] = new ResumeVM(vmId);
+                    vmActions[i] = new ResumeVMModel(vmId);
                 } else if (map.getRunningVMs().contains(vmId)) {
-                    vmActions[i] = new MigratableVM(vmId);
+                    vmActions[i] = new MigratableVMModel(vmId);
                 } else if (map.getWaitingVMs().contains(vmId)) {
-                    vmActions[i] = new RunVM(vmId);
+                    vmActions[i] = new BootVMModel(vmId);
                 } else {
                     throw new SolverException(model, "Unable to set VM '" + vmId + "' running: not instantiated");
                 }
@@ -125,7 +125,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 if (vmActions[i] != null) {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
                 } else if (!map.getAllVMs().contains(vmId)) {
-                    vmActions[i] = new InstantiateVM(vmId);
+                    vmActions[i] = new InstantiateVMModel(vmId);
                 } else {
                     throw new SolverException(model, "Unable to set VM '" + vmId + "' waiting: already instantiated or unknown");
                 }
@@ -134,7 +134,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 if (vmActions[i] != null) {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
                 } else if (map.getRunningVMs().contains(vmId)) {
-                    vmActions[i] = new SuspendVM(vmId);
+                    vmActions[i] = new SuspendVMModel(vmId);
                 } else if (!map.getSleepingVMs().contains(vmId)) {
                     throw new SolverException(model, "Unable to set VM '" + vmId + "' sleeping: should be running");
                 }
@@ -143,7 +143,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 if (vmActions[i] != null) {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
                 } else if (map.getRunningVMs().contains(vmId)) {
-                    vmActions[i] = new StopVM(vmId);
+                    vmActions[i] = new ShutdownVMModel(vmId);
                 } else {
                     throw new SolverException(model, "Unable to halt VM '" + vmId + "': should be running");
                 }
@@ -172,13 +172,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         int i = 0;
         for (UUID nId : model.getMapping().getAllNodes()) {
             if (m.getOfflineNodes().contains(nId)) {
-                nodeActions[i] = new BootableNode(nId);
+                nodeActions[i] = new BootableNodeModel(nId);
             }
             if (m.getOfflineNodes().contains(nId)) {
                 if (nodeActions[i] != null) {
                     throw new SolverException(model, "Next state for node '" + nId + "' is ambiguous");
                 }
-                nodeActions[i] = new ShutdownableNode(nId);
+                nodeActions[i] = new ShutdownableNodeModel(nId);
             }
 
             Slice s = nodeActions[i].getCSlice();

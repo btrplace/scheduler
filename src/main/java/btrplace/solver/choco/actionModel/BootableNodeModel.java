@@ -26,14 +26,14 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Model an action that let a node offline.
+ * Model an action that allow a node to be booted if necessary.
  *
  * @author Fabien Hermenier
  */
-public class StayOfflineNode extends ActionModel {
+public class BootableNodeModel extends ActionModel {
 
-    public StayOfflineNode(UUID e) {
-        super(e);    //To change body of overridden methods use File | Settings | File Templates.
+    public BootableNodeModel(UUID nId) {
+        super(nId);
     }
 
     @Override

@@ -26,13 +26,13 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Model an action that allow a VM to be migrated if necessary.
+ * Model an action that allow a node to boot if necessary.
  *
  * @author Fabien Hermenier
  */
-public class MigratableVM extends ActionModel {
+public class ShutdownableNodeModel extends ActionModel {
 
-    public MigratableVM(UUID e) {
+    public ShutdownableNodeModel(UUID e) {
         super(e);
     }
 

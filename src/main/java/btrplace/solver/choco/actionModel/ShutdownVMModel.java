@@ -26,13 +26,13 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Model an action that allow a node to boot if necessary.
+ * Model an action that stop a running VM.
  *
  * @author Fabien Hermenier
  */
-public class ShutdownableNode extends ActionModel {
+public class ShutdownVMModel extends ActionModel {
 
-    public ShutdownableNode(UUID e) {
+    public ShutdownVMModel(UUID e) {
         super(e);
     }
 
