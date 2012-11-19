@@ -31,6 +31,12 @@ public abstract class Action {
 
     private int stop;
 
+    /**
+     * Create an action.
+     *
+     * @param st the moment the action starts
+     * @param ed the moment the action ends
+     */
     public Action(int st, int ed) {
         this.start = st;
         this.stop = ed;
