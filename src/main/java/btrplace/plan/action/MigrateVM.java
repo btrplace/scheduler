@@ -16,8 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.plan.actions;
-
+package btrplace.plan.action;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -26,40 +25,31 @@ import btrplace.plan.Action;
 import java.util.UUID;
 
 /**
- * An action to resume a VirtualMachine on an online node.
- * The state of the virtual machine comes to "sleeping" to "running".
+ * Migrate a running VM from one online node to another one.
  *
  * @author Fabien Hermenier
  */
-public class ResumeVM extends Action {
+public class MigrateVM extends Action {
 
     private UUID vm;
 
     private UUID src, dst;
 
-    /**
-     * Make a new resume action.
-     *
-     * @param vm   the virtual machine to resume
-     * @param from the source node
-     * @param to   the destination node
-     * @param st   the moment the action starts.
-     * @param end  the moment the action finish
-     */
-    public ResumeVM(UUID vm, UUID from, UUID to, int st, int end) {
-        super(st, end);
-        this.vm = vm;
-        this.src = from;
-        this.dst = to;
-    }
 
     /**
-     * Get the VM to resume.
+     * Make a new migrate action.
      *
-     * @return the VM identifier
+     * @param vm  the VM to migrate
+     * @param src the node the VM is currently running on
+     * @param dst the node where to place the VM
+     * @param st  the moment the action will start
+     * @param ed  the moment the action will stop
      */
-    public UUID getVM() {
-        return vm;
+    public MigrateVM(UUID vm, UUID src, UUID dst, int st, int ed) {
+        super(st, ed);
+        this.vm = vm;
+        this.src = src;
+        this.dst = dst;
     }
 
     /**
@@ -77,25 +67,46 @@ public class ResumeVM extends Action {
      * @return the node identifier
      */
     public UUID getSourceNode() {
-        return dst;
+        return src;
     }
 
+    /**
+     * Get the VM to migrate.
+     *
+     * @return the VM identifier
+     */
+    public UUID getVM() {
+        return vm;
+    }
 
+    /**
+     * Make the VM running on the destination node
+     * in the given model.
+     *
+     * @param i the model to alter with the action
+     * @return {@code true} iff the vm if running on the destination node
+     */
     @Override
-    public String toString() {
-        return new StringBuilder("resume(")
-                .append("vm=").append(vm)
-                .append(", from=").append(src)
-                .append(", to=")
-                .append(dst).append(')').toString();
+    public boolean apply(Model i) {
+        Mapping c = i.getMapping();
+        if (c.getOnlineNodes().contains(src)
+                && c.getOnlineNodes().contains(dst)
+                && c.getRunningVMs().contains(vm)
+                && c.getVMLocation(vm).equals(src)
+                && !src.equals(dst)) {
+            c.setVMRunOn(vm, dst);
+            return true;
+        }
+        return false;
     }
 
-    @Override
-    public boolean apply(Model m) {
-        Mapping map = m.getMapping();
-        return map.setVMRunOn(vm, dst);
-    }
-
+    /**
+     * Test if this action is equals to another object.
+     *
+     * @param o the object to compare with
+     * @return true if ref is an instance of Instantiate and if both
+     *         instance involve the same virtual machine
+     */
     @Override
     public boolean equals(Object o) {
         if (o == null) {
@@ -103,7 +114,7 @@ public class ResumeVM extends Action {
         } else if (o == this) {
             return true;
         } else if (o.getClass() == this.getClass()) {
-            ResumeVM that = (ResumeVM) o;
+            MigrateVM that = (MigrateVM) o;
             return this.vm.equals(that.vm) &&
                     this.src.equals(that.src) &&
                     this.dst.equals(that.dst) &&
@@ -120,5 +131,13 @@ public class ResumeVM extends Action {
         res = src.hashCode() + 31 * res;
         res = 31 * res + dst.hashCode();
         return 31 * res + src.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuilder("migrate(vm=").append(vm)
+                .append(", from=").append(src)
+                .append(", to=").append(dst)
+                .append(')').toString();
     }
 }

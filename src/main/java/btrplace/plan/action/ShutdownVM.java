@@ -16,61 +16,66 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.plan.actions;
+package btrplace.plan.action;
 
 
+import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.plan.Action;
 
 import java.util.UUID;
 
 /**
- * An action that suspend a running virtual machine to disk.
+ * An action to stop a virtual machine running on an online node and put it into the waiting state.
  *
  * @author Fabien Hermenier
  */
-public class SuspendVM extends Action {
+public class ShutdownVM extends Action {
 
     private UUID vm;
 
-    private UUID src, dst;
+    private UUID node;
 
     /**
-     * Make a new suspend action.
+     * Make a new action.
      *
-     * @param vm   the virtual machine to suspend
-     * @param from The node that host the virtual machine
-     * @param to   the destination node.
-     * @param s    the moment the action starts.
-     * @param f    the moment the action finish
+     * @param vm the virtual machine to stop
+     * @param on the hosting node
+     * @param s  the moment the action start.
+     * @param f  the moment the action finish
      */
-    public SuspendVM(UUID vm, UUID from, UUID to, int s, int f) {
+    public ShutdownVM(UUID vm, UUID on, int s, int f) {
         super(s, f);
         this.vm = vm;
-        this.src = from;
-        this.dst = to;
+        this.node = on;
+    }
 
+
+    /**
+     * Apply the action by removing the virtual machine from the model.
+     *
+     * @param m the model to alter
+     * @return {@code true}
+     */
+    @Override
+    public boolean apply(Model m) {
+        Mapping map = m.getMapping();
+        if (map.getOnlineNodes().contains(node) &&
+                map.getRunningVMs().contains(vm) &&
+                map.getVMLocation(vm).equals(node)) {
+            map.addWaitingVM(vm);
+            return true;
+        }
+        return false;
     }
 
     @Override
     public String toString() {
-        return new StringBuilder("suspend(")
+        return new StringBuilder("stop(")
                 .append("vm=").append(vm)
-                .append(", from=").append(src)
-                .append(", to=").append(dst).append(')').toString();
+                .append(", on=").append(node).append(')').toString();
     }
 
-    /**
-     * Apply the action by putting the VM
-     * into the sleeping state on its destination node in a given model
-     *
-     * @param m the model to alter
-     * @return {@code true} iff the VM is now sleeping on the destination node
-     */
-    @Override
-    public boolean apply(Model m) {
-        return m.getMapping().setVMSleepOn(vm, dst);
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -79,10 +84,9 @@ public class SuspendVM extends Action {
         } else if (o == this) {
             return true;
         } else if (o.getClass() == this.getClass()) {
-            SuspendVM that = (SuspendVM) o;
+            ShutdownVM that = (ShutdownVM) o;
             return this.vm.equals(that.vm) &&
-                    this.src.equals(that.src) &&
-                    this.dst.equals(that.dst) &&
+                    this.node.equals(that.node) &&
                     this.getStart() == that.getStart() &&
                     this.getEnd() == that.getEnd();
         }
@@ -93,35 +97,25 @@ public class SuspendVM extends Action {
     public int hashCode() {
         int res = getEnd();
         res = getStart() + 31 * res;
-        res = src.hashCode() + 31 * res;
-        res = 31 * res + dst.hashCode();
-        return 31 * res + src.hashCode();
+        res = vm.hashCode() + 31 * res;
+        return 31 * res + node.hashCode();
     }
 
     /**
-     * Get the destination node.
-     *
-     * @return the node identifier
-     */
-    public UUID getDestinationNode() {
-        return dst;
-    }
-
-    /**
-     * Get the source node that is currently hosting the VM.
-     *
-     * @return the node identifier
-     */
-    public UUID getSourceNode() {
-        return dst;
-    }
-
-    /**
-     * Get the VM to suspend.
+     * Get the VM to shutdown.
      *
      * @return the VM identifier
      */
     public UUID getVM() {
         return vm;
+    }
+
+    /**
+     * Get the node hosting the VM.
+     *
+     * @return the node identifier
+     */
+    public UUID getNode() {
+        return node;
     }
 }

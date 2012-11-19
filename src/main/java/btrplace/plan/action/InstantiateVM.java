@@ -16,60 +16,58 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.plan.actions;
+package btrplace.plan.action;
 
-
+import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.plan.Action;
 
 import java.util.UUID;
 
 /**
- * An action to stop a virtual machine running on an online node.
+ * Prepare a VM for being deployed.
  *
  * @author Fabien Hermenier
  */
-public class ShutdownVM extends Action {
+public class InstantiateVM extends Action {
 
-    private UUID vm;
-
-    private UUID node;
+    private UUID id;
 
     /**
      * Make a new action.
      *
-     * @param vm the virtual machine to stop
-     * @param on the hosting node
-     * @param s  the moment the action start.
-     * @param f  the moment the action finish
+     * @param vm the VM to instantiate.
      */
-    public ShutdownVM(UUID vm, UUID on, int s, int f) {
-        super(s, f);
-        this.vm = vm;
-        this.node = on;
+    public InstantiateVM(UUID vm, int st, int ed) {
+        super(st, ed);
+        this.id = vm;
     }
 
-
     /**
-     * Apply the action by removing the virtual machine from the model.
+     * Put the VM in the waiting state if it does not already belong
+     * to the mapping.
      *
-     * @param m the model to alter
-     * @return {@code true}
+     * @param m the model to modify
+     * @return {@code true} iff successful
      */
     @Override
     public boolean apply(Model m) {
-        m.getMapping().removeVM(vm);
-        return true;
+        Mapping map = m.getMapping();
+
+        if (!map.getAllVMs().contains(id)) {
+            map.addWaitingVM(id);
+            return true;
+        }
+        return false;
     }
 
-    @Override
-    public String toString() {
-        return new StringBuilder("stop(")
-                .append("vm=").append(vm)
-                .append(", on=").append(node).append(')').toString();
-    }
-
-
+    /**
+     * Test if this action is equals to another object.
+     *
+     * @param o the object to compare with
+     * @return true if ref is an instance of Instantiate and if both
+     *         instance involve the same virtual machine
+     */
     @Override
     public boolean equals(Object o) {
         if (o == null) {
@@ -77,11 +75,8 @@ public class ShutdownVM extends Action {
         } else if (o == this) {
             return true;
         } else if (o.getClass() == this.getClass()) {
-            ShutdownVM that = (ShutdownVM) o;
-            return this.vm.equals(that.vm) &&
-                    this.node.equals(that.node) &&
-                    this.getStart() == that.getStart() &&
-                    this.getEnd() == that.getEnd();
+            InstantiateVM that = (InstantiateVM) o;
+            return this.id.equals(that.id);
         }
         return false;
     }
@@ -90,25 +85,20 @@ public class ShutdownVM extends Action {
     public int hashCode() {
         int res = getEnd();
         res = getStart() + 31 * res;
-        res = vm.hashCode() + 31 * res;
-        return 31 * res + node.hashCode();
+        return id.hashCode() + 31 * res;
     }
 
     /**
-     * Get the VM to shutdown.
+     * Get the VM to instantiate.
      *
      * @return the VM identifier
      */
     public UUID getVM() {
-        return vm;
+        return id;
     }
 
-    /**
-     * Get the node hosting the VM.
-     *
-     * @return the node identifier
-     */
-    public UUID getNode() {
-        return node;
+    @Override
+    public String toString() {
+        return new StringBuilder("instantiate(vm=").append(id).append(')').toString();
     }
 }

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.plan.actions;
+package btrplace.plan.action;
 
 
 import btrplace.model.Model;
@@ -93,10 +93,14 @@ public class BootNode extends Action {
      * Put the node online on the model.
      *
      * @param c the model to alter
+     * @return {@code true} iff the node was offline and is now online
      */
     @Override
     public boolean apply(Model c) {
-        c.getMapping().addOnlineNode(node);
-        return true;
+        if (c.getMapping().getOfflineNodes().contains(node)) {
+            c.getMapping().addOnlineNode(node);
+            return true;
+        }
+        return false;
     }
 }
