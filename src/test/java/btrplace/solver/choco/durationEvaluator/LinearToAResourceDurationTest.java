@@ -18,34 +18,31 @@
 
 package btrplace.solver.choco.durationEvaluator;
 
-import btrplace.solver.choco.DurationEvaluator;
+import btrplace.model.DefaultIntResource;
+import btrplace.model.IntResource;
+import junit.framework.Assert;
+import org.testng.annotations.Test;
 
 import java.util.UUID;
 
 /**
- * Evaluate an action duration to a constant.
+ * Unit tests for {@link LinearToAResourceDuration}.
  *
  * @author Fabien Hermenier
  */
-public class ConstantDuration implements DurationEvaluator {
+public class LinearToAResourceDurationTest {
 
-    private int duration;
+    @Test
+    public void testSimple() {
+        IntResource rc = new DefaultIntResource("foo", 0);
+        UUID u = UUID.randomUUID();
+        rc.set(u, 3);
+        LinearToAResourceDuration d = new LinearToAResourceDuration(rc, 3);
+        Assert.assertEquals(d.evaluate(u), 9);
+        Assert.assertEquals(d.evaluate(UUID.randomUUID()), 0);
 
-    /**
-     * Make a new evaluator.
-     *
-     * @param d the estimated duration to accomplish the action. Must be strictly positive
-     */
-    public ConstantDuration(int d) {
-        this.duration = d;
-    }
-
-    @Override
-    public int evaluate(UUID e) {
-        return duration;
-    }
-
-    public String toString() {
-        return new StringBuilder("d=").append(duration).toString();
+        d = new LinearToAResourceDuration(rc, 3, 4);
+        Assert.assertEquals(d.evaluate(u), 13);
+        Assert.assertEquals(d.evaluate(UUID.randomUUID()), 4);
     }
 }

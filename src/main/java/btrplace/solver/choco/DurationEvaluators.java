@@ -19,10 +19,7 @@
 package btrplace.solver.choco;
 
 import btrplace.plan.Action;
-import btrplace.plan.actions.BootNode;
-import btrplace.plan.actions.MigrateVM;
-import btrplace.plan.actions.ShutdownNode;
-import btrplace.solver.choco.actionModel.*;
+import btrplace.plan.action.*;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
 
 import java.util.HashMap;
@@ -36,19 +33,19 @@ import java.util.UUID;
  */
 public class DurationEvaluators {
 
-    private Map<Class, DurationEvaluator> durations;
+    private Map<Class<? extends Action>, DurationEvaluator> durations;
 
     /**
      * Make a new mapper.
      */
     public DurationEvaluators() {
-        durations = new HashMap<Class, DurationEvaluator>();
+        durations = new HashMap<Class<? extends Action>, DurationEvaluator>();
 
 
         //Default constructors
         durations.put(MigrateVM.class, new ConstantDuration(1));
-        durations.put(RunVM.class, new ConstantDuration(1));
-        durations.put(StopVM.class, new ConstantDuration(1));
+        durations.put(BootVM.class, new ConstantDuration(1));
+        durations.put(ShutdownVM.class, new ConstantDuration(1));
         durations.put(SuspendVM.class, new ConstantDuration(1));
         durations.put(ResumeVM.class, new ConstantDuration(1));
         durations.put(InstantiateVM.class, new ConstantDuration(1));
@@ -63,8 +60,8 @@ public class DurationEvaluators {
      * @param e the evaluator to register for the given action
      * @return {@code false} if this action delete a previous evaluator for that action
      */
-    public boolean register(Class a, DurationEvaluator e) {
-        return durations.put(a, e) != null;
+    public boolean register(Class<? extends Action> a, DurationEvaluator e) {
+        return durations.put(a, e) == null;
     }
 
     /**
@@ -74,29 +71,39 @@ public class DurationEvaluators {
      * @param a the action class
      * @return {@code true} if a {@link DurationEvaluator} was associated to the action.
      */
-    public boolean unregister(Class a) {
+    public boolean unregister(Class<? extends Action> a) {
         return durations.remove(a) != null;
     }
 
     /**
      * Check if a {@link DurationEvaluator} is registered for a given action.
      *
-     * @param a the action
+     * @param a the action' class
      * @return {@code true} iff a {@link DurationEvaluator} is registered for that action
      */
-    public boolean isRegistered(Action a) {
-        return durations.containsKey(a.getClass());
+    public boolean isRegistered(Class<? extends Action> a) {
+        return durations.containsKey(a);
+    }
+
+    /**
+     * Get the evaluator associated to a given action.
+     *
+     * @param a the action' class
+     * @return the registered evaluator, if exists
+     */
+    public DurationEvaluator getEvaluator(Class<? extends Action> a) {
+        return durations.get(a);
     }
 
     /**
      * Evaluate the duration of given action on a given element.
      *
-     * @param a the action
+     * @param a the action' class
      * @param e the element
      * @return a positive number if the evaluation succeeded. A negative number otherwise
      */
-    public int evaluate(Action a, UUID e) {
-        DurationEvaluator ev = durations.get(a.getClass());
+    public int evaluate(Class<? extends Action> a, UUID e) {
+        DurationEvaluator ev = durations.get(a);
         if (ev == null) {
             return -1;
         }

@@ -18,34 +18,22 @@
 
 package btrplace.solver.choco.durationEvaluator;
 
-import btrplace.solver.choco.DurationEvaluator;
+import junit.framework.Assert;
+import org.testng.annotations.Test;
 
 import java.util.UUID;
 
 /**
- * Evaluate an action duration to a constant.
+ * Unit tests for {@link ConstantDuration}.
  *
  * @author Fabien Hermenier
  */
-public class ConstantDuration implements DurationEvaluator {
+public class ConstantDurationTest {
 
-    private int duration;
-
-    /**
-     * Make a new evaluator.
-     *
-     * @param d the estimated duration to accomplish the action. Must be strictly positive
-     */
-    public ConstantDuration(int d) {
-        this.duration = d;
-    }
-
-    @Override
-    public int evaluate(UUID e) {
-        return duration;
-    }
-
-    public String toString() {
-        return new StringBuilder("d=").append(duration).toString();
+    @Test
+    public void testInstantiate() {
+        ConstantDuration cd = new ConstantDuration(5);
+        Assert.assertEquals(5, cd.evaluate(UUID.randomUUID()));
+        Assert.assertNotNull(cd.toString());
     }
 }
