@@ -34,16 +34,17 @@ public interface ReconfigurationPlan extends Iterable<Action> {
      * Get the model that is used as a starting point
      * to perform the reconfiguration
      *
-     * @return the source model
+     * @return the original model
      */
-    Model getSource();
+    Model getOrigin();
 
     /**
      * Add a new action to a plan.
      *
      * @param a the action to add
+     * @return {@code true} iff the action has been added
      */
-    void add(Action a);
+    boolean add(Action a);
 
     /**
      * Get the number of action in the plan.

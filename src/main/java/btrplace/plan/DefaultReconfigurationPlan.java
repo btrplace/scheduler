@@ -42,7 +42,17 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
     private static Comparator<Action> endFirstComparator = new Comparator<Action>() {
         @Override
         public int compare(Action a1, Action a2) {
-            return a1.getEnd() - a2.getEnd();
+            int d = a1.getEnd() - a2.getEnd();
+            if (d == 0) {
+                if (a1.equals(a2)) {
+                    return 0;
+                } else {
+                    //At this level, we don't care, we just want to be sure the actions will be added
+                    return -1;
+                }
+            } else {
+                return d;
+            }
         }
     };
 
@@ -57,13 +67,13 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
     }
 
     @Override
-    public Model getSource() {
+    public Model getOrigin() {
         return src;
     }
 
     @Override
-    public void add(Action a) {
-        this.actions.add(a);
+    public boolean add(Action a) {
+        return this.actions.add(a);
     }
 
     @Override
@@ -101,5 +111,14 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
             }
         }
         return res;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+        for (Action a : actions) {
+            b.append(a.getStart()).append(':').append(a.getEnd()).append(" ").append(a.toString()).append('\n');
+        }
+        return b.toString();
     }
 }

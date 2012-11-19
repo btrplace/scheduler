@@ -1,6 +1,10 @@
 Release notes
 =======================
 
+v0.3-SNAPSHOT
+----------------------
+- bug fixes in DefaultReconfigurationPlan
+
 v0.2 - 19 nov. 2012
 -----------------------
 - Clarify actions name
