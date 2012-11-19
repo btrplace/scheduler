@@ -19,9 +19,11 @@
 package btrplace.solver.choco.actionModel;
 
 import btrplace.plan.Action;
+import btrplace.plan.SolverException;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,12 +34,12 @@ import java.util.UUID;
  */
 public class ShutdownVMModel extends ActionModel {
 
-    public ShutdownVMModel(UUID e) {
-        super(e);
+    public ShutdownVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
+        super(rp, e);
     }
 
     @Override
     public List<Action> getResultingActions(ReconfigurationProblem rp) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return new ArrayList<Action>();
     }
 }

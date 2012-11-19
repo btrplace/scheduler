@@ -19,7 +19,6 @@
 package btrplace.solver.choco;
 
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.variables.scheduling.TaskVar;
 
 /**
  * Model a period where an element is hosted on a node.
@@ -28,11 +27,23 @@ import choco.kernel.solver.variables.scheduling.TaskVar;
  */
 public class Slice {
 
-    private TaskVar task;
-
     private IntDomainVar hoster;
 
+    private IntDomainVar start;
+
+    private IntDomainVar end;
+
+    private IntDomainVar duration;
+
     private String name;
+
+    public Slice(String n, IntDomainVar st, IntDomainVar ed, IntDomainVar d, IntDomainVar h) {
+        this.name = n;
+        this.start = st;
+        this.end = ed;
+        this.duration = d;
+        this.hoster = h;
+    }
 
     @Override
     public String toString() {
@@ -57,15 +68,15 @@ public class Slice {
     }
 
     public IntDomainVar getStart() {
-        return task.end();
+        return start;
     }
 
     public IntDomainVar getEnd() {
-        return task.end();
+        return end;
     }
 
     public IntDomainVar getDuration() {
-        return task.duration();
+        return duration;
     }
 
     public IntDomainVar getHoster() {

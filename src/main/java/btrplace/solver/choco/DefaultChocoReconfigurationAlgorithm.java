@@ -42,7 +42,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
     private boolean optimize = false;
 
-    private int timeLimit;
+    private int timeLimit = 5;
 
     private ReconfigurationProblem rp;
 
@@ -76,7 +76,6 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
     @Override
     public ReconfigurationPlan solve(Model i) throws SolverException {
-
         rp = null;
         //Build the RP. As VM state management is not possible
         //We extract VM-state related constraints first.

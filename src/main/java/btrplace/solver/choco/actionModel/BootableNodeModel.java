@@ -19,9 +19,12 @@
 package btrplace.solver.choco.actionModel;
 
 import btrplace.plan.Action;
+import btrplace.plan.SolverException;
+import btrplace.plan.action.BootNode;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,12 +35,17 @@ import java.util.UUID;
  */
 public class BootableNodeModel extends ActionModel {
 
-    public BootableNodeModel(UUID nId) {
-        super(nId);
+    public BootableNodeModel(ReconfigurationProblem rp, UUID nId) throws SolverException {
+        super(rp, nId);
+        state = rp.getSolver().createBooleanVar("");
     }
 
     @Override
     public List<Action> getResultingActions(ReconfigurationProblem rp) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        List<Action> a = new ArrayList<Action>();
+        if (start.getVal() == 1) {
+            a.add(new BootNode(getSubject(), start.getVal(), end.getVal()));
+        }
+        return a;
     }
 }

@@ -19,9 +19,11 @@
 package btrplace.solver.choco.actionModel;
 
 import btrplace.plan.Action;
+import btrplace.plan.SolverException;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,12 +34,12 @@ import java.util.UUID;
  */
 public class StayOfflineNodeModel extends ActionModel {
 
-    public StayOfflineNodeModel(UUID e) {
-        super(e);    //To change body of overridden methods use File | Settings | File Templates.
+    public StayOfflineNodeModel(ReconfigurationProblem rp, UUID e) throws SolverException {
+        super(rp, e);    //To change body of overridden methods use File | Settings | File Templates.
     }
 
     @Override
     public List<Action> getResultingActions(ReconfigurationProblem rp) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return new ArrayList<Action>();
     }
 }

@@ -125,32 +125,55 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         cSlices = new ArrayList<Slice>();
         dSlices = new ArrayList<Slice>();
 
-        makeVMActionModels();
-        makeNodeActionModels();
-
         solver = new CPSolver();
         start = solver.makeConstantIntVar(0);
         end = solver.createBoundIntVar("end", 0, DEFAULT_MAX_TIME);
+
         solver.post(solver.geq(end, start));
+
+        fillElements();
+
+        makeNodeActionModels();
+        makeVMActionModels();
+
+
     }
 
-    private void makeVMActionModels() throws SolverException {
+    private void fillElements() throws SolverException {
+
         Set<UUID> allVMs = new HashSet<UUID>(model.getMapping().getAllVMs());
         allVMs.addAll(waitings); //The only VMs that may not appear in the mapping
 
         vms = new UUID[allVMs.size()];
         revVMs = new TObjectIntHashMap<UUID>(allVMs.size(), 0.5f, -1); //0.5f is the default load factor
+
         int i = 0;
+        for (UUID vm : allVMs) {
+            vms[i] = vm;
+            revVMs.put(vm, i++);
+        }
+
+        nodes = new UUID[model.getMapping().getAllNodes().size()];
+        revNodes = new TObjectIntHashMap<UUID>(nodes.length, 0.5f, -1);
+        i = 0;
+        for (UUID nId : model.getMapping().getAllNodes()) {
+            nodes[i] = nId;
+            revNodes.put(nId, i++);
+        }
+    }
+
+    private void makeVMActionModels() throws SolverException {
         Mapping map = model.getMapping();
-        vmActions = new ActionModel[allVMs.size()];
-        for (UUID vmId : allVMs) {
+        vmActions = new ActionModel[vms.length];
+        for (int i = 0; i < vms.length; i++) {
+            UUID vmId = vms[i];
             if (runnings.contains(vmId)) {
                 if (map.getSleepingVMs().contains(vmId)) {
-                    vmActions[i] = new ResumeVMModel(vmId);
+                    vmActions[i] = new ResumeVMModel(this, vmId);
                 } else if (map.getRunningVMs().contains(vmId)) {
-                    vmActions[i] = new MigratableVMModel(vmId);
+                    vmActions[i] = new MigratableVMModel(this, vmId);
                 } else if (map.getWaitingVMs().contains(vmId)) {
-                    vmActions[i] = new BootVMModel(vmId);
+                    vmActions[i] = new BootVMModel(this, vmId);
                 } else {
                     throw new SolverException(model, "Unable to set VM '" + vmId + "' running: not instantiated");
                 }
@@ -159,9 +182,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 if (vmActions[i] != null) {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
                 } else if (!map.getAllVMs().contains(vmId)) {
-                    vmActions[i] = new InstantiateVMModel(vmId);
+                    vmActions[i] = new InstantiateVMModel(this, vmId);
                 } else if (map.getWaitingVMs().contains(vmId)) {
-                    vmActions[i] = new StayAwayVMModel(vmId);
+                    vmActions[i] = new StayAwayVMModel(this, vmId);
                 } else {
                     throw new SolverException(model, "Unable to set VM '" + vmId + "' waiting: already instantiated or unknown");
                 }
@@ -170,9 +193,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 if (vmActions[i] != null) {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
                 } else if (map.getRunningVMs().contains(vmId)) {
-                    vmActions[i] = new SuspendVMModel(vmId);
+                    vmActions[i] = new SuspendVMModel(this, vmId);
                 } else if (map.getSleepingVMs().contains(vmId)) {
-                    vmActions[i] = new StayAwayVMModel(vmId);
+                    vmActions[i] = new StayAwayVMModel(this, vmId);
                 } else {
                     throw new SolverException(model, "Unable to set VM '" + vmId + "' sleeping: should be running");
                 }
@@ -181,7 +204,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 if (vmActions[i] != null) {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
                 } else if (map.getRunningVMs().contains(vmId)) {
-                    vmActions[i] = new ShutdownVMModel(vmId);
+                    vmActions[i] = new ShutdownVMModel(this, vmId);
                 } else {
                     throw new SolverException(model, "Unable to halt VM '" + vmId + "': should be running");
                 }
@@ -198,27 +221,22 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             if (s != null) {
                 dSlices.add(s);
             }
-            vms[i] = vmId;
-            revVMs.put(vmId, i++);
         }
     }
 
     private void makeNodeActionModels() throws SolverException {
-        nodes = new UUID[model.getMapping().getAllNodes().size()];
-        revNodes = new TObjectIntHashMap<UUID>(nodes.length, 0.5f, -1);
-
-        nodeActions = new ActionModel[nodes.length];
         Mapping m = model.getMapping();
-        int i = 0;
-        for (UUID nId : model.getMapping().getAllNodes()) {
+        nodeActions = new ActionModel[nodes.length];
+        for (int i = 0; i < nodes.length; i++) {
+            UUID nId = nodes[i];
             if (m.getOfflineNodes().contains(nId)) {
-                nodeActions[i] = new BootableNodeModel(nId);
+                nodeActions[i] = new BootableNodeModel(this, nId);
             }
             if (m.getOnlineNodes().contains(nId)) {
                 if (nodeActions[i] != null) {
                     throw new SolverException(model, "Next state for node '" + nId + "' is ambiguous");
                 }
-                nodeActions[i] = new ShutdownableNodeModel(nId);
+                nodeActions[i] = new ShutdownableNodeModel(this, nId);
             }
 
             Slice s = nodeActions[i].getCSlice();
@@ -230,9 +248,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             if (s != null) {
                 dSlices.add(s);
             }
-
-            nodes[i] = nId;
-            revNodes.put(nId, i++);
         }
     }
 

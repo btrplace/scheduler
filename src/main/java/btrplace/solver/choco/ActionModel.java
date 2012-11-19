@@ -45,12 +45,17 @@ public abstract class ActionModel {
 
     protected IntDomainVar cost;
 
+    protected ReconfigurationProblem rp;
+
+    protected IntDomainVar state;
+
     /**
      * Make a new action on an element.
      *
      * @param e the element
      */
-    public ActionModel(UUID e) {
+    public ActionModel(ReconfigurationProblem rp, UUID e) {
+        this.rp = rp;
         this.subject = e;
     }
 
@@ -124,5 +129,14 @@ public abstract class ActionModel {
      * @return a list of {@link Action} that may be empty.
      */
     public abstract List<Action> getResultingActions(ReconfigurationProblem rp);
+
+    /**
+     * Get the next state of the subject manipulated by the action.
+     *
+     * @return {@code 0} for offline, {@code 1} for online.
+     */
+    public IntDomainVar getState() {
+        return state;
+    }
 
 }

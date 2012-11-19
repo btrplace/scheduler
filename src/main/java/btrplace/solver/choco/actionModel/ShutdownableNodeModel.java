@@ -19,9 +19,12 @@
 package btrplace.solver.choco.actionModel;
 
 import btrplace.plan.Action;
+import btrplace.plan.SolverException;
+import btrplace.plan.action.ShutdownNode;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,12 +35,19 @@ import java.util.UUID;
  */
 public class ShutdownableNodeModel extends ActionModel {
 
-    public ShutdownableNodeModel(UUID e) {
-        super(e);
+    public ShutdownableNodeModel(ReconfigurationProblem rp, UUID e) throws SolverException {
+        super(rp, e);
+        state = rp.getSolver().createBooleanVar("");
+
     }
+
 
     @Override
     public List<Action> getResultingActions(ReconfigurationProblem rp) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        List<Action> a = new ArrayList<Action>();
+        if (state.getVal() == 0) {
+            a.add(new ShutdownNode(getSubject(), start.getVal(), end.getVal()));
+        }
+        return a;
     }
 }
