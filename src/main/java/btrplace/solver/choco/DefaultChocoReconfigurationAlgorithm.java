@@ -49,8 +49,8 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     private DurationEvaluators durationEvaluators;
 
     public DefaultChocoReconfigurationAlgorithm() {
-        cstrMapper = new SatConstraintMapper();
 
+        cstrMapper = new SatConstraintMapper();
         durationEvaluators = new DurationEvaluators();
     }
 
@@ -123,6 +123,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         //The heuristics
 
         //Let's rock
+        rp.getSolver().setTimeLimit(timeLimit);
         Boolean ret = rp.getSolver().solve();
         if (Boolean.TRUE.equals(ret)) {
             return rp.extractSolution();

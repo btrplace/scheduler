@@ -67,7 +67,7 @@ public class ChocoSatBan implements ChocoSatConstraint {
         }
 
         for (UUID vm : vms) {
-            if (rp.getFutureRunnings().contains(vm)) {
+            if (rp.getFutureRunningVMs().contains(vm)) {
                 Slice t = rp.getVMAction(rp.getVM(vm)).getDSlice();
                 if (t != null) {
                     for (int x : nodesIdx) {

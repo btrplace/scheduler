@@ -63,7 +63,7 @@ public class ChocoSatContinuousSpread implements ChocoSatConstraint {
         Set<UUID> onlyRunnings = new HashSet<UUID>();
         Mapping m = rp.getSourceModel().getMapping();
         for (UUID vmId : cstr.getInvolvedVMs()) {
-            if (rp.getFutureRunnings().contains(vmId) || m.getRunningVMs().contains(vmId)) {
+            if (rp.getFutureRunningVMs().contains(vmId) || m.getRunningVMs().contains(vmId)) {
                 onlyRunnings.add(vmId);
             }
         }

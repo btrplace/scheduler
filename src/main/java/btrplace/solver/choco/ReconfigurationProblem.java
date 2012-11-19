@@ -35,11 +35,6 @@ import java.util.UUID;
 public interface ReconfigurationProblem {
 
     /**
-     * The maximum duration of a plan in seconds: One hour.
-     */
-    Integer DEFAULT_MAX_TIME = 3600;
-
-    /**
      * Get the current location of a running or a sleeping VM.
      *
      * @param vmIdx the index of the virtual machine
@@ -59,7 +54,7 @@ public interface ReconfigurationProblem {
      *
      * @return an array of virtual machines.
      */
-    UUID[] getVirtualMachines();
+    UUID[] getVMs();
 
     /**
      * Get the initial Model.
@@ -74,7 +69,7 @@ public interface ReconfigurationProblem {
      *
      * @return a set, may be empty
      */
-    Set<UUID> getFutureRunnings();
+    Set<UUID> getFutureRunningVMs();
 
     /**
      * Get the virtual machines that will be in the waiting state at the
@@ -82,7 +77,7 @@ public interface ReconfigurationProblem {
      *
      * @return a set, may be empty
      */
-    Set<UUID> getFutureWaitings();
+    Set<UUID> getFutureWaitingVMs();
 
     /**
      * Get the virtual machines that will be in the sleeping state at the
@@ -90,7 +85,7 @@ public interface ReconfigurationProblem {
      *
      * @return a set, may be empty
      */
-    Set<UUID> getFutureSleepings();
+    Set<UUID> getFutureSleepingVMs();
 
     /**
      * Get the virtual machines that will be in the terminated state at the
@@ -98,7 +93,7 @@ public interface ReconfigurationProblem {
      *
      * @return a set, may be empty
      */
-    Set<UUID> getFutureDestroyed();
+    Set<UUID> getFutureDestroyedVMs();
 
     /**
      * Get the starting moment of the reconfiguration.

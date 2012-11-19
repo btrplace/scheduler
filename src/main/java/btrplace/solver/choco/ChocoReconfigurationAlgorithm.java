@@ -32,10 +32,27 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm 
 
     boolean doOptimize();
 
+    /**
+     * Set the timeout value in seconds.
+     * Use a negative number to remove any timeout.
+     *
+     * @param t
+     */
     void setTimeLimit(int t);
 
+    /**
+     * Get the timeout value.
+     *
+     * @return a positive integer in seconds to indicate the timeout value or a negative value to
+     *         indicate no timeout has been set
+     */
     int getTimeLimit();
 
+    /**
+     * Get the mapper that convert {@link btrplace.model.SatConstraint} to {@link ChocoSatConstraint}.
+     *
+     * @return the mapper.
+     */
     SatConstraintMapper getSatConstraintMapper();
 
     /**

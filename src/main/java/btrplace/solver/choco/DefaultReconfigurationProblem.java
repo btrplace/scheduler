@@ -35,11 +35,16 @@ import java.util.*;
  * Default implementation of {@link ReconfigurationProblem}.
  * TODO: resource capacity
  * TODO: actions model
- * TODO: duration evaluator
  *
  * @author Fabien Hermenier
  */
 public class DefaultReconfigurationProblem implements ReconfigurationProblem {
+
+    /**
+     * The maximum duration of a plan in seconds: One hour.
+     */
+    public Integer DEFAULT_MAX_TIME = 3600;
+
 
     private Model model;
 
@@ -66,6 +71,35 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private List<Slice> cSlices;
 
     private DurationEvaluators durEval;
+
+    /**
+     * Make a new ReconfigurationProblem that does not change the current state of the VMs
+     * and rely on the default {@link DurationEvaluators}.
+     *
+     * @param m the initial model
+     * @throws SolverException if an error occurred
+     */
+    public DefaultReconfigurationProblem(Model m) throws SolverException {
+        this(m, m.getMapping().getWaitingVMs(),
+                m.getMapping().getRunningVMs(),
+                m.getMapping().getSleepingVMs(),
+                new HashSet<UUID>());
+    }
+
+    /**
+     * Make a new RP that does not change the current state of the VMs.
+     *
+     * @param m     the initial model
+     * @param dEval the evaluator to use to evaluate the actions duration
+     * @throws SolverException
+     */
+    public DefaultReconfigurationProblem(Model m, DurationEvaluators dEval) throws SolverException {
+        this(m, dEval,
+                m.getMapping().getWaitingVMs(),
+                m.getMapping().getRunningVMs(),
+                m.getMapping().getSleepingVMs(),
+                new HashSet<UUID>());
+    }
 
     public DefaultReconfigurationProblem(Model m,
                                          Set<UUID> toWait,
@@ -96,7 +130,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         solver = new CPSolver();
         start = solver.makeConstantIntVar(0);
-        end = solver.createBoundIntVar("end", 0, ReconfigurationProblem.DEFAULT_MAX_TIME);
+        end = solver.createBoundIntVar("end", 0, DEFAULT_MAX_TIME);
         solver.post(solver.geq(end, start));
     }
 
@@ -126,6 +160,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
                 } else if (!map.getAllVMs().contains(vmId)) {
                     vmActions[i] = new InstantiateVMModel(vmId);
+                } else if (map.getWaitingVMs().contains(vmId)) {
+                    vmActions[i] = new StayAwayVMModel(vmId);
                 } else {
                     throw new SolverException(model, "Unable to set VM '" + vmId + "' waiting: already instantiated or unknown");
                 }
@@ -135,7 +171,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
                 } else if (map.getRunningVMs().contains(vmId)) {
                     vmActions[i] = new SuspendVMModel(vmId);
-                } else if (!map.getSleepingVMs().contains(vmId)) {
+                } else if (map.getSleepingVMs().contains(vmId)) {
+                    vmActions[i] = new StayAwayVMModel(vmId);
+                } else {
                     throw new SolverException(model, "Unable to set VM '" + vmId + "' sleeping: should be running");
                 }
             }
@@ -147,7 +185,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 } else {
                     throw new SolverException(model, "Unable to halt VM '" + vmId + "': should be running");
                 }
-            } else {
+            }
+            if (vmActions[i] == null) {
                 throw new SolverException(model, "Next state for VM '" + vmId + "' is undefined");
             }
             Slice s = vmActions[i].getCSlice();
@@ -168,13 +207,14 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         nodes = new UUID[model.getMapping().getAllNodes().size()];
         revNodes = new TObjectIntHashMap<UUID>(nodes.length, 0.5f, -1);
 
+        nodeActions = new ActionModel[nodes.length];
         Mapping m = model.getMapping();
         int i = 0;
         for (UUID nId : model.getMapping().getAllNodes()) {
             if (m.getOfflineNodes().contains(nId)) {
                 nodeActions[i] = new BootableNodeModel(nId);
             }
-            if (m.getOfflineNodes().contains(nId)) {
+            if (m.getOnlineNodes().contains(nId)) {
                 if (nodeActions[i] != null) {
                     throw new SolverException(model, "Next state for node '" + nId + "' is ambiguous");
                 }
@@ -212,7 +252,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public UUID[] getVirtualMachines() {
+    public UUID[] getVMs() {
         return vms;
     }
 
@@ -222,22 +262,22 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public Set<UUID> getFutureRunnings() {
+    public Set<UUID> getFutureRunningVMs() {
         return runnings;
     }
 
     @Override
-    public Set<UUID> getFutureWaitings() {
+    public Set<UUID> getFutureWaitingVMs() {
         return waitings;
     }
 
     @Override
-    public Set<UUID> getFutureSleepings() {
+    public Set<UUID> getFutureSleepingVMs() {
         return sleepings;
     }
 
     @Override
-    public Set<UUID> getFutureDestroyed() {
+    public Set<UUID> getFutureDestroyedVMs() {
         return destroyed;
     }
 

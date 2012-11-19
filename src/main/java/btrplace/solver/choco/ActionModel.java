@@ -45,38 +45,84 @@ public abstract class ActionModel {
 
     protected IntDomainVar cost;
 
+    /**
+     * Make a new action on an element.
+     *
+     * @param e the element
+     */
     public ActionModel(UUID e) {
         this.subject = e;
     }
 
+    /**
+     * Get the moment the action starts.
+     *
+     * @return a variable that must be positive
+     */
     public IntDomainVar getStart() {
         return start;
     }
 
+    /**
+     * Get the moment the action ends.
+     *
+     * @return a variable that must be greater than {@link #getStart()}
+     */
     public IntDomainVar getEnd() {
         return end;
     }
 
+    /**
+     * Get the action duration.
+     *
+     * @return a duration equals to {@code getEnd() - getStart()}
+     */
     public IntDomainVar getDuration() {
         return duration;
     }
 
+    /**
+     * Get the slice denoting the possible current placement of the subject on a node.
+     *
+     * @return a {@link Slice} that may be {@code null}
+     */
     public Slice getCSlice() {
         return cSlice;
     }
 
+    /**
+     * Get the slice denoting the possible future placement off the subject
+     *
+     * @return a {@link Slice} that may be {@code null}
+     */
     public Slice getDSlice() {
         return dSlice;
     }
 
+    /**
+     * Get the subject of the slice. Usually a VM or a node.
+     *
+     * @return an element identifier
+     */
     public UUID getSubject() {
         return subject;
     }
 
+    /**
+     * Get the cost of the action.
+     *
+     * @return a variable
+     */
     public IntDomainVar getGlobalCost() {
         return cost;
     }
 
+    /**
+     * Get the action that are generated for the model variables.
+     *
+     * @param rp the current problem
+     * @return a list of {@link Action} that may be empty.
+     */
     public abstract List<Action> getResultingActions(ReconfigurationProblem rp);
 
 }
