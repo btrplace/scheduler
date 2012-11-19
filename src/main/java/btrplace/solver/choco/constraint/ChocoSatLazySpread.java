@@ -22,8 +22,8 @@ import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Spread;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.solver.choco.ChocoConstraint;
 import btrplace.solver.choco.ChocoConstraintBuilder;
+import btrplace.solver.choco.ChocoSatConstraint;
 import btrplace.solver.choco.ReconfigurationProblem;
 
 import java.util.Set;
@@ -36,21 +36,21 @@ import java.util.UUID;
  * Time: 16:49
  * To change this template use File | Settings | File Templates.
  */
-public class ChocoLazySpread implements ChocoConstraint {
+public class ChocoSatLazySpread implements ChocoSatConstraint {
 
     public static class ChocoLazySpreadBuilder implements ChocoConstraintBuilder {
         @Override
-        public Class getKey() {
+        public Class<? extends SatConstraint> getKey() {
             return Spread.class;
         }
 
         @Override
-        public ChocoConstraint build(SatConstraint cstr) {
-            return new ChocoLazySpread((Spread) cstr);
+        public ChocoSatLazySpread build(SatConstraint cstr) {
+            return new ChocoSatLazySpread((Spread) cstr);
         }
     }
 
-    public ChocoLazySpread(Spread s) {
+    public ChocoSatLazySpread(Spread s) {
 
     }
 
@@ -60,7 +60,7 @@ public class ChocoLazySpread implements ChocoConstraint {
     }
 
     @Override
-    public SatConstraint getAssociatedConstraint() {
+    public Spread getAssociatedConstraint() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 

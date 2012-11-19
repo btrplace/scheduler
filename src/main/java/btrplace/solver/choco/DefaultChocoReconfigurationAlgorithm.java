@@ -86,7 +86,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         Set<UUID> toDestroy = new HashSet<UUID>();
         Set<UUID> toSleep = new HashSet<UUID>();
 
-        List<ChocoConstraint> cConstraints = new ArrayList<ChocoConstraint>();
+        List<ChocoSatConstraint> cConstraints = new ArrayList<ChocoSatConstraint>();
         for (SatConstraint cstr : i.getConstraints()) {
             if (cstr instanceof Running) {
                 toRun.addAll(cstr.getInvolvedVMs());
@@ -97,11 +97,11 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
             } else if (cstr instanceof Destroyed) {
                 toDestroy.addAll(cstr.getInvolvedVMs());
             } else {
-                ChocoConstraintBuilder ccstrb = cstrMapper.get(cstr);
+                ChocoConstraintBuilder ccstrb = cstrMapper.getBuilder(cstr.getClass());
                 if (ccstrb == null) {
                     throw new SolverException(i, "Unable to map constraint '" + cstr.getClass().getSimpleName() + "'");
                 }
-                ChocoConstraint ccstr = ccstrb.build(cstr);
+                ChocoSatConstraint ccstr = ccstrb.build(cstr);
                 if (ccstr == null) {
                     throw new SolverException(i, "Error while mapping the constraint '" + cstr.getClass().getSimpleName() + "'");
                 } else {
@@ -114,7 +114,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         rp = new DefaultReconfigurationProblem(i, durationEvaluators, toWait, toRun, toSleep, toDestroy);
 
         //Customize with the constraints
-        for (ChocoConstraint ccstr : cConstraints) {
+        for (ChocoSatConstraint ccstr : cConstraints) {
             ccstr.inject(rp);
         }
 

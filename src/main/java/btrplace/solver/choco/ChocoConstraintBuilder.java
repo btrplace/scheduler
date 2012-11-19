@@ -21,7 +21,7 @@ package btrplace.solver.choco;
 import btrplace.model.SatConstraint;
 
 /**
- * Interface to specify a builder that create a {@link ChocoConstraint} from
+ * Interface to specify a builder that create a {@link ChocoSatConstraint} from
  * a specific {@link SatConstraint}.
  *
  * @author Fabien Hermenier
@@ -31,9 +31,9 @@ public interface ChocoConstraintBuilder {
     /**
      * Get the class of the SatConstraint associated to the builder.
      *
-     * @return a Class
+     * @return a Class derived from {@link SatConstraint}
      */
-    public Class getKey();
+    public Class<? extends SatConstraint> getKey();
 
     /**
      * Build the ChocoConstraint associated to the {@link SatConstraint}
@@ -42,5 +42,5 @@ public interface ChocoConstraintBuilder {
      * @param cstr the model constraint
      * @return the associated ChocoConstraint or {@code null} if an error occurred
      */
-    public ChocoConstraint build(SatConstraint cstr);
+    public ChocoSatConstraint build(SatConstraint cstr);
 }

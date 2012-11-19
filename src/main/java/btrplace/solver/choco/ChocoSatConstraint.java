@@ -21,6 +21,7 @@ package btrplace.solver.choco;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.SolverException;
 
 import java.util.Set;
 import java.util.UUID;
@@ -30,14 +31,25 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public interface ChocoConstraint {
+public interface ChocoSatConstraint {
 
-    void inject(ReconfigurationProblem rp);
+    /**
+     * Inject the constraint into the problem.
+     *
+     * @param rp the problem
+     * @throws SolverException if an error occurred while injecting.
+     */
+    void inject(ReconfigurationProblem rp) throws SolverException;
 
+    /**
+     * Get the constraint model associated to the implementation
+     *
+     * @return a {@link SatConstraint}
+     */
     SatConstraint getAssociatedConstraint();
 
-
     public Set<UUID> getMisPlacedVMs(Model m);
+
 
     public boolean isSatisfied(ReconfigurationPlan plan);
 

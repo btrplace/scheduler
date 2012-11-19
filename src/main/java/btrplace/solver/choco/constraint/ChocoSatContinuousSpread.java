@@ -37,23 +37,23 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class ChocoContinuousSpread implements ChocoConstraint {
+public class ChocoSatContinuousSpread implements ChocoSatConstraint {
 
     private Spread cstr;
 
     public static class ChocoContinuousSpreadBuilder implements ChocoConstraintBuilder {
         @Override
-        public Class getKey() {
+        public Class<? extends SatConstraint> getKey() {
             return Spread.class;
         }
 
         @Override
-        public ChocoConstraint build(SatConstraint cstr) {
-            return new ChocoContinuousSpread((Spread) cstr);
+        public ChocoSatContinuousSpread build(SatConstraint cstr) {
+            return new ChocoSatContinuousSpread((Spread) cstr);
         }
     }
 
-    public ChocoContinuousSpread(Spread s) {
+    public ChocoSatContinuousSpread(Spread s) {
         cstr = s;
     }
 
@@ -70,7 +70,7 @@ public class ChocoContinuousSpread implements ChocoConstraint {
         Solver s = rp.getSolver();
         if (!onlyRunnings.isEmpty()) {
             //The lazy spread implementation for the placement
-            new ChocoLazySpread(cstr).inject(rp);
+            new ChocoSatLazySpread(cstr).inject(rp);
             UUID[] vms = onlyRunnings.toArray(new UUID[onlyRunnings.size()]);
             for (int i = 0; i < vms.length; i++) {
                 UUID vm = vms[i];
@@ -111,7 +111,7 @@ public class ChocoContinuousSpread implements ChocoConstraint {
     }
 
     @Override
-    public SatConstraint getAssociatedConstraint() {
+    public Spread getAssociatedConstraint() {
         return cstr;
     }
 

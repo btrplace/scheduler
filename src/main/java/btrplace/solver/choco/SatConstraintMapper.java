@@ -19,38 +19,41 @@
 package btrplace.solver.choco;
 
 import btrplace.model.SatConstraint;
+import btrplace.model.constraint.Ban;
 import btrplace.model.constraint.Spread;
-import btrplace.solver.choco.constraint.ChocoContinuousSpread;
+import btrplace.solver.choco.constraint.ChocoSatBan;
+import btrplace.solver.choco.constraint.ChocoSatContinuousSpread;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Mapper that allow to convert {@link SatConstraint} to {@link ChocoConstraint}.
+ * Mapper that allow to convert {@link SatConstraint} to {@link ChocoSatConstraint}.
  *
  * @author Fabien Hermenier
  */
 public class SatConstraintMapper {
 
-    private Map<Class, ChocoConstraintBuilder> builders;
+    private Map<Class<? extends SatConstraint>, ChocoConstraintBuilder> builders;
 
     /**
      * Make a new mapper.
      */
     public SatConstraintMapper() {
-        builders = new HashMap<Class, ChocoConstraintBuilder>();
+        builders = new HashMap<Class<? extends SatConstraint>, ChocoConstraintBuilder>();
 
-        builders.put(Spread.class, new ChocoContinuousSpread.ChocoContinuousSpreadBuilder());
+        builders.put(Spread.class, new ChocoSatContinuousSpread.ChocoContinuousSpreadBuilder());
+        builders.put(Ban.class, new ChocoSatBan.ChocoBanBuilder());
     }
 
     /**
      * Register a constraint builder.
      *
      * @param ccb the builder to register
-     * @return {@code false} if no builder previously registered for the given constraint was deleted
+     * @return {@code true} if no builder previously registered for the given constraint was deleted
      */
     public boolean register(ChocoConstraintBuilder ccb) {
-        return builders.put(ccb.getKey(), ccb) != null;
+        return builders.put(ccb.getKey(), ccb) == null;
     }
 
     /**
@@ -59,8 +62,18 @@ public class SatConstraintMapper {
      * @param c the class of the {@link SatConstraint} to un-register
      * @return {@code true} if a builder was registered
      */
-    public boolean unregister(Class c) {
+    public boolean unregister(Class<? extends SatConstraint> c) {
         return builders.remove(c) != null;
+    }
+
+    /**
+     * Check if a {@link ChocoConstraintBuilder} is registered for a given {@link SatConstraint}.
+     *
+     * @param c the constraint to check
+     * @return {@code true} iff a builder is registered
+     */
+    public boolean isRegistered(Class<? extends SatConstraint> c) {
+        return builders.containsKey(c);
     }
 
     /**
@@ -69,7 +82,21 @@ public class SatConstraintMapper {
      * @param c the constraint
      * @return the associated builder if exists. {@code null} otherwise
      */
-    public ChocoConstraintBuilder get(SatConstraint c) {
+    public ChocoConstraintBuilder getBuilder(Class<? extends SatConstraint> c) {
         return builders.get(c);
+    }
+
+    /**
+     * Map the given {@link SatConstraint} to a {@link ChocoSatConstraint} if possible.
+     *
+     * @param c the constraint to map
+     * @return the mapping result or {@null} if no {@link ChocoSatConstraint} was available
+     */
+    public ChocoSatConstraint map(SatConstraint c) {
+        ChocoConstraintBuilder b = builders.get(c.getClass());
+        if (b != null) {
+            return b.build(c);
+        }
+        return null;
     }
 }
