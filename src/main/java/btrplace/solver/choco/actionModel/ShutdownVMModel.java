@@ -43,7 +43,7 @@ public class ShutdownVMModel extends ActionModel {
         start = getStart();
         duration = rp.makeDuration("", d, d);
         end = duration;
-        this.cSlice = new Slice("", rp.getStart(), end, duration, rp.makeCurrentHost("", e));
+        this.cSlice = new Slice("", e, rp.getStart(), end, duration, rp.makeCurrentHost("", e), rp.getSolver().createBooleanVar(""));
     }
 
     @Override

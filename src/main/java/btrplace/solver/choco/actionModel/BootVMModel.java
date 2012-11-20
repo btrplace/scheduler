@@ -47,7 +47,7 @@ public class BootVMModel extends ActionModel {
         end = new IntDomainVarAddCste(rp.getSolver(), "", getStart(), d);
         duration = rp.makeDuration("", d, d);
 
-        dSlice = new Slice("dSlice(" + e + ")", start, rp.getEnd(), rp.makeDuration(""), rp.makeHostVariable(""));
+        dSlice = new Slice("dSlice(" + e + ")", e, start, rp.getEnd(), rp.makeDuration(""), rp.makeHostVariable(""), rp.getSolver().createBooleanVar(""));
         SliceUtils.linkMoments(rp, dSlice);
     }
 

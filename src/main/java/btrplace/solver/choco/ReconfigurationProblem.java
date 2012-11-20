@@ -247,4 +247,19 @@ public interface ReconfigurationProblem {
      * @throws SolverException if the bounds are not valid
      */
     IntDomainVar makeDuration(String n, int lb, int ub) throws SolverException;
+
+    /**
+     * Get a resource mapping from its identifier.
+     *
+     * @param id the resource identifier
+     * @return the resource mapping if exists, {@code null} otherwise
+     */
+    ResourceMapping getResourceMapping(String id);
+
+    /**
+     * Get the amount of VMs hosted on each node.
+     *
+     * @return an array of variable counting the number of VMs on each node
+     */
+    IntDomainVar[] getVMsCountOnNodes();
 }

@@ -26,6 +26,7 @@ import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceUtils;
 import btrplace.solver.choco.chocoUtil.FastIFFEq;
+import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.TimesXYZ;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -53,7 +54,7 @@ public class ShutdownableNodeModel extends ActionModel {
 
         //A dslice without height to be ignored by the packing constraint. So it does not disallow to
         //have other d-slices on it. But required to be handled by the scheduling problem.
-        this.dSlice = new Slice("", rp.makeDuration(""), rp.getEnd(), duration, rp.makeCurrentNode("", e));
+        this.dSlice = new Slice("", e, rp.makeDuration(""), rp.getEnd(), duration, rp.makeCurrentNode("", e), s.createBooleanVar(""));
 
         end = rp.makeDuration("");
         start = dSlice.getStart();
@@ -62,7 +63,7 @@ public class ShutdownableNodeModel extends ActionModel {
         state = s.createBooleanVar("");
 
 
-        IntDomainVar isOffline = s.createBooleanVar("");//TODO: dSlice.isExclusive(); //offline means there will be an exclusive d-Slice
+        IntDomainVar isOffline = dSlice.isExclusive(); //offline means there will be an exclusive d-Slice
         s.post(s.neq(isOffline, state)); //Cannot rely on BoolVarNot cause it is not compatible with the eq() below
         // Duration necessarily < end of the duration of the reconfiguration process.
         s.post(s.leq(duration, rp.getEnd()));
@@ -72,8 +73,7 @@ public class ShutdownableNodeModel extends ActionModel {
          */
         s.post(new FastIFFEq(state, duration, 0)); //Stay online <-> duration = 0
 
-        //TODO: how to check a node is empty
-        //s.post(new FastImpliesEq(isOffline, rp.getUsedMem(n), 0)); //Packing stuff; isOffline -> mem == 0
+        s.post(new FastImpliesEq(isOffline, rp.getVMsCountOnNodes()[rp.getNode(e)], 0)); //Packing stuff; isOffline -> mem == 0
 
         cost = rp.makeDuration("");
         s.post(new TimesXYZ(end, isOffline, cost));

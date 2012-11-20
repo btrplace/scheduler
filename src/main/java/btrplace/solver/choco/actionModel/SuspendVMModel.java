@@ -41,7 +41,7 @@ public class SuspendVMModel extends ActionModel {
         int d = rp.getDurationEvaluator().evaluate(SuspendVM.class, e);
 
         duration = rp.makeDuration("", d, rp.getEnd().getSup());
-        this.cSlice = new Slice("", rp.getStart(), duration, duration, rp.makeCurrentHost("", e));
+        this.cSlice = new Slice("", e, rp.getStart(), duration, duration, rp.makeCurrentHost("", e), rp.getSolver().createBooleanVar(""));
 
         SliceUtils.linkMoments(rp, cSlice);
         start = cSlice.getStart();

@@ -23,6 +23,12 @@ import btrplace.plan.SolverException;
 import btrplace.plan.action.BootNode;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.Slice;
+import btrplace.solver.choco.SliceUtils;
+import btrplace.solver.choco.chocoUtil.FastImpliesEq;
+import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.reified.ReifiedFactory;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +44,32 @@ public class BootableNodeModel extends ActionModel {
     public BootableNodeModel(ReconfigurationProblem rp, UUID nId) throws SolverException {
         super(rp, nId);
         state = rp.getSolver().createBooleanVar("");
+
+        int nIdx = rp.getNode(nId);
+
+        //A c-slice that consume all the resources to represent the boot process.
+        int d = rp.getDurationEvaluator().evaluate(BootNode.class, nId);
+        CPSolver s = rp.getSolver();
+        cSlice = new Slice("", nId, rp.makeDuration(""), rp.makeDuration("", d, rp.getEnd().getSup()), rp.makeDuration("", d, rp.getEnd().getSup()), rp.makeCurrentNode("", nId), s.createIntegerConstant("", 0));
+        cost = s.createEnumIntVar("cost(" + toString() + ")", new int[]{0, d});
+        state = s.createBooleanVar("");
+
+        //The cost equals the estimated duration <=> the node is booted. Otherwise it will equals 0
+        s.post(new FastImpliesEq(state, cost, 0));
+
+        /**
+         * used denotes whether or not the node is used, \ie it host running VMs
+         * In practice, we consider that if some memory are used, then the node is used
+         * (it avoids to use an Occurrence constraint)
+         */
+        IntDomainVar used = s.createBooleanVar("");
+        s.post(ReifiedFactory.builder(used, s.neq(rp.getVMsCountOnNodes()[nIdx], 0), s));
+        s.post(new FastImpliesEq(used, state, 1));
+
+        s.post(s.eq(cSlice.getEnd(), cost));
+
+
+        SliceUtils.linkMoments(rp, cSlice);
     }
 
     @Override

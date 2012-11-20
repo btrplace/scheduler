@@ -21,6 +21,9 @@ package btrplace.solver.choco;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
  * Utility methods to extract variables from slices.
  *
@@ -31,16 +34,31 @@ public final class SliceUtils {
     private SliceUtils() {
     }
 
-    public static IntDomainVar[] extractHosters() {
-        return null;
+    public static IntDomainVar[] extractHosters(List<Slice> slices) {
+        IntDomainVar[] vs = new IntDomainVar[slices.size()];
+        int i = 0;
+        for (Slice s : slices) {
+            vs[i++] = s.getHoster();
+        }
+        return vs;
     }
 
-    public static IntDomainVar[] extractStarts() {
-        return null;
+    public static IntDomainVar[] extractStarts(Collection<Slice> slices) {
+        IntDomainVar[] vs = new IntDomainVar[slices.size()];
+        int i = 0;
+        for (Slice s : slices) {
+            vs[i++] = s.getStart();
+        }
+        return vs;
     }
 
-    public static IntDomainVar[] extractEnds() {
-        return null;
+    public static IntDomainVar[] extractEnds(Collection<Slice> slices) {
+        IntDomainVar[] vs = new IntDomainVar[slices.size()];
+        int i = 0;
+        for (Slice s : slices) {
+            vs[i++] = s.getEnd();
+        }
+        return vs;
     }
 
     public static void linkMoments(ReconfigurationProblem rp, Slice slice) {

@@ -54,10 +54,10 @@ public class RelocatableVMModel extends ActionModel {
         this.cost = rp.makeDuration("");
         duration = s.createEnumIntVar("", new int[]{0, d});
         IntDomainVar cDuration = rp.makeDuration("");
-        cSlice = new Slice("", rp.getStart(), cDuration, cDuration, rp.makeCurrentHost("", e));
+        cSlice = new Slice("", e, rp.getStart(), cDuration, cDuration, rp.makeCurrentHost("", e), s.createIntegerConstant("", 0));
 
         IntDomainVar dDuration = rp.makeDuration("");
-        dSlice = new Slice("", dDuration, rp.getEnd(), rp.makeDuration(""), rp.makeHostVariable(""));
+        dSlice = new Slice("", e, dDuration, rp.getEnd(), rp.makeDuration(""), rp.makeHostVariable(""), s.createIntegerConstant("", 0));
         IntDomainVar move = s.createBooleanVar("");
         s.post(ReifiedFactory.builder(move, s.neq(cSlice.getHoster(), dSlice.getHoster()), s));
 

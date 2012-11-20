@@ -42,11 +42,11 @@ public class StayRunningVMModel extends ActionModel {
         boolean neadIncrease = true; //TODO: How to get resource changes ?
         IntDomainVar host = rp.makeCurrentHost("", e);
         if (neadIncrease) {
-            cSlice = new Slice("", rp.getStart(), rp.getEnd(), rp.getEnd(), host);
-            dSlice = new Slice("", rp.getEnd(), rp.getEnd(), rp.makeDuration("", 0, 0), host);
+            cSlice = new Slice("", e, rp.getStart(), rp.getEnd(), rp.getEnd(), host, s.createIntegerConstant("", 0));
+            dSlice = new Slice("", e, rp.getEnd(), rp.getEnd(), rp.makeDuration("", 0, 0), host, s.createIntegerConstant("", 0));
         } else {
-            cSlice = new Slice("", rp.getStart(), rp.getStart(), rp.getStart(), host);
-            dSlice = new Slice("", rp.getStart(), rp.getEnd(), rp.getEnd(), host);
+            cSlice = new Slice("", e, rp.getStart(), rp.getStart(), rp.getStart(), host, s.createIntegerConstant("", 0));
+            dSlice = new Slice("", e, rp.getStart(), rp.getEnd(), rp.getEnd(), host, s.createIntegerConstant("", 0));
         }
         end = dSlice.getStart();
         start = cSlice.getEnd();

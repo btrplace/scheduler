@@ -20,6 +20,8 @@ package btrplace.solver.choco;
 
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import java.util.UUID;
+
 /**
  * Model a period where an element is hosted on a node.
  *
@@ -37,12 +39,28 @@ public class Slice {
 
     private String name;
 
-    public Slice(String n, IntDomainVar st, IntDomainVar ed, IntDomainVar d, IntDomainVar h) {
+    private IntDomainVar excl;
+
+    private UUID subject;
+
+    /**
+     * Make a new period.
+     *
+     * @param n  the slice label
+     * @param s  the subject involved in the slice
+     * @param st the moment the slice starts
+     * @param ed the moment the slice ends
+     * @param d  the duration of the slice
+     * @param h  the slice' host
+     * @param ex a boolean variable to indicate if the slice is exclusive or not
+     */
+    public Slice(String n, UUID s, IntDomainVar st, IntDomainVar ed, IntDomainVar d, IntDomainVar h, IntDomainVar ex) {
         this.name = n;
         this.start = st;
         this.end = ed;
         this.duration = d;
         this.hoster = h;
+        this.excl = ex;
     }
 
     @Override
@@ -67,21 +85,57 @@ public class Slice {
         return b.append('}').toString();
     }
 
+    /**
+     * Get the moment the slice starts.
+     *
+     * @return a variable denoting the moment
+     */
     public IntDomainVar getStart() {
         return start;
     }
 
+    /**
+     * Get the moment the slice ends.
+     *
+     * @return a variable denoting the moment
+     */
     public IntDomainVar getEnd() {
         return end;
     }
 
+    /**
+     * Get the duration of the slice.
+     *
+     * @return a variable denoting the moment
+     */
     public IntDomainVar getDuration() {
         return duration;
     }
 
+    /**
+     * Get the slice hoster.
+     *
+     * @return a variable indicating the node index
+     */
     public IntDomainVar getHoster() {
         return hoster;
     }
 
+    /**
+     * Indicates whether or not the slice can overlap other ones.
+     *
+     * @return {@code 1} to indicate that no overlap is allowed
+     */
+    public IntDomainVar isExclusive() {
+        return excl;
+    }
 
+    /**
+     * Get the subject of the slice.
+     *
+     * @return the subject identifier
+     */
+    public UUID getSubject() {
+        return subject;
+    }
 }

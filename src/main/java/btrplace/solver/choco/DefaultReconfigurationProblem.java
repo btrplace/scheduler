@@ -18,6 +18,7 @@
 
 package btrplace.solver.choco;
 
+import btrplace.model.IntResource;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.plan.Action;
@@ -25,6 +26,7 @@ import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.SolverException;
 import btrplace.solver.choco.actionModel.*;
+import btrplace.solver.choco.chocoUtil.BinPacking;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.map.hash.TObjectIntHashMap;
@@ -71,6 +73,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private List<Slice> cSlices;
 
     private DurationEvaluators durEval;
+
+    private Map<String, ResourceMapping> resources;
+
+    private IntDomainVar[] vmsCountOnNodes;
 
     /**
      * Make a new ReconfigurationProblem that does not change the current state of the VMs
@@ -133,10 +139,50 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         fillElements();
 
+        makeCardinalities();
+
         makeNodeActionModels();
         makeVMActionModels();
 
+        makeResources();
 
+        linkCardinatiesWithSlices();
+    }
+
+    /**
+     * Create the {@link ResourceMapping} from the {@link IntResource}.
+     *
+     * @throws SolverException if an error occurred
+     */
+    private void makeResources() throws SolverException {
+        resources = new HashMap<String, ResourceMapping>(model.getResources().size());
+        for (IntResource rc : model.getResources()) {
+            ResourceMapping rm = new ResourceMapping(this, rc);
+            resources.put(rm.getIdentifier(), rm);
+        }
+    }
+
+    /**
+     * Create the cardinalities variables.
+     *
+     * @throws SolverException if an error occurred
+     */
+    private void makeCardinalities() throws SolverException {
+        vmsCountOnNodes = new IntDomainVar[nodes.length];
+        int nbVMs = vms.length;
+        for (int i = 0; i < vmsCountOnNodes.length; i++) {
+            vmsCountOnNodes[i] = solver.createBoundIntVar("", 0, nbVMs);
+        }
+    }
+
+    private void linkCardinatiesWithSlices() throws SolverException {
+        ActionModel[] am = getVMActions(runnings);
+        IntDomainVar[] ds = SliceUtils.extractHosters(ActionModelUtil.getDSlices(am));
+        IntDomainVar[] usages = new IntDomainVar[ds.length];
+        for (int i = 0; i < ds.length; i++) {
+            usages[i] = solver.makeConstantIntVar(1);
+        }
+        solver.post(new BinPacking(solver.getEnvironment(), vmsCountOnNodes, usages, ds));
     }
 
     private void fillElements() throws SolverException {
@@ -387,6 +433,16 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             }
         }
         return p.getDuration() == end.getVal();
+    }
+
+    @Override
+    public IntDomainVar[] getVMsCountOnNodes() {
+        return vmsCountOnNodes;
+    }
+
+    @Override
+    public ResourceMapping getResourceMapping(String id) {
+        return resources.get(id);
     }
 
     @Override

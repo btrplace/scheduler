@@ -48,6 +48,9 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
     private DurationEvaluators durationEvaluators;
 
+    /**
+     * Make a new algorithm.
+     */
     public DefaultChocoReconfigurationAlgorithm() {
 
         cstrMapper = new SatConstraintMapper();
