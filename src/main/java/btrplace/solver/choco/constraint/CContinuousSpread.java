@@ -37,7 +37,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class ChocoSatContinuousSpread implements ChocoSatConstraint {
+public class CContinuousSpread implements ChocoSatConstraint {
 
     private Spread cstr;
 
@@ -46,7 +46,7 @@ public class ChocoSatContinuousSpread implements ChocoSatConstraint {
      *
      * @param s the constraint to rely one
      */
-    public ChocoSatContinuousSpread(Spread s) {
+    public CContinuousSpread(Spread s) {
         cstr = s;
     }
 
@@ -148,8 +148,8 @@ public class ChocoSatContinuousSpread implements ChocoSatConstraint {
         }
 
         @Override
-        public ChocoSatContinuousSpread build(SatConstraint cstr) {
-            return new ChocoSatContinuousSpread((Spread) cstr);
+        public CContinuousSpread build(SatConstraint cstr) {
+            return new CContinuousSpread((Spread) cstr);
         }
     }
 }

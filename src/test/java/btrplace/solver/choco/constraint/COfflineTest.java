@@ -34,11 +34,11 @@ import org.testng.annotations.Test;
 import java.util.UUID;
 
 /**
- * Unit tests for {@link ChocoSatOffline}.
+ * Unit tests for {@link COffline}.
  *
  * @author Fabien Hermenier
  */
-public class ChocoSatOfflineTest {
+public class COfflineTest {
 
     /**
      * Simple test, no VMs.

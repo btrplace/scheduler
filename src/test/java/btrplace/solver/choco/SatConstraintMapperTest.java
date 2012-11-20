@@ -21,8 +21,8 @@ package btrplace.solver.choco;
 import btrplace.model.constraint.Ban;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Spread;
-import btrplace.solver.choco.constraint.ChocoSatContinuousSpread;
-import btrplace.solver.choco.constraint.ChocoSatLazySpread;
+import btrplace.solver.choco.constraint.CContinuousSpread;
+import btrplace.solver.choco.constraint.CLazySpread;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
@@ -49,7 +49,7 @@ public class SatConstraintMapperTest {
     public void testGetBuilder() {
         SatConstraintMapper map = new SatConstraintMapper();
         ChocoConstraintBuilder b = map.getBuilder(Spread.class);
-        Assert.assertEquals(b.getClass(), ChocoSatContinuousSpread.Builder.class);
+        Assert.assertEquals(b.getClass(), CContinuousSpread.Builder.class);
 
         Assert.assertNull(map.getBuilder(Fence.class));
     }
@@ -66,11 +66,11 @@ public class SatConstraintMapperTest {
     public void testRegister() {
         SatConstraintMapper map = new SatConstraintMapper();
         map.unregister(Spread.class);
-        ChocoSatLazySpread.Builder cb = new ChocoSatLazySpread.Builder();
+        CLazySpread.Builder cb = new CLazySpread.Builder();
         Assert.assertTrue(map.register(cb));
         Assert.assertEquals(map.getBuilder(Spread.class), cb);
 
-        ChocoSatContinuousSpread.Builder cb2 = new ChocoSatContinuousSpread.Builder();
+        CContinuousSpread.Builder cb2 = new CContinuousSpread.Builder();
         Assert.assertFalse(map.register(cb2));
         Assert.assertEquals(map.getBuilder(Spread.class), cb2);
     }
@@ -80,13 +80,13 @@ public class SatConstraintMapperTest {
         SatConstraintMapper map = new SatConstraintMapper();
         Spread s = new Spread(Collections.singleton(UUID.randomUUID()));
         ChocoSatConstraint c = map.map(s);
-        Assert.assertTrue(c.getClass().equals(ChocoSatContinuousSpread.class));
+        Assert.assertTrue(c.getClass().equals(CContinuousSpread.class));
 
         map.unregister(Spread.class);
-        ChocoSatLazySpread.Builder cb = new ChocoSatLazySpread.Builder();
+        CLazySpread.Builder cb = new CLazySpread.Builder();
         map.register(cb);
         c = map.map(s);
-        Assert.assertTrue(c.getClass().equals(ChocoSatLazySpread.class));
+        Assert.assertTrue(c.getClass().equals(CLazySpread.class));
 
         //Fence is not registered !
         Fence b = new Fence(Collections.singleton(UUID.randomUUID()), Collections.singleton(UUID.randomUUID()));

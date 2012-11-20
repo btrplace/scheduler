@@ -28,8 +28,18 @@ import btrplace.plan.ReconfigurationAlgorithm;
 public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm {
 
 
+    /**
+     * State if the algorithm must try to improve the first computed solution.
+     *
+     * @param b {@code true} to make the algorithm try to improve the solution
+     */
     void doOptimize(boolean b);
 
+    /**
+     * Tell is the solver tries to improve the first computed solution.
+     *
+     * @return {@code true} iff it try to improve the solution
+     */
     boolean doOptimize();
 
     /**

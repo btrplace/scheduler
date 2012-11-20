@@ -39,7 +39,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class ChocoSatOffline implements ChocoSatConstraint {
+public class COffline implements ChocoSatConstraint {
 
     private Offline cstr;
 
@@ -48,7 +48,7 @@ public class ChocoSatOffline implements ChocoSatConstraint {
      *
      * @param o the {@link SatConstraint} to rely on
      */
-    public ChocoSatOffline(Offline o) {
+    public COffline(Offline o) {
         this.cstr = o;
     }
 
@@ -94,8 +94,8 @@ public class ChocoSatOffline implements ChocoSatConstraint {
         }
 
         @Override
-        public ChocoSatOffline build(SatConstraint cstr) {
-            return new ChocoSatOffline((Offline) cstr);
+        public COffline build(SatConstraint cstr) {
+            return new COffline((Offline) cstr);
         }
     }
 }

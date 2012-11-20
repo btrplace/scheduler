@@ -23,10 +23,10 @@ import btrplace.model.constraint.Ban;
 import btrplace.model.constraint.Offline;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Spread;
-import btrplace.solver.choco.constraint.ChocoSatBan;
-import btrplace.solver.choco.constraint.ChocoSatContinuousSpread;
-import btrplace.solver.choco.constraint.ChocoSatOffline;
-import btrplace.solver.choco.constraint.ChocoSatOnline;
+import btrplace.solver.choco.constraint.CBan;
+import btrplace.solver.choco.constraint.CContinuousSpread;
+import btrplace.solver.choco.constraint.COffline;
+import btrplace.solver.choco.constraint.COnline;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,10 +46,10 @@ public class SatConstraintMapper {
     public SatConstraintMapper() {
         builders = new HashMap<Class<? extends SatConstraint>, ChocoConstraintBuilder>();
 
-        builders.put(Spread.class, new ChocoSatContinuousSpread.Builder());
-        builders.put(Ban.class, new ChocoSatBan.Builder());
-        builders.put(Online.class, new ChocoSatOnline.Builder());
-        builders.put(Offline.class, new ChocoSatOffline.Builder());
+        builders.put(Spread.class, new CContinuousSpread.Builder());
+        builders.put(Ban.class, new CBan.Builder());
+        builders.put(Online.class, new COnline.Builder());
+        builders.put(Offline.class, new COffline.Builder());
     }
 
     /**

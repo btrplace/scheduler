@@ -19,6 +19,7 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.Model;
+import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Oversubscription;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.SolverException;
@@ -36,7 +37,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class ChocoSatOversubscription implements ChocoSatConstraint {
+public class COversubscription implements ChocoSatConstraint {
 
     private Oversubscription cstr;
 
@@ -45,7 +46,7 @@ public class ChocoSatOversubscription implements ChocoSatConstraint {
      *
      * @param o the constraint to rely on
      */
-    public ChocoSatOversubscription(Oversubscription o) {
+    public COversubscription(Oversubscription o) {
         cstr = o;
     }
 
@@ -82,5 +83,20 @@ public class ChocoSatOversubscription implements ChocoSatConstraint {
     @Override
     public boolean isSatisfied(ReconfigurationPlan plan) {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    /**
+     * Builder associated to the constraint.
+     */
+    public static class Builder implements ChocoConstraintBuilder {
+        @Override
+        public Class<? extends SatConstraint> getKey() {
+            return Oversubscription.class;
+        }
+
+        @Override
+        public COversubscription build(SatConstraint cstr) {
+            return new COversubscription((Oversubscription) cstr);
+        }
     }
 }

@@ -38,7 +38,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class ChocoSatBan implements ChocoSatConstraint {
+public class CBan implements ChocoSatConstraint {
 
     private Ban ban;
 
@@ -47,7 +47,7 @@ public class ChocoSatBan implements ChocoSatConstraint {
      *
      * @param b the ban constraint to rely on
      */
-    public ChocoSatBan(Ban b) {
+    public CBan(Ban b) {
         ban = b;
     }
 
@@ -110,8 +110,8 @@ public class ChocoSatBan implements ChocoSatConstraint {
         }
 
         @Override
-        public ChocoSatBan build(SatConstraint cstr) {
-            return new ChocoSatBan((Ban) cstr);
+        public CBan build(SatConstraint cstr) {
+            return new CBan((Ban) cstr);
         }
     }
 

@@ -35,12 +35,12 @@ import java.util.*;
 /**
  * An implementation of {@link Spread} that only ensure VMs will not be
  * co-located at the end of the reconfiguration. Temporary overlapping during
- * the reconfiguration is still possible. To prevent for that situation, use {@link ChocoSatContinuousSpread}
+ * the reconfiguration is still possible. To prevent for that situation, use {@link CContinuousSpread}
  * instead.
  *
  * @author Fabien Hermenier
  */
-public class ChocoSatLazySpread implements ChocoSatConstraint {
+public class CLazySpread implements ChocoSatConstraint {
 
     private Spread cstr;
 
@@ -54,8 +54,8 @@ public class ChocoSatLazySpread implements ChocoSatConstraint {
         }
 
         @Override
-        public ChocoSatLazySpread build(SatConstraint cstr) {
-            return new ChocoSatLazySpread((Spread) cstr);
+        public CLazySpread build(SatConstraint cstr) {
+            return new CLazySpread((Spread) cstr);
         }
     }
 
@@ -64,7 +64,7 @@ public class ChocoSatLazySpread implements ChocoSatConstraint {
      *
      * @param s the constraint to rely on
      */
-    public ChocoSatLazySpread(Spread s) {
+    public CLazySpread(Spread s) {
         cstr = s;
     }
 
