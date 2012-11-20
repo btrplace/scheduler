@@ -57,7 +57,7 @@ public class RelocatableVMModel extends ActionModel {
         cSlice = new Slice("", rp.getStart(), cDuration, cDuration, rp.makeCurrentHost("", e));
 
         IntDomainVar dDuration = rp.makeDuration("");
-        dSlice = new Slice("", dDuration, rp.getEnd(), null, rp.makeHostVariable(""));
+        dSlice = new Slice("", dDuration, rp.getEnd(), rp.makeDuration(""), rp.makeHostVariable(""));
         IntDomainVar move = s.createBooleanVar("");
         s.post(ReifiedFactory.builder(move, s.neq(cSlice.getHoster(), dSlice.getHoster()), s));
 
@@ -77,6 +77,8 @@ public class RelocatableVMModel extends ActionModel {
         SliceUtils.linkMoments(rp, cSlice);
         s.post(s.leq(duration, cSlice.getDuration()));
         s.post(s.leq(duration, dSlice.getDuration()));
+        start = dSlice.getStart();
+        end = cSlice.getEnd();
         s.post(s.eq(this.getEnd(), s.plus(this.getStart(), duration)));
 
         //TODO: What about the exlusive dSlice stuff ?
@@ -86,6 +88,14 @@ public class RelocatableVMModel extends ActionModel {
 
     @Override
     public List<Action> getResultingActions(ReconfigurationProblem rp) {
-        return new ArrayList<Action>();
+        List<Action> l = new ArrayList<Action>();
+        if (cSlice.getHoster().getVal() != dSlice.getHoster().getVal()) {
+            l.add(new MigrateVM(getSubject(),
+                    rp.getNode(cSlice.getHoster().getVal()),
+                    rp.getNode(dSlice.getHoster().getVal()),
+                    getStart().getVal(),
+                    getEnd().getVal()));
+        }
+        return l;
     }
 }

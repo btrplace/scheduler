@@ -18,6 +18,7 @@
 
 package btrplace.solver.choco.constraint;
 
+import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Spread;
@@ -25,19 +26,27 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.choco.ChocoConstraintBuilder;
 import btrplace.solver.choco.ChocoSatConstraint;
 import btrplace.solver.choco.ReconfigurationProblem;
+import choco.cp.solver.constraints.global.BoundAllDiff;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
- * Created with IntelliJ IDEA.
- * User: fhermeni
- * Date: 15/11/12
- * Time: 16:49
- * To change this template use File | Settings | File Templates.
+ * An implementation of {@link Spread} that only ensure VMs will not be
+ * co-located at the end of the reconfiguration. Temporary overlapping during
+ * the reconfiguration is still possible. To prevent for that situation, use {@link ChocoSatContinuousSpread}
+ * instead.
+ *
+ * @author Fabien Hermenier
  */
 public class ChocoSatLazySpread implements ChocoSatConstraint {
 
+    private Spread cstr;
+
+    /**
+     * The builder associated to that constraint.
+     */
     public static class Builder implements ChocoConstraintBuilder {
         @Override
         public Class<? extends SatConstraint> getKey() {
@@ -50,27 +59,61 @@ public class ChocoSatLazySpread implements ChocoSatConstraint {
         }
     }
 
+    /**
+     * Make a new constraint.
+     *
+     * @param s the constraint to rely on
+     */
     public ChocoSatLazySpread(Spread s) {
-
+        cstr = s;
     }
 
     @Override
     public void inject(ReconfigurationProblem rp) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        Set<UUID> onlyRunnings = new HashSet<UUID>();
+        Mapping m = rp.getSourceModel().getMapping();
+        for (UUID vmId : cstr.getInvolvedVMs()) {
+            if (rp.getFutureRunningVMs().contains(vmId) || m.getRunningVMs().contains(vmId)) {
+                onlyRunnings.add(vmId);
+            }
+        }
+        Solver s = rp.getSolver();
+
+        if (!onlyRunnings.isEmpty()) {
+            s.post(new BoundAllDiff(onlyRunnings.toArray(new IntDomainVar[onlyRunnings.size()]), true));
+        }
     }
 
     @Override
     public Spread getAssociatedConstraint() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return cstr;
     }
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Map<UUID, Set<UUID>> spots = new HashMap<UUID, Set<UUID>>();
+        Set<UUID> bad = new HashSet<UUID>();
+        Mapping map = m.getMapping();
+        for (UUID vm : cstr.getInvolvedVMs()) {
+            UUID h = map.getVMLocation(vm);
+            if (map.getRunningVMs().contains(vm)) {
+                if (!spots.containsKey(h)) {
+                    spots.put(h, new HashSet<UUID>());
+                }
+                spots.get(h).add(vm);
+            }
+
+        }
+        for (Map.Entry<UUID, Set<UUID>> e : spots.entrySet()) {
+            if (e.getValue().size() > 1) {
+                bad.addAll(e.getValue());
+            }
+        }
+        return bad;
     }
 
     @Override
     public boolean isSatisfied(ReconfigurationPlan plan) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return cstr.isSatisfied(plan.getResult()).equals(SatConstraint.Sat.SATISFIED);
     }
 }

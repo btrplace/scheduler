@@ -25,13 +25,12 @@ import btrplace.model.constraint.Spread;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.choco.*;
 import btrplace.solver.choco.chocoUtil.ChocoUtils;
+import choco.cp.solver.constraints.global.BoundAllDiff;
 import choco.cp.solver.constraints.reified.ReifiedFactory;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Continuous implementation of {@link Spread}.
@@ -42,18 +41,11 @@ public class ChocoSatContinuousSpread implements ChocoSatConstraint {
 
     private Spread cstr;
 
-    public static class Builder implements ChocoConstraintBuilder {
-        @Override
-        public Class<? extends SatConstraint> getKey() {
-            return Spread.class;
-        }
-
-        @Override
-        public ChocoSatContinuousSpread build(SatConstraint cstr) {
-            return new ChocoSatContinuousSpread((Spread) cstr);
-        }
-    }
-
+    /**
+     * Make a new constraint.
+     *
+     * @param s the constraint to rely one
+     */
     public ChocoSatContinuousSpread(Spread s) {
         cstr = s;
     }
@@ -71,7 +63,8 @@ public class ChocoSatContinuousSpread implements ChocoSatConstraint {
         Solver s = rp.getSolver();
         if (!onlyRunnings.isEmpty()) {
             //The lazy spread implementation for the placement
-            new ChocoSatLazySpread(cstr).inject(rp);
+            s.post(new BoundAllDiff(onlyRunnings.toArray(new IntDomainVar[onlyRunnings.size()]), true));
+
             UUID[] vms = onlyRunnings.toArray(new UUID[onlyRunnings.size()]);
             for (int i = 0; i < vms.length; i++) {
                 UUID vm = vms[i];
@@ -118,11 +111,45 @@ public class ChocoSatContinuousSpread implements ChocoSatConstraint {
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Map<UUID, Set<UUID>> spots = new HashMap<UUID, Set<UUID>>();
+        Set<UUID> bad = new HashSet<UUID>();
+        Mapping map = m.getMapping();
+        for (UUID vm : cstr.getInvolvedVMs()) {
+            UUID h = map.getVMLocation(vm);
+            if (map.getRunningVMs().contains(vm)) {
+                if (!spots.containsKey(h)) {
+                    spots.put(h, new HashSet<UUID>());
+                }
+                spots.get(h).add(vm);
+            }
+
+        }
+        for (Map.Entry<UUID, Set<UUID>> e : spots.entrySet()) {
+            if (e.getValue().size() > 1) {
+                bad.addAll(e.getValue());
+            }
+        }
+        return bad;
     }
 
     @Override
     public boolean isSatisfied(ReconfigurationPlan plan) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        //TODO: A check on every action ?
+        return cstr.isSatisfied(plan.getResult()).equals(SatConstraint.Sat.SATISFIED);
+    }
+
+    /**
+     * The builder associated to the constraint.
+     */
+    public static class Builder implements ChocoConstraintBuilder {
+        @Override
+        public Class<? extends SatConstraint> getKey() {
+            return Spread.class;
+        }
+
+        @Override
+        public ChocoSatContinuousSpread build(SatConstraint cstr) {
+            return new ChocoSatContinuousSpread((Spread) cstr);
+        }
     }
 }
