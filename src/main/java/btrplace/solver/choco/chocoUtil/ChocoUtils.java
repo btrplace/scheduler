@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.chocoUtil;
 
 import choco.cp.solver.constraints.integer.Element;
 import choco.cp.solver.constraints.integer.ElementV;

@@ -402,4 +402,43 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     public CPSolver getSolver() {
         return solver;
     }
+
+    @Override
+    public IntDomainVar makeHostVariable(String n) {
+        return solver.createEnumIntVar(n, 0, nodes.length - 1);
+    }
+
+    @Override
+    public IntDomainVar makeHostVariable(String n, int idx) throws SolverException {
+        if (idx < 0 || idx >= nodes.length) {
+            throw new SolverException(model, "Unable to create host variable '" + n + "': out of bounds");
+        }
+        return solver.makeConstantIntVar(n, idx);
+    }
+
+    @Override
+    public IntDomainVar makeCurrentHost(String n, UUID vmId) throws SolverException {
+        int idx = getVM(vmId);
+        if (idx < 0) {
+            throw new SolverException(model, "Unknown VM '" + vmId + "'");
+        }
+        int loc = getCurrentVMLocation(idx);
+        if (loc < 0) {
+            throw new SolverException(model, "Unknown current location for VM '" + vmId + "'");
+        }
+        return solver.makeConstantIntVar(n, loc);
+    }
+
+    @Override
+    public IntDomainVar makeDuration(String n) {
+        return solver.createBoundIntVar(n, 0, end.getSup());
+    }
+
+    @Override
+    public IntDomainVar makeDuration(String n, int lb, int ub) throws SolverException {
+        if (lb < 0 || ub < lb) {
+            throw new SolverException(model, "Unable to create duration '" + n + "': invalid bounds");
+        }
+        return solver.createBoundIntVar(n, lb, ub < end.getSup() ? ub : end.getSup());
+    }
 }

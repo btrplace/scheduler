@@ -22,12 +22,10 @@ import btrplace.plan.Action;
 import btrplace.plan.SolverException;
 import btrplace.plan.action.BootVM;
 import btrplace.solver.choco.ActionModel;
-import btrplace.solver.choco.DurationEvaluators;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
-import choco.cp.solver.CPSolver;
+import btrplace.solver.choco.SliceUtils;
 import choco.cp.solver.variables.integer.IntDomainVarAddCste;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,22 +40,15 @@ public class BootVMModel extends ActionModel {
 
     public BootVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
         super(rp, e);
-        DurationEvaluators dEvals = rp.getDurationEvaluator();
 
-        CPSolver s = rp.getSolver();
-        int d = dEvals.evaluate(BootVM.class, e);
-        if (d < 0) {
-            throw new SolverException(rp.getSourceModel(), "Unable to evaluate the duration of runVM(" + e + ")");
-        }
+        int d = rp.getDurationEvaluator().evaluate(BootVM.class, e);
 
-        start = s.createBoundIntVar("", 0, rp.getEnd().getSup() - d);
+        start = rp.makeDuration("", 0, rp.getEnd().getSup() - d);
         end = new IntDomainVarAddCste(rp.getSolver(), "", getStart(), d);
-        duration = s.createIntegerConstant("", d);
-        IntDomainVar hoster = s.createEnumIntVar("", 0, rp.getNodes().length - 1);
-        IntDomainVar sDuration = s.createBoundIntVar("", d, rp.getEnd().getSup());
+        duration = rp.makeDuration("", d, d);
 
-        dSlice = new Slice("dSlice(" + e + ")", start, rp.getEnd(), sDuration, hoster);
-        rp.getSolver().post(s.eq(dSlice.getEnd(), s.plus(dSlice.getDuration(), dSlice.getStart())));
+        dSlice = new Slice("dSlice(" + e + ")", start, rp.getEnd(), rp.makeDuration(""), rp.makeHostVariable(""));
+        SliceUtils.linkMoments(rp, dSlice);
     }
 
     @Override

@@ -18,6 +18,7 @@
 
 package btrplace.solver.choco;
 
+import btrplace.plan.SolverException;
 import btrplace.plan.action.*;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
 import junit.framework.Assert;
@@ -74,12 +75,16 @@ public class DurationEvaluatorsTest {
     }
 
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testUnregister", "testRegister"})
-    public void testEvaluate() {
+    public void testEvaluate() throws SolverException {
         DurationEvaluators d = new DurationEvaluators();
         DurationEvaluator ev = new ConstantDuration(7);
         d.register(MigrateVM.class, ev);
         Assert.assertEquals(d.evaluate(MigrateVM.class, UUID.randomUUID()), 7);
+    }
 
+    @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testUnregister"}, expectedExceptions = {SolverException.class})
+    public void testBadEvaluate() throws SolverException {
+        DurationEvaluators d = new DurationEvaluators();
         d.unregister(MigrateVM.class);
         Assert.assertEquals(d.evaluate(MigrateVM.class, UUID.randomUUID()), -1);
     }

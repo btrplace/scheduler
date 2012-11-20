@@ -20,8 +20,10 @@ package btrplace.solver.choco.actionModel;
 
 import btrplace.plan.Action;
 import btrplace.plan.SolverException;
+import btrplace.plan.action.ShutdownVM;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.Slice;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +38,12 @@ public class ShutdownVMModel extends ActionModel {
 
     public ShutdownVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
         super(rp, e);
+
+        int d = rp.getDurationEvaluator().evaluate(ShutdownVM.class, e);
+        start = getStart();
+        duration = rp.makeDuration("", d, d);
+        end = duration;
+        this.cSlice = new Slice("", rp.getStart(), end, duration, rp.makeCurrentHost("", e));
     }
 
     @Override

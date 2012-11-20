@@ -20,6 +20,7 @@ package btrplace.solver.choco;
 
 import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.SolverException;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -208,4 +209,14 @@ public interface ReconfigurationProblem {
     ReconfigurationPlan extractSolution();
 
     CPSolver getSolver();
+
+    IntDomainVar makeHostVariable(String n);
+
+    IntDomainVar makeHostVariable(String n, int nIdx) throws SolverException;
+
+    IntDomainVar makeCurrentHost(String n, UUID vmId) throws SolverException;
+
+    IntDomainVar makeDuration(String n);
+
+    IntDomainVar makeDuration(String n, int lb, int ub) throws SolverException;
 }

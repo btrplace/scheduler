@@ -24,6 +24,7 @@ import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Spread;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.choco.*;
+import btrplace.solver.choco.chocoUtil.ChocoUtils;
 import choco.cp.solver.constraints.reified.ReifiedFactory;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;

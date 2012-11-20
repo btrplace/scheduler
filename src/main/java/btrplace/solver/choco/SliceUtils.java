@@ -18,6 +18,7 @@
 
 package btrplace.solver.choco;
 
+import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -25,9 +26,9 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  *
  * @author Fabien Hermenier
  */
-public final class Slices {
+public final class SliceUtils {
 
-    private Slices() {
+    private SliceUtils() {
     }
 
     public static IntDomainVar[] extractHosters() {
@@ -40,5 +41,10 @@ public final class Slices {
 
     public static IntDomainVar[] extractEnds() {
         return null;
+    }
+
+    public static void linkMoments(ReconfigurationProblem rp, Slice slice) {
+        CPSolver s = rp.getSolver();
+        s.post(s.eq(slice.getEnd(), s.plus(slice.getDuration(), slice.getStart())));
     }
 }

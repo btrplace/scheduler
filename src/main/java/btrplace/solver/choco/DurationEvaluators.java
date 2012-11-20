@@ -19,6 +19,7 @@
 package btrplace.solver.choco;
 
 import btrplace.plan.Action;
+import btrplace.plan.SolverException;
 import btrplace.plan.action.*;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
 
@@ -102,11 +103,15 @@ public class DurationEvaluators {
      * @param e the element
      * @return a positive number if the evaluation succeeded. A negative number otherwise
      */
-    public int evaluate(Class<? extends Action> a, UUID e) {
+    public int evaluate(Class<? extends Action> a, UUID e) throws SolverException {
         DurationEvaluator ev = durations.get(a);
         if (ev == null) {
-            return -1;
+            throw new SolverException(null, "Unable to estimate the action duration related to '" + e + "'");
         }
-        return ev.evaluate(e);
+        int d = ev.evaluate(e);
+        if (d < 0) {
+            throw new SolverException(null, "Unable to estimate the action duration related to '" + e + "'");
+        }
+        return d;
     }
 }
