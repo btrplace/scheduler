@@ -43,6 +43,11 @@ public class ChocoSatOffline implements ChocoSatConstraint {
 
     private Offline cstr;
 
+    /**
+     * Make a new constraint.
+     *
+     * @param o the {@link SatConstraint} to rely on
+     */
     public ChocoSatOffline(Offline o) {
         this.cstr = o;
     }
@@ -79,6 +84,9 @@ public class ChocoSatOffline implements ChocoSatConstraint {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Builder associated to the constraint.
+     */
     public static class Builder implements ChocoConstraintBuilder {
         @Override
         public Class<? extends SatConstraint> getKey() {

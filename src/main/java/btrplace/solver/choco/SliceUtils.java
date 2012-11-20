@@ -22,7 +22,6 @@ import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Utility methods to extract variables from slices.
@@ -34,7 +33,13 @@ public final class SliceUtils {
     private SliceUtils() {
     }
 
-    public static IntDomainVar[] extractHosters(List<Slice> slices) {
+    /**
+     * Extract and merge the variables indicating the slices hosts.
+     *
+     * @param slices the slices
+     * @return an array containing every hosting variable
+     */
+    public static IntDomainVar[] extractHosters(Collection<Slice> slices) {
         IntDomainVar[] vs = new IntDomainVar[slices.size()];
         int i = 0;
         for (Slice s : slices) {
@@ -43,6 +48,12 @@ public final class SliceUtils {
         return vs;
     }
 
+    /**
+     * Extract and merge the variables indicating the slices start moment.
+     *
+     * @param slices the slices
+     * @return an array containing every start variable
+     */
     public static IntDomainVar[] extractStarts(Collection<Slice> slices) {
         IntDomainVar[] vs = new IntDomainVar[slices.size()];
         int i = 0;
@@ -52,6 +63,12 @@ public final class SliceUtils {
         return vs;
     }
 
+    /**
+     * Extract and merge the variables indicating the slices end moment.
+     *
+     * @param slices the slices
+     * @return an array containing every end variable
+     */
     public static IntDomainVar[] extractEnds(Collection<Slice> slices) {
         IntDomainVar[] vs = new IntDomainVar[slices.size()];
         int i = 0;

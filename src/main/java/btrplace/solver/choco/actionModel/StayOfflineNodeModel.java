@@ -34,6 +34,13 @@ import java.util.UUID;
  */
 public class StayOfflineNodeModel extends ActionModel {
 
+    /**
+     * Make a new model.
+     *
+     * @param rp the RP to use as a basis.
+     * @param e  the node managed by the action
+     * @throws SolverException if an error occurred
+     */
     public StayOfflineNodeModel(ReconfigurationProblem rp, UUID e) throws SolverException {
         super(rp, e);    //To change body of overridden methods use File | Settings | File Templates.
     }

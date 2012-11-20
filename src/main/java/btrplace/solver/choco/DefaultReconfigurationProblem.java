@@ -45,8 +45,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     /**
      * The maximum duration of a plan in seconds: One hour.
      */
-    public Integer DEFAULT_MAX_TIME = 3600;
-
+    public static final int DEFAULT_MAX_TIME = 3600;
 
     private Model model;
 
@@ -79,7 +78,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private IntDomainVar[] vmsCountOnNodes;
 
     /**
-     * Make a new ReconfigurationProblem that does not change the current state of the VMs
+     * Make a new ReconfigurationProblem that will not change the current state of the VMs
      * and rely on the default {@link DurationEvaluators}.
      *
      * @param m the initial model
@@ -93,11 +92,12 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     /**
-     * Make a new RP that does not change the current state of the VMs.
+     * Make a new RP that will not change the current state of the VMs.
+     * A custom {@link DurationEvaluators} is however provided
      *
      * @param m     the initial model
-     * @param dEval the evaluator to use to evaluate the actions duration
-     * @throws SolverException
+     * @param dEval to evaluate the duration of every action
+     * @throws SolverException if an error occurred
      */
     public DefaultReconfigurationProblem(Model m, DurationEvaluators dEval) throws SolverException {
         this(m, dEval,
@@ -107,24 +107,45 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 new HashSet<UUID>());
     }
 
+    /**
+     * Make a new RP where the next state for every VM is indicated.
+     *
+     * @param m           the initial model
+     * @param toWait      the VMs that must be in the waiting state
+     * @param toRun       the VMs that must be in the running state
+     * @param toSleep     the VMs that must be in the sleeping state
+     * @param toTerminate the VMs that must be terminated
+     * @throws SolverException if an error occurred
+     */
     public DefaultReconfigurationProblem(Model m,
                                          Set<UUID> toWait,
                                          Set<UUID> toRun,
                                          Set<UUID> toSleep,
-                                         Set<UUID> toDestroy) throws SolverException {
-        this(m, new DurationEvaluators(), toWait, toRun, toSleep, toDestroy);
+                                         Set<UUID> toTerminate) throws SolverException {
+        this(m, new DurationEvaluators(), toWait, toRun, toSleep, toTerminate);
     }
 
+    /**
+     * Make a new RP where the next state for every VM is indicated.
+     *
+     * @param m           the initial model
+     * @param dEval       to evaluate the duration of every action
+     * @param toWait      the VMs that must be in the waiting state
+     * @param toRun       the VMs that must be in the running state
+     * @param toSleep     the VMs that must be in the sleeping state
+     * @param toTerminate the VMs that must be terminated
+     * @throws SolverException if an error occurred
+     */
     public DefaultReconfigurationProblem(Model m,
                                          DurationEvaluators dEval,
                                          Set<UUID> toWait,
                                          Set<UUID> toRun,
                                          Set<UUID> toSleep,
-                                         Set<UUID> toDestroy) throws SolverException {
+                                         Set<UUID> toTerminate) throws SolverException {
         waitings = toWait;
         runnings = toRun;
         sleepings = toSleep;
-        destroyed = toDestroy;
+        destroyed = toTerminate;
         model = m;
         durEval = dEval;
 

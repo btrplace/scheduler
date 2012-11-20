@@ -45,6 +45,13 @@ import java.util.UUID;
  */
 public class RelocatableVMModel extends ActionModel {
 
+    /**
+     * Make a new model.
+     *
+     * @param rp the RP to use as a basis.
+     * @param e  the VM managed by the action
+     * @throws SolverException if an error occurred
+     */
     public RelocatableVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
         super(rp, e);
 

@@ -28,13 +28,20 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * A fake action model that indicate the VM is waiting or sleeping and stay
- * in the current state.
+ * A fake action model that indicates the VM is waiting or sleeping and does
+ * not go in the running state.
  *
  * @author Fabien Hermenier
  */
 public class StayAwayVMModel extends ActionModel {
 
+    /**
+     * Make a new model.
+     *
+     * @param rp the RP to use as a basis.
+     * @param e  the VM managed by the action
+     * @throws SolverException if an error occurred
+     */
     public StayAwayVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
         super(rp, e);
     }

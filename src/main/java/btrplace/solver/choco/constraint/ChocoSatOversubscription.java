@@ -40,6 +40,11 @@ public class ChocoSatOversubscription implements ChocoSatConstraint {
 
     private Oversubscription cstr;
 
+    /**
+     * Make a new constraint.
+     *
+     * @param o the constraint to rely on
+     */
     public ChocoSatOversubscription(Oversubscription o) {
         cstr = o;
     }

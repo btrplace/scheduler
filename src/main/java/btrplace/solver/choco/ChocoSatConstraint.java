@@ -48,9 +48,23 @@ public interface ChocoSatConstraint {
      */
     SatConstraint getAssociatedConstraint();
 
-    public Set<UUID> getMisPlacedVMs(Model m);
+    /**
+     * Get the VMs that are supposed to be mis-placed.
+     * This set may not be minimal but will be used
+     * but it is considered good enough to be able to compute a solution
+     * by only managing these VMs.
+     *
+     * @param m the model to use to inspect the VMs.
+     * @return a set of VMs identifier that may be empty (if the constraint is satisfied)
+     */
+    Set<UUID> getMisPlacedVMs(Model m);
 
-
-    public boolean isSatisfied(ReconfigurationPlan plan);
+    /**
+     * Check if a plan satisfies the constraint.
+     *
+     * @param plan the plan to inspect
+     * @return {@code true} iff the constraint is satisfied by the plan
+     */
+    boolean isSatisfied(ReconfigurationPlan plan);
 
 }

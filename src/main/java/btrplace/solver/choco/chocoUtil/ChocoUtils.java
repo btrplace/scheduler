@@ -131,7 +131,7 @@ public final class ChocoUtils {
     }
 
     /**
-     * add a constraint, left*right==product
+     * make a constraint, left*right==product
      */
     public static void mult(Solver s, IntDomainVar left, IntDomainVar right, IntDomainVar product) {
         s.post(new TimesXYZ(left, right, product));

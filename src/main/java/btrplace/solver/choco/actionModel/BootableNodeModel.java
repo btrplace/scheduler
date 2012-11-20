@@ -41,6 +41,13 @@ import java.util.UUID;
  */
 public class BootableNodeModel extends ActionModel {
 
+    /**
+     * Make a new model.
+     *
+     * @param rp  the RP to use as a basis.
+     * @param nId the node managed by the action
+     * @throws SolverException if an error occurred
+     */
     public BootableNodeModel(ReconfigurationProblem rp, UUID nId) throws SolverException {
         super(rp, nId);
         state = rp.getSolver().createBooleanVar("");

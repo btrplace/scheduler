@@ -25,7 +25,7 @@ import java.util.UUID;
 
 /**
  * Evaluate the duration of an action on an element
- * linearly from a given resource.
+ * linearly from a given resource. The duration {@code d} is expressed as {@code d = a * rc.get(e) + b}.
  *
  * @author Fabien Hermenier
  */
@@ -37,10 +37,23 @@ public class LinearToAResourceDuration implements DurationEvaluator {
 
     private int b;
 
+    /**
+     * Make a new evaluator.
+     *
+     * @param rc the resource to consider
+     * @param a  the coefficient
+     */
     public LinearToAResourceDuration(IntResource rc, int a) {
         this(rc, a, 0);
     }
 
+    /**
+     * Make a new evaluator.
+     *
+     * @param rc the resource to consider
+     * @param a  the coefficient
+     * @param b  the initial value
+     */
     public LinearToAResourceDuration(IntResource rc, int a, int b) {
         this.rc = rc;
         this.a = a;

@@ -28,12 +28,19 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Model an action that instantiate a VM to let it into the waiting state.
+ * Model an action that instantiate a VM to put it into the waiting state.
  *
  * @author Fabien Hermenier
  */
 public class InstantiateVMModel extends ActionModel {
 
+    /**
+     * Make a new model.
+     *
+     * @param rp the RP to use as a basis.
+     * @param e  the VM managed by the action
+     * @throws SolverException if an error occurred
+     */
     public InstantiateVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
         super(rp, e);
     }

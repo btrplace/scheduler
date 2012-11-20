@@ -60,10 +60,13 @@ public class ChocoSatBanTest {
         Ban b = new Ban(sVMs, sNodes);
         mo.attach(b);
         mo.attach(new Running(m.getAllVMs()));
+        System.out.println(b);
+
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
 
         ReconfigurationPlan p = cra.solve(mo);
-        Assert.assertTrue(b.isSatisfied(p.getResult()) == SatConstraint.Sat.SATISFIED);
+        System.out.println(p);
+        Assert.assertEquals(SatConstraint.Sat.SATISFIED, b.isSatisfied(p.getResult()));
         Assert.assertEquals(3, p.size());
     }
 }

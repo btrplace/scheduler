@@ -34,6 +34,13 @@ import java.util.UUID;
  */
 public class ResumeVMModel extends ActionModel {
 
+    /**
+     * Make a new model.
+     *
+     * @param rp the RP to use as a basis.
+     * @param e  the VM managed by the action
+     * @throws SolverException if an error occurred
+     */
     public ResumeVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
         super(rp, e);
     }

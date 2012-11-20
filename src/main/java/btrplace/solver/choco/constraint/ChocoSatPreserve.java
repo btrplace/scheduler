@@ -20,79 +20,72 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.constraint.Online;
+import btrplace.model.constraint.Preserve;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.SolverException;
-import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ChocoConstraintBuilder;
 import btrplace.solver.choco.ChocoSatConstraint;
 import btrplace.solver.choco.ReconfigurationProblem;
-import choco.kernel.solver.ContradictionException;
+import btrplace.solver.choco.ResourceMapping;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 /**
- * Choco implementation of {@link btrplace.model.constraint.Online}.
+ * Choco implementation of {@link btrplace.model.constraint.Preserve}.
  *
  * @author Fabien Hermenier
  */
-public class ChocoSatOnline implements ChocoSatConstraint {
+public class ChocoSatPreserve implements ChocoSatConstraint {
 
-    private Online cstr;
+    private Preserve cstr;
 
-    /**
-     * Make a new constraint.
-     *
-     * @param o the {@link SatConstraint} to rely on
-     */
-    public ChocoSatOnline(Online o) {
-        this.cstr = o;
+    public ChocoSatPreserve(Preserve p) {
+        cstr = p;
     }
 
     @Override
     public void inject(ReconfigurationProblem rp) throws SolverException {
-        for (UUID nId : cstr.getInvolvedNodes()) {
-            int idx = rp.getNode(nId);
-            ActionModel m = rp.getNodeActions()[idx];
-            try {
-                m.getState().setVal(1);
-            } catch (ContradictionException e) {
-                throw new SolverException(rp.getSourceModel(), "Unable to force '" + nId + "' at getting online");
-            }
+        ResourceMapping map = rp.getResourceMapping(cstr.getResource());
+        if (map == null) {
+            throw new SolverException(rp.getSourceModel(), "Unable to get the resource mapper associated to '" + cstr.getResource() + "'");
         }
+        for (UUID vm : cstr.getInvolvedVMs()) {
+            int idx = rp.getVM(vm);
+            if (map.getUsage()[idx] < cstr.getAmount()) {
+                map.getUsage()[idx] = cstr.getAmount();
+            }
 
+        }
     }
 
     @Override
-    public Online getAssociatedConstraint() {
+    public SatConstraint getAssociatedConstraint() {
         return cstr;
     }
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
-        return new HashSet<UUID>();
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public boolean isSatisfied(ReconfigurationPlan plan) {
-        throw new UnsupportedOperationException();
+        return cstr.isSatisfied(plan.getResult()).equals(SatConstraint.Sat.SATISFIED);
     }
 
-
     /**
-     * Builder associated to the constraint.
+     * The builder associated to that constraint.
      */
     public static class Builder implements ChocoConstraintBuilder {
         @Override
         public Class<? extends SatConstraint> getKey() {
-            return Online.class;
+            return Preserve.class;
         }
 
         @Override
-        public ChocoSatOnline build(SatConstraint cstr) {
-            return new ChocoSatOnline((Online) cstr);
+        public ChocoSatPreserve build(SatConstraint cstr) {
+            return new ChocoSatPreserve((Preserve) cstr);
         }
     }
 }
