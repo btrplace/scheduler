@@ -38,7 +38,7 @@ import java.util.UUID;
  */
 public class ChocoSatLazySpread implements ChocoSatConstraint {
 
-    public static class ChocoLazySpreadBuilder implements ChocoConstraintBuilder {
+    public static class Builder implements ChocoConstraintBuilder {
         @Override
         public Class<? extends SatConstraint> getKey() {
             return Spread.class;

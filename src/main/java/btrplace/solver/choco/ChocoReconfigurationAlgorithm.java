@@ -56,6 +56,13 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm 
     SatConstraintMapper getSatConstraintMapper();
 
     /**
+     * Get the evaluator that is used to indicate the estimated duration of each action.
+     *
+     * @return the evaluator
+     */
+    DurationEvaluators getDurationEvaluators();
+
+    /**
      * Get statistics about the solving process
      *
      * @return some statistics

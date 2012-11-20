@@ -42,7 +42,7 @@ public class ChocoSatContinuousSpread implements ChocoSatConstraint {
 
     private Spread cstr;
 
-    public static class ChocoContinuousSpreadBuilder implements ChocoConstraintBuilder {
+    public static class Builder implements ChocoConstraintBuilder {
         @Override
         public Class<? extends SatConstraint> getKey() {
             return Spread.class;
@@ -75,10 +75,10 @@ public class ChocoSatContinuousSpread implements ChocoSatConstraint {
             UUID[] vms = onlyRunnings.toArray(new UUID[onlyRunnings.size()]);
             for (int i = 0; i < vms.length; i++) {
                 UUID vm = vms[i];
-                ActionModel aI = rp.getVMAction(rp.getVM(vm));
+                ActionModel aI = rp.getVMActions()[rp.getVM(vm)];
                 for (int j = 0; j < i; j++) {
                     UUID vmJ = vms[j];
-                    ActionModel aJ = rp.getVMAction(rp.getVM(vm));
+                    ActionModel aJ = rp.getVMActions()[rp.getVM(vm)];
                     Slice d = aI.getDSlice();
                     Slice c = aJ.getCSlice();
                     if (d != null && c != null) {

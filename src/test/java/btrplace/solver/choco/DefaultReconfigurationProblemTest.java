@@ -126,7 +126,7 @@ public class DefaultReconfigurationProblemTest {
                 new HashSet<UUID>(),
                 new HashSet<UUID>(),
                 new HashSet<UUID>());
-        ActionModel a = rp.getVMAction(0);
+        ActionModel a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMActions()[0]);
         Assert.assertEquals(InstantiateVMModel.class, a.getClass());
     }
@@ -141,7 +141,7 @@ public class DefaultReconfigurationProblemTest {
                 Collections.singleton(vm),
                 new HashSet<UUID>(),
                 new HashSet<UUID>());
-        ActionModel a = rp.getVMAction(0);
+        ActionModel a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMActions()[0]);
         Assert.assertEquals(BootVMModel.class, a.getClass());
     }
@@ -158,9 +158,9 @@ public class DefaultReconfigurationProblemTest {
                 Collections.singleton(vm),
                 new HashSet<UUID>(),
                 new HashSet<UUID>());
-        ActionModel a = rp.getVMAction(0);
+        ActionModel a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMActions()[0]);
-        Assert.assertEquals(MigratableVMModel.class, a.getClass());
+        Assert.assertEquals(RelocatableVMModel.class, a.getClass());
     }
 
     @Test
@@ -175,7 +175,7 @@ public class DefaultReconfigurationProblemTest {
                 new HashSet<UUID>(),
                 Collections.singleton(vm),
                 new HashSet<UUID>());
-        ActionModel a = rp.getVMAction(0);
+        ActionModel a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMActions()[0]);
         Assert.assertEquals(SuspendVMModel.class, a.getClass());
     }
@@ -193,7 +193,7 @@ public class DefaultReconfigurationProblemTest {
                 new HashSet<UUID>(),
                 Collections.singleton(vm)
         );
-        ActionModel a = rp.getVMAction(0);
+        ActionModel a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMActions()[0]);
         Assert.assertEquals(ShutdownVMModel.class, a.getClass());
     }
@@ -211,7 +211,7 @@ public class DefaultReconfigurationProblemTest {
                 Collections.singleton(vm),
                 new HashSet<UUID>()
         );
-        ActionModel a = rp.getVMAction(0);
+        ActionModel a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMActions()[0]);
         Assert.assertEquals(StayAwayVMModel.class, a.getClass());
     }
@@ -229,7 +229,7 @@ public class DefaultReconfigurationProblemTest {
                 new HashSet<UUID>(),
                 new HashSet<UUID>()
         );
-        ActionModel a = rp.getVMAction(0);
+        ActionModel a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMActions()[0]);
         Assert.assertEquals(ResumeVMModel.class, a.getClass());
     }
@@ -245,7 +245,7 @@ public class DefaultReconfigurationProblemTest {
                 new HashSet<UUID>(),
                 new HashSet<UUID>()
         );
-        ActionModel a = rp.getNodeAction(0);
+        ActionModel a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getNodeActions()[0]);
         Assert.assertEquals(ShutdownableNodeModel.class, a.getClass());
     }
@@ -261,7 +261,7 @@ public class DefaultReconfigurationProblemTest {
                 new HashSet<UUID>(),
                 new HashSet<UUID>()
         );
-        ActionModel a = rp.getNodeAction(0);
+        ActionModel a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getNodeActions()[0]);
         Assert.assertEquals(BootableNodeModel.class, a.getClass());
     }

@@ -22,20 +22,37 @@ import btrplace.plan.Action;
 import btrplace.plan.SolverException;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.Slice;
+import choco.cp.solver.CPSolver;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 /**
- * Model an action that allow a VM to be migrated if necessary.
- *
- * @author Fabien Hermenier
+ * A model for a running VM that stay online.
  */
-public class MigratableVMModel extends ActionModel {
+public class StayRunningVMModel extends ActionModel {
 
-    public MigratableVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
+    public StayRunningVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
         super(rp, e);
+
+        CPSolver s = rp.getSolver();
+        boolean neadIncrease = true; //TODO: How to get resource changes ?
+        IntDomainVar host = rp.makeCurrentHost("", e);
+        if (neadIncrease) {
+            cSlice = new Slice("", rp.getStart(), rp.getEnd(), rp.getEnd(), host);
+            dSlice = new Slice("", rp.getEnd(), rp.getEnd(), rp.makeDuration("", 0, 0), host);
+        } else {
+            cSlice = new Slice("", rp.getStart(), rp.getStart(), rp.getStart(), host);
+            dSlice = new Slice("", rp.getStart(), rp.getEnd(), rp.getEnd(), host);
+        }
+        end = dSlice.getStart();
+        start = cSlice.getEnd();
+        cost = s.createIntegerConstant("", 0);
+        duration = cost;
+        s.post(s.eq(this.end, this.start));
     }
 
     @Override

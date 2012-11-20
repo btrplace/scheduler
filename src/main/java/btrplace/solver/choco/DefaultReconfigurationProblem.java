@@ -171,7 +171,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 if (map.getSleepingVMs().contains(vmId)) {
                     vmActions[i] = new ResumeVMModel(this, vmId);
                 } else if (map.getRunningVMs().contains(vmId)) {
-                    vmActions[i] = new MigratableVMModel(this, vmId);
+                    vmActions[i] = new RelocatableVMModel(this, vmId);
                 } else if (map.getWaitingVMs().contains(vmId)) {
                     vmActions[i] = new BootVMModel(this, vmId);
                 } else {
@@ -225,6 +225,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     private void makeNodeActionModels() throws SolverException {
+
         Mapping m = model.getMapping();
         nodeActions = new ActionModel[nodes.length];
         for (int i = 0; i < nodes.length; i++) {
@@ -337,18 +338,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public ActionModel getVMAction(int vmIdx) {
-        return vmActions[vmIdx];
-    }
-
-    @Override
     public ActionModel[] getNodeActions() {
         return nodeActions;
-    }
-
-    @Override
-    public ActionModel getNodeAction(int nId) {
-        return nodeActions[nId];
     }
 
     @Override
@@ -409,24 +400,21 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public IntDomainVar makeHostVariable(String n, int idx) throws SolverException {
-        if (idx < 0 || idx >= nodes.length) {
-            throw new SolverException(model, "Unable to create host variable '" + n + "': out of bounds");
-        }
-        return solver.makeConstantIntVar(n, idx);
-    }
-
-    @Override
     public IntDomainVar makeCurrentHost(String n, UUID vmId) throws SolverException {
         int idx = getVM(vmId);
         if (idx < 0) {
             throw new SolverException(model, "Unknown VM '" + vmId + "'");
         }
-        int loc = getCurrentVMLocation(idx);
-        if (loc < 0) {
-            throw new SolverException(model, "Unknown current location for VM '" + vmId + "'");
+        return makeCurrentNode(n, model.getMapping().getVMLocation(vmId));
+    }
+
+    @Override
+    public IntDomainVar makeCurrentNode(String n, UUID nId) throws SolverException {
+        int idx = getNode(nId);
+        if (idx < 0) {
+            throw new SolverException(model, "Unknown node '" + nId + "'");
         }
-        return solver.makeConstantIntVar(n, loc);
+        return solver.makeConstantIntVar(n, idx);
     }
 
     @Override

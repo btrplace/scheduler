@@ -49,7 +49,7 @@ public class SatConstraintMapperTest {
     public void testGetBuilder() {
         SatConstraintMapper map = new SatConstraintMapper();
         ChocoConstraintBuilder b = map.getBuilder(Spread.class);
-        Assert.assertEquals(b.getClass(), ChocoSatContinuousSpread.ChocoContinuousSpreadBuilder.class);
+        Assert.assertEquals(b.getClass(), ChocoSatContinuousSpread.Builder.class);
 
         Assert.assertNull(map.getBuilder(Fence.class));
     }
@@ -66,11 +66,11 @@ public class SatConstraintMapperTest {
     public void testRegister() {
         SatConstraintMapper map = new SatConstraintMapper();
         map.unregister(Spread.class);
-        ChocoSatLazySpread.ChocoLazySpreadBuilder cb = new ChocoSatLazySpread.ChocoLazySpreadBuilder();
+        ChocoSatLazySpread.Builder cb = new ChocoSatLazySpread.Builder();
         Assert.assertTrue(map.register(cb));
         Assert.assertEquals(map.getBuilder(Spread.class), cb);
 
-        ChocoSatContinuousSpread.ChocoContinuousSpreadBuilder cb2 = new ChocoSatContinuousSpread.ChocoContinuousSpreadBuilder();
+        ChocoSatContinuousSpread.Builder cb2 = new ChocoSatContinuousSpread.Builder();
         Assert.assertFalse(map.register(cb2));
         Assert.assertEquals(map.getBuilder(Spread.class), cb2);
     }
@@ -83,7 +83,7 @@ public class SatConstraintMapperTest {
         Assert.assertTrue(c.getClass().equals(ChocoSatContinuousSpread.class));
 
         map.unregister(Spread.class);
-        ChocoSatLazySpread.ChocoLazySpreadBuilder cb = new ChocoSatLazySpread.ChocoLazySpreadBuilder();
+        ChocoSatLazySpread.Builder cb = new ChocoSatLazySpread.Builder();
         map.register(cb);
         c = map.map(s);
         Assert.assertTrue(c.getClass().equals(ChocoSatLazySpread.class));

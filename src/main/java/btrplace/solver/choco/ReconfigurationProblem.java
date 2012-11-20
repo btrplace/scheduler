@@ -150,14 +150,6 @@ public interface ReconfigurationProblem {
     ActionModel[] getVMActions();
 
     /**
-     * Get the action associated to a virtual machine.
-     *
-     * @param vmIdx the index of the virtual machine
-     * @return the action associated to the virtual machine.
-     */
-    ActionModel getVMAction(int vmIdx);
-
-    /**
      * Get all the actions associated to a list of virtual machines.
      *
      * @param id the virtual machines
@@ -172,14 +164,6 @@ public interface ReconfigurationProblem {
      * @return a list of actions.
      */
     ActionModel[] getNodeActions();
-
-    /**
-     * Get the action associated to a node.
-     *
-     * @param nId the node index
-     * @return the associated action, may be null
-     */
-    ActionModel getNodeAction(int nId);
 
     /**
      * Get the evaluator to estimate the duration of the actions.
@@ -208,15 +192,59 @@ public interface ReconfigurationProblem {
      */
     ReconfigurationPlan extractSolution();
 
+    /**
+     * Get the CPSolver used to model this problem.
+     *
+     * @return the CPSolver
+     */
     CPSolver getSolver();
 
+    /**
+     * Create a variable that indicate the placement of an element on a node.
+     *
+     * @param n the variable label
+     * @return a variable
+     */
     IntDomainVar makeHostVariable(String n);
 
-    IntDomainVar makeHostVariable(String n, int nIdx) throws SolverException;
-
+    /**
+     * Create a variable that indicate the current placement of a VM.
+     * The variable is then already instantiated
+     *
+     * @param n    the variable label
+     * @param vmId the VM identifier
+     * @return the created variable
+     * @throws SolverException if an error occurred while creating the variable
+     */
     IntDomainVar makeCurrentHost(String n, UUID vmId) throws SolverException;
 
+    /**
+     * Create a variable that indicate a given node.
+     * The variable is then already instantiated
+     *
+     * @param n   the variable label
+     * @param nId the node identifier
+     * @return the created variable
+     * @throws SolverException if an error occurred while creating the variable
+     */
+    IntDomainVar makeCurrentNode(String n, UUID nId) throws SolverException;
+
+    /**
+     * Create a variable denoting a duration.
+     *
+     * @param n the variable label
+     * @return the created variable.
+     */
     IntDomainVar makeDuration(String n);
 
+    /**
+     * Create a variable that indicate a moment.
+     *
+     * @param n  the variable label
+     * @param lb the variable lower bound
+     * @param ub the variable upper bound
+     * @return the created variable with a upper-bound necessarily lesser than {@code getEnd().getSup()}
+     * @throws SolverException if the bounds are not valid
+     */
     IntDomainVar makeDuration(String n, int lb, int ub) throws SolverException;
 }

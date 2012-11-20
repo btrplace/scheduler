@@ -299,7 +299,6 @@ public class BinPacking extends AbstractLargeIntSConstraint {
             for (int b = availableBins.nextSetBit(0); b >= 0; b = availableBins.nextSetBit(b + 1)) {
                 noFixPoint |= filterLoadInf(b, Math.max(bRLoads[b].get(), (int) sumISizes - sumLoadSup.get() + loads[b].getSup()));
                 noFixPoint |= filterLoadSup(b, Math.min(bTLoads[b].get(), (int) sumISizes - sumLoadInf.get() + loads[b].getInf()));
-                //if (bigItemsPolicy == BigItemsPolicy.DYNAMIC) noFixPoint |= bigItemsKnapsackAdditionalFiltering(b);
                 noFixPoint |= propagateKnapsack(b);
             }
         }
@@ -324,98 +323,6 @@ public class BinPacking extends AbstractLargeIntSConstraint {
         this.sumLoadInf.set(sumLoadInf);
         this.sumLoadSup.set(sumLoadSup);
     }
-
-//@Override
-///**
-// * on loads variables: update sum of the bin load LBs + UBs, check it against sumItemSizes, then delay propagation
-// */
-//public void awakeOnInst(int varIdx) throws ContradictionException {
-//	awakeOnBounds(varIdx);
-//}
-//
-//@Override
-///**
-// * on loads variables: update sum of the bin load LBs + UBs, check it against sumItemSizes, then delay propagation
-// */
-//public void awakeOnBounds(int varIdx) throws ContradictionException {
-//	varIdx -= bins.length;
-//	int oldInf = loads[varIdx].getInf();
-//	int oldSup = loads[varIdx].getSup();
-//	DisposableIntIterator it = loads[varIdx].getDomain().getDeltaIterator();
-//	try {
-//		while (it.hasNext()) {
-//			int v = it.next();
-//			if (v<oldInf) {
-//				oldInf = v;
-//			} else if (v>oldSup) {
-//				oldSup = v;
-//			}
-//		}
-//	} finally {
-//		it.dispose();
-//	}
-//	int varInf = loads[varIdx].getInf()-oldInf;
-//	if (varInf > 0) {
-//		sumLoadInf.add(varInf);
-//		if (sumISizes < sumLoadInf.get()) {
-//			fail();
-//		}
-//	}
-//	int varSup = loads[varIdx].getSup()-oldSup;
-//	if (varSup < 0) {
-//		sumLoadSup.add(varSup);
-//		if (sumISizes > sumLoadSup.get()) {
-//			fail();
-//		}
-//	}
-//	this.constAwake(false);
-//}
-//
-//    @Override
-//    /**
-//     * on loads variables: update sum of the bin load LBs, check it against sumItemSizes, then delay propagation
-//     */
-//    public void awakeOnInf(int varIdx) throws ContradictionException {
-//        varIdx -= bins.length;
-//	    if (loads[varIdx].isInstantiated()) return;
-//        int oldInf = Choco.MAX_UPPER_BOUND;
-//        DisposableIntIterator it = loads[varIdx].getDomain().getDeltaIterator();
-//        try {
-//            while (it.hasNext()) {
-//                oldInf = Math.min(oldInf, it.next());
-//            }
-//        } finally {
-//            it.dispose();
-//        }
-//        int r = sumLoadInf.add(loads[varIdx].getInf() - oldInf);
-//        if (sumISizes < r) {
-//            fail();
-//        }
-//        this.constAwake(false);
-//    }
-//
-//    @Override
-//    /**
-//     * on loads variables: update sum of the bin load UBs, check it against sumItemSizes, then delay propagation
-//     */
-//    public void awakeOnSup(int varIdx) throws ContradictionException {
-//        varIdx -= bins.length;
-//	    if (loads[varIdx].isInstantiated()) return;
-//        int oldSup = Choco.MIN_LOWER_BOUND;
-//        DisposableIntIterator it = loads[varIdx].getDomain().getDeltaIterator();
-//        try {
-//            while (it.hasNext()) {
-//                oldSup = Math.max(oldSup, it.next());
-//            }
-//        } finally {
-//            it.dispose();
-//        }
-//        int r = sumLoadSup.add(loads[varIdx].getSup() - oldSup);
-//        if (sumISizes > r) {
-//            fail();
-//        }
-//        this.constAwake(false);
-//    }
 
     /**
      * on loads variables: delay propagation

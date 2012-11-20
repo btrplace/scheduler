@@ -139,6 +139,11 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     @Override
+    public DurationEvaluators getDurationEvaluators() {
+        return durationEvaluators;
+    }
+
+    @Override
     public SolvingStatistics getSolvingStatistics() {
         if (rp == null) {
             return new SolvingStatistics(0, 0, 0, false);

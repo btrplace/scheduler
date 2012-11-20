@@ -21,98 +21,73 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.constraint.Ban;
+import btrplace.model.constraint.Offline;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.SolverException;
+import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ChocoConstraintBuilder;
 import btrplace.solver.choco.ChocoSatConstraint;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.Slice;
+import choco.kernel.solver.ContradictionException;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 /**
- * Choco implementation of the constraint {@link Ban}.
+ * Choco implementation of {@link Offline}.
  *
  * @author Fabien Hermenier
  */
-public class ChocoSatBan implements ChocoSatConstraint {
+public class ChocoSatOffline implements ChocoSatConstraint {
 
-    private Ban ban;
+    private Offline cstr;
 
-    /**
-     * Make a new constraint.
-     *
-     * @param b the ban constraint to rely on
-     */
-    public ChocoSatBan(Ban b) {
-        ban = b;
+    public ChocoSatOffline(Offline o) {
+        this.cstr = o;
     }
 
     @Override
     public void inject(ReconfigurationProblem rp) throws SolverException {
-        Set<UUID> nodes = ban.getInvolvedNodes();
-        Set<UUID> vms = ban.getInvolvedVMs();
-        int[] nodesIdx = new int[nodes.size()];
-        int i = 0;
-        for (UUID n : ban.getInvolvedNodes()) {
-            nodesIdx[i++] = rp.getNode(n);
-        }
-
-        for (UUID vm : vms) {
-            if (rp.getFutureRunningVMs().contains(vm)) {
-                Slice t = rp.getVMActions()[rp.getVM(vm)].getDSlice();
-                if (t != null) {
-                    for (int x : nodesIdx) {
-                        try {
-                            t.getHoster().remVal(x);
-                        } catch (Exception e) {
-                            throw new SolverException(null, "Unable to disallow VM '" + vm + "' to be running on '" + rp.getNode(x) + "'");
-                        }
-                    }
-                }
+        for (UUID nId : cstr.getInvolvedNodes()) {
+            int idx = rp.getNode(nId);
+            ActionModel m = rp.getNodeActions()[idx];
+            try {
+                m.getState().setVal(0);
+            } catch (ContradictionException e) {
+                throw new SolverException(rp.getSourceModel(), "Unable to force '" + nId + "' at getting offline");
             }
         }
+
     }
 
     @Override
-    public Ban getAssociatedConstraint() {
-        return ban;
+    public Offline getAssociatedConstraint() {
+        return cstr;
     }
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
-        Mapping map = m.getMapping();
-
+        Mapping mapping = m.getMapping();
         Set<UUID> bad = new HashSet<UUID>();
-        for (UUID vm : ban.getInvolvedVMs()) {
-            if (map.getRunningVMs().contains(vm) && ban.getInvolvedNodes().contains(map.getVMLocation(vm))) {
-                bad.add(vm);
-            }
-        }
+        bad.addAll(mapping.getRunningVMs(cstr.getInvolvedNodes()));
         return bad;
     }
 
     @Override
     public boolean isSatisfied(ReconfigurationPlan plan) {
-        return ban.isSatisfied(plan.getResult()).equals(SatConstraint.Sat.SATISFIED);
+        throw new UnsupportedOperationException();
     }
 
-    /**
-     * Builder associated to the constraint.
-     */
     public static class Builder implements ChocoConstraintBuilder {
         @Override
         public Class<? extends SatConstraint> getKey() {
-            return Ban.class;
+            return Offline.class;
         }
 
         @Override
-        public ChocoSatBan build(SatConstraint cstr) {
-            return new ChocoSatBan((Ban) cstr);
+        public ChocoSatOffline build(SatConstraint cstr) {
+            return new ChocoSatOffline((Offline) cstr);
         }
     }
-
 }
