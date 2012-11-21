@@ -23,8 +23,7 @@ import btrplace.plan.SolverException;
 import btrplace.plan.action.BootVM;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.Slice;
-import btrplace.solver.choco.SliceUtils;
+import btrplace.solver.choco.SliceBuilder;
 import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 
 import java.util.ArrayList;
@@ -50,12 +49,16 @@ public class BootVMModel extends ActionModel {
 
         int d = rp.getDurationEvaluator().evaluate(BootVM.class, e);
 
-        start = rp.makeDuration("", 0, rp.getEnd().getSup() - d);
-        end = new IntDomainVarAddCste(rp.getSolver(), "", getStart(), d);
-        duration = rp.makeDuration("", d, d);
+        start = rp.makeDuration(rp.makeVarLabel("bootVM_start(" + e + ")"), 0, rp.getEnd().getSup() - d);
+        end = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel("bootVM_end(" + e + ")"), getStart(), d);
+        duration = rp.makeDuration(rp.makeVarLabel("bootVM_duration(" + e + ")"), d, d);
+        dSlice = new SliceBuilder(rp, e).setStart(start)
+                .setDuration(rp.makeDuration(rp.makeVarLabel("slice_duration(" + e + ")"), d, rp.getEnd().getSup()))
+                .setExclusive(false)
+                .build();
+        cost = end;
 
-        dSlice = new Slice("dSlice(" + e + ")", e, start, rp.getEnd(), rp.makeDuration(""), rp.makeHostVariable(""), rp.getSolver().createBooleanVar(""));
-        SliceUtils.linkMoments(rp, dSlice);
+
     }
 
     @Override

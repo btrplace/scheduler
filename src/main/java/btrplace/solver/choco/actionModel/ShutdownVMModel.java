@@ -23,7 +23,8 @@ import btrplace.plan.SolverException;
 import btrplace.plan.action.ShutdownVM;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.Slice;
+import btrplace.solver.choco.SliceBuilder;
+import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,14 +48,25 @@ public class ShutdownVMModel extends ActionModel {
         super(rp, e);
 
         int d = rp.getDurationEvaluator().evaluate(ShutdownVM.class, e);
-        start = getStart();
-        duration = rp.makeDuration("", d, d);
-        end = duration;
-        this.cSlice = new Slice("", e, rp.getStart(), end, duration, rp.makeCurrentHost("", e), rp.getSolver().createBooleanVar(""));
+
+        duration = rp.getSolver().createIntegerConstant("", d);
+        this.cSlice = new SliceBuilder(rp, e).setHoster(rp.getCurrentVMLocation(rp.getVM(e)))
+                .setEnd(rp.makeDuration("", d, rp.getEnd().getSup()))
+                .setExclusive(false)
+                .build();
+
+        end = cSlice.getEnd();
+        cost = end;
+        start = new IntDomainVarAddCste(rp.getSolver(), "", end, -d);
     }
 
     @Override
     public List<Action> getResultingActions(ReconfigurationProblem rp) {
-        return new ArrayList<Action>();
+        List<Action> l = new ArrayList<Action>();
+        l.add(new ShutdownVM(getSubject(),
+                rp.getSourceModel().getMapping().getVMLocation(getSubject()),
+                start.getVal(),
+                end.getVal()));
+        return l;
     }
 }

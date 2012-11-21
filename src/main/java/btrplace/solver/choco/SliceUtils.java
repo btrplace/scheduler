@@ -18,7 +18,6 @@
 
 package btrplace.solver.choco;
 
-import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.Collection;
@@ -76,10 +75,5 @@ public final class SliceUtils {
             vs[i++] = s.getEnd();
         }
         return vs;
-    }
-
-    public static void linkMoments(ReconfigurationProblem rp, Slice slice) {
-        CPSolver s = rp.getSolver();
-        s.post(s.eq(slice.getEnd(), s.plus(slice.getDuration(), slice.getStart())));
     }
 }

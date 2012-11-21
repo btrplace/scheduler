@@ -52,7 +52,8 @@ public abstract class ActionModel {
     /**
      * Make a new action on an element.
      *
-     * @param e the element
+     * @param rp the current problem
+     * @param e  the element
      */
     public ActionModel(ReconfigurationProblem rp, UUID e) {
         this.rp = rp;

@@ -23,8 +23,7 @@ import btrplace.plan.SolverException;
 import btrplace.plan.action.ShutdownNode;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.Slice;
-import btrplace.solver.choco.SliceUtils;
+import btrplace.solver.choco.SliceBuilder;
 import btrplace.solver.choco.chocoUtil.FastIFFEq;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import choco.cp.solver.CPSolver;
@@ -51,7 +50,7 @@ public class ShutdownableNodeModel extends ActionModel {
      */
     public ShutdownableNodeModel(ReconfigurationProblem rp, UUID e) throws SolverException {
         super(rp, e);
-        state = rp.getSolver().createBooleanVar("");
+        state = rp.getSolver().createBooleanVar(rp.makeVarLabel("shutdownNode_state(" + e + ")"));
 
         CPSolver s = rp.getSolver();
         int d = rp.getDurationEvaluator().evaluate(ShutdownNode.class, e);
@@ -59,16 +58,16 @@ public class ShutdownableNodeModel extends ActionModel {
         duration = s.createEnumIntVar("", new int[]{0, d});
 
 
-        //A dslice without height to be ignored by the packing constraint. So it does not disallow to
-        //have other d-slices on it. But required to be handled by the scheduling problem.
-        this.dSlice = new Slice("", e, rp.makeDuration(""), rp.getEnd(), duration, rp.makeCurrentNode("", e), s.createBooleanVar(""));
+        this.dSlice = new SliceBuilder(rp, e)
+                .setStart(rp.makeDuration(rp.makeVarLabel("slice_start(" + e + ")")))
+                .setHoster(rp.getNode(e))
+                .build();
 
-        end = rp.makeDuration("");
+        end = rp.makeDuration(rp.makeVarLabel("shutdownNode_end(" + e + ")"));
+
         start = dSlice.getStart();
         s.post(s.eq(end, s.plus(start, duration)));
         //The future state is uncertain yet
-        state = s.createBooleanVar("");
-
 
         IntDomainVar isOffline = dSlice.isExclusive(); //offline means there will be an exclusive d-Slice
         s.post(s.neq(isOffline, state)); //Cannot rely on BoolVarNot cause it is not compatible with the eq() below
@@ -82,12 +81,11 @@ public class ShutdownableNodeModel extends ActionModel {
 
         s.post(new FastImpliesEq(isOffline, rp.getVMsCountOnNodes()[rp.getNode(e)], 0)); //Packing stuff; isOffline -> mem == 0
 
-        cost = rp.makeDuration("");
+        cost = rp.makeDuration(rp.makeVarLabel("shutdownNode_cost(" + e + ")"));
         s.post(new TimesXYZ(end, isOffline, cost));
 
 
         //The end of the action is 'd' seconds after starting the d-slice
-        SliceUtils.linkMoments(rp, dSlice);
     }
 
 

@@ -22,7 +22,7 @@ import btrplace.plan.Action;
 import btrplace.plan.SolverException;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.Slice;
+import btrplace.solver.choco.SliceBuilder;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -49,17 +49,26 @@ public class StayRunningVMModel extends ActionModel {
         boolean neadIncrease = true; //TODO: How to get resource changes ?
         IntDomainVar host = rp.makeCurrentHost("", e);
         if (neadIncrease) {
-            cSlice = new Slice("", e, rp.getStart(), rp.getEnd(), rp.getEnd(), host, s.createIntegerConstant("", 0));
-            dSlice = new Slice("", e, rp.getEnd(), rp.getEnd(), rp.makeDuration("", 0, 0), host, s.createIntegerConstant("", 0));
+            cSlice = new SliceBuilder(rp, e)
+                    .setHoster(host)
+                    .build();
+            dSlice = new SliceBuilder(rp, e)
+                    .setStart(rp.getEnd())
+                    .setHoster(host)
+                    .build();
         } else {
-            cSlice = new Slice("", e, rp.getStart(), rp.getStart(), rp.getStart(), host, s.createIntegerConstant("", 0));
-            dSlice = new Slice("", e, rp.getStart(), rp.getEnd(), rp.getEnd(), host, s.createIntegerConstant("", 0));
+            cSlice = new SliceBuilder(rp, e)
+                    .setEnd(rp.getStart())
+                    .setHoster(host)
+                    .build();
+            dSlice = new SliceBuilder(rp, e)
+                    .setHoster(host)
+                    .build();
         }
-        end = dSlice.getStart();
-        start = cSlice.getEnd();
+        end = rp.getStart();
+        start = rp.getStart();
         cost = s.createIntegerConstant("", 0);
         duration = cost;
-        s.post(s.eq(this.end, this.start));
     }
 
     @Override

@@ -24,6 +24,7 @@ import java.util.UUID;
 
 /**
  * Model a period where an element is hosted on a node.
+ * {@link SliceBuilder} may be used to ease the creation of Slices.
  *
  * @author Fabien Hermenier
  */
@@ -37,36 +38,27 @@ public class Slice {
 
     private IntDomainVar duration;
 
-    private String name;
-
     private IntDomainVar excl;
 
     private UUID subject;
 
-    /**
-     * Make a new period.
-     *
-     * @param n  the slice label
-     * @param s  the subject involved in the slice
-     * @param st the moment the slice starts
-     * @param ed the moment the slice ends
-     * @param d  the duration of the slice
-     * @param h  the slice' host
-     * @param ex a boolean variable to indicate if the slice is exclusive or not
-     */
-    public Slice(String n, UUID s, IntDomainVar st, IntDomainVar ed, IntDomainVar d, IntDomainVar h, IntDomainVar ex) {
-        this.name = n;
+    private ReconfigurationProblem rp;
+
+    public Slice(ReconfigurationProblem rp, UUID s, IntDomainVar st, IntDomainVar ed, IntDomainVar dur, IntDomainVar h, IntDomainVar excl) {
+
+        this.rp = rp;
         this.start = st;
         this.end = ed;
-        this.duration = d;
+        this.subject = s;
         this.hoster = h;
-        this.excl = ex;
+        this.excl = excl;
+        this.duration = dur;
     }
 
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        b.append(name).append("{from=");
+        b.append(subject).append("{from=");
         if (getStart().isInstantiated()) {
             b.append(getStart().getVal());
         } else {

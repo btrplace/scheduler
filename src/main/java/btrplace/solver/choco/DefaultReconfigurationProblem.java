@@ -42,6 +42,7 @@ import java.util.*;
  */
 public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
+    private boolean useLabels = false;
     /**
      * The maximum duration of a plan in seconds: One hour.
      */
@@ -153,7 +154,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         dSlices = new ArrayList<Slice>();
 
         solver = new CPSolver();
-        start = solver.makeConstantIntVar(0);
+        start = solver.makeConstantIntVar("start", 0);
         end = solver.createBoundIntVar("end", 0, DEFAULT_MAX_TIME);
 
         solver.post(solver.geq(end, start));
@@ -505,5 +506,19 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             throw new SolverException(model, "Unable to create duration '" + n + "': invalid bounds");
         }
         return solver.createBoundIntVar(n, lb, ub < end.getSup() ? ub : end.getSup());
+    }
+
+    @Override
+    public void labelVariables(boolean b) {
+        useLabels = b;
+    }
+
+    @Override
+    public boolean areVariablesLabelled() {
+        return useLabels;
+    }
+
+    public String makeVarLabel(String lbl) {
+        return useLabels ? lbl : "";
     }
 }

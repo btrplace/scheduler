@@ -23,8 +23,7 @@ import btrplace.plan.SolverException;
 import btrplace.plan.action.MigrateVM;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.Slice;
-import btrplace.solver.choco.SliceUtils;
+import btrplace.solver.choco.SliceBuilder;
 import btrplace.solver.choco.chocoUtil.FastIFFEq;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import choco.cp.solver.CPSolver;
@@ -40,6 +39,7 @@ import java.util.UUID;
 
 /**
  * Model an action that allow a VM to be migrated if necessary.
+ * TODO: Integrate re-instantiable experiments
  *
  * @author Fabien Hermenier
  */
@@ -58,30 +58,33 @@ public class RelocatableVMModel extends ActionModel {
         int d = rp.getDurationEvaluator().evaluate(MigrateVM.class, e);
 
         CPSolver s = rp.getSolver();
-        this.cost = rp.makeDuration("");
-        duration = s.createEnumIntVar("", new int[]{0, d});
-        IntDomainVar cDuration = rp.makeDuration("");
-        cSlice = new Slice("", e, rp.getStart(), cDuration, cDuration, rp.makeCurrentHost("", e), s.createIntegerConstant("", 0));
+        cost = rp.makeDuration(rp.makeVarLabel("relocatable_cost(" + e + ")"));
+        duration = s.createEnumIntVar(rp.makeVarLabel("relocatable_duration(" + e + ")"), new int[]{0, d});
+        cSlice = new SliceBuilder(rp, e)
+                .setHoster(rp.getNode(rp.getSourceModel().getMapping().getVMLocation(e)))
+                .setEnd(rp.makeDuration(rp.makeVarLabel("cSlice_duration(" + e + ")")))
+                .setExclusive(false)
+                .build();
 
-        IntDomainVar dDuration = rp.makeDuration("");
-        dSlice = new Slice("", e, dDuration, rp.getEnd(), rp.makeDuration(""), rp.makeHostVariable(""), s.createIntegerConstant("", 0));
-        IntDomainVar move = s.createBooleanVar("");
+        dSlice = new SliceBuilder(rp, e)
+                .setStart(rp.makeDuration(rp.makeVarLabel("dSlice_duration(" + e + ")")))
+                .setExclusive(false)
+                .build();
+        IntDomainVar move = s.createBooleanVar(rp.makeVarLabel("relocatable_move(" + e + ")"));
         s.post(ReifiedFactory.builder(move, s.neq(cSlice.getHoster(), dSlice.getHoster()), s));
 
-        IntDomainVar stay = new BoolVarNot(s, "", (BooleanVarImpl) move);
+        IntDomainVar stay = new BoolVarNot(s, rp.makeVarLabel("relocatable_stay(" + e + ")"), (BooleanVarImpl) move);
 
         s.post(new TimesXYZ(move, cSlice.getEnd(), cost));
 
         s.post(new FastIFFEq(stay, duration, 0));
 
-        boolean increase = false;
+        boolean increase = false; //TODO: detect increasing requirements
         if (!increase) {
             s.post(new FastImpliesEq(stay, cSlice.getDuration(), 0));
         } else {
             s.post(new FastImpliesEq(stay, dSlice.getDuration(), 0));
         }
-        SliceUtils.linkMoments(rp, dSlice);
-        SliceUtils.linkMoments(rp, cSlice);
         s.post(s.leq(duration, cSlice.getDuration()));
         s.post(s.leq(duration, dSlice.getDuration()));
         start = dSlice.getStart();

@@ -20,8 +20,11 @@ package btrplace.solver.choco.actionModel;
 
 import btrplace.plan.Action;
 import btrplace.plan.SolverException;
+import btrplace.plan.action.ResumeVM;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.SliceBuilder;
+import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,10 +46,26 @@ public class ResumeVMModel extends ActionModel {
      */
     public ResumeVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
         super(rp, e);
+
+        int d = rp.getDurationEvaluator().evaluate(ResumeVM.class, e);
+
+        start = rp.makeDuration("", 0, rp.getEnd().getSup() - d);
+        end = new IntDomainVarAddCste(rp.getSolver(), "", getStart(), d);
+        duration = rp.makeDuration("", d, d);
+        dSlice = new SliceBuilder(rp, e).setStart(start)
+                .setDuration(rp.makeDuration("", d, rp.getEnd().getSup()))
+                .setExclusive(false)
+                .build();
+        cost = end;
     }
 
     @Override
     public List<Action> getResultingActions(ReconfigurationProblem rp) {
-        return new ArrayList<Action>();
+        List<Action> l = new ArrayList<Action>(1);
+        l.add(new ResumeVM(getSubject(), rp.getSourceModel().getMapping().getVMLocation(getSubject()),
+                rp.getNode(dSlice.getHoster().getVal()),
+                start.getVal(), end.getVal()));
+        return l;
+
     }
 }
