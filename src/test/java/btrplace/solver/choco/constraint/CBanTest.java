@@ -62,7 +62,7 @@ public class CBanTest {
         mo.attach(new Running(m.getAllVMs()));
 
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-
+        cra.setTimeLimit(-1);
         ReconfigurationPlan p = cra.solve(mo);
         Assert.assertEquals(SatConstraint.Sat.SATISFIED, b.isSatisfied(p.getResult()));
         Assert.assertEquals(3, p.size());
