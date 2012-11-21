@@ -42,11 +42,18 @@ public class Slice {
 
     private UUID subject;
 
-    private ReconfigurationProblem rp;
+    /**
+     * Make a new slice.
+     *
+     * @param s    the element associated to the slice
+     * @param st   the moment the slice starts
+     * @param ed   the moment the slice ends
+     * @param dur  the slice duration
+     * @param h    the slice host
+     * @param excl the exclusive status of the slice
+     */
+    public Slice(UUID s, IntDomainVar st, IntDomainVar ed, IntDomainVar dur, IntDomainVar h, IntDomainVar excl) {
 
-    public Slice(ReconfigurationProblem rp, UUID s, IntDomainVar st, IntDomainVar ed, IntDomainVar dur, IntDomainVar h, IntDomainVar excl) {
-
-        this.rp = rp;
         this.start = st;
         this.end = ed;
         this.subject = s;

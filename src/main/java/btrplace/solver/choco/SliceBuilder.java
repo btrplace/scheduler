@@ -100,7 +100,7 @@ public class SliceBuilder {
         if (duration.getSup() > rp.getEnd().getInf()) {
             rp.getSolver().post(rp.getSolver().leq(duration, rp.getEnd()));
         }
-        return new Slice(rp, e, start, end, duration, hoster, isExclusive);
+        return new Slice(e, start, end, duration, hoster, isExclusive);
     }
 
     /**

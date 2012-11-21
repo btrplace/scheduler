@@ -518,6 +518,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         return useLabels;
     }
 
+    @Override
     public String makeVarLabel(String lbl) {
         return useLabels ? lbl : "";
     }
