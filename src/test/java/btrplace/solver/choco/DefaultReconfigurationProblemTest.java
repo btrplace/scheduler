@@ -18,10 +18,7 @@
 
 package btrplace.solver.choco;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.plan.SolverException;
 import btrplace.solver.choco.actionModel.*;
 import junit.framework.Assert;
@@ -260,5 +257,25 @@ public class DefaultReconfigurationProblemTest {
         );
         ActionModel a = rp.getNodeActions()[0];
         Assert.assertEquals(BootableNodeModel.class, a.getClass());
+    }
+
+    @Test
+    public void testGetResourceMapping() throws SolverException {
+        Model m = defaultModel();
+        IntResource rc = new DefaultIntResource("cpu", 0);
+        for (UUID n : m.getMapping().getAllNodes()) {
+            rc.set(n, 4);
+        }
+
+        for (UUID vm : m.getMapping().getWaitingVMs()) {
+            rc.set(vm, 2);
+        }
+        m.attach(rc);
+        ReconfigurationProblem rp = new DefaultReconfigurationProblem(m);
+        ResourceMapping rcm = rp.getResourceMapping("cpu");
+        Assert.assertNotNull(rcm);
+        Assert.assertNull(rp.getResourceMapping("bar"));
+        Assert.assertEquals("cpu", rcm.getIdentifier());
+        Assert.assertEquals(rc, rcm.getSourceResource());
     }
 }

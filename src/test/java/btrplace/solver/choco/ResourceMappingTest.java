@@ -63,5 +63,6 @@ public class ResourceMappingTest {
         IntDomainVar vn2 = rcm.getCapacities()[rp.getNode(n2)];
         Assert.assertTrue(vn1.getInf() == 0 && vn1.getSup() == 4);
         Assert.assertTrue(vn2.getInf() == 0 && vn2.getSup() == 0);
+        Assert.assertEquals(rc, rcm.getSourceResource());
     }
 }
