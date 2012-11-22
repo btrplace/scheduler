@@ -21,13 +21,13 @@ package btrplace.solver.choco;
 import btrplace.model.*;
 import btrplace.plan.SolverException;
 import btrplace.solver.choco.actionModel.*;
-import junit.framework.Assert;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.variables.integer.IntDomainVar;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Unit tests for {@link DefaultReconfigurationProblem}.
@@ -277,5 +277,58 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertNull(rp.getResourceMapping("bar"));
         Assert.assertEquals("cpu", rcm.getIdentifier());
         Assert.assertEquals(rc, rcm.getSourceResource());
+    }
+
+    /**
+     * Check the consistency between the variables counting the number of VMs on
+     * each node, and the placement variable.
+     *
+     * @throws SolverException
+     * @throws ContradictionException
+     */
+    @Test
+    public void testVMCounting() throws SolverException, ContradictionException {
+        Model m = defaultModel();
+        Mapping map = m.getMapping().clone();
+        Set<UUID> s = new HashSet<UUID>(map.getAllVMs());
+        for (UUID vm : s) {
+            map.addWaitingVM(vm);
+        }
+        map.removeNode(nOff);
+        m = new DefaultModel(map);
+        ReconfigurationProblem rp = new DefaultReconfigurationProblem(m
+                , new HashSet<UUID>()
+                , map.getAllVMs()
+                , new HashSet<UUID>()
+                , new HashSet<UUID>());
+
+        rp.labelVariables(true);
+        Assert.assertEquals(Boolean.TRUE, rp.getSolver().solve());
+        //Restrict the capacity to 2 at most
+        try {
+            for (IntDomainVar capa : rp.getVMsCountOnNodes()) {
+                capa.setSup(5);
+            }
+        } catch (ContradictionException e) {
+            Assert.fail(e.getMessage(), e);
+        }
+
+        //Check consistency between the counting and the hoster variables
+        int[] counts = new int[map.getAllNodes().size()];
+        for (UUID n : map.getOnlineNodes()) {
+            int nIdx = rp.getNode(n);
+            counts[nIdx] = rp.getVMsCountOnNodes()[nIdx].getVal();
+        }
+        System.out.println(Arrays.toString(counts));
+        for (UUID vm : rp.getFutureRunningVMs()) {
+            ActionModel mo = rp.getVMActions()[rp.getVM(vm)];
+            int on = mo.getDSlice().getHoster().getInf();
+            System.out.println(mo + " " + on);
+            counts[on]--;
+        }
+        for (int i = 0; i < counts.length; i++) {
+            Assert.assertEquals(0, counts[i]);
+        }
+        ChocoLogging.flushLogs();
     }
 }

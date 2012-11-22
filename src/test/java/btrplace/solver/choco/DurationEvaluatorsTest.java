@@ -86,6 +86,7 @@ public class DurationEvaluatorsTest {
     public void testEvaluateUnregisteredAction() throws SolverException {
         DurationEvaluators d = new DurationEvaluators();
         d.unregister(MigrateVM.class);
+        d.evaluate(MigrateVM.class, UUID.randomUUID());
     }
 
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testRegister"}, expectedExceptions = {SolverException.class})

@@ -51,7 +51,7 @@ public class ResourceMapping {
         capacity = new IntDomainVar[nodes.length];
         usage = new int[vms.length];
         for (int i = 0; i < nodes.length; i++) {
-            capacity[i] = rp.getSolver().createBoundIntVar("", 0, rc.get(nodes[i]));
+            capacity[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("capacity('" + rc.identifier() + "', '" + rp.getNode(i) + "')"), 0, rc.get(nodes[i]));
         }
 
         for (int i = 0; i < vms.length; i++) {

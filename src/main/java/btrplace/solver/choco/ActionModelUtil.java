@@ -18,6 +18,8 @@
 
 package btrplace.solver.choco;
 
+import choco.kernel.solver.variables.integer.IntDomainVar;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,5 +63,47 @@ public final class ActionModelUtil {
             }
         }
         return slices;
+    }
+
+    /**
+     * Extract the start moments of an array of actions.
+     * The ordering is maintained
+     *
+     * @return an array of variable
+     */
+    public static IntDomainVar[] getStarts(ActionModel[] actions) {
+        IntDomainVar[] starts = new IntDomainVar[actions.length];
+        for (int i = 0; i < actions.length; i++) {
+            starts[i] = actions[i].getStart();
+        }
+        return starts;
+    }
+
+    /**
+     * Extract the end moments of an array of actions.
+     * The ordering is maintained
+     *
+     * @return an array of variable
+     */
+    public static IntDomainVar[] getEnds(ActionModel[] actions) {
+        IntDomainVar[] starts = new IntDomainVar[actions.length];
+        for (int i = 0; i < actions.length; i++) {
+            starts[i] = actions[i].getEnd();
+        }
+        return starts;
+    }
+
+    /**
+     * Extract the durations of an array of actions.
+     * The ordering is maintained
+     *
+     * @return an array of variable
+     */
+    public static IntDomainVar[] getDurations(ActionModel[] actions) {
+        IntDomainVar[] starts = new IntDomainVar[actions.length];
+        for (int i = 0; i < actions.length; i++) {
+            starts[i] = actions[i].getDuration();
+        }
+        return starts;
     }
 }
