@@ -23,6 +23,7 @@ import btrplace.plan.SolverException;
 import btrplace.plan.action.ShutdownNode;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
 import btrplace.solver.choco.chocoUtil.FastIFFEq;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
@@ -39,7 +40,19 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class ShutdownableNodeModel extends ActionModel {
+public class ShutdownableNodeModel implements ActionModel {
+
+    private UUID node;
+
+    private IntDomainVar state;
+
+    private IntDomainVar duration;
+
+    private Slice dSlice;
+
+    private IntDomainVar end;
+
+    private IntDomainVar cost;
 
     /**
      * Make a new model.
@@ -49,11 +62,11 @@ public class ShutdownableNodeModel extends ActionModel {
      * @throws SolverException if an error occurred
      */
     public ShutdownableNodeModel(ReconfigurationProblem rp, UUID e) throws SolverException {
-        super(rp, e);
+        this.node = e;
         state = rp.getSolver().createBooleanVar(rp.makeVarLabel("shutdownNode_state(" + e + ")"));
 
         CPSolver s = rp.getSolver();
-        int d = rp.getDurationEvaluator().evaluate(ShutdownNode.class, e);
+        int d = rp.getDurationEvaluators().evaluate(ShutdownNode.class, e);
         //Duration is either 0 (no shutdown) or 'd' (shutdown)
         duration = s.createEnumIntVar("", new int[]{0, d});
 
@@ -65,8 +78,7 @@ public class ShutdownableNodeModel extends ActionModel {
 
         end = rp.makeDuration(rp.makeVarLabel("shutdownNode_end(" + e + ")"));
 
-        start = dSlice.getStart();
-        s.post(s.eq(end, s.plus(start, duration)));
+        s.post(s.eq(end, s.plus(dSlice.getStart(), duration)));
         //The future state is uncertain yet
 
         IntDomainVar isOffline = dSlice.isExclusive(); //offline means there will be an exclusive d-Slice
@@ -90,11 +102,55 @@ public class ShutdownableNodeModel extends ActionModel {
 
 
     @Override
-    public List<Action> getResultingActions(ReconfigurationProblem rp) {
+    public List<Action> getResultingActions() {
         List<Action> a = new ArrayList<Action>();
         if (state.getVal() == 0) {
-            a.add(new ShutdownNode(getSubject(), start.getVal(), end.getVal()));
+            a.add(new ShutdownNode(node, dSlice.getStart().getVal(), end.getVal()));
         }
         return a;
+    }
+
+    /**
+     * Get the node manipulated by the action.
+     *
+     * @return the node identifier
+     */
+    public UUID getNode() {
+        return node;
+    }
+
+    @Override
+    public IntDomainVar getStart() {
+        return dSlice.getStart();
+    }
+
+    @Override
+    public IntDomainVar getEnd() {
+        return end;
+    }
+
+    @Override
+    public IntDomainVar getDuration() {
+        return duration;
+    }
+
+    @Override
+    public Slice getCSlice() {
+        return null;
+    }
+
+    @Override
+    public Slice getDSlice() {
+        return dSlice;
+    }
+
+    @Override
+    public IntDomainVar getGlobalCost() {
+        return cost;
+    }
+
+    @Override
+    public IntDomainVar getState() {
+        return state;
     }
 }

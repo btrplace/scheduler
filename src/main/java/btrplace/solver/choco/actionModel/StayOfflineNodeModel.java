@@ -21,7 +21,8 @@ package btrplace.solver.choco.actionModel;
 import btrplace.plan.Action;
 import btrplace.plan.SolverException;
 import btrplace.solver.choco.ActionModel;
-import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.Slice;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,21 +33,66 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class StayOfflineNodeModel extends ActionModel {
+public class StayOfflineNodeModel implements ActionModel {
+
+    private UUID node;
 
     /**
      * Make a new model.
      *
-     * @param rp the RP to use as a basis.
-     * @param e  the node managed by the action
+     * @param e the node managed by the action
      * @throws SolverException if an error occurred
      */
-    public StayOfflineNodeModel(ReconfigurationProblem rp, UUID e) throws SolverException {
-        super(rp, e);    //To change body of overridden methods use File | Settings | File Templates.
+    public StayOfflineNodeModel(UUID e) throws SolverException {
+        node = e;
     }
 
     @Override
-    public List<Action> getResultingActions(ReconfigurationProblem rp) {
+    public List<Action> getResultingActions() {
         return new ArrayList<Action>();
+    }
+
+    @Override
+    public IntDomainVar getStart() {
+        return null;
+    }
+
+    @Override
+    public IntDomainVar getEnd() {
+        return null;
+    }
+
+    @Override
+    public IntDomainVar getDuration() {
+        return null;
+    }
+
+    @Override
+    public Slice getCSlice() {
+        return null;
+    }
+
+    @Override
+    public Slice getDSlice() {
+        return null;
+    }
+
+    @Override
+    public IntDomainVar getGlobalCost() {
+        return null;
+    }
+
+    @Override
+    public IntDomainVar getState() {
+        return null;
+    }
+
+    /**
+     * Get the node manipulated by the action.
+     *
+     * @return the node identifier
+     */
+    public UUID getNode() {
+        return node;
     }
 }

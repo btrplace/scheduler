@@ -23,8 +23,10 @@ import btrplace.plan.SolverException;
 import btrplace.plan.action.ShutdownVM;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
 import choco.cp.solver.variables.integer.IntDomainVarAddCste;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +37,17 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class ShutdownVMModel extends ActionModel {
+public class ShutdownVMModel implements ActionModel {
+
+    private ReconfigurationProblem rp;
+
+    private UUID vm;
+
+    private IntDomainVar duration;
+
+    private Slice cSlice;
+
+    private IntDomainVar start;
 
     /**
      * Make a new model.
@@ -45,9 +57,10 @@ public class ShutdownVMModel extends ActionModel {
      * @throws SolverException if an error occurred
      */
     public ShutdownVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
-        super(rp, e);
+        this.rp = rp;
+        this.vm = e;
 
-        int d = rp.getDurationEvaluator().evaluate(ShutdownVM.class, e);
+        int d = rp.getDurationEvaluators().evaluate(ShutdownVM.class, e);
 
         duration = rp.getSolver().createIntegerConstant("", d);
         this.cSlice = new SliceBuilder(rp, e).setHoster(rp.getCurrentVMLocation(rp.getVM(e)))
@@ -55,18 +68,60 @@ public class ShutdownVMModel extends ActionModel {
                 .setExclusive(false)
                 .build();
 
-        end = cSlice.getEnd();
-        cost = end;
-        start = new IntDomainVarAddCste(rp.getSolver(), "", end, -d);
+        start = new IntDomainVarAddCste(rp.getSolver(), "", cSlice.getEnd(), -d);
     }
 
     @Override
-    public List<Action> getResultingActions(ReconfigurationProblem rp) {
+    public List<Action> getResultingActions() {
         List<Action> l = new ArrayList<Action>();
-        l.add(new ShutdownVM(getSubject(),
-                rp.getSourceModel().getMapping().getVMLocation(getSubject()),
+        l.add(new ShutdownVM(getVM(),
+                rp.getSourceModel().getMapping().getVMLocation(getVM()),
                 start.getVal(),
-                end.getVal()));
+                cSlice.getEnd().getVal()));
         return l;
+    }
+
+    /**
+     * Get the VM manipulated by the action.
+     *
+     * @return the VM identifier
+     */
+    public UUID getVM() {
+        return vm;
+    }
+
+    @Override
+    public IntDomainVar getStart() {
+        return start;
+    }
+
+    @Override
+    public IntDomainVar getEnd() {
+        return cSlice.getEnd();
+    }
+
+    @Override
+    public IntDomainVar getDuration() {
+        return duration;
+    }
+
+    @Override
+    public Slice getCSlice() {
+        return cSlice;
+    }
+
+    @Override
+    public Slice getDSlice() {
+        return null;
+    }
+
+    @Override
+    public IntDomainVar getGlobalCost() {
+        return cSlice.getEnd();
+    }
+
+    @Override
+    public IntDomainVar getState() {
+        return null;
     }
 }

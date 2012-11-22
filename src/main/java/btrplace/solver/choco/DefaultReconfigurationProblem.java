@@ -252,7 +252,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 } else if (!map.getAllVMs().contains(vmId)) {
                     vmActions[i] = new InstantiateVMModel(this, vmId);
                 } else if (map.getWaitingVMs().contains(vmId)) {
-                    vmActions[i] = new StayAwayVMModel(this, vmId);
+                    vmActions[i] = new StayAwayVMModel(vmId);
                 } else {
                     throw new SolverException(model, "Unable to set VM '" + vmId + "' waiting: already instantiated or unknown");
                 }
@@ -263,7 +263,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 } else if (map.getRunningVMs().contains(vmId)) {
                     vmActions[i] = new SuspendVMModel(this, vmId);
                 } else if (map.getSleepingVMs().contains(vmId)) {
-                    vmActions[i] = new StayAwayVMModel(this, vmId);
+                    vmActions[i] = new StayAwayVMModel(vmId);
                 } else {
                     throw new SolverException(model, "Unable to set VM '" + vmId + "' sleeping: should be running");
                 }
@@ -411,7 +411,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public DurationEvaluators getDurationEvaluator() {
+    public DurationEvaluators getDurationEvaluators() {
         return durEval;
     }
 
@@ -433,13 +433,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         DefaultReconfigurationPlan plan = new DefaultReconfigurationPlan(model);
         for (ActionModel action : nodeActions) {
-            for (Action a : action.getResultingActions(this)) {
+            for (Action a : action.getResultingActions()) {
                 plan.add(a);
             }
 
         }
         for (ActionModel action : vmActions) {
-            for (Action a : action.getResultingActions(this)) {
+            for (Action a : action.getResultingActions()) {
                 plan.add(a);
             }
 

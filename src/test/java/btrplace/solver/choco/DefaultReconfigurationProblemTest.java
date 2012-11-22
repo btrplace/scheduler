@@ -90,7 +90,7 @@ public class DefaultReconfigurationProblemTest {
 
         );
 
-        Assert.assertEquals(dEval, rp.getDurationEvaluator());
+        Assert.assertEquals(dEval, rp.getDurationEvaluators());
         Assert.assertEquals(rp.getFutureWaitingVMs(), toWait);
         Assert.assertEquals(rp.getFutureRunningVMs(), toRun);
         Assert.assertEquals(rp.getFutureSleepingVMs(), Collections.singleton(vm3));
@@ -112,6 +112,18 @@ public class DefaultReconfigurationProblemTest {
             Assert.assertEquals(i, rp.getNode(n));
         }
         Assert.assertEquals(-1, rp.getNode(UUID.randomUUID()));
+    }
+
+    @Test
+    public void testShortInstantiation() throws SolverException {
+        Model m = defaultModel();
+        DurationEvaluators d = new DurationEvaluators();
+        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblem(m, d);
+        Assert.assertEquals(d, rp.getDurationEvaluators());
+        Assert.assertTrue(rp.getFutureDestroyedVMs().isEmpty());
+        Assert.assertEquals(m.getMapping().getRunningVMs(), rp.getFutureRunningVMs());
+        Assert.assertEquals(m.getMapping().getSleepingVMs(), rp.getFutureSleepingVMs());
+        Assert.assertEquals(m.getMapping().getWaitingVMs(), rp.getFutureWaitingVMs());
     }
 
     @Test

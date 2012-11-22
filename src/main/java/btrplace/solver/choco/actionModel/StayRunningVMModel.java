@@ -22,8 +22,8 @@ import btrplace.plan.Action;
 import btrplace.plan.SolverException;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
-import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
@@ -31,9 +31,15 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * A model for a running VM that stay online.
+ * A model for a running VM that stay online on the same node.
  */
-public class StayRunningVMModel extends ActionModel {
+public class StayRunningVMModel implements ActionModel {
+
+    private Slice cSlice, dSlice;
+
+    private ReconfigurationProblem rp;
+
+    private UUID vm;
 
     /**
      * Make a new model.
@@ -43,9 +49,9 @@ public class StayRunningVMModel extends ActionModel {
      * @throws SolverException if an error occurred
      */
     public StayRunningVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
-        super(rp, e);
-
-        CPSolver s = rp.getSolver();
+        this.vm = e;
+        this.rp = rp;
+        //CPSolver s = rp.getSolver();
         boolean neadIncrease = true; //TODO: How to get resource changes ?
         IntDomainVar host = rp.makeCurrentHost("", e);
         if (neadIncrease) {
@@ -65,14 +71,54 @@ public class StayRunningVMModel extends ActionModel {
                     .setHoster(host)
                     .build();
         }
-        end = rp.getStart();
-        start = rp.getStart();
-        cost = s.createIntegerConstant("", 0);
-        duration = cost;
     }
 
     @Override
-    public List<Action> getResultingActions(ReconfigurationProblem rp) {
+    public List<Action> getResultingActions() {
         return new ArrayList<Action>();
+    }
+
+    @Override
+    public IntDomainVar getStart() {
+        return rp.getStart();
+    }
+
+    @Override
+    public IntDomainVar getEnd() {
+        return rp.getStart();
+    }
+
+    @Override
+    public IntDomainVar getDuration() {
+        return rp.getStart();
+    }
+
+    @Override
+    public Slice getCSlice() {
+        return cSlice;
+    }
+
+    @Override
+    public Slice getDSlice() {
+        return dSlice;
+    }
+
+    @Override
+    public IntDomainVar getGlobalCost() {
+        return rp.getStart();
+    }
+
+    @Override
+    public IntDomainVar getState() {
+        return null;
+    }
+
+    /**
+     * Get the VM manipulated by the action.
+     *
+     * @return the VM identifier
+     */
+    public UUID getVM() {
+        return vm;
     }
 }

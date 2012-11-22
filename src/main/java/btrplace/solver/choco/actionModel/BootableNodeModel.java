@@ -23,6 +23,7 @@ import btrplace.plan.SolverException;
 import btrplace.plan.action.BootNode;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
 import btrplace.solver.choco.chocoUtil.FastIFFEq;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
@@ -40,7 +41,17 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class BootableNodeModel extends ActionModel {
+public class BootableNodeModel implements ActionModel {
+
+    private Slice cSlice;
+
+    private IntDomainVar duration;
+
+    private IntDomainVar start;
+
+    private IntDomainVar state;
+
+    private UUID node;
 
     /**
      * Make a new model.
@@ -50,13 +61,12 @@ public class BootableNodeModel extends ActionModel {
      * @throws SolverException if an error occurred
      */
     public BootableNodeModel(ReconfigurationProblem rp, UUID nId) throws SolverException {
-        super(rp, nId);
-
+        node = nId;
         int nIdx = rp.getNode(nId);
         CPSolver s = rp.getSolver();
 
         //TODO: makes it consume all the resources of the node
-        int d = rp.getDurationEvaluator().evaluate(BootNode.class, nId);
+        int d = rp.getDurationEvaluators().evaluate(BootNode.class, nId);
         duration = s.createEnumIntVar(rp.makeVarLabel("bootableNode_duration(" + nId + ")"), new int[]{0, d});
 
         cSlice = new SliceBuilder(rp, nId)
@@ -64,14 +74,13 @@ public class BootableNodeModel extends ActionModel {
                 .setHoster(nIdx)
                 .build();
 
-        end = cSlice.getEnd();
-        start = new IntDomainVarAddCste(s, rp.makeVarLabel("bootableNode_start(" + nId + ")"), end, -d);
+        start = new IntDomainVarAddCste(s, rp.makeVarLabel("bootableNode_start(" + nId + ")"), cSlice.getEnd(), -d);
         //Unknown state
         state = s.createBooleanVar(rp.makeVarLabel("bootableNode_state(" + nId + ")"));
-        cost = end;
+
         //the node goes online <-> duration == d
         s.post(new FastIFFEq(state, duration, d));
-        s.post(s.leq(duration, cost));
+        s.post(s.leq(duration, cSlice.getEnd()));
         /**
          * used denotes whether or not the node is used, \ie it host running VMs
          */
@@ -81,11 +90,55 @@ public class BootableNodeModel extends ActionModel {
     }
 
     @Override
-    public List<Action> getResultingActions(ReconfigurationProblem rp) {
+    public List<Action> getResultingActions() {
         List<Action> a = new ArrayList<Action>();
         if (start.getVal() == 1) {
-            a.add(new BootNode(getSubject(), start.getVal(), end.getVal()));
+            a.add(new BootNode(node, start.getVal(), getEnd().getVal()));
         }
         return a;
+    }
+
+    @Override
+    public IntDomainVar getStart() {
+        return start;
+    }
+
+    @Override
+    public IntDomainVar getEnd() {
+        return cSlice.getEnd();
+    }
+
+    @Override
+    public IntDomainVar getDuration() {
+        return duration;
+    }
+
+    @Override
+    public Slice getCSlice() {
+        return cSlice;
+    }
+
+    @Override
+    public Slice getDSlice() {
+        return null;
+    }
+
+    /**
+     * Get the node manipulated by the action.
+     *
+     * @return the node identifier
+     */
+    public UUID getNode() {
+        return node;
+    }
+
+    @Override
+    public IntDomainVar getGlobalCost() {
+        return cSlice.getEnd();
+    }
+
+    @Override
+    public IntDomainVar getState() {
+        return state;
     }
 }

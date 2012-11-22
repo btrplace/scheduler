@@ -22,122 +22,68 @@ import btrplace.plan.Action;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Model an action.
  *
  * @author Fabien Hermenier
  */
-public abstract class ActionModel {
-
-    protected UUID subject;
-
-    protected IntDomainVar start;
-
-    protected IntDomainVar end;
-
-    protected IntDomainVar duration;
-
-    protected Slice cSlice;
-
-    protected Slice dSlice;
-
-    protected IntDomainVar cost;
-
-    protected ReconfigurationProblem rp;
-
-    protected IntDomainVar state;
-
-    /**
-     * Make a new action on an element.
-     *
-     * @param rp the current problem
-     * @param e  the element
-     */
-    public ActionModel(ReconfigurationProblem rp, UUID e) {
-        this.rp = rp;
-        this.subject = e;
-    }
+public interface ActionModel {
 
     /**
      * Get the moment the action starts.
      *
      * @return a variable that must be positive
      */
-    public IntDomainVar getStart() {
-        return start;
-    }
+    IntDomainVar getStart();
 
     /**
      * Get the moment the action ends.
      *
      * @return a variable that must be greater than {@link #getStart()}
      */
-    public IntDomainVar getEnd() {
-        return end;
-    }
+    IntDomainVar getEnd();
 
     /**
      * Get the action duration.
      *
      * @return a duration equals to {@code getEnd() - getStart()}
      */
-    public IntDomainVar getDuration() {
-        return duration;
-    }
+    IntDomainVar getDuration();
 
     /**
      * Get the slice denoting the possible current placement of the subject on a node.
      *
      * @return a {@link Slice} that may be {@code null}
      */
-    public Slice getCSlice() {
-        return cSlice;
-    }
+    Slice getCSlice();
 
     /**
      * Get the slice denoting the possible future placement off the subject
      *
      * @return a {@link Slice} that may be {@code null}
      */
-    public Slice getDSlice() {
-        return dSlice;
-    }
-
-    /**
-     * Get the subject of the slice. Usually a VM or a node.
-     *
-     * @return an element identifier
-     */
-    public UUID getSubject() {
-        return subject;
-    }
+    Slice getDSlice();
 
     /**
      * Get the cost of the action.
      *
      * @return a variable
      */
-    public IntDomainVar getGlobalCost() {
-        return cost;
-    }
+    IntDomainVar getGlobalCost();
 
     /**
      * Get the action that are generated for the model variables.
      *
-     * @param rp the current problem
      * @return a list of {@link Action} that may be empty.
      */
-    public abstract List<Action> getResultingActions(ReconfigurationProblem rp);
+    List<Action> getResultingActions();
 
     /**
      * Get the next state of the subject manipulated by the action.
      *
      * @return {@code 0} for offline, {@code 1} for online.
      */
-    public IntDomainVar getState() {
-        return state;
-    }
+    IntDomainVar getState();
 
 }

@@ -51,7 +51,9 @@ public class SliceTest {
         Assert.assertEquals(hoster, sl.getHoster());
         Assert.assertEquals(duration, sl.getDuration());
         Assert.assertEquals(ex, sl.isExclusive());
-        System.out.println(sl);
-        Assert.assertNotNull(sl.toString());
+        Assert.assertFalse(sl.toString().contains("null"));
+        duration = s.createBoundIntVar("duration", 3, 5);
+        sl = new Slice(e, st, ed, duration, hoster, ex);
+        Assert.assertFalse(sl.toString().contains("null"));
     }
 }

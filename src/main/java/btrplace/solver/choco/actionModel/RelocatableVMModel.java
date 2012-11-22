@@ -23,6 +23,7 @@ import btrplace.plan.SolverException;
 import btrplace.plan.action.MigrateVM;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
 import btrplace.solver.choco.chocoUtil.FastIFFEq;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
@@ -43,7 +44,17 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class RelocatableVMModel extends ActionModel {
+public class RelocatableVMModel implements ActionModel {
+
+    private Slice cSlice, dSlice;
+
+    private ReconfigurationProblem rp;
+
+    private UUID vm;
+
+    private IntDomainVar cost;
+
+    private IntDomainVar duration;
 
     /**
      * Make a new model.
@@ -53,9 +64,10 @@ public class RelocatableVMModel extends ActionModel {
      * @throws SolverException if an error occurred
      */
     public RelocatableVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
-        super(rp, e);
+        this.vm = e;
+        this.rp = rp;
 
-        int d = rp.getDurationEvaluator().evaluate(MigrateVM.class, e);
+        int d = rp.getDurationEvaluators().evaluate(MigrateVM.class, e);
 
         CPSolver s = rp.getSolver();
         cost = rp.makeDuration(rp.makeVarLabel("relocatable_cost(" + e + ")"));
@@ -87,8 +99,6 @@ public class RelocatableVMModel extends ActionModel {
         }
         s.post(s.leq(duration, cSlice.getDuration()));
         s.post(s.leq(duration, dSlice.getDuration()));
-        start = dSlice.getStart();
-        end = cSlice.getEnd();
         s.post(s.eq(this.getEnd(), s.plus(this.getStart(), duration)));
 
         //TODO: What about the exlusive dSlice stuff ?
@@ -97,15 +107,59 @@ public class RelocatableVMModel extends ActionModel {
     }
 
     @Override
-    public List<Action> getResultingActions(ReconfigurationProblem rp) {
+    public List<Action> getResultingActions() {
         List<Action> l = new ArrayList<Action>();
         if (cSlice.getHoster().getVal() != dSlice.getHoster().getVal()) {
-            l.add(new MigrateVM(getSubject(),
+            l.add(new MigrateVM(vm,
                     rp.getNode(cSlice.getHoster().getVal()),
                     rp.getNode(dSlice.getHoster().getVal()),
                     getStart().getVal(),
                     getEnd().getVal()));
         }
         return l;
+    }
+
+    /**
+     * Get the VM manipulated by the action.
+     *
+     * @return the VM identifier
+     */
+    public UUID getVM() {
+        return vm;
+    }
+
+    @Override
+    public IntDomainVar getStart() {
+        return dSlice.getStart();
+    }
+
+    @Override
+    public IntDomainVar getEnd() {
+        return cSlice.getEnd();
+    }
+
+    @Override
+    public IntDomainVar getDuration() {
+        return duration;
+    }
+
+    @Override
+    public Slice getCSlice() {
+        return cSlice;
+    }
+
+    @Override
+    public Slice getDSlice() {
+        return dSlice;
+    }
+
+    @Override
+    public IntDomainVar getGlobalCost() {
+        return cost;
+    }
+
+    @Override
+    public IntDomainVar getState() {
+        return null;
     }
 }
