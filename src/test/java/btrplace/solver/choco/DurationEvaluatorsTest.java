@@ -83,9 +83,15 @@ public class DurationEvaluatorsTest {
     }
 
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testUnregister"}, expectedExceptions = {SolverException.class})
-    public void testBadEvaluate() throws SolverException {
+    public void testEvaluateUnregisteredAction() throws SolverException {
         DurationEvaluators d = new DurationEvaluators();
         d.unregister(MigrateVM.class);
-        Assert.assertEquals(d.evaluate(MigrateVM.class, UUID.randomUUID()), -1);
+    }
+
+    @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testRegister"}, expectedExceptions = {SolverException.class})
+    public void testEvaluateWithError() throws SolverException {
+        DurationEvaluators d = new DurationEvaluators();
+        d.register(MigrateVM.class, new ConstantDuration(-5));
+        d.evaluate(MigrateVM.class, UUID.randomUUID());
     }
 }

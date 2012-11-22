@@ -45,15 +45,18 @@ public class SolvingStatisticsTest {
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testAddSolution() {
         SolvingStatistics st = new SolvingStatistics(1, 2, 3, false);
-        SolutionStatistics s1 = new SolutionStatistics(1, 2, 3, 4);
+        SolutionStatistics s0 = new SolutionStatistics(1, 2, 3, 4);
+        SolutionStatistics s1 = new SolutionStatistics(2, 2, 3, 4);
         SolutionStatistics s2 = new SolutionStatistics(2, 3, 4, 3);
         SolutionStatistics s3 = new SolutionStatistics(2, 4, 5, 2);
         st.addSolution(s1);
         st.addSolution(s2);
         st.addSolution(s3);
+        st.addSolution(s0);
         Assert.assertNotNull(st.toString());
-        Assert.assertEquals(st.getSolutions().size(), 3);
+        Assert.assertEquals(st.getSolutions().size(), 4);
         Iterator<SolutionStatistics> ite = st.getSolutions().iterator();
+        Assert.assertEquals(ite.next(), s0);
         Assert.assertEquals(ite.next(), s1);
         Assert.assertEquals(ite.next(), s2);
         Assert.assertEquals(ite.next(), s3);

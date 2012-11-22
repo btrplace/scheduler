@@ -65,23 +65,17 @@ public class Slice {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        b.append(subject).append("{from=");
-        if (getStart().isInstantiated()) {
-            b.append(getStart().getVal());
-        } else {
-            b.append('[').append(getStart().getInf()).append(':').append(getStart().getSup()).append(']');
-
-        }
-        b.append(" to=");
-        if (getEnd().isInstantiated()) {
-            b.append(getEnd().getVal());
-        } else {
-            b.append('[').append(getEnd().getInf()).append(':').append(getEnd().getSup()).append(']');
-
-        }
-
-
+        b.append(subject).append("{from=").append(printValue(getStart()));
+        b.append(", to=").append(printValue(getEnd()));
+        b.append(", on=").append(printValue(getHoster()));
         return b.append('}').toString();
+    }
+
+    private String printValue(IntDomainVar v) {
+        if (v.isInstantiated()) {
+            return Integer.toString(v.getVal());
+        }
+        return new StringBuilder("[").append(v.getInf()).append(':').append(v.getSup()).append(']').toString();
     }
 
     /**
