@@ -124,7 +124,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
             } else if (cstr instanceof Destroyed) {
                 toDestroy.addAll(cstr.getInvolvedVMs());
             } else {
-                ChocoConstraintBuilder ccstrb = cstrMapper.getBuilder(cstr.getClass());
+                ChocoSatConstraintBuilder ccstrb = cstrMapper.getBuilder(cstr.getClass());
                 if (ccstrb == null) {
                     throw new SolverException(i, "Unable to map constraint '" + cstr.getClass().getSimpleName() + "'");
                 }

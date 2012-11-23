@@ -141,7 +141,7 @@ public class CContinuousSpread implements ChocoSatConstraint {
     /**
      * The builder associated to the constraint.
      */
-    public static class Builder implements ChocoConstraintBuilder {
+    public static class Builder implements ChocoSatConstraintBuilder {
         @Override
         public Class<? extends SatConstraint> getKey() {
             return Spread.class;

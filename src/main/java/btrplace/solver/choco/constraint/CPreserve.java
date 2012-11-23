@@ -23,8 +23,8 @@ import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Preserve;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.SolverException;
-import btrplace.solver.choco.ChocoConstraintBuilder;
 import btrplace.solver.choco.ChocoSatConstraint;
+import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.ResourceMapping;
 
@@ -82,7 +82,7 @@ public class CPreserve implements ChocoSatConstraint {
     /**
      * The builder associated to that constraint.
      */
-    public static class Builder implements ChocoConstraintBuilder {
+    public static class Builder implements ChocoSatConstraintBuilder {
         @Override
         public Class<? extends SatConstraint> getKey() {
             return Preserve.class;

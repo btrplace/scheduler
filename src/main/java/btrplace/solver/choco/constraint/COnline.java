@@ -24,8 +24,8 @@ import btrplace.model.constraint.Online;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.SolverException;
 import btrplace.solver.choco.ActionModel;
-import btrplace.solver.choco.ChocoConstraintBuilder;
 import btrplace.solver.choco.ChocoSatConstraint;
+import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import choco.kernel.solver.ContradictionException;
 
@@ -84,7 +84,7 @@ public class COnline implements ChocoSatConstraint {
     /**
      * Builder associated to the constraint.
      */
-    public static class Builder implements ChocoConstraintBuilder {
+    public static class Builder implements ChocoSatConstraintBuilder {
         @Override
         public Class<? extends SatConstraint> getKey() {
             return Online.class;

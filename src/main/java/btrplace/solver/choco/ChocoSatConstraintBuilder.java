@@ -26,7 +26,7 @@ import btrplace.model.SatConstraint;
  *
  * @author Fabien Hermenier
  */
-public interface ChocoConstraintBuilder {
+public interface ChocoSatConstraintBuilder {
 
     /**
      * Get the class of the SatConstraint associated to the builder.

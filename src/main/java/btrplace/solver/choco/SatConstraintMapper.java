@@ -38,13 +38,13 @@ import java.util.Map;
  */
 public class SatConstraintMapper {
 
-    private Map<Class<? extends SatConstraint>, ChocoConstraintBuilder> builders;
+    private Map<Class<? extends SatConstraint>, ChocoSatConstraintBuilder> builders;
 
     /**
      * Make a new mapper.
      */
     public SatConstraintMapper() {
-        builders = new HashMap<Class<? extends SatConstraint>, ChocoConstraintBuilder>();
+        builders = new HashMap<Class<? extends SatConstraint>, ChocoSatConstraintBuilder>();
 
         builders.put(Spread.class, new CContinuousSpread.Builder());
         builders.put(Ban.class, new CBan.Builder());
@@ -58,7 +58,7 @@ public class SatConstraintMapper {
      * @param ccb the builder to register
      * @return {@code true} if no builder previously registered for the given constraint was deleted
      */
-    public boolean register(ChocoConstraintBuilder ccb) {
+    public boolean register(ChocoSatConstraintBuilder ccb) {
         return builders.put(ccb.getKey(), ccb) == null;
     }
 
@@ -73,7 +73,7 @@ public class SatConstraintMapper {
     }
 
     /**
-     * Check if a {@link ChocoConstraintBuilder} is registered for a given {@link SatConstraint}.
+     * Check if a {@link ChocoSatConstraintBuilder} is registered for a given {@link SatConstraint}.
      *
      * @param c the constraint to check
      * @return {@code true} iff a builder is registered
@@ -88,7 +88,7 @@ public class SatConstraintMapper {
      * @param c the constraint
      * @return the associated builder if exists. {@code null} otherwise
      */
-    public ChocoConstraintBuilder getBuilder(Class<? extends SatConstraint> c) {
+    public ChocoSatConstraintBuilder getBuilder(Class<? extends SatConstraint> c) {
         return builders.get(c);
     }
 
@@ -99,7 +99,7 @@ public class SatConstraintMapper {
      * @return the mapping result or {@null} if no {@link ChocoSatConstraint} was available
      */
     public ChocoSatConstraint map(SatConstraint c) {
-        ChocoConstraintBuilder b = builders.get(c.getClass());
+        ChocoSatConstraintBuilder b = builders.get(c.getClass());
         if (b != null) {
             return b.build(c);
         }

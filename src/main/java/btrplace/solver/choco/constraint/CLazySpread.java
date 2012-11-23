@@ -23,8 +23,8 @@ import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Spread;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.solver.choco.ChocoConstraintBuilder;
 import btrplace.solver.choco.ChocoSatConstraint;
+import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import choco.cp.solver.constraints.global.BoundAllDiff;
 import choco.kernel.solver.Solver;
@@ -47,7 +47,7 @@ public class CLazySpread implements ChocoSatConstraint {
     /**
      * The builder associated to that constraint.
      */
-    public static class Builder implements ChocoConstraintBuilder {
+    public static class Builder implements ChocoSatConstraintBuilder {
         @Override
         public Class<? extends SatConstraint> getKey() {
             return Spread.class;

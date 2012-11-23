@@ -88,7 +88,7 @@ public class COversubscription implements ChocoSatConstraint {
     /**
      * Builder associated to the constraint.
      */
-    public static class Builder implements ChocoConstraintBuilder {
+    public static class Builder implements ChocoSatConstraintBuilder {
         @Override
         public Class<? extends SatConstraint> getKey() {
             return Oversubscription.class;

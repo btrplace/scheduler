@@ -48,7 +48,7 @@ public class SatConstraintMapperTest {
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testGetBuilder() {
         SatConstraintMapper map = new SatConstraintMapper();
-        ChocoConstraintBuilder b = map.getBuilder(Spread.class);
+        ChocoSatConstraintBuilder b = map.getBuilder(Spread.class);
         Assert.assertEquals(b.getClass(), CContinuousSpread.Builder.class);
 
         Assert.assertNull(map.getBuilder(Fence.class));
