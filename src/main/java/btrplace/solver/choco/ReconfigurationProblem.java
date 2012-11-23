@@ -263,28 +263,26 @@ public interface ReconfigurationProblem {
      */
     IntDomainVar[] getVMsCountOnNodes();
 
-    /**
-     * Indicate if variables have to be labelled.
-     * This is convenient for debugging but not activated by default.
-     *
-     * @param b {@code true} to create label for variables
-     */
-    void labelVariables(boolean b);
 
     /**
-     * Indicate if variables are labelled.
-     *
-     * @return {@code true} iff the variables are labelled
-     */
-    boolean areVariablesLabelled();
-
-    /**
-     * Make a label for a variable if {@link #areVariablesLabelled()} is
-     * set to {@code true}.
+     * Make a label for a variable iff the labelling is enabled
      *
      * @param lbl the label to make
      * @return the label that will be used in practice
      */
     String makeVarLabel(String lbl);
 
+    /**
+     * Check if variables labelling is enabled.
+     *
+     * @return {@code true} iff enabled
+     */
+    boolean isVarLabelling();
+
+    /**
+     * Get the VMs managed by the solver.
+     *
+     * @return a set of VMs identifier
+     */
+    Set<UUID> getManageableVMs();
 }

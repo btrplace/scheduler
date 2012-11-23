@@ -54,7 +54,7 @@ public class ResourceMappingTest {
         rc.set(vm2, 3);
         rc.set(n1, 4);
         Model mo = new DefaultModel(ma);
-        ReconfigurationProblem rp = new DefaultReconfigurationProblem(mo);
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         ResourceMapping rcm = new ResourceMapping(rp, rc);
         Assert.assertEquals(rc.identifier(), rcm.getIdentifier());
         Assert.assertEquals(0, rcm.getUsage()[rp.getVM(vm)]);

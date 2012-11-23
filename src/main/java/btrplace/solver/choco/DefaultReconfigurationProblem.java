@@ -36,7 +36,6 @@ import java.util.*;
 /**
  * Default implementation of {@link ReconfigurationProblem}.
  * TODO: resource capacity
- * TODO: actions model
  *
  * @author Fabien Hermenier
  */
@@ -56,6 +55,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private Set<UUID> runnings;
     private Set<UUID> sleepings;
     private Set<UUID> destroyed;
+
+    private Set<UUID> manageable;
 
     private UUID[] vms;
     private TObjectIntHashMap<UUID> revVMs;
@@ -79,61 +80,16 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private IntDomainVar[] vmsCountOnNodes;
 
     /**
-     * Make a new ReconfigurationProblem that will not change the current state of the VMs
-     * and rely on the default {@link DurationEvaluators}.
-     *
-     * @param m the initial model
-     * @throws SolverException if an error occurred
-     */
-    public DefaultReconfigurationProblem(Model m) throws SolverException {
-        this(m, m.getMapping().getWaitingVMs(),
-                m.getMapping().getRunningVMs(),
-                m.getMapping().getSleepingVMs(),
-                new HashSet<UUID>());
-    }
-
-    /**
-     * Make a new RP that will not change the current state of the VMs.
-     * A custom {@link DurationEvaluators} is however provided
-     *
-     * @param m     the initial model
-     * @param dEval to evaluate the duration of every action
-     * @throws SolverException if an error occurred
-     */
-    public DefaultReconfigurationProblem(Model m, DurationEvaluators dEval) throws SolverException {
-        this(m, dEval,
-                m.getMapping().getWaitingVMs(),
-                m.getMapping().getRunningVMs(),
-                m.getMapping().getSleepingVMs(),
-                new HashSet<UUID>());
-    }
-
-    /**
      * Make a new RP where the next state for every VM is indicated.
-     *
-     * @param m           the initial model
-     * @param toWait      the VMs that must be in the waiting state
-     * @param toRun       the VMs that must be in the running state
-     * @param toSleep     the VMs that must be in the sleeping state
-     * @param toTerminate the VMs that must be terminated
-     * @throws SolverException if an error occurred
-     */
-    public DefaultReconfigurationProblem(Model m,
-                                         Set<UUID> toWait,
-                                         Set<UUID> toRun,
-                                         Set<UUID> toSleep,
-                                         Set<UUID> toTerminate) throws SolverException {
-        this(m, new DurationEvaluators(), toWait, toRun, toSleep, toTerminate);
-    }
-
-    /**
-     * Make a new RP where the next state for every VM is indicated.
+     * {@link DefaultReconfigurationProblemBuilder} can be used to simplify the instantiation process
      *
      * @param m           the initial model
      * @param dEval       to evaluate the duration of every action
      * @param toWait      the VMs that must be in the waiting state
      * @param toRun       the VMs that must be in the running state
      * @param toSleep     the VMs that must be in the sleeping state
+     * @param manageable  the VMs that can be managed by the solver
+     * @param label       {@code true} to label the variables (for debugging purpose)
      * @param toTerminate the VMs that must be terminated
      * @throws SolverException if an error occurred
      */
@@ -142,11 +98,16 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                                          Set<UUID> toWait,
                                          Set<UUID> toRun,
                                          Set<UUID> toSleep,
-                                         Set<UUID> toTerminate) throws SolverException {
+                                         Set<UUID> toTerminate,
+                                         Set<UUID> manageable,
+                                         boolean label
+    ) throws SolverException {
         waitings = toWait;
         runnings = toRun;
         sleepings = toSleep;
         destroyed = toTerminate;
+        this.manageable = manageable;
+        this.useLabels = label;
         model = m;
         durEval = dEval;
 
@@ -509,17 +470,17 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public void labelVariables(boolean b) {
-        useLabels = b;
+    public String makeVarLabel(String lbl) {
+        return useLabels ? lbl : "";
     }
 
     @Override
-    public boolean areVariablesLabelled() {
+    public boolean isVarLabelling() {
         return useLabels;
     }
 
     @Override
-    public String makeVarLabel(String lbl) {
-        return useLabels ? lbl : "";
+    public Set<UUID> getManageableVMs() {
+        return manageable;
     }
 }

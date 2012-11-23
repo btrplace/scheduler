@@ -44,6 +44,10 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
     private int timeLimit = 5;
 
+    private boolean repair = false;
+
+    private boolean useLabels = false;
+
     private ReconfigurationProblem rp;
 
     private DurationEvaluators durationEvaluators;
@@ -75,6 +79,27 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     @Override
     public int getTimeLimit() {
         return timeLimit;
+    }
+
+    @Override
+    public void repair(boolean b) {
+        repair = b;
+    }
+
+    @Override
+    public boolean repair() {
+        return repair;
+    }
+
+
+    @Override
+    public void labelVariables(boolean b) {
+        useLabels = b;
+    }
+
+    @Override
+    public boolean areVariablesLabelled() {
+        return useLabels;
     }
 
     @Override
@@ -113,7 +138,21 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         }
 
         //Make the core-RP
-        rp = new DefaultReconfigurationProblem(i, durationEvaluators, toWait, toRun, toSleep, toDestroy);
+        DefaultReconfigurationProblemBuilder rpb = new DefaultReconfigurationProblemBuilder(i)
+                .setNextVMsStates(toWait, toRun, toSleep, toDestroy)
+                .setDurationEvaluatators(durationEvaluators);
+
+        if (repair) {
+            Set<UUID> toManage = new HashSet<UUID>();
+            for (ChocoSatConstraint cstr : cConstraints) {
+                toManage.addAll(cstr.getMisPlacedVMs(i));
+            }
+            rpb.setManageableVMs(toManage);
+        }
+        if (useLabels) {
+            rpb.labelVariables();
+        }
+        rp = rpb.build();
 
         //Customize with the constraints
         for (ChocoSatConstraint ccstr : cConstraints) {

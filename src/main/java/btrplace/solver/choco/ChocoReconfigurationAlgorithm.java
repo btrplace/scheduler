@@ -27,6 +27,20 @@ import btrplace.plan.ReconfigurationAlgorithm;
  */
 public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm {
 
+    /**
+     * State if the algorithm only have to repair the model instead
+     * of rebuilding a complete new solution.
+     *
+     * @param b {@code true} to repair
+     */
+    void repair(boolean b);
+
+    /**
+     * Indicate if the algorithm repair the model.
+     *
+     * @return {@code true} iff it repairs the model.
+     */
+    boolean repair();
 
     /**
      * State if the algorithm must try to improve the first computed solution.
@@ -59,6 +73,21 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm 
     int getTimeLimit();
 
     /**
+     * Indicate if variables have to be labelled.
+     * This is convenient for debugging but not activated by default.
+     *
+     * @param b {@code true} to create label for variables
+     */
+    void labelVariables(boolean b);
+
+    /**
+     * Indicate if variables are labelled.
+     *
+     * @return {@code true} iff the variables are labelled
+     */
+    boolean areVariablesLabelled();
+
+    /**
      * Get the mapper that convert {@link btrplace.model.SatConstraint} to {@link ChocoSatConstraint}.
      *
      * @return the mapper.
@@ -78,4 +107,5 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm 
      * @return some statistics
      */
     SolvingStatistics getSolvingStatistics();
+
 }
