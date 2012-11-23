@@ -89,7 +89,7 @@ public class InstantiateVMModel implements ActionModel {
     }
 
     @Override
-    public IntDomainVar getGlobalCost() {
+    public IntDomainVar getCost() {
         return null;
     }
 

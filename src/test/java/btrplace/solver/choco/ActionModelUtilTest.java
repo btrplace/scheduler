@@ -1,0 +1,190 @@
+/*
+ * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ *
+ * This file is part of btrplace.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package btrplace.solver.choco;
+
+import btrplace.plan.Action;
+import choco.cp.solver.CPSolver;
+import choco.kernel.solver.variables.integer.IntDomainVar;
+import junit.framework.Assert;
+import org.testng.annotations.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+/**
+ * Unit tests for {@link ActionModelUtil}.
+ *
+ * @author Fabien Hermenier
+ */
+public class ActionModelUtilTest {
+
+    private ActionModel[] makeActions() {
+        ActionModel[] as = new ActionModel[10];
+        CPSolver s = new CPSolver();
+        for (int i = 0; i < as.length; i++) {
+            as[i] = new MockActionModel(s, i);
+
+        }
+        return as;
+    }
+
+    @Test
+    public void testGetDSlices() {
+        List<Slice> cs = ActionModelUtil.getDSlices(makeActions());
+        Assert.assertEquals(5, cs.size());
+        for (int i = 0; i < cs.size() - 1; i++) {
+            Slice s = cs.get(i);
+            Slice ns = cs.get(i + 1);
+            Assert.assertTrue(s.getHoster().getName().startsWith("dS"));
+            Assert.assertTrue(s.getHoster().getVal() < ns.getHoster().getVal());
+        }
+    }
+
+    @Test
+    public void testGetCSlices() {
+        List<Slice> cs = ActionModelUtil.getCSlices(makeActions());
+        Assert.assertEquals(5, cs.size());
+        for (int i = 0; i < cs.size() - 1; i++) {
+            Slice s = cs.get(i);
+            Slice ns = cs.get(i + 1);
+            Assert.assertTrue(s.getHoster().getName().startsWith("cS"));
+            Assert.assertTrue(s.getHoster().getVal() < ns.getHoster().getVal());
+        }
+    }
+
+    @Test
+    public void testGetStarts() {
+        IntDomainVar[] sts = ActionModelUtil.getStarts(makeActions());
+        Assert.assertEquals(10, sts.length);
+        for (int i = 0; i < sts.length - 1; i++) {
+            IntDomainVar s = sts[i];
+            IntDomainVar ns = sts[i + 1];
+            Assert.assertTrue(s.getName().startsWith("start"));
+            Assert.assertTrue(s.getVal() < ns.getVal());
+        }
+    }
+
+    @Test
+    public void testGetEnds() {
+        IntDomainVar[] sts = ActionModelUtil.getEnds(makeActions());
+        Assert.assertEquals(10, sts.length);
+        for (int i = 0; i < sts.length - 1; i++) {
+            IntDomainVar s = sts[i];
+            IntDomainVar ns = sts[i + 1];
+            Assert.assertTrue(s.getName().startsWith("end"));
+            Assert.assertTrue(s.getVal() < ns.getVal());
+        }
+    }
+
+    @Test
+    public void testGetDurations() {
+        IntDomainVar[] sts = ActionModelUtil.getDurations(makeActions());
+        Assert.assertEquals(10, sts.length);
+        for (int i = 0; i < sts.length - 1; i++) {
+            IntDomainVar s = sts[i];
+            IntDomainVar ns = sts[i + 1];
+            Assert.assertTrue(s.getName().startsWith("duration"));
+            Assert.assertTrue(s.getVal() < ns.getVal());
+        }
+    }
+
+    @Test
+    public void testGetCosts() {
+        IntDomainVar[] sts = ActionModelUtil.getCosts(makeActions());
+        Assert.assertEquals(10, sts.length);
+        for (int i = 0; i < sts.length - 1; i++) {
+            IntDomainVar s = sts[i];
+            IntDomainVar ns = sts[i + 1];
+            Assert.assertTrue(s.getName().startsWith("cost"));
+            Assert.assertTrue(s.getVal() < ns.getVal());
+        }
+    }
+
+    public static class MockActionModel implements ActionModel {
+
+        private IntDomainVar st, ed, d, h, c, state;
+
+        private Slice cSlice, dSlice;
+
+        public MockActionModel(CPSolver s, int nb) {
+            st = s.createBoundIntVar("start" + nb, nb, nb + 1);
+            ed = s.createBoundIntVar("end" + nb, nb, nb + 1);
+            d = s.createBoundIntVar("duration" + nb, nb, nb + 1);
+            h = s.createBoundIntVar("hoster" + nb, nb, nb + 1);
+            c = s.createBoundIntVar("cost" + nb, nb, nb + 1);
+            state = s.createBoundIntVar("state" + nb, nb, nb + 1);
+            if (nb % 2 == 0) {
+                cSlice = new Slice(UUID.randomUUID(),
+                        s.createBoundIntVar("cS" + nb + "-st", nb, nb + 1),
+                        s.createBoundIntVar("cS" + nb + "-ed", nb, nb + 1),
+                        s.createBoundIntVar("cS" + nb + "-d", nb, nb + 1),
+                        s.createBoundIntVar("cS" + nb + "-h", nb, nb + 1),
+                        s.createBoundIntVar("cS" + nb + "-excl", nb, nb + 1));
+            } else {
+                dSlice = new Slice(UUID.randomUUID(),
+                        s.createBoundIntVar("dS" + nb + "-st", nb, nb + 1),
+                        s.createBoundIntVar("dS" + nb + "-ed", nb, nb + 1),
+                        s.createBoundIntVar("dS" + nb + "-d", nb, nb + 1),
+                        s.createBoundIntVar("dS" + nb + "-h", nb, nb + 1),
+                        s.createBoundIntVar("dS" + nb + "-excl", nb, nb + 1));
+            }
+        }
+
+        @Override
+        public IntDomainVar getStart() {
+            return st;
+        }
+
+        @Override
+        public IntDomainVar getEnd() {
+            return ed;
+        }
+
+        @Override
+        public IntDomainVar getDuration() {
+            return d;
+        }
+
+        @Override
+        public Slice getCSlice() {
+            return cSlice;
+        }
+
+        @Override
+        public Slice getDSlice() {
+            return dSlice;
+        }
+
+        @Override
+        public IntDomainVar getCost() {
+            return c;
+        }
+
+        @Override
+        public List<Action> getResultingActions() {
+            return new ArrayList<Action>();
+        }
+
+        @Override
+        public IntDomainVar getState() {
+            return state;
+        }
+    }
+}

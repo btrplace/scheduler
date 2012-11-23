@@ -104,7 +104,7 @@ public class StayRunningVMModel implements ActionModel {
     }
 
     @Override
-    public IntDomainVar getGlobalCost() {
+    public IntDomainVar getCost() {
         return rp.getStart();
     }
 

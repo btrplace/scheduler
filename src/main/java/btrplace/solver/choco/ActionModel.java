@@ -67,10 +67,11 @@ public interface ActionModel {
 
     /**
      * Get the cost of the action.
+     * TODO: Is it a required method ?
      *
      * @return a variable
      */
-    IntDomainVar getGlobalCost();
+    IntDomainVar getCost();
 
     /**
      * Get the action that are generated for the model variables.

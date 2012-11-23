@@ -145,7 +145,7 @@ public class ShutdownableNodeModel implements ActionModel {
     }
 
     @Override
-    public IntDomainVar getGlobalCost() {
+    public IntDomainVar getCost() {
         return cost;
     }
 

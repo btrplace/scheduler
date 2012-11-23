@@ -133,7 +133,7 @@ public class BootableNodeModel implements ActionModel {
     }
 
     @Override
-    public IntDomainVar getGlobalCost() {
+    public IntDomainVar getCost() {
         return cSlice.getEnd();
     }
 

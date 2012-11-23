@@ -117,7 +117,7 @@ public class ResumeVMModel implements ActionModel {
     }
 
     @Override
-    public IntDomainVar getGlobalCost() {
+    public IntDomainVar getCost() {
         return end;
     }
 

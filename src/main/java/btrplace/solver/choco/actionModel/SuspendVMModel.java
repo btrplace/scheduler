@@ -106,7 +106,7 @@ public class SuspendVMModel implements ActionModel {
     }
 
     @Override
-    public IntDomainVar getGlobalCost() {
+    public IntDomainVar getCost() {
         return cSlice.getEnd();
     }
 

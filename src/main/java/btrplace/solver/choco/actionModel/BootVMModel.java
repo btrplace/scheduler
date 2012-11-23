@@ -105,7 +105,7 @@ public class BootVMModel implements ActionModel {
     }
 
     @Override
-    public IntDomainVar getGlobalCost() {
+    public IntDomainVar getCost() {
         return end;
     }
 

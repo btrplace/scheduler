@@ -78,7 +78,7 @@ public class StayOfflineNodeModel implements ActionModel {
     }
 
     @Override
-    public IntDomainVar getGlobalCost() {
+    public IntDomainVar getCost() {
         return null;
     }
 
