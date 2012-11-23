@@ -28,9 +28,7 @@ import btrplace.solver.choco.chocoUtil.BinPacking;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Choco implementation of {@link btrplace.model.SatConstraint}.
@@ -58,8 +56,12 @@ public class COversubscription implements ChocoSatConstraint {
         if (rcm == null) {
             throw new SolverException(rp.getSourceModel(), "Unable to get the resource mapping '" + cstr.getResource() + "'");
         }
+
         IntDomainVar[] capa = rcm.getCapacities();
-        List<Slice> dSlices = rp.getDSlices();
+        List<Slice> dSlices = new ArrayList<Slice>(rp.getDSlices());
+
+        SliceRcComparator dscComparator = new SliceRcComparator(rcm.getSourceResource(), false);
+        Collections.sort(dSlices, dscComparator);
         IntDomainVar[] usages = new IntDomainVar[dSlices.size()];
         IntDomainVar[] hosters = SliceUtils.extractHosters(dSlices);
         for (int i = 0; i < dSlices.size(); i++) {
