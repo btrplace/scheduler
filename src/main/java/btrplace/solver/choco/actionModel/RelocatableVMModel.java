@@ -99,7 +99,7 @@ public class RelocatableVMModel implements ActionModel {
         }
         s.post(s.leq(duration, cSlice.getDuration()));
         s.post(s.leq(duration, dSlice.getDuration()));
-        s.post(s.eq(this.getEnd(), s.plus(this.getStart(), duration)));
+        s.post(s.eq(cSlice.getEnd(), s.plus(dSlice.getStart(), duration)));
 
         //TODO: What about the exlusive dSlice stuff ?
         s.post(s.leq(cSlice.getDuration(), rp.getEnd()));

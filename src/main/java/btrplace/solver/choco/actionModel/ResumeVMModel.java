@@ -65,7 +65,7 @@ public class ResumeVMModel implements ActionModel {
         int d = rp.getDurationEvaluators().evaluate(ResumeVM.class, e);
 
         start = rp.makeDuration("", 0, rp.getEnd().getSup() - d);
-        end = new IntDomainVarAddCste(rp.getSolver(), "", getStart(), d);
+        end = new IntDomainVarAddCste(rp.getSolver(), "", start, d);
         duration = rp.makeDuration("", d, d);
         dSlice = new SliceBuilder(rp, e).setStart(start)
                 .setDuration(rp.makeDuration("", d, rp.getEnd().getSup()))

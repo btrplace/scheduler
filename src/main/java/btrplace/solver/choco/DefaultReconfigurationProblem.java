@@ -200,7 +200,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 if (map.getSleepingVMs().contains(vmId)) {
                     vmActions[i] = new ResumeVMModel(this, vmId);
                 } else if (map.getRunningVMs().contains(vmId)) {
-                    vmActions[i] = new RelocatableVMModel(this, vmId);
+                    if (manageable.contains(vmId)) {
+                        vmActions[i] = new RelocatableVMModel(this, vmId);
+                    } else {
+                        vmActions[i] = new StayRunningVMModel(this, vmId);
+                    }
                 } else if (map.getWaitingVMs().contains(vmId)) {
                     vmActions[i] = new BootVMModel(this, vmId);
                 } else {

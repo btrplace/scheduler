@@ -58,7 +58,7 @@ public class COversubscription implements ChocoSatConstraint {
         }
 
         IntDomainVar[] capa = rcm.getCapacities();
-        List<Slice> dSlices = new ArrayList<Slice>(rp.getDSlices());
+        List<Slice> dSlices = new ArrayList<Slice>(ActionModelUtil.getDSlices(rp.getVMActions()));
 
         SliceRcComparator dscComparator = new SliceRcComparator(rcm.getSourceResource(), false);
         Collections.sort(dSlices, dscComparator);

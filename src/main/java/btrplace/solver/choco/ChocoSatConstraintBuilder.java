@@ -33,7 +33,7 @@ public interface ChocoSatConstraintBuilder {
      *
      * @return a Class derived from {@link SatConstraint}
      */
-    public Class<? extends SatConstraint> getKey();
+    Class<? extends SatConstraint> getKey();
 
     /**
      * Build the ChocoConstraint associated to the {@link SatConstraint}
@@ -42,5 +42,5 @@ public interface ChocoSatConstraintBuilder {
      * @param cstr the model constraint
      * @return the associated ChocoConstraint or {@code null} if an error occurred
      */
-    public ChocoSatConstraint build(SatConstraint cstr);
+    ChocoSatConstraint build(SatConstraint cstr);
 }
