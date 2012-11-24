@@ -24,7 +24,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import java.util.UUID;
 
 /**
- * Specify, for a given resource, the capacity associated to each server,
+ * Specify, for a given resource, the rawUsage associated to each server,
  * and the usage consumed by each of the VMs they host.
  *
  * @author Fabien Hermenier
@@ -33,8 +33,9 @@ public class ResourceMapping {
 
     private IntResource rc;
 
-    private IntDomainVar[] capacity;
+    private IntDomainVar[] rawUsage;
 
+    private IntDomainVar[] realUsage;
     private int[] usage;
 
     /**
@@ -48,15 +49,21 @@ public class ResourceMapping {
 
         UUID[] nodes = rp.getNodes();
         UUID[] vms = rp.getVMs();
-        capacity = new IntDomainVar[nodes.length];
+        rawUsage = new IntDomainVar[nodes.length];
+        realUsage = new IntDomainVar[nodes.length];
         usage = new int[vms.length];
+
+        int maxVMs = rc.sum(rp.getFutureRunningVMs(), true);
         for (int i = 0; i < nodes.length; i++) {
-            capacity[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("capacity('" + rc.identifier() + "', '" + rp.getNode(i) + "')"), 0, rc.get(nodes[i]));
+            rawUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("rawUsage('" + rc.identifier() + "', '" + rp.getNode(i) + "')"), 0, rc.get(nodes[i]));
+            realUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("realUsage('" + rc.identifier() + "', '" + rp.getNode(i) + "')"), 0, maxVMs);
         }
 
         for (int i = 0; i < vms.length; i++) {
             usage[i] = rc.get(vms[i]);
         }
+
+        //Bin packing for the node usage
     }
 
     /**
@@ -78,20 +85,29 @@ public class ResourceMapping {
     }
 
     /**
-     * Get the nodes capacity according to the original resource.
+     * Get the nodes raw usage according to the original resource.
      *
-     * @return an array of variable denoting each node capacity
+     * @return an array of variable denoting each node raw usage.
      */
-    public IntDomainVar[] getCapacities() {
-        return capacity;
+    public IntDomainVar[] getRawUsage() {
+        return rawUsage;
     }
 
     /**
-     * Get the VMs usage of the resource according to the original resource.
+     * Get the nodes real usage that is made by the VMs for the resource.
+     *
+     * @return an array of variables denoting each node real usage.
+     */
+    public IntDomainVar[] getRealUsage() {
+        return realUsage;
+    }
+
+    /**
+     * Get the VMs consumption of the resource according to the original resource.
      *
      * @return an array of integer denoting each VM usage
      */
-    public int[] getUsage() {
+    public int[] getConsumption() {
         return usage;
     }
 

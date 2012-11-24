@@ -27,6 +27,8 @@ import btrplace.plan.action.BootVM;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.durationEvaluator.LinearToAResourceDuration;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
@@ -34,45 +36,41 @@ import java.util.Random;
 import java.util.UUID;
 
 /**
- * Created with IntelliJ IDEA.
- * User: fhermeni
- * Date: 23/11/12
- * Time: 22:56
- * To change this template use File | Settings | File Templates.
+ * Unit tests for {@link COversubscription}.
+ *
+ * @author Fabien Hermenier
  */
 public class COversubscriptionTest {
 
     @Test
     public void testBasic() throws SolverException {
         Random rnd = new Random();
-        UUID[] nodes = new UUID[10];
-        UUID[] vms = new UUID[30];
+        UUID[] nodes = new UUID[5];
+        UUID[] vms = new UUID[11];
         Mapping m = new DefaultMapping();
-        IntResource rcMem = new DefaultIntResource("mem");
         IntResource rcCPU = new DefaultIntResource("cpu");
         for (int i = 0; i < vms.length; i++) {
             if (i < nodes.length) {
                 nodes[i] = UUID.randomUUID();
-                rcMem.set(nodes[i], 10);
-                rcCPU.set(nodes[i], 4);
+                rcCPU.set(nodes[i], 2);
                 m.addOnlineNode(nodes[i]);
             }
             vms[i] = UUID.randomUUID();
-            rcMem.set(vms[i], rnd.nextInt(3));
-            rcCPU.set(vms[i], rnd.nextInt(2));
+            rcCPU.set(vms[i], 1);
 
             m.addWaitingVM(vms[i]);
         }
         Model mo = new DefaultModel(m);
         mo.attach(rcCPU);
-        mo.attach(rcMem);
         mo.attach(new Oversubscription(m.getAllNodes(), "cpu", 2));
-        mo.attach(new Oversubscription(m.getAllNodes(), "mem", 1));
         mo.attach(new Running(m.getAllVMs()));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.labelVariables(true);
         cra.getSatConstraintMapper().register(new COversubscription.Builder());
-        cra.getDurationEvaluators().register(BootVM.class, new LinearToAResourceDuration(rcMem, 2, 3));
+        ChocoLogging.setVerbosity(Verbosity.SEARCH);
         ReconfigurationPlan p = cra.solve(mo);
+        System.out.println(p);
+        Assert.fail();
     }
 
     @Test

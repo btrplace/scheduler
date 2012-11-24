@@ -57,7 +57,19 @@ public class COversubscription implements ChocoSatConstraint {
             throw new SolverException(rp.getSourceModel(), "Unable to get the resource mapping '" + cstr.getResource() + "'");
         }
 
-        IntDomainVar[] capa = rcm.getCapacities();
+        IntDomainVar[] rawCapa = rcm.getRawUsage();
+        IntDomainVar[] overCapa;
+
+//        if (cstr.getRatio() == 1) {
+        overCapa = rawCapa;
+//        } else {
+
+//
+//        }
+
+        //move the bin packing to ResourceMapping
+
+        //Connect rawUsage to realUsage
         List<Slice> dSlices = new ArrayList<Slice>(ActionModelUtil.getDSlices(rp.getVMActions()));
 
         SliceRcComparator dscComparator = new SliceRcComparator(rcm.getSourceResource(), false);
@@ -66,10 +78,10 @@ public class COversubscription implements ChocoSatConstraint {
         IntDomainVar[] hosters = SliceUtils.extractHosters(dSlices);
         for (int i = 0; i < dSlices.size(); i++) {
             UUID e = dSlices.get(i).getSubject();
-            usages[i] = s.createIntegerConstant("", rcm.getUsage()[rp.getVM(e)]);
+            usages[i] = s.createIntegerConstant("", rcm.getConsumption()[rp.getVM(e)]);
         }
 
-        s.post(new BinPacking(s.getEnvironment(), capa, usages, hosters));
+        s.post(new BinPacking(s.getEnvironment(), overCapa, usages, hosters));
     }
 
     @Override

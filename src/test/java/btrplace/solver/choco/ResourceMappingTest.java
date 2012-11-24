@@ -47,8 +47,8 @@ public class ResourceMappingTest {
         UUID vm2 = UUID.randomUUID();
         ma.addOnlineNode(n1);
         ma.addOfflineNode(n2);
-        ma.addWaitingVM(vm);
-        ma.addWaitingVM(vm2);
+        ma.setVMRunOn(vm, n1);
+        ma.setVMRunOn(vm2, n1);
 
         IntResource rc = new DefaultIntResource("foo", 0);
         rc.set(vm2, 3);
@@ -57,12 +57,18 @@ public class ResourceMappingTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         ResourceMapping rcm = new ResourceMapping(rp, rc);
         Assert.assertEquals(rc.identifier(), rcm.getIdentifier());
-        Assert.assertEquals(0, rcm.getUsage()[rp.getVM(vm)]);
-        Assert.assertEquals(3, rcm.getUsage()[rp.getVM(vm2)]);
-        IntDomainVar vn1 = rcm.getCapacities()[rp.getNode(n1)];
-        IntDomainVar vn2 = rcm.getCapacities()[rp.getNode(n2)];
-        Assert.assertTrue(vn1.getInf() == 0 && vn1.getSup() == 4);
-        Assert.assertTrue(vn2.getInf() == 0 && vn2.getSup() == 0);
+        Assert.assertEquals(0, rcm.getConsumption()[rp.getVM(vm)]);
+        Assert.assertEquals(3, rcm.getConsumption()[rp.getVM(vm2)]);
+        IntDomainVar pn1 = rcm.getRawUsage()[rp.getNode(n1)];
+        IntDomainVar pn2 = rcm.getRawUsage()[rp.getNode(n2)];
+        Assert.assertTrue(pn1.getInf() == 0 && pn1.getSup() == 4);
+        Assert.assertTrue(pn2.getInf() == 0 && pn2.getSup() == 0);
+
+        IntDomainVar vn1 = rcm.getRealUsage()[rp.getNode(n1)];
+        IntDomainVar vn2 = rcm.getRealUsage()[rp.getNode(n2)];
+        Assert.assertTrue(vn1.getInf() == 0 && vn1.getSup() == 3);
+        Assert.assertTrue(vn2.getInf() == 0 && vn2.getSup() == 3);
+
         Assert.assertEquals(rc, rcm.getSourceResource());
     }
 }
