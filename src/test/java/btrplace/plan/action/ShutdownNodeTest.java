@@ -41,7 +41,7 @@ public class ShutdownNodeTest {
         Assert.assertEquals(n, a.getNode());
         Assert.assertEquals(3, a.getStart());
         Assert.assertEquals(5, a.getEnd());
-        Assert.assertNotNull(a);
+        Assert.assertFalse(a.toString().contains("null"));
     }
 
     @Test(dependsOnMethods = {"testInstantiate"})

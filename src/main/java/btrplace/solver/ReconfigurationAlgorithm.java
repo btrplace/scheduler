@@ -16,36 +16,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.plan;
+package btrplace.solver;
 
 import btrplace.model.Model;
+import btrplace.plan.ReconfigurationPlan;
 
 /**
- * An exception that indicate an error in the reconfiguration algorithm.
+ * Basic interface for a reconfiguration algorithm.
  *
  * @author Fabien Hermenier
  */
-public class SolverException extends Exception {
-
-    private Model model;
+public interface ReconfigurationAlgorithm {
 
     /**
-     * Make a new exception.
+     * Compute a reconfiguration plan to reach a solution to the model
      *
-     * @param m   the model that lead to the exception
-     * @param msg the error message
+     * @param i the current model
+     * @return the plan to execute to reach the new solution or {@code null} if there is no
+     *         solution
      */
-    public SolverException(Model m, String msg) {
-        super(msg);
-        model = m;
-    }
-
-    /**
-     * Get the model at the source of the exception.
-     *
-     * @return a Model
-     */
-    public Model getModel() {
-        return model;
-    }
+    ReconfigurationPlan solve(Model i) throws SolverException;
 }

@@ -16,23 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.plan;
-
-import btrplace.model.Model;
-
 /**
- * Basic interface for a reconfiguration algorithm.
- *
- * @author Fabien Hermenier
+ * API to define a {@link ReconfigurationAlgorithm}.
  */
-public interface ReconfigurationAlgorithm {
-
-    /**
-     * Compute a reconfiguration plan to reach a solution to the model
-     *
-     * @param i the current model
-     * @return the plan to execute to reach the new solution or {@code null} if there is no
-     *         solution
-     */
-    ReconfigurationPlan solve(Model i) throws SolverException;
-}
+package btrplace.solver;

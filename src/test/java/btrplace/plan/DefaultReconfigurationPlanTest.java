@@ -41,6 +41,8 @@ public class DefaultReconfigurationPlanTest {
         Assert.assertEquals(m, p.getResult());
         Assert.assertEquals(0, p.getDuration());
         Assert.assertTrue(p.getActions().isEmpty());
+        Assert.assertFalse(p.toString().contains("null"));
+
     }
 
     @Test(dependsOnMethods = {"testInstantiate"})
@@ -65,6 +67,8 @@ public class DefaultReconfigurationPlanTest {
         Assert.assertFalse(p.add(a2));
 
         Assert.assertEquals(4, p.size());
+
+        Assert.assertFalse(p.toString().contains("null"));
     }
 
 
@@ -78,10 +82,7 @@ public class DefaultReconfigurationPlanTest {
         }
 
         public boolean equals(Object o) {
-            if (o instanceof MockAction) {
-                return ((MockAction) o).e.equals(e);
-            }
-            return false;
+            return o instanceof MockAction && ((MockAction) o).e.equals(e);
         }
 
         @Override

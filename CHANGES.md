@@ -1,9 +1,11 @@
 Release notes
 =======================
 
-v0.3-SNAPSHOT
+v0.3 - 26 nov. 2012
 ----------------------
 - bug fixes in DefaultReconfigurationPlan
+- a package btrplace.solver dedicated to the reconfiguration algorithm
+- upgrade to btrplace-model 0.4
 
 v0.2 - 19 nov. 2012
 -----------------------

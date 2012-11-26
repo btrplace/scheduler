@@ -46,7 +46,8 @@ public class ResumeVMTest {
         Assert.assertEquals(n2, a.getDestinationNode());
         Assert.assertEquals(3, a.getStart());
         Assert.assertEquals(5, a.getEnd());
-        Assert.assertNotNull(a.toString());
+        Assert.assertFalse(a.toString().contains("null"));
+
     }
 
     @Test(dependsOnMethods = {"testInstantiate"})
