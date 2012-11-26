@@ -18,7 +18,7 @@
 
 package btrplace.solver.choco;
 
-import btrplace.model.IntResource;
+import btrplace.model.StackableResource;
 
 import java.util.Comparator;
 
@@ -29,7 +29,7 @@ import java.util.Comparator;
  */
 public class SliceRcComparator implements Comparator<Slice> {
 
-    private IntResource rc;
+    private StackableResource rc;
 
     private int ratio;
 
@@ -39,7 +39,7 @@ public class SliceRcComparator implements Comparator<Slice> {
      * @param r   the resource used to perform the comparison
      * @param asc {@code true} for an ascending comparison
      */
-    public SliceRcComparator(IntResource r, boolean asc) {
+    public SliceRcComparator(StackableResource r, boolean asc) {
         this.rc = r;
         ratio = asc ? 1 : -1;
     }

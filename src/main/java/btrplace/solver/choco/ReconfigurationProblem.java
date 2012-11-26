@@ -20,7 +20,7 @@ package btrplace.solver.choco;
 
 import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.SolverException;
+import btrplace.solver.SolverException;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 

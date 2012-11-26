@@ -18,13 +18,13 @@
 
 package btrplace.solver.choco;
 
-import btrplace.model.IntResource;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.StackableResource;
 import btrplace.plan.Action;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.SolverException;
+import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
 import btrplace.solver.choco.chocoUtil.BinPacking;
 import choco.cp.solver.CPSolver;
@@ -133,13 +133,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     /**
-     * Create the {@link ResourceMapping} from the {@link IntResource}.
+     * Create the {@link ResourceMapping} from the {@link StackableResource}.
      *
      * @throws SolverException if an error occurred
      */
     private void makeResources() throws SolverException {
         resources = new HashMap<String, ResourceMapping>(model.getResources().size());
-        for (IntResource rc : model.getResources()) {
+        for (StackableResource rc : model.getResources()) {
             ResourceMapping rm = new ResourceMapping(this, rc);
             resources.put(rm.getIdentifier(), rm);
         }

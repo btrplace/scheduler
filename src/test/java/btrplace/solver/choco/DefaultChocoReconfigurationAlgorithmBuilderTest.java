@@ -22,7 +22,7 @@ import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.plan.SolverException;
+import btrplace.solver.SolverException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

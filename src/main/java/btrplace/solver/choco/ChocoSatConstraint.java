@@ -21,7 +21,7 @@ package btrplace.solver.choco;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.SolverException;
+import btrplace.solver.SolverException;
 
 import java.util.Set;
 import java.util.UUID;

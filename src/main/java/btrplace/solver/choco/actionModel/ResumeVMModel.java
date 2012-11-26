@@ -19,8 +19,8 @@
 package btrplace.solver.choco.actionModel;
 
 import btrplace.plan.Action;
-import btrplace.plan.SolverException;
 import btrplace.plan.action.ResumeVM;
+import btrplace.solver.SolverException;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;

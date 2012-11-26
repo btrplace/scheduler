@@ -20,7 +20,7 @@ package btrplace.solver.choco;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.plan.SolverException;
+import btrplace.solver.SolverException;
 
 import java.util.HashSet;
 import java.util.Set;

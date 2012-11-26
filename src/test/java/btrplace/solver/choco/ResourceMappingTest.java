@@ -19,7 +19,7 @@
 package btrplace.solver.choco;
 
 import btrplace.model.*;
-import btrplace.plan.SolverException;
+import btrplace.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
@@ -50,13 +50,13 @@ public class ResourceMappingTest {
         ma.setVMRunOn(vm, n1);
         ma.setVMRunOn(vm2, n1);
 
-        IntResource rc = new DefaultIntResource("foo", 0);
+        StackableResource rc = new DefaultStackableResource("foo", 0);
         rc.set(vm2, 3);
         rc.set(n1, 4);
         Model mo = new DefaultModel(ma);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         ResourceMapping rcm = new ResourceMapping(rp, rc);
-        Assert.assertEquals(rc.identifier(), rcm.getIdentifier());
+        Assert.assertEquals(rc.getIdentifier(), rcm.getIdentifier());
         Assert.assertEquals(0, rcm.getConsumption()[rp.getVM(vm)]);
         Assert.assertEquals(3, rcm.getConsumption()[rp.getVM(vm2)]);
         IntDomainVar pn1 = rcm.getRawUsage()[rp.getNode(n1)];
@@ -66,8 +66,8 @@ public class ResourceMappingTest {
 
         IntDomainVar vn1 = rcm.getRealUsage()[rp.getNode(n1)];
         IntDomainVar vn2 = rcm.getRealUsage()[rp.getNode(n2)];
-        Assert.assertTrue(vn1.getInf() == 0 && vn1.getSup() == 3);
-        Assert.assertTrue(vn2.getInf() == 0 && vn2.getSup() == 3);
+        Assert.assertTrue(vn1.getInf() == 0);
+        Assert.assertTrue(vn2.getInf() == 0);
 
         Assert.assertEquals(rc, rcm.getSourceResource());
     }

@@ -19,7 +19,7 @@
 package btrplace.solver.choco;
 
 import btrplace.model.*;
-import btrplace.plan.SolverException;
+import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
@@ -262,7 +262,7 @@ public class DefaultReconfigurationProblemTest {
     @Test(dependsOnGroups = {"DefaultRPBuilder"})
     public void testGetResourceMapping() throws SolverException {
         Model m = defaultModel();
-        IntResource rc = new DefaultIntResource("cpu", 0);
+        StackableResource rc = new DefaultStackableResource("cpu", 0);
         for (UUID n : m.getMapping().getAllNodes()) {
             rc.set(n, 4);
         }

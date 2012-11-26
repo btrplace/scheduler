@@ -20,12 +20,12 @@ package btrplace.solver.choco;
 
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.constraint.Destroyed;
 import btrplace.model.constraint.Running;
 import btrplace.model.constraint.Sleeping;
+import btrplace.model.constraint.Terminated;
 import btrplace.model.constraint.Waiting;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.SolverException;
+import btrplace.solver.SolverException;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.search.measure.IMeasures;
 
@@ -121,7 +121,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
                 toSleep.addAll(cstr.getInvolvedVMs());
             } else if (cstr instanceof Waiting) {
                 toWait.addAll(cstr.getInvolvedVMs());
-            } else if (cstr instanceof Destroyed) {
+            } else if (cstr instanceof Terminated) {
                 toDestroy.addAll(cstr.getInvolvedVMs());
             } else {
                 ChocoSatConstraintBuilder ccstrb = cstrMapper.getBuilder(cstr.getClass());

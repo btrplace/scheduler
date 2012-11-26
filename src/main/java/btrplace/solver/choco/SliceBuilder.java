@@ -18,7 +18,7 @@
 
 package btrplace.solver.choco;
 
-import btrplace.plan.SolverException;
+import btrplace.solver.SolverException;
 import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 

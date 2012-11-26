@@ -18,8 +18,8 @@
 
 package btrplace.solver.choco;
 
-import btrplace.model.DefaultIntResource;
-import btrplace.model.IntResource;
+import btrplace.model.DefaultStackableResource;
+import btrplace.model.StackableResource;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -47,7 +47,7 @@ public class SliceRcComparatorTest {
     @Test
     public void testAscending() {
         List<Slice> l = makeSlices();
-        IntResource rc = new DefaultIntResource("cpu");
+        StackableResource rc = new DefaultStackableResource("cpu");
         for (Slice s : l) {
             rc.set(s.getSubject(), rnd.nextInt(10));
         }
@@ -63,7 +63,7 @@ public class SliceRcComparatorTest {
     @Test
     public void testDescending() {
         List<Slice> l = makeSlices();
-        IntResource rc = new DefaultIntResource("cpu");
+        StackableResource rc = new DefaultStackableResource("cpu");
         for (Slice s : l) {
             rc.set(s.getSubject(), rnd.nextInt(10));
         }

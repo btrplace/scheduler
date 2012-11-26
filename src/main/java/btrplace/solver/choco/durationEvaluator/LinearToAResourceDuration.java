@@ -18,7 +18,7 @@
 
 package btrplace.solver.choco.durationEvaluator;
 
-import btrplace.model.IntResource;
+import btrplace.model.StackableResource;
 import btrplace.solver.choco.DurationEvaluator;
 
 import java.util.UUID;
@@ -31,7 +31,7 @@ import java.util.UUID;
  */
 public class LinearToAResourceDuration implements DurationEvaluator {
 
-    private IntResource rc;
+    private StackableResource rc;
 
     private int a;
 
@@ -43,7 +43,7 @@ public class LinearToAResourceDuration implements DurationEvaluator {
      * @param rc the resource to consider
      * @param a  the coefficient
      */
-    public LinearToAResourceDuration(IntResource rc, int a) {
+    public LinearToAResourceDuration(StackableResource rc, int a) {
         this(rc, a, 0);
     }
 
@@ -54,7 +54,7 @@ public class LinearToAResourceDuration implements DurationEvaluator {
      * @param a  the coefficient
      * @param b  the initial value
      */
-    public LinearToAResourceDuration(IntResource rc, int a, int b) {
+    public LinearToAResourceDuration(StackableResource rc, int a, int b) {
         this.rc = rc;
         this.a = a;
         this.b = b;

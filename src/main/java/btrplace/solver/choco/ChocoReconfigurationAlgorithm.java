@@ -18,7 +18,7 @@
 
 package btrplace.solver.choco;
 
-import btrplace.plan.ReconfigurationAlgorithm;
+import btrplace.solver.ReconfigurationAlgorithm;
 
 /**
  * A reconfiguration algorithm based on the Choco constraint solver.

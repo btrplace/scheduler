@@ -18,8 +18,8 @@
 
 package btrplace.solver.choco;
 
-import btrplace.plan.SolverException;
 import btrplace.plan.action.*;
+import btrplace.solver.SolverException;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
 import junit.framework.Assert;
 import org.testng.annotations.Test;

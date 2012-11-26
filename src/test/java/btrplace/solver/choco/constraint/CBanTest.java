@@ -22,7 +22,7 @@ import btrplace.model.*;
 import btrplace.model.constraint.Ban;
 import btrplace.model.constraint.Running;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.SolverException;
+import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import junit.framework.Assert;
 import org.testng.annotations.Test;

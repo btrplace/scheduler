@@ -18,9 +18,16 @@
 
 package btrplace.solver.choco;
 
-import btrplace.model.IntResource;
+import btrplace.model.StackableResource;
+import btrplace.solver.choco.chocoUtil.BinPacking;
+import choco.Choco;
+import choco.cp.solver.CPSolver;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -31,11 +38,12 @@ import java.util.UUID;
  */
 public class ResourceMapping {
 
-    private IntResource rc;
+    private StackableResource rc;
 
     private IntDomainVar[] rawUsage;
 
     private IntDomainVar[] realUsage;
+
     private int[] usage;
 
     /**
@@ -44,7 +52,7 @@ public class ResourceMapping {
      * @param rp the problem to rely on
      * @param rc the resource to consider
      */
-    public ResourceMapping(ReconfigurationProblem rp, IntResource rc) {
+    public ResourceMapping(ReconfigurationProblem rp, StackableResource rc) {
         this.rc = rc;
 
         UUID[] nodes = rp.getNodes();
@@ -53,10 +61,9 @@ public class ResourceMapping {
         realUsage = new IntDomainVar[nodes.length];
         usage = new int[vms.length];
 
-        int maxVMs = rc.sum(rp.getFutureRunningVMs(), true);
         for (int i = 0; i < nodes.length; i++) {
-            rawUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("rawUsage('" + rc.identifier() + "', '" + rp.getNode(i) + "')"), 0, rc.get(nodes[i]));
-            realUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("realUsage('" + rc.identifier() + "', '" + rp.getNode(i) + "')"), 0, maxVMs);
+            rawUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("rawUsage('" + rc.getIdentifier() + "', '" + rp.getNode(i) + "')"), 0, rc.get(nodes[i]));
+            realUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("realUsage('" + rc.getIdentifier() + "', '" + rp.getNode(i) + "')"), 0, Choco.MAX_UPPER_BOUND);
         }
 
         for (int i = 0; i < vms.length; i++) {
@@ -64,6 +71,23 @@ public class ResourceMapping {
         }
 
         //Bin packing for the node usage
+        CPSolver s = rp.getSolver();
+        SliceRcComparator cmp = new SliceRcComparator(rc, false);
+        List<Slice> dSlices = ActionModelUtil.getDSlices(rp.getVMActions(rp.getFutureRunningVMs()));
+        Collections.sort(dSlices, cmp);
+        IntDomainVar[] ds = SliceUtils.extractHosters(dSlices);
+        IntDomainVar[] usages = new IntDomainVar[ds.length];
+        for (int i = 0; i < ds.length; i++) {
+            UUID vmId = dSlices.get(i).getSubject();
+            usages[i] = s.createBoundIntVar("usage('" + rc.getIdentifier() + "', '" + vmId + "')", rc.get(vmId), Choco.MAX_UPPER_BOUND);
+            try {
+                usages[i].setInf(new Random().nextInt(10));
+            } catch (ContradictionException ex) {
+                ex.printStackTrace();
+            }
+        }
+        s.post(new BinPacking(s.getEnvironment(), realUsage, usages, ds));
+
     }
 
     /**
@@ -72,15 +96,15 @@ public class ResourceMapping {
      * @return an identifier
      */
     public String getIdentifier() {
-        return rc.identifier();
+        return rc.getIdentifier();
     }
 
     /**
      * Get the original resource usage and consumption.
      *
-     * @return an {@link IntResource}
+     * @return an {@link StackableResource}
      */
-    public IntResource getSourceResource() {
+    public StackableResource getSourceResource() {
         return rc;
     }
 
