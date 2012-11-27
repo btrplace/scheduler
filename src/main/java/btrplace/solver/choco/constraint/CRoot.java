@@ -21,67 +21,63 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.constraint.SingleRunningCapacity;
+import btrplace.model.constraint.Root;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoSatConstraint;
-import btrplace.solver.choco.ChocoSatConstraintBuilder;
-import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.*;
 import choco.cp.solver.CPSolver;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 /**
- * Choco implementation of {@link btrplace.model.constraint.SingleRunningCapacity}.
+ * Choco implementation for {@link btrplace.model.constraint.Root}.
  *
  * @author Fabien Hermenier
  */
-public class CSingleRunningCapacity implements ChocoSatConstraint {
+public class CRoot implements ChocoSatConstraint {
 
-    private SingleRunningCapacity cstr;
+    private Root cstr;
 
-    /**
-     * Make a new constraint.
-     *
-     * @param c the sat constraint to rely on
-     */
-    public CSingleRunningCapacity(SingleRunningCapacity c) {
-        cstr = c;
+    public CRoot(Root r) {
+        cstr = r;
     }
 
     @Override
     public void inject(ReconfigurationProblem rp) throws SolverException {
         CPSolver s = rp.getSolver();
-        for (UUID u : cstr.getInvolvedNodes()) {
-            IntDomainVar v = rp.getVMsCountOnNodes()[rp.getNode(u)];
-            s.post(s.leq(v, cstr.getAmount()));
+        for (UUID vm : cstr.getInvolvedVMs()) {
+            ActionModel m = rp.getVMActions()[rp.getVM(vm)];
+            Slice cSlice = m.getCSlice();
+            Slice dSlice = m.getDSlice();
+            if (cSlice != null && dSlice != null) {
+                s.post(s.eq(cSlice.getHoster(), dSlice.getHoster()));
+            }
         }
     }
 
     @Override
-    public SingleRunningCapacity getAssociatedConstraint() {
+    public Root getAssociatedConstraint() {
         return cstr;
     }
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
-        Mapping map = m.getMapping();
-        Set<UUID> bad = new HashSet<UUID>();
-        for (UUID n : cstr.getInvolvedNodes()) {
-            if (map.getRunningVMs(n).size() > cstr.getAmount()) {
-                bad.addAll(map.getRunningVMs(n));
-                break;
-            }
-        }
-        return bad;
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public boolean isSatisfied(ReconfigurationPlan plan) {
-        return cstr.isSatisfied(plan.getResult()).equals(SatConstraint.Sat.SATISFIED);
+        Mapping dst = plan.getResult().getMapping();
+        Mapping src = plan.getOrigin().getMapping();
+        for (UUID vm : cstr.getInvolvedVMs()) {
+            if (src.getRunningVMs().contains(vm) && dst.getRunningVMs().contains(vm)) {
+                if (!src.getVMLocation(vm).equals(dst.getVMLocation(vm))) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -90,12 +86,12 @@ public class CSingleRunningCapacity implements ChocoSatConstraint {
     public static class Builder implements ChocoSatConstraintBuilder {
         @Override
         public Class<? extends SatConstraint> getKey() {
-            return SingleRunningCapacity.class;
+            return Root.class;
         }
 
         @Override
-        public CSingleRunningCapacity build(SatConstraint cstr) {
-            return new CSingleRunningCapacity((SingleRunningCapacity) cstr);
+        public CRoot build(SatConstraint cstr) {
+            return new CRoot((Root) cstr);
         }
     }
 }

@@ -22,12 +22,10 @@ import btrplace.model.StackableResource;
 import btrplace.solver.choco.chocoUtil.BinPacking;
 import choco.Choco;
 import choco.cp.solver.CPSolver;
-import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -44,7 +42,7 @@ public class ResourceMapping {
 
     private IntDomainVar[] realUsage;
 
-    private int[] usage;
+    private IntDomainVar[] usage;
 
     /**
      * Make a new mappring.
@@ -59,16 +57,13 @@ public class ResourceMapping {
         UUID[] vms = rp.getVMs();
         rawUsage = new IntDomainVar[nodes.length];
         realUsage = new IntDomainVar[nodes.length];
-        usage = new int[vms.length];
+        usage = new IntDomainVar[vms.length];
 
         for (int i = 0; i < nodes.length; i++) {
             rawUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("rawUsage('" + rc.getIdentifier() + "', '" + rp.getNode(i) + "')"), 0, rc.get(nodes[i]));
             realUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("realUsage('" + rc.getIdentifier() + "', '" + rp.getNode(i) + "')"), 0, Choco.MAX_UPPER_BOUND);
         }
 
-        for (int i = 0; i < vms.length; i++) {
-            usage[i] = rc.get(vms[i]);
-        }
 
         //Bin packing for the node usage
         CPSolver s = rp.getSolver();
@@ -80,11 +75,6 @@ public class ResourceMapping {
         for (int i = 0; i < ds.length; i++) {
             UUID vmId = dSlices.get(i).getSubject();
             usages[i] = s.createBoundIntVar("usage('" + rc.getIdentifier() + "', '" + vmId + "')", rc.get(vmId), Choco.MAX_UPPER_BOUND);
-            try {
-                usages[i].setInf(new Random().nextInt(10));
-            } catch (ContradictionException ex) {
-                ex.printStackTrace();
-            }
         }
         s.post(new BinPacking(s.getEnvironment(), realUsage, usages, ds));
 
@@ -128,10 +118,12 @@ public class ResourceMapping {
 
     /**
      * Get the VMs consumption of the resource according to the original resource.
+     * <b>Warning: the only possible approach to restrict these value is to increase their
+     * lower bound using the associated {@code setInf()} method</b>
      *
-     * @return an array of integer denoting each VM usage
+     * @return an array of variables denoting each VM usage
      */
-    public int[] getConsumption() {
+    public IntDomainVar[] getConsumption() {
         return usage;
     }
 

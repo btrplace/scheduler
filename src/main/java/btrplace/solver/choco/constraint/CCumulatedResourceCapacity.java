@@ -22,74 +22,70 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.StackableResource;
-import btrplace.model.constraint.Preserve;
+import btrplace.model.constraint.CumulatedResourceCapacity;
+import btrplace.model.constraint.CumulatedRunningCapacity;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoSatConstraint;
 import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.ResourceMapping;
-import choco.kernel.solver.ContradictionException;
+import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
- * Choco implementation of {@link btrplace.model.constraint.Preserve}.
+ * Choco implementation of {@link btrplace.model.constraint.CumulatedResourceCapacity}.
  *
  * @author Fabien Hermenier
  */
-public class CPreserve implements ChocoSatConstraint {
+public class CCumulatedResourceCapacity implements ChocoSatConstraint {
 
-    private Preserve cstr;
+    private CumulatedResourceCapacity cstr;
 
     /**
      * Make a new constraint.
      *
-     * @param p the constraint to rely on
+     * @param c the constraint to rely on
      */
-    public CPreserve(Preserve p) {
-        cstr = p;
+    public CCumulatedResourceCapacity(CumulatedResourceCapacity c) {
+        cstr = c;
     }
 
     @Override
     public void inject(ReconfigurationProblem rp) throws SolverException {
-        ResourceMapping map = rp.getResourceMapping(cstr.getResource());
-        if (map == null) {
-            throw new SolverException(rp.getSourceModel(), "Unable to get the resource mapper associated to '" +
-                    cstr.getResource() + "'");
+        ResourceMapping rcm = rp.getResourceMapping(cstr.getResource());
+        if (rcm == null) {
+            throw new SolverException(rp.getSourceModel(), "Unable to find a resource mapping for resource '" + cstr.getResource() + "'");
         }
-        for (UUID vm : cstr.getInvolvedVMs()) {
-            int idx = rp.getVM(vm);
-            IntDomainVar v = map.getConsumption()[idx];
-            try {
-                v.setInf(cstr.getAmount());
-            } catch (ContradictionException ex) {
-                throw new SolverException(rp.getSourceModel(), "Unable to set the '" + cstr.getResource() +
-                        "' consumption for '" + vm + "' to '" + cstr.getAmount() + "'");
-            }
+        List<IntDomainVar> vs = new ArrayList<IntDomainVar>();
+        for (UUID u : cstr.getInvolvedNodes()) {
+            vs.add(rcm.getRealUsage()[rp.getNode(u)]);
         }
+        CPSolver s = rp.getSolver();
+        s.post(s.leq(s.sum((IntDomainVar[]) vs.toArray()), cstr.getAmount()));
     }
 
     @Override
-    public SatConstraint getAssociatedConstraint() {
+    public CumulatedResourceCapacity getAssociatedConstraint() {
         return cstr;
     }
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
-        Set<UUID> bad = new HashSet<UUID>();
+        Mapping map = m.getMapping();
         StackableResource rc = m.getResource(cstr.getResource());
-        if (rc == null) {
-            bad.addAll(cstr.getInvolvedVMs());
-        } else {
-            for (UUID vm : cstr.getInvolvedVMs()) {
-                int x = rc.get(vm);
-                if (x < cstr.getAmount()) {
-                    Mapping map = m.getMapping();
-                    bad.addAll(map.getRunningVMs(map.getVMLocation(vm)));
+        Set<UUID> bad = new HashSet<UUID>();
+        int remainder = cstr.getAmount();
+        for (UUID n : cstr.getInvolvedNodes()) {
+            for (UUID v : map.getRunningVMs(n)) {
+                remainder -= rc.get(v);
+                if (remainder < 0) {
+                    for (UUID n2 : cstr.getInvolvedNodes()) {
+                        bad.addAll(map.getRunningVMs(n2));
+                    }
+                    return bad;
                 }
             }
         }
@@ -107,12 +103,12 @@ public class CPreserve implements ChocoSatConstraint {
     public static class Builder implements ChocoSatConstraintBuilder {
         @Override
         public Class<? extends SatConstraint> getKey() {
-            return Preserve.class;
+            return CumulatedRunningCapacity.class;
         }
 
         @Override
-        public CPreserve build(SatConstraint cstr) {
-            return new CPreserve((Preserve) cstr);
+        public CCumulatedResourceCapacity build(SatConstraint cstr) {
+            return new CCumulatedResourceCapacity((CumulatedResourceCapacity) cstr);
         }
     }
 }

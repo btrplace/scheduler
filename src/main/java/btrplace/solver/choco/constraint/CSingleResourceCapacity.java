@@ -22,54 +22,42 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.StackableResource;
-import btrplace.model.constraint.Preserve;
+import btrplace.model.constraint.SingleResourceCapacity;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoSatConstraint;
 import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.ResourceMapping;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.cp.solver.CPSolver;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 /**
- * Choco implementation of {@link btrplace.model.constraint.Preserve}.
+ * Choco implementation of {@link btrplace.model.constraint.SingleResourceCapacity}.
  *
  * @author Fabien Hermenier
  */
-public class CPreserve implements ChocoSatConstraint {
+public class CSingleResourceCapacity implements ChocoSatConstraint {
 
-    private Preserve cstr;
+    private SingleResourceCapacity cstr;
 
-    /**
-     * Make a new constraint.
-     *
-     * @param p the constraint to rely on
-     */
-    public CPreserve(Preserve p) {
-        cstr = p;
+    public CSingleResourceCapacity(SingleResourceCapacity c) {
+        cstr = c;
     }
 
     @Override
     public void inject(ReconfigurationProblem rp) throws SolverException {
-        ResourceMapping map = rp.getResourceMapping(cstr.getResource());
-        if (map == null) {
-            throw new SolverException(rp.getSourceModel(), "Unable to get the resource mapper associated to '" +
-                    cstr.getResource() + "'");
+        ResourceMapping rcm = rp.getResourceMapping(cstr.getResource());
+        if (rcm == null) {
+            throw new SolverException(rp.getSourceModel(), "Unable to find a resource mapping for resource '" + cstr.getResource() + "'");
         }
-        for (UUID vm : cstr.getInvolvedVMs()) {
-            int idx = rp.getVM(vm);
-            IntDomainVar v = map.getConsumption()[idx];
-            try {
-                v.setInf(cstr.getAmount());
-            } catch (ContradictionException ex) {
-                throw new SolverException(rp.getSourceModel(), "Unable to set the '" + cstr.getResource() +
-                        "' consumption for '" + vm + "' to '" + cstr.getAmount() + "'");
-            }
+        int amount = cstr.getAmount();
+        CPSolver s = rp.getSolver();
+        for (UUID n : cstr.getInvolvedNodes()) {
+            s.post(s.leq(rcm.getRealUsage()[rp.getNode(n)], amount));
         }
     }
 
@@ -80,16 +68,16 @@ public class CPreserve implements ChocoSatConstraint {
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
+        Mapping map = m.getMapping();
         Set<UUID> bad = new HashSet<UUID>();
         StackableResource rc = m.getResource(cstr.getResource());
-        if (rc == null) {
-            bad.addAll(cstr.getInvolvedVMs());
-        } else {
-            for (UUID vm : cstr.getInvolvedVMs()) {
-                int x = rc.get(vm);
-                if (x < cstr.getAmount()) {
-                    Mapping map = m.getMapping();
-                    bad.addAll(map.getRunningVMs(map.getVMLocation(vm)));
+        for (UUID n : cstr.getInvolvedNodes()) {
+            int remainder = cstr.getAmount();
+            for (UUID v : map.getRunningVMs(n)) {
+                remainder -= rc.get(v);
+                if (remainder < 0) {
+                    bad.addAll(map.getRunningVMs(n));
+                    break;
                 }
             }
         }
@@ -107,12 +95,12 @@ public class CPreserve implements ChocoSatConstraint {
     public static class Builder implements ChocoSatConstraintBuilder {
         @Override
         public Class<? extends SatConstraint> getKey() {
-            return Preserve.class;
+            return SingleResourceCapacity.class;
         }
 
         @Override
-        public CPreserve build(SatConstraint cstr) {
-            return new CPreserve((Preserve) cstr);
+        public CSingleResourceCapacity build(SatConstraint cstr) {
+            return new CSingleResourceCapacity((SingleResourceCapacity) cstr);
         }
     }
 }
