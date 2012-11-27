@@ -19,7 +19,11 @@
 package btrplace.solver.choco;
 
 import btrplace.model.*;
+import btrplace.model.constraint.Running;
 import btrplace.solver.SolverException;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
@@ -70,5 +74,42 @@ public class ResourceMappingTest {
         Assert.assertTrue(vn2.getInf() == 0);
 
         Assert.assertEquals(rc, rcm.getSourceResource());
+    }
+
+    /**
+     * Place some VMs and check realNodeUsage is updated accordingly
+     */
+    @Test
+    public void testRealNodeUsage() throws SolverException, ContradictionException {
+        Mapping ma = new DefaultMapping();
+        UUID n1 = UUID.randomUUID();
+        UUID n2 = UUID.randomUUID();
+        UUID vm = UUID.randomUUID();
+        UUID vm2 = UUID.randomUUID();
+        ma.addOnlineNode(n1);
+        ma.addOnlineNode(n2);
+        ma.setVMRunOn(vm, n1);
+        ma.setVMRunOn(vm2, n1);
+
+        StackableResource rc = new DefaultStackableResource("foo", 0);
+        rc.set(vm, 2);
+        rc.set(vm2, 3);
+        rc.set(n1, 4);
+        rc.set(n2, 2);
+        Model mo = new DefaultModel(ma);
+        mo.attach(new Running(ma.getAllVMs()));
+        mo.attach(rc);
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
+        ActionModel avm1 = rp.getVMActions()[rp.getVM(vm)];
+        ActionModel avm2 = rp.getVMActions()[rp.getVM(vm2)];
+        avm1.getDSlice().getHoster().setVal(0);
+        avm2.getDSlice().getHoster().setVal(1);
+        ChocoLogging.setVerbosity(Verbosity.SEARCH);
+        rp.getSolver().solve();
+        ResourceMapping rcm = rp.getResourceMapping("foo");
+        Assert.assertEquals(2, rcm.getRealNodeUsage()[0].getInf());
+        Assert.assertEquals(2, rcm.getRealNodeUsage()[0].getSup());
+        Assert.assertEquals(3, rcm.getRealNodeUsage()[1].getInf());
+        Assert.assertEquals(3, rcm.getRealNodeUsage()[1].getSup());
     }
 }

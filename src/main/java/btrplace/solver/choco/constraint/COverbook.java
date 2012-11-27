@@ -29,8 +29,8 @@ import btrplace.solver.choco.ChocoSatConstraint;
 import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.ResourceMapping;
+import btrplace.solver.choco.chocoUtil.ChocoUtils;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.integer.TimesXYZ;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.HashSet;
@@ -73,8 +73,27 @@ public class COverbook implements ChocoSatConstraint {
             }
         } else {
             IntDomainVar cRatio = s.createIntegerConstant(rp.makeVarLabel("overbook_ratio('" + rcm.getIdentifier() + "')"), cstr.getRatio());
-            for (int i = 0; i < rawCapa.length; i++) {
-                s.post(new TimesXYZ(rawCapa[i], cRatio, realCapa[i]));
+            for (UUID u : cstr.getInvolvedNodes()) {
+                int nIdx = rp.getNode(u);
+                //beware of truncation made by choco: 3 = 7 / 2 while here, 4 pCPU will be used
+                //The hack consists in computing the number of free pCPU
+                /*
+                int maxRaw = ...;
+                int maxReal = maxRaw * factor;
+                freeReal = var(0,maxReal)
+                post(eq(freeReal, minus(maxReal,usageReal))
+                freeRaw = div(freeReal,factor);
+                eq(usageRaw, minus(maxRaw,freeRaw)
+                 */
+                //example: 6 pCPU, 7 vCPU, factor= 2
+                //freePCpu = ((2 * 6) - 7) / 2 = 2
+                //usedPCPU = 6 - 2 = 4 \o/
+                int maxRaw = rcm.getSourceResource().get(u);
+                int maxReal = maxRaw * cstr.getRatio();
+                IntDomainVar freeReal = s.createBoundIntVar(rp.makeVarLabel("free_real('" + u + "')"), 0, maxReal);
+                s.post(s.eq(freeReal, s.minus(maxReal, realCapa[nIdx])));
+                IntDomainVar freeRaw = ChocoUtils.div(s, freeReal, cstr.getRatio());
+                s.post(s.eq(rawCapa[nIdx], s.minus(maxRaw, freeRaw)));
             }
         }
     }
