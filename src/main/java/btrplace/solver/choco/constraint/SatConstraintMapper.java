@@ -16,23 +16,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.constraint;
 
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Ban;
 import btrplace.model.constraint.Offline;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Spread;
-import btrplace.solver.choco.constraint.CBan;
-import btrplace.solver.choco.constraint.CContinuousSpread;
-import btrplace.solver.choco.constraint.COffline;
-import btrplace.solver.choco.constraint.COnline;
+import btrplace.solver.choco.ChocoSatConstraint;
+import btrplace.solver.choco.ChocoSatConstraintBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Mapper that allow to convert {@link SatConstraint} to {@link ChocoSatConstraint}.
+ * Mapper that allow to convert {@link SatConstraint} to {@link btrplace.solver.choco.ChocoSatConstraint}.
  *
  * @author Fabien Hermenier
  */
@@ -93,10 +91,10 @@ public class SatConstraintMapper {
     }
 
     /**
-     * Map the given {@link SatConstraint} to a {@link ChocoSatConstraint} if possible.
+     * Map the given {@link SatConstraint} to a {@link btrplace.solver.choco.ChocoSatConstraint} if possible.
      *
      * @param c the constraint to map
-     * @return the mapping result or {@null} if no {@link ChocoSatConstraint} was available
+     * @return the mapping result or {@null} if no {@link btrplace.solver.choco.ChocoSatConstraint} was available
      */
     public ChocoSatConstraint map(SatConstraint c) {
         ChocoSatConstraintBuilder b = builders.get(c.getClass());

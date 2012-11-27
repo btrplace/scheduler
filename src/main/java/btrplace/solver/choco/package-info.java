@@ -17,6 +17,6 @@
  */
 
 /**
- * Choco implementation of a {@link ReconfigurationAlgorithm}.
+ * Choco implementation of a {@link btrplace.solver.ReconfigurationAlgorithm}.
  */
 package btrplace.solver.choco;

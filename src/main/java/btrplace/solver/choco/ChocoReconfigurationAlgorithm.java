@@ -19,6 +19,7 @@
 package btrplace.solver.choco;
 
 import btrplace.solver.ReconfigurationAlgorithm;
+import btrplace.solver.choco.constraint.SatConstraintMapper;
 
 /**
  * A reconfiguration algorithm based on the Choco constraint solver.

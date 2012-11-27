@@ -16,13 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.constraint;
 
 import btrplace.model.constraint.Ban;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Spread;
-import btrplace.solver.choco.constraint.CContinuousSpread;
-import btrplace.solver.choco.constraint.CLazySpread;
+import btrplace.solver.choco.ChocoSatConstraint;
+import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
@@ -30,7 +30,7 @@ import java.util.Collections;
 import java.util.UUID;
 
 /**
- * Unit tests for {@link SatConstraintMapper}.
+ * Unit tests for {@link btrplace.solver.choco.constraint.SatConstraintMapper}.
  *
  * @author Fabien Hermenier
  */

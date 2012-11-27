@@ -26,6 +26,7 @@ import btrplace.model.constraint.Terminated;
 import btrplace.model.constraint.Waiting;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
+import btrplace.solver.choco.constraint.SatConstraintMapper;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.search.measure.IMeasures;
 
