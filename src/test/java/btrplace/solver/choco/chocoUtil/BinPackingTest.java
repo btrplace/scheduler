@@ -94,7 +94,7 @@ public class BinPackingTest {
         int nBins = 5;
         int nItems = 25;
         s = new CPSolver();
-        ChocoLogging.setVerbosity(Verbosity.SEARCH);
+        //ChocoLogging.setVerbosity(Verbosity.SEARCH);
         loads = new IntDomainVar[nBins];
         sizes = new IntDomainVar[nItems];
         bins = new IntDomainVar[nItems];
