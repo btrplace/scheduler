@@ -30,7 +30,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.BitSet;
+import java.util.*;
 
 /**
  * A bin packing constraint similar to {@link choco.cp.solver.constraints.global.pack.PackSConstraint}
@@ -62,22 +62,24 @@ public class BinPacking extends AbstractLargeIntSConstraint {
     /**
      * The bin assigned to each item.
      */
-    protected final IntDomainVar[] bins;
+    private final IntDomainVar[] bins;
 
     /**
      * The constant size of each item in decreasing order.
      */
-    protected final int[] iSizes;
+    private final int[] iSizes;
+
+    private IntDomainVar[] sizes;
 
     /**
      * The sum of the item sizes.
      */
-    private final long sumISizes;
+    private long sumISizes;
 
     /**
      * The load of each bin.
      */
-    protected final IntDomainVar[] loads;
+    private final IntDomainVar[] loads;
 
     /**
      * The candidate items for each bin (possible but not required assignments)
@@ -109,6 +111,15 @@ public class BinPacking extends AbstractLargeIntSConstraint {
      */
     private IStateBool loadsHaveChanged;
 
+    /**
+     * provide the items index in iSizes from its position in the bitset.
+     */
+    private int[] bsToVars;
+
+    /**
+     * Provide the item position in the bitset from its position in iSizes.
+     */
+    private int[] varsToBs;
 
     /**
      * The bins having candidate items.
@@ -120,35 +131,21 @@ public class BinPacking extends AbstractLargeIntSConstraint {
      *
      * @param environment the solver environment
      * @param loads       array of nbBins variables, each figuring the total size of the items assigned to it, usually initialized to [0, capacity]
-     * @param sizes       array of nbItems CONSTANTS in DECREASING order, each figuring the size of i-th biggest item
+     * @param sizes       array of nbItems variables, each figuring the item size. Only the LB will be considered!
      * @param bins        array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
      */
     public BinPacking(IEnvironment environment, IntDomainVar[] loads, IntDomainVar[] sizes, IntDomainVar[] bins) {
         super(ArrayUtils.append(bins, loads));
-        assert checkArgs(loads, sizes, bins);
+
         this.env = environment;
         this.loads = loads;
         this.nbBins = loads.length;
         this.bins = bins;
         this.iSizes = new int[sizes.length];
-        long sum = 0;
-        for (int i = 0; i < sizes.length; i++) {
-            this.iSizes[i] = sizes[i].getVal();
-            sum += iSizes[i];
-        }
-        this.sumISizes = sum;
+        this.sizes = sizes;
+
         this.bTLoads = new IStateInt[nbBins];
         this.bRLoads = new IStateInt[nbBins];
-    }
-
-    public boolean checkArgs(IntDomainVar[] loads, IntDomainVar[] sizes, IntDomainVar[] bins) {
-        //if (!bins[0].hasEnumeratedDomain()) return false;
-        for (int i = 1; i < sizes.length; i++) {
-            if (/*!bins[i].hasEnumeratedDomain() ||*/ !sizes[i].isInstantiated() || sizes[i - 1].getVal() < sizes[i].getVal()) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public final int getRemainingSpace(int bin) {
@@ -157,6 +154,33 @@ public class BinPacking extends AbstractLargeIntSConstraint {
 
     public IStateBitSet getCandidates(int bin) {
         return candidates[bin];
+    }
+
+    private void sortIndices() {
+        long sum = 0;
+        //l denotes the ordering of the items, so bsToVars
+        List<Integer> l = new ArrayList<Integer>(iSizes.length);
+        for (int i = 0; i < iSizes.length; i++) {
+            l.add(i);
+            iSizes[i] = sizes[i].getInf();
+            sum += iSizes[i];
+        }
+        this.sumISizes = sum;
+        Collections.sort(l, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer i1, Integer i2) {
+                return iSizes[i2] - iSizes[i1];
+            }
+        });
+        bsToVars = new int[iSizes.length];
+        varsToBs = new int[iSizes.length];
+        for (int i = 0; i < bsToVars.length; i++) {
+            bsToVars[i] = l.get(i);
+            varsToBs[l.get(i)] = i;
+        }
+//        System.err.println("Sizes" + Arrays.toString(iSizes));
+//        System.err.println("bsToVars: " + Arrays.toString(bsToVars));
+//        System.err.println("varsToBs: " + Arrays.toString(varsToBs));
     }
 
     @Override
@@ -184,7 +208,7 @@ public class BinPacking extends AbstractLargeIntSConstraint {
     public String prettyCandidates(int bin) {
         StringBuilder s = new StringBuilder("{");
         for (int i = candidates[bin].nextSetBit(0); i >= 0; i = candidates[bin].nextSetBit(i + 1)) {
-            s.append(i).append(' ');
+            s.append(bsToVars[i]).append(' ');
         }
         return s.append('}').toString();
     }
@@ -227,6 +251,8 @@ public class BinPacking extends AbstractLargeIntSConstraint {
      * shrink the bin load variables: binRequiredLoad <= binLoad <= binTotalLoad
      */
     public void awake() throws ContradictionException {
+
+        sortIndices();
         availableBins = env.makeBitSet(nbBins);
         candidates = new IStateBitSet[nbBins];
         for (int b = 0; b < nbBins; b++) {
@@ -245,7 +271,7 @@ public class BinPacking extends AbstractLargeIntSConstraint {
                 try {
                     while (it.hasNext()) {
                         int b = it.next();
-                        candidates[b].set(i);
+                        candidates[b].set(varsToBs[i]/*i*/);
                         cLoads[b] += iSizes[i];
                     }
                 } finally {
@@ -272,7 +298,6 @@ public class BinPacking extends AbstractLargeIntSConstraint {
         this.loadsHaveChanged = env.makeBool(false);
 
         assert checkLoadConsistency() && checkCandidatesConsistency();
-
         propagate();
     }
 
@@ -353,13 +378,13 @@ public class BinPacking extends AbstractLargeIntSConstraint {
     public void awakeOnRemovals(int iIdx, DisposableIntIterator deltaDomain) throws ContradictionException {
         try {
             while (deltaDomain.hasNext()) {
-                removeItem(iIdx, deltaDomain.next());
+                removeItem(varsToBs[iIdx], deltaDomain.next());
             }
         } finally {
             deltaDomain.dispose();
         }
         if (/*vars[iIdx].isInstantiated()*/vars[iIdx].getInf() == vars[iIdx].getSup()) {
-            assignItem(iIdx, vars[iIdx].getVal());
+            assignItem(varsToBs[iIdx], vars[iIdx].getVal());
         }
         this.constAwake(false);
     }
@@ -373,14 +398,14 @@ public class BinPacking extends AbstractLargeIntSConstraint {
      * remove the item from the candidate list of the bin and balance its size from the candidate to the required load of the bin
      * check to update the LB of load[bin]
      *
-     * @param item item index
+     * @param item item index in the bin
      * @param bin  bin index
      * @throws choco.kernel.solver.ContradictionException
      *          on the load[bin] variable
      */
     private void assignItem(int item, int bin) throws ContradictionException {
         if (candidates[bin].get(item)) {
-            int r = bRLoads[bin].add(iSizes[item]);
+            int r = bRLoads[bin].add(iSizes[/*item*/bsToVars[item]]);
             filterLoadInf(bin, r);
             candidates[bin].clear(item);
             if (candidates[bin].isEmpty()) {
@@ -394,7 +419,7 @@ public class BinPacking extends AbstractLargeIntSConstraint {
      * remove the item from the candidate list of the bin and reduce the candidate load of the bin
      * check to update the UB of load[bin]
      *
-     * @param item item index
+     * @param item item index in its bin
      * @param bin  bin index
      * @throws choco.kernel.solver.ContradictionException
      *          on the load[bin] variable
@@ -405,7 +430,7 @@ public class BinPacking extends AbstractLargeIntSConstraint {
             if (candidates[bin].isEmpty()) {
                 availableBins.clear(bin);
             }
-            int r = bTLoads[bin].add(-1 * iSizes[item]);
+            int r = bTLoads[bin].add(-1 * iSizes[/*item*/bsToVars[item]]);
             filterLoadSup(bin, r);
         }
     }
@@ -468,30 +493,35 @@ public class BinPacking extends AbstractLargeIntSConstraint {
      */
     private boolean propagateKnapsack(int bin) throws ContradictionException {
         boolean ret = false;
-        for (int item = candidates[bin].nextSetBit(0); item >= 0; item = candidates[bin].nextSetBit(item + 1)) {
-            if (iSizes[item] + bRLoads[bin].get() > loads[bin].getSup()) {
-                removeItem(item, bin);
-                bins[item].removeVal(bin, this, false);
-                if (bins[item].isInstantiated()) {
-                    assignItem(item, bins[item].getVal());
+        //ibIdx= item in the bitset, its size is at iSize[bsToVars[i]].
+        //System.err.println("propagateKnapsack(" + bin + ")");
+        for (int ibIdx = candidates[bin].nextSetBit(0); ibIdx >= 0; ibIdx = candidates[bin].nextSetBit(ibIdx + 1)) {
+            //  System.err.println("ibIdx= " + ibIdx + " size=" + iSizes[bsToVars[ibIdx]]);
+            int iSize = iSizes[bsToVars[ibIdx]];
+            if (iSize/*iSizes[ibIdx]*/ + bRLoads[bin].get() > loads[bin].getSup()) {
+                removeItem(ibIdx, bin);
+                bins[bsToVars[ibIdx]].removeVal(bin, this, false);
+                if (bins[bsToVars[ibIdx]].isInstantiated()) {
+                    assignItem(ibIdx, bins[bsToVars[ibIdx]].getVal());
                 }
                 ret = true;
-            } else if (bTLoads[bin].get() - iSizes[item] < loads[bin].getInf()) {
-                assignItem(item, bin);
-                DisposableIntIterator domain = bins[item].getDomain().getIterator();
+            } else if (bTLoads[bin].get() - /*iSizes[ibIdx]*/ iSize < loads[bin].getInf()) {
+                assignItem(ibIdx, bin);
+                DisposableIntIterator domain = bins[bsToVars[ibIdx]].getDomain().getIterator();
                 try {
                     while (domain.hasNext()) {
                         int b = domain.next();
                         if (b != bin) {
-                            removeItem(item, b);
+                            removeItem(ibIdx, b);
                         }
                     }
                 } finally {
                     domain.dispose();
                 }
-                bins[item].instantiate(bin, this, false);
+                bins[bsToVars[ibIdx]].instantiate(bin, this, false);
                 ret = true;
             } else {
+                //System.err.println("Stop");
                 break;
             }
         }
@@ -587,7 +617,7 @@ public class BinPacking extends AbstractLargeIntSConstraint {
                 DisposableIntIterator it = bins[i].getDomain().getIterator();
                 try {
                     while (it.hasNext()) {
-                        bs[it.next()].set(i);
+                        bs[it.next()].set(varsToBs[i]);
                     }
                 } finally {
                     it.dispose();

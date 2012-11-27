@@ -64,8 +64,8 @@ public class COverbook implements ChocoSatConstraint {
             throw new SolverException(rp.getSourceModel(), "Unable to get the resource mapping '" + cstr.getResource() + "'");
         }
 
-        IntDomainVar[] rawCapa = rcm.getRawUsage();
-        IntDomainVar[] realCapa = rcm.getRealUsage();
+        IntDomainVar[] rawCapa = rcm.getRawNodeUsage();
+        IntDomainVar[] realCapa = rcm.getRealNodeUsage();
 
         if (cstr.getRatio() == 1) {
             for (int i = 0; i < realCapa.length; i++) {

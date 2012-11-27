@@ -57,7 +57,7 @@ public class CSingleResourceCapacity implements ChocoSatConstraint {
         int amount = cstr.getAmount();
         CPSolver s = rp.getSolver();
         for (UUID n : cstr.getInvolvedNodes()) {
-            s.post(s.leq(rcm.getRealUsage()[rp.getNode(n)], amount));
+            s.post(s.leq(rcm.getRealNodeUsage()[rp.getNode(n)], amount));
         }
     }
 

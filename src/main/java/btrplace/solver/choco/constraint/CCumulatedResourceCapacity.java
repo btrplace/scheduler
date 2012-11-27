@@ -61,7 +61,7 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
         }
         List<IntDomainVar> vs = new ArrayList<IntDomainVar>();
         for (UUID u : cstr.getInvolvedNodes()) {
-            vs.add(rcm.getRealUsage()[rp.getNode(u)]);
+            vs.add(rcm.getRealNodeUsage()[rp.getNode(u)]);
         }
         CPSolver s = rp.getSolver();
         s.post(s.leq(s.sum((IntDomainVar[]) vs.toArray()), cstr.getAmount()));

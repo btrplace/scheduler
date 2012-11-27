@@ -24,13 +24,12 @@ import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 /**
- * Specify, for a given resource, the rawUsage associated to each server,
- * and the usage consumed by each of the VMs they host.
+ * Specify, for a given resource, the rawNodeUsage associated to each server,
+ * and the vmUsage consumed by each of the VMs they host.
  *
  * @author Fabien Hermenier
  */
@@ -38,11 +37,11 @@ public class ResourceMapping {
 
     private StackableResource rc;
 
-    private IntDomainVar[] rawUsage;
+    private IntDomainVar[] rawNodeUsage;
 
-    private IntDomainVar[] realUsage;
+    private IntDomainVar[] realNodeUsage;
 
-    private IntDomainVar[] usage;
+    private IntDomainVar[] vmUsage;
 
     /**
      * Make a new mappring.
@@ -54,29 +53,25 @@ public class ResourceMapping {
         this.rc = rc;
 
         UUID[] nodes = rp.getNodes();
-        UUID[] vms = rp.getVMs();
-        rawUsage = new IntDomainVar[nodes.length];
-        realUsage = new IntDomainVar[nodes.length];
-        usage = new IntDomainVar[vms.length];
+        rawNodeUsage = new IntDomainVar[nodes.length];
+        realNodeUsage = new IntDomainVar[nodes.length];
 
         for (int i = 0; i < nodes.length; i++) {
-            rawUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("rawUsage('" + rc.getIdentifier() + "', '" + rp.getNode(i) + "')"), 0, rc.get(nodes[i]));
-            realUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("realUsage('" + rc.getIdentifier() + "', '" + rp.getNode(i) + "')"), 0, Choco.MAX_UPPER_BOUND);
+            rawNodeUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("rawNodeUsage('" + rc.getIdentifier() + "', '" + rp.getNode(i) + "')"), 0, rc.get(nodes[i]));
+            realNodeUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("realNodeUsage('" + rc.getIdentifier() + "', '" + rp.getNode(i) + "')"), 0, Choco.MAX_UPPER_BOUND);
         }
 
 
-        //Bin packing for the node usage
+        //Bin packing for the node vmUsage
         CPSolver s = rp.getSolver();
-        SliceRcComparator cmp = new SliceRcComparator(rc, false);
         List<Slice> dSlices = ActionModelUtil.getDSlices(rp.getVMActions(rp.getFutureRunningVMs()));
-        Collections.sort(dSlices, cmp);
         IntDomainVar[] ds = SliceUtils.extractHosters(dSlices);
-        IntDomainVar[] usages = new IntDomainVar[ds.length];
+        vmUsage = new IntDomainVar[ds.length];
         for (int i = 0; i < ds.length; i++) {
             UUID vmId = dSlices.get(i).getSubject();
-            usages[i] = s.createBoundIntVar("usage('" + rc.getIdentifier() + "', '" + vmId + "')", rc.get(vmId), Choco.MAX_UPPER_BOUND);
+            vmUsage[i] = s.createBoundIntVar("vmUsage('" + rc.getIdentifier() + "', '" + vmId + "')", rc.get(vmId), Choco.MAX_UPPER_BOUND);
         }
-        s.post(new BinPacking(s.getEnvironment(), realUsage, usages, ds));
+        s.post(new BinPacking(s.getEnvironment(), realNodeUsage, vmUsage, ds));
 
     }
 
@@ -90,7 +85,7 @@ public class ResourceMapping {
     }
 
     /**
-     * Get the original resource usage and consumption.
+     * Get the original resource vmUsage and consumption.
      *
      * @return an {@link StackableResource}
      */
@@ -99,21 +94,21 @@ public class ResourceMapping {
     }
 
     /**
-     * Get the nodes raw usage according to the original resource.
+     * Get the nodes raw vmUsage according to the original resource.
      *
-     * @return an array of variable denoting each node raw usage.
+     * @return an array of variable denoting each node raw vmUsage.
      */
-    public IntDomainVar[] getRawUsage() {
-        return rawUsage;
+    public IntDomainVar[] getRawNodeUsage() {
+        return rawNodeUsage;
     }
 
     /**
-     * Get the nodes real usage that is made by the VMs for the resource.
+     * Get the nodes real vmUsage that is made by the VMs for the resource.
      *
-     * @return an array of variables denoting each node real usage.
+     * @return an array of variables denoting each node real vmUsage.
      */
-    public IntDomainVar[] getRealUsage() {
-        return realUsage;
+    public IntDomainVar[] getRealNodeUsage() {
+        return realNodeUsage;
     }
 
     /**
@@ -121,10 +116,10 @@ public class ResourceMapping {
      * <b>Warning: the only possible approach to restrict these value is to increase their
      * lower bound using the associated {@code setInf()} method</b>
      *
-     * @return an array of variables denoting each VM usage
+     * @return an array of variables denoting each VM vmUsage
      */
-    public IntDomainVar[] getConsumption() {
-        return usage;
+    public IntDomainVar[] getVMConsumption() {
+        return vmUsage;
     }
 
 
