@@ -27,8 +27,6 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.durationEvaluator.LinearToAResourceDuration;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
@@ -67,7 +65,7 @@ public class COverbookTest {
         cra.labelVariables(true);
         cra.getSatConstraintMapper().register(new COverbook.Builder());
         cra.setTimeLimit(-1);
-        ChocoLogging.setVerbosity(Verbosity.SEARCH);
+        //ChocoLogging.setVerbosity(Verbosity.SEARCH);
         ReconfigurationPlan p = cra.solve(mo);
         Assert.assertNull(p);
 
