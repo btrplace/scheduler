@@ -17,6 +17,6 @@
  */
 
 /**
- * Basic API to specify a {@link ReconfigurationPlan}.
+ * Basic API to specify a {@link btrplace.plan.ReconfigurationPlan}.
  */
 package btrplace.plan;

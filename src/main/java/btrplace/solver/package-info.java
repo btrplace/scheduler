@@ -17,6 +17,6 @@
  */
 
 /**
- * API to define a {@link ReconfigurationAlgorithm}.
+ * API to define a {@link btrplace.solver.ReconfigurationAlgorithm}.
  */
 package btrplace.solver;

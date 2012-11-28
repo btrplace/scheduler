@@ -17,6 +17,6 @@
  */
 
 /**
- * Concrete implementation of actions composing a {@link ReconfigurationPlan}.
+ * Concrete implementation of actions composing a {@link btrplace.plan.ReconfigurationPlan}.
  */
 package btrplace.plan.action;
