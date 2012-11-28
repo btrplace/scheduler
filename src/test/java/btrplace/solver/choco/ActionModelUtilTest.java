@@ -19,6 +19,7 @@
 package btrplace.solver.choco;
 
 import btrplace.plan.Action;
+import btrplace.solver.choco.actionModel.ActionModelVisitor;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import junit.framework.Assert;
@@ -105,18 +106,6 @@ public class ActionModelUtilTest {
         }
     }
 
-    @Test
-    public void testGetCosts() {
-        IntDomainVar[] sts = ActionModelUtil.getCosts(makeActions());
-        Assert.assertEquals(10, sts.length);
-        for (int i = 0; i < sts.length - 1; i++) {
-            IntDomainVar s = sts[i];
-            IntDomainVar ns = sts[i + 1];
-            Assert.assertTrue(s.getName().startsWith("cost"));
-            Assert.assertTrue(s.getVal() < ns.getVal());
-        }
-    }
-
     public static class MockActionModel implements ActionModel {
 
         private IntDomainVar st, ed, d, h, c, state;
@@ -173,11 +162,6 @@ public class ActionModelUtilTest {
         }
 
         @Override
-        public IntDomainVar getCost() {
-            return c;
-        }
-
-        @Override
         public List<Action> getResultingActions() {
             return new ArrayList<Action>();
         }
@@ -185,6 +169,11 @@ public class ActionModelUtilTest {
         @Override
         public IntDomainVar getState() {
             return state;
+        }
+
+        @Override
+        public void visit(ActionModelVisitor v) {
+            throw new UnsupportedOperationException();
         }
     }
 }

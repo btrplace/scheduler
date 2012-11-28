@@ -78,11 +78,6 @@ public class StayOfflineNodeModel implements ActionModel {
     }
 
     @Override
-    public IntDomainVar getCost() {
-        return null;
-    }
-
-    @Override
     public IntDomainVar getState() {
         return null;
     }
@@ -95,4 +90,10 @@ public class StayOfflineNodeModel implements ActionModel {
     public UUID getNode() {
         return node;
     }
+
+    @Override
+    public void visit(ActionModelVisitor v) {
+        v.visit(this);
+    }
+
 }

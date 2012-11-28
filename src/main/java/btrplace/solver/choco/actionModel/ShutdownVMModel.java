@@ -116,12 +116,13 @@ public class ShutdownVMModel implements ActionModel {
     }
 
     @Override
-    public IntDomainVar getCost() {
-        return cSlice.getEnd();
-    }
-
-    @Override
     public IntDomainVar getState() {
         return null;
     }
+
+    @Override
+    public void visit(ActionModelVisitor v) {
+        v.visit(this);
+    }
+
 }

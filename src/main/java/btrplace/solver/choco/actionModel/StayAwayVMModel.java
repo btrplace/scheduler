@@ -88,12 +88,13 @@ public class StayAwayVMModel implements ActionModel {
     }
 
     @Override
-    public IntDomainVar getCost() {
+    public IntDomainVar getState() {
         return null;
     }
 
     @Override
-    public IntDomainVar getState() {
-        return null;
+    public void visit(ActionModelVisitor v) {
+        v.visit(this);
     }
+
 }

@@ -19,6 +19,7 @@
 package btrplace.solver.choco;
 
 import btrplace.plan.Action;
+import btrplace.solver.choco.actionModel.ActionModelVisitor;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.List;
@@ -65,13 +66,7 @@ public interface ActionModel {
      */
     Slice getDSlice();
 
-    /**
-     * Get the cost of the action.
-     * TODO: Is it a required method ?
-     *
-     * @return a variable
-     */
-    IntDomainVar getCost();
+    void visit(ActionModelVisitor v);
 
     /**
      * Get the action that are generated for the model variables.

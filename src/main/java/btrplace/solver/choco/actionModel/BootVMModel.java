@@ -105,11 +105,6 @@ public class BootVMModel implements ActionModel {
     }
 
     @Override
-    public IntDomainVar getCost() {
-        return end;
-    }
-
-    @Override
     public IntDomainVar getState() {
         return null;
     }
@@ -122,5 +117,11 @@ public class BootVMModel implements ActionModel {
     public UUID getVM() {
         return vm;
     }
+
+    @Override
+    public void visit(ActionModelVisitor v) {
+        v.visit(this);
+    }
+
 
 }

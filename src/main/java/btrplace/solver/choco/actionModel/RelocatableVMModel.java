@@ -154,12 +154,13 @@ public class RelocatableVMModel implements ActionModel {
     }
 
     @Override
-    public IntDomainVar getCost() {
-        return cost;
-    }
-
-    @Override
     public IntDomainVar getState() {
         return null;
     }
+
+    @Override
+    public void visit(ActionModelVisitor v) {
+        v.visit(this);
+    }
+
 }

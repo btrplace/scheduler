@@ -106,11 +106,6 @@ public class SuspendVMModel implements ActionModel {
     }
 
     @Override
-    public IntDomainVar getCost() {
-        return cSlice.getEnd();
-    }
-
-    @Override
     public IntDomainVar getState() {
         return null;
     }
@@ -123,4 +118,10 @@ public class SuspendVMModel implements ActionModel {
     public UUID getVM() {
         return vm;
     }
+
+    @Override
+    public void visit(ActionModelVisitor v) {
+        v.visit(this);
+    }
+
 }

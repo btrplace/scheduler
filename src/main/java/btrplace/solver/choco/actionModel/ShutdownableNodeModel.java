@@ -145,12 +145,13 @@ public class ShutdownableNodeModel implements ActionModel {
     }
 
     @Override
-    public IntDomainVar getCost() {
-        return cost;
-    }
-
-    @Override
     public IntDomainVar getState() {
         return state;
     }
+
+    @Override
+    public void visit(ActionModelVisitor v) {
+        v.visit(this);
+    }
+
 }

@@ -133,12 +133,12 @@ public class BootableNodeModel implements ActionModel {
     }
 
     @Override
-    public IntDomainVar getCost() {
-        return cSlice.getEnd();
+    public IntDomainVar getState() {
+        return state;
     }
 
     @Override
-    public IntDomainVar getState() {
-        return state;
+    public void visit(ActionModelVisitor v) {
+        v.visit(this);
     }
 }

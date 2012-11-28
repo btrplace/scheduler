@@ -104,11 +104,6 @@ public class StayRunningVMModel implements ActionModel {
     }
 
     @Override
-    public IntDomainVar getCost() {
-        return rp.getStart();
-    }
-
-    @Override
     public IntDomainVar getState() {
         return null;
     }
@@ -121,4 +116,10 @@ public class StayRunningVMModel implements ActionModel {
     public UUID getVM() {
         return vm;
     }
+
+    @Override
+    public void visit(ActionModelVisitor v) {
+        v.visit(this);
+    }
+
 }

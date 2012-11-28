@@ -117,12 +117,13 @@ public class ResumeVMModel implements ActionModel {
     }
 
     @Override
-    public IntDomainVar getCost() {
-        return end;
-    }
-
-    @Override
     public IntDomainVar getState() {
         return null;
     }
+
+    @Override
+    public void visit(ActionModelVisitor v) {
+        v.visit(this);
+    }
+
 }

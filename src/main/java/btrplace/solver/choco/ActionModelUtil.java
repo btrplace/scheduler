@@ -106,18 +106,4 @@ public final class ActionModelUtil {
         }
         return starts;
     }
-
-    /**
-     * Extract the cost of an array of actions.
-     * The ordering is maintained
-     *
-     * @return an array of variable
-     */
-    public static IntDomainVar[] getCosts(ActionModel[] actions) {
-        IntDomainVar[] starts = new IntDomainVar[actions.length];
-        for (int i = 0; i < actions.length; i++) {
-            starts[i] = actions[i].getCost();
-        }
-        return starts;
-    }
 }
