@@ -73,6 +73,11 @@ public class COverbookTest {
         Assert.assertTrue(o.isSatisfied(p.getResult()).equals(SatConstraint.Sat.SATISFIED));
     }
 
+    /**
+     * One overbook factor per node.
+     *
+     * @throws SolverException should not occur
+     */
     @Test
     public void testMultipleOverbook() throws SolverException {
         UUID[] nodes = new UUID[3];
@@ -133,5 +138,35 @@ public class COverbookTest {
         cra.getSatConstraintMapper().register(new COverbook.Builder());
         cra.getDurationEvaluators().register(BootVM.class, new LinearToAResourceDuration(rcMem, 2, 3));
         Assert.assertNull(cra.solve(mo));
+    }
+
+    @Test
+    public void testGetMisplaced() throws SolverException {
+        Mapping m = new DefaultMapping();
+        UUID n1 = UUID.randomUUID();
+        UUID n2 = UUID.randomUUID();
+        UUID n3 = UUID.randomUUID();
+        m.addOnlineNode(n1);
+        m.addOnlineNode(n2);
+        m.addOnlineNode(n3);
+        m.setVMRunOn(UUID.randomUUID(), n1);
+        m.setVMRunOn(UUID.randomUUID(), n2);
+        m.setVMRunOn(UUID.randomUUID(), n2);
+        m.setVMRunOn(UUID.randomUUID(), n3);
+        m.setVMRunOn(UUID.randomUUID(), n3);
+        m.setVMRunOn(UUID.randomUUID(), n3);
+        StackableResource rcCPU = new DefaultStackableResource("cpu", 1);
+        Model mo = new DefaultModel(m);
+        mo.attach(rcCPU);
+        Overbook o1 = new Overbook(Collections.singleton(n1), "cpu", 1);
+        Overbook o2 = new Overbook(Collections.singleton(n2), "cpu", 2);
+        Overbook o3 = new Overbook(Collections.singleton(n3), "cpu", 3);
+        COverbook co1 = new COverbook(o1);
+        COverbook co2 = new COverbook(o2);
+        COverbook co3 = new COverbook(o3);
+        Assert.assertTrue(co1.getMisPlacedVMs(mo).isEmpty());
+        Assert.assertTrue(co2.getMisPlacedVMs(mo).isEmpty());
+        Assert.assertEquals(o3.getInvolvedVMs(), co3.getMisPlacedVMs(mo));
+
     }
 }
