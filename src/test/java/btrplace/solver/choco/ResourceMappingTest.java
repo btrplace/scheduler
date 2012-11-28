@@ -21,8 +21,6 @@ package btrplace.solver.choco;
 import btrplace.model.*;
 import btrplace.model.constraint.Running;
 import btrplace.solver.SolverException;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import junit.framework.Assert;
@@ -104,7 +102,6 @@ public class ResourceMappingTest {
         ActionModel avm2 = rp.getVMActions()[rp.getVM(vm2)];
         avm1.getDSlice().getHoster().setVal(0);
         avm2.getDSlice().getHoster().setVal(1);
-        ChocoLogging.setVerbosity(Verbosity.SEARCH);
         rp.getSolver().solve();
         ResourceMapping rcm = rp.getResourceMapping("foo");
         Assert.assertEquals(2, rcm.getRealNodeUsage()[0].getInf());

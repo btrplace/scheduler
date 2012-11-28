@@ -27,11 +27,10 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.durationEvaluator.LinearToAResourceDuration;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Collections;
 import java.util.UUID;
 
 /**
@@ -67,7 +66,6 @@ public class COverbookTest {
         cra.labelVariables(true);
         cra.getSatConstraintMapper().register(new COverbook.Builder());
         cra.setTimeLimit(-1);
-        ChocoLogging.setVerbosity(Verbosity.SEARCH);
         ReconfigurationPlan p = cra.solve(mo);
         Assert.assertNotNull(p);
         System.out.println(p);
@@ -75,9 +73,10 @@ public class COverbookTest {
         Assert.assertTrue(o.isSatisfied(p.getResult()).equals(SatConstraint.Sat.SATISFIED));
     }
 
+    @Test
     public void testMultipleOverbook() throws SolverException {
         UUID[] nodes = new UUID[3];
-        UUID[] vms = new UUID[9];
+        UUID[] vms = new UUID[11];
         Mapping m = new DefaultMapping();
         StackableResource rcCPU = new DefaultStackableResource("cpu");
         for (int i = 0; i < vms.length; i++) {
@@ -93,19 +92,21 @@ public class COverbookTest {
         }
         Model mo = new DefaultModel(m);
         mo.attach(rcCPU);
-        Overbook o = new Overbook(m.getAllNodes(), "cpu", 2);
-        mo.attach(o);
+        mo.attach(new Overbook(Collections.singleton(nodes[0]), "cpu", 1));
+        mo.attach(new Overbook(Collections.singleton(nodes[1]), "cpu", 2));
+        mo.attach(new Overbook(Collections.singleton(nodes[2]), "cpu", 3));
         mo.attach(new Running(m.getAllVMs()));
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
         cra.getSatConstraintMapper().register(new COverbook.Builder());
         cra.setTimeLimit(-1);
-        ChocoLogging.setVerbosity(Verbosity.SEARCH);
         ReconfigurationPlan p = cra.solve(mo);
         Assert.assertNotNull(p);
         System.out.println(p);
         System.out.println(p.getResult().getMapping());
-        Assert.assertTrue(o.isSatisfied(p.getResult()).equals(SatConstraint.Sat.SATISFIED));
+        for (SatConstraint cstr : mo.getConstraints()) {
+            Assert.assertTrue(cstr.isSatisfied(p.getResult()).equals(SatConstraint.Sat.SATISFIED));
+        }
     }
 
     @Test

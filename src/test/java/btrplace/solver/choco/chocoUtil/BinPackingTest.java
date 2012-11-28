@@ -75,6 +75,7 @@ public class BinPackingTest {
         }
         SConstraint cPack = new BinPacking(s.getEnvironment(), loads, sizes, bins);
         s.post(cPack);
+        s.getConfiguration().putFalse(Configuration.STOP_AT_FIRST_SOLUTION);
     }
 
     public void testPack(int nbSol) {
@@ -94,7 +95,6 @@ public class BinPackingTest {
         int nBins = 5;
         int nItems = 25;
         s = new CPSolver();
-        //ChocoLogging.setVerbosity(Verbosity.SEARCH);
         loads = new IntDomainVar[nBins];
         sizes = new IntDomainVar[nItems];
         bins = new IntDomainVar[nItems];

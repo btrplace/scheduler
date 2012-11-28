@@ -68,11 +68,12 @@ public class COverbook implements ChocoSatConstraint {
         IntDomainVar[] realCapa = rcm.getRealNodeUsage();
 
         if (cstr.getRatio() == 1) {
-            for (int i = 0; i < realCapa.length; i++) {
-                s.post(s.eq(realCapa[i], rawCapa[i]));
+            for (UUID u : cstr.getInvolvedNodes()) {
+                int nIdx = rp.getNode(u);
+                s.post(s.eq(realCapa[nIdx], rawCapa[nIdx]));
             }
         } else {
-            IntDomainVar cRatio = s.createIntegerConstant(rp.makeVarLabel("overbook_ratio('" + rcm.getIdentifier() + "')"), cstr.getRatio());
+            int ratio = cstr.getRatio();
             for (UUID u : cstr.getInvolvedNodes()) {
                 int nIdx = rp.getNode(u);
                 //beware of truncation made by choco: 3 = 7 / 2 while here, 4 pCPU will be used
@@ -89,10 +90,10 @@ public class COverbook implements ChocoSatConstraint {
                 //freePCpu = ((2 * 6) - 7) / 2 = 2
                 //usedPCPU = 6 - 2 = 4 \o/
                 int maxRaw = rcm.getSourceResource().get(u);
-                int maxReal = maxRaw * cstr.getRatio();
+                int maxReal = maxRaw * ratio;
                 IntDomainVar freeReal = s.createBoundIntVar(rp.makeVarLabel("free_real('" + u + "')"), 0, maxReal);
                 s.post(s.eq(freeReal, s.minus(maxReal, realCapa[nIdx])));
-                IntDomainVar freeRaw = ChocoUtils.div(s, freeReal, cstr.getRatio());
+                IntDomainVar freeRaw = ChocoUtils.div(s, freeReal, ratio);
                 s.post(s.eq(rawCapa[nIdx], s.minus(maxRaw, freeRaw)));
             }
         }
