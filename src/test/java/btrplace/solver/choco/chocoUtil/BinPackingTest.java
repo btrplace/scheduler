@@ -18,7 +18,6 @@
 
 package btrplace.solver.choco.chocoUtil;
 
-import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.ElementV;
 import choco.cp.solver.search.BranchingFactory;
@@ -133,34 +132,6 @@ public class BinPackingTest {
         s.post(nth(bins[0], loads, margeLoad));
         ChocoLogging.setVerbosity(Verbosity.SILENT);
         testPack(2);
-    }
-
-    @Test(sequential = true)
-    public void testEntail() {
-        int nBins = 5;
-        int nItems = 25;
-        s = new CPSolver();
-        loads = new IntDomainVar[nBins];
-        sizes = new IntDomainVar[nItems];
-        bins = new IntDomainVar[nItems];
-        for (int i = 0; i < nBins; i++) {
-            loads[i] = s.createBoundIntVar("l" + i, 0, Choco.MAX_UPPER_BOUND);
-        }
-        Random rnd = new Random();
-        for (int i = 0; i < nItems; i++) {
-            sizes[i] = s.createIntegerConstant("s" + i, rnd.nextInt(4) + 1);
-            bins[i] = s.createEnumIntVar("b" + i, 0, nBins);
-        }
-        SConstraint cPack = new BinPacking(s.getEnvironment(), loads, sizes, bins);
-        s.post(cPack);
-
-        s.getConfiguration().putTrue(Configuration.STOP_AT_FIRST_SOLUTION);
-        s.generateSearchStrategy();
-        //ChocoLogging.setVerbosity(Verbosity.SEARCH);
-        s.launch();
-        int nbSol = s.getNbSolutions();
-        Assert.assertEquals((boolean) s.isFeasible(), nbSol != 0, "SAT");
-        s.clear();
     }
 
     /**

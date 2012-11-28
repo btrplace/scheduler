@@ -1,7 +1,7 @@
 Roadmap to v0.1
 ----------------
 
-- Entailment management in BinPacking
+- OK (cause it is not needed) Entailment management in BinPacking
 - Slice scheduling
 - Implement and check every ActionModel
 - Objective && search Heuristic
