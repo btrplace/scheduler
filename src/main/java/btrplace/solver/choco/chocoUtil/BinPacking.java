@@ -18,14 +18,12 @@
 
 package btrplace.solver.choco.chocoUtil;
 
+import choco.Choco;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
-import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.IStateBitSet;
-import choco.kernel.memory.IStateBool;
-import choco.kernel.memory.IStateInt;
+import choco.kernel.memory.*;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -127,6 +125,18 @@ public class BinPacking extends AbstractLargeIntSConstraint {
     private IStateBitSet availableBins;
 
     /**
+     * The cumulated load of all items that are not yet placed.
+     */
+    private IStateLong loadToPlace;
+
+    /**
+     * The minimum remaining space on all the bins.
+     */
+    private IStateInt minRemainingSpace;
+
+    private IStateBool pseudoEntail;
+
+    /**
      * constructor of the FastBinPacking global constraint
      *
      * @param environment the solver environment
@@ -178,9 +188,6 @@ public class BinPacking extends AbstractLargeIntSConstraint {
             bsToVars[i] = l.get(i);
             varsToBs[l.get(i)] = i;
         }
-//        System.err.println("Sizes" + Arrays.toString(iSizes));
-//        System.err.println("bsToVars: " + Arrays.toString(bsToVars));
-//        System.err.println("varsToBs: " + Arrays.toString(varsToBs));
     }
 
     @Override
@@ -261,12 +268,14 @@ public class BinPacking extends AbstractLargeIntSConstraint {
         int[] rLoads = new int[nbBins];
         int[] cLoads = new int[nbBins];
 
+        int remainderToPlace = 0;
         for (int i = 0; i < bins.length; i++) {
             bins[i].updateInf(0, this, false);
             bins[i].updateSup(nbBins - 1, this, false);
             if (bins[i].isInstantiated()) {
                 rLoads[bins[i].getVal()] += iSizes[i];
             } else {
+                remainderToPlace += iSizes[i];
                 DisposableIntIterator it = bins[i].getDomain().getIterator();
                 try {
                     while (it.hasNext()) {
@@ -279,6 +288,7 @@ public class BinPacking extends AbstractLargeIntSConstraint {
                 }
             }
         }
+        loadToPlace = env.makeLong(remainderToPlace);
 
         int sumLoadInf = 0;
         int sumLoadSup = 0;
@@ -298,6 +308,15 @@ public class BinPacking extends AbstractLargeIntSConstraint {
         this.loadsHaveChanged = env.makeBool(false);
 
         assert checkLoadConsistency() && checkCandidatesConsistency();
+        int minRemaining = Choco.MAX_UPPER_BOUND;
+        for (int i = 0; i < loads.length; i++) {
+            int m = getRemainingSpace(i);
+            if (m < minRemaining) {
+                minRemaining = m;
+            }
+        }
+        minRemainingSpace = env.makeInt(minRemaining);
+        pseudoEntail = env.makeBool(false);
         propagate();
     }
 
@@ -315,6 +334,10 @@ public class BinPacking extends AbstractLargeIntSConstraint {
      */
     public void propagate() throws ContradictionException {
         recomputeLoadSums();
+        if (pseudoEntail.get()) {
+            assert checkLoadConsistency() && checkCandidatesConsistency();
+            return;
+        }
         boolean noFixPoint = true;
         while (noFixPoint) {
             if (sumISizes > sumLoadSup.get() || sumISizes < sumLoadInf.get()) {
@@ -328,6 +351,14 @@ public class BinPacking extends AbstractLargeIntSConstraint {
             }
         }
         assert checkLoadConsistency() && checkCandidatesConsistency();
+
+        if (loadToPlace.get() <= minRemainingSpace.get()) {
+            //No need to filter anymore cause every node has sufficient resources to host all the
+            //remaining VMs
+            pseudoEntail.set(true);
+            //setEntailed();
+        }
+
     }
 
     /**
@@ -411,6 +442,13 @@ public class BinPacking extends AbstractLargeIntSConstraint {
             if (candidates[bin].isEmpty()) {
                 availableBins.clear(bin);
             }
+
+            int remaining = getRemainingSpace(bin);
+            if (remaining < minRemainingSpace.get()) {
+                minRemainingSpace.set(remaining);
+            }
+            loadToPlace.add(-iSizes[bsToVars[item]]);
+            long newLoad = loadToPlace.get();
         }
     }
 
@@ -635,5 +673,19 @@ public class BinPacking extends AbstractLargeIntSConstraint {
             }
         }
         return true;
+    }
+
+    @Override
+    public Boolean isEntailed() {
+        /*
+          * The constraint is entailed iff the remaining capacity on every bin
+          * is at least equals to the cumulated size of every items that are still to place
+         */
+        if (loadToPlace.get() < minRemainingSpace.get()) {
+            System.err.println("isEntailed : TRUE");
+            return Boolean.TRUE;
+        }
+        System.err.println("isEntailed : FALSE");
+        return Boolean.FALSE;
     }
 }
