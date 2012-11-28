@@ -94,7 +94,7 @@ public class SatConstraintMapper {
      * Map the given {@link SatConstraint} to a {@link btrplace.solver.choco.ChocoSatConstraint} if possible.
      *
      * @param c the constraint to map
-     * @return the mapping result or {@null} if no {@link btrplace.solver.choco.ChocoSatConstraint} was available
+     * @return the mapping result or {@code null} if no {@link btrplace.solver.choco.ChocoSatConstraint} was available
      */
     public ChocoSatConstraint map(SatConstraint c) {
         ChocoSatConstraintBuilder b = builders.get(c.getClass());
