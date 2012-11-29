@@ -89,6 +89,20 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm 
     boolean areVariablesLabelled();
 
     /**
+     * Get the objective associated to this algorithm.
+     *
+     * @return the stated objective.
+     */
+    ReconfigurationObjective getObjective();
+
+    /**
+     * Set the objective to consider for this algorithm.
+     *
+     * @param o the objective
+     */
+    void setObjective(ReconfigurationObjective o);
+
+    /**
      * Get the mapper that convert {@link btrplace.model.SatConstraint} to {@link ChocoSatConstraint}.
      *
      * @return the mapper.

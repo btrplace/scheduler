@@ -27,7 +27,11 @@ import btrplace.model.constraint.Waiting;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.constraint.SatConstraintMapper;
+import btrplace.solver.choco.objective.minMTTR.MinMTTR;
+import choco.cp.solver.CPSolver;
 import choco.kernel.solver.Solution;
+import choco.kernel.solver.search.ISolutionPool;
+import choco.kernel.solver.search.SolutionPoolFactory;
 import choco.kernel.solver.search.measure.IMeasures;
 
 import java.util.*;
@@ -53,6 +57,8 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
     private DurationEvaluators durationEvaluators;
 
+    private ReconfigurationObjective obj;
+
     /**
      * Make a new algorithm.
      */
@@ -60,6 +66,9 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
         cstrMapper = new SatConstraintMapper();
         durationEvaluators = new DurationEvaluators();
+
+        //Default objective
+        obj = new MinMTTR();
     }
 
     @Override
@@ -161,14 +170,20 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         }
 
         //The objective
+        obj.inject(rp);
 
-        //The heuristics
+        CPSolver s = rp.getSolver();
+        s.generateSearchStrategy();
+        ISolutionPool sp = SolutionPoolFactory.makeInfiniteSolutionPool(s.getSearchStrategy());
+        s.getSearchStrategy().setSolutionPool(sp);
 
         //Let's rock
         if (timeLimit > 0) {
-            rp.getSolver().setTimeLimit(timeLimit);
+            s.setTimeLimit(timeLimit);
         }
-        Boolean ret = rp.getSolver().solve();
+        s.setFirstSolution(!optimize);
+        s.launch();
+        Boolean ret = s.isFeasible();
         if (Boolean.TRUE.equals(ret)) {
             return rp.extractSolution();
         } else if (Boolean.FALSE.equals(ret)) {
@@ -186,6 +201,16 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     @Override
     public DurationEvaluators getDurationEvaluators() {
         return durationEvaluators;
+    }
+
+    @Override
+    public ReconfigurationObjective getObjective() {
+        return obj;
+    }
+
+    @Override
+    public void setObjective(ReconfigurationObjective o) {
+        obj = o;
     }
 
     @Override
