@@ -59,7 +59,7 @@ public class ResumeVMTest {
 
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
-        map.setVMSleepOn(vm, n1);
+        map.addSleepingVM(vm, n1);
 
         Model m = new DefaultModel(map);
 
@@ -71,12 +71,12 @@ public class ResumeVMTest {
         Assert.assertFalse(a.apply(m));
         Assert.assertEquals(map.getVMLocation(vm), n2);
 
-        map.setVMSleepOn(vm, n2);
+        map.addSleepingVM(vm, n2);
         Assert.assertTrue(new ResumeVM(vm, n2, n2, 3, 5).apply(m));
 
         Assert.assertFalse(new ResumeVM(vm, n2, n1, 3, 5).apply(m));
 
-        map.addWaitingVM(vm);
+        map.addReadyVM(vm);
         Assert.assertFalse(new ResumeVM(vm, n2, n1, 3, 5).apply(m));
 
         map.addOfflineNode(n1);

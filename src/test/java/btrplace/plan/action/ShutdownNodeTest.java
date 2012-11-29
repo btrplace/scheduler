@@ -58,7 +58,7 @@ public class ShutdownNodeTest {
 
         UUID vm = UUID.randomUUID();
         map.addOnlineNode(n);
-        map.setVMRunOn(vm, n);
+        map.addRunningVM(vm, n);
         Assert.assertFalse(a.apply(m));
     }
 

@@ -54,21 +54,21 @@ public class BootVMTest {
         UUID n = UUID.randomUUID();
         BootVM a = new BootVM(vm, n, 3, 5);
         map.addOnlineNode(n);
-        map.addWaitingVM(vm);
+        map.addReadyVM(vm);
         Assert.assertTrue(a.apply(m));
         Assert.assertTrue(map.getRunningVMs().contains(vm));
         Assert.assertEquals(map.getVMLocation(vm), n);
 
         Assert.assertFalse(a.apply(m));
 
-        map.setVMSleepOn(vm, n);
+        map.addSleepingVM(vm, n);
         Assert.assertFalse(a.apply(m));
         Assert.assertTrue(map.getSleepingVMs().contains(vm));
 
         map.removeVM(vm);
         Assert.assertFalse(a.apply(m));
 
-        map.addWaitingVM(vm);
+        map.addReadyVM(vm);
         map.addOfflineNode(n);
         Assert.assertFalse(a.apply(m));
     }

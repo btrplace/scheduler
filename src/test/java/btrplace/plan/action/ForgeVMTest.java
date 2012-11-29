@@ -28,16 +28,16 @@ import org.testng.annotations.Test;
 import java.util.UUID;
 
 /**
- * Unit tests for {@link InstantiateVM}.
+ * Unit tests for {@link ForgeVM}.
  *
  * @author Fabien Hermenier
  */
-public class InstantiateVMTest {
+public class ForgeVMTest {
 
     @Test
     public void testInstantiate() {
         UUID vm = UUID.randomUUID();
-        InstantiateVM a = new InstantiateVM(vm, 3, 5);
+        ForgeVM a = new ForgeVM(vm, 3, 5);
         Assert.assertEquals(vm, a.getVM());
         Assert.assertEquals(3, a.getStart());
         Assert.assertEquals(5, a.getEnd());
@@ -49,18 +49,18 @@ public class InstantiateVMTest {
         Mapping map = new DefaultMapping();
         Model m = new DefaultModel(map);
         UUID vm = UUID.randomUUID();
-        InstantiateVM a = new InstantiateVM(vm, 3, 5);
+        ForgeVM a = new ForgeVM(vm, 3, 5);
         Assert.assertTrue(a.apply(m));
-        Assert.assertTrue(map.getWaitingVMs().contains(vm));
+        Assert.assertTrue(map.getReadyVMs().contains(vm));
         Assert.assertFalse(a.apply(m));
 
         UUID n = UUID.randomUUID();
         map.addOnlineNode(n);
-        map.setVMRunOn(vm, n);
+        map.addRunningVM(vm, n);
         Assert.assertFalse(a.apply(m));
         Assert.assertTrue(map.getRunningVMs().contains(vm));
 
-        map.setVMSleepOn(vm, n);
+        map.addSleepingVM(vm, n);
         Assert.assertFalse(a.apply(m));
         Assert.assertTrue(map.getSleepingVMs().contains(vm));
 
@@ -69,12 +69,12 @@ public class InstantiateVMTest {
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testEquals() {
         UUID vm = UUID.randomUUID();
-        InstantiateVM a = new InstantiateVM(vm, 3, 5);
-        InstantiateVM b = new InstantiateVM(vm, 3, 5);
+        ForgeVM a = new ForgeVM(vm, 3, 5);
+        ForgeVM b = new ForgeVM(vm, 3, 5);
         Assert.assertEquals(a, b);
         Assert.assertEquals(a.hashCode(), b.hashCode());
-        Assert.assertNotSame(a, new InstantiateVM(vm, 4, 5));
-        Assert.assertNotSame(a, new InstantiateVM(vm, 3, 4));
-        Assert.assertNotSame(a, new InstantiateVM(UUID.randomUUID(), 3, 5));
+        Assert.assertNotSame(a, new ForgeVM(vm, 4, 5));
+        Assert.assertNotSame(a, new ForgeVM(vm, 3, 4));
+        Assert.assertNotSame(a, new ForgeVM(UUID.randomUUID(), 3, 5));
     }
 }

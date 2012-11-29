@@ -1,6 +1,11 @@
 Release notes
 =======================
 
+v0.4-SNAPSHOT ??
+----------------------
+- InstantiateVM becomes ForgeVM
+- new action: KillVM
+
 v0.3 - 26 nov. 2012
 ----------------------
 - bug fixes in DefaultReconfigurationPlan

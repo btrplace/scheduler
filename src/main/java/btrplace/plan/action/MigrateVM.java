@@ -94,7 +94,7 @@ public class MigrateVM extends Action {
                 && c.getRunningVMs().contains(vm)
                 && c.getVMLocation(vm).equals(src)
                 && !src.equals(dst)) {
-            c.setVMRunOn(vm, dst);
+            c.addRunningVM(vm, dst);
             return true;
         }
         return false;

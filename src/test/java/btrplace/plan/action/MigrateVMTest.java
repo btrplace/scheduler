@@ -59,7 +59,7 @@ public class MigrateVMTest {
 
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
-        map.setVMRunOn(vm, n1);
+        map.addRunningVM(vm, n1);
 
         Model m = new DefaultModel(map);
 
@@ -73,10 +73,10 @@ public class MigrateVMTest {
 
         Assert.assertFalse(new MigrateVM(vm, n2, n2, 3, 5).apply(m));
 
-        map.setVMSleepOn(vm, n2);
+        map.addSleepingVM(vm, n2);
         Assert.assertFalse(new MigrateVM(vm, n2, n1, 3, 5).apply(m));
 
-        map.addWaitingVM(vm);
+        map.addReadyVM(vm);
         Assert.assertFalse(new MigrateVM(vm, n2, n1, 3, 5).apply(m));
 
         map.addOfflineNode(n1);

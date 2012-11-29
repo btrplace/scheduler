@@ -59,7 +59,7 @@ public class SuspendVMTest {
 
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
-        map.setVMRunOn(vm, n1);
+        map.addRunningVM(vm, n1);
 
         Model m = new DefaultModel(map);
 
@@ -71,12 +71,12 @@ public class SuspendVMTest {
         Assert.assertFalse(a.apply(m));
         Assert.assertEquals(map.getVMLocation(vm), n2);
 
-        map.setVMRunOn(vm, n2);
+        map.addRunningVM(vm, n2);
         Assert.assertTrue(new SuspendVM(vm, n2, n2, 3, 5).apply(m));
 
         Assert.assertFalse(new SuspendVM(vm, n2, n1, 3, 5).apply(m));
 
-        map.addWaitingVM(vm);
+        map.addReadyVM(vm);
         Assert.assertFalse(new SuspendVM(vm, n2, n1, 3, 5).apply(m));
 
         map.addOfflineNode(n1);

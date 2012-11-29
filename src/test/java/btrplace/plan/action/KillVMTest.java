@@ -28,17 +28,17 @@ import org.testng.annotations.Test;
 import java.util.UUID;
 
 /**
- * Unit tests for {@link ShutdownVM}.
+ * Unit tests for {@link KillVM}.
  *
  * @author Fabien Hermenier
  */
-public class ShutdownVMTest {
+public class KillVMTest {
 
     @Test
     public void testInstantiate() {
         UUID vm = UUID.randomUUID();
         UUID n = UUID.randomUUID();
-        ShutdownVM a = new ShutdownVM(vm, n, 3, 5);
+        KillVM a = new KillVM(vm, n, 3, 5);
         Assert.assertEquals(vm, a.getVM());
         Assert.assertEquals(n, a.getNode());
         Assert.assertEquals(3, a.getStart());
@@ -53,36 +53,32 @@ public class ShutdownVMTest {
         Model m = new DefaultModel(map);
         UUID vm = UUID.randomUUID();
         UUID n = UUID.randomUUID();
-        ShutdownVM a = new ShutdownVM(vm, n, 3, 5);
+        KillVM a = new KillVM(vm, n, 3, 5);
         map.addOnlineNode(n);
         map.addRunningVM(vm, n);
         Assert.assertTrue(a.apply(m));
-        Assert.assertTrue(map.getReadyVMs().contains(vm));
+        Assert.assertFalse(map.containsVM(vm));
 
         Assert.assertFalse(a.apply(m));
 
         map.addSleepingVM(vm, n);
-        Assert.assertFalse(a.apply(m));
-
-        map.removeVM(vm);
-        Assert.assertFalse(a.apply(m));
+        Assert.assertTrue(a.apply(m));
 
         map.addReadyVM(vm);
-        map.addOfflineNode(n);
-        Assert.assertFalse(a.apply(m));
+        Assert.assertTrue(a.apply(m));
     }
 
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testEquals() {
         UUID n = UUID.randomUUID();
         UUID vm = UUID.randomUUID();
-        ShutdownVM a = new ShutdownVM(vm, n, 3, 5);
-        ShutdownVM b = new ShutdownVM(vm, n, 3, 5);
+        KillVM a = new KillVM(vm, n, 3, 5);
+        KillVM b = new KillVM(vm, n, 3, 5);
         Assert.assertEquals(a, b);
         Assert.assertEquals(a.hashCode(), b.hashCode());
-        Assert.assertNotSame(a, new ShutdownVM(vm, n, 4, 5));
-        Assert.assertNotSame(a, new ShutdownVM(vm, n, 3, 4));
-        Assert.assertNotSame(a, new ShutdownVM(vm, UUID.randomUUID(), 3, 5));
-        Assert.assertNotSame(a, new ShutdownVM(UUID.randomUUID(), n, 4, 5));
+        Assert.assertNotSame(a, new KillVM(vm, n, 4, 5));
+        Assert.assertNotSame(a, new KillVM(vm, n, 3, 4));
+        Assert.assertNotSame(a, new KillVM(vm, UUID.randomUUID(), 3, 5));
+        Assert.assertNotSame(a, new KillVM(UUID.randomUUID(), n, 4, 5));
     }
 }

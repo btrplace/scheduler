@@ -18,7 +18,6 @@
 
 package btrplace.plan.action;
 
-
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.plan.Action;
@@ -26,57 +25,49 @@ import btrplace.plan.Action;
 import java.util.UUID;
 
 /**
- * An action to stop a virtual machine running on an online node and put it into the ready state.
+ * Prepare a VM for being deployed.
  *
  * @author Fabien Hermenier
  */
-public class ShutdownVM extends Action {
+public class ForgeVM extends Action {
 
-    private UUID vm;
-
-    private UUID node;
+    private UUID id;
 
     /**
      * Make a new action.
      *
-     * @param vm the virtual machine to stop
-     * @param on the hosting node
-     * @param s  the moment the action start.
-     * @param f  the moment the action finish
+     * @param vm the VM to force.
      */
-    public ShutdownVM(UUID vm, UUID on, int s, int f) {
-        super(s, f);
-        this.vm = vm;
-        this.node = on;
+    public ForgeVM(UUID vm, int st, int ed) {
+        super(st, ed);
+        this.id = vm;
     }
 
-
     /**
-     * Apply the action by removing the virtual machine from the model.
+     * Put the VM in the ready state if it does not already belong
+     * to the mapping.
      *
-     * @param m the model to alter
-     * @return {@code true}
+     * @param m the model to modify
+     * @return {@code true} iff successful
      */
     @Override
     public boolean apply(Model m) {
         Mapping map = m.getMapping();
-        if (map.getOnlineNodes().contains(node) &&
-                map.getRunningVMs().contains(vm) &&
-                map.getVMLocation(vm).equals(node)) {
-            map.addReadyVM(vm);
+
+        if (!map.getAllVMs().contains(id)) {
+            map.addReadyVM(id);
             return true;
         }
         return false;
     }
 
-    @Override
-    public String toString() {
-        return new StringBuilder("stop(")
-                .append("vm=").append(vm)
-                .append(", on=").append(node).append(')').toString();
-    }
-
-
+    /**
+     * Test if this action is equals to another object.
+     *
+     * @param o the object to compare with
+     * @return true if ref is an instance of Force and if both
+     *         instance involve the same virtual machine
+     */
     @Override
     public boolean equals(Object o) {
         if (o == null) {
@@ -84,11 +75,8 @@ public class ShutdownVM extends Action {
         } else if (o == this) {
             return true;
         } else if (o.getClass() == this.getClass()) {
-            ShutdownVM that = (ShutdownVM) o;
-            return this.vm.equals(that.vm) &&
-                    this.node.equals(that.node) &&
-                    this.getStart() == that.getStart() &&
-                    this.getEnd() == that.getEnd();
+            ForgeVM that = (ForgeVM) o;
+            return this.id.equals(that.id);
         }
         return false;
     }
@@ -97,25 +85,20 @@ public class ShutdownVM extends Action {
     public int hashCode() {
         int res = getEnd();
         res = getStart() + 31 * res;
-        res = vm.hashCode() + 31 * res;
-        return 31 * res + node.hashCode();
+        return id.hashCode() + 31 * res;
     }
 
     /**
-     * Get the VM to shutdown.
+     * Get the VM to forge.
      *
      * @return the VM identifier
      */
     public UUID getVM() {
-        return vm;
+        return id;
     }
 
-    /**
-     * Get the node hosting the VM.
-     *
-     * @return the node identifier
-     */
-    public UUID getNode() {
-        return node;
+    @Override
+    public String toString() {
+        return new StringBuilder("forge(vm=").append(id).append(')').toString();
     }
 }

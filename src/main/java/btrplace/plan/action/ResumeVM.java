@@ -97,7 +97,7 @@ public class ResumeVM extends Action {
                 && map.getOnlineNodes().contains(dst)
                 && map.getSleepingVMs().contains(vm)
                 && map.getVMLocation(vm).equals(src)
-                && map.setVMRunOn(vm, dst));
+                && map.addRunningVM(vm, dst));
     }
 
     @Override

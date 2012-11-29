@@ -75,7 +75,7 @@ public class SuspendVM extends Action {
                 map.getOnlineNodes().contains(dst) &&
                 map.getRunningVMs().contains(vm) &&
                 map.getVMLocation(vm).equals(src) &&
-                map.setVMSleepOn(vm, dst)
+                map.addSleepingVM(vm, dst)
         );
     }
 

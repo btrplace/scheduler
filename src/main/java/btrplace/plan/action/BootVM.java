@@ -26,7 +26,7 @@ import java.util.UUID;
 
 /**
  * An action that demand to run a virtual machine on an online node.
- * The virtual machine is originally in the state 'waiting'.
+ * The virtual machine is originally in the state 'ready'.
  *
  * @author Fabien Hermenier
  */
@@ -79,7 +79,7 @@ public class BootVM extends Action {
 
     @Override
     public boolean apply(Model c) {
-        return (c.getMapping().getWaitingVMs().contains(vm) && c.getMapping().setVMRunOn(vm, node));
+        return (c.getMapping().getReadyVMs().contains(vm) && c.getMapping().addRunningVM(vm, node));
     }
 
     /**
