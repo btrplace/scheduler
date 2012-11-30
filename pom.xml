@@ -110,4 +110,15 @@
             <layout>default</layout>
         </snapshotRepository>
     </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>btrp-releases</id>
+            <url>http://btrp.inria.fr:8080/repos/releases</url>
+        </repository>
+        <repository>
+            <id>btrp-snapshots</id>
+            <url>http://btrp.inria.fr:8080/repos/snapshot-releases</url>
+        </repository>
+    </repositories>
 </project>
