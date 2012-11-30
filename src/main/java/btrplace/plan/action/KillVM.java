@@ -94,4 +94,11 @@ public class KillVM extends Action {
         res = res * 31 + (host != null ? host.hashCode() : 0);
         return id.hashCode() + 31 * res;
     }
+
+    @Override
+    public String toString() {
+        return new StringBuilder("killVM(vm=").append(id)
+                .append(", node=").append(host)
+                .append(')').toString();
+    }
 }

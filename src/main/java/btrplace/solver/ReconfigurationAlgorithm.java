@@ -19,7 +19,10 @@
 package btrplace.solver;
 
 import btrplace.model.Model;
+import btrplace.model.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
+
+import java.util.Collection;
 
 /**
  * Basic interface for a reconfiguration algorithm.
@@ -31,9 +34,10 @@ public interface ReconfigurationAlgorithm {
     /**
      * Compute a reconfiguration plan to reach a solution to the model
      *
-     * @param i the current model
+     * @param i     the current model
+     * @param cstrs the constraints that must be considered
      * @return the plan to execute to reach the new solution or {@code null} if there is no
      *         solution
      */
-    ReconfigurationPlan solve(Model i) throws SolverException;
+    ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs) throws SolverException;
 }

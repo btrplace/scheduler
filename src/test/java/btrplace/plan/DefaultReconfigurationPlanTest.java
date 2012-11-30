@@ -87,7 +87,7 @@ public class DefaultReconfigurationPlanTest {
 
         @Override
         public boolean apply(Model i) {
-            return false;  //To change body of implemented methods use File | Settings | File Templates.
+            return false;
         }
     }
 }

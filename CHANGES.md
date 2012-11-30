@@ -1,10 +1,11 @@
 Release notes
 =======================
 
-v0.4-SNAPSHOT ??
+v0.4 - ??
 ----------------------
 - InstantiateVM becomes ForgeVM
 - new action: KillVM
+- ReconfigurationAlgorithm.solve() takes the constraints to satisfy as a parameter.
 
 v0.3 - 26 nov. 2012
 ----------------------
