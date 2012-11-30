@@ -22,7 +22,7 @@
 
     <groupId>btrplace</groupId>
     <artifactId>solver-api</artifactId>
-    <version>0.4</version>
+    <version>0.5-SNAPSHOT</version>
 
     <description>Core components for a reconfiguration algorithm</description>
     <properties>
@@ -86,7 +86,7 @@
         <connection>scm:git:git://github.com/fhermeni/btrplace-solver-api.git</connection>
         <url>scm:git:git@github.com:fhermeni/btrplace-solver-api</url>
         <developerConnection>scm:git:git@github.com:fhermeni/btrplace-solver-api.git</developerConnection>
-        <tag>btrplace-solver-api-0.4</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
