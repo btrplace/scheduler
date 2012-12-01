@@ -1,7 +1,7 @@
 Release notes
 =======================
 
-v0.4 - ??
+v0.4 - 30 nov. 2012
 ----------------------
 - InstantiateVM becomes ForgeVM
 - new action: KillVM
