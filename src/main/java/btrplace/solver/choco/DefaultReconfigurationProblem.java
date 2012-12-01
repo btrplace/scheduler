@@ -205,7 +205,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                     } else {
                         vmActions[i] = new StayRunningVMModel(this, vmId);
                     }
-                } else if (map.getWaitingVMs().contains(vmId)) {
+                } else if (map.getReadyVMs().contains(vmId)) {
                     vmActions[i] = new BootVMModel(this, vmId);
                 } else {
                     throw new SolverException(model, "Unable to set VM '" + vmId + "' running: not instantiated");
@@ -216,7 +216,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
                 } else if (!map.getAllVMs().contains(vmId)) {
                     vmActions[i] = new InstantiateVMModel(this, vmId);
-                } else if (map.getWaitingVMs().contains(vmId)) {
+                } else if (map.getReadyVMs().contains(vmId)) {
                     vmActions[i] = new StayAwayVMModel(vmId);
                 } else {
                     throw new SolverException(model, "Unable to set VM '" + vmId + "' waiting: already instantiated or unknown");

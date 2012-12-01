@@ -57,12 +57,12 @@ public class DefaultChocoReconfigurationAlgorithmBuilderTest {
         map.addOnlineNode(nOn2);
         map.addOfflineNode(nOff);
 
-        map.setVMRunOn(vm1, nOn1);
-        map.setVMRunOn(vm2, nOn1);
-        map.setVMRunOn(vm3, nOn2);
-        map.setVMSleepOn(vm4, nOn2);
-        map.addWaitingVM(vm5);
-        map.addWaitingVM(vm6);
+        map.addRunningVM(vm1, nOn1);
+        map.addRunningVM(vm2, nOn1);
+        map.addRunningVM(vm3, nOn2);
+        map.addSleepingVM(vm4, nOn2);
+        map.addReadyVM(vm5);
+        map.addReadyVM(vm6);
         return new DefaultModel(map);
     }
 
@@ -74,7 +74,7 @@ public class DefaultChocoReconfigurationAlgorithmBuilderTest {
         Assert.assertTrue(rp.getFutureDestroyedVMs().isEmpty());
         Assert.assertEquals(m.getMapping().getRunningVMs(), rp.getFutureRunningVMs());
         Assert.assertEquals(m.getMapping().getSleepingVMs(), rp.getFutureSleepingVMs());
-        Assert.assertEquals(m.getMapping().getWaitingVMs(), rp.getFutureWaitingVMs());
+        Assert.assertEquals(m.getMapping().getReadyVMs(), rp.getFutureWaitingVMs());
         Assert.assertEquals(m.getMapping().getAllVMs(), rp.getManageableVMs());
     }
 
@@ -87,7 +87,7 @@ public class DefaultChocoReconfigurationAlgorithmBuilderTest {
         Assert.assertTrue(rp.getFutureDestroyedVMs().isEmpty());
         Assert.assertEquals(m.getMapping().getRunningVMs(), rp.getFutureRunningVMs());
         Assert.assertEquals(m.getMapping().getSleepingVMs(), rp.getFutureSleepingVMs());
-        Assert.assertEquals(m.getMapping().getWaitingVMs(), rp.getFutureWaitingVMs());
+        Assert.assertEquals(m.getMapping().getReadyVMs(), rp.getFutureWaitingVMs());
         Assert.assertEquals(m.getMapping().getAllVMs(), rp.getManageableVMs());
     }
 
@@ -99,7 +99,7 @@ public class DefaultChocoReconfigurationAlgorithmBuilderTest {
         Assert.assertTrue(rp.getFutureDestroyedVMs().isEmpty());
         Assert.assertEquals(m.getMapping().getRunningVMs(), rp.getFutureRunningVMs());
         Assert.assertEquals(m.getMapping().getSleepingVMs(), rp.getFutureSleepingVMs());
-        Assert.assertEquals(m.getMapping().getWaitingVMs(), rp.getFutureWaitingVMs());
+        Assert.assertEquals(m.getMapping().getReadyVMs(), rp.getFutureWaitingVMs());
         Assert.assertEquals(man, rp.getManageableVMs());
     }
 

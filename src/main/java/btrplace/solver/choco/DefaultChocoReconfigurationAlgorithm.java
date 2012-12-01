@@ -20,10 +20,10 @@ package btrplace.solver.choco;
 
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.model.constraint.Ready;
 import btrplace.model.constraint.Running;
 import btrplace.model.constraint.Sleeping;
 import btrplace.model.constraint.Terminated;
-import btrplace.model.constraint.Waiting;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.constraint.SatConstraintMapper;
@@ -113,7 +113,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     @Override
-    public ReconfigurationPlan solve(Model i) throws SolverException {
+    public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs) throws SolverException {
         rp = null;
         //Build the RP. As VM state management is not possible
         //We extract VM-state related constraints first.
@@ -124,12 +124,12 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         Set<UUID> toSleep = new HashSet<UUID>();
 
         List<ChocoSatConstraint> cConstraints = new ArrayList<ChocoSatConstraint>();
-        for (SatConstraint cstr : i.getConstraints()) {
+        for (SatConstraint cstr : cstrs) {
             if (cstr instanceof Running) {
                 toRun.addAll(cstr.getInvolvedVMs());
             } else if (cstr instanceof Sleeping) {
                 toSleep.addAll(cstr.getInvolvedVMs());
-            } else if (cstr instanceof Waiting) {
+            } else if (cstr instanceof Ready) {
                 toWait.addAll(cstr.getInvolvedVMs());
             } else if (cstr instanceof Terminated) {
                 toDestroy.addAll(cstr.getInvolvedVMs());

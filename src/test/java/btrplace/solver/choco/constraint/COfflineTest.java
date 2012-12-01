@@ -18,10 +18,7 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.Offline;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.action.ShutdownNode;
@@ -31,6 +28,8 @@ import btrplace.solver.choco.durationEvaluator.ConstantDuration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
 
 /**
@@ -52,11 +51,11 @@ public class COfflineTest {
         map.addOnlineNode(n2);
 
         Model model = new DefaultModel(map);
-        model.attach(new Offline(map.getAllNodes()));
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.getDurationEvaluators().register(ShutdownNode.class, new ConstantDuration(10));
         cra.setTimeLimit(-1);
-        ReconfigurationPlan plan = cra.solve(model);
+        Collection<SatConstraint> x = Collections.singleton((SatConstraint) new Offline(map.getAllNodes()));
+        ReconfigurationPlan plan = cra.solve(model, x);
         Assert.assertEquals(2, plan.size());
         Assert.assertEquals(10, plan.getDuration());
         Model res = plan.getResult();

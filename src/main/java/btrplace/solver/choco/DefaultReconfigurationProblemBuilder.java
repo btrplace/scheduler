@@ -115,7 +115,7 @@ public class DefaultReconfigurationProblemBuilder {
         if (runs == null) { //The others are supposed to be null to
             Mapping map = model.getMapping();
             runs = map.getRunningVMs();
-            waits = map.getWaitingVMs();
+            waits = map.getReadyVMs();
             sleep = map.getSleepingVMs();
             over = new HashSet<UUID>();
         }

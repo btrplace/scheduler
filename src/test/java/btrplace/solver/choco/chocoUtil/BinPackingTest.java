@@ -111,7 +111,6 @@ public class BinPackingTest {
 
         s.getConfiguration().putTrue(Configuration.STOP_AT_FIRST_SOLUTION);
         s.generateSearchStrategy();
-        ChocoLogging.setVerbosity(Verbosity.SEARCH);
         s.launch();
         int nbSol = s.getNbSolutions();
         Assert.assertEquals((boolean) s.isFeasible(), nbSol != 0, "SAT");

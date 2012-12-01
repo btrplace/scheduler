@@ -39,12 +39,12 @@
         <dependency>
             <groupId>btrplace</groupId>
             <artifactId>model</artifactId>
-            <version>0.5-SNAPSHOT</version>
+            <version>0.6</version>
         </dependency>
         <dependency>
             <groupId>btrplace</groupId>
             <artifactId>solver-api</artifactId>
-            <version>0.3</version>
+            <version>0.4</version>
         </dependency>
         <dependency>
             <groupId>net.sf.trove4j</groupId>
@@ -80,19 +80,19 @@
     <distributionManagement>
         <repository>
             <uniqueVersion>false</uniqueVersion>
-            <id>btrp</id>
+            <id>btrp-releases</id>
             <name>Corporate Repository</name>
             <url>
-                scpexe://btrp.inria.fr:/home/maven/repos/releases
+                scp://btrp.inria.fr:/home/maven/repos/releases
             </url>
             <layout>default</layout>
         </repository>
         <snapshotRepository>
-            <uniqueVersion>false</uniqueVersion>
-            <id>btrp</id>
+            <uniqueVersion>true</uniqueVersion>
+            <id>btrp-snapshots</id>
             <name>Corporate Repository</name>
             <url>
-                scpexe://btrp.inria.fr:/home/maven/repos/snapshot-releases
+                scp://btrp.inria.fr:/home/maven/repos/snapshot-releases
             </url>
             <layout>default</layout>
         </snapshotRepository>
@@ -108,7 +108,7 @@
         <extensions>
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh-external</artifactId>
+                <artifactId>wagon-ssh</artifactId>
                 <version>2.0</version>
             </extension>
         </extensions>
@@ -138,6 +138,14 @@
         <repository>
             <id>choco.repos</id>
             <url>http://www.emn.fr/z-info/choco-repo/mvn/repository/</url>
+        </repository>
+        <repository>
+            <id>btrp-releases</id>
+            <url>http://btrp.inria.fr:8080/repos/releases</url>
+        </repository>
+        <repository>
+            <id>btrp-snapshots</id>
+            <url>http://btrp.inria.fr:8080/repos/snapshot-releases</url>
         </repository>
     </repositories>
 </project>

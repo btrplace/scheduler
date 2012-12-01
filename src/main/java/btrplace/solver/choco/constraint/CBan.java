@@ -29,6 +29,7 @@ import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -53,8 +54,8 @@ public class CBan implements ChocoSatConstraint {
 
     @Override
     public void inject(ReconfigurationProblem rp) throws SolverException {
-        Set<UUID> nodes = ban.getInvolvedNodes();
-        Set<UUID> vms = ban.getInvolvedVMs();
+        Collection<UUID> nodes = ban.getInvolvedNodes();
+        Collection<UUID> vms = ban.getInvolvedVMs();
         int[] nodesIdx = new int[nodes.size()];
         int i = 0;
         for (UUID n : ban.getInvolvedNodes()) {

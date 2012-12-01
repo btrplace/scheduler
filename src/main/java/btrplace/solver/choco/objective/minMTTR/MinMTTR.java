@@ -56,5 +56,7 @@ public class MinMTTR implements ReconfigurationObjective {
 
         s.setDoMaximize(false);
         s.setObjective(cost);
+
+        //TODO: Insert the placement heuristic
     }
 }

@@ -27,6 +27,7 @@ import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -49,7 +50,7 @@ public class CBanTest {
             nodes[i] = UUID.randomUUID();
             vms[i] = UUID.randomUUID();
             m.addOnlineNode(nodes[i]);
-            m.setVMRunOn(vms[i], nodes[i]);
+            m.addRunningVM(vms[i], nodes[i]);
             if (i % 2 == 0) {
                 sVMs.add(vms[i]);
                 sNodes.add(nodes[i]);
@@ -58,12 +59,13 @@ public class CBanTest {
 
         Model mo = new DefaultModel(m);
         Ban b = new Ban(sVMs, sNodes);
-        mo.attach(b);
-        mo.attach(new Running(m.getAllVMs()));
+        Collection<SatConstraint> s = new HashSet<SatConstraint>();
+        s.add(b);
+        s.add(new Running(m.getAllVMs()));
 
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.setTimeLimit(-1);
-        ReconfigurationPlan p = cra.solve(mo);
+        ReconfigurationPlan p = cra.solve(mo, s);
         Assert.assertEquals(SatConstraint.Sat.SATISFIED, b.isSatisfied(p.getResult()));
         Assert.assertEquals(3, p.size());
     }

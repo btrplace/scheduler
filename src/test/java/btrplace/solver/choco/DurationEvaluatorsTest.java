@@ -41,7 +41,7 @@ public class DurationEvaluatorsTest {
         Assert.assertTrue(d.isRegistered(MigrateVM.class));
         Assert.assertTrue(d.isRegistered(SuspendVM.class));
         Assert.assertTrue(d.isRegistered(ResumeVM.class));
-        Assert.assertTrue(d.isRegistered(InstantiateVM.class));
+        Assert.assertTrue(d.isRegistered(ForgeVM.class));
         Assert.assertTrue(d.isRegistered(BootVM.class));
         Assert.assertTrue(d.isRegistered(ShutdownVM.class));
         Assert.assertTrue(d.isRegistered(BootNode.class));

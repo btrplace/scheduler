@@ -19,7 +19,6 @@
 package btrplace.solver.choco;
 
 import btrplace.model.*;
-import btrplace.model.constraint.Running;
 import btrplace.solver.SolverException;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -49,8 +48,8 @@ public class ResourceMappingTest {
         UUID vm2 = UUID.randomUUID();
         ma.addOnlineNode(n1);
         ma.addOfflineNode(n2);
-        ma.setVMRunOn(vm, n1);
-        ma.setVMRunOn(vm2, n1);
+        ma.addRunningVM(vm, n1);
+        ma.addRunningVM(vm2, n1);
 
         StackableResource rc = new DefaultStackableResource("foo", 0);
         rc.set(vm2, 3);
@@ -86,8 +85,8 @@ public class ResourceMappingTest {
         UUID vm2 = UUID.randomUUID();
         ma.addOnlineNode(n1);
         ma.addOnlineNode(n2);
-        ma.setVMRunOn(vm, n1);
-        ma.setVMRunOn(vm2, n1);
+        ma.addRunningVM(vm, n1);
+        ma.addRunningVM(vm2, n1);
 
         StackableResource rc = new DefaultStackableResource("foo", 0);
         rc.set(vm, 2);
@@ -95,8 +94,8 @@ public class ResourceMappingTest {
         rc.set(n1, 4);
         rc.set(n2, 2);
         Model mo = new DefaultModel(ma);
-        mo.attach(new Running(ma.getAllVMs()));
         mo.attach(rc);
+        //new Running(ma.getAllVMs())
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
         ActionModel avm1 = rp.getVMActions()[rp.getVM(vm)];
         ActionModel avm2 = rp.getVMActions()[rp.getVM(vm2)];

@@ -55,12 +55,12 @@ public class DefaultReconfigurationProblemTest {
         map.addOnlineNode(nOn2);
         map.addOfflineNode(nOff);
 
-        map.setVMRunOn(vm1, nOn1);
-        map.setVMRunOn(vm2, nOn1);
-        map.setVMRunOn(vm3, nOn2);
-        map.setVMSleepOn(vm4, nOn2);
-        map.addWaitingVM(vm5);
-        map.addWaitingVM(vm6);
+        map.addRunningVM(vm1, nOn1);
+        map.addRunningVM(vm2, nOn1);
+        map.addRunningVM(vm3, nOn2);
+        map.addSleepingVM(vm4, nOn2);
+        map.addReadyVM(vm5);
+        map.addReadyVM(vm6);
         return new DefaultModel(map);
     }
 
@@ -129,7 +129,7 @@ public class DefaultReconfigurationProblemTest {
     public void testWaitinVMToRun() throws SolverException {
         Mapping m = new DefaultMapping();
         UUID vm = UUID.randomUUID();
-        m.addWaitingVM(vm);
+        m.addReadyVM(vm);
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(new DefaultModel(m))
                 .setNextVMsStates(new HashSet<UUID>(),
                         Collections.singleton(vm),
@@ -147,7 +147,7 @@ public class DefaultReconfigurationProblemTest {
         UUID vm = UUID.randomUUID();
         UUID n = UUID.randomUUID();
         m.addOnlineNode(n);
-        m.setVMRunOn(vm, n);
+        m.addRunningVM(vm, n);
 
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(new DefaultModel(m))
                 .setNextVMsStates(new HashSet<UUID>(),
@@ -165,7 +165,7 @@ public class DefaultReconfigurationProblemTest {
         UUID vm = UUID.randomUUID();
         UUID n = UUID.randomUUID();
         m.addOnlineNode(n);
-        m.setVMRunOn(vm, n);
+        m.addRunningVM(vm, n);
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(new DefaultModel(m))
                 .setNextVMsStates(new HashSet<UUID>(),
                         new HashSet<UUID>(),
@@ -183,7 +183,7 @@ public class DefaultReconfigurationProblemTest {
         UUID vm = UUID.randomUUID();
         UUID n = UUID.randomUUID();
         m.addOnlineNode(n);
-        m.setVMRunOn(vm, n);
+        m.addRunningVM(vm, n);
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(new DefaultModel(m))
                 .setNextVMsStates(new HashSet<UUID>(),
                         new HashSet<UUID>(),
@@ -201,7 +201,7 @@ public class DefaultReconfigurationProblemTest {
         UUID vm = UUID.randomUUID();
         UUID n = UUID.randomUUID();
         m.addOnlineNode(n);
-        m.setVMSleepOn(vm, n);
+        m.addSleepingVM(vm, n);
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(new DefaultModel(m))
                 .setNextVMsStates(new HashSet<UUID>(),
                         new HashSet<UUID>(),
@@ -218,7 +218,7 @@ public class DefaultReconfigurationProblemTest {
         UUID vm = UUID.randomUUID();
         UUID n = UUID.randomUUID();
         m.addOnlineNode(n);
-        m.setVMSleepOn(vm, n);
+        m.addSleepingVM(vm, n);
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(new DefaultModel(m))
                 .setNextVMsStates(new HashSet<UUID>(),
                         Collections.singleton(vm),
@@ -267,7 +267,7 @@ public class DefaultReconfigurationProblemTest {
             rc.set(n, 4);
         }
 
-        for (UUID vm : m.getMapping().getWaitingVMs()) {
+        for (UUID vm : m.getMapping().getReadyVMs()) {
             rc.set(vm, 2);
         }
         m.attach(rc);
@@ -292,7 +292,7 @@ public class DefaultReconfigurationProblemTest {
         Mapping map = m.getMapping().clone();
         Set<UUID> s = new HashSet<UUID>(map.getAllVMs());
         for (UUID vm : s) {
-            map.addWaitingVM(vm);
+            map.addReadyVM(vm);
         }
         map.removeNode(nOff);
         m = new DefaultModel(map);

@@ -30,7 +30,9 @@ import btrplace.solver.choco.durationEvaluator.LinearToAResourceDuration;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.UUID;
 
 /**
@@ -55,18 +57,19 @@ public class COverbookTest {
             vms[i] = UUID.randomUUID();
             rcCPU.set(vms[i], 1);
 
-            m.addWaitingVM(vms[i]);
+            m.addReadyVM(vms[i]);
         }
         Model mo = new DefaultModel(m);
         mo.attach(rcCPU);
         Overbook o = new Overbook(m.getAllNodes(), "cpu", 2);
-        mo.attach(o);
-        mo.attach(new Running(m.getAllVMs()));
+        Collection<SatConstraint> c = new HashSet<SatConstraint>();
+        c.add(o);
+        c.add(new Running(m.getAllVMs()));
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
         cra.getSatConstraintMapper().register(new COverbook.Builder());
         cra.setTimeLimit(-1);
-        ReconfigurationPlan p = cra.solve(mo);
+        ReconfigurationPlan p = cra.solve(mo, c);
         Assert.assertNotNull(p);
         System.out.println(p);
         System.out.println(p.getResult().getMapping());
@@ -93,23 +96,24 @@ public class COverbookTest {
             vms[i] = UUID.randomUUID();
             rcCPU.set(vms[i], 1);
 
-            m.addWaitingVM(vms[i]);
+            m.addReadyVM(vms[i]);
         }
         Model mo = new DefaultModel(m);
         mo.attach(rcCPU);
-        mo.attach(new Overbook(Collections.singleton(nodes[0]), "cpu", 1));
-        mo.attach(new Overbook(Collections.singleton(nodes[1]), "cpu", 2));
-        mo.attach(new Overbook(Collections.singleton(nodes[2]), "cpu", 3));
-        mo.attach(new Running(m.getAllVMs()));
+        Collection<SatConstraint> c = new HashSet<SatConstraint>();
+        c.add(new Overbook(Collections.singleton(nodes[0]), "cpu", 1));
+        c.add(new Overbook(Collections.singleton(nodes[1]), "cpu", 2));
+        c.add(new Overbook(Collections.singleton(nodes[2]), "cpu", 3));
+        c.add(new Running(m.getAllVMs()));
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
         cra.getSatConstraintMapper().register(new COverbook.Builder());
         cra.setTimeLimit(-1);
-        ReconfigurationPlan p = cra.solve(mo);
+        ReconfigurationPlan p = cra.solve(mo, c);
         Assert.assertNotNull(p);
         System.out.println(p);
         System.out.println(p.getResult().getMapping());
-        for (SatConstraint cstr : mo.getConstraints()) {
+        for (SatConstraint cstr : c) {
             Assert.assertTrue(cstr.isSatisfied(p.getResult()).equals(SatConstraint.Sat.SATISFIED));
         }
     }
@@ -128,16 +132,17 @@ public class COverbookTest {
             }
             vms[i] = UUID.randomUUID();
             rcMem.set(vms[i], 1);
-            m.addWaitingVM(vms[i]);
+            m.addReadyVM(vms[i]);
         }
         Model mo = new DefaultModel(m);
         mo.attach(rcMem);
-        mo.attach(new Overbook(m.getAllNodes(), "mem", 1));
-        mo.attach(new Running(m.getAllVMs()));
+        Collection<SatConstraint> c = new HashSet<SatConstraint>();
+        c.add(new Overbook(m.getAllNodes(), "mem", 1));
+        c.add(new Running(m.getAllVMs()));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.getSatConstraintMapper().register(new COverbook.Builder());
         cra.getDurationEvaluators().register(BootVM.class, new LinearToAResourceDuration(rcMem, 2, 3));
-        Assert.assertNull(cra.solve(mo));
+        Assert.assertNull(cra.solve(mo, c));
     }
 
     @Test
@@ -149,12 +154,12 @@ public class COverbookTest {
         m.addOnlineNode(n1);
         m.addOnlineNode(n2);
         m.addOnlineNode(n3);
-        m.setVMRunOn(UUID.randomUUID(), n1);
-        m.setVMRunOn(UUID.randomUUID(), n2);
-        m.setVMRunOn(UUID.randomUUID(), n2);
-        m.setVMRunOn(UUID.randomUUID(), n3);
-        m.setVMRunOn(UUID.randomUUID(), n3);
-        m.setVMRunOn(UUID.randomUUID(), n3);
+        m.addRunningVM(UUID.randomUUID(), n1);
+        m.addRunningVM(UUID.randomUUID(), n2);
+        m.addRunningVM(UUID.randomUUID(), n2);
+        m.addRunningVM(UUID.randomUUID(), n3);
+        m.addRunningVM(UUID.randomUUID(), n3);
+        m.addRunningVM(UUID.randomUUID(), n3);
         StackableResource rcCPU = new DefaultStackableResource("cpu", 1);
         Model mo = new DefaultModel(m);
         mo.attach(rcCPU);

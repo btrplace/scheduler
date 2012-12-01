@@ -49,7 +49,7 @@ public class DurationEvaluators {
         durations.put(ShutdownVM.class, new ConstantDuration(1));
         durations.put(SuspendVM.class, new ConstantDuration(1));
         durations.put(ResumeVM.class, new ConstantDuration(1));
-        durations.put(InstantiateVM.class, new ConstantDuration(1));
+        durations.put(ForgeVM.class, new ConstantDuration(1));
         durations.put(ShutdownNode.class, new ConstantDuration(1));
         durations.put(BootNode.class, new ConstantDuration(1));
     }
