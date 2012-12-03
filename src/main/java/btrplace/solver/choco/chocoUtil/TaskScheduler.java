@@ -37,16 +37,16 @@ import java.util.logging.Level;
 
 /**
  * A constraint to schedule tasks with regards to their resource usages on resources having a finite amount to share.
- * Tasks and resources can have multi-dimensions.
+ * Tasks and resources can have multiple dimensions.
  * There is only 2 kind of tasks. cTasks that are already placed and necessarily starts at 0 and dTasks that
  * are not placed but end necessarily at the end of the schedule.
  * Inspired by the cumulatives constraint.
  *
  * @author Fabien Hermenier
  */
-public class SlicesScheduler2 extends AbstractLargeIntSConstraint {
+public class TaskScheduler extends AbstractLargeIntSConstraint {
 
-    private LocalScheduler2[] scheds;
+    private LocalTaskScheduler[] scheds;
 
     private IntDomainVar[] cHosters;
 
@@ -57,6 +57,8 @@ public class SlicesScheduler2 extends AbstractLargeIntSConstraint {
     private IntDomainVar[] dStarts;
 
     private int nbResources;
+
+    private int nbDims;
 
     private int nbCTasks;
 
@@ -86,17 +88,17 @@ public class SlicesScheduler2 extends AbstractLargeIntSConstraint {
         return l.toArray(new IntDomainVar[l.size()]);
     }
 
-    public SlicesScheduler2(IEnvironment env,
-                            int[][] capas,
-                            IntDomainVar[] cHosters,
-                            int[][] cUsages,
-                            IntDomainVar[] cEnds,
-                            IntDomainVar[] dHosters,
-                            int[][] dUsages,
-                            IntDomainVar[] dStarts,
-                            int[] assocs,
-                            IntDomainVar[] excls,
-                            int[] exclSlice
+    public TaskScheduler(IEnvironment env,
+                         int[][] capas,
+                         IntDomainVar[] cHosters,
+                         int[][] cUsages,
+                         IntDomainVar[] cEnds,
+                         IntDomainVar[] dHosters,
+                         int[][] dUsages,
+                         IntDomainVar[] dStarts,
+                         int[] assocs,
+                         IntDomainVar[] excls,
+                         int[] exclSlice
 
     ) {
 
@@ -112,10 +114,11 @@ public class SlicesScheduler2 extends AbstractLargeIntSConstraint {
         this.dUsages = dUsages;
 
         this.nbResources = capas[0].length;
+        this.nbDims = capas.length;
         this.nbCTasks = cUsages[0].length;
         this.nbDTasks = dUsages[0].length;
 
-        scheds = new LocalScheduler2[nbResources];
+        scheds = new LocalTaskScheduler[nbResources];
 
         this.dExclusives = excls;
 
@@ -143,7 +146,7 @@ public class SlicesScheduler2 extends AbstractLargeIntSConstraint {
         this.vIns = new IStateIntVector[scheds.length];
         for (int i = 0; i < scheds.length; i++) {
             vIns[i] = env.makeIntVector();
-            scheds[i] = new LocalScheduler2(i, env,
+            scheds[i] = new LocalTaskScheduler(i, env,
                     capacities,
                     cUsages,
                     cEnds,
@@ -215,7 +218,7 @@ public class SlicesScheduler2 extends AbstractLargeIntSConstraint {
 
     @Override
     public boolean isConsistent() {
-        for (LocalScheduler2 sc : scheds) {
+        for (LocalTaskScheduler sc : scheds) {
             sc.computeProfiles();
             try {
                 if (!sc.checkInvariant()) {
@@ -247,17 +250,17 @@ public class SlicesScheduler2 extends AbstractLargeIntSConstraint {
             cEndsVals[i] = vals[i + dHosters.length + cHosters.length];
         }
 
-
         //A hashmap to save the changes of each node (relatives to the previous moment) in the resources distribution
-        TIntIntHashMap[][] changes = new TIntIntHashMap[capacities.length][nbResources];
-        for (int i = 0; i < nbResources; i++) {
-            for (int j = 0; j < capacities.length; j++) {
+        TIntIntHashMap[][] changes = new TIntIntHashMap[nbDims][nbResources];
+
+        for (int i = 0; i < nbDims; i++) {
+            for (int j = 0; j < nbResources; j++) {
                 changes[i][j] = new TIntIntHashMap();
             }
         }
 
 
-        for (int i = 0; i < nbResources; i++) { //Each dimension
+        for (int i = 0; i < nbDims; i++) { //Each dimension
             for (int j = 0; j < dHostersVals.length; j++) { //for each placed dSlices
                 int nIdx = dHostersVals[j]; //on which resource it is placed
                 changes[i][nIdx].put(dStartsVals[j], changes[i][nIdx].get(dStartsVals[j]) - dUsages[i][j]);
@@ -269,7 +272,7 @@ public class SlicesScheduler2 extends AbstractLargeIntSConstraint {
             currentFree[i] = Arrays.copyOf(capacities[i], capacities[i].length);
         }
 
-        for (int i = 0; i < capacities.length; i++) {
+        for (int i = 0; i < nbDims; i++) {
             for (int j = 0; j < cHostersVals.length; j++) {
                 int nIdx = cHostersVals[j];
                 changes[i][nIdx].put(cEndsVals[j], changes[i][nIdx].get(cEndsVals[j] - cUsages[i][j]));
@@ -287,8 +290,8 @@ public class SlicesScheduler2 extends AbstractLargeIntSConstraint {
             }
         }
 
-        for (int i = 0; i < capacities.length; i++) {
-            for (int j = 0; j < capacities[i].length; j++) {
+        for (int i = 0; i < nbDims; i++) {
+            for (int j = 0; j < nbDims; j++) {
                 //Now we check the evolution of the absolute free space.
                 ChocoLogging.getBranchingLogger().finest("--- " + j + " isSatisfied() on dimension '" + i + "' ---");
                 ChocoLogging.getBranchingLogger().finest(j + " currentFree=" + currentFree[j]);

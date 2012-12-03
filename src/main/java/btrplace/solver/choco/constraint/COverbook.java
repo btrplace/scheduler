@@ -96,6 +96,11 @@ public class COverbook implements ChocoSatConstraint {
                 IntDomainVar freeRaw = ChocoUtils.div(s, freeReal, (int) ratio); //TODO: check for the correctness of the truncation
                 s.post(s.eq(rawCapa[nIdx], s.minus(maxRaw, freeRaw)));
             }
+
+            //The slice scheduling constraint that is necessary
+            //TODO: a slice on both the real and the raw resource usage ?
+            SlicesPlanner p = new SlicesPlanner(rcm, cstr.getRatio());
+            p.inject(rp);
         }
     }
 

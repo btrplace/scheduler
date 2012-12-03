@@ -30,21 +30,13 @@ import java.util.Arrays;
 import java.util.BitSet;
 
 /**
+ * TODO: Transpose dimension/element indexes to remove getUsage()
+ *
  * @author Fabien Hermenier
  */
-public class LocalScheduler2 {
+public class LocalTaskScheduler {
 
     private int me;
-
-    /**
-     * My CPU capacity.
-     */
-    //private int capacityCPU;
-
-    /**
-     * My memory capacity.
-     */
-    //private int capacityMem;
 
     /**
      * out[i] = true <=> the consuming slice i will leave me.
@@ -104,18 +96,18 @@ public class LocalScheduler2 {
 
     private int nbDims = 0;
 
-    public LocalScheduler2(int me,
-                           IEnvironment env,
-                           int[][] capacities,
-                           int[][] cUsages,
-                           IntDomainVar[] cEnds,
-                           BitSet outs,
-                           int[][] dUsages,
-                           IntDomainVar[] dStarts,
-                           IStateIntVector vIn,
-                           int[] assocs,
-                           int[] revAssocs,
-                           IntDomainVar excl, int exclSlice) {
+    public LocalTaskScheduler(int me,
+                              IEnvironment env,
+                              int[][] capacities,
+                              int[][] cUsages,
+                              IntDomainVar[] cEnds,
+                              BitSet outs,
+                              int[][] dUsages,
+                              IntDomainVar[] dStarts,
+                              IStateIntVector vIn,
+                              int[] assocs,
+                              int[] revAssocs,
+                              IntDomainVar excl, int exclSlice) {
         this.associations = assocs;
         this.me = me;
         this.cEnds = cEnds;
@@ -140,8 +132,6 @@ public class LocalScheduler2 {
             profilesMax[i] = new TIntIntHashMap();
             profilesMin[i] = new TIntIntHashMap();
         }
-        //startupFreeMem = capacityMem;
-        //startupFreeCPU = capacityCPU;
 
         int lastInf = out.isEmpty() ? 0 : Integer.MAX_VALUE;
         int lastSup = 0;
@@ -150,9 +140,6 @@ public class LocalScheduler2 {
             for (int i = 0; i < capacities.length; i++) {
                 startupFree[i] -= cUsages[i][j];
             }
-
-//            startupFreeCPU -= cCPUHeights[j];
-//            startupFreeMem -= cMemHeights[j];
 
             int i = cEnds[j].getInf();
             int s = cEnds[j].getSup();

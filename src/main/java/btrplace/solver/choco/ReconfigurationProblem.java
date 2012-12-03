@@ -24,6 +24,7 @@ import btrplace.solver.SolverException;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -255,6 +256,13 @@ public interface ReconfigurationProblem {
      * @return the resource mapping if exists, {@code null} otherwise
      */
     ResourceMapping getResourceMapping(String id);
+
+    /**
+     * Get all the declared resource mappings.
+     *
+     * @return a collection of resources
+     */
+    Collection<ResourceMapping> getResourceMappings();
 
     /**
      * Get the amount of VMs hosted on each node.

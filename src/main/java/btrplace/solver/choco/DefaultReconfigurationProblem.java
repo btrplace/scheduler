@@ -435,6 +435,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
+    public Collection<ResourceMapping> getResourceMappings() {
+        return resources.values();
+    }
+
+    @Override
     public CPSolver getSolver() {
         return solver;
     }

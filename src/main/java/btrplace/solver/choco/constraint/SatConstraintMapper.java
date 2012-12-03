@@ -19,10 +19,7 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.SatConstraint;
-import btrplace.model.constraint.Ban;
-import btrplace.model.constraint.Offline;
-import btrplace.model.constraint.Online;
-import btrplace.model.constraint.Spread;
+import btrplace.model.constraint.*;
 import btrplace.solver.choco.ChocoSatConstraint;
 import btrplace.solver.choco.ChocoSatConstraintBuilder;
 
@@ -46,6 +43,7 @@ public class SatConstraintMapper {
 
         builders.put(Spread.class, new CContinuousSpread.Builder());
         builders.put(Ban.class, new CBan.Builder());
+        builders.put(Fence.class, new CFence.Builder());
         builders.put(Online.class, new COnline.Builder());
         builders.put(Offline.class, new COffline.Builder());
     }

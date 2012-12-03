@@ -19,6 +19,7 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.*;
+import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Overbook;
 import btrplace.model.constraint.Running;
 import btrplace.plan.ReconfigurationPlan;
@@ -30,10 +31,7 @@ import btrplace.solver.choco.durationEvaluator.LinearToAResourceDuration;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Unit tests for {@link COverbook}.
@@ -172,6 +170,40 @@ public class COverbookTest {
         Assert.assertTrue(co1.getMisPlacedVMs(mo).isEmpty());
         Assert.assertTrue(co2.getMisPlacedVMs(mo).isEmpty());
         Assert.assertEquals(o3.getInvolvedVMs(), co3.getMisPlacedVMs(mo));
+    }
+
+    @Test
+    public void testWithScheduling1() throws SolverException {
+        Mapping m = new DefaultMapping();
+        UUID n1 = UUID.randomUUID();
+        UUID n2 = UUID.randomUUID();
+        UUID n3 = UUID.randomUUID();
+        UUID vm1 = UUID.randomUUID();
+        UUID vm2 = UUID.randomUUID();
+        UUID vm3 = UUID.randomUUID();
+
+        m.addOnlineNode(n1);
+        m.addOnlineNode(n2);
+        m.addOnlineNode(n3);
+        m.addRunningVM(vm1, n1);
+        m.addRunningVM(vm2, n2);
+        m.addRunningVM(vm3, n3);
+
+        ShareableResource rcCPU = new DefaultShareableResource("cpu", 1);
+
+        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        cstrs.add(new Running(m.getAllVMs()));
+        cstrs.add(new Overbook(Collections.singleton(n3), "cpu", 2));
+        cstrs.add(new Overbook(Collections.singleton(n2), "cpu", 1));
+        cstrs.add(new Overbook(Collections.singleton(n1), "cpu", 1));
+        cstrs.add(new Fence(Collections.singleton(vm1), Collections.singleton(n2)));
+        Model mo = new DefaultModel(m);
+        mo.attach(rcCPU);
+
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.getSatConstraintMapper().register(new COverbook.Builder());
+        ReconfigurationPlan p = cra.solve(mo, cstrs);
+        System.out.println(p);
 
     }
 }
