@@ -71,6 +71,8 @@ public class COverbook implements ChocoSatConstraint {
             for (UUID u : cstr.getInvolvedNodes()) {
                 int nIdx = rp.getNode(u);
                 s.post(s.eq(realCapa[nIdx], rawCapa[nIdx]));
+                SlicesPlanner p = new SlicesPlanner(rcm, cstr.getRatio());
+                p.inject(rp);
             }
         } else {
             double ratio = cstr.getRatio();
@@ -99,6 +101,7 @@ public class COverbook implements ChocoSatConstraint {
 
             //The slice scheduling constraint that is necessary
             //TODO: a slice on both the real and the raw resource usage ?
+
             SlicesPlanner p = new SlicesPlanner(rcm, cstr.getRatio());
             p.inject(rp);
         }

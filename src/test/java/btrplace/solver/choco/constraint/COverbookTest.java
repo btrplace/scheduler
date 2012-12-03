@@ -19,15 +19,15 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.*;
-import btrplace.model.constraint.Fence;
-import btrplace.model.constraint.Overbook;
-import btrplace.model.constraint.Running;
+import btrplace.model.constraint.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.action.BootVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.durationEvaluator.LinearToAResourceDuration;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
@@ -174,36 +174,39 @@ public class COverbookTest {
 
     @Test
     public void testWithScheduling1() throws SolverException {
+        ChocoLogging.setVerbosity(Verbosity.FINEST);
         Mapping m = new DefaultMapping();
         UUID n1 = UUID.randomUUID();
         UUID n2 = UUID.randomUUID();
-        UUID n3 = UUID.randomUUID();
         UUID vm1 = UUID.randomUUID();
         UUID vm2 = UUID.randomUUID();
         UUID vm3 = UUID.randomUUID();
 
         m.addOnlineNode(n1);
         m.addOnlineNode(n2);
-        m.addOnlineNode(n3);
         m.addRunningVM(vm1, n1);
         m.addRunningVM(vm2, n2);
-        m.addRunningVM(vm3, n3);
+        m.addReadyVM(vm3);
 
         ShareableResource rcCPU = new DefaultShareableResource("cpu", 1);
 
         List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
-        cstrs.add(new Running(m.getAllVMs()));
-        cstrs.add(new Overbook(Collections.singleton(n3), "cpu", 2));
-        cstrs.add(new Overbook(Collections.singleton(n2), "cpu", 1));
-        cstrs.add(new Overbook(Collections.singleton(n1), "cpu", 1));
-        cstrs.add(new Fence(Collections.singleton(vm1), Collections.singleton(n2)));
+        cstrs.add(new Running(Collections.singleton(vm1)));
+        cstrs.add(new Sleeping(Collections.singleton(vm2)));
+        cstrs.add(new Running(Collections.singleton(vm3)));
+        cstrs.add(new Online(m.getAllNodes()));
+        cstrs.add(new Overbook(m.getAllNodes(), "cpu", 1));
+        cstrs.add(new Preserve(m.getAllVMs(), "cpu", 1));
         Model mo = new DefaultModel(m);
         mo.attach(rcCPU);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.labelVariables(true);
         cra.getSatConstraintMapper().register(new COverbook.Builder());
+        cra.getSatConstraintMapper().register(new CPreserve.Builder());
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         System.out.println(p);
+        Assert.assertNotNull(p);
 
     }
 }

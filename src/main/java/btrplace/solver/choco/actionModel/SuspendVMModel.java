@@ -62,13 +62,13 @@ public class SuspendVMModel implements ActionModel {
 
         int d = rp.getDurationEvaluators().evaluate(SuspendVM.class, e);
 
-        duration = rp.makeDuration("", d, d);
+        duration = rp.makeDuration(rp.makeVarLabel("suspend_duration(" + e + ")"), d, d);
         this.cSlice = new SliceBuilder(rp, e).setHoster(rp.getCurrentVMLocation(rp.getVM(e)))
-                .setEnd(rp.makeDuration("", d, rp.getEnd().getSup()))
+                .setEnd(rp.makeDuration(rp.makeVarLabel("cSlice_duration(" + e + ")"), d, rp.getEnd().getSup()))
                 .setExclusive(false)
                 .build();
 
-        start = new IntDomainVarAddCste(rp.getSolver(), "", cSlice.getEnd(), -d);
+        start = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel("suspend_start(" + e + ")"), cSlice.getEnd(), -d);
 
     }
 

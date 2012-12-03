@@ -31,6 +31,8 @@ import java.util.*;
 
 /**
  * A global constraint to help to plan all the slices in a reconfiguration problem.
+ * <p/>
+ * TODO: Should be able to work on a part only of the infra to be aligned with overbook signature.
  *
  * @author Fabien Hermenier
  */
@@ -114,12 +116,14 @@ public class SlicesPlanner {
             dHosters[i] = d.getHoster();
             dStart[i] = d.getStart();
             UUID e = d.getSubject();
-            //TODO: e is not necessarily a VM, seems to go to an API failure here
+            //TODO: e is not necessarily a VM, seems to get to an API failure here
             int iIdx = rp.getVM(e);
-            if (iIdx == -1) {
-                iIdx = rp.getNode(e);
+            if (iIdx < 0) {
+                dUsages[i] = map.getVMConsumption()[rp.getNode(e)].getInf();
+            } else {
+                dUsages[i] = map.getVMConsumption()[iIdx].getInf();
             }
-            dUsages[i] = map.getVMConsumption()[iIdx].getInf();
+
 
         }
 

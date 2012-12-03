@@ -267,7 +267,7 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
             }
         }
 
-        int[][] currentFree = new int[capacities.length][];
+        int[][] currentFree = new int[nbDims][];
         for (int i = 0; i < currentFree.length; i++) {
             currentFree[i] = Arrays.copyOf(capacities[i], capacities[i].length);
         }
@@ -290,22 +290,24 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
             }
         }
 
-        for (int i = 0; i < nbDims; i++) {
-            for (int j = 0; j < nbDims; j++) {
+        boolean ok = true;
+        for (int j = 0; j < nbResources; j++) {
+            ChocoLogging.getBranchingLogger().finest("--- Resource " + j + " isSatisfied() ---");
+            for (int i = 0; i < nbDims; i++) {
+                ChocoLogging.getBranchingLogger().finest("Dimension " + i + ":"
+                        + " currentFree= " + currentFree[i][j]
+                        + " changes= " + changes[i][j]);
                 //Now we check the evolution of the absolute free space.
-                ChocoLogging.getBranchingLogger().finest("--- " + j + " isSatisfied() on dimension '" + i + "' ---");
-                ChocoLogging.getBranchingLogger().finest(j + " currentFree=" + currentFree[j]);
-                ChocoLogging.getBranchingLogger().finest("Changes: " + changes[i][j].toString());
 
                 for (int x = 0; x < changes[i][j].keys().length; x++) {
                     currentFree[i][j] += changes[i][j].get(x);
                     if (currentFree[i][j] < 0) {
-                        ChocoLogging.getMainLogger().severe("@" + x + ": free=" + currentFree[i][j]);
-                        return false;
+                        ChocoLogging.getMainLogger().severe("-> free@" + x + ": " + currentFree[i][j]);
+                        ok = false;
                     }
                 }
             }
         }
-        return true;
+        return ok;
     }
 }
