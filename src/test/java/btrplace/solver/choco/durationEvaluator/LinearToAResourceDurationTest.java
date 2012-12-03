@@ -18,8 +18,8 @@
 
 package btrplace.solver.choco.durationEvaluator;
 
-import btrplace.model.DefaultStackableResource;
-import btrplace.model.StackableResource;
+import btrplace.model.DefaultShareableResource;
+import btrplace.model.ShareableResource;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
@@ -34,7 +34,7 @@ public class LinearToAResourceDurationTest {
 
     @Test
     public void testSimple() {
-        StackableResource rc = new DefaultStackableResource("foo", 0);
+        ShareableResource rc = new DefaultShareableResource("foo", 0);
         UUID u = UUID.randomUUID();
         rc.set(u, 3);
         LinearToAResourceDuration d = new LinearToAResourceDuration(rc, 3);

@@ -19,6 +19,7 @@
 package btrplace.solver.choco.actionModel;
 
 import btrplace.plan.Action;
+import btrplace.plan.action.KillVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -30,13 +31,15 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Model an action that instantiate a VM to put it into the waiting state.
+ * An action to model a VM that is killed.
  *
  * @author Fabien Hermenier
  */
-public class InstantiateVMModel implements ActionModel {
+public class KillVMActionModel implements ActionModel {
 
     private UUID vm;
+
+    private UUID node;
 
     /**
      * Make a new model.
@@ -45,52 +48,34 @@ public class InstantiateVMModel implements ActionModel {
      * @param e  the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public InstantiateVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
+    public KillVMActionModel(ReconfigurationProblem rp, UUID e) throws SolverException {
         vm = e;
-    }
-
-    @Override
-    public List<Action> getResultingActions() {
-        return new ArrayList<Action>();
-    }
-
-    /**
-     * Get the VM manipulated by the action.
-     *
-     * @return the VM identifier
-     */
-    public UUID getVM() {
-        return vm;
+        node = rp.getSourceModel().getMapping().getVMLocation(vm);
     }
 
     @Override
     public IntDomainVar getStart() {
-        return null;
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public IntDomainVar getEnd() {
-        return null;
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public IntDomainVar getDuration() {
-        return null;
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public Slice getCSlice() {
-        return null;
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public Slice getDSlice() {
-        return null;
-    }
-
-    @Override
-    public IntDomainVar getState() {
-        return null;
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -98,4 +83,15 @@ public class InstantiateVMModel implements ActionModel {
         v.visit(this);
     }
 
+    @Override
+    public List<Action> getResultingActions() {
+        List<Action> l = new ArrayList<Action>();
+        l.add(new KillVM(vm, node, getStart().getVal(), getEnd().getVal()));
+        return l;
+    }
+
+    @Override
+    public IntDomainVar getState() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

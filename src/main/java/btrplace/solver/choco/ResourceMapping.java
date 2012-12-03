@@ -18,7 +18,7 @@
 
 package btrplace.solver.choco;
 
-import btrplace.model.StackableResource;
+import btrplace.model.ShareableResource;
 import btrplace.solver.choco.chocoUtil.BinPacking;
 import choco.Choco;
 import choco.cp.solver.CPSolver;
@@ -35,7 +35,7 @@ import java.util.UUID;
  */
 public class ResourceMapping {
 
-    private StackableResource rc;
+    private ShareableResource rc;
 
     private IntDomainVar[] rawNodeUsage;
 
@@ -49,7 +49,7 @@ public class ResourceMapping {
      * @param rp the problem to rely on
      * @param rc the resource to consider
      */
-    public ResourceMapping(ReconfigurationProblem rp, StackableResource rc) {
+    public ResourceMapping(ReconfigurationProblem rp, ShareableResource rc) {
         this.rc = rc;
 
         UUID[] nodes = rp.getNodes();
@@ -87,9 +87,9 @@ public class ResourceMapping {
     /**
      * Get the original resource vmUsage and consumption.
      *
-     * @return an {@link StackableResource}
+     * @return an {@link ShareableResource}
      */
-    public StackableResource getSourceResource() {
+    public ShareableResource getSourceResource() {
         return rc;
     }
 

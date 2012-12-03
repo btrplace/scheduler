@@ -21,7 +21,7 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.StackableResource;
+import btrplace.model.ShareableResource;
 import btrplace.model.constraint.Overbook;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
@@ -73,7 +73,7 @@ public class COverbook implements ChocoSatConstraint {
                 s.post(s.eq(realCapa[nIdx], rawCapa[nIdx]));
             }
         } else {
-            int ratio = cstr.getRatio();
+            double ratio = cstr.getRatio();
             for (UUID u : cstr.getInvolvedNodes()) {
                 int nIdx = rp.getNode(u);
                 //beware of truncation made by choco: 3 = 7 / 2 while here, 4 pCPU will be used
@@ -90,10 +90,10 @@ public class COverbook implements ChocoSatConstraint {
                 //freePCpu = ((2 * 6) - 7) / 2 = 2
                 //usedPCPU = 6 - 2 = 4 \o/
                 int maxRaw = rcm.getSourceResource().get(u);
-                int maxReal = maxRaw * ratio;
+                int maxReal = (int) (maxRaw * ratio); //Truncation, we ignore partial virtual resource so it's correct
                 IntDomainVar freeReal = s.createBoundIntVar(rp.makeVarLabel("free_real('" + u + "')"), 0, maxReal);
                 s.post(s.eq(freeReal, s.minus(maxReal, realCapa[nIdx])));
-                IntDomainVar freeRaw = ChocoUtils.div(s, freeReal, ratio);
+                IntDomainVar freeRaw = ChocoUtils.div(s, freeReal, (int) ratio); //TODO: check for the correctness of the truncation
                 s.post(s.eq(rawCapa[nIdx], s.minus(maxRaw, freeRaw)));
             }
         }
@@ -106,7 +106,7 @@ public class COverbook implements ChocoSatConstraint {
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
-        StackableResource rc = m.getResource(cstr.getResource());
+        ShareableResource rc = m.getResource(cstr.getResource());
         Set<UUID> bads = new HashSet<UUID>();
         if (rc == null) { //Should not occur, if the right model is given
             for (UUID n : cstr.getInvolvedNodes()) {
@@ -115,7 +115,7 @@ public class COverbook implements ChocoSatConstraint {
         } else {
             //Check if the node is saturated
             for (UUID n : cstr.getInvolvedNodes()) {
-                int overCapa = rc.get(n) * cstr.getRatio();
+                int overCapa = (int) (cstr.getRatio() * rc.get(n));
                 //Minus the VMs usage
                 for (UUID vmId : m.getMapping().getRunningVMs(n)) {
                     overCapa -= rc.get(vmId);

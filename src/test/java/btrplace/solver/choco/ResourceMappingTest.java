@@ -51,7 +51,7 @@ public class ResourceMappingTest {
         ma.addRunningVM(vm, n1);
         ma.addRunningVM(vm2, n1);
 
-        StackableResource rc = new DefaultStackableResource("foo", 0);
+        ShareableResource rc = new DefaultShareableResource("foo", 0);
         rc.set(vm2, 3);
         rc.set(n1, 4);
         Model mo = new DefaultModel(ma);
@@ -88,7 +88,7 @@ public class ResourceMappingTest {
         ma.addRunningVM(vm, n1);
         ma.addRunningVM(vm2, n1);
 
-        StackableResource rc = new DefaultStackableResource("foo", 0);
+        ShareableResource rc = new DefaultShareableResource("foo", 0);
         rc.set(vm, 2);
         rc.set(vm2, 3);
         rc.set(n1, 4);

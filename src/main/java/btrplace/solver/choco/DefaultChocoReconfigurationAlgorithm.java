@@ -20,10 +20,10 @@ package btrplace.solver.choco;
 
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.model.constraint.Killed;
 import btrplace.model.constraint.Ready;
 import btrplace.model.constraint.Running;
 import btrplace.model.constraint.Sleeping;
-import btrplace.model.constraint.Terminated;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.constraint.SatConstraintMapper;
@@ -119,8 +119,8 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         //We extract VM-state related constraints first.
         //For other constraint, we just create the right choco constraint
         Set<UUID> toRun = new HashSet<UUID>();
-        Set<UUID> toWait = new HashSet<UUID>();
-        Set<UUID> toDestroy = new HashSet<UUID>();
+        Set<UUID> toForge = new HashSet<UUID>();
+        Set<UUID> toKill = new HashSet<UUID>();
         Set<UUID> toSleep = new HashSet<UUID>();
 
         List<ChocoSatConstraint> cConstraints = new ArrayList<ChocoSatConstraint>();
@@ -130,9 +130,9 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
             } else if (cstr instanceof Sleeping) {
                 toSleep.addAll(cstr.getInvolvedVMs());
             } else if (cstr instanceof Ready) {
-                toWait.addAll(cstr.getInvolvedVMs());
-            } else if (cstr instanceof Terminated) {
-                toDestroy.addAll(cstr.getInvolvedVMs());
+                toForge.addAll(cstr.getInvolvedVMs());
+            } else if (cstr instanceof Killed) {
+                toKill.addAll(cstr.getInvolvedVMs());
             } else {
                 ChocoSatConstraintBuilder ccstrb = cstrMapper.getBuilder(cstr.getClass());
                 if (ccstrb == null) {
@@ -149,7 +149,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
         //Make the core-RP
         DefaultReconfigurationProblemBuilder rpb = new DefaultReconfigurationProblemBuilder(i)
-                .setNextVMsStates(toWait, toRun, toSleep, toDestroy)
+                .setNextVMsStates(toForge, toRun, toSleep, toKill)
                 .setDurationEvaluatators(durationEvaluators);
 
         if (repair) {

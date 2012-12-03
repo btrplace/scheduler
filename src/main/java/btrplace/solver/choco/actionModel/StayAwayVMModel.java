@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * A fake action model that indicates the VM is waiting or sleeping and does
+ * A fake action model that indicates the VM is ready or sleeping and does
  * not go in the running state.
  *
  * @author Fabien Hermenier

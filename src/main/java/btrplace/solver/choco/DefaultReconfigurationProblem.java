@@ -20,7 +20,7 @@ package btrplace.solver.choco;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.StackableResource;
+import btrplace.model.ShareableResource;
 import btrplace.plan.Action;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
@@ -51,10 +51,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private CPSolver solver;
 
-    private Set<UUID> waitings;
+    private Set<UUID> ready;
     private Set<UUID> runnings;
     private Set<UUID> sleepings;
-    private Set<UUID> destroyed;
+    private Set<UUID> killed;
 
     private Set<UUID> manageable;
 
@@ -83,29 +83,29 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * Make a new RP where the next state for every VM is indicated.
      * {@link DefaultReconfigurationProblemBuilder} can be used to simplify the instantiation process
      *
-     * @param m           the initial model
-     * @param dEval       to evaluate the duration of every action
-     * @param toWait      the VMs that must be in the waiting state
-     * @param toRun       the VMs that must be in the running state
-     * @param toSleep     the VMs that must be in the sleeping state
-     * @param manageable  the VMs that can be managed by the solver
-     * @param label       {@code true} to label the variables (for debugging purpose)
-     * @param toTerminate the VMs that must be terminated
+     * @param m          the initial model
+     * @param dEval      to evaluate the duration of every action
+     * @param ready      the VMs that must be in the ready state
+     * @param running    the VMs that must be in the running state
+     * @param sleeeping  the VMs that must be in the sleeping state
+     * @param manageable the VMs that can be managed by the solver
+     * @param label      {@code true} to label the variables (for debugging purpose)
+     * @param killed     the VMs that must be killed
      * @throws SolverException if an error occurred
      */
     public DefaultReconfigurationProblem(Model m,
                                          DurationEvaluators dEval,
-                                         Set<UUID> toWait,
-                                         Set<UUID> toRun,
-                                         Set<UUID> toSleep,
-                                         Set<UUID> toTerminate,
+                                         Set<UUID> ready,
+                                         Set<UUID> running,
+                                         Set<UUID> sleeeping,
+                                         Set<UUID> killed,
                                          Set<UUID> manageable,
                                          boolean label
     ) throws SolverException {
-        waitings = toWait;
-        runnings = toRun;
-        sleepings = toSleep;
-        destroyed = toTerminate;
+        this.ready = ready;
+        this.runnings = running;
+        this.sleepings = sleeeping;
+        this.killed = killed;
         this.manageable = manageable;
         this.useLabels = label;
         model = m;
@@ -133,13 +133,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     /**
-     * Create the {@link ResourceMapping} from the {@link StackableResource}.
+     * Create the {@link ResourceMapping} from the {@link ShareableResource}.
      *
      * @throws SolverException if an error occurred
      */
     private void makeResources() throws SolverException {
         resources = new HashMap<String, ResourceMapping>(model.getResources().size());
-        for (StackableResource rc : model.getResources()) {
+        for (ShareableResource rc : model.getResources()) {
             ResourceMapping rm = new ResourceMapping(this, rc);
             resources.put(rm.getIdentifier(), rm);
         }
@@ -171,7 +171,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private void fillElements() throws SolverException {
 
         Set<UUID> allVMs = new HashSet<UUID>(model.getMapping().getAllVMs());
-        allVMs.addAll(waitings); //The only VMs that may not appear in the mapping
+        allVMs.addAll(ready); //The only VMs that may not appear in the mapping
 
         vms = new UUID[allVMs.size()];
         revVMs = new TObjectIntHashMap<UUID>(allVMs.size(), 0.5f, -1); //0.5f is the default load factor
@@ -208,18 +208,20 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 } else if (map.getReadyVMs().contains(vmId)) {
                     vmActions[i] = new BootVMModel(this, vmId);
                 } else {
-                    throw new SolverException(model, "Unable to set VM '" + vmId + "' running: not instantiated");
+                    throw new SolverException(model, "Unable to set VM '" + vmId + "' running: not ready");
                 }
             }
-            if (waitings.contains(vmId)) {
+            if (ready.contains(vmId)) {
                 if (vmActions[i] != null) {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
                 } else if (!map.getAllVMs().contains(vmId)) {
-                    vmActions[i] = new InstantiateVMModel(this, vmId);
+                    vmActions[i] = new ForgeVMModel(this, vmId);
                 } else if (map.getReadyVMs().contains(vmId)) {
                     vmActions[i] = new StayAwayVMModel(vmId);
+                } else if (map.getRunningVMs().contains(vmId)) {
+                    vmActions[i] = new ShutdownVMModel(this, vmId);
                 } else {
-                    throw new SolverException(model, "Unable to set VM '" + vmId + "' waiting: already instantiated or unknown");
+                    throw new SolverException(model, "Unable to set VM '" + vmId + "' ready: not in the 'running' state or already forged");
                 }
             }
             if (sleepings.contains(vmId)) {
@@ -233,13 +235,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                     throw new SolverException(model, "Unable to set VM '" + vmId + "' sleeping: should be running");
                 }
             }
-            if (destroyed.contains(vmId)) {
+            if (killed.contains(vmId)) {
                 if (vmActions[i] != null) {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
-                } else if (map.getRunningVMs().contains(vmId)) {
-                    vmActions[i] = new ShutdownVMModel(this, vmId);
+                } else if (map.containsVM(vmId)) {
+                    vmActions[i] = new KillVMActionModel(this, vmId);
                 } else {
-                    throw new SolverException(model, "Unable to halt VM '" + vmId + "': should be running");
+                    throw new SolverException(model, "Unable to kill VM '" + vmId + "': unknown");
                 }
             }
             if (vmActions[i] == null) {
@@ -316,8 +318,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public Set<UUID> getFutureWaitingVMs() {
-        return waitings;
+    public Set<UUID> getFutureReadyVMs() {
+        return ready;
     }
 
     @Override
@@ -326,8 +328,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public Set<UUID> getFutureDestroyedVMs() {
-        return destroyed;
+    public Set<UUID> getFutureKilledVMs() {
+        return killed;
     }
 
     @Override

@@ -51,7 +51,6 @@ public class StayRunningVMModel implements ActionModel {
     public StayRunningVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
         this.vm = e;
         this.rp = rp;
-        //CPSolver s = rp.getSolver();
         boolean neadIncrease = true; //TODO: How to get resource changes ?
         IntDomainVar host = rp.makeCurrentHost("", e);
         if (neadIncrease) {

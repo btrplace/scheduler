@@ -73,12 +73,12 @@ public interface ReconfigurationProblem {
     Set<UUID> getFutureRunningVMs();
 
     /**
-     * Get the virtual machines that will be in the waiting state at the
+     * Get the virtual machines that will be in the ready state at the
      * end of the reconfiguration process.
      *
      * @return a set, may be empty
      */
-    Set<UUID> getFutureWaitingVMs();
+    Set<UUID> getFutureReadyVMs();
 
     /**
      * Get the virtual machines that will be in the sleeping state at the
@@ -89,12 +89,12 @@ public interface ReconfigurationProblem {
     Set<UUID> getFutureSleepingVMs();
 
     /**
-     * Get the virtual machines that will be in the terminated state at the
+     * Get the virtual machines that will be killed at the
      * end of the reconfiguration process.
      *
      * @return a set, may be empty
      */
-    Set<UUID> getFutureDestroyedVMs();
+    Set<UUID> getFutureKilledVMs();
 
     /**
      * Get the starting moment of the reconfiguration.

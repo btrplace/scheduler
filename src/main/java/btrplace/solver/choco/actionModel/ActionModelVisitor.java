@@ -75,11 +75,11 @@ public interface ActionModelVisitor {
     void visit(SuspendVMModel a);
 
     /**
-     * Visit a {@link InstantiateVMModel}.
+     * Visit a {@link ForgeVMModel}.
      *
      * @param a the action to visit
      */
-    void visit(InstantiateVMModel a);
+    void visit(ForgeVMModel a);
 
     /**
      * Visit a {@link StayRunningVMModel}.
@@ -101,4 +101,12 @@ public interface ActionModelVisitor {
      * @param a the action to visit
      */
     void visit(StayAwayVMModel a);
+
+    /**
+     * Visit a {@link KillVMActionModel}.
+     *
+     * @param a the action to visit
+     */
+    void visit(KillVMActionModel a);
+
 }

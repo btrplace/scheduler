@@ -71,10 +71,10 @@ public class DefaultChocoReconfigurationAlgorithmBuilderTest {
         Model m = defaultModel();
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(m).build();
         Assert.assertNotNull(rp.getDurationEvaluators());
-        Assert.assertTrue(rp.getFutureDestroyedVMs().isEmpty());
+        Assert.assertTrue(rp.getFutureKilledVMs().isEmpty());
         Assert.assertEquals(m.getMapping().getRunningVMs(), rp.getFutureRunningVMs());
         Assert.assertEquals(m.getMapping().getSleepingVMs(), rp.getFutureSleepingVMs());
-        Assert.assertEquals(m.getMapping().getReadyVMs(), rp.getFutureWaitingVMs());
+        Assert.assertEquals(m.getMapping().getReadyVMs(), rp.getFutureReadyVMs());
         Assert.assertEquals(m.getMapping().getAllVMs(), rp.getManageableVMs());
     }
 
@@ -84,10 +84,10 @@ public class DefaultChocoReconfigurationAlgorithmBuilderTest {
         DurationEvaluators d = new DurationEvaluators();
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(m).setDurationEvaluatators(d).build();
         Assert.assertEquals(d, rp.getDurationEvaluators());
-        Assert.assertTrue(rp.getFutureDestroyedVMs().isEmpty());
+        Assert.assertTrue(rp.getFutureKilledVMs().isEmpty());
         Assert.assertEquals(m.getMapping().getRunningVMs(), rp.getFutureRunningVMs());
         Assert.assertEquals(m.getMapping().getSleepingVMs(), rp.getFutureSleepingVMs());
-        Assert.assertEquals(m.getMapping().getReadyVMs(), rp.getFutureWaitingVMs());
+        Assert.assertEquals(m.getMapping().getReadyVMs(), rp.getFutureReadyVMs());
         Assert.assertEquals(m.getMapping().getAllVMs(), rp.getManageableVMs());
     }
 
@@ -96,10 +96,10 @@ public class DefaultChocoReconfigurationAlgorithmBuilderTest {
         Model m = defaultModel();
         Set<UUID> man = m.getMapping().getRunningVMs();
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(m).setManageableVMs(man).build();
-        Assert.assertTrue(rp.getFutureDestroyedVMs().isEmpty());
+        Assert.assertTrue(rp.getFutureKilledVMs().isEmpty());
         Assert.assertEquals(m.getMapping().getRunningVMs(), rp.getFutureRunningVMs());
         Assert.assertEquals(m.getMapping().getSleepingVMs(), rp.getFutureSleepingVMs());
-        Assert.assertEquals(m.getMapping().getReadyVMs(), rp.getFutureWaitingVMs());
+        Assert.assertEquals(m.getMapping().getReadyVMs(), rp.getFutureReadyVMs());
         Assert.assertEquals(man, rp.getManageableVMs());
     }
 
@@ -125,10 +125,10 @@ public class DefaultChocoReconfigurationAlgorithmBuilderTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(m)
                 .setNextVMsStates(toWait, toRun, Collections.singleton(vm3), Collections.singleton(vm2))
                 .build();
-        Assert.assertEquals(rp.getFutureWaitingVMs(), toWait);
+        Assert.assertEquals(rp.getFutureReadyVMs(), toWait);
         Assert.assertEquals(rp.getFutureRunningVMs(), toRun);
         Assert.assertEquals(rp.getFutureSleepingVMs(), Collections.singleton(vm3));
-        Assert.assertEquals(rp.getFutureDestroyedVMs(), Collections.singleton(vm2));
+        Assert.assertEquals(rp.getFutureKilledVMs(), Collections.singleton(vm2));
 
     }
 }

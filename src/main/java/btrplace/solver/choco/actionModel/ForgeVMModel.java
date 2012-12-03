@@ -19,13 +19,10 @@
 package btrplace.solver.choco.actionModel;
 
 import btrplace.plan.Action;
-import btrplace.plan.action.BootVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
-import btrplace.solver.choco.SliceBuilder;
-import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
@@ -33,23 +30,13 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Model an action that boot a VM in the ready state.
+ * Model an action that forge a VM to put it into the ready state.
  *
  * @author Fabien Hermenier
  */
-public class BootVMModel implements ActionModel {
-
-    private Slice dSlice;
-
-    private IntDomainVar end;
-
-    private IntDomainVar start;
-
-    private IntDomainVar duration;
+public class ForgeVMModel implements ActionModel {
 
     private UUID vm;
-
-    private ReconfigurationProblem rp;
 
     /**
      * Make a new model.
@@ -58,55 +45,13 @@ public class BootVMModel implements ActionModel {
      * @param e  the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public BootVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
+    public ForgeVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
         vm = e;
-
-        int d = rp.getDurationEvaluators().evaluate(BootVM.class, e);
-        this.rp = rp;
-        start = rp.makeDuration(rp.makeVarLabel("bootVM_start(" + e + ")"), 0, rp.getEnd().getSup() - d);
-        end = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel("bootVM_end(" + e + ")"), start, d);
-        duration = rp.makeDuration(rp.makeVarLabel("bootVM_duration(" + e + ")"), d, d);
-        dSlice = new SliceBuilder(rp, e).setStart(start)
-                .setDuration(rp.makeDuration(rp.makeVarLabel("slice_duration(" + e + ")"), d, rp.getEnd().getSup()))
-                .setExclusive(false)
-                .build();
     }
 
     @Override
     public List<Action> getResultingActions() {
-        List<Action> l = new ArrayList<Action>(1);
-        l.add(new BootVM(vm, rp.getNode(dSlice.getHoster().getVal()), start.getVal(), end.getVal()));
-        return l;
-    }
-
-    @Override
-    public IntDomainVar getStart() {
-        return start;
-    }
-
-    @Override
-    public IntDomainVar getEnd() {
-        return end;
-    }
-
-    @Override
-    public IntDomainVar getDuration() {
-        return duration;
-    }
-
-    @Override
-    public Slice getCSlice() {
-        return null;
-    }
-
-    @Override
-    public Slice getDSlice() {
-        return dSlice;
-    }
-
-    @Override
-    public IntDomainVar getState() {
-        return null;
+        return new ArrayList<Action>();
     }
 
     /**
@@ -119,9 +64,38 @@ public class BootVMModel implements ActionModel {
     }
 
     @Override
+    public IntDomainVar getStart() {
+        return null;
+    }
+
+    @Override
+    public IntDomainVar getEnd() {
+        return null;
+    }
+
+    @Override
+    public IntDomainVar getDuration() {
+        return null;
+    }
+
+    @Override
+    public Slice getCSlice() {
+        return null;
+    }
+
+    @Override
+    public Slice getDSlice() {
+        return null;
+    }
+
+    @Override
+    public IntDomainVar getState() {
+        return null;
+    }
+
+    @Override
     public void visit(ActionModelVisitor v) {
         v.visit(this);
     }
-
 
 }

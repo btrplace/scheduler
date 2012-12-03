@@ -21,7 +21,7 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.StackableResource;
+import btrplace.model.ShareableResource;
 import btrplace.model.constraint.Preserve;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
@@ -81,7 +81,7 @@ public class CPreserve implements ChocoSatConstraint {
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         Set<UUID> bad = new HashSet<UUID>();
-        StackableResource rc = m.getResource(cstr.getResource());
+        ShareableResource rc = m.getResource(cstr.getResource());
         if (rc == null) {
             bad.addAll(cstr.getInvolvedVMs());
         } else {

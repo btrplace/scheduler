@@ -47,7 +47,7 @@ public class COverbookTest {
         UUID[] nodes = new UUID[3];
         UUID[] vms = new UUID[9];
         Mapping m = new DefaultMapping();
-        StackableResource rcCPU = new DefaultStackableResource("cpu");
+        ShareableResource rcCPU = new DefaultShareableResource("cpu");
         for (int i = 0; i < vms.length; i++) {
             if (i < nodes.length) {
                 nodes[i] = UUID.randomUUID();
@@ -71,8 +71,8 @@ public class COverbookTest {
         cra.setTimeLimit(-1);
         ReconfigurationPlan p = cra.solve(mo, c);
         Assert.assertNotNull(p);
-        System.out.println(p);
-        System.out.println(p.getResult().getMapping());
+        //System.out.println(p);
+        //System.out.println(p.getResult().getMapping());
         Assert.assertTrue(o.isSatisfied(p.getResult()).equals(SatConstraint.Sat.SATISFIED));
     }
 
@@ -86,7 +86,7 @@ public class COverbookTest {
         UUID[] nodes = new UUID[3];
         UUID[] vms = new UUID[11];
         Mapping m = new DefaultMapping();
-        StackableResource rcCPU = new DefaultStackableResource("cpu");
+        ShareableResource rcCPU = new DefaultShareableResource("cpu");
         for (int i = 0; i < vms.length; i++) {
             if (i < nodes.length) {
                 nodes[i] = UUID.randomUUID();
@@ -111,8 +111,8 @@ public class COverbookTest {
         cra.setTimeLimit(-1);
         ReconfigurationPlan p = cra.solve(mo, c);
         Assert.assertNotNull(p);
-        System.out.println(p);
-        System.out.println(p.getResult().getMapping());
+        //System.out.println(p);
+        //System.out.println(p.getResult().getMapping());
         for (SatConstraint cstr : c) {
             Assert.assertTrue(cstr.isSatisfied(p.getResult()).equals(SatConstraint.Sat.SATISFIED));
         }
@@ -123,7 +123,7 @@ public class COverbookTest {
         UUID[] nodes = new UUID[10];
         UUID[] vms = new UUID[31];
         Mapping m = new DefaultMapping();
-        StackableResource rcMem = new DefaultStackableResource("mem");
+        ShareableResource rcMem = new DefaultShareableResource("mem");
         for (int i = 0; i < vms.length; i++) {
             if (i < nodes.length) {
                 nodes[i] = UUID.randomUUID();
@@ -160,7 +160,7 @@ public class COverbookTest {
         m.addRunningVM(UUID.randomUUID(), n3);
         m.addRunningVM(UUID.randomUUID(), n3);
         m.addRunningVM(UUID.randomUUID(), n3);
-        StackableResource rcCPU = new DefaultStackableResource("cpu", 1);
+        ShareableResource rcCPU = new DefaultShareableResource("cpu", 1);
         Model mo = new DefaultModel(m);
         mo.attach(rcCPU);
         Overbook o1 = new Overbook(Collections.singleton(n1), "cpu", 1);

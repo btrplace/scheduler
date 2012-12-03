@@ -86,10 +86,10 @@ public class DefaultReconfigurationProblemTest {
                 .setDurationEvaluatators(dEval).build();
 
         Assert.assertEquals(dEval, rp.getDurationEvaluators());
-        Assert.assertEquals(rp.getFutureWaitingVMs(), toWait);
+        Assert.assertEquals(rp.getFutureReadyVMs(), toWait);
         Assert.assertEquals(rp.getFutureRunningVMs(), toRun);
         Assert.assertEquals(rp.getFutureSleepingVMs(), Collections.singleton(vm3));
-        Assert.assertEquals(rp.getFutureDestroyedVMs(), Collections.singleton(vm2));
+        Assert.assertEquals(rp.getFutureKilledVMs(), Collections.singleton(vm2));
         Assert.assertEquals(rp.getVMs().length, 7);
         Assert.assertEquals(rp.getNodes().length, 3);
 
@@ -122,7 +122,7 @@ public class DefaultReconfigurationProblemTest {
 
         ActionModel a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMActions()[0]);
-        Assert.assertEquals(InstantiateVMModel.class, a.getClass());
+        Assert.assertEquals(ForgeVMModel.class, a.getClass());
     }
 
     @Test(dependsOnGroups = {"DefaultRPBuilder"})
@@ -178,22 +178,43 @@ public class DefaultReconfigurationProblemTest {
     }
 
     @Test(dependsOnGroups = {"DefaultRPBuilder"})
-    public void testVMRunningToTerminated() throws SolverException {
+    public void testVMsToKill() throws SolverException {
+        Mapping m = new DefaultMapping();
+        UUID vm = UUID.randomUUID();
+        UUID n = UUID.randomUUID();
+        m.addOnlineNode(n);
+        m.addRunningVM(UUID.randomUUID(), n);
+        m.addSleepingVM(UUID.randomUUID(), n);
+        m.addReadyVM(UUID.randomUUID());
+        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(new DefaultModel(m))
+                .setNextVMsStates(new HashSet<UUID>(),
+                        new HashSet<UUID>(),
+                        new HashSet<UUID>(),
+                        m.getAllVMs()).build();
+
+        for (ActionModel a : rp.getVMActions()) {
+            Assert.assertEquals(a.getClass(), KillVMActionModel.class);
+        }
+    }
+
+    @Test(dependsOnGroups = {"DefaultRPBuilder"})
+    public void testVMToShutdown() throws SolverException {
         Mapping m = new DefaultMapping();
         UUID vm = UUID.randomUUID();
         UUID n = UUID.randomUUID();
         m.addOnlineNode(n);
         m.addRunningVM(vm, n);
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(new DefaultModel(m))
-                .setNextVMsStates(new HashSet<UUID>(),
+                .setNextVMsStates(Collections.singleton(vm),
                         new HashSet<UUID>(),
                         new HashSet<UUID>(),
-                        Collections.singleton(vm)).build();
-
+                        new HashSet<UUID>()).build();
         ActionModel a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMActions()[0]);
         Assert.assertEquals(ShutdownVMModel.class, a.getClass());
+
     }
+
 
     @Test(dependsOnGroups = {"DefaultRPBuilder"})
     public void testVMStaySleeping() throws SolverException {
@@ -262,7 +283,7 @@ public class DefaultReconfigurationProblemTest {
     @Test(dependsOnGroups = {"DefaultRPBuilder"})
     public void testGetResourceMapping() throws SolverException {
         Model m = defaultModel();
-        StackableResource rc = new DefaultStackableResource("cpu", 0);
+        ShareableResource rc = new DefaultShareableResource("cpu", 0);
         for (UUID n : m.getMapping().getAllNodes()) {
             rc.set(n, 4);
         }
