@@ -26,6 +26,7 @@ import btrplace.model.constraint.Running;
 import btrplace.model.constraint.Sleeping;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
+import btrplace.solver.choco.constraint.RunningScheduler;
 import btrplace.solver.choco.constraint.SatConstraintMapper;
 import btrplace.solver.choco.objective.minMTTR.MinMTTR;
 import choco.cp.solver.CPSolver;
@@ -172,6 +173,8 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         //The objective
         obj.inject(rp);
 
+
+        new RunningScheduler().inject(rp);
         CPSolver s = rp.getSolver();
         s.generateSearchStrategy();
         ISolutionPool sp = SolutionPoolFactory.makeInfiniteSolutionPool(s.getSearchStrategy());

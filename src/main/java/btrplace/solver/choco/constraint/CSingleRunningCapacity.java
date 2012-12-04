@@ -22,12 +22,14 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.SingleRunningCapacity;
+import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoSatConstraint;
 import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import choco.cp.solver.CPSolver;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.HashSet;
@@ -36,6 +38,10 @@ import java.util.UUID;
 
 /**
  * Choco implementation of {@link btrplace.model.constraint.SingleRunningCapacity}.
+ * <p/>
+ * The implementation support the continuous or the discrete restriction.
+ * If the continuous restriction is set, it is activated only if the current model does not violate the constraint.
+ * Otherwise, there is no solution.
  *
  * @author Fabien Hermenier
  */
@@ -58,6 +64,15 @@ public class CSingleRunningCapacity implements ChocoSatConstraint {
         for (UUID u : cstr.getInvolvedNodes()) {
             IntDomainVar v = rp.getVMsCountOnNodes()[rp.getNode(u)];
             s.post(s.leq(v, cstr.getAmount()));
+
+            //Continuous in practice ?
+            if (cstr.continuousMode() && cstr.isSatisfied(rp.getSourceModel()) == SatConstraint.Sat.SATISFIED) {
+                try {
+                    v.setSup(cstr.getAmount());
+                } catch (ContradictionException e) {
+                    throw new SolverException(rp.getSourceModel(), e.getMessage());
+                }
+            }
         }
     }
 
@@ -81,7 +96,23 @@ public class CSingleRunningCapacity implements ChocoSatConstraint {
 
     @Override
     public boolean isSatisfied(ReconfigurationPlan plan) {
-        return cstr.isSatisfied(plan.getResult()).equals(SatConstraint.Sat.SATISFIED);
+        if (!cstr.continuousMode()) {
+            return cstr.isSatisfied(plan.getResult()).equals(SatConstraint.Sat.SATISFIED);
+        } else {
+            //Initial statement
+            Model mo = plan.getOrigin().clone();
+            for (Action a : plan) {
+                for (UUID n : cstr.getInvolvedNodes()) {
+                    if (mo.getMapping().getRunningVMs(n).size() > cstr.getAmount()) {
+                        return false;
+                    }
+                }
+                if (!a.apply(mo)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
