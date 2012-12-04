@@ -28,7 +28,6 @@ import btrplace.solver.choco.SliceBuilder;
 import btrplace.solver.choco.chocoUtil.FastIFFEq;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.integer.TimesXYZ;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
@@ -52,8 +51,6 @@ public class ShutdownableNodeModel implements ActionModel {
 
     private IntDomainVar end;
 
-    private IntDomainVar cost;
-
     /**
      * Make a new model.
      *
@@ -63,20 +60,20 @@ public class ShutdownableNodeModel implements ActionModel {
      */
     public ShutdownableNodeModel(ReconfigurationProblem rp, UUID e) throws SolverException {
         this.node = e;
-        state = rp.getSolver().createBooleanVar(rp.makeVarLabel("shutdownNode_state(" + e + ")"));
+        state = rp.getSolver().createBooleanVar(rp.makeVarLabel("shutdownnableNode.state(" + e + ")"));
 
         CPSolver s = rp.getSolver();
         int d = rp.getDurationEvaluators().evaluate(ShutdownNode.class, e);
         //Duration is either 0 (no shutdown) or 'd' (shutdown)
-        duration = s.createEnumIntVar("", new int[]{0, d});
+        duration = s.createEnumIntVar(rp.makeVarLabel("shutdownableNode.duration(" + e + ")"), new int[]{0, d});
 
 
         this.dSlice = new SliceBuilder(rp, e)
-                .setStart(rp.makeDuration(rp.makeVarLabel("slice_start(" + e + ")")))
+                .setStart(rp.makeDuration(rp.makeVarLabel("shutdownableNode.dSlice_start(" + e + ")")))
                 .setHoster(rp.getNode(e))
                 .build();
 
-        end = rp.makeDuration(rp.makeVarLabel("shutdownNode_end(" + e + ")"));
+        end = rp.makeDuration(rp.makeVarLabel("shutdownableNode.end(" + e + ")"));
 
         s.post(s.eq(end, s.plus(dSlice.getStart(), duration)));
         //The future state is uncertain yet
@@ -90,12 +87,9 @@ public class ShutdownableNodeModel implements ActionModel {
          * If it is state to shutdown the node, then the duration of the dSlice is not null
          */
         s.post(new FastIFFEq(state, duration, 0)); //Stay online <-> duration = 0
+        s.post(new FastIFFEq(state, dSlice.getDuration(), 0)); //Stay online <-> duration = 0
 
-        s.post(new FastImpliesEq(isOffline, rp.getVMsCountOnNodes()[rp.getNode(e)], 0)); //Packing stuff; isOffline -> mem == 0
-
-        cost = rp.makeDuration(rp.makeVarLabel("shutdownNode_cost(" + e + ")"));
-        s.post(new TimesXYZ(end, isOffline, cost));
-
+        s.post(new FastImpliesEq(isOffline, rp.getVMsCountOnNodes()[rp.getNode(e)], 0)); //Packing stuff; isOffline -> no VMs running
 
         //The end of the action is 'd' seconds after starting the d-slice
     }

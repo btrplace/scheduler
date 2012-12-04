@@ -119,7 +119,10 @@ public class SlicesPlanner {
             //TODO: e is not necessarily a VM, seems to get to an API failure here
             int iIdx = rp.getVM(e);
             if (iIdx < 0) {
-                dUsages[i] = map.getVMConsumption()[rp.getNode(e)].getInf();
+                if (rp.getSourceModel().getMapping().getAllNodes().contains(e)) {
+                    dUsages[i] = 0;//map.getVMConsumption()[rp.getNode(e)].getInf();
+                }
+                //dUsages[i] = map.getVMConsumption()[rp.getNode(e)].getInf();
             } else {
                 IntDomainVar[] x = map.getVMConsumption();
                 dUsages[i] = x[iIdx].getInf();

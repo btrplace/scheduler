@@ -32,7 +32,6 @@ import btrplace.solver.choco.ResourceMapping;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -62,11 +61,9 @@ public class CPreserve implements ChocoSatConstraint {
             throw new SolverException(rp.getSourceModel(), "Unable to get the resource mapper associated to '" +
                     cstr.getResource() + "'");
         }
-        System.err.println(cstr);
         for (UUID vm : cstr.getInvolvedVMs()) {
             if (rp.getFutureRunningVMs().contains(vm)) {
                 int idx = rp.getVM(vm);
-                System.err.println(Arrays.toString(map.getVMConsumption()));
                 IntDomainVar v = map.getVMConsumption()[idx];
                 try {
                     v.setInf(cstr.getAmount());

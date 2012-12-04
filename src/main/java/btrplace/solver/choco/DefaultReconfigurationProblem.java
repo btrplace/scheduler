@@ -30,8 +30,11 @@ import btrplace.solver.choco.chocoUtil.BinPacking;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.map.hash.TObjectIntHashMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
+
 
 /**
  * Default implementation of {@link ReconfigurationProblem}.
@@ -40,6 +43,8 @@ import java.util.*;
  * @author Fabien Hermenier
  */
 public class DefaultReconfigurationProblem implements ReconfigurationProblem {
+
+    static final Logger LOGGER = LoggerFactory.getLogger("ChocoRP");
 
     private boolean useLabels = false;
     /**
@@ -420,10 +425,15 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private boolean checkConsistency(ReconfigurationPlan p) {
         for (Action a : p) {
             if (a.getStart() == a.getEnd()) {
+                LOGGER.error(a.toString() + " has a zero duration");
                 return false;
             }
         }
-        return p.getDuration() == end.getVal();
+        if (p.getDuration() != end.getVal()) {
+            LOGGER.error("The plan duration (" + p.getDuration() + ") and the ReconfigurationProblem.getEnd() (" + end.getVal() + ") mismatch:\n" + p);
+            return false;
+        }
+        return true;
     }
 
     @Override
