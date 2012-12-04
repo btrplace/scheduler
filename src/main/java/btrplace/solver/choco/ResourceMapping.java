@@ -44,7 +44,7 @@ public class ResourceMapping {
     private IntDomainVar[] vmUsage;
 
     /**
-     * Make a new mappring.
+     * Make a new mapping.
      *
      * @param rp the problem to rely on
      * @param rc the resource to consider

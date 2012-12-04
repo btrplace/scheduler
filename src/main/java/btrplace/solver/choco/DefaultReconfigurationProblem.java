@@ -45,7 +45,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     /**
      * The maximum duration of a plan in seconds: One hour.
      */
-    public static final int DEFAULT_MAX_TIME = 3600;
+    public static final int DEFAULT_MAX_TIME = 3;
 
     private Model model;
 
