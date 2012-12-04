@@ -77,7 +77,7 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
     }
 
     @Override
-    public int size() {
+    public int getSize() {
         return actions.size();
     }
 

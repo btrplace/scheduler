@@ -84,7 +84,7 @@ public class BootNode extends Action {
 
     @Override
     public String toString() {
-        StringBuilder buffer = new StringBuilder("startup(");
+        StringBuilder buffer = new StringBuilder("boot(");
         buffer.append("node=").append(node).append(")");
         return buffer.toString();
     }

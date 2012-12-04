@@ -51,7 +51,7 @@ public interface ReconfigurationPlan extends Iterable<Action> {
      *
      * @return a positive integer
      */
-    int size();
+    int getSize();
 
     /**
      * Return the theoretical duration of a reconfiguration plan.

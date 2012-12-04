@@ -66,7 +66,7 @@ public class DefaultReconfigurationPlanTest {
         }
         Assert.assertFalse(p.add(a2));
 
-        Assert.assertEquals(4, p.size());
+        Assert.assertEquals(4, p.getSize());
 
         Assert.assertFalse(p.toString().contains("null"));
     }

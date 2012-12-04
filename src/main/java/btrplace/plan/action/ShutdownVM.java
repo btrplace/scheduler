@@ -71,7 +71,7 @@ public class ShutdownVM extends Action {
 
     @Override
     public String toString() {
-        return new StringBuilder("stop(")
+        return new StringBuilder("shutdown(")
                 .append("vm=").append(vm)
                 .append(", on=").append(node).append(')').toString();
     }
