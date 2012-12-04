@@ -121,7 +121,8 @@ public class SlicesPlanner {
             if (iIdx < 0) {
                 dUsages[i] = map.getVMConsumption()[rp.getNode(e)].getInf();
             } else {
-                dUsages[i] = map.getVMConsumption()[iIdx].getInf();
+                IntDomainVar[] x = map.getVMConsumption();
+                dUsages[i] = x[iIdx].getInf();
             }
 
 

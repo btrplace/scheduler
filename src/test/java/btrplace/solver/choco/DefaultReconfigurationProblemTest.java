@@ -327,12 +327,8 @@ public class DefaultReconfigurationProblemTest {
 
         Assert.assertEquals(Boolean.TRUE, rp.getSolver().solve());
         //Restrict the capacity to 2 at most
-        try {
-            for (IntDomainVar capa : rp.getVMsCountOnNodes()) {
-                capa.setSup(5);
-            }
-        } catch (ContradictionException e) {
-            Assert.fail(e.getMessage(), e);
+        for (IntDomainVar capa : rp.getVMsCountOnNodes()) {
+            capa.setSup(5);
         }
 
         //Check consistency between the counting and the hoster variables

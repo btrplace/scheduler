@@ -19,21 +19,19 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.*;
-import btrplace.model.constraint.Overbook;
-import btrplace.model.constraint.Running;
+import btrplace.model.constraint.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.action.BootVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.durationEvaluator.LinearToAResourceDuration;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Unit tests for {@link COverbook}.
@@ -174,7 +172,7 @@ public class COverbookTest {
         Assert.assertEquals(o3.getInvolvedVMs(), co3.getMisPlacedVMs(mo));
     }
 
-    /*
+
     @Test
     public void testWithScheduling1() throws SolverException {
         ChocoLogging.setVerbosity(Verbosity.FINEST);
@@ -206,5 +204,5 @@ public class COverbookTest {
         System.out.println(p);
         Assert.assertNotNull(p);
 
-    }    */
+    }
 }

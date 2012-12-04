@@ -46,11 +46,12 @@ public class ResourceMappingTest {
         UUID n2 = UUID.randomUUID();
         UUID vm = UUID.randomUUID();
         UUID vm2 = UUID.randomUUID();
+        UUID vm3 = UUID.randomUUID();
         ma.addOnlineNode(n1);
         ma.addOfflineNode(n2);
         ma.addRunningVM(vm, n1);
         ma.addRunningVM(vm2, n1);
-
+        ma.addReadyVM(vm3);
         ShareableResource rc = new DefaultShareableResource("foo", 0);
         rc.set(vm2, 3);
         rc.set(n1, 4);
@@ -60,6 +61,7 @@ public class ResourceMappingTest {
         Assert.assertEquals(rc.getIdentifier(), rcm.getIdentifier());
         Assert.assertEquals(0, rcm.getVMConsumption()[rp.getVM(vm)].getInf());
         Assert.assertEquals(3, rcm.getVMConsumption()[rp.getVM(vm2)].getInf());
+        Assert.assertEquals(0, rcm.getVMConsumption()[rp.getVM(vm3)].getSup()); //Will not be running so 0
         IntDomainVar pn1 = rcm.getRawNodeUsage()[rp.getNode(n1)];
         IntDomainVar pn2 = rcm.getRawNodeUsage()[rp.getNode(n2)];
         Assert.assertTrue(pn1.getInf() == 0 && pn1.getSup() == 4);
@@ -108,4 +110,5 @@ public class ResourceMappingTest {
         Assert.assertEquals(3, rcm.getRealNodeUsage()[1].getInf());
         Assert.assertEquals(3, rcm.getRealNodeUsage()[1].getSup());
     }
+
 }

@@ -24,6 +24,7 @@ import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -64,14 +65,25 @@ public class ResourceMapping {
 
         //Bin packing for the node vmUsage
         CPSolver s = rp.getSolver();
-        List<Slice> dSlices = ActionModelUtil.getDSlices(rp.getVMActions(rp.getFutureRunningVMs()));
-        IntDomainVar[] ds = SliceUtils.extractHosters(dSlices);
-        vmUsage = new IntDomainVar[ds.length];
-        for (int i = 0; i < ds.length; i++) {
-            UUID vmId = dSlices.get(i).getSubject();
-            vmUsage[i] = s.createBoundIntVar("vmUsage('" + rc.getIdentifier() + "', '" + vmId + "')", rc.get(vmId), Choco.MAX_UPPER_BOUND);
+        List<IntDomainVar> notNullUsage = new ArrayList<IntDomainVar>();
+        List<IntDomainVar> hosters = new ArrayList<IntDomainVar>();
+
+        vmUsage = new IntDomainVar[rp.getVMs().length];
+        for (int i = 0; i < vmUsage.length; i++) {
+            UUID vmId = rp.getVM(i);
+            ActionModel a = rp.getVMActions()[i];
+            Slice slice = a.getDSlice();
+            if (slice == null) { //The VMs will not be running, so its consumption is set to 0
+                vmUsage[i] = s.makeConstantIntVar(rp.makeVarLabel("vmUsage('" + rc.getIdentifier() + "', '" + vmId + "'"), 0);
+            } else {
+                vmUsage[i] = s.createBoundIntVar("vmUsage('" + rc.getIdentifier() + "', '" + vmId + "')", rc.get(vmId), Choco.MAX_UPPER_BOUND);
+                notNullUsage.add(vmUsage[i]);
+                hosters.add(slice.getHoster());
+            }
+
         }
-        s.post(new BinPacking(s.getEnvironment(), realNodeUsage, vmUsage, ds));
+        //We create a BP with only the VMs requiring a not null amount of resources
+        s.post(new BinPacking(s.getEnvironment(), realNodeUsage, notNullUsage.toArray(new IntDomainVar[notNullUsage.size()]), hosters.toArray(new IntDomainVar[hosters.size()])));
 
     }
 

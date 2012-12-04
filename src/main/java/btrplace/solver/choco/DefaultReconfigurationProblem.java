@@ -166,6 +166,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             usages[i] = solver.makeConstantIntVar(1);
         }
         solver.post(new BinPacking(solver.getEnvironment(), vmsCountOnNodes, usages, ds));
+
+        //TODO: Continuous restriction on the hosting
     }
 
     private void fillElements() throws SolverException {
