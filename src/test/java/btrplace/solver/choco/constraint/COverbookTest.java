@@ -42,6 +42,7 @@ public class COverbookTest {
 
     @Test
     public void testBasic() throws SolverException {
+        ChocoLogging.setVerbosity(Verbosity.SEARCH);
         UUID[] nodes = new UUID[3];
         UUID[] vms = new UUID[9];
         Mapping m = new DefaultMapping();
@@ -70,8 +71,8 @@ public class COverbookTest {
         ReconfigurationPlan p = cra.solve(mo, c);
         Assert.assertNotNull(p);
         //System.out.println(p);
-        //System.out.println(p.getResult().getMapping());
-        Assert.assertTrue(o.isSatisfied(p.getResult()).equals(SatConstraint.Sat.SATISFIED));
+        System.out.println(p.getResult().getMapping());
+        Assert.assertEquals(SatConstraint.Sat.SATISFIED, o.isSatisfied(p.getResult()));
     }
 
     /**
@@ -175,7 +176,6 @@ public class COverbookTest {
 
     @Test
     public void testWithScheduling1() throws SolverException {
-        ChocoLogging.setVerbosity(Verbosity.FINEST);
         Mapping m = new DefaultMapping();
         UUID n1 = UUID.randomUUID();
         UUID vm1 = UUID.randomUUID();

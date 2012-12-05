@@ -65,10 +65,10 @@ public class ResumeVMModel implements ActionModel {
         int d = rp.getDurationEvaluators().evaluate(ResumeVM.class, e);
 
         start = rp.makeDuration("", 0, rp.getEnd().getSup() - d);
-        end = new IntDomainVarAddCste(rp.getSolver(), "", start, d);
-        duration = rp.makeDuration("", d, d);
-        dSlice = new SliceBuilder(rp, e).setStart(start)
-                .setDuration(rp.makeDuration("", d, rp.getEnd().getSup()))
+        end = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel("resumeVM(" + e + ").end"), start, d);
+        duration = rp.makeDuration(rp.makeVarLabel("resumeVM(" + e + ").duration"), d, d);
+        dSlice = new SliceBuilder(rp, e, "resumeVM(" + e + ").dSlice").setStart(start)
+                .setDuration(rp.makeDuration(rp.makeVarLabel("resumeVM(" + e + ").dSlice_duration"), d, rp.getEnd().getSup()))
                 .setExclusive(false)
                 .build();
     }

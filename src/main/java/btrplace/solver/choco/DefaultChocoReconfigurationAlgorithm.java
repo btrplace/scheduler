@@ -26,14 +26,15 @@ import btrplace.model.constraint.Running;
 import btrplace.model.constraint.Sleeping;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.constraint.RunningScheduler;
 import btrplace.solver.choco.constraint.SatConstraintMapper;
+import btrplace.solver.choco.constraint.TaskSchedulerBuilder;
 import btrplace.solver.choco.objective.minMTTR.MinMTTR;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.search.ISolutionPool;
 import choco.kernel.solver.search.SolutionPoolFactory;
 import choco.kernel.solver.search.measure.IMeasures;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.*;
 
@@ -165,6 +166,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         }
         rp = rpb.build();
 
+        TaskSchedulerBuilder.begin(rp);
         //Customize with the constraints
         for (ChocoSatConstraint ccstr : cConstraints) {
             ccstr.inject(rp);
@@ -174,7 +176,12 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         obj.inject(rp);
 
 
-        new RunningScheduler().inject(rp);
+        addContinuousResourceCapacities();
+
+
+        TaskSchedulerBuilder.getInstance().commitConstraint();
+
+
         CPSolver s = rp.getSolver();
         s.generateSearchStrategy();
         ISolutionPool sp = SolutionPoolFactory.makeInfiniteSolutionPool(s.getSearchStrategy());
@@ -194,6 +201,17 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         } else {
             throw new SolverException(i, "Unable to state about the feasibility of the problem");
         }
+    }
+
+    private void addContinuousResourceCapacities() {
+        IntDomainVar[] iUse = new IntDomainVar[rp.getVMs().length];
+        int[] cUse = new int[rp.getVMs().length];
+        for (int j = 0; j < rp.getVMs().length; j++) {
+            iUse[j] = rp.getSolver().makeConstantIntVar(1);
+            cUse[j] = 1;
+        }
+
+        TaskSchedulerBuilder.getInstance().add(rp.getVMsCountOnNodes(), cUse, iUse);
     }
 
     @Override

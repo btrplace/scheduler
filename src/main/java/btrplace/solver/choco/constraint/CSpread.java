@@ -22,6 +22,7 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Spread;
+import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.choco.*;
 import btrplace.solver.choco.chocoUtil.ChocoUtils;
@@ -37,7 +38,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class CContinuousSpread implements ChocoSatConstraint {
+public class CSpread implements ChocoSatConstraint {
 
     private Spread cstr;
 
@@ -46,7 +47,7 @@ public class CContinuousSpread implements ChocoSatConstraint {
      *
      * @param s the constraint to rely one
      */
-    public CContinuousSpread(Spread s) {
+    public CSpread(Spread s) {
         cstr = s;
     }
 
@@ -65,38 +66,40 @@ public class CContinuousSpread implements ChocoSatConstraint {
             //The lazy spread implementation for the placement
             s.post(new BoundAllDiff(onlyRunnings.toArray(new IntDomainVar[onlyRunnings.size()]), true));
 
-            UUID[] vms = onlyRunnings.toArray(new UUID[onlyRunnings.size()]);
-            for (int i = 0; i < vms.length; i++) {
-                UUID vm = vms[i];
-                ActionModel aI = rp.getVMActions()[rp.getVM(vm)];
-                for (int j = 0; j < i; j++) {
-                    UUID vmJ = vms[j];
-                    ActionModel aJ = rp.getVMActions()[rp.getVM(vm)];
-                    Slice d = aI.getDSlice();
-                    Slice c = aJ.getCSlice();
-                    if (d != null && c != null) {
-                        //No need to place the constraints if the slices do not have a chance to overlap
-                        if (!(c.getHoster().isInstantiated() && !d.getHoster().canBeInstantiatedTo(c.getHoster().getVal()))
-                                && !(d.getHoster().isInstantiated() && !c.getHoster().canBeInstantiatedTo(d.getHoster().getVal()))
-                                ) {
-                            IntDomainVar eq = rp.getSolver().createBooleanVar("eq");
-                            s.post(ReifiedFactory.builder(eq, s.eq(d.getHoster(), c.getHoster()), s));
-                            ChocoUtils.postImplies(s, eq, s.leq(c.getEnd(), d.getStart()));
+            if (cstr.isContinuous()) {
+                UUID[] vms = onlyRunnings.toArray(new UUID[onlyRunnings.size()]);
+                for (int i = 0; i < vms.length; i++) {
+                    UUID vm = vms[i];
+                    ActionModel aI = rp.getVMActions()[rp.getVM(vm)];
+                    for (int j = 0; j < i; j++) {
+                        UUID vmJ = vms[j];
+                        ActionModel aJ = rp.getVMActions()[rp.getVM(vm)];
+                        Slice d = aI.getDSlice();
+                        Slice c = aJ.getCSlice();
+                        if (d != null && c != null) {
+                            //No need to place the constraints if the slices do not have a chance to overlap
+                            if (!(c.getHoster().isInstantiated() && !d.getHoster().canBeInstantiatedTo(c.getHoster().getVal()))
+                                    && !(d.getHoster().isInstantiated() && !c.getHoster().canBeInstantiatedTo(d.getHoster().getVal()))
+                                    ) {
+                                IntDomainVar eq = rp.getSolver().createBooleanVar("eq");
+                                s.post(ReifiedFactory.builder(eq, s.eq(d.getHoster(), c.getHoster()), s));
+                                ChocoUtils.postImplies(s, eq, s.leq(c.getEnd(), d.getStart()));
+                            }
                         }
-                    }
 
-                    //The inverse relation
-                    d = aJ.getDSlice();
-                    c = aI.getCSlice();
+                        //The inverse relation
+                        d = aJ.getDSlice();
+                        c = aI.getCSlice();
 
-                    if (d != null && c != null) {
-                        //No need to place the constraints if the slices do not have a chance to overlap
-                        if (!(c.getHoster().isInstantiated() && !d.getHoster().canBeInstantiatedTo(c.getHoster().getVal()))
-                                && !(d.getHoster().isInstantiated() && !c.getHoster().canBeInstantiatedTo(d.getHoster().getVal()))
-                                ) {
-                            IntDomainVar eq = s.createBooleanVar("eq");
-                            s.post(ReifiedFactory.builder(eq, s.eq(d.getHoster(), c.getHoster()), s));
-                            ChocoUtils.postImplies(s, eq, s.leq(c.getEnd(), d.getStart()));
+                        if (d != null && c != null) {
+                            //No need to place the constraints if the slices do not have a chance to overlap
+                            if (!(c.getHoster().isInstantiated() && !d.getHoster().canBeInstantiatedTo(c.getHoster().getVal()))
+                                    && !(d.getHoster().isInstantiated() && !c.getHoster().canBeInstantiatedTo(d.getHoster().getVal()))
+                                    ) {
+                                IntDomainVar eq = s.createBooleanVar("eq");
+                                s.post(ReifiedFactory.builder(eq, s.eq(d.getHoster(), c.getHoster()), s));
+                                ChocoUtils.postImplies(s, eq, s.leq(c.getEnd(), d.getStart()));
+                            }
                         }
                     }
                 }
@@ -134,8 +137,21 @@ public class CContinuousSpread implements ChocoSatConstraint {
 
     @Override
     public boolean isSatisfied(ReconfigurationPlan plan) {
-        //TODO: A check on every action ?
-        return cstr.isSatisfied(plan.getResult()).equals(SatConstraint.Sat.SATISFIED);
+        boolean ret = cstr.isSatisfied(plan.getResult()).equals(SatConstraint.Sat.SATISFIED);
+        if (!ret) {
+            return false;
+        }
+        if (cstr.isContinuous()) {
+            Model m = plan.getOrigin().clone();
+            for (Action a : plan) {
+                a.apply(m);
+                ret = cstr.isSatisfied(plan.getResult()).equals(SatConstraint.Sat.SATISFIED);
+                if (!ret) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -148,8 +164,8 @@ public class CContinuousSpread implements ChocoSatConstraint {
         }
 
         @Override
-        public CContinuousSpread build(SatConstraint cstr) {
-            return new CContinuousSpread((Spread) cstr);
+        public CSpread build(SatConstraint cstr) {
+            return new CSpread((Spread) cstr);
         }
     }
 }

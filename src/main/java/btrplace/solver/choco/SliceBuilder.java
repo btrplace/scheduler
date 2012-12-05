@@ -45,15 +45,19 @@ public class SliceBuilder {
 
     private UUID e;
 
+    private String lblPrefix;
+
     /**
      * Make a new Builder.
      *
-     * @param rp the problem to customize
-     * @param e  the element associated to the slice
+     * @param rp     the problem to customize
+     * @param e      the element associated to the slice
+     * @param prefix the label prefix for the variables
      */
-    public SliceBuilder(ReconfigurationProblem rp, UUID e) {
+    public SliceBuilder(ReconfigurationProblem rp, UUID e, String prefix) {
         this.rp = rp;
         this.e = e;
+        lblPrefix = prefix;
     }
 
     /**
@@ -64,7 +68,7 @@ public class SliceBuilder {
      */
     public Slice build() throws SolverException {
         if (hoster == null) {
-            hoster = rp.makeHostVariable(rp.makeVarLabel("hoster_slice(" + e + ")"));
+            hoster = rp.makeHostVariable(rp.makeVarLabel(lblPrefix + "_hoster"));
         }
         if (start == null) {
             start = rp.getStart();
@@ -74,22 +78,22 @@ public class SliceBuilder {
         }
         if (duration == null) {
             if (start.isInstantiated() && end.isInstantiated()) {
-                duration = rp.getSolver().createIntegerConstant(rp.makeVarLabel("duration_slice(" + e + ")"), end.getVal() - start.getVal());
+                duration = rp.getSolver().createIntegerConstant(rp.makeVarLabel(lblPrefix + "_duration"), end.getVal() - start.getVal());
             } else if (start.isInstantiated()) {
-                duration = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel("duration_slice(" + e + ")"), end, -start.getVal());
+                duration = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel(lblPrefix + "_duration"), end, -start.getVal());
             } else {
                 int inf = end.getInf() - start.getSup();
                 if (inf < 0) {
                     inf = 0;
                 }
                 int sup = end.getSup() - start.getInf();
-                duration = rp.getSolver().createBoundIntVar(rp.makeVarLabel("duration_slice(" + e + ")"), inf, sup);
+                duration = rp.getSolver().createBoundIntVar(rp.makeVarLabel(lblPrefix + "_duration"), inf, sup);
                 rp.getSolver().post(rp.getSolver().eq(end, rp.getSolver().plus(start, duration)));
             }
         }
 
         if (isExclusive == null) {
-            isExclusive = rp.getSolver().createBooleanVar(rp.makeVarLabel("exclusive_slice(" + e + ")"));
+            isExclusive = rp.getSolver().createBooleanVar(rp.makeVarLabel(lblPrefix + "_exclusive"));
         }
         if (start.getSup() > rp.getEnd().getInf()) {
             //System.err.println("Restrict " + start.pretty() + " < " + rp.getEnd().pretty());

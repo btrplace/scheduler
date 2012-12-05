@@ -21,7 +21,6 @@ package btrplace.solver.choco;
 import btrplace.model.*;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
-import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
@@ -325,11 +324,12 @@ public class DefaultReconfigurationProblemTest {
                 .labelVariables()
                 .build();
 
-        Assert.assertEquals(Boolean.TRUE, rp.getSolver().solve());
-        //Restrict the capacity to 2 at most
         for (IntDomainVar capa : rp.getVMsCountOnNodes()) {
             capa.setSup(5);
         }
+
+        //Restrict the capacity to 2 at most
+        Assert.assertEquals(Boolean.TRUE, rp.getSolver().solve());
 
         //Check consistency between the counting and the hoster variables
         int[] counts = new int[map.getAllNodes().size()];
@@ -347,7 +347,6 @@ public class DefaultReconfigurationProblemTest {
         for (int i = 0; i < counts.length; i++) {
             Assert.assertEquals(0, counts[i]);
         }
-        ChocoLogging.flushLogs();
     }
 
 

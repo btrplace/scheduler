@@ -64,11 +64,11 @@ public class BootVMModel implements ActionModel {
 
         int d = rp.getDurationEvaluators().evaluate(BootVM.class, e);
         this.rp = rp;
-        start = rp.makeDuration(rp.makeVarLabel("bootVM.start(" + e + ")"), 0, rp.getEnd().getSup() - d);
-        end = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel("bootVM.end(" + e + ")"), start, d);
+        start = rp.makeDuration(rp.makeVarLabel("bootVM(" + e + ").start"), 0, rp.getEnd().getSup() - d);
+        end = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel("bootVM(" + e + ").end"), start, d);
         duration = rp.makeDuration(rp.makeVarLabel("bootVM.duration(" + e + ")"), d, d);
-        dSlice = new SliceBuilder(rp, e).setStart(start)
-                .setDuration(rp.makeDuration(rp.makeVarLabel("bootVM.dSlice_duration(" + e + ")"), d, rp.getEnd().getSup()))
+        dSlice = new SliceBuilder(rp, e, "bootVM(" + e + ").dSlice").setStart(start)
+                .setDuration(rp.makeDuration(rp.makeVarLabel("bootVM(" + e + ").dSlice_duration"), d, rp.getEnd().getSup()))
                 .setExclusive(false)
                 .build();
         CPSolver s = rp.getSolver();

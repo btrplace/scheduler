@@ -28,7 +28,6 @@ import btrplace.solver.choco.SliceBuilder;
 import btrplace.solver.choco.chocoUtil.FastIFFEq;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.integer.TimesXYZ;
 import choco.cp.solver.constraints.reified.ReifiedFactory;
 import choco.cp.solver.variables.integer.BoolVarNot;
 import choco.cp.solver.variables.integer.BooleanVarImpl;
@@ -70,24 +69,21 @@ public class RelocatableVMModel implements ActionModel {
         int d = rp.getDurationEvaluators().evaluate(MigrateVM.class, e);
 
         CPSolver s = rp.getSolver();
-        cost = rp.makeDuration(rp.makeVarLabel("relocatable_cost(" + e + ")"));
-        duration = s.createEnumIntVar(rp.makeVarLabel("relocatable_duration(" + e + ")"), new int[]{0, d});
-        cSlice = new SliceBuilder(rp, e)
+        duration = s.createEnumIntVar(rp.makeVarLabel("relocatable(" + e + ").duration"), new int[]{0, d});
+        cSlice = new SliceBuilder(rp, e, "relocatable(" + e + ").cSlice")
                 .setHoster(rp.getNode(rp.getSourceModel().getMapping().getVMLocation(e)))
-                .setEnd(rp.makeDuration(rp.makeVarLabel("cSlice_duration(" + e + ")")))
+                .setEnd(rp.makeDuration(rp.makeVarLabel("relocatable(" + e + ").cSlice_end")))
                 .setExclusive(false)
                 .build();
 
-        dSlice = new SliceBuilder(rp, e)
-                .setStart(rp.makeDuration(rp.makeVarLabel("dSlice_duration(" + e + ")")))
+        dSlice = new SliceBuilder(rp, e, "relocatable(" + e + ").dSlice")
+                .setStart(rp.makeDuration(rp.makeVarLabel("relocatable(" + e + ").dSlice_start")))
                 .setExclusive(false)
                 .build();
-        IntDomainVar move = s.createBooleanVar(rp.makeVarLabel("relocatable_move(" + e + ")"));
+        IntDomainVar move = s.createBooleanVar(rp.makeVarLabel("relocatable(" + e + ").move"));
         s.post(ReifiedFactory.builder(move, s.neq(cSlice.getHoster(), dSlice.getHoster()), s));
 
-        IntDomainVar stay = new BoolVarNot(s, rp.makeVarLabel("relocatable_stay(" + e + ")"), (BooleanVarImpl) move);
-
-        s.post(new TimesXYZ(move, cSlice.getEnd(), cost));
+        IntDomainVar stay = new BoolVarNot(s, rp.makeVarLabel("relocatable(" + e + ").stay"), (BooleanVarImpl) move);
 
         s.post(new FastIFFEq(stay, duration, 0));
 

@@ -62,9 +62,9 @@ public class ShutdownVMModel implements ActionModel {
 
         int d = rp.getDurationEvaluators().evaluate(ShutdownVM.class, e);
 
-        duration = rp.getSolver().createIntegerConstant("", d);
-        this.cSlice = new SliceBuilder(rp, e).setHoster(rp.getCurrentVMLocation(rp.getVM(e)))
-                .setEnd(rp.makeDuration("", d, rp.getEnd().getSup()))
+        duration = rp.getSolver().createIntegerConstant(rp.makeVarLabel("shutdownVM(" + e + ").duration"), d);
+        this.cSlice = new SliceBuilder(rp, e, "shutdownVM(" + e + ").cSlice").setHoster(rp.getCurrentVMLocation(rp.getVM(e)))
+                .setEnd(rp.makeDuration(rp.makeVarLabel("shutdownVM(" + e + ").cSlice_end"), d, rp.getEnd().getSup()))
                 .setExclusive(false)
                 .build();
 

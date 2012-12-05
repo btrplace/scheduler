@@ -20,12 +20,11 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.*;
 import btrplace.model.constraint.Ban;
+import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Running;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
@@ -43,7 +42,6 @@ public class CBanTest {
 
     @Test
     public void testBasic() throws SolverException {
-        ChocoLogging.setVerbosity(Verbosity.FINEST);
         UUID[] nodes = new UUID[5];
         UUID[] vms = new UUID[5];
         Mapping m = new DefaultMapping();
@@ -65,6 +63,7 @@ public class CBanTest {
         Collection<SatConstraint> s = new HashSet<SatConstraint>();
         s.add(b);
         s.add(new Running(m.getAllVMs()));
+        s.add(new Online(m.getAllNodes()));
 
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
@@ -72,6 +71,6 @@ public class CBanTest {
         ReconfigurationPlan p = cra.solve(mo, s);
         Assert.assertEquals(SatConstraint.Sat.SATISFIED, b.isSatisfied(p.getResult()));
         System.out.println(p);
-        Assert.assertEquals(3, p.size());
+        Assert.assertEquals(3, p.getSize());
     }
 }

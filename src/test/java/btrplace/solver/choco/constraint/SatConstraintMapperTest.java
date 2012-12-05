@@ -18,15 +18,20 @@
 
 package btrplace.solver.choco.constraint;
 
+import btrplace.model.Model;
+import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Ban;
-import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Spread;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoSatConstraint;
 import btrplace.solver.choco.ChocoSatConstraintBuilder;
+import btrplace.solver.choco.ReconfigurationProblem;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Collections;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -49,30 +54,25 @@ public class SatConstraintMapperTest {
     public void testGetBuilder() {
         SatConstraintMapper map = new SatConstraintMapper();
         ChocoSatConstraintBuilder b = map.getBuilder(Spread.class);
-        Assert.assertEquals(b.getClass(), CContinuousSpread.Builder.class);
+        Assert.assertEquals(b.getClass(), CSpread.Builder.class);
 
-        Assert.assertNull(map.getBuilder(Fence.class));
+        Assert.assertNull(map.getBuilder(MockSatConstraint.class));
     }
 
-    @Test(dependsOnMethods = {"testInstantiate"})
+    @Test(dependsOnMethods = {"testInstantiate", "testRegister"})
     public void testUnregister() {
         SatConstraintMapper map = new SatConstraintMapper();
-        Assert.assertTrue(map.unregister(Spread.class));
-        Assert.assertNull(map.getBuilder(Spread.class));
-        Assert.assertFalse(map.unregister(Spread.class));
+        Builder cb = new Builder();
+        Assert.assertNull(map.getBuilder(MockSatConstraint.class));
+        Assert.assertFalse(map.unregister(MockSatConstraint.class));
     }
 
-    @Test(dependsOnMethods = {"testInstantiate", "testGetBuilder", "testUnregister"})
+    @Test(dependsOnMethods = {"testInstantiate", "testGetBuilder"})
     public void testRegister() {
         SatConstraintMapper map = new SatConstraintMapper();
-        map.unregister(Spread.class);
-        CLazySpread.Builder cb = new CLazySpread.Builder();
+        Builder cb = new Builder();
         Assert.assertTrue(map.register(cb));
-        Assert.assertEquals(map.getBuilder(Spread.class), cb);
-
-        CContinuousSpread.Builder cb2 = new CContinuousSpread.Builder();
-        Assert.assertFalse(map.register(cb2));
-        Assert.assertEquals(map.getBuilder(Spread.class), cb2);
+        Assert.assertEquals(map.getBuilder(MockSatConstraint.class), cb);
     }
 
     @Test(dependsOnMethods = {"testInstantiate", "testUnregister", "testRegister"})
@@ -80,17 +80,62 @@ public class SatConstraintMapperTest {
         SatConstraintMapper map = new SatConstraintMapper();
         Spread s = new Spread(Collections.singleton(UUID.randomUUID()));
         ChocoSatConstraint c = map.map(s);
-        Assert.assertTrue(c.getClass().equals(CContinuousSpread.class));
+        Assert.assertTrue(c.getClass().equals(CSpread.class));
 
         map.unregister(Spread.class);
-        CLazySpread.Builder cb = new CLazySpread.Builder();
+        CSpread.Builder cb = new CSpread.Builder();
         map.register(cb);
         c = map.map(s);
-        Assert.assertTrue(c.getClass().equals(CLazySpread.class));
+        Assert.assertTrue(c.getClass().equals(CSpread.class));
 
-        //Fence is not registered !
-        Fence b = new Fence(Collections.singleton(UUID.randomUUID()), Collections.singleton(UUID.randomUUID()));
+        MockSatConstraint b = new MockSatConstraint();
         Assert.assertNull(map.map(b));
+    }
 
+    public static class MockSatConstraint extends SatConstraint {
+        public MockSatConstraint() {
+            super(null, null);
+        }
+
+        @Override
+        public Sat isSatisfied(Model i) {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    public class Builder implements ChocoSatConstraintBuilder {
+        @Override
+        public Class<? extends SatConstraint> getKey() {
+            return MockSatConstraint.class;
+        }
+
+        @Override
+        public ChocoSatConstraint build(SatConstraint cstr) {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    public static class MockCConstraint implements ChocoSatConstraint {
+
+
+        @Override
+        public void inject(ReconfigurationProblem rp) throws SolverException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public SatConstraint getAssociatedConstraint() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Set<UUID> getMisPlacedVMs(Model m) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isSatisfied(ReconfigurationPlan plan) {
+            throw new UnsupportedOperationException();
+        }
     }
 }

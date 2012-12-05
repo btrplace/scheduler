@@ -52,21 +52,21 @@ public class StayRunningVMModel implements ActionModel {
         this.vm = e;
         this.rp = rp;
         boolean neadIncrease = true; //TODO: How to get resource changes ?
-        IntDomainVar host = rp.makeCurrentHost("", e);
+        IntDomainVar host = rp.makeCurrentHost(rp.makeVarLabel("stayRunningVM(" + e + ").host"), e);
         if (neadIncrease) {
-            cSlice = new SliceBuilder(rp, e)
+            cSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").cSlice")
                     .setHoster(host)
                     .build();
-            dSlice = new SliceBuilder(rp, e)
+            dSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").dSlice")
                     .setStart(rp.getEnd())
                     .setHoster(host)
                     .build();
         } else {
-            cSlice = new SliceBuilder(rp, e)
+            cSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").cSlice")
                     .setEnd(rp.getStart())
                     .setHoster(host)
                     .build();
-            dSlice = new SliceBuilder(rp, e)
+            dSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").dSlice")
                     .setHoster(host)
                     .build();
         }

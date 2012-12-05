@@ -60,20 +60,20 @@ public class ShutdownableNodeModel implements ActionModel {
      */
     public ShutdownableNodeModel(ReconfigurationProblem rp, UUID e) throws SolverException {
         this.node = e;
-        state = rp.getSolver().createBooleanVar(rp.makeVarLabel("shutdownnableNode.state(" + e + ")"));
+        state = rp.getSolver().createBooleanVar(rp.makeVarLabel("shutdownnableNode(" + e + ").state"));
 
         CPSolver s = rp.getSolver();
         int d = rp.getDurationEvaluators().evaluate(ShutdownNode.class, e);
         //Duration is either 0 (no shutdown) or 'd' (shutdown)
-        duration = s.createEnumIntVar(rp.makeVarLabel("shutdownableNode.duration(" + e + ")"), new int[]{0, d});
+        duration = s.createEnumIntVar(rp.makeVarLabel("shutdownableNode(" + e + ").duration"), new int[]{0, d});
 
 
-        this.dSlice = new SliceBuilder(rp, e)
-                .setStart(rp.makeDuration(rp.makeVarLabel("shutdownableNode.dSlice_start(" + e + ")")))
+        this.dSlice = new SliceBuilder(rp, e, "shutdownableNode(" + e + ").dSlice")
+                .setStart(rp.makeDuration(rp.makeVarLabel("shutdownableNode(" + e + ").dSlice_start")))
                 .setHoster(rp.getNode(e))
                 .build();
 
-        end = rp.makeDuration(rp.makeVarLabel("shutdownableNode.end(" + e + ")"));
+        end = rp.makeDuration(rp.makeVarLabel("shutdownableNode(" + e + ").end"));
 
         s.post(s.eq(end, s.plus(dSlice.getStart(), duration)));
         //The future state is uncertain yet

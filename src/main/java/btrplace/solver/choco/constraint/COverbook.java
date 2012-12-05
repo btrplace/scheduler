@@ -25,17 +25,13 @@ import btrplace.model.ShareableResource;
 import btrplace.model.constraint.Overbook;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoSatConstraint;
-import btrplace.solver.choco.ChocoSatConstraintBuilder;
-import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.ResourceMapping;
+import btrplace.solver.choco.*;
 import btrplace.solver.choco.chocoUtil.ChocoUtils;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import gnu.trove.TIntArrayList;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Choco implementation of {@link btrplace.model.SatConstraint}.
@@ -71,8 +67,6 @@ public class COverbook implements ChocoSatConstraint {
             for (UUID u : cstr.getInvolvedNodes()) {
                 int nIdx = rp.getNode(u);
                 s.post(s.eq(realCapa[nIdx], rawCapa[nIdx]));
-                SlicesPlanner p = new SlicesPlanner(rcm, cstr.getRatio());
-                p.inject(rp);
             }
         } else {
             double ratio = cstr.getRatio();
@@ -99,10 +93,32 @@ public class COverbook implements ChocoSatConstraint {
                 s.post(s.eq(rawCapa[nIdx], s.minus(maxRaw, freeRaw)));
             }
 
+
             //The slice scheduling constraint that is necessary
             //TODO: a slice on both the real and the raw resource usage ?
-            SlicesPlanner p = new SlicesPlanner(rcm, cstr.getRatio());
-            p.inject(rp);
+
+            TIntArrayList cUse = new TIntArrayList();
+            List<IntDomainVar> dUse = new ArrayList<IntDomainVar>();
+
+            for (ActionModel a : rp.getVMActions()) {
+                Slice c = a.getCSlice();
+                Slice d = a.getDSlice();
+                if (c != null) {
+                    UUID vmId = c.getSubject();
+                    cUse.add(rcm.getSourceResource().get(vmId));
+                }
+                if (d != null) {
+                    UUID vmId = d.getSubject();
+                    dUse.add(rcm.getVMConsumption()[rp.getVM(vmId)]);
+                }
+            }
+
+            IntDomainVar[] capa = new IntDomainVar[rp.getNodes().length];
+            for (int i = 0; i < rp.getNodes().length; i++) {
+                capa[i] = realCapa[i];
+            }
+
+            //TaskSchedulerBuilder.getInstance().add(capa, cUse.toNativeArray(), dUse.toArray(new IntDomainVar[cUse.size()]));
         }
     }
 

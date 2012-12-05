@@ -67,16 +67,16 @@ public class BootableNodeModel implements ActionModel {
 
         //TODO: makes it consume all the resources of the node
         int d = rp.getDurationEvaluators().evaluate(BootNode.class, nId);
-        duration = s.createEnumIntVar(rp.makeVarLabel("bootableNode_duration(" + nId + ")"), new int[]{0, d});
+        duration = s.createEnumIntVar(rp.makeVarLabel("bootableNode.duration(" + nId + ")"), new int[]{0, d});
 
-        cSlice = new SliceBuilder(rp, nId)
-                .setEnd(rp.makeDuration(rp.makeVarLabel("slice_end(" + nId + ")")))
+        cSlice = new SliceBuilder(rp, nId, "bootableNode(" + nId + ").cSlice")
+                .setEnd(rp.makeDuration(rp.makeVarLabel("bootableNode(" + nId + ").cSlice_end")))
                 .setHoster(nIdx)
                 .build();
 
-        start = new IntDomainVarAddCste(s, rp.makeVarLabel("bootableNode_start(" + nId + ")"), cSlice.getEnd(), -d);
+        start = new IntDomainVarAddCste(s, rp.makeVarLabel("bootableNode(" + nId + ").start"), cSlice.getEnd(), -d);
         //Unknown state
-        state = s.createBooleanVar(rp.makeVarLabel("bootableNode_state(" + nId + ")"));
+        state = s.createBooleanVar(rp.makeVarLabel("bootableNode(" + nId + ").state"));
 
         //the node goes online <-> duration == d
         s.post(new FastIFFEq(state, duration, d));

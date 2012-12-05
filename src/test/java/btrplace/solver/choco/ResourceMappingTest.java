@@ -60,7 +60,7 @@ public class ResourceMappingTest {
         ResourceMapping rcm = new ResourceMapping(rp, rc);
         Assert.assertEquals(rc.getIdentifier(), rcm.getIdentifier());
         Assert.assertEquals(0, rcm.getVMConsumption()[rp.getVM(vm)].getInf());
-        Assert.assertEquals(3, rcm.getVMConsumption()[rp.getVM(vm2)].getInf());
+        Assert.assertEquals(0, rcm.getVMConsumption()[rp.getVM(vm2)].getInf());
         Assert.assertEquals(0, rcm.getVMConsumption()[rp.getVM(vm3)].getSup()); //Will not be running so 0
         IntDomainVar pn1 = rcm.getRawNodeUsage()[rp.getNode(n1)];
         IntDomainVar pn2 = rcm.getRawNodeUsage()[rp.getNode(n2)];
@@ -103,8 +103,11 @@ public class ResourceMappingTest {
         ActionModel avm2 = rp.getVMActions()[rp.getVM(vm2)];
         avm1.getDSlice().getHoster().setVal(0);
         avm2.getDSlice().getHoster().setVal(1);
-        rp.getSolver().solve();
         ResourceMapping rcm = rp.getResourceMapping("foo");
+        //Basic consumption for the VMs. If would be safe to use Preserve, but I don't want:D
+        rcm.getVMConsumption()[0].setInf(2);
+        rcm.getVMConsumption()[1].setInf(3);
+        rp.getSolver().solve();
         Assert.assertEquals(2, rcm.getRealNodeUsage()[0].getInf());
         Assert.assertEquals(2, rcm.getRealNodeUsage()[0].getSup());
         Assert.assertEquals(3, rcm.getRealNodeUsage()[1].getInf());
