@@ -380,7 +380,8 @@ public class LocalTaskScheduler {
             for (int i = 0; i < nbDims; i++) {
                 if (profilesMin[i].get(t) > capacities[i][me]) {
                     if (me == DEBUG) {
-                        ChocoLogging.getBranchingLogger().warning("(" + me + ") Invalid profile at " + t + " on dimension " + i + ": " + prettyProfile(sortedMinProfile, profilesMin[i]));
+                        ChocoLogging.getBranchingLogger().warning("(" + me + ") Invalid min profile at " + t + " on dimension " + i
+                                + ": " + profilesMin[i].get(t) + " > " + capacities[i][me]/* + " - " + prettyProfile(sortedMinProfile, profilesMin[i])*/);
                     }
                     return false;
                 }

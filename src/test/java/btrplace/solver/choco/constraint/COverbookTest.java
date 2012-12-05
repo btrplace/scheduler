@@ -26,8 +26,6 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.durationEvaluator.LinearToAResourceDuration;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
@@ -42,7 +40,6 @@ public class COverbookTest {
 
     @Test
     public void testBasic() throws SolverException {
-        ChocoLogging.setVerbosity(Verbosity.SEARCH);
         UUID[] nodes = new UUID[3];
         UUID[] vms = new UUID[9];
         Mapping m = new DefaultMapping();
@@ -64,13 +61,15 @@ public class COverbookTest {
         Collection<SatConstraint> c = new HashSet<SatConstraint>();
         c.add(o);
         c.add(new Running(m.getAllVMs()));
+        c.add(new Preserve(m.getAllVMs(), "cpu", 1));
+        c.add(new Online(m.getAllNodes()));
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
         cra.getSatConstraintMapper().register(new COverbook.Builder());
         cra.setTimeLimit(-1);
         ReconfigurationPlan p = cra.solve(mo, c);
         Assert.assertNotNull(p);
-        //System.out.println(p);
+        System.out.println(p);
         System.out.println(p.getResult().getMapping());
         Assert.assertEquals(SatConstraint.Sat.SATISFIED, o.isSatisfied(p.getResult()));
     }
@@ -104,16 +103,16 @@ public class COverbookTest {
         c.add(new Overbook(Collections.singleton(nodes[1]), "cpu", 2));
         c.add(new Overbook(Collections.singleton(nodes[2]), "cpu", 3));
         c.add(new Running(m.getAllVMs()));
+        c.add(new Preserve(m.getAllVMs(), "cpu", 1));
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
-        cra.getSatConstraintMapper().register(new COverbook.Builder());
         cra.setTimeLimit(-1);
         ReconfigurationPlan p = cra.solve(mo, c);
         Assert.assertNotNull(p);
         //System.out.println(p);
         //System.out.println(p.getResult().getMapping());
         for (SatConstraint cstr : c) {
-            Assert.assertTrue(cstr.isSatisfied(p.getResult()).equals(SatConstraint.Sat.SATISFIED));
+            Assert.assertEquals(SatConstraint.Sat.SATISFIED, cstr.isSatisfied(p.getResult()));
         }
     }
 
@@ -138,8 +137,8 @@ public class COverbookTest {
         Collection<SatConstraint> c = new HashSet<SatConstraint>();
         c.add(new Overbook(m.getAllNodes(), "mem", 1));
         c.add(new Running(m.getAllVMs()));
+        c.add(new Preserve(m.getAllVMs(), "mem", 1));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.getSatConstraintMapper().register(new COverbook.Builder());
         cra.getDurationEvaluators().register(BootVM.class, new LinearToAResourceDuration(rcMem, 2, 3));
         Assert.assertNull(cra.solve(mo, c));
     }
@@ -198,8 +197,6 @@ public class COverbookTest {
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
-        cra.getSatConstraintMapper().register(new COverbook.Builder());
-        cra.getSatConstraintMapper().register(new CPreserve.Builder());
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         System.out.println(p);
         Assert.assertNotNull(p);

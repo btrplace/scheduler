@@ -30,6 +30,7 @@ import btrplace.solver.choco.constraint.SatConstraintMapper;
 import btrplace.solver.choco.constraint.TaskSchedulerBuilder;
 import btrplace.solver.choco.objective.minMTTR.MinMTTR;
 import choco.cp.solver.CPSolver;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.search.ISolutionPool;
 import choco.kernel.solver.search.SolutionPoolFactory;
@@ -192,6 +193,16 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
             s.setTimeLimit(timeLimit);
         }
         s.setFirstSolution(!optimize);
+
+        for (ResourceMapping rcm : rp.getResourceMappings()) {
+            for (IntDomainVar v : rcm.getVMConsumption()) {
+                try {
+                    v.setVal(v.getInf());
+                } catch (ContradictionException e) {
+                    throw new SolverException(rp.getSourceModel(), "Unable to set the VM '" + rcm.getIdentifier() + "' consumption to " + v.getInf());
+                }
+            }
+        }
         s.launch();
         Boolean ret = s.isFeasible();
         if (Boolean.TRUE.equals(ret)) {
@@ -206,9 +217,21 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     private void addContinuousResourceCapacities() {
         IntDomainVar[] iUse = new IntDomainVar[rp.getVMs().length];
         int[] cUse = new int[rp.getVMs().length];
+        for (ActionModel a : rp.getVMActions()) {
+
+        }
         for (int j = 0; j < rp.getVMs().length; j++) {
-            iUse[j] = rp.getSolver().makeConstantIntVar(1);
-            cUse[j] = 1;
+            ActionModel a = rp.getVMActions()[j];
+            if (a.getDSlice() != null) {
+                iUse[j] = rp.getSolver().makeConstantIntVar(1);
+            } else {
+                iUse[j] = rp.getStart();
+            }
+            if (a.getCSlice() != null) {
+                cUse[j] = 1;
+            } else {
+                cUse[j] = 0;
+            }
         }
 
         TaskSchedulerBuilder.getInstance().add(rp.getVMsCountOnNodes(), cUse, iUse);

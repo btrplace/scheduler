@@ -28,6 +28,7 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.*;
 import btrplace.solver.choco.chocoUtil.ChocoUtils;
 import choco.cp.solver.CPSolver;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntArrayList;
 
@@ -87,6 +88,11 @@ public class COverbook implements ChocoSatConstraint {
                 //usedPCPU = 6 - 2 = 4 \o/
                 int maxRaw = rcm.getSourceResource().get(u);
                 int maxReal = (int) (maxRaw * ratio); //Truncation, we ignore partial virtual resource so it's correct
+                try {
+                    realCapa[nIdx].setSup(maxReal);
+                } catch (ContradictionException ex) {
+                    throw new SolverException(rp.getSourceModel(), "Unable to restrict the real '" + rcm.getIdentifier() + "' capacity of " + rp.getNode(nIdx) + " to " + maxReal);
+                }
                 IntDomainVar freeReal = s.createBoundIntVar(rp.makeVarLabel("free_real('" + u + "')"), 0, maxReal);
                 s.post(s.eq(freeReal, s.minus(maxReal, realCapa[nIdx])));
                 IntDomainVar freeRaw = ChocoUtils.div(s, freeReal, (int) ratio); //TODO: check for the correctness of the truncation
@@ -118,7 +124,7 @@ public class COverbook implements ChocoSatConstraint {
                 capa[i] = realCapa[i];
             }
 
-            //TaskSchedulerBuilder.getInstance().add(capa, cUse.toNativeArray(), dUse.toArray(new IntDomainVar[cUse.size()]));
+            TaskSchedulerBuilder.getInstance().add(capa, cUse.toNativeArray(), dUse.toArray(new IntDomainVar[cUse.size()]));
         }
     }
 

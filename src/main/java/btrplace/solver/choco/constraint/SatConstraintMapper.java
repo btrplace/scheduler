@@ -47,6 +47,8 @@ public class SatConstraintMapper {
         builders.put(Online.class, new COnline.Builder());
         builders.put(Offline.class, new COffline.Builder());
         builders.put(SingleRunningCapacity.class, new CSingleRunningCapacity.Builder());
+        builders.put(Preserve.class, new CPreserve.Builder());
+        builders.put(Overbook.class, new COverbook.Builder());
     }
 
     /**

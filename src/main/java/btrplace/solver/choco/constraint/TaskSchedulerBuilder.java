@@ -183,7 +183,7 @@ public class TaskSchedulerBuilder {
         for (IntDomainVar[] dUseDim : dUsages) {
             dUses[i] = new int[dUseDim.length];
             for (int j = 0; j < dUseDim.length; j++) {
-                dUses[i][j] = dUseDim[j].getSup();
+                dUses[i][j] = dUseDim[j].getInf();
             }
             i++;
         }
