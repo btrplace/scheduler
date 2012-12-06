@@ -184,14 +184,14 @@ public class COverbookTest {
         m.addRunningVM(vm1, n1);
         m.addReadyVM(vm3);
 
-        ShareableResource rcCPU = new DefaultShareableResource("cpu", 1);
+        ShareableResource rcCPU = new DefaultShareableResource("cpu", 2);
 
         List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
         cstrs.add(new Running(Collections.singleton(vm3)));
         cstrs.add(new Sleeping(Collections.singleton(vm1)));
         cstrs.add(new Online(m.getAllNodes()));
         cstrs.add(new Overbook(m.getAllNodes(), "cpu", 1));
-        cstrs.add(new Preserve(m.getAllVMs(), "cpu", 1));
+        cstrs.add(new Preserve(m.getAllVMs(), "cpu", 2));
         Model mo = new DefaultModel(m);
         mo.attach(rcCPU);
 

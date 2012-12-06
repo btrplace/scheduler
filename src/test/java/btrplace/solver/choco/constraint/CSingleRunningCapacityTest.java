@@ -30,8 +30,6 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
@@ -59,10 +57,10 @@ public class CSingleRunningCapacityTest {
         Model mo = new DefaultModel(map);
         List<SatConstraint> l = new ArrayList<SatConstraint>();
         l.add(new Running(Collections.singleton(vm1)));
-        l.add(new Running(Collections.singleton(vm3)));
         l.add(new Ready(Collections.singleton(vm2)));
+        l.add(new Running(Collections.singleton(vm3)));
         SingleRunningCapacity x = new SingleRunningCapacity(map.getAllNodes(), 2);
-        x.setContinuous(true);
+        x.setContinuous(false);
         l.add(x);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
@@ -70,14 +68,11 @@ public class CSingleRunningCapacityTest {
         ReconfigurationPlan plan = cra.solve(mo, l);
         Iterator<Action> ite = plan.getActions().iterator();
         Assert.assertEquals(2, plan.getSize());
-        Action a1 = ite.next();
-        Action a2 = ite.next();
         Assert.assertEquals(SatConstraint.Sat.SATISFIED, x.isSatisfied(plan.getResult()));
     }
 
     @Test
     public void testContinuous() throws SolverException {
-        ChocoLogging.setVerbosity(Verbosity.SEARCH);
         UUID vm1 = UUID.randomUUID();
         UUID vm2 = UUID.randomUUID();
         UUID vm3 = UUID.randomUUID();
@@ -90,15 +85,18 @@ public class CSingleRunningCapacityTest {
         Model mo = new DefaultModel(map);
         List<SatConstraint> l = new ArrayList<SatConstraint>();
         l.add(new Running(Collections.singleton(vm1)));
-        l.add(new Running(Collections.singleton(vm3)));
         l.add(new Ready(Collections.singleton(vm2)));
-        l.add(new SingleRunningCapacity(map.getAllNodes(), 2));
+        l.add(new Running(Collections.singleton(vm3)));
+        SingleRunningCapacity sc = new SingleRunningCapacity(map.getAllNodes(), 2);
+        sc.setContinuous(true);
+        l.add(sc);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.setTimeLimit(3);
         cra.labelVariables(true);
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
+        System.out.println(plan);
         Iterator<Action> ite = plan.getActions().iterator();
         Assert.assertEquals(2, plan.getSize());
         Action a1 = ite.next();

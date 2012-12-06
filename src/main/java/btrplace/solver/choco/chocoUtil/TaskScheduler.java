@@ -275,7 +275,7 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
         for (int i = 0; i < nbDims; i++) {
             for (int j = 0; j < cHostersVals.length; j++) {
                 int nIdx = cHostersVals[j];
-                changes[i][nIdx].put(cEndsVals[j], changes[i][nIdx].get(cEndsVals[j] - cUsages[i][j]));
+                changes[i][nIdx].put(cEndsVals[j], changes[i][nIdx].get(cEndsVals[j] + cUsages[i][j]));
                 currentFree[i][nIdx] -= cUsages[i][j];
             }
         }
@@ -294,7 +294,7 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
         for (int j = 0; j < nbResources; j++) {
             ChocoLogging.getBranchingLogger().finest("--- Resource " + j + " isSatisfied() ---");
             for (int i = 0; i < nbDims; i++) {
-                ChocoLogging.getBranchingLogger().finest("Dimension " + i + ":"
+                ChocoLogging.getBranchingLogger().finest("Dimension " + (i + 1) + "/" + nbDims + ": "
                         + " currentFree= " + currentFree[i][j]
                         + " changes= " + changes[i][j]);
                 //Now we check the evolution of the absolute free space.

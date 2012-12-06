@@ -36,6 +36,7 @@ import choco.kernel.solver.search.ISolutionPool;
 import choco.kernel.solver.search.SolutionPoolFactory;
 import choco.kernel.solver.search.measure.IMeasures;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import gnu.trove.list.array.TIntArrayList;
 
 import java.util.*;
 
@@ -215,26 +216,19 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     private void addContinuousResourceCapacities() {
-        IntDomainVar[] iUse = new IntDomainVar[rp.getVMs().length];
-        int[] cUse = new int[rp.getVMs().length];
-        for (ActionModel a : rp.getVMActions()) {
-
-        }
+        TIntArrayList cUse = new TIntArrayList();
+        List<IntDomainVar> iUse = new ArrayList<IntDomainVar>();
         for (int j = 0; j < rp.getVMs().length; j++) {
             ActionModel a = rp.getVMActions()[j];
             if (a.getDSlice() != null) {
-                iUse[j] = rp.getSolver().makeConstantIntVar(1);
-            } else {
-                iUse[j] = rp.getStart();
+                iUse.add(rp.getSolver().makeConstantIntVar(1));
             }
             if (a.getCSlice() != null) {
-                cUse[j] = 1;
-            } else {
-                cUse[j] = 0;
+                cUse.add(1);
             }
         }
 
-        TaskSchedulerBuilder.getInstance().add(rp.getVMsCountOnNodes(), cUse, iUse);
+        TaskSchedulerBuilder.getInstance().add(rp.getVMsCountOnNodes(), cUse.toArray(), iUse.toArray(new IntDomainVar[iUse.size()]));
     }
 
     @Override

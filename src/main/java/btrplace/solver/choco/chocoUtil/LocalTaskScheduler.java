@@ -201,14 +201,13 @@ public class LocalTaskScheduler {
         int lastSup = 0;
 
         for (int j = out.nextSetBit(0); j >= 0; j = out.nextSetBit(j + 1)) {
+
             int t = cEnds[j].getInf();
             if (t < lastInf) {
                 lastInf = t;
             }
 
-            if (associatedToDSliceOnCurrentNode(j) &&
-                    increase(j, revAssociations[j])) {
-                //dCPUHeights[revAssociations[j]] > cCPUHeights[j]) {
+            if (associatedToDSliceOnCurrentNode(j) && increase(j, revAssociations[j])) {
                 if (me == DEBUG) {
                     ChocoLogging.getBranchingLogger().finest(me + " " + cEnds[j].pretty() + " increasing");
                 }
@@ -218,7 +217,7 @@ public class LocalTaskScheduler {
 
             } else {
                 if (me == DEBUG) {
-                    ChocoLogging.getBranchingLogger().finest(me + " " + cEnds[j].pretty() + " decreasing or non-associated (" + (revAssociations[j] >= 0 ? dStarts[revAssociations[j]].pretty() : "no rev") + "?)");
+                    ChocoLogging.getBranchingLogger().finest(me + " " + cEnds[j].pretty() + " < or non-associated (" + (revAssociations[j] >= 0 ? dStarts[revAssociations[j]].pretty() : "no rev") + "?)");
                 }
                 for (int i = 0; i < nbDims; i++) {
                     profilesMin[i].put(t, profilesMin[i].get(t) - cUsages[i][j]);
@@ -230,9 +229,7 @@ public class LocalTaskScheduler {
             if (t > lastSup) {
                 lastSup = t;
             }
-            if (associatedToDSliceOnCurrentNode(j) &&
-                    increase(j, revAssociations[j])) {
-                //dCPUHeights[revAssociations[j]] > cCPUHeights[j]) {
+            if (associatedToDSliceOnCurrentNode(j) && increase(j, revAssociations[j])) {
                 for (int i = 0; i < nbDims; i++) {
                     profilesMin[i].put(t, profilesMin[i].get(t) - cUsages[i][j]);
                 }
@@ -310,9 +307,9 @@ public class LocalTaskScheduler {
     private boolean associatedToDSliceOnCurrentNode(int cSlice) {
         if (revAssociations[cSlice] != NO_ASSOCIATIONS
                 && isIn(revAssociations[cSlice])) {//TODO: need a constant time operation
-            if (me == DEBUG) {
+            /*if (me == DEBUG) {
                 ChocoLogging.getBranchingLogger().finest(me + " " + cEnds[cSlice].getName() + " with " + dStarts[revAssociations[cSlice]]);
-            }
+            } */
             return true;
         }
         return false;
