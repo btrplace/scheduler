@@ -392,6 +392,18 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
+    public ActionModel getVMAction(UUID id) {
+        int idx = getVM(id);
+        return idx < 0 ? null : vmActions[idx];
+    }
+
+    @Override
+    public ActionModel getNodeAction(UUID id) {
+        int idx = getNode(id);
+        return idx < 0 ? null : nodeActions[idx];
+    }
+
+    @Override
     public ActionModel[] getNodeActions() {
         return nodeActions;
     }

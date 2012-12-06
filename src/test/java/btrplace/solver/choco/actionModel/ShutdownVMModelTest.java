@@ -24,7 +24,7 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.action.BootVM;
+import btrplace.plan.action.ShutdownVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.DurationEvaluators;
@@ -40,83 +40,70 @@ import java.util.Iterator;
 import java.util.UUID;
 
 /**
- * Basic unit tests for {@link BootVMModel}.
+ * Unit tests for {@link ShutdownVMModel}.
  *
  * @author Fabien Hermenier
  */
-public class BootVMModelTest {
+public class ShutdownVMModelTest {
 
-    /**
-     * Just boot a VM on a  node.
-     */
     @Test
-    public void testBasics() throws SolverException, ContradictionException {
+    public void testBasic() throws ContradictionException, SolverException {
         Mapping map = new DefaultMapping();
         UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
         map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
         UUID vm = UUID.randomUUID();
-        map.addReadyVM(vm);
+        map.addRunningVM(vm, n1);
 
         Model mo = new DefaultModel(map);
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(BootVM.class, new ConstantDuration(5));
+        dev.register(ShutdownVM.class, new ConstantDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
-                .setNextVMsStates(new HashSet<UUID>(), map.getAllVMs(), new HashSet<UUID>(), new HashSet<UUID>())
+                .setNextVMsStates(map.getAllVMs(), new HashSet<UUID>(), new HashSet<UUID>(), new HashSet<UUID>())
                 .build();
         rp.getNodeActions()[0].getState().setVal(1);
-        rp.getNodeActions()[1].getState().setVal(1);
-        BootVMModel m = (BootVMModel) rp.getVMActions()[0];
+        ShutdownVMModel m = (ShutdownVMModel) rp.getVMActions()[0];
         Assert.assertEquals(vm, m.getVM());
-        Assert.assertNull(m.getCSlice());
+        Assert.assertNull(m.getDSlice());
         Assert.assertTrue(m.getDuration().isInstantiatedTo(5));
-        Assert.assertTrue(m.getState().isInstantiatedTo(1));
-        Assert.assertFalse(m.getDSlice().getHoster().isInstantiated());
-        Assert.assertFalse(m.getDSlice().getStart().isInstantiated());
-        Assert.assertFalse(m.getDSlice().getEnd().isInstantiated());
+        Assert.assertTrue(m.getState().isInstantiatedTo(0));
+        Assert.assertTrue(m.getCSlice().getHoster().isInstantiatedTo(0));
 
         Assert.assertEquals(Boolean.TRUE, rp.getSolver().solve());
         ReconfigurationPlan p = rp.extractSolution();
-        BootVM a = (BootVM) p.getActions().iterator().next();
+        ShutdownVM a = (ShutdownVM) p.getActions().iterator().next();
 
-        UUID dest = rp.getNode(m.getDSlice().getHoster().getVal());
         Assert.assertEquals(vm, a.getVM());
-        Assert.assertEquals(dest, a.getDestinationNode());
         Assert.assertEquals(5, a.getEnd() - a.getStart());
     }
 
     /**
-     * Test that check when the action is shorter than the end of
-     * the reconfiguration process.
-     * In practice, 2 boot actions have to be executed sequentially
+     * Test that check that the action duration is lesser than
+     * the cSlice duration. This allows actions scheduling
+     * In practice, for this test, 2 shutdown actions have to be executed sequentially
      */
     @Test
-    public void testBootSequence() throws SolverException, ContradictionException {
+    public void testShutdownSequence() throws SolverException, ContradictionException {
         Mapping map = new DefaultMapping();
         UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
         map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
         UUID vm1 = UUID.randomUUID();
         UUID vm2 = UUID.randomUUID();
-        map.addReadyVM(vm1);
-        map.addReadyVM(vm2);
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
 
         Model mo = new DefaultModel(map);
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(BootVM.class, new ConstantDuration(5));
+        dev.register(ShutdownVM.class, new ConstantDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
-                .setNextVMsStates(new HashSet<UUID>(), map.getAllVMs(), new HashSet<UUID>(), new HashSet<UUID>())
+                .setNextVMsStates(map.getAllVMs(), new HashSet<UUID>(), new HashSet<UUID>(), new HashSet<UUID>())
                 .build();
-        BootVMModel m1 = (BootVMModel) rp.getVMActions()[rp.getVM(vm1)];
-        BootVMModel m2 = (BootVMModel) rp.getVMActions()[rp.getVM(vm2)];
+        ShutdownVMModel m1 = (ShutdownVMModel) rp.getVMActions()[rp.getVM(vm1)];
+        ShutdownVMModel m2 = (ShutdownVMModel) rp.getVMActions()[rp.getVM(vm2)];
         rp.getNodeActions()[0].getState().setVal(1);
-        rp.getNodeActions()[1].getState().setVal(1);
         CPSolver s = rp.getSolver();
         s.post(s.geq(m2.getStart(), m1.getEnd()));
 
@@ -125,8 +112,8 @@ public class BootVMModelTest {
         Assert.assertNotNull(p);
         System.out.println(p);
         Iterator<Action> ite = p.iterator();
-        BootVM b1 = (BootVM) ite.next();
-        BootVM b2 = (BootVM) ite.next();
+        ShutdownVM b1 = (ShutdownVM) ite.next();
+        ShutdownVM b2 = (ShutdownVM) ite.next();
         Assert.assertEquals(vm1, b1.getVM());
         Assert.assertEquals(vm2, b2.getVM());
         Assert.assertTrue(b1.getEnd() <= b2.getStart());

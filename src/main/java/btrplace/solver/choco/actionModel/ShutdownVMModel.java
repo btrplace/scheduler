@@ -49,6 +49,8 @@ public class ShutdownVMModel implements ActionModel {
 
     private IntDomainVar start;
 
+    private IntDomainVar state;
+
     /**
      * Make a new model.
      *
@@ -69,6 +71,7 @@ public class ShutdownVMModel implements ActionModel {
                 .build();
 
         start = new IntDomainVarAddCste(rp.getSolver(), "", cSlice.getEnd(), -d);
+        state = rp.getSolver().makeConstantIntVar(0);
     }
 
     @Override
@@ -117,7 +120,7 @@ public class ShutdownVMModel implements ActionModel {
 
     @Override
     public IntDomainVar getState() {
-        return null;
+        return state;
     }
 
     @Override

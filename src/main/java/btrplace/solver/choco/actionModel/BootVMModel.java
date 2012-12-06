@@ -52,6 +52,8 @@ public class BootVMModel implements ActionModel {
 
     private ReconfigurationProblem rp;
 
+    private IntDomainVar state;
+
     /**
      * Make a new model.
      *
@@ -73,6 +75,8 @@ public class BootVMModel implements ActionModel {
                 .build();
         CPSolver s = rp.getSolver();
         s.post(s.leq(end, rp.getEnd()));
+
+        state = s.makeConstantIntVar(1);
     }
 
     @Override
@@ -109,7 +113,7 @@ public class BootVMModel implements ActionModel {
 
     @Override
     public IntDomainVar getState() {
-        return null;
+        return state;
     }
 
     /**

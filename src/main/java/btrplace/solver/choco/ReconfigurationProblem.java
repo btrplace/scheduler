@@ -151,6 +151,14 @@ public interface ReconfigurationProblem {
     ActionModel[] getVMActions();
 
     /**
+     * Get the action associated to a given VM.
+     *
+     * @param id the VM identifier
+     * @return the associated action if exists, {@code null} otherwise
+     */
+    ActionModel getVMAction(UUID id);
+
+    /**
      * Get all the actions associated to a list of virtual machines.
      *
      * @param id the virtual machines
@@ -165,6 +173,14 @@ public interface ReconfigurationProblem {
      * @return a list of actions.
      */
     ActionModel[] getNodeActions();
+
+    /**
+     * Get the action associated to a given node.
+     *
+     * @param id the node identifier
+     * @return the associated action if exists, {@code null} otherwise
+     */
+    ActionModel getNodeAction(UUID id);
 
     /**
      * Get the evaluator to estimate the duration of the actions.
