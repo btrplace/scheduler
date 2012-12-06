@@ -25,6 +25,7 @@ import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
+import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -34,6 +35,8 @@ import java.util.UUID;
 
 /**
  * Model an action that resume a sleeping VM.
+ * <p/>
+ * TODO: support local/remote resume
  *
  * @author Fabien Hermenier
  */
@@ -50,6 +53,8 @@ public class ResumeVMModel implements ActionModel {
     private IntDomainVar duration;
 
     private Slice dSlice;
+
+    private IntDomainVar state;
 
     /**
      * Make a new model.
@@ -71,6 +76,10 @@ public class ResumeVMModel implements ActionModel {
                 .setDuration(rp.makeDuration(rp.makeVarLabel("resumeVM(" + e + ").dSlice_duration"), d, rp.getEnd().getSup()))
                 .setExclusive(false)
                 .build();
+
+        CPSolver s = rp.getSolver();
+        s.post(s.leq(end, rp.getEnd()));
+        state = s.makeConstantIntVar(1);
     }
 
     @Override
@@ -118,7 +127,7 @@ public class ResumeVMModel implements ActionModel {
 
     @Override
     public IntDomainVar getState() {
-        return null;
+        return state;
     }
 
     @Override
