@@ -38,7 +38,6 @@ import java.util.*;
 
 /**
  * Default implementation of {@link ReconfigurationProblem}.
- * TODO: resource capacity
  *
  * @author Fabien Hermenier
  */
@@ -47,10 +46,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     static final Logger LOGGER = LoggerFactory.getLogger("ChocoRP");
 
     private boolean useLabels = false;
+
     /**
      * The maximum duration of a plan in seconds: One hour.
      */
-    public static final int DEFAULT_MAX_TIME = 60;
+    public static final int DEFAULT_MAX_TIME = 3600;
 
     private Model model;
 
@@ -86,6 +86,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     /**
      * Make a new RP where the next state for every VM is indicated.
+     * If the state for a VM is omitted, it is considered as unchanged
      * {@link DefaultReconfigurationProblemBuilder} can be used to simplify the instantiation process
      *
      * @param m          the initial model
@@ -171,8 +172,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             usages[i] = solver.makeConstantIntVar(1);
         }
         solver.post(new BinPacking(solver.getEnvironment(), vmsCountOnNodes, usages, ds));
-
-        //TODO: Continuous restriction on the hosting
     }
 
     private void fillElements() throws SolverException {
@@ -252,7 +251,20 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 }
             }
             if (vmActions[i] == null) {
-                throw new SolverException(model, "Next state for VM '" + vmId + "' is undefined");
+                //Next state is undefined, keep the current state
+                if (map.getRunningVMs().contains(vmId)) {
+                    if (manageable.contains(vmId)) {
+                        vmActions[i] = new RelocatableVMModel(this, vmId);
+                    } else {
+                        vmActions[i] = new StayRunningVMModel(this, vmId);
+                    }
+                } else if (map.getReadyVMs().contains(vmId)) {
+                    vmActions[i] = new StayAwayVMModel(vmId);
+                } else if (map.getSleepingVMs().contains(vmId)) {
+                    vmActions[i] = new StayAwayVMModel(vmId);
+                } else {
+                    throw new SolverException(model, "Unable to infer the next state of VM '" + vmId + "'");
+                }
             }
             Slice s = vmActions[i].getCSlice();
             if (s != null) {

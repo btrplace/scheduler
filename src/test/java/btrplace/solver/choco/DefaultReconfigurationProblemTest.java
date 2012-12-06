@@ -263,6 +263,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertEquals(ShutdownableNodeModel.class, a.getClass());
     }
 
+
     @Test(dependsOnGroups = {"DefaultRPBuilder"})
     public void testNodeOff() throws SolverException {
         Mapping m = new DefaultMapping();
@@ -348,6 +349,4 @@ public class DefaultReconfigurationProblemTest {
             Assert.assertEquals(0, counts[i]);
         }
     }
-
-
 }

@@ -66,6 +66,11 @@ public interface ActionModel {
      */
     Slice getDSlice();
 
+    /**
+     * Make a visitor inspect the action model.
+     *
+     * @param v the visitor to use
+     */
     void visit(ActionModelVisitor v);
 
     /**

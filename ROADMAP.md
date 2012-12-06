@@ -2,7 +2,8 @@ Roadmap to v0.1
 ----------------
 
 - OK (cause it is not needed) Entailment management in BinPacking
-- Slice scheduling
+- OK? Slice scheduling
+- Default behavior: no transition actions, maintain resource usage
 - Implement and check every ActionModel
 - Objective && search Heuristic
    -> the default Objective will be the current entropy one (MinMTTR)

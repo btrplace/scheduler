@@ -44,6 +44,11 @@ public class CSingleResourceCapacity implements ChocoSatConstraint {
 
     private SingleResourceCapacity cstr;
 
+    /**
+     * Make a new constraint.
+     *
+     * @param c the constraint to rely on
+     */
     public CSingleResourceCapacity(SingleResourceCapacity c) {
         cstr = c;
     }

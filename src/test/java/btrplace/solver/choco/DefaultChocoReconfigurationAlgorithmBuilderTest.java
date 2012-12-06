@@ -129,6 +129,5 @@ public class DefaultChocoReconfigurationAlgorithmBuilderTest {
         Assert.assertEquals(rp.getFutureRunningVMs(), toRun);
         Assert.assertEquals(rp.getFutureSleepingVMs(), Collections.singleton(vm3));
         Assert.assertEquals(rp.getFutureKilledVMs(), Collections.singleton(vm2));
-
     }
 }

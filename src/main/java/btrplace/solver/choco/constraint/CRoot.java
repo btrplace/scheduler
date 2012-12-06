@@ -39,6 +39,11 @@ public class CRoot implements ChocoSatConstraint {
 
     private Root cstr;
 
+    /**
+     * Make a new constraint.
+     *
+     * @param r the constraint to rely on
+     */
     public CRoot(Root r) {
         cstr = r;
     }

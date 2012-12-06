@@ -134,11 +134,11 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
 
         int[] revAssociations = new int[nbCTasks];
         for (int i = 0; i < revAssociations.length; i++) {
-            revAssociations[i] = LocalScheduler.NO_ASSOCIATIONS;
+            revAssociations[i] = LocalTaskScheduler.NO_ASSOCIATIONS;
         }
 
         for (int i = 0; i < assocs.length; i++) {
-            if (assocs[i] != LocalScheduler.NO_ASSOCIATIONS) {
+            if (assocs[i] != LocalTaskScheduler.NO_ASSOCIATIONS) {
                 revAssociations[assocs[i]] = i;
             }
         }
