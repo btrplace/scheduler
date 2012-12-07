@@ -223,7 +223,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 } else if (!map.getAllVMs().contains(vmId)) {
                     vmActions[i] = new ForgeVMModel(this, vmId);
                 } else if (map.getReadyVMs().contains(vmId)) {
-                    vmActions[i] = new StayAwayVMModel(vmId);
+                    vmActions[i] = new StayAwayVMModel(this, vmId);
                 } else if (map.getRunningVMs().contains(vmId)) {
                     vmActions[i] = new ShutdownVMModel(this, vmId);
                 } else {
@@ -236,7 +236,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 } else if (map.getRunningVMs().contains(vmId)) {
                     vmActions[i] = new SuspendVMModel(this, vmId);
                 } else if (map.getSleepingVMs().contains(vmId)) {
-                    vmActions[i] = new StayAwayVMModel(vmId);
+                    vmActions[i] = new StayAwayVMModel(this, vmId);
                 } else {
                     throw new SolverException(model, "Unable to set VM '" + vmId + "' sleeping: should be running");
                 }
@@ -258,10 +258,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                     } else {
                         vmActions[i] = new StayRunningVMModel(this, vmId);
                     }
-                } else if (map.getReadyVMs().contains(vmId)) {
-                    vmActions[i] = new StayAwayVMModel(vmId);
-                } else if (map.getSleepingVMs().contains(vmId)) {
-                    vmActions[i] = new StayAwayVMModel(vmId);
+                } else if (map.getReadyVMs().contains(vmId) || map.getSleepingVMs().contains(vmId)) {
+                    vmActions[i] = new StayAwayVMModel(this, vmId);
                 } else {
                     throw new SolverException(model, "Unable to infer the next state of VM '" + vmId + "'");
                 }

@@ -26,7 +26,7 @@ import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -74,7 +74,7 @@ public class StayRunningVMModel implements ActionModel {
 
     @Override
     public List<Action> getResultingActions() {
-        return new ArrayList<Action>();
+        return Collections.<Action>emptyList();
     }
 
     @Override

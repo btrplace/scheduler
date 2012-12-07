@@ -21,10 +21,11 @@ package btrplace.solver.choco.actionModel;
 import btrplace.plan.Action;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ActionModel;
+import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,19 +39,23 @@ public class StayAwayVMModel implements ActionModel {
 
     private UUID vm;
 
+    private IntDomainVar zero;
+
     /**
      * Make a new model.
      *
-     * @param e the VM managed by the action
+     * @param rp the RP to use as a basis.
+     * @param e  the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public StayAwayVMModel(UUID e) throws SolverException {
+    public StayAwayVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
         vm = e;
+        zero = rp.getSolver().makeConstantIntVar(0);
     }
 
     @Override
     public List<Action> getResultingActions() {
-        return new ArrayList<Action>();
+        return Collections.<Action>emptyList();
     }
 
     /**
@@ -64,17 +69,17 @@ public class StayAwayVMModel implements ActionModel {
 
     @Override
     public IntDomainVar getStart() {
-        return null;
+        return zero;
     }
 
     @Override
     public IntDomainVar getEnd() {
-        return null;
+        return zero;
     }
 
     @Override
     public IntDomainVar getDuration() {
-        return null;
+        return zero;
     }
 
     @Override
@@ -89,7 +94,7 @@ public class StayAwayVMModel implements ActionModel {
 
     @Override
     public IntDomainVar getState() {
-        return null;
+        return zero;
     }
 
     @Override

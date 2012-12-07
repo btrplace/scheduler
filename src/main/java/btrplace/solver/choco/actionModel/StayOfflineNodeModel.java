@@ -24,7 +24,7 @@ import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.Slice;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,7 +49,7 @@ public class StayOfflineNodeModel implements ActionModel {
 
     @Override
     public List<Action> getResultingActions() {
-        return new ArrayList<Action>();
+        return Collections.<Action>emptyList();
     }
 
     @Override
