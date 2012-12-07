@@ -23,6 +23,9 @@ import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.constraint.Killed;
+import btrplace.plan.DefaultReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.action.KillVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -58,5 +61,20 @@ public class CKilledTest {
         Assert.assertTrue(k.getMisPlacedVMs(mo).isEmpty());
         k = new CKilled(new Killed(m.getAllVMs()));
         Assert.assertEquals(2, k.getMisPlacedVMs(mo).size());
+    }
+
+    @Test
+    public void testIsSatisfied() {
+        Mapping m = new DefaultMapping();
+        Model mo = new DefaultModel(m);
+        UUID vm = UUID.randomUUID();
+        UUID n1 = UUID.randomUUID();
+        m.addOnlineNode(n1);
+        m.addSleepingVM(vm, n1);
+        ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
+        CKilled k = new CKilled(new Killed(Collections.singleton(vm)));
+        Assert.assertFalse(k.isSatisfied(p));
+        p.add(new KillVM(vm, n1, 1, 2));
+        Assert.assertTrue(k.isSatisfied(p));
     }
 }

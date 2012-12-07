@@ -23,6 +23,9 @@ import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.constraint.Ready;
+import btrplace.plan.DefaultReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.action.ForgeVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -58,5 +61,18 @@ public class CReadyTest {
         CReady k = new CReady(new Ready(m.getAllVMs()));
         Assert.assertEquals(2, k.getMisPlacedVMs(mo).size());
         Assert.assertFalse(k.getMisPlacedVMs(mo).contains(vm1));
+    }
+
+    @Test
+    public void testIsSatisfied() {
+        Mapping m = new DefaultMapping();
+        Model mo = new DefaultModel(m);
+        UUID vm = UUID.randomUUID();
+
+        ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
+        CReady k = new CReady(new Ready(Collections.singleton(vm)));
+        Assert.assertFalse(k.isSatisfied(p));
+        p.add(new ForgeVM(vm, 1, 2));
+        Assert.assertTrue(k.isSatisfied(p));
     }
 }

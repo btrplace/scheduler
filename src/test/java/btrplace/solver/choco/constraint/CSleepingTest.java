@@ -23,6 +23,9 @@ import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.constraint.Sleeping;
+import btrplace.plan.DefaultReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.action.SuspendVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -58,5 +61,20 @@ public class CSleepingTest {
         CSleeping k = new CSleeping(new Sleeping(m.getAllVMs()));
         Assert.assertEquals(2, k.getMisPlacedVMs(mo).size());
         Assert.assertFalse(k.getMisPlacedVMs(mo).contains(vm3));
+    }
+
+    @Test
+    public void testIsSatisfied() {
+        Mapping m = new DefaultMapping();
+        Model mo = new DefaultModel(m);
+        UUID vm = UUID.randomUUID();
+        UUID n1 = UUID.randomUUID();
+        m.addOnlineNode(n1);
+        m.addRunningVM(vm, n1);
+        ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
+        CSleeping k = new CSleeping(new Sleeping(Collections.singleton(vm)));
+        Assert.assertFalse(k.isSatisfied(p));
+        p.add(new SuspendVM(vm, n1, n1, 1, 2));
+        Assert.assertTrue(k.isSatisfied(p));
     }
 }
