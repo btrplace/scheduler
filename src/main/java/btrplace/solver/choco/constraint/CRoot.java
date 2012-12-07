@@ -27,6 +27,7 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.*;
 import choco.cp.solver.CPSolver;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
@@ -68,7 +69,7 @@ public class CRoot implements ChocoSatConstraint {
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return Collections.emptySet();
     }
 
     @Override

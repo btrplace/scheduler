@@ -22,6 +22,7 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.solver.SolverException;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -117,7 +118,7 @@ public class DefaultReconfigurationProblemBuilder {
             runs = map.getRunningVMs();
             waits = map.getReadyVMs();
             sleep = map.getSleepingVMs();
-            over = new HashSet<UUID>();
+            over = Collections.<UUID>emptySet();
         }
         if (dEval == null) {
             dEval = new DurationEvaluators();

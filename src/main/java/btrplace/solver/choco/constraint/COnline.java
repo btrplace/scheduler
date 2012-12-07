@@ -29,7 +29,7 @@ import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import choco.kernel.solver.ContradictionException;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
@@ -72,7 +72,7 @@ public class COnline implements ChocoSatConstraint {
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
-        return new HashSet<UUID>();
+        return Collections.<UUID>emptySet();
     }
 
     @Override
