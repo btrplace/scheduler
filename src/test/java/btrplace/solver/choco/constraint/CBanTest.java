@@ -73,4 +73,54 @@ public class CBanTest {
         System.out.println(p);
         Assert.assertEquals(3, p.getSize());
     }
+
+    /**
+     * Test getMisPlaced() in various situations.
+     */
+    @Test
+    public void testGetMisPlaced() {
+        Mapping m = new DefaultMapping();
+        UUID n1 = UUID.randomUUID();
+        UUID n2 = UUID.randomUUID();
+        UUID n3 = UUID.randomUUID();
+        UUID n4 = UUID.randomUUID();
+        UUID n5 = UUID.randomUUID();
+
+        UUID vm1 = UUID.randomUUID();
+        UUID vm2 = UUID.randomUUID();
+        UUID vm3 = UUID.randomUUID();
+        UUID vm4 = UUID.randomUUID();
+        UUID vm5 = UUID.randomUUID();
+
+        m.addOnlineNode(n1);
+        m.addOnlineNode(n2);
+        m.addOnlineNode(n3);
+        m.addOnlineNode(n4);
+        m.addOfflineNode(n5);
+
+        m.addRunningVM(vm1, n1);
+        m.addRunningVM(vm2, n1);
+        m.addRunningVM(vm3, n2);
+        m.addRunningVM(vm4, n3);
+        m.addSleepingVM(vm5, n4);
+
+        Set<UUID> vms = new HashSet<UUID>();
+        Set<UUID> ns = new HashSet<UUID>();
+
+        vms.add(vm1);
+        vms.add(vm2);
+        ns.add(n3);
+        ns.add(n4);
+        CBan c = new CBan(new Ban(vms, ns));
+        Model mo = new DefaultModel(m);
+        org.testng.Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
+        ns.add(vm4);
+        org.testng.Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
+        vms.add(vm5);
+        org.testng.Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
+        ns.add(n1);
+        Set<UUID> bad = c.getMisPlacedVMs(mo);
+        org.testng.Assert.assertEquals(2, bad.size());
+        org.testng.Assert.assertTrue(bad.contains(vm1) && bad.contains(vm2));
+    }
 }
