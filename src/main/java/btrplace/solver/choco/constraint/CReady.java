@@ -18,61 +18,61 @@
 
 package btrplace.solver.choco.constraint;
 
+import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.constraint.Online;
+import btrplace.model.constraint.Ready;
+import btrplace.model.constraint.Sleeping;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ChocoSatConstraint;
 import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
-import choco.kernel.solver.ContradictionException;
 
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 /**
- * Choco implementation of {@link btrplace.model.constraint.Online}.
+ * Naive implementation of {@link btrplace.model.constraint.Ready}.
+ * This constraint is just a stub to be consistent with the model. It does not state any constraint
+ * as the state has already been expressed inside {@link btrplace.solver.choco.ReconfigurationProblem}.
  *
  * @author Fabien Hermenier
  */
-public class COnline implements ChocoSatConstraint {
+public class CReady implements ChocoSatConstraint {
 
-    private Online cstr;
+    private Ready cstr;
 
     /**
      * Make a new constraint.
      *
-     * @param o the {@link SatConstraint} to rely on
+     * @param c the constraint to rely on
      */
-    public COnline(Online o) {
-        this.cstr = o;
+    public CReady(Ready c) {
+        cstr = c;
     }
 
     @Override
     public void inject(ReconfigurationProblem rp) throws SolverException {
-        for (UUID nId : cstr.getInvolvedNodes()) {
-            int idx = rp.getNode(nId);
-            ActionModel m = rp.getNodeActions()[idx];
-            try {
-                m.getState().setVal(1);
-            } catch (ContradictionException e) {
-                throw new SolverException(rp.getSourceModel(), "Unable to force '" + nId + "' at getting online");
-            }
-        }
 
     }
 
     @Override
-    public Online getAssociatedConstraint() {
+    public SatConstraint getAssociatedConstraint() {
         return cstr;
     }
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
-        return Collections.<UUID>emptySet();
+        Set<UUID> bad = new HashSet<UUID>();
+        Mapping map = m.getMapping();
+        for (UUID vm : cstr.getInvolvedVMs()) {
+            if (!map.getReadyVMs().contains(vm)) {
+                bad.add(vm);
+            }
+        }
+        return bad;
     }
 
     @Override
@@ -80,19 +80,18 @@ public class COnline implements ChocoSatConstraint {
         return cstr.isSatisfied(plan.getResult()).equals(SatConstraint.Sat.SATISFIED);
     }
 
-
     /**
      * Builder associated to the constraint.
      */
     public static class Builder implements ChocoSatConstraintBuilder {
         @Override
         public Class<? extends SatConstraint> getKey() {
-            return Online.class;
+            return Sleeping.class;
         }
 
         @Override
-        public COnline build(SatConstraint cstr) {
-            return new COnline((Online) cstr);
+        public CReady build(SatConstraint cstr) {
+            return new CReady((Ready) cstr);
         }
     }
 }

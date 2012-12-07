@@ -137,18 +137,17 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
                 toForge.addAll(cstr.getInvolvedVMs());
             } else if (cstr instanceof Killed) {
                 toKill.addAll(cstr.getInvolvedVMs());
-            } else {
-                ChocoSatConstraintBuilder ccstrb = cstrMapper.getBuilder(cstr.getClass());
-                if (ccstrb == null) {
-                    throw new SolverException(i, "Unable to map constraint '" + cstr.getClass().getSimpleName() + "'");
-                }
-                ChocoSatConstraint ccstr = ccstrb.build(cstr);
-                if (ccstr == null) {
-                    throw new SolverException(i, "Error while mapping the constraint '" + cstr.getClass().getSimpleName() + "'");
-                } else {
-                    cConstraints.add(ccstr);
-                }
             }
+
+            ChocoSatConstraintBuilder ccstrb = cstrMapper.getBuilder(cstr.getClass());
+            if (ccstrb == null) {
+                throw new SolverException(i, "Unable to map constraint '" + cstr.getClass().getSimpleName() + "'");
+            }
+            ChocoSatConstraint ccstr = ccstrb.build(cstr);
+            if (ccstr == null) {
+                throw new SolverException(i, "Error while mapping the constraint '" + cstr.getClass().getSimpleName() + "'");
+            }
+            cConstraints.add(ccstr);
         }
 
         //Make the core-RP
@@ -207,12 +206,23 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         s.launch();
         Boolean ret = s.isFeasible();
         if (Boolean.TRUE.equals(ret)) {
-            return rp.extractSolution();
+            ReconfigurationPlan p = rp.extractSolution();
+            assert checkSatisfaction(p, cConstraints);
+            return p;
         } else if (Boolean.FALSE.equals(ret)) {
             return null;
         } else {
             throw new SolverException(i, "Unable to state about the feasibility of the problem");
         }
+    }
+
+    private boolean checkSatisfaction(ReconfigurationPlan p, List<ChocoSatConstraint> cstrs) throws SolverException {
+        for (ChocoSatConstraint ccstr : cstrs) {
+            if (!ccstr.isSatisfied(p)) {
+                throw new SolverException(p.getOrigin(), "Unsatisfied constraint: " + ccstr.toString());
+            }
+        }
+        return true;
     }
 
     private void addContinuousResourceCapacities() {

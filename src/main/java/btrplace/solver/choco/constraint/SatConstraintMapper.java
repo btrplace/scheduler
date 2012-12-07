@@ -50,6 +50,10 @@ public class SatConstraintMapper {
         builders.put(Preserve.class, new CPreserve.Builder());
         builders.put(Overbook.class, new COverbook.Builder());
         builders.put(Root.class, new CRoot.Builder());
+        builders.put(Ready.class, new CReady.Builder());
+        builders.put(Running.class, new CRunning.Builder());
+        builders.put(Sleeping.class, new CSleeping.Builder());
+        builders.put(Killed.class, new CKilled.Builder());
     }
 
     /**

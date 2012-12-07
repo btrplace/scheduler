@@ -81,7 +81,7 @@ public class COffline implements ChocoSatConstraint {
 
     @Override
     public boolean isSatisfied(ReconfigurationPlan plan) {
-        throw new UnsupportedOperationException();
+        return cstr.isSatisfied(plan.getResult()).equals(SatConstraint.Sat.SATISFIED);
     }
 
     /**

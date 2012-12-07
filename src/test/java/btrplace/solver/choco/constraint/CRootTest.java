@@ -56,6 +56,7 @@ public class CRootTest {
         Model mo = new DefaultModel(map);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.repair(false);
         Root r1 = new Root(map.getAllVMs());
         Online n = new Online(map.getAllNodes());
         List<SatConstraint> l = new ArrayList<SatConstraint>();
