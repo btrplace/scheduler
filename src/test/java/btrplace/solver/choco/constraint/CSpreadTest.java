@@ -26,7 +26,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import junit.framework.Assert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
@@ -47,6 +47,14 @@ public class CSpreadTest {
     private static UUID n1 = UUID.randomUUID();
     private static UUID n2 = UUID.randomUUID();
     private static UUID n3 = UUID.randomUUID();
+
+
+    @Test
+    public void testInstantiation() {
+        Spread b = new Spread(Collections.singleton(UUID.randomUUID()));
+        CSpread c = new CSpread(b);
+        Assert.assertEquals(b, c.getAssociatedConstraint());
+    }
 
     private static Model getModel() {
         Mapping map = new DefaultMapping();

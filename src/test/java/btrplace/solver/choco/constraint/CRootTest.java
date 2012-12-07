@@ -25,10 +25,11 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import junit.framework.Assert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,6 +39,13 @@ import java.util.UUID;
  * @author Fabien Hermenier
  */
 public class CRootTest {
+
+    @Test
+    public void testInstantiation() {
+        Root b = new Root(Collections.singleton(UUID.randomUUID()));
+        CRoot c = new CRoot(b);
+        Assert.assertEquals(b, c.getAssociatedConstraint());
+    }
 
     @Test
     public void testBasic() throws SolverException {

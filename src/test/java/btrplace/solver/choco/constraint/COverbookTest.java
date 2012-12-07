@@ -26,7 +26,7 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.durationEvaluator.LinearToAResourceDuration;
-import junit.framework.Assert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.*;
@@ -37,6 +37,13 @@ import java.util.*;
  * @author Fabien Hermenier
  */
 public class COverbookTest {
+
+    @Test
+    public void testInstantiation() {
+        Overbook b = new Overbook(Collections.singleton(UUID.randomUUID()), "c", 1);
+        COverbook c = new COverbook(b);
+        Assert.assertEquals(b, c.getAssociatedConstraint());
+    }
 
     @Test
     public void testBasic() throws SolverException {

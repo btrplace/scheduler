@@ -25,13 +25,10 @@ import btrplace.model.constraint.Running;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import junit.framework.Assert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Unit tests for {@link CBan}.
@@ -39,6 +36,13 @@ import java.util.UUID;
  * @author Fabien Hermenier
  */
 public class CBanTest {
+
+    @Test
+    public void testInstantiation() {
+        Ban b = new Ban(Collections.singleton(UUID.randomUUID()), Collections.singleton(UUID.randomUUID()));
+        CBan c = new CBan(b);
+        Assert.assertEquals(b, c.getAssociatedConstraint());
+    }
 
     @Test
     public void testBasic() throws SolverException {

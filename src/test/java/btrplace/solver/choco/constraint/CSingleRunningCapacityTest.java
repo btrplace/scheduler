@@ -30,7 +30,7 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
-import junit.framework.Assert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.*;
@@ -42,6 +42,13 @@ import java.util.*;
  */
 public class CSingleRunningCapacityTest {
 
+
+    @Test
+    public void testInstantiation() {
+        SingleRunningCapacity b = new SingleRunningCapacity(Collections.singleton(UUID.randomUUID()), 1);
+        CSingleRunningCapacity c = new CSingleRunningCapacity(b);
+        Assert.assertEquals(b, c.getAssociatedConstraint());
+    }
 
     @Test
     public void testDiscrete() throws SolverException {

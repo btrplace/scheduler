@@ -26,6 +26,7 @@ import btrplace.model.constraint.Fence;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -36,6 +37,13 @@ import java.util.UUID;
  * @author Fabien Hermenier
  */
 public class CFenceTest {
+
+    @Test
+    public void testInstantiation() {
+        Fence b = new Fence(Collections.singleton(UUID.randomUUID()), Collections.singleton(UUID.randomUUID()));
+        CFence c = new CFence(b);
+        Assert.assertEquals(b, c.getAssociatedConstraint());
+    }
 
     /**
      * Test getMisPlaced() in various situations.

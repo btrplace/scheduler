@@ -19,10 +19,12 @@
 package btrplace.solver.choco.actionModel;
 
 import btrplace.plan.Action;
+import btrplace.plan.action.ForgeVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
+import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
@@ -38,6 +40,12 @@ public class ForgeVMModel implements ActionModel {
 
     private UUID vm;
 
+    private IntDomainVar duration;
+
+    private IntDomainVar state;
+
+    private IntDomainVar start;
+
     /**
      * Make a new model.
      *
@@ -46,6 +54,10 @@ public class ForgeVMModel implements ActionModel {
      * @throws SolverException if an error occurred
      */
     public ForgeVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
+        int d = rp.getDurationEvaluators().evaluate(ForgeVM.class, e);
+        CPSolver s = rp.getSolver();
+        duration = s.makeConstantIntVar(d);
+        state = s.makeConstantIntVar(0);
         vm = e;
     }
 
@@ -75,7 +87,7 @@ public class ForgeVMModel implements ActionModel {
 
     @Override
     public IntDomainVar getDuration() {
-        return null;
+        return duration;
     }
 
     @Override
@@ -90,7 +102,7 @@ public class ForgeVMModel implements ActionModel {
 
     @Override
     public IntDomainVar getState() {
-        return null;
+        return state;
     }
 
     @Override

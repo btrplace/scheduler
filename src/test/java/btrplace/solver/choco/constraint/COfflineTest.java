@@ -39,6 +39,13 @@ import java.util.UUID;
  */
 public class COfflineTest {
 
+    @Test
+    public void testInstantiation() {
+        Offline b = new Offline(Collections.singleton(UUID.randomUUID()));
+        COffline c = new COffline(b);
+        Assert.assertEquals(b, c.getAssociatedConstraint());
+    }
+
     /**
      * Simple test, no VMs.
      */
