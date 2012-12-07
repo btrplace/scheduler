@@ -60,7 +60,7 @@ public class ForgeVMModelTest {
         Assert.assertFalse(ma.getEnd().isInstantiated());
         Assert.assertTrue(ma.getState().isInstantiatedTo(0));
         Assert.assertNull(ma.getCSlice());
-        Assert.assertNotNull(ma.getDSlice());
+        Assert.assertNull(ma.getDSlice());
 
     }
 

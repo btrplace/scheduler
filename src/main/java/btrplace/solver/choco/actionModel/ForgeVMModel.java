@@ -24,7 +24,9 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
+import btrplace.solver.choco.SliceBuilder;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
@@ -44,7 +46,9 @@ public class ForgeVMModel implements ActionModel {
 
     private IntDomainVar state;
 
-    private IntDomainVar start;
+    private IntDomainVar end;
+
+    private Slice dSlice;
 
     /**
      * Make a new model.
@@ -54,11 +58,22 @@ public class ForgeVMModel implements ActionModel {
      * @throws SolverException if an error occurred
      */
     public ForgeVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
+        /*
+         * We don't make any "real" dslice cause it may impacts the TaskScheduler
+         */
         int d = rp.getDurationEvaluators().evaluate(ForgeVM.class, e);
         CPSolver s = rp.getSolver();
         duration = s.makeConstantIntVar(d);
         state = s.makeConstantIntVar(0);
         vm = e;
+
+        dSlice = new SliceBuilder(rp, e, rp.makeVarLabel("forge(" + e + ").dSlice"))
+                .setExclusive(false)
+                .setEnd(rp.getEnd())
+                .setStart(rp.makeDuration(rp.makeVarLabel("forge(" + e + ").start")))
+                .build();
+        s.post(s.leq(d, dSlice.getDuration()));
+        end = new IntDomainVarAddCste(s, rp.makeVarLabel("forge(" + e + ").start"), dSlice.getStart(), -d);
     }
 
     @Override
@@ -77,12 +92,12 @@ public class ForgeVMModel implements ActionModel {
 
     @Override
     public IntDomainVar getStart() {
-        return null;
+        return dSlice.getStart();
     }
 
     @Override
     public IntDomainVar getEnd() {
-        return null;
+        return end;
     }
 
     @Override
