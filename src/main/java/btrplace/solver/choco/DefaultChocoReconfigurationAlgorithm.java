@@ -154,7 +154,6 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         DefaultReconfigurationProblemBuilder rpb = new DefaultReconfigurationProblemBuilder(i)
                 .setNextVMsStates(toForge, toRun, toSleep, toKill)
                 .setDurationEvaluatators(durationEvaluators);
-
         if (repair) {
             Set<UUID> toManage = new HashSet<UUID>();
             for (ChocoSatConstraint cstr : cConstraints) {

@@ -64,7 +64,7 @@ public class CBan implements ChocoSatConstraint {
 
         for (UUID vm : vms) {
             if (rp.getFutureRunningVMs().contains(vm)) {
-                Slice t = rp.getVMActions()[rp.getVM(vm)].getDSlice();
+                Slice t = rp.getVMAction(vm).getDSlice();
                 if (t != null) {
                     for (int x : nodesIdx) {
                         try {
@@ -101,6 +101,11 @@ public class CBan implements ChocoSatConstraint {
         return ban.isSatisfied(plan.getResult()).equals(SatConstraint.Sat.SATISFIED);
     }
 
+    @Override
+    public String toString() {
+        return ban.toString();
+    }
+
     /**
      * Builder associated to the constraint.
      */
@@ -115,5 +120,4 @@ public class CBan implements ChocoSatConstraint {
             return new CBan((Ban) cstr);
         }
     }
-
 }

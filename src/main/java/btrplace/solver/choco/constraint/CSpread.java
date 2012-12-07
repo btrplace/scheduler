@@ -54,11 +54,15 @@ public class CSpread implements ChocoSatConstraint {
     @Override
     public void inject(ReconfigurationProblem rp) {
 
-        Set<UUID> onlyRunnings = new HashSet<UUID>();
+        List<IntDomainVar> onlyRunnings = new ArrayList<IntDomainVar>();
         Mapping m = rp.getSourceModel().getMapping();
         for (UUID vmId : cstr.getInvolvedVMs()) {
-            if (rp.getFutureRunningVMs().contains(vmId) || m.getRunningVMs().contains(vmId)) {
-                onlyRunnings.add(vmId);
+            if (rp.getFutureRunningVMs().contains(vmId)/* || m.getRunningVMs().contains(vmId)*/) {
+                ActionModel a = rp.getVMAction(vmId);
+                Slice d = a.getDSlice();
+                if (d != null) {
+                    onlyRunnings.add(d.getHoster());
+                }
             }
         }
         Solver s = rp.getSolver();
@@ -67,13 +71,19 @@ public class CSpread implements ChocoSatConstraint {
             s.post(new BoundAllDiff(onlyRunnings.toArray(new IntDomainVar[onlyRunnings.size()]), true));
 
             if (cstr.isContinuous()) {
-                UUID[] vms = onlyRunnings.toArray(new UUID[onlyRunnings.size()]);
+                UUID[] vms = new UUID[onlyRunnings.size()];
+                int x = 0;
+                for (UUID vm : cstr.getInvolvedVMs()) {
+                    if (rp.getFutureRunningVMs().contains(vm)) {
+                        vms[x++] = vm;
+                    }
+                }
                 for (int i = 0; i < vms.length; i++) {
                     UUID vm = vms[i];
-                    ActionModel aI = rp.getVMActions()[rp.getVM(vm)];
+                    ActionModel aI = rp.getVMAction(vm);
                     for (int j = 0; j < i; j++) {
                         UUID vmJ = vms[j];
-                        ActionModel aJ = rp.getVMActions()[rp.getVM(vm)];
+                        ActionModel aJ = rp.getVMAction(vmJ);
                         Slice d = aI.getDSlice();
                         Slice c = aJ.getCSlice();
                         if (d != null && c != null) {
@@ -145,13 +155,18 @@ public class CSpread implements ChocoSatConstraint {
             Model m = plan.getOrigin().clone();
             for (Action a : plan) {
                 a.apply(m);
-                ret = cstr.isSatisfied(plan.getResult()).equals(SatConstraint.Sat.SATISFIED);
+                ret = cstr.isSatisfied(m).equals(SatConstraint.Sat.SATISFIED);
                 if (!ret) {
                     return false;
                 }
             }
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return cstr.toString();
     }
 
     /**

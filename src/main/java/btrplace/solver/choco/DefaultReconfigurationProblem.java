@@ -252,13 +252,19 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             }
             if (vmActions[i] == null) {
                 //Next state is undefined, keep the current state
+                //Need to update runnings, sleeping and waitings accordingly
                 if (map.getRunningVMs().contains(vmId)) {
+                    runnings.add(vmId);
                     if (manageable.contains(vmId)) {
                         vmActions[i] = new RelocatableVMModel(this, vmId);
                     } else {
                         vmActions[i] = new StayRunningVMModel(this, vmId);
                     }
-                } else if (map.getReadyVMs().contains(vmId) || map.getSleepingVMs().contains(vmId)) {
+                } else if (map.getReadyVMs().contains(vmId)) {
+                    ready.add(vmId);
+                    vmActions[i] = new StayAwayVMModel(this, vmId);
+                } else if (map.getSleepingVMs().contains(vmId)) {
+                    sleepings.add(vmId);
                     vmActions[i] = new StayAwayVMModel(this, vmId);
                 } else {
                     throw new SolverException(model, "Unable to infer the next state of VM '" + vmId + "'");

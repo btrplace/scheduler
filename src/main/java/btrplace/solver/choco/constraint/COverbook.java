@@ -120,9 +120,7 @@ public class COverbook implements ChocoSatConstraint {
             }
 
             IntDomainVar[] capa = new IntDomainVar[rp.getNodes().length];
-            for (int i = 0; i < rp.getNodes().length; i++) {
-                capa[i] = realCapa[i];
-            }
+            System.arraycopy(realCapa, 0, capa, 0, rp.getNodes().length);
 
             TaskSchedulerBuilder.getInstance().add(capa, cUse.toNativeArray(), dUse.toArray(new IntDomainVar[cUse.size()]));
         }
@@ -162,6 +160,11 @@ public class COverbook implements ChocoSatConstraint {
     @Override
     public boolean isSatisfied(ReconfigurationPlan plan) {
         return cstr.isSatisfied(plan.getResult()).equals(SatConstraint.Sat.SATISFIED);
+    }
+
+    @Override
+    public String toString() {
+        return cstr.toString();
     }
 
     /**

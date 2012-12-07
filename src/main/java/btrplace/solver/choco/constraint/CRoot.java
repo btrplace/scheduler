@@ -86,6 +86,12 @@ public class CRoot implements ChocoSatConstraint {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return cstr.toString();
+    }
+
+
     /**
      * The builder associated to that constraint.
      */

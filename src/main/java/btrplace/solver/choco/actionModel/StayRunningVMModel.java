@@ -56,18 +56,22 @@ public class StayRunningVMModel implements ActionModel {
         if (neadIncrease) {
             cSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").cSlice")
                     .setHoster(host)
+                    .setExclusive(false)
                     .build();
             dSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").dSlice")
                     .setStart(rp.getEnd())
                     .setHoster(host)
+                    .setExclusive(false)
                     .build();
         } else {
             cSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").cSlice")
                     .setEnd(rp.getStart())
+                    .setExclusive(false)
                     .setHoster(host)
                     .build();
             dSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").dSlice")
                     .setHoster(host)
+                    .setExclusive(false)
                     .build();
         }
     }

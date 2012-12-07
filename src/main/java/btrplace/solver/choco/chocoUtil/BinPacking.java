@@ -596,12 +596,12 @@ public class BinPacking extends AbstractLargeIntSConstraint {
         ChocoLogging.flushLogs();
         if (!check) {
             for (int b = 0; b < rs.length; b++) {
-                System.out.println(loads[b].pretty() + " required=" + bRLoads[b].get() + " (" + rs[b] + ") total=" + bTLoads[b].get() + " (" + (rs[b] + cs[b]) + ")");
+                ChocoLogging.getBranchingLogger().severe(loads[b].pretty() + " required=" + bRLoads[b].get() + " (" + rs[b] + ") total=" + bTLoads[b].get() + " (" + (rs[b] + cs[b]) + ")");
             }
-            System.out.println("Sum Load LB = " + this.sumLoadInf.get() + " (" + sumLoadInf + ")");
-            System.out.println("Sum Load UB = " + this.sumLoadSup.get() + " (" + sumLoadSup + ")");
+            ChocoLogging.getBranchingLogger().severe("Sum Load LB = " + this.sumLoadInf.get() + " (" + sumLoadInf + ")");
+            ChocoLogging.getBranchingLogger().severe("Sum Load UB = " + this.sumLoadSup.get() + " (" + sumLoadSup + ")");
             for (int i = 0; i < bins.length; i++) {
-                System.out.println(bins[i].pretty());
+                ChocoLogging.getBranchingLogger().severe(bins[i].pretty());
             }
         }
         return check;

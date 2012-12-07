@@ -94,6 +94,12 @@ public class CSingleResourceCapacity implements ChocoSatConstraint {
         return cstr.isSatisfied(plan.getResult()).equals(SatConstraint.Sat.SATISFIED);
     }
 
+    @Override
+    public String toString() {
+        return cstr.toString();
+    }
+
+
     /**
      * The builder associated to that constraint.
      */

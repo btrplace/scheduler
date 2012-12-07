@@ -125,12 +125,8 @@ public class DefaultReconfigurationProblemBuilder {
         }
         if (manageable == null) {
             manageable = new HashSet<UUID>();
-            manageable.addAll(runs);
-            manageable.addAll(waits);
-            manageable.addAll(sleep);
-            manageable.addAll(over);
+            manageable.addAll(model.getMapping().getAllVMs());
         }
-
         return new DefaultReconfigurationProblem(model, dEval, waits, runs, sleep, over, manageable, labelVars);
     }
 
