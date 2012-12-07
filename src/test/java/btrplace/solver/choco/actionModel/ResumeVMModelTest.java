@@ -87,6 +87,7 @@ public class ResumeVMModelTest {
         UUID dest = rp.getNode(m.getDSlice().getHoster().getVal());
         Assert.assertEquals(vm, a.getVM());
         Assert.assertEquals(dest, a.getDestinationNode());
+        Assert.assertEquals(n1, a.getSourceNode());
         Assert.assertEquals(10, a.getEnd() - a.getStart());
     }
 

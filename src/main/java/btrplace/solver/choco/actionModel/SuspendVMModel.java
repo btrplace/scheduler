@@ -49,6 +49,8 @@ public class SuspendVMModel implements ActionModel {
 
     private ReconfigurationProblem rp;
 
+    private IntDomainVar state;
+
     /**
      * Make a new model.
      *
@@ -68,7 +70,7 @@ public class SuspendVMModel implements ActionModel {
                 .setExclusive(false)
                 .build();
         start = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel("suspendVM(" + e + ").start"), cSlice.getEnd(), -d);
-
+        state = rp.getSolver().makeConstantIntVar(0);
     }
 
     @Override
@@ -106,7 +108,7 @@ public class SuspendVMModel implements ActionModel {
 
     @Override
     public IntDomainVar getState() {
-        return null;
+        return state;
     }
 
     /**

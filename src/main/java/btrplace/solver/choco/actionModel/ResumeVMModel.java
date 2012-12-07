@@ -36,7 +36,6 @@ import java.util.UUID;
 /**
  * Model an action that resume a sleeping VM.
  * <p/>
- * TODO: support local/remote resume
  *
  * @author Fabien Hermenier
  */

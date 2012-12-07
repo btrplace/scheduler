@@ -24,7 +24,7 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.action.ShutdownVM;
+import btrplace.plan.action.SuspendVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.DurationEvaluators;
@@ -40,11 +40,11 @@ import java.util.Iterator;
 import java.util.UUID;
 
 /**
- * Unit tests for {@link ShutdownVMModel}.
+ * Unit tests for {@link SuspendVMModel}.
  *
  * @author Fabien Hermenier
  */
-public class ShutdownVMModelTest {
+public class SuspendVMModelTest {
 
     @Test
     public void testBasic() throws ContradictionException, SolverException {
@@ -56,14 +56,14 @@ public class ShutdownVMModelTest {
 
         Model mo = new DefaultModel(map);
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(ShutdownVM.class, new ConstantDuration(5));
+        dev.register(SuspendVM.class, new ConstantDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
-                .setNextVMsStates(map.getAllVMs(), new HashSet<UUID>(), new HashSet<UUID>(), new HashSet<UUID>())
+                .setNextVMsStates(new HashSet<UUID>(), new HashSet<UUID>(), map.getAllVMs(), new HashSet<UUID>())
                 .build();
         rp.getNodeActions()[0].getState().setVal(1);
-        ShutdownVMModel m = (ShutdownVMModel) rp.getVMActions()[0];
+        SuspendVMModel m = (SuspendVMModel) rp.getVMActions()[0];
         Assert.assertEquals(vm, m.getVM());
         Assert.assertNull(m.getDSlice());
         Assert.assertTrue(m.getDuration().isInstantiatedTo(5));
@@ -72,8 +72,8 @@ public class ShutdownVMModelTest {
 
         Assert.assertEquals(Boolean.TRUE, rp.getSolver().solve());
         ReconfigurationPlan p = rp.extractSolution();
-        ShutdownVM a = (ShutdownVM) p.getActions().iterator().next();
-
+        SuspendVM a = (SuspendVM) p.getActions().iterator().next();
+        Assert.assertEquals(n1, a.getSourceNode());
         Assert.assertEquals(vm, a.getVM());
         Assert.assertEquals(5, a.getEnd() - a.getStart());
     }
@@ -81,10 +81,10 @@ public class ShutdownVMModelTest {
     /**
      * Test that check that the action duration is lesser than
      * the cSlice duration. This allows actions scheduling
-     * In practice, for this test, 2 shutdown actions have to be executed sequentially
+     * In practice, for this test, 2 suspend actions have to be executed sequentially
      */
     @Test
-    public void testShutdownSequence() throws SolverException, ContradictionException {
+    public void testSuspendSequences() throws SolverException, ContradictionException {
         Mapping map = new DefaultMapping();
         UUID n1 = UUID.randomUUID();
         map.addOnlineNode(n1);
@@ -95,14 +95,14 @@ public class ShutdownVMModelTest {
 
         Model mo = new DefaultModel(map);
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(ShutdownVM.class, new ConstantDuration(5));
+        dev.register(SuspendVM.class, new ConstantDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
-                .setNextVMsStates(map.getAllVMs(), new HashSet<UUID>(), new HashSet<UUID>(), new HashSet<UUID>())
+                .setNextVMsStates(new HashSet<UUID>(), new HashSet<UUID>(), map.getAllVMs(), new HashSet<UUID>())
                 .build();
-        ShutdownVMModel m1 = (ShutdownVMModel) rp.getVMActions()[rp.getVM(vm1)];
-        ShutdownVMModel m2 = (ShutdownVMModel) rp.getVMActions()[rp.getVM(vm2)];
+        SuspendVMModel m1 = (SuspendVMModel) rp.getVMActions()[rp.getVM(vm1)];
+        SuspendVMModel m2 = (SuspendVMModel) rp.getVMActions()[rp.getVM(vm2)];
         rp.getNodeActions()[0].getState().setVal(1);
         CPSolver s = rp.getSolver();
         s.post(s.geq(m2.getStart(), m1.getEnd()));
@@ -112,12 +112,13 @@ public class ShutdownVMModelTest {
         Assert.assertNotNull(p);
         System.out.println(p);
         Iterator<Action> ite = p.iterator();
-        ShutdownVM b1 = (ShutdownVM) ite.next();
-        ShutdownVM b2 = (ShutdownVM) ite.next();
+        SuspendVM b1 = (SuspendVM) ite.next();
+        SuspendVM b2 = (SuspendVM) ite.next();
         Assert.assertEquals(vm1, b1.getVM());
         Assert.assertEquals(vm2, b2.getVM());
         Assert.assertTrue(b1.getEnd() <= b2.getStart());
         Assert.assertEquals(5, b1.getEnd() - b1.getStart());
         Assert.assertEquals(5, b2.getEnd() - b2.getStart());
+
     }
 }
