@@ -52,6 +52,7 @@ public class DurationEvaluators {
         durations.put(ForgeVM.class, new ConstantDuration(1));
         durations.put(ShutdownNode.class, new ConstantDuration(1));
         durations.put(BootNode.class, new ConstantDuration(1));
+        durations.put(KillVM.class, new ConstantDuration(1));
     }
 
     /**

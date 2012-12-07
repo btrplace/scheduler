@@ -18,12 +18,14 @@
 
 package btrplace.solver.choco.actionModel;
 
+import btrplace.model.Mapping;
 import btrplace.plan.Action;
 import btrplace.plan.action.KillVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
+import btrplace.solver.choco.SliceBuilder;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
@@ -32,6 +34,8 @@ import java.util.UUID;
 
 /**
  * An action to model a VM that is killed.
+ * The kill necessarily occurs at the beginning of the reconfiguration process and
+ * can consider a VM that is either in the ready, the running, and the sleeping state.
  *
  * @author Fabien Hermenier
  */
@@ -40,6 +44,14 @@ public class KillVMActionModel implements ActionModel {
     private UUID vm;
 
     private UUID node;
+
+    private IntDomainVar state;
+
+    private IntDomainVar start;
+
+    private IntDomainVar end;
+
+    private Slice cSlice;
 
     /**
      * Make a new model.
@@ -50,32 +62,60 @@ public class KillVMActionModel implements ActionModel {
      */
     public KillVMActionModel(ReconfigurationProblem rp, UUID e) throws SolverException {
         vm = e;
-        node = rp.getSourceModel().getMapping().getVMLocation(vm);
+        Mapping map = rp.getSourceModel().getMapping();
+        node = map.getVMLocation(vm);
+        state = rp.getSolver().makeConstantIntVar(0);
+
+        int d = rp.getDurationEvaluators().evaluate(KillVM.class, e);
+
+        if (map.getRunningVMs().contains(vm)) {
+            cSlice = new SliceBuilder(rp, e, "killVM('" + e + "').cSlice")
+                    .setExclusive(false)
+                    .setStart(rp.getStart())
+                    .setHoster(rp.getCurrentVMLocation(rp.getVM(vm)))
+                    .setEnd(rp.getSolver().makeConstantIntVar(d))
+                    .build();
+            end = cSlice.getEnd();
+        } else {
+            end = rp.getSolver().makeConstantIntVar(d);
+        }
+        start = rp.getStart();
+
+
     }
 
     @Override
     public IntDomainVar getStart() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return start;
     }
 
     @Override
     public IntDomainVar getEnd() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return end;
     }
 
     @Override
     public IntDomainVar getDuration() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return end;
     }
 
     @Override
     public Slice getCSlice() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return cSlice;
     }
 
     @Override
     public Slice getDSlice() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
+    }
+
+    /**
+     * Get the VM manipulated by the action.
+     *
+     * @return the VM identifier
+     */
+    public UUID getVM() {
+        return vm;
     }
 
     @Override
@@ -92,6 +132,6 @@ public class KillVMActionModel implements ActionModel {
 
     @Override
     public IntDomainVar getState() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return state;
     }
 }
