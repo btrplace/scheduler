@@ -98,7 +98,11 @@ public class CBan implements ChocoSatConstraint {
 
     @Override
     public boolean isSatisfied(ReconfigurationPlan plan) {
-        return ban.isSatisfied(plan.getResult()).equals(SatConstraint.Sat.SATISFIED);
+        Model r = plan.getResult();
+        if (r == null) {
+            return false;
+        }
+        return ban.isSatisfied(r).equals(SatConstraint.Sat.SATISFIED);
     }
 
     @Override

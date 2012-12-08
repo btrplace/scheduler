@@ -21,7 +21,9 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.*;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Root;
+import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.action.MigrateVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
@@ -74,5 +76,23 @@ public class CRootTest {
         Assert.assertNotNull(p);
         Model res = p.getResult();
         Assert.assertEquals(n1, res.getMapping().getVMLocation(vm1));
+    }
+
+    @Test
+    public void testIsSatisfied() {
+        Mapping map = new DefaultMapping();
+        UUID n1 = UUID.randomUUID();
+        UUID n2 = UUID.randomUUID();
+        UUID vm1 = UUID.randomUUID();
+        Model mo = new DefaultModel(map);
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addRunningVM(vm1, n1);
+        ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
+        CRoot r = new CRoot(new Root(Collections.singleton(vm1)));
+        Assert.assertTrue(r.isSatisfied(p));
+        Assert.assertTrue(r.getMisPlacedVMs(mo).isEmpty());
+        p.add(new MigrateVM(vm1, n1, n2, 1, 2));
+        Assert.assertFalse(r.isSatisfied(p));
     }
 }

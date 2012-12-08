@@ -446,6 +446,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             }
 
         }
+        assert plan.isApplyable();
         assert checkConsistency(plan);
         return plan;
     }

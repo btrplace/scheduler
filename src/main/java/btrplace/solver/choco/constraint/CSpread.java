@@ -147,7 +147,11 @@ public class CSpread implements ChocoSatConstraint {
 
     @Override
     public boolean isSatisfied(ReconfigurationPlan plan) {
-        boolean ret = cstr.isSatisfied(plan.getResult()).equals(SatConstraint.Sat.SATISFIED);
+        Model r = plan.getResult();
+        if (r == null) {
+            return false;
+        }
+        boolean ret = cstr.isSatisfied(r).equals(SatConstraint.Sat.SATISFIED);
         if (!ret) {
             return false;
         }

@@ -94,7 +94,11 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
 
     @Override
     public boolean isSatisfied(ReconfigurationPlan plan) {
-        return cstr.isSatisfied(plan.getResult()).equals(SatConstraint.Sat.SATISFIED);
+        Model r = plan.getResult();
+        if (r == null) {
+            return false;
+        }
+        return cstr.isSatisfied(r).equals(SatConstraint.Sat.SATISFIED);
     }
 
     @Override

@@ -74,7 +74,11 @@ public class CRoot implements ChocoSatConstraint {
 
     @Override
     public boolean isSatisfied(ReconfigurationPlan plan) {
-        Mapping dst = plan.getResult().getMapping();
+        Model r = plan.getResult();
+        if (r == null) {
+            return false;
+        }
+        Mapping dst = r.getMapping();
         Mapping src = plan.getOrigin().getMapping();
         for (UUID vm : cstr.getInvolvedVMs()) {
             if (src.getRunningVMs().contains(vm) && dst.getRunningVMs().contains(vm)) {
