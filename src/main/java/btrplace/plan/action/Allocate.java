@@ -40,6 +40,16 @@ public class Allocate extends Action {
 
     private int amount;
 
+    /**
+     * Make a new constraint.
+     *
+     * @param vm     the VM identifier
+     * @param host   the identifier of the node hosting the VM
+     * @param rcId   the resource identifier
+     * @param amount the minimum amount of resource to allocate
+     * @param st     the moment the action starts
+     * @param ed     the moment the action ends
+     */
     public Allocate(UUID vm, UUID host, String rcId, int amount, int st, int ed) {
         super(st, ed);
         this.vm = vm;
