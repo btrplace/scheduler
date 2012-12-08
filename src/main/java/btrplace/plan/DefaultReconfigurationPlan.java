@@ -117,8 +117,19 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
     public String toString() {
         StringBuilder b = new StringBuilder();
         for (Action a : actions) {
-            b.append(a.getStart()).append(':').append(a.getEnd()).append(" ").append(a.toString()).append('\n');
+            b.append(a.getStart()).append(':').append(a.getEnd()).append(' ').append(a.toString()).append('\n');
         }
         return b.toString();
+    }
+
+    @Override
+    public boolean isApplyable() {
+        Model m = src.clone();
+        for (Action a : actions) {
+            if (!a.apply(m)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

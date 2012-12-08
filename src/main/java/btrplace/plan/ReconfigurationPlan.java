@@ -70,7 +70,17 @@ public interface ReconfigurationPlan extends Iterable<Action> {
     /**
      * Get the resulting model once all the actions are executed.
      *
-     * @return the resulting model or {@code null} if an error occurred.
+     * @return the resulting model or {@code null} if the plan is not applyable.
      */
     Model getResult();
+
+    /**
+     * Check if all the actions can be applied according
+     * to their schedule.
+     * In practice, it calls every {@link Action#apply(btrplace.model.Model)} while
+     * respecting their ordering
+     *
+     * @return {@code true} iff the actions are applyable.
+     */
+    boolean isApplyable();
 }
