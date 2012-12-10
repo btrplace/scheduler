@@ -84,6 +84,7 @@ public class ResumeVMModel implements ActionModel {
         plan.add(new ResumeVM(vm, rp.getSourceModel().getMapping().getVMLocation(vm),
                 rp.getNode(dSlice.getHoster().getVal()),
                 start.getVal(), end.getVal()));
+        rp.insertAllocates(plan, vm, rp.getNode(dSlice.getHoster().getVal()), getEnd().getVal(), getEnd().getVal() + 1);
         return true;
     }
 

@@ -79,7 +79,9 @@ public class BootVMModel implements ActionModel {
 
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
-        plan.add(new BootVM(vm, rp.getNode(dSlice.getHoster().getVal()), start.getVal(), end.getVal()));
+        UUID node = rp.getNode(dSlice.getHoster().getVal());
+        plan.add(new BootVM(vm, node, start.getVal(), end.getVal()));
+        rp.insertAllocates(plan, vm, node, end.getVal(), end.getVal() + 1);
         return true;
     }
 

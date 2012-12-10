@@ -76,6 +76,7 @@ public class StayRunningVMModel implements ActionModel {
 
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
+        rp.insertAllocates(plan, vm, rp.getNode(dSlice.getHoster().getVal()), getEnd().getVal(), getEnd().getVal() + 1);
         return true;
     }
 
