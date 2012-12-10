@@ -18,7 +18,7 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.plan.Action;
+import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -26,8 +26,6 @@ import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -77,8 +75,8 @@ public class StayRunningVMModel implements ActionModel {
     }
 
     @Override
-    public List<Action> getResultingActions() {
-        return Collections.<Action>emptyList();
+    public boolean insertActions(ReconfigurationPlan plan) {
+        return true;
     }
 
     @Override

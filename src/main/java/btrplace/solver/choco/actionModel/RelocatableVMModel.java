@@ -18,7 +18,7 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.plan.Action;
+import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.action.MigrateVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ActionModel;
@@ -33,8 +33,6 @@ import choco.cp.solver.variables.integer.BoolVarNot;
 import choco.cp.solver.variables.integer.BooleanVarImpl;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -102,16 +100,18 @@ public class RelocatableVMModel implements ActionModel {
     }
 
     @Override
-    public List<Action> getResultingActions() {
-        List<Action> l = new ArrayList<Action>();
+    public boolean insertActions(ReconfigurationPlan plan) {
         if (cSlice.getHoster().getVal() != dSlice.getHoster().getVal()) {
-            l.add(new MigrateVM(vm,
+            plan.add(new MigrateVM(vm,
                     rp.getNode(cSlice.getHoster().getVal()),
                     rp.getNode(dSlice.getHoster().getVal()),
                     getStart().getVal(),
                     getEnd().getVal()));
+            /*for (ResourceMapping rcm : rp.getResourceMappings()) {
+                rcm.addAllocateAction(plan, vm, rp.getNode(dSlice.getHoster().getVal()), getEnd().getVal(), getEnd().getVal() + 1);
+            } */
         }
-        return l;
+        return true;
     }
 
     /**

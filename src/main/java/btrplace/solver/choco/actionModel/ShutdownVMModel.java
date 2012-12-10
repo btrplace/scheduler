@@ -18,7 +18,7 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.plan.Action;
+import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.action.ShutdownVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ActionModel;
@@ -28,8 +28,6 @@ import btrplace.solver.choco.SliceBuilder;
 import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -75,13 +73,12 @@ public class ShutdownVMModel implements ActionModel {
     }
 
     @Override
-    public List<Action> getResultingActions() {
-        List<Action> l = new ArrayList<Action>();
-        l.add(new ShutdownVM(getVM(),
+    public boolean insertActions(ReconfigurationPlan plan) {
+        plan.add(new ShutdownVM(getVM(),
                 rp.getSourceModel().getMapping().getVMLocation(getVM()),
                 start.getVal(),
                 cSlice.getEnd().getVal()));
-        return l;
+        return true;
     }
 
     /**

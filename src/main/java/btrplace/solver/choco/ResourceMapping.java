@@ -19,6 +19,8 @@
 package btrplace.solver.choco;
 
 import btrplace.model.ShareableResource;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.action.Allocate;
 import btrplace.solver.choco.chocoUtil.BinPacking;
 import choco.Choco;
 import choco.cp.solver.CPSolver;
@@ -44,6 +46,8 @@ public class ResourceMapping {
 
     private IntDomainVar[] vmUsage;
 
+    private ReconfigurationProblem rp;
+
     /**
      * Make a new mapping.
      *
@@ -52,7 +56,7 @@ public class ResourceMapping {
      */
     public ResourceMapping(ReconfigurationProblem rp, ShareableResource rc) {
         this.rc = rc;
-
+        this.rp = rp;
         UUID[] nodes = rp.getNodes();
         rawNodeUsage = new IntDomainVar[nodes.length];
         realNodeUsage = new IntDomainVar[nodes.length];
@@ -135,5 +139,26 @@ public class ResourceMapping {
         return vmUsage;
     }
 
+    /**
+     * Generate and add an {@link Allocate} action if the amount of
+     * resources allocated to a VM has changed.
+     * The action schedule must be known.
+     *
+     * @param e    the VM identifier
+     * @param node the identifier of the node that is currently hosting the VM
+     * @param st   the moment that action starts
+     * @param ed   the moment the action ends
+     * @return {@code true} if the action has been added to the plan,{@code false} otherwise
+     */
+    public boolean addAllocateAction(ReconfigurationPlan plan, UUID e, UUID node, int st, int ed) {
+
+        int use = vmUsage[rp.getVM(e)].getInf();
+        if (rc.get(e) != use) {
+            //The allocation has changed
+            Allocate a = new Allocate(e, node, rc.getIdentifier(), use, st, ed);
+            return plan.add(a);
+        }
+        return false;
+    }
 
 }

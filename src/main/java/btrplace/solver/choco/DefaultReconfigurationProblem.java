@@ -24,6 +24,7 @@ import btrplace.model.ShareableResource;
 import btrplace.plan.Action;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.action.Allocate;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
 import btrplace.solver.choco.chocoUtil.BinPacking;
@@ -435,20 +436,30 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         DefaultReconfigurationPlan plan = new DefaultReconfigurationPlan(model);
         for (ActionModel action : nodeActions) {
-            for (Action a : action.getResultingActions()) {
-                plan.add(a);
-            }
-
+            action.insertActions(plan);
         }
         for (ActionModel action : vmActions) {
-            for (Action a : action.getResultingActions()) {
-                plan.add(a);
-            }
-
+            action.insertActions(plan);
         }
+
         assert plan.isApplyable();
         assert checkConsistency(plan);
         return plan;
+    }
+
+    @Override
+    public boolean insertAllocates(ReconfigurationPlan plan, UUID vm, UUID node, int st, int ed) {
+        for (Map.Entry<String, ResourceMapping> e : resources.entrySet()) {
+            ResourceMapping rcm = e.getValue();
+            String rcId = e.getKey();
+            int prev = rcm.getSourceResource().get(vm);
+            int now = rcm.getVMConsumption()[getVM(vm)].getInf();
+            if (prev != now) {
+                Allocate a = new Allocate(vm, node, rcId, now, st, ed);
+                plan.add(a);
+            }
+        }
+        return true;
     }
 
     private boolean checkConsistency(ReconfigurationPlan p) {

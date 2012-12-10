@@ -18,7 +18,7 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.plan.Action;
+import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.action.BootNode;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ActionModel;
@@ -32,8 +32,6 @@ import choco.cp.solver.constraints.reified.ReifiedFactory;
 import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -90,12 +88,11 @@ public class BootableNodeModel implements ActionModel {
     }
 
     @Override
-    public List<Action> getResultingActions() {
-        List<Action> a = new ArrayList<Action>();
+    public boolean insertActions(ReconfigurationPlan plan) {
         if (start.getVal() == 1) {
-            a.add(new BootNode(node, start.getVal(), getEnd().getVal()));
+            plan.add(new BootNode(node, start.getVal(), getEnd().getVal()));
         }
-        return a;
+        return true;
     }
 
     @Override

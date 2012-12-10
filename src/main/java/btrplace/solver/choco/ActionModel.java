@@ -18,11 +18,9 @@
 
 package btrplace.solver.choco;
 
-import btrplace.plan.Action;
+import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.choco.actionModel.ActionModelVisitor;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.List;
 
 /**
  * Model an action.
@@ -74,11 +72,12 @@ public interface ActionModel {
     void visit(ActionModelVisitor v);
 
     /**
-     * Get the action that are generated for the model variables.
+     * Insert into a plan the actions resulting from the model.
      *
-     * @return a list of {@link Action} that may be empty.
+     * @param plan the plan to modify
+     * @return {@code true} iff success
      */
-    List<Action> getResultingActions();
+    boolean insertActions(ReconfigurationPlan plan);
 
     /**
      * Get the next state of the subject manipulated by the action.

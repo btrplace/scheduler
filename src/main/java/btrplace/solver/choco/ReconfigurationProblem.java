@@ -309,4 +309,17 @@ public interface ReconfigurationProblem {
      * @return a set of VMs identifier
      */
     Set<UUID> getManageableVMs();
+
+    /**
+     * Insert {@link btrplace.plan.action.Allocate} actions if the amount of
+     * resources allocated to a VM has changed.
+     * The action schedule must be known in advance
+     *
+     * @param vm   the VM identifier
+     * @param node the identifier of the node that is currently hosting the VM
+     * @param st   the moment that action starts
+     * @param ed   the moment the action ends
+     * @return {@code true} if the action has been added to the plan,{@code false} otherwise
+     */
+    boolean insertAllocates(ReconfigurationPlan plan, UUID vm, UUID node, int st, int ed);
 }

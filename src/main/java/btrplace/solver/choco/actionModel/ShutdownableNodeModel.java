@@ -18,7 +18,7 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.plan.Action;
+import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.action.ShutdownNode;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ActionModel;
@@ -30,8 +30,6 @@ import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -96,12 +94,11 @@ public class ShutdownableNodeModel implements ActionModel {
 
 
     @Override
-    public List<Action> getResultingActions() {
-        List<Action> a = new ArrayList<Action>();
+    public boolean insertActions(ReconfigurationPlan plan) {
         if (state.getVal() == 0) {
-            a.add(new ShutdownNode(node, dSlice.getStart().getVal(), end.getVal()));
+            plan.add(new ShutdownNode(node, dSlice.getStart().getVal(), end.getVal()));
         }
-        return a;
+        return true;
     }
 
     /**

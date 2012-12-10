@@ -18,14 +18,13 @@
 
 package btrplace.solver.choco;
 
-import btrplace.plan.Action;
+import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.choco.actionModel.ActionModelVisitor;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -162,8 +161,8 @@ public class ActionModelUtilTest {
         }
 
         @Override
-        public List<Action> getResultingActions() {
-            return new ArrayList<Action>();
+        public boolean insertActions(ReconfigurationPlan plan) {
+            return true;
         }
 
         @Override

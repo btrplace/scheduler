@@ -19,6 +19,7 @@
 package btrplace.solver.choco.actionModel;
 
 import btrplace.plan.Action;
+import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.action.SuspendVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ActionModel;
@@ -74,11 +75,11 @@ public class SuspendVMModel implements ActionModel {
     }
 
     @Override
-    public List<Action> getResultingActions() {
+    public boolean insertActions(ReconfigurationPlan plan) {
         List<Action> a = new ArrayList<Action>();
         UUID node = rp.getNode(cSlice.getHoster().getVal());
-        a.add(new SuspendVM(vm, node, node, start.getVal(), getEnd().getVal()));
-        return a;
+        plan.add(new SuspendVM(vm, node, node, start.getVal(), getEnd().getVal()));
+        return true;
     }
 
     @Override
