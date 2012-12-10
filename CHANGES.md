@@ -1,11 +1,12 @@
 Release notes
 =======================
 
-V0.5 - ????
+V0.5 - 10 dev. 2012
 ----------------------
 - Fix toString() is some actions
 - ReconfigurationPlan.size() -> ReconfigurationPlan.getSize()
 - new action: Allocate to manage the resource allocation
+- API improvment to provide additional checkers
 
 v0.4 - 30 nov. 2012
 ----------------------
