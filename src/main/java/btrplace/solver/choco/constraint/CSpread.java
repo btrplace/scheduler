@@ -155,7 +155,7 @@ public class CSpread implements ChocoSatConstraint {
         if (!ret) {
             return false;
         }
-        if (cstr.isContinuous()) {
+        if (cstr.isContinuous() && cstr.isSatisfied(plan.getOrigin()).equals(SatConstraint.Sat.SATISFIED)) {
             Model m = plan.getOrigin().clone();
             for (Action a : plan) {
                 a.apply(m);
