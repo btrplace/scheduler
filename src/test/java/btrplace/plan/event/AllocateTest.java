@@ -25,40 +25,31 @@ import org.testng.annotations.Test;
 import java.util.UUID;
 
 /**
- * Unit tests for {@link AllocateEvent}.
+ * Unit tests for {@link Allocate}.
  *
  * @author Fabien Hermenier
  */
-public class AllocateEventTest {
+public class AllocateTest {
 
     @Test
-    public void testBasics() {
+    public void testInstantiation() {
         UUID vm = UUID.randomUUID();
-        AllocateEvent na = new AllocateEvent(vm, "foo", 3);
-        Assert.assertEquals(vm, na.getVM());
-        Assert.assertEquals("foo", na.getResourceId());
-        Assert.assertEquals(3, na.getAmount());
-        Assert.assertFalse(na.toString().contains("null"));
-
-    }
-
-    @Test
-    public void testEqualsHashCode() {
-        UUID vm = UUID.randomUUID();
-        AllocateEvent na = new AllocateEvent(vm, "foo", 3);
-        AllocateEvent na2 = new AllocateEvent(vm, "foo", 3);
-        Assert.assertTrue(na.equals(na2));
-        Assert.assertTrue(na2.equals(na));
-        Assert.assertEquals(na.hashCode(), na2.hashCode());
-        Assert.assertFalse(na.equals(new AllocateEvent(UUID.randomUUID(), "foo", 3)));
-        Assert.assertFalse(na.equals(new AllocateEvent(vm, "bar", 3)));
-        Assert.assertFalse(na.equals(new AllocateEvent(vm, "foo", 5)));
+        UUID node = UUID.randomUUID();
+        Allocate a = new Allocate(vm, node, "foo", 3, 1, 5);
+        Assert.assertEquals(vm, a.getVM());
+        Assert.assertEquals(node, a.getHost());
+        Assert.assertEquals("foo", a.getResourceId());
+        Assert.assertEquals(3, a.getAmount());
+        Assert.assertEquals(1, a.getStart());
+        Assert.assertEquals(5, a.getEnd());
+        Assert.assertFalse(a.toString().contains("null"));
     }
 
     @Test
     public void testApply() {
         UUID vm = UUID.randomUUID();
-        AllocateEvent na = new AllocateEvent(vm, "foo", 3);
+        UUID node = UUID.randomUUID();
+        Allocate na = new Allocate(vm, node, "foo", 3, 3, 5);
         Mapping map = new DefaultMapping();
         UUID n1 = UUID.randomUUID();
         map.addOnlineNode(n1);
@@ -70,4 +61,5 @@ public class AllocateEventTest {
         Assert.assertTrue(na.apply(mo));
         Assert.assertEquals(3, rc.get(vm));
     }
+
 }
