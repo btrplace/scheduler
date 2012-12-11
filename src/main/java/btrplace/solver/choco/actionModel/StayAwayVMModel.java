@@ -20,9 +20,9 @@ package btrplace.solver.choco.actionModel;
 
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
+import btrplace.solver.choco.VMActionModel;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.UUID;
@@ -33,7 +33,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class StayAwayVMModel implements ActionModel {
+public class StayAwayVMModel implements VMActionModel {
 
     private UUID vm;
 
@@ -56,11 +56,7 @@ public class StayAwayVMModel implements ActionModel {
         return true;
     }
 
-    /**
-     * Get the VM manipulated by the action.
-     *
-     * @return the VM identifier
-     */
+    @Override
     public UUID getVM() {
         return vm;
     }

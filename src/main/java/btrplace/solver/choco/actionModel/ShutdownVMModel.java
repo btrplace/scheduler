@@ -21,10 +21,10 @@ package btrplace.solver.choco.actionModel;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
+import btrplace.solver.choco.VMActionModel;
 import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -35,7 +35,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class ShutdownVMModel implements ActionModel {
+public class ShutdownVMModel implements VMActionModel {
 
     private ReconfigurationProblem rp;
 
@@ -81,11 +81,7 @@ public class ShutdownVMModel implements ActionModel {
         return true;
     }
 
-    /**
-     * Get the VM manipulated by the action.
-     *
-     * @return the VM identifier
-     */
+    @Override
     public UUID getVM() {
         return vm;
     }

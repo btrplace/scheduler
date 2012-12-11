@@ -174,5 +174,10 @@ public class ActionModelUtilTest {
         public void visit(ActionModelVisitor v) {
             throw new UnsupportedOperationException();
         }
+
+        @Override
+        public UUID getSubject() {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
     }
 }

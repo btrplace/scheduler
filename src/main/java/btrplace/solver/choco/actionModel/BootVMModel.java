@@ -22,10 +22,10 @@ import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootVM;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
+import btrplace.solver.choco.VMActionModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -37,7 +37,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class BootVMModel implements ActionModel {
+public class BootVMModel implements VMActionModel {
 
     private Slice dSlice;
 
@@ -117,11 +117,7 @@ public class BootVMModel implements ActionModel {
         return state;
     }
 
-    /**
-     * Get the VM manipulated by the action.
-     *
-     * @return the VM identifier
-     */
+    @Override
     public UUID getVM() {
         return vm;
     }

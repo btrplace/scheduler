@@ -21,7 +21,7 @@ package btrplace.solver.choco.actionModel;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootNode;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ActionModel;
+import btrplace.solver.choco.NodeActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
@@ -39,7 +39,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class BootableNodeModel implements ActionModel {
+public class BootableNodeModel implements NodeActionModel {
 
     private Slice cSlice;
 
@@ -120,11 +120,7 @@ public class BootableNodeModel implements ActionModel {
         return null;
     }
 
-    /**
-     * Get the node manipulated by the action.
-     *
-     * @return the node identifier
-     */
+    @Override
     public UUID getNode() {
         return node;
     }

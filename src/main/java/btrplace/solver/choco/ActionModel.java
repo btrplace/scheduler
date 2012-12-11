@@ -85,5 +85,4 @@ public interface ActionModel {
      * @return {@code 0} for offline, {@code 1} for online.
      */
     IntDomainVar getState();
-
 }

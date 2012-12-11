@@ -22,10 +22,10 @@ import btrplace.model.Mapping;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.KillVM;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
+import btrplace.solver.choco.VMActionModel;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.UUID;
@@ -37,7 +37,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class KillVMActionModel implements ActionModel {
+public class KillVMActionModel implements VMActionModel {
 
     private UUID vm;
 
@@ -107,11 +107,7 @@ public class KillVMActionModel implements ActionModel {
         return null;
     }
 
-    /**
-     * Get the VM manipulated by the action.
-     *
-     * @return the VM identifier
-     */
+    @Override
     public UUID getVM() {
         return vm;
     }

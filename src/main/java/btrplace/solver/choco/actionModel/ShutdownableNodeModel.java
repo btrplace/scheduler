@@ -21,7 +21,7 @@ package btrplace.solver.choco.actionModel;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ActionModel;
+import btrplace.solver.choco.NodeActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
@@ -37,7 +37,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class ShutdownableNodeModel implements ActionModel {
+public class ShutdownableNodeModel implements NodeActionModel {
 
     private UUID node;
 
@@ -101,11 +101,7 @@ public class ShutdownableNodeModel implements ActionModel {
         return true;
     }
 
-    /**
-     * Get the node manipulated by the action.
-     *
-     * @return the node identifier
-     */
+    @Override
     public UUID getNode() {
         return node;
     }

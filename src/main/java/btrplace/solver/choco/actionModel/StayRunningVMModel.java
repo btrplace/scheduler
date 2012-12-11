@@ -20,10 +20,10 @@ package btrplace.solver.choco.actionModel;
 
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
+import btrplace.solver.choco.VMActionModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -32,7 +32,7 @@ import java.util.UUID;
 /**
  * A model for a running VM that stay online on the same node.
  */
-public class StayRunningVMModel implements ActionModel {
+public class StayRunningVMModel implements VMActionModel {
 
     private Slice cSlice, dSlice;
 
@@ -101,11 +101,7 @@ public class StayRunningVMModel implements ActionModel {
         return null;
     }
 
-    /**
-     * Get the VM manipulated by the action.
-     *
-     * @return the VM identifier
-     */
+    @Override
     public UUID getVM() {
         return vm;
     }

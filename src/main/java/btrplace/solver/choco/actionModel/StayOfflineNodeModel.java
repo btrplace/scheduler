@@ -20,7 +20,7 @@ package btrplace.solver.choco.actionModel;
 
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ActionModel;
+import btrplace.solver.choco.NodeActionModel;
 import btrplace.solver.choco.Slice;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -31,7 +31,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class StayOfflineNodeModel implements ActionModel {
+public class StayOfflineNodeModel implements NodeActionModel {
 
     private UUID node;
 
@@ -80,11 +80,7 @@ public class StayOfflineNodeModel implements ActionModel {
         return null;
     }
 
-    /**
-     * Get the node manipulated by the action.
-     *
-     * @return the node identifier
-     */
+    @Override
     public UUID getNode() {
         return node;
     }

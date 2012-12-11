@@ -22,10 +22,10 @@ import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
+import btrplace.solver.choco.VMActionModel;
 import btrplace.solver.choco.chocoUtil.FastIFFEq;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.ReifiedFactory;
@@ -41,7 +41,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class RelocatableVMModel implements ActionModel {
+public class RelocatableVMModel implements VMActionModel {
 
     private Slice cSlice, dSlice;
 
@@ -117,11 +117,7 @@ public class RelocatableVMModel implements ActionModel {
         return true;
     }
 
-    /**
-     * Get the VM manipulated by the action.
-     *
-     * @return the VM identifier
-     */
+    @Override
     public UUID getVM() {
         return vm;
     }
