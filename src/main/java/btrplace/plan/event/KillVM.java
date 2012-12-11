@@ -96,7 +96,7 @@ public class KillVM extends Action {
     }
 
     @Override
-    public String toString() {
+    public String pretty() {
         return new StringBuilder("killVM(vm=").append(id)
                 .append(", node=").append(host)
                 .append(')').toString();

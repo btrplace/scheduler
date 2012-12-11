@@ -89,5 +89,10 @@ public class DefaultReconfigurationPlanTest {
         public boolean applyAction(Model i) {
             return false;
         }
+
+        @Override
+        public String pretty() {
+            return "";
+        }
     }
 }

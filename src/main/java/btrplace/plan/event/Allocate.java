@@ -93,7 +93,7 @@ public class Allocate extends Action {
     }
 
     @Override
-    public String toString() {
+    public String pretty() {
         return new StringBuilder("allocate(")
                 .append("vm=").append(ev.getVM())
                 .append(", on=").append(node)

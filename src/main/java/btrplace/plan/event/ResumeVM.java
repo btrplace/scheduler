@@ -82,7 +82,7 @@ public class ResumeVM extends Action {
 
 
     @Override
-    public String toString() {
+    public String pretty() {
         return new StringBuilder("resume(")
                 .append("vm=").append(vm)
                 .append(", from=").append(src)

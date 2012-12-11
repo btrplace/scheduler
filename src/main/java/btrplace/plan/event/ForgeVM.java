@@ -100,7 +100,7 @@ public class ForgeVM extends Action {
     }
 
     @Override
-    public String toString() {
+    public String pretty() {
         return new StringBuilder("forge(vm=").append(id).append(')').toString();
     }
 }

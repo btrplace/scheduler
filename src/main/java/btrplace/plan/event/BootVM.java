@@ -51,7 +51,7 @@ public class BootVM extends Action {
     }
 
     @Override
-    public String toString() {
+    public String pretty() {
         return new StringBuilder("boot(")
                 .append("vm=").append(vm)
                 .append(", on=").append(node)

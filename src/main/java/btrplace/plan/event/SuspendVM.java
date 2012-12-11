@@ -54,7 +54,7 @@ public class SuspendVM extends Action {
     }
 
     @Override
-    public String toString() {
+    public String pretty() {
         return new StringBuilder("suspend(")
                 .append("vm=").append(vm)
                 .append(", from=").append(src)

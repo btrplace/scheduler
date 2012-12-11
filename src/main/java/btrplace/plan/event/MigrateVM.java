@@ -134,7 +134,7 @@ public class MigrateVM extends Action {
     }
 
     @Override
-    public String toString() {
+    public String pretty() {
         return new StringBuilder("migrate(vm=").append(vm)
                 .append(", from=").append(src)
                 .append(", to=").append(dst)

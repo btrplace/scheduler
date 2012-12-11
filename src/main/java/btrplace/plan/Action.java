@@ -119,6 +119,14 @@ public abstract class Action implements Event {
     }
 
 
+    /**
+     * Add an event on the action.
+     * The moment the event will be executed depends on its hook.
+     *
+     * @param k the hook
+     * @param n the event to attach
+     * @return
+     */
     public boolean addEvent(Hook k, Event n) {
         List<Event> l = events.get(k);
         if (l == null) {
@@ -139,20 +147,30 @@ public abstract class Action implements Event {
         return l == null ? Collections.<Event>emptyList() : l;
     }
 
+    /**
+     * Pretty print of the action.
+     *
+     * @return a String
+     */
+    public abstract String pretty();
+
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        for (Map.Entry<Hook, List<Event>> entry : events.entrySet()) {
-            List<Event> l = entry.getValue();
-            Hook k = entry.getKey();
-            b.append("\n@").append(k).append("= {");
-            for (Iterator<Event> ite = l.iterator(); ite.hasNext(); ) {
-                b.append(ite.next());
-                if (ite.hasNext()) {
-                    b.append(", ");
+        b.append("{action=").append(pretty());
+        if (!events.isEmpty()) {
+            for (Map.Entry<Hook, List<Event>> entry : events.entrySet()) {
+                List<Event> l = entry.getValue();
+                Hook k = entry.getKey();
+                b.append(", @").append(k).append("= {");
+                for (Iterator<Event> ite = l.iterator(); ite.hasNext(); ) {
+                    b.append(ite.next());
+                    if (ite.hasNext()) {
+                        b.append(", ");
+                    }
                 }
+                b.append("}");
             }
-            b.append("}");
         }
         return b.toString();
     }

@@ -86,7 +86,7 @@ public class ShutdownNode extends Action {
     }
 
     @Override
-    public String toString() {
+    public String pretty() {
         StringBuilder buffer = new StringBuilder("shutdown(");
         buffer.append("node=").append(node);
         buffer.append(")");

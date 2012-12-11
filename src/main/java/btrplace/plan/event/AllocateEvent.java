@@ -91,7 +91,7 @@ public class AllocateEvent implements Event {
     @Override
     public String toString() {
         return new StringBuilder("allocate(")
-                .append(", vm=").append(vm)
+                .append("vm=").append(vm)
                 .append(", rc=").append(rc)
                 .append(", amount=").append(qty)
                 .append(')').toString();

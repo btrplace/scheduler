@@ -39,6 +39,11 @@ public class ActionTest {
         public boolean applyAction(Model i) {
             throw new UnsupportedOperationException();
         }
+
+        @Override
+        public String pretty() {
+            return "pretty()";
+        }
     }
 
     public static class MockEvent implements Event {
@@ -46,6 +51,10 @@ public class ActionTest {
         @Override
         public boolean apply(Model m) {
             throw new UnsupportedOperationException();
+        }
+
+        public String toString() {
+            return "event()";
         }
     }
 
@@ -66,6 +75,6 @@ public class ActionTest {
         Assert.assertEquals(1, a1.getEvents(Action.Hook.pre).size());
         a1.addEvent(Action.Hook.post, n1);
         Assert.assertEquals(1, a1.getEvents(Action.Hook.post).size());
-
+        System.out.println(a1);
     }
 }
