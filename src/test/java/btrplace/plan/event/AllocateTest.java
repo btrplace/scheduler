@@ -62,4 +62,22 @@ public class AllocateTest {
         Assert.assertEquals(3, rc.get(vm));
     }
 
+    @Test(dependsOnMethods = {"testInstantiation"})
+    public void testEquals() {
+        UUID n = UUID.randomUUID();
+        UUID vm = UUID.randomUUID();
+        Allocate a = new Allocate(vm, n, "foo", 5, 3, 5);
+        Allocate b = new Allocate(vm, n, "foo", 5, 3, 5);
+        Assert.assertFalse(a.equals(new Object()));
+        Assert.assertTrue(a.equals(a));
+        Assert.assertEquals(a, b);
+        Assert.assertEquals(a.hashCode(), b.hashCode());
+        Assert.assertNotSame(a, new Allocate(UUID.randomUUID(), n, "foo", 5, 3, 5));
+        Assert.assertNotSame(a, new Allocate(vm, UUID.randomUUID(), "foo", 5, 3, 5));
+        Assert.assertNotSame(a, new Allocate(vm, n, "bar", 5, 3, 5));
+        Assert.assertNotSame(a, new Allocate(vm, n, "foo", 6, 3, 5));
+        Assert.assertNotSame(a, new Allocate(vm, n, "foo", 5, 4, 5));
+        Assert.assertNotSame(a, new Allocate(vm, n, "foo", 5, 3, 7));
+    }
+
 }

@@ -47,6 +47,8 @@ public class AllocateEventTest {
         UUID vm = UUID.randomUUID();
         AllocateEvent na = new AllocateEvent(vm, "foo", 3);
         AllocateEvent na2 = new AllocateEvent(vm, "foo", 3);
+        Assert.assertFalse(na.equals(new Object()));
+        Assert.assertTrue(na.equals(na));
         Assert.assertTrue(na.equals(na2));
         Assert.assertTrue(na2.equals(na));
         Assert.assertEquals(na.hashCode(), na2.hashCode());

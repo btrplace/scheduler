@@ -22,7 +22,7 @@ import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import junit.framework.Assert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.UUID;
@@ -78,6 +78,8 @@ public class ShutdownVMTest {
         UUID vm = UUID.randomUUID();
         ShutdownVM a = new ShutdownVM(vm, n, 3, 5);
         ShutdownVM b = new ShutdownVM(vm, n, 3, 5);
+        Assert.assertFalse(a.equals(new Object()));
+        Assert.assertTrue(a.equals(a));
         Assert.assertEquals(a, b);
         Assert.assertEquals(a.hashCode(), b.hashCode());
         Assert.assertNotSame(a, new ShutdownVM(vm, n, 4, 5));
