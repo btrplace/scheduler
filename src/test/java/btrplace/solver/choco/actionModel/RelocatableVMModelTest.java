@@ -18,22 +18,22 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
+import btrplace.model.constraint.Online;
+import btrplace.model.constraint.Overbook;
+import btrplace.model.constraint.Preserve;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
-import btrplace.solver.choco.DurationEvaluators;
-import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.*;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -129,5 +129,38 @@ public class RelocatableVMModelTest {
 
         Model m = p.getResult();
         Assert.assertEquals(n1, m.getMapping().getVMLocation(vm));
+    }
+
+    @Test
+    public void testRelocateDueToPreserve() throws SolverException {
+        Mapping map = new DefaultMapping();
+        UUID n1 = UUID.randomUUID();
+        UUID n2 = UUID.randomUUID();
+        UUID vm1 = UUID.randomUUID();
+        UUID vm2 = UUID.randomUUID();
+        UUID vm3 = UUID.randomUUID();
+
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm3, n2);
+        ShareableResource rc = new DefaultShareableResource("cpu", 10);
+        rc.set(n1, 7);
+        rc.set(vm1, 3);
+        rc.set(vm2, 3);
+        rc.set(vm3, 5);
+
+        Preserve pr = new Preserve(map.getAllVMs(), "cpu", 5);
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        Model mo = new DefaultModel(map);
+        mo.attach(rc);
+        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        cstrs.add(new Online(map.getAllNodes()));
+        cstrs.add(new Overbook(map.getAllNodes(), "cpu", 1));
+        cstrs.add(pr);
+        ReconfigurationPlan p = cra.solve(mo, cstrs);
+        Assert.assertNotNull(p);
+        System.out.println(p);
     }
 }

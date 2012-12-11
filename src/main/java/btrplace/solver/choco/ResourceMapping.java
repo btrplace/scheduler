@@ -80,8 +80,9 @@ public class ResourceMapping {
             if (slice == null) { //The VMs will not be running, so its consumption is set to 0
                 vmUsage[i] = s.makeConstantIntVar(rp.makeVarLabel("vmUsage('" + rc.getIdentifier() + "', '" + vmId + "'"), 0);
             } else {
-                //We don't know about the next VM usage for the moment
-                vmUsage[i] = s.createBoundIntVar("vmUsage('" + rc.getIdentifier() + "', '" + vmId + "')", 0, Choco.MAX_UPPER_BOUND);
+                //We don't know about the next VM usage for the moment, -1 is used by default to allow to detect an
+                //non-updated value.
+                vmUsage[i] = s.createBoundIntVar("vmUsage('" + rc.getIdentifier() + "', '" + vmId + "')", -1, Choco.MAX_UPPER_BOUND);
                 notNullUsage.add(vmUsage[i]);
                 hosters.add(slice.getHoster());
             }

@@ -63,6 +63,8 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
     private ReconfigurationObjective obj;
 
+    private boolean keepRcUsage = true;
+
     /**
      * Make a new algorithm.
      */
@@ -145,7 +147,8 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
             }
             ChocoSatConstraint ccstr = ccstrb.build(cstr);
             if (ccstr == null) {
-                throw new SolverException(i, "Error while mapping the constraint '" + cstr.getClass().getSimpleName() + "'");
+                throw new SolverException(i, "Error while mapping the constraint '"
+                        + cstr.getClass().getSimpleName() + "'");
             }
             cConstraints.add(ccstr);
         }
@@ -172,6 +175,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
             ccstr.inject(rp);
         }
 
+
         //The objective
         obj.inject(rp);
 
@@ -181,6 +185,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
         TaskSchedulerBuilder.getInstance().commitConstraint();
 
+        maintainResourceUsage();
 
         CPSolver s = rp.getSolver();
         s.generateSearchStrategy();
@@ -193,12 +198,14 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         }
         s.setFirstSolution(!optimize);
 
+        //Instantiate the VM usage to its LB.
         for (ResourceMapping rcm : rp.getResourceMappings()) {
             for (IntDomainVar v : rcm.getVMConsumption()) {
                 try {
                     v.setVal(v.getInf());
                 } catch (ContradictionException e) {
-                    throw new SolverException(rp.getSourceModel(), "Unable to set the VM '" + rcm.getIdentifier() + "' consumption to " + v.getInf());
+                    throw new SolverException(rp.getSourceModel(), "Unable to set the VM '" + rcm.getIdentifier()
+                            + "' consumption to " + v.getInf());
                 }
             }
         }
@@ -214,6 +221,30 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
             throw new SolverException(i, "Unable to state about the feasibility of the problem");
         }
     }
+
+    /**
+     * Set the VM resource usage for the result, to its current usage.
+     *
+     * @throws SolverException if an error occurred
+     */
+    private void maintainResourceUsage() throws SolverException {
+        for (ResourceMapping rcm : rp.getResourceMappings()) {
+            for (UUID vm : rp.getSourceModel().getMapping().getAllVMs()) {
+                int vmId = rp.getVM(vm);
+                if (rcm.getVMConsumption()[vmId].getInf() < 0) {
+                    int prevUsage = rcm.getSourceResource().get(vm);
+                    try {
+                        rcm.getVMConsumption()[vmId].setInf(prevUsage);
+                    } catch (ContradictionException e) {
+                        throw new SolverException(rp.getSourceModel(), "Unable to set the minimal '"
+                                + rcm.getIdentifier() + "' usage for '" + vm
+                                + "' to its current usage (" + prevUsage + ")");
+                    }
+                }
+            }
+        }
+    }
+
 
     private boolean checkSatisfaction(ReconfigurationPlan p, List<ChocoSatConstraint> cstrs) throws SolverException {
         for (ChocoSatConstraint ccstr : cstrs) {
@@ -237,7 +268,9 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
             }
         }
 
-        TaskSchedulerBuilder.getInstance().add(rp.getVMsCountOnNodes(), cUse.toArray(), iUse.toArray(new IntDomainVar[iUse.size()]));
+        TaskSchedulerBuilder.getInstance().add(rp.getVMsCountOnNodes(),
+                cUse.toArray(),
+                iUse.toArray(new IntDomainVar[iUse.size()]));
     }
 
     @Override

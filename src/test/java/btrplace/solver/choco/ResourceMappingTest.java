@@ -22,7 +22,7 @@ import btrplace.model.*;
 import btrplace.solver.SolverException;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import junit.framework.Assert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.UUID;
@@ -59,8 +59,8 @@ public class ResourceMappingTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         ResourceMapping rcm = new ResourceMapping(rp, rc);
         Assert.assertEquals(rc.getIdentifier(), rcm.getIdentifier());
-        Assert.assertEquals(0, rcm.getVMConsumption()[rp.getVM(vm)].getInf());
-        Assert.assertEquals(0, rcm.getVMConsumption()[rp.getVM(vm2)].getInf());
+        Assert.assertEquals(-1, rcm.getVMConsumption()[rp.getVM(vm)].getInf());
+        Assert.assertEquals(-1, rcm.getVMConsumption()[rp.getVM(vm2)].getInf());
         Assert.assertEquals(0, rcm.getVMConsumption()[rp.getVM(vm3)].getSup()); //Will not be running so 0
         IntDomainVar pn1 = rcm.getRawNodeUsage()[rp.getNode(n1)];
         IntDomainVar pn2 = rcm.getRawNodeUsage()[rp.getNode(n2)];
@@ -69,8 +69,8 @@ public class ResourceMappingTest {
 
         IntDomainVar vn1 = rcm.getRealNodeUsage()[rp.getNode(n1)];
         IntDomainVar vn2 = rcm.getRealNodeUsage()[rp.getNode(n2)];
-        Assert.assertTrue(vn1.getInf() == 0);
-        Assert.assertTrue(vn2.getInf() == 0);
+        Assert.assertEquals(vn1.getInf(), 0);
+        Assert.assertEquals(vn2.getInf(), 0);
 
         Assert.assertEquals(rc, rcm.getSourceResource());
     }

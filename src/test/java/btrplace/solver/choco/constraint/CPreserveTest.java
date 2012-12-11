@@ -20,7 +20,6 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.*;
 import btrplace.model.constraint.Online;
-import btrplace.model.constraint.Overbook;
 import btrplace.model.constraint.Preserve;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
@@ -75,8 +74,16 @@ public class CPreserveTest {
         Assert.assertEquals(map.getRunningVMs(n1), bads);
     }
 
+    /**
+     * A preserve constraint asks for a minimum amount of resources but
+     * their is no overbook ratio so, their should be no relocation,
+     * but also no allocate action ?
+     * TODO: Consistent or not ?
+     *
+     * @throws SolverException
+     */
     @Test
-    public void testReMappingForPreserve() throws SolverException {
+    public void testPreserveWithoutOverbook() throws SolverException {
         Mapping map = new DefaultMapping();
         UUID n1 = UUID.randomUUID();
         UUID n2 = UUID.randomUUID();
@@ -101,11 +108,11 @@ public class CPreserveTest {
         mo.attach(rc);
         List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
         cstrs.add(new Online(map.getAllNodes()));
-        cstrs.add(new Overbook(map.getAllNodes(), "cpu", 1));
         cstrs.add(pr);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
-        System.out.println(p);
-    }
+        //No relocation
+        Assert.assertEquals(p.getResult().getMapping(), map);
 
+    }
 }
