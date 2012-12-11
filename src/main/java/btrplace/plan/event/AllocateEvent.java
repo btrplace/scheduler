@@ -20,7 +20,7 @@ package btrplace.plan.event;
 
 import btrplace.model.Model;
 import btrplace.model.ShareableResource;
-import btrplace.plan.Event;
+import btrplace.plan.VMEvent;
 
 import java.util.UUID;
 
@@ -30,7 +30,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class AllocateEvent implements Event {
+public class AllocateEvent implements VMEvent {
 
     private int qty;
 
@@ -51,11 +51,7 @@ public class AllocateEvent implements Event {
         this.qty = amount;
     }
 
-    /**
-     * Get the VM that is the subject of the resource allocation.
-     *
-     * @return the VM identifier
-     */
+    @Override
     public UUID getVM() {
         return vm;
     }

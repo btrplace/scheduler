@@ -21,6 +21,7 @@ package btrplace.plan.event;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.plan.Action;
+import btrplace.plan.VMEvent;
 
 import java.util.UUID;
 
@@ -29,7 +30,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class ForgeVM extends Action {
+public class ForgeVM extends Action implements VMEvent {
 
     private UUID id;
 
@@ -90,11 +91,7 @@ public class ForgeVM extends Action {
         return id.hashCode() + 31 * res;
     }
 
-    /**
-     * Get the VM to forge.
-     *
-     * @return the VM identifier
-     */
+    @Override
     public UUID getVM() {
         return id;
     }

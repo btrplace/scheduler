@@ -22,6 +22,7 @@ package btrplace.plan.event;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.plan.Action;
+import btrplace.plan.VMEvent;
 
 import java.util.UUID;
 
@@ -31,7 +32,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class ResumeVM extends Action {
+public class ResumeVM extends Action implements VMEvent {
 
     private UUID vm;
 
@@ -53,11 +54,7 @@ public class ResumeVM extends Action {
         this.dst = to;
     }
 
-    /**
-     * Get the VM to resume.
-     *
-     * @return the VM identifier
-     */
+    @Override
     public UUID getVM() {
         return vm;
     }

@@ -21,6 +21,7 @@ package btrplace.plan.event;
 
 import btrplace.model.Model;
 import btrplace.plan.Action;
+import btrplace.plan.VMEvent;
 
 import java.util.UUID;
 
@@ -30,7 +31,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class BootVM extends Action {
+public class BootVM extends Action implements VMEvent {
 
     private UUID vm;
 
@@ -67,11 +68,7 @@ public class BootVM extends Action {
         return node;
     }
 
-    /**
-     * Get the VM to boot.
-     *
-     * @return the VM identifier
-     */
+    @Override
     public UUID getVM() {
         return vm;
     }

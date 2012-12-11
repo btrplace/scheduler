@@ -21,6 +21,7 @@ package btrplace.plan.event;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.plan.Action;
+import btrplace.plan.NodeEvent;
 
 import java.util.UUID;
 
@@ -30,7 +31,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class ShutdownNode extends Action {
+public class ShutdownNode extends Action implements NodeEvent {
 
     private UUID node;
 
@@ -46,11 +47,7 @@ public class ShutdownNode extends Action {
         this.node = n;
     }
 
-    /**
-     * Get the node to shutdown.
-     *
-     * @return the node identifier
-     */
+    @Override
     public UUID getNode() {
         return node;
     }

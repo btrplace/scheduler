@@ -21,6 +21,7 @@ package btrplace.plan.event;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.plan.Action;
+import btrplace.plan.VMEvent;
 
 import java.util.UUID;
 
@@ -29,7 +30,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class MigrateVM extends Action {
+public class MigrateVM extends Action implements VMEvent {
 
     private UUID vm;
 
@@ -70,11 +71,7 @@ public class MigrateVM extends Action {
         return src;
     }
 
-    /**
-     * Get the VM to migrate.
-     *
-     * @return the VM identifier
-     */
+    @Override
     public UUID getVM() {
         return vm;
     }

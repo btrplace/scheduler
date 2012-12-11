@@ -22,6 +22,7 @@ package btrplace.plan.event;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.plan.Action;
+import btrplace.plan.VMEvent;
 
 import java.util.UUID;
 
@@ -30,7 +31,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class ShutdownVM extends Action {
+public class ShutdownVM extends Action implements VMEvent {
 
     private UUID vm;
 
@@ -101,11 +102,7 @@ public class ShutdownVM extends Action {
         return 31 * res + node.hashCode();
     }
 
-    /**
-     * Get the VM to shutdown.
-     *
-     * @return the VM identifier
-     */
+    @Override
     public UUID getVM() {
         return vm;
     }

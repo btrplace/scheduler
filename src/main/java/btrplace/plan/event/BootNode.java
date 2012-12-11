@@ -21,6 +21,7 @@ package btrplace.plan.event;
 
 import btrplace.model.Model;
 import btrplace.plan.Action;
+import btrplace.plan.NodeEvent;
 
 import java.util.UUID;
 
@@ -29,7 +30,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class BootNode extends Action {
+public class BootNode extends Action implements NodeEvent {
 
     private UUID node;
 
@@ -66,11 +67,7 @@ public class BootNode extends Action {
         return false;
     }
 
-    /**
-     * Get the node to boot.
-     *
-     * @return the node identifier
-     */
+    @Override
     public UUID getNode() {
         return node;
     }

@@ -20,6 +20,7 @@ package btrplace.plan.event;
 
 import btrplace.model.Model;
 import btrplace.plan.Action;
+import btrplace.plan.VMEvent;
 
 import java.util.UUID;
 
@@ -28,7 +29,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class KillVM extends Action {
+public class KillVM extends Action implements VMEvent {
 
     private UUID id;
 
@@ -57,11 +58,7 @@ public class KillVM extends Action {
         return host;
     }
 
-    /**
-     * Get the VM to kill.
-     *
-     * @return the VM identifier
-     */
+    @Override
     public UUID getVM() {
         return id;
     }

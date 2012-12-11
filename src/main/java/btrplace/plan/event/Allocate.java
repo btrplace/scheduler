@@ -20,6 +20,7 @@ package btrplace.plan.event;
 
 import btrplace.model.Model;
 import btrplace.plan.Action;
+import btrplace.plan.VMEvent;
 
 import java.util.UUID;
 
@@ -29,7 +30,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class Allocate extends Action {
+public class Allocate extends Action implements VMEvent {
 
     private UUID node;
 
@@ -60,11 +61,7 @@ public class Allocate extends Action {
         return node;
     }
 
-    /**
-     * Get the VM that is subject to the resource allocation.
-     *
-     * @return the VM identifier
-     */
+    @Override
     public UUID getVM() {
         return ev.getVM();
     }
