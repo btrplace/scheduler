@@ -172,6 +172,7 @@ public abstract class Action implements Event {
                 b.append("}");
             }
         }
+        b.append('}');
         return b.toString();
     }
 }
