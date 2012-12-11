@@ -41,7 +41,7 @@ public class ActionTest {
         }
     }
 
-    public static class MockNotification implements Notification {
+    public static class MockEvent implements Event {
 
         @Override
         public boolean apply(Model m) {
@@ -54,18 +54,18 @@ public class ActionTest {
         Action a1 = new MockAction(1, 3);
         Assert.assertEquals(1, a1.getStart());
         Assert.assertEquals(3, a1.getEnd());
-        Assert.assertTrue(a1.getNotifications(Action.Hook.pre).isEmpty());
-        Assert.assertTrue(a1.getNotifications(Action.Hook.post).isEmpty());
+        Assert.assertTrue(a1.getEvents(Action.Hook.pre).isEmpty());
+        Assert.assertTrue(a1.getEvents(Action.Hook.post).isEmpty());
     }
 
     @Test
-    public void testNotifications() {
+    public void testEvents() {
         Action a1 = new MockAction(1, 3);
-        MockNotification n1 = new MockNotification();
-        a1.addNotification(Action.Hook.pre, n1);
-        Assert.assertEquals(1, a1.getNotifications(Action.Hook.pre).size());
-        a1.addNotification(Action.Hook.post, n1);
-        Assert.assertEquals(1, a1.getNotifications(Action.Hook.post).size());
+        MockEvent n1 = new MockEvent();
+        a1.addEvent(Action.Hook.pre, n1);
+        Assert.assertEquals(1, a1.getEvents(Action.Hook.pre).size());
+        a1.addEvent(Action.Hook.post, n1);
+        Assert.assertEquals(1, a1.getEvents(Action.Hook.post).size());
 
     }
 }

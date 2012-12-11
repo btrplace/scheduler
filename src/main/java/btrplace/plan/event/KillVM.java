@@ -16,82 +16,49 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.plan.action;
+package btrplace.plan.event;
 
-import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.plan.Action;
 
 import java.util.UUID;
 
 /**
- * Prepare a VM for being deployed.
+ * An action to destroy a VM that can be in any state.
  *
  * @author Fabien Hermenier
  */
-public class ForgeVM extends Action {
+public class KillVM extends Action {
 
     private UUID id;
+
+    private UUID host;
 
     /**
      * Make a new action.
      *
-     * @param vm the VM to force.
+     * @param vm   the VM to kill
+     * @param host its location if any, {@code null} otherwise
+     * @param st   the moment the action starts
+     * @param ed   the moment the action ends
      */
-    public ForgeVM(UUID vm, int st, int ed) {
+    public KillVM(UUID vm, UUID host, int st, int ed) {
         super(st, ed);
-        this.id = vm;
+        id = vm;
+        this.host = host;
     }
 
     /**
-     * Put the VM in the ready state if it does not already belong
-     * to the mapping.
+     * Get the VM location.
      *
-     * @param m the model to modify
-     * @return {@code true} iff successful
+     * @return the node identifier if the VM is hosted somewhere. Otherwise, {@code null}
      */
-    @Override
-    public boolean applyAction(Model m) {
-        Mapping map = m.getMapping();
-
-        if (!map.getAllVMs().contains(id)) {
-            map.addReadyVM(id);
-            return true;
-        }
-        return false;
+    public UUID getNode() {
+        return host;
     }
 
     /**
-     * Test if this action is equals to another object.
-     *
-     * @param o the object to compare with
-     * @return true if ref is an instance of Force and if both
-     *         instance involve the same virtual machine
-     */
-    @Override
-    public boolean equals(Object o) {
-        if (o == null) {
-            return false;
-        } else if (o == this) {
-            return true;
-        } else if (o.getClass() == this.getClass()) {
-            ForgeVM that = (ForgeVM) o;
-            return this.id.equals(that.id)
-                    && this.getStart() == that.getStart()
-                    && this.getEnd() == that.getEnd();
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        int res = getEnd();
-        res = getStart() + 31 * res;
-        return id.hashCode() + 31 * res;
-    }
-
-    /**
-     * Get the VM to forge.
+     * Get the VM to kill.
      *
      * @return the VM identifier
      */
@@ -100,7 +67,38 @@ public class ForgeVM extends Action {
     }
 
     @Override
+    public boolean applyAction(Model i) {
+        return i.getMapping().removeVM(id);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        } else if (o == this) {
+            return true;
+        } else if (o.getClass() == this.getClass()) {
+            KillVM that = (KillVM) o;
+            return this.id.equals(that.id) &&
+                    ((host == null && that.host == null) || (host != null && host.equals(that.host))) &&
+                    this.getStart() == that.getStart() &&
+                    this.getEnd() == that.getEnd();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int res = getEnd();
+        res = getStart() + 31 * res;
+        res = res * 31 + (host != null ? host.hashCode() : 0);
+        return id.hashCode() + 31 * res;
+    }
+
+    @Override
     public String toString() {
-        return new StringBuilder("forge(vm=").append(id).append(')').toString();
+        return new StringBuilder("killVM(vm=").append(id)
+                .append(", node=").append(host)
+                .append(')').toString();
     }
 }

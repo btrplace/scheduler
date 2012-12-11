@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.plan.action;
+package btrplace.plan.event;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -24,16 +24,16 @@ import org.testng.annotations.Test;
 import java.util.UUID;
 
 /**
- * Unit tests for {@link btrplace.plan.action.NotifyAllocation}.
+ * Unit tests for {@link AllocateEvent}.
  *
  * @author Fabien Hermenier
  */
-public class NotifyAllocationTest {
+public class AllocateEventTest {
 
     @Test
     public void testBasics() {
         UUID vm = UUID.randomUUID();
-        NotifyAllocation na = new NotifyAllocation(vm, "foo", 3);
+        AllocateEvent na = new AllocateEvent(vm, "foo", 3);
         Assert.assertEquals(vm, na.getVM());
         Assert.assertEquals("foo", na.getResourceId());
         Assert.assertEquals(3, na.getAmount());
@@ -44,13 +44,13 @@ public class NotifyAllocationTest {
     @Test
     public void testEqualsHashCode() {
         UUID vm = UUID.randomUUID();
-        NotifyAllocation na = new NotifyAllocation(vm, "foo", 3);
-        NotifyAllocation na2 = new NotifyAllocation(vm, "foo", 3);
+        AllocateEvent na = new AllocateEvent(vm, "foo", 3);
+        AllocateEvent na2 = new AllocateEvent(vm, "foo", 3);
         Assert.assertTrue(na.equals(na2));
         Assert.assertTrue(na2.equals(na));
         Assert.assertEquals(na.hashCode(), na2.hashCode());
-        Assert.assertFalse(na.equals(new NotifyAllocation(UUID.randomUUID(), "foo", 3)));
-        Assert.assertFalse(na.equals(new NotifyAllocation(vm, "bar", 3)));
-        Assert.assertFalse(na.equals(new NotifyAllocation(vm, "foo", 5)));
+        Assert.assertFalse(na.equals(new AllocateEvent(UUID.randomUUID(), "foo", 3)));
+        Assert.assertFalse(na.equals(new AllocateEvent(vm, "bar", 3)));
+        Assert.assertFalse(na.equals(new AllocateEvent(vm, "foo", 5)));
     }
 }

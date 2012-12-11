@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.plan.action;
+package btrplace.plan.event;
 
 import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
@@ -28,80 +28,62 @@ import org.testng.annotations.Test;
 import java.util.UUID;
 
 /**
- * Unit tests for {@link SuspendVM}.
+ * Unit tests for {@link BootNode}.
  *
  * @author Fabien Hermenier
  */
-public class SuspendVMTest {
+public class BootVMTest {
 
     @Test
     public void testInstantiate() {
         UUID vm = UUID.randomUUID();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-
-        SuspendVM a = new SuspendVM(vm, n1, n2, 3, 5);
+        UUID n = UUID.randomUUID();
+        BootVM a = new BootVM(vm, n, 3, 5);
         Assert.assertEquals(vm, a.getVM());
-        Assert.assertEquals(n1, a.getSourceNode());
-        Assert.assertEquals(n2, a.getDestinationNode());
+        Assert.assertEquals(n, a.getDestinationNode());
         Assert.assertEquals(3, a.getStart());
         Assert.assertEquals(5, a.getEnd());
         Assert.assertFalse(a.toString().contains("null"));
-
     }
 
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testApply() {
         Mapping map = new DefaultMapping();
-        UUID vm = UUID.randomUUID();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addRunningVM(vm, n1);
-
         Model m = new DefaultModel(map);
-
-        SuspendVM a = new SuspendVM(vm, n1, n2, 3, 5);
+        UUID vm = UUID.randomUUID();
+        UUID n = UUID.randomUUID();
+        BootVM a = new BootVM(vm, n, 3, 5);
+        map.addOnlineNode(n);
+        map.addReadyVM(vm);
         Assert.assertTrue(a.apply(m));
-        Assert.assertEquals(map.getVMLocation(vm), n2);
-        Assert.assertTrue(map.getSleepingVMs().contains(vm));
+        Assert.assertTrue(map.getRunningVMs().contains(vm));
+        Assert.assertEquals(map.getVMLocation(vm), n);
 
         Assert.assertFalse(a.apply(m));
-        Assert.assertEquals(map.getVMLocation(vm), n2);
 
-        map.addRunningVM(vm, n2);
-        Assert.assertTrue(new SuspendVM(vm, n2, n2, 3, 5).apply(m));
+        map.addSleepingVM(vm, n);
+        Assert.assertFalse(a.apply(m));
+        Assert.assertTrue(map.getSleepingVMs().contains(vm));
 
-        Assert.assertFalse(new SuspendVM(vm, n2, n1, 3, 5).apply(m));
+        map.removeVM(vm);
+        Assert.assertFalse(a.apply(m));
 
         map.addReadyVM(vm);
-        Assert.assertFalse(new SuspendVM(vm, n2, n1, 3, 5).apply(m));
-
-        map.addOfflineNode(n1);
-        Assert.assertFalse(new SuspendVM(vm, n2, n1, 3, 5).apply(m));
-
-        map.removeNode(n1);
-        Assert.assertFalse(new SuspendVM(vm, n2, n1, 3, 5).apply(m));
+        map.addOfflineNode(n);
+        Assert.assertFalse(a.apply(m));
     }
 
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testEquals() {
+        UUID n = UUID.randomUUID();
         UUID vm = UUID.randomUUID();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-
-        SuspendVM a = new SuspendVM(vm, n1, n2, 3, 5);
-        SuspendVM b = new SuspendVM(vm, n1, n2, 3, 5);
+        BootVM a = new BootVM(vm, n, 3, 5);
+        BootVM b = new BootVM(vm, n, 3, 5);
         Assert.assertEquals(a, b);
         Assert.assertEquals(a.hashCode(), b.hashCode());
-
-        Assert.assertNotSame(a, new SuspendVM(vm, n1, n2, 4, 5));
-        Assert.assertNotSame(a, new SuspendVM(vm, n1, n2, 3, 4));
-        Assert.assertNotSame(a, new SuspendVM(UUID.randomUUID(), n1, n2, 3, 5));
-        Assert.assertNotSame(a, new SuspendVM(vm, UUID.randomUUID(), n2, 3, 5));
-        Assert.assertNotSame(a, new SuspendVM(vm, n1, UUID.randomUUID(), 3, 5));
-
+        Assert.assertNotSame(a, new BootVM(vm, n, 4, 5));
+        Assert.assertNotSame(a, new BootVM(vm, n, 3, 4));
+        Assert.assertNotSame(a, new BootVM(vm, UUID.randomUUID(), 3, 5));
+        Assert.assertNotSame(a, new BootVM(UUID.randomUUID(), n, 4, 5));
     }
 }

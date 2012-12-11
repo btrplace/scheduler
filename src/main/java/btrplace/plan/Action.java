@@ -23,26 +23,25 @@ import btrplace.model.Model;
 import java.util.*;
 
 /**
- * An action is a scheduled operation on an element that modify an instance when the action
- * succeeds.
+ * An action is an event that has to be scheduled for reliability purpose.
  * <p/>
- * In addition to the action itself, it is possible to apply traditional notifications before or after
- * the action completion.
+ * An action may embed several other events that may be attached to a particular
+ * hook.
  *
  * @author Fabien Hermenier
  */
-public abstract class Action implements Notification {
+public abstract class Action implements Event {
 
     /**
-     * Possible moment where notifications can be considered.
+     * Possible moment where events can be considered.
      */
     public static enum Hook {
         /**
-         * The notification can be considered before executing the action.
+         * The event can be considered before executing the action.
          */
         pre,
         /**
-         * The notification can be considered after the action execution.
+         * The event can be considered after the action execution.
          */
         post
     }
@@ -51,7 +50,7 @@ public abstract class Action implements Notification {
 
     private int stop;
 
-    private Map<Hook, List<Notification>> notifications;
+    private Map<Hook, List<Event>> events;
 
     /**
      * Create an action.
@@ -62,18 +61,21 @@ public abstract class Action implements Notification {
     public Action(int st, int ed) {
         this.start = st;
         this.stop = ed;
-        notifications = new HashMap<Hook, List<Notification>>(2);
+        events = new HashMap<Hook, List<Event>>(2);
     }
 
     /**
-     * Apply the action on an instance.
+     * Apply the action on a model.
+     * In practice, the events with the {@link Hook#pre} are executed in first,
+     * then {@link #applyAction(btrplace.model.Model)} is called. Finally,
+     * the events with the {@link Hook#post} are executed.
      *
      * @param i the instance to alter with the action
-     * @return {@code true} if the action was applied successfully
+     * @return {@code true} if the action and all the events were applied successfully
      */
     public boolean apply(Model i) {
-        List<Notification> nots = getNotifications(Hook.pre);
-        for (Notification n : nots) {
+        List<Event> nots = getEvents(Hook.pre);
+        for (Event n : nots) {
             if (!n.apply(i)) {
                 return false;
             }
@@ -81,8 +83,8 @@ public abstract class Action implements Notification {
         if (!applyAction(i)) {
             return false;
         }
-        nots = getNotifications(Hook.post);
-        for (Notification n : nots) {
+        nots = getEvents(Hook.post);
+        for (Event n : nots) {
             if (!n.apply(i)) {
                 return false;
             }
@@ -91,7 +93,7 @@ public abstract class Action implements Notification {
     }
 
     /**
-     * Apply the actions.
+     * Apply only the scheduled action.
      *
      * @param i the model to modify
      * @return {@code true} if the action was applied successfully
@@ -117,34 +119,34 @@ public abstract class Action implements Notification {
     }
 
 
-    public boolean addNotification(Hook k, Notification n) {
-        List<Notification> l = notifications.get(k);
+    public boolean addEvent(Hook k, Event n) {
+        List<Event> l = events.get(k);
         if (l == null) {
-            l = new ArrayList<Notification>();
-            notifications.put(k, l);
+            l = new ArrayList<Event>();
+            events.put(k, l);
         }
         return l.add(n);
     }
 
     /**
-     * Get the attached notifications having a specific hook.
+     * Get the events having a specific hook.
      *
      * @param k the hook
-     * @return a list of notifications that may be empty
+     * @return a list of events that may be empty
      */
-    public List<Notification> getNotifications(Hook k) {
-        List<Notification> l = notifications.get(k);
-        return l == null ? Collections.<Notification>emptyList() : l;
+    public List<Event> getEvents(Hook k) {
+        List<Event> l = events.get(k);
+        return l == null ? Collections.<Event>emptyList() : l;
     }
 
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        for (Map.Entry<Hook, List<Notification>> entry : notifications.entrySet()) {
-            List<Notification> l = entry.getValue();
+        for (Map.Entry<Hook, List<Event>> entry : events.entrySet()) {
+            List<Event> l = entry.getValue();
             Hook k = entry.getKey();
             b.append("\n@").append(k).append("= {");
-            for (Iterator<Notification> ite = l.iterator(); ite.hasNext(); ) {
+            for (Iterator<Event> ite = l.iterator(); ite.hasNext(); ) {
                 b.append(ite.next());
                 if (ite.hasNext()) {
                     b.append(", ");

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.plan.action;
+package btrplace.plan.event;
 
 import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
@@ -28,49 +28,57 @@ import org.testng.annotations.Test;
 import java.util.UUID;
 
 /**
- * Unit tests for {@link ShutdownNode}.
+ * Unit tests for {@link KillVM}.
  *
  * @author Fabien Hermenier
  */
-public class ShutdownNodeTest {
+public class KillVMTest {
 
     @Test
     public void testInstantiate() {
+        UUID vm = UUID.randomUUID();
         UUID n = UUID.randomUUID();
-        ShutdownNode a = new ShutdownNode(n, 3, 5);
+        KillVM a = new KillVM(vm, n, 3, 5);
+        Assert.assertEquals(vm, a.getVM());
         Assert.assertEquals(n, a.getNode());
         Assert.assertEquals(3, a.getStart());
         Assert.assertEquals(5, a.getEnd());
         Assert.assertFalse(a.toString().contains("null"));
+
     }
 
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testApply() {
         Mapping map = new DefaultMapping();
         Model m = new DefaultModel(map);
-        UUID n = UUID.randomUUID();
-        ShutdownNode a = new ShutdownNode(n, 3, 5);
-        map.addOnlineNode(n);
-        Assert.assertTrue(a.apply(m));
-        Assert.assertTrue(map.getOfflineNodes().contains(n));
-
-        Assert.assertFalse(a.apply(m));
-
         UUID vm = UUID.randomUUID();
+        UUID n = UUID.randomUUID();
+        KillVM a = new KillVM(vm, n, 3, 5);
         map.addOnlineNode(n);
         map.addRunningVM(vm, n);
+        Assert.assertTrue(a.apply(m));
+        Assert.assertFalse(map.containsVM(vm));
+
         Assert.assertFalse(a.apply(m));
+
+        map.addSleepingVM(vm, n);
+        Assert.assertTrue(a.apply(m));
+
+        map.addReadyVM(vm);
+        Assert.assertTrue(a.apply(m));
     }
 
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testEquals() {
         UUID n = UUID.randomUUID();
-        ShutdownNode a = new ShutdownNode(n, 3, 5);
-        ShutdownNode b = new ShutdownNode(n, 3, 5);
+        UUID vm = UUID.randomUUID();
+        KillVM a = new KillVM(vm, n, 3, 5);
+        KillVM b = new KillVM(vm, n, 3, 5);
         Assert.assertEquals(a, b);
         Assert.assertEquals(a.hashCode(), b.hashCode());
-        Assert.assertNotSame(a, new ShutdownNode(n, 4, 5));
-        Assert.assertNotSame(a, new ShutdownNode(n, 3, 4));
-        Assert.assertNotSame(a, new ShutdownNode(UUID.randomUUID(), 4, 5));
+        Assert.assertNotSame(a, new KillVM(vm, n, 4, 5));
+        Assert.assertNotSame(a, new KillVM(vm, n, 3, 4));
+        Assert.assertNotSame(a, new KillVM(vm, UUID.randomUUID(), 3, 5));
+        Assert.assertNotSame(a, new KillVM(UUID.randomUUID(), n, 4, 5));
     }
 }

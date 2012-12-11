@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.plan.action;
+package btrplace.plan.event;
 
 import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
@@ -28,11 +28,11 @@ import org.testng.annotations.Test;
 import java.util.UUID;
 
 /**
- * Unit tests for {@link ResumeVM}.
+ * Unit tests for {@link MigrateVM}.
  *
  * @author Fabien Hermenier
  */
-public class ResumeVMTest {
+public class MigrateVMTest {
 
     @Test
     public void testInstantiate() {
@@ -40,7 +40,7 @@ public class ResumeVMTest {
         UUID n1 = UUID.randomUUID();
         UUID n2 = UUID.randomUUID();
 
-        ResumeVM a = new ResumeVM(vm, n1, n2, 3, 5);
+        MigrateVM a = new MigrateVM(vm, n1, n2, 3, 5);
         Assert.assertEquals(vm, a.getVM());
         Assert.assertEquals(n1, a.getSourceNode());
         Assert.assertEquals(n2, a.getDestinationNode());
@@ -59,11 +59,11 @@ public class ResumeVMTest {
 
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
-        map.addSleepingVM(vm, n1);
+        map.addRunningVM(vm, n1);
 
         Model m = new DefaultModel(map);
 
-        ResumeVM a = new ResumeVM(vm, n1, n2, 3, 5);
+        MigrateVM a = new MigrateVM(vm, n1, n2, 3, 5);
         Assert.assertTrue(a.apply(m));
         Assert.assertEquals(map.getVMLocation(vm), n2);
         Assert.assertTrue(map.getRunningVMs().contains(vm));
@@ -71,19 +71,19 @@ public class ResumeVMTest {
         Assert.assertFalse(a.apply(m));
         Assert.assertEquals(map.getVMLocation(vm), n2);
 
-        map.addSleepingVM(vm, n2);
-        Assert.assertTrue(new ResumeVM(vm, n2, n2, 3, 5).apply(m));
+        Assert.assertFalse(new MigrateVM(vm, n2, n2, 3, 5).apply(m));
 
-        Assert.assertFalse(new ResumeVM(vm, n2, n1, 3, 5).apply(m));
+        map.addSleepingVM(vm, n2);
+        Assert.assertFalse(new MigrateVM(vm, n2, n1, 3, 5).apply(m));
 
         map.addReadyVM(vm);
-        Assert.assertFalse(new ResumeVM(vm, n2, n1, 3, 5).apply(m));
+        Assert.assertFalse(new MigrateVM(vm, n2, n1, 3, 5).apply(m));
 
         map.addOfflineNode(n1);
-        Assert.assertFalse(new ResumeVM(vm, n2, n1, 3, 5).apply(m));
+        Assert.assertFalse(new MigrateVM(vm, n2, n1, 3, 5).apply(m));
 
         map.removeNode(n1);
-        Assert.assertFalse(new ResumeVM(vm, n2, n1, 3, 5).apply(m));
+        Assert.assertFalse(new MigrateVM(vm, n2, n1, 3, 5).apply(m));
     }
 
     @Test(dependsOnMethods = {"testInstantiate"})
@@ -92,16 +92,16 @@ public class ResumeVMTest {
         UUID n1 = UUID.randomUUID();
         UUID n2 = UUID.randomUUID();
 
-        ResumeVM a = new ResumeVM(vm, n1, n2, 3, 5);
-        ResumeVM b = new ResumeVM(vm, n1, n2, 3, 5);
+        MigrateVM a = new MigrateVM(vm, n1, n2, 3, 5);
+        MigrateVM b = new MigrateVM(vm, n1, n2, 3, 5);
         Assert.assertEquals(a, b);
         Assert.assertEquals(a.hashCode(), b.hashCode());
 
-        Assert.assertNotSame(a, new ResumeVM(vm, n1, n2, 4, 5));
-        Assert.assertNotSame(a, new ResumeVM(vm, n1, n2, 3, 4));
-        Assert.assertNotSame(a, new ResumeVM(UUID.randomUUID(), n1, n2, 3, 5));
-        Assert.assertNotSame(a, new ResumeVM(vm, UUID.randomUUID(), n2, 3, 5));
-        Assert.assertNotSame(a, new ResumeVM(vm, n1, UUID.randomUUID(), 3, 5));
+        Assert.assertNotSame(a, new MigrateVM(vm, n1, n2, 4, 5));
+        Assert.assertNotSame(a, new MigrateVM(vm, n1, n2, 3, 4));
+        Assert.assertNotSame(a, new MigrateVM(UUID.randomUUID(), n1, n2, 3, 5));
+        Assert.assertNotSame(a, new MigrateVM(vm, UUID.randomUUID(), n2, 3, 5));
+        Assert.assertNotSame(a, new MigrateVM(vm, n1, UUID.randomUUID(), 3, 5));
 
     }
 }

@@ -16,25 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.plan;
-
-import btrplace.model.Model;
-
 /**
- * A notification can be attached to an action to inform the action executor
- * that non-critical operations can be performed. A hook indicates the moment
- * the notification can be considered. Typically, before or after the action
- * execution.
- *
- * @author Fabien Hermenier
+ * Concrete implementation of actions composing a {@link btrplace.plan.ReconfigurationPlan}.
  */
-public interface Notification {
-
-    /**
-     * Apply the notification on a given model.
-     *
-     * @param m the model to modify
-     * @return {@code true} iff the modification succeeded
-     */
-    boolean apply(Model m);
-}
+package btrplace.plan.event;

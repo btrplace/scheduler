@@ -16,7 +16,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+package btrplace.plan;
+
+import btrplace.model.Model;
+
 /**
- * Concrete implementation of actions composing a {@link btrplace.plan.ReconfigurationPlan}.
+ * A event to apply on a model to modify it.
+ *
+ * @author Fabien Hermenier
  */
-package btrplace.plan.action;
+public interface Event {
+
+    /**
+     * Apply the event on a given model.
+     *
+     * @param m the model to modify
+     * @return {@code true} iff the modification succeeded
+     */
+    boolean apply(Model m);
+}

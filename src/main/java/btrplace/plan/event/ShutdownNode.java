@@ -16,61 +16,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.plan.action;
+package btrplace.plan.event;
 
+import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.plan.Action;
 
 import java.util.UUID;
 
 /**
- * An action to destroy a VM that can be in any state.
+ * An action to shutdown an online node.
+ * The node will be in the offline state once the action applied.
  *
  * @author Fabien Hermenier
  */
-public class KillVM extends Action {
+public class ShutdownNode extends Action {
 
-    private UUID id;
-
-    private UUID host;
+    private UUID node;
 
     /**
-     * Make a new action.
+     * Create a new shutdown action on an online node.
      *
-     * @param vm   the VM to kill
-     * @param host its location if any, {@code null} otherwise
-     * @param st   the moment the action starts
-     * @param ed   the moment the action ends
+     * @param n The node to stop
+     * @param s the moment the action starts
+     * @param f the moment the action is finished
      */
-    public KillVM(UUID vm, UUID host, int st, int ed) {
-        super(st, ed);
-        id = vm;
-        this.host = host;
+    public ShutdownNode(UUID n, int s, int f) {
+        super(s, f);
+        this.node = n;
     }
 
     /**
-     * Get the VM location.
+     * Get the node to shutdown.
      *
-     * @return the node identifier if the VM is hosted somewhere. Otherwise, {@code null}
+     * @return the node identifier
      */
     public UUID getNode() {
-        return host;
+        return node;
     }
+
 
     /**
-     * Get the VM to kill.
+     * Test the equality with another object.
      *
-     * @return the VM identifier
+     * @param o The object to compare with
+     * @return true if o is an instance of Shutdown and if both actions act on the same node
      */
-    public UUID getVM() {
-        return id;
-    }
-
-    @Override
-    public boolean applyAction(Model i) {
-        return i.getMapping().removeVM(id);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (o == null) {
@@ -78,11 +69,11 @@ public class KillVM extends Action {
         } else if (o == this) {
             return true;
         } else if (o.getClass() == this.getClass()) {
-            KillVM that = (KillVM) o;
-            return this.id.equals(that.id) &&
-                    ((host == null && that.host == null) || (host != null && host.equals(that.host))) &&
+            ShutdownNode that = (ShutdownNode) o;
+            return this.node.equals(that.node) &&
                     this.getStart() == that.getStart() &&
                     this.getEnd() == that.getEnd();
+
         }
         return false;
     }
@@ -91,14 +82,26 @@ public class KillVM extends Action {
     public int hashCode() {
         int res = getEnd();
         res = getStart() + 31 * res;
-        res = res * 31 + (host != null ? host.hashCode() : 0);
-        return id.hashCode() + 31 * res;
+        return 31 * res + node.hashCode();
     }
 
     @Override
     public String toString() {
-        return new StringBuilder("killVM(vm=").append(id)
-                .append(", node=").append(host)
-                .append(')').toString();
+        StringBuilder buffer = new StringBuilder("shutdown(");
+        buffer.append("node=").append(node);
+        buffer.append(")");
+        return buffer.toString();
+    }
+
+    /**
+     * Put the node offline on a model
+     *
+     * @param c the model
+     * @return {@code true} if the node was online and is set offline. {@code false} otherwise
+     */
+    @Override
+    public boolean applyAction(Model c) {
+        Mapping map = c.getMapping();
+        return (!map.getOfflineNodes().contains(node) && map.addOfflineNode(node));
     }
 }

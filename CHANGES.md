@@ -3,9 +3,9 @@ Release notes
 
 V0.6 - ???
 ----------------------
-- Notifications can be attached to actions to
+- Events can be attached to actions to
 inform nodes about additional operations to execute
-- first notification: NotifyAllocation
+- first event: Allocate
 
 V0.5 - 10 dev. 2012
 ----------------------

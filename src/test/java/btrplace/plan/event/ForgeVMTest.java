@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.plan.action;
+package btrplace.plan.event;
 
 import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
@@ -28,19 +28,17 @@ import org.testng.annotations.Test;
 import java.util.UUID;
 
 /**
- * Unit tests for {@link BootNode}.
+ * Unit tests for {@link ForgeVM}.
  *
  * @author Fabien Hermenier
  */
-public class BootVMTest {
+public class ForgeVMTest {
 
     @Test
     public void testInstantiate() {
         UUID vm = UUID.randomUUID();
-        UUID n = UUID.randomUUID();
-        BootVM a = new BootVM(vm, n, 3, 5);
+        ForgeVM a = new ForgeVM(vm, 3, 5);
         Assert.assertEquals(vm, a.getVM());
-        Assert.assertEquals(n, a.getDestinationNode());
         Assert.assertEquals(3, a.getStart());
         Assert.assertEquals(5, a.getEnd());
         Assert.assertFalse(a.toString().contains("null"));
@@ -51,39 +49,32 @@ public class BootVMTest {
         Mapping map = new DefaultMapping();
         Model m = new DefaultModel(map);
         UUID vm = UUID.randomUUID();
-        UUID n = UUID.randomUUID();
-        BootVM a = new BootVM(vm, n, 3, 5);
-        map.addOnlineNode(n);
-        map.addReadyVM(vm);
+        ForgeVM a = new ForgeVM(vm, 3, 5);
         Assert.assertTrue(a.apply(m));
-        Assert.assertTrue(map.getRunningVMs().contains(vm));
-        Assert.assertEquals(map.getVMLocation(vm), n);
-
+        Assert.assertTrue(map.getReadyVMs().contains(vm));
         Assert.assertFalse(a.apply(m));
+
+        UUID n = UUID.randomUUID();
+        map.addOnlineNode(n);
+        map.addRunningVM(vm, n);
+        Assert.assertFalse(a.apply(m));
+        Assert.assertTrue(map.getRunningVMs().contains(vm));
 
         map.addSleepingVM(vm, n);
         Assert.assertFalse(a.apply(m));
         Assert.assertTrue(map.getSleepingVMs().contains(vm));
 
-        map.removeVM(vm);
-        Assert.assertFalse(a.apply(m));
-
-        map.addReadyVM(vm);
-        map.addOfflineNode(n);
-        Assert.assertFalse(a.apply(m));
     }
 
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testEquals() {
-        UUID n = UUID.randomUUID();
         UUID vm = UUID.randomUUID();
-        BootVM a = new BootVM(vm, n, 3, 5);
-        BootVM b = new BootVM(vm, n, 3, 5);
+        ForgeVM a = new ForgeVM(vm, 3, 5);
+        ForgeVM b = new ForgeVM(vm, 3, 5);
         Assert.assertEquals(a, b);
         Assert.assertEquals(a.hashCode(), b.hashCode());
-        Assert.assertNotSame(a, new BootVM(vm, n, 4, 5));
-        Assert.assertNotSame(a, new BootVM(vm, n, 3, 4));
-        Assert.assertNotSame(a, new BootVM(vm, UUID.randomUUID(), 3, 5));
-        Assert.assertNotSame(a, new BootVM(UUID.randomUUID(), n, 4, 5));
+        Assert.assertNotSame(a, new ForgeVM(vm, 4, 5));
+        Assert.assertNotSame(a, new ForgeVM(vm, 3, 4));
+        Assert.assertNotSame(a, new ForgeVM(UUID.randomUUID(), 3, 5));
     }
 }
