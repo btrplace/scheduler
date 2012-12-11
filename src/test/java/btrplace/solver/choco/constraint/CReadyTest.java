@@ -25,7 +25,7 @@ import btrplace.model.Model;
 import btrplace.model.constraint.Ready;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.action.ForgeVM;
+import btrplace.plan.event.ForgeVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

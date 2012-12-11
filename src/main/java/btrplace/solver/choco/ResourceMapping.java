@@ -20,7 +20,7 @@ package btrplace.solver.choco;
 
 import btrplace.model.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.action.Allocate;
+import btrplace.plan.event.Allocate;
 import btrplace.solver.choco.chocoUtil.BinPacking;
 import choco.Choco;
 import choco.cp.solver.CPSolver;
@@ -140,7 +140,7 @@ public class ResourceMapping {
     }
 
     /**
-     * Generate and add an {@link Allocate} action if the amount of
+     * Generate and add an {@link btrplace.plan.event.Allocate} action if the amount of
      * resources allocated to a VM has changed.
      * The action schedule must be known.
      *

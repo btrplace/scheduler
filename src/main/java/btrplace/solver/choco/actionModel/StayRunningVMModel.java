@@ -24,6 +24,7 @@ import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
+import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.UUID;
@@ -49,34 +50,24 @@ public class StayRunningVMModel implements ActionModel {
     public StayRunningVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
         this.vm = e;
         this.rp = rp;
-        boolean neadIncrease = true; //TODO: How to get resource changes ?
         IntDomainVar host = rp.makeCurrentHost(rp.makeVarLabel("stayRunningVM(" + e + ").host"), e);
-        if (neadIncrease) {
-            cSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").cSlice")
-                    .setHoster(host)
-                    .setExclusive(false)
-                    .build();
-            dSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").dSlice")
-                    .setStart(rp.getEnd())
-                    .setHoster(host)
-                    .setExclusive(false)
-                    .build();
-        } else {
-            cSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").cSlice")
-                    .setEnd(rp.getStart())
-                    .setExclusive(false)
-                    .setHoster(host)
-                    .build();
-            dSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").dSlice")
-                    .setHoster(host)
-                    .setExclusive(false)
-                    .build();
-        }
+        cSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").cSlice")
+                .setHoster(host)
+                .setExclusive(false)
+                .build();
+        dSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").dSlice")
+                .setHoster(host)
+                .setExclusive(false)
+                .build();
+        CPSolver s = rp.getSolver();
+        s.post(s.eq(cSlice.getEnd(), dSlice.getStart()));
     }
 
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
-        rp.insertAllocates(plan, vm, rp.getNode(dSlice.getHoster().getVal()), getEnd().getVal(), getEnd().getVal() + 1);
+        int st = dSlice.getStart().getVal();
+        UUID src = rp.getNode(cSlice.getHoster().getVal());
+        rp.insertAllocateAction(plan, vm, src, st, st);
         return true;
     }
 

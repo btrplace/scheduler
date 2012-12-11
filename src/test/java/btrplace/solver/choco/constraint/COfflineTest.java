@@ -21,7 +21,7 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.*;
 import btrplace.model.constraint.Offline;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.action.ShutdownNode;
+import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;

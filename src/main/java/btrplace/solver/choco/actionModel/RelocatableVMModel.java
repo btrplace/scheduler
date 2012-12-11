@@ -18,15 +18,15 @@
 
 package btrplace.solver.choco.actionModel;
 
+import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.action.MigrateVM;
+import btrplace.plan.event.MigrateVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
 import btrplace.solver.choco.chocoUtil.FastIFFEq;
-import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.ReifiedFactory;
 import choco.cp.solver.variables.integer.BoolVarNot;
@@ -76,6 +76,7 @@ public class RelocatableVMModel implements ActionModel {
 
         dSlice = new SliceBuilder(rp, e, "relocatable(" + e + ").dSlice")
                 .setStart(rp.makeDuration(rp.makeVarLabel("relocatable(" + e + ").dSlice_start")))
+                        //.setDuration(rp.makeDuration(rp.makeVarLabel("relocatable(" + e + ").dSlice_duration"), 1, rp.getEnd().getSup()))
                 .setExclusive(false)
                 .build();
         IntDomainVar move = s.createBooleanVar(rp.makeVarLabel("relocatable(" + e + ").move"));
@@ -85,12 +86,12 @@ public class RelocatableVMModel implements ActionModel {
 
         s.post(new FastIFFEq(stay, duration, 0));
 
-        boolean increase = false; //TODO: detect increasing requirements
+        /*boolean increase = false;
         if (!increase) {
             s.post(new FastImpliesEq(stay, cSlice.getDuration(), 0));
         } else {
             s.post(new FastImpliesEq(stay, dSlice.getDuration(), 0));
-        }
+        } */
         s.post(s.leq(duration, cSlice.getDuration()));
         s.post(s.leq(duration, dSlice.getDuration()));
         s.post(s.eq(cSlice.getEnd(), s.plus(dSlice.getStart(), duration)));
@@ -101,14 +102,18 @@ public class RelocatableVMModel implements ActionModel {
 
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
+        UUID src = rp.getNode(cSlice.getHoster().getVal());
         if (cSlice.getHoster().getVal() != dSlice.getHoster().getVal()) {
-            plan.add(new MigrateVM(vm,
-                    rp.getNode(cSlice.getHoster().getVal()),
-                    rp.getNode(dSlice.getHoster().getVal()),
-                    getStart().getVal(),
-                    getEnd().getVal()));
+            UUID dst = rp.getNode(dSlice.getHoster().getVal());
+            int st = getStart().getVal();
+            int ed = getEnd().getVal();
+            MigrateVM a = new MigrateVM(vm, src, dst, st, ed);
+            rp.insertNotifyAllocations(a, vm, Action.Hook.post);
+            plan.add(a);
+        } else {
+            int st = dSlice.getStart().getVal();
+            rp.insertAllocateAction(plan, vm, src, st, st);
         }
-        rp.insertAllocates(plan, vm, rp.getNode(dSlice.getHoster().getVal()), getEnd().getVal(), getEnd().getVal() + 1);
         return true;
     }
 

@@ -24,7 +24,8 @@ import btrplace.model.ShareableResource;
 import btrplace.plan.Action;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.action.Allocate;
+import btrplace.plan.event.Allocate;
+import btrplace.plan.event.AllocateEvent;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
 import btrplace.solver.choco.chocoUtil.BinPacking;
@@ -443,14 +444,12 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
 
         assert plan.isApplyable();
-        //FIXME: Follow is not possible due to the insertion of allocate actions
-        //assert checkConsistency(plan);
-        System.err.println(plan);
+        assert checkConsistency(plan);
         return plan;
     }
 
     @Override
-    public boolean insertAllocates(ReconfigurationPlan plan, UUID vm, UUID node, int st, int ed) {
+    public void insertAllocateAction(ReconfigurationPlan plan, UUID vm, UUID node, int st, int ed) {
         for (Map.Entry<String, ResourceMapping> e : resources.entrySet()) {
             ResourceMapping rcm = e.getValue();
             String rcId = e.getKey();
@@ -461,16 +460,21 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 plan.add(a);
             }
         }
-        return true;
+    }
+
+    public void insertNotifyAllocations(Action a, UUID vm, Action.Hook k) {
+        for (Map.Entry<String, ResourceMapping> e : resources.entrySet()) {
+            ResourceMapping rcm = e.getValue();
+            String rcId = e.getKey();
+            int prev = rcm.getSourceResource().get(vm);
+            int now = rcm.getVMConsumption()[getVM(vm)].getInf();
+            if (prev != now) {
+                a.addEvent(k, new AllocateEvent(vm, rcId, now));
+            }
+        }
     }
 
     private boolean checkConsistency(ReconfigurationPlan p) {
-        for (Action a : p) {
-            if (a.getStart() == a.getEnd()) {
-                LOGGER.error(a.toString() + " has a zero duration");
-                return false;
-            }
-        }
         if (p.getDuration() != end.getVal()) {
             LOGGER.error("The plan duration (" + p.getDuration() + ") and the ReconfigurationProblem.getEnd() (" + end.getVal() + ") mismatch:\n" + p);
             return false;

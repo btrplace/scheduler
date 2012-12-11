@@ -18,8 +18,9 @@
 
 package btrplace.solver.choco.actionModel;
 
+import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.action.ResumeVM;
+import btrplace.plan.event.ResumeVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -81,10 +82,13 @@ public class ResumeVMModel implements ActionModel {
 
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
-        plan.add(new ResumeVM(vm, rp.getSourceModel().getMapping().getVMLocation(vm),
-                rp.getNode(dSlice.getHoster().getVal()),
-                start.getVal(), end.getVal()));
-        rp.insertAllocates(plan, vm, rp.getNode(dSlice.getHoster().getVal()), getEnd().getVal(), getEnd().getVal() + 1);
+        int ed = end.getVal();
+        int st = start.getVal();
+        UUID src = rp.getSourceModel().getMapping().getVMLocation(vm);
+        UUID dst = rp.getNode(dSlice.getHoster().getVal());
+        ResumeVM a = new ResumeVM(vm, src, dst, st, ed);
+        rp.insertNotifyAllocations(a, vm, Action.Hook.pre);
+        plan.add(a);
         return true;
     }
 

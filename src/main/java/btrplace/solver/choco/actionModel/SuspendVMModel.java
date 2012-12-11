@@ -20,7 +20,7 @@ package btrplace.solver.choco.actionModel;
 
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.action.SuspendVM;
+import btrplace.plan.event.SuspendVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;

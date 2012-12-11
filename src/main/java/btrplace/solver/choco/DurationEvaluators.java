@@ -19,7 +19,6 @@
 package btrplace.solver.choco;
 
 import btrplace.plan.Action;
-import btrplace.plan.action.*;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
 
@@ -44,15 +43,15 @@ public class DurationEvaluators {
 
 
         //Default constructors
-        durations.put(MigrateVM.class, new ConstantDuration(1));
-        durations.put(BootVM.class, new ConstantDuration(1));
-        durations.put(ShutdownVM.class, new ConstantDuration(1));
-        durations.put(SuspendVM.class, new ConstantDuration(1));
-        durations.put(ResumeVM.class, new ConstantDuration(1));
-        durations.put(ForgeVM.class, new ConstantDuration(1));
-        durations.put(ShutdownNode.class, new ConstantDuration(1));
-        durations.put(BootNode.class, new ConstantDuration(1));
-        durations.put(KillVM.class, new ConstantDuration(1));
+        durations.put(btrplace.plan.event.MigrateVM.class, new ConstantDuration(1));
+        durations.put(btrplace.plan.event.BootVM.class, new ConstantDuration(1));
+        durations.put(btrplace.plan.event.ShutdownVM.class, new ConstantDuration(1));
+        durations.put(btrplace.plan.event.SuspendVM.class, new ConstantDuration(1));
+        durations.put(btrplace.plan.event.ResumeVM.class, new ConstantDuration(1));
+        durations.put(btrplace.plan.event.ForgeVM.class, new ConstantDuration(1));
+        durations.put(btrplace.plan.event.ShutdownNode.class, new ConstantDuration(1));
+        durations.put(btrplace.plan.event.BootNode.class, new ConstantDuration(1));
+        durations.put(btrplace.plan.event.KillVM.class, new ConstantDuration(1));
     }
 
     /**

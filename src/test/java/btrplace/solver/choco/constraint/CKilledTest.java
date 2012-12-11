@@ -25,7 +25,7 @@ import btrplace.model.Model;
 import btrplace.model.constraint.Killed;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.action.KillVM;
+import btrplace.plan.event.KillVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

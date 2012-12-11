@@ -18,8 +18,9 @@
 
 package btrplace.solver.choco.actionModel;
 
+import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.action.BootVM;
+import btrplace.plan.event.BootVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -80,8 +81,9 @@ public class BootVMModel implements ActionModel {
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
         UUID node = rp.getNode(dSlice.getHoster().getVal());
-        plan.add(new BootVM(vm, node, start.getVal(), end.getVal()));
-        rp.insertAllocates(plan, vm, node, end.getVal(), end.getVal() + 1);
+        BootVM a = new BootVM(vm, node, start.getVal(), end.getVal());
+        plan.add(a);
+        rp.insertNotifyAllocations(a, vm, Action.Hook.pre);
         return true;
     }
 

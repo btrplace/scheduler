@@ -19,7 +19,7 @@
 package btrplace.solver.choco.actionModel;
 
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.action.ShutdownNode;
+import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;

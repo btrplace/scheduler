@@ -76,7 +76,7 @@ public class CPreserveTest {
     }
 
     @Test
-    private void testReMappingForPreserve() throws SolverException {
+    public void testReMappingForPreserve() throws SolverException {
         Mapping map = new DefaultMapping();
         UUID n1 = UUID.randomUUID();
         UUID n2 = UUID.randomUUID();
@@ -105,7 +105,7 @@ public class CPreserveTest {
         cstrs.add(pr);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
-
+        System.out.println(p);
     }
 
 }

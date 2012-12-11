@@ -3,6 +3,7 @@ Roadmap to v0.1
 
 - OK (cause it is not needed) Entailment management in BinPacking
 - OK? Slice scheduling
+- OK Allocate actions and event
 - By default, no transition actions
 - By default maintain resource usage
 - Implement and check every ActionModel

@@ -25,7 +25,7 @@ import btrplace.model.Model;
 import btrplace.model.constraint.Sleeping;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.action.SuspendVM;
+import btrplace.plan.event.SuspendVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

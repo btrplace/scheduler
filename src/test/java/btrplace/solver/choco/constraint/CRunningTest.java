@@ -25,8 +25,8 @@ import btrplace.model.Model;
 import btrplace.model.constraint.Running;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.action.BootVM;
-import btrplace.plan.action.ResumeVM;
+import btrplace.plan.event.BootVM;
+import btrplace.plan.event.ResumeVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

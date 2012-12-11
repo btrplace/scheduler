@@ -18,18 +18,19 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.Fence;
+import btrplace.model.constraint.Online;
+import btrplace.model.constraint.Ready;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.MigrateVM;
+import btrplace.solver.SolverException;
+import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Unit tests for {@link btrplace.model.constraint.Fence}.
@@ -93,5 +94,49 @@ public class CFenceTest {
         Set<UUID> bad = c.getMisPlacedVMs(mo);
         Assert.assertEquals(1, bad.size());
         Assert.assertTrue(bad.contains(vm4));
+    }
+
+    @Test
+    public void testBasic() throws SolverException {
+        Mapping map = new DefaultMapping();
+        UUID n1 = UUID.randomUUID();
+        UUID n2 = UUID.randomUUID();
+        UUID n3 = UUID.randomUUID();
+
+        UUID vm1 = UUID.randomUUID();
+        UUID vm2 = UUID.randomUUID();
+        UUID vm3 = UUID.randomUUID();
+        UUID vm4 = UUID.randomUUID();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOnlineNode(n3);
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n2);
+        map.addRunningVM(vm3, n3);
+        map.addRunningVM(vm4, n1);
+
+        Set<UUID> on = new HashSet<UUID>();
+        on.add(n3);
+        on.add(n1);
+        Fence f = new Fence(map.getAllVMs(), on);
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        cstrs.add(f);
+        cstrs.add(new Online(map.getAllNodes()));
+        Model mo = new DefaultModel(map);
+        ReconfigurationPlan p = cra.solve(mo, cstrs);
+        Assert.assertNotNull(p);
+        System.out.println(p);
+        Assert.assertTrue(p.getSize() > 0);
+        Assert.assertTrue(p.iterator().next() instanceof MigrateVM);
+        Assert.assertEquals(SatConstraint.Sat.SATISFIED, f.isSatisfied(p.getResult()));
+        cstrs.add(new Ready(Collections.singleton(vm2)));
+
+        p = cra.solve(mo, cstrs);
+        Assert.assertNotNull(p);
+        Assert.assertEquals(1, p.getSize()); //Just the suspend of vm2
+        Assert.assertEquals(SatConstraint.Sat.SATISFIED, f.isSatisfied(p.getResult()));
+
+
     }
 }
