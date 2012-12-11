@@ -20,6 +20,9 @@ package btrplace.plan;
 
 import btrplace.model.Model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * An action to perform on an element and that will alter an instance on success.
  *
@@ -31,6 +34,8 @@ public abstract class Action {
 
     private int stop;
 
+    private List<Notification> notifications;
+
     /**
      * Create an action.
      *
@@ -40,6 +45,7 @@ public abstract class Action {
     public Action(int st, int ed) {
         this.start = st;
         this.stop = ed;
+        this.notifications = new ArrayList<Notification>();
     }
 
     /**
@@ -67,4 +73,14 @@ public abstract class Action {
     public int getEnd() {
         return stop;
     }
+
+    /**
+     * Get the notifications attached to the action.
+     *
+     * @return a list of notifications.
+     */
+    public List<Notification> getNotifications() {
+        return this.notifications;
+    }
+
 }

@@ -1,6 +1,12 @@
 Release notes
 =======================
 
+V0.6 - ???
+----------------------
+- Notifications can be attached to actions to
+inform nodes about additional operations to execute
+- first notification: NotifyAllocation
+
 V0.5 - 10 dev. 2012
 ----------------------
 - Fix toString() is some actions

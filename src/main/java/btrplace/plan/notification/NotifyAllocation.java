@@ -16,59 +16,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.plan.action;
+package btrplace.plan.notification;
 
 import btrplace.model.Model;
 import btrplace.model.ShareableResource;
-import btrplace.plan.Action;
+import btrplace.plan.Notification;
 
 import java.util.UUID;
 
 /**
- * An action to indicate the amount of resource of a given type
- * to allocate to a VM.
+ * A notification to inform a node that a VM
+ * it is hosting may have a new resource allocation.
  *
  * @author Fabien Hermenier
  */
-public class Allocate extends Action {
+public class NotifyAllocation implements Notification {
+
+    private int qty;
 
     private UUID vm;
 
-    private UUID node;
+    private String rc;
 
-    private String rcId;
-
-    private int amount;
+    private Hook hook;
 
     /**
-     * Make a new constraint.
+     * Make a new notification.
      *
-     * @param vm     the VM identifier
-     * @param host   the identifier of the node hosting the VM
+     * @param h      the notification hook
+     * @param vm     the VM that is subject to the resource alllocation
      * @param rcId   the resource identifier
-     * @param amount the minimum amount of resource to allocate
-     * @param st     the moment the action starts
-     * @param ed     the moment the action ends
+     * @param amount the amount of resources to allocate
      */
-    public Allocate(UUID vm, UUID host, String rcId, int amount, int st, int ed) {
-        super(st, ed);
+    public NotifyAllocation(Hook h, UUID vm, String rcId, int amount) {
+        hook = h;
         this.vm = vm;
-        this.node = host;
-        this.rcId = rcId;
-        this.amount = amount;
+        this.rc = rcId;
+        this.qty = amount;
+    }
+
+    @Override
+    public Hook getHook() {
+        return hook;
     }
 
     /**
-     * Get the node that is currently hosting the VM.
-     *
-     * @return the node identifier
-     */
-    public UUID getHost() {
-        return node;
-    }
-
-    /**
-     * Get the VM that is subject to the resource allocation.
+     * Get the VM that is the subject of the resource allocation.
      *
      * @return the VM identifier
      */
@@ -82,7 +75,7 @@ public class Allocate extends Action {
      * @return a non-empty string
      */
     public String getResourceId() {
-        return rcId;
+        return rc;
     }
 
     /**
@@ -91,26 +84,26 @@ public class Allocate extends Action {
      * @return a positive number
      */
     public int getAmount() {
-        return amount;
+        return qty;
     }
 
     @Override
     public boolean apply(Model i) {
-        ShareableResource rc = i.getResource(rcId);
-        if (rc == null) {
+        ShareableResource r = i.getResource(rc);
+        if (r == null) {
             return false;
         }
-        rc.set(vm, amount);
+        r.set(vm, qty);
         return true;
     }
 
     @Override
     public String toString() {
-        return new StringBuilder("allocate(")
-                .append("vm=").append(vm)
-                .append(", on=").append(node)
-                .append(", rc=").append(rcId)
-                .append(", amount=").append(amount)
+        return new StringBuilder("notifyAllocate(")
+                .append("hook=").append(hook)
+                .append(", vm=").append(vm)
+                .append(", rc=").append(rc)
+                .append(", amount=").append(qty)
                 .append(')').toString();
     }
 
@@ -121,25 +114,21 @@ public class Allocate extends Action {
         } else if (o == this) {
             return true;
         } else if (o.getClass() == this.getClass()) {
-            Allocate that = (Allocate) o;
+            NotifyAllocation that = (NotifyAllocation) o;
             return this.vm.equals(that.vm)
-                    && this.node.equals(that.node)
-                    && this.rcId.equals(that.rcId)
-                    && this.getStart() == that.getStart()
-                    && this.getEnd() == that.getEnd()
-                    && this.amount == that.amount;
+                    && this.rc.equals(that.rc)
+                    && this.qty == that.qty
+                    && this.hook == that.hook;
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        int res = getEnd();
-        res = getStart() + 31 * res;
-        res = res * 31 + amount;
-        res = res * 31 + rcId.hashCode();
+        int res = qty;
+        res = res * 31 + hook.hashCode();
+        res = res * 31 + rc.hashCode();
         res = res * 31 + vm.hashCode();
-        res = res + 31 + node.hashCode();
         return res;
     }
 }
