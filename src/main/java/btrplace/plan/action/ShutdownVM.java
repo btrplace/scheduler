@@ -58,7 +58,7 @@ public class ShutdownVM extends Action {
      * @return {@code true}
      */
     @Override
-    public boolean apply(Model m) {
+    public boolean applyAction(Model m) {
         Mapping map = m.getMapping();
         if (map.getOnlineNodes().contains(node) &&
                 map.getRunningVMs().contains(vm) &&

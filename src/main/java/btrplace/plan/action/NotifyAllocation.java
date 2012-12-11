@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.plan.notification;
+package btrplace.plan.action;
 
 import btrplace.model.Model;
 import btrplace.model.ShareableResource;

@@ -100,7 +100,7 @@ public class ShutdownNode extends Action {
      * @return {@code true} if the node was online and is set offline. {@code false} otherwise
      */
     @Override
-    public boolean apply(Model c) {
+    public boolean applyAction(Model c) {
         Mapping map = c.getMapping();
         return (!map.getOfflineNodes().contains(node) && map.addOfflineNode(node));
     }

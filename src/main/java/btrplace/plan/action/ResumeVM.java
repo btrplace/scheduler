@@ -91,7 +91,7 @@ public class ResumeVM extends Action {
     }
 
     @Override
-    public boolean apply(Model m) {
+    public boolean applyAction(Model m) {
         Mapping map = m.getMapping();
         return (map.getOnlineNodes().contains(src)
                 && map.getOnlineNodes().contains(dst)

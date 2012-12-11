@@ -96,7 +96,7 @@ public class BootNode extends Action {
      * @return {@code true} iff the node was offline and is now online
      */
     @Override
-    public boolean apply(Model c) {
+    public boolean applyAction(Model c) {
         if (c.getMapping().getOfflineNodes().contains(node)) {
             c.getMapping().addOnlineNode(node);
             return true;

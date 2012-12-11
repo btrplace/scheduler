@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.plan.notification;
+package btrplace.plan.action;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -24,7 +24,7 @@ import org.testng.annotations.Test;
 import java.util.UUID;
 
 /**
- * Unit tests for {@link NotifyAllocation}.
+ * Unit tests for {@link btrplace.plan.action.NotifyAllocation}.
  *
  * @author Fabien Hermenier
  */

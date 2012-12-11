@@ -23,22 +23,26 @@ import btrplace.model.Model;
 import java.util.*;
 
 /**
- * An action to perform on an element and that will alter an instance on success.
+ * An action is a scheduled operation on an element that modify an instance when the action
+ * succeeds.
+ * <p/>
+ * In addition to the action itself, it is possible to apply traditional notifications before or after
+ * the action completion.
  *
  * @author Fabien Hermenier
  */
-public abstract class Action {
+public abstract class Action implements Notification {
 
     /**
      * Possible moment where notifications can be considered.
      */
     public static enum Hook {
         /**
-         * The notification can be considered before executing the action
+         * The notification can be considered before executing the action.
          */
         pre,
         /**
-         * The notification can be considered after the action execution
+         * The notification can be considered after the action execution.
          */
         post
     }
@@ -67,7 +71,32 @@ public abstract class Action {
      * @param i the instance to alter with the action
      * @return {@code true} if the action was applied successfully
      */
-    public abstract boolean apply(Model i);
+    public boolean apply(Model i) {
+        List<Notification> nots = getNotifications(Hook.pre);
+        for (Notification n : nots) {
+            if (!n.apply(i)) {
+                return false;
+            }
+        }
+        if (!applyAction(i)) {
+            return false;
+        }
+        nots = getNotifications(Hook.post);
+        for (Notification n : nots) {
+            if (!n.apply(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Apply the actions.
+     *
+     * @param i the model to modify
+     * @return {@code true} if the action was applied successfully
+     */
+    public abstract boolean applyAction(Model i);
 
     /**
      * Get the moment the action starts.

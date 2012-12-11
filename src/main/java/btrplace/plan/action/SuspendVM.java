@@ -69,7 +69,7 @@ public class SuspendVM extends Action {
      * @return {@code true} iff the VM is now sleeping on the destination node
      */
     @Override
-    public boolean apply(Model m) {
+    public boolean applyAction(Model m) {
         Mapping map = m.getMapping();
         return (map.getOnlineNodes().contains(src) &&
                 map.getOnlineNodes().contains(dst) &&

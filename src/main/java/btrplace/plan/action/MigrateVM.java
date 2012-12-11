@@ -87,7 +87,7 @@ public class MigrateVM extends Action {
      * @return {@code true} iff the vm if running on the destination node
      */
     @Override
-    public boolean apply(Model i) {
+    public boolean applyAction(Model i) {
         Mapping c = i.getMapping();
         if (c.getOnlineNodes().contains(src)
                 && c.getOnlineNodes().contains(dst)

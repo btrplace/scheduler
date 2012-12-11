@@ -67,7 +67,7 @@ public class KillVM extends Action {
     }
 
     @Override
-    public boolean apply(Model i) {
+    public boolean applyAction(Model i) {
         return i.getMapping().removeVM(id);
     }
 

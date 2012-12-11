@@ -86,7 +86,7 @@ public class DefaultReconfigurationPlanTest {
         }
 
         @Override
-        public boolean apply(Model i) {
+        public boolean applyAction(Model i) {
             return false;
         }
     }

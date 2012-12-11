@@ -36,7 +36,7 @@ public class ActionTest {
         }
 
         @Override
-        public boolean apply(Model i) {
+        public boolean applyAction(Model i) {
             throw new UnsupportedOperationException();
         }
     }

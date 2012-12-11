@@ -78,7 +78,7 @@ public class BootVM extends Action {
 
 
     @Override
-    public boolean apply(Model c) {
+    public boolean applyAction(Model c) {
         return (c.getMapping().getReadyVMs().contains(vm) && c.getMapping().addRunningVM(vm, node));
     }
 

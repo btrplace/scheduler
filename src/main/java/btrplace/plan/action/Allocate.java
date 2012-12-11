@@ -95,7 +95,7 @@ public class Allocate extends Action {
     }
 
     @Override
-    public boolean apply(Model i) {
+    public boolean applyAction(Model i) {
         ShareableResource rc = i.getResource(rcId);
         if (rc == null) {
             return false;

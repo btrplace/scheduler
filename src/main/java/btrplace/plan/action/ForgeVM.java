@@ -51,7 +51,7 @@ public class ForgeVM extends Action {
      * @return {@code true} iff successful
      */
     @Override
-    public boolean apply(Model m) {
+    public boolean applyAction(Model m) {
         Mapping map = m.getMapping();
 
         if (!map.getAllVMs().contains(id)) {
