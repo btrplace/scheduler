@@ -30,24 +30,6 @@ import btrplace.model.Model;
  */
 public interface Notification {
 
-    public static enum Hook {
-        /**
-         * The notification can be considered before executing the action
-         */
-        pre,
-        /**
-         * The notification can be considered after the action execution
-         */
-        post
-    }
-
-    /**
-     * Get the moment the notification can be considered.
-     *
-     * @return a hook
-     */
-    Hook getHook();
-
     /**
      * Apply the notification on a given model.
      *

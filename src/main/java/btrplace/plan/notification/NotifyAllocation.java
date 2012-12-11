@@ -38,26 +38,17 @@ public class NotifyAllocation implements Notification {
 
     private String rc;
 
-    private Hook hook;
-
     /**
      * Make a new notification.
      *
-     * @param h      the notification hook
-     * @param vm     the VM that is subject to the resource alllocation
+     * @param vm     the VM that is subject to the resource allocation
      * @param rcId   the resource identifier
      * @param amount the amount of resources to allocate
      */
-    public NotifyAllocation(Hook h, UUID vm, String rcId, int amount) {
-        hook = h;
+    public NotifyAllocation(UUID vm, String rcId, int amount) {
         this.vm = vm;
         this.rc = rcId;
         this.qty = amount;
-    }
-
-    @Override
-    public Hook getHook() {
-        return hook;
     }
 
     /**
@@ -100,7 +91,6 @@ public class NotifyAllocation implements Notification {
     @Override
     public String toString() {
         return new StringBuilder("notifyAllocate(")
-                .append("hook=").append(hook)
                 .append(", vm=").append(vm)
                 .append(", rc=").append(rc)
                 .append(", amount=").append(qty)
@@ -117,8 +107,7 @@ public class NotifyAllocation implements Notification {
             NotifyAllocation that = (NotifyAllocation) o;
             return this.vm.equals(that.vm)
                     && this.rc.equals(that.rc)
-                    && this.qty == that.qty
-                    && this.hook == that.hook;
+                    && this.qty == that.qty;
         }
         return false;
     }
@@ -126,7 +115,6 @@ public class NotifyAllocation implements Notification {
     @Override
     public int hashCode() {
         int res = qty;
-        res = res * 31 + hook.hashCode();
         res = res * 31 + rc.hashCode();
         res = res * 31 + vm.hashCode();
         return res;

@@ -20,8 +20,7 @@ package btrplace.plan;
 
 import btrplace.model.Model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * An action to perform on an element and that will alter an instance on success.
@@ -30,11 +29,25 @@ import java.util.List;
  */
 public abstract class Action {
 
+    /**
+     * Possible moment where notifications can be considered.
+     */
+    public static enum Hook {
+        /**
+         * The notification can be considered before executing the action
+         */
+        pre,
+        /**
+         * The notification can be considered after the action execution
+         */
+        post
+    }
+
     private int start;
 
     private int stop;
 
-    private List<Notification> notifications;
+    private Map<Hook, List<Notification>> notifications;
 
     /**
      * Create an action.
@@ -45,7 +58,7 @@ public abstract class Action {
     public Action(int st, int ed) {
         this.start = st;
         this.stop = ed;
-        this.notifications = new ArrayList<Notification>();
+        notifications = new HashMap<Hook, List<Notification>>(2);
     }
 
     /**
@@ -74,13 +87,42 @@ public abstract class Action {
         return stop;
     }
 
-    /**
-     * Get the notifications attached to the action.
-     *
-     * @return a list of notifications.
-     */
-    public List<Notification> getNotifications() {
-        return this.notifications;
+
+    public boolean addNotification(Hook k, Notification n) {
+        List<Notification> l = notifications.get(k);
+        if (l == null) {
+            l = new ArrayList<Notification>();
+            notifications.put(k, l);
+        }
+        return l.add(n);
     }
 
+    /**
+     * Get the attached notifications having a specific hook.
+     *
+     * @param k the hook
+     * @return a list of notifications that may be empty
+     */
+    public List<Notification> getNotifications(Hook k) {
+        List<Notification> l = notifications.get(k);
+        return l == null ? Collections.<Notification>emptyList() : l;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+        for (Map.Entry<Hook, List<Notification>> entry : notifications.entrySet()) {
+            List<Notification> l = entry.getValue();
+            Hook k = entry.getKey();
+            b.append("\n@").append(k).append("= {");
+            for (Iterator<Notification> ite = l.iterator(); ite.hasNext(); ) {
+                b.append(ite.next());
+                if (ite.hasNext()) {
+                    b.append(", ");
+                }
+            }
+            b.append("}");
+        }
+        return b.toString();
+    }
 }

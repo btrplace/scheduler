@@ -18,7 +18,6 @@
 
 package btrplace.plan.notification;
 
-import btrplace.plan.Notification;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -34,9 +33,8 @@ public class NotifyAllocationTest {
     @Test
     public void testBasics() {
         UUID vm = UUID.randomUUID();
-        NotifyAllocation na = new NotifyAllocation(Notification.Hook.pre, vm, "foo", 3);
+        NotifyAllocation na = new NotifyAllocation(vm, "foo", 3);
         Assert.assertEquals(vm, na.getVM());
-        Assert.assertEquals(Notification.Hook.pre, na.getHook());
         Assert.assertEquals("foo", na.getResourceId());
         Assert.assertEquals(3, na.getAmount());
         Assert.assertFalse(na.toString().contains("null"));
@@ -46,14 +44,13 @@ public class NotifyAllocationTest {
     @Test
     public void testEqualsHashCode() {
         UUID vm = UUID.randomUUID();
-        NotifyAllocation na = new NotifyAllocation(Notification.Hook.pre, vm, "foo", 3);
-        NotifyAllocation na2 = new NotifyAllocation(Notification.Hook.pre, vm, "foo", 3);
+        NotifyAllocation na = new NotifyAllocation(vm, "foo", 3);
+        NotifyAllocation na2 = new NotifyAllocation(vm, "foo", 3);
         Assert.assertTrue(na.equals(na2));
         Assert.assertTrue(na2.equals(na));
         Assert.assertEquals(na.hashCode(), na2.hashCode());
-        Assert.assertFalse(na.equals(new NotifyAllocation(Notification.Hook.post, vm, "foo", 3)));
-        Assert.assertFalse(na.equals(new NotifyAllocation(Notification.Hook.pre, UUID.randomUUID(), "foo", 3)));
-        Assert.assertFalse(na.equals(new NotifyAllocation(Notification.Hook.pre, vm, "bar", 3)));
-        Assert.assertFalse(na.equals(new NotifyAllocation(Notification.Hook.pre, vm, "foo", 5)));
+        Assert.assertFalse(na.equals(new NotifyAllocation(UUID.randomUUID(), "foo", 3)));
+        Assert.assertFalse(na.equals(new NotifyAllocation(vm, "bar", 3)));
+        Assert.assertFalse(na.equals(new NotifyAllocation(vm, "foo", 5)));
     }
 }

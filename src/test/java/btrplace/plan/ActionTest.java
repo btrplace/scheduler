@@ -44,11 +44,6 @@ public class ActionTest {
     public static class MockNotification implements Notification {
 
         @Override
-        public Hook getHook() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
         public boolean apply(Model m) {
             throw new UnsupportedOperationException();
         }
@@ -59,14 +54,18 @@ public class ActionTest {
         Action a1 = new MockAction(1, 3);
         Assert.assertEquals(1, a1.getStart());
         Assert.assertEquals(3, a1.getEnd());
-        Assert.assertTrue(a1.getNotifications().isEmpty());
+        Assert.assertTrue(a1.getNotifications(Action.Hook.pre).isEmpty());
+        Assert.assertTrue(a1.getNotifications(Action.Hook.post).isEmpty());
     }
 
     @Test
     public void testNotifications() {
         Action a1 = new MockAction(1, 3);
         MockNotification n1 = new MockNotification();
-        Assert.assertTrue(a1.getNotifications().add(n1));
-        Assert.assertEquals(1, a1.getNotifications().size());
+        a1.addNotification(Action.Hook.pre, n1);
+        Assert.assertEquals(1, a1.getNotifications(Action.Hook.pre).size());
+        a1.addNotification(Action.Hook.post, n1);
+        Assert.assertEquals(1, a1.getNotifications(Action.Hook.post).size());
+
     }
 }
