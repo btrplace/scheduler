@@ -73,6 +73,7 @@ public class RelocatableVMModelTest {
         Assert.assertFalse(am.getEnd().isInstantiated());
         Assert.assertNotNull(am.getCSlice());
         Assert.assertTrue(am.getCSlice().getHoster().isInstantiatedTo(rp.getNode(n1)));
+        Assert.assertTrue(am.getState().isInstantiatedTo(1));
         Assert.assertNotNull(am.getDSlice());
         Assert.assertFalse(am.getDSlice().getHoster().isInstantiated());
 

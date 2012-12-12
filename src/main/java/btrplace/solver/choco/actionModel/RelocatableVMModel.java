@@ -49,9 +49,10 @@ public class RelocatableVMModel implements VMActionModel {
 
     private UUID vm;
 
-    private IntDomainVar cost;
+    private IntDomainVar state;
 
     private IntDomainVar duration;
+
 
     /**
      * Make a new model.
@@ -98,6 +99,8 @@ public class RelocatableVMModel implements VMActionModel {
 
         s.post(s.leq(cSlice.getDuration(), rp.getEnd()));
         s.post(s.leq(dSlice.getDuration(), rp.getEnd()));
+
+        state = s.makeConstantIntVar(1);
     }
 
     @Override
@@ -149,7 +152,7 @@ public class RelocatableVMModel implements VMActionModel {
 
     @Override
     public IntDomainVar getState() {
-        return null;
+        return state;
     }
 
     @Override

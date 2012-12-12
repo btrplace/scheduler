@@ -149,12 +149,12 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         taskSchedBuilder = new TaskSchedulerBuilder(this);
     }
 
+    @Override
     public Boolean solve(int timeLimit, boolean optimize) throws SolverException {
 
         maintainResourceUsage();
 
         addContinuousResourceCapacities();
-
 
         taskSchedBuilder.commitConstraint();
 
