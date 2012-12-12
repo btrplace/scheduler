@@ -23,9 +23,12 @@ import btrplace.model.constraint.Ready;
 import btrplace.model.constraint.Running;
 import btrplace.model.constraint.SingleRunningCapacity;
 import btrplace.plan.Action;
+import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootVM;
+import btrplace.plan.event.ResumeVM;
 import btrplace.plan.event.ShutdownVM;
+import btrplace.plan.event.SuspendVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
@@ -139,6 +142,57 @@ public class CSingleRunningCapacityTest {
         Assert.assertEquals(m.getRunningVMs(n2), cc.getMisPlacedVMs(mo));
         m.addRunningVM(vm2, n1);
         Assert.assertEquals(m.getAllVMs(), cc.getMisPlacedVMs(mo));
+    }
+
+    @Test
+    public void testIsSatisfied() {
+        Mapping m = new DefaultMapping();
+        UUID n1 = UUID.randomUUID();
+        UUID n2 = UUID.randomUUID();
+        m.addOnlineNode(n1);
+        m.addOnlineNode(n2);
+        UUID vm1 = UUID.randomUUID();
+        UUID vm2 = UUID.randomUUID();
+        UUID vm3 = UUID.randomUUID();
+        UUID vm4 = UUID.randomUUID();
+        m.addRunningVM(vm1, n1);
+        m.addReadyVM(vm2);
+
+        m.addRunningVM(vm3, n2);
+        m.addReadyVM(vm4);
+        Model mo = new DefaultModel(m);
+
+        SingleRunningCapacity c = new SingleRunningCapacity(m.getAllNodes(), 1);
+        CSingleRunningCapacity cc = new CSingleRunningCapacity(c);
+        ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
+        Assert.assertTrue(cc.isSatisfied(plan));
+
+        //Bad resulting configuration
+        plan.add(new BootVM(vm2, n1, 1, 2));
+        Assert.assertFalse(cc.isSatisfied(plan));
+        c.setContinuous(true);
+        Assert.assertFalse(cc.isSatisfied(plan));
+
+        //bad initial configuration
+        m.addRunningVM(vm2, n1);
+        plan = new DefaultReconfigurationPlan(mo);
+        Assert.assertFalse(cc.isSatisfied(plan));
+
+        //The discrete fix
+        plan.add(new SuspendVM(vm2, n1, n1, 1, 3));
+        c.setContinuous(false);
+        Assert.assertTrue(cc.isSatisfied(plan));
+        c.setContinuous(true);
+        Assert.assertFalse(cc.isSatisfied(plan));
+
+        //Already satisfied && continuous satisfaction
+        m.addSleepingVM(vm2, n1);
+        plan = new DefaultReconfigurationPlan(mo);
+        plan.add(new ShutdownVM(vm1, n1, 0, 1));
+        plan.add(new ResumeVM(vm2, n1, n1, 1, 2));
+        c.setContinuous(true);
+        Assert.assertTrue(cc.isSatisfied(plan));
+
 
     }
 }

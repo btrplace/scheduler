@@ -100,14 +100,21 @@ public class CSingleRunningCapacity implements ChocoSatConstraint {
         } else {
             //Initial statement
             Model mo = plan.getOrigin().clone();
-            for (Action a : plan) {
-                for (UUID n : cstr.getInvolvedNodes()) {
-                    if (mo.getMapping().getRunningVMs(n).size() > cstr.getAmount()) {
-                        return false;
-                    }
+            for (UUID n : cstr.getInvolvedNodes()) {
+                int nb = mo.getMapping().getRunningVMs(n).size();
+                if (nb > cstr.getAmount()) {
+                    return false;
                 }
+            }
+            for (Action a : plan) {
                 if (!a.apply(mo)) {
                     return false;
+                }
+                for (UUID n : cstr.getInvolvedNodes()) {
+                    int nb = mo.getMapping().getRunningVMs(n).size();
+                    if (nb > cstr.getAmount()) {
+                        return false;
+                    }
                 }
             }
         }
