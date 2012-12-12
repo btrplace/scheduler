@@ -117,11 +117,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                                          Set<UUID> manageable,
                                          boolean label
     ) throws SolverException {
-        this.ready = ready;
-        this.runnings = running;
-        this.sleepings = sleeeping;
-        this.killed = killed;
-        this.manageable = manageable;
+        this.ready = new HashSet<UUID>(ready);
+        this.runnings = new HashSet<UUID>(running);
+        this.sleepings = new HashSet<UUID>(sleeeping);
+        this.killed = new HashSet<UUID>(killed);
+        this.manageable = new HashSet<UUID>(manageable);
         this.useLabels = label;
         model = m;
         durEval = dEval;

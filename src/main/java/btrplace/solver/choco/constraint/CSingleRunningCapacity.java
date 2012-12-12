@@ -88,7 +88,6 @@ public class CSingleRunningCapacity implements ChocoSatConstraint {
         for (UUID n : cstr.getInvolvedNodes()) {
             if (map.getRunningVMs(n).size() > cstr.getAmount()) {
                 bad.addAll(map.getRunningVMs(n));
-                break;
             }
         }
         return bad;

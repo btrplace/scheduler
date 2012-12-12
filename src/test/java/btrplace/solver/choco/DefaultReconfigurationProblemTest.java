@@ -19,6 +19,7 @@
 package btrplace.solver.choco;
 
 import btrplace.model.*;
+import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
 import choco.kernel.solver.ContradictionException;
@@ -352,5 +353,80 @@ public class DefaultReconfigurationProblemTest {
         for (int i = 0; i < counts.length; i++) {
             Assert.assertEquals(0, counts[i]);
         }
+    }
+
+    @Test
+    public void testMaintainResourceUsage() throws SolverException {
+        Mapping map = new DefaultMapping();
+
+        UUID n1 = UUID.randomUUID();
+        UUID vm1 = UUID.randomUUID();
+        UUID vm2 = UUID.randomUUID();
+
+        map.addOnlineNode(n1);
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        ShareableResource rc = new DefaultShareableResource("foo");
+        rc.set(vm1, 5);
+        rc.set(vm2, 7);
+
+        Model mo = new DefaultModel(map);
+        mo.attach(rc);
+
+        ReconfigurationProblem rp = new DefaultReconfigurationProblem(mo, new DurationEvaluators(),
+                map.getReadyVMs(),
+                map.getRunningVMs(),
+                map.getSleepingVMs(),
+                Collections.<UUID>emptySet(),
+                map.getAllVMs(),
+                false);
+        Assert.assertEquals(Boolean.TRUE, rp.solve(0, true));
+
+        //Check the amount of allocated resources on the RP
+        ResourceMapping rcm = rp.getResourceMapping("foo");
+        Assert.assertEquals(rcm.getVMConsumption()[rp.getVM(vm1)].getVal(), 5);
+        Assert.assertEquals(rcm.getVMConsumption()[rp.getVM(vm2)].getVal(), 7);
+
+        //And on the resulting plan.
+        ReconfigurationPlan p = rp.extractSolution();
+        Model res = p.getResult();
+        Assert.assertEquals(res.getResource("foo").get(vm1), 5);
+        Assert.assertEquals(res.getResource("foo").get(vm2), 7);
+    }
+
+    @Test
+    public void testMaintainState() throws SolverException {
+        Mapping map = new DefaultMapping();
+
+        UUID n1 = UUID.randomUUID();
+        UUID v1 = UUID.randomUUID();
+        UUID v2 = UUID.randomUUID();
+        UUID v3 = UUID.randomUUID();
+        UUID v4 = UUID.randomUUID();
+        UUID v5 = UUID.randomUUID();
+        map.addOnlineNode(n1);
+        map.addRunningVM(v1, n1);
+        map.addReadyVM(v2);
+        map.addSleepingVM(v3, n1);
+        map.addReadyVM(v5);
+        ShareableResource rc = new DefaultShareableResource("foo");
+        rc.set(v1, 5);
+        rc.set(v2, 7);
+
+        Model mo = new DefaultModel(map);
+        mo.attach(rc);
+
+        ReconfigurationProblem rp = new DefaultReconfigurationProblem(mo, new DurationEvaluators(),
+                Collections.singleton(v4),
+                Collections.singleton(v5),
+                Collections.singleton(v1),
+                Collections.<UUID>emptySet(),
+                map.getAllVMs(),
+                false);
+        Assert.assertTrue(rp.getFutureSleepingVMs().contains(v1));
+        Assert.assertTrue(rp.getFutureReadyVMs().contains(v2));
+        Assert.assertTrue(rp.getFutureSleepingVMs().contains(v3));
+        Assert.assertTrue(rp.getFutureReadyVMs().contains(v4));
+        Assert.assertTrue(rp.getFutureRunningVMs().contains(v5));
     }
 }

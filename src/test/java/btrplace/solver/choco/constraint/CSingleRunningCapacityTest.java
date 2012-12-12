@@ -51,7 +51,7 @@ public class CSingleRunningCapacityTest {
     }
 
     @Test
-    public void testDiscrete() throws SolverException {
+    public void testDiscreteResolution() throws SolverException {
         UUID vm1 = UUID.randomUUID();
         UUID vm2 = UUID.randomUUID();
         UUID vm3 = UUID.randomUUID();
@@ -79,7 +79,7 @@ public class CSingleRunningCapacityTest {
     }
 
     @Test
-    public void testContinuous() throws SolverException {
+    public void testContinuousResolution() throws SolverException {
         UUID vm1 = UUID.randomUUID();
         UUID vm2 = UUID.randomUUID();
         UUID vm3 = UUID.randomUUID();
@@ -111,5 +111,34 @@ public class CSingleRunningCapacityTest {
         Assert.assertTrue(a1 instanceof ShutdownVM);
         Assert.assertTrue(a2 instanceof BootVM);
         Assert.assertTrue(a1.getEnd() <= a2.getStart());
+    }
+
+    @Test
+    public void testGetMisplaced() {
+        Mapping m = new DefaultMapping();
+        UUID n1 = UUID.randomUUID();
+        UUID n2 = UUID.randomUUID();
+        m.addOnlineNode(n1);
+        m.addOnlineNode(n2);
+        UUID vm1 = UUID.randomUUID();
+        UUID vm2 = UUID.randomUUID();
+        UUID vm3 = UUID.randomUUID();
+        UUID vm4 = UUID.randomUUID();
+        m.addRunningVM(vm1, n1);
+        m.addReadyVM(vm2);
+
+        m.addRunningVM(vm3, n2);
+        m.addReadyVM(vm4);
+        Model mo = new DefaultModel(m);
+
+        SingleRunningCapacity c = new SingleRunningCapacity(m.getAllNodes(), 1);
+        CSingleRunningCapacity cc = new CSingleRunningCapacity(c);
+
+        Assert.assertTrue(cc.getMisPlacedVMs(mo).isEmpty());
+        m.addRunningVM(vm4, n2);
+        Assert.assertEquals(m.getRunningVMs(n2), cc.getMisPlacedVMs(mo));
+        m.addRunningVM(vm2, n1);
+        Assert.assertEquals(m.getAllVMs(), cc.getMisPlacedVMs(mo));
+
     }
 }
