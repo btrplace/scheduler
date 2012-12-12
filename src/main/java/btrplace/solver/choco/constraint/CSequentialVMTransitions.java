@@ -49,6 +49,11 @@ public class CSequentialVMTransitions implements ChocoSatConstraint {
 
     private SequentialVMTransitions cstr;
 
+    /**
+     * Make a new constraint.
+     *
+     * @param c the constraint to rely on
+     */
     public CSequentialVMTransitions(SequentialVMTransitions c) {
         cstr = c;
     }

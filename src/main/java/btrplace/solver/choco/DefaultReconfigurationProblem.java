@@ -547,6 +547,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
     }
 
+    @Override
     public void insertNotifyAllocations(Action a, UUID vm, Action.Hook k) {
         for (Map.Entry<String, ResourceMapping> e : resources.entrySet()) {
             ResourceMapping rcm = e.getValue();
