@@ -70,7 +70,7 @@ public class SuspendVMModelTest {
         Assert.assertTrue(m.getState().isInstantiatedTo(0));
         Assert.assertTrue(m.getCSlice().getHoster().isInstantiatedTo(0));
 
-        Assert.assertEquals(Boolean.TRUE, rp.getSolver().solve());
+        org.testng.Assert.assertEquals(rp.solve(0, true), Boolean.TRUE);
         ReconfigurationPlan p = rp.extractSolution();
         SuspendVM a = (SuspendVM) p.getActions().iterator().next();
         Assert.assertEquals(n1, a.getSourceNode());
@@ -107,7 +107,7 @@ public class SuspendVMModelTest {
         CPSolver s = rp.getSolver();
         s.post(s.geq(m2.getStart(), m1.getEnd()));
 
-        Assert.assertEquals(Boolean.TRUE, rp.getSolver().solve());
+        org.testng.Assert.assertEquals(rp.solve(0, true), Boolean.TRUE);
         ReconfigurationPlan p = rp.extractSolution();
         Assert.assertNotNull(p);
         System.out.println(p);

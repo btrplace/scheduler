@@ -80,7 +80,11 @@ public class SliceBuilder {
             if (start.isInstantiated() && end.isInstantiated()) {
                 duration = rp.getSolver().createIntegerConstant(rp.makeVarLabel(lblPrefix + "_duration"), end.getVal() - start.getVal());
             } else if (start.isInstantiated()) {
-                duration = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel(lblPrefix + "_duration"), end, -start.getVal());
+                if (start.isInstantiatedTo(0)) {
+                    duration = end;
+                } else {
+                    duration = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel(lblPrefix + "_duration"), end, -start.getVal());
+                }
             } else {
                 int inf = end.getInf() - start.getSup();
                 if (inf < 0) {
@@ -95,15 +99,15 @@ public class SliceBuilder {
         if (isExclusive == null) {
             isExclusive = rp.getSolver().createBooleanVar(rp.makeVarLabel(lblPrefix + "_exclusive"));
         }
-        if (start.getSup() > rp.getEnd().getInf()) {
+        if (start != rp.getEnd() && start.getSup() > rp.getEnd().getInf()) {
             //System.err.println("Restrict " + start.pretty() + " < " + rp.getEnd().pretty());
             rp.getSolver().post(rp.getSolver().leq(start, rp.getEnd()));
         }
-        if (end.getSup() > rp.getEnd().getInf()) {
+        if (end != rp.getEnd() && end.getSup() > rp.getEnd().getInf()) {
             //System.err.println("Restrict " + end.pretty() + " < " + rp.getEnd().pretty());
             rp.getSolver().post(rp.getSolver().leq(end, rp.getEnd()));
         }
-        if (duration.getSup() > rp.getEnd().getInf()) {
+        if (duration != rp.getEnd() && duration.getSup() > rp.getEnd().getInf()) {
             //System.err.println("Restrict " + duration.pretty() + " < " + rp.getEnd().pretty());
             rp.getSolver().post(rp.getSolver().leq(duration, rp.getEnd()));
         }

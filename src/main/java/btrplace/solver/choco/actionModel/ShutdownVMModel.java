@@ -25,6 +25,7 @@ import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
 import btrplace.solver.choco.VMActionModel;
+import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -61,13 +62,14 @@ public class ShutdownVMModel implements VMActionModel {
         this.vm = e;
 
         int d = rp.getDurationEvaluators().evaluate(ShutdownVM.class, e);
-
+        assert d > 0;
         duration = rp.getSolver().createIntegerConstant(rp.makeVarLabel("shutdownVM(" + e + ").duration"), d);
         this.cSlice = new SliceBuilder(rp, e, "shutdownVM(" + e + ").cSlice").setHoster(rp.getCurrentVMLocation(rp.getVM(e)))
                 .setEnd(rp.makeDuration(rp.makeVarLabel("shutdownVM(" + e + ").cSlice_end"), d, rp.getEnd().getSup()))
                 .setExclusive(false)
                 .build();
-
+        CPSolver s = rp.getSolver();
+        //s.post(s.geq(cSlice.getDuration(), d));
         start = new IntDomainVarAddCste(rp.getSolver(), "", cSlice.getEnd(), -d);
         state = rp.getSolver().makeConstantIntVar(0);
     }

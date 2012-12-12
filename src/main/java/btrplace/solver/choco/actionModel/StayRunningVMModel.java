@@ -31,6 +31,8 @@ import java.util.UUID;
 
 /**
  * A model for a running VM that stay online on the same node.
+ *
+ * @author Fabien Hermenier
  */
 public class StayRunningVMModel implements VMActionModel {
 
@@ -53,10 +55,12 @@ public class StayRunningVMModel implements VMActionModel {
         IntDomainVar host = rp.makeCurrentHost(rp.makeVarLabel("stayRunningVM(" + e + ").host"), e);
         cSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").cSlice")
                 .setHoster(host)
+                .setEnd(rp.makeDuration(rp.makeVarLabel("stayRunningVM(" + e + ").cSlice_end")))
                 .setExclusive(false)
                 .build();
         dSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").dSlice")
                 .setHoster(host)
+                .setStart(rp.makeDuration(rp.makeVarLabel("stayRunningVM(" + e + ").dSlice_start")))
                 .setExclusive(false)
                 .build();
         CPSolver s = rp.getSolver();

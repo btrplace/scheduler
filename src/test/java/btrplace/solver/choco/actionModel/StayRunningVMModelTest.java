@@ -24,55 +24,48 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
-import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Collections;
 import java.util.UUID;
 
 /**
- * Unit tests for {@link StayAwayVMModel}.
+ * Unit tests for {@link StayRunningVMModel}.
  *
  * @author Fabien Hermenier
  */
-public class StayAwayVMModelTest {
+public class StayRunningVMModelTest {
 
     @Test
-    public void testBasic() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
+    public void testBasic() throws SolverException {
+
         UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
+        UUID n1 = UUID.randomUUID();
+
+        Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
-        map.addSleepingVM(vm1, n1);
-        map.addReadyVM(vm2);
+        map.addRunningVM(vm1, n1);
 
         Model mo = new DefaultModel(map);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setManageableVMs(Collections.<UUID>emptySet())
                 .labelVariables()
                 .build();
-
-        rp.getNodeAction(n1).getState().setVal(1);
-        StayAwayVMModel ma1 = (StayAwayVMModel) rp.getVMAction(vm1);
-        StayAwayVMModel ma2 = (StayAwayVMModel) rp.getVMAction(vm2);
-        Assert.assertEquals(vm1, ma1.getVM());
-        Assert.assertEquals(vm2, ma2.getVM());
-
-        for (ActionModel am : rp.getVMActions()) {
-            Assert.assertTrue(am.getState().isInstantiatedTo(0));
-            Assert.assertNull(am.getCSlice());
-            Assert.assertNull(am.getDSlice());
-            Assert.assertTrue(am.getStart().isInstantiatedTo(0));
-            Assert.assertTrue(am.getEnd().isInstantiatedTo(0));
-            Assert.assertTrue(am.getDuration().isInstantiatedTo(0));
-        }
+        Assert.assertEquals(rp.getVMAction(vm1).getClass(), StayRunningVMModel.class);
+        StayRunningVMModel m1 = (StayRunningVMModel) rp.getVMAction(vm1);
+        Assert.assertNotNull(m1.getCSlice());
+        Assert.assertNotNull(m1.getDSlice());
+        Assert.assertTrue(m1.getCSlice().getHoster().isInstantiatedTo(rp.getNode(n1)));
+        Assert.assertTrue(m1.getDSlice().getHoster().isInstantiatedTo(rp.getNode(n1)));
+        Assert.assertTrue(m1.getDuration().isInstantiatedTo(0));
+        Assert.assertTrue(m1.getStart().isInstantiatedTo(0));
+        Assert.assertTrue(m1.getEnd().isInstantiatedTo(0));
 
         Assert.assertEquals(rp.solve(0, true), Boolean.TRUE);
         ReconfigurationPlan p = rp.extractSolution();
-        Assert.assertNotNull(p);
-        Assert.assertEquals(0, p.getSize());
+        Assert.assertEquals(p.getSize(), 0);
     }
 }

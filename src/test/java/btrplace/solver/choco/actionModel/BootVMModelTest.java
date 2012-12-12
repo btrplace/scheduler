@@ -32,7 +32,7 @@ import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.ContradictionException;
-import junit.framework.Assert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.HashSet;
@@ -78,7 +78,7 @@ public class BootVMModelTest {
         Assert.assertFalse(m.getDSlice().getStart().isInstantiated());
         Assert.assertFalse(m.getDSlice().getEnd().isInstantiated());
 
-        Assert.assertEquals(Boolean.TRUE, rp.getSolver().solve());
+        Assert.assertEquals(rp.solve(0, true), Boolean.TRUE);
         ReconfigurationPlan p = rp.extractSolution();
         BootVM a = (BootVM) p.getActions().iterator().next();
 
@@ -120,7 +120,7 @@ public class BootVMModelTest {
         CPSolver s = rp.getSolver();
         s.post(s.geq(m2.getStart(), m1.getEnd()));
 
-        Assert.assertEquals(Boolean.TRUE, rp.getSolver().solve());
+        org.testng.Assert.assertEquals(rp.solve(0, true), Boolean.TRUE);
         ReconfigurationPlan p = rp.extractSolution();
         Assert.assertNotNull(p);
         System.out.println(p);

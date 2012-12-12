@@ -179,6 +179,7 @@ public class TaskSchedulerBuilder {
         }
 
         i = 0;
+
         int[][] dUses = new int[dUsages.size()][];
         for (IntDomainVar[] dUseDim : dUsages) {
             dUses[i] = new int[dUseDim.length];
@@ -187,7 +188,6 @@ public class TaskSchedulerBuilder {
             }
             i++;
         }
-
         s.post(new TaskScheduler(s.getEnvironment(),
                 capas,
                 cHosters, cUses, cEnds,

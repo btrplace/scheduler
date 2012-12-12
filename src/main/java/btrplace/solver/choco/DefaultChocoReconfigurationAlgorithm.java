@@ -27,16 +27,10 @@ import btrplace.model.constraint.Sleeping;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.constraint.SatConstraintMapper;
-import btrplace.solver.choco.constraint.TaskSchedulerBuilder;
 import btrplace.solver.choco.objective.minMTTR.MinMTTR;
 import choco.cp.solver.CPSolver;
-import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
-import choco.kernel.solver.search.ISolutionPool;
-import choco.kernel.solver.search.SolutionPoolFactory;
 import choco.kernel.solver.search.measure.IMeasures;
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import gnu.trove.list.array.TIntArrayList;
 
 import java.util.*;
 
@@ -169,7 +163,6 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         }
         rp = rpb.build();
 
-        TaskSchedulerBuilder.begin(rp);
         //Customize with the constraints
         for (ChocoSatConstraint ccstr : cConstraints) {
             ccstr.inject(rp);
@@ -180,37 +173,9 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         obj.inject(rp);
 
 
-        addContinuousResourceCapacities();
-
-
-        TaskSchedulerBuilder.getInstance().commitConstraint();
-
-        maintainResourceUsage();
-
         CPSolver s = rp.getSolver();
-        s.generateSearchStrategy();
-        ISolutionPool sp = SolutionPoolFactory.makeInfiniteSolutionPool(s.getSearchStrategy());
-        s.getSearchStrategy().setSolutionPool(sp);
 
-        //Let's rock
-        if (timeLimit > 0) {
-            s.setTimeLimit(timeLimit);
-        }
-        s.setFirstSolution(!optimize);
-
-        //Instantiate the VM usage to its LB.
-        for (ResourceMapping rcm : rp.getResourceMappings()) {
-            for (IntDomainVar v : rcm.getVMConsumption()) {
-                try {
-                    v.setVal(v.getInf());
-                } catch (ContradictionException e) {
-                    throw new SolverException(rp.getSourceModel(), "Unable to set the VM '" + rcm.getIdentifier()
-                            + "' consumption to " + v.getInf());
-                }
-            }
-        }
-        s.launch();
-        Boolean ret = s.isFeasible();
+        Boolean ret = rp.solve(timeLimit, optimize);
         if (Boolean.TRUE.equals(ret)) {
             ReconfigurationPlan p = rp.extractSolution();
             assert checkSatisfaction(p, cConstraints);
@@ -222,30 +187,6 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         }
     }
 
-    /**
-     * Set the VM resource usage for the result, to its current usage.
-     *
-     * @throws SolverException if an error occurred
-     */
-    private void maintainResourceUsage() throws SolverException {
-        for (ResourceMapping rcm : rp.getResourceMappings()) {
-            for (UUID vm : rp.getSourceModel().getMapping().getAllVMs()) {
-                int vmId = rp.getVM(vm);
-                if (rcm.getVMConsumption()[vmId].getInf() < 0) {
-                    int prevUsage = rcm.getSourceResource().get(vm);
-                    try {
-                        rcm.getVMConsumption()[vmId].setInf(prevUsage);
-                    } catch (ContradictionException e) {
-                        throw new SolverException(rp.getSourceModel(), "Unable to set the minimal '"
-                                + rcm.getIdentifier() + "' usage for '" + vm
-                                + "' to its current usage (" + prevUsage + ")");
-                    }
-                }
-            }
-        }
-    }
-
-
     private boolean checkSatisfaction(ReconfigurationPlan p, List<ChocoSatConstraint> cstrs) throws SolverException {
         for (ChocoSatConstraint ccstr : cstrs) {
             if (!ccstr.isSatisfied(p)) {
@@ -253,24 +194,6 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
             }
         }
         return true;
-    }
-
-    private void addContinuousResourceCapacities() {
-        TIntArrayList cUse = new TIntArrayList();
-        List<IntDomainVar> iUse = new ArrayList<IntDomainVar>();
-        for (int j = 0; j < rp.getVMs().length; j++) {
-            ActionModel a = rp.getVMActions()[j];
-            if (a.getDSlice() != null) {
-                iUse.add(rp.getSolver().makeConstantIntVar(1));
-            }
-            if (a.getCSlice() != null) {
-                cUse.add(1);
-            }
-        }
-
-        TaskSchedulerBuilder.getInstance().add(rp.getVMsCountOnNodes(),
-                cUse.toArray(),
-                iUse.toArray(new IntDomainVar[iUse.size()]));
     }
 
     @Override

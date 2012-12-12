@@ -68,6 +68,11 @@ public class COverbook implements ChocoSatConstraint {
             for (UUID u : cstr.getInvolvedNodes()) {
                 int nIdx = rp.getNode(u);
                 s.post(s.eq(realCapa[nIdx], rawCapa[nIdx]));
+                try {
+                    realCapa[nIdx].setSup(rawCapa[nIdx].getSup());
+                } catch (ContradictionException ex) {
+                    throw new SolverException(rp.getSourceModel(), "Unable to restrict the real '" + rcm.getIdentifier() + "' capacity of " + rp.getNode(nIdx) + " to " + rawCapa[nIdx].getSup());
+                }
             }
         } else {
             double ratio = cstr.getRatio();
@@ -98,32 +103,34 @@ public class COverbook implements ChocoSatConstraint {
                 IntDomainVar freeRaw = ChocoUtils.div(s, freeReal, (int) ratio); //TODO: check for the correctness of the truncation
                 s.post(s.eq(rawCapa[nIdx], s.minus(maxRaw, freeRaw)));
             }
-
-
-            //The slice scheduling constraint that is necessary
-            //TODO: a slice on both the real and the raw resource usage ?
-
-            TIntArrayList cUse = new TIntArrayList();
-            List<IntDomainVar> dUse = new ArrayList<IntDomainVar>();
-
-            for (ActionModel a : rp.getVMActions()) {
-                Slice c = a.getCSlice();
-                Slice d = a.getDSlice();
-                if (c != null) {
-                    UUID vmId = c.getSubject();
-                    cUse.add(rcm.getSourceResource().get(vmId));
-                }
-                if (d != null) {
-                    UUID vmId = d.getSubject();
-                    dUse.add(rcm.getVMConsumption()[rp.getVM(vmId)]);
-                }
-            }
-
-            IntDomainVar[] capa = new IntDomainVar[rp.getNodes().length];
-            System.arraycopy(realCapa, 0, capa, 0, rp.getNodes().length);
-
-            TaskSchedulerBuilder.getInstance().add(capa, cUse.toNativeArray(), dUse.toArray(new IntDomainVar[cUse.size()]));
         }
+        //The slice scheduling constraint that is necessary
+        //TODO: a slice on both the real and the raw resource usage ?
+
+        TIntArrayList cUse = new TIntArrayList();
+        List<IntDomainVar> dUse = new ArrayList<IntDomainVar>();
+
+        for (UUID vmId : rp.getVMs()) {
+            ActionModel a = rp.getVMAction(vmId);
+            //for (ActionModel a : rp.getVMActions()) {
+            Slice c = a.getCSlice();
+            Slice d = a.getDSlice();
+            if (c != null) {
+                cUse.add(rcm.getSourceResource().get(vmId));
+            } /*else {
+                cUse.add(0);
+            }   */
+            if (d != null) {
+                dUse.add(rcm.getVMConsumption()[rp.getVM(vmId)]);
+            } /*else {
+                dUse.add(rp.getSolver().makeConstantIntVar(0));
+            }   */
+        }
+
+        IntDomainVar[] capa = new IntDomainVar[rp.getNodes().length];
+        System.arraycopy(realCapa, 0, capa, 0, rp.getNodes().length);
+
+        TaskSchedulerBuilder.getInstance().add(capa, cUse.toNativeArray(), dUse.toArray(new IntDomainVar[dUse.size()]));
     }
 
     @Override

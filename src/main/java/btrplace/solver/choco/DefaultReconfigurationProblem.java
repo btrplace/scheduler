@@ -29,8 +29,13 @@ import btrplace.plan.event.AllocateEvent;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
 import btrplace.solver.choco.chocoUtil.BinPacking;
+import btrplace.solver.choco.constraint.TaskSchedulerBuilder;
 import choco.cp.solver.CPSolver;
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.search.ISolutionPool;
+import choco.kernel.solver.search.SolutionPoolFactory;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,8 +128,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         dSlices = new ArrayList<Slice>();
 
         solver = new CPSolver();
-        start = solver.makeConstantIntVar("start", 0);
-        end = solver.createBoundIntVar("end", 0, DEFAULT_MAX_TIME);
+        start = solver.makeConstantIntVar("RP.start", 0);
+        end = solver.createBoundIntVar("RP.end", 0, DEFAULT_MAX_TIME);
 
         solver.post(solver.geq(end, start));
 
@@ -138,6 +143,84 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         makeResources();
 
         linkCardinatiesWithSlices();
+
+        TaskSchedulerBuilder.begin(this);
+    }
+
+    public Boolean solve(int timeLimit, boolean optimize) throws SolverException {
+
+        maintainResourceUsage();
+
+        addContinuousResourceCapacities();
+
+
+        TaskSchedulerBuilder.getInstance().commitConstraint();
+
+        solver.generateSearchStrategy();
+        ISolutionPool sp = SolutionPoolFactory.makeInfiniteSolutionPool(solver.getSearchStrategy());
+        solver.getSearchStrategy().setSolutionPool(sp);
+
+        //Instantiate the VM usage to its LB.
+        for (ResourceMapping rcm : getResourceMappings()) {
+            for (IntDomainVar v : rcm.getVMConsumption()) {
+                try {
+                    v.setVal(v.getInf());
+                } catch (ContradictionException e) {
+                    throw new SolverException(getSourceModel(), "Unable to set the VM '" + rcm.getIdentifier()
+                            + "' consumption to " + v.getInf());
+                }
+            }
+        }
+
+        //Let's rock
+        if (timeLimit > 0) {
+            solver.setTimeLimit(timeLimit);
+        }
+        solver.setFirstSolution(!optimize);
+
+        solver.launch();
+        return solver.isFeasible();
+    }
+
+    /**
+     * Set the VM resource usage for the result, to its current usage.
+     *
+     * @throws SolverException if an error occurred
+     */
+    private void maintainResourceUsage() throws SolverException {
+        for (ResourceMapping rcm : getResourceMappings()) {
+            for (UUID vm : getSourceModel().getMapping().getAllVMs()) {
+                int vmId = getVM(vm);
+                if (rcm.getVMConsumption()[vmId].getInf() < 0) {
+                    int prevUsage = rcm.getSourceResource().get(vm);
+                    try {
+                        rcm.getVMConsumption()[vmId].setInf(prevUsage);
+                    } catch (ContradictionException e) {
+                        throw new SolverException(getSourceModel(), "Unable to set the minimal '"
+                                + rcm.getIdentifier() + "' usage for '" + vm
+                                + "' to its current usage (" + prevUsage + ")");
+                    }
+                }
+            }
+        }
+    }
+
+    private void addContinuousResourceCapacities() {
+        TIntArrayList cUse = new TIntArrayList();
+        List<IntDomainVar> iUse = new ArrayList<IntDomainVar>();
+        for (int j = 0; j < getVMs().length; j++) {
+            ActionModel a = getVMActions()[j];
+            if (a.getDSlice() != null) {
+                iUse.add(solver.makeConstantIntVar(1));
+            }
+            if (a.getCSlice() != null) {
+                cUse.add(1);
+            }
+        }
+
+        TaskSchedulerBuilder.getInstance().add(getVMsCountOnNodes(),
+                cUse.toArray(),
+                iUse.toArray(new IntDomainVar[iUse.size()]));
     }
 
     /**

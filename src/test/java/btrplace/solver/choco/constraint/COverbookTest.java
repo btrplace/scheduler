@@ -20,12 +20,16 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.*;
 import btrplace.model.constraint.*;
+import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.Allocate;
 import btrplace.plan.event.BootVM;
+import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.durationEvaluator.LinearToAResourceDuration;
+import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -207,6 +211,55 @@ public class COverbookTest {
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         System.out.println(p);
         Assert.assertNotNull(p);
+    }
 
+    /**
+     * Test with a root VM that has increasing need and another one that prevent it
+     * to get the resources immediately
+     */
+    @Test
+    public void testWithIncrease() throws SolverException, ContradictionException {
+        UUID vm1 = UUID.randomUUID();
+        UUID vm2 = UUID.randomUUID();
+        UUID n1 = UUID.randomUUID();
+
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+
+        Model mo = new DefaultModel(map);
+        ShareableResource rc = new DefaultShareableResource("foo");
+        rc.set(n1, 5);
+        rc.set(vm1, 3);
+        rc.set(vm2, 2);
+        mo.attach(rc);
+
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.labelVariables(true);
+        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        cstrs.add(new Online(map.getAllNodes()));
+        Overbook o = new Overbook(map.getAllNodes(), "foo", 1);
+        o.setContinuous(true);
+        cstrs.add(o);
+        cstrs.add(new Ready(Collections.singleton(vm2)));
+        cstrs.add(new Preserve(Collections.singleton(vm1), "foo", 5));
+        ReconfigurationPlan p = cra.solve(mo, cstrs);
+        System.out.println(p);
+        Assert.assertNotNull(p);
+        Assert.assertEquals(p.getSize(), 2);
+        //An allocate action at the moment the vm2 leaved.
+        Action al = null;
+        Action sh = null;
+        for (Action a : p) {
+            if (a instanceof Allocate) {
+                al = a;
+            } else if (a instanceof ShutdownVM) {
+                sh = a;
+            } else {
+                Assert.fail();
+            }
+        }
+        Assert.assertTrue(sh.getEnd() <= al.getStart());
     }
 }
