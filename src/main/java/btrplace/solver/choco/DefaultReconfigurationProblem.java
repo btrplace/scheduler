@@ -91,6 +91,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private IntDomainVar[] vmsCountOnNodes;
 
+    private TaskSchedulerBuilder taskSchedBuilder;
+
     /**
      * Make a new RP where the next state for every VM is indicated.
      * If the state for a VM is omitted, it is considered as unchanged
@@ -144,7 +146,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         linkCardinatiesWithSlices();
 
-        TaskSchedulerBuilder.begin(this);
+        taskSchedBuilder = new TaskSchedulerBuilder(this);
     }
 
     public Boolean solve(int timeLimit, boolean optimize) throws SolverException {
@@ -154,7 +156,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         addContinuousResourceCapacities();
 
 
-        TaskSchedulerBuilder.getInstance().commitConstraint();
+        taskSchedBuilder.commitConstraint();
 
         solver.generateSearchStrategy();
         ISolutionPool sp = SolutionPoolFactory.makeInfiniteSolutionPool(solver.getSearchStrategy());
@@ -218,7 +220,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             }
         }
 
-        TaskSchedulerBuilder.getInstance().add(getVMsCountOnNodes(),
+        taskSchedBuilder.add(getVMsCountOnNodes(),
                 cUse.toArray(),
                 iUse.toArray(new IntDomainVar[iUse.size()]));
     }
@@ -583,6 +585,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     @Override
     public CPSolver getSolver() {
         return solver;
+    }
+
+    @Override
+    public TaskSchedulerBuilder getTaskSchedulerBuilder() {
+        return taskSchedBuilder;
     }
 
     @Override

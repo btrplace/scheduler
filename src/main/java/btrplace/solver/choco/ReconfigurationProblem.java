@@ -22,6 +22,7 @@ import btrplace.model.Model;
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
+import btrplace.solver.choco.constraint.TaskSchedulerBuilder;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -344,4 +345,11 @@ public interface ReconfigurationProblem {
      * @throws SolverException if an error occurs
      */
     Boolean solve(int timelimit, boolean optimize) throws SolverException;
+
+    /**
+     * Get the builder that handle the scheduling part of the problem.
+     *
+     * @return the builder
+     */
+    TaskSchedulerBuilder getTaskSchedulerBuilder();
 }

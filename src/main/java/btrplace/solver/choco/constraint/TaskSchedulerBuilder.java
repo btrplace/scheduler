@@ -38,8 +38,6 @@ import java.util.List;
  */
 public class TaskSchedulerBuilder {
 
-    private static TaskSchedulerBuilder instance = null;
-
     private ReconfigurationProblem rp;
 
     private List<IntDomainVar[]> capacities;
@@ -66,7 +64,7 @@ public class TaskSchedulerBuilder {
 
     private Slice[] dSlices;
 
-    private TaskSchedulerBuilder(ReconfigurationProblem rp) {
+    public TaskSchedulerBuilder(ReconfigurationProblem rp) {
         this.rp = rp;
         capacities = new ArrayList<IntDomainVar[]>();
         cUsages = new ArrayList<int[]>();
@@ -144,14 +142,6 @@ public class TaskSchedulerBuilder {
         }
     }
 
-    public static void begin(ReconfigurationProblem rp) {
-        instance = new TaskSchedulerBuilder(rp);
-    }
-
-    public static TaskSchedulerBuilder getInstance() {
-        return instance;
-    }
-
     public void add(IntDomainVar[] capa, int[] cUse, IntDomainVar[] dUse) {
         capacities.add(capa);
         cUsages.add(cUse);
@@ -193,8 +183,5 @@ public class TaskSchedulerBuilder {
                 cHosters, cUses, cEnds,
                 dHosters, dUses, dStarts,
                 associations, excls, exclSlice));
-
-
-        instance = null;
     }
 }

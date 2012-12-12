@@ -27,8 +27,7 @@ import btrplace.plan.event.MigrateVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.*;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
+import choco.cp.solver.CPSolver;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -47,7 +46,6 @@ public class RelocatableVMModelTest {
 
     @Test
     public void testForcedToMove() throws SolverException, ContradictionException {
-        ChocoLogging.setVerbosity(Verbosity.SEARCH);
         UUID n1 = UUID.randomUUID();
         UUID n2 = UUID.randomUUID();
         UUID vm = UUID.randomUUID();
@@ -62,6 +60,7 @@ public class RelocatableVMModelTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<UUID>emptySet(), map.getAllVMs(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
                 .setDurationEvaluatators(dev)
+                .labelVariables()
                 .build();
         rp.getNodeActions()[0].getState().setVal(1);
         rp.getNodeActions()[1].getState().setVal(1);
@@ -77,8 +76,9 @@ public class RelocatableVMModelTest {
         Assert.assertNotNull(am.getDSlice());
         Assert.assertFalse(am.getDSlice().getHoster().isInstantiated());
 
-        //No VMs on n1
-        rp.getVMsCountOnNodes()[rp.getNode(n1)].setVal(0);
+        //No VMs on n1, discrete mode
+        CPSolver s = rp.getSolver();
+        s.post(s.eq(rp.getVMsCountOnNodes()[rp.getNode(n1)], 0));
 
         Assert.assertEquals(rp.solve(0, true), Boolean.TRUE);
         ReconfigurationPlan p = rp.extractSolution();

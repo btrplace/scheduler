@@ -16,6 +16,7 @@ Roadmap to v0.1
    -> the default Objective will be the current entropy one (MinMTTR)
 - Partitioning
 - Repair mode with undefined satisfaction status
+- Clarify discrete/continuous restriction
 
 Later
 -----------------
