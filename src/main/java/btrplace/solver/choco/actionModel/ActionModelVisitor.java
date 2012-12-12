@@ -89,13 +89,6 @@ public interface ActionModelVisitor {
     void visit(StayRunningVMModel a);
 
     /**
-     * Visit a {@link StayOfflineNodeModel}.
-     *
-     * @param a the action to visit
-     */
-    void visit(StayOfflineNodeModel a);
-
-    /**
      * Visit a {@link StayAwayVMModel}.
      *
      * @param a the action to visit

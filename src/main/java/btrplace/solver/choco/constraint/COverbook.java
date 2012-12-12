@@ -111,7 +111,7 @@ public class COverbook implements ChocoSatConstraint {
         List<IntDomainVar> dUse = new ArrayList<IntDomainVar>();
 
         for (UUID vmId : rp.getVMs()) {
-            ActionModel a = rp.getVMAction(vmId);
+            VMActionModel a = rp.getVMAction(vmId);
             Slice c = a.getCSlice();
             Slice d = a.getDSlice();
             if (c != null) {

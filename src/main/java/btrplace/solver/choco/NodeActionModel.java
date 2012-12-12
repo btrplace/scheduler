@@ -18,6 +18,8 @@
 
 package btrplace.solver.choco;
 
+import choco.kernel.solver.variables.integer.IntDomainVar;
+
 import java.util.UUID;
 
 /**
@@ -33,4 +35,8 @@ public interface NodeActionModel extends ActionModel {
      * @return the node identifier
      */
     UUID getNode();
+
+    IntDomainVar getHostingStart();
+
+    IntDomainVar getHostingEnd();
 }

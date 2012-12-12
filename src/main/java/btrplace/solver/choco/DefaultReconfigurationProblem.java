@@ -79,11 +79,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private IntDomainVar start;
     private IntDomainVar end;
 
-    private ActionModel[] vmActions;
-    private ActionModel[] nodeActions;
-
-    private List<Slice> dSlices;
-    private List<Slice> cSlices;
+    private VMActionModel[] vmActions;
+    private NodeActionModel[] nodeActions;
 
     private DurationEvaluators durEval;
 
@@ -125,9 +122,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         this.useLabels = label;
         model = m;
         durEval = dEval;
-
-        cSlices = new ArrayList<Slice>();
-        dSlices = new ArrayList<Slice>();
 
         solver = new CPSolver();
         start = solver.makeConstantIntVar("RP.start", 0);
@@ -211,7 +205,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         TIntArrayList cUse = new TIntArrayList();
         List<IntDomainVar> iUse = new ArrayList<IntDomainVar>();
         for (int j = 0; j < getVMs().length; j++) {
-            ActionModel a = getVMActions()[j];
+            VMActionModel a = getVMActions()[j];
             if (a.getDSlice() != null) {
                 iUse.add(solver.makeConstantIntVar(1));
             }
@@ -252,7 +246,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     private void linkCardinatiesWithSlices() throws SolverException {
-        ActionModel[] am = getVMActions(runnings);
+        VMActionModel[] am = getVMActions(runnings);
         IntDomainVar[] ds = SliceUtils.extractHosters(ActionModelUtil.getDSlices(am));
         IntDomainVar[] usages = new IntDomainVar[ds.length];
         for (int i = 0; i < ds.length; i++) {
@@ -286,7 +280,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private void makeVMActionModels() throws SolverException {
         Mapping map = model.getMapping();
-        vmActions = new ActionModel[vms.length];
+        vmActions = new VMActionModel[vms.length];
         for (int i = 0; i < vms.length; i++) {
             UUID vmId = vms[i];
             if (runnings.contains(vmId)) {
@@ -357,22 +351,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                     throw new SolverException(model, "Unable to infer the next state of VM '" + vmId + "'");
                 }
             }
-            Slice s = vmActions[i].getCSlice();
-            if (s != null) {
-                cSlices.add(s);
-            }
-
-            s = vmActions[i].getDSlice();
-            if (s != null) {
-                dSlices.add(s);
-            }
         }
     }
 
     private void makeNodeActionModels() throws SolverException {
 
         Mapping m = model.getMapping();
-        nodeActions = new ActionModel[nodes.length];
+        nodeActions = new NodeActionModel[nodes.length];
         for (int i = 0; i < nodes.length; i++) {
             UUID nId = nodes[i];
             if (m.getOfflineNodes().contains(nId)) {
@@ -383,16 +368,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                     throw new SolverException(model, "Next state for node '" + nId + "' is ambiguous");
                 }
                 nodeActions[i] = new ShutdownableNodeModel(this, nId);
-            }
-
-            Slice s = nodeActions[i].getCSlice();
-            if (s != null) {
-                cSlices.add(s);
-            }
-
-            s = nodeActions[i].getDSlice();
-            if (s != null) {
-                dSlices.add(s);
             }
         }
     }
@@ -473,45 +448,35 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public ActionModel[] getVMActions() {
+    public VMActionModel[] getVMActions() {
         return vmActions;
     }
 
     @Override
-    public ActionModel[] getVMActions(Set<UUID> id) {
+    public VMActionModel[] getVMActions(Set<UUID> id) {
         return vmActions;
     }
 
     @Override
-    public ActionModel getVMAction(UUID id) {
+    public VMActionModel getVMAction(UUID id) {
         int idx = getVM(id);
         return idx < 0 ? null : vmActions[idx];
     }
 
     @Override
-    public ActionModel getNodeAction(UUID id) {
+    public NodeActionModel getNodeAction(UUID id) {
         int idx = getNode(id);
         return idx < 0 ? null : nodeActions[idx];
     }
 
     @Override
-    public ActionModel[] getNodeActions() {
+    public NodeActionModel[] getNodeActions() {
         return nodeActions;
     }
 
     @Override
     public DurationEvaluators getDurationEvaluators() {
         return durEval;
-    }
-
-    @Override
-    public List<Slice> getDSlices() {
-        return dSlices;
-    }
-
-    @Override
-    public List<Slice> getCSlices() {
-        return cSlices;
     }
 
     @Override

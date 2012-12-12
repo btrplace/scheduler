@@ -122,16 +122,6 @@ public class ShutdownableNodeModel implements NodeActionModel {
     }
 
     @Override
-    public Slice getCSlice() {
-        return null;
-    }
-
-    @Override
-    public Slice getDSlice() {
-        return dSlice;
-    }
-
-    @Override
     public IntDomainVar getState() {
         return state;
     }
@@ -141,4 +131,13 @@ public class ShutdownableNodeModel implements NodeActionModel {
         v.visit(this);
     }
 
+    @Override
+    public IntDomainVar getHostingStart() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public IntDomainVar getHostingEnd() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

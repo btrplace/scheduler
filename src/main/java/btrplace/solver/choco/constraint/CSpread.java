@@ -58,7 +58,7 @@ public class CSpread implements ChocoSatConstraint {
         Mapping m = rp.getSourceModel().getMapping();
         for (UUID vmId : cstr.getInvolvedVMs()) {
             if (rp.getFutureRunningVMs().contains(vmId)/* || m.getRunningVMs().contains(vmId)*/) {
-                ActionModel a = rp.getVMAction(vmId);
+                VMActionModel a = rp.getVMAction(vmId);
                 Slice d = a.getDSlice();
                 if (d != null) {
                     onlyRunnings.add(d.getHoster());
@@ -80,10 +80,10 @@ public class CSpread implements ChocoSatConstraint {
                 }
                 for (int i = 0; i < vms.length; i++) {
                     UUID vm = vms[i];
-                    ActionModel aI = rp.getVMAction(vm);
+                    VMActionModel aI = rp.getVMAction(vm);
                     for (int j = 0; j < i; j++) {
                         UUID vmJ = vms[j];
-                        ActionModel aJ = rp.getVMAction(vmJ);
+                        VMActionModel aJ = rp.getVMAction(vmJ);
                         Slice d = aI.getDSlice();
                         Slice c = aJ.getCSlice();
                         if (d != null && c != null) {

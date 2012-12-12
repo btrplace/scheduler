@@ -99,8 +99,8 @@ public class ResourceMappingTest {
         mo.attach(rc);
         //new Running(ma.getAllVMs())
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
-        ActionModel avm1 = rp.getVMActions()[rp.getVM(vm)];
-        ActionModel avm2 = rp.getVMActions()[rp.getVM(vm2)];
+        VMActionModel avm1 = rp.getVMActions()[rp.getVM(vm)];
+        VMActionModel avm2 = rp.getVMActions()[rp.getVM(vm2)];
         avm1.getDSlice().getHoster().setVal(0);
         avm2.getDSlice().getHoster().setVal(1);
         ResourceMapping rcm = rp.getResourceMapping("foo");

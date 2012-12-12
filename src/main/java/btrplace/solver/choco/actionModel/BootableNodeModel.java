@@ -111,16 +111,6 @@ public class BootableNodeModel implements NodeActionModel {
     }
 
     @Override
-    public Slice getCSlice() {
-        return cSlice;
-    }
-
-    @Override
-    public Slice getDSlice() {
-        return null;
-    }
-
-    @Override
     public UUID getNode() {
         return node;
     }
@@ -133,5 +123,15 @@ public class BootableNodeModel implements NodeActionModel {
     @Override
     public void visit(ActionModelVisitor v) {
         v.visit(this);
+    }
+
+    @Override
+    public IntDomainVar getHostingStart() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public IntDomainVar getHostingEnd() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

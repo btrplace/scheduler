@@ -21,6 +21,7 @@ package btrplace.solver.choco.constraint;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
+import btrplace.solver.choco.VMActionModel;
 import btrplace.solver.choco.chocoUtil.LocalTaskScheduler;
 import btrplace.solver.choco.chocoUtil.TaskScheduler;
 import choco.cp.solver.CPSolver;
@@ -79,7 +80,7 @@ public class TaskSchedulerBuilder {
         excls = new IntDomainVar[rp.getNodes().length];
         exclSlice = new int[rp.getNodes().length];
 
-        for (ActionModel a : rp.getVMActions()) {
+        for (VMActionModel a : rp.getVMActions()) {
             Slice c = a.getCSlice();
             Slice d = a.getDSlice();
 

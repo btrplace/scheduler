@@ -39,9 +39,9 @@ public final class ActionModelUtil {
      * @param models the models to browse
      * @return a list of d-slices that may be empty
      */
-    public static List<Slice> getDSlices(ActionModel[] models) {
+    public static List<Slice> getDSlices(VMActionModel[] models) {
         List<Slice> slices = new ArrayList<Slice>();
-        for (ActionModel m : models) {
+        for (VMActionModel m : models) {
             if (m.getDSlice() != null) {
                 slices.add(m.getDSlice());
             }
@@ -55,9 +55,9 @@ public final class ActionModelUtil {
      * @param models the models to browse
      * @return a list of c-slices that may be empty
      */
-    public static List<Slice> getCSlices(ActionModel[] models) {
+    public static List<Slice> getCSlices(VMActionModel[] models) {
         List<Slice> slices = new ArrayList<Slice>();
-        for (ActionModel m : models) {
+        for (VMActionModel m : models) {
             if (m.getCSlice() != null) {
                 slices.add(m.getCSlice());
             }
