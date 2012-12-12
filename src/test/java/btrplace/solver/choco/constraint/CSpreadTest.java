@@ -201,7 +201,30 @@ public class CSpreadTest {
         MigrateVM m2 = new MigrateVM(vm2, n2, n3, 0, 1);
         p.add(m2);
         Assert.assertTrue(cs.isSatisfied(p));
+    }
 
-
+    /**
+     * 2 VMs are already hosted on a same node, check
+     * if separation is working in continuous mode
+     */
+    @Test
+    public void testSeparateWithContinuous() throws SolverException {
+        Model m = getModel();
+        Mapping map = m.getMapping();
+        map.addRunningVM(vm2, n1);
+        List<SatConstraint> cstr = new ArrayList<SatConstraint>();
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.labelVariables(true);
+        Spread s = new Spread(m.getMapping().getAllVMs());
+        s.setContinuous(true);
+        cstr.add(s);
+        cstr.add(new Online(m.getMapping().getAllNodes()));
+        cstr.add(new Fence(Collections.singleton(vm1), Collections.singleton(n2)));
+        ReconfigurationPlan p = cra.solve(m, cstr);
+        Assert.assertNotNull(p);
+        System.out.println(p);
+        Mapping res = p.getResult().getMapping();
+        Assert.assertEquals(1, p.getSize());
+        Assert.assertNotSame(res.getVMLocation(vm1), res.getVMLocation(vm2));
     }
 }

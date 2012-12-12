@@ -192,7 +192,5 @@ public class CSingleRunningCapacityTest {
         plan.add(new ResumeVM(vm2, n1, n1, 1, 2));
         c.setContinuous(true);
         Assert.assertTrue(cc.isSatisfied(plan));
-
-
     }
 }

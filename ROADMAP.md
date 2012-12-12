@@ -2,11 +2,11 @@ Roadmap to v0.1
 ----------------
 
 - OK (cause it is not needed) Entailment management in BinPacking
-- OK? Slice scheduling
+- OK Slice scheduling
 - OK Allocate actions and event
 - OK By default, no transition actions
 - OK By default maintain resource usage
-- Implement and check every VM ActionModel
+- OK Implement and check every VM ActionModel
 - Implement and check every node ActionModel
 
 - A default overbooking factor or not ?
