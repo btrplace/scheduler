@@ -112,19 +112,14 @@ public class COverbook implements ChocoSatConstraint {
 
         for (UUID vmId : rp.getVMs()) {
             ActionModel a = rp.getVMAction(vmId);
-            //for (ActionModel a : rp.getVMActions()) {
             Slice c = a.getCSlice();
             Slice d = a.getDSlice();
             if (c != null) {
                 cUse.add(rcm.getSourceResource().get(vmId));
-            } /*else {
-                cUse.add(0);
-            }   */
+            }
             if (d != null) {
                 dUse.add(rcm.getVMConsumption()[rp.getVM(vmId)]);
-            } /*else {
-                dUse.add(rp.getSolver().makeConstantIntVar(0));
-            }   */
+            }
         }
 
         IntDomainVar[] capa = new IntDomainVar[rp.getNodes().length];
