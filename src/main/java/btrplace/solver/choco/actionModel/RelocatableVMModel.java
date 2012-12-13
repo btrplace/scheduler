@@ -72,13 +72,10 @@ public class RelocatableVMModel implements VMActionModel {
         cSlice = new SliceBuilder(rp, e, "relocatable(" + e + ").cSlice")
                 .setHoster(rp.getNode(rp.getSourceModel().getMapping().getVMLocation(e)))
                 .setEnd(rp.makeDuration(rp.makeVarLabel("relocatable(" + e + ").cSlice_end")))
-                .setExclusive(false)
                 .build();
 
         dSlice = new SliceBuilder(rp, e, "relocatable(" + e + ").dSlice")
                 .setStart(rp.makeDuration(rp.makeVarLabel("relocatable(" + e + ").dSlice_start")))
-                        //.setDuration(rp.makeDuration(rp.makeVarLabel("relocatable(" + e + ").dSlice_duration"), 1, rp.getEnd().getSup()))
-                .setExclusive(false)
                 .build();
         IntDomainVar move = s.createBooleanVar(rp.makeVarLabel("relocatable(" + e + ").move"));
         s.post(ReifiedFactory.builder(move, s.neq(cSlice.getHoster(), dSlice.getHoster()), s));

@@ -68,7 +68,6 @@ public class KillVMActionModel implements VMActionModel {
 
         if (map.getRunningVMs().contains(vm)) {
             cSlice = new SliceBuilder(rp, e, "killVM('" + e + "').cSlice")
-                    .setExclusive(false)
                     .setStart(rp.getStart())
                     .setHoster(rp.getCurrentVMLocation(rp.getVM(vm)))
                     .setEnd(rp.getSolver().makeConstantIntVar(d))

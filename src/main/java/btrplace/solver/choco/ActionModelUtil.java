@@ -80,6 +80,34 @@ public final class ActionModelUtil {
     }
 
     /**
+     * Extract the hostingEnd moments of an array of node actions.
+     * The ordering is maintained
+     *
+     * @return an array of variable
+     */
+    public static IntDomainVar[] getHostingEnds(NodeActionModel[] actions) {
+        IntDomainVar[] starts = new IntDomainVar[actions.length];
+        for (int i = 0; i < actions.length; i++) {
+            starts[i] = actions[i].getHostingEnd();
+        }
+        return starts;
+    }
+
+    /**
+     * Extract the hostingStart moments of an array of node actions.
+     * The ordering is maintained
+     *
+     * @return an array of variable
+     */
+    public static IntDomainVar[] getHostingStarts(NodeActionModel[] actions) {
+        IntDomainVar[] starts = new IntDomainVar[actions.length];
+        for (int i = 0; i < actions.length; i++) {
+            starts[i] = actions[i].getHostingStart();
+        }
+        return starts;
+    }
+
+    /**
      * Extract the end moments of an array of actions.
      * The ordering is maintained
      *

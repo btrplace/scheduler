@@ -39,7 +39,7 @@ public class SliceRcComparatorTest {
         List<Slice> l = new ArrayList<Slice>(10);
         for (int i = 0; i < 10; i++) {
             UUID u = UUID.randomUUID();
-            l.add(new Slice(u, null, null, null, null, null));
+            l.add(new Slice(u, null, null, null, null));
         }
         return l;
     }

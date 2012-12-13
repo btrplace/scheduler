@@ -23,11 +23,11 @@ import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.NodeActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.Slice;
-import btrplace.solver.choco.SliceBuilder;
-import btrplace.solver.choco.chocoUtil.FastIFFEq;
+import btrplace.solver.choco.chocoUtil.ChocoUtils;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.integer.TimesXYZ;
+import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.UUID;
@@ -41,13 +41,17 @@ public class ShutdownableNodeModel implements NodeActionModel {
 
     private UUID node;
 
-    private IntDomainVar state;
+    private IntDomainVar isOnline, isOffline;
 
     private IntDomainVar duration;
 
-    private Slice dSlice;
-
     private IntDomainVar end;
+
+    private IntDomainVar hostingStart;
+
+    private IntDomainVar hostingEnd;
+
+    private IntDomainVar start;
 
     /**
      * Make a new model.
@@ -58,45 +62,43 @@ public class ShutdownableNodeModel implements NodeActionModel {
      */
     public ShutdownableNodeModel(ReconfigurationProblem rp, UUID e) throws SolverException {
         this.node = e;
-        state = rp.getSolver().createBooleanVar(rp.makeVarLabel("shutdownnableNode(" + e + ").state"));
+        isOnline = rp.getSolver().createBooleanVar(rp.makeVarLabel("shutdownnableNode(" + e + ").online"));
 
         CPSolver s = rp.getSolver();
+
+        isOffline = s.createBooleanVar(rp.makeVarLabel("shutdownnableNode(" + e + ").offline"));
+        s.post(s.neq(isOnline, isOffline));
+        //new BoolVarNot(s, rp.makeVarLabel("shutdownnableNode(" + e + ").offline"), (BooleanVarImpl) isOnline);
+
         int d = rp.getDurationEvaluators().evaluate(ShutdownNode.class, e);
         //Duration is either 0 (no shutdown) or 'd' (shutdown)
         duration = s.createEnumIntVar(rp.makeVarLabel("shutdownableNode(" + e + ").duration"), new int[]{0, d});
 
-
-        this.dSlice = new SliceBuilder(rp, e, "shutdownableNode(" + e + ").dSlice")
-                .setStart(rp.makeDuration(rp.makeVarLabel("shutdownableNode(" + e + ").dSlice_start")))
-                .setHoster(rp.getNode(e))
-                .build();
+        hostingStart = rp.getStart();
+        hostingEnd = rp.makeDuration("shutdownableNode(" + e + ").hostingEnd");
+        s.eq(hostingEnd, s.plus(rp.getEnd(), ChocoUtils.mult(s, isOffline, -d)));
+        start = rp.makeDuration(rp.makeVarLabel("shutdownableNode(" + e + ").start"));
+        s.post(s.eq(start, ChocoUtils.mult(s, isOffline, hostingEnd)));
 
         end = rp.makeDuration(rp.makeVarLabel("shutdownableNode(" + e + ").end"));
-
-        s.post(s.eq(end, s.plus(dSlice.getStart(), duration)));
-        //The future state is uncertain yet
-
-        IntDomainVar isOffline = dSlice.isExclusive(); //offline means there will be an exclusive d-Slice
-        s.post(s.neq(isOffline, state)); //Cannot rely on BoolVarNot cause it is not compatible with the eq() below
-        // Duration necessarily < end of the duration of the reconfiguration process.
+        IntDomainVar endIfGoesOffline = new IntDomainVarAddCste(s, rp.makeVarLabel("endIfOffline"), hostingEnd, d);
+        s.post(new TimesXYZ(isOffline, endIfGoesOffline, end));
         s.post(s.leq(duration, rp.getEnd()));
-
+        s.post(s.leq(end, rp.getEnd()));
+        s.post(s.leq(hostingStart, rp.getEnd()));
+        s.post(s.leq(hostingEnd, rp.getEnd()));
+        s.post(s.leq(start, rp.getEnd()));
         /**
          * If it is state to shutdown the node, then the duration of the dSlice is not null
          */
-        s.post(new FastIFFEq(state, duration, 0)); //Stay online <-> duration = 0
-        s.post(new FastIFFEq(state, dSlice.getDuration(), 0)); //Stay online <-> duration = 0
-
         s.post(new FastImpliesEq(isOffline, rp.getVMsCountOnNodes()[rp.getNode(e)], 0)); //Packing stuff; isOffline -> no VMs running
-
-        //The end of the action is 'd' seconds after starting the d-slice
     }
 
 
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
-        if (state.getVal() == 0) {
-            plan.add(new ShutdownNode(node, dSlice.getStart().getVal(), end.getVal()));
+        if (isOffline.getVal() == 1) {
+            plan.add(new ShutdownNode(node, hostingEnd.getVal(), end.getVal()));
         }
         return true;
     }
@@ -108,7 +110,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
 
     @Override
     public IntDomainVar getStart() {
-        return dSlice.getStart();
+        return start;
     }
 
     @Override
@@ -123,7 +125,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
 
     @Override
     public IntDomainVar getState() {
-        return state;
+        return isOnline;
     }
 
     @Override
@@ -133,11 +135,11 @@ public class ShutdownableNodeModel implements NodeActionModel {
 
     @Override
     public IntDomainVar getHostingStart() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return hostingStart;
     }
 
     @Override
     public IntDomainVar getHostingEnd() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return hostingEnd;
     }
 }

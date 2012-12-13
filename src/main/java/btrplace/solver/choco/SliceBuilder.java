@@ -41,8 +41,6 @@ public class SliceBuilder {
 
     private IntDomainVar hoster = null;
 
-    private IntDomainVar isExclusive = null;
-
     private UUID e;
 
     private String lblPrefix;
@@ -96,9 +94,6 @@ public class SliceBuilder {
             }
         }
 
-        if (isExclusive == null) {
-            isExclusive = rp.getSolver().createBooleanVar(rp.makeVarLabel(lblPrefix + "_exclusive"));
-        }
         if (start != rp.getEnd() && start.getSup() > rp.getEnd().getInf()) {
             //System.err.println("Restrict " + start.pretty() + " < " + rp.getEnd().pretty());
             rp.getSolver().post(rp.getSolver().leq(start, rp.getEnd()));
@@ -111,7 +106,7 @@ public class SliceBuilder {
             //System.err.println("Restrict " + duration.pretty() + " < " + rp.getEnd().pretty());
             rp.getSolver().post(rp.getSolver().leq(duration, rp.getEnd()));
         }
-        return new Slice(e, start, end, duration, hoster, isExclusive);
+        return new Slice(e, start, end, duration, hoster);
     }
 
     /**
@@ -166,28 +161,6 @@ public class SliceBuilder {
      */
     public SliceBuilder setHoster(int v) {
         this.hoster = rp.getSolver().createIntegerConstant(rp.makeVarLabel("hoster_slice(" + e + ")"), v);
-        return this;
-    }
-
-    /**
-     * Set the exclusivity status of the slice.
-     *
-     * @param exclusive the variable indicating the exlusive status of the slice
-     * @return the current builder
-     */
-    public SliceBuilder setExclusive(IntDomainVar exclusive) {
-        isExclusive = exclusive;
-        return this;
-    }
-
-    /**
-     * Indicates if the slice is exclusive or not.
-     *
-     * @param b {@code true} to indicate the slice is exclusive
-     * @return the current builder
-     */
-    public SliceBuilder setExclusive(boolean b) {
-        isExclusive = rp.getSolver().createIntegerConstant(rp.makeVarLabel("exclusive_slice(" + e + ")"), b ? 1 : 0);
         return this;
     }
 }

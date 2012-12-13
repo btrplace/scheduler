@@ -35,8 +35,8 @@ import java.util.UUID;
  */
 public class ActionModelUtilTest {
 
-    private ActionModel[] makeActions() {
-        ActionModel[] as = new ActionModel[10];
+    private VMActionModel[] makeActions() {
+        VMActionModel[] as = new VMActionModel[10];
         CPSolver s = new CPSolver();
         for (int i = 0; i < as.length; i++) {
             as[i] = new MockActionModel(s, i);
@@ -105,7 +105,7 @@ public class ActionModelUtilTest {
         }
     }
 
-    public static class MockActionModel implements ActionModel {
+    public static class MockActionModel implements VMActionModel {
 
         private IntDomainVar st, ed, d, h, c, state;
 
@@ -123,21 +123,24 @@ public class ActionModelUtilTest {
                         s.createBoundIntVar("cS" + nb + "-st", nb, nb + 1),
                         s.createBoundIntVar("cS" + nb + "-ed", nb, nb + 1),
                         s.createBoundIntVar("cS" + nb + "-d", nb, nb + 1),
-                        s.createBoundIntVar("cS" + nb + "-h", nb, nb + 1),
-                        s.createBoundIntVar("cS" + nb + "-excl", nb, nb + 1));
+                        s.createBoundIntVar("cS" + nb + "-h", nb, nb + 1));
             } else {
                 dSlice = new Slice(UUID.randomUUID(),
                         s.createBoundIntVar("dS" + nb + "-st", nb, nb + 1),
                         s.createBoundIntVar("dS" + nb + "-ed", nb, nb + 1),
                         s.createBoundIntVar("dS" + nb + "-d", nb, nb + 1),
-                        s.createBoundIntVar("dS" + nb + "-h", nb, nb + 1),
-                        s.createBoundIntVar("dS" + nb + "-excl", nb, nb + 1));
+                        s.createBoundIntVar("dS" + nb + "-h", nb, nb + 1));
             }
         }
 
         @Override
         public IntDomainVar getStart() {
             return st;
+        }
+
+        @Override
+        public UUID getVM() {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         @Override

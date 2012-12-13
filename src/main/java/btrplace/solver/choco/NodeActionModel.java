@@ -36,7 +36,17 @@ public interface NodeActionModel extends ActionModel {
      */
     UUID getNode();
 
+    /**
+     * Get the moment the node is being capable of hosting VMs.
+     *
+     * @return a variable
+     */
     IntDomainVar getHostingStart();
 
+    /**
+     * Get the moment the node is no longer capable of hosting VMs.
+     *
+     * @return a variable
+     */
     IntDomainVar getHostingEnd();
 }

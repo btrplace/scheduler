@@ -73,8 +73,6 @@ public class LocalTaskScheduler {
 
     private int[] sortedMaxProfile;
 
-    private IntDomainVar excl;
-
     /**
      * LB of the moment the last c-slice leaves.
      */
@@ -85,19 +83,18 @@ public class LocalTaskScheduler {
      */
     private IStateInt lastCendSup;
 
-    /**
-     * The index of the d-slice that may be exclusive.
-     */
-    private int exclSlice;
-
     private int[][] capacities;
 
     private int[][] cUsages, dUsages;
 
     private int nbDims = 0;
 
+    private IntDomainVar early, last;
+
     public LocalTaskScheduler(int me,
                               IEnvironment env,
+                              IntDomainVar early,
+                              IntDomainVar last,
                               int[][] capacities,
                               int[][] cUsages,
                               IntDomainVar[] cEnds,
@@ -106,8 +103,10 @@ public class LocalTaskScheduler {
                               IntDomainVar[] dStarts,
                               IStateIntVector vIn,
                               int[] assocs,
-                              int[] revAssocs,
-                              IntDomainVar excl, int exclSlice) {
+                              int[] revAssocs) {
+        this.early = early;
+        this.last = last;
+
         this.associations = assocs;
         this.me = me;
         this.cEnds = cEnds;
@@ -150,8 +149,6 @@ public class LocalTaskScheduler {
                 lastSup = s;
             }
         }
-        this.excl = excl;
-        this.exclSlice = exclSlice;
         this.lastCendInf = env.makeInt(lastInf);
         this.lastCendSup = env.makeInt(lastSup);
     }
@@ -161,7 +158,6 @@ public class LocalTaskScheduler {
         if (!checkInvariant()) {
             return false;
         }
-        updateNonOverlappingWithExclusiveDSlice();
         updateCEndsSup();
         updateDStartsInf();
         updateDStartsSup();
@@ -276,7 +272,7 @@ public class LocalTaskScheduler {
 
         if (me == DEBUG) {
             ChocoLogging.getBranchingLogger().finest("---" + me + "--- startup=(" + Arrays.toString(startupFree) + ")"
-                    + " init=(" + Arrays.toString(getUsages(capacities, me)) + ")");
+                    + " init=(" + Arrays.toString(getUsages(capacities, me)) + "); early=" + early.pretty() + "; last=" + last.pretty());
             for (int x = 0; x < vIn.size(); x++) {
                 int i = vIn.get(x);
                 ChocoLogging.getBranchingLogger().finest((dStarts[i].isInstantiated() ? "!" : "?") + " " + dStarts[i].pretty() + " " + Arrays.toString(getUsages(dUsages, i)));
@@ -306,10 +302,7 @@ public class LocalTaskScheduler {
 
     private boolean associatedToDSliceOnCurrentNode(int cSlice) {
         if (revAssociations[cSlice] != NO_ASSOCIATIONS
-                && isIn(revAssociations[cSlice])) {//TODO: need a constant time operation
-            /*if (me == DEBUG) {
-                ChocoLogging.getBranchingLogger().finest(me + " " + cEnds[cSlice].getName() + " with " + dStarts[revAssociations[cSlice]]);
-            } */
+                && isIn(revAssociations[cSlice])) {
             return true;
         }
         return false;
@@ -324,23 +317,6 @@ public class LocalTaskScheduler {
             }
         }
         return false;
-    }
-
-    /**
-     * If the exclusive flag is set, then the bounds of the designated d-slice start is updated
-     * to avoid overlapping.
-     */
-    private void updateNonOverlappingWithExclusiveDSlice() throws ContradictionException {
-        if (excl != null && (!excl.isInstantiated() || excl.isInstantiatedTo(1))) {
-            if (me == DEBUG) {
-                ChocoLogging.getBranchingLogger().finest(me + " - I have an exclusive d-slice: " + dStarts[exclSlice].pretty());
-                ChocoLogging.getBranchingLogger().finest(me + " - lastInfSup: " + lastCendInf.get() + " sup=" + lastCendSup.get());
-            }
-            dStarts[exclSlice].setInf(this.lastCendInf.get());
-            dStarts[exclSlice].setSup(this.lastCendSup.get());
-
-        }
-
     }
 
     private boolean associatedToCSliceOnCurrentNode(int dSlice) {
@@ -378,76 +354,34 @@ public class LocalTaskScheduler {
                 if (profilesMin[i].get(t) > capacities[i][me]) {
                     if (me == DEBUG) {
                         ChocoLogging.getBranchingLogger().warning("(" + me + ") Invalid min profile at " + t + " on dimension " + i
-                                + ": " + profilesMin[i].get(t) + " > " + capacities[i][me]/* + " - " + prettyProfile(sortedMinProfile, profilesMin[i])*/);
+                                + ": " + profilesMin[i].get(t) + " > " + capacities[i][me]);
                     }
                     return false;
                 }
             }
         }
-        //Check the invariant related to the exclusive d-slice. If it is set, then all the c-slices must end before
-        //the d-slice start. So the UB of the c-slices < UB of the exclusive d-slice
-        if (excl != null && excl.isInstantiatedTo(1)) {
-            for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
-                if (me == DEBUG && cEnds[i].getInf() > dStarts[exclSlice].getSup()) {
-                    ChocoLogging.getBranchingLogger().warning(me + ": Invalid start for c-slice " + i + ": lb=" + cEnds[i].getInf() + " while excl UB=" + dStarts[exclSlice].getSup());
-                    return false;
+
+        //invariant related to the last and the early.
+        for (int idx = 0; idx < vIn.size(); idx++) {
+            int i = vIn.get(idx);
+            if (dStarts[i].getSup() < early.getSup()) {
+                if (me == DEBUG) {
+                    ChocoLogging.getBranchingLogger().warning("(" + me + ") The dSlice " + i + " has to start too early (max is " + dStarts[i].pretty() + ") (min expected=" + early.pretty() + ")");
                 }
-                cEnds[i].setSup(dStarts[exclSlice].getSup());
+                return false;
+            }
+        }
+
+        for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
+            if (cEnds[i].getInf() > last.getSup()) {
+                if (me == DEBUG) {
+                    ChocoLogging.getBranchingLogger().warning("(" + me + ") The cSlice " + i + " has to end too late (last expected=" + last.getSup() + ")");
+                }
+                return false;
             }
 
-
         }
-
-
         return true;
-    }
-
-    /**
-     * Get the real deadline LB for a c-slice between a given value
-     * and a potential exclusive dSlice.
-     *
-     * @param v the value to try
-     * @return the real value
-     */
-    private int getDeadlineLB(int v) {
-        return Math.min(dStarts[exclSlice].getInf(), v);
-    }
-
-    /**
-     * Get the real deadline UB for a c-slice between a given value
-     * and a potential exclusive dSlice.
-     *
-     * @param v the value to try
-     * @return the real value
-     */
-    private int getDeadlineUB(int v) {
-
-        if (excl != null && (!excl.isInstantiated() || excl.isInstantiatedTo(1))) {
-            return Math.max(dStarts[exclSlice].getSup(), v);
-        } else { //excl is null or instantiated to 0
-            return v;
-        }
-
-    }
-
-    /**
-     * Get the minimal start moment for a d-slice between a given value
-     * and a potential exclusive d-slice.
-     *
-     * @param v
-     */
-    private int getLivingLineLB(int v) {
-        return Math.min(lastCendInf.get(), v);
-    }
-
-    /**
-     * Get the maximal start moment for a d-slice between a given value
-     * and a potential exclusive d-slice.
-     *
-     * @param v
-     */
-    private int getLivingLineUB(int v) {
-        return Math.max(lastCendSup.get(), v);
     }
 
     private void updateDStartsInf() throws ContradictionException {
@@ -472,12 +406,7 @@ public class LocalTaskScheduler {
                     }
                 }
                 if (lastT != -1) {
-                    if (excl == null || !excl.isInstantiated() || (excl.isInstantiatedTo(1) && i != exclSlice)) {
-                        if (me == DEBUG) {
-                            ChocoLogging.getBranchingLogger().finest(me + ": " + dStarts[i].pretty() + " lb =" + lastT);
-                        }
-                        dStarts[i].setInf(getLivingLineLB(lastT));
-                    }
+                    dStarts[i].setInf(Math.max(lastT, early.getInf()));
                 }
             }
         }
@@ -505,12 +434,7 @@ public class LocalTaskScheduler {
                 int i = vIn.get(x);
                 if (!dStarts[i].isInstantiated() && !associatedToCSliceOnCurrentNode(i) && dStarts[i].getSup() > lastSup) {
                     int s = Math.max(dStarts[i].getInf(), lastSup);
-                    if (excl == null || !excl.isInstantiated() || (excl.isInstantiatedTo(1) && i != exclSlice)) {
-                        if (me == DEBUG) {
-                            ChocoLogging.getBranchingLogger().finest(me + ": " + dStarts[i].pretty() + " ub=" + s + ");");
-                        }
-                        dStarts[i].setSup(getLivingLineUB(s));
-                    }
+                    dStarts[i].setSup(Math.max(s, early.getSup()));
                 }
             }
         }
@@ -536,8 +460,7 @@ public class LocalTaskScheduler {
                     if (me == DEBUG) {
                         ChocoLogging.getBranchingLogger().finest(me + ": " + cEnds[i].pretty() + " cEndsSup =" + lastT);
                     }
-
-                    cEnds[i].setSup(getDeadlineUB(lastT));
+                    cEnds[i].setSup(Math.min(lastT, last.getSup()));
                 }
 
             }

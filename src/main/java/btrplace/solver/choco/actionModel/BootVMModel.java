@@ -70,7 +70,6 @@ public class BootVMModel implements VMActionModel {
         duration = rp.makeDuration(rp.makeVarLabel("bootVM.duration(" + e + ")"), d, d);
         dSlice = new SliceBuilder(rp, e, "bootVM(" + e + ").dSlice").setStart(start)
                 .setDuration(rp.makeDuration(rp.makeVarLabel("bootVM(" + e + ").dSlice_duration"), d, rp.getEnd().getSup()))
-                .setExclusive(false)
                 .build();
         CPSolver s = rp.getSolver();
         s.post(s.leq(end, rp.getEnd()));

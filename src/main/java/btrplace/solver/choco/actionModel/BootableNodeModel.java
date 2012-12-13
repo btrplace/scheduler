@@ -23,13 +23,11 @@ import btrplace.plan.event.BootNode;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.NodeActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.Slice;
-import btrplace.solver.choco.SliceBuilder;
-import btrplace.solver.choco.chocoUtil.FastIFFEq;
-import btrplace.solver.choco.chocoUtil.FastImpliesEq;
+import btrplace.solver.choco.chocoUtil.ChocoUtils;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.reified.ReifiedFactory;
-import choco.cp.solver.variables.integer.IntDomainVarAddCste;
+import choco.cp.solver.constraints.integer.ElementV;
+import choco.cp.solver.variables.integer.BoolVarNot;
+import choco.cp.solver.variables.integer.BooleanVarImpl;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.UUID;
@@ -41,13 +39,17 @@ import java.util.UUID;
  */
 public class BootableNodeModel implements NodeActionModel {
 
-    private Slice cSlice;
-
-    private IntDomainVar duration;
-
     private IntDomainVar start;
 
-    private IntDomainVar state;
+    private IntDomainVar end;
+
+    private IntDomainVar isOnline;
+
+    private IntDomainVar hostingStart;
+
+    private IntDomainVar hostingEnd;
+
+    private IntDomainVar duration;
 
     private UUID node;
 
@@ -60,31 +62,28 @@ public class BootableNodeModel implements NodeActionModel {
      */
     public BootableNodeModel(ReconfigurationProblem rp, UUID nId) throws SolverException {
         node = nId;
-        int nIdx = rp.getNode(nId);
+
+        int d = rp.getDurationEvaluators().evaluate(BootNode.class, nId);
         CPSolver s = rp.getSolver();
 
-        //TODO: makes it consume all the resources of the node
-        int d = rp.getDurationEvaluators().evaluate(BootNode.class, nId);
-        duration = s.createEnumIntVar(rp.makeVarLabel("bootableNode.duration(" + nId + ")"), new int[]{0, d});
+        isOnline = s.createBooleanVar(rp.makeVarLabel("bootableNode(" + nId + ").online"));
+        IntDomainVar isOffline = new BoolVarNot(s, rp.makeVarLabel("bootableNode(" + nId + ").offline"), (BooleanVarImpl) isOnline);
+        start = rp.getStart();
+        end = rp.makeDuration(rp.makeVarLabel("bootableNode(" + nId + ").end"));
 
-        cSlice = new SliceBuilder(rp, nId, "bootableNode(" + nId + ").cSlice")
-                .setEnd(rp.makeDuration(rp.makeVarLabel("bootableNode(" + nId + ").cSlice_end")))
-                .setHoster(nIdx)
-                .build();
+        hostingStart = rp.makeDuration(rp.makeVarLabel("bootableNode(" + nId + ").hostingStart"));
 
-        start = new IntDomainVarAddCste(s, rp.makeVarLabel("bootableNode(" + nId + ").start"), cSlice.getEnd(), -d);
-        //Unknown state
-        state = s.createBooleanVar(rp.makeVarLabel("bootableNode(" + nId + ").state"));
+        s.post(s.eq(end, ChocoUtils.mult(s, isOffline, hostingStart)));
 
-        //the node goes online <-> duration == d
-        s.post(new FastIFFEq(state, duration, d));
-        s.post(s.leq(duration, cSlice.getEnd()));
+        IntDomainVar cDur = s.makeConstantIntVar(d);
+
         /**
-         * used denotes whether or not the node is used, \ie it host running VMs
+         * if isOnline == 0, hostingStart = cDur , the boot duration
+         * else            , hostingStart = rp.getEnd(), so no dSlice
          */
-        IntDomainVar used = s.createBooleanVar(rp.makeVarLabel("bootableNode_isUsed(" + nId + ")"));
-        s.post(ReifiedFactory.builder(used, s.neq(rp.getVMsCountOnNodes()[nIdx], 0), s));
-        s.post(new FastImpliesEq(used, state, 1));
+        s.post(new ElementV(new IntDomainVar[]{rp.getEnd(), cDur, isOnline, hostingStart}, 0, s.getEnvironment()));
+        hostingEnd = rp.getEnd();
+        duration = rp.makeDuration(rp.makeVarLabel("bootableNode(" + nId + ").duration"));
     }
 
     @Override
@@ -102,7 +101,7 @@ public class BootableNodeModel implements NodeActionModel {
 
     @Override
     public IntDomainVar getEnd() {
-        return cSlice.getEnd();
+        return end;
     }
 
     @Override
@@ -117,7 +116,7 @@ public class BootableNodeModel implements NodeActionModel {
 
     @Override
     public IntDomainVar getState() {
-        return state;
+        return isOnline;
     }
 
     @Override
@@ -127,11 +126,11 @@ public class BootableNodeModel implements NodeActionModel {
 
     @Override
     public IntDomainVar getHostingStart() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return hostingStart;
     }
 
     @Override
     public IntDomainVar getHostingEnd() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return hostingEnd;
     }
 }

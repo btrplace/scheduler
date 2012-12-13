@@ -56,12 +56,10 @@ public class StayRunningVMModel implements VMActionModel {
         cSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").cSlice")
                 .setHoster(host)
                 .setEnd(rp.makeDuration(rp.makeVarLabel("stayRunningVM(" + e + ").cSlice_end")))
-                .setExclusive(false)
                 .build();
         dSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").dSlice")
                 .setHoster(host)
                 .setStart(rp.makeDuration(rp.makeVarLabel("stayRunningVM(" + e + ").dSlice_start")))
-                .setExclusive(false)
                 .build();
         CPSolver s = rp.getSolver();
         s.post(s.eq(cSlice.getEnd(), dSlice.getStart()));

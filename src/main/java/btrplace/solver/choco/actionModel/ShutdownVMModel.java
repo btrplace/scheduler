@@ -66,7 +66,6 @@ public class ShutdownVMModel implements VMActionModel {
         duration = rp.getSolver().createIntegerConstant(rp.makeVarLabel("shutdownVM(" + e + ").duration"), d);
         this.cSlice = new SliceBuilder(rp, e, "shutdownVM(" + e + ").cSlice").setHoster(rp.getCurrentVMLocation(rp.getVM(e)))
                 .setEnd(rp.makeDuration(rp.makeVarLabel("shutdownVM(" + e + ").cSlice_end"), d, rp.getEnd().getSup()))
-                .setExclusive(false)
                 .build();
         CPSolver s = rp.getSolver();
         //s.post(s.geq(cSlice.getDuration(), d));

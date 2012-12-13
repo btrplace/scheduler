@@ -75,8 +75,10 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
     private IEnvironment env;
 
     private IStateIntVector[] vIns;
-    private IntDomainVar[] dExclusives;
 
+    private IntDomainVar[] earlyStarts;
+
+    private IntDomainVar[] lastEnds;
 
     public static IntDomainVar[] allButNull(IntDomainVar[] xs) {
         List<IntDomainVar> l = new ArrayList<IntDomainVar>();
@@ -89,6 +91,8 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
     }
 
     public TaskScheduler(IEnvironment env,
+                         IntDomainVar[] earlyStarts,
+                         IntDomainVar[] lastEnds,
                          int[][] capas,
                          IntDomainVar[] cHosters,
                          int[][] cUsages,
@@ -96,14 +100,12 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
                          IntDomainVar[] dHosters,
                          int[][] dUsages,
                          IntDomainVar[] dStarts,
-                         int[] assocs,
-                         IntDomainVar[] excls,
-                         int[] exclSlice
+                         int[] assocs) {
 
-    ) {
-
-        super(ArrayUtils.append(dHosters, cHosters, cEnds, dStarts, allButNull(excls)));
+        super(ArrayUtils.append(dHosters, cHosters, cEnds, dStarts, earlyStarts, lastEnds));
         this.env = env;
+        this.earlyStarts = earlyStarts;
+        this.lastEnds = lastEnds;
         this.cHosters = cHosters;
         this.dHosters = dHosters;
         this.cEnds = cEnds;
@@ -119,8 +121,6 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
         this.nbDTasks = dUsages[0].length;
 
         scheds = new LocalTaskScheduler[nbResources];
-
-        this.dExclusives = excls;
 
         BitSet[] outs = new BitSet[scheds.length];
         for (int i = 0; i < scheds.length; i++) {
@@ -147,6 +147,8 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
         for (int i = 0; i < scheds.length; i++) {
             vIns[i] = env.makeIntVector();
             scheds[i] = new LocalTaskScheduler(i, env,
+                    earlyStarts[i],
+                    lastEnds[i],
                     capacities,
                     cUsages,
                     cEnds,
@@ -155,9 +157,7 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
                     dStarts,
                     vIns[i],
                     assocs,
-                    revAssociations,
-                    dExclusives[i],
-                    exclSlice[i]
+                    revAssociations
             );
         }
     }

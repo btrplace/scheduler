@@ -107,11 +107,11 @@ public class ResourceMappingTest {
         //Basic consumption for the VMs. If would be safe to use Preserve, but I don't want:D
         rcm.getVMConsumption()[rp.getVM(vm)].setInf(2);
         rcm.getVMConsumption()[rp.getVM(vm2)].setInf(3);
-        rp.getSolver().solve();
-        Assert.assertEquals(2, rcm.getRealNodeUsage()[0].getInf());
-        Assert.assertEquals(2, rcm.getRealNodeUsage()[0].getSup());
-        Assert.assertEquals(3, rcm.getRealNodeUsage()[1].getInf());
-        Assert.assertEquals(3, rcm.getRealNodeUsage()[1].getSup());
+        Assert.assertEquals(rp.getSolver().solve(), Boolean.TRUE);
+        Assert.assertEquals(rcm.getRealNodeUsage()[0].getInf(), 2);
+        Assert.assertEquals(rcm.getRealNodeUsage()[0].getSup(), 2);
+        Assert.assertEquals(rcm.getRealNodeUsage()[1].getInf(), 3);
+        Assert.assertEquals(rcm.getRealNodeUsage()[1].getSup(), 3);
     }
 
 }
