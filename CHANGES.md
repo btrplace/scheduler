@@ -1,6 +1,10 @@
 Release notes
 =======================
 
+v0.7 - ?? dec. 2012
+----------------------
+- Integrate btrplace.model
+
 V0.6 - 14 dec. 2012
 ----------------------
 - Events can be attached to actions to
