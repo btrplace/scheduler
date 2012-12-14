@@ -29,10 +29,8 @@ import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntIntHashMap;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
-import java.util.List;
 import java.util.logging.Level;
 
 /**
@@ -71,16 +69,6 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
     private IEnvironment env;
 
     private IStateIntVector[] vIns;
-
-    public static IntDomainVar[] allButNull(IntDomainVar[] xs) {
-        List<IntDomainVar> l = new ArrayList<IntDomainVar>();
-        for (int i = 0; i < xs.length; i++) {
-            if (xs[i] != null) {
-                l.add(xs[i]);
-            }
-        }
-        return l.toArray(new IntDomainVar[l.size()]);
-    }
 
     public TaskScheduler(IEnvironment env,
                          IntDomainVar[] earlyStarts,
