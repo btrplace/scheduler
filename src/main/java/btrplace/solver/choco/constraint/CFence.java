@@ -67,7 +67,7 @@ public class CFence implements ChocoSatConstraint {
         if (!runnings.isEmpty()) {
             if (nodes.size() == 1) { //Only 1 possible destination node, so we directly instantiate the variable.
                 for (UUID vm : runnings) {
-                    Slice t = rp.getVMActions()[rp.getVM(vm)].getDSlice();
+                    Slice t = rp.getVMAction(vm).getDSlice();
                     if (t != null) {
                         UUID n = nodes.iterator().next();
                         try {
@@ -101,7 +101,7 @@ public class CFence implements ChocoSatConstraint {
 
                 //Domain restriction. Remove all the non-involved nodes
                 for (UUID vm : runnings) {
-                    Slice t = rp.getVMActions()[rp.getVM(vm)].getDSlice();
+                    Slice t = rp.getVMAction(vm).getDSlice();
                     if (t != null) {
                         for (int a = 0; a < i; a++) {
                             try {

@@ -53,7 +53,7 @@ public class CRoot implements ChocoSatConstraint {
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
         CPSolver s = rp.getSolver();
         for (UUID vm : cstr.getInvolvedVMs()) {
-            VMActionModel m = rp.getVMActions()[rp.getVM(vm)];
+            VMActionModel m = rp.getVMAction(vm);
             Slice cSlice = m.getCSlice();
             Slice dSlice = m.getDSlice();
             if (cSlice != null && dSlice != null) {

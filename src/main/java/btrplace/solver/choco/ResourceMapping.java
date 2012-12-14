@@ -75,7 +75,7 @@ public class ResourceMapping {
         vmUsage = new IntDomainVar[rp.getVMs().length];
         for (int i = 0; i < vmUsage.length; i++) {
             UUID vmId = rp.getVM(i);
-            VMActionModel a = rp.getVMActions()[i];
+            VMActionModel a = rp.getVMAction(vmId);
             Slice slice = a.getDSlice();
             if (slice == null) { //The VMs will not be running, so its consumption is set to 0
                 vmUsage[i] = s.makeConstantIntVar(rp.makeVarLabel("vmUsage('" + rc.getIdentifier() + "', '" + vmId + "'"), 0);

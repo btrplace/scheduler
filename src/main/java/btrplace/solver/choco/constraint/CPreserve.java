@@ -102,10 +102,7 @@ public class CPreserve implements ChocoSatConstraint {
     @Override
     public boolean isSatisfied(ReconfigurationPlan plan) {
         Model r = plan.getResult();
-        if (r == null) {
-            return false;
-        }
-        return cstr.isSatisfied(r).equals(SatConstraint.Sat.SATISFIED);
+        return r != null && cstr.isSatisfied(r).equals(SatConstraint.Sat.SATISFIED);
     }
 
     @Override
