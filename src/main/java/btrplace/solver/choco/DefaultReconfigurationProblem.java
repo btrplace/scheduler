@@ -29,7 +29,6 @@ import btrplace.plan.event.AllocateEvent;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
 import btrplace.solver.choco.chocoUtil.BinPacking;
-import btrplace.solver.choco.constraint.TaskSchedulerBuilder;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.ISolutionPool;
@@ -88,7 +87,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private IntDomainVar[] vmsCountOnNodes;
 
-    private TaskSchedulerBuilder taskSchedBuilder;
+    private SliceSchedulerBuilder taskSchedBuilder;
 
     /**
      * Make a new RP where the next state for every VM is indicated.
@@ -140,7 +139,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         linkCardinatiesWithSlices();
 
-        taskSchedBuilder = new TaskSchedulerBuilder(this);
+        taskSchedBuilder = new SliceSchedulerBuilder(this);
     }
 
     @Override
@@ -150,7 +149,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         addContinuousResourceCapacities();
 
-        taskSchedBuilder.commitConstraint();
+        solver.post(taskSchedBuilder.build());
 
         solver.generateSearchStrategy();
         ISolutionPool sp = SolutionPoolFactory.makeInfiniteSolutionPool(solver.getSearchStrategy());
@@ -554,7 +553,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public TaskSchedulerBuilder getTaskSchedulerBuilder() {
+    public SliceSchedulerBuilder getTaskSchedulerBuilder() {
         return taskSchedBuilder;
     }
 

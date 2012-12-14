@@ -22,12 +22,10 @@ import btrplace.model.Model;
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.constraint.TaskSchedulerBuilder;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -337,5 +335,5 @@ public interface ReconfigurationProblem {
      *
      * @return the builder
      */
-    TaskSchedulerBuilder getTaskSchedulerBuilder();
+    SliceSchedulerBuilder getTaskSchedulerBuilder();
 }
