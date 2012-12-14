@@ -20,7 +20,7 @@ package btrplace.solver.choco;
 
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Utility methods to extract variables from slices.
@@ -29,6 +29,9 @@ import java.util.Collection;
  */
 public final class SliceUtils {
 
+    /**
+     * No instantiation.
+     */
     private SliceUtils() {
     }
 
@@ -38,7 +41,7 @@ public final class SliceUtils {
      * @param slices the slices
      * @return an array containing every hosting variable
      */
-    public static IntDomainVar[] extractHosters(Collection<Slice> slices) {
+    public static IntDomainVar[] extractHosters(List<Slice> slices) {
         IntDomainVar[] vs = new IntDomainVar[slices.size()];
         int i = 0;
         for (Slice s : slices) {
@@ -53,7 +56,7 @@ public final class SliceUtils {
      * @param slices the slices
      * @return an array containing every start variable
      */
-    public static IntDomainVar[] extractStarts(Collection<Slice> slices) {
+    public static IntDomainVar[] extractStarts(List<Slice> slices) {
         IntDomainVar[] vs = new IntDomainVar[slices.size()];
         int i = 0;
         for (Slice s : slices) {
@@ -68,11 +71,26 @@ public final class SliceUtils {
      * @param slices the slices
      * @return an array containing every end variable
      */
-    public static IntDomainVar[] extractEnds(Collection<Slice> slices) {
+    public static IntDomainVar[] extractEnds(List<Slice> slices) {
         IntDomainVar[] vs = new IntDomainVar[slices.size()];
         int i = 0;
         for (Slice s : slices) {
             vs[i++] = s.getEnd();
+        }
+        return vs;
+    }
+
+    /**
+     * Extract and merge the variables indicating the slices duration.
+     *
+     * @param slices the slices
+     * @return an array containing every variable
+     */
+    public static IntDomainVar[] extractDurations(List<Slice> slices) {
+        IntDomainVar[] vs = new IntDomainVar[slices.size()];
+        int i = 0;
+        for (Slice s : slices) {
+            vs[i++] = s.getDuration();
         }
         return vs;
     }
