@@ -20,17 +20,17 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.*;
 import btrplace.model.constraint.Offline;
+import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ShutdownNode;
+import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Unit tests for {@link COffline}.
@@ -44,6 +44,7 @@ public class COfflineTest {
         Offline b = new Offline(Collections.singleton(UUID.randomUUID()));
         COffline c = new COffline(b);
         Assert.assertEquals(b, c.getAssociatedConstraint());
+        Assert.assertEquals(c.toString(), b.toString());
     }
 
     /**
@@ -63,9 +64,40 @@ public class COfflineTest {
         cra.setTimeLimit(-1);
         Collection<SatConstraint> x = Collections.singleton((SatConstraint) new Offline(map.getAllNodes()));
         ReconfigurationPlan plan = cra.solve(model, x);
-        Assert.assertEquals(2, plan.getSize());
-        Assert.assertEquals(10, plan.getDuration());
+        Assert.assertEquals(plan.getSize(), 2);
+        Assert.assertEquals(plan.getDuration(), 10);
         Model res = plan.getResult();
-        Assert.assertEquals(2, res.getMapping().getOfflineNodes().size());
+        Assert.assertEquals(res.getMapping().getOfflineNodes().size(), 2);
+    }
+
+    @Test
+    public void testGetMisplacedAndSatisfied() {
+        Mapping map = new DefaultMapping();
+        UUID n1 = UUID.randomUUID();
+        UUID n2 = UUID.randomUUID();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+
+        Set<UUID> s = new HashSet<UUID>();
+        s.add(n1);
+        s.add(n2);
+        Offline off = new Offline(s);
+        COffline coff = new COffline(off);
+        Model mo = new DefaultModel(map);
+
+        Assert.assertTrue(coff.getMisPlacedVMs(mo).isEmpty());
+
+        UUID vm = UUID.randomUUID();
+        map.addRunningVM(vm, n1);
+        Assert.assertEquals(coff.getMisPlacedVMs(mo), map.getAllVMs());
+
+        ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
+        Assert.assertFalse(coff.isSatisfied(plan));
+        plan.add(new ShutdownNode(n2, 0, 1));
+        plan.add(new ShutdownVM(vm, n1, 0, 1));
+        Assert.assertFalse(coff.isSatisfied(plan));
+        plan.add(new ShutdownNode(n1, 1, 2));
+        Assert.assertTrue(coff.isSatisfied(plan));
+
     }
 }

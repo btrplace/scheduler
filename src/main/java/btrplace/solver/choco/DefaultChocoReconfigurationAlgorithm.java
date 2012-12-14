@@ -167,7 +167,6 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
             }
         }
 
-
         //The objective
         obj.inject(rp);
 
