@@ -101,9 +101,9 @@ public class COverbook implements ChocoSatConstraint {
                     return false;
                 }
                 IntDomainVar freeReal = s.createBoundIntVar(rp.makeVarLabel("free_real('" + u + "')"), 0, maxReal);
-                s.post(s.eq(freeReal, s.minus(maxReal, realCapa[nIdx])));
+                s.post(s.eq(freeReal, CPSolver.minus(maxReal, realCapa[nIdx])));
                 IntDomainVar freeRaw = ChocoUtils.div(s, freeReal, (int) ratio); //TODO: check for the correctness of the truncation
-                s.post(s.eq(rawCapa[nIdx], s.minus(maxRaw, freeRaw)));
+                s.post(s.eq(rawCapa[nIdx], CPSolver.minus(maxRaw, freeRaw)));
             }
         }
         //The slice scheduling constraint that is necessary
@@ -165,10 +165,7 @@ public class COverbook implements ChocoSatConstraint {
     @Override
     public boolean isSatisfied(ReconfigurationPlan plan) {
         Model r = plan.getResult();
-        if (r == null) {
-            return false;
-        }
-        return cstr.isSatisfied(r).equals(SatConstraint.Sat.SATISFIED);
+        return r != null && cstr.isSatisfied(r).equals(SatConstraint.Sat.SATISFIED);
     }
 
     @Override

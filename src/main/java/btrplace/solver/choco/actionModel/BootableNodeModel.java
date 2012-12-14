@@ -87,7 +87,7 @@ public class BootableNodeModel implements NodeActionModel {
         s.post(new ElementV(new IntDomainVar[]{rp.getEnd(), cDur, isOnline, hostingStart}, 0, s.getEnvironment()));
         hostingEnd = rp.getEnd();
         duration = rp.makeDuration(rp.makeVarLabel("bootableNode(" + nId + ").duration"));
-        s.post(s.eq(duration, s.minus(end, start)));
+        s.post(s.eq(duration, CPSolver.minus(end, start)));
     }
 
     @Override
