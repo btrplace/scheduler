@@ -55,9 +55,8 @@ public class CSpread implements ChocoSatConstraint {
     public void inject(ReconfigurationProblem rp) {
 
         List<IntDomainVar> onlyRunnings = new ArrayList<IntDomainVar>();
-        Mapping m = rp.getSourceModel().getMapping();
         for (UUID vmId : cstr.getInvolvedVMs()) {
-            if (rp.getFutureRunningVMs().contains(vmId)/* || m.getRunningVMs().contains(vmId)*/) {
+            if (rp.getFutureRunningVMs().contains(vmId)) {
                 VMActionModel a = rp.getVMAction(vmId);
                 Slice d = a.getDSlice();
                 if (d != null) {

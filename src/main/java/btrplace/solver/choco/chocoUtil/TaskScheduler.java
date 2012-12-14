@@ -60,10 +60,6 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
 
     private int nbDims;
 
-    private int nbCTasks;
-
-    private int nbDTasks;
-
     private int[][] capacities;
 
     private int[][] cUsages;
@@ -75,10 +71,6 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
     private IEnvironment env;
 
     private IStateIntVector[] vIns;
-
-    private IntDomainVar[] earlyStarts;
-
-    private IntDomainVar[] lastEnds;
 
     public static IntDomainVar[] allButNull(IntDomainVar[] xs) {
         List<IntDomainVar> l = new ArrayList<IntDomainVar>();
@@ -104,8 +96,6 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
 
         super(ArrayUtils.append(dHosters, cHosters, cEnds, dStarts, earlyStarts, lastEnds));
         this.env = env;
-        this.earlyStarts = earlyStarts;
-        this.lastEnds = lastEnds;
         this.cHosters = cHosters;
         this.dHosters = dHosters;
         this.cEnds = cEnds;
@@ -117,8 +107,7 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
 
         this.nbResources = capas[0].length;
         this.nbDims = capas.length;
-        this.nbCTasks = cUsages[0].length;
-        this.nbDTasks = dUsages[0].length;
+        int nbCTasks = cUsages[0].length;
 
         scheds = new LocalTaskScheduler[nbResources];
 

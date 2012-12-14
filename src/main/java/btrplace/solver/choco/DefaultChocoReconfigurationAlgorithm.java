@@ -28,7 +28,6 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.constraint.SatConstraintMapper;
 import btrplace.solver.choco.objective.minMTTR.MinMTTR;
-import choco.cp.solver.CPSolver;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.search.measure.IMeasures;
 
@@ -56,8 +55,6 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     private DurationEvaluators durationEvaluators;
 
     private ReconfigurationObjective obj;
-
-    private boolean keepRcUsage = true;
 
     /**
      * Make a new algorithm.
@@ -171,9 +168,6 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
         //The objective
         obj.inject(rp);
-
-
-        CPSolver s = rp.getSolver();
 
         Boolean ret = rp.solve(timeLimit, optimize);
         if (Boolean.TRUE.equals(ret)) {
