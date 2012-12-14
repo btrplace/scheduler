@@ -67,14 +67,17 @@ public final class MyElement extends AbstractBinIntSConstraint {
         this(index, values, var, 0, Sort.none);
     }
 
+    @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
 
+    @Override
     public String toString() {
         return "Element";
     }
 
+    @Override
     public int getFilteredEventMask(int idx) {
         if (idx == 0)
             return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
@@ -88,11 +91,12 @@ public final class MyElement extends AbstractBinIntSConstraint {
      * @throws choco.kernel.solver.ContradictionException
      *          contradiction exception
      */
-
+    @Override
     public void propagate() throws ContradictionException {
         this.updateIndexFromValue();
     }
 
+    @Override
     public String pretty() {
         return (this.v1.pretty() + " = nth(" + this.v0.pretty() + ", " + StringUtils.pretty(this.lval) + ")");
     }
@@ -183,20 +187,20 @@ public final class MyElement extends AbstractBinIntSConstraint {
         }
     }
 
+    @Override
     public void awake() throws ContradictionException {
         this.updateIndexFromValue();
         this.updateValueFromIndex();
     }
 
+    @Override
     public void awakeOnInst(int i) throws ContradictionException {
         if (i == 0) {
             this.v1.instantiate(this.lval[this.v0.getVal() - this.cste], this, false);
         }
-
-//    else
-//      this.updateIndexFromValue();
     }
 
+    @Override
     public void awakeOnRem(int i, int x) throws ContradictionException {
         if (i == 0)
             this.updateValueFromIndex();
@@ -204,6 +208,7 @@ public final class MyElement extends AbstractBinIntSConstraint {
             this.updateIndexFromValue();
     }
 
+    @Override
     public Boolean isEntailed() {
         if (this.v1.isInstantiated()) {
             boolean allVal = true;
@@ -230,6 +235,7 @@ public final class MyElement extends AbstractBinIntSConstraint {
         return Boolean.FALSE;
     }
 
+    @Override
     public boolean isSatisfied(int[] tuple) {
         if (tuple[0] - this.cste >= lval.length ||
                 tuple[0] - this.cste < 0) return false;
