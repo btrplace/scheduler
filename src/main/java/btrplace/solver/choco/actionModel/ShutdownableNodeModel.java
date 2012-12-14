@@ -88,6 +88,8 @@ public class ShutdownableNodeModel implements NodeActionModel {
         s.post(s.leq(hostingStart, rp.getEnd()));
         s.post(s.leq(hostingEnd, rp.getEnd()));
         s.post(s.leq(start, rp.getEnd()));
+
+        s.post(s.eq(duration, s.minus(end, start)));
         /**
          * If it is state to shutdown the node, then the duration of the dSlice is not null
          */
