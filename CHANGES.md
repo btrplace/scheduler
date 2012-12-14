@@ -1,7 +1,7 @@
 Release notes
 =======================
 
-V0.6 - ???
+V0.6 - 14 dec. 2012
 ----------------------
 - Events can be attached to actions to
 inform nodes about additional operations to execute
