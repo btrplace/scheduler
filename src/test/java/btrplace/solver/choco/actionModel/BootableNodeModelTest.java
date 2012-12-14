@@ -72,13 +72,13 @@ public class BootableNodeModelTest {
                 .build();
         BootableNodeModel na = (BootableNodeModel) rp.getNodeAction(n1);
         na.getState().setVal(1);
-        Assert.assertEquals(rp.solve(0, true), Boolean.TRUE);
+        ReconfigurationPlan p = rp.solve(0, true);
         Assert.assertEquals(na.getDuration().getVal(), 5);
         Assert.assertEquals(na.getStart().getVal(), 0);
         Assert.assertEquals(na.getEnd().getVal(), 5);
         Assert.assertEquals(na.getHostingStart().getVal(), 5);
         Assert.assertEquals(na.getHostingEnd().getVal(), 5);
-        ReconfigurationPlan p = rp.extractSolution();
+
         Assert.assertNotNull(p);
         Model res = p.getResult();
         Assert.assertTrue(res.getMapping().getOnlineNodes().contains(n1));
@@ -99,13 +99,13 @@ public class BootableNodeModelTest {
                 .build();
         BootableNodeModel na = (BootableNodeModel) rp.getNodeAction(n1);
         na.getState().setVal(0);
-        Assert.assertEquals(rp.solve(0, true), Boolean.TRUE);
+        ReconfigurationPlan p = rp.solve(0, true);
         Assert.assertEquals(na.getDuration().getVal(), 0);
         Assert.assertEquals(na.getStart().getVal(), 0);
         Assert.assertEquals(na.getEnd().getVal(), 0);
         Assert.assertEquals(na.getHostingStart().getVal(), rp.getEnd().getVal());
         Assert.assertEquals(na.getHostingEnd().getVal(), rp.getEnd().getVal());
-        ReconfigurationPlan p = rp.extractSolution();
+
         Assert.assertNotNull(p);
         Assert.assertEquals(p.getSize(), 0);
         Model res = p.getResult();
@@ -128,8 +128,7 @@ public class BootableNodeModelTest {
                 .labelVariables()
                 .setDurationEvaluatators(dev)
                 .build();
-        BootableNodeModel na = (BootableNodeModel) rp.getNodeAction(n1);
-        Assert.assertEquals(rp.solve(0, true), Boolean.TRUE);
+        Assert.assertNotNull(rp.solve(0, true));
     }
 
 }

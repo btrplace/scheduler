@@ -78,8 +78,7 @@ public class ResumeVMModelTest {
         Assert.assertFalse(m.getDSlice().getStart().isInstantiated());
         Assert.assertFalse(m.getDSlice().getEnd().isInstantiated());
 
-        Assert.assertEquals(Boolean.TRUE, rp.solve(0, true));
-        ReconfigurationPlan p = rp.extractSolution();
+        ReconfigurationPlan p = rp.solve(0, true);
         Assert.assertNotNull(p);
         System.out.println(p);
         ResumeVM a = (ResumeVM) p.getActions().iterator().next();
@@ -123,8 +122,7 @@ public class ResumeVMModelTest {
         CPSolver s = rp.getSolver();
         s.post(s.geq(m2.getStart(), m1.getEnd()));
 
-        org.testng.Assert.assertEquals(rp.solve(0, true), Boolean.TRUE);
-        ReconfigurationPlan p = rp.extractSolution();
+        ReconfigurationPlan p = rp.solve(0, true);
         Assert.assertNotNull(p);
         System.out.println(p);
         Iterator<Action> ite = p.iterator();

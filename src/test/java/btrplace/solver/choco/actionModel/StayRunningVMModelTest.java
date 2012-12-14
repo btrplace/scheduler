@@ -64,8 +64,7 @@ public class StayRunningVMModelTest {
         Assert.assertTrue(m1.getStart().isInstantiatedTo(0));
         Assert.assertTrue(m1.getEnd().isInstantiatedTo(0));
 
-        Assert.assertEquals(rp.solve(0, true), Boolean.TRUE);
-        ReconfigurationPlan p = rp.extractSolution();
+        ReconfigurationPlan p = rp.solve(0, true);
         Assert.assertEquals(p.getSize(), 0);
     }
 }

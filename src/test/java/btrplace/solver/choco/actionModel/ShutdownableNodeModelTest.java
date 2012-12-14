@@ -71,13 +71,13 @@ public class ShutdownableNodeModelTest {
                 .build();
         ShutdownableNodeModel ma = (ShutdownableNodeModel) rp.getNodeAction(n1);
         ma.getState().setVal(1);
-        Assert.assertEquals(rp.solve(0, true), Boolean.TRUE);
+        ReconfigurationPlan p = rp.solve(0, true);
         Assert.assertEquals(ma.getDuration().getVal(), 0);
         Assert.assertEquals(ma.getStart().getVal(), 0);
         Assert.assertEquals(ma.getEnd().getVal(), 0);
         Assert.assertEquals(ma.getHostingStart().getVal(), 0);
         Assert.assertEquals(ma.getHostingEnd().getVal(), 0);
-        ReconfigurationPlan p = rp.extractSolution();
+
         Assert.assertNotNull(p);
         Assert.assertEquals(p.getSize(), 0);
         Model res = p.getResult();
@@ -98,13 +98,13 @@ public class ShutdownableNodeModelTest {
                 .build();
         ShutdownableNodeModel ma = (ShutdownableNodeModel) rp.getNodeAction(n1);
         ma.getState().setVal(0);
-        Assert.assertEquals(rp.solve(0, true), Boolean.TRUE);
+        ReconfigurationPlan p = rp.solve(0, true);
         Assert.assertEquals(ma.getDuration().getVal(), 5);
         Assert.assertEquals(ma.getStart().getVal(), 0);
         Assert.assertEquals(ma.getEnd().getVal(), 5);
         Assert.assertEquals(ma.getHostingStart().getVal(), 0);
         Assert.assertEquals(ma.getHostingEnd().getVal(), 0);
-        ReconfigurationPlan p = rp.extractSolution();
+
         Assert.assertNotNull(p);
         Assert.assertEquals(p.getSize(), 1);
         Model res = p.getResult();
@@ -129,13 +129,13 @@ public class ShutdownableNodeModelTest {
                 .build();
         ShutdownableNodeModel ma = (ShutdownableNodeModel) rp.getNodeAction(n1);
         ma.getState().setVal(0);
-        Assert.assertEquals(rp.solve(0, true), Boolean.TRUE);
+        ReconfigurationPlan p = rp.solve(0, true);
         Assert.assertEquals(ma.getDuration().getVal(), 5);
         Assert.assertEquals(ma.getStart().getVal(), 2);
         Assert.assertEquals(ma.getEnd().getVal(), 7);
         Assert.assertEquals(ma.getHostingStart().getVal(), 0);
         Assert.assertEquals(ma.getHostingEnd().getVal(), 2);
-        ReconfigurationPlan p = rp.extractSolution();
+
         Assert.assertNotNull(p);
         Model res = p.getResult();
         Assert.assertTrue(res.getMapping().getOfflineNodes().contains(n1));

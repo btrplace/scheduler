@@ -143,7 +143,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public Boolean solve(int timeLimit, boolean optimize) throws SolverException {
+    public ReconfigurationPlan solve(int timeLimit, boolean optimize) throws SolverException {
 
         maintainResourceUsage();
 
@@ -174,7 +174,23 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         solver.setFirstSolution(!optimize);
 
         solver.launch();
-        return solver.isFeasible();
+        if (Boolean.FALSE == solver.isFeasible()) {
+            return null;
+        } else if (solver.isFeasible() == null) {
+            throw new SolverException(model, "Unable to state about the problem feasibility");
+        }
+
+        DefaultReconfigurationPlan plan = new DefaultReconfigurationPlan(model);
+        for (ActionModel action : nodeActions) {
+            action.insertActions(plan);
+        }
+        for (ActionModel action : vmActions) {
+            action.insertActions(plan);
+        }
+
+        assert plan.isApplyable();
+        assert checkConsistency(plan);
+        return plan;
     }
 
     /**
@@ -476,25 +492,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     @Override
     public DurationEvaluators getDurationEvaluators() {
         return durEval;
-    }
-
-    @Override
-    public ReconfigurationPlan extractSolution() {
-        if (!Boolean.TRUE.equals(solver.isFeasible())) {
-            return null;
-        }
-
-        DefaultReconfigurationPlan plan = new DefaultReconfigurationPlan(model);
-        for (ActionModel action : nodeActions) {
-            action.insertActions(plan);
-        }
-        for (ActionModel action : vmActions) {
-            action.insertActions(plan);
-        }
-
-        assert plan.isApplyable();
-        assert checkConsistency(plan);
-        return plan;
     }
 
     @Override

@@ -188,12 +188,15 @@ public interface ReconfigurationProblem {
     DurationEvaluators getDurationEvaluators();
 
     /**
-     * Extract the resulting reconfiguration plan if the
-     * solving process succeeded.
+     * Solve the RP and return a solution if exists.
      *
-     * @return a plan if the solving process succeeded or {@code null}
+     * @param timelimit the timeout in second. Must be superior to 0 to be considered
+     * @param optimize  {@code true} to make the solver try to improve the first computed solution.
+     * @return a plan if the solving process succeeded, {@code null} if the solver was not able to compute
+     *         a solution.
+     * @throws SolverException if an error occurs
      */
-    ReconfigurationPlan extractSolution();
+    ReconfigurationPlan solve(int timelimit, boolean optimize) throws SolverException;
 
     /**
      * Get the CPSolver used to model this problem.
@@ -318,17 +321,6 @@ public interface ReconfigurationProblem {
      * @param k  the hook for the notifications
      */
     void insertNotifyAllocations(Action a, UUID vm, Action.Hook k);
-
-    /**
-     * Solve the RP.
-     *
-     * @param timelimit the timeout in second. A negative number for no timeout
-     * @param optimize  {@code true} to make the solver try to improve the first computed solution.
-     * @return {@link Boolean#TRUE} if a solution was computed, {@link Boolean#FALSE} if there is no solution,
-     *         {@code null} if the solver was not able to compute a solution
-     * @throws SolverException if an error occurs
-     */
-    Boolean solve(int timelimit, boolean optimize) throws SolverException;
 
     /**
      * Get the builder that handle the scheduling part of the problem.

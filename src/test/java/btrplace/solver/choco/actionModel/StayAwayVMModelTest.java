@@ -24,7 +24,6 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.VMActionModel;
@@ -71,8 +70,7 @@ public class StayAwayVMModelTest {
             Assert.assertTrue(am.getDuration().isInstantiatedTo(0));
         }
 
-        Assert.assertEquals(rp.solve(0, true), Boolean.TRUE);
-        ReconfigurationPlan p = rp.extractSolution();
+        ReconfigurationPlan p = rp.solve(0, true);
         Assert.assertNotNull(p);
         Assert.assertEquals(0, p.getSize());
     }

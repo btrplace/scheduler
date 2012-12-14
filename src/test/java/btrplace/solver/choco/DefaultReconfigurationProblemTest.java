@@ -380,7 +380,7 @@ public class DefaultReconfigurationProblemTest {
                 Collections.<UUID>emptySet(),
                 map.getAllVMs(),
                 false);
-        Assert.assertEquals(Boolean.TRUE, rp.solve(0, true));
+        ReconfigurationPlan p = rp.solve(0, true);
 
         //Check the amount of allocated resources on the RP
         ResourceMapping rcm = rp.getResourceMapping("foo");
@@ -388,7 +388,6 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertEquals(rcm.getVMConsumption()[rp.getVM(vm2)].getVal(), 7);
 
         //And on the resulting plan.
-        ReconfigurationPlan p = rp.extractSolution();
         Model res = p.getResult();
         Assert.assertEquals(res.getResource("foo").get(vm1), 5);
         Assert.assertEquals(res.getResource("foo").get(vm2), 7);

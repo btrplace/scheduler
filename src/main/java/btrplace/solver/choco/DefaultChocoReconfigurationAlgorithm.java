@@ -169,15 +169,12 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         //The objective
         obj.inject(rp);
 
-        Boolean ret = rp.solve(timeLimit, optimize);
-        if (Boolean.TRUE.equals(ret)) {
-            ReconfigurationPlan p = rp.extractSolution();
+        ReconfigurationPlan p = rp.solve(timeLimit, optimize);
+        if (p != null) {
             assert checkSatisfaction(p, cConstraints);
             return p;
-        } else if (Boolean.FALSE.equals(ret)) {
-            return null;
         } else {
-            throw new SolverException(i, "Unable to state about the feasibility of the problem");
+            return null;
         }
     }
 
