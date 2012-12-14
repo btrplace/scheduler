@@ -25,6 +25,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ShutdownNode;
 import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
+import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
 import org.testng.Assert;
@@ -98,6 +99,35 @@ public class COfflineTest {
         Assert.assertFalse(coff.isSatisfied(plan));
         plan.add(new ShutdownNode(n1, 1, 2));
         Assert.assertTrue(coff.isSatisfied(plan));
+    }
 
+    @Test
+    public void testSolvableProblem() throws SolverException {
+        Mapping map = new DefaultMapping();
+        UUID n1 = UUID.randomUUID();
+        UUID n2 = UUID.randomUUID();
+        UUID vm = UUID.randomUUID();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addRunningVM(vm, n1);
+        Model mo = new DefaultModel(map);
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Offline(Collections.singleton(n1))));
+        Assert.assertNotNull(plan);
+        Model res = plan.getResult();
+        Assert.assertTrue(res.getMapping().getOfflineNodes().contains(n1));
+    }
+
+    @Test
+    public void testUnsolvableProblem() throws SolverException {
+        Mapping map = new DefaultMapping();
+        UUID n1 = UUID.randomUUID();
+        UUID vm = UUID.randomUUID();
+        map.addOnlineNode(n1);
+        map.addRunningVM(vm, n1);
+        Model mo = new DefaultModel(map);
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Offline(Collections.singleton(n1))));
+        Assert.assertNull(plan);
     }
 }

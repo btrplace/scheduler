@@ -70,7 +70,7 @@ public class DefaultReconfigurationProblemTest {
      *
      * @throws SolverException should not occur
      */
-    @Test(dependsOnGroups = {"DefaultRPBuilder"})
+    @Test
     public void testSimplestInstantiation() throws SolverException {
         Model m = defaultModel();
         Set<UUID> toRun = new HashSet<UUID>();
@@ -109,7 +109,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertEquals(-1, rp.getNode(UUID.randomUUID()));
     }
 
-    @Test(dependsOnGroups = {"DefaultRPBuilder"})
+    @Test
     public void testVMToWaiting() throws SolverException {
         Mapping m = new DefaultMapping();
         UUID vm = UUID.randomUUID();
@@ -125,7 +125,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertEquals(ForgeVMModel.class, a.getClass());
     }
 
-    @Test(dependsOnGroups = {"DefaultRPBuilder"})
+    @Test
     public void testWaitinVMToRun() throws SolverException {
         Mapping m = new DefaultMapping();
         UUID vm = UUID.randomUUID();
@@ -141,7 +141,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertEquals(BootVMModel.class, a.getClass());
     }
 
-    @Test(dependsOnGroups = {"DefaultRPBuilder"})
+    @Test
     public void testVMStayRunning() throws SolverException {
         Mapping m = new DefaultMapping();
         UUID vm = UUID.randomUUID();
@@ -159,7 +159,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertEquals(RelocatableVMModel.class, a.getClass());
     }
 
-    @Test(dependsOnGroups = {"DefaultRPBuilder"})
+    @Test
     public void testVMRunningToSleeping() throws SolverException {
         Mapping m = new DefaultMapping();
         UUID vm = UUID.randomUUID();
@@ -177,7 +177,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertEquals(SuspendVMModel.class, a.getClass());
     }
 
-    @Test(dependsOnGroups = {"DefaultRPBuilder"})
+    @Test
     public void testVMsToKill() throws SolverException {
         Mapping m = new DefaultMapping();
         UUID vm = UUID.randomUUID();
@@ -197,7 +197,7 @@ public class DefaultReconfigurationProblemTest {
         }
     }
 
-    @Test(dependsOnGroups = {"DefaultRPBuilder"})
+    @Test
     public void testVMToShutdown() throws SolverException {
         Mapping m = new DefaultMapping();
         UUID vm = UUID.randomUUID();
@@ -216,7 +216,7 @@ public class DefaultReconfigurationProblemTest {
     }
 
 
-    @Test(dependsOnGroups = {"DefaultRPBuilder"})
+    @Test
     public void testVMStaySleeping() throws SolverException {
         Mapping m = new DefaultMapping();
         UUID vm = UUID.randomUUID();
@@ -234,7 +234,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertEquals(StayAwayVMModel.class, a.getClass());
     }
 
-    @Test(dependsOnGroups = {"DefaultRPBuilder"})
+    @Test
     public void testVMSleepToRun() throws SolverException {
         Mapping m = new DefaultMapping();
         UUID vm = UUID.randomUUID();
@@ -251,7 +251,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertEquals(ResumeVMModel.class, a.getClass());
     }
 
-    @Test(dependsOnGroups = {"DefaultRPBuilder"})
+    @Test
     public void testNodeOn() throws SolverException {
         Mapping m = new DefaultMapping();
         UUID n = UUID.randomUUID();
@@ -268,7 +268,7 @@ public class DefaultReconfigurationProblemTest {
     }
 
 
-    @Test(dependsOnGroups = {"DefaultRPBuilder"})
+    @Test
     public void testNodeOff() throws SolverException {
         Mapping m = new DefaultMapping();
         UUID n = UUID.randomUUID();
@@ -285,7 +285,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertEquals(BootableNodeModel.class, a.getClass());
     }
 
-    @Test(dependsOnGroups = {"DefaultRPBuilder"})
+    @Test
     public void testGetResourceMapping() throws SolverException {
         Model m = defaultModel();
         ShareableResource rc = new DefaultShareableResource("cpu", 0);
@@ -312,7 +312,7 @@ public class DefaultReconfigurationProblemTest {
      * @throws SolverException
      * @throws ContradictionException
      */
-    @Test(dependsOnGroups = {"DefaultRPBuilder"})
+    @Test
     public void testVMCounting() throws SolverException, ContradictionException {
         Model m = defaultModel();
         Mapping map = m.getMapping().clone();
