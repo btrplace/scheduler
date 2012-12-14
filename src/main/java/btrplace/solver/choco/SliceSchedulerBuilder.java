@@ -54,6 +54,7 @@ public class SliceSchedulerBuilder {
 
     /**
      * Make a new builder.
+     *
      * @param rp the associated problem
      */
     public SliceSchedulerBuilder(ReconfigurationProblem rp) {
@@ -121,6 +122,7 @@ public class SliceSchedulerBuilder {
 
     /**
      * Add a dimension.
+     *
      * @param capa the resource capacity of each of the nodes
      * @param cUse the resource usage of each of the cSlices
      * @param dUse the resource usage of each of the dSlices
@@ -133,6 +135,7 @@ public class SliceSchedulerBuilder {
 
     /**
      * Build the constraint.
+     *
      * @return the resulting constraint
      */
     public TaskScheduler build() {
@@ -165,8 +168,8 @@ public class SliceSchedulerBuilder {
             }
             i++;
         }
-        IntDomainVar[] earlyStarts = ActionModelUtil.getHostingStarts(rp.getNodeActions());
-        IntDomainVar[] lastEnd = ActionModelUtil.getHostingEnds(rp.getNodeActions());
+        IntDomainVar[] earlyStarts = ActionModelUtils.getHostingStarts(rp.getNodeActions());
+        IntDomainVar[] lastEnd = ActionModelUtils.getHostingEnds(rp.getNodeActions());
         return new TaskScheduler(s.getEnvironment(),
                 earlyStarts,
                 lastEnd,

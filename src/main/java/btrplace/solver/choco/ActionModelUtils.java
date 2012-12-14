@@ -28,9 +28,9 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public final class ActionModelUtil {
+public final class ActionModelUtils {
 
-    private ActionModelUtil() {
+    private ActionModelUtils() {
     }
 
     /**

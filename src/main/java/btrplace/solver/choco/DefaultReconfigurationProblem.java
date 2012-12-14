@@ -262,7 +262,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     private void linkCardinatiesWithSlices() throws SolverException {
-        IntDomainVar[] ds = SliceUtils.extractHosters(ActionModelUtil.getDSlices(vmActions));
+        IntDomainVar[] ds = SliceUtils.extractHosters(ActionModelUtils.getDSlices(vmActions));
         IntDomainVar[] usages = new IntDomainVar[ds.length];
         for (int i = 0; i < ds.length; i++) {
             usages[i] = solver.makeConstantIntVar(1);

@@ -29,11 +29,11 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Unit tests for {@link ActionModelUtil}.
+ * Unit tests for {@link ActionModelUtils}.
  *
  * @author Fabien Hermenier
  */
-public class ActionModelUtilTest {
+public class ActionModelUtilsTest {
 
     private VMActionModel[] makeActions() {
         VMActionModel[] as = new VMActionModel[10];
@@ -47,7 +47,7 @@ public class ActionModelUtilTest {
 
     @Test
     public void testGetDSlices() {
-        List<Slice> cs = ActionModelUtil.getDSlices(makeActions());
+        List<Slice> cs = ActionModelUtils.getDSlices(makeActions());
         Assert.assertEquals(5, cs.size());
         for (int i = 0; i < cs.size() - 1; i++) {
             Slice s = cs.get(i);
@@ -59,7 +59,7 @@ public class ActionModelUtilTest {
 
     @Test
     public void testGetCSlices() {
-        List<Slice> cs = ActionModelUtil.getCSlices(makeActions());
+        List<Slice> cs = ActionModelUtils.getCSlices(makeActions());
         Assert.assertEquals(5, cs.size());
         for (int i = 0; i < cs.size() - 1; i++) {
             Slice s = cs.get(i);
@@ -71,7 +71,7 @@ public class ActionModelUtilTest {
 
     @Test
     public void testGetStarts() {
-        IntDomainVar[] sts = ActionModelUtil.getStarts(makeActions());
+        IntDomainVar[] sts = ActionModelUtils.getStarts(makeActions());
         Assert.assertEquals(10, sts.length);
         for (int i = 0; i < sts.length - 1; i++) {
             IntDomainVar s = sts[i];
@@ -83,7 +83,7 @@ public class ActionModelUtilTest {
 
     @Test
     public void testGetEnds() {
-        IntDomainVar[] sts = ActionModelUtil.getEnds(makeActions());
+        IntDomainVar[] sts = ActionModelUtils.getEnds(makeActions());
         Assert.assertEquals(10, sts.length);
         for (int i = 0; i < sts.length - 1; i++) {
             IntDomainVar s = sts[i];
@@ -95,7 +95,7 @@ public class ActionModelUtilTest {
 
     @Test
     public void testGetDurations() {
-        IntDomainVar[] sts = ActionModelUtil.getDurations(makeActions());
+        IntDomainVar[] sts = ActionModelUtils.getDurations(makeActions());
         Assert.assertEquals(10, sts.length);
         for (int i = 0; i < sts.length - 1; i++) {
             IntDomainVar s = sts[i];
