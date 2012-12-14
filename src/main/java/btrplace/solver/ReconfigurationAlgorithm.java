@@ -37,7 +37,8 @@ public interface ReconfigurationAlgorithm {
      * @param i     the current model
      * @param cstrs the constraints that must be considered
      * @return the plan to execute to reach the new solution or {@code null} if there is no
-     *         solution
+     *         solution.
+     * @throws SolverException if an error occurred while trying to solve the problem
      */
     ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs) throws SolverException;
 }
