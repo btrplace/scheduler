@@ -39,9 +39,9 @@ public final class ActionModelUtil {
      * @param models the models to browse
      * @return a list of d-slices that may be empty
      */
-    public static List<Slice> getDSlices(ActionModel[] models) {
+    public static List<Slice> getDSlices(VMActionModel[] models) {
         List<Slice> slices = new ArrayList<Slice>();
-        for (ActionModel m : models) {
+        for (VMActionModel m : models) {
             if (m.getDSlice() != null) {
                 slices.add(m.getDSlice());
             }
@@ -55,9 +55,9 @@ public final class ActionModelUtil {
      * @param models the models to browse
      * @return a list of c-slices that may be empty
      */
-    public static List<Slice> getCSlices(ActionModel[] models) {
+    public static List<Slice> getCSlices(VMActionModel[] models) {
         List<Slice> slices = new ArrayList<Slice>();
-        for (ActionModel m : models) {
+        for (VMActionModel m : models) {
             if (m.getCSlice() != null) {
                 slices.add(m.getCSlice());
             }
@@ -75,6 +75,34 @@ public final class ActionModelUtil {
         IntDomainVar[] starts = new IntDomainVar[actions.length];
         for (int i = 0; i < actions.length; i++) {
             starts[i] = actions[i].getStart();
+        }
+        return starts;
+    }
+
+    /**
+     * Extract the hostingEnd moments of an array of node actions.
+     * The ordering is maintained
+     *
+     * @return an array of variable
+     */
+    public static IntDomainVar[] getHostingEnds(NodeActionModel[] actions) {
+        IntDomainVar[] starts = new IntDomainVar[actions.length];
+        for (int i = 0; i < actions.length; i++) {
+            starts[i] = actions[i].getHostingEnd();
+        }
+        return starts;
+    }
+
+    /**
+     * Extract the hostingStart moments of an array of node actions.
+     * The ordering is maintained
+     *
+     * @return an array of variable
+     */
+    public static IntDomainVar[] getHostingStarts(NodeActionModel[] actions) {
+        IntDomainVar[] starts = new IntDomainVar[actions.length];
+        for (int i = 0; i < actions.length; i++) {
+            starts[i] = actions[i].getHostingStart();
         }
         return starts;
     }

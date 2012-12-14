@@ -18,9 +18,10 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.solver.choco.ActionModel;
+import btrplace.solver.choco.ActionModelUtil;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
+import btrplace.solver.choco.VMActionModel;
 import btrplace.solver.choco.chocoUtil.LocalTaskScheduler;
 import btrplace.solver.choco.chocoUtil.TaskScheduler;
 import choco.cp.solver.CPSolver;
@@ -45,10 +46,6 @@ public class TaskSchedulerBuilder {
     private List<int[]> cUsages;
 
     private List<IntDomainVar[]> dUsages;
-
-    private IntDomainVar[] excls;
-
-    private int[] exclSlice;
 
     private int[] associations;
 
@@ -76,10 +73,8 @@ public class TaskSchedulerBuilder {
 
         List<int[]> linked = new ArrayList<int[]>();
         int dIdx = 0, cIdx = 0;
-        excls = new IntDomainVar[rp.getNodes().length];
-        exclSlice = new int[rp.getNodes().length];
 
-        for (ActionModel a : rp.getVMActions()) {
+        for (VMActionModel a : rp.getVMActions()) {
             Slice c = a.getCSlice();
             Slice d = a.getDSlice();
 
@@ -88,15 +83,6 @@ public class TaskSchedulerBuilder {
             }
             if (d != null) {
                 dS.add(dIdx, d);
-                //Check for the exclusive flag for Demanding Slice
-                IntDomainVar excl = d.isExclusive();
-                //TODO: exclusive slice
-                if (excl != null) {
-                    if (rp.getNode(d.getSubject()) >= 0) {
-                        excls[rp.getNode(d.getSubject())] = d.isExclusive();
-                        exclSlice[rp.getNode(d.getSubject())] = dIdx;
-                    }
-                }
                 dIdx++;
             }
 
@@ -178,10 +164,14 @@ public class TaskSchedulerBuilder {
             }
             i++;
         }
+        IntDomainVar[] earlyStarts = ActionModelUtil.getHostingStarts(rp.getNodeActions());
+        IntDomainVar[] lastEnd = ActionModelUtil.getHostingEnds(rp.getNodeActions());
         s.post(new TaskScheduler(s.getEnvironment(),
+                earlyStarts,
+                lastEnd,
                 capas,
                 cHosters, cUses, cEnds,
                 dHosters, dUses, dStarts,
-                associations, excls, exclSlice));
+                associations));
     }
 }

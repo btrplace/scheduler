@@ -150,7 +150,7 @@ public interface ReconfigurationProblem {
      *
      * @return a list of actions.
      */
-    ActionModel[] getVMActions();
+    VMActionModel[] getVMActions();
 
     /**
      * Get the action associated to a given VM.
@@ -158,7 +158,7 @@ public interface ReconfigurationProblem {
      * @param id the VM identifier
      * @return the associated action if exists, {@code null} otherwise
      */
-    ActionModel getVMAction(UUID id);
+    VMActionModel getVMAction(UUID id);
 
     /**
      * Get all the actions associated to a list of virtual machines.
@@ -166,7 +166,7 @@ public interface ReconfigurationProblem {
      * @param id the virtual machines
      * @return a list of actions. The order is the same than the order of the VMs.
      */
-    ActionModel[] getVMActions(Set<UUID> id);
+    VMActionModel[] getVMActions(Set<UUID> id);
 
 
     /**
@@ -174,7 +174,7 @@ public interface ReconfigurationProblem {
      *
      * @return a list of actions.
      */
-    ActionModel[] getNodeActions();
+    NodeActionModel[] getNodeActions();
 
     /**
      * Get the action associated to a given node.
@@ -182,26 +182,12 @@ public interface ReconfigurationProblem {
      * @param id the node identifier
      * @return the associated action if exists, {@code null} otherwise
      */
-    ActionModel getNodeAction(UUID id);
+    NodeActionModel getNodeAction(UUID id);
 
     /**
      * Get the evaluator to estimate the duration of the actions.
      */
     DurationEvaluators getDurationEvaluators();
-
-    /**
-     * Get  all the demanding slices in the model.
-     *
-     * @return a list of slice. May be empty
-     */
-    List<Slice> getDSlices();
-
-    /**
-     * Get all the consuming slices in the model.
-     *
-     * @return a list of slice. May be empty
-     */
-    List<Slice> getCSlices();
 
     /**
      * Extract the resulting reconfiguration plan if the

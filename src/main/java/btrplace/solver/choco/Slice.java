@@ -38,27 +38,23 @@ public class Slice {
 
     private IntDomainVar duration;
 
-    private IntDomainVar excl;
-
     private UUID subject;
 
     /**
      * Make a new slice.
      *
-     * @param s    the element associated to the slice
-     * @param st   the moment the slice starts
-     * @param ed   the moment the slice ends
-     * @param dur  the slice duration
-     * @param h    the slice host
-     * @param excl the exclusive status of the slice
+     * @param s   the element associated to the slice
+     * @param st  the moment the slice starts
+     * @param ed  the moment the slice ends
+     * @param dur the slice duration
+     * @param h   the slice host
      */
-    public Slice(UUID s, IntDomainVar st, IntDomainVar ed, IntDomainVar dur, IntDomainVar h, IntDomainVar excl) {
+    public Slice(UUID s, IntDomainVar st, IntDomainVar ed, IntDomainVar dur, IntDomainVar h) {
 
         this.start = st;
         this.end = ed;
         this.subject = s;
         this.hoster = h;
-        this.excl = excl;
         this.duration = dur;
     }
 
@@ -112,15 +108,6 @@ public class Slice {
      */
     public IntDomainVar getHoster() {
         return hoster;
-    }
-
-    /**
-     * Indicates whether or not the slice can overlap other ones.
-     *
-     * @return {@code 1} to indicate that no overlap is allowed
-     */
-    public IntDomainVar isExclusive() {
-        return excl;
     }
 
     /**

@@ -27,6 +27,7 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.VMActionModel;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -61,7 +62,7 @@ public class StayAwayVMModelTest {
         Assert.assertEquals(vm1, ma1.getVM());
         Assert.assertEquals(vm2, ma2.getVM());
 
-        for (ActionModel am : rp.getVMActions()) {
+        for (VMActionModel am : rp.getVMActions()) {
             Assert.assertTrue(am.getState().isInstantiatedTo(0));
             Assert.assertNull(am.getCSlice());
             Assert.assertNull(am.getDSlice());

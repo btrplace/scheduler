@@ -18,6 +18,8 @@
 
 package btrplace.solver.choco;
 
+import choco.kernel.solver.variables.integer.IntDomainVar;
+
 import java.util.UUID;
 
 /**
@@ -33,4 +35,18 @@ public interface NodeActionModel extends ActionModel {
      * @return the node identifier
      */
     UUID getNode();
+
+    /**
+     * Get the moment the node is being capable of hosting VMs.
+     *
+     * @return a variable
+     */
+    IntDomainVar getHostingStart();
+
+    /**
+     * Get the moment the node is no longer capable of hosting VMs.
+     *
+     * @return a variable
+     */
+    IntDomainVar getHostingEnd();
 }

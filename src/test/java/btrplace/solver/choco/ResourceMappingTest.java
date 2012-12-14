@@ -99,19 +99,19 @@ public class ResourceMappingTest {
         mo.attach(rc);
         //new Running(ma.getAllVMs())
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
-        ActionModel avm1 = rp.getVMActions()[rp.getVM(vm)];
-        ActionModel avm2 = rp.getVMActions()[rp.getVM(vm2)];
+        VMActionModel avm1 = rp.getVMActions()[rp.getVM(vm)];
+        VMActionModel avm2 = rp.getVMActions()[rp.getVM(vm2)];
         avm1.getDSlice().getHoster().setVal(0);
         avm2.getDSlice().getHoster().setVal(1);
         ResourceMapping rcm = rp.getResourceMapping("foo");
         //Basic consumption for the VMs. If would be safe to use Preserve, but I don't want:D
         rcm.getVMConsumption()[rp.getVM(vm)].setInf(2);
         rcm.getVMConsumption()[rp.getVM(vm2)].setInf(3);
-        rp.getSolver().solve();
-        Assert.assertEquals(2, rcm.getRealNodeUsage()[0].getInf());
-        Assert.assertEquals(2, rcm.getRealNodeUsage()[0].getSup());
-        Assert.assertEquals(3, rcm.getRealNodeUsage()[1].getInf());
-        Assert.assertEquals(3, rcm.getRealNodeUsage()[1].getSup());
+        Assert.assertEquals(rp.getSolver().solve(), Boolean.TRUE);
+        Assert.assertEquals(rcm.getRealNodeUsage()[0].getInf(), 2);
+        Assert.assertEquals(rcm.getRealNodeUsage()[0].getSup(), 2);
+        Assert.assertEquals(rcm.getRealNodeUsage()[1].getInf(), 3);
+        Assert.assertEquals(rcm.getRealNodeUsage()[1].getSup(), 3);
     }
 
 }

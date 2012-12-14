@@ -51,27 +51,6 @@ public interface ActionModel {
     IntDomainVar getDuration();
 
     /**
-     * Get the slice denoting the possible current placement of the subject on a node.
-     *
-     * @return a {@link Slice} that may be {@code null}
-     */
-    Slice getCSlice();
-
-    /**
-     * Get the slice denoting the possible future placement off the subject
-     *
-     * @return a {@link Slice} that may be {@code null}
-     */
-    Slice getDSlice();
-
-    /**
-     * Make a visitor inspect the action model.
-     *
-     * @param v the visitor to use
-     */
-    void visit(ActionModelVisitor v);
-
-    /**
      * Insert into a plan the actions resulting from the model.
      *
      * @param plan the plan to modify
@@ -85,4 +64,11 @@ public interface ActionModel {
      * @return {@code 0} for offline, {@code 1} for online.
      */
     IntDomainVar getState();
+
+    /**
+     * Make a visitor inspect the action model.
+     *
+     * @param v the visitor to use
+     */
+    void visit(ActionModelVisitor v);
 }

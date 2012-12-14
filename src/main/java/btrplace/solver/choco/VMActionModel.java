@@ -18,6 +18,8 @@
 
 package btrplace.solver.choco;
 
+import btrplace.solver.choco.actionModel.ActionModelVisitor;
+
 import java.util.UUID;
 
 /**
@@ -33,4 +35,18 @@ public interface VMActionModel extends ActionModel {
      * @return the VM identifier
      */
     UUID getVM();
+
+    /**
+     * Get the slice denoting the possible current placement of the subject on a node.
+     *
+     * @return a {@link Slice} that may be {@code null}
+     */
+    Slice getCSlice();
+
+    /**
+     * Get the slice denoting the possible future placement off the subject
+     *
+     * @return a {@link Slice} that may be {@code null}
+     */
+    Slice getDSlice();
 }

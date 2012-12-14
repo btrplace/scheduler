@@ -66,7 +66,6 @@ public class ForgeVMModel implements VMActionModel {
         vm = e;
 
         dSlice = new SliceBuilder(rp, e, rp.makeVarLabel("forge(" + e + ").dSlice"))
-                .setExclusive(false)
                 .setEnd(rp.getEnd())
                 .setStart(rp.makeDuration(rp.makeVarLabel("forge(" + e + ").start")))
                 .build();

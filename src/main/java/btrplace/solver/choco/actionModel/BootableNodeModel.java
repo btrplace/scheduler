@@ -23,13 +23,10 @@ import btrplace.plan.event.BootNode;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.NodeActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.Slice;
-import btrplace.solver.choco.SliceBuilder;
-import btrplace.solver.choco.chocoUtil.FastIFFEq;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.reified.ReifiedFactory;
-import choco.cp.solver.variables.integer.IntDomainVarAddCste;
+import choco.cp.solver.constraints.integer.ElementV;
+import choco.cp.solver.constraints.integer.TimesXYZ;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.UUID;
@@ -41,13 +38,17 @@ import java.util.UUID;
  */
 public class BootableNodeModel implements NodeActionModel {
 
-    private Slice cSlice;
-
-    private IntDomainVar duration;
-
     private IntDomainVar start;
 
-    private IntDomainVar state;
+    private IntDomainVar end;
+
+    private IntDomainVar isOnline;
+
+    private IntDomainVar hostingStart;
+
+    private IntDomainVar hostingEnd;
+
+    private IntDomainVar duration;
 
     private UUID node;
 
@@ -60,37 +61,39 @@ public class BootableNodeModel implements NodeActionModel {
      */
     public BootableNodeModel(ReconfigurationProblem rp, UUID nId) throws SolverException {
         node = nId;
-        int nIdx = rp.getNode(nId);
+
+        int d = rp.getDurationEvaluators().evaluate(BootNode.class, nId);
         CPSolver s = rp.getSolver();
 
-        //TODO: makes it consume all the resources of the node
-        int d = rp.getDurationEvaluators().evaluate(BootNode.class, nId);
-        duration = s.createEnumIntVar(rp.makeVarLabel("bootableNode.duration(" + nId + ")"), new int[]{0, d});
+        isOnline = s.createBooleanVar(rp.makeVarLabel("bootableNode(" + nId + ").online"));
+        IntDomainVar isOffline = s.createBooleanVar(rp.makeVarLabel("bootableNode(" + nId + ").offline"));
+        s.post(s.neq(isOffline, isOnline));
+        s.post(new FastImpliesEq(isOffline, rp.getVMsCountOnNodes()[rp.getNode(nId)], 0));
+        start = rp.getStart();
+        end = rp.makeDuration(rp.makeVarLabel("bootableNode(" + nId + ").end"));
 
-        cSlice = new SliceBuilder(rp, nId, "bootableNode(" + nId + ").cSlice")
-                .setEnd(rp.makeDuration(rp.makeVarLabel("bootableNode(" + nId + ").cSlice_end")))
-                .setHoster(nIdx)
-                .build();
+        hostingStart = rp.makeDuration(rp.makeVarLabel("bootableNode(" + nId + ").hostingStart"));
+        s.post(new TimesXYZ(isOnline, hostingStart, end));
+        //s.post(new TimesXYZ(isOffline, rp.getEnd(), hostingStart));
+        s.post(s.leq(hostingEnd, rp.getEnd()));
+        s.post(s.leq(end, rp.getEnd()));
+        s.post(s.leq(hostingStart, rp.getEnd()));
+        IntDomainVar cDur = s.makeConstantIntVar(d);
 
-        start = new IntDomainVarAddCste(s, rp.makeVarLabel("bootableNode(" + nId + ").start"), cSlice.getEnd(), -d);
-        //Unknown state
-        state = s.createBooleanVar(rp.makeVarLabel("bootableNode(" + nId + ").state"));
-
-        //the node goes online <-> duration == d
-        s.post(new FastIFFEq(state, duration, d));
-        s.post(s.leq(duration, cSlice.getEnd()));
         /**
-         * used denotes whether or not the node is used, \ie it host running VMs
+         * if isOnline == 0, hostingStart = cDur , the boot duration
+         * else            , hostingStart = rp.getEnd(), so no dSlice
          */
-        IntDomainVar used = s.createBooleanVar(rp.makeVarLabel("bootableNode_isUsed(" + nId + ")"));
-        s.post(ReifiedFactory.builder(used, s.neq(rp.getVMsCountOnNodes()[nIdx], 0), s));
-        s.post(new FastImpliesEq(used, state, 1));
+        s.post(new ElementV(new IntDomainVar[]{rp.getEnd(), cDur, isOnline, hostingStart}, 0, s.getEnvironment()));
+        hostingEnd = rp.getEnd();
+        duration = rp.makeDuration(rp.makeVarLabel("bootableNode(" + nId + ").duration"));
+        s.post(s.eq(duration, s.minus(end, start)));
     }
 
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
-        if (start.getVal() == 1) {
-            plan.add(new BootNode(node, start.getVal(), getEnd().getVal()));
+        if (getState().getVal() == 1) {
+            plan.add(new BootNode(node, start.getVal(), end.getVal()));
         }
         return true;
     }
@@ -102,22 +105,12 @@ public class BootableNodeModel implements NodeActionModel {
 
     @Override
     public IntDomainVar getEnd() {
-        return cSlice.getEnd();
+        return end;
     }
 
     @Override
     public IntDomainVar getDuration() {
         return duration;
-    }
-
-    @Override
-    public Slice getCSlice() {
-        return cSlice;
-    }
-
-    @Override
-    public Slice getDSlice() {
-        return null;
     }
 
     @Override
@@ -127,11 +120,21 @@ public class BootableNodeModel implements NodeActionModel {
 
     @Override
     public IntDomainVar getState() {
-        return state;
+        return isOnline;
     }
 
     @Override
     public void visit(ActionModelVisitor v) {
         v.visit(this);
+    }
+
+    @Override
+    public IntDomainVar getHostingStart() {
+        return hostingStart;
+    }
+
+    @Override
+    public IntDomainVar getHostingEnd() {
+        return hostingEnd;
     }
 }

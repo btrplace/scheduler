@@ -43,17 +43,15 @@ public class SliceTest {
         IntDomainVar ed = s.createIntegerConstant("end", 3);
         IntDomainVar duration = s.createIntegerConstant("duration", 2);
         IntDomainVar hoster = s.createIntegerConstant("hoster", 4);
-        IntDomainVar ex = s.createIntegerConstant("ex", 5);
-        Slice sl = new Slice(e, st, ed, duration, hoster, ex);
+        Slice sl = new Slice(e, st, ed, duration, hoster);
         Assert.assertEquals(e, sl.getSubject());
         Assert.assertEquals(st, sl.getStart());
         Assert.assertEquals(ed, sl.getEnd());
         Assert.assertEquals(hoster, sl.getHoster());
         Assert.assertEquals(duration, sl.getDuration());
-        Assert.assertEquals(ex, sl.isExclusive());
         Assert.assertFalse(sl.toString().contains("null"));
         duration = s.createBoundIntVar("duration", 3, 5);
-        sl = new Slice(e, st, ed, duration, hoster, ex);
+        sl = new Slice(e, st, ed, duration, hoster);
         Assert.assertFalse(sl.toString().contains("null"));
     }
 }

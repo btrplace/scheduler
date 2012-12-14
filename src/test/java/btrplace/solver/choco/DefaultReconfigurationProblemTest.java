@@ -345,7 +345,7 @@ public class DefaultReconfigurationProblemTest {
         }
         System.out.println(Arrays.toString(counts));
         for (UUID vm : rp.getFutureRunningVMs()) {
-            ActionModel mo = rp.getVMActions()[rp.getVM(vm)];
+            VMActionModel mo = rp.getVMActions()[rp.getVM(vm)];
             int on = mo.getDSlice().getHoster().getInf();
             System.out.println(mo + " " + on);
             counts[on]--;
