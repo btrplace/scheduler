@@ -53,7 +53,7 @@ public class CBan implements ChocoSatConstraint {
     }
 
     @Override
-    public void inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) throws SolverException {
         Collection<UUID> nodes = ban.getInvolvedNodes();
         Collection<UUID> vms = ban.getInvolvedVMs();
         int[] nodesIdx = new int[nodes.size()];
@@ -70,12 +70,14 @@ public class CBan implements ChocoSatConstraint {
                         try {
                             t.getHoster().remVal(x);
                         } catch (Exception e) {
-                            throw new SolverException(null, "Unable to disallow VM '" + vm + "' to be running on '" + rp.getNode(x) + "'");
+                            rp.getLogger().error("Unable to disallow VM '{}' to be running on '{}': {}", vm, rp.getNode(x), e.getMessage());
+                            return false;
                         }
                     }
                 }
             }
         }
+        return true;
     }
 
     @Override

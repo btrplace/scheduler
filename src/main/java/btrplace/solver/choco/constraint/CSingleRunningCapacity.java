@@ -59,7 +59,7 @@ public class CSingleRunningCapacity implements ChocoSatConstraint {
     }
 
     @Override
-    public void inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) throws SolverException {
         CPSolver s = rp.getSolver();
         for (UUID u : cstr.getInvolvedNodes()) {
             IntDomainVar v = rp.getNbRunningVMs()[rp.getNode(u)];
@@ -70,10 +70,12 @@ public class CSingleRunningCapacity implements ChocoSatConstraint {
                 try {
                     v.setSup(cstr.getAmount());
                 } catch (ContradictionException e) {
-                    throw new SolverException(rp.getSourceModel(), e.getMessage());
+                    rp.getLogger().error("Unable to restrict to up to {}, the maximum amount of VMs on '{}': ", cstr.getAmount(), u, e.getMessage());
+                    return false;
                 }
             }
         }
+        return true;
     }
 
     @Override

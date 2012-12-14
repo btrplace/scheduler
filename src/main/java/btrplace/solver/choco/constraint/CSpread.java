@@ -52,7 +52,7 @@ public class CSpread implements ChocoSatConstraint {
     }
 
     @Override
-    public void inject(ReconfigurationProblem rp) {
+    public boolean inject(ReconfigurationProblem rp) {
 
         List<IntDomainVar> onlyRunnings = new ArrayList<IntDomainVar>();
         for (UUID vmId : cstr.getInvolvedVMs()) {
@@ -114,6 +114,7 @@ public class CSpread implements ChocoSatConstraint {
                 }
             }
         }
+        return true;
     }
 
     @Override

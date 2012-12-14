@@ -51,13 +51,14 @@ public class CCumulatedRunningCapacity implements ChocoSatConstraint {
     }
 
     @Override
-    public void inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) throws SolverException {
         List<IntDomainVar> vs = new ArrayList<IntDomainVar>();
         for (UUID u : cstr.getInvolvedNodes()) {
             vs.add(rp.getNbRunningVMs()[rp.getNode(u)]);
         }
         CPSolver s = rp.getSolver();
         s.post(s.leq(CPSolver.sum(vs.toArray(new IntDomainVar[vs.size()])), cstr.getAmount()));
+        return true;
     }
 
     @Override
@@ -85,10 +86,7 @@ public class CCumulatedRunningCapacity implements ChocoSatConstraint {
     @Override
     public boolean isSatisfied(ReconfigurationPlan plan) {
         Model r = plan.getResult();
-        if (r == null) {
-            return false;
-        }
-        return cstr.isSatisfied(r).equals(SatConstraint.Sat.SATISFIED);
+        return r != null && cstr.isSatisfied(r).equals(SatConstraint.Sat.SATISFIED);
     }
 
     @Override

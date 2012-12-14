@@ -24,6 +24,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import org.slf4j.Logger;
 
 import java.util.Collection;
 import java.util.Set;
@@ -328,4 +329,11 @@ public interface ReconfigurationProblem {
      * @return the builder
      */
     SliceSchedulerBuilder getTaskSchedulerBuilder();
+
+    /**
+     * Get the logger.
+     *
+     * @return well, the logger
+     */
+    Logger getLogger();
 }

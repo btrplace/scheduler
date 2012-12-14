@@ -50,7 +50,7 @@ public class CRoot implements ChocoSatConstraint {
     }
 
     @Override
-    public void inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) throws SolverException {
         CPSolver s = rp.getSolver();
         for (UUID vm : cstr.getInvolvedVMs()) {
             VMActionModel m = rp.getVMActions()[rp.getVM(vm)];
@@ -60,6 +60,7 @@ public class CRoot implements ChocoSatConstraint {
                 s.post(s.eq(cSlice.getHoster(), dSlice.getHoster()));
             }
         }
+        return true;
     }
 
     @Override

@@ -55,7 +55,7 @@ public class CFence implements ChocoSatConstraint {
     }
 
     @Override
-    public void inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) throws SolverException {
 
         Set<UUID> runnings = new HashSet<UUID>();
         for (UUID vm : cstr.getInvolvedVMs()) {
@@ -69,10 +69,12 @@ public class CFence implements ChocoSatConstraint {
                 for (UUID vm : runnings) {
                     Slice t = rp.getVMActions()[rp.getVM(vm)].getDSlice();
                     if (t != null) {
+                        UUID n = nodes.iterator().next();
                         try {
-                            t.getHoster().setVal(rp.getNode(nodes.iterator().next()));
+                            t.getHoster().setVal(rp.getNode(n));
                         } catch (ContradictionException e) {
-                            throw new SolverException(rp.getSourceModel(), e.getMessage());
+                            rp.getLogger().error("Unable to force VM '{}' to be running on '{}': {}", vm, n, e.getMessage());
+                            return false;
                         }
                     }
                 }
@@ -105,13 +107,15 @@ public class CFence implements ChocoSatConstraint {
                             try {
                                 t.getHoster().remVal(iExlude[a]);
                             } catch (ContradictionException e) {
-                                throw new SolverException(rp.getSourceModel(), e.getMessage());
+                                rp.getLogger().error("Unable to disallow VM '{}' to be running on '{}': {}", vm, rp.getNode(iExlude[a]), e.getMessage());
+                                return false;
                             }
                         }
                     }
                 }
             }
         }
+        return true;
     }
 
     @Override
@@ -134,10 +138,7 @@ public class CFence implements ChocoSatConstraint {
     @Override
     public boolean isSatisfied(ReconfigurationPlan plan) {
         Model r = plan.getResult();
-        if (r == null) {
-            return false;
-        }
-        return cstr.isSatisfied(r).equals(SatConstraint.Sat.SATISFIED);
+        return r != null && cstr.isSatisfied(r).equals(SatConstraint.Sat.SATISFIED);
     }
 
     @Override

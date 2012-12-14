@@ -162,7 +162,9 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
         //Customize with the constraints
         for (ChocoSatConstraint ccstr : cConstraints) {
-            ccstr.inject(rp);
+            if (!ccstr.inject(rp)) {
+                return null;
+            }
         }
 
 
@@ -178,10 +180,11 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         }
     }
 
-    private boolean checkSatisfaction(ReconfigurationPlan p, List<ChocoSatConstraint> cstrs) throws SolverException {
+    private boolean checkSatisfaction(ReconfigurationPlan p, List<ChocoSatConstraint> cstrs) {
         for (ChocoSatConstraint ccstr : cstrs) {
             if (!ccstr.isSatisfied(p)) {
-                throw new SolverException(p.getOrigin(), "Unsatisfied constraint: " + ccstr.toString());
+                rp.getLogger().error("Unsatisfied constraint: {}", ccstr.toString());
+                return false;
             }
         }
         return true;

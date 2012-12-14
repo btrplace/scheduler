@@ -54,8 +54,8 @@ public class CReady implements ChocoSatConstraint {
     }
 
     @Override
-    public void inject(ReconfigurationProblem rp) throws SolverException {
-
+    public boolean inject(ReconfigurationProblem rp) throws SolverException {
+        return true;
     }
 
     @Override

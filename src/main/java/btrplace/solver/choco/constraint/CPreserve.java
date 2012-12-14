@@ -55,7 +55,7 @@ public class CPreserve implements ChocoSatConstraint {
     }
 
     @Override
-    public void inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) throws SolverException {
         ResourceMapping map = rp.getResourceMapping(cstr.getResource());
         if (map == null) {
             throw new SolverException(rp.getSourceModel(), "Unable to get the resource mapper associated to '" +
@@ -68,11 +68,12 @@ public class CPreserve implements ChocoSatConstraint {
                 try {
                     v.setInf(cstr.getAmount());
                 } catch (ContradictionException ex) {
-                    throw new SolverException(rp.getSourceModel(), "Unable to set the '" + cstr.getResource() +
-                            "' consumption for '" + vm + "' to '" + cstr.getAmount() + "'");
+                    rp.getLogger().error("Unable to set the '{}' consumption for VM '{}' to '{}'", cstr.getResource(), cstr.getAmount(), ex.getMessage());
+                    return false;
                 }
             }
         }
+        return true;
     }
 
     @Override

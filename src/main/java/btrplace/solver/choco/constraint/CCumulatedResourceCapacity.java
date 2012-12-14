@@ -54,7 +54,7 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
     }
 
     @Override
-    public void inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) throws SolverException {
         ResourceMapping rcm = rp.getResourceMapping(cstr.getResource());
         if (rcm == null) {
             throw new SolverException(rp.getSourceModel(), "Unable to find a resource mapping for resource '" + cstr.getResource() + "'");
@@ -65,6 +65,7 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
         }
         CPSolver s = rp.getSolver();
         s.post(s.leq(CPSolver.sum(vs.toArray(new IntDomainVar[vs.size()])), cstr.getAmount()));
+        return true;
     }
 
     @Override

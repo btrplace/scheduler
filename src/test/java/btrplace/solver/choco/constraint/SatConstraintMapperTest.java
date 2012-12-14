@@ -119,7 +119,7 @@ public class SatConstraintMapperTest {
 
 
         @Override
-        public void inject(ReconfigurationProblem rp) throws SolverException {
+        public boolean inject(ReconfigurationProblem rp) throws SolverException {
             throw new UnsupportedOperationException();
         }
 

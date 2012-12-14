@@ -54,7 +54,7 @@ public class CSingleResourceCapacity implements ChocoSatConstraint {
     }
 
     @Override
-    public void inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) throws SolverException {
         ResourceMapping rcm = rp.getResourceMapping(cstr.getResource());
         if (rcm == null) {
             throw new SolverException(rp.getSourceModel(), "Unable to find a resource mapping for resource '" + cstr.getResource() + "'");
@@ -64,6 +64,7 @@ public class CSingleResourceCapacity implements ChocoSatConstraint {
         for (UUID n : cstr.getInvolvedNodes()) {
             s.post(s.leq(rcm.getRealNodeUsage()[rp.getNode(n)], amount));
         }
+        return true;
     }
 
     @Override

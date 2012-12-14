@@ -53,7 +53,7 @@ public class COverbook implements ChocoSatConstraint {
     }
 
     @Override
-    public void inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) throws SolverException {
 
         CPSolver s = rp.getSolver();
         ResourceMapping rcm = rp.getResourceMapping(cstr.getResource());
@@ -71,7 +71,8 @@ public class COverbook implements ChocoSatConstraint {
                 try {
                     realCapa[nIdx].setSup(rawCapa[nIdx].getSup());
                 } catch (ContradictionException ex) {
-                    throw new SolverException(rp.getSourceModel(), "Unable to restrict the real '" + rcm.getIdentifier() + "' capacity of " + rp.getNode(nIdx) + " to " + rawCapa[nIdx].getSup());
+                    rp.getLogger().error("Unable to restrict the real '{}' capacity of {} to {}: ", u, rawCapa[nIdx].getSup(), ex.getMessage());
+                    return false;
                 }
             }
         } else {
@@ -96,7 +97,8 @@ public class COverbook implements ChocoSatConstraint {
                 try {
                     realCapa[nIdx].setSup(maxReal);
                 } catch (ContradictionException ex) {
-                    throw new SolverException(rp.getSourceModel(), "Unable to restrict the real '" + rcm.getIdentifier() + "' capacity of " + rp.getNode(nIdx) + " to " + maxReal);
+                    rp.getLogger().error("Unable to restrict the real '{}' capacity of {} to {}: {}", rcm.getIdentifier(), u, maxReal, ex.getMessage());
+                    return false;
                 }
                 IntDomainVar freeReal = s.createBoundIntVar(rp.makeVarLabel("free_real('" + u + "')"), 0, maxReal);
                 s.post(s.eq(freeReal, s.minus(maxReal, realCapa[nIdx])));
@@ -126,6 +128,7 @@ public class COverbook implements ChocoSatConstraint {
         System.arraycopy(realCapa, 0, capa, 0, rp.getNodes().length);
 
         rp.getTaskSchedulerBuilder().add(capa, cUse.toNativeArray(), dUse.toArray(new IntDomainVar[dUse.size()]));
+        return true;
     }
 
     @Override

@@ -49,7 +49,7 @@ import java.util.*;
  */
 public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
-    static final Logger LOGGER = LoggerFactory.getLogger("ChocoRP");
+    private final Logger logger = LoggerFactory.getLogger("ChocoRP");
 
     private boolean useLabels = false;
 
@@ -145,7 +145,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     @Override
     public ReconfigurationPlan solve(int timeLimit, boolean optimize) throws SolverException {
 
-        maintainResourceUsage();
+        if (!maintainResourceUsage()) {
+            return null;
+        }
 
         addContinuousResourceCapacities();
 
@@ -161,8 +163,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 try {
                     v.setVal(v.getInf());
                 } catch (ContradictionException e) {
-                    throw new SolverException(getSourceModel(), "Unable to set the VM '" + rcm.getIdentifier()
-                            + "' consumption to " + v.getInf());
+                    getLogger().error("Unable to set the VM '{}' consumption to {}", rcm.getIdentifier(), v.getInf());
+                    return null;
                 }
             }
         }
@@ -195,10 +197,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     /**
      * Set the VM resource usage for the result, to its current usage.
-     *
-     * @throws SolverException if an error occurred
      */
-    private void maintainResourceUsage() throws SolverException {
+    private boolean maintainResourceUsage() {
         for (ResourceMapping rcm : getResourceMappings()) {
             for (UUID vm : getSourceModel().getMapping().getAllVMs()) {
                 int vmId = getVM(vm);
@@ -207,13 +207,14 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                     try {
                         rcm.getVMConsumption()[vmId].setInf(prevUsage);
                     } catch (ContradictionException e) {
-                        throw new SolverException(getSourceModel(), "Unable to set the minimal '"
-                                + rcm.getIdentifier() + "' usage for '" + vm
-                                + "' to its current usage (" + prevUsage + ")");
+                        getLogger().error("Unable to set the minimal '{}' usage for '{}' to its current usage ({})",
+                                rcm.getIdentifier(), vm, prevUsage);
+                        return false;
                     }
                 }
             }
         }
+        return true;
     }
 
     private void addContinuousResourceCapacities() {
@@ -523,7 +524,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private boolean checkConsistency(ReconfigurationPlan p) {
         if (p.getDuration() != end.getVal()) {
-            LOGGER.error("The plan duration (" + p.getDuration() + ") and the ReconfigurationProblem.getEnd() (" + end.getVal() + ") mismatch:\n" + p);
+            logger.error("The plan effective duration ({}) and the computed duration ({}) mismatch", p.getDuration(), end.getVal());
             return false;
         }
         return true;
@@ -603,5 +604,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     @Override
     public Set<UUID> getManageableVMs() {
         return manageable;
+    }
+
+    @Override
+    public Logger getLogger() {
+        return logger;
     }
 }

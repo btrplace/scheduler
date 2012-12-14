@@ -52,17 +52,17 @@ public class COnline implements ChocoSatConstraint {
     }
 
     @Override
-    public void inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) throws SolverException {
         for (UUID nId : cstr.getInvolvedNodes()) {
-            int idx = rp.getNode(nId);
-            ActionModel m = rp.getNodeActions()[idx];
+            ActionModel m = rp.getNodeAction(nId);
             try {
                 m.getState().setVal(1);
             } catch (ContradictionException e) {
-                throw new SolverException(rp.getSourceModel(), "Unable to force '" + nId + "' at getting online");
+                rp.getLogger().error("Unable to force node '{}' at being online: {}", nId, e.getMessage());
+                return false;
             }
         }
-
+        return true;
     }
 
     @Override
@@ -78,10 +78,7 @@ public class COnline implements ChocoSatConstraint {
     @Override
     public boolean isSatisfied(ReconfigurationPlan plan) {
         Model r = plan.getResult();
-        if (r == null) {
-            return false;
-        }
-        return cstr.isSatisfied(r).equals(SatConstraint.Sat.SATISFIED);
+        return r != null && cstr.isSatisfied(r).equals(SatConstraint.Sat.SATISFIED);
     }
 
     @Override

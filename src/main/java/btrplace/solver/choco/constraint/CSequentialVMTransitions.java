@@ -64,7 +64,7 @@ public class CSequentialVMTransitions implements ChocoSatConstraint {
     }
 
     @Override
-    public void inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) throws SolverException {
         List<UUID> seq = cstr.getInvolvedVMs();
 
         List<ActionModel> ams = new ArrayList<ActionModel>();
@@ -88,6 +88,7 @@ public class CSequentialVMTransitions implements ChocoSatConstraint {
                 prev = cur;
             }
         }
+        return true;
     }
 
     @Override
