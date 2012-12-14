@@ -213,7 +213,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             }
         }
 
-        taskSchedBuilder.add(getVMsCountOnNodes(),
+        taskSchedBuilder.add(getNbRunningVMs(),
                 cUse.toArray(),
                 iUse.toArray(new IntDomainVar[iUse.size()]));
     }
@@ -533,7 +533,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public IntDomainVar[] getVMsCountOnNodes() {
+    public IntDomainVar[] getNbRunningVMs() {
         return vmsCountOnNodes;
     }
 

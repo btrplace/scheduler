@@ -68,7 +68,7 @@ public class BootableNodeModel implements NodeActionModel {
         isOnline = s.createBooleanVar(rp.makeVarLabel("bootableNode(" + nId + ").online"));
         IntDomainVar isOffline = s.createBooleanVar(rp.makeVarLabel("bootableNode(" + nId + ").offline"));
         s.post(s.neq(isOffline, isOnline));
-        s.post(new FastImpliesEq(isOffline, rp.getVMsCountOnNodes()[rp.getNode(nId)], 0));
+        s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNode(nId)], 0));
         start = rp.getStart();
         end = rp.makeDuration(rp.makeVarLabel("bootableNode(" + nId + ").end"));
 

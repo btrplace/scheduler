@@ -54,10 +54,10 @@ public class CCumulatedRunningCapacity implements ChocoSatConstraint {
     public void inject(ReconfigurationProblem rp) throws SolverException {
         List<IntDomainVar> vs = new ArrayList<IntDomainVar>();
         for (UUID u : cstr.getInvolvedNodes()) {
-            vs.add(rp.getVMsCountOnNodes()[rp.getNode(u)]);
+            vs.add(rp.getNbRunningVMs()[rp.getNode(u)]);
         }
         CPSolver s = rp.getSolver();
-        s.post(s.leq(s.sum((IntDomainVar[]) vs.toArray()), cstr.getAmount()));
+        s.post(s.leq(CPSolver.sum(vs.toArray(new IntDomainVar[vs.size()])), cstr.getAmount()));
     }
 
     @Override

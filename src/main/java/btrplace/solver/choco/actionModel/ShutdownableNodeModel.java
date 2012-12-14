@@ -93,7 +93,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
         /**
          * If it is state to shutdown the node, then the duration of the dSlice is not null
          */
-        s.post(new FastImpliesEq(isOffline, rp.getVMsCountOnNodes()[rp.getNode(e)], 0)); //Packing stuff; isOffline -> no VMs running
+        s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNode(e)], 0)); //Packing stuff; isOffline -> no VMs running
     }
 
 

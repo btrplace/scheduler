@@ -62,7 +62,7 @@ public class CSingleRunningCapacity implements ChocoSatConstraint {
     public void inject(ReconfigurationProblem rp) throws SolverException {
         CPSolver s = rp.getSolver();
         for (UUID u : cstr.getInvolvedNodes()) {
-            IntDomainVar v = rp.getVMsCountOnNodes()[rp.getNode(u)];
+            IntDomainVar v = rp.getNbRunningVMs()[rp.getNode(u)];
             s.post(s.leq(v, cstr.getAmount()));
 
             //Continuous in practice ?

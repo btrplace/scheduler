@@ -79,7 +79,7 @@ public class RelocatableVMModelTest {
 
         //No VMs on n1, discrete mode
         CPSolver s = rp.getSolver();
-        s.post(s.eq(rp.getVMsCountOnNodes()[rp.getNode(n1)], 0));
+        s.post(s.eq(rp.getNbRunningVMs()[rp.getNode(n1)], 0));
 
         Assert.assertEquals(rp.solve(0, true), Boolean.TRUE);
         ReconfigurationPlan p = rp.extractSolution();
@@ -118,7 +118,7 @@ public class RelocatableVMModelTest {
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm);
 
         //No VMs on n2
-        rp.getVMsCountOnNodes()[rp.getNode(n2)].setVal(0);
+        rp.getNbRunningVMs()[rp.getNode(n2)].setVal(0);
 
         Assert.assertEquals(rp.solve(0, true), Boolean.TRUE);
         ReconfigurationPlan p = rp.extractSolution();

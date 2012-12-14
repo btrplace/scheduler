@@ -330,7 +330,7 @@ public class DefaultReconfigurationProblemTest {
                 .labelVariables()
                 .build();
 
-        for (IntDomainVar capa : rp.getVMsCountOnNodes()) {
+        for (IntDomainVar capa : rp.getNbRunningVMs()) {
             capa.setSup(5);
         }
 
@@ -341,7 +341,7 @@ public class DefaultReconfigurationProblemTest {
         int[] counts = new int[map.getAllNodes().size()];
         for (UUID n : map.getOnlineNodes()) {
             int nIdx = rp.getNode(n);
-            counts[nIdx] = rp.getVMsCountOnNodes()[nIdx].getVal();
+            counts[nIdx] = rp.getNbRunningVMs()[nIdx].getVal();
         }
         System.out.println(Arrays.toString(counts));
         for (UUID vm : rp.getFutureRunningVMs()) {

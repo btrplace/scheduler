@@ -271,7 +271,7 @@ public interface ReconfigurationProblem {
      *
      * @return an array of variable counting the number of VMs on each node
      */
-    IntDomainVar[] getVMsCountOnNodes();
+    IntDomainVar[] getNbRunningVMs();
 
 
     /**

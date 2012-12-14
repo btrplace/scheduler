@@ -64,7 +64,7 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
             vs.add(rcm.getRealNodeUsage()[rp.getNode(u)]);
         }
         CPSolver s = rp.getSolver();
-        s.post(s.leq(s.sum((IntDomainVar[]) vs.toArray()), cstr.getAmount()));
+        s.post(s.leq(CPSolver.sum(vs.toArray(new IntDomainVar[vs.size()])), cstr.getAmount()));
     }
 
     @Override
@@ -95,10 +95,7 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
     @Override
     public boolean isSatisfied(ReconfigurationPlan plan) {
         Model r = plan.getResult();
-        if (r == null) {
-            return false;
-        }
-        return cstr.isSatisfied(r).equals(SatConstraint.Sat.SATISFIED);
+        return r != null && cstr.isSatisfied(r).equals(SatConstraint.Sat.SATISFIED);
     }
 
     @Override
