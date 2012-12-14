@@ -23,11 +23,10 @@ import btrplace.plan.event.BootNode;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.NodeActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.chocoUtil.ChocoUtils;
+import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.ElementV;
-import choco.cp.solver.variables.integer.BoolVarNot;
-import choco.cp.solver.variables.integer.BooleanVarImpl;
+import choco.cp.solver.constraints.integer.TimesXYZ;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.UUID;
@@ -67,14 +66,18 @@ public class BootableNodeModel implements NodeActionModel {
         CPSolver s = rp.getSolver();
 
         isOnline = s.createBooleanVar(rp.makeVarLabel("bootableNode(" + nId + ").online"));
-        IntDomainVar isOffline = new BoolVarNot(s, rp.makeVarLabel("bootableNode(" + nId + ").offline"), (BooleanVarImpl) isOnline);
+        IntDomainVar isOffline = s.createBooleanVar(rp.makeVarLabel("bootableNode(" + nId + ").offline"));
+        s.post(s.neq(isOffline, isOnline));
+        s.post(new FastImpliesEq(isOffline, rp.getVMsCountOnNodes()[rp.getNode(nId)], 0));
         start = rp.getStart();
         end = rp.makeDuration(rp.makeVarLabel("bootableNode(" + nId + ").end"));
 
         hostingStart = rp.makeDuration(rp.makeVarLabel("bootableNode(" + nId + ").hostingStart"));
-
-        s.post(s.eq(end, ChocoUtils.mult(s, isOffline, hostingStart)));
-
+        s.post(new TimesXYZ(isOnline, hostingStart, end));
+        //s.post(new TimesXYZ(isOffline, rp.getEnd(), hostingStart));
+        s.post(s.leq(hostingEnd, rp.getEnd()));
+        s.post(s.leq(end, rp.getEnd()));
+        s.post(s.leq(hostingStart, rp.getEnd()));
         IntDomainVar cDur = s.makeConstantIntVar(d);
 
         /**
@@ -84,12 +87,13 @@ public class BootableNodeModel implements NodeActionModel {
         s.post(new ElementV(new IntDomainVar[]{rp.getEnd(), cDur, isOnline, hostingStart}, 0, s.getEnvironment()));
         hostingEnd = rp.getEnd();
         duration = rp.makeDuration(rp.makeVarLabel("bootableNode(" + nId + ").duration"));
+        s.post(s.eq(duration, s.minus(end, start)));
     }
 
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
-        if (start.getVal() == 1) {
-            plan.add(new BootNode(node, start.getVal(), getEnd().getVal()));
+        if (getState().getVal() == 1) {
+            plan.add(new BootNode(node, start.getVal(), end.getVal()));
         }
         return true;
     }

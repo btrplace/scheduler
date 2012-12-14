@@ -57,7 +57,7 @@ public class LocalTaskScheduler {
 
     private int[] startupFree;
 
-    public static int DEBUG = -1;
+    public static int DEBUG = 0;
 
     private int[] associations;
 
@@ -353,7 +353,7 @@ public class LocalTaskScheduler {
             for (int i = 0; i < nbDims; i++) {
                 if (profilesMin[i].get(t) > capacities[i][me]) {
                     if (me == DEBUG) {
-                        ChocoLogging.getBranchingLogger().warning("(" + me + ") Invalid min profile at " + t + " on dimension " + i
+                        ChocoLogging.getBranchingLogger().info("(" + me + ") Invalid min profile at " + t + " on dimension " + i
                                 + ": " + profilesMin[i].get(t) + " > " + capacities[i][me]);
                     }
                     return false;
@@ -366,7 +366,7 @@ public class LocalTaskScheduler {
             int i = vIn.get(idx);
             if (dStarts[i].getSup() < early.getSup()) {
                 if (me == DEBUG) {
-                    ChocoLogging.getBranchingLogger().warning("(" + me + ") The dSlice " + i + " has to start too early (max is " + dStarts[i].pretty() + ") (min expected=" + early.pretty() + ")");
+                    ChocoLogging.getBranchingLogger().info("(" + me + ") The dSlice " + i + " has to start too early (max is " + dStarts[i].pretty() + ") (min expected=" + early.pretty() + ")");
                 }
                 return false;
             }
@@ -375,7 +375,7 @@ public class LocalTaskScheduler {
         for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
             if (cEnds[i].getInf() > last.getSup()) {
                 if (me == DEBUG) {
-                    ChocoLogging.getBranchingLogger().warning("(" + me + ") The cSlice " + i + " has to end too late (last expected=" + last.getSup() + ")");
+                    ChocoLogging.getBranchingLogger().info("(" + me + ") The cSlice " + i + " has to end too late (last expected=" + last.getSup() + ")");
                 }
                 return false;
             }
