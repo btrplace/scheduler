@@ -26,10 +26,13 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * A constraint to force a set of virtual machines to avoid
- * to be hosted on a group of nodes.
+ * A constraint to disallow the given VMs, when running,
+ * to be hosted on a given set of nodes.
+ * <p/>
+ * The restriction provided by this constraint is only discrete.
  *
  * @author Fabien Hermenier
+ * @see SatConstraint
  */
 public class Ban extends SatConstraint {
 
@@ -40,15 +43,15 @@ public class Ban extends SatConstraint {
      * @param nodes the nodes identifiers
      */
     public Ban(Set<UUID> vms, Set<UUID> nodes) {
-        super(vms, nodes);
+        super(vms, nodes, false);
     }
 
     @Override
     public Sat isSatisfied(Model i) {
         Mapping c = i.getMapping();
         Set<UUID> runnings = c.getRunningVMs();
-        for (UUID vm : getInvolvedVMs()) {
-            if (runnings.contains(vm) && getInvolvedNodes().contains(c.getVMLocation(vm))) {
+        for (UUID vm : runnings) {
+            if (getInvolvedNodes().contains(c.getVMLocation(vm))) {
                 return Sat.UNSATISFIED;
             }
         }
@@ -60,6 +63,11 @@ public class Ban extends SatConstraint {
         return new StringBuilder("ban(")
                 .append("vms=").append(getInvolvedVMs())
                 .append(", nodes=").append(getInvolvedNodes())
-                .append(")").toString();
+                .append(", discrete)").toString();
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        return !b;
     }
 }

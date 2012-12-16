@@ -26,8 +26,10 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * A constraint to force a set of virtual machines
+ * A constraint to force the given VMs, when running,
  * to be hosted on a group of nodes.
+ * <p/>
+ * The restriction provided by this constraint is only discrete.
  *
  * @author Fabien Hermenier
  */
@@ -40,7 +42,7 @@ public class Fence extends SatConstraint {
      * @param nodes the nodes identifiers
      */
     public Fence(Set<UUID> vms, Set<UUID> nodes) {
-        super(vms, nodes);
+        super(vms, nodes, false);
     }
 
     @Override
@@ -48,8 +50,8 @@ public class Fence extends SatConstraint {
         Mapping c = i.getMapping();
         Set<UUID> runnings = c.getRunningVMs();
 
-        for (UUID vm : getInvolvedVMs()) {
-            if (runnings.contains(vm) && !getInvolvedNodes().contains(c.getVMLocation(vm))) {
+        for (UUID vm : runnings) {
+            if (!getInvolvedNodes().contains(c.getVMLocation(vm))) {
                 return Sat.UNSATISFIED;
             }
         }
@@ -61,7 +63,14 @@ public class Fence extends SatConstraint {
         return new StringBuilder("fence(vms=")
                 .append(getInvolvedVMs())
                 .append(", nodes=").append(getInvolvedNodes())
+                .append(", discrete")
                 .append(")").toString();
+    }
+
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        return !b;
     }
 
 }

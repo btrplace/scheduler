@@ -39,7 +39,7 @@ public class Online extends SatConstraint {
      * @param nodes the nodes to set online
      */
     public Online(Set<UUID> nodes) {
-        super(Collections.<UUID>emptySet(), nodes);
+        super(Collections.<UUID>emptySet(), nodes, false);
     }
 
     @Override
