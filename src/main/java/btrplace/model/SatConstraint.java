@@ -18,47 +18,43 @@
 
 package btrplace.model;
 
+import btrplace.plan.Action;
+import btrplace.plan.ReconfigurationPlan;
+
 import java.util.Collection;
 import java.util.UUID;
 
 /**
- * Interface to characterize a satisfaction-oriented constraint that impose a restriction
- * on some components of a model.
+ * Abstract class to characterize a satisfaction-oriented constraint
+ * that impose a restriction on some components of a model.
  * <p/>
- * A constraint may or may be not be satisfied for a given model and it is not
- * always possible to state about its feasibility by relying only on a model.
+ * The restriction provided by the constraint can be either discrete or continuous.
+ * If the restriction is discrete, then the constraint imposes a restriction on a {@link Model}.
+ * If the restriction is continuous, then the constraint imposes also a restriction on a whole {@link ReconfigurationPlan}.
+ * This may be the action schedule but also all the intermediary models between the source and the result model.
  * <p/>
- * If a constraint is not satisfied, a reconfiguration algorithm may be used
- * to compute a new model that will lead to the constraint satisfaction. In this case,
- * the restriction provided by the constraint may be either discrete or continuous.
- * If the restriction is discrete, then the constraint must only be satisfied at the end of the reconfiguration.
- * If the restriction is continuous and if the constraint is already satisfied before the reconfiguration,
- * then the constraint will have to be satisfied at any moment of the reconfiguration process.
- * <p/>
- * Stating about the restriction type is optional and may not be supported by every constraint or reconfiguration
- * algorithm.
+ * A constraint does not necessarily support both continuous or discrete restriction.
  *
  * @author Fabien Hermenier
  */
 public abstract class SatConstraint {
 
-    private boolean lazy = false;
+    private boolean continuous;
 
     /**
-     * An enumeration to indicate the satisfaction of a constraint
-     * with regards to a model
+     * An enumeration to indicate the satisfaction of a constraint.
      */
     public enum Sat {
         /**
-         * The constraint is satisfied
+         * The constraint is satisfied.
          */
         SATISFIED,
         /**
-         * The constraint is not satisfied
+         * The constraint is not satisfied .
          */
         UNSATISFIED,
         /**
-         * It is not possible to state about the constraint satisfaction
+         * It is not possible to state about the constraint satisfaction.
          */
         UNDEFINED
     }
@@ -78,10 +74,12 @@ public abstract class SatConstraint {
      *
      * @param vms   the involved VMs
      * @param nodes the involved nodes
+     * @param c     {@code true} to indicate a continuous restriction
      */
-    public SatConstraint(Collection<UUID> vms, Collection<UUID> nodes) {
+    public SatConstraint(Collection<UUID> vms, Collection<UUID> nodes, boolean c) {
         this.vms = vms;
         this.nodes = nodes;
+        this.continuous = c;
     }
 
     /**
@@ -103,12 +101,36 @@ public abstract class SatConstraint {
     }
 
     /**
-     * Check if an instance violate the constraint.
+     * Check if a model satisfies the constraint.
+     * This method is used when the constraint provides only a discrete restriction.
      *
-     * @param i the instance to check
+     * @param i the model to check
      * @return {@code true} iff the constraint is not violated
      */
     public abstract Sat isSatisfied(Model i);
+
+    /**
+     * Check if a plan satisfies the constraint.
+     * This method is only considered when the constraint provides a continuous restriction.
+     * By default, this method checks if the intermediary models that result from the application of the actions
+     * are consistent with the constraint.
+     *
+     * @param p the plan to inspect
+     * @return {@code true} iff the plan satisfies the constraint
+     */
+    public Sat isSatisfied(ReconfigurationPlan p) {
+        Model m = p.getOrigin().clone();
+        for (Action a : p) {
+            if (!a.apply(m)) {
+                return Sat.UNSATISFIED;
+            }
+            Sat s = isSatisfied(m);
+            if (s.equals(Sat.SATISFIED)) {
+                return s;
+            }
+        }
+        return Sat.SATISFIED;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -130,22 +152,22 @@ public abstract class SatConstraint {
 
     /**
      * Indicates if the restriction provided by the constraint has to be
-     * continuous if possible.
+     * continuous if it is possible.
      *
-     * @param b {@code true} to ask for a continuous satisfaction. {@code false} for a discrete satisfaction.
+     * @param b {@code true} to ask for a continuous satisfaction, {@code false} for a discrete satisfaction.
      * @return {@code true} iff the parameter has been considered
      */
     public boolean setContinuous(boolean b) {
-        lazy = b;
+        continuous = b;
         return true;
     }
 
     /**
-     * Check if the constraint restriction shall be continuous or not.
+     * Check if the restriction provided by the constraint be continuous.
      *
-     * @return {@code true} for a continuous satisfaction
+     * @return {@code true} for a continuous restriction
      */
     public boolean isContinuous() {
-        return lazy;
+        return continuous;
     }
 }

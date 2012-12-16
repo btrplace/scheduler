@@ -21,6 +21,8 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.plan.Action;
+import btrplace.plan.ReconfigurationPlan;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -28,8 +30,15 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * A constraint to indicate the given VMs, if running, must be hosted
- * on distinct nodes.
+ * A constraint to indicate that the given VMs, if running,
+ * must be hosted on distinct nodes.
+ * <p/>
+ * If the restriction is continuous, the constraint ensure no VM is relocated to a node hosting a VM
+ * involved in the same Spread constraint.
+ * If the restriction is discrete, the constraint only ensures that there is no co-location
+ * at the end of the reconfiguration plan.
+ * <p/>
+ * By default, the restriction is continuous.
  *
  * @author Fabien Hermenier
  */
@@ -41,7 +50,7 @@ public class Spread extends SatConstraint {
      * @param vms the VMs to consider
      */
     public Spread(Set<UUID> vms) {
-        super(vms, Collections.<UUID>emptySet());
+        super(vms, Collections.<UUID>emptySet(), true);
     }
 
     @Override
@@ -57,10 +66,25 @@ public class Spread extends SatConstraint {
     }
 
     @Override
+    public Sat isSatisfied(ReconfigurationPlan plan) {
+        Model m = plan.getOrigin().clone();
+        for (Action a : plan) {
+            a.apply(m);
+            Sat s = isSatisfied(m);
+            if (!s.equals(SatConstraint.Sat.SATISFIED)) {
+                return s;
+            }
+        }
+        return Sat.SATISFIED;
+    }
+
+    @Override
     public String toString() {
         StringBuilder b = new StringBuilder("spread(vms=").append(getInvolvedVMs());
         if (!isContinuous()) {
             b.append(", discrete");
+        } else {
+            b.append(", continuous");
         }
         return b.append(")").toString();
     }
@@ -75,7 +99,7 @@ public class Spread extends SatConstraint {
         }
 
         Spread that = (Spread) o;
-        return getInvolvedVMs().equals(that.getInvolvedVMs());
+        return getInvolvedVMs().equals(that.getInvolvedVMs()) && isContinuous() == that.isContinuous();
     }
 
     @Override
