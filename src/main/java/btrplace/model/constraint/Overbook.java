@@ -51,10 +51,9 @@ public class Overbook extends SatConstraint {
      * @param r     the overbooking ratio
      */
     public Overbook(Set<UUID> nodes, String rcId, double r) {
-        super(Collections.<UUID>emptySet(), nodes);
+        super(Collections.<UUID>emptySet(), nodes, true);
         this.rcId = rcId;
         this.ratio = r;
-        setContinuous(true);
     }
 
     /**

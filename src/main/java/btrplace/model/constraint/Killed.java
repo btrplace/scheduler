@@ -39,7 +39,7 @@ public class Killed extends SatConstraint {
      * @param vms the VMs to remove
      */
     public Killed(Set<UUID> vms) {
-        super(vms, Collections.<UUID>emptySet());
+        super(vms, Collections.<UUID>emptySet(), false);
     }
 
     @Override
@@ -76,6 +76,11 @@ public class Killed extends SatConstraint {
         return new StringBuilder("killed(vms=")
                 .append(getInvolvedVMs())
                 .append(")").toString();
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        return !b;
     }
 
 }

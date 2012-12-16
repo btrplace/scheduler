@@ -34,7 +34,7 @@ public class SatConstraintTest {
     static class MockSatConstraints extends SatConstraint {
 
         public MockSatConstraints() {
-            super(new HashSet<UUID>(), new HashSet<UUID>());
+            super(new HashSet<UUID>(), new HashSet<UUID>(), false);
             getInvolvedVMs().add(UUID.randomUUID());
         }
 

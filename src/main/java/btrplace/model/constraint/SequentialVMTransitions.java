@@ -41,7 +41,7 @@ public class SequentialVMTransitions extends SatConstraint {
      * @param seq the order to ensure
      */
     public SequentialVMTransitions(List<UUID> seq) {
-        super(seq, new ArrayList<UUID>());
+        super(seq, new ArrayList<UUID>(), true);
         order = seq;
     }
 

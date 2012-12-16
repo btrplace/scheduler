@@ -42,7 +42,7 @@ public class CumulatedRunningCapacity extends SatConstraint {
      * @param amount  the total amount of resource consumed by all the VMs running on the given servers
      */
     public CumulatedRunningCapacity(Set<UUID> servers, int amount) {
-        super(Collections.<UUID>emptySet(), servers);
+        super(Collections.<UUID>emptySet(), servers, false);
         this.qty = amount;
     }
 

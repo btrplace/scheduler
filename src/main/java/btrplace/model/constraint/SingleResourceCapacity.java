@@ -46,7 +46,7 @@ public class SingleResourceCapacity extends SatConstraint {
      * @param amount the maximum amount of resource to share among the hosted VMs
      */
     public SingleResourceCapacity(Set<UUID> nodes, String rcId, int amount) {
-        super(Collections.<UUID>emptySet(), nodes);
+        super(Collections.<UUID>emptySet(), nodes, false);
         this.rcId = rcId;
         this.amount = amount;
     }

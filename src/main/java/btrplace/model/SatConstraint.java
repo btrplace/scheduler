@@ -18,7 +18,6 @@
 
 package btrplace.model;
 
-import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
 
 import java.util.Collection;
@@ -112,24 +111,17 @@ public abstract class SatConstraint {
     /**
      * Check if a plan satisfies the constraint.
      * This method is only considered when the constraint provides a continuous restriction.
-     * By default, this method checks if the intermediary models that result from the application of the actions
-     * are consistent with the constraint.
+     * By default, the method checks that the result model satisfies the constraint
      *
      * @param p the plan to inspect
      * @return {@code true} iff the plan satisfies the constraint
      */
     public Sat isSatisfied(ReconfigurationPlan p) {
-        Model m = p.getOrigin().clone();
-        for (Action a : p) {
-            if (!a.apply(m)) {
-                return Sat.UNSATISFIED;
-            }
-            Sat s = isSatisfied(m);
-            if (s.equals(Sat.SATISFIED)) {
-                return s;
-            }
+        Model m = p.getResult();
+        if (m == null) {
+            return Sat.UNSATISFIED;
         }
-        return Sat.SATISFIED;
+        return isSatisfied(m);
     }
 
     @Override

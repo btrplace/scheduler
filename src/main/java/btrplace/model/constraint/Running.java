@@ -39,7 +39,7 @@ public class Running extends SatConstraint {
      * @param vms the VMs to make running
      */
     public Running(Set<UUID> vms) {
-        super(vms, Collections.<UUID>emptySet());
+        super(vms, Collections.<UUID>emptySet(), false);
     }
 
     @Override
@@ -78,4 +78,8 @@ public class Running extends SatConstraint {
                 .append(")").toString();
     }
 
+    @Override
+    public boolean setContinuous(boolean b) {
+        return !b;
+    }
 }

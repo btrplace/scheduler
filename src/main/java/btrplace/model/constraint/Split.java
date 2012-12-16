@@ -39,7 +39,7 @@ public class Split extends SatConstraint {
      * @param sets the disjoint sets of VMs that must be split
      */
     public Split(Collection<Set<UUID>> sets) {
-        super(null, Collections.<UUID>emptySet());
+        super(null, Collections.<UUID>emptySet(), false);
         this.sets = sets;
     }
 
@@ -114,5 +114,10 @@ public class Split extends SatConstraint {
             }
         }
         return b.toString();
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        return !b;
     }
 }

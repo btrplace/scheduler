@@ -39,7 +39,7 @@ public class Root extends SatConstraint {
      * @param vms the set of VMs to disallow to move
      */
     public Root(Set<UUID> vms) {
-        super(vms, Collections.<UUID>emptySet());
+        super(vms, Collections.<UUID>emptySet(), false);
     }
 
     @Override
@@ -70,6 +70,11 @@ public class Root extends SatConstraint {
         return new StringBuilder("root(")
                 .append("vms=").append(getInvolvedVMs())
                 .append(")").toString();
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        return !b;
     }
 
 }

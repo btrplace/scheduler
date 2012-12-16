@@ -39,7 +39,7 @@ public class Offline extends SatConstraint {
      * @param nodes the nodes to set offline
      */
     public Offline(Set<UUID> nodes) {
-        super(Collections.<UUID>emptySet(), nodes);
+        super(Collections.<UUID>emptySet(), nodes, false);
     }
 
     @Override
@@ -77,6 +77,11 @@ public class Offline extends SatConstraint {
         return new StringBuilder("offline(nodes=")
                 .append(getInvolvedNodes())
                 .append(")").toString();
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        return !b;
     }
 
 }

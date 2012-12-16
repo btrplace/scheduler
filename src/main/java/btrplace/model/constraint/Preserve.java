@@ -48,7 +48,7 @@ public class Preserve extends SatConstraint {
      * @param amount the minimum amount of resource to allocate
      */
     public Preserve(Set<UUID> vms, String rcId, int amount) {
-        super(vms, Collections.<UUID>emptySet());
+        super(vms, Collections.<UUID>emptySet(), false);
         this.rc = rcId;
         this.amount = amount;
     }
@@ -115,6 +115,10 @@ public class Preserve extends SatConstraint {
                 .append(")").toString();
     }
 
+    @Override
+    public boolean setContinuous(boolean b) {
+        return !b;
+    }
 }
 
 

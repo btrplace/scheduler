@@ -78,4 +78,8 @@ public class Online extends SatConstraint {
                 .append(")").toString();
     }
 
+    @Override
+    public boolean setContinuous(boolean b) {
+        return !b;
+    }
 }

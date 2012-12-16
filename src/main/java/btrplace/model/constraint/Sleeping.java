@@ -39,7 +39,7 @@ public class Sleeping extends SatConstraint {
      * @param vms the VMs to make sleeping
      */
     public Sleeping(Set<UUID> vms) {
-        super(vms, Collections.<UUID>emptySet());
+        super(vms, Collections.<UUID>emptySet(), false);
     }
 
     @Override
@@ -76,5 +76,10 @@ public class Sleeping extends SatConstraint {
         return new StringBuilder("sleeping(")
                 .append("vms=").append(getInvolvedVMs())
                 .append(")").toString();
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        return !b;
     }
 }

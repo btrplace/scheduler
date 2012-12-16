@@ -51,7 +51,7 @@ public class SplitAmong extends SatConstraint {
      * @param pGrps the set of set of nodes. Sets of nodes must be disjoint
      */
     public SplitAmong(Set<Set<UUID>> vGrps, Set<Set<UUID>> pGrps) {
-        super(null, null);
+        super(null, null, false);
         this.vGrps = vGrps;
         this.pGrps = pGrps;
     }
@@ -167,5 +167,10 @@ public class SplitAmong extends SatConstraint {
         }
 
         return b.toString();
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        return !b;
     }
 }

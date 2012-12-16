@@ -39,7 +39,7 @@ public class Ready extends SatConstraint {
      * @param vms the VMs to make ready
      */
     public Ready(Set<UUID> vms) {
-        super(vms, Collections.<UUID>emptySet());
+        super(vms, Collections.<UUID>emptySet(), false);
     }
 
     @Override
@@ -75,5 +75,10 @@ public class Ready extends SatConstraint {
         return new StringBuilder("ready(")
                 .append("vms=").append(getInvolvedVMs())
                 .append(")").toString();
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        return !b;
     }
 }
