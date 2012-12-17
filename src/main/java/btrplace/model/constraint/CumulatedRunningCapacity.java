@@ -26,9 +26,16 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Restrict the cumulated amount of VMs running
- * on the given set of VMs to a maximum.
- *
+ * Restrict to a given value, the cumulated amount of VMs running
+ * on the given set of nodes.
+ * <p/>
+ * The restriction provided by the constraint can be either discrete or continuous.
+ * If it is discrete, the constraint only considers the model obtained as the end
+ * of the reconfiguration process.
+ * If the restriction is continuous, then the cumulated usage must never exceed
+ * the given amount, in the source model, during the reconfiguration and at the end.
+ * <p/>
+ * By default, the restriction is discrete
  *
  * @author Fabien Hermenier
  */
@@ -60,6 +67,7 @@ public class CumulatedRunningCapacity extends SatConstraint {
         }
         return Sat.SATISFIED;
     }
+
 
     @Override
     public boolean equals(Object o) {
@@ -104,7 +112,7 @@ public class CumulatedRunningCapacity extends SatConstraint {
         } else {
             b.append(", continuous");
         }
-                b.append(')');
+        b.append(')');
 
         return b.toString();
     }

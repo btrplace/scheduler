@@ -19,6 +19,10 @@
 package btrplace.model.constraint;
 
 import btrplace.model.*;
+import btrplace.plan.DefaultReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.ShutdownNode;
+import btrplace.plan.event.ShutdownVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -61,6 +65,32 @@ public class OfflineTest {
         Assert.assertEquals(o.isSatisfied(i), SatConstraint.Sat.SATISFIED);
         c.addOnlineNode(n2);
         Assert.assertEquals(o.isSatisfied(i), SatConstraint.Sat.UNSATISFIED);
+    }
+
+    @Test
+    public void testContinuousIsSatisfied() {
+        Mapping map = new DefaultMapping();
+        UUID n1 = UUID.randomUUID();
+        UUID n2 = UUID.randomUUID();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+
+        Set<UUID> s = new HashSet<UUID>();
+        s.add(n1);
+        s.add(n2);
+        Offline off = new Offline(s);
+        UUID vm = UUID.randomUUID();
+        map.addRunningVM(vm, n1);
+
+        Model mo = new DefaultModel(map);
+        ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
+        Assert.assertEquals(off.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        plan.add(new ShutdownNode(n2, 0, 1));
+        plan.add(new ShutdownVM(vm, n1, 0, 1));
+        Assert.assertEquals(off.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        plan.add(new ShutdownNode(n1, 1, 2));
+        Assert.assertEquals(off.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+
     }
 
     @Test

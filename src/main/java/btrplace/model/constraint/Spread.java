@@ -23,11 +23,13 @@ import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.event.BootVM;
 import btrplace.plan.event.MigrateVM;
-import btrplace.plan.event.ResumeVM;
+import btrplace.plan.event.RunningVMPlacement;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * A constraint to indicate that the given VMs, if running,
@@ -81,14 +83,8 @@ public class Spread extends SatConstraint {
 
             UUID destNode = null;
             //TODO: looks like an interface would be nice
-            if (a instanceof MigrateVM) {
+            if (a instanceof RunningVMPlacement) {
                 destNode = ((MigrateVM) a).getDestinationNode();
-            } else if (a instanceof ResumeVM) {
-                destNode = ((ResumeVM) a).getDestinationNode();
-            } else if (a instanceof BootVM) {
-                destNode = ((BootVM) a).getDestinationNode();
-            }
-            if (destNode != null) {
                 Set<UUID> on = new HashSet<UUID>(cur.getMapping().getRunningVMs(destNode));
                 //If there is 2 VMs here that are involved in
                 //the constraint, it's a failure

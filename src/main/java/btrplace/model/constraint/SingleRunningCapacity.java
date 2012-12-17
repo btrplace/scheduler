@@ -31,13 +31,13 @@ import java.util.UUID;
 /**
  * Restrict the hosting capacity of each of the given server to a given
  * amount of VMs.
- *
+ * <p/>
  * The restriction provided by the constraint can be either discrete or continuous.
  * If it is discrete, the constraint only considers the model obtained as the end
  * of the reconfiguration process.
- * If the restriction is continuous, then the cumulated usage must never exceed
+ * If the restriction is continuous, then the usage must never exceed
  * the given amount, in the source model, during the reconfiguration and at the end.
- *
+ * <p/>
  * By default, the constraint provides a discrete restriction.
  *
  * @author Fabien Hermenier
@@ -79,19 +79,19 @@ public class SingleRunningCapacity extends SatConstraint {
 
     @Override
     public Sat isSatisfied(ReconfigurationPlan plan) {
-            Model mo = plan.getOrigin().clone();
+        Model mo = plan.getOrigin().clone();
+        if (!isSatisfied(mo).equals(SatConstraint.Sat.SATISFIED)) {
+            return Sat.UNSATISFIED;
+        }
+        for (Action a : plan) {
+            if (!a.apply(mo)) {
+                return Sat.UNSATISFIED;
+            }
             if (!isSatisfied(mo).equals(SatConstraint.Sat.SATISFIED)) {
                 return Sat.UNSATISFIED;
             }
-            for (Action a : plan) {
-                if (!a.apply(mo)) {
-                    return Sat.UNSATISFIED;
-                }
-                if (!isSatisfied(mo).equals(SatConstraint.Sat.SATISFIED)) {
-                    return Sat.UNSATISFIED;
-                }
-            }
-        return Sat.UNSATISFIED;
+        }
+        return Sat.SATISFIED;
     }
 
     @Override

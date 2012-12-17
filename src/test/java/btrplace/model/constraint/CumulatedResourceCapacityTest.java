@@ -43,6 +43,9 @@ public class CumulatedResourceCapacityTest {
         Assert.assertEquals(3, c.getAmount());
         Assert.assertTrue(c.getInvolvedVMs().isEmpty());
         Assert.assertFalse(c.toString().contains("null"));
+        Assert.assertFalse(c.isContinuous());
+        Assert.assertTrue(c.setContinuous(true));
+        Assert.assertTrue(c.isContinuous());
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
@@ -59,5 +62,15 @@ public class CumulatedResourceCapacityTest {
         Assert.assertFalse(c.equals(new CumulatedResourceCapacity(s, "bar", 3)));
         Assert.assertFalse(c.equals(new CumulatedResourceCapacity(s, "foo", 2)));
         Assert.assertFalse(c.equals(new CumulatedResourceCapacity(new HashSet<UUID>(), "foo", 3)));
+    }
+
+    @Test
+    public void testDiscreteIsSatisfied() {
+        Assert.fail();
+    }
+
+    @Test
+    public void testContinuousIsSatisfied() {
+        Assert.fail();
     }
 }

@@ -30,7 +30,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class MigrateVM extends Action implements VMEvent {
+public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
 
     private UUID vm;
 
@@ -53,11 +53,7 @@ public class MigrateVM extends Action implements VMEvent {
         this.dst = dst;
     }
 
-    /**
-     * Get the destination node.
-     *
-     * @return the node identifier
-     */
+    @Override
     public UUID getDestinationNode() {
         return dst;
     }

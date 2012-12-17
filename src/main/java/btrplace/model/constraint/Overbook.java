@@ -28,12 +28,14 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * A constraint to specify the overbooking factor between
- * the physical resources offered by a node and the associated virtual resources
+ * A constraint to specify and overbooking factor between
+ * the physical resources offered by a node and the virtual resources
  * that are consumed by the VMs it hosts.
  * <p/>
  * To compute the virtual capacity of a server, its physical capacity is multiplied
  * by the overbooking factor. The result is then truncated.
+ * <p/>
+ * TODO: discrete/continuous
  *
  * @author Fabien Hermenier
  */

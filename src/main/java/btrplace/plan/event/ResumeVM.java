@@ -32,7 +32,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class ResumeVM extends Action implements VMEvent {
+public class ResumeVM extends Action implements VMEvent, RunningVMPlacement {
 
     private UUID vm;
 
@@ -59,11 +59,7 @@ public class ResumeVM extends Action implements VMEvent {
         return vm;
     }
 
-    /**
-     * Get the destination node.
-     *
-     * @return the node identifier
-     */
+    @Override
     public UUID getDestinationNode() {
         return dst;
     }

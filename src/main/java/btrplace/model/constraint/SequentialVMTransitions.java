@@ -20,16 +20,22 @@ package btrplace.model.constraint;
 
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.plan.Action;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.VMEvent;
+import btrplace.plan.event.BootVM;
+import btrplace.plan.event.ResumeVM;
+import btrplace.plan.event.ShutdownVM;
+import btrplace.plan.event.SuspendVM;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * A constraint to force the actions that change the given VMs state
  * to be executed in the given order.
- *
+ * <p/>
  * The restriction provided by the constraint is only continuous.
+ *
  * @author Fabien Hermenier
  */
 public class SequentialVMTransitions extends SatConstraint {
@@ -87,5 +93,44 @@ public class SequentialVMTransitions extends SatConstraint {
             super.setContinuous(b);
         }
         return b;
+    }
+
+    @Override
+    public Sat isSatisfied(ReconfigurationPlan plan) {
+        List<UUID> seq = getInvolvedVMs();
+        Set<UUID> s = new HashSet<UUID>();
+        s.addAll(seq);
+        int vmIdx = 0;
+        UUID curVM = seq.get(vmIdx);
+        s.remove(curVM);
+        for (Action a : plan) {
+            if (a instanceof VMEvent) {
+                UUID vm = ((VMEvent) a).getVM();
+                if (a instanceof BootVM || a instanceof ShutdownVM
+                        || a instanceof SuspendVM || a instanceof ResumeVM) {
+                    if (curVM.equals(vm)) {
+                        //This is the VM we expected
+                        curVM = seq.get(++vmIdx);
+                        s.remove(curVM);
+                    } else {
+                        //Not the VM we expected
+                        if (s.contains(curVM)) {
+                            //and the VM is in the queue,
+                            //this is a violation
+                            return Sat.UNSATISFIED;
+                        }
+                    }
+                } else {
+                    if (curVM.equals(vm)) { //It's not a state transition, so we pass
+                        curVM = seq.get(++vmIdx);
+                        s.remove(curVM);
+                    }
+                }
+                if (s.isEmpty()) {
+                    return Sat.SATISFIED;
+                }
+            }
+        }
+        return Sat.UNSATISFIED;
     }
 }

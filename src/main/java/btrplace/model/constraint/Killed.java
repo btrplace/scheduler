@@ -28,8 +28,9 @@ import java.util.UUID;
 
 /**
  * A constraint to force a set of VMs to be killed.
- *
+ * <p/>
  * The restriction provided by the constraint is discrete.
+ *
  * @author Fabien Hermenier
  */
 public class Killed extends SatConstraint {

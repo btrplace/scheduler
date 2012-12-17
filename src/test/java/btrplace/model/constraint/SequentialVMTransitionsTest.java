@@ -43,6 +43,8 @@ public class SequentialVMTransitionsTest {
         Assert.assertEquals(l, c.getInvolvedVMs());
         Assert.assertTrue(c.getInvolvedNodes().isEmpty());
         Assert.assertFalse(c.toString().contains("null"));
+        Assert.assertTrue(c.isContinuous());
+        Assert.assertFalse(c.setContinuous(false));
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})

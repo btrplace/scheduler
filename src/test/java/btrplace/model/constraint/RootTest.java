@@ -19,9 +19,13 @@
 package btrplace.model.constraint;
 
 import btrplace.model.*;
+import btrplace.plan.DefaultReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.MigrateVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -76,6 +80,23 @@ public class RootTest {
         Assert.assertEquals(o.isSatisfied(i), SatConstraint.Sat.SATISFIED);
         c.clear();
         Assert.assertEquals(o.isSatisfied(i), SatConstraint.Sat.SATISFIED);
+    }
+
+    @Test
+    public void testContinuousIsSatisfied() {
+        Mapping map = new DefaultMapping();
+        UUID n1 = UUID.randomUUID();
+        UUID n2 = UUID.randomUUID();
+        UUID vm1 = UUID.randomUUID();
+        Model mo = new DefaultModel(map);
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addRunningVM(vm1, n1);
+        ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
+        Root r = new Root(Collections.singleton(vm1));
+        Assert.assertEquals(r.isSatisfied(p), SatConstraint.Sat.SATISFIED);
+        p.add(new MigrateVM(vm1, n1, n2, 1, 2));
+        Assert.assertEquals(r.isSatisfied(p), SatConstraint.Sat.UNSATISFIED);
     }
 
 }

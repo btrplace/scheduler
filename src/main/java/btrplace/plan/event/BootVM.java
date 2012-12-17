@@ -31,7 +31,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class BootVM extends Action implements VMEvent {
+public class BootVM extends Action implements VMEvent, RunningVMPlacement {
 
     private UUID vm;
 
@@ -59,11 +59,7 @@ public class BootVM extends Action implements VMEvent {
                 .append(')').toString();
     }
 
-    /**
-     * Get the destination node.
-     *
-     * @return the node identifier
-     */
+    @Override
     public UUID getDestinationNode() {
         return node;
     }

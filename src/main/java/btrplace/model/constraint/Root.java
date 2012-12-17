@@ -18,8 +18,10 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.plan.ReconfigurationPlan;
 
 import java.util.Collections;
 import java.util.Set;
@@ -28,10 +30,11 @@ import java.util.UUID;
 /**
  * A constraint to avoid relocation. Any running VMs given in parameters
  * will be disallowed to be moved to another host. Other VMs are ignored.
- *
+ * <p/>
  * The restriction provided by the constraint is only continuous. The running
  * VMs will stay on their current node for the whole duration of the reconfiguration
  * process.
+ *
  * @author Fabien Hermenier
  */
 public class Root extends SatConstraint {
@@ -47,6 +50,24 @@ public class Root extends SatConstraint {
 
     @Override
     public Sat isSatisfied(Model i) {
+        return Sat.SATISFIED;
+    }
+
+    @Override
+    public Sat isSatisfied(ReconfigurationPlan plan) {
+        Model r = plan.getResult();
+        if (r == null) {
+            return Sat.UNSATISFIED;
+        }
+        Mapping dst = r.getMapping();
+        Mapping src = plan.getOrigin().getMapping();
+        for (UUID vm : getInvolvedVMs()) {
+            if (src.getRunningVMs().contains(vm) && dst.getRunningVMs().contains(vm)) {
+                if (!src.getVMLocation(vm).equals(dst.getVMLocation(vm))) {
+                    return Sat.UNSATISFIED;
+                }
+            }
+        }
         return Sat.SATISFIED;
     }
 
