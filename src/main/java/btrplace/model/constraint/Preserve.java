@@ -31,6 +31,8 @@ import java.util.UUID;
  * each of the given VMs. If a VM is not running, the constraint ignores it.
  * The amount to allocate must be specified as a minimum or an exact value.
  * At most, the VM will have an allocation of resources equals to the maximum allowed
+ * <p/>
+ * The restriction provided by the constraint is discrete.
  *
  * @author Fabien Hermenier
  */
@@ -118,6 +120,9 @@ public class Preserve extends SatConstraint {
 
     @Override
     public boolean setContinuous(boolean b) {
+        if (!b) {
+            return super.setContinuous(b);
+        }
         return !b;
     }
 }

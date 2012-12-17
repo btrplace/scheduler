@@ -22,6 +22,8 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.ShareableResource;
+import btrplace.plan.Action;
+import btrplace.plan.ReconfigurationPlan;
 
 import java.util.Collections;
 import java.util.Set;
@@ -35,7 +37,10 @@ import java.util.UUID;
  * To compute the virtual capacity of a server, its physical capacity is multiplied
  * by the overbooking factor. The result is then truncated.
  * <p/>
- * TODO: discrete/continuous
+ * <p/>
+ * The restriction provided by the constraint can be either discrete or continuous.
+ * If the restriction is continuous, then the constraint imposes the restriction
+ * in the source model, during the reconfiguration and at the end.
  *
  * @author Fabien Hermenier
  */
@@ -111,6 +116,24 @@ public class Overbook extends SatConstraint {
             }
         }
         return Sat.SATISFIED;
+    }
+
+    @Override
+    public Sat isSatisfied(ReconfigurationPlan plan) {
+        Sat res = isSatisfied(plan.getOrigin());
+        if (!res.equals(Sat.SATISFIED)) {
+            return Sat.UNSATISFIED;
+        }
+        Model cur = plan.getOrigin().clone();
+        for (Action a : plan) {
+            if (!a.apply(cur)) {
+                return Sat.UNSATISFIED;
+            }
+            if (!res.equals(Sat.SATISFIED)) {
+                return Sat.UNSATISFIED;
+            }
+        }
+        return Sat.UNSATISFIED;
     }
 
     @Override
