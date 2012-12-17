@@ -82,7 +82,6 @@ public class Spread extends SatConstraint {
             }
 
             UUID destNode = null;
-            //TODO: looks like an interface would be nice
             if (a instanceof RunningVMPlacement) {
                 destNode = ((MigrateVM) a).getDestinationNode();
                 Set<UUID> on = new HashSet<UUID>(cur.getMapping().getRunningVMs(destNode));

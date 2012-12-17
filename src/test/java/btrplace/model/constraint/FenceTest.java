@@ -43,6 +43,8 @@ public class FenceTest {
         Assert.assertEquals(vms, f.getInvolvedVMs());
         Assert.assertEquals(nodes, f.getInvolvedNodes());
         Assert.assertFalse(f.toString().contains("null"));
+        Assert.assertFalse(f.isContinuous());
+        Assert.assertFalse(f.setContinuous(true));
     }
 
     @Test

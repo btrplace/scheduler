@@ -35,7 +35,7 @@ import java.util.UUID;
  * If the restriction is continuous, then the cumulated usage must never exceed
  * the given amount, in the source model, during the reconfiguration and at the end.
  * <p/>
- * By default, the restriction is discrete
+ * By default, the restriction is discrete.
  *
  * @author Fabien Hermenier
  */
