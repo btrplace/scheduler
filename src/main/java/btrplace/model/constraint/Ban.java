@@ -50,8 +50,8 @@ public class Ban extends SatConstraint {
     public Sat isSatisfied(Model i) {
         Mapping c = i.getMapping();
         Set<UUID> runnings = c.getRunningVMs();
-        for (UUID vm : runnings) {
-            if (getInvolvedNodes().contains(c.getVMLocation(vm))) {
+        for (UUID vm : getInvolvedVMs()) {
+            if (runnings.contains(vm) && getInvolvedNodes().contains(c.getVMLocation(vm))) {
                 return Sat.UNSATISFIED;
             }
         }
@@ -68,6 +68,9 @@ public class Ban extends SatConstraint {
 
     @Override
     public boolean setContinuous(boolean b) {
+        if (!b) {
+            super.setContinuous(b);
+        }
         return !b;
     }
 }

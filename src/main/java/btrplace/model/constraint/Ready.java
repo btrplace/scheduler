@@ -29,6 +29,9 @@ import java.util.UUID;
 /**
  * A constraint to force a set of VMs at being ready for running.
  *
+ * The restriction provided by the constraint is discrete
+ * however, if some of the VMs are already in the ready state, then
+ * their state will be unchanged.
  * @author Fabien Hermenier
  */
 public class Ready extends SatConstraint {
@@ -74,6 +77,7 @@ public class Ready extends SatConstraint {
     public String toString() {
         return new StringBuilder("ready(")
                 .append("vms=").append(getInvolvedVMs())
+                .append(", discrete")
                 .append(")").toString();
     }
 

@@ -23,17 +23,17 @@ import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.BootVM;
+import btrplace.plan.event.MigrateVM;
+import btrplace.plan.event.ResumeVM;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * A constraint to indicate that the given VMs, if running,
  * must be hosted on distinct nodes.
  * <p/>
- * If the restriction is continuous, the constraint ensure no VM is relocated to a node hosting a VM
+ * If the restriction is continuous, the constraint ensure no VMs are relocated to a node hosting a VM
  * involved in the same Spread constraint.
  * If the restriction is discrete, the constraint only ensures that there is no co-location
  * at the end of the reconfiguration plan.
@@ -56,9 +56,9 @@ public class Spread extends SatConstraint {
     @Override
     public Sat isSatisfied(Model i) {
         Mapping c = i.getMapping();
-        Set<UUID> hosts = new HashSet<UUID>();
+        Set<UUID> used = new HashSet<UUID>();
         for (UUID vm : getInvolvedVMs()) {
-            if (c.getRunningVMs().contains(vm) && !hosts.add(c.getVMLocation(vm))) {
+            if (c.getRunningVMs().contains(vm) && !used.add(c.getVMLocation(vm))) {
                 return Sat.UNSATISFIED;
             }
         }
@@ -67,12 +67,35 @@ public class Spread extends SatConstraint {
 
     @Override
     public Sat isSatisfied(ReconfigurationPlan plan) {
-        Model m = plan.getOrigin().clone();
+        if (plan.getSize() == 0) {
+            return isSatisfied(plan.getOrigin());
+        }
+
+        //For each relocation action, we check if the
+        //destination node is not hosting a VM involved in the constraint
+        Model cur = plan.getOrigin().clone();
         for (Action a : plan) {
-            a.apply(m);
-            Sat s = isSatisfied(m);
-            if (!s.equals(SatConstraint.Sat.SATISFIED)) {
-                return s;
+            if (!a.apply(cur)) {
+                return Sat.UNSATISFIED;
+            }
+
+            UUID destNode = null;
+            //TODO: looks like an interface would be nice
+            if (a instanceof MigrateVM) {
+                destNode = ((MigrateVM) a).getDestinationNode();
+            } else if (a instanceof ResumeVM) {
+                destNode = ((ResumeVM) a).getDestinationNode();
+            } else if (a instanceof BootVM) {
+                destNode = ((BootVM) a).getDestinationNode();
+            }
+            if (destNode != null) {
+                Set<UUID> on = new HashSet<UUID>(cur.getMapping().getRunningVMs(destNode));
+                //If there is 2 VMs here that are involved in
+                //the constraint, it's a failure
+                on.retainAll(getInvolvedVMs());
+                if (on.size() > 1) {
+                    return Sat.UNSATISFIED;
+                }
             }
         }
         return Sat.SATISFIED;

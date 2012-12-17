@@ -21,6 +21,8 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.plan.Action;
+import btrplace.plan.ReconfigurationPlan;
 
 import java.util.Collections;
 import java.util.Set;
@@ -29,6 +31,14 @@ import java.util.UUID;
 /**
  * Restrict the hosting capacity of each of the given server to a given
  * amount of VMs.
+ *
+ * The restriction provided by the constraint can be either discrete or continuous.
+ * If it is discrete, the constraint only considers the model obtained as the end
+ * of the reconfiguration process.
+ * If the restriction is continuous, then the cumulated usage must never exceed
+ * the given amount, in the source model, during the reconfiguration and at the end.
+ *
+ * By default, the constraint provides a discrete restriction.
  *
  * @author Fabien Hermenier
  */
@@ -68,6 +78,23 @@ public class SingleRunningCapacity extends SatConstraint {
     }
 
     @Override
+    public Sat isSatisfied(ReconfigurationPlan plan) {
+            Model mo = plan.getOrigin().clone();
+            if (!isSatisfied(mo).equals(SatConstraint.Sat.SATISFIED)) {
+                return Sat.UNSATISFIED;
+            }
+            for (Action a : plan) {
+                if (!a.apply(mo)) {
+                    return Sat.UNSATISFIED;
+                }
+                if (!isSatisfied(mo).equals(SatConstraint.Sat.SATISFIED)) {
+                    return Sat.UNSATISFIED;
+                }
+            }
+        return Sat.UNSATISFIED;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -93,6 +120,8 @@ public class SingleRunningCapacity extends SatConstraint {
                 .append(", amount=").append(amount);
         if (!isContinuous()) {
             b.append(", discrete");
+        } else {
+            b.append(", continuous");
         }
         return b.append(")").toString();
     }

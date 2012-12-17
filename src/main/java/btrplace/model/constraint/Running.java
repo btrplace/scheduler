@@ -29,6 +29,10 @@ import java.util.UUID;
 /**
  * A constraint to force a set of VMs at being running.
  *
+ * The restriction provided by the constraint is discrete.
+ * however, if some of the VMs are already running, then
+ * their state will be unchanged.
+ *
  * @author Fabien Hermenier
  */
 public class Running extends SatConstraint {
@@ -75,6 +79,7 @@ public class Running extends SatConstraint {
     public String toString() {
         return new StringBuilder("running(")
                 .append("vms=").append(getInvolvedVMs())
+                .append(", discrete")
                 .append(")").toString();
     }
 

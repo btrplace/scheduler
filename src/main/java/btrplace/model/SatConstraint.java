@@ -30,7 +30,7 @@ import java.util.UUID;
  * The restriction provided by the constraint can be either discrete or continuous.
  * If the restriction is discrete, then the constraint imposes a restriction on a {@link Model}.
  * If the restriction is continuous, then the constraint imposes also a restriction on a whole {@link ReconfigurationPlan}.
- * This may be the action schedule but also all the intermediary models between the source and the result model.
+ * This may be the action schedule but also all the intermediary models that result from the application of the reconfiguration plan.
  * <p/>
  * A constraint does not necessarily support both continuous or discrete restriction.
  *

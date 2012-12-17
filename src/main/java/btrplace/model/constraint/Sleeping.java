@@ -29,6 +29,10 @@ import java.util.UUID;
 /**
  * A constraint to force a set of VMs at being sleeping.
  *
+ * The restriction provided by the constraint is discrete
+ * however, if some of the VMs are already sleeping, then
+ * their state will be unchanged.
+
  * @author Fabien Hermenier
  */
 public class Sleeping extends SatConstraint {
@@ -75,6 +79,7 @@ public class Sleeping extends SatConstraint {
     public String toString() {
         return new StringBuilder("sleeping(")
                 .append("vms=").append(getInvolvedVMs())
+                .append(", discrete")
                 .append(")").toString();
     }
 

@@ -29,6 +29,9 @@ import java.util.UUID;
  * A constraint to avoid relocation. Any running VMs given in parameters
  * will be disallowed to be moved to another host. Other VMs are ignored.
  *
+ * The restriction provided by the constraint is only continuous. The running
+ * VMs will stay on their current node for the whole duration of the reconfiguration
+ * process.
  * @author Fabien Hermenier
  */
 public class Root extends SatConstraint {
@@ -39,7 +42,7 @@ public class Root extends SatConstraint {
      * @param vms the set of VMs to disallow to move
      */
     public Root(Set<UUID> vms) {
-        super(vms, Collections.<UUID>emptySet(), false);
+        super(vms, Collections.<UUID>emptySet(), true);
     }
 
     @Override
@@ -69,12 +72,13 @@ public class Root extends SatConstraint {
     public String toString() {
         return new StringBuilder("root(")
                 .append("vms=").append(getInvolvedVMs())
+                .append(", continuous")
                 .append(")").toString();
     }
 
     @Override
     public boolean setContinuous(boolean b) {
-        return !b;
+        return b;
     }
 
 }

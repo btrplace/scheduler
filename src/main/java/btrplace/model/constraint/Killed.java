@@ -29,6 +29,7 @@ import java.util.UUID;
 /**
  * A constraint to force a set of VMs to be killed.
  *
+ * The restriction provided by the constraint is discrete.
  * @author Fabien Hermenier
  */
 public class Killed extends SatConstraint {
@@ -75,6 +76,7 @@ public class Killed extends SatConstraint {
     public String toString() {
         return new StringBuilder("killed(vms=")
                 .append(getInvolvedVMs())
+                .append(", discrete")
                 .append(")").toString();
     }
 

@@ -26,8 +26,9 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Restrict the cumulated amount of VMs hosted
+ * Restrict the cumulated amount of VMs running
  * on the given set of VMs to a maximum.
+ *
  *
  * @author Fabien Hermenier
  */
@@ -97,8 +98,13 @@ public class CumulatedRunningCapacity extends SatConstraint {
         StringBuilder b = new StringBuilder();
         b.append("cumulatedRunningCapacity(")
                 .append("nodes=").append(getInvolvedNodes())
-                .append(", amount=").append(qty)
-                .append(')');
+                .append(", amount=").append(qty);
+        if (!isContinuous()) {
+            b.append(", discrete");
+        } else {
+            b.append(", continuous");
+        }
+                b.append(')');
 
         return b.toString();
     }

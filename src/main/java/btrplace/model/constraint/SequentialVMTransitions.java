@@ -26,9 +26,10 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * For the action associated to a list of VMs
- * to be executed in a given order.
+ * A constraint to force the actions that change the given VMs state
+ * to be executed in the given order.
  *
+ * The restriction provided by the constraint is only continuous.
  * @author Fabien Hermenier
  */
 public class SequentialVMTransitions extends SatConstraint {
@@ -76,6 +77,15 @@ public class SequentialVMTransitions extends SatConstraint {
     public String toString() {
         return new StringBuilder("sequentialVMTransitions(")
                 .append("vms=").append(getInvolvedVMs())
+                .append(", continuous")
                 .append(")").toString();
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        if (b) {
+            super.setContinuous(b);
+        }
+        return b;
     }
 }

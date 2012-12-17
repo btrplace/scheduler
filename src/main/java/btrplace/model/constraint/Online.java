@@ -29,6 +29,9 @@ import java.util.UUID;
 /**
  * A constraint to force a set of nodes at being online.
  *
+ * The restriction provided by the constraint is discrete.
+ * however, if some of the nodes are already offline, then
+ * their state will be unchanged.
  * @author Fabien Hermenier
  */
 public class Online extends SatConstraint {
@@ -75,6 +78,7 @@ public class Online extends SatConstraint {
     public String toString() {
         return new StringBuilder("online(nodes=")
                 .append(getInvolvedNodes())
+                .append(", discrete")
                 .append(")").toString();
     }
 

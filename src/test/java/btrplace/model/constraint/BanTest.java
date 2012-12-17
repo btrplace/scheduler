@@ -19,7 +19,7 @@
 package btrplace.model.constraint;
 
 import btrplace.model.*;
-import junit.framework.Assert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.HashSet;
@@ -69,9 +69,9 @@ public class BanTest {
         nodes.add(n1);
         Ban b = new Ban(vms, nodes);
         Model m = new DefaultModel(map);
-        Assert.assertEquals(SatConstraint.Sat.SATISFIED, b.isSatisfied(m));
+        Assert.assertEquals(b.isSatisfied(m), SatConstraint.Sat.SATISFIED);
         map.addRunningVM(vm3, n1);
-        Assert.assertEquals(SatConstraint.Sat.UNSATISFIED, b.isSatisfied(m));
+        Assert.assertEquals(b.isSatisfied(m), SatConstraint.Sat.UNSATISFIED);
     }
 
     @Test

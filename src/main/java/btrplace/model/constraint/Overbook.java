@@ -81,6 +81,8 @@ public class Overbook extends SatConstraint {
         b.append(this.getInvolvedNodes()).append(", rc=").append(rcId).append(", ratio=").append(ratio);
         if (!isContinuous()) {
             b.append(", discrete");
+        } else {
+            b.append(", continuous");
         }
         return b.append(')').toString();
     }

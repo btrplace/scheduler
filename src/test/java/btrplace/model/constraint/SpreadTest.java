@@ -19,7 +19,10 @@
 package btrplace.model.constraint;
 
 import btrplace.model.*;
-import junit.framework.Assert;
+import btrplace.plan.DefaultReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.MigrateVM;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.HashSet;
@@ -41,7 +44,10 @@ public class SpreadTest {
         Spread s = new Spread(x);
         Assert.assertEquals(x, s.getInvolvedVMs());
         Assert.assertTrue(s.getInvolvedNodes().isEmpty());
+        Assert.assertTrue(s.isContinuous());
         Assert.assertNotNull(s.toString());
+        Assert.assertTrue(s.setContinuous(false));
+        Assert.assertFalse(s.isContinuous());
     }
 
     @Test
@@ -60,34 +66,78 @@ public class SpreadTest {
         Assert.assertNotSame(s.hashCode(), new Spread(x).hashCode());
     }
 
+    /**
+     * test isSatisfied() in the discrete mode.
+     */
     @Test
-    public void testIsSatisfied() {
-        Mapping c = new DefaultMapping();
+    public void testDiscreteIsSatisfied() {
         UUID n1 = UUID.randomUUID();
         UUID n2 = UUID.randomUUID();
         UUID n3 = UUID.randomUUID();
-        c.addOnlineNode(n1);
-        c.addOnlineNode(n2);
-        c.addOnlineNode(n3);
-        Set<UUID> s = new HashSet<UUID>();
-        UUID v1 = UUID.randomUUID();
-        UUID v2 = UUID.randomUUID();
-        UUID v3 = UUID.randomUUID();
-        s.add(v1);
-        s.add(v2);
-        s.add(v3);
-        Spread sp = new Spread(s);
+        UUID n4 = UUID.randomUUID();
+        UUID vm1 = UUID.randomUUID();
+        UUID vm2 = UUID.randomUUID();
+        UUID vm3 = UUID.randomUUID();
 
-        Model i = new DefaultModel(c);
-        Assert.assertEquals(sp.isSatisfied(i), SatConstraint.Sat.SATISFIED);
-        c.addRunningVM(v1, n2);
-        c.addReadyVM(v2);
-        c.addRunningVM(v2, n1);
-        Assert.assertEquals(sp.isSatisfied(i), SatConstraint.Sat.SATISFIED);
-        c.addSleepingVM(v3, n1);
-        Assert.assertEquals(sp.isSatisfied(i), SatConstraint.Sat.SATISFIED);
-        c.addRunningVM(v3, n1);
-        Assert.assertEquals(sp.isSatisfied(i), SatConstraint.Sat.UNSATISFIED);
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOnlineNode(n3);
+        map.addOnlineNode(n4);
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n2);
+        map.addRunningVM(vm3, n1);
 
+        Model mo = new DefaultModel(map);
+
+        //Discrete satisfaction.
+        Spread s = new Spread(map.getAllVMs());
+        s.setContinuous(false);
+
+        Assert.assertEquals(s.isSatisfied(mo), SatConstraint.Sat.UNSATISFIED);
+        map.addRunningVM(vm1, n4);
+        Assert.assertEquals(s.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
+    }
+
+    @Test
+    public void testContinuousIsSatisfied() {
+        UUID n1 = UUID.randomUUID();
+        UUID n2 = UUID.randomUUID();
+        UUID n3 = UUID.randomUUID();
+        UUID n4 = UUID.randomUUID();
+        UUID vm1 = UUID.randomUUID();
+        UUID vm2 = UUID.randomUUID();
+        UUID vm3 = UUID.randomUUID();
+
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOnlineNode(n3);
+        map.addOnlineNode(n4);
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n2);
+
+        Spread s = new Spread(map.getAllVMs());
+
+        Model mo = new DefaultModel(map);
+        ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
+        Assert.assertEquals(s.isSatisfied(p), SatConstraint.Sat.SATISFIED);
+
+        MigrateVM m1 = new MigrateVM(vm1, n1, n2, 1, 2);
+        p.add(m1);
+        Assert.assertEquals(s.isSatisfied(p), SatConstraint.Sat.UNSATISFIED);
+
+        //No overlapping at moment 1
+        MigrateVM m2 = new MigrateVM(vm2, n2, n3, 0, 1);
+        p.add(m2);
+        Assert.assertEquals(s.isSatisfied(p), SatConstraint.Sat.SATISFIED);
+
+
+        map.addRunningVM(vm3, n2);
+        s = new Spread(map.getAllVMs());
+        p = new DefaultReconfigurationPlan(mo);
+        Assert.assertEquals(s.isSatisfied(p), SatConstraint.Sat.UNSATISFIED);
+        p.add(new MigrateVM(vm3, n2, n3, 0, 5));
+        Assert.assertEquals(s.isSatisfied(p), SatConstraint.Sat.SATISFIED);
     }
 }

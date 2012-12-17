@@ -112,6 +112,7 @@ public class Preserve extends SatConstraint {
                 .append(getInvolvedVMs())
                 .append(", rc=").append(rc)
                 .append(", amount=").append(amount)
+                .append(", discrete")
                 .append(")").toString();
     }
 
