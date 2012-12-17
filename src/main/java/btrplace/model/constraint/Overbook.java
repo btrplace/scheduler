@@ -41,6 +41,8 @@ import java.util.UUID;
  * The restriction provided by the constraint can be either discrete or continuous.
  * If the restriction is continuous, then the constraint imposes the restriction
  * in the source model, during the reconfiguration and at the end.
+ * <p/>
+ * By default, the restriction is continuous.
  *
  * @author Fabien Hermenier
  */
@@ -105,7 +107,6 @@ public class Overbook extends SatConstraint {
             if (cfg.getOnlineNodes().contains(nId)) {
                 //Server capacity with the ratio
                 double capa = rc.get(nId) * ratio;
-
                 //Minus the VMs usage
                 for (UUID vmId : cfg.getRunningVMs(nId)) {
                     capa -= rc.get(vmId);
@@ -126,14 +127,17 @@ public class Overbook extends SatConstraint {
         }
         Model cur = plan.getOrigin().clone();
         for (Action a : plan) {
+
             if (!a.apply(cur)) {
                 return Sat.UNSATISFIED;
             }
+            res = isSatisfied(cur);
+
             if (!res.equals(Sat.SATISFIED)) {
                 return Sat.UNSATISFIED;
             }
         }
-        return Sat.UNSATISFIED;
+        return Sat.SATISFIED;
     }
 
     @Override

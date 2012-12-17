@@ -19,6 +19,10 @@
 package btrplace.model.constraint;
 
 import btrplace.model.*;
+import btrplace.plan.DefaultReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.Allocate;
+import btrplace.plan.event.ShutdownVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -44,10 +48,13 @@ public class OverbookTest {
         Assert.assertTrue(o.getInvolvedVMs().isEmpty());
         Assert.assertEquals(1.5, o.getRatio());
         Assert.assertNotNull(o.toString());
+        Assert.assertTrue(o.isContinuous());
+        Assert.assertTrue(o.setContinuous(false));
+        Assert.assertFalse(o.isContinuous());
     }
 
     @Test
-    public void testIsSatisfied() {
+    public void testDiscreteIsSatisfied() {
         Set<UUID> s = new HashSet<UUID>();
         UUID n1 = UUID.randomUUID();
         UUID n2 = UUID.randomUUID();
@@ -92,6 +99,63 @@ public class OverbookTest {
 
         Overbook o2 = new Overbook(s, "mem", 2);
         Assert.assertEquals(o2.isSatisfied(i), SatConstraint.Sat.UNSATISFIED);
+    }
+
+    @Test
+    public void testContinuousIsSatisfied() {
+        Set<UUID> s = new HashSet<UUID>();
+        UUID n1 = UUID.randomUUID();
+        UUID n2 = UUID.randomUUID();
+
+        s.add(n1);
+        s.add(n2);
+
+        Mapping cfg = new DefaultMapping();
+        cfg.addOnlineNode(n1);
+        cfg.addOnlineNode(n2);
+
+        ShareableResource rc = new DefaultShareableResource("cpu");
+        rc.set(n1, 1);
+        rc.set(n2, 4);
+
+        UUID vm1 = UUID.randomUUID();
+        UUID vm2 = UUID.randomUUID();
+        UUID vm3 = UUID.randomUUID();
+        UUID vm4 = UUID.randomUUID();
+
+        rc.set(vm1, 2);
+        rc.set(vm2, 2);
+        rc.set(vm3, 4);
+
+        cfg.addRunningVM(vm1, n1);
+        cfg.addRunningVM(vm2, n2);
+        cfg.addRunningVM(vm3, n2);
+        cfg.addRunningVM(vm4, n2);
+
+
+        Model i = new DefaultModel(cfg);
+        i.attach(rc);
+
+        Overbook o = new Overbook(s, "cpu", 2);
+        o.setContinuous(true);
+        ReconfigurationPlan p = new DefaultReconfigurationPlan(i);
+        Assert.assertEquals(o.isSatisfied(p), SatConstraint.Sat.SATISFIED);
+
+        p.add(new Allocate(vm1, n1, "cpu", 1, 2, 5));
+        Assert.assertEquals(o.isSatisfied(p), SatConstraint.Sat.SATISFIED);
+
+        p.add(new Allocate(vm2, n2, "cpu", 5, 2, 5));
+        Assert.assertEquals(o.isSatisfied(p), SatConstraint.Sat.UNSATISFIED);
+
+        p.add(new Allocate(vm3, n2, "cpu", 2, 0, 1));
+        Assert.assertEquals(o.isSatisfied(p), SatConstraint.Sat.SATISFIED);
+
+        p.add(new Allocate(vm4, n2, "cpu", 3, 4, 6));
+        Assert.assertEquals(o.isSatisfied(p), SatConstraint.Sat.UNSATISFIED);
+
+        p.add(new ShutdownVM(vm3, n2, 2, 3));
+
+        Assert.assertEquals(o.isSatisfied(p), SatConstraint.Sat.SATISFIED);
     }
 
     @Test
