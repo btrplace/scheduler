@@ -19,6 +19,10 @@
 package btrplace.model.constraint;
 
 import btrplace.model.*;
+import btrplace.plan.DefaultReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.BootVM;
+import btrplace.plan.event.ShutdownVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -43,6 +47,10 @@ public class CumulatedRunningCapacityTest {
         Assert.assertEquals(3, c.getAmount());
         Assert.assertTrue(c.getInvolvedVMs().isEmpty());
         Assert.assertFalse(c.toString().contains("null"));
+
+        Assert.assertFalse(c.isContinuous());
+        Assert.assertTrue(c.setContinuous(true));
+        Assert.assertTrue(c.isContinuous());
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
@@ -61,7 +69,7 @@ public class CumulatedRunningCapacityTest {
     }
 
     @Test
-    public void testIsSatisfied() {
+    public void testDiscreteIsSatisfied() {
         Mapping m = new DefaultMapping();
         UUID n1 = UUID.randomUUID();
         UUID n2 = UUID.randomUUID();
@@ -78,8 +86,39 @@ public class CumulatedRunningCapacityTest {
         m.addReadyVM(vm4);
         Model mo = new DefaultModel(m);
         CumulatedRunningCapacity c = new CumulatedRunningCapacity(m.getAllNodes(), 2);
+        c.setContinuous(false);
         Assert.assertEquals(c.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
         m.addRunningVM(vm2, n2);
         Assert.assertEquals(c.isSatisfied(mo), SatConstraint.Sat.UNSATISFIED);
+    }
+
+    @Test
+    public void testContinuousIsSatisfied() {
+        Mapping m = new DefaultMapping();
+        UUID n1 = UUID.randomUUID();
+        UUID n2 = UUID.randomUUID();
+        m.addOnlineNode(n1);
+        m.addOnlineNode(n2);
+        UUID vm1 = UUID.randomUUID();
+        UUID vm2 = UUID.randomUUID();
+        UUID vm3 = UUID.randomUUID();
+        UUID vm4 = UUID.randomUUID();
+        m.addRunningVM(vm1, n1);
+        m.addReadyVM(vm2);
+
+        m.addRunningVM(vm3, n2);
+        m.addReadyVM(vm4);
+
+        CumulatedRunningCapacity c = new CumulatedRunningCapacity(m.getAllNodes(), 2);
+        c.setContinuous(true);
+        Model mo = new DefaultModel(m);
+        ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
+        Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        plan.add(new BootVM(vm4, n2, 2, 4));
+        Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        plan.add(new ShutdownVM(vm1, n1, 0, 1));
+        Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+
+
     }
 }

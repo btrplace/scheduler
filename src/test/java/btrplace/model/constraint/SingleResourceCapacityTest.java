@@ -60,4 +60,15 @@ public class SingleResourceCapacityTest {
         Assert.assertFalse(c.equals(new SingleResourceCapacity(s, "foo", 2)));
         Assert.assertFalse(c.equals(new SingleResourceCapacity(new HashSet<UUID>(), "foo", 3)));
     }
+
+    @Test
+    public void testDiscreteIsSatisfied() {
+        Assert.fail();
+    }
+
+    @Test
+    public void testContinuousIsSatisfied() {
+        Assert.fail();
+    }
+
 }

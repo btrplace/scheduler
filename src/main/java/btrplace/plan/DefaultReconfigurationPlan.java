@@ -37,18 +37,24 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
     private Set<Action> actions;
 
     /**
-     * A comparator to sort the actions in the increasing order of their end moment.
+     * A comparator to sort the actions in the increasing order of their start moment.
+     * If they start at the same moment, the action that ends first in considered
      */
-    private static Comparator<Action> endFirstComparator = new Comparator<Action>() {
+    private static Comparator<Action> startFirstComparator = new Comparator<Action>() {
         @Override
         public int compare(Action a1, Action a2) {
-            int d = a1.getEnd() - a2.getEnd();
+            int d = a1.getStart() - a2.getStart();
             if (d == 0) {
                 if (a1.equals(a2)) {
                     return 0;
                 } else {
-                    //At this level, we don't care, we just want to be sure the actions will be added
-                    return -1;
+                    d = a1.getEnd() - a2.getEnd();
+                    //At this level we don't care but we must not return 0 because the action will
+                    //not be added
+                    if (d == 0) {
+                        return -1;
+                    }
+                    return d;
                 }
             } else {
                 return d;
@@ -63,7 +69,7 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
      */
     public DefaultReconfigurationPlan(Model src) {
         this.src = src;
-        this.actions = new TreeSet<Action>(endFirstComparator);
+        this.actions = new TreeSet<Action>(startFirstComparator);
     }
 
     @Override

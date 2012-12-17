@@ -24,7 +24,6 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootVM;
 import btrplace.plan.event.ResumeVM;
 import btrplace.plan.event.ShutdownVM;
-import btrplace.plan.event.SuspendVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -49,6 +48,10 @@ public class SingleRunningCapacityTest {
         Assert.assertEquals(3, c.getAmount());
         Assert.assertTrue(c.getInvolvedVMs().isEmpty());
         Assert.assertFalse(c.toString().contains("null"));
+        Assert.assertFalse(c.isContinuous());
+        Assert.assertTrue(c.setContinuous(true));
+        Assert.assertTrue(c.isContinuous());
+
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
@@ -67,7 +70,7 @@ public class SingleRunningCapacityTest {
     }
 
     @Test
-    public void testIsSatistied() {
+    public void testDiscreteIsSatisfied() {
         Mapping m = new DefaultMapping();
         UUID n1 = UUID.randomUUID();
         UUID n2 = UUID.randomUUID();
@@ -85,6 +88,7 @@ public class SingleRunningCapacityTest {
         Model mo = new DefaultModel(m);
 
         SingleRunningCapacity c = new SingleRunningCapacity(m.getAllNodes(), 1);
+
         Assert.assertEquals(c.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
         m.addRunningVM(vm2, n2);
         Assert.assertEquals(c.isSatisfied(mo), SatConstraint.Sat.UNSATISFIED);
@@ -92,7 +96,7 @@ public class SingleRunningCapacityTest {
 
 
     @Test
-    public void testIsSatisfied() {
+    public void testContinuousIsSatisfied() {
         Mapping m = new DefaultMapping();
         UUID n1 = UUID.randomUUID();
         UUID n2 = UUID.randomUUID();
@@ -110,13 +114,12 @@ public class SingleRunningCapacityTest {
         Model mo = new DefaultModel(m);
 
         SingleRunningCapacity c = new SingleRunningCapacity(m.getAllNodes(), 1);
+        c.setContinuous(true);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
 
         //Bad resulting configuration
         plan.add(new BootVM(vm2, n1, 1, 2));
-        Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
-        c.setContinuous(true);
         Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
 
         //bad initial configuration
@@ -124,19 +127,12 @@ public class SingleRunningCapacityTest {
         plan = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
 
-        //The discrete fix
-        plan.add(new SuspendVM(vm2, n1, n1, 1, 3));
-        c.setContinuous(false);
-        Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
-        c.setContinuous(true);
-        Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
 
         //Already satisfied && continuous satisfaction
         m.addSleepingVM(vm2, n1);
         plan = new DefaultReconfigurationPlan(mo);
         plan.add(new ShutdownVM(vm1, n1, 0, 1));
         plan.add(new ResumeVM(vm2, n1, n1, 1, 2));
-        c.setContinuous(true);
         Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
     }
 }
