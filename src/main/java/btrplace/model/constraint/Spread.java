@@ -23,8 +23,7 @@ import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.event.MigrateVM;
-import btrplace.plan.event.RunningVMPlacement;
+import btrplace.plan.RunningVMPlacement;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -83,7 +82,7 @@ public class Spread extends SatConstraint {
 
             UUID destNode = null;
             if (a instanceof RunningVMPlacement) {
-                destNode = ((MigrateVM) a).getDestinationNode();
+                destNode = ((RunningVMPlacement) a).getDestinationNode();
                 Set<UUID> on = new HashSet<UUID>(cur.getMapping().getRunningVMs(destNode));
                 //If there is 2 VMs here that are involved in
                 //the constraint, it's a failure

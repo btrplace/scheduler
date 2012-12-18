@@ -22,7 +22,7 @@ package btrplace.plan.event;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.plan.Action;
-import btrplace.plan.VMEvent;
+import btrplace.plan.VMStateTransition;
 
 import java.util.UUID;
 
@@ -31,7 +31,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class ShutdownVM extends Action implements VMEvent {
+public class ShutdownVM extends Action implements VMStateTransition {
 
     private UUID vm;
 
@@ -114,5 +114,16 @@ public class ShutdownVM extends Action implements VMEvent {
      */
     public UUID getNode() {
         return node;
+    }
+
+
+    @Override
+    public VMState getCurrentState() {
+        return VMState.running;
+    }
+
+    @Override
+    public VMState getNextState() {
+        return VMState.ready;
     }
 }

@@ -16,22 +16,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.plan.event;
-
-import java.util.UUID;
+package btrplace.plan;
 
 /**
- * An interface to indicate an event that
- * will place a running VM on a node.
+ * A interface to indicate an event realize a transition
+ * on a VM state.
  *
  * @author Fabien Hermenier
  */
-public interface RunningVMPlacement {
+public interface VMStateTransition extends VMEvent {
 
     /**
-     * Get the destination node for the VM.
-     *
-     * @return the node identifier
+     * The possible state for a VM.
      */
-    UUID getDestinationNode();
+    public static enum VMState {
+        init, ready, running, sleeping, killed
+    }
+
+    /**
+     * Get the current state of the VM.
+     *
+     * @return a State
+     */
+    VMState getCurrentState();
+
+    /**
+     * Get the next state of the VM.
+     *
+     * @return a State
+     */
+    VMState getNextState();
 }

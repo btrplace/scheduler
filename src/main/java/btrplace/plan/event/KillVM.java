@@ -20,7 +20,7 @@ package btrplace.plan.event;
 
 import btrplace.model.Model;
 import btrplace.plan.Action;
-import btrplace.plan.VMEvent;
+import btrplace.plan.VMStateTransition;
 
 import java.util.UUID;
 
@@ -29,7 +29,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class KillVM extends Action implements VMEvent {
+public class KillVM extends Action implements VMStateTransition {
 
     private UUID id;
 
@@ -97,5 +97,16 @@ public class KillVM extends Action implements VMEvent {
         return new StringBuilder("killVM(vm=").append(id)
                 .append(", node=").append(host)
                 .append(')').toString();
+    }
+
+
+    @Override
+    public VMState getCurrentState() {
+        return VMState.init;
+    }
+
+    @Override
+    public VMState getNextState() {
+        return VMState.ready;
     }
 }

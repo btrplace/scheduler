@@ -21,7 +21,8 @@ package btrplace.plan.event;
 
 import btrplace.model.Model;
 import btrplace.plan.Action;
-import btrplace.plan.VMEvent;
+import btrplace.plan.RunningVMPlacement;
+import btrplace.plan.VMStateTransition;
 
 import java.util.UUID;
 
@@ -31,7 +32,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class BootVM extends Action implements VMEvent, RunningVMPlacement {
+public class BootVM extends Action implements VMStateTransition, RunningVMPlacement {
 
     private UUID vm;
 
@@ -104,5 +105,15 @@ public class BootVM extends Action implements VMEvent, RunningVMPlacement {
         res = getStart() + 31 * res;
         res = vm.hashCode() + 31 * res;
         return 31 * res + node.hashCode();
+    }
+
+    @Override
+    public VMState getCurrentState() {
+        return VMState.ready;
+    }
+
+    @Override
+    public VMState getNextState() {
+        return VMState.running;
     }
 }

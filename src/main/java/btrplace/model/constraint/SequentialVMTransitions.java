@@ -22,11 +22,7 @@ import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.VMEvent;
-import btrplace.plan.event.BootVM;
-import btrplace.plan.event.ResumeVM;
-import btrplace.plan.event.ShutdownVM;
-import btrplace.plan.event.SuspendVM;
+import btrplace.plan.VMStateTransition;
 
 import java.util.*;
 
@@ -104,10 +100,11 @@ public class SequentialVMTransitions extends SatConstraint {
         UUID curVM = seq.get(vmIdx);
         s.remove(curVM);
         for (Action a : plan) {
-            if (a instanceof VMEvent) {
-                UUID vm = ((VMEvent) a).getVM();
-                if (a instanceof BootVM || a instanceof ShutdownVM
-                        || a instanceof SuspendVM || a instanceof ResumeVM) {
+            if (a instanceof VMStateTransition) {
+                VMStateTransition ste = (VMStateTransition) a;
+                UUID vm = ste.getVM();
+                if (ste.getNextState() == VMStateTransition.VMState.running
+                        || ste.getCurrentState() == VMStateTransition.VMState.running) {
                     if (curVM.equals(vm)) {
                         //This is the VM we expected
                         curVM = seq.get(++vmIdx);
