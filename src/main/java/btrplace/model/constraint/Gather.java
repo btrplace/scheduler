@@ -21,6 +21,7 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.plan.ReconfigurationPlan;
 
 import java.util.Collections;
 import java.util.Set;
@@ -63,6 +64,15 @@ public class Gather extends SatConstraint {
             }
         }
         return Sat.SATISFIED;
+    }
+
+    @Override
+    public Sat isSatisfied(ReconfigurationPlan p) {
+        Model mo = p.getResult();
+        if (mo == null) {
+            return Sat.UNSATISFIED;
+        }
+        return isSatisfied(mo);
     }
 
     @Override

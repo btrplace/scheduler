@@ -22,6 +22,7 @@ import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.plan.VMStateTransition;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -44,6 +45,8 @@ public class ShutdownVMTest {
         Assert.assertEquals(3, a.getStart());
         Assert.assertEquals(5, a.getEnd());
         Assert.assertFalse(a.toString().contains("null"));
+        Assert.assertEquals(a.getCurrentState(), VMStateTransition.VMState.running);
+        Assert.assertEquals(a.getNextState(), VMStateTransition.VMState.ready);
 
     }
 

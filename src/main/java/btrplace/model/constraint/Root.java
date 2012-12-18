@@ -62,10 +62,9 @@ public class Root extends SatConstraint {
         Mapping dst = r.getMapping();
         Mapping src = plan.getOrigin().getMapping();
         for (UUID vm : getInvolvedVMs()) {
-            if (src.getRunningVMs().contains(vm) && dst.getRunningVMs().contains(vm)) {
-                if (!src.getVMLocation(vm).equals(dst.getVMLocation(vm))) {
-                    return Sat.UNSATISFIED;
-                }
+            if (src.getRunningVMs().contains(vm) && dst.getRunningVMs().contains(vm)
+                    && !src.getVMLocation(vm).equals(dst.getVMLocation(vm))) {
+                return Sat.UNSATISFIED;
             }
         }
         return Sat.SATISFIED;

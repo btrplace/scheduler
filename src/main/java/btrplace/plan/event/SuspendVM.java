@@ -132,11 +132,11 @@ public class SuspendVM extends Action implements VMStateTransition {
 
     @Override
     public VMState getCurrentState() {
-        return VMState.init;
+        return VMState.running;
     }
 
     @Override
     public VMState getNextState() {
-        return VMState.ready;
+        return VMState.sleeping;
     }
 }

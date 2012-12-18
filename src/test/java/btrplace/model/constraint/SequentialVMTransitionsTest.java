@@ -18,6 +18,13 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.*;
+import btrplace.plan.DefaultReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.BootVM;
+import btrplace.plan.event.MigrateVM;
+import btrplace.plan.event.ResumeVM;
+import btrplace.plan.event.SuspendVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -60,6 +67,41 @@ public class SequentialVMTransitionsTest {
         Assert.assertEquals(c.hashCode(), c2.hashCode());
         l2.add(l2.remove(0)); //shift the list
         Assert.assertFalse(c.equals(c2));
+    }
+
+    @Test
+    public void testContinuousIsSatisfied() {
+        Mapping map = new DefaultMapping();
+        UUID n1 = UUID.randomUUID();
+        UUID n2 = UUID.randomUUID();
+        UUID vm1 = UUID.randomUUID();
+        UUID vm2 = UUID.randomUUID();
+        UUID vm3 = UUID.randomUUID();
+        UUID vm4 = UUID.randomUUID();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addRunningVM(vm1, n1);
+        map.addReadyVM(vm2);
+        map.addSleepingVM(vm3, n1);
+        map.addRunningVM(vm4, n1);
+        List<UUID> l = new ArrayList<UUID>();
+        l.add(vm1);
+        l.add(vm2);
+        l.add(vm3);
+        l.add(vm4);
+        SequentialVMTransitions c = new SequentialVMTransitions(l);
+        Model mo = new DefaultModel(map);
+        ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
+        plan.add(new MigrateVM(vm4, n1, n2, 0, 1));
+        plan.add(new SuspendVM(vm1, n1, n1, 2, 3));
+        plan.add(new BootVM(vm2, n1, 3, 4));
+        plan.add(new ResumeVM(vm3, n1, n1, 4, 5));
+        Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+
+        plan = new DefaultReconfigurationPlan(mo);
+        plan.add(new BootVM(vm2, n1, 3, 4));
+        plan.add(new ResumeVM(vm3, n1, n1, 3, 5));
+        Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
 
     }
 }
