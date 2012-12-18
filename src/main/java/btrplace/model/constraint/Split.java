@@ -25,7 +25,11 @@ import btrplace.model.SatConstraint;
 import java.util.*;
 
 /**
- * A constraint to force several set of VMs to not share any node.
+ * A constraint to force several set of VMs to not share any node when they are
+ * running.
+ * <p/>
+ * The restriction provided by the constraint is discrete.
+ * TODO: Possible to have a continuous restriction ?
  *
  * @author Fabien Hermenier
  */
