@@ -18,6 +18,8 @@
 
 package btrplace.plan;
 
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -31,13 +33,16 @@ public class ActionTest {
 
     public static class MockAction extends Action {
 
+        int count = 0;
+
         public MockAction(int st, int ed) {
             super(st, ed);
         }
 
         @Override
         public boolean applyAction(Model i) {
-            throw new UnsupportedOperationException();
+            count++;
+            return true;
         }
 
         @Override
@@ -48,9 +53,12 @@ public class ActionTest {
 
     public static class MockEvent implements Event {
 
+        int count = 0;
+
         @Override
         public boolean apply(Model m) {
-            throw new UnsupportedOperationException();
+            count++;
+            return true;
         }
 
         public String toString() {
@@ -76,5 +84,17 @@ public class ActionTest {
         a1.addEvent(Action.Hook.post, n1);
         Assert.assertEquals(1, a1.getEvents(Action.Hook.post).size());
         System.out.println(a1);
+    }
+
+    @Test
+    public void testApply() {
+        MockAction a1 = new MockAction(1, 3);
+        MockEvent n1 = new MockEvent();
+        a1.addEvent(Action.Hook.pre, n1);
+        a1.addEvent(Action.Hook.post, n1);
+        Model mo = new DefaultModel(new DefaultMapping());
+        a1.apply(mo);
+        Assert.assertEquals(n1.count, 2);
+        Assert.assertEquals(a1.count, 1);
     }
 }

@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 
@@ -31,18 +32,70 @@ import java.util.UUID;
  * the VMs given as argument is still possible.
  * <p/>
  * The restriction provided by the constraint is discrete.
- * TODO: Possible to make a continuous version ?
  *
  * @author Fabien Hermenier
  */
 public class Lonely extends SatConstraint {
 
+    /**
+     * Make a new constraint.
+     *
+     * @param vms the set of VMs to consider
+     */
     public Lonely(Set<UUID> vms) {
         super(vms, Collections.<UUID>emptySet(), false);
     }
 
     @Override
     public Sat isSatisfied(Model i) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Mapping map = i.getMapping();
+        for (UUID vm : getInvolvedVMs()) {
+            if (map.getRunningVMs().contains(vm)) {
+                UUID host = map.getVMLocation(vm);
+                Set<UUID> on = map.getRunningVMs(host);
+                //Check for other VMs on the node. If they are not in the constraint
+                //it's a violation
+                for (UUID vm2 : on) {
+                    if (!vm2.equals(vm) && !getInvolvedVMs().contains(vm2)) {
+                        return Sat.UNSATISFIED;
+                    }
+                }
+            }
+        }
+        return Sat.SATISFIED;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Lonely that = (Lonely) o;
+        return getInvolvedVMs().equals(that.getInvolvedVMs());
+    }
+
+    @Override
+    public int hashCode() {
+        return getInvolvedVMs().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuilder("lonely(")
+                .append("vms=").append(getInvolvedVMs())
+                .append(", discrete")
+                .append(")").toString();
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        if (!b) {
+            return super.setContinuous(b);
+        }
+        return !b;
     }
 }

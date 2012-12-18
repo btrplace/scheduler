@@ -31,18 +31,57 @@ import java.util.UUID;
  * while no VMs outside the quarantine zone can be hosted on
  * the nodes in quarantine.
  * <p/>
- * The restriction provided by the constraint is discrete.
+ * The restriction provided by the constraint is only continuous.
  *
  * @author Fabien Hermenier
  */
 public class Quarantine extends SatConstraint {
 
+    /**
+     * Make a new constraint.
+     *
+     * @param nodes the set of nodes to put into quarantine
+     */
     public Quarantine(Set<UUID> nodes) {
-        super(Collections.<UUID>emptySet(), nodes, false);
+        super(Collections.<UUID>emptySet(), nodes, true);
     }
 
     @Override
     public Sat isSatisfied(Model i) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return Sat.SATISFIED;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Quarantine that = (Quarantine) o;
+        return getInvolvedNodes().equals(that.getInvolvedNodes());
+    }
+
+    @Override
+    public int hashCode() {
+        return getInvolvedNodes().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuilder("quarantine(")
+                .append("nodes=").append(getInvolvedNodes())
+                .append(", continuous")
+                .append(")").toString();
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        if (b) {
+            return super.setContinuous(b);
+        }
+        return b;
     }
 }

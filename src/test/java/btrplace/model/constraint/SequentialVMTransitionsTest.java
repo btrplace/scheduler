@@ -52,6 +52,7 @@ public class SequentialVMTransitionsTest {
         Assert.assertFalse(c.toString().contains("null"));
         Assert.assertTrue(c.isContinuous());
         Assert.assertFalse(c.setContinuous(false));
+        Assert.assertTrue(c.setContinuous(true));
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
@@ -98,9 +99,16 @@ public class SequentialVMTransitionsTest {
         plan.add(new ResumeVM(vm3, n1, n1, 4, 5));
         Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
 
+        //Overlap
         plan = new DefaultReconfigurationPlan(mo);
         plan.add(new BootVM(vm2, n1, 3, 4));
         plan.add(new ResumeVM(vm3, n1, n1, 3, 5));
+        Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+
+        //Not the right precedence
+        plan = new DefaultReconfigurationPlan(mo);
+        plan.add(new BootVM(vm2, n1, 3, 4));
+        plan.add(new ResumeVM(vm3, n1, n1, 0, 1));
         Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
 
     }
