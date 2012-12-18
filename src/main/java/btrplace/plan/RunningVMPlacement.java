@@ -26,7 +26,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public interface RunningVMPlacement {
+public interface RunningVMPlacement extends VMEvent {
 
     /**
      * Get the destination node for the VM.
