@@ -24,7 +24,6 @@ import btrplace.model.SatConstraint;
 import btrplace.model.ShareableResource;
 import btrplace.model.constraint.CumulatedResourceCapacity;
 import btrplace.model.constraint.CumulatedRunningCapacity;
-import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoSatConstraint;
 import btrplace.solver.choco.ChocoSatConstraintBuilder;
@@ -69,11 +68,6 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
     }
 
     @Override
-    public CumulatedResourceCapacity getAssociatedConstraint() {
-        return cstr;
-    }
-
-    @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
         ShareableResource rc = m.getResource(cstr.getResource());
@@ -91,12 +85,6 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
             }
         }
         return bad;
-    }
-
-    @Override
-    public boolean isSatisfied(ReconfigurationPlan plan) {
-        Model r = plan.getResult();
-        return r != null && cstr.isSatisfied(r).equals(SatConstraint.Sat.SATISFIED);
     }
 
     @Override

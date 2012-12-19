@@ -21,13 +21,6 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.SequentialVMTransitions;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.VMEvent;
-import btrplace.plan.event.BootVM;
-import btrplace.plan.event.ResumeVM;
-import btrplace.plan.event.ShutdownVM;
-import btrplace.plan.event.SuspendVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ChocoSatConstraint;
@@ -92,55 +85,8 @@ public class CSequentialVMTransitions implements ChocoSatConstraint {
     }
 
     @Override
-    public SatConstraint getAssociatedConstraint() {
-        return cstr;
-    }
-
-    @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         return Collections.emptySet();
-    }
-
-    @Override
-    public boolean isSatisfied(ReconfigurationPlan plan) {
-        List<UUID> seq = cstr.getInvolvedVMs();
-        Set<UUID> s = new HashSet<UUID>();
-        s.addAll(seq);
-        int vmIdx = 0;
-        UUID curVM = seq.get(vmIdx);
-        s.remove(curVM);
-        for (Action a : plan) {
-            if (a instanceof VMEvent) {
-                UUID vm = ((VMEvent) a).getVM();
-                if (a instanceof BootVM || a instanceof ShutdownVM
-                        || a instanceof SuspendVM || a instanceof ResumeVM) {
-                    if (curVM.equals(vm)) {
-                        //This is the VM we expected
-                        curVM = seq.get(++vmIdx);
-                        s.remove(curVM);
-                        if (s.isEmpty()) {
-                            return true;
-                        }
-                    } else {
-                        //Not the VM we expected
-                        if (s.contains(curVM)) {
-                            //and the VM is in the queue,
-                            //this is a violation
-                            return false;
-                        }
-                    }
-                } else {
-                    if (curVM.equals(vm)) {
-                        curVM = seq.get(++vmIdx);
-                        s.remove(curVM);
-                        if (s.isEmpty()) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        return false;
     }
 
     /**

@@ -39,12 +39,12 @@ import java.util.*;
  */
 public class CFenceTest {
 
-    @Test
+    /*@Test
     public void testInstantiation() {
         Fence b = new Fence(Collections.singleton(UUID.randomUUID()), Collections.singleton(UUID.randomUUID()));
         CFence c = new CFence(b);
         Assert.assertEquals(b, c.getAssociatedConstraint());
-    }
+    } */
 
     /**
      * Test getMisPlaced() in various situations.

@@ -22,7 +22,6 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Offline;
-import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ChocoSatConstraint;
@@ -68,22 +67,11 @@ public class COffline implements ChocoSatConstraint {
     }
 
     @Override
-    public Offline getAssociatedConstraint() {
-        return cstr;
-    }
-
-    @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         Mapping mapping = m.getMapping();
         Set<UUID> bad = new HashSet<UUID>();
         bad.addAll(mapping.getRunningVMs(cstr.getInvolvedNodes()));
         return bad;
-    }
-
-    @Override
-    public boolean isSatisfied(ReconfigurationPlan plan) {
-        Model r = plan.getResult();
-        return r != null && cstr.isSatisfied(r).equals(SatConstraint.Sat.SATISFIED);
     }
 
     @Override

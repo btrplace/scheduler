@@ -22,8 +22,6 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.SingleRunningCapacity;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoSatConstraint;
 import btrplace.solver.choco.ChocoSatConstraintBuilder;
@@ -79,11 +77,6 @@ public class CSingleRunningCapacity implements ChocoSatConstraint {
     }
 
     @Override
-    public SingleRunningCapacity getAssociatedConstraint() {
-        return cstr;
-    }
-
-    @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
         Set<UUID> bad = new HashSet<UUID>();
@@ -93,28 +86,6 @@ public class CSingleRunningCapacity implements ChocoSatConstraint {
             }
         }
         return bad;
-    }
-
-    @Override
-    public boolean isSatisfied(ReconfigurationPlan plan) {
-        if (!cstr.isContinuous()) {
-            return cstr.isSatisfied(plan.getResult()).equals(SatConstraint.Sat.SATISFIED);
-        } else {
-            //Initial statement
-            Model mo = plan.getOrigin().clone();
-            if (!cstr.isSatisfied(mo).equals(SatConstraint.Sat.SATISFIED)) {
-                return false;
-            }
-            for (Action a : plan) {
-                if (!a.apply(mo)) {
-                    return false;
-                }
-                if (!cstr.isSatisfied(mo).equals(SatConstraint.Sat.SATISFIED)) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
     @Override

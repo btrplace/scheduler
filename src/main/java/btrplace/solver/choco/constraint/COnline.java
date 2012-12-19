@@ -21,7 +21,6 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Online;
-import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ActionModel;
 import btrplace.solver.choco.ChocoSatConstraint;
@@ -66,26 +65,14 @@ public class COnline implements ChocoSatConstraint {
     }
 
     @Override
-    public Online getAssociatedConstraint() {
-        return cstr;
-    }
-
-    @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         return Collections.<UUID>emptySet();
-    }
-
-    @Override
-    public boolean isSatisfied(ReconfigurationPlan plan) {
-        Model r = plan.getResult();
-        return r != null && cstr.isSatisfied(r).equals(SatConstraint.Sat.SATISFIED);
     }
 
     @Override
     public String toString() {
         return cstr.toString();
     }
-
 
     /**
      * Builder associated to the constraint.

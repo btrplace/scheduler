@@ -19,8 +19,6 @@
 package btrplace.solver.choco;
 
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
-import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 
 import java.util.Set;
@@ -42,12 +40,6 @@ public interface ChocoSatConstraint {
      */
     boolean inject(ReconfigurationProblem rp) throws SolverException;
 
-    /**
-     * Get the constraint model associated to the implementation
-     *
-     * @return a {@link SatConstraint}
-     */
-    SatConstraint getAssociatedConstraint();
 
     /**
      * Get the VMs that are supposed to be mis-placed.
@@ -59,13 +51,4 @@ public interface ChocoSatConstraint {
      * @return a set of VMs identifier that may be empty (if the constraint is satisfied)
      */
     Set<UUID> getMisPlacedVMs(Model m);
-
-    /**
-     * Check if a plan satisfies the constraint.
-     *
-     * @param plan the plan to inspect
-     * @return {@code true} iff the constraint is satisfied by the plan
-     */
-    boolean isSatisfied(ReconfigurationPlan plan);
-
 }

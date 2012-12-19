@@ -172,19 +172,28 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
         ReconfigurationPlan p = rp.solve(timeLimit, optimize);
         if (p != null) {
-            assert checkSatisfaction(p, cConstraints);
+            assert checkSatisfaction(p, cstrs);
             return p;
         } else {
             return null;
         }
     }
 
-    private boolean checkSatisfaction(ReconfigurationPlan p, List<ChocoSatConstraint> cstrs) {
-        for (ChocoSatConstraint ccstr : cstrs) {
-            if (!ccstr.isSatisfied(p)) {
-                rp.getLogger().error("Unsatisfied constraint: {}", ccstr.toString());
+    private boolean checkSatisfaction(ReconfigurationPlan p, Collection<SatConstraint> cstrs) {
+        Model res = p.getResult();
+        if (res == null) {
+            rp.getLogger().error("Applying the plan does not conclude to a model");
+            return false;
+        }
+        for (SatConstraint cstr : cstrs) {
+            if (cstr.isContinuous() && !cstr.isSatisfied(p).equals(SatConstraint.Sat.SATISFIED)) {
+                rp.getLogger().error("Unsatisfied continuous constraint: {}", cstr.toString());
+                return false;
+            } else if (!cstr.isSatisfied(res).equals(SatConstraint.Sat.SATISFIED)) {
+                rp.getLogger().error("Unsatisfied discrete constraint: {}", cstr.toString());
                 return false;
             }
+
         }
         return true;
     }

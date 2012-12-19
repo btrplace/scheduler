@@ -18,11 +18,9 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Root;
-import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.*;
 import choco.cp.solver.CPSolver;
@@ -64,31 +62,8 @@ public class CRoot implements ChocoSatConstraint {
     }
 
     @Override
-    public Root getAssociatedConstraint() {
-        return cstr;
-    }
-
-    @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         return Collections.emptySet();
-    }
-
-    @Override
-    public boolean isSatisfied(ReconfigurationPlan plan) {
-        Model r = plan.getResult();
-        if (r == null) {
-            return false;
-        }
-        Mapping dst = r.getMapping();
-        Mapping src = plan.getOrigin().getMapping();
-        for (UUID vm : cstr.getInvolvedVMs()) {
-            if (src.getRunningVMs().contains(vm) && dst.getRunningVMs().contains(vm)) {
-                if (!src.getVMLocation(vm).equals(dst.getVMLocation(vm))) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
     @Override

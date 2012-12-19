@@ -23,7 +23,6 @@ import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.ShareableResource;
 import btrplace.model.constraint.Overbook;
-import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.*;
 import btrplace.solver.choco.chocoUtil.ChocoUtils;
@@ -132,11 +131,6 @@ public class COverbook implements ChocoSatConstraint {
     }
 
     @Override
-    public Overbook getAssociatedConstraint() {
-        return cstr;
-    }
-
-    @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         ShareableResource rc = m.getResource(cstr.getResource());
         Set<UUID> bads = new HashSet<UUID>();
@@ -160,12 +154,6 @@ public class COverbook implements ChocoSatConstraint {
             }
         }
         return bads;
-    }
-
-    @Override
-    public boolean isSatisfied(ReconfigurationPlan plan) {
-        Model r = plan.getResult();
-        return r != null && cstr.isSatisfied(r).equals(SatConstraint.Sat.SATISFIED);
     }
 
     @Override

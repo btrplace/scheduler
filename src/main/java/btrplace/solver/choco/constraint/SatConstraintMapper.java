@@ -47,6 +47,9 @@ public class SatConstraintMapper {
         builders.put(Online.class, new COnline.Builder());
         builders.put(Offline.class, new COffline.Builder());
         builders.put(SingleRunningCapacity.class, new CSingleRunningCapacity.Builder());
+        builders.put(CumulatedRunningCapacity.class, new CCumulatedRunningCapacity.Builder());
+        builders.put(SingleResourceCapacity.class, new CSingleResourceCapacity.Builder());
+        builders.put(CumulatedResourceCapacity.class, new CCumulatedResourceCapacity.Builder());
         builders.put(Preserve.class, new CPreserve.Builder());
         builders.put(Overbook.class, new COverbook.Builder());
         builders.put(Root.class, new CRoot.Builder());
@@ -54,6 +57,8 @@ public class SatConstraintMapper {
         builders.put(Running.class, new CRunning.Builder());
         builders.put(Sleeping.class, new CSleeping.Builder());
         builders.put(Killed.class, new CKilled.Builder());
+        builders.put(Gather.class, new CGather.Builder());
+        builders.put(SequentialVMTransitions.class, new CSequentialVMTransitions.Builder());
     }
 
     /**

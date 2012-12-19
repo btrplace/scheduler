@@ -22,7 +22,6 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Ban;
-import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoSatConstraint;
 import btrplace.solver.choco.ChocoSatConstraintBuilder;
@@ -81,11 +80,6 @@ public class CBan implements ChocoSatConstraint {
     }
 
     @Override
-    public Ban getAssociatedConstraint() {
-        return ban;
-    }
-
-    @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
 
@@ -96,15 +90,6 @@ public class CBan implements ChocoSatConstraint {
             }
         }
         return bad;
-    }
-
-    @Override
-    public boolean isSatisfied(ReconfigurationPlan plan) {
-        Model r = plan.getResult();
-        if (r == null) {
-            return false;
-        }
-        return ban.isSatisfied(r).equals(SatConstraint.Sat.SATISFIED);
     }
 
     @Override

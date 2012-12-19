@@ -22,8 +22,6 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Spread;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.choco.*;
 import btrplace.solver.choco.chocoUtil.ChocoUtils;
 import choco.cp.solver.constraints.global.BoundAllDiff;
@@ -118,11 +116,6 @@ public class CSpread implements ChocoSatConstraint {
     }
 
     @Override
-    public Spread getAssociatedConstraint() {
-        return cstr;
-    }
-
-    @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         Map<UUID, Set<UUID>> spots = new HashMap<UUID, Set<UUID>>();
         Set<UUID> bad = new HashSet<UUID>();
@@ -143,29 +136,6 @@ public class CSpread implements ChocoSatConstraint {
             }
         }
         return bad;
-    }
-
-    @Override
-    public boolean isSatisfied(ReconfigurationPlan plan) {
-        Model r = plan.getResult();
-        if (r == null) {
-            return false;
-        }
-        boolean ret = cstr.isSatisfied(r).equals(SatConstraint.Sat.SATISFIED);
-        if (!ret) {
-            return false;
-        }
-        if (cstr.isContinuous() && cstr.isSatisfied(plan.getOrigin()).equals(SatConstraint.Sat.SATISFIED)) {
-            Model m = plan.getOrigin().clone();
-            for (Action a : plan) {
-                a.apply(m);
-                ret = cstr.isSatisfied(m).equals(SatConstraint.Sat.SATISFIED);
-                if (!ret) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
     @Override

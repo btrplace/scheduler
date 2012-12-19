@@ -46,7 +46,6 @@ public class COnlineTest {
         s.add(UUID.randomUUID());
         Online on = new Online(s);
         COnline con = new COnline(on);
-        Assert.assertEquals(con.getAssociatedConstraint(), on);
         Assert.assertEquals(con.toString(), on.toString());
     }
 
