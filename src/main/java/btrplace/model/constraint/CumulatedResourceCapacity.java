@@ -30,7 +30,6 @@ import java.util.UUID;
  * Restrict the cumulated amount of virtual resources consumed by
  * the VMs hosted on the given nodes.
  * <p/>
- * <p/>
  * The restriction provided by the constraint can be either discrete or continuous.
  * If it is discrete, the constraint only considers the model obtained as the end
  * of the reconfiguration process.
@@ -116,7 +115,8 @@ public class CumulatedResourceCapacity extends SatConstraint {
 
         return qty == that.qty &&
                 rcId.equals(that.rcId) &&
-                getInvolvedNodes().equals(that.getInvolvedNodes());
+                getInvolvedNodes().equals(that.getInvolvedNodes()) &&
+                this.isContinuous() == that.isContinuous();
     }
 
     @Override
@@ -124,7 +124,7 @@ public class CumulatedResourceCapacity extends SatConstraint {
         int result = super.hashCode();
         result = 31 * result + qty;
         result = 31 * result + rcId.hashCode();
-        result = 31 * result + getInvolvedNodes().hashCode();
+        result = 31 * result + getInvolvedNodes().hashCode() + (isContinuous() ? 1 : 0);
         return result;
     }
 

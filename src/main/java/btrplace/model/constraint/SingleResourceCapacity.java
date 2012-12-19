@@ -18,17 +18,28 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.ShareableResource;
+import btrplace.plan.Action;
+import btrplace.plan.ReconfigurationPlan;
 
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
 /**
- * Restrict the capacity of each of the given server to a given
- * amount for a specific resource that is used by the VMs.
+ * Restrict the amount of virtual resources consumed by
+ * the VMs hosted on each of the given nodes.
+ * <p/>
+ * The restriction provided by the constraint can be either discrete or continuous.
+ * If it is discrete, the constraint only considers the model obtained as the end
+ * of the reconfiguration process.
+ * If the restriction is continuous, then the usage must never exceed
+ * the given amount, in the source model, during the reconfiguration and at the end.
+ * <p/>
+ * By default, the constraint provides a discrete restriction.
  *
  * @author Fabien Hermenier
  */
@@ -75,7 +86,32 @@ public class SingleResourceCapacity extends SatConstraint {
         if (rc == null) {
             return Sat.UNSATISFIED;
         }
-        return Sat.UNDEFINED;
+        Mapping map = i.getMapping();
+        for (UUID n : getInvolvedNodes()) {
+            if (rc.sum(map.getRunningVMs(n), true) > amount) {
+                return Sat.UNSATISFIED;
+            }
+        }
+        return Sat.SATISFIED;
+
+    }
+
+    @Override
+    public Sat isSatisfied(ReconfigurationPlan plan) {
+        Model mo = plan.getOrigin();
+        if (!isSatisfied(mo).equals(SatConstraint.Sat.SATISFIED)) {
+            return Sat.UNSATISFIED;
+        }
+        mo = plan.getOrigin().clone();
+        for (Action a : plan) {
+            if (!a.apply(mo)) {
+                return Sat.UNSATISFIED;
+            }
+            if (!isSatisfied(mo).equals(SatConstraint.Sat.SATISFIED)) {
+                return Sat.UNSATISFIED;
+            }
+        }
+        return Sat.SATISFIED;
     }
 
     @Override
@@ -89,14 +125,15 @@ public class SingleResourceCapacity extends SatConstraint {
 
         SingleResourceCapacity that = (SingleResourceCapacity) o;
         return getInvolvedNodes().equals(that.getInvolvedNodes())
-                && amount == that.amount && rcId.equals(that.rcId);
+                && amount == that.amount && rcId.equals(that.rcId)
+                && isContinuous() == that.isContinuous();
     }
 
     @Override
     public int hashCode() {
         int res = amount;
         res = 31 * res + rcId.hashCode();
-        res = 31 * res + getInvolvedNodes().hashCode();
+        res = 31 * res + getInvolvedNodes().hashCode() + (isContinuous() ? 1 : 0);
         return res;
     }
 

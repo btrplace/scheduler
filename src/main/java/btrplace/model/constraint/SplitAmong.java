@@ -206,21 +206,27 @@ public class SplitAmong extends SatConstraint {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder("splitAmong(");
-        b.append("vms=");
+        b.append("vms=[");
         for (Iterator<Set<UUID>> ite = vGrps.iterator(); ite.hasNext(); ) {
             b.append(ite.next());
             if (ite.hasNext()) {
                 b.append(", ");
             }
         }
-        b.append(", nodes=");
+        b.append("], nodes=[");
         for (Iterator<Set<UUID>> ite = pGrps.iterator(); ite.hasNext(); ) {
             b.append(ite.next());
             if (ite.hasNext()) {
                 b.append(", ");
             }
         }
+        b.append(']');
+        if (isContinuous()) {
+            b.append(", continuous");
+        } else {
+            b.append(", discrete");
+        }
 
-        return b.toString();
+        return b.append(')').toString();
     }
 }

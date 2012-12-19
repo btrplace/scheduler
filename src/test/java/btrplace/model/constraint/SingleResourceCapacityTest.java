@@ -18,6 +18,11 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.*;
+import btrplace.plan.DefaultReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.BootVM;
+import btrplace.plan.event.ShutdownVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -32,6 +37,15 @@ import java.util.UUID;
  */
 public class SingleResourceCapacityTest {
 
+    UUID n1 = UUID.randomUUID();
+    UUID n2 = UUID.randomUUID();
+
+    UUID vm1 = UUID.randomUUID();
+    UUID vm2 = UUID.randomUUID();
+    UUID vm3 = UUID.randomUUID();
+    UUID vm4 = UUID.randomUUID();
+
+
     @Test
     public void testInstantiation() {
         Set<UUID> s = new HashSet<UUID>();
@@ -44,6 +58,9 @@ public class SingleResourceCapacityTest {
         Assert.assertTrue(c.getInvolvedVMs().isEmpty());
         Assert.assertFalse(c.toString().contains("null"));
         System.out.println(c);
+        Assert.assertFalse(c.isContinuous());
+        Assert.assertTrue(c.setContinuous(true));
+        Assert.assertTrue(c.isContinuous());
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
@@ -60,16 +77,60 @@ public class SingleResourceCapacityTest {
         Assert.assertFalse(c.equals(new SingleResourceCapacity(s, "bar", 3)));
         Assert.assertFalse(c.equals(new SingleResourceCapacity(s, "foo", 2)));
         Assert.assertFalse(c.equals(new SingleResourceCapacity(new HashSet<UUID>(), "foo", 3)));
+        c.setContinuous(true);
+        c2.setContinuous(false);
+        Assert.assertFalse(c.equals(c2));
     }
 
     @Test
     public void testDiscreteIsSatisfied() {
-        Assert.fail();
+        Mapping m = new DefaultMapping();
+        m.addOnlineNode(n1);
+        m.addOnlineNode(n2);
+        m.addRunningVM(vm1, n1);
+        m.addReadyVM(vm2);
+
+        m.addRunningVM(vm3, n2);
+        m.addReadyVM(vm4);
+        Model mo = new DefaultModel(m);
+
+        ShareableResource rc = new DefaultShareableResource("foo", 2);
+        mo.attach(rc);
+        SingleResourceCapacity c = new SingleResourceCapacity(m.getAllNodes(), "foo", 3);
+        Assert.assertEquals(c.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
+        rc.set(vm3, 4);
+        Assert.assertEquals(c.isSatisfied(mo), SatConstraint.Sat.UNSATISFIED);
+
+        rc.set(vm3, 1);
+        m.addRunningVM(vm1, n2);
+        Assert.assertEquals(c.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
     }
 
     @Test
     public void testContinuousIsSatisfied() {
-        Assert.fail();
+        Mapping m = new DefaultMapping();
+        m.addOnlineNode(n1);
+        m.addOnlineNode(n2);
+        m.addRunningVM(vm1, n1);
+        m.addReadyVM(vm2);
+
+        m.addRunningVM(vm3, n2);
+        m.addReadyVM(vm4);
+        Model mo = new DefaultModel(m);
+
+        ShareableResource rc = new DefaultShareableResource("foo", 2);
+        mo.attach(rc);
+        SingleResourceCapacity c = new SingleResourceCapacity(m.getAllNodes(), "foo", 3);
+
+        ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
+        Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        plan.add(new BootVM(vm4, n1, 1, 2));
+        Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+
+        plan.add(new ShutdownVM(vm1, n1, 0, 1));
+        Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+
+
     }
 
 }
