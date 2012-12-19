@@ -50,6 +50,12 @@ public class Among extends SatConstraint {
     private Set<Set<UUID>> pGrps;
 
 
+    /**
+     * Make a new constraint.
+     *
+     * @param vms   the group of VMs
+     * @param pGrps the candidate group of nodes.
+     */
     public Among(Set<UUID> vms, Set<Set<UUID>> pGrps) {
         super(vms, null, false);
         this.pGrps = pGrps;

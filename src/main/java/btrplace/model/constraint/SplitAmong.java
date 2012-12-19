@@ -21,6 +21,9 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.plan.Action;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.RunningVMPlacement;
 
 import java.util.*;
 
@@ -29,6 +32,17 @@ import java.util.*;
  * VMs inside a same set may still be collocated.
  * <p/>
  * The set of VMs must be disjoint so must be the set of servers.
+ * <p/>
+ * If the constraint is set to provide a discrete restriction, it only ensures no group of VMs share a group of nodes
+ * while each group of VMs does not spread over several group of nodes. This allows to change the group of nodes
+ * hosting the group of VMs during the reconfiguration process.
+ * <p/>
+ * If the constraint is set to provide a continuous restriction, the constraint must be satisfied initially, then the VMs
+ * of a single group can never spread on multiple groups of nodes.
+ * <p/>
+ * <p/>
+ * <p/>
+ * By default, the constraint provides a discrete restriction.
  *
  * @author Fabien Hermenier
  */
@@ -101,10 +115,19 @@ public class SplitAmong extends SatConstraint {
         return null;
     }
 
+    private Set<UUID> getAssociatedVGroup(UUID u) {
+        for (Set<UUID> vGrp : vGrps) {
+            if (vGrp.contains(u)) {
+                return vGrp;
+            }
+        }
+        return null;
+    }
+
     @Override
     public Sat isSatisfied(Model i) {
         Mapping m = i.getMapping();
-        Set<Set<UUID>> used = new HashSet<Set<UUID>>(); //The pgroups that are used
+        Set<Set<UUID>> pUsed = new HashSet<Set<UUID>>(); //The pgroups that are used
         for (Set<UUID> vgrp : vGrps) {
             Set<UUID> choosedGroup = null;
 
@@ -115,10 +138,41 @@ public class SplitAmong extends SatConstraint {
                         choosedGroup = getAssociatedPGroup(m.getVMLocation(vmId));
                         if (choosedGroup == null) { //THe VM is running but on an unknown group. It is an error
                             return Sat.UNSATISFIED;
-                        } else if (!used.add(choosedGroup)) { //The pgroup has already been used for another set of VMs.
+                        } else if (!pUsed.add(choosedGroup)) { //The pgroup has already been used for another set of VMs.
                             return Sat.UNSATISFIED;
                         }
-                    } else if (!choosedGroup.contains(vmId)) { //The VM is not in the group with the other
+                    } else if (!choosedGroup.contains(m.getVMLocation(vmId))) { //The VM is not in the group with the other
+                        return Sat.UNSATISFIED;
+                    }
+                }
+            }
+        }
+        return Sat.SATISFIED;
+    }
+
+    @Override
+    public Sat isSatisfied(ReconfigurationPlan p) {
+        Model o = p.getOrigin();
+        if (!isSatisfied(o).equals(Sat.SATISFIED)) {
+            return Sat.UNSATISFIED;
+        }
+        o = p.getOrigin().clone();
+        for (Action a : p) {
+            if (!a.apply(o)) {
+                return Sat.UNSATISFIED;
+            }
+            if (a instanceof RunningVMPlacement) {
+                RunningVMPlacement ra = (RunningVMPlacement) a;
+                UUID vm = ra.getVM();
+                Set<UUID> myGroup = getAssociatedVGroup(vm);
+                if (myGroup != null) {
+                    //Does the VM go to a compatible group of nodes ?
+                    UUID destNode = ra.getDestinationNode();
+                    Set<UUID> myPGroup = getAssociatedPGroup(destNode);
+                    if (myPGroup == null) { //The node does not belong to a group. Violation
+                        return Sat.UNSATISFIED;
+                    } else if (!myGroup.containsAll(o.getMapping().getRunningVMs(myPGroup))) {
+                        //Some VMs that are not in myGroup are hosting on the nodes. Violation
                         return Sat.UNSATISFIED;
                     }
                 }
@@ -138,38 +192,35 @@ public class SplitAmong extends SatConstraint {
 
         SplitAmong that = (SplitAmong) o;
 
-        return pGrps.equals(that.pGrps) && vGrps.equals(that.vGrps);
+        return pGrps.equals(that.pGrps) && vGrps.equals(that.vGrps) && this.isContinuous() == that.isContinuous();
     }
 
     @Override
     public int hashCode() {
-        int result = vGrps.hashCode() * 31 + "splitAmong".hashCode();
+        int result = vGrps.hashCode() * 31;
         result = 31 * result + pGrps.hashCode();
+        result = 31 * result + (isContinuous() ? 1 : 0);
         return result;
     }
 
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder("splitAmong(");
+        b.append("vms=");
         for (Iterator<Set<UUID>> ite = vGrps.iterator(); ite.hasNext(); ) {
-            b.append("vms=").append(ite.next());
+            b.append(ite.next());
             if (ite.hasNext()) {
                 b.append(", ");
             }
         }
-
+        b.append(", nodes=");
         for (Iterator<Set<UUID>> ite = pGrps.iterator(); ite.hasNext(); ) {
-            b.append("nodes=").append(ite.next());
+            b.append(ite.next());
             if (ite.hasNext()) {
                 b.append(", ");
             }
         }
 
         return b.toString();
-    }
-
-    @Override
-    public boolean setContinuous(boolean b) {
-        return !b;
     }
 }
