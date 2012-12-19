@@ -33,8 +33,8 @@ import java.util.*;
  * <p/>
  * When the restriction is discrete, the constraint ensures there is no co-location on
  * only on a given model.
- * When the restriction is continuous, the constraint ensures their is no overlapping
- * during the reconfiguration process.
+ * When the restriction is continuous, the constraint ensures a VM can not be set running
+ * on a node that is hosting VMs from another group.
  * <p/>
  * By default, the restriction provided by the constraint is discrete.
  *
