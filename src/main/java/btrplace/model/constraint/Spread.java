@@ -80,7 +80,7 @@ public class Spread extends SatConstraint {
                 return Sat.UNSATISFIED;
             }
 
-            UUID destNode = null;
+            UUID destNode;
             if (a instanceof RunningVMPlacement) {
                 destNode = ((RunningVMPlacement) a).getDestinationNode();
                 Set<UUID> on = new HashSet<UUID>(cur.getMapping().getRunningVMs(destNode));

@@ -19,6 +19,11 @@
 package btrplace.model.constraint;
 
 import btrplace.model.*;
+import btrplace.plan.DefaultReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.MigrateVM;
+import btrplace.plan.event.ShutdownVM;
+import btrplace.plan.event.SuspendVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -30,6 +35,16 @@ import java.util.*;
  * @author Fabien Hermenier
  */
 public class SplitTest {
+
+    UUID n1 = UUID.randomUUID();
+    UUID n2 = UUID.randomUUID();
+    UUID n3 = UUID.randomUUID();
+
+    UUID vm1 = UUID.randomUUID();
+    UUID vm2 = UUID.randomUUID();
+    UUID vm3 = UUID.randomUUID();
+    UUID vm4 = UUID.randomUUID();
+
 
     @Test
     public void testInstantiation() {
@@ -45,6 +60,11 @@ public class SplitTest {
         Assert.assertEquals(2, sp.getInvolvedVMs().size());
         Assert.assertTrue(sp.getInvolvedNodes().isEmpty());
         Assert.assertFalse(sp.toString().contains("null"));
+        Assert.assertFalse(sp.isContinuous());
+        Assert.assertTrue(sp.setContinuous(true));
+        Assert.assertTrue(sp.isContinuous());
+        Assert.assertTrue(sp.setContinuous(false));
+        Assert.assertFalse(sp.isContinuous());
         System.out.println(sp);
     }
 
@@ -67,20 +87,11 @@ public class SplitTest {
     }
 
     @Test
-    public void testIsSatisfied() {
+    public void testDiscreteIsSatisfied() {
         Mapping map = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        UUID n3 = UUID.randomUUID();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addOnlineNode(n3);
-
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
-        UUID vm4 = UUID.randomUUID();
-        UUID vm5 = UUID.randomUUID();
 
         Set<Set<UUID>> args = new HashSet<Set<UUID>>();
         Set<UUID> s1 = new HashSet<UUID>();
@@ -108,4 +119,45 @@ public class SplitTest {
         Assert.assertEquals(SatConstraint.Sat.UNSATISFIED, sp.isSatisfied(mo));
     }
 
+    @Test
+    public void testContinuousIsSatisfied() {
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOnlineNode(n3);
+
+        Set<Set<UUID>> args = new HashSet<Set<UUID>>();
+        Set<UUID> s1 = new HashSet<UUID>();
+        s1.add(vm1);
+        s1.add(vm2);
+        Set<UUID> s2 = new HashSet<UUID>();
+        s2.add(vm3);
+        s2.add(vm4);
+        Set<UUID> s3 = new HashSet<UUID>();
+        s3.add(UUID.randomUUID());
+        args.add(s1);
+        args.add(s2);
+        args.add(s3);
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm3, n2);
+        map.addRunningVM(vm4, n2);
+
+        Split sp = new Split(args);
+        Model mo = new DefaultModel(map);
+        ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
+        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        map.addRunningVM(vm3, n1); //Violation
+        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+
+        plan.add(new MigrateVM(vm3, n1, n2, 0, 1));
+        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        //Temporary overlap
+        plan.add(new MigrateVM(vm3, n2, n1, 5, 6));
+        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        //Liberate n1 from vm1 and vm2 before
+        plan.add(new SuspendVM(vm1, n1, n1, 2, 3));
+        plan.add(new ShutdownVM(vm2, n1, 2, 3));
+        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+    }
 }

@@ -21,6 +21,9 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.plan.Action;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.RunningVMPlacement;
 
 import java.util.*;
 
@@ -28,8 +31,12 @@ import java.util.*;
  * A constraint to force several set of VMs to not share any node when they are
  * running.
  * <p/>
- * The restriction provided by the constraint is discrete.
- * TODO: Possible to have a continuous restriction ?
+ * When the restriction is discrete, the constraint ensures there is no co-location on
+ * only on a given model.
+ * When the restriction is continuous, the constraint ensures their is no overlapping
+ * during the reconfiguration process.
+ * <p/>
+ * By default, the restriction provided by the constraint is discrete.
  *
  * @author Fabien Hermenier
  */
@@ -65,6 +72,21 @@ public class Split extends SatConstraint {
         return this.sets;
     }
 
+    /**
+     * Get the group of VMs that contains the given VM.
+     *
+     * @param u the VM identifier
+     * @return the group of VM if exists, {@code null} otherwise
+     */
+    private Set<UUID> getAssociatedVGroup(UUID u) {
+        for (Set<UUID> vGrp : sets) {
+            if (vGrp.contains(u)) {
+                return vGrp;
+            }
+        }
+        return null;
+    }
+
     @Override
     public Sat isSatisfied(Model i) {
         Mapping m = i.getMapping();
@@ -86,6 +108,43 @@ public class Split extends SatConstraint {
                 }
             }
             used.add(myGroup);
+        }
+        return Sat.SATISFIED;
+    }
+
+    @Override
+    public Sat isSatisfied(ReconfigurationPlan plan) {
+        if (plan.getSize() == 0) {
+            return isSatisfied(plan.getOrigin());
+        }
+
+        //For each relocation action, we check if the
+        //destination node is not hosting a VM from another group
+        Model cur = plan.getOrigin().clone();
+        for (Action a : plan) {
+            if (!a.apply(cur)) {
+                return Sat.UNSATISFIED;
+            }
+
+            UUID destNode;
+            if (a instanceof RunningVMPlacement) {
+                RunningVMPlacement ra = (RunningVMPlacement) a;
+                destNode = ra.getDestinationNode();
+                UUID vm = ra.getVM();
+                Set<UUID> vmGrp = getAssociatedVGroup(vm);
+
+                if (vmGrp != null) {
+                    //The VM is involved in the constraint, the node must not
+                    //run any VM that belong to another group.
+                    for (UUID vmOn : cur.getMapping().getRunningVMs(destNode)) {
+                        Set<UUID> grp = getAssociatedVGroup(vmOn);
+                        if (grp != null && !vmGrp.equals(grp)) {
+                            return Sat.UNSATISFIED;
+                        }
+                    }
+
+                }
+            }
         }
         return Sat.SATISFIED;
     }
@@ -124,10 +183,5 @@ public class Split extends SatConstraint {
             b.append(", discrete");
         }
         return b.append(')').toString();
-    }
-
-    @Override
-    public boolean setContinuous(boolean b) {
-        return !b;
     }
 }
