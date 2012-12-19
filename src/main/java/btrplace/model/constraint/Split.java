@@ -110,14 +110,20 @@ public class Split extends SatConstraint {
 
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder("split");
+        StringBuilder b = new StringBuilder("split(vms=[");
         for (Iterator<Set<UUID>> ite = sets.iterator(); ite.hasNext(); ) {
-            b.append("vms=").append(ite.next());
+            b.append(ite.next());
             if (ite.hasNext()) {
                 b.append(", ");
             }
         }
-        return b.toString();
+        b.append(']');
+        if (isContinuous()) {
+            b.append(", continuous");
+        } else {
+            b.append(", discrete");
+        }
+        return b.append(')').toString();
     }
 
     @Override

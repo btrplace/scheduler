@@ -125,8 +125,14 @@ public class CumulatedResourceCapacity extends SatConstraint {
         b.append("cumulatedResourceCapacity(")
                 .append("nodes=").append(getInvolvedNodes())
                 .append(", rc=").append(rcId)
-                .append(", amount=").append(qty)
-                .append(')');
+                .append(", amount=").append(qty);
+
+        if (isContinuous()) {
+            b.append(", continuous");
+        } else {
+            b.append(", discrete");
+        }
+        b.append(')');
 
         return b.toString();
     }

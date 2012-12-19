@@ -102,10 +102,17 @@ public class SingleResourceCapacity extends SatConstraint {
 
     @Override
     public String toString() {
-        return new StringBuilder("singleResourceCapacity(")
+        StringBuilder b = new StringBuilder("singleResourceCapacity(")
                 .append("nodes=").append(getInvolvedNodes())
                 .append(", rc=").append(rcId)
-                .append(", amount=").append(amount)
-                .append(")").toString();
+                .append(", amount=").append(amount);
+
+        if (isContinuous()) {
+            b.append(", continuous");
+        } else {
+            b.append(", discrete");
+        }
+
+        return b.append(')').toString();
     }
 }
