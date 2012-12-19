@@ -18,6 +18,11 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.*;
+import btrplace.plan.DefaultReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.Allocate;
+import btrplace.plan.event.MigrateVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -31,6 +36,15 @@ import java.util.UUID;
  * @author Fabien Hermenier
  */
 public class CumulatedResourceCapacityTest {
+
+    UUID vm1 = UUID.randomUUID();
+    UUID vm2 = UUID.randomUUID();
+    UUID vm3 = UUID.randomUUID();
+    UUID vm4 = UUID.randomUUID();
+
+    UUID n1 = UUID.randomUUID();
+    UUID n2 = UUID.randomUUID();
+    UUID n3 = UUID.randomUUID();
 
     @Test
     public void testInstantiation() {
@@ -67,11 +81,64 @@ public class CumulatedResourceCapacityTest {
 
     @Test
     public void testDiscreteIsSatisfied() {
-        Assert.fail();
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOnlineNode(n3);
+
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm3, n2);
+        map.addRunningVM(vm4, n3);
+
+        Model mo = new DefaultModel(map);
+        ShareableResource rc = new DefaultShareableResource("foo", 1);
+        rc.set(vm2, 2);
+        mo.attach(rc);
+        Set<UUID> nodes = new HashSet<UUID>();
+        nodes.add(n1);
+        nodes.add(n2);
+        CumulatedResourceCapacity cc = new CumulatedResourceCapacity(nodes, "foo", 4);
+        Assert.assertEquals(cc.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(new CumulatedResourceCapacity(nodes, "bar", 100).isSatisfied(mo), SatConstraint.Sat.UNSATISFIED);
+
+        rc.set(vm1, 3);
+        Assert.assertEquals(cc.isSatisfied(mo), SatConstraint.Sat.UNSATISFIED);
+        map.addSleepingVM(vm2, n1);
+        map.addSleepingVM(vm3, n1);
+        Assert.assertEquals(cc.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
     }
 
     @Test
     public void testContinuousIsSatisfied() {
-        Assert.fail();
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOnlineNode(n3);
+
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm3, n2);
+        map.addRunningVM(vm4, n3);
+
+        Model mo = new DefaultModel(map);
+        ShareableResource rc = new DefaultShareableResource("foo", 1);
+        rc.set(vm2, 2);
+        mo.attach(rc);
+        Set<UUID> nodes = new HashSet<UUID>();
+        nodes.add(n1);
+        nodes.add(n2);
+        CumulatedResourceCapacity cc = new CumulatedResourceCapacity(nodes, "foo", 4);
+
+        ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
+        Assert.assertEquals(cc.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        plan.add(new MigrateVM(vm4, n3, n2, 1, 2));
+        Assert.assertEquals(cc.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        plan.add(new MigrateVM(vm1, n1, n3, 0, 1));
+        Assert.assertEquals(cc.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        plan.add(new Allocate(vm4, n2, "foo", 2, 5, 6));
+        Assert.assertEquals(cc.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        plan.add(new Allocate(vm2, n1, "foo", 1, 4, 5));
+        Assert.assertEquals(cc.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
     }
 }

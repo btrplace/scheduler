@@ -27,8 +27,17 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Restrict the global amount of virtual resources consumed by
- * the VMs hosted on the given servers.
+ * Restrict the cumulated amount of virtual resources consumed by
+ * the VMs hosted on the given nodes.
+ * <p/>
+ * <p/>
+ * The restriction provided by the constraint can be either discrete or continuous.
+ * If it is discrete, the constraint only considers the model obtained as the end
+ * of the reconfiguration process.
+ * If the restriction is continuous, then the cumulated resource usage must never exceed
+ * the given amount, in the source model, during the reconfiguration and at the end.
+ * <p/>
+ * By default, the restriction is discrete.
  *
  * @author Fabien Hermenier
  */
@@ -136,4 +145,5 @@ public class CumulatedResourceCapacity extends SatConstraint {
 
         return b.toString();
     }
+
 }

@@ -52,6 +52,8 @@ public class DefaultAttributesTest {
         Assert.assertEquals(Boolean.TRUE, attrs.get(u, "fi"));
         Assert.assertEquals(Boolean.TRUE, attrs.set(u, "fi", Boolean.FALSE));
         Assert.assertEquals(Boolean.FALSE, attrs.get(u, "fi"));
+
+        System.out.println(attrs);
     }
 
     @Test(dependsOnMethods = {"testSetAndGet", "testInstantiation"})

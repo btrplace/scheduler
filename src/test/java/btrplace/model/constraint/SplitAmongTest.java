@@ -19,6 +19,9 @@
 package btrplace.model.constraint;
 
 import btrplace.model.*;
+import btrplace.plan.DefaultReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.MigrateVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -173,5 +176,60 @@ public class SplitAmongTest {
         map.addRunningVM(vm1, n3);
         map.addRunningVM(vm3, n4);
         Assert.assertEquals(sp.isSatisfied(mo), SatConstraint.Sat.UNSATISFIED);
+    }
+
+    @Test
+    public void testContinuousIsSatisfied() {
+        Set<Set<UUID>> vGrps = new HashSet<Set<UUID>>();
+        Set<UUID> vs1 = new HashSet<UUID>();
+        vs1.add(vm1);
+        vs1.add(vm2);
+
+        Set<UUID> vs2 = new HashSet<UUID>();
+        vs2.add(vm3);
+        vs2.add(vm4);
+
+        vGrps.add(vs1);
+        vGrps.add(vs2);
+
+        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>();
+        Set<UUID> ps1 = new HashSet<UUID>();
+        ps1.add(n1);
+        ps1.add(n2);
+
+        Set<UUID> ps2 = new HashSet<UUID>();
+        ps2.add(n3);
+        ps2.add(n4);
+
+        pGrps.add(ps1);
+        pGrps.add(ps2);
+
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOnlineNode(n3);
+        map.addOnlineNode(n4);
+
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm3, n3);
+        map.addRunningVM(vm4, n4);
+
+        Model mo = new DefaultModel(map);
+
+        SplitAmong sp = new SplitAmong(vGrps, pGrps);
+        ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
+        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+
+        plan.add(new MigrateVM(vm1, n1, n2, 3, 4));
+        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+
+        UUID vm5 = UUID.randomUUID();
+        map.addRunningVM(vm5, n4);
+        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        plan.add(new MigrateVM(vm2, n1, n3, 0, 2));
+        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+
+
     }
 }

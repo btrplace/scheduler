@@ -47,6 +47,11 @@ public class RootTest {
         Assert.assertTrue(s.getInvolvedNodes().isEmpty());
         Assert.assertNotNull(s.toString());
         System.out.println(s);
+        Assert.assertTrue(s.isContinuous());
+        Assert.assertFalse(s.setContinuous(false));
+        Assert.assertTrue(s.isContinuous());
+        Assert.assertTrue(s.setContinuous(true));
+        Assert.assertTrue(s.isContinuous());
     }
 
     @Test

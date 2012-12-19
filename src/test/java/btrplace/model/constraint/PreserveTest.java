@@ -44,6 +44,8 @@ public class PreserveTest {
         Assert.assertEquals(3, p.getAmount());
         Assert.assertEquals("cpu", p.getResource());
         Assert.assertFalse(p.toString().contains("null"));
+        Assert.assertFalse(p.isContinuous());
+        Assert.assertFalse(p.setContinuous(true));
         System.out.println(p);
     }
 

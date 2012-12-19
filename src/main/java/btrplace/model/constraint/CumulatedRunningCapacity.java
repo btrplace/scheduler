@@ -20,6 +20,8 @@ package btrplace.model.constraint;
 
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.plan.Action;
+import btrplace.plan.ReconfigurationPlan;
 
 import java.util.Collections;
 import java.util.Set;
@@ -68,6 +70,23 @@ public class CumulatedRunningCapacity extends SatConstraint {
         return Sat.SATISFIED;
     }
 
+    @Override
+    public Sat isSatisfied(ReconfigurationPlan p) {
+        Model mo = p.getOrigin();
+        if (!isSatisfied(mo).equals(Sat.SATISFIED)) {
+            return Sat.UNSATISFIED;
+        }
+        mo = p.getOrigin().clone();
+        for (Action a : p) {
+            if (!a.apply(mo)) {
+                return Sat.UNSATISFIED;
+            }
+            if (!isSatisfied(mo).equals(Sat.SATISFIED)) {
+                return Sat.UNSATISFIED;
+            }
+        }
+        return Sat.SATISFIED;
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -50,7 +50,7 @@ public class SequentialVMTransitions extends SatConstraint {
 
     @Override
     public Sat isSatisfied(Model i) {
-        return Sat.SATISFIED;
+        return Sat.UNDEFINED;
     }
 
     @Override
