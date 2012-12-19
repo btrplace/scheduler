@@ -50,7 +50,6 @@ public class SuspendVMTest {
         Assert.assertFalse(a.toString().contains("null"));
         Assert.assertEquals(a.getCurrentState(), VMStateTransition.VMState.running);
         Assert.assertEquals(a.getNextState(), VMStateTransition.VMState.sleeping);
-
     }
 
     @Test(dependsOnMethods = {"testInstantiate"})

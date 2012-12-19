@@ -42,6 +42,7 @@ public class OnlineTest {
         Assert.assertEquals(o.getInvolvedNodes(), s);
         Assert.assertTrue(o.getInvolvedVMs().isEmpty());
         Assert.assertNotNull(o.toString());
+        System.out.println(o);
     }
 
     @Test

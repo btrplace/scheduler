@@ -42,6 +42,7 @@ public class RunningTest {
         Assert.assertEquals(x, s.getInvolvedVMs());
         Assert.assertTrue(s.getInvolvedNodes().isEmpty());
         Assert.assertNotNull(s.toString());
+        System.out.println(s);
     }
 
     @Test

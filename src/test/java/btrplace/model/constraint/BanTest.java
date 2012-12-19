@@ -45,6 +45,7 @@ public class BanTest {
         Assert.assertFalse(b.toString().contains("null"));
         Assert.assertFalse(b.isContinuous());
         Assert.assertFalse(b.setContinuous(true));
+        System.out.println(b);
     }
 
     @Test

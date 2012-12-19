@@ -51,6 +51,7 @@ public class CumulatedRunningCapacityTest {
         Assert.assertFalse(c.isContinuous());
         Assert.assertTrue(c.setContinuous(true));
         Assert.assertTrue(c.isContinuous());
+        System.out.println(c);
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})

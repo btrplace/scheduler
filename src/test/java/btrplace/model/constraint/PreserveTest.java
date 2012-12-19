@@ -44,6 +44,7 @@ public class PreserveTest {
         Assert.assertEquals(3, p.getAmount());
         Assert.assertEquals("cpu", p.getResource());
         Assert.assertFalse(p.toString().contains("null"));
+        System.out.println(p);
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})

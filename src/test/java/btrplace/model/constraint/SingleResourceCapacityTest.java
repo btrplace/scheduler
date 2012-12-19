@@ -43,6 +43,7 @@ public class SingleResourceCapacityTest {
         Assert.assertEquals(3, c.getAmount());
         Assert.assertTrue(c.getInvolvedVMs().isEmpty());
         Assert.assertFalse(c.toString().contains("null"));
+        System.out.println(c);
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})

@@ -45,6 +45,7 @@ public class SplitTest {
         Assert.assertEquals(2, sp.getInvolvedVMs().size());
         Assert.assertTrue(sp.getInvolvedNodes().isEmpty());
         Assert.assertFalse(sp.toString().contains("null"));
+        System.out.println(sp);
     }
 
     @Test

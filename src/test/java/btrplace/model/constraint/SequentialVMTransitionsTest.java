@@ -53,6 +53,7 @@ public class SequentialVMTransitionsTest {
         Assert.assertTrue(c.isContinuous());
         Assert.assertFalse(c.setContinuous(false));
         Assert.assertTrue(c.setContinuous(true));
+        System.out.println(c);
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})

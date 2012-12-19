@@ -48,6 +48,7 @@ public class SpreadTest {
         Assert.assertNotNull(s.toString());
         Assert.assertTrue(s.setContinuous(false));
         Assert.assertFalse(s.isContinuous());
+        System.out.println(s);
     }
 
     @Test

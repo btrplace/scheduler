@@ -49,6 +49,7 @@ public class GatherTest {
         Assert.assertFalse(g.toString().contains("null"));
         Assert.assertFalse(g.isContinuous());
         Assert.assertFalse(g.setContinuous(true));
+        System.out.println(g);
     }
 
     @Test(dependsOnMethods = {"testInstantiate"})

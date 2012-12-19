@@ -18,29 +18,153 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.plan.Action;
+import btrplace.plan.ReconfigurationPlan;
 
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * A constraint to force a set of VMs to be hosted on a single group of nodes
  * among those available.
  * <p/>
- * The restriction provided by the constraint is only discrete.
- * TODO: it is possible to get a continuous restriction. Looks fun ?
+ * <p/>
+ * When the restriction is discrete, the constraint only ensure that the VMs are not spread over several
+ * group of nodes at the end of the reconfiguration process. However, this situation may occur temporary during
+ * the reconfiguration. Basically, this allows to select a new group of nodes for the VMs.
+ * <p/>
+ * When the restriction is continuous, the constraint must be already satisfied and will be satisfied at any moment.
+ * This disallow to select a new group of nodes for the VMs.
+ * <p/>
+ * By default, the constraint provides a discrete restriction.
  *
  * @author Fabien Hermenier
  */
 public class Among extends SatConstraint {
 
+    /**
+     * Set of set of nodes.
+     */
+    private Set<Set<UUID>> pGrps;
+
+
     public Among(Set<UUID> vms, Set<Set<UUID>> pGrps) {
         super(vms, null, false);
+        this.pGrps = pGrps;
+    }
+
+    /**
+     * Get the group of nodes that contains the given node.
+     *
+     * @param u the node identifier
+     * @return the group of nodes if exists, {@code null} otherwise
+     */
+    private Set<UUID> getAssociatedPGroup(UUID u) {
+        for (Set<UUID> pGrp : pGrps) {
+            if (pGrp.contains(u)) {
+                return pGrp;
+            }
+        }
+        return null;
     }
 
     @Override
     public Sat isSatisfied(Model i) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Mapping map = i.getMapping();
+        Set<UUID> choosedGroup = null;
+        for (UUID vm : getInvolvedVMs()) {
+            if (map.getRunningVMs().contains(vm)) {
+                Set<UUID> nodes = getAssociatedPGroup((map.getVMLocation(vm)));
+                if (nodes == null) {
+                    return Sat.UNSATISFIED;
+                } else if (choosedGroup == null) {
+                    choosedGroup = nodes;
+                } else if (!choosedGroup.equals(nodes)) {
+                    return Sat.UNSATISFIED;
+                }
+            }
+        }
+        return Sat.SATISFIED;
+    }
+
+    @Override
+    public Sat isSatisfied(ReconfigurationPlan p) {
+        Model mo = p.getOrigin();
+        if (!isSatisfied(mo).equals(Sat.SATISFIED)) {
+            return Sat.UNSATISFIED;
+        }
+        mo = p.getOrigin().clone();
+        for (Action a : p) {
+            if (!a.apply(mo)) {
+                return Sat.UNSATISFIED;
+            }
+            if (!isSatisfied(mo).equals(Sat.SATISFIED)) {
+                return Sat.UNSATISFIED;
+            }
+        }
+        return Sat.SATISFIED;
+    }
+
+    @Override
+    public Collection<UUID> getInvolvedNodes() {
+        Set<UUID> s = new HashSet<UUID>();
+        for (Set<UUID> x : pGrps) {
+            s.addAll(x);
+        }
+        return s;
+    }
+
+    /**
+     * Get the groups of nodes identifiers
+     *
+     * @return the groups
+     */
+    public Set<Set<UUID>> getGroupsOfNodes() {
+        return pGrps;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Among that = (Among) o;
+
+        return pGrps.equals(that.pGrps) &&
+                getInvolvedVMs().equals(that.getInvolvedVMs()) &&
+                isContinuous() == that.isContinuous();
+    }
+
+    @Override
+    public int hashCode() {
+        int result = pGrps.hashCode() * 31 + (isContinuous() ? 1 : 0);
+        result = 31 * result + getInvolvedVMs().hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder b = new StringBuilder("among(");
+        b.append("vms=").append(getInvolvedVMs());
+        b.append(", nodes=[");
+        for (Iterator<Set<UUID>> ite = pGrps.iterator(); ite.hasNext(); ) {
+            b.append(ite.next());
+            if (ite.hasNext()) {
+                b.append(", ");
+            }
+        }
+        b.append(']');
+        if (isContinuous()) {
+            b.append(", continuous");
+        } else {
+            b.append(", discrete");
+        }
+        return b.append(")").toString();
     }
 }

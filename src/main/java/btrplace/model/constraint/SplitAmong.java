@@ -72,7 +72,6 @@ public class SplitAmong extends SatConstraint {
             s.addAll(x);
         }
         return s;
-
     }
 
     /**

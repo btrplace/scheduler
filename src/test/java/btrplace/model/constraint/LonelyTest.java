@@ -49,6 +49,7 @@ public class LonelyTest {
         Assert.assertFalse(l.isContinuous());
         Assert.assertFalse(l.setContinuous(true));
         Assert.assertTrue(l.setContinuous(false));
+        System.out.println(l);
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})

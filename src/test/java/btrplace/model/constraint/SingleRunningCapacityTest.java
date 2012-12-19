@@ -51,6 +51,7 @@ public class SingleRunningCapacityTest {
         Assert.assertFalse(c.isContinuous());
         Assert.assertTrue(c.setContinuous(true));
         Assert.assertTrue(c.isContinuous());
+        System.out.println(c);
 
     }
 

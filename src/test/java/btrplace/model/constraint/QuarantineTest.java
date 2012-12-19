@@ -52,6 +52,7 @@ public class QuarantineTest {
         Assert.assertTrue(q.setContinuous(true));
         Assert.assertFalse(q.toString().contains("null"));
         Assert.assertEquals(q.isSatisfied(new DefaultModel(new DefaultMapping())), SatConstraint.Sat.UNDEFINED);
+        System.out.println(q);
     }
 
     @Test
