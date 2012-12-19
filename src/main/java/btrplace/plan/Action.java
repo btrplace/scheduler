@@ -125,7 +125,7 @@ public abstract class Action implements Event {
      *
      * @param k the hook
      * @param n the event to attach
-     * @return
+     * @return {@code true} iff the event was added
      */
     public boolean addEvent(Hook k, Event n) {
         List<Event> l = events.get(k);

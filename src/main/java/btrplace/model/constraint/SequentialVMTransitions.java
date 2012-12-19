@@ -103,8 +103,9 @@ public class SequentialVMTransitions extends SatConstraint {
             if (a instanceof VMStateTransition) {
                 VMStateTransition ste = (VMStateTransition) a;
                 UUID vm = ste.getVM();
-                if (ste.getNextState() == VMStateTransition.VMState.running
-                        || ste.getCurrentState() == VMStateTransition.VMState.running) {
+                if (ste.getCurrentState() != ste.getNextState() &&
+                        (ste.getNextState() == VMStateTransition.VMState.running
+                                || ste.getCurrentState() == VMStateTransition.VMState.running)) {
                     if (curVM.equals(vm)) {
                         //This is the VM we expected
                         curVM = seq.get(++vmIdx);
