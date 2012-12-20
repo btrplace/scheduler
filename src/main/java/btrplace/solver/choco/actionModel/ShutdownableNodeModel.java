@@ -78,7 +78,9 @@ public class ShutdownableNodeModel implements NodeActionModel {
         hostingEnd = rp.makeDuration("shutdownableNode(" + e + ").hostingEnd");
 
 
-        s.eq(hostingEnd, s.plus(rp.getEnd(), ChocoUtils.mult(s, isOffline, -d)));
+        IntDomainVar exceedent = rp.makeDuration("shutdownableNode(" + e + ").exceed");
+        s.post(new TimesXYZ(isOffline, s.makeConstantIntVar(-d), exceedent));
+        s.post(s.eq(hostingEnd, s.plus(rp.getEnd(), exceedent)));
 
 
         start = rp.makeDuration(rp.makeVarLabel("shutdownableNode(" + e + ").start"));

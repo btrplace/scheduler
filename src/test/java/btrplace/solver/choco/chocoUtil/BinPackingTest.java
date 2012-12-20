@@ -82,7 +82,6 @@ public class BinPackingTest {
         s.getConfiguration().putFalse(Configuration.STOP_AT_FIRST_SOLUTION);
         s.generateSearchStrategy();
         s.launch();
-        System.out.println(s.getNbSolutions());
         Assert.assertEquals((boolean) s.isFeasible(), nbSol != 0, "SAT");
         if (nbSol > 0) {
             Assert.assertEquals(s.getNbSolutions(), nbSol, "#SOL");

@@ -49,6 +49,10 @@ public final class ActionModelUtils {
         return slices;
     }
 
+    public static List<Slice> getDSlices(List<VMActionModel> l) {
+        return getDSlices(l.toArray(new VMActionModel[l.size()]));
+    }
+
     /**
      * Extract all the c-slices of a list of {@link ActionModel}.
      *
@@ -63,6 +67,10 @@ public final class ActionModelUtils {
             }
         }
         return slices;
+    }
+
+    public static List<Slice> getCSlices(List<VMActionModel> l) {
+        return getCSlices(l.toArray(new VMActionModel[l.size()]));
     }
 
     /**

@@ -126,7 +126,6 @@ public class CFenceTest {
         Model mo = new DefaultModel(map);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
-        System.out.println(p);
         Assert.assertTrue(p.getSize() > 0);
         Assert.assertTrue(p.iterator().next() instanceof MigrateVM);
         Assert.assertEquals(SatConstraint.Sat.SATISFIED, f.isSatisfied(p.getResult()));

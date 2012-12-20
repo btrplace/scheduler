@@ -146,7 +146,6 @@ public class CSpreadTest {
         cstr.add(new Fence(Collections.singleton(vm1), Collections.singleton(n2)));
         ReconfigurationPlan p = cra.solve(m, cstr);
         Assert.assertNotNull(p);
-        System.out.println(p);
         Mapping res = p.getResult().getMapping();
         Assert.assertEquals(1, p.getSize());
         Assert.assertNotSame(res.getVMLocation(vm1), res.getVMLocation(vm2));

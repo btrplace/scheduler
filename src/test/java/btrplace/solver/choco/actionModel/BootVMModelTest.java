@@ -121,7 +121,6 @@ public class BootVMModelTest {
 
         ReconfigurationPlan p = rp.solve(0, true);
         Assert.assertNotNull(p);
-        System.out.println(p);
         Iterator<Action> ite = p.iterator();
         BootVM b1 = (BootVM) ite.next();
         BootVM b2 = (BootVM) ite.next();

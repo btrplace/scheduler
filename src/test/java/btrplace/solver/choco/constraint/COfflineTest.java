@@ -63,6 +63,7 @@ public class COfflineTest {
         cra.setTimeLimit(-1);
         Collection<SatConstraint> x = Collections.singleton((SatConstraint) new Offline(map.getAllNodes()));
         ReconfigurationPlan plan = cra.solve(model, x);
+        Assert.assertNotNull(plan);
         Assert.assertEquals(plan.getSize(), 2);
         Assert.assertEquals(plan.getDuration(), 10);
         Model res = plan.getResult();

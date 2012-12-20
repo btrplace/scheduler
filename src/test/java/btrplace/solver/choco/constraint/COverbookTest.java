@@ -81,8 +81,6 @@ public class COverbookTest {
         cra.setTimeLimit(-1);
         ReconfigurationPlan p = cra.solve(mo, c);
         Assert.assertNotNull(p);
-        System.out.println(p);
-        System.out.println(p.getResult().getMapping());
         Assert.assertEquals(SatConstraint.Sat.SATISFIED, o.isSatisfied(p.getResult()));
     }
 
@@ -210,7 +208,7 @@ public class COverbookTest {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
-        System.out.println(p);
+
         Assert.assertNotNull(p);
     }
 
@@ -246,7 +244,6 @@ public class COverbookTest {
         cstrs.add(new Ready(Collections.singleton(vm2)));
         cstrs.add(new Preserve(Collections.singleton(vm1), "foo", 5));
         ReconfigurationPlan p = cra.solve(mo, cstrs);
-        System.out.println(p);
         Assert.assertNotNull(p);
         Assert.assertEquals(p.getSize(), 2);
         //An allocate action at the moment the vm2 leaved.

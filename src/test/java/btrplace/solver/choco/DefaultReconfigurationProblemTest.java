@@ -27,7 +27,10 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Unit tests for {@link DefaultReconfigurationProblem}.
@@ -343,11 +346,9 @@ public class DefaultReconfigurationProblemTest {
             int nIdx = rp.getNode(n);
             counts[nIdx] = rp.getNbRunningVMs()[nIdx].getVal();
         }
-        System.out.println(Arrays.toString(counts));
         for (UUID vm : rp.getFutureRunningVMs()) {
             VMActionModel mo = rp.getVMActions()[rp.getVM(vm)];
             int on = mo.getDSlice().getHoster().getInf();
-            System.out.println(mo + " " + on);
             counts[on]--;
         }
         for (int i = 0; i < counts.length; i++) {

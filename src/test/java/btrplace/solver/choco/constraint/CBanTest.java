@@ -76,7 +76,6 @@ public class CBanTest {
         cra.setTimeLimit(-1);
         ReconfigurationPlan p = cra.solve(mo, s);
         Assert.assertEquals(SatConstraint.Sat.SATISFIED, b.isSatisfied(p.getResult()));
-        System.out.println(p);
         Assert.assertEquals(3, p.getSize());
     }
 

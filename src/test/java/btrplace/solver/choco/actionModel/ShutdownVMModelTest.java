@@ -108,7 +108,6 @@ public class ShutdownVMModelTest {
 
         ReconfigurationPlan p = rp.solve(0, true);
         Assert.assertNotNull(p);
-        System.out.println(p);
         Iterator<Action> ite = p.iterator();
         ShutdownVM b1 = (ShutdownVM) ite.next();
         ShutdownVM b2 = (ShutdownVM) ite.next();

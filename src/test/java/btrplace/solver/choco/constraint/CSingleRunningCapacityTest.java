@@ -103,7 +103,6 @@ public class CSingleRunningCapacityTest {
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
-        System.out.println(plan);
         Iterator<Action> ite = plan.getActions().iterator();
         Assert.assertEquals(2, plan.getSize());
         Action a1 = ite.next();

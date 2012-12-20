@@ -109,7 +109,6 @@ public class SuspendVMModelTest {
         ReconfigurationPlan p = rp.solve(0, true);
 
         Assert.assertNotNull(p);
-        System.out.println(p);
         Iterator<Action> ite = p.iterator();
         SuspendVM b1 = (SuspendVM) ite.next();
         SuspendVM b2 = (SuspendVM) ite.next();

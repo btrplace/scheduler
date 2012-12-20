@@ -94,7 +94,6 @@ public class KillVMActionModelTest {
         Assert.assertTrue(rp.getVMAction(vm1).getCSlice().getHoster().isInstantiatedTo(rp.getNode(n1)));
         ReconfigurationPlan p = rp.solve(0, true);
         Assert.assertNotNull(p);
-        System.out.println(p);
 
         for (Action a : p) {
             KillVM vma = (KillVM) a;

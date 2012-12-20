@@ -93,7 +93,6 @@ public class RelocatableVMModelTest {
         Assert.assertEquals(n1, a.getSourceNode());
         Assert.assertEquals(n2, a.getDestinationNode());
         Assert.assertEquals(vm, a.getVM());
-        System.out.println(p);
     }
 
     @Test
@@ -164,6 +163,5 @@ public class RelocatableVMModelTest {
         cstrs.add(pr);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
-        System.out.println(p);
     }
 }

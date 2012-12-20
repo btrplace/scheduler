@@ -80,7 +80,6 @@ public class ResumeVMModelTest {
 
         ReconfigurationPlan p = rp.solve(0, true);
         Assert.assertNotNull(p);
-        System.out.println(p);
         ResumeVM a = (ResumeVM) p.getActions().iterator().next();
 
         UUID dest = rp.getNode(m.getDSlice().getHoster().getVal());
@@ -124,7 +123,6 @@ public class ResumeVMModelTest {
 
         ReconfigurationPlan p = rp.solve(0, true);
         Assert.assertNotNull(p);
-        System.out.println(p);
         Iterator<Action> ite = p.iterator();
         ResumeVM b1 = (ResumeVM) ite.next();
         ResumeVM b2 = (ResumeVM) ite.next();
