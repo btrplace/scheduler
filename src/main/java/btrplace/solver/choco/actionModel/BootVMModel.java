@@ -65,11 +65,11 @@ public class BootVMModel implements VMActionModel {
 
         int d = rp.getDurationEvaluators().evaluate(BootVM.class, e);
         this.rp = rp;
-        start = rp.makeDuration(rp.makeVarLabel("bootVM(" + e + ").start"), 0, rp.getEnd().getSup() - d);
+        start = rp.makeDuration("bootVM(" + e + ").start", 0, rp.getEnd().getSup() - d);
         end = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel("bootVM(" + e + ").end"), start, d);
-        duration = rp.makeDuration(rp.makeVarLabel("bootVM.duration(" + e + ")"), d, d);
+        duration = rp.makeDuration("bootVM.duration(" + e + ")", d, d);
         dSlice = new SliceBuilder(rp, e, "bootVM(" + e + ").dSlice").setStart(start)
-                .setDuration(rp.makeDuration(rp.makeVarLabel("bootVM(" + e + ").dSlice_duration"), d, rp.getEnd().getSup()))
+                .setDuration(rp.makeDuration("bootVM(" + e + ").dSlice_duration", d, rp.getEnd().getSup()))
                 .build();
         CPSolver s = rp.getSolver();
         s.post(s.leq(start, rp.getEnd()));

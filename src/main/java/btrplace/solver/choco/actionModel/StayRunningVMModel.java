@@ -52,14 +52,14 @@ public class StayRunningVMModel implements VMActionModel {
     public StayRunningVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
         this.vm = e;
         this.rp = rp;
-        IntDomainVar host = rp.makeCurrentHost(rp.makeVarLabel("stayRunningVM(" + e + ").host"), e);
+        IntDomainVar host = rp.makeCurrentHost("stayRunningVM(" + e + ").host", e);
         cSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").cSlice")
                 .setHoster(host)
-                .setEnd(rp.makeDuration(rp.makeVarLabel("stayRunningVM(" + e + ").cSlice_end")))
+                .setEnd(rp.makeDuration("stayRunningVM(" + e + ").cSlice_end"))
                 .build();
         dSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").dSlice")
                 .setHoster(host)
-                .setStart(rp.makeDuration(rp.makeVarLabel("stayRunningVM(" + e + ").dSlice_start")))
+                .setStart(rp.makeDuration("stayRunningVM(" + e + ").dSlice_start"))
                 .build();
         CPSolver s = rp.getSolver();
         s.post(s.eq(cSlice.getEnd(), dSlice.getStart()));

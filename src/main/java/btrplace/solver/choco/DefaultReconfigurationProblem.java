@@ -30,10 +30,15 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
 import btrplace.solver.choco.chocoUtil.BinPacking;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.search.integer.branching.AssignVar;
+import choco.cp.solver.search.integer.valselector.MinVal;
+import choco.cp.solver.search.integer.varselector.StaticVarOrder;
+import choco.cp.solver.search.set.StaticSetVarOrder;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.ISolutionPool;
 import choco.kernel.solver.search.SolutionPoolFactory;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.variables.set.SetVar;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import org.slf4j.Logger;
@@ -168,6 +173,21 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 }
             }
         }
+
+        //Just in case, a default search heuristic for free variables
+        IntDomainVar[] foo = new IntDomainVar[solver.getNbIntVars()];
+        SetVar[] bar = new SetVar[solver.getNbSetVars()];
+
+        for (int i = 0; i < foo.length; i++) {
+            foo[i] = solver.getIntVarQuick(i);
+        }
+
+        for (int i = 0; i < bar.length; i++) {
+            bar[i] = solver.getSetVarQuick(i);
+        }
+
+        solver.addGoal(new AssignVar(new StaticVarOrder(solver, foo), new MinVal()));
+        solver.addGoal(new AssignVar(new StaticSetVarOrder(solver, bar), new MinVal()));
 
         //Let's rock
         if (timeLimit > 0) {
@@ -556,7 +576,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public IntDomainVar makeHostVariable(String n) {
-        return solver.createEnumIntVar(n, 0, nodes.length - 1);
+        return solver.createEnumIntVar(useLabels ? n : "", 0, nodes.length - 1);
     }
 
     @Override
@@ -565,7 +585,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (idx < 0) {
             throw new SolverException(model, "Unknown VM '" + vmId + "'");
         }
-        return makeCurrentNode(n, model.getMapping().getVMLocation(vmId));
+        return makeCurrentNode(useLabels ? n : "", model.getMapping().getVMLocation(vmId));
     }
 
     @Override
@@ -574,12 +594,12 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (idx < 0) {
             throw new SolverException(model, "Unknown node '" + nId + "'");
         }
-        return solver.makeConstantIntVar(n, idx);
+        return solver.makeConstantIntVar(useLabels ? n : "", idx);
     }
 
     @Override
     public IntDomainVar makeDuration(String n) {
-        return solver.createBoundIntVar(n, 0, end.getSup());
+        return solver.createBoundIntVar(useLabels ? n : "", 0, end.getSup());
     }
 
     @Override
@@ -587,7 +607,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (lb < 0 || ub < lb) {
             throw new SolverException(model, "Unable to create duration '" + n + "': invalid bounds");
         }
-        return solver.createBoundIntVar(n, lb, ub < end.getSup() ? ub : end.getSup());
+        return solver.createBoundIntVar(useLabels ? n : "", lb, ub < end.getSup() ? ub : end.getSup());
     }
 
     @Override

@@ -70,9 +70,9 @@ public class BootableNodeModel implements NodeActionModel {
         s.post(s.neq(isOffline, isOnline));
         s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNode(nId)], 0));
         start = rp.getStart();
-        end = rp.makeDuration(rp.makeVarLabel("bootableNode(" + nId + ").end"));
+        end = rp.makeDuration("bootableNode(" + nId + ").end");
 
-        hostingStart = rp.makeDuration(rp.makeVarLabel("bootableNode(" + nId + ").hostingStart"));
+        hostingStart = rp.makeDuration("bootableNode(" + nId + ").hostingStart");
         s.post(new TimesXYZ(isOnline, hostingStart, end));
         //s.post(new TimesXYZ(isOffline, rp.getEnd(), hostingStart));
         s.post(s.leq(hostingEnd, rp.getEnd()));
@@ -86,7 +86,7 @@ public class BootableNodeModel implements NodeActionModel {
          */
         s.post(new ElementV(new IntDomainVar[]{rp.getEnd(), cDur, isOnline, hostingStart}, 0, s.getEnvironment()));
         hostingEnd = rp.getEnd();
-        duration = rp.makeDuration(rp.makeVarLabel("bootableNode(" + nId + ").duration"));
+        duration = rp.makeDuration("bootableNode(" + nId + ").duration");
         s.post(s.eq(duration, CPSolver.minus(end, start)));
     }
 

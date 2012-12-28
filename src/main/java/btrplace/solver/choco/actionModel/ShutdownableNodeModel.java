@@ -76,7 +76,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
         //The node is already online, so it can host VMs at the beginning of the RP
         hostingStart = rp.getStart();
         //The moment the node can no longer host VMs varies depending on its next state
-        hostingEnd = rp.makeDuration(rp.makeVarLabel("shutdownableNode(" + e + ").hostingEnd"));
+        hostingEnd = rp.makeDuration("shutdownableNode(" + e + ").hostingEnd");
 
         //The duration between the moment the node can not host VMs anymore and the end of the RP
         //online: hostingEnd == RP.end
@@ -85,10 +85,10 @@ public class ShutdownableNodeModel implements NodeActionModel {
         s.post(s.eq(hostingEnd, CPSolver.minus(rp.getEnd(), duration)));
         s.post(new FastIFFEq(isOnline, duration, 0));
 
-        start = rp.makeDuration(rp.makeVarLabel("shutdownableNode(" + e + ").start"));
+        start = rp.makeDuration("shutdownableNode(" + e + ").start");
         s.post(s.eq(start, ChocoUtils.mult(s, isOffline, hostingEnd)));
 
-        end = rp.makeDuration(rp.makeVarLabel("shutdownableNode(" + e + ").end"));
+        end = rp.makeDuration("shutdownableNode(" + e + ").end");
         s.post(s.eq(end, s.plus(start, duration)));
         s.post(s.leq(duration, rp.getEnd()));
         s.post(s.leq(end, rp.getEnd()));

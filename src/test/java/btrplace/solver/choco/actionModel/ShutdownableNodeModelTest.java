@@ -98,7 +98,7 @@ public class ShutdownableNodeModelTest {
                 .build();
         ShutdownableNodeModel ma = (ShutdownableNodeModel) rp.getNodeAction(n1);
         ma.getState().setVal(0);
-        System.out.println(rp.getSolver().pretty());
+
         ReconfigurationPlan p = rp.solve(0, true);
         Assert.assertNotNull(p);
         Assert.assertEquals(ma.getDuration().getVal(), 5);
@@ -130,7 +130,7 @@ public class ShutdownableNodeModelTest {
                 .build();
         ShutdownableNodeModel ma = (ShutdownableNodeModel) rp.getNodeAction(n1);
         ma.getState().setVal(0);
-        //System.err.println(rp.getSolver().pretty());
+
         ReconfigurationPlan p = rp.solve(0, true);
         Assert.assertNotNull(p);
         Assert.assertEquals(ma.getState().getVal(), 0);
