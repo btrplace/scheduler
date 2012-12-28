@@ -24,10 +24,9 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.NodeActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.chocoUtil.ChocoUtils;
+import btrplace.solver.choco.chocoUtil.FastIFFEq;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.integer.TimesXYZ;
-import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.UUID;
@@ -71,31 +70,32 @@ public class ShutdownableNodeModel implements NodeActionModel {
         //new BoolVarNot(s, rp.makeVarLabel("shutdownnableNode(" + e + ").offline"), (BooleanVarImpl) isOnline);
 
         int d = rp.getDurationEvaluators().evaluate(ShutdownNode.class, e);
-        //Duration is either 0 (no shutdown) or 'd' (shutdown)
+        //Action duration is either 0 (no shutdown) or 'd' (shutdown)
         duration = s.createEnumIntVar(rp.makeVarLabel("shutdownableNode(" + e + ").duration"), new int[]{0, d});
 
+        //The node is already online, so it can host VMs at the beginning of the RP
         hostingStart = rp.getStart();
-        hostingEnd = rp.makeDuration("shutdownableNode(" + e + ").hostingEnd");
+        //The moment the node can no longer host VMs varies depending on its next state
+        hostingEnd = rp.makeDuration(rp.makeVarLabel("shutdownableNode(" + e + ").hostingEnd"));
 
-
-        IntDomainVar exceedent = rp.makeDuration("shutdownableNode(" + e + ").exceed");
-        s.post(new TimesXYZ(isOffline, s.makeConstantIntVar(-d), exceedent));
-        s.post(s.eq(hostingEnd, s.plus(rp.getEnd(), exceedent)));
-
+        //The duration between the moment the node can not host VMs anymore and the end of the RP
+        //online: hostingEnd == RP.end
+        //offline: hostingEnd == RP.end - duration
+        //duration = {O, K}
+        s.post(s.eq(hostingEnd, CPSolver.minus(rp.getEnd(), duration)));
+        s.post(new FastIFFEq(isOnline, duration, 0));
 
         start = rp.makeDuration(rp.makeVarLabel("shutdownableNode(" + e + ").start"));
         s.post(s.eq(start, ChocoUtils.mult(s, isOffline, hostingEnd)));
 
         end = rp.makeDuration(rp.makeVarLabel("shutdownableNode(" + e + ").end"));
-        IntDomainVar endIfGoesOffline = new IntDomainVarAddCste(s, rp.makeVarLabel("endIfOffline"), hostingEnd, d);
-        s.post(new TimesXYZ(isOffline, endIfGoesOffline, end));
+        s.post(s.eq(end, s.plus(start, duration)));
         s.post(s.leq(duration, rp.getEnd()));
         s.post(s.leq(end, rp.getEnd()));
         s.post(s.leq(hostingStart, rp.getEnd()));
         s.post(s.leq(hostingEnd, rp.getEnd()));
         s.post(s.leq(start, rp.getEnd()));
 
-        s.post(s.eq(duration, CPSolver.minus(end, start)));
         /**
          * If it is state to shutdown the node, then the duration of the dSlice is not null
          */

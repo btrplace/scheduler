@@ -25,6 +25,8 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -87,6 +89,7 @@ public class CPreserveTest {
      */
     @Test
     public void testPreserveWithoutOverbook() throws SolverException {
+        ChocoLogging.setVerbosity(Verbosity.SEARCH);
         Mapping map = new DefaultMapping();
         UUID n1 = UUID.randomUUID();
         UUID n2 = UUID.randomUUID();
@@ -107,6 +110,7 @@ public class CPreserveTest {
 
         Preserve pr = new Preserve(map.getAllVMs(), "cpu", 5);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.labelVariables(true);
         Model mo = new DefaultModel(map);
         mo.attach(rc);
         List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
