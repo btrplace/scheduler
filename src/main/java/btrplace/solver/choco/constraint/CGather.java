@@ -52,33 +52,29 @@ public class CGather implements ChocoSatConstraint {
                 l.add(dSlice);
             }
         }
-
-        CPSolver s = new CPSolver();
+        CPSolver s = rp.getSolver();
         for (int i = 0; i < l.size(); i++) {
             for (int j = 0; j < i; j++) {
                 Slice s1 = l.get(i);
                 Slice s2 = l.get(j);
                 IntDomainVar i1 = s1.getHoster();
-                IntDomainVar i2 = s1.getHoster();
+                IntDomainVar i2 = s2.getHoster();
                 if (i1.isInstantiated() && i2.isInstantiated()) {
                     if (i1.getVal() != i2.getVal()) {
                         throw new SolverException(rp.getSourceModel(), "Unable to force VM '" + s1.getSubject() + "' to be co-located with '" + s2.getSubject() + "'");
                     }
-                }
-                if (i1.isInstantiated()) {
-                    try {
-                        i2.setVal(i1.getVal());
-                    } catch (ContradictionException ex) {
-                        throw new SolverException(rp.getSourceModel(), "Unable to force VM '" + s1.getSubject() + "' to be co-located with '" + s2.getSubject() + "'");
-                    }
-                } else if (i2.isInstantiated()) {
-                    try {
-                        i1.setVal(i2.getVal());
-                    } catch (ContradictionException ex) {
-                        throw new SolverException(rp.getSourceModel(), "Unable to force VM '" + s1.getSubject() + "' to be co-located with '" + s2.getSubject() + "'");
-                    }
                 } else {
-                    s.post(s.eq(i1, i2));
+                    try {
+                        if (i1.isInstantiated()) {
+                            i2.setVal(i1.getVal());
+                        } else if (i2.isInstantiated()) {
+                            i1.setVal(i2.getVal());
+                        } else {
+                            s.post(s.eq(i1, i2));
+                        }
+                    } catch (ContradictionException ex) {
+                        throw new SolverException(rp.getSourceModel(), "Unable to force VM '" + s1.getSubject() + "' to be co-located with '" + s2.getSubject() + "'");
+                    }
                 }
             }
         }
