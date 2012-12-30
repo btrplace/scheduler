@@ -67,7 +67,6 @@ public class CGatherTest {
 
     @Test
     public void testWithRunningVMs() throws SolverException {
-        //ChocoLogging.setVerbosity(Verbosity.SEARCH);
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
@@ -88,5 +87,24 @@ public class CGatherTest {
         Assert.assertEquals(g.isSatisfied(res), SatConstraint.Sat.SATISFIED);
         Assert.assertEquals(g.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
         Assert.assertEquals(res.getMapping().getVMLocation(vm1), res.getMapping().getVMLocation(vm2));
+    }
+
+    @Test
+    public void testGetMisplaced() {
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addReadyVM(vm1);
+        map.addRunningVM(vm2, n2);
+        Model mo = new DefaultModel(map);
+        Gather g = new Gather(map.getAllVMs());
+        CGather c = new CGather(g);
+        Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
+        map.addRunningVM(vm1, n2);
+        Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
+
+        map.addRunningVM(vm1, n1);
+        Assert.assertEquals(c.getMisPlacedVMs(mo), map.getAllVMs());
+
     }
 }
