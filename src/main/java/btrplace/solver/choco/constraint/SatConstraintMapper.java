@@ -42,6 +42,10 @@ public class SatConstraintMapper {
         builders = new HashMap<Class<? extends SatConstraint>, ChocoSatConstraintBuilder>();
 
         builders.put(Spread.class, new CSpread.Builder());
+        builders.put(Split.class, new CSplit.Builder());
+        builders.put(SplitAmong.class, new CSplitAmong.Builder());
+        builders.put(Among.class, new CAmong.Builder());
+        builders.put(Quarantine.class, new CQuarantine.Builder());
         builders.put(Ban.class, new CBan.Builder());
         builders.put(Fence.class, new CFence.Builder());
         builders.put(Online.class, new COnline.Builder());
