@@ -42,14 +42,6 @@ import java.util.*;
  */
 public class CSingleRunningCapacityTest {
 
-
-    /*@Test
-    public void testInstantiation() {
-        SingleRunningCapacity b = new SingleRunningCapacity(Collections.singleton(UUID.randomUUID()), 1);
-        CSingleRunningCapacity c = new CSingleRunningCapacity(b);
-        Assert.assertEquals(b, c.getAssociatedConstraint());
-    } */
-
     @Test
     public void testDiscreteResolution() throws SolverException {
         UUID vm1 = UUID.randomUUID();
