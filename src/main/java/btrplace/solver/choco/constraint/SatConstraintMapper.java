@@ -62,6 +62,7 @@ public class SatConstraintMapper {
         builders.put(Sleeping.class, new CSleeping.Builder());
         builders.put(Killed.class, new CKilled.Builder());
         builders.put(Gather.class, new CGather.Builder());
+        builders.put(Lonely.class, new CLonely.Builder());
         builders.put(SequentialVMTransitions.class, new CSequentialVMTransitions.Builder());
     }
 
