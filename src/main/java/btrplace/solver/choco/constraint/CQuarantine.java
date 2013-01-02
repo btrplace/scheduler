@@ -18,16 +18,18 @@
 
 package btrplace.solver.choco.constraint;
 
+import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.model.constraint.Ban;
 import btrplace.model.constraint.Quarantine;
+import btrplace.model.constraint.Root;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoSatConstraint;
 import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Choco implementation of {@link btrplace.model.constraint.Quarantine}.
@@ -44,12 +46,31 @@ public class CQuarantine implements ChocoSatConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        // It is just a composition of a root constraint on the VMs on the given nodes (the zone)
+        // plus a ban on the other VMs to prevent them for being hosted in the zone
+        Mapping map = rp.getSourceModel().getMapping();
+        Set<UUID> toRoot = new HashSet<UUID>();
+        Set<UUID> toBan = new HashSet<UUID>();
+        Collection<UUID> zone = cstr.getInvolvedNodes();
+        for (UUID vm : rp.getFutureRunningVMs()) {
+            if (zone.contains(map.getVMLocation(vm))) {
+                toRoot.add(vm);
+            } else {
+                toBan.add(vm);
+            }
+        }
+
+        map.getRunningVMs(cstr.getInvolvedNodes());
+
+        CRoot r = new CRoot(new Root(toRoot));
+        CBan b = new CBan(new Ban(toBan, new HashSet<UUID>(zone)));
+        return (r.inject(rp) && b.inject(rp));
+
     }
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return Collections.emptySet();
     }
 
 
