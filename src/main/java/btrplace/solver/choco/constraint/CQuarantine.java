@@ -40,6 +40,11 @@ public class CQuarantine implements ChocoSatConstraint {
 
     private Quarantine cstr;
 
+    /**
+     * Make a new constraint.
+     *
+     * @param q the quarantine constraint to rely on
+     */
     public CQuarantine(Quarantine q) {
         this.cstr = q;
     }

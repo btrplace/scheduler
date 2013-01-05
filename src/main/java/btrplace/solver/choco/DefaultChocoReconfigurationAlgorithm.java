@@ -189,7 +189,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
             if (cstr.isContinuous() && !cstr.isSatisfied(p).equals(SatConstraint.Sat.SATISFIED)) {
                 rp.getLogger().error("Unsatisfied continuous constraint: {}", cstr.toString());
                 return false;
-            } else if (!cstr.isSatisfied(res).equals(SatConstraint.Sat.SATISFIED)) {
+            } else if (!cstr.isContinuous() && !cstr.isSatisfied(res).equals(SatConstraint.Sat.SATISFIED)) {
                 rp.getLogger().error("Unsatisfied discrete constraint: {}", cstr.toString());
                 return false;
             }

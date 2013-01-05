@@ -18,6 +18,7 @@
 
 package btrplace.solver.choco.constraint;
 
+import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Lonely;
@@ -25,9 +26,12 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoSatConstraint;
 import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.Slice;
+import btrplace.solver.choco.chocoUtil.Disjoint;
+import choco.cp.solver.CPSolver;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Choco implementation of {@link btrplace.model.constraint.Lonely}.
@@ -38,18 +42,58 @@ public class CLonely implements ChocoSatConstraint {
 
     private Lonely cstr;
 
-    public CLonely(Lonely q) {
-        this.cstr = q;
+    /**
+     * Make a new constraint.
+     *
+     * @param c the lonely constraint to rely on
+     */
+    public CLonely(Lonely c) {
+        this.cstr = c;
     }
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        //Remove non future-running VMs
+        List<IntDomainVar> mine = new ArrayList<IntDomainVar>();
+        List<IntDomainVar> otherVMs = new ArrayList<IntDomainVar>();
+        Collection<UUID> vms = cstr.getInvolvedVMs();
+        for (UUID vm : rp.getFutureRunningVMs()) {
+            Slice s = rp.getVMAction(vm).getDSlice();
+            if (vms.contains(vm)) {
+                mine.add(s.getHoster());
+            } else {
+                otherVMs.add(s.getHoster());
+            }
+        }
+        //Link the assignment variables with the set
+        CPSolver s = rp.getSolver();
+        s.post(new Disjoint(s.getEnvironment(), mine.toArray(new IntDomainVar[mine.size()]),
+                otherVMs.toArray(new IntDomainVar[otherVMs.size()]),
+                rp.getNodes().length));
+        return true;
     }
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Set<UUID> bad = new HashSet<UUID>();
+        Set<UUID> hosters = new HashSet<UUID>();
+        Collection<UUID> vms = cstr.getInvolvedVMs();
+        Mapping map = m.getMapping();
+        for (UUID vm : vms) {
+            if (map.getRunningVMs().contains(vm)) {
+                hosters.add(map.getVMLocation(vm));
+            }
+        }
+        for (UUID n : hosters) { //Every used node that host a VMs that is not a part of the constraint
+            //is a bad node. All the hosted VMs are candidate for relocation. Not optimal, but safe
+            for (UUID vm : map.getRunningVMs(n)) {
+                if (!vms.contains(vm)) {
+                    bad.addAll(map.getRunningVMs(n));
+                    break;
+                }
+            }
+        }
+        return bad;
     }
 
 
