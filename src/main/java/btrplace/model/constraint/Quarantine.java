@@ -54,7 +54,7 @@ public class Quarantine extends SatConstraint {
     @Override
     public Sat isSatisfied(ReconfigurationPlan plan) {
         if (plan.getSize() == 0) {
-            return Sat.UNDEFINED;
+            return Sat.SATISFIED;
         }
         Model src = plan.getOrigin();
         Model mo = plan.getOrigin().clone();
