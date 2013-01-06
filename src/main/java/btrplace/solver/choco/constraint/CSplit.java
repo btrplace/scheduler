@@ -38,6 +38,11 @@ public class CSplit implements ChocoSatConstraint {
 
     private Split cstr;
 
+    /**
+     * Make a new constraint.
+     *
+     * @param s the constraint to rely on
+     */
     public CSplit(Split s) {
         this.cstr = s;
     }

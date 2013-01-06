@@ -38,6 +38,11 @@ public class CAmong implements ChocoSatConstraint {
 
     private Among cstr;
 
+    /**
+     * Make a new constraint.
+     *
+     * @param a the constraint to rely on
+     */
     public CAmong(Among a) {
         cstr = a;
     }

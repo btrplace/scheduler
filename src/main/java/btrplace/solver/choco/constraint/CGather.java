@@ -38,6 +38,11 @@ public class CGather implements ChocoSatConstraint {
 
     private Gather cstr;
 
+    /**
+     * Make a new constraint.
+     *
+     * @param g the constraint to rely on
+     */
     public CGather(Gather g) {
         cstr = g;
     }
