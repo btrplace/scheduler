@@ -21,13 +21,16 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Among;
+import btrplace.model.constraint.Fence;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoSatConstraint;
 import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.chocoUtil.MyElement;
+import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Choco implementation of the {@link btrplace.model.constraint.Among} constraint.
@@ -49,7 +52,75 @@ public class CAmong implements ChocoSatConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+
+        List<Set<UUID>> groups = new ArrayList<Set<UUID>>();
+        groups.addAll(cstr.getGroupsOfNodes());
+        List<UUID> allNodes = new ArrayList<UUID>(cstr.getInvolvedNodes());
+        Collection<UUID> vms = cstr.getInvolvedVMs();
+        if (groups.size() == 1 && !groups.iterator().next().equals(rp.getSourceModel().getMapping().getAllNodes())) {
+            new CFence(new Fence(new HashSet<UUID>(vms), groups.get(0))).inject(rp);
+        } else {
+
+            //Get only the future running VMs
+            Set<UUID> runnings = new HashSet<UUID>();
+            for (UUID vm : vms) {
+                if (rp.getFutureRunningVMs().contains(vm)) {
+                    runnings.add(vm);
+                }
+            }
+
+            //Now, we create a group variable & all that stuff
+            IntDomainVar vmGrpId = rp.getSolver().createEnumIntVar(rp.makeVarLabel("among#pGrp"), 0, groups.size() - 1);
+            int gIdx = -1;
+            //First pass on the group of VMs to check if a VM is already placed
+            for (UUID vm : vms) {
+                if (rp.getFutureRunningVMs().contains(vm)) {
+                    IntDomainVar vAssign = rp.getVMAction(vm).getDSlice().getHoster();
+                    //If one of the VM is already placed, no need for the constraint
+                    if (vAssign.isInstantiated()) {
+                        //Get the group of nodes that match the selected node
+                        int g = getGroup(rp.getNode(vAssign.getVal()));
+                        if (gIdx == -1) {
+                            gIdx = g;
+                        } else if (gIdx != g) {
+                            rp.getLogger().error("The VMs in '{}' spread over multiple group of nodes", vms);
+                            return false;
+                        }
+                    }
+                }
+            }
+            if (gIdx == -1) {
+                //A table to indicate the group each node belong, -1 for no group
+                int[] grps = new int[rp.getNodes().length];
+                for (int i = 0; i < grps.length; i++) {
+                    UUID n = rp.getNodes()[i];
+                    int idx = getGroup(n);
+                    if (idx >= 0) {
+                        grps[i] = idx;
+                    }
+                }
+                new CFence(new Fence(runnings, new HashSet<UUID>(allNodes))).inject(rp);
+                for (UUID vm : runnings) {
+                    IntDomainVar assign = rp.getVMAction(vm).getDSlice().getHoster();
+                    SConstraint c = new MyElement(assign, grps, vmGrpId, 0, MyElement.Sort.detect);
+                    rp.getSolver().post(c);
+                }
+            } else {
+                new CFence(new Fence(runnings, groups.get(vmGrpId.getVal()))).inject(rp);
+            }
+        }
+        return true;
+    }
+
+    private int getGroup(UUID n) {
+        int i = 0;
+        for (Set<UUID> pGrp : cstr.getGroupsOfNodes()) {
+            if (pGrp.contains(n)) {
+                return i;
+            }
+            i++;
+        }
+        return -1;
     }
 
     @Override
