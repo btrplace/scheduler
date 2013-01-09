@@ -119,7 +119,7 @@ public class CAmongTest {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
         cstrs.add(new Running(map.getAllVMs()));
-        cstrs.add(new Fence(Collections.singleton(vm2), Collections.singleton(n3)));
+        cstrs.add(new Fence(Collections.singleton(vm2), s));
         cstrs.add(a);
 
         Model mo = new DefaultModel(map);

@@ -115,8 +115,8 @@ public class CAmong implements ChocoSatConstraint {
                 vmGrpId = rp.getSolver().makeConstantIntVar(rp.makeVarLabel("among#pGrp"), 0);
             } else {
                 //Now, we create a variable to indicate on which group of nodes the VMs will be
-                vmGrpId = rp.getSolver().createEnumIntVar(rp.makeVarLabel("among#pGrp"), 0, groups.size() - 1);
                 if (nextGrp == -1) {
+                    vmGrpId = rp.getSolver().createEnumIntVar(rp.makeVarLabel("among#pGrp"), 0, groups.size() - 1);
                     //grp: A table to indicate the group each node belong to, -1 for no group
                     int[] grps = new int[rp.getNodes().length];
                     Set<UUID> possibleNodes = new HashSet<UUID>();
@@ -137,6 +137,7 @@ public class CAmong implements ChocoSatConstraint {
                         rp.getSolver().post(c);
                     }
                 } else {
+                    vmGrpId = rp.getSolver().makeConstantIntVar(rp.makeVarLabel("among#pGrp"), nextGrp);
                     //As the group is already known, it's now just a fence constraint
                     new CFence(new Fence(runnings, groups.get(nextGrp))).inject(rp);
                 }
