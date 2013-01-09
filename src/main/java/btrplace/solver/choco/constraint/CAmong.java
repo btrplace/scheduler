@@ -18,6 +18,7 @@
 
 package btrplace.solver.choco.constraint;
 
+import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Among;
@@ -53,64 +54,79 @@ public class CAmong implements ChocoSatConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
 
+        int nextGrp = -1;
+        int curGrp = -1;
+
         List<Set<UUID>> groups = new ArrayList<Set<UUID>>();
         groups.addAll(cstr.getGroupsOfNodes());
-        Collection<UUID> vms = cstr.getInvolvedVMs();
-        if (groups.size() == 1 && !groups.iterator().next().equals(rp.getSourceModel().getMapping().getAllNodes())) {
-            //Only 1 group of nodes, it's just a fence constraint
-            new CFence(new Fence(new HashSet<UUID>(vms), groups.get(0))).inject(rp);
-        } else {
-            //Get only the future running VMs
-            Set<UUID> runnings = new HashSet<UUID>();
-            for (UUID vm : vms) {
-                if (rp.getFutureRunningVMs().contains(vm)) {
-                    runnings.add(vm);
+
+        //Browse every VM, check if one is already placed and isolate future runnings
+        Set<UUID> runnings = new HashSet<UUID>();
+        Mapping src = rp.getSourceModel().getMapping();
+        for (UUID vm : cstr.getInvolvedVMs()) {
+            if (rp.getFutureRunningVMs().contains(vm)) { //The VM will be running
+                runnings.add(vm);
+                IntDomainVar vAssign = rp.getVMAction(vm).getDSlice().getHoster();
+                //If one of the VM is already placed, no need for the constraint, the group will be known
+                if (vAssign.isInstantiated()) {
+                    //Get the group of nodes that match the selected node
+                    int g = getGroup(rp.getNode(vAssign.getVal()));
+                    if (g == -1) {
+                        rp.getLogger().error("The VM in '{}' will be placed out of any of the allowed group", vm);
+                        return false;
+                    } else if (nextGrp == -1) {
+                        nextGrp = g;
+                    } else if (nextGrp != g) {
+                        rp.getLogger().error("The VMs in '{}' cannot be spread over multiple group of nodes", cstr.getInvolvedVMs());
+                        return false;
+                    }
                 }
             }
+            if (src.getRunningVMs().contains(vm) && cstr.isContinuous()) { //The VM is already running
+                UUID curNode = src.getVMLocation(vm);
+                int g = getGroup(curNode);
+                if (curGrp == -1) {
+                    curGrp = g;
+                } else if (curGrp != g) {
+                    rp.getLogger().error("The VMs in '{}' are already spreaded over multiple group of nodes", cstr.getInvolvedVMs());
+                    return false;
+                }
+            }
+        }
 
-            //Now, we create a variable to indicate on which group of nodes the VMs will be
-            IntDomainVar vmGrpId = rp.getSolver().createEnumIntVar(rp.makeVarLabel("among#pGrp"), 0, groups.size() - 1);
-            int gIdx = -1;
-            //First pass on the group of VMs to check if a VM is already placed
-            for (UUID vm : vms) {
-                if (rp.getFutureRunningVMs().contains(vm)) {
-                    IntDomainVar vAssign = rp.getVMAction(vm).getDSlice().getHoster();
-                    //If one of the VM is already placed, no need for the constraint
-                    if (vAssign.isInstantiated()) {
-                        //Get the group of nodes that match the selected node
-                        int g = getGroup(rp.getNode(vAssign.getVal()));
-                        if (gIdx == -1) {
-                            gIdx = g;
-                        } else if (gIdx != g) {
-                            rp.getLogger().error("The VMs in '{}' cannot spread over multiple group of nodes", vms);
-                            return false;
+        if (cstr.isContinuous() && curGrp != -1) {
+            return new CFence(new Fence(runnings, groups.get(curGrp))).inject(rp);
+        } else {
+            if (groups.size() == 1 && !groups.iterator().next().equals(rp.getSourceModel().getMapping().getAllNodes())) {
+                //Only 1 group of nodes, it's just a fence constraint
+                new CFence(new Fence(new HashSet<UUID>(runnings), groups.get(0))).inject(rp);
+            } else {
+                //Now, we create a variable to indicate on which group of nodes the VMs will be
+                IntDomainVar vmGrpId = rp.getSolver().createEnumIntVar(rp.makeVarLabel("among#pGrp"), 0, groups.size() - 1);
+                if (nextGrp == -1) {
+                    //grp: A table to indicate the group each node belong to, -1 for no group
+                    int[] grps = new int[rp.getNodes().length];
+                    Set<UUID> possibleNodes = new HashSet<UUID>();
+                    for (int i = 0; i < grps.length; i++) {
+                        UUID n = rp.getNodes()[i];
+                        int idx = getGroup(n);
+                        if (idx >= 0) {
+                            grps[i] = idx;
+                            possibleNodes.add(n);
                         }
                     }
-                }
-            }
-            if (gIdx == -1) {
-                //grp: A table to indicate the group each node belong to, -1 for no group
-                int[] grps = new int[rp.getNodes().length];
-                Set<UUID> possibleNodes = new HashSet<UUID>();
-                for (int i = 0; i < grps.length; i++) {
-                    UUID n = rp.getNodes()[i];
-                    int idx = getGroup(n);
-                    if (idx >= 0) {
-                        grps[i] = idx;
-                        possibleNodes.add(n);
+                    //In any case, the VMs cannot go to nodes that are in no groups
+                    new CFence(new Fence(runnings, new HashSet<UUID>(possibleNodes))).inject(rp);
+                    //We link the VM placement variable with the group variable
+                    for (UUID vm : runnings) {
+                        IntDomainVar assign = rp.getVMAction(vm).getDSlice().getHoster();
+                        SConstraint c = new MyElement(assign, grps, vmGrpId, 0, MyElement.Sort.detect);
+                        rp.getSolver().post(c);
                     }
+                } else {
+                    //As the group is already known, it's now just a fence constraint
+                    new CFence(new Fence(runnings, groups.get(nextGrp))).inject(rp);
                 }
-                //In any case, the VMs cannot go to nodes that are in no groups
-                new CFence(new Fence(runnings, new HashSet<UUID>(possibleNodes))).inject(rp);
-                //We link the VM placement variable with the group variable
-                for (UUID vm : runnings) {
-                    IntDomainVar assign = rp.getVMAction(vm).getDSlice().getHoster();
-                    SConstraint c = new MyElement(assign, grps, vmGrpId, 0, MyElement.Sort.detect);
-                    rp.getSolver().post(c);
-                }
-            } else {
-                //As the group is already known, it's now just a fence constraint
-                new CFence(new Fence(runnings, groups.get(vmGrpId.getVal()))).inject(rp);
             }
         }
         return true;
