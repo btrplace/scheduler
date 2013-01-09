@@ -18,6 +18,7 @@
 
 package btrplace.solver.choco.constraint;
 
+import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Gather;
@@ -58,27 +59,56 @@ public class CGather implements ChocoSatConstraint {
             }
         }
         CPSolver s = rp.getSolver();
-        for (int i = 0; i < l.size(); i++) {
-            for (int j = 0; j < i; j++) {
-                Slice s1 = l.get(i);
-                Slice s2 = l.get(j);
-                IntDomainVar i1 = s1.getHoster();
-                IntDomainVar i2 = s2.getHoster();
-                if (i1.isInstantiated() && i2.isInstantiated()) {
-                    if (i1.getVal() != i2.getVal()) {
-                        throw new SolverException(rp.getSourceModel(), "Unable to force VM '" + s1.getSubject() + "' to be co-located with '" + s2.getSubject() + "'");
+        if (cstr.isContinuous()) {
+            //Check for already running VMs
+            Mapping map = rp.getSourceModel().getMapping();
+            UUID loc = null;
+            for (UUID vm : cstr.getInvolvedVMs()) {
+                if (map.getRunningVMs().contains(vm)) {
+                    UUID node = map.getVMLocation(vm);
+                    if (loc == null) {
+                        loc = node;
+                    } else if (!loc.equals(node)) {
+                        rp.getLogger().error("Some VMs in '{}' are already running but not co-located", cstr.getInvolvedVMs());
+                        return false;
                     }
-                } else {
+                }
+            }
+            int nIdx = rp.getNode(loc);
+            for (UUID vm : cstr.getInvolvedVMs()) {
+                if (rp.getFutureRunningVMs().contains(vm)) {
+                    Slice dSlice = rp.getVMAction(vm).getDSlice();
                     try {
-                        if (i1.isInstantiated()) {
-                            i2.setVal(i1.getVal());
-                        } else if (i2.isInstantiated()) {
-                            i1.setVal(i2.getVal());
-                        } else {
-                            s.post(s.eq(i1, i2));
-                        }
+                        dSlice.getHoster().setVal(nIdx);
                     } catch (ContradictionException ex) {
-                        throw new SolverException(rp.getSourceModel(), "Unable to force VM '" + s1.getSubject() + "' to be co-located with '" + s2.getSubject() + "'");
+                        rp.getLogger().error("Unable to maintain the co-location of all the future-running VMs in '{}'", cstr.getInvolvedVMs());
+                        return false;
+                    }
+                }
+            }
+        } else {
+            for (int i = 0; i < l.size(); i++) {
+                for (int j = 0; j < i; j++) {
+                    Slice s1 = l.get(i);
+                    Slice s2 = l.get(j);
+                    IntDomainVar i1 = s1.getHoster();
+                    IntDomainVar i2 = s2.getHoster();
+                    if (i1.isInstantiated() && i2.isInstantiated()) {
+                        if (i1.getVal() != i2.getVal()) {
+                            throw new SolverException(rp.getSourceModel(), "Unable to force VM '" + s1.getSubject() + "' to be co-located with '" + s2.getSubject() + "'");
+                        }
+                    } else {
+                        try {
+                            if (i1.isInstantiated()) {
+                                i2.setVal(i1.getVal());
+                            } else if (i2.isInstantiated()) {
+                                i1.setVal(i2.getVal());
+                            } else {
+                                s.post(s.eq(i1, i2));
+                            }
+                        } catch (ContradictionException ex) {
+                            throw new SolverException(rp.getSourceModel(), "Unable to force VM '" + s1.getSubject() + "' to be co-located with '" + s2.getSubject() + "'");
+                        }
                     }
                 }
             }

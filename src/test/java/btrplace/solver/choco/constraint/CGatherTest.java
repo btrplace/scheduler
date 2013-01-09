@@ -19,6 +19,7 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.*;
+import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Gather;
 import btrplace.model.constraint.Running;
 import btrplace.plan.ReconfigurationPlan;
@@ -41,11 +42,12 @@ import java.util.UUID;
 public class CGatherTest {
     UUID vm1 = UUID.randomUUID();
     UUID vm2 = UUID.randomUUID();
+    UUID vm3 = UUID.randomUUID();
     UUID n1 = UUID.randomUUID();
     UUID n2 = UUID.randomUUID();
 
     @Test
-    public void testWithoutRunningVM() throws SolverException {
+    public void testDiscreteWithoutRunningVM() throws SolverException {
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
@@ -53,7 +55,7 @@ public class CGatherTest {
         map.addRunningVM(vm2, n2);
         Model mo = new DefaultModel(map);
         Gather g = new Gather(map.getAllVMs());
-
+        g.setContinuous(false);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(g));
@@ -66,7 +68,7 @@ public class CGatherTest {
     }
 
     @Test
-    public void testWithRunningVMs() throws SolverException {
+    public void testDiscreteWithRunningVMs() throws SolverException {
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
@@ -74,7 +76,7 @@ public class CGatherTest {
         map.addRunningVM(vm2, n2);
         Model mo = new DefaultModel(map);
         Gather g = new Gather(map.getAllVMs());
-
+        g.setContinuous(false);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
@@ -105,6 +107,47 @@ public class CGatherTest {
 
         map.addRunningVM(vm1, n1);
         Assert.assertEquals(c.getMisPlacedVMs(mo), map.getAllVMs());
+    }
 
+    @Test
+    public void testContinuousWithPartialRunning() throws SolverException {
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addReadyVM(vm1);
+        map.addRunningVM(vm2, n2);
+        Model mo = new DefaultModel(map);
+        Gather g = new Gather(map.getAllVMs());
+        g.setContinuous(true);
+        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        cstrs.add(new Running(map.getAllVMs()));
+        cstrs.add(g);
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ReconfigurationPlan plan = cra.solve(mo, cstrs);
+        Assert.assertNotNull(plan);
+    }
+
+    /**
+     * We try to relocate co-located VMs in continuous mode. Not allowed
+     *
+     * @throws SolverException
+     */
+    @Test
+    public void testContinuousWithRelocationOfVMs() throws SolverException {
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addRunningVM(vm1, n2);
+        map.addRunningVM(vm2, n2);
+        Model mo = new DefaultModel(map);
+        Gather g = new Gather(map.getAllVMs());
+        g.setContinuous(true);
+        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        cstrs.add(new Running(map.getAllVMs()));
+        cstrs.add(g);
+        cstrs.add(new Fence(map.getAllVMs(), Collections.singleton(n1)));
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ReconfigurationPlan plan = cra.solve(mo, cstrs);
+        Assert.assertNull(plan);
     }
 }
