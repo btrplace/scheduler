@@ -1,7 +1,11 @@
 Release notes
 =======================
 
-v0.7 - ??
+v0.8 - ??
+----------------------
+- Continuous or discrete restriction for Gather
+
+v0.7 - 19 dec. 2012
 ----------------------
 - Integrate btrplace.model
 - new constraints : a total of 23 now
