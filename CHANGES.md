@@ -1,11 +1,11 @@
 Release notes
 =======================
 
-v0.7 - ?? dec. 2012
+v0.7 - ??
 ----------------------
 - Integrate btrplace.model
 - new constraints : a total of 23 now
-- bug fix
+- bug fixes
 - a better documentation for the constraints
 
 V0.6 - 14 dec. 2012

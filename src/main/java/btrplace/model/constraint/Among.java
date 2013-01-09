@@ -35,8 +35,8 @@ import java.util.*;
  * group of nodes at the end of the reconfiguration process. However, this situation may occur temporary during
  * the reconfiguration. Basically, this allows to select a new group of nodes for the VMs.
  * <p/>
- * When the restriction is continuous, the constraint must be already satisfied and will be satisfied at any moment.
- * This disallow to select a new group of nodes for the VMs.
+ * When the restriction is continuous, if some VMs are already running, on a group of nodes,
+ * it will not be possible to relocated the VMs to a new group of nodes.
  * <p/>
  * By default, the constraint provides a discrete restriction.
  *

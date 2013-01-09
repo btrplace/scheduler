@@ -38,7 +38,7 @@ import java.util.*;
  * hosting the group of VMs during the reconfiguration process.
  * <p/>
  * If the constraint is set to provide a continuous restriction, the constraint must be satisfied initially, then the VMs
- * of a single group can never spread on multiple groups of nodes.
+ * of a single group can never spread on multiple groups of nodes nor change of group.
  * <p/>
  * <p/>
  * <p/>

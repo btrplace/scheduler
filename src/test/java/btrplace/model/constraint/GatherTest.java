@@ -21,6 +21,7 @@ package btrplace.model.constraint;
 import btrplace.model.*;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.BootVM;
 import btrplace.plan.event.MigrateVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -48,7 +49,7 @@ public class GatherTest {
         Assert.assertEquals(g.getInvolvedVMs(), s);
         Assert.assertFalse(g.toString().contains("null"));
         Assert.assertFalse(g.isContinuous());
-        Assert.assertFalse(g.setContinuous(true));
+        Assert.assertTrue(g.setContinuous(true));
         System.out.println(g);
     }
 
@@ -70,7 +71,7 @@ public class GatherTest {
     }
 
     @Test
-    public void testIsSatisfied() {
+    public void testDiscreteIsSatisfied() {
         UUID vm1 = UUID.randomUUID();
         UUID vm2 = UUID.randomUUID();
         UUID n1 = UUID.randomUUID();
@@ -96,7 +97,7 @@ public class GatherTest {
         Assert.assertEquals(g.isSatisfied(mo), SatConstraint.Sat.UNSATISFIED);
     }
 
-    @Test(dependsOnMethods = {"testIsSatisfied"})
+    @Test(dependsOnMethods = {"testDiscreteIsSatisfied"})
     public void testContinuousIsSatisfied() {
         UUID vm1 = UUID.randomUUID();
         UUID vm2 = UUID.randomUUID();
@@ -107,7 +108,7 @@ public class GatherTest {
         s.add(vm1);
         s.add(vm2);
         Gather g = new Gather(s);
-
+        g.setContinuous(true);
         Mapping map = new DefaultMapping();
         Model mo = new DefaultModel(map);
 
@@ -118,7 +119,16 @@ public class GatherTest {
         map.addRunningVM(vm2, n2);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(g.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
-        plan.add(new MigrateVM(vm2, n2, n1, 0, 1));
+
+        map.addReadyVM(vm2);
         Assert.assertEquals(g.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        plan.add(new BootVM(vm2, n1, 0, 1));
+        Assert.assertEquals(g.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+
+        map.addRunningVM(vm2, n1);
+        plan = new DefaultReconfigurationPlan(mo);
+        plan.add(new MigrateVM(vm2, n1, n2, 0, 1));
+        plan.add(new MigrateVM(vm1, n1, n2, 0, 1));
+        Assert.assertEquals(g.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
     }
 }
