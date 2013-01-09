@@ -42,6 +42,8 @@ public class CAmong implements ChocoSatConstraint {
 
     private Among cstr;
 
+    private IntDomainVar vmGrpId;
+
     /**
      * Make a new constraint.
      *
@@ -49,6 +51,15 @@ public class CAmong implements ChocoSatConstraint {
      */
     public CAmong(Among a) {
         cstr = a;
+    }
+
+    /**
+     * Get the group variable that indicate on which group the VMs are running.
+     *
+     * @return a variable that may be instantiated but {@code null} until {@link #inject(btrplace.solver.choco.ReconfigurationProblem)} has been called
+     */
+    public IntDomainVar getGroupVariable() {
+        return vmGrpId;
     }
 
     @Override
@@ -95,14 +106,16 @@ public class CAmong implements ChocoSatConstraint {
         }
 
         if (cstr.isContinuous() && curGrp != -1) {
+            vmGrpId = rp.getSolver().makeConstantIntVar(rp.makeVarLabel("among#pGrp"), curGrp);
             return new CFence(new Fence(runnings, groups.get(curGrp))).inject(rp);
         } else {
             if (groups.size() == 1 && !groups.iterator().next().equals(rp.getSourceModel().getMapping().getAllNodes())) {
                 //Only 1 group of nodes, it's just a fence constraint
                 new CFence(new Fence(new HashSet<UUID>(runnings), groups.get(0))).inject(rp);
+                vmGrpId = rp.getSolver().makeConstantIntVar(rp.makeVarLabel("among#pGrp"), 0);
             } else {
                 //Now, we create a variable to indicate on which group of nodes the VMs will be
-                IntDomainVar vmGrpId = rp.getSolver().createEnumIntVar(rp.makeVarLabel("among#pGrp"), 0, groups.size() - 1);
+                vmGrpId = rp.getSolver().createEnumIntVar(rp.makeVarLabel("among#pGrp"), 0, groups.size() - 1);
                 if (nextGrp == -1) {
                     //grp: A table to indicate the group each node belong to, -1 for no group
                     int[] grps = new int[rp.getNodes().length];
@@ -138,7 +151,7 @@ public class CAmong implements ChocoSatConstraint {
      * @param n the node
      * @return the group identifier, {@code -1} if the node does not belong to a group
      */
-    private int getGroup(UUID n) {
+    public int getGroup(UUID n) {
         int i = 0;
         for (Set<UUID> pGrp : cstr.getGroupsOfNodes()) {
             if (pGrp.contains(n)) {

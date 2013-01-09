@@ -91,13 +91,6 @@ public class CFence implements ChocoSatConstraint {
                     }
                 }
 
-                for (UUID n : rp.getSourceModel().getMapping().getOnlineNodes()) {
-                    int idx = rp.getNode(n);
-                    if (!toKeep.contains(idx)) {
-                        iExlude[i++] = idx;
-                    }
-                }
-
                 //Domain restriction. Remove all the non-involved nodes
                 for (UUID vm : runnings) {
                     Slice t = rp.getVMAction(vm).getDSlice();

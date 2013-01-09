@@ -49,6 +49,12 @@ public final class ActionModelUtils {
         return slices;
     }
 
+    /**
+     * Extract all the d-slices of a list of {@link ActionModel}.
+     *
+     * @param l the models to browse
+     * @return a list of d-slices that may be empty
+     */
     public static List<Slice> getDSlices(List<VMActionModel> l) {
         return getDSlices(l.toArray(new VMActionModel[l.size()]));
     }
@@ -69,6 +75,12 @@ public final class ActionModelUtils {
         return slices;
     }
 
+    /**
+     * Extract all the c-slices of a list of {@link ActionModel}.
+     *
+     * @param l the models to browse
+     * @return a list of c-slices that may be empty
+     */
     public static List<Slice> getCSlices(List<VMActionModel> l) {
         return getCSlices(l.toArray(new VMActionModel[l.size()]));
     }
