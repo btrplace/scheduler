@@ -51,7 +51,29 @@ public class CCumulatedRunningCapacity implements ChocoSatConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        if (!cstr.isContinuous()) {
+        if (cstr.isContinuous()) {
+            //The constraint must be already satisfied
+            if (!cstr.isSatisfied(rp.getSourceModel()).equals(SatConstraint.Sat.SATISFIED)) {
+                rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
+                return false;
+            } else {
+                int[] alias = new int[cstr.getInvolvedNodes().size()];
+                int i = 0;
+                for (UUID n : cstr.getInvolvedNodes()) {
+                    alias[i++] = rp.getNode(n);
+                }
+
+                i = 0;
+                int[] cUse = new int[rp.getSourceModel().getMapping().getRunningVMs().size()];
+                IntDomainVar[] dUse = new IntDomainVar[rp.getFutureRunningVMs().size()];
+                Arrays.fill(cUse, 1);
+                for (UUID vm : rp.getFutureRunningVMs()) {
+                    dUse[i++] = rp.getSolver().makeConstantIntVar(1);
+                }
+
+                rp.getAliasedCumulativesBuilder().add(cstr.getAmount(), cUse, dUse, alias);
+            }
+        } else {
             List<IntDomainVar> vs = new ArrayList<IntDomainVar>();
             for (UUID u : cstr.getInvolvedNodes()) {
                 vs.add(rp.getNbRunningVMs()[rp.getNode(u)]);
@@ -60,9 +82,7 @@ public class CCumulatedRunningCapacity implements ChocoSatConstraint {
             s.post(s.leq(CPSolver.sum(vs.toArray(new IntDomainVar[vs.size()])), cstr.getAmount()));
             return true;
         }
-
-        //TODO: Implement continuous restriction
-        return false;
+        return true;
     }
 
     @Override

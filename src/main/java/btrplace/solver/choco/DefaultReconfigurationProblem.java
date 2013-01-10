@@ -28,6 +28,8 @@ import btrplace.plan.event.Allocate;
 import btrplace.plan.event.AllocateEvent;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
+import btrplace.solver.choco.chocoUtil.AliasedCumulatives;
+import btrplace.solver.choco.chocoUtil.AliasedCumulativesBuilder;
 import btrplace.solver.choco.chocoUtil.BinPacking;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignVar;
@@ -94,6 +96,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private SliceSchedulerBuilder taskSchedBuilder;
 
+    private AliasedCumulativesBuilder cumulativesBuilder;
+
     /**
      * Make a new RP where the next state for every VM is indicated.
      * If the state for a VM is omitted, it is considered as unchanged
@@ -145,6 +149,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         linkCardinatiesWithSlices();
 
         taskSchedBuilder = new SliceSchedulerBuilder(this);
+        cumulativesBuilder = new AliasedCumulativesBuilder(this);
     }
 
     @Override
@@ -157,6 +162,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         addContinuousResourceCapacities();
 
         solver.post(taskSchedBuilder.build());
+
+        for (AliasedCumulatives cstr : cumulativesBuilder.getConstraints()) {
+            solver.post(cstr);
+        }
 
         solver.generateSearchStrategy();
         ISolutionPool sp = SolutionPoolFactory.makeInfiniteSolutionPool(solver.getSearchStrategy());
@@ -572,6 +581,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     @Override
     public SliceSchedulerBuilder getTaskSchedulerBuilder() {
         return taskSchedBuilder;
+    }
+
+    @Override
+    public AliasedCumulativesBuilder getAliasedCumulativesBuilder() {
+        return cumulativesBuilder;
     }
 
     @Override

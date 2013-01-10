@@ -27,6 +27,7 @@ import choco.kernel.memory.IStateIntVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import gnu.trove.TIntHashSet;
 import gnu.trove.TIntIntHashMap;
 
 import java.util.Arrays;
@@ -34,17 +35,14 @@ import java.util.BitSet;
 import java.util.logging.Level;
 
 /**
- * A constraint to schedule tasks with regards to their resource usages on resources having a finite amount to share.
- * Tasks and resources can have multiple dimensions.
- * There is only 2 kind of tasks. cTasks that are already placed and necessarily starts at 0 and dTasks that
- * are not placed but end necessarily at the end of the schedule.
- * Inspired by the cumulatives constraint.
+ * A kind of cumulatives constraint where a single resource is shared among multiple identifiers.
  *
  * @author Fabien Hermenier
+ * @see TaskScheduler
  */
-public class TaskScheduler extends AbstractLargeIntSConstraint {
+public class AliasedCumulatives extends AbstractLargeIntSConstraint {
 
-    private LocalTaskScheduler[] scheds;
+    private AliasedCumulativesFiltering resource;
 
     private IntDomainVar[] cHosters;
 
@@ -54,11 +52,9 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
 
     private IntDomainVar[] dStarts;
 
-    private int nbResources;
-
     private int nbDims;
 
-    private int[][] capacities;
+    private int[] capacities;
 
     private int[][] cUsages;
 
@@ -68,36 +64,45 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
 
     private IEnvironment env;
 
-    private IStateIntVector[] vIns;
+    private IStateIntVector vIns;
+
+    /**
+     * 0 [0,1,2,4]
+     * 1 [0,1,2,4]
+     * 2 [2]
+     * 3 [3,5]
+     * 4 [0,1,2,4]
+     * 5 [3,5]
+     */
+    private TIntHashSet alias;
 
     /**
      * Make a new constraint.
      *
-     * @param env         the solver environment
-     * @param earlyStarts a variable for each resource to indicate the earliest moment a task can arrive on the resource
-     * @param lastEnds    a variable for each resource to indicate the latest moment a task can stay on the resource
-     * @param capas       for each dimension, the capacity of each resource
-     * @param cHosters    the placement variable of each cTask
-     * @param cUsages     the resource usage of each cTask for each dimension
-     * @param cEnds       the moment each cTask ends
-     * @param dHosters    the placement variable of each dTask
-     * @param dUsages     the resource usage of each dTask for each dimension
-     * @param dStarts     the moment each dTask starts
-     * @param assocs      indicate association between cTasks and dTasks. Associated tasks cannot overlap on a same resource
+     * @param env      the solver environment
+     * @param alias    the resource identifier related to this cumulative
+     * @param capas    for each dimension, the capacity of each resource
+     * @param cHosters the placement variable of each cTask
+     * @param cUsages  the resource usage of each cTask for each dimension
+     * @param cEnds    the moment each cTask ends
+     * @param dHosters the placement variable of each dTask
+     * @param dUsages  the resource usage of each dTask for each dimension
+     * @param dStarts  the moment each dTask starts
+     * @param assocs   indicate association between cTasks and dTasks. Associated tasks cannot overlap on a same resource
      */
-    public TaskScheduler(IEnvironment env,
-                         IntDomainVar[] earlyStarts,
-                         IntDomainVar[] lastEnds,
-                         int[][] capas,
-                         IntDomainVar[] cHosters,
-                         int[][] cUsages,
-                         IntDomainVar[] cEnds,
-                         IntDomainVar[] dHosters,
-                         int[][] dUsages,
-                         IntDomainVar[] dStarts,
-                         int[] assocs) {
+    public AliasedCumulatives(IEnvironment env,
+                              int[] alias,
+                              int[] capas,
+                              IntDomainVar[] cHosters,
+                              int[][] cUsages,
+                              IntDomainVar[] cEnds,
+                              IntDomainVar[] dHosters,
+                              int[][] dUsages,
+                              IntDomainVar[] dStarts,
+                              int[] assocs) {
 
-        super(ArrayUtils.append(dHosters, cHosters, cEnds, dStarts, earlyStarts, lastEnds));
+        super(ArrayUtils.append(dHosters, cHosters, cEnds, dStarts));
+        this.alias = new TIntHashSet(alias);
         this.env = env;
         this.cHosters = cHosters;
         this.dHosters = dHosters;
@@ -108,19 +113,17 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
         this.cUsages = cUsages;
         this.dUsages = dUsages;
 
-        this.nbResources = capas[0].length;
         this.nbDims = capas.length;
         int nbCTasks = cUsages[0].length;
 
-        scheds = new LocalTaskScheduler[nbResources];
 
-        BitSet[] outs = new BitSet[scheds.length];
-        for (int i = 0; i < scheds.length; i++) {
-            outs[i] = new BitSet(cHosters.length);
-        }
+        BitSet out = new BitSet(cHosters.length);
 
         for (int i = 0; i < cHosters.length; i++) {
-            outs[cHosters[i].getVal()].set(i);
+            int v = cHosters[i].getVal();
+            if (isIn(v)) {
+                out.set(i);
+            }
         }
 
 
@@ -135,23 +138,21 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
             }
         }
 
-        this.vIns = new IStateIntVector[scheds.length];
-        for (int i = 0; i < scheds.length; i++) {
-            vIns[i] = env.makeIntVector();
-            scheds[i] = new LocalTaskScheduler(i, env,
-                    earlyStarts[i],
-                    lastEnds[i],
-                    capacities,
-                    cUsages,
-                    cEnds,
-                    outs[i],
-                    dUsages,
-                    dStarts,
-                    vIns[i],
-                    assocs,
-                    revAssociations
-            );
-        }
+        vIns = env.makeIntVector();
+        resource = new AliasedCumulativesFiltering(env,
+                capacities,
+                cUsages,
+                cEnds,
+                out,
+                dUsages,
+                dStarts,
+                vIns,
+                assocs,
+                revAssociations);
+    }
+
+    private boolean isIn(int idx) {
+        return alias.contains(idx);
     }
 
     @Override
@@ -163,20 +164,18 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
         for (int i = 0; i < dHosters.length; i++) {
             if (dHosters[i].isInstantiated()) {
                 int nIdx = dHosters[i].getVal();
-                toInstantiate.add(-1);
-                vIns[nIdx].add(i);
+                if (isIn(nIdx)) {
+                    toInstantiate.add(-1);
+                    vIns.add(i);
+                }
             }
         }
     }
 
     @Override
     public void propagate() throws ContradictionException {
-        if (isFull2()) {
-            for (int i = 0; i < scheds.length; i++) {
-                if (!scheds[i].propagate()) {
-                    fail();
-                }
-            }
+        if (isFull2() && !resource.propagate()) {
+            fail();
         }
     }
 
@@ -185,7 +184,9 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
         if (idx < dHosters.length) {
             toInstantiate.add(-1);
             int nIdx = vars[idx].getVal();
-            vIns[nIdx].add(idx);
+            if (isIn(nIdx)) {
+                vIns.add(idx);
+            }
         }
         this.constAwake(false);
     }
@@ -210,15 +211,13 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
 
     @Override
     public boolean isConsistent() {
-        for (LocalTaskScheduler sc : scheds) {
-            sc.computeProfiles();
-            try {
-                if (!sc.checkInvariant()) {
-                    return false;
-                }
-            } catch (ContradictionException e) {
+        resource.computeProfiles();
+        try {
+            if (!resource.checkInvariant()) {
                 return false;
             }
+        } catch (ContradictionException e) {
+            return false;
         }
         return true;
     }
@@ -243,32 +242,31 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
         }
 
         //A hashmap to save the changes of each node (relatives to the previous moment) in the resources distribution
-        TIntIntHashMap[][] changes = new TIntIntHashMap[nbDims][nbResources];
+        TIntIntHashMap[] changes = new TIntIntHashMap[nbDims];
 
         for (int i = 0; i < nbDims; i++) {
-            for (int j = 0; j < nbResources; j++) {
-                changes[i][j] = new TIntIntHashMap();
-            }
+            changes[i] = new TIntIntHashMap();
         }
 
 
         for (int i = 0; i < nbDims; i++) { //Each dimension
             for (int j = 0; j < dHostersVals.length; j++) { //for each placed dSlices
                 int nIdx = dHostersVals[j]; //on which resource it is placed
-                changes[i][nIdx].put(dStartsVals[j], changes[i][nIdx].get(dStartsVals[j]) - dUsages[i][j]);
+                if (isIn(nIdx)) {
+                    changes[i].put(dStartsVals[j], changes[i].get(dStartsVals[j]) - dUsages[i][j]);
+                }
             }
         }
 
-        int[][] currentFree = new int[nbDims][];
-        for (int i = 0; i < currentFree.length; i++) {
-            currentFree[i] = Arrays.copyOf(capacities[i], capacities[i].length);
-        }
+        int[] currentFree = Arrays.copyOf(capacities, capacities.length);
 
         for (int i = 0; i < nbDims; i++) {
             for (int j = 0; j < cHostersVals.length; j++) {
                 int nIdx = cHostersVals[j];
-                changes[i][nIdx].put(cEndsVals[j], changes[i][nIdx].get(cEndsVals[j] + cUsages[i][j]));
-                currentFree[i][nIdx] -= cUsages[i][j];
+                if (isIn(nIdx)) {
+                    changes[i].put(cEndsVals[j], changes[i].get(cEndsVals[j] + cUsages[i][j]));
+                    currentFree[i] -= cUsages[i][j];
+                }
             }
         }
 
@@ -283,20 +281,17 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
         }
 
         boolean ok = true;
-        for (int j = 0; j < nbResources; j++) {
-            ChocoLogging.getBranchingLogger().finest("--- Resource " + j + " isSatisfied() ---");
-            for (int i = 0; i < nbDims; i++) {
-                ChocoLogging.getBranchingLogger().finest("Dimension " + (i + 1) + "/" + nbDims + ": "
-                        + " currentFree= " + currentFree[i][j]
-                        + " changes= " + changes[i][j]);
-                //Now we check the evolution of the absolute free space.
+        for (int i = 0; i < nbDims; i++) {
+            ChocoLogging.getBranchingLogger().finest("Dimension " + (i + 1) + "/" + nbDims + ": "
+                    + " currentFree= " + currentFree[i]
+                    + " changes= " + changes[i]);
+            //Now we check the evolution of the absolute free space.
 
-                for (int x = 0; x < changes[i][j].keys().length; x++) {
-                    currentFree[i][j] += changes[i][j].get(x);
-                    if (currentFree[i][j] < 0) {
-                        ChocoLogging.getMainLogger().severe("-> free@" + x + ": " + currentFree[i][j]);
-                        ok = false;
-                    }
+            for (int x = 0; x < changes[i].keys().length; x++) {
+                currentFree[i] += changes[i].get(x);
+                if (currentFree[i] < 0) {
+                    ChocoLogging.getMainLogger().severe("-> free@" + x + ": " + currentFree[i]);
+                    ok = false;
                 }
             }
         }

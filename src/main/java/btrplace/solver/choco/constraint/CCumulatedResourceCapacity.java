@@ -54,6 +54,10 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
+        if (cstr.isContinuous()) {
+            rp.getLogger().error("Continuous restriction is not supported for CumulatedResourceCapacity");
+            return false;
+        }
         ResourceMapping rcm = rp.getResourceMapping(cstr.getResource());
         if (rcm == null) {
             throw new SolverException(rp.getSourceModel(), "Unable to find a resource mapping for resource '" + cstr.getResource() + "'");

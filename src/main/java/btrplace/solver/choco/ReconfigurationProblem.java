@@ -22,6 +22,7 @@ import btrplace.model.Model;
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
+import btrplace.solver.choco.chocoUtil.AliasedCumulativesBuilder;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.slf4j.Logger;
@@ -329,6 +330,13 @@ public interface ReconfigurationProblem {
      * @return the builder
      */
     SliceSchedulerBuilder getTaskSchedulerBuilder();
+
+    /**
+     * Get the builder that handle the management of capacities over the time.
+     *
+     * @return the builder
+     */
+    AliasedCumulativesBuilder getAliasedCumulativesBuilder();
 
     /**
      * Get the logger.
