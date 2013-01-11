@@ -31,7 +31,6 @@ import gnu.trove.TIntIntHashMap;
 
 import java.util.Arrays;
 import java.util.BitSet;
-import java.util.logging.Level;
 
 /**
  * A constraint to schedule tasks with regards to their resource usages on resources having a finite amount to share.
@@ -273,14 +272,14 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
         }
 
 
-        if (ChocoLogging.getBranchingLogger().isLoggable(Level.FINEST)) {
+        /*if (ChocoLogging.getBranchingLogger().isLoggable(Level.FINEST)) {
             for (int x = 0; x < cHostersVals.length; x++) {
                 ChocoLogging.getBranchingLogger().finest(x + " " + cEnds[x].pretty() + " ends at " + cEndsVals[x]);
             }
             for (int x = 0; x < dHostersVals.length; x++) {
                 ChocoLogging.getBranchingLogger().finest(dStarts[x].pretty());
             }
-        }
+        } */
 
         boolean ok = true;
         for (int j = 0; j < nbResources; j++) {

@@ -133,7 +133,6 @@ public class AliasedCumulativesBuilder {
      * @return the resulting constraint
      */
     public void add(int capas, int[] cUse, IntDomainVar[] dUse, int[] alias) {
-        CPSolver s = rp.getSolver();
         capacities.add(capas);
         cUsages.add(cUse);
         dUsages.add(dUse);
@@ -154,6 +153,15 @@ public class AliasedCumulativesBuilder {
                 dUses[i++] = dUseDim.getInf();
             }
 
+            /*System.out.println(Arrays.toString(alias) +
+                              " " + capa +
+                              " " + Arrays.toString(cHosters) +
+                              " " + Arrays.toString(cUse) +
+                              " " + Arrays.toString(cEnds) +
+                              " " + Arrays.toString(dHosters) +
+                              " " + Arrays.toString(dUses) +
+                              " " + Arrays.toString(dStarts) +
+                              " " + Arrays.toString(associations));  */
             cstrs.add(new AliasedCumulatives(s.getEnvironment(),
                     alias,
                     new int[]{capa},

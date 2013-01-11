@@ -53,7 +53,7 @@ public class AliasedCumulativesFiltering {
 
     private int[] startupFree;
 
-    public boolean DEBUG = false;
+    public boolean DEBUG = true;
 
     private int[] associations;
 
@@ -193,16 +193,16 @@ public class AliasedCumulativesFiltering {
 
             if (associatedToDSliceOnCurrentNode(j) && increase(j, revAssociations[j])) {
                 if (DEBUG) {
-                    ChocoLogging.getBranchingLogger().finest(cEnds[j].pretty() + " increasing");
+                    ChocoLogging.getBranchingLogger().info(cEnds[j].pretty() + " increasing");
                 }
                 for (int i = 0; i < nbDims; i++) {
                     profilesMax[i].put(t, profilesMax[i].get(t) - cUsages[i][j]);
                 }
 
             } else {
-                if (DEBUG) {
-                    ChocoLogging.getBranchingLogger().finest(cEnds[j].pretty() + " < or non-associated (" + (revAssociations[j] >= 0 ? dStarts[revAssociations[j]].pretty() : "no rev") + "?)");
-                }
+                /*if (DEBUG) {
+                    ChocoLogging.getBranchingLogger().info(cEnds[j].pretty() + " < or non-associated (" + (revAssociations[j] >= 0 ? dStarts[revAssociations[j]].pretty() : "no rev") + "?)");
+                } */
                 for (int i = 0; i < nbDims; i++) {
                     profilesMin[i].put(t, profilesMin[i].get(t) - cUsages[i][j]);
                 }
@@ -259,22 +259,22 @@ public class AliasedCumulativesFiltering {
         }
 
         if (DEBUG) {
-            ChocoLogging.getBranchingLogger().finest("--- startup=(" + Arrays.toString(startupFree) + ")"
-                    + " init=(" + Arrays.toString(capacities) + ")");
+            ChocoLogging.getBranchingLogger().info("--- startup=(" + Arrays.toString(startupFree) + ")"
+                    + " capacities=(" + Arrays.toString(capacities) + ") ---");
             for (int x = 0; x < vIn.size(); x++) {
                 int i = vIn.get(x);
-                ChocoLogging.getBranchingLogger().finest((dStarts[i].isInstantiated() ? "!" : "?") + " " + dStarts[i].pretty() + " " + Arrays.toString(dUsages));
+                ChocoLogging.getBranchingLogger().info((dStarts[i].isInstantiated() ? "!" : "?") + " " + dStarts[i].pretty() + " " + Arrays.toString(dUsages));
             }
 
             for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
-                ChocoLogging.getBranchingLogger().finest((cEnds[i].isInstantiated() ? "!" : "?") + " " + cEnds[i].pretty() + " " + Arrays.toString(cUsages));
+                ChocoLogging.getBranchingLogger().info((cEnds[i].isInstantiated() ? "!" : "?") + " " + cEnds[i].pretty() + " " + Arrays.toString(cUsages));
             }
-            ChocoLogging.getBranchingLogger().finest("---");
+            ChocoLogging.getBranchingLogger().info("---");
 
 
             for (int i = 0; i < nbDims; i++) {
-                ChocoLogging.getBranchingLogger().finest("profileMin dim " + i + "=" + prettyProfile(sortedMinProfile, profilesMin[i]));
-                ChocoLogging.getBranchingLogger().finest("profileMax dim " + i + "=" + prettyProfile(sortedMaxProfile, profilesMax[i]));
+                ChocoLogging.getBranchingLogger().info("profileMin(dim " + i + ")= " + prettyProfile(sortedMinProfile, profilesMin[i]));
+                ChocoLogging.getBranchingLogger().info("profileMax(dim " + i + ")= " + prettyProfile(sortedMaxProfile, profilesMax[i]));
             }
         }
     }
@@ -309,9 +309,9 @@ public class AliasedCumulativesFiltering {
     private boolean associatedToCSliceOnCurrentNode(int dSlice) {
         if (associations[dSlice] != NO_ASSOCIATIONS
                 && out.get(associations[dSlice])) {
-            if (DEBUG) {
-                ChocoLogging.getBranchingLogger().finest(dStarts[dSlice].getName() + " with " + cEnds[associations[dSlice]]);
-            }
+            /*if (DEBUG) {
+                ChocoLogging.getBranchingLogger().info(dStarts[dSlice].getName() + " with " + cEnds[associations[dSlice]]);
+            } */
             return true;
         }
         return false;
@@ -385,16 +385,15 @@ public class AliasedCumulativesFiltering {
         int lastSup = -1;
         for (int i = sortedMaxProfile.length - 1; i >= 0; i--) {
             int t = sortedMaxProfile[i];
-            //if (profileMaxCPU.get(t) <= capacityCPU && profileMaxMem.get(t) <= capacityMem) {
             if (!exceedCapacity(profilesMax, t, myCapacity)) {
                 lastSup = t;
             } else {
                 break;
             }
         }
-        if (DEBUG) {
-            ChocoLogging.getBranchingLogger().finest("lastSup=" + lastSup);
-        }
+        /*if (DEBUG) {
+            ChocoLogging.getBranchingLogger().info("lastSup=" + lastSup);
+        } */
         if (lastSup != -1) {
             for (int x = 0; x < vIn.size(); x++) {
                 int i = vIn.get(x);
@@ -424,7 +423,7 @@ public class AliasedCumulativesFiltering {
                 }
                 if (lastT != -1) {
                     if (DEBUG) {
-                        ChocoLogging.getBranchingLogger().finest(cEnds[i].pretty() + " cEndsSup =" + lastT);
+                        ChocoLogging.getBranchingLogger().info(cEnds[i].pretty() + " cEndsSup =" + lastT);
                     }
                     cEnds[i].setSup(lastT);
                 }

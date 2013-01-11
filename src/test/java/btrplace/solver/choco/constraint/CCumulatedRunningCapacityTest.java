@@ -19,8 +19,7 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.*;
-import btrplace.model.constraint.CumulatedRunningCapacity;
-import btrplace.model.constraint.Fence;
+import btrplace.model.constraint.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
@@ -101,12 +100,45 @@ public class CCumulatedRunningCapacityTest {
 
 
     @Test
-    public void testContinuousResolution() throws SolverException {
+    public void testFeasibleContinuousResolution() throws SolverException {
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addOnlineNode(n3);
         map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm3, n2);
+        map.addRunningVM(vm4, n2);
+        map.addReadyVM(vm5);
+        Set<UUID> on = new HashSet<UUID>();
+        on.add(n1);
+        on.add(n2);
+        Model mo = new DefaultModel(map);
+        System.out.println(mo.getMapping());
+        List<SatConstraint> l = new ArrayList<SatConstraint>();
+        l.add(new Running(Collections.singleton(vm5)));
+        l.add(new Fence(Collections.singleton(vm5), Collections.singleton(n1)));
+        CumulatedRunningCapacity x = new CumulatedRunningCapacity(on, 4);
+        x.setContinuous(true);
+        l.add(x);
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.labelVariables(true);
+        for (SatConstraint c : l) {
+            System.out.println(c);
+        }
+        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantDuration(10));
+        ReconfigurationPlan plan = cra.solve(mo, l);
+        Assert.assertNotNull(plan);
+        Assert.assertEquals(plan.getSize(), 2);
+    }
+
+    @Test
+    public void testUnFeasibleContinuousResolution() throws SolverException {
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOnlineNode(n3);
+        map.addReadyVM(vm1);
         map.addRunningVM(vm2, n1);
         map.addRunningVM(vm3, n2);
         map.addRunningVM(vm4, n2);
@@ -117,6 +149,12 @@ public class CCumulatedRunningCapacityTest {
         Model mo = new DefaultModel(map);
         List<SatConstraint> l = new ArrayList<SatConstraint>();
         l.add(new Fence(Collections.singleton(vm5), Collections.singleton(n1)));
+        List<UUID> seq = new ArrayList<UUID>();
+        seq.add(vm1);
+        seq.add(vm2);
+        l.add(new SequentialVMTransitions(seq));
+        l.add(new Sleeping(Collections.singleton(vm2)));
+        l.add(new Running(Collections.singleton(vm1)));
         CumulatedRunningCapacity x = new CumulatedRunningCapacity(on, 3);
         x.setContinuous(true);
         l.add(x);
@@ -124,9 +162,7 @@ public class CCumulatedRunningCapacityTest {
         cra.labelVariables(true);
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
-        Assert.assertNotNull(plan);
-        System.out.println(plan);
-        Assert.assertEquals(plan.getSize(), 2);
+        Assert.assertNull(plan);
     }
 
     @Test

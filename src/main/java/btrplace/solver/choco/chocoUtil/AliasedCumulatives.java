@@ -32,7 +32,6 @@ import gnu.trove.TIntIntHashMap;
 
 import java.util.Arrays;
 import java.util.BitSet;
-import java.util.logging.Level;
 
 /**
  * A kind of cumulatives constraint where a single resource is shared among multiple identifiers.
@@ -226,8 +225,8 @@ public class AliasedCumulatives extends AbstractLargeIntSConstraint {
     public boolean isSatisfied(int[] vals) {
         //Split this use tab to ease the analysis
         int[] dHostersVals = new int[dHosters.length];
-        int[] dStartsVals = new int[dStarts.length];
         int[] cHostersVals = new int[cHosters.length];
+        int[] dStartsVals = new int[dStarts.length];
         int[] cEndsVals = new int[cEnds.length];
 
         //dHosters, cHosters, cEnds, dStarts
@@ -241,7 +240,7 @@ public class AliasedCumulatives extends AbstractLargeIntSConstraint {
             cEndsVals[i] = vals[i + dHosters.length + cHosters.length];
         }
 
-        //A hashmap to save the changes of each node (relatives to the previous moment) in the resources distribution
+        //A hashmap to save the changes of the resource (relatives to the previous moment) in the resources distribution
         TIntIntHashMap[] changes = new TIntIntHashMap[nbDims];
 
         for (int i = 0; i < nbDims; i++) {
@@ -254,6 +253,7 @@ public class AliasedCumulatives extends AbstractLargeIntSConstraint {
                 int nIdx = dHostersVals[j]; //on which resource it is placed
                 if (isIn(nIdx)) {
                     changes[i].put(dStartsVals[j], changes[i].get(dStartsVals[j]) - dUsages[i][j]);
+                    ChocoLogging.getBranchingLogger().finest("Count dTask " + dHosters[j].getName() + " at " + dStartsVals[j]);
                 }
             }
         }
@@ -264,26 +264,26 @@ public class AliasedCumulatives extends AbstractLargeIntSConstraint {
             for (int j = 0; j < cHostersVals.length; j++) {
                 int nIdx = cHostersVals[j];
                 if (isIn(nIdx)) {
-                    changes[i].put(cEndsVals[j], changes[i].get(cEndsVals[j] + cUsages[i][j]));
+                    changes[i].put(cEndsVals[j], changes[i].get(cEndsVals[j]) + cUsages[i][j]);
                     currentFree[i] -= cUsages[i][j];
+                    ChocoLogging.getBranchingLogger().finest("Count cTask " + cHosters[j].getName() + " at " + cEndsVals[j]);
                 }
             }
         }
 
 
-        if (ChocoLogging.getBranchingLogger().isLoggable(Level.FINEST)) {
+        /*if (ChocoLogging.getBranchingLogger().isLoggable(Level.FINEST)) {
             for (int x = 0; x < cHostersVals.length; x++) {
-                ChocoLogging.getBranchingLogger().finest(x + " " + cEnds[x].pretty() + " ends at " + cEndsVals[x]);
+                ChocoLogging.getBranchingLogger().finest(cEnds[x].getName() + "=" + cEndsVals[x]);
             }
             for (int x = 0; x < dHostersVals.length; x++) {
-                ChocoLogging.getBranchingLogger().finest(dStarts[x].pretty());
+                ChocoLogging.getBranchingLogger().finest(dStarts[x].getName() + "=" + dStartsVals[x]);
             }
-        }
-
-        boolean ok = true;
+        } */
+        ChocoLogging.flushLogs();
         for (int i = 0; i < nbDims; i++) {
-            ChocoLogging.getBranchingLogger().finest("Dimension " + (i + 1) + "/" + nbDims + ": "
-                    + " currentFree= " + currentFree[i]
+            ChocoLogging.getBranchingLogger().finest("AliasedCumulatives Dimension " + (i + 1) + "/" + nbDims + ": "
+                    + " capacities=" + capacities[i] + ", free@0= " + currentFree[i]
                     + " changes= " + changes[i]);
             //Now we check the evolution of the absolute free space.
 
@@ -291,10 +291,11 @@ public class AliasedCumulatives extends AbstractLargeIntSConstraint {
                 currentFree[i] += changes[i].get(x);
                 if (currentFree[i] < 0) {
                     ChocoLogging.getMainLogger().severe("-> free@" + x + ": " + currentFree[i]);
-                    ok = false;
+                    return false;
                 }
             }
         }
-        return ok;
+        ChocoLogging.flushLogs();
+        return true;
     }
 }

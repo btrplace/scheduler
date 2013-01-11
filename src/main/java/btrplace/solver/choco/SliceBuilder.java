@@ -164,7 +164,7 @@ public class SliceBuilder {
      * @return the current builder
      */
     public SliceBuilder setHoster(int v) {
-        this.hoster = rp.getSolver().createIntegerConstant(rp.makeVarLabel("hoster_slice(" + e + ")"), v);
+        this.hoster = rp.getSolver().createIntegerConstant(rp.makeVarLabel(lblPrefix + "_hoster(" + e + ")"), v);
         return this;
     }
 }

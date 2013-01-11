@@ -51,6 +51,7 @@ public class CCumulatedRunningCapacity implements ChocoSatConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
+        CPSolver s = rp.getSolver();
         if (cstr.isContinuous()) {
             //The constraint must be already satisfied
             if (!cstr.isSatisfied(rp.getSourceModel()).equals(SatConstraint.Sat.SATISFIED)) {
@@ -62,26 +63,18 @@ public class CCumulatedRunningCapacity implements ChocoSatConstraint {
                 for (UUID n : cstr.getInvolvedNodes()) {
                     alias[i++] = rp.getNode(n);
                 }
-
-                i = 0;
                 int[] cUse = new int[rp.getSourceModel().getMapping().getRunningVMs().size()];
                 IntDomainVar[] dUse = new IntDomainVar[rp.getFutureRunningVMs().size()];
                 Arrays.fill(cUse, 1);
-                for (UUID vm : rp.getFutureRunningVMs()) {
-                    dUse[i++] = rp.getSolver().makeConstantIntVar(1);
-                }
-
+                Arrays.fill(dUse, s.makeConstantIntVar(1));
                 rp.getAliasedCumulativesBuilder().add(cstr.getAmount(), cUse, dUse, alias);
             }
-        } else {
-            List<IntDomainVar> vs = new ArrayList<IntDomainVar>();
-            for (UUID u : cstr.getInvolvedNodes()) {
-                vs.add(rp.getNbRunningVMs()[rp.getNode(u)]);
-            }
-            CPSolver s = rp.getSolver();
-            s.post(s.leq(CPSolver.sum(vs.toArray(new IntDomainVar[vs.size()])), cstr.getAmount()));
-            return true;
         }
+        List<IntDomainVar> vs = new ArrayList<IntDomainVar>();
+        for (UUID u : cstr.getInvolvedNodes()) {
+            vs.add(rp.getNbRunningVMs()[rp.getNode(u)]);
+        }
+        s.post(s.leq(CPSolver.sum(vs.toArray(new IntDomainVar[vs.size()])), cstr.getAmount()));
         return true;
     }
 
