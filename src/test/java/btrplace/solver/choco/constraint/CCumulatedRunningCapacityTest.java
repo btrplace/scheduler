@@ -26,6 +26,8 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -134,6 +136,7 @@ public class CCumulatedRunningCapacityTest {
 
     @Test
     public void testUnFeasibleContinuousResolution() throws SolverException {
+        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
@@ -143,25 +146,31 @@ public class CCumulatedRunningCapacityTest {
         map.addRunningVM(vm3, n2);
         map.addRunningVM(vm4, n2);
         map.addRunningVM(vm5, n3);
-        Set<UUID> on = new HashSet<UUID>();
-        on.add(n1);
-        on.add(n2);
         Model mo = new DefaultModel(map);
         List<SatConstraint> l = new ArrayList<SatConstraint>();
-        l.add(new Fence(Collections.singleton(vm5), Collections.singleton(n1)));
+
         List<UUID> seq = new ArrayList<UUID>();
         seq.add(vm1);
         seq.add(vm2);
         l.add(new SequentialVMTransitions(seq));
+        l.add(new Fence(Collections.singleton(vm1), Collections.singleton(n1)));
         l.add(new Sleeping(Collections.singleton(vm2)));
         l.add(new Running(Collections.singleton(vm1)));
+        l.add(new Root(Collections.singleton(vm3)));
+        l.add(new Root(Collections.singleton(vm4)));
+
+        Set<UUID> on = new HashSet<UUID>();
+        on.add(n1);
+        on.add(n2);
         CumulatedRunningCapacity x = new CumulatedRunningCapacity(on, 3);
         x.setContinuous(true);
         l.add(x);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.setMaxEnd(5);
         cra.labelVariables(true);
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
+        System.out.println(plan);
         Assert.assertNull(plan);
     }
 

@@ -28,6 +28,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.constraint.SatConstraintMapper;
 import btrplace.solver.choco.objective.minMTTR.MinMTTR;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.search.measure.IMeasures;
 
@@ -55,6 +56,8 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     private DurationEvaluators durationEvaluators;
 
     private ReconfigurationObjective obj;
+
+    private int maxEnd = DefaultReconfigurationProblem.DEFAULT_MAX_TIME;
 
     /**
      * Make a new algorithm.
@@ -160,6 +163,14 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         }
         rp = rpb.build();
 
+        //Set the maximum duration
+        try {
+            rp.getEnd().setSup(maxEnd);
+        } catch (ContradictionException e) {
+            rp.getLogger().error("Unable to restrict the maximum plan duration to {}", maxEnd);
+            return null;
+        }
+
         //Customize with the constraints
         for (ChocoSatConstraint ccstr : cConstraints) {
             if (!ccstr.inject(rp)) {
@@ -246,5 +257,15 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
         }
         return st;
+    }
+
+    @Override
+    public void setMaxEnd(int end) {
+        this.maxEnd = end;
+    }
+
+    @Override
+    public int getMaxEnd() {
+        return this.maxEnd;
     }
 }

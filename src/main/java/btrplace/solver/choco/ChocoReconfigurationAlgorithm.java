@@ -123,4 +123,18 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm 
      */
     SolvingStatistics getSolvingStatistics();
 
+    /**
+     * Set the maximum duration of a reconfiguration plan.
+     *
+     * @param end a positive integer
+     */
+    void setMaxEnd(int end);
+
+    /**
+     * Get the maximum duration of a reconfiguration plan.
+     *
+     * @return a positive integer
+     */
+    int getMaxEnd();
+
 }
