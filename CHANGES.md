@@ -3,7 +3,8 @@ Release notes
 
 v0.8 - ??
 ----------------------
-- Continuous or discrete restriction for Gather
+- Continuous resolution for Gather and Lonely
+- Bug fixes
 
 v0.7 - 19 dec. 2012
 ----------------------
