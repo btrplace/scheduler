@@ -33,13 +33,13 @@ import org.testng.annotations.Test;
 public class PrecedencesTest {
 
     /**
-     * ends variables are already instantiated.
+     * Ends variables are already instantiated.
      * Just a simple test.
      */
     @Test
     public void dummyTest() {
         CPSolver s = new CPSolver();
-        ChocoLogging.setVerbosity(Verbosity.FINEST);
+        //ChocoLogging.setVerbosity(Verbosity.FINEST);
 
         IntDomainVar[] ends = new IntDomainVar[5];
         int[] others = new int[5];
@@ -63,6 +63,38 @@ public class PrecedencesTest {
            If host == 2, start = 5
            => 6 solutions
          */
+        Precedences p = new Precedences(s.getEnvironment(), host, start, others, ends);
+        s.post(p);
+        Boolean ret = s.solveAll();
+        Assert.assertEquals(ret, Boolean.TRUE);
+        Assert.assertEquals(s.getNbSolutions(), 6);
+    }
+
+    /**
+     * Ends variables vary between 1 and 3 + index of the host
+     * Just a simple test.
+     */
+    @Test
+    public void simpleTest() {
+        CPSolver s = new CPSolver();
+        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+
+        IntDomainVar[] ends = new IntDomainVar[5];
+        int[] others = new int[5];
+        others[0] = 0;
+        ends[0] = s.createBoundIntVar("ends[0]", 1, 3);
+        others[1] = 0;
+        ends[1] = s.createBoundIntVar("ends[1]", 1, 3);
+        others[2] = 1;
+        ends[2] = s.createBoundIntVar("ends[2]", 1, 4);
+        others[3] = 1;
+        ends[3] = s.createBoundIntVar("ends[3]", 1, 4);
+        others[4] = 2;
+        ends[4] = s.createBoundIntVar("ends[4]", 1, 5);
+
+
+        IntDomainVar host = s.createEnumIntVar("host", 0, 2);
+        IntDomainVar start = s.createBoundIntVar("start", 0, 6);
         Precedences p = new Precedences(s.getEnvironment(), host, start, others, ends);
         s.post(p);
         Boolean ret = s.solveAll();
