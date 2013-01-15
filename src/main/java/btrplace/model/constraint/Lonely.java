@@ -21,6 +21,8 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.plan.Action;
+import btrplace.plan.ReconfigurationPlan;
 
 import java.util.Collections;
 import java.util.Set;
@@ -31,7 +33,14 @@ import java.util.UUID;
  * to not share their host with other VMs. Co-location between
  * the VMs given as argument is still possible.
  * <p/>
- * The restriction provided by the constraint is discrete.
+ * <p/>
+ * If the restriction is discrete, then the constraint ensures the given VMs
+ * will not be co-located with other VMs only at the end of the reconfiguration process.
+ * If the restriction is continuous, then no co-location is possible during the reconfiguration
+ * process.
+ * <p/>
+ * By default, the restriction is discrete.
+ * <p/>
  *
  * @author Fabien Hermenier
  */
@@ -66,6 +75,24 @@ public class Lonely extends SatConstraint {
     }
 
     @Override
+    public Sat isSatisfied(ReconfigurationPlan p) {
+        Model mo = p.getOrigin();
+        if (!isSatisfied(mo).equals(Sat.SATISFIED)) {
+            return Sat.UNSATISFIED;
+        }
+        mo = p.getOrigin().clone();
+        for (Action a : p) {
+            if (!a.apply(mo)) {
+                return Sat.UNSATISFIED;
+            }
+            if (!isSatisfied(mo).equals(Sat.SATISFIED)) {
+                return Sat.UNSATISFIED;
+            }
+        }
+        return Sat.SATISFIED;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -85,17 +112,15 @@ public class Lonely extends SatConstraint {
 
     @Override
     public String toString() {
-        return new StringBuilder("lonely(")
-                .append("vms=").append(getInvolvedVMs())
-                .append(", discrete")
-                .append(")").toString();
-    }
+        StringBuilder b = new StringBuilder("lonely(")
+                .append("vms=").append(getInvolvedVMs());
 
-    @Override
-    public boolean setContinuous(boolean b) {
-        if (!b) {
-            return super.setContinuous(b);
+        if (!isContinuous()) {
+            b.append(", discrete");
+        } else {
+            b.append(", continuous");
         }
-        return !b;
+
+        return b.append(')').toString();
     }
 }

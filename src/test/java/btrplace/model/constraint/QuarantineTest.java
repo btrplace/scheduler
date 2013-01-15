@@ -89,7 +89,7 @@ public class QuarantineTest {
 
         Model mo = new DefaultModel(map);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
-        Assert.assertEquals(q.isSatisfied(plan), SatConstraint.Sat.UNDEFINED);
+        Assert.assertEquals(q.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
         plan.add(new ShutdownVM(vm2, n2, 1, 2));
         Assert.assertEquals(q.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
 

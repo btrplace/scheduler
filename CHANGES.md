@@ -1,11 +1,17 @@
 Release notes
 =======================
 
+
+v0.8 - 15 jan. 2012
+----------------------
+- Continuous resolution for Gather and Lonely
+- Bug fixes
+
 v0.7 - 19 dec. 2012
 ----------------------
 - Integrate btrplace.model
 - new constraints : a total of 23 now
-- bug fix
+- bug fixes
 - a better documentation for the constraints
 
 V0.6 - 14 dec. 2012

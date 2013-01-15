@@ -21,6 +21,7 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
 
 import java.util.Collections;
@@ -31,10 +32,12 @@ import java.util.UUID;
  * A constraint to force a set of VMs, if running, to be
  * hosted on the same node.
  * <p/>
- * The restriction provided by the constraint is discrete.
- * VMs may then be temporary not co-located during the reconfiguration process.
- * To disallow that, a {@link Root} constraint may be necessary but in this
- * setting, no relocation will be possible at all.
+ * If the restriction is discrete, VMs may then be temporary not co-located during the reconfiguration process but they
+ * are ensure of being co-located at the end of the reconfiguration.
+ * If the restriction is continuous, VMs will always be co-located. In practice, if the VMs are all running, they
+ * have to already be co-located and it will not possible to relocate them to avoid a potential temporary separation.
+ * <p/>
+ * By default, the restriction is discrete.
  *
  * @author Fabien Hermenier
  */
@@ -68,11 +71,20 @@ public class Gather extends SatConstraint {
 
     @Override
     public Sat isSatisfied(ReconfigurationPlan p) {
-        Model mo = p.getResult();
-        if (mo == null) {
+        Model mo = p.getOrigin();
+        if (!isSatisfied(mo).equals(Sat.SATISFIED)) {
             return Sat.UNSATISFIED;
         }
-        return isSatisfied(mo);
+        mo = p.getOrigin().clone();
+        for (Action a : p) {
+            if (!a.apply(mo)) {
+                return Sat.UNSATISFIED;
+            }
+            if (!isSatisfied(mo).equals(Sat.SATISFIED)) {
+                return Sat.UNSATISFIED;
+            }
+        }
+        return Sat.SATISFIED;
     }
 
     @Override
@@ -95,17 +107,14 @@ public class Gather extends SatConstraint {
 
     @Override
     public String toString() {
-        return new StringBuilder("gather(")
-                .append("vms=").append(getInvolvedVMs())
-                .append(", discrete")
-                .append(")").toString();
-    }
+        StringBuilder sb = new StringBuilder("gather(")
+                .append("vms=").append(getInvolvedVMs());
 
-    @Override
-    public boolean setContinuous(boolean b) {
-        if (!b) {
-            super.setContinuous(b);
+        if (!isContinuous()) {
+            sb.append(", discrete");
+        } else {
+            sb.append(", continuous");
         }
-        return !b;
+        return sb.append(')').toString();
     }
 }

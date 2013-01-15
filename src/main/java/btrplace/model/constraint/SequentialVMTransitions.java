@@ -93,12 +93,10 @@ public class SequentialVMTransitions extends SatConstraint {
 
     @Override
     public Sat isSatisfied(ReconfigurationPlan plan) {
-        List<UUID> seq = getInvolvedVMs();
-        Set<UUID> s = new HashSet<UUID>();
-        s.addAll(seq);
-        int vmIdx = 0;
-        UUID curVM = seq.get(vmIdx);
-        s.remove(curVM);
+        Set<UUID> pending = new HashSet<UUID>(getInvolvedVMs()); //all the VMAction we expect
+
+        Map<UUID, Action> actions = new HashMap<UUID, Action>(); //The action associated to the VM if it is an action
+        //to consider
         for (Action a : plan) {
             if (a instanceof VMStateTransition) {
                 VMStateTransition ste = (VMStateTransition) a;
@@ -106,29 +104,28 @@ public class SequentialVMTransitions extends SatConstraint {
                 if (ste.getCurrentState() != ste.getNextState() &&
                         (ste.getNextState() == VMStateTransition.VMState.running
                                 || ste.getCurrentState() == VMStateTransition.VMState.running)) {
-                    if (curVM.equals(vm)) {
-                        //This is the VM we expected
-                        curVM = seq.get(++vmIdx);
-                        s.remove(curVM);
-                    } else {
-                        //Not the VM we expected
-                        if (s.contains(curVM)) {
-                            //and the VM is in the queue,
-                            //this is a violation
-                            return Sat.UNSATISFIED;
-                        }
+                    //This action matters and the associated VM is in the constraint
+                    if (pending.contains(vm)) {
+                        actions.put(vm, a);
                     }
-                } else {
-                    if (curVM.equals(vm)) { //It's not a state transition, so we pass
-                        curVM = seq.get(++vmIdx);
-                        s.remove(curVM);
-                    }
-                }
-                if (s.isEmpty()) {
-                    return Sat.SATISFIED;
                 }
             }
         }
-        return Sat.UNSATISFIED;
+        //We browse the actions in the order of the associated VM, and ensure there is no overlap btw. the action
+        int prevEnd = -1;
+        for (UUID vm : getInvolvedVMs()) {
+            Action a = actions.get(vm);
+            if (a != null) {
+                //We do care about this action
+                int p = a.getStart();
+                if (p < prevEnd) {
+                    //There is an overlap
+                    return Sat.UNSATISFIED;
+                } else {
+                    prevEnd = a.getEnd();
+                }
+            }
+        }
+        return Sat.SATISFIED;
     }
 }

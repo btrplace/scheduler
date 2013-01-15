@@ -21,10 +21,7 @@ package btrplace.model.constraint;
 import btrplace.model.*;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.event.BootVM;
-import btrplace.plan.event.MigrateVM;
-import btrplace.plan.event.ResumeVM;
-import btrplace.plan.event.SuspendVM;
+import btrplace.plan.event.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -38,6 +35,14 @@ import java.util.UUID;
  * @author Fabien Hermenier
  */
 public class SequentialVMTransitionsTest {
+
+    UUID n1 = UUID.randomUUID();
+    UUID n2 = UUID.randomUUID();
+    UUID vm1 = UUID.randomUUID();
+    UUID vm2 = UUID.randomUUID();
+    UUID vm3 = UUID.randomUUID();
+    UUID vm4 = UUID.randomUUID();
+
 
     @Test
     public void testInstantiation() {
@@ -74,12 +79,6 @@ public class SequentialVMTransitionsTest {
     @Test
     public void testContinuousIsSatisfied() {
         Mapping map = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
-        UUID vm4 = UUID.randomUUID();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm1, n1);
@@ -111,6 +110,35 @@ public class SequentialVMTransitionsTest {
         plan.add(new BootVM(vm2, n1, 3, 4));
         plan.add(new ResumeVM(vm3, n1, n1, 0, 1));
         Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+    }
 
+    @Test
+    public void testContinuousSatisfied2() {
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addReadyVM(vm1);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm3, n2);
+        map.addRunningVM(vm4, n1);
+
+        Model mo = new DefaultModel(map);
+        ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
+        /*
+        0:1 {action=boot(vm=7f7dfa63-2d6a-42a5-8d68-38c6f3ca95f9, on=21396c2b-9697-4442-ab9e-ae85802f84dd)}
+        1:2 {action=suspend(vm=1cd64878-1d78-47f3-8a4b-009646aa09b9, from=21396c2b-9697-4442-ab9e-ae85802f84dd, to=21396c2b-9697-4442-ab9e-ae85802f84dd)}
+        2:3 {action=shutdown(vm=0cf16dbc-4694-4aa1-a7df-5c0599844b9c, on=21396c2b-9697-4442-ab9e-ae85802f84dd)}
+         */
+        p.add(new BootVM(vm1, n1, 0, 1));
+        p.add(new SuspendVM(vm3, n2, n2, 1, 2));
+        p.add(new ShutdownVM(vm4, n1, 2, 3));
+
+        List<UUID> seq = new ArrayList<UUID>();
+        seq.add(vm1);
+        seq.add(vm2);
+        seq.add(vm3);
+        seq.add(vm4);
+        SequentialVMTransitions cstr = new SequentialVMTransitions(seq);
+        Assert.assertEquals(cstr.isSatisfied(p), SatConstraint.Sat.SATISFIED);
     }
 }
