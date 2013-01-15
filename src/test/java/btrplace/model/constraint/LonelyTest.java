@@ -19,6 +19,10 @@
 package btrplace.model.constraint;
 
 import btrplace.model.*;
+import btrplace.plan.DefaultReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.MigrateVM;
+import btrplace.plan.event.ShutdownVM;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
@@ -33,12 +37,19 @@ import java.util.UUID;
  */
 public class LonelyTest {
 
+    UUID vm1 = UUID.randomUUID();
+    UUID vm2 = UUID.randomUUID();
+    UUID vm3 = UUID.randomUUID();
+    UUID vm4 = UUID.randomUUID();
+
+    UUID n1 = UUID.randomUUID();
+    UUID n2 = UUID.randomUUID();
+    UUID n3 = UUID.randomUUID();
+
+
     @Test
     public void testInstantiation() {
         Set<UUID> s = new HashSet<UUID>();
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
         s.add(vm1);
         s.add(vm2);
         s.add(vm3);
@@ -47,7 +58,7 @@ public class LonelyTest {
         Assert.assertEquals(l.getInvolvedVMs(), s);
         Assert.assertTrue(l.getInvolvedNodes().isEmpty());
         Assert.assertFalse(l.isContinuous());
-        Assert.assertFalse(l.setContinuous(true));
+        Assert.assertTrue(l.setContinuous(true));
         Assert.assertTrue(l.setContinuous(false));
         System.out.println(l);
     }
@@ -55,9 +66,6 @@ public class LonelyTest {
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsHashCode() {
         Set<UUID> s = new HashSet<UUID>();
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
         s.add(vm1);
         s.add(vm2);
         s.add(vm3);
@@ -69,16 +77,39 @@ public class LonelyTest {
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
+    public void testContinuousIsSatisfied() {
+        Set<UUID> s = new HashSet<UUID>();
+
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOnlineNode(n3);
+
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm3, n2);
+        map.addRunningVM(vm4, n2);
+
+        Model mo = new DefaultModel(map);
+
+        s.add(vm1);
+        s.add(vm2);
+        Lonely l = new Lonely(s);
+
+        ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
+        Assert.assertEquals(l.isSatisfied(p), SatConstraint.Sat.SATISFIED);
+        p.add(new MigrateVM(vm2, n1, n2, 2, 4));
+
+        Assert.assertEquals(l.isSatisfied(p), SatConstraint.Sat.UNSATISFIED);
+        p.add(new ShutdownVM(vm3, n2, 0, 1));
+        Assert.assertEquals(l.isSatisfied(p), SatConstraint.Sat.UNSATISFIED);
+        p.add(new MigrateVM(vm4, n2, n3, 1, 2));
+        Assert.assertEquals(l.isSatisfied(p), SatConstraint.Sat.SATISFIED);
+    }
+
+    @Test
     public void testDiscreteIsSatisfied() {
         Set<UUID> s = new HashSet<UUID>();
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
-        UUID vm4 = UUID.randomUUID();
-
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        UUID n3 = UUID.randomUUID();
 
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
@@ -102,5 +133,6 @@ public class LonelyTest {
 
         map.addRunningVM(vm3, n1);
         Assert.assertEquals(l.isSatisfied(mo), SatConstraint.Sat.UNSATISFIED);
+
     }
 }
