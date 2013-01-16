@@ -33,6 +33,8 @@ import java.util.BitSet;
 /**
  * Enforces two sets of variables values to be disjoint
  * created sofdem - 08/09/11
+ * <p/>
+ * TODO: Seems buggy but hard to reproduce
  *
  * @author Sophie Demassey
  */
@@ -152,7 +154,7 @@ public class Disjoint extends AbstractLargeIntSConstraint {
                     }
                 }
             }
-            assert n == candidates[other][val].get();
+            assert n == candidates[other][val].get() : "n=" + n + " candidate=" + candidates[other][val].get();
             candidates[other][val].set(0);
         }
         required[group].set(val);

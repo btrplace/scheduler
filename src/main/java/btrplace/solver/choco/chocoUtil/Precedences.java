@@ -18,6 +18,7 @@
 
 package btrplace.solver.choco.chocoUtil;
 
+import choco.Choco;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
@@ -93,6 +94,10 @@ public class Precedences extends AbstractLargeIntSConstraint {
         for (int i = 0; i < l.length; i++) {
             endsByHost[i] = l[i].toNativeArray();
         }
+
+        if (host.isInstantiated()) {
+            start.setInf(horizonLB[host.getVal()].get());
+        }
         propagate();
     }
 
@@ -106,29 +111,32 @@ public class Precedences extends AbstractLargeIntSConstraint {
 
     @Override
     public void awakeOnInst(int idx) throws ContradictionException {
-        ChocoLogging.getBranchingLogger().finest("awakeOnInst(" + vars[idx].pretty() + ")");
+        //ChocoLogging.getBranchingLogger().finest("awakeOnInst(" + vars[idx].pretty() + ")");
         switch (idx) {
             case 0:
-                //The host variable
+                //The host variable has been instantiated, so its LB can be updated to the LB of the host.
                 start.setInf(horizonLB[idx].get());
                 break;
             case 1:
-                //The moment the task starts
-                //For every possible host, check if the start
-                //moment > UB
+                //The moment the task starts has been instantiated
+                //For each possible host, we update the UB of the other ends to ensure the non-overlapping
                 int st = start.getVal();
-                for (int i = 0; i < othersHost.length; i++) {
-                    //TODO: store the otherEnds by their location to not iterate over all of them
-                    int h = othersHost[i];
-                    if (host.canBeInstantiatedTo(h)) {
-                        //The task can go on the resource
-                        //the other task must end after this one, so we adjust its UB
-                        othersEnd[i].setSup(st);
+                DisposableIntIterator it = host.getDomain().getIterator();
+                try {
+                    while (it.hasNext()) {
+                        int h = it.next();
+                        for (int i : endsByHost[h]) {
+                            //The task can go on the resource
+                            //the other task must end after this one, so we adjust its UB
+                            othersEnd[i].setSup(st);
+                        }
                     }
+                } finally {
+                    it.dispose();
                 }
                 break;
             default:
-                //The moment the placed task ends
+                //The moment a placed tasks ends
                 int o = idx - 2;
                 int h = othersHost[o];
                 recomputeHorizonForHost(h);
@@ -136,8 +144,22 @@ public class Precedences extends AbstractLargeIntSConstraint {
 
                 if (host.isInstantiatedTo(h)) {
                     start.setInf(horizonLB[h].get());
+                } else if (host.canBeInstantiatedTo(h)) {
+                    //Browse the horizon for each of the possible host to update the LB
+                    DisposableIntIterator it2 = host.getDomain().getIterator();
+                    int min = Choco.MAX_UPPER_BOUND;
+                    try {
+                        while (it2.hasNext()) {
+                            int candidate = it2.next();
+                            if (horizonLB[candidate].get() < min) {
+                                min = horizonLB[candidate].get();
+                            }
+                        }
+                    } finally {
+                        it2.dispose();
+                    }
+                    start.setInf(min);
                 }
-                //TODO: is it possible to increase start when host is not instantiated ?
         }
         constAwake(false);
     }
@@ -156,18 +178,21 @@ public class Precedences extends AbstractLargeIntSConstraint {
 
     @Override
     public void awakeOnInf(int idx) throws ContradictionException {
-        ChocoLogging.getBranchingLogger().finest("awakeOnInf(" + vars[idx].pretty() + ")");
+        //ChocoLogging.getBranchingLogger().finest("awakeOnInf(" + vars[idx].pretty() + ")");
         if (idx >= 2) {
             int o = idx - 2;
             int h = othersHost[o];
             recomputeHorizonForHost(h);
+            if (host.isInstantiatedTo(h)) {
+                start.setInf(horizonLB[h].get());
+            }
         }
         constAwake(false);
     }
 
     @Override
     public void awakeOnSup(int idx) throws ContradictionException {
-        ChocoLogging.getBranchingLogger().finest("awakeOnSup(" + vars[idx].pretty() + ")");
+        //ChocoLogging.getBranchingLogger().finest("awakeOnSup(" + vars[idx].pretty() + ")");
         if (idx >= 2) {
             int o = idx - 2;
             int h = othersHost[o];
@@ -192,29 +217,20 @@ public class Precedences extends AbstractLargeIntSConstraint {
      * @throws ContradictionException if the invariant is violated
      */
     private void checkInvariant() throws ContradictionException {
-        if (host.isInstantiated()) {
-            int h = host.getVal();
-            if (!checkHorizonForHost(h)) {
-                fail();
+        DisposableIntIterator it = host.getDomain().getIterator();
+        try {
+            while (it.hasNext()) {
+                checkHorizonForHost(it.next());
             }
-        } else {
-            DisposableIntIterator it = host.getDomain().getIterator();
-            try {
-                while (it.hasNext()) {
-                    int h = it.next();
-                    if (!checkHorizonForHost(h)) {
-                        fail();
-                    }
-                }
-            } finally {
-                it.dispose();
-            }
+        } finally {
+            it.dispose();
         }
     }
 
-    private boolean checkHorizonForHost(int h) {
-        IStateInt ub = horizonUB[h];
-        return start.getSup() >= ub.get();
+    private void checkHorizonForHost(int h) throws ContradictionException {
+        if (start.getSup() < horizonLB[h].get()) {
+            fail();
+        }
     }
 
     @Override
@@ -274,5 +290,8 @@ public class Precedences extends AbstractLargeIntSConstraint {
             }
             ChocoLogging.getBranchingLogger().info(buf.append(" lb=").append(horizonLB[i].get()).append(" ub=").append(horizonUB[i].get()).toString());
         }
+        ChocoLogging.getBranchingLogger().info("Mine placed on " + host.pretty());
+        ChocoLogging.getBranchingLogger().info("Mine starts at " + start.pretty());
     }
+
 }

@@ -19,8 +19,6 @@
 package btrplace.solver.choco.chocoUtil;
 
 import choco.cp.solver.CPSolver;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -71,34 +69,37 @@ public class PrecedencesTest {
     }
 
     /**
-     * Ends variables vary between 1 and 3 + index of the host
+     * Ends variables vary between 1 and 2 + index of the host
      * Just a simple test.
      */
     @Test
     public void simpleTest() {
         CPSolver s = new CPSolver();
-        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+        //ChocoLogging.setVerbosity(Verbosity.FINEST);
 
-        IntDomainVar[] ends = new IntDomainVar[5];
-        int[] others = new int[5];
+        IntDomainVar[] ends = new IntDomainVar[3];
+        int[] others = new int[3];
         others[0] = 0;
-        ends[0] = s.createBoundIntVar("ends[0]", 1, 3);
+        ends[0] = s.createBoundIntVar("ends[0]", 1, 2);
         others[1] = 0;
         ends[1] = s.createBoundIntVar("ends[1]", 1, 3);
-        others[2] = 1;
+        others[2] = 0;
         ends[2] = s.createBoundIntVar("ends[2]", 1, 4);
-        others[3] = 1;
-        ends[3] = s.createBoundIntVar("ends[3]", 1, 4);
-        others[4] = 2;
-        ends[4] = s.createBoundIntVar("ends[4]", 1, 5);
 
+        /*
+         on host 0, 2 * 2 * 2 -> 8
+         on host 1, 2 * 2 -> 4
 
-        IntDomainVar host = s.createEnumIntVar("host", 0, 2);
-        IntDomainVar start = s.createBoundIntVar("start", 0, 6);
+         on host 2, 4 * 4 * 2 -> 32
+         16 * 9 * 16 + 27 * 4 * 16 + 32 * 4 * 9
+         */
+
+        IntDomainVar host = s.createEnumIntVar("host", 0, 0);
+        IntDomainVar start = s.createBoundIntVar("start", 0, 5);
         Precedences p = new Precedences(s.getEnvironment(), host, start, others, ends);
         s.post(p);
         Boolean ret = s.solveAll();
         Assert.assertEquals(ret, Boolean.TRUE);
-        Assert.assertEquals(s.getNbSolutions(), 6);
+        Assert.assertEquals(s.getNbSolutions(), 75); //TODO: A way to check if it is correct ?
     }
 }

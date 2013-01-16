@@ -131,6 +131,7 @@ public class CCumulatedRunningCapacityTest {
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
+        System.out.println(plan);
         Assert.assertEquals(plan.getSize(), 2);
     }
 

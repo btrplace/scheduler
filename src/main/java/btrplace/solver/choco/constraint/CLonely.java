@@ -26,10 +26,12 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoSatConstraint;
 import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.Slice;
+import btrplace.solver.choco.VMActionModel;
 import btrplace.solver.choco.chocoUtil.Disjoint;
+import btrplace.solver.choco.chocoUtil.Precedences;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import gnu.trove.TIntArrayList;
 
 import java.util.*;
 
@@ -54,22 +56,49 @@ public class CLonely implements ChocoSatConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
         //Remove non future-running VMs
-        List<IntDomainVar> mine = new ArrayList<IntDomainVar>();
-        List<IntDomainVar> otherVMs = new ArrayList<IntDomainVar>();
+        List<IntDomainVar> myHosts = new ArrayList<IntDomainVar>();
+        List<IntDomainVar> otherHosts = new ArrayList<IntDomainVar>();
         Collection<UUID> vms = cstr.getInvolvedVMs();
         for (UUID vm : rp.getFutureRunningVMs()) {
-            Slice s = rp.getVMAction(vm).getDSlice();
+            IntDomainVar host = rp.getVMAction(vm).getDSlice().getHoster();
             if (vms.contains(vm)) {
-                mine.add(s.getHoster());
+                myHosts.add(host);
             } else {
-                otherVMs.add(s.getHoster());
+                otherHosts.add(host);
             }
         }
         //Link the assignment variables with the set
         CPSolver s = rp.getSolver();
-        s.post(new Disjoint(s.getEnvironment(), mine.toArray(new IntDomainVar[mine.size()]),
-                otherVMs.toArray(new IntDomainVar[otherVMs.size()]),
+        //System.out.println(myHosts);
+        //System.out.println(otherHosts);
+        s.post(new Disjoint(s.getEnvironment(), myHosts.toArray(new IntDomainVar[myHosts.size()]),
+                otherHosts.toArray(new IntDomainVar[otherHosts.size()]),
                 rp.getNodes().length));
+
+        if (cstr.isContinuous()) {
+            //Get the position of all the others c-slices and their associated end moment
+            TIntArrayList curPos = new TIntArrayList();
+
+            List<IntDomainVar> curEnds = new ArrayList<IntDomainVar>();
+            Mapping map = rp.getSourceModel().getMapping();
+            for (UUID vm : map.getRunningVMs()) {
+                if (!vms.contains(vm)) {
+                    curPos.add(rp.getNode(map.getVMLocation(vm)));
+                    VMActionModel a = rp.getVMAction(vm);
+                    curEnds.add(a.getCSlice().getEnd());
+                }
+            }
+            for (UUID vm : vms) {
+                if (rp.getFutureRunningVMs().contains(vm)) {
+                    VMActionModel a = rp.getVMAction(vm);
+                    Precedences prec = new Precedences(s.getEnvironment(), a.getDSlice().getHoster(),
+                            a.getDSlice().getStart(),
+                            curPos.toNativeArray(),
+                            curEnds.toArray(new IntDomainVar[curEnds.size()]));
+                    s.post(prec);
+                }
+            }
+        }
         return true;
     }
 
