@@ -115,4 +115,29 @@ public class CLonelyTest {
         System.out.println(plan);
         Assert.assertEquals(l.isSatisfied(plan.getResult()), SatConstraint.Sat.SATISFIED);
     }
+
+    @Test
+    public void testGetMisplaced() {
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOnlineNode(n3);
+
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm3, n1);
+        map.addRunningVM(vm4, n2);
+        map.addRunningVM(vm5, n2);
+        Model mo = new DefaultModel(map);
+
+        Set<UUID> mine = new HashSet<UUID>();
+        mine.add(vm1);
+        mine.add(vm2);
+        mine.add(vm3);
+
+        CLonely c = new CLonely(new Lonely(mine));
+        Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
+        map.addRunningVM(vm2, n2);
+        Assert.assertEquals(c.getMisPlacedVMs(mo), map.getRunningVMs(n2));
+    }
 }

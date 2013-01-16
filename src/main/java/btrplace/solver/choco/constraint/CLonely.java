@@ -80,26 +80,40 @@ public class CLonely implements ChocoSatConstraint {
 
         if (cstr.isContinuous()) {
             //Get the position of all the others c-slices and their associated end moment
-            TIntArrayList curPos = new TIntArrayList();
-
-            List<IntDomainVar> curEnds = new ArrayList<IntDomainVar>();
+            TIntArrayList otherPos = new TIntArrayList();
+            TIntArrayList minePos = new TIntArrayList();
+            List<IntDomainVar> otherEnds = new ArrayList<IntDomainVar>();
+            List<IntDomainVar> mineEnds = new ArrayList<IntDomainVar>();
             Mapping map = rp.getSourceModel().getMapping();
             for (UUID vm : map.getRunningVMs()) {
                 if (!vms.contains(vm)) {
-                    curPos.add(rp.getNode(map.getVMLocation(vm)));
+                    otherPos.add(rp.getNode(map.getVMLocation(vm)));
                     VMActionModel a = rp.getVMAction(vm);
-                    curEnds.add(a.getCSlice().getEnd());
+                    otherEnds.add(a.getCSlice().getEnd());
+                } else {
+                    minePos.add(rp.getNode(map.getVMLocation(vm)));
+                    VMActionModel a = rp.getVMAction(vm);
+                    mineEnds.add(a.getCSlice().getEnd());
                 }
             }
             for (UUID vm : vms) {
                 VMActionModel a = rp.getVMAction(vm);
                 Precedences prec = new Precedences(s.getEnvironment(), a.getDSlice().getHoster(),
                         a.getDSlice().getStart(),
-                        curPos.toNativeArray(),
-                        curEnds.toArray(new IntDomainVar[curEnds.size()]));
+                        otherPos.toNativeArray(),
+                        otherEnds.toArray(new IntDomainVar[otherEnds.size()]));
                 s.post(prec);
             }
-            //TODO: What about the other VMs, they cannot have their d-slice on a node having a c-slice ?
+
+            //TODO: The following reveals a model problem. Too many constraints!!
+            for (UUID vm : otherVMs) {
+                VMActionModel a = rp.getVMAction(vm);
+                Precedences prec = new Precedences(s.getEnvironment(), a.getDSlice().getHoster(),
+                        a.getDSlice().getStart(),
+                        minePos.toNativeArray(),
+                        mineEnds.toArray(new IntDomainVar[mineEnds.size()]));
+                s.post(prec);
+            }
         }
         return true;
     }

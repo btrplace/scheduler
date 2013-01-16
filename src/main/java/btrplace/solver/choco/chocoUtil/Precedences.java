@@ -103,8 +103,8 @@ public class Precedences extends AbstractLargeIntSConstraint {
 
     @Override
     public void propagate() throws ContradictionException {
-        printOthers();
-        printEndsByHost();
+        //printOthers();
+        //printEndsByHost();
         assert checkHorizonConsistency();
         checkInvariant();
     }
@@ -165,11 +165,13 @@ public class Precedences extends AbstractLargeIntSConstraint {
     }
 
     private void recomputeHorizonForHost(int h) {
+        //ChocoLogging.getBranchingLogger().finest("recomputeHorizonForHost(" + h + ")");
         int lb = 0, ub = 0;
         for (int id : endsByHost[h]) {
             IntDomainVar end = othersEnd[id];
+            //ChocoLogging.getBranchingLogger().finest("\t check " + end.pretty());
             lb = Math.max(end.getInf(), lb);
-            ub = Math.max(end.getSup(), lb);
+            ub = Math.max(end.getSup(), ub);
         }
         horizonLB[h].set(lb);
         horizonUB[h].set(ub);
