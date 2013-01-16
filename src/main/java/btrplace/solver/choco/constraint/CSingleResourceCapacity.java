@@ -29,6 +29,8 @@ import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.ResourceMapping;
 import choco.cp.solver.CPSolver;
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -61,8 +63,22 @@ public class CSingleResourceCapacity implements ChocoSatConstraint {
         int amount = cstr.getAmount();
         CPSolver s = rp.getSolver();
         for (UUID n : cstr.getInvolvedNodes()) {
-            s.post(s.leq(rcm.getRealNodeUsage()[rp.getNode(n)], amount));
+            IntDomainVar v = rcm.getVirtualUsage()[rp.getNode(n)];
+            s.post(s.leq(v, amount));
+
+            //Continuous in practice ?
+            if (cstr.isContinuous() && cstr.isSatisfied(rp.getSourceModel()).equals(SatConstraint.Sat.SATISFIED)) {
+                try {
+                    v.setSup(cstr.getAmount());
+                } catch (ContradictionException e) {
+                    rp.getLogger().error("Unable to restrict to up to {}, the maximum '{}' usage on '{}': ", cstr.getAmount(), rcm.getIdentifier(), n, e.getMessage());
+                    return false;
+                }
+            }
+
         }
+
+
         return true;
     }
 

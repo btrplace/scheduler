@@ -59,16 +59,16 @@ public class ResourceMappingTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         ResourceMapping rcm = new ResourceMapping(rp, rc);
         Assert.assertEquals(rc.getIdentifier(), rcm.getIdentifier());
-        Assert.assertEquals(-1, rcm.getVMConsumption()[rp.getVM(vm)].getInf());
-        Assert.assertEquals(-1, rcm.getVMConsumption()[rp.getVM(vm2)].getInf());
-        Assert.assertEquals(0, rcm.getVMConsumption()[rp.getVM(vm3)].getSup()); //Will not be running so 0
-        IntDomainVar pn1 = rcm.getRawNodeUsage()[rp.getNode(n1)];
-        IntDomainVar pn2 = rcm.getRawNodeUsage()[rp.getNode(n2)];
+        Assert.assertEquals(-1, rcm.getVMsAllocation()[rp.getVM(vm)].getInf());
+        Assert.assertEquals(-1, rcm.getVMsAllocation()[rp.getVM(vm2)].getInf());
+        Assert.assertEquals(0, rcm.getVMsAllocation()[rp.getVM(vm3)].getSup()); //Will not be running so 0
+        IntDomainVar pn1 = rcm.getPhysicalUsage()[rp.getNode(n1)];
+        IntDomainVar pn2 = rcm.getPhysicalUsage()[rp.getNode(n2)];
         Assert.assertTrue(pn1.getInf() == 0 && pn1.getSup() == 4);
         Assert.assertTrue(pn2.getInf() == 0 && pn2.getSup() == 0);
 
-        IntDomainVar vn1 = rcm.getRealNodeUsage()[rp.getNode(n1)];
-        IntDomainVar vn2 = rcm.getRealNodeUsage()[rp.getNode(n2)];
+        IntDomainVar vn1 = rcm.getVirtualUsage()[rp.getNode(n1)];
+        IntDomainVar vn2 = rcm.getVirtualUsage()[rp.getNode(n2)];
         Assert.assertEquals(vn1.getInf(), 0);
         Assert.assertEquals(vn2.getInf(), 0);
 
@@ -105,13 +105,13 @@ public class ResourceMappingTest {
         avm2.getDSlice().getHoster().setVal(1);
         ResourceMapping rcm = rp.getResourceMapping("foo");
         //Basic consumption for the VMs. If would be safe to use Preserve, but I don't want:D
-        rcm.getVMConsumption()[rp.getVM(vm)].setInf(2);
-        rcm.getVMConsumption()[rp.getVM(vm2)].setInf(3);
+        rcm.getVMsAllocation()[rp.getVM(vm)].setInf(2);
+        rcm.getVMsAllocation()[rp.getVM(vm2)].setInf(3);
         Assert.assertEquals(rp.getSolver().solve(), Boolean.TRUE);
-        Assert.assertEquals(rcm.getRealNodeUsage()[0].getInf(), 2);
-        Assert.assertEquals(rcm.getRealNodeUsage()[0].getSup(), 2);
-        Assert.assertEquals(rcm.getRealNodeUsage()[1].getInf(), 3);
-        Assert.assertEquals(rcm.getRealNodeUsage()[1].getSup(), 3);
+        Assert.assertEquals(rcm.getVirtualUsage()[0].getInf(), 2);
+        Assert.assertEquals(rcm.getVirtualUsage()[0].getSup(), 2);
+        Assert.assertEquals(rcm.getVirtualUsage()[1].getInf(), 3);
+        Assert.assertEquals(rcm.getVirtualUsage()[1].getSup(), 3);
     }
 
 }

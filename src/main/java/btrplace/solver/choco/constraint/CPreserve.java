@@ -63,7 +63,7 @@ public class CPreserve implements ChocoSatConstraint {
         for (UUID vm : cstr.getInvolvedVMs()) {
             if (rp.getFutureRunningVMs().contains(vm)) {
                 int idx = rp.getVM(vm);
-                IntDomainVar v = map.getVMConsumption()[idx];
+                IntDomainVar v = map.getVMsAllocation()[idx];
                 try {
                     v.setInf(cstr.getAmount());
                 } catch (ContradictionException ex) {

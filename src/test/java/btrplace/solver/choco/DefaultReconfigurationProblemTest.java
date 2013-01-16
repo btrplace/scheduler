@@ -385,8 +385,8 @@ public class DefaultReconfigurationProblemTest {
 
         //Check the amount of allocated resources on the RP
         ResourceMapping rcm = rp.getResourceMapping("foo");
-        Assert.assertEquals(rcm.getVMConsumption()[rp.getVM(vm1)].getVal(), 5);
-        Assert.assertEquals(rcm.getVMConsumption()[rp.getVM(vm2)].getVal(), 7);
+        Assert.assertEquals(rcm.getVMsAllocation()[rp.getVM(vm1)].getVal(), 5);
+        Assert.assertEquals(rcm.getVMsAllocation()[rp.getVM(vm2)].getVal(), 7);
 
         //And on the resulting plan.
         Model res = p.getResult();

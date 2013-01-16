@@ -31,8 +31,8 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Specify, for a given resource, the rawNodeUsage associated to each server,
- * and the vmUsage consumed by each of the VMs they host.
+ * Specify, for a given resource, the physical resource usage associated to each server,
+ * and the associated virtual resource usage consumed by each of the VMs they host.
  *
  * @author Fabien Hermenier
  */
@@ -40,11 +40,11 @@ public class ResourceMapping {
 
     private ShareableResource rc;
 
-    private IntDomainVar[] rawNodeUsage;
+    private IntDomainVar[] phyRcUsage;
 
-    private IntDomainVar[] realNodeUsage;
+    private IntDomainVar[] virtRcUsage;
 
-    private IntDomainVar[] vmUsage;
+    private IntDomainVar[] vmAllocation;
 
     private ReconfigurationProblem rp;
 
@@ -58,38 +58,38 @@ public class ResourceMapping {
         this.rc = rc;
         this.rp = rp;
         UUID[] nodes = rp.getNodes();
-        rawNodeUsage = new IntDomainVar[nodes.length];
-        realNodeUsage = new IntDomainVar[nodes.length];
+        phyRcUsage = new IntDomainVar[nodes.length];
+        virtRcUsage = new IntDomainVar[nodes.length];
 
         for (int i = 0; i < nodes.length; i++) {
-            rawNodeUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("rawNodeUsage('" + rc.getIdentifier() + "', '" + rp.getNode(i) + "')"), 0, rc.get(nodes[i]));
-            realNodeUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("realNodeUsage('" + rc.getIdentifier() + "', '" + rp.getNode(i) + "')"), 0, Choco.MAX_UPPER_BOUND);
+            phyRcUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("phyRcUsage('" + rc.getIdentifier() + "', '" + rp.getNode(i) + "')"), 0, rc.get(nodes[i]));
+            virtRcUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("virtRcUsage('" + rc.getIdentifier() + "', '" + rp.getNode(i) + "')"), 0, Choco.MAX_UPPER_BOUND);
         }
 
 
-        //Bin packing for the node vmUsage
+        //Bin packing for the node vmAllocation
         CPSolver s = rp.getSolver();
         List<IntDomainVar> notNullUsage = new ArrayList<IntDomainVar>();
         List<IntDomainVar> hosters = new ArrayList<IntDomainVar>();
 
-        vmUsage = new IntDomainVar[rp.getVMs().length];
-        for (int i = 0; i < vmUsage.length; i++) {
+        vmAllocation = new IntDomainVar[rp.getVMs().length];
+        for (int i = 0; i < vmAllocation.length; i++) {
             UUID vmId = rp.getVM(i);
             VMActionModel a = rp.getVMAction(vmId);
             Slice slice = a.getDSlice();
             if (slice == null) { //The VMs will not be running, so its consumption is set to 0
-                vmUsage[i] = s.makeConstantIntVar(rp.makeVarLabel("vmUsage('" + rc.getIdentifier() + "', '" + vmId + "'"), 0);
+                vmAllocation[i] = s.makeConstantIntVar(rp.makeVarLabel("vmAllocation('" + rc.getIdentifier() + "', '" + vmId + "'"), 0);
             } else {
                 //We don't know about the next VM usage for the moment, -1 is used by default to allow to detect an
                 //non-updated value.
-                vmUsage[i] = s.createBoundIntVar("vmUsage('" + rc.getIdentifier() + "', '" + vmId + "')", -1, Choco.MAX_UPPER_BOUND);
-                notNullUsage.add(vmUsage[i]);
+                vmAllocation[i] = s.createBoundIntVar("vmAllocation('" + rc.getIdentifier() + "', '" + vmId + "')", -1, Choco.MAX_UPPER_BOUND);
+                notNullUsage.add(vmAllocation[i]);
                 hosters.add(slice.getHoster());
             }
 
         }
         //We create a BP with only the VMs requiring a not null amount of resources
-        s.post(new BinPacking(s.getEnvironment(), realNodeUsage, notNullUsage.toArray(new IntDomainVar[notNullUsage.size()]), hosters.toArray(new IntDomainVar[hosters.size()])));
+        s.post(new BinPacking(s.getEnvironment(), virtRcUsage, notNullUsage.toArray(new IntDomainVar[notNullUsage.size()]), hosters.toArray(new IntDomainVar[hosters.size()])));
 
     }
 
@@ -103,7 +103,7 @@ public class ResourceMapping {
     }
 
     /**
-     * Get the original resource vmUsage and consumption.
+     * Get the original resource node physical capacity and VM consumption.
      *
      * @return an {@link ShareableResource}
      */
@@ -112,32 +112,77 @@ public class ResourceMapping {
     }
 
     /**
-     * Get the nodes raw vmUsage according to the original resource.
+     * Get the physical resource usage of each node.
      *
-     * @return an array of variable denoting each node raw vmUsage.
+     * @return an array of variable denoting the resource usage for each node.
      */
-    public IntDomainVar[] getRawNodeUsage() {
-        return rawNodeUsage;
+    public IntDomainVar[] getPhysicalUsage() {
+        return phyRcUsage;
     }
 
     /**
-     * Get the nodes real vmUsage that is made by the VMs for the resource.
+     * Get the physical resource usage of a given node
      *
-     * @return an array of variables denoting each node real vmUsage.
+     * @param nIdx the node identifier
+     * @return the variable denoting the resource usage for the node. {@code null} if the node is unknown
      */
-    public IntDomainVar[] getRealNodeUsage() {
-        return realNodeUsage;
+    public IntDomainVar getPhysicalUsage(int nIdx) {
+        if (nIdx >= 0 && nIdx < rp.getNodes().length) {
+            return phyRcUsage[nIdx];
+        }
+        return null;
     }
 
     /**
-     * Get the VMs consumption of the resource according to the original resource.
+     * Get the virtual resource usage  that is made by the VMs on the nodes.
+     * <b>Warning: the only possible approach to restrict these value is to increase their
+     * upper bound using the associated {@code setSup()} method</b>
+     *
+     * @return an array of variables denoting each node virtual resource usage.
+     */
+    public IntDomainVar[] getVirtualUsage() {
+        return virtRcUsage;
+    }
+
+    /**
+     * Get the virtual resource usage of a given node.
+     * <b>Warning: the only possible approach to restrict the value is to increase their
+     * upper bound using the associated {@code setSup()} method</b>
+     *
+     * @param nIdx the node identifier
+     * @return the variable denoting the resource usage for the node. {@code null} if the node is unknown
+     */
+    public IntDomainVar getVirtualUsage(int nIdx) {
+        if (nIdx >= 0 && nIdx < rp.getNodes().length) {
+            return virtRcUsage[nIdx];
+        }
+        return null;
+    }
+
+    /**
+     * Get the amount of virtual resource to allocate to each VM.
      * <b>Warning: the only possible approach to restrict these value is to increase their
      * lower bound using the associated {@code setInf()} method</b>
      *
-     * @return an array of variables denoting each VM vmUsage
+     * @return an array of variables denoting each VM vmAllocation
      */
-    public IntDomainVar[] getVMConsumption() {
-        return vmUsage;
+    public IntDomainVar[] getVMsAllocation() {
+        return vmAllocation;
+    }
+
+    /**
+     * Get the amount of virtual resource to allocate a given VM.
+     * <b>Warning: the only possible approach to restrict this value is to increase their
+     * lower bound using the associated {@code setInf()} method</b>
+     *
+     * @param the VM identifier
+     * @return the variable denoting the virtual resources to allocate to the VM. {@code null} if the VM is unknown
+     */
+    public IntDomainVar getVMsAllocation(int vmIdx) {
+        if (vmIdx >= 0 && vmIdx < rp.getVMs().length) {
+            return vmAllocation[vmIdx];
+        }
+        return null;
     }
 
     /**
@@ -153,7 +198,7 @@ public class ResourceMapping {
      */
     public boolean addAllocateAction(ReconfigurationPlan plan, UUID e, UUID node, int st, int ed) {
 
-        int use = vmUsage[rp.getVM(e)].getInf();
+        int use = vmAllocation[rp.getVM(e)].getInf();
         if (rc.get(e) != use) {
             //The allocation has changed
             Allocate a = new Allocate(e, node, rc.getIdentifier(), use, st, ed);

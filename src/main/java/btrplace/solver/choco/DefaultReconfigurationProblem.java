@@ -173,7 +173,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         //Instantiate the VM usage to its LB.
         for (ResourceMapping rcm : getResourceMappings()) {
-            for (IntDomainVar v : rcm.getVMConsumption()) {
+            for (IntDomainVar v : rcm.getVMsAllocation()) {
                 try {
                     v.setVal(v.getInf());
                 } catch (ContradictionException e) {
@@ -231,10 +231,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         for (ResourceMapping rcm : getResourceMappings()) {
             for (UUID vm : getSourceModel().getMapping().getAllVMs()) {
                 int vmId = getVM(vm);
-                if (rcm.getVMConsumption()[vmId].getInf() < 0) {
+                if (rcm.getVMsAllocation()[vmId].getInf() < 0) {
                     int prevUsage = rcm.getSourceResource().get(vm);
                     try {
-                        rcm.getVMConsumption()[vmId].setInf(prevUsage);
+                        rcm.getVMsAllocation()[vmId].setInf(prevUsage);
                     } catch (ContradictionException e) {
                         getLogger().error("Unable to set the minimal '{}' usage for '{}' to its current usage ({})",
                                 rcm.getIdentifier(), vm, prevUsage);
@@ -529,7 +529,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             ResourceMapping rcm = e.getValue();
             String rcId = e.getKey();
             int prev = rcm.getSourceResource().get(vm);
-            int now = rcm.getVMConsumption()[getVM(vm)].getInf();
+            int now = rcm.getVMsAllocation()[getVM(vm)].getInf();
             if (prev != now) {
                 Allocate a = new Allocate(vm, node, rcId, now, st, ed);
                 plan.add(a);
@@ -543,7 +543,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             ResourceMapping rcm = e.getValue();
             String rcId = e.getKey();
             int prev = rcm.getSourceResource().get(vm);
-            int now = rcm.getVMConsumption()[getVM(vm)].getInf();
+            int now = rcm.getVMsAllocation()[getVM(vm)].getInf();
             if (prev != now) {
                 a.addEvent(k, new AllocateEvent(vm, rcId, now));
             }
