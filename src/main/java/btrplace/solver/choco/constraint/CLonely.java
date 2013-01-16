@@ -58,13 +58,16 @@ public class CLonely implements ChocoSatConstraint {
         //Remove non future-running VMs
         List<IntDomainVar> myHosts = new ArrayList<IntDomainVar>();
         List<IntDomainVar> otherHosts = new ArrayList<IntDomainVar>();
-        Collection<UUID> vms = cstr.getInvolvedVMs();
+        Collection<UUID> vms = new HashSet<UUID>();//cstr.getInvolvedVMs();
+        Set<UUID> otherVMs = new HashSet<UUID>();
         for (UUID vm : rp.getFutureRunningVMs()) {
             IntDomainVar host = rp.getVMAction(vm).getDSlice().getHoster();
-            if (vms.contains(vm)) {
+            if (cstr.getInvolvedVMs().contains(vm)) {
                 myHosts.add(host);
+                vms.add(vm);
             } else {
                 otherHosts.add(host);
+                otherVMs.add(vm);
             }
         }
         //Link the assignment variables with the set
@@ -89,15 +92,14 @@ public class CLonely implements ChocoSatConstraint {
                 }
             }
             for (UUID vm : vms) {
-                if (rp.getFutureRunningVMs().contains(vm)) {
-                    VMActionModel a = rp.getVMAction(vm);
-                    Precedences prec = new Precedences(s.getEnvironment(), a.getDSlice().getHoster(),
-                            a.getDSlice().getStart(),
-                            curPos.toNativeArray(),
-                            curEnds.toArray(new IntDomainVar[curEnds.size()]));
-                    s.post(prec);
-                }
+                VMActionModel a = rp.getVMAction(vm);
+                Precedences prec = new Precedences(s.getEnvironment(), a.getDSlice().getHoster(),
+                        a.getDSlice().getStart(),
+                        curPos.toNativeArray(),
+                        curEnds.toArray(new IntDomainVar[curEnds.size()]));
+                s.post(prec);
             }
+            //TODO: What about the other VMs, they cannot have their d-slice on a node having a c-slice ?
         }
         return true;
     }
