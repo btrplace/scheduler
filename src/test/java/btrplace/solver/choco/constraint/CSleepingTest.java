@@ -33,7 +33,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class CSleepingTest {
+public class CSleepingTest extends ConstraintTestMaterial {
 
     /*@Test
     public void testInstantiation() {
@@ -45,11 +45,7 @@ public class CSleepingTest {
     @Test
     public void testGetMisplaced() {
         Mapping m = new DefaultMapping();
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
         m.addReadyVM(vm1);
-        UUID n1 = UUID.randomUUID();
         m.addOnlineNode(n1);
         m.addRunningVM(vm2, n1);
         m.addSleepingVM(vm3, n1);

@@ -35,16 +35,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class CQuarantineTest {
-
-    UUID vm1 = UUID.randomUUID();
-    UUID vm2 = UUID.randomUUID();
-    UUID vm3 = UUID.randomUUID();
-    UUID vm4 = UUID.randomUUID();
-
-    UUID n1 = UUID.randomUUID();
-    UUID n2 = UUID.randomUUID();
-    UUID n3 = UUID.randomUUID();
+public class CQuarantineTest extends ConstraintTestMaterial {
 
     @Test
     public void testWithSatisfiedModel() throws SolverException {

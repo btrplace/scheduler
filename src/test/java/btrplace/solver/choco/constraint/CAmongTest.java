@@ -36,18 +36,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class CAmongTest {
-
-    UUID vm1 = UUID.randomUUID();
-    UUID vm2 = UUID.randomUUID();
-    UUID vm3 = UUID.randomUUID();
-    UUID vm4 = UUID.randomUUID();
-    UUID vm5 = UUID.randomUUID();
-
-    UUID n1 = UUID.randomUUID();
-    UUID n2 = UUID.randomUUID();
-    UUID n3 = UUID.randomUUID();
-    UUID n4 = UUID.randomUUID();
+public class CAmongTest extends ConstraintTestMaterial{
 
     @Test
     public void testWithOnGroup() throws SolverException {

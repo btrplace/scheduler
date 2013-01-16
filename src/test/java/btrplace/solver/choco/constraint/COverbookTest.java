@@ -40,7 +40,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class COverbookTest {
+public class COverbookTest extends ConstraintTestMaterial {
 
     /*
     @Test
@@ -156,18 +156,15 @@ public class COverbookTest {
     @Test
     public void testGetMisplaced() throws SolverException {
         Mapping m = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        UUID n3 = UUID.randomUUID();
         m.addOnlineNode(n1);
         m.addOnlineNode(n2);
         m.addOnlineNode(n3);
-        m.addRunningVM(UUID.randomUUID(), n1);
-        m.addRunningVM(UUID.randomUUID(), n2);
-        m.addRunningVM(UUID.randomUUID(), n2);
-        m.addRunningVM(UUID.randomUUID(), n3);
-        m.addRunningVM(UUID.randomUUID(), n3);
-        m.addRunningVM(UUID.randomUUID(), n3);
+        m.addRunningVM(vm1, n1);
+        m.addRunningVM(vm2, n2);
+        m.addRunningVM(vm3, n2);
+        m.addRunningVM(vm4, n3);
+        m.addRunningVM(vm5, n3);
+        m.addRunningVM(vm6, n3);
         ShareableResource rcCPU = new DefaultShareableResource("cpu", 1);
         Model mo = new DefaultModel(m);
         mo.attach(rcCPU);
@@ -186,9 +183,6 @@ public class COverbookTest {
     @Test
     public void testWithScheduling1() throws SolverException {
         Mapping m = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID vm1 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
 
         m.addOnlineNode(n1);
         m.addRunningVM(vm1, n1);
@@ -218,9 +212,6 @@ public class COverbookTest {
      */
     @Test
     public void testWithIncrease() throws SolverException, ContradictionException {
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID n1 = UUID.randomUUID();
 
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);

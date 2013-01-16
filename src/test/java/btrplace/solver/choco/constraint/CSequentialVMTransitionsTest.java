@@ -40,15 +40,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class CSequentialVMTransitionsTest {
-
-    UUID vm1 = UUID.randomUUID();
-    UUID vm2 = UUID.randomUUID();
-    UUID vm3 = UUID.randomUUID();
-    UUID vm4 = UUID.randomUUID();
-
-    UUID n1 = UUID.randomUUID();
-    UUID n2 = UUID.randomUUID();
+public class CSequentialVMTransitionsTest extends ConstraintTestMaterial {
 
     @Test
     public void testWithOnlyTransitions() throws SolverException {

@@ -36,7 +36,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class COfflineTest {
+public class COfflineTest extends ConstraintTestMaterial {
 
     @Test
     public void testInstantiation() {
@@ -52,8 +52,6 @@ public class COfflineTest {
     @Test
     public void simpleTest() throws SolverException {
         Mapping map = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
 
@@ -104,12 +102,9 @@ public class COfflineTest {
     @Test
     public void testSolvableProblem() throws SolverException {
         Mapping map = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        UUID vm = UUID.randomUUID();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
-        map.addRunningVM(vm, n1);
+        map.addRunningVM(vm1, n1);
         Model mo = new DefaultModel(map);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Offline(Collections.singleton(n1))));
@@ -121,10 +116,8 @@ public class COfflineTest {
     @Test
     public void testUnsolvableProblem() throws SolverException {
         Mapping map = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID vm = UUID.randomUUID();
         map.addOnlineNode(n1);
-        map.addRunningVM(vm, n1);
+        map.addRunningVM(vm1, n1);
         Model mo = new DefaultModel(map);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Offline(Collections.singleton(n1))));

@@ -37,7 +37,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class CRootTest {
+public class CRootTest extends ConstraintTestMaterial {
 
     /*@Test
     public void testInstantiation() {
@@ -49,11 +49,6 @@ public class CRootTest {
     @Test
     public void testBasic() throws SolverException {
         Mapping map = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm1, n1);

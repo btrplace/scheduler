@@ -34,7 +34,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class CKilledTest {
+public class CKilledTest extends ConstraintTestMaterial {
 
     /*@Test
     public void testInstantiation() {
@@ -46,10 +46,7 @@ public class CKilledTest {
     @Test
     public void testGetMisplaced() {
         Mapping m = new DefaultMapping();
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
         m.addReadyVM(vm1);
-        UUID n1 = UUID.randomUUID();
         m.addOnlineNode(n1);
         m.addRunningVM(vm2, n1);
         Model mo = new DefaultModel(m);

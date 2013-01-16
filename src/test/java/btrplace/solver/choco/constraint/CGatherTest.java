@@ -39,12 +39,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class CGatherTest {
-    UUID vm1 = UUID.randomUUID();
-    UUID vm2 = UUID.randomUUID();
-    UUID vm3 = UUID.randomUUID();
-    UUID n1 = UUID.randomUUID();
-    UUID n2 = UUID.randomUUID();
+public class CGatherTest extends ConstraintTestMaterial {
 
     @Test
     public void testDiscreteWithoutRunningVM() throws SolverException {

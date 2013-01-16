@@ -40,14 +40,11 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class CSingleRunningCapacityTest {
+public class CSingleRunningCapacityTest extends ConstraintTestMaterial {
 
     @Test
     public void testDiscreteResolution() throws SolverException {
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
-        UUID n1 = UUID.randomUUID();
+
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);
@@ -72,10 +69,6 @@ public class CSingleRunningCapacityTest {
 
     @Test
     public void testContinuousResolution() throws SolverException {
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
-        UUID n1 = UUID.randomUUID();
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);
@@ -107,14 +100,8 @@ public class CSingleRunningCapacityTest {
     @Test
     public void testGetMisplaced() {
         Mapping m = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
         m.addOnlineNode(n1);
         m.addOnlineNode(n2);
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
-        UUID vm4 = UUID.randomUUID();
         m.addRunningVM(vm1, n1);
         m.addReadyVM(vm2);
 

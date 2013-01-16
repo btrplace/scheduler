@@ -38,7 +38,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class CBanTest {
+public class CBanTest extends ConstraintTestMaterial {
 
 /*    @Test
     public void testInstantiation() {
@@ -85,17 +85,6 @@ public class CBanTest {
     @Test
     public void testGetMisPlaced() {
         Mapping m = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        UUID n3 = UUID.randomUUID();
-        UUID n4 = UUID.randomUUID();
-        UUID n5 = UUID.randomUUID();
-
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
-        UUID vm4 = UUID.randomUUID();
-        UUID vm5 = UUID.randomUUID();
 
         m.addOnlineNode(n1);
         m.addOnlineNode(n2);

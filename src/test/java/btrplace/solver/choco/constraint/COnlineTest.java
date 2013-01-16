@@ -37,13 +37,13 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class COnlineTest {
+public class COnlineTest extends ConstraintTestMaterial{
 
     @Test
     public void testInstantiation() {
         Set<UUID> s = new HashSet<UUID>();
-        s.add(UUID.randomUUID());
-        s.add(UUID.randomUUID());
+        s.add(n1);
+        s.add(n2);
         Online on = new Online(s);
         COnline con = new COnline(on);
         Assert.assertEquals(con.toString(), on.toString());
@@ -52,7 +52,6 @@ public class COnlineTest {
     @Test
     public void testSolvableProblem() throws SolverException {
         Mapping map = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
         map.addOfflineNode(n1);
         Model mo = new DefaultModel(map);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();

@@ -38,17 +38,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class CLonelyTest {
-
-    private UUID vm1 = UUID.randomUUID();
-    private UUID vm2 = UUID.randomUUID();
-    private UUID vm3 = UUID.randomUUID();
-    private UUID vm4 = UUID.randomUUID();
-    private UUID vm5 = UUID.randomUUID();
-
-    private UUID n1 = UUID.randomUUID();
-    private UUID n2 = UUID.randomUUID();
-    private UUID n3 = UUID.randomUUID();
+public class CLonelyTest extends ConstraintTestMaterial{
 
     @Test
     public void testFeasibleDiscrete() throws SolverException {

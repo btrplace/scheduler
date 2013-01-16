@@ -137,7 +137,6 @@ public class CCumulatedRunningCapacityTest {
 
     @Test
     public void testUnFeasibleContinuousResolution() throws SolverException {
-        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);

@@ -36,15 +36,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class CSpreadTest {
-
-    private static UUID vm1 = UUID.randomUUID();
-    private static UUID vm2 = UUID.randomUUID();
-
-    private static UUID n1 = UUID.randomUUID();
-    private static UUID n2 = UUID.randomUUID();
-    private static UUID n3 = UUID.randomUUID();
-
+public class CSpreadTest extends ConstraintTestMaterial {
 
     /*@Test
     public void testInstantiation() {
