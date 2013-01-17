@@ -52,6 +52,12 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
+
+        ResourceMapping rcm = rp.getResourceMapping(cstr.getResource());
+        if (rcm == null) {
+            throw new SolverException(rp.getSourceModel(), "No resource associated to identifier '" + cstr.getResource() + "'");
+        }
+
         if (cstr.isContinuous()) {
             //The constraint must be already satisfied
             if (!cstr.isSatisfied(rp.getSourceModel()).equals(SatConstraint.Sat.SATISFIED)) {
@@ -67,10 +73,6 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
                 TIntArrayList cUse = new TIntArrayList();
                 List<IntDomainVar> dUse = new ArrayList<IntDomainVar>();
 
-                ResourceMapping rcm = rp.getResourceMapping(cstr.getResource());
-                if (rcm == null) {
-                    throw new SolverException(rp.getSourceModel(), "No resource associated to identifier '" + cstr.getResource() + "'");
-                }
                 for (UUID vmId : rp.getVMs()) {
                     VMActionModel a = rp.getVMAction(vmId);
                     Slice c = a.getCSlice();
@@ -84,10 +86,6 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
                 }
                 rp.getAliasedCumulativesBuilder().add(cstr.getAmount(), cUse.toNativeArray(), dUse.toArray(new IntDomainVar[dUse.size()]), alias);
             }
-        }
-        ResourceMapping rcm = rp.getResourceMapping(cstr.getResource());
-        if (rcm == null) {
-            throw new SolverException(rp.getSourceModel(), "Unable to find a resource mapping for resource '" + cstr.getResource() + "'");
         }
         List<IntDomainVar> vs = new ArrayList<IntDomainVar>();
         for (UUID u : cstr.getInvolvedNodes()) {

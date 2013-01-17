@@ -31,6 +31,8 @@ import java.util.UUID;
 
 /**
  * Choco implementation of the {@link btrplace.model.constraint.Split} constraint.
+ * <p/>
+ * TODO: Implementation :D
  *
  * @author Fabien Hermenier
  */
