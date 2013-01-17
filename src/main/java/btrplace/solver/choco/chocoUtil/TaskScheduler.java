@@ -28,9 +28,11 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntIntHashMap;
+import gnu.trove.TIntObjectHashMap;
 
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.logging.Level;
 
 /**
  * A constraint to schedule tasks with regards to their resource usages on resources having a finite amount to share.
@@ -97,6 +99,7 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
                          int[] assocs) {
 
         super(ArrayUtils.append(dHosters, cHosters, cEnds, dStarts, earlyStarts, lastEnds));
+
         this.env = env;
         this.cHosters = cHosters;
         this.dHosters = dHosters;
@@ -106,6 +109,10 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
         this.capacities = capas;
         this.cUsages = cUsages;
         this.dUsages = dUsages;
+
+        Arrays.toString(capacities);
+        Arrays.toString(cUsages);
+        Arrays.toString(dUsages);
 
         this.nbResources = capas[0].length;
         this.nbDims = capas.length;
@@ -241,64 +248,124 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
             cEndsVals[i] = vals[i + dHosters.length + cHosters.length];
         }
 
-        //A hashmap to save the changes of each node (relatives to the previous moment) in the resources distribution
+        //A hashmap to save the changes of each node (relatives to the previous moment) and each dimension
         TIntIntHashMap[][] changes = new TIntIntHashMap[nbDims][nbResources];
 
-        for (int i = 0; i < nbDims; i++) {
+        for (int d = 0; d < nbDims; d++) {
             for (int j = 0; j < nbResources; j++) {
-                changes[i][j] = new TIntIntHashMap();
+                changes[d][j] = new TIntIntHashMap();
             }
         }
 
 
-        for (int i = 0; i < nbDims; i++) { //Each dimension
+        for (int d = 0; d < nbDims; d++) { //Each dimension
             for (int j = 0; j < dHostersVals.length; j++) { //for each placed dSlices
-                int nIdx = dHostersVals[j]; //on which resource it is placed
-                changes[i][nIdx].put(dStartsVals[j], changes[i][nIdx].get(dStartsVals[j]) - dUsages[i][j]);
+                int r = dHostersVals[j]; //on which resource it is placed
+                int st = dStartsVals[j];
+                //ChocoLogging.getBranchingLogger().info("d= "+ d + ", j=" + dHosters[j].pretty() + " j.val=" + r + ", " + "start=" + dStarts[j].pretty() + " val=" + st);
+                changes[d][r].put(st, changes[d][r].get(st) - dUsages[d][j]);
             }
         }
 
         int[][] currentFree = new int[nbDims][];
-        for (int i = 0; i < currentFree.length; i++) {
+        for (int i = 0; i < nbDims; i++) {
             currentFree[i] = Arrays.copyOf(capacities[i], capacities[i].length);
         }
 
-        for (int i = 0; i < nbDims; i++) {
+        for (int d = 0; d < nbDims; d++) {
             for (int j = 0; j < cHostersVals.length; j++) {
-                int nIdx = cHostersVals[j];
-                changes[i][nIdx].put(cEndsVals[j], changes[i][nIdx].get(cEndsVals[j] + cUsages[i][j]));
-                currentFree[i][nIdx] -= cUsages[i][j];
+                int r = cHostersVals[j];
+                int h = cUsages[d][j];
+                int ed = cEndsVals[j];
+                changes[d][r].put(ed, changes[d][r].get(ed) + h);
+                currentFree[d][r] -= h;
             }
         }
 
-
-        /*if (ChocoLogging.getBranchingLogger().isLoggable(Level.FINEST)) {
-            for (int x = 0; x < cHostersVals.length; x++) {
-                ChocoLogging.getBranchingLogger().finest(x + " " + cEnds[x].pretty() + " ends at " + cEndsVals[x]);
-            }
-            for (int x = 0; x < dHostersVals.length; x++) {
-                ChocoLogging.getBranchingLogger().finest(dStarts[x].pretty());
-            }
-        } */
-
         boolean ok = true;
         for (int j = 0; j < nbResources; j++) {
-            ChocoLogging.getBranchingLogger().finest("--- Resource " + j + " isSatisfied() ---");
-            for (int i = 0; i < nbDims; i++) {
-                ChocoLogging.getBranchingLogger().finest("Dimension " + (i + 1) + "/" + nbDims + ": "
-                        + " currentFree= " + currentFree[i][j]
-                        + " changes= " + changes[i][j]);
-                //Now we check the evolution of the absolute free space.
+            TIntObjectHashMap<int[]> myChanges = myChanges(changes, j);
+            ChocoLogging.getBranchingLogger().finest("--- Resource " + j + " isSatisfied() ? ---");
+            ChocoLogging.getBranchingLogger().finest(" before: " + prettyUsages(currentFree, j)
+                    + "/" + prettyUsages(capacities, j)
+                    + " changes: " + prettyChanges(myChanges));
 
-                for (int x = 0; x < changes[i][j].keys().length; x++) {
-                    currentFree[i][j] += changes[i][j].get(x);
-                    if (currentFree[i][j] < 0) {
-                        ChocoLogging.getMainLogger().severe("-> free@" + x + ": " + currentFree[i][j]);
-                        ok = false;
+
+            int[] moments = myChanges.keys(new int[myChanges.size()]);
+            Arrays.sort(moments);
+            for (int t : moments) {
+                boolean bad = true;
+                for (int d = 0; d < nbDims; d++) {
+                    currentFree[d][j] += myChanges.get(t)[d];
+                    if (currentFree[d][j] < 0) {
+                        bad = false;
+                    }
+                }
+                if (!bad) {
+                    ChocoLogging.getMainLogger().info("/!\\ at " + t + ": free=" + prettyUsages(currentFree, j));
+                    ok = false;
+                    break;
+                }
+            }
+
+            if (ChocoLogging.getBranchingLogger().isLoggable(Level.FINEST)) {
+                for (int x = 0; x < cHostersVals.length; x++) {
+                    if (cHostersVals[x] == j) {
+                        ChocoLogging.getBranchingLogger().finest(cEnds[x].getName() + " ends at " + cEndsVals[x] + " uses:" + prettyUsages(cUsages, x));
+                    }
+                }
+                for (int x = 0; x < dHostersVals.length; x++) {
+                    if (dHostersVals[x] == j) {
+                        ChocoLogging.getBranchingLogger().finest(dStarts[x].getName() + " starts at " + dStartsVals[x] + " uses:" + prettyUsages(dUsages, x));
                     }
                 }
             }
         }
         return ok;
+    }
+
+    private String prettyUsages(int[][] usages, int i) {
+        int[] u = new int[nbDims];
+        for (int x = 0; x < nbDims; x++) {
+            u[x] = usages[x][i];
+        }
+        return Arrays.toString(u);
+    }
+
+    private TIntObjectHashMap<int[]> myChanges(TIntIntHashMap[][] changes, int nIdx) {
+        TIntObjectHashMap<int[]> map = new TIntObjectHashMap<int[]>();
+        for (int d = 0; d < changes.length; d++) {
+            TIntIntHashMap ch = changes[d][nIdx];
+            //ChocoLogging.getBranchingLogger().info("rc " + nIdx + " changes for d=" + d + ": " + ch);
+            for (int k : ch.keys()) {
+                int[] upd = map.get(k);
+                if (upd == null) {
+                    upd = new int[changes.length];
+                    map.put(k, upd);
+                }
+                upd[d] += changes[d][nIdx].get(k);
+            }
+        }
+        return map;
+    }
+
+    private String prettyChanges(TIntObjectHashMap<int[]> changes) {
+        int[] moments = changes.keys(new int[changes.size()]);
+        Arrays.sort(moments);
+        StringBuilder b = new StringBuilder();
+        for (int t : moments) {
+            b.append(t).append('=').append(Arrays.toString(changes.get(t))).append(' ');
+        }
+        return b.toString();
+    }
+
+    private String pretty(int[][] arr) {
+        StringBuilder b = new StringBuilder();
+        b.append('[');
+        for (int[] x : arr) {
+            b.append(Arrays.toString(x));
+        }
+        b.append(']');
+        return b.toString();
     }
 }

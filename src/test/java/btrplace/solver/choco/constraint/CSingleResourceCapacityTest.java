@@ -20,14 +20,13 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.*;
 import btrplace.model.constraint.Fence;
+import btrplace.model.constraint.Overbook;
 import btrplace.model.constraint.Running;
 import btrplace.model.constraint.SingleResourceCapacity;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -129,7 +128,7 @@ public class CSingleResourceCapacityTest extends ConstraintTestMaterial {
 
     @Test
     public void testContinuousSolvable() throws SolverException {
-        ChocoLogging.setVerbosity(Verbosity.FINEST);
+        //ChocoLogging.setVerbosity(Verbosity.FINEST);
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
@@ -158,7 +157,7 @@ public class CSingleResourceCapacityTest extends ConstraintTestMaterial {
         cstrs.add(s);
         cstrs.add(new Fence(Collections.singleton(vm4), Collections.singleton(n2)));
         cstrs.add(new Running(Collections.singleton(vm4)));
-
+        cstrs.add(new Overbook(map.getAllNodes(), "cpu", 1));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
