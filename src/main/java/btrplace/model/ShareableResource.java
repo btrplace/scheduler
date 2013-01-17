@@ -23,9 +23,13 @@ import java.util.*;
 /**
  * An interface to denote a resource that a node shares among the VMs it hosts
  * <p/>
- * The interface allows to specify the capacity of a node and the usage of a VM.
- * The resource may be overbookable so in practice, it is possible to have
- * a nodes hosting VMs having a cumulated usage that exceeds the node capacity.
+ * The interface allows to specify the physical resource capacity of the nodes
+ * but also the amount of virtual resources to allocate to the VMs.
+ * By default, nodes capacity and VMs usages are not directly linked. It is
+ * then a necessary to express a mapping between the physical resources and
+ * the virtual resources. This can be made through a {@link btrplace.model.constraint.Overbook}
+ * constraint to indicate the virtual capacity of a node from its physical
+ * capacity.
  *
  * @author Fabien Hermenier
  */
