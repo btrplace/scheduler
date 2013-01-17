@@ -102,6 +102,9 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
     public Set<UUID> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
         ShareableResource rc = m.getResource(cstr.getResource());
+        if (rc == null) {
+            return map.getRunningVMs(cstr.getInvolvedNodes());
+        }
         Set<UUID> bad = new HashSet<UUID>();
         int remainder = cstr.getAmount();
         for (UUID n : cstr.getInvolvedNodes()) {

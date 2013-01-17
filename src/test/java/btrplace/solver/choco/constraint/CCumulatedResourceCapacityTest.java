@@ -19,24 +19,24 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.*;
-import btrplace.model.constraint.*;
+import btrplace.model.constraint.CumulatedResourceCapacity;
+import btrplace.model.constraint.Fence;
+import btrplace.model.constraint.Running;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.durationEvaluator.ConstantDuration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.*;
 
 /**
- * Unit tests for {@link btrplace.solver.choco.constraint.CCumulatedRunningCapacity}.
+ * Unit tests for {@link CCumulatedRunningCapacity}.
  *
  * @author Fabien Hermenier
  */
-public class CCumulatedRunningCapacityTest extends ConstraintTestMaterial {
+public class CCumulatedResourceCapacityTest extends ConstraintTestMaterial {
 
     @Test
     public void testWithSatisfiedConstraint() throws SolverException {
@@ -49,14 +49,21 @@ public class CCumulatedRunningCapacityTest extends ConstraintTestMaterial {
         map.addRunningVM(vm3, n3);
         map.addRunningVM(vm4, n3);
         map.addSleepingVM(vm5, n2);
+
+        ShareableResource rc = new DefaultShareableResource("cpu", 5);
+        rc.set(vm1, 2);
+        rc.set(vm2, 4);
+        rc.set(vm3, 3);
+        rc.set(vm4, 1);
+        rc.set(vm5, 5);
+
         Model mo = new DefaultModel(map);
+        mo.attach(rc);
         List<SatConstraint> l = new ArrayList<SatConstraint>();
-        CumulatedRunningCapacity x = new CumulatedRunningCapacity(map.getAllNodes(), 4);
+        CumulatedResourceCapacity x = new CumulatedResourceCapacity(map.getAllNodes(), "cpu", 10);
         x.setContinuous(false);
         l.add(x);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
-        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertEquals(plan.getSize(), 0);
     }
@@ -75,20 +82,26 @@ public class CCumulatedRunningCapacityTest extends ConstraintTestMaterial {
         Set<UUID> on = new HashSet<UUID>();
         on.add(n1);
         on.add(n2);
+
+        ShareableResource rc = new DefaultShareableResource("cpu", 5);
+        rc.set(vm1, 2);
+        rc.set(vm2, 4);
+        rc.set(vm3, 3);
+        rc.set(vm4, 1);
+        rc.set(vm5, 5);
+
         Model mo = new DefaultModel(map);
+        mo.attach(rc);
         List<SatConstraint> l = new ArrayList<SatConstraint>();
-        CumulatedRunningCapacity x = new CumulatedRunningCapacity(on, 4);
+        CumulatedResourceCapacity x = new CumulatedResourceCapacity(on, "cpu", 10);
         x.setContinuous(false);
         l.add(x);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
-        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
         System.out.println(plan);
-        Assert.assertEquals(plan.getSize(), 1);
+        Assert.assertTrue(plan.getSize() > 0);
     }
-
 
     @Test
     public void testFeasibleContinuousResolution() throws SolverException {
@@ -105,62 +118,27 @@ public class CCumulatedRunningCapacityTest extends ConstraintTestMaterial {
         on.add(n1);
         on.add(n2);
         Model mo = new DefaultModel(map);
-        System.out.println(mo.getMapping());
+
+        ShareableResource rc = new DefaultShareableResource("cpu", 5);
+        rc.set(vm1, 2);
+        rc.set(vm2, 4);
+        rc.set(vm3, 3);
+        rc.set(vm4, 1);
+        rc.set(vm5, 5);
+        mo.attach(rc);
+
         List<SatConstraint> l = new ArrayList<SatConstraint>();
         l.add(new Running(Collections.singleton(vm5)));
         l.add(new Fence(Collections.singleton(vm5), Collections.singleton(n1)));
-        CumulatedRunningCapacity x = new CumulatedRunningCapacity(on, 4);
+        CumulatedResourceCapacity x = new CumulatedResourceCapacity(on, "cpu", 10);
         x.setContinuous(true);
         l.add(x);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
-        for (SatConstraint c : l) {
-            System.out.println(c);
-        }
-        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
         System.out.println(plan);
-        Assert.assertEquals(plan.getSize(), 2);
-    }
-
-    @Test
-    public void testUnFeasibleContinuousResolution() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addReadyVM(vm1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addRunningVM(vm4, n2);
-        map.addRunningVM(vm5, n3);
-        Model mo = new DefaultModel(map);
-        List<SatConstraint> l = new ArrayList<SatConstraint>();
-
-        List<UUID> seq = new ArrayList<UUID>();
-        seq.add(vm1);
-        seq.add(vm2);
-        l.add(new SequentialVMTransitions(seq));
-        l.add(new Fence(Collections.singleton(vm1), Collections.singleton(n1)));
-        l.add(new Sleeping(Collections.singleton(vm2)));
-        l.add(new Running(Collections.singleton(vm1)));
-        l.add(new Root(Collections.singleton(vm3)));
-        l.add(new Root(Collections.singleton(vm4)));
-
-        Set<UUID> on = new HashSet<UUID>();
-        on.add(n1);
-        on.add(n2);
-        CumulatedRunningCapacity x = new CumulatedRunningCapacity(on, 3);
-        x.setContinuous(true);
-        l.add(x);
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.setMaxEnd(5);
-        cra.labelVariables(true);
-        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantDuration(10));
-        ReconfigurationPlan plan = cra.solve(mo, l);
-        System.out.println(plan);
-        Assert.assertNull(plan);
+        Assert.assertTrue(plan.getSize() > 0);
     }
 
     @Test
@@ -175,13 +153,20 @@ public class CCumulatedRunningCapacityTest extends ConstraintTestMaterial {
         m.addRunningVM(vm4, n2);
         m.addReadyVM(vm5);
 
+        ShareableResource rc = new DefaultShareableResource("cpu", 5);
+        rc.set(vm1, 2);
+        rc.set(vm2, 4);
+        rc.set(vm3, 3);
+        rc.set(vm4, 1);
+        rc.set(vm5, 5);
         Model mo = new DefaultModel(m);
-
-        CumulatedRunningCapacity c = new CumulatedRunningCapacity(m.getAllNodes(), 4);
-        CCumulatedRunningCapacity cc = new CCumulatedRunningCapacity(c);
+        mo.attach(rc);
+        CumulatedResourceCapacity c = new CumulatedResourceCapacity(m.getAllNodes(), "cpu", 10);
+        CCumulatedResourceCapacity cc = new CCumulatedResourceCapacity(c);
 
         Assert.assertTrue(cc.getMisPlacedVMs(mo).isEmpty());
         m.addRunningVM(vm5, n3);
         Assert.assertEquals(cc.getMisPlacedVMs(mo), m.getAllVMs());
     }
+
 }
