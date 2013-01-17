@@ -57,6 +57,11 @@ public class CSplit implements ChocoSatConstraint {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
+    public String toString() {
+        return cstr.toString();
+    }
+
     /**
      * Builder associated to the constraint.
      */

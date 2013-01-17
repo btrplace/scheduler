@@ -81,7 +81,7 @@ public class CGather implements ChocoSatConstraint {
                     try {
                         dSlice.getHoster().setVal(nIdx);
                     } catch (ContradictionException ex) {
-                        rp.getLogger().error("Unable to maintain the co-location of all the future-running VMs in '{}'", cstr.getInvolvedVMs());
+                        rp.getLogger().error("Unable to maintain the co-location of all the future-running VMs in '{}': ", cstr.getInvolvedVMs(), ex.getMessage());
                         return false;
                     }
                 }
@@ -115,6 +115,12 @@ public class CGather implements ChocoSatConstraint {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        return cstr.toString();
+    }
+
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {

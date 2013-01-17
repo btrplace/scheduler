@@ -136,6 +136,11 @@ public class CSplitAmong implements ChocoSatConstraint {
         return bad;
     }
 
+    @Override
+    public String toString() {
+        return cstr.toString();
+    }
+
     /**
      * Builder associated to the constraint.
      */

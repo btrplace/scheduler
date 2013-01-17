@@ -171,6 +171,11 @@ public class CAmong implements ChocoSatConstraint {
         return Collections.emptySet();
     }
 
+    @Override
+    public String toString() {
+        return cstr.toString();
+    }
+
     /**
      * Builder associated to the constraint.
      */

@@ -48,8 +48,6 @@ public class AliasedCumulativesBuilder {
 
     private IntDomainVar[] dStarts;
 
-    private List<AliasedCumulatives> cstrs;
-
     private TIntArrayList capacities;
 
     private List<int[]> cUsages;
@@ -66,7 +64,6 @@ public class AliasedCumulativesBuilder {
     public AliasedCumulativesBuilder(ReconfigurationProblem rp) {
         this.rp = rp;
 
-        cstrs = new ArrayList<AliasedCumulatives>();
         List<Slice> dS = new ArrayList<Slice>();
         List<Slice> cS = new ArrayList<Slice>();
 

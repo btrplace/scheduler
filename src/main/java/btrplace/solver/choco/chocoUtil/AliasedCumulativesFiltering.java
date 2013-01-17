@@ -53,7 +53,7 @@ public class AliasedCumulativesFiltering {
 
     private int[] startupFree;
 
-    public boolean DEBUG = true;
+    public boolean debug = true;
 
     private int[] associations;
 
@@ -192,7 +192,7 @@ public class AliasedCumulativesFiltering {
             }
 
             if (associatedToDSliceOnCurrentNode(j) && increase(j, revAssociations[j])) {
-                if (DEBUG) {
+                if (debug) {
                     ChocoLogging.getBranchingLogger().finest(cEnds[j].pretty() + " increasing");
                 }
                 for (int i = 0; i < nbDims; i++) {
@@ -200,7 +200,7 @@ public class AliasedCumulativesFiltering {
                 }
 
             } else {
-                /*if (DEBUG) {
+                /*if (debug) {
                     ChocoLogging.getBranchingLogger().finest(cEnds[j].pretty() + " < or non-associated (" + (revAssociations[j] >= 0 ? dStarts[revAssociations[j]].pretty() : "no rev") + "?)");
                 } */
                 for (int i = 0; i < nbDims; i++) {
@@ -258,7 +258,7 @@ public class AliasedCumulativesFiltering {
             toAbsoluteFreeResources(profilesMax[i], sortedMaxProfile);
         }
 
-        if (DEBUG) {
+        if (debug) {
             ChocoLogging.getBranchingLogger().finest("--- startup=(" + Arrays.toString(startupFree) + ")"
                     + " capacities=(" + Arrays.toString(capacities) + ") ---");
             for (int x = 0; x < vIn.size(); x++) {
@@ -309,7 +309,7 @@ public class AliasedCumulativesFiltering {
     private boolean associatedToCSliceOnCurrentNode(int dSlice) {
         if (associations[dSlice] != NO_ASSOCIATIONS
                 && out.get(associations[dSlice])) {
-            /*if (DEBUG) {
+            /*if (debug) {
                 ChocoLogging.getBranchingLogger().finest(dStarts[dSlice].getName() + " with " + cEnds[associations[dSlice]]);
             } */
             return true;
@@ -339,7 +339,7 @@ public class AliasedCumulativesFiltering {
             int t = sortedMinProfile[x];
             for (int i = 0; i < nbDims; i++) {
                 if (profilesMin[i].get(t) > capacities[i]) {
-                    if (DEBUG) {
+                    if (debug) {
                         ChocoLogging.getBranchingLogger().finest("Invalid min profile at " + t + " on dimension " + i
                                 + ": " + profilesMin[i].get(t) + " > " + capacities[i]);
                     }
@@ -391,7 +391,7 @@ public class AliasedCumulativesFiltering {
                 break;
             }
         }
-        /*if (DEBUG) {
+        /*if (debug) {
             ChocoLogging.getBranchingLogger().finest("lastSup=" + lastSup);
         } */
         if (lastSup != -1) {
@@ -422,7 +422,7 @@ public class AliasedCumulativesFiltering {
                     }
                 }
                 if (lastT != -1) {
-                    if (DEBUG) {
+                    if (debug) {
                         ChocoLogging.getBranchingLogger().finest(cEnds[i].pretty() + " cEndsSup =" + lastT);
                     }
                     cEnds[i].setSup(lastT);
