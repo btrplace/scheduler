@@ -32,7 +32,7 @@ import java.util.UUID;
 
 /**
  * Specify, for a given resource, the physical resource usage associated to each server,
- * and the associated virtual resource usage consumed by each of the VMs they host.
+ * and the virtual resource usage consumed by each of the VMs they host.
  *
  * @author Fabien Hermenier
  */
@@ -175,7 +175,7 @@ public class ResourceMapping {
      * <b>Warning: the only possible approach to restrict this value is to increase their
      * lower bound using the associated {@code setInf()} method</b>
      *
-     * @param the VM identifier
+     * @param vmIdx the VM identifier
      * @return the variable denoting the virtual resources to allocate to the VM. {@code null} if the VM is unknown
      */
     public IntDomainVar getVMsAllocation(int vmIdx) {
