@@ -18,6 +18,7 @@
 
 package btrplace.solver.choco.constraint;
 
+import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Split;
@@ -26,8 +27,7 @@ import btrplace.solver.choco.ChocoSatConstraint;
 import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Choco implementation of the {@link btrplace.model.constraint.Split} constraint.
@@ -56,8 +56,36 @@ public class CSplit implements ChocoSatConstraint {
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        Mapping map = m.getMapping();
+        List<Set<UUID>> groups = new ArrayList<Set<UUID>>(cstr.getSets());
+        //Bad contains the VMs on nodes that host VMs from different groups.
+        Set<UUID> bad = new HashSet<UUID>();
+        for (Set<UUID> grp : groups) {
+            for (UUID vm : grp) {
+                if (map.getRunningVMs().contains(vm)) {
+                    UUID n = map.getVMLocation(vm);
+                    Set<UUID> allOnN = map.getRunningVMs(n);
+                    for (UUID vmOnN : allOnN) {
+                        if (inOtherGroup(groups, grp, vmOnN)) { //The VM belong to another group
+                            bad.add(vm);
+                            bad.add(vmOnN);
+                        }
+                    }
+                }
+            }
+        }
+        return bad;
     }
+
+    private boolean inOtherGroup(List<Set<UUID>> groups, Set<UUID> grp, UUID vmOnN) {
+        for (Set<UUID> s : groups) {
+            if (s.contains(vmOnN) && !grp.contains(vmOnN)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     @Override
     public String toString() {
