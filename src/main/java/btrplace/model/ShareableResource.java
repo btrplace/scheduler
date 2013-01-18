@@ -21,15 +21,13 @@ package btrplace.model;
 import java.util.*;
 
 /**
- * An interface to denote a resource that a node shares among the VMs it hosts
+ * An interface to denote a resource that nodes share among the VMs they host
  * <p/>
  * The interface allows to specify the physical resource capacity of the nodes
- * but also the amount of virtual resources to allocate to the VMs.
- * By default, nodes capacity and VMs usages are not directly linked. It is
- * then a necessary to express a mapping between the physical resources and
- * the virtual resources. This can be made through a {@link btrplace.model.constraint.Overbook}
- * constraint to indicate the virtual capacity of a node from its physical
- * capacity.
+ * and the amount of virtual resources to allocate to the VMs.
+ * By default, their is no mapping between the physical and the virtual resources.
+ * To limit the hosting capacity of the nodes it is then a necessary to express this mapping,
+ * as an exemple, using {@link btrplace.model.constraint.Overbook} constraints.
  *
  * @author Fabien Hermenier
  */
@@ -51,7 +49,7 @@ public interface ShareableResource extends Comparator<UUID>, Cloneable {
     boolean defined(UUID n);
 
     /**
-     * Undefine a resource for a given element.
+     * Un-define a resource for a given element.
      *
      * @param n the element identifier
      * @return {@code true} iff a value was previously defined for {@code n}.
@@ -60,8 +58,8 @@ public interface ShareableResource extends Comparator<UUID>, Cloneable {
 
     /**
      * Define a value for an element.
-     * If the element is a VM, the value denotes its resource usage.
-     * If the element is a node, the value denotes its capacity
+     * If the element is a VM, the value denotes its allocation of virtual resources
+     * If the element is a node, the value denotes its physical capacity
      *
      * @param n the element identifier
      * @param o the value to set
@@ -70,7 +68,7 @@ public interface ShareableResource extends Comparator<UUID>, Cloneable {
     ShareableResource set(UUID n, int o);
 
     /**
-     * get the resource associated to an element.
+     * Get the resource value associated to an element.
      * The resource must be defined for the element.
      *
      * @param n the element
@@ -80,7 +78,7 @@ public interface ShareableResource extends Comparator<UUID>, Cloneable {
 
     /**
      * Get the resource associated to a list of element.
-     * Order is maintained
+     * The ordering is maintained
      *
      * @param ids the element identifiers
      * @return a list of values.
@@ -88,7 +86,7 @@ public interface ShareableResource extends Comparator<UUID>, Cloneable {
     List<Integer> get(List<UUID> ids);
 
     /**
-     * Get the elements identifiers that are defined.
+     * Get the identifiers that are defined.
      *
      * @return a set that may be empty.
      */
