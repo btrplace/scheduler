@@ -32,7 +32,7 @@ import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.ContradictionException;
-import junit.framework.Assert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.HashSet;

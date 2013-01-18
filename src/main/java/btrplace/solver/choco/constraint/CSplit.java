@@ -90,7 +90,7 @@ public class CSplit implements ChocoSatConstraint {
             }
         }
         if (cstr.isContinuous()) {
-            rp.getLogger().error("Continuous mode is not supported for Split");
+            rp.getLogger().error("Continuous restriction is not supported for constraint split");
             return false;
         }
         return true;

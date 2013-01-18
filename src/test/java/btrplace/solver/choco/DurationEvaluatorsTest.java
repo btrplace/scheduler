@@ -20,7 +20,7 @@ package btrplace.solver.choco;
 
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
-import junit.framework.Assert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.UUID;

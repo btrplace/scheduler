@@ -18,7 +18,7 @@
 
 package btrplace.solver.choco.constraint;
 
-import junit.framework.Assert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**

@@ -22,7 +22,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.choco.actionModel.ActionModelVisitor;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import junit.framework.Assert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.List;

@@ -26,8 +26,6 @@ import btrplace.model.constraint.Ready;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.UUID;
-
 /**
  * Unit tests for {@link btrplace.solver.choco.constraint.CReady}.
  *

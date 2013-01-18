@@ -20,7 +20,7 @@ package btrplace.solver.choco.durationEvaluator;
 
 import btrplace.model.DefaultShareableResource;
 import btrplace.model.ShareableResource;
-import junit.framework.Assert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.UUID;
