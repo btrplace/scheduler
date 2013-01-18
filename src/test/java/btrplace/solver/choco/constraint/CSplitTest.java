@@ -18,14 +18,16 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.Split;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.solver.SolverException;
+import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -94,8 +96,54 @@ public class CSplitTest extends ConstraintTestMaterial {
     }
 
     @Test
-    public void testDiscrete() {
-        Assert.fail();
+    public void testSimpleDiscrete() throws SolverException {
+        Set<UUID> g1 = new HashSet<UUID>();
+        Set<UUID> g2 = new HashSet<UUID>();
+        Set<UUID> g3 = new HashSet<UUID>();
+
+        g1.add(vm1);
+        g1.add(vm2);
+
+        g2.add(vm3);
+        g2.add(vm4);
+        g2.add(vm5);
+
+        g3.add(vm6);
+        g3.add(vm7);
+
+        Set<Set<UUID>> grps = new HashSet<Set<UUID>>();
+        grps.add(g1);
+        grps.add(g2);
+        grps.add(g3);
+
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOnlineNode(n3);
+        map.addOnlineNode(n4);
+        map.addOnlineNode(n5);
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm8, n1);
+
+        map.addRunningVM(vm3, n1); //Violation
+        map.addRunningVM(vm4, n3);
+        map.addRunningVM(vm5, n3);
+
+        map.addRunningVM(vm6, n3); //Violation
+        map.addRunningVM(vm7, n5);
+        map.addRunningVM(vm8, n5);
+
+        Split s = new Split(grps);
+
+        Model mo = new DefaultModel(map);
+
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+
+        ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>singleton(s));
+        Assert.assertNotNull(p);
+        Assert.assertTrue(p.getSize() > 0);
+        System.out.println(p);
     }
 
     @Test

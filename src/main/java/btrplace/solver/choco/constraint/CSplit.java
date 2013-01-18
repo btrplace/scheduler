@@ -26,13 +26,17 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoSatConstraint;
 import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.Slice;
+import btrplace.solver.choco.chocoUtil.Disjoint;
+import choco.cp.solver.CPSolver;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.*;
 
 /**
  * Choco implementation of the {@link btrplace.model.constraint.Split} constraint.
  * <p/>
- * TODO: Implementation :D
+ * TODO: continuous implementation
  *
  * @author Fabien Hermenier
  */
@@ -51,7 +55,45 @@ public class CSplit implements ChocoSatConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        List<List<IntDomainVar>> groups = new ArrayList<List<IntDomainVar>>();
+        for (Set<UUID> grp : cstr.getSets()) {
+            List<IntDomainVar> l = new ArrayList<IntDomainVar>();
+            for (UUID vm : grp) {
+                if (rp.getFutureRunningVMs().contains(vm)) {
+                    Slice s = rp.getVMAction(vm).getDSlice();
+                    l.add(s.getHoster());
+                }
+            }
+            if (!l.isEmpty()) {
+                groups.add(l);
+            }
+        }
+        CPSolver s = rp.getSolver();
+        int nbNodes = rp.getNodes().length;
+        IntDomainVar[][] vars = new IntDomainVar[groups.size()][];
+        for (int i = 0; i < groups.size(); i++) {
+            for (int j = 0; j < i; j++) {
+                IntDomainVar[] gI = vars[i];
+                IntDomainVar[] gJ = vars[j];
+
+                if (gI == null) {
+                    gI = groups.get(i).toArray(new IntDomainVar[groups.get(i).size()]);
+                    vars[i] = gI;
+                }
+
+                if (gJ == null) {
+                    gJ = groups.get(j).toArray(new IntDomainVar[groups.get(j).size()]);
+                    vars[j] = gJ;
+                }
+
+                s.post(new Disjoint(s.getEnvironment(), gI, gJ, nbNodes));
+            }
+        }
+        if (cstr.isContinuous()) {
+            rp.getLogger().error("Continuous mode is not supported for Split");
+            return false;
+        }
+        return true;
     }
 
     @Override
