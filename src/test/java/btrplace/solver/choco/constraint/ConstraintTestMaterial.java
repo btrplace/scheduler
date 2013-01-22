@@ -22,26 +22,27 @@ import java.util.UUID;
 
 /**
  * Pre-made VMs and servers for tests
+ *
  * @author Fabien Hermenier
  */
 public abstract class ConstraintTestMaterial {
 
-    public static final UUID vm1 = UUID.randomUUID();
-    public static final UUID vm2 = UUID.randomUUID();
-    public static final UUID vm3 = UUID.randomUUID();
-    public static final UUID vm4 = UUID.randomUUID();
-    public static final UUID vm5 = UUID.randomUUID();
-    public static final UUID vm6 = UUID.randomUUID();
-    public static final UUID vm7 = UUID.randomUUID();
-    public static final UUID vm8 = UUID.randomUUID();
-    public static final UUID vm9 = UUID.randomUUID();
-    public static final UUID vm10 = UUID.randomUUID();
+    public static final UUID vm1 = new UUID(0, 1);
+    public static final UUID vm2 = new UUID(0, 2);
+    public static final UUID vm3 = new UUID(0, 3);
+    public static final UUID vm4 = new UUID(0, 4);
+    public static final UUID vm5 = new UUID(0, 5);
+    public static final UUID vm6 = new UUID(0, 6);
+    public static final UUID vm7 = new UUID(0, 7);
+    public static final UUID vm8 = new UUID(0, 8);
+    public static final UUID vm9 = new UUID(0, 9);
+    public static final UUID vm10 = new UUID(0, 10);
 
 
-    public static final UUID n1 = UUID.randomUUID();
-    public static final UUID n2 = UUID.randomUUID();
-    public static final UUID n3 = UUID.randomUUID();
-    public static final UUID n4 = UUID.randomUUID();
-    public static final UUID n5 = UUID.randomUUID();
+    public static final UUID n1 = new UUID(1, 1);
+    public static final UUID n2 = new UUID(1, 2);
+    public static final UUID n3 = new UUID(1, 3);
+    public static final UUID n4 = new UUID(1, 4);
+    public static final UUID n5 = new UUID(1, 5);
 
 }
