@@ -419,7 +419,7 @@ public class DefaultMapping implements Mapping, Cloneable {
             buf.append('(').append(n).append(")\n");
         }
 
-        buf.append("FARM");
+        buf.append("READY");
 
         for (UUID vm : this.getReadyVMs()) {
             buf.append(' ').append(vm);
@@ -427,5 +427,4 @@ public class DefaultMapping implements Mapping, Cloneable {
 
         return buf.append('\n').toString();
     }
-
 }
