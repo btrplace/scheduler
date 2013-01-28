@@ -344,4 +344,19 @@ public interface ReconfigurationProblem {
      * @return well, the logger
      */
     Logger getLogger();
+
+    /**
+     * Get the alterer that is used to manipulate the objective value
+     * each time a solution is computed
+     *
+     * @return the alterer if it was defined, {@code null} otherwise
+     */
+    ObjectiveAlterer getObjectiveAlterer();
+
+    /**
+     * Set the alterer to use for this problem
+     *
+     * @param a the alterer to use
+     */
+    void setObjectiveAlterer(ObjectiveAlterer a);
 }
