@@ -72,7 +72,7 @@ public class BootableNodeModelTest {
                 .build();
         BootableNodeModel na = (BootableNodeModel) rp.getNodeAction(n1);
         na.getState().setVal(1);
-        ReconfigurationPlan p = rp.solve(0, true);
+        ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertEquals(na.getDuration().getVal(), 5);
         Assert.assertEquals(na.getStart().getVal(), 0);
         Assert.assertEquals(na.getEnd().getVal(), 5);
@@ -99,7 +99,7 @@ public class BootableNodeModelTest {
                 .build();
         BootableNodeModel na = (BootableNodeModel) rp.getNodeAction(n1);
         na.getState().setVal(0);
-        ReconfigurationPlan p = rp.solve(0, true);
+        ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertEquals(na.getDuration().getVal(), 0);
         Assert.assertEquals(na.getStart().getVal(), 0);
         Assert.assertEquals(na.getEnd().getVal(), 0);
@@ -128,7 +128,7 @@ public class BootableNodeModelTest {
                 .labelVariables()
                 .setDurationEvaluatators(dev)
                 .build();
-        Assert.assertNotNull(rp.solve(0, true));
+        Assert.assertNotNull(rp.solve(0, false));
     }
 
 }

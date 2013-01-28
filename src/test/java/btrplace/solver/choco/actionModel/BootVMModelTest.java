@@ -78,7 +78,7 @@ public class BootVMModelTest {
         Assert.assertFalse(m.getDSlice().getStart().isInstantiated());
         Assert.assertFalse(m.getDSlice().getEnd().isInstantiated());
 
-        ReconfigurationPlan p = rp.solve(0, true);
+        ReconfigurationPlan p = rp.solve(0, false);
         BootVM a = (BootVM) p.getActions().iterator().next();
 
         UUID dest = rp.getNode(m.getDSlice().getHoster().getVal());
@@ -119,7 +119,7 @@ public class BootVMModelTest {
         CPSolver s = rp.getSolver();
         s.post(s.geq(m2.getStart(), m1.getEnd()));
 
-        ReconfigurationPlan p = rp.solve(0, true);
+        ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         Iterator<Action> ite = p.iterator();
         BootVM b1 = (BootVM) ite.next();

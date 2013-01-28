@@ -32,15 +32,11 @@ import btrplace.solver.choco.chocoUtil.AliasedCumulatives;
 import btrplace.solver.choco.chocoUtil.AliasedCumulativesBuilder;
 import btrplace.solver.choco.chocoUtil.BinPacking;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.search.BranchAndBound;
 import choco.cp.solver.search.integer.branching.AssignVar;
-import choco.cp.solver.search.integer.objective.IntObjectiveManager;
-import choco.cp.solver.search.integer.objective.MinIntObjManager;
 import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.cp.solver.search.set.StaticSetVarOrder;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solution;
 import choco.kernel.solver.search.ISolutionPool;
 import choco.kernel.solver.search.SolutionPoolFactory;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -50,7 +46,6 @@ import gnu.trove.map.hash.TObjectIntHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
 
@@ -102,8 +97,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private SliceSchedulerBuilder taskSchedBuilder;
 
     private AliasedCumulativesBuilder cumulativesBuilder;
-
-    private ObjectiveAlterer objAlterer = null;
 
     /**
      * Make a new RP where the next state for every VM is indicated.
@@ -211,11 +204,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
         solver.setFirstSolution(!optimize);
 
-        if (objAlterer == null) {
-            solver.launch();
-        } else if (optimize) {
-            launchWithAlterer();
-        }
+        solver.launch();
         if (Boolean.FALSE == solver.isFeasible()) {
             return null;
         } else if (solver.isFeasible() == null) {
@@ -233,43 +222,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         assert plan.isApplyable();
         assert checkConsistency(plan);
         return plan;
-    }
-
-    /**
-     * Launch the solver with a known ObjectiveAlterer.
-     * Each time a solution has been computed, the alterer is called to set a new bound for the objective
-     *
-     * @return {@code true} iff the injection was successful.
-     */
-    private boolean launchWithAlterer() {
-        BranchAndBound bb = (BranchAndBound) solver.getSearchStrategy();
-        MinIntObjManager obj = (MinIntObjManager) bb.getObjectiveManager();
-        Field f;
-        try {
-            f = IntObjectiveManager.class.getDeclaredField("targetBound");
-            f.setAccessible(true);
-        } catch (Exception e) {
-            logger.error("Unable to inject the alterer: ", e);
-            return false;
-        }
-
-        solver.launch();
-        Solution s = solver.getSearchStrategy().getSolutionPool().getBestSolution();
-        if (solver.isFeasible() == Boolean.TRUE) {
-            do {
-                int objVal = solver.getObjectiveValue().intValue();
-                int newBound = objAlterer.newBound(objVal);
-                try {
-                    f.set(obj, newBound);
-                } catch (Exception e) {
-                    logger.error("Unable to set the new target bound {} for the objective {}:", newBound, solver.getObjective().getName(), e);
-                    return false;
-                }
-            } while (solver.nextSolution() == Boolean.TRUE);
-        }
-        solver.worldPopUntil(solver.getSearchStrategy().baseWorld);
-        solver.restoreSolution(s);
-        return true;
     }
 
     /**
@@ -690,15 +642,5 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     @Override
     public Logger getLogger() {
         return logger;
-    }
-
-    @Override
-    public ObjectiveAlterer getObjectiveAlterer() {
-        return objAlterer;
-    }
-
-    @Override
-    public void setObjectiveAlterer(ObjectiveAlterer a) {
-        objAlterer = a;
     }
 }

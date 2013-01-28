@@ -22,10 +22,6 @@ import btrplace.model.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.AtMostNValue;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
@@ -432,30 +428,5 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertTrue(rp.getFutureSleepingVMs().contains(v3));
         Assert.assertTrue(rp.getFutureReadyVMs().contains(v4));
         Assert.assertTrue(rp.getFutureRunningVMs().contains(v5));
-    }
-
-    @Test
-    public void testAlterer() throws SolverException {
-        ChocoLogging.setVerbosity(Verbosity.SEARCH);
-        Mapping map = new DefaultMapping();
-        for (int i = 0; i < 10; i++) {
-            UUID n = UUID.randomUUID();
-            UUID vm = UUID.randomUUID();
-            map.addOnlineNode(n);
-            map.addRunningVM(vm, n);
-        }
-        Model mo = new DefaultModel(map);
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
-        CPSolver s = rp.getSolver();
-        IntDomainVar nbNodes = s.createBoundIntVar("nbNodes", 1, map.getAllNodes().size());
-        IntDomainVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
-        s.post(new AtMostNValue(hosters, nbNodes));
-        s.setDoMaximize(false);
-        s.setObjective(nbNodes);
-        ReconfigurationPlan p = rp.solve(100, true);
-        Assert.assertNotNull(p);
-        System.out.println(p);
-        System.out.println(p.getResult().getMapping());
-
     }
 }
