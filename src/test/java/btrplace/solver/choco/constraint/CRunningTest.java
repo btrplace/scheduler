@@ -33,13 +33,6 @@ import org.testng.annotations.Test;
  */
 public class CRunningTest extends ConstraintTestMaterial {
 
-    /*@Test
-    public void testInstantiation() {
-        Running b = new Running(Collections.singleton(UUID.randomUUID()));
-        CRunning c = new CRunning(b);
-        Assert.assertEquals(b, c.getAssociatedConstraint());
-    } */
-
     @Test
     public void testGetMisplaced() {
         Mapping m = new DefaultMapping();

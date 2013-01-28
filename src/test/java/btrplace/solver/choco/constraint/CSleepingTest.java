@@ -18,11 +18,11 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.constraint.Sleeping;
+import btrplace.solver.choco.MappingBuilder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -35,11 +35,7 @@ public class CSleepingTest extends ConstraintTestMaterial {
 
     @Test
     public void testGetMisplaced() {
-        Mapping m = new DefaultMapping();
-        m.addReadyVM(vm1);
-        m.addOnlineNode(n1);
-        m.addRunningVM(vm2, n1);
-        m.addSleepingVM(vm3, n1);
+        Mapping m = new MappingBuilder().on(n1).ready(vm1).run(n1, vm2).sleep(n1, vm3).get();
         Model mo = new DefaultModel(m);
         CSleeping k = new CSleeping(new Sleeping(m.getAllVMs()));
         Assert.assertEquals(2, k.getMisPlacedVMs(mo).size());

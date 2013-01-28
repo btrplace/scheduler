@@ -41,12 +41,6 @@ import java.util.UUID;
  */
 public class CBanTest extends ConstraintTestMaterial {
 
-/*    @Test
-    public void testInstantiation() {
-        Ban b = new Ban(Collections.singleton(UUID.randomUUID()), Collections.singleton(UUID.randomUUID()));
-        CBan c = new CBan(b);
-    }*/
-
     @Test
     public void testBasic() throws SolverException {
         UUID[] nodes = new UUID[5];

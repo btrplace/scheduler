@@ -18,13 +18,17 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
+import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Root;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.MappingBuilder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -40,12 +44,7 @@ public class CRootTest extends ConstraintTestMaterial {
 
     @Test
     public void testBasic() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addRunningVM(vm1, n1);
-        map.addSleepingVM(vm2, n1);
-        map.addReadyVM(vm3);
+        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).ready(vm3).get();
 
         Model mo = new DefaultModel(map);
 

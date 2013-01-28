@@ -18,20 +18,21 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
+import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Lonely;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.MappingBuilder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Unit tests for {@link CLonely}.
@@ -42,21 +43,11 @@ public class CLonelyTest extends ConstraintTestMaterial {
 
     @Test
     public void testFeasibleDiscrete() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
+        Mapping map = new MappingBuilder().on(n1, n2, n3)
+                .run(n1, vm1, vm2)
+                .run(n2, vm3, vm4, vm5).get();
 
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addRunningVM(vm4, n2);
-        map.addRunningVM(vm5, n2);
-
-        Set<UUID> mine = new HashSet<UUID>();
-        mine.add(vm1);
-        mine.add(vm2);
-        mine.add(vm3);
+        Set<UUID> mine = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
         Model mo = new DefaultModel(map);
@@ -77,21 +68,10 @@ public class CLonelyTest extends ConstraintTestMaterial {
     @Test
     public void testFeasibleContinuous() throws SolverException {
         //ChocoLogging.setVerbosity(Verbosity.FINEST);
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n1);
-        map.addRunningVM(vm4, n2);
-        map.addRunningVM(vm5, n2);
-
-        Set<UUID> mine = new HashSet<UUID>();
-        mine.add(vm1);
-        mine.add(vm2);
-        mine.add(vm3);
+        Mapping map = new MappingBuilder().on(n1, n2, n3)
+                .run(n1, vm1, vm2, vm3)
+                .run(n2, vm4, vm5).get();
+        Set<UUID> mine = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
         Model mo = new DefaultModel(map);
@@ -108,22 +88,13 @@ public class CLonelyTest extends ConstraintTestMaterial {
 
     @Test
     public void testGetMisplaced() {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
 
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n1);
-        map.addRunningVM(vm4, n2);
-        map.addRunningVM(vm5, n2);
+        Mapping map = new MappingBuilder().on(n1, n2, n3)
+                .run(n1, vm1, vm2, vm3)
+                .run(n2, vm4, vm5).get();
+        Set<UUID> mine = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
+
         Model mo = new DefaultModel(map);
-
-        Set<UUID> mine = new HashSet<UUID>();
-        mine.add(vm1);
-        mine.add(vm2);
-        mine.add(vm3);
 
         CLonely c = new CLonely(new Lonely(mine));
         Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());

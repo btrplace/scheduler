@@ -18,7 +18,10 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
+import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Ready;
@@ -27,6 +30,7 @@ import btrplace.plan.event.MigrateVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.MappingBuilder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -44,27 +48,15 @@ public class CFenceTest extends ConstraintTestMaterial {
      */
     @Test
     public void testGetMisPlaced() {
-        Mapping m = new DefaultMapping();
+        Mapping m = new MappingBuilder().on(n1, n2, n3, n4)
+                .off(n5)
+                .run(n1, vm1, vm2)
+                .run(n2, vm3)
+                .run(n3, vm4)
+                .sleep(n4, vm5).get();
 
-        m.addOnlineNode(n1);
-        m.addOnlineNode(n2);
-        m.addOnlineNode(n3);
-        m.addOnlineNode(n4);
-        m.addOfflineNode(n5);
-
-        m.addRunningVM(vm1, n1);
-        m.addRunningVM(vm2, n1);
-        m.addRunningVM(vm3, n2);
-        m.addRunningVM(vm4, n3);
-        m.addSleepingVM(vm5, n4);
-
-        Set<UUID> vms = new HashSet<UUID>();
-        Set<UUID> ns = new HashSet<UUID>();
-
-        vms.add(vm1);
-        vms.add(vm2);
-        ns.add(n1);
-        ns.add(n2);
+        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> ns = new HashSet<UUID>(Arrays.asList(n1, n2));
         CFence c = new CFence(new Fence(vms, ns));
         Model mo = new DefaultModel(m);
         Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
@@ -80,19 +72,13 @@ public class CFenceTest extends ConstraintTestMaterial {
 
     @Test
     public void testBasic() throws SolverException {
-        Mapping map = new DefaultMapping();
 
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
-        map.addRunningVM(vm3, n3);
-        map.addRunningVM(vm4, n1);
+        Mapping map = new MappingBuilder().on(n1, n2, n3)
+                .run(n1, vm1, vm4)
+                .run(n2, vm2)
+                .run(n3, vm3).get();
 
-        Set<UUID> on = new HashSet<UUID>();
-        on.add(n3);
-        on.add(n1);
+        Set<UUID> on = new HashSet<UUID>(Arrays.asList(n1, n3));
         Fence f = new Fence(map.getAllVMs(), on);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
