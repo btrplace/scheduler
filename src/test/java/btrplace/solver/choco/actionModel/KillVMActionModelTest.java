@@ -92,7 +92,7 @@ public class KillVMActionModelTest {
         //The running VM has a CSlice
         Assert.assertNotNull(rp.getVMAction(vm1).getCSlice());
         Assert.assertTrue(rp.getVMAction(vm1).getCSlice().getHoster().isInstantiatedTo(rp.getNode(n1)));
-        ReconfigurationPlan p = rp.solve(0, true);
+        ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
 
         for (Action a : p) {

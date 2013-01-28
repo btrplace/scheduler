@@ -81,7 +81,7 @@ public class RelocatableVMModelTest {
         CPSolver s = rp.getSolver();
         s.post(s.eq(rp.getNbRunningVMs()[rp.getNode(n1)], 0));
 
-        ReconfigurationPlan p = rp.solve(0, true);
+        ReconfigurationPlan p = rp.solve(0, false);
 
         Assert.assertNotNull(p);
         Model m = p.getResult();
@@ -119,7 +119,7 @@ public class RelocatableVMModelTest {
         //No VMs on n2
         rp.getNbRunningVMs()[rp.getNode(n2)].setVal(0);
 
-        ReconfigurationPlan p = rp.solve(0, true);
+        ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         Assert.assertEquals(0, p.getSize());
 

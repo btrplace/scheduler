@@ -70,7 +70,7 @@ public class StayAwayVMModelTest {
             Assert.assertTrue(am.getDuration().isInstantiatedTo(0));
         }
 
-        ReconfigurationPlan p = rp.solve(0, true);
+        ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         Assert.assertEquals(0, p.getSize());
     }

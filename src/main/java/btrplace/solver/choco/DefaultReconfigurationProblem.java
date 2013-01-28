@@ -36,9 +36,8 @@ import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.cp.solver.search.set.StaticSetVarOrder;
+import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.search.ISolutionPool;
-import choco.kernel.solver.search.SolutionPoolFactory;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
 import gnu.trove.list.array.TIntArrayList;
@@ -167,9 +166,14 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             solver.post(cstr);
         }
 
+        //Let's rock
+        if (timeLimit > 0) {
+            solver.setTimeLimit(timeLimit);
+        }
+
+        solver.getConfiguration().putBoolean(choco.kernel.solver.Configuration.STOP_AT_FIRST_SOLUTION, !optimize);
+        solver.getConfiguration().putInt(Configuration.SOLUTION_POOL_CAPACITY, Integer.MAX_VALUE);
         solver.generateSearchStrategy();
-        ISolutionPool sp = SolutionPoolFactory.makeInfiniteSolutionPool(solver.getSearchStrategy());
-        solver.getSearchStrategy().setSolutionPool(sp);
 
         //Instantiate the VM usage to its LB.
         for (ResourceMapping rcm : getResourceMappings()) {
@@ -177,7 +181,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 try {
                     v.setVal(v.getInf());
                 } catch (ContradictionException e) {
-                    getLogger().error("Unable to set the VM '{}' consumption to {}", rcm.getIdentifier(), v.getInf());
+                    getLogger().error("Unable to set the VM '{}' consumption to '{}'", rcm.getIdentifier(), v.getInf());
                     return null;
                 }
             }
@@ -197,12 +201,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         solver.addGoal(new AssignVar(new StaticVarOrder(solver, foo), new MinVal()));
         solver.addGoal(new AssignVar(new StaticSetVarOrder(solver, bar), new MinVal()));
-
-        //Let's rock
-        if (timeLimit > 0) {
-            solver.setTimeLimit(timeLimit);
-        }
-        solver.setFirstSolution(!optimize);
 
         solver.launch();
         if (Boolean.FALSE == solver.isFeasible()) {

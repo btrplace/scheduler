@@ -70,7 +70,7 @@ public class ShutdownVMModelTest {
         Assert.assertTrue(m.getState().isInstantiatedTo(0));
         Assert.assertTrue(m.getCSlice().getHoster().isInstantiatedTo(0));
 
-        ReconfigurationPlan p = rp.solve(0, true);
+        ReconfigurationPlan p = rp.solve(0, false);
         ShutdownVM a = (ShutdownVM) p.getActions().iterator().next();
 
         Assert.assertEquals(vm, a.getVM());
@@ -106,7 +106,7 @@ public class ShutdownVMModelTest {
         CPSolver s = rp.getSolver();
         s.post(s.geq(m2.getStart(), m1.getEnd()));
 
-        ReconfigurationPlan p = rp.solve(0, true);
+        ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         Iterator<Action> ite = p.iterator();
         ShutdownVM b1 = (ShutdownVM) ite.next();
