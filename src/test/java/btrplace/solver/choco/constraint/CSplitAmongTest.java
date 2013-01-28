@@ -18,18 +18,20 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.SatConstraint;
 import btrplace.model.constraint.SplitAmong;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.solver.SolverException;
+import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.MappingBuilder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Unit tests for {@link CSplitAmong}.
@@ -40,20 +42,12 @@ public class CSplitAmongTest extends ConstraintTestMaterial {
 
     @Test
     public void testGetMisplaced() {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOnlineNode(n4);
-        map.addOnlineNode(n5);
-
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
-        map.addRunningVM(vm3, n1);
-        map.addRunningVM(vm4, n3);
-        map.addRunningVM(vm5, n4);
-        map.addRunningVM(vm6, n3);
-        map.addRunningVM(vm7, n5);
+        Mapping map = new MappingBuilder().on(n1, n2, n3, n4, n5)
+                .run(n1, vm1, vm3)
+                .run(n2, vm2)
+                .run(n3, vm4, vm6)
+                .run(n4, vm5)
+                .run(n5, vm7).get();
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
@@ -93,8 +87,38 @@ public class CSplitAmongTest extends ConstraintTestMaterial {
     }
 
     @Test
-    public void testDiscrete() {
-        Assert.fail();
+    public void testDiscrete() throws SolverException {
+        Mapping map = new MappingBuilder().on(n1, n2, n3, n4, n5)
+                .run(n1, vm1, vm3)
+                .run(n2, vm2)
+                .run(n3, vm4, vm6)
+                .run(n4, vm5)
+                .run(n5, vm7).get();
+
+        //Isolated VM not considered by the constraint
+        map.addRunningVM(vm8, n1);
+
+        Set<UUID> vg1 = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
+        Set<UUID> vg2 = new HashSet<UUID>(Arrays.asList(vm4, vm5, vm6));
+        Set<UUID> vg3 = new HashSet<UUID>(Arrays.asList(vm7));
+
+        Set<UUID> pg1 = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> pg2 = new HashSet<UUID>(Arrays.asList(n3, n4));
+        Set<UUID> pg3 = new HashSet<UUID>(Arrays.asList(n5));
+        Set<Set<UUID>> vgs = new HashSet<Set<UUID>>(Arrays.asList(vg1, vg2, vg3));
+        Set<Set<UUID>> pgs = new HashSet<Set<UUID>>(Arrays.asList(pg1, pg2, pg3));
+
+        SplitAmong s = new SplitAmong(vgs, pgs);
+        s.setContinuous(false);
+
+        //vg1 and vg2 overlap on n1. The two groups are mis-placed
+        map.addRunningVM(vm6, n2);
+
+        Model mo = new DefaultModel(map);
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>singleton(s));
+        Assert.assertNotNull(p);
+        Assert.assertTrue(p.getSize() > 0);
     }
 
     @Test

@@ -38,13 +38,6 @@ import java.util.*;
  */
 public class CSpreadTest extends ConstraintTestMaterial {
 
-    /*@Test
-    public void testInstantiation() {
-        Spread b = new Spread(Collections.singleton(UUID.randomUUID()));
-        CSpread c = new CSpread(b);
-        Assert.assertEquals(b, c.getAssociatedConstraint());
-    } */
-
     private static Model getModel() {
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
@@ -95,12 +88,6 @@ public class CSpreadTest extends ConstraintTestMaterial {
 
     @Test
     public void testGetMisplaced() {
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
 
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);

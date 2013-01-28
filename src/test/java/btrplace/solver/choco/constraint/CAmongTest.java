@@ -18,7 +18,10 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
+import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Among;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Running;
@@ -26,6 +29,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.MappingBuilder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -40,16 +44,11 @@ public class CAmongTest extends ConstraintTestMaterial {
 
     @Test
     public void testWithOnGroup() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOnlineNode(n4);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
-        map.addRunningVM(vm3, n3);
-        map.addReadyVM(vm4);
-        map.addReadyVM(vm5);
+
+        Mapping map = new MappingBuilder()
+                .on(n1, n2, n3, n4)
+                .run(n1, vm1).run(n2, vm2).run(n3, vm3)
+                .ready(vm4, vm5).get();
 
         Set<UUID> vms = new HashSet<UUID>();
         vms.add(vm1);
@@ -77,16 +76,11 @@ public class CAmongTest extends ConstraintTestMaterial {
 
     @Test
     public void testWithGroupChange() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOnlineNode(n4);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
-        map.addRunningVM(vm3, n2);
-        map.addReadyVM(vm4);
-        map.addReadyVM(vm5);
+
+        Mapping map = new MappingBuilder()
+                .on(n1, n2, n3, n4)
+                .run(n1, vm1).run(n2, vm2, vm3)
+                .ready(vm4, vm5).get();
 
         Set<UUID> vms = new HashSet<UUID>();
         vms.add(vm1);
@@ -125,16 +119,11 @@ public class CAmongTest extends ConstraintTestMaterial {
      */
     @Test
     public void testWithNoSolution() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOnlineNode(n4);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
-        map.addRunningVM(vm3, n2);
-        map.addReadyVM(vm4);
-        map.addReadyVM(vm5);
+
+        Mapping map = new MappingBuilder()
+                .on(n1, n2, n3, n4)
+                .run(n1, vm1).run(n2, vm2, vm3)
+                .ready(vm4, vm5).get();
 
         Set<UUID> vms = new HashSet<UUID>();
         vms.add(vm1);
@@ -167,16 +156,11 @@ public class CAmongTest extends ConstraintTestMaterial {
 
     @Test
     public void testGetMisplaced() {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOnlineNode(n4);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
-        map.addRunningVM(vm3, n2);
-        map.addReadyVM(vm4);
-        map.addReadyVM(vm5);
+
+        Mapping map = new MappingBuilder()
+                .on(n1, n2, n3, n4)
+                .run(n1, vm1).run(n2, vm2, vm3)
+                .ready(vm4, vm5).get();
 
         Set<UUID> vms = new HashSet<UUID>();
         vms.add(vm1);
@@ -205,16 +189,10 @@ public class CAmongTest extends ConstraintTestMaterial {
 
     @Test
     public void testContinuousWithAlreadySatisfied() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOnlineNode(n4);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
-        map.addRunningVM(vm3, n2);
-        map.addReadyVM(vm4);
-        map.addReadyVM(vm5);
+        Mapping map = new MappingBuilder()
+                .on(n1, n2, n3, n4)
+                .run(n1, vm1).run(n2, vm2, vm3)
+                .ready(vm4, vm5).get();
 
         Set<UUID> vms = new HashSet<UUID>();
         vms.add(vm1);
@@ -249,16 +227,10 @@ public class CAmongTest extends ConstraintTestMaterial {
 
     @Test
     public void testContinuousWithNotAlreadySatisfied() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOnlineNode(n4);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
-        map.addRunningVM(vm3, n3);
-        map.addReadyVM(vm4);
-        map.addReadyVM(vm5);
+        Mapping map = new MappingBuilder()
+                .on(n1, n2, n3, n4)
+                .run(n1, vm1).run(n2, vm2).run(n3, vm3)
+                .ready(vm4, vm5).get();
 
         Set<UUID> vms = new HashSet<UUID>();
         vms.add(vm1);

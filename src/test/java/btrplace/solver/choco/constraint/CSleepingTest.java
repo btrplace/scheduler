@@ -33,13 +33,6 @@ import org.testng.annotations.Test;
  */
 public class CSleepingTest extends ConstraintTestMaterial {
 
-    /*@Test
-    public void testInstantiation() {
-        Sleeping b = new Sleeping(Collections.singleton(UUID.randomUUID()));
-        CSleeping c = new CSleeping(b);
-        Assert.assertEquals(b, c.getAssociatedConstraint());
-    }     */
-
     @Test
     public void testGetMisplaced() {
         Mapping m = new DefaultMapping();

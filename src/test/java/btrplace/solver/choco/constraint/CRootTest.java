@@ -38,13 +38,6 @@ import java.util.List;
  */
 public class CRootTest extends ConstraintTestMaterial {
 
-    /*@Test
-    public void testInstantiation() {
-        Root b = new Root(Collections.singleton(UUID.randomUUID()));
-        CRoot c = new CRoot(b);
-        Assert.assertEquals(b, c.getAssociatedConstraint());
-    } */
-
     @Test
     public void testBasic() throws SolverException {
         Mapping map = new DefaultMapping();

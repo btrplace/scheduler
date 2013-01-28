@@ -33,13 +33,6 @@ import org.testng.annotations.Test;
  */
 public class CReadyTest extends ConstraintTestMaterial {
 
-   /* @Test
-    public void testInstantiation() {
-        Ready b = new Ready(Collections.singleton(UUID.randomUUID()));
-        CReady c = new CReady(b);
-        Assert.assertEquals(b, c.getAssociatedConstraint());
-    }*/
-
     @Test
     public void testGetMisplaced() {
         Mapping m = new DefaultMapping();
@@ -52,17 +45,4 @@ public class CReadyTest extends ConstraintTestMaterial {
         Assert.assertEquals(2, k.getMisPlacedVMs(mo).size());
         Assert.assertFalse(k.getMisPlacedVMs(mo).contains(vm1));
     }
-
-    /*@Test
-    public void testIsSatisfied() {
-        Mapping m = new DefaultMapping();
-        Model mo = new DefaultModel(m);
-        UUID vm = UUID.randomUUID();
-
-        ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
-        CReady k = new CReady(new Ready(Collections.singleton(vm)));
-        Assert.assertFalse(k.isSatisfied(p));
-        p.add(new ForgeVM(vm, 1, 2));
-        Assert.assertTrue(k.isSatisfied(p));
-    }          */
 }

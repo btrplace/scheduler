@@ -36,13 +36,6 @@ import java.util.UUID;
  */
 public class CKilledTest extends ConstraintTestMaterial {
 
-    /*@Test
-    public void testInstantiation() {
-        Killed b = new Killed(Collections.singleton(UUID.randomUUID()));
-        CKilled c = new CKilled(b);
-        Assert.assertEquals(b, c.getAssociatedConstraint());
-    } */
-
     @Test
     public void testGetMisplaced() {
         Mapping m = new DefaultMapping();

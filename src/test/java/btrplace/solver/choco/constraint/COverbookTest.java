@@ -42,14 +42,6 @@ import java.util.*;
  */
 public class COverbookTest extends ConstraintTestMaterial {
 
-    /*
-    @Test
-    public void testInstantiation() {
-        Overbook b = new Overbook(Collections.singleton(UUID.randomUUID()), "c", 1);
-        COverbook c = new COverbook(b);
-        Assert.assertEquals(b, c.getAssociatedConstraint());
-    } */
-
     @Test
     public void testBasic() throws SolverException {
         UUID[] nodes = new UUID[3];

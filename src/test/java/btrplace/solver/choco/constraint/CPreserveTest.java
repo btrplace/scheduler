@@ -40,13 +40,6 @@ import java.util.UUID;
  */
 public class CPreserveTest extends ConstraintTestMaterial {
 
-    /*@Test
-    public void testInstantiation() {
-        Preserve b = new Preserve(Collections.singleton(UUID.randomUUID()), "cpu", 5);
-        CPreserve c = new CPreserve(b);
-        Assert.assertEquals(b, c.getAssociatedConstraint());
-    } */
-
     @Test
     public void testGetMisplaced() {
         Mapping map = new DefaultMapping();

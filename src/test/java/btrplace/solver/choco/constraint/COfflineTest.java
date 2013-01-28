@@ -42,7 +42,6 @@ public class COfflineTest extends ConstraintTestMaterial {
     public void testInstantiation() {
         Offline b = new Offline(Collections.singleton(UUID.randomUUID()));
         COffline c = new COffline(b);
-        //Assert.assertEquals(b, c.getAssociatedConstraint());
         Assert.assertEquals(c.toString(), b.toString());
     }
 
@@ -71,8 +70,6 @@ public class COfflineTest extends ConstraintTestMaterial {
     @Test
     public void testGetMisplacedAndSatisfied() {
         Mapping map = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
 

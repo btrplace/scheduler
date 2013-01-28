@@ -52,25 +52,4 @@ public class CRunningTest extends ConstraintTestMaterial {
         Assert.assertEquals(1, k.getMisPlacedVMs(mo).size());
         Assert.assertTrue(k.getMisPlacedVMs(mo).contains(vm1));
     }
-
-    /*@Test
-    public void testIsSatisfied() {
-        Mapping m = new DefaultMapping();
-        Model mo = new DefaultModel(m);
-        UUID vm = UUID.randomUUID();
-        UUID n1 = UUID.randomUUID();
-        m.addOnlineNode(n1);
-        m.addSleepingVM(vm, n1);
-        ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
-        CRunning k = new CRunning(new Running(Collections.singleton(vm)));
-        Assert.assertFalse(k.isSatisfied(p));
-        p.add(new ResumeVM(vm, n1, n1, 1, 2));
-        Assert.assertTrue(k.isSatisfied(p));
-
-        vm = UUID.randomUUID();
-        m.addReadyVM(vm);
-        p.add(new BootVM(vm, n1, 1, 2));
-        k = new CRunning(new Running(Collections.singleton(vm)));
-        Assert.assertTrue(k.isSatisfied(p));
-    }         */
 }

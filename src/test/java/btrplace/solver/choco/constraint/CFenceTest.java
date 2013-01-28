@@ -37,14 +37,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class CFenceTest extends ConstraintTestMaterial{
-
-    /*@Test
-    public void testInstantiation() {
-        Fence b = new Fence(Collections.singleton(UUID.randomUUID()), Collections.singleton(UUID.randomUUID()));
-        CFence c = new CFence(b);
-        Assert.assertEquals(b, c.getAssociatedConstraint());
-    } */
+public class CFenceTest extends ConstraintTestMaterial {
 
     /**
      * Test getMisPlaced() in various situations.
