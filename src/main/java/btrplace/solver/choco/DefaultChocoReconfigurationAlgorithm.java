@@ -45,7 +45,10 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
     private boolean optimize = false;
 
-    private int timeLimit = 5;
+    /**
+     * No time limit by default.
+     */
+    private int timeLimit = 0;
 
     private boolean repair = false;
 

@@ -88,7 +88,7 @@ public class CSplitAmong implements ChocoSatConstraint {
      * @param n the node
      * @return the group identifier, {@code -1} if the node does not belong to a group
      */
-    public int getGroup(UUID n) {
+    public int getPGroup(UUID n) {
         int i = 0;
         for (Set<UUID> pGrp : cstr.getGroupsOfNodes()) {
             if (pGrp.contains(n)) {
@@ -112,24 +112,20 @@ public class CSplitAmong implements ChocoSatConstraint {
             for (UUID vm : vms) {
                 if (map.getRunningVMs().contains(vm)) {
                     UUID n = map.getVMLocation(vm);
-                    int g = getGroup(n);
+                    int g = getPGroup(n);
                     if (g == -1) {
                         bad.add(vm); //The VM is on an disallowed node
                     } else if (grp == -1) {
                         grp = g;
+                        usedGrp[g] = vms;
                     } else if (g != grp) {
                         //The VMs spread over multiple group of nodes, the group of VMs is mis-placed
                         bad.addAll(vms);
+                        if (usedGrp[g] != null) {
+                            bad.addAll(usedGrp[g]);
+                        }
+                        bad.addAll(usedGrp[grp]);
                     }
-                }
-            }
-            if (grp > 0) {
-                if (usedGrp[grp] == null) {
-                    usedGrp[grp] = vms;
-                } else {
-                    //The group of nodes is already used, the VMs on this group plus the current VMs are mis-placed
-                    bad.addAll(vms);
-                    bad.addAll(usedGrp[grp]);
                 }
             }
         }

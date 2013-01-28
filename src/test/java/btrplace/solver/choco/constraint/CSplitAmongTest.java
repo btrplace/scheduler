@@ -18,8 +18,18 @@
 
 package btrplace.solver.choco.constraint;
 
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
+import btrplace.model.constraint.SplitAmong;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Unit tests for {@link CSplitAmong}.
@@ -30,7 +40,56 @@ public class CSplitAmongTest extends ConstraintTestMaterial {
 
     @Test
     public void testGetMisplaced() {
-        Assert.fail();
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOnlineNode(n3);
+        map.addOnlineNode(n4);
+        map.addOnlineNode(n5);
+
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n2);
+        map.addRunningVM(vm3, n1);
+        map.addRunningVM(vm4, n3);
+        map.addRunningVM(vm5, n4);
+        map.addRunningVM(vm6, n3);
+        map.addRunningVM(vm7, n5);
+
+        //Isolated VM not considered by the constraint
+        map.addRunningVM(vm8, n1);
+
+        Set<UUID> vg1 = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
+        Set<UUID> vg2 = new HashSet<UUID>(Arrays.asList(vm4, vm5, vm6));
+        Set<UUID> vg3 = new HashSet<UUID>(Arrays.asList(vm7));
+
+        Set<UUID> pg1 = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> pg2 = new HashSet<UUID>(Arrays.asList(n3, n4));
+        Set<UUID> pg3 = new HashSet<UUID>(Arrays.asList(n5));
+        Set<Set<UUID>> vgs = new HashSet<Set<UUID>>(Arrays.asList(vg1, vg2, vg3));
+        Set<Set<UUID>> pgs = new HashSet<Set<UUID>>(Arrays.asList(pg1, pg2, pg3));
+
+        SplitAmong s = new SplitAmong(vgs, pgs);
+        CSplitAmong cs = new CSplitAmong(s);
+
+        Model mo = new DefaultModel(map);
+
+        Assert.assertTrue(cs.getMisPlacedVMs(mo).isEmpty());
+
+
+        map.removeVM(vm7);
+        map.addRunningVM(vm6, n5);
+        //vg2 is on 2 group of nodes, the whole group is mis-placed
+
+        Assert.assertEquals(cs.getMisPlacedVMs(mo), vg2);
+
+
+        map.addRunningVM(vm7, n5);
+        //vg1 and vg2 overlap on n1. The two groups are mis-placed
+        map.addRunningVM(vm6, n2);
+
+        Assert.assertTrue(cs.getMisPlacedVMs(mo).containsAll(vg1));
+        Assert.assertTrue(cs.getMisPlacedVMs(mo).containsAll(vg2));
+        Assert.assertEquals(cs.getMisPlacedVMs(mo).size(), vg1.size() + vg2.size());
     }
 
     @Test
