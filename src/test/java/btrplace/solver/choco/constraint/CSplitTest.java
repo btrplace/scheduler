@@ -18,13 +18,17 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
+import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Split;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.MappingBuilder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -37,44 +41,23 @@ import java.util.*;
  */
 public class CSplitTest extends ConstraintTestMaterial {
 
+    private static Set<UUID> g1 = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+    private static Set<UUID> g2 = new HashSet<UUID>(Arrays.asList(vm3, vm4, vm5));
+    private static Set<UUID> g3 = new HashSet<UUID>(Arrays.asList(vm6, vm7));
+
+    private static Set<Set<UUID>> grps = new HashSet<Set<UUID>>(Arrays.asList(g1, g2, g3));
+
     @Test
     public void testGetMisplaced() {
-        Set<UUID> g1 = new HashSet<UUID>();
-        Set<UUID> g2 = new HashSet<UUID>();
-        Set<UUID> g3 = new HashSet<UUID>();
 
-        g1.add(vm1);
-        g1.add(vm2);
+        Set<Set<UUID>> grps = new HashSet<Set<UUID>>(Arrays.asList(g1, g2, g3));
 
-        g2.add(vm3);
-        g2.add(vm4);
-        g2.add(vm5);
-
-        g3.add(vm6);
-        g3.add(vm7);
-
-        Set<Set<UUID>> grps = new HashSet<Set<UUID>>();
-        grps.add(g1);
-        grps.add(g2);
-        grps.add(g3);
-
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOnlineNode(n4);
-        map.addOnlineNode(n5);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm8, n1);
-
-        map.addRunningVM(vm3, n2);
-        map.addRunningVM(vm4, n3);
-        map.addRunningVM(vm5, n3);
-
-        map.addRunningVM(vm6, n4);
-        map.addRunningVM(vm7, n5);
-        map.addRunningVM(vm8, n5);
+        Mapping map = new MappingBuilder().on(n1, n2, n3, n4, n5)
+                .run(n1, vm1, vm2)
+                .run(n2, vm3)
+                .run(n3, vm4, vm5)
+                .run(n4, vm6)
+                .run(n5, vm7, vm8).get();
 
         Split s = new Split(grps);
         CSplit cs = new CSplit(s);
@@ -95,42 +78,11 @@ public class CSplitTest extends ConstraintTestMaterial {
 
     @Test
     public void testSimpleDiscrete() throws SolverException {
-        Set<UUID> g1 = new HashSet<UUID>();
-        Set<UUID> g2 = new HashSet<UUID>();
-        Set<UUID> g3 = new HashSet<UUID>();
 
-        g1.add(vm1);
-        g1.add(vm2);
-
-        g2.add(vm3);
-        g2.add(vm4);
-        g2.add(vm5);
-
-        g3.add(vm6);
-        g3.add(vm7);
-
-        Set<Set<UUID>> grps = new HashSet<Set<UUID>>();
-        grps.add(g1);
-        grps.add(g2);
-        grps.add(g3);
-
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOnlineNode(n4);
-        map.addOnlineNode(n5);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm8, n1);
-
-        map.addRunningVM(vm3, n1); //Violation
-        map.addRunningVM(vm4, n3);
-        map.addRunningVM(vm5, n3);
-
-        map.addRunningVM(vm6, n3); //Violation
-        map.addRunningVM(vm7, n5);
-        map.addRunningVM(vm8, n5);
+        Mapping map = new MappingBuilder().on(n1, n2, n3, n4, n5)
+                .run(n1, vm1, vm2, vm3/* violation*/)
+                .run(n3, vm4, vm5, vm6/*violation*/)
+                .run(n5, vm7, vm8).get();
 
         Split s = new Split(grps);
 
@@ -146,42 +98,11 @@ public class CSplitTest extends ConstraintTestMaterial {
 
     @Test
     public void testContinuous() throws SolverException {
-        Set<UUID> g1 = new HashSet<UUID>();
-        Set<UUID> g2 = new HashSet<UUID>();
-        Set<UUID> g3 = new HashSet<UUID>();
 
-        g1.add(vm1);
-        g1.add(vm2);
-
-        g2.add(vm3);
-        g2.add(vm4);
-        g2.add(vm5);
-
-        g3.add(vm6);
-        g3.add(vm7);
-
-        Set<Set<UUID>> grps = new HashSet<Set<UUID>>();
-        grps.add(g1);
-        grps.add(g2);
-        grps.add(g3);
-
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOnlineNode(n4);
-        map.addOnlineNode(n5);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm8, n1);
-
-        map.addRunningVM(vm3, n3);
-        map.addRunningVM(vm4, n3);
-        map.addRunningVM(vm5, n3);
-
-        map.addRunningVM(vm6, n5);
-        map.addRunningVM(vm7, n5);
-        map.addRunningVM(vm8, n5);
+        Mapping map = new MappingBuilder().on(n1, n2, n3, n4, n5)
+                .run(n1, vm1, vm2)
+                .run(n3, vm3, vm4, vm5)
+                .run(n5, vm6, vm7, vm8).get();
 
         Split s = new Split(grps);
         s.setContinuous(true);

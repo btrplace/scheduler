@@ -18,7 +18,10 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
+import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Spread;
@@ -26,6 +29,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.MappingBuilder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -39,12 +43,8 @@ import java.util.*;
 public class CSpreadTest extends ConstraintTestMaterial {
 
     private static Model getModel() {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
+        Mapping map = new MappingBuilder().on(n1, n2, n3)
+                .run(n1, vm1).run(n2, vm2).get();
         return new DefaultModel(map);
     }
 
@@ -89,12 +89,9 @@ public class CSpreadTest extends ConstraintTestMaterial {
     @Test
     public void testGetMisplaced() {
 
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
-        map.addRunningVM(vm3, n1);
+        Mapping map = new MappingBuilder().on(n1, n2)
+                .run(n1, vm1, vm3)
+                .run(n2, vm2).get();
         Set<UUID> vms = new HashSet<UUID>();
         vms.add(vm1);
         vms.add(vm2);

@@ -25,6 +25,7 @@ import btrplace.model.constraint.Running;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.MappingBuilder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -84,19 +85,11 @@ public class CBanTest extends ConstraintTestMaterial {
      */
     @Test
     public void testGetMisPlaced() {
-        Mapping m = new DefaultMapping();
-
-        m.addOnlineNode(n1);
-        m.addOnlineNode(n2);
-        m.addOnlineNode(n3);
-        m.addOnlineNode(n4);
-        m.addOfflineNode(n5);
-
-        m.addRunningVM(vm1, n1);
-        m.addRunningVM(vm2, n1);
-        m.addRunningVM(vm3, n2);
-        m.addRunningVM(vm4, n3);
-        m.addSleepingVM(vm5, n4);
+        Mapping m = new MappingBuilder().on(n1, n2, n3, n4, n5)
+                .run(n1, vm1, vm2)
+                .run(n2, vm3)
+                .run(n3, vm4)
+                .sleep(n4, vm5).get();
 
         Set<UUID> vms = new HashSet<UUID>();
         Set<UUID> ns = new HashSet<UUID>();
