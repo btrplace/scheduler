@@ -67,15 +67,19 @@ public class CSingleResourceCapacity implements ChocoSatConstraint {
             s.post(s.leq(v, amount));
 
             //Continuous in practice ?
-            if (cstr.isContinuous() && cstr.isSatisfied(rp.getSourceModel()).equals(SatConstraint.Sat.SATISFIED)) {
-                try {
-                    v.setSup(cstr.getAmount());
-                } catch (ContradictionException e) {
-                    rp.getLogger().error("Unable to restrict to up to {}, the maximum '{}' usage on '{}': ", cstr.getAmount(), rcm.getIdentifier(), n, e.getMessage());
+            if (cstr.isContinuous()) {
+                if (cstr.isSatisfied(rp.getSourceModel()).equals(SatConstraint.Sat.SATISFIED)) {
+                    try {
+                        v.setSup(cstr.getAmount());
+                    } catch (ContradictionException e) {
+                        rp.getLogger().error("Unable to restrict to up to {}, the maximum '{}' usage on '{}': ", cstr.getAmount(), rcm.getIdentifier(), n, e.getMessage());
+                        return false;
+                    }
+                } else {
+                    rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
                     return false;
                 }
             }
-
         }
 
 

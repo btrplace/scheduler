@@ -30,6 +30,7 @@ import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.chocoUtil.Disjoint;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import gnu.trove.TIntArrayList;
 
 import java.util.*;
 
@@ -56,16 +57,22 @@ public class CSplit implements ChocoSatConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
         List<List<IntDomainVar>> groups = new ArrayList<List<IntDomainVar>>();
+        List<List<UUID>> vmGroups = new ArrayList<List<UUID>>();
+        Set<UUID> runnings = new HashSet<UUID>();
         for (Set<UUID> grp : cstr.getSets()) {
             List<IntDomainVar> l = new ArrayList<IntDomainVar>();
+            List<UUID> vl = new ArrayList<UUID>();
             for (UUID vm : grp) {
                 if (rp.getFutureRunningVMs().contains(vm)) {
                     Slice s = rp.getVMAction(vm).getDSlice();
                     l.add(s.getHoster());
+                    runnings.add(vm);
+                    vl.add(vm);
                 }
             }
             if (!l.isEmpty()) {
                 groups.add(l);
+                vmGroups.add(vl);
             }
         }
         CPSolver s = rp.getSolver();
@@ -90,8 +97,38 @@ public class CSplit implements ChocoSatConstraint {
             }
         }
         if (cstr.isContinuous()) {
-            rp.getLogger().error("Continuous restriction is not supported for constraint split");
-            return false;
+            if (cstr.isSatisfied(rp.getSourceModel()) != SatConstraint.Sat.SATISFIED) {
+                rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
+                return false;
+            } else {
+                Mapping map = rp.getSourceModel().getMapping();
+                //For each group, we create a list of int denoting the position of the VMs
+                //in the other groups
+                List<TIntArrayList> otherPositions = new ArrayList<TIntArrayList>();
+                List<List<IntDomainVar>> otherEnds = new ArrayList<List<IntDomainVar>>();
+                for (int i = 0; i < vmGroups.size(); i++) {
+                    otherPositions.add(new TIntArrayList());
+                    otherEnds.add(new ArrayList<IntDomainVar>());
+                }
+
+                for (int i = 0; i < vmGroups.size(); i++) {
+                    List<UUID> grp = vmGroups.get(i);
+                    for (UUID vm : grp) {
+                        if (map.getRunningVMs().contains(vm)) {
+                            int pos = rp.getNode(map.getVMLocation(vm));
+                            for (int j = 0; j < vmGroups.size(); j++) {
+                                if (i != j) {
+                                    otherPositions.get(j).add(pos);
+                                    otherEnds.get(j).add(rp.getVMAction(vm).getCSlice().getEnd());
+                                }
+                            }
+                        }
+                    }
+                }
+
+                rp.getLogger().error("Continuous restriction is not supported for constraint split");
+                return false;
+            }
         }
         return true;
     }

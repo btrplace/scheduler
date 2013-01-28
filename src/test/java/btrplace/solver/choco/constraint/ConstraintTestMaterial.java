@@ -21,7 +21,7 @@ package btrplace.solver.choco.constraint;
 import java.util.UUID;
 
 /**
- * Pre-made VMs and servers for tests
+ * Pre-made VMs and servers for tests.
  *
  * @author Fabien Hermenier
  */
