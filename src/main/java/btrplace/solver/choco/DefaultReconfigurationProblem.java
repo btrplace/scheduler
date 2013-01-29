@@ -251,7 +251,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             f = IntObjectiveManager.class.getDeclaredField("targetBound");
             f.setAccessible(true);
         } catch (Exception e) {
-            throw new SolverException(model, "Unable to inject the alterer: " + e.getMessage());
+            throw new SolverException(model, "Unable to inject the alterer: " + e.getMessage(), e);
         }
 
         solver.launch();
@@ -262,7 +262,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 try {
                     f.set(obj, newBound);
                 } catch (Exception e) {
-                    throw new SolverException(model, "Unable to set the new target bound " + newBound + " for the objective " + solver.getObjective().getName() + ": " + e);
+                    throw new SolverException(model, "Unable to set the new target bound " + newBound + " for the objective " + solver.getObjective().getName() + ": " + e.getMessage(), e);
                 }
             } while (solver.nextSolution() == Boolean.TRUE);
         }
