@@ -278,8 +278,8 @@ public class BinPacking extends AbstractLargeIntSConstraint {
             }
         }
 
-        int sumLoadInf = 0;
-        int sumLoadSup = 0;
+        int slb = 0;
+        int slu = 0;
         for (int b = 0; b < nbBins; b++) {
             bRLoads[b] = env.makeInt(rLoads[b]);
             bTLoads[b] = env.makeInt(rLoads[b] + cLoads[b]);
@@ -288,11 +288,11 @@ public class BinPacking extends AbstractLargeIntSConstraint {
             if (!candidates[b].isEmpty()) {
                 availableBins.set(b);
             }
-            sumLoadInf += loads[b].getInf();
-            sumLoadSup += loads[b].getSup();
+            slb += loads[b].getInf();
+            slu += loads[b].getSup();
         }
-        this.sumLoadInf = env.makeInt(sumLoadInf);
-        this.sumLoadSup = env.makeInt(sumLoadSup);
+        this.sumLoadInf = env.makeInt(slb);
+        this.sumLoadSup = env.makeInt(slu);
         this.loadsHaveChanged = env.makeBool(false);
 
         assert checkLoadConsistency() && checkCandidatesConsistency();
@@ -344,15 +344,15 @@ public class BinPacking extends AbstractLargeIntSConstraint {
             return;
         }
         loadsHaveChanged.set(false);
-        int sumLoadInf = 0;
-        int sumLoadSup = 0;
+        int sli = 0;
+        int sls = 0;
         for (int b = 0; b < nbBins; b++) {
-            sumLoadInf += loads[b].getInf();
-            sumLoadSup += loads[b].getSup();
+            sli += loads[b].getInf();
+            sls += loads[b].getSup();
         }
 
-        this.sumLoadInf.set(sumLoadInf);
-        this.sumLoadSup.set(sumLoadSup);
+        this.sumLoadInf.set(sli);
+        this.sumLoadSup.set(sls);
     }
 
     /**
@@ -563,8 +563,8 @@ public class BinPacking extends AbstractLargeIntSConstraint {
                 }
             }
         }
-        int sumLoadInf = 0;
-        int sumLoadSup = 0;
+        int sli = 0;
+        int sls = 0;
         for (int b = 0; b < rs.length; b++) {
             if (rs[b] != bRLoads[b].get()) {
                 ChocoLogging.getBranchingLogger().warning(loads[b].pretty() + " required=" + bRLoads[b].get() + " expected=" + rs[b]);
@@ -582,15 +582,15 @@ public class BinPacking extends AbstractLargeIntSConstraint {
                 ChocoLogging.getBranchingLogger().warning(loads[b].pretty() + " UB expected <=" + (rs[b] + cs[b]));
                 check = false;
             }
-            sumLoadInf += loads[b].getInf();
-            sumLoadSup += loads[b].getSup();
+            sli += loads[b].getInf();
+            sls += loads[b].getSup();
         }
-        if (this.sumLoadInf.get() != sumLoadInf) {
-            ChocoLogging.getBranchingLogger().warning("Sum Load LB = " + this.sumLoadInf.get() + " expected =" + sumLoadInf);
+        if (this.sumLoadInf.get() != sli) {
+            ChocoLogging.getBranchingLogger().warning("Sum Load LB = " + this.sumLoadInf.get() + " expected =" + sli);
             check = false;
         }
-        if (this.sumLoadSup.get() != sumLoadSup) {
-            ChocoLogging.getBranchingLogger().warning("Sum Load UB = " + this.sumLoadSup.get() + " expected =" + sumLoadSup);
+        if (this.sumLoadSup.get() != sls) {
+            ChocoLogging.getBranchingLogger().warning("Sum Load UB = " + this.sumLoadSup.get() + " expected =" + sls);
             check = false;
         }
         ChocoLogging.flushLogs();

@@ -74,9 +74,10 @@ public final class MyElement extends AbstractBinIntSConstraint {
 
     @Override
     public int getFilteredEventMask(int idx) {
-        if (idx == 0)
+        if (idx == 0) {
             return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
-        else return IntVarEvent.REMVAL_MASK;
+        }
+        return IntVarEvent.REMVAL_MASK;
     }
 
     /**
@@ -165,19 +166,23 @@ public final class MyElement extends AbstractBinIntSConstraint {
         boolean forceAwake = !this.v1.hasEnumeratedDomain();
 
         while ((this.v0.canBeInstantiatedTo(minFeasibleIndex))
-                && !(this.v1.canBeInstantiatedTo(lval[minFeasibleIndex - this.cste])))
+                && !(this.v1.canBeInstantiatedTo(lval[minFeasibleIndex - this.cste]))) {
             minFeasibleIndex++;
+        }
+
         this.v0.updateInf(minFeasibleIndex, this, forceAwake);
 
         while ((this.v0.canBeInstantiatedTo(maxFeasibleIndex))
-                && !(this.v1.canBeInstantiatedTo(lval[maxFeasibleIndex - this.cste])))
+                && !(this.v1.canBeInstantiatedTo(lval[maxFeasibleIndex - this.cste]))) {
             maxFeasibleIndex--;
+        }
         this.v0.updateSup(maxFeasibleIndex, this, forceAwake);
 
         if (this.v0.hasEnumeratedDomain()) {
             for (int i = minFeasibleIndex + 1; i <= maxFeasibleIndex - 1; i++) {
-                if (this.v0.canBeInstantiatedTo(i) && !(this.v1.canBeInstantiatedTo(this.lval[i - this.cste])))
+                if (this.v0.canBeInstantiatedTo(i) && !(this.v1.canBeInstantiatedTo(this.lval[i - this.cste]))) {
                     this.v0.removeVal(i, this, forceAwake);
+                }
             }
         }
     }
@@ -197,10 +202,11 @@ public final class MyElement extends AbstractBinIntSConstraint {
 
     @Override
     public void awakeOnRem(int i, int x) throws ContradictionException {
-        if (i == 0)
+        if (i == 0) {
             this.updateValueFromIndex();
-        else
+        } else {
             this.updateIndexFromValue();
+        }
     }
 
     @Override
@@ -215,8 +221,12 @@ public final class MyElement extends AbstractBinIntSConstraint {
                 allVal &= b;
                 oneVal |= b;
             }
-            if (allVal) return Boolean.TRUE;
-            if (oneVal) return null;
+            if (allVal) {
+                return Boolean.TRUE;
+            }
+            if (oneVal) {
+                return null;
+            }
         } else {
             boolean b = false;
             for (int val = v0.getInf(); val <= v0.getSup() && !b; val = v0.getNextDomainValue(val)) {
@@ -225,7 +235,9 @@ public final class MyElement extends AbstractBinIntSConstraint {
                     b = this.v1.canBeInstantiatedTo(this.lval[val - this.cste]);
                 }
             }
-            if (b) return null;
+            if (b) {
+                return null;
+            }
         }
         return Boolean.FALSE;
     }
@@ -233,7 +245,9 @@ public final class MyElement extends AbstractBinIntSConstraint {
     @Override
     public boolean isSatisfied(int[] tuple) {
         if (tuple[0] - this.cste >= lval.length ||
-                tuple[0] - this.cste < 0) return false;
+                tuple[0] - this.cste < 0) {
+            return false;
+        }
         return this.lval[tuple[0] - this.cste] == tuple[1];
     }
 }

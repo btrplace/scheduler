@@ -45,12 +45,12 @@ public class Disjoint extends AbstractLargeIntSConstraint {
     /**
      * number of variables in the first set (group 0)
      */
-    final private int nbX;
+    private final int nbX;
 
     /**
      * the variable domains must be included in [0, nbValues-1]
      */
-    final private int nbValues;
+    private final int nbValues;
 
     /**
      * candidates[g][v] = number of variables in group 'g' which can be assigned to the value 'v',
