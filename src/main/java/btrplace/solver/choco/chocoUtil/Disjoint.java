@@ -19,6 +19,7 @@
 package btrplace.solver.choco.chocoUtil;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.memory.IEnvironment;
@@ -44,23 +45,23 @@ public class Disjoint extends AbstractLargeIntSConstraint {
     /**
      * number of variables in the first set (group 0)
      */
-    final int nbX;
+    final private int nbX;
 
     /**
      * the variable domains must be included in [0, nbValues-1]
      */
-    final int nbValues;
+    final private int nbValues;
 
     /**
-     * candidates[group][value] = number of variables in group which can be assigned to value,
-     * with group = 0,1 and value=0,...nbValues-1
+     * candidates[g][v] = number of variables in group 'g' which can be assigned to the value 'v',
+     * with g = 0 || 1 and 0 <= v < nbValues
      */
-    IStateInt[][] candidates;
+    private IStateInt[][] candidates;
     /**
-     * required[group][value] = 1 iff at least one variable in group is assigned to value,
-     * with group = 0,1 and value=0,...nbValues-1
+     * required[g].get(v) iff at least one variable in the group 'g' is assigned to the value 'v',
+     * with g = 0 || 1 and 0 <= v < nbValues
      */
-    IStateBitSet[] required;
+    private IStateBitSet[] required;
 
 
     /**
@@ -89,10 +90,11 @@ public class Disjoint extends AbstractLargeIntSConstraint {
     }
 
     /**
-     * init the internal data according to the domain of a variable
+     * Initialise required and candidate for a given variable
+     * that belong to a given group.
      *
-     * @param var   variable
-     * @param group variable group
+     * @param var   the variable
+     * @param group the group of the variable
      */
     private void initVar(IntDomainVar var, int group) {
         if (var.isInstantiated()) {
@@ -110,10 +112,8 @@ public class Disjoint extends AbstractLargeIntSConstraint {
         }
     }
 
-    /**
-     * init the internal data according to the variable domains
-     */
-    public void init() {
+    @Override
+    public void awake() throws ContradictionException {
         int i = 0;
         for (; i < nbX; i++) {
             initVar(vars[i], 0);
@@ -121,11 +121,6 @@ public class Disjoint extends AbstractLargeIntSConstraint {
         for (; i < vars.length; i++) {
             initVar(vars[i], 1);
         }
-    }
-
-    @Override
-    public void awake() throws ContradictionException {
-        init();
         propagate();
     }
 
@@ -141,20 +136,26 @@ public class Disjoint extends AbstractLargeIntSConstraint {
      *          when some variables in both groups are instantiated to the same value
      */
     public void setRequired(int val, int group, int other) throws ContradictionException {
-        if (required[other].get(val)) fail();
+
+        if (required[other].get(val)) {
+            //The value is used in the other group. It's a contradiction
+            fail();
+        }
         if (candidates[other][val].get() > 0) {
-            int n = 0;
+            //The value was possible for the other group, so we remove it from its variable
+
+            int n = 0; //The number of variables that were updated
             int i = (other == 0) ? 0 : nbX;
             int end = (other == 0) ? nbX : vars.length;
             for (; i < end; i++) {
                 if (vars[i].removeVal(val, this, false)) {
                     n++;
-                    if (vars[i].isInstantiated()) {
+                    /*if (vars[i].isInstantiated()) {
                         setRequired(vars[i].getVal(), other, group);
-                    }
+                    } */
                 }
             }
-            assert n == candidates[other][val].get() : "n=" + n + " candidate=" + candidates[other][val].get();
+            assert n == candidates[other][val].get() : n + " variables in group '" + other + "' were updated but candidate=" + candidates[other][val].get();
             candidates[other][val].set(0);
         }
         required[group].set(val);
@@ -163,23 +164,37 @@ public class Disjoint extends AbstractLargeIntSConstraint {
     @Override
     public void awakeOnInst(int idx) throws ContradictionException {
         int group = (idx < nbX) ? 0 : 1;
+        //ChocoLogging.getBranchingLogger().finest("awakeOnInst grp= " + group + " val=" + vars[idx].getVal());
         setRequired(vars[idx].getVal(), group, 1 - group);
+        constAwake(false);
     }
 
     @Override
     public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
+        //ChocoLogging.getBranchingLogger().finest("awakeOnRemovals(" + idx + ")");
         int group = (idx < nbX) ? 0 : 1;
         while (deltaDomain.hasNext()) {
-            candidates[group][deltaDomain.next()].add(-1);
+            int n = deltaDomain.next();
+            //ChocoLogging.getBranchingLogger().finest("Decrease candidates for value " + n +  " in group " + group);
+            candidates[group][n].add(-1);
         }
+        constAwake(false);
     }
 
     @Override
     public void propagate() throws ContradictionException {
         for (int v = 0; v < nbValues; v++) {
-            if (required[0].get(v)) setRequired(v, 0, 1);
-            if (required[1].get(v)) setRequired(v, 1, 0);
+            //Check if the value 'v' is required by a group
+            if (required[0].get(v)) {
+                //Required by group 0
+                setRequired(v, 0, 1);
+            }
+            if (required[1].get(v)) {
+                setRequired(v, 1, 0);
+            }
         }
+        //prettyCandidates(0);
+        //prettyCandidates(1);
     }
 
     @Override
@@ -190,9 +205,19 @@ public class Disjoint extends AbstractLargeIntSConstraint {
             valuesOne.set(tuple[i]);
         }
         for (; i < tuple.length; i++) {
-            if (valuesOne.get(tuple[i])) return false;
+            if (valuesOne.get(tuple[i])) {
+                return false;
+            }
         }
         return true;
     }
 
+    private void prettyCandidates(int g) {
+        StringBuilder b = new StringBuilder();
+        int x = 0;
+        for (IStateInt v : candidates[g]) {
+            b.append(" value(").append(x++).append("):").append(v.get());
+        }
+        ChocoLogging.getBranchingLogger().finest("Candidates for group " + g + ": " + b.toString());
+    }
 }

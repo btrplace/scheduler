@@ -58,7 +58,7 @@ public class CLonely implements ChocoSatConstraint {
         //Remove non future-running VMs
         List<IntDomainVar> myHosts = new ArrayList<IntDomainVar>();
         List<IntDomainVar> otherHosts = new ArrayList<IntDomainVar>();
-        Collection<UUID> vms = new HashSet<UUID>();//cstr.getInvolvedVMs();
+        Collection<UUID> vms = new HashSet<UUID>();
         Set<UUID> otherVMs = new HashSet<UUID>();
         for (UUID vm : rp.getFutureRunningVMs()) {
             IntDomainVar host = rp.getVMAction(vm).getDSlice().getHoster();
@@ -72,8 +72,6 @@ public class CLonely implements ChocoSatConstraint {
         }
         //Link the assignment variables with the set
         CPSolver s = rp.getSolver();
-        //System.out.println(myHosts);
-        //System.out.println(otherHosts);
         s.post(new Disjoint(s.getEnvironment(), myHosts.toArray(new IntDomainVar[myHosts.size()]),
                 otherHosts.toArray(new IntDomainVar[otherHosts.size()]),
                 rp.getNodes().length));

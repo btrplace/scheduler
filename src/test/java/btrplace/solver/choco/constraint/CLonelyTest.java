@@ -43,6 +43,7 @@ public class CLonelyTest extends ConstraintTestMaterial {
 
     @Test
     public void testFeasibleDiscrete() throws SolverException {
+        //ChocoLogging.setVerbosity(Verbosity.SEARCH);
         Mapping map = new MappingBuilder().on(n1, n2, n3)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3, vm4, vm5).get();
