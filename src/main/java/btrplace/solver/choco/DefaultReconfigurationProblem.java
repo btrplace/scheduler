@@ -255,7 +255,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
 
         solver.launch();
-        //Solution s = solver.getSearchStrategy().getSolutionPool().getBestSolution();
         if (solver.isFeasible() == Boolean.TRUE) {
             do {
                 int objVal = solver.getObjectiveValue().intValue();

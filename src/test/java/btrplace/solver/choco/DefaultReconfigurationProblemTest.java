@@ -24,6 +24,7 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.AtMostNValue;
+import choco.cp.solver.constraints.global.IncreasingNValue;
 import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.ResolutionPolicy;
@@ -432,12 +433,12 @@ public class DefaultReconfigurationProblemTest {
     }
 
     /**
-     * A simple optimization problem where we reduce the number of used nodes.
+     * Test a minimization problem: use the minimum number of nodes.
      *
      * @throws SolverException
      */
     @Test
-    public void testOptimize() throws SolverException {
+    public void testMinimize() throws SolverException {
         Mapping map = new DefaultMapping();
         for (int i = 0; i < 10; i++) {
             UUID n = UUID.randomUUID();
@@ -462,12 +463,13 @@ public class DefaultReconfigurationProblemTest {
     }
 
     /**
-     * Same Optimization problem that testOptimize + alterer that divide the resolution per 2 each time
+     * Test a minimization problem: use the minimum number of nodes. For a faster reduction,
+     * an alterer divide the current objective by 2 at each solution
      *
      * @throws SolverException
      */
     @Test
-    public void testOptimizeWithAlterer() throws SolverException {
+    public void testMinimizationWithAlterer() throws SolverException {
         Mapping map = new DefaultMapping();
         for (int i = 0; i < 10; i++) {
             UUID n = UUID.randomUUID();
@@ -487,7 +489,6 @@ public class DefaultReconfigurationProblemTest {
         ObjectiveAlterer alt = new ObjectiveAlterer() {
             @Override
             public int newBound(int currentValue) {
-                //ChocoLogging.getBranchingLogger().info("Value was " + currentValue + ". Try with " + (currentValue / 2));
                 return currentValue / 2;
             }
         };
@@ -501,7 +502,82 @@ public class DefaultReconfigurationProblemTest {
     }
 
     /**
-     * Same Optimization problem that testOptimize + alterer that divide the resolution per 2 each time
+     * Test a maximization problem: use the maximum number of nodes to host VMs
+     *
+     * @throws SolverException
+     */
+    @Test
+    public void testMaximization() throws SolverException {
+        Mapping map = new DefaultMapping();
+        UUID n1 = UUID.randomUUID();
+        map.addOnlineNode(n1);
+        for (int i = 0; i < 10; i++) {
+            UUID n = UUID.randomUUID();
+            UUID vm = UUID.randomUUID();
+            map.addOnlineNode(n);
+            map.addRunningVM(vm, n1);
+        }
+        Model mo = new DefaultModel(map);
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
+        CPSolver s = rp.getSolver();
+        IntDomainVar nbNodes = s.createBoundIntVar("nbNodes", 1, map.getOnlineNodes().size());
+        IntDomainVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
+        s.post(new IncreasingNValue(nbNodes, hosters, IncreasingNValue.Mode.ATLEAST));
+        s.setObjective(nbNodes);
+        s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MAXIMIZE);
+
+        ReconfigurationPlan plan = rp.solve(0, true);
+        Assert.assertNotNull(plan);
+        Mapping dst = plan.getResult().getMapping();
+        Assert.assertEquals(s.getNbSolutions(), 10);
+        Assert.assertEquals(MappingUtils.usedNodes(dst, EnumSet.of(MappingUtils.State.Runnings)).size(), 10);
+    }
+
+    /**
+     * Test a maximization problem: use the maximum number of nodes to host VMs
+     * For a faster optimisation process, the current objective is doubled at each solution
+     *
+     * @throws SolverException
+     */
+    @Test
+    public void testMaximizationWithAlterer() throws SolverException {
+        Mapping map = new DefaultMapping();
+        UUID n1 = UUID.randomUUID();
+        map.addOnlineNode(n1);
+        for (int i = 0; i < 10; i++) {
+            UUID n = UUID.randomUUID();
+            UUID vm = UUID.randomUUID();
+            map.addOnlineNode(n);
+            map.addRunningVM(vm, n1);
+        }
+        Model mo = new DefaultModel(map);
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
+        CPSolver s = rp.getSolver();
+        final IntDomainVar nbNodes = s.createBoundIntVar("nbNodes", 1, map.getOnlineNodes().size());
+        IntDomainVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
+        s.post(new IncreasingNValue(nbNodes, hosters, IncreasingNValue.Mode.ATLEAST));
+        s.setObjective(nbNodes);
+        s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MAXIMIZE);
+
+        ObjectiveAlterer alt = new ObjectiveAlterer() {
+            @Override
+            public int newBound(int currentValue) {
+                if (currentValue == 10) return 11; //bound violation
+                return currentValue * 2 > 10 ? 10 : currentValue * 2;
+            }
+        };
+
+        rp.setObjectiveAlterer(alt);
+
+        ReconfigurationPlan plan = rp.solve(0, true);
+        Assert.assertNotNull(plan);
+        Mapping dst = plan.getResult().getMapping();
+        Assert.assertEquals(s.getNbSolutions(), 5);
+        Assert.assertEquals(MappingUtils.usedNodes(dst, EnumSet.of(MappingUtils.State.Runnings)).size(), 10);
+    }
+
+    /**
+     * Test an unsolvable optimisation problem with an alterer. No solution
      *
      * @throws SolverException
      */
@@ -526,7 +602,6 @@ public class DefaultReconfigurationProblemTest {
         ObjectiveAlterer alt = new ObjectiveAlterer() {
             @Override
             public int newBound(int currentValue) {
-                //ChocoLogging.getBranchingLogger().info("Value was " + currentValue + ". Try with " + (currentValue / 2));
                 return currentValue / 2;
             }
         };
