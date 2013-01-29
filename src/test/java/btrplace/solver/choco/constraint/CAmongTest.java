@@ -18,7 +18,10 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
+import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Among;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Running;
@@ -26,6 +29,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.MappingBuilder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -40,21 +44,13 @@ public class CAmongTest extends ConstraintTestMaterial {
 
     @Test
     public void testWithOnGroup() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOnlineNode(n4);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
-        map.addRunningVM(vm3, n3);
-        map.addReadyVM(vm4);
-        map.addReadyVM(vm5);
 
-        Set<UUID> vms = new HashSet<UUID>();
-        vms.add(vm1);
-        vms.add(vm2);
-        vms.add(vm3);
+        Mapping map = new MappingBuilder()
+                .on(n1, n2, n3, n4)
+                .run(n1, vm1).run(n2, vm2).run(n3, vm3)
+                .ready(vm4, vm5).get();
+
+        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
 
         Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>();
         Set<UUID> s = new HashSet<UUID>();
@@ -77,38 +73,23 @@ public class CAmongTest extends ConstraintTestMaterial {
 
     @Test
     public void testWithGroupChange() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOnlineNode(n4);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
-        map.addRunningVM(vm3, n2);
-        map.addReadyVM(vm4);
-        map.addReadyVM(vm5);
 
-        Set<UUID> vms = new HashSet<UUID>();
-        vms.add(vm1);
-        vms.add(vm2);
-        vms.add(vm5);
+        Mapping map = new MappingBuilder()
+                .on(n1, n2, n3, n4)
+                .run(n1, vm1).run(n2, vm2, vm3)
+                .ready(vm4, vm5).get();
 
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>();
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(n1);
-        s.add(n2);
-        pGrps.add(s);
+        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm5));
 
-        s = new HashSet<UUID>();
-        s.add(n3);
-        s.add(n4);
-        pGrps.add(s);
+        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(n3, n4));
+        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(s1, s2));
         Among a = new Among(vms, pGrps);
         a.setContinuous(false);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
         cstrs.add(new Running(map.getAllVMs()));
-        cstrs.add(new Fence(Collections.singleton(vm2), s));
+        cstrs.add(new Fence(Collections.singleton(vm2), s2));
         cstrs.add(a);
 
         Model mo = new DefaultModel(map);
@@ -125,32 +106,19 @@ public class CAmongTest extends ConstraintTestMaterial {
      */
     @Test
     public void testWithNoSolution() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOnlineNode(n4);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
-        map.addRunningVM(vm3, n2);
-        map.addReadyVM(vm4);
-        map.addReadyVM(vm5);
 
-        Set<UUID> vms = new HashSet<UUID>();
-        vms.add(vm1);
-        vms.add(vm2);
-        vms.add(vm5);
+        Mapping map = new MappingBuilder()
+                .on(n1, n2, n3, n4)
+                .run(n1, vm1).run(n2, vm2, vm3)
+                .ready(vm4, vm5).get();
 
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>();
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(n1);
-        s.add(n2);
-        pGrps.add(s);
+        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm5));
 
-        s = new HashSet<UUID>();
-        s.add(n3);
-        s.add(n4);
-        pGrps.add(s);
+
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(n3, n4));
+        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(s, s2));
+
         Among a = new Among(vms, pGrps);
         a.setContinuous(false);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
@@ -167,34 +135,18 @@ public class CAmongTest extends ConstraintTestMaterial {
 
     @Test
     public void testGetMisplaced() {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOnlineNode(n4);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
-        map.addRunningVM(vm3, n2);
-        map.addReadyVM(vm4);
-        map.addReadyVM(vm5);
 
-        Set<UUID> vms = new HashSet<UUID>();
-        vms.add(vm1);
-        vms.add(vm2);
-        vms.add(vm5);
+        Mapping map = new MappingBuilder()
+                .on(n1, n2, n3, n4)
+                .run(n1, vm1).run(n2, vm2, vm3)
+                .ready(vm4, vm5).get();
 
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>();
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(n1);
-        s.add(n2);
-        pGrps.add(s);
+        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm5));
+        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(n3, n4));
+        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(s1, s2));
 
         Model mo = new DefaultModel(map);
-
-        s = new HashSet<UUID>();
-        s.add(n3);
-        s.add(n4);
-        pGrps.add(s);
         Among a = new Among(vms, pGrps);
         CAmong ca = new CAmong(a);
         Assert.assertEquals(ca.getMisPlacedVMs(mo), Collections.emptySet());
@@ -205,34 +157,17 @@ public class CAmongTest extends ConstraintTestMaterial {
 
     @Test
     public void testContinuousWithAlreadySatisfied() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOnlineNode(n4);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
-        map.addRunningVM(vm3, n2);
-        map.addReadyVM(vm4);
-        map.addReadyVM(vm5);
+        Mapping map = new MappingBuilder()
+                .on(n1, n2, n3, n4)
+                .run(n1, vm1).run(n2, vm2, vm3)
+                .ready(vm4, vm5).get();
 
-        Set<UUID> vms = new HashSet<UUID>();
-        vms.add(vm1);
-        vms.add(vm2);
-        vms.add(vm5);
-
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>();
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(n1);
-        s.add(n2);
-        pGrps.add(s);
+        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm5));
+        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(n3, n4));
+        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(s1, s2));
 
         Model mo = new DefaultModel(map);
-
-        s = new HashSet<UUID>();
-        s.add(n3);
-        s.add(n4);
-        pGrps.add(s);
         Among a = new Among(vms, pGrps);
         a.setContinuous(true);
 
@@ -249,34 +184,18 @@ public class CAmongTest extends ConstraintTestMaterial {
 
     @Test
     public void testContinuousWithNotAlreadySatisfied() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOnlineNode(n4);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
-        map.addRunningVM(vm3, n3);
-        map.addReadyVM(vm4);
-        map.addReadyVM(vm5);
+        Mapping map = new MappingBuilder()
+                .on(n1, n2, n3, n4)
+                .run(n1, vm1).run(n2, vm2).run(n3, vm3)
+                .ready(vm4, vm5).get();
 
-        Set<UUID> vms = new HashSet<UUID>();
-        vms.add(vm1);
-        vms.add(vm2);
-        vms.add(vm5);
+        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm5));
 
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>();
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(n1);
-        s.add(n2);
-        pGrps.add(s);
+        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(n3, n4));
+        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(s1, s2));
 
         Model mo = new DefaultModel(map);
-
-        s = new HashSet<UUID>();
-        s.add(n3);
-        s.add(n4);
-        pGrps.add(s);
         Among a = new Among(vms, pGrps);
         a.setContinuous(true);
 

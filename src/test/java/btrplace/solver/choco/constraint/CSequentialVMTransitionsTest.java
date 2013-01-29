@@ -18,7 +18,10 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
+import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Ready;
 import btrplace.model.constraint.Running;
 import btrplace.model.constraint.SequentialVMTransitions;
@@ -27,13 +30,11 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.MappingBuilder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Unit tests for {@link CSequentialVMTransitions}.
@@ -44,13 +45,7 @@ public class CSequentialVMTransitionsTest extends ConstraintTestMaterial {
 
     @Test
     public void testWithOnlyTransitions() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addReadyVM(vm1);
-        map.addRunningVM(vm2, n1);
-        map.addSleepingVM(vm3, n2);
-        map.addRunningVM(vm4, n1);
+        Mapping map = new MappingBuilder().on(n1, n2).ready(vm1).run(n1, vm2, vm4).sleep(n2, vm3).get();
         List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
         Model mo = new DefaultModel(map);
         cstrs.add(new Running(Collections.singleton(vm1)));
@@ -58,26 +53,15 @@ public class CSequentialVMTransitionsTest extends ConstraintTestMaterial {
         cstrs.add(new Running(Collections.singleton(vm3)));
         cstrs.add(new Ready(Collections.singleton(vm4)));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        List<UUID> seq = new ArrayList<UUID>();
-        seq.add(vm1);
-        seq.add(vm2);
-        seq.add(vm3);
-        seq.add(vm4);
+        List<UUID> seq = Arrays.asList(vm1, vm2, vm3, vm4);
         cstrs.add(new SequentialVMTransitions(seq));
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
         Assert.assertNotNull(plan);
-//        System.out.println(plan);
     }
 
     @Test
     public void testWithVMsWithNoTransitions() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addReadyVM(vm1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addRunningVM(vm4, n1);
+        Mapping map = new MappingBuilder().on(n1, n2).ready(vm1).run(n1, vm2, vm4).run(n2, vm3).get();
         List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
         Model mo = new DefaultModel(map);
         cstrs.add(new Running(Collections.singleton(vm1)));
@@ -85,11 +69,7 @@ public class CSequentialVMTransitionsTest extends ConstraintTestMaterial {
         cstrs.add(new Running(Collections.singleton(vm3)));
         cstrs.add(new Ready(Collections.singleton(vm4)));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        List<UUID> seq = new ArrayList<UUID>();
-        seq.add(vm1);
-        seq.add(vm2);
-        seq.add(vm3);
-        seq.add(vm4);
+        List<UUID> seq = Arrays.asList(vm1, vm2, vm3, vm4);
         cstrs.add(new SequentialVMTransitions(seq));
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
         Assert.assertNotNull(plan);

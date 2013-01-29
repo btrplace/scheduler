@@ -28,6 +28,7 @@ import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.MappingBuilder;
 import btrplace.solver.choco.durationEvaluator.LinearToAResourceDuration;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
@@ -41,14 +42,6 @@ import java.util.*;
  * @author Fabien Hermenier
  */
 public class COverbookTest extends ConstraintTestMaterial {
-
-    /*
-    @Test
-    public void testInstantiation() {
-        Overbook b = new Overbook(Collections.singleton(UUID.randomUUID()), "c", 1);
-        COverbook c = new COverbook(b);
-        Assert.assertEquals(b, c.getAssociatedConstraint());
-    } */
 
     @Test
     public void testBasic() throws SolverException {
@@ -119,8 +112,6 @@ public class COverbookTest extends ConstraintTestMaterial {
         cra.setTimeLimit(-1);
         ReconfigurationPlan p = cra.solve(mo, c);
         Assert.assertNotNull(p);
-        //System.out.println(p);
-        //System.out.println(p.getResult().getMapping());
         for (SatConstraint cstr : c) {
             Assert.assertEquals(SatConstraint.Sat.SATISFIED, cstr.isSatisfied(p.getResult()));
         }
@@ -155,16 +146,10 @@ public class COverbookTest extends ConstraintTestMaterial {
 
     @Test
     public void testGetMisplaced() throws SolverException {
-        Mapping m = new DefaultMapping();
-        m.addOnlineNode(n1);
-        m.addOnlineNode(n2);
-        m.addOnlineNode(n3);
-        m.addRunningVM(vm1, n1);
-        m.addRunningVM(vm2, n2);
-        m.addRunningVM(vm3, n2);
-        m.addRunningVM(vm4, n3);
-        m.addRunningVM(vm5, n3);
-        m.addRunningVM(vm6, n3);
+        Mapping m = new MappingBuilder().on(n1, n2, n3)
+                .run(n1, vm1)
+                .run(n2, vm2, vm3)
+                .run(n3, vm4, vm5, vm6).get();
         ShareableResource rcCPU = new DefaultShareableResource("cpu", 1);
         Model mo = new DefaultModel(m);
         mo.attach(rcCPU);
@@ -182,11 +167,7 @@ public class COverbookTest extends ConstraintTestMaterial {
 
     @Test
     public void testWithScheduling1() throws SolverException {
-        Mapping m = new DefaultMapping();
-
-        m.addOnlineNode(n1);
-        m.addRunningVM(vm1, n1);
-        m.addReadyVM(vm3);
+        Mapping m = new MappingBuilder().on(n1).run(n1, vm1).ready(vm3).get();
 
         ShareableResource rcCPU = new DefaultShareableResource("cpu", 2);
 
@@ -212,11 +193,7 @@ public class COverbookTest extends ConstraintTestMaterial {
      */
     @Test
     public void testWithIncrease() throws SolverException, ContradictionException {
-
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
+        Mapping map = new MappingBuilder().on(n1).run(n1, vm1, vm2).get();
 
         Model mo = new DefaultModel(map);
         ShareableResource rc = new DefaultShareableResource("foo");

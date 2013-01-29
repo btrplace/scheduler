@@ -18,13 +18,17 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
+import btrplace.model.SatConstraint;
 import btrplace.model.constraint.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.MappingBuilder;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -40,15 +44,10 @@ public class CCumulatedRunningCapacityTest extends ConstraintTestMaterial {
 
     @Test
     public void testWithSatisfiedConstraint() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n3);
-        map.addRunningVM(vm4, n3);
-        map.addSleepingVM(vm5, n2);
+        Mapping map = new MappingBuilder().on(n1, n2, n3)
+                .run(n1, vm1, vm2)
+                .run(n3, vm3, vm4)
+                .sleep(n2, vm5).get();
         Model mo = new DefaultModel(map);
         List<SatConstraint> l = new ArrayList<SatConstraint>();
         CumulatedRunningCapacity x = new CumulatedRunningCapacity(map.getAllNodes(), 4);
@@ -63,18 +62,10 @@ public class CCumulatedRunningCapacityTest extends ConstraintTestMaterial {
 
     @Test
     public void testDiscreteSatisfaction() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addRunningVM(vm4, n2);
-        map.addRunningVM(vm5, n2);
-        Set<UUID> on = new HashSet<UUID>();
-        on.add(n1);
-        on.add(n2);
+        Mapping map = new MappingBuilder().on(n1, n2, n3)
+                .run(n1, vm1, vm2)
+                .run(n2, vm3, vm4, vm5).get();
+        Set<UUID> on = new HashSet<UUID>(Arrays.asList(n1, n2));
         Model mo = new DefaultModel(map);
         List<SatConstraint> l = new ArrayList<SatConstraint>();
         CumulatedRunningCapacity x = new CumulatedRunningCapacity(on, 4);
@@ -92,18 +83,10 @@ public class CCumulatedRunningCapacityTest extends ConstraintTestMaterial {
 
     @Test
     public void testFeasibleContinuousResolution() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addRunningVM(vm4, n2);
-        map.addReadyVM(vm5);
-        Set<UUID> on = new HashSet<UUID>();
-        on.add(n1);
-        on.add(n2);
+        Mapping map = new MappingBuilder().on(n1, n2, n3)
+                .run(n1, vm1, vm2)
+                .run(n2, vm3, vm4).ready(vm5).get();
+        Set<UUID> on = new HashSet<UUID>(Arrays.asList(n1, n2));
         Model mo = new DefaultModel(map);
         System.out.println(mo.getMapping());
         List<SatConstraint> l = new ArrayList<SatConstraint>();
@@ -126,15 +109,12 @@ public class CCumulatedRunningCapacityTest extends ConstraintTestMaterial {
 
     @Test
     public void testUnFeasibleContinuousResolution() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addReadyVM(vm1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addRunningVM(vm4, n2);
-        map.addRunningVM(vm5, n3);
+        Mapping map = new MappingBuilder().on(n1, n2, n3)
+                .ready(vm1)
+                .run(n1, vm2)
+                .run(n2, vm3, vm4)
+                .run(n3, vm5).get();
+
         Model mo = new DefaultModel(map);
         List<SatConstraint> l = new ArrayList<SatConstraint>();
 
@@ -148,9 +128,7 @@ public class CCumulatedRunningCapacityTest extends ConstraintTestMaterial {
         l.add(new Root(Collections.singleton(vm3)));
         l.add(new Root(Collections.singleton(vm4)));
 
-        Set<UUID> on = new HashSet<UUID>();
-        on.add(n1);
-        on.add(n2);
+        Set<UUID> on = new HashSet<UUID>(Arrays.asList(n1, n2));
         CumulatedRunningCapacity x = new CumulatedRunningCapacity(on, 3);
         x.setContinuous(true);
         l.add(x);
@@ -165,23 +143,17 @@ public class CCumulatedRunningCapacityTest extends ConstraintTestMaterial {
 
     @Test
     public void testGetMisplaced() {
-        Mapping m = new DefaultMapping();
-        m.addOnlineNode(n1);
-        m.addOnlineNode(n2);
-        m.addOnlineNode(n3);
-        m.addRunningVM(vm1, n1);
-        m.addRunningVM(vm2, n1);
-        m.addRunningVM(vm3, n1);
-        m.addRunningVM(vm4, n2);
-        m.addReadyVM(vm5);
+        Mapping map = new MappingBuilder().on(n1, n2, n3)
+                .run(n1, vm1, vm2, vm3)
+                .run(n2, vm4).ready(vm5).get();
 
-        Model mo = new DefaultModel(m);
+        Model mo = new DefaultModel(map);
 
-        CumulatedRunningCapacity c = new CumulatedRunningCapacity(m.getAllNodes(), 4);
+        CumulatedRunningCapacity c = new CumulatedRunningCapacity(map.getAllNodes(), 4);
         CCumulatedRunningCapacity cc = new CCumulatedRunningCapacity(c);
 
         Assert.assertTrue(cc.getMisPlacedVMs(mo).isEmpty());
-        m.addRunningVM(vm5, n3);
-        Assert.assertEquals(cc.getMisPlacedVMs(mo), m.getAllVMs());
+        map.addRunningVM(vm5, n3);
+        Assert.assertEquals(cc.getMisPlacedVMs(mo), map.getAllVMs());
     }
 }

@@ -25,13 +25,11 @@ import btrplace.model.constraint.Running;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.MappingBuilder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Unit tests for {@link CBan}.
@@ -39,12 +37,6 @@ import java.util.UUID;
  * @author Fabien Hermenier
  */
 public class CBanTest extends ConstraintTestMaterial {
-
-/*    @Test
-    public void testInstantiation() {
-        Ban b = new Ban(Collections.singleton(UUID.randomUUID()), Collections.singleton(UUID.randomUUID()));
-        CBan c = new CBan(b);
-    }*/
 
     @Test
     public void testBasic() throws SolverException {
@@ -84,27 +76,15 @@ public class CBanTest extends ConstraintTestMaterial {
      */
     @Test
     public void testGetMisPlaced() {
-        Mapping m = new DefaultMapping();
+        Mapping m = new MappingBuilder().on(n1, n2, n3, n4, n5)
+                .run(n1, vm1, vm2)
+                .run(n2, vm3)
+                .run(n3, vm4)
+                .sleep(n4, vm5).get();
 
-        m.addOnlineNode(n1);
-        m.addOnlineNode(n2);
-        m.addOnlineNode(n3);
-        m.addOnlineNode(n4);
-        m.addOfflineNode(n5);
+        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> ns = new HashSet<UUID>(Arrays.asList(n3, n4));
 
-        m.addRunningVM(vm1, n1);
-        m.addRunningVM(vm2, n1);
-        m.addRunningVM(vm3, n2);
-        m.addRunningVM(vm4, n3);
-        m.addSleepingVM(vm5, n4);
-
-        Set<UUID> vms = new HashSet<UUID>();
-        Set<UUID> ns = new HashSet<UUID>();
-
-        vms.add(vm1);
-        vms.add(vm2);
-        ns.add(n3);
-        ns.add(n4);
         CBan c = new CBan(new Ban(vms, ns));
         Model mo = new DefaultModel(m);
         org.testng.Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());

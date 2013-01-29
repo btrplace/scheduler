@@ -18,13 +18,17 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
+import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Offline;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.MappingBuilder;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -42,7 +46,6 @@ public class COfflineTest extends ConstraintTestMaterial {
     public void testInstantiation() {
         Offline b = new Offline(Collections.singleton(UUID.randomUUID()));
         COffline c = new COffline(b);
-        //Assert.assertEquals(b, c.getAssociatedConstraint());
         Assert.assertEquals(c.toString(), b.toString());
     }
 
@@ -51,9 +54,7 @@ public class COfflineTest extends ConstraintTestMaterial {
      */
     @Test
     public void simpleTest() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
+        Mapping map = new MappingBuilder().on(n1, n2).get();
 
         Model model = new DefaultModel(map);
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
@@ -70,15 +71,9 @@ public class COfflineTest extends ConstraintTestMaterial {
 
     @Test
     public void testGetMisplacedAndSatisfied() {
-        Mapping map = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
+        Mapping map = new MappingBuilder().on(n1, n2).get();
 
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(n1);
-        s.add(n2);
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
         Offline off = new Offline(s);
         COffline coff = new COffline(off);
         Model mo = new DefaultModel(map);
@@ -88,23 +83,11 @@ public class COfflineTest extends ConstraintTestMaterial {
         UUID vm = UUID.randomUUID();
         map.addRunningVM(vm, n1);
         Assert.assertEquals(coff.getMisPlacedVMs(mo), map.getAllVMs());
-               /*
-        ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
-        Assert.assertFalse(coff.isSatisfied(plan));
-        plan.add(new ShutdownNode(n2, 0, 1));
-        plan.add(new ShutdownVM(vm, n1, 0, 1));
-        Assert.assertFalse(coff.isSatisfied(plan));
-        plan.add(new ShutdownNode(n1, 1, 2));
-        Assert.assertTrue(coff.isSatisfied(plan));
-        */
     }
 
     @Test
     public void testSolvableProblem() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addRunningVM(vm1, n1);
+        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1).get();
         Model mo = new DefaultModel(map);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Offline(Collections.singleton(n1))));
@@ -115,9 +98,7 @@ public class COfflineTest extends ConstraintTestMaterial {
 
     @Test
     public void testUnsolvableProblem() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addRunningVM(vm1, n1);
+        Mapping map = new MappingBuilder().on(n1).run(n1, vm1).get();
         Model mo = new DefaultModel(map);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Offline(Collections.singleton(n1))));

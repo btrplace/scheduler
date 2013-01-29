@@ -18,11 +18,11 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.constraint.Running;
+import btrplace.solver.choco.MappingBuilder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -33,44 +33,13 @@ import org.testng.annotations.Test;
  */
 public class CRunningTest extends ConstraintTestMaterial {
 
-    /*@Test
-    public void testInstantiation() {
-        Running b = new Running(Collections.singleton(UUID.randomUUID()));
-        CRunning c = new CRunning(b);
-        Assert.assertEquals(b, c.getAssociatedConstraint());
-    } */
-
     @Test
     public void testGetMisplaced() {
-        Mapping m = new DefaultMapping();
-        m.addReadyVM(vm1);
-        m.addOnlineNode(n1);
-        m.addRunningVM(vm2, n1);
+        Mapping m = new MappingBuilder().on(n1).ready(vm1).run(n1, vm2).get();
         Model mo = new DefaultModel(m);
 
         CRunning k = new CRunning(new Running(m.getAllVMs()));
         Assert.assertEquals(1, k.getMisPlacedVMs(mo).size());
         Assert.assertTrue(k.getMisPlacedVMs(mo).contains(vm1));
     }
-
-    /*@Test
-    public void testIsSatisfied() {
-        Mapping m = new DefaultMapping();
-        Model mo = new DefaultModel(m);
-        UUID vm = UUID.randomUUID();
-        UUID n1 = UUID.randomUUID();
-        m.addOnlineNode(n1);
-        m.addSleepingVM(vm, n1);
-        ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
-        CRunning k = new CRunning(new Running(Collections.singleton(vm)));
-        Assert.assertFalse(k.isSatisfied(p));
-        p.add(new ResumeVM(vm, n1, n1, 1, 2));
-        Assert.assertTrue(k.isSatisfied(p));
-
-        vm = UUID.randomUUID();
-        m.addReadyVM(vm);
-        p.add(new BootVM(vm, n1, 1, 2));
-        k = new CRunning(new Running(Collections.singleton(vm)));
-        Assert.assertTrue(k.isSatisfied(p));
-    }         */
 }

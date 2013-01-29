@@ -25,6 +25,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.MappingBuilder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -40,22 +41,9 @@ import java.util.UUID;
  */
 public class CPreserveTest extends ConstraintTestMaterial {
 
-    /*@Test
-    public void testInstantiation() {
-        Preserve b = new Preserve(Collections.singleton(UUID.randomUUID()), "cpu", 5);
-        CPreserve c = new CPreserve(b);
-        Assert.assertEquals(b, c.getAssociatedConstraint());
-    } */
-
     @Test
     public void testGetMisplaced() {
-        Mapping map = new DefaultMapping();
-
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
+        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
         ShareableResource rc = new DefaultShareableResource("cpu", 7);
         rc.set(vm1, 3);
         rc.set(vm2, 3);
@@ -82,14 +70,7 @@ public class CPreserveTest extends ConstraintTestMaterial {
      */
     @Test
     public void testPreserveWithoutOverbook() throws SolverException {
-        //ChocoLogging.setVerbosity(Verbosity.SEARCH);
-        Mapping map = new DefaultMapping();
-
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
+        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
         ShareableResource rc = new DefaultShareableResource("cpu", 10);
         rc.set(n1, 7);
         rc.set(vm1, 3);

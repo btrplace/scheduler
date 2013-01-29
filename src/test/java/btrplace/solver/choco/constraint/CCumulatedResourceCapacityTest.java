@@ -26,6 +26,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.MappingBuilder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -40,15 +41,10 @@ public class CCumulatedResourceCapacityTest extends ConstraintTestMaterial {
 
     @Test
     public void testWithSatisfiedConstraint() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n3);
-        map.addRunningVM(vm4, n3);
-        map.addSleepingVM(vm5, n2);
+        Mapping map = new MappingBuilder().on(n1, n2, n3)
+                .run(n1, vm1, vm2)
+                .run(n3, vm3, vm4)
+                .sleep(n2, vm5).get();
 
         ShareableResource rc = new DefaultShareableResource("cpu", 5);
         rc.set(vm1, 2);
@@ -70,18 +66,12 @@ public class CCumulatedResourceCapacityTest extends ConstraintTestMaterial {
 
     @Test
     public void testDiscreteSatisfaction() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addRunningVM(vm4, n2);
-        map.addRunningVM(vm5, n2);
-        Set<UUID> on = new HashSet<UUID>();
-        on.add(n1);
-        on.add(n2);
+
+        Mapping map = new MappingBuilder().on(n1, n2, n3)
+                .run(n1, vm1, vm2)
+                .run(n2, vm3, vm4, vm5).get();
+
+        Set<UUID> on = new HashSet<UUID>(Arrays.asList(n1, n2));
 
         ShareableResource rc = new DefaultShareableResource("cpu", 5);
         rc.set(vm1, 2);
@@ -105,18 +95,12 @@ public class CCumulatedResourceCapacityTest extends ConstraintTestMaterial {
 
     @Test
     public void testFeasibleContinuousResolution() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addRunningVM(vm4, n2);
-        map.addReadyVM(vm5);
-        Set<UUID> on = new HashSet<UUID>();
-        on.add(n1);
-        on.add(n2);
+
+        Mapping map = new MappingBuilder().on(n1, n2, n3)
+                .run(n1, vm1, vm2)
+                .run(n2, vm3, vm4)
+                .ready(vm5).get();
+        Set<UUID> on = new HashSet<UUID>(Arrays.asList(n1, n2));
         Model mo = new DefaultModel(map);
 
         ShareableResource rc = new DefaultShareableResource("cpu", 5);
@@ -143,15 +127,8 @@ public class CCumulatedResourceCapacityTest extends ConstraintTestMaterial {
 
     @Test
     public void testGetMisplaced() {
-        Mapping m = new DefaultMapping();
-        m.addOnlineNode(n1);
-        m.addOnlineNode(n2);
-        m.addOnlineNode(n3);
-        m.addRunningVM(vm1, n1);
-        m.addRunningVM(vm2, n1);
-        m.addRunningVM(vm3, n1);
-        m.addRunningVM(vm4, n2);
-        m.addReadyVM(vm5);
+        Mapping m = new MappingBuilder().on(n1, n2, n3)
+                .run(n1, vm1, vm2, vm3).run(n2, vm4).ready(vm5).get();
 
         ShareableResource rc = new DefaultShareableResource("cpu", 5);
         rc.set(vm1, 2);
@@ -168,5 +145,4 @@ public class CCumulatedResourceCapacityTest extends ConstraintTestMaterial {
         m.addRunningVM(vm5, n3);
         Assert.assertEquals(cc.getMisPlacedVMs(mo), m.getAllVMs());
     }
-
 }

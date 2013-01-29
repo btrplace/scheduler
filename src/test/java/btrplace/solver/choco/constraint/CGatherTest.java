@@ -18,7 +18,10 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
+import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Gather;
 import btrplace.model.constraint.Running;
@@ -26,6 +29,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.MappingBuilder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -42,11 +46,7 @@ public class CGatherTest extends ConstraintTestMaterial {
 
     @Test
     public void testDiscreteWithoutRunningVM() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addReadyVM(vm1);
-        map.addRunningVM(vm2, n2);
+        Mapping map = new MappingBuilder().ready(vm1).on(n1, n2).run(n2, vm2).get();
         Model mo = new DefaultModel(map);
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(false);
@@ -63,11 +63,7 @@ public class CGatherTest extends ConstraintTestMaterial {
 
     @Test
     public void testDiscreteWithRunningVMs() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addReadyVM(vm1);
-        map.addRunningVM(vm2, n2);
+        Mapping map = new MappingBuilder().ready(vm1).on(n1, n2).run(n2, vm2).get();
         Model mo = new DefaultModel(map);
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(false);
@@ -87,11 +83,7 @@ public class CGatherTest extends ConstraintTestMaterial {
 
     @Test
     public void testGetMisplaced() {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addReadyVM(vm1);
-        map.addRunningVM(vm2, n2);
+        Mapping map = new MappingBuilder().ready(vm1).on(n1, n2).run(n2, vm2).get();
         Model mo = new DefaultModel(map);
         Gather g = new Gather(map.getAllVMs());
         CGather c = new CGather(g);
@@ -105,11 +97,7 @@ public class CGatherTest extends ConstraintTestMaterial {
 
     @Test
     public void testContinuousWithPartialRunning() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addReadyVM(vm1);
-        map.addRunningVM(vm2, n2);
+        Mapping map = new MappingBuilder().ready(vm1).on(n1, n2).run(n2, vm2).get();
         Model mo = new DefaultModel(map);
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(true);
@@ -128,11 +116,7 @@ public class CGatherTest extends ConstraintTestMaterial {
      */
     @Test
     public void testContinuousWithRelocationOfVMs() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addRunningVM(vm1, n2);
-        map.addRunningVM(vm2, n2);
+        Mapping map = new MappingBuilder().on(n1, n2).run(n2, vm1, vm2).get();
         Model mo = new DefaultModel(map);
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(true);

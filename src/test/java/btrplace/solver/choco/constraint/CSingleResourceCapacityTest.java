@@ -27,6 +27,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.MappingBuilder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -41,13 +42,7 @@ public class CSingleResourceCapacityTest extends ConstraintTestMaterial {
 
     @Test
     public void testGetMisplaced() {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
-        map.addRunningVM(vm3, n2);
+        Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).get();
 
         ShareableResource rc = new DefaultShareableResource("cpu", 5);
         rc.set(vm1, 3);
@@ -57,9 +52,7 @@ public class CSingleResourceCapacityTest extends ConstraintTestMaterial {
         Model mo = new DefaultModel(map);
         mo.attach(rc);
 
-        Set<UUID> nodes = new HashSet<UUID>();
-        nodes.add(n1);
-        nodes.add(n2);
+        Set<UUID> nodes = new HashSet<UUID>(Arrays.asList(n1, n2));
 
         SingleResourceCapacity s = new SingleResourceCapacity(nodes, "cpu", 4);
         CSingleResourceCapacity cs = new CSingleResourceCapacity(s);
@@ -70,12 +63,7 @@ public class CSingleResourceCapacityTest extends ConstraintTestMaterial {
 
     @Test
     public void testDiscreteSolvable() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
+        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
 
         ShareableResource rc = new DefaultShareableResource("cpu", 5);
         rc.set(vm1, 3);
@@ -85,9 +73,7 @@ public class CSingleResourceCapacityTest extends ConstraintTestMaterial {
         Model mo = new DefaultModel(map);
         mo.attach(rc);
 
-        Set<UUID> nodes = new HashSet<UUID>();
-        nodes.add(n1);
-        nodes.add(n2);
+        Set<UUID> nodes = new HashSet<UUID>(Arrays.asList(n1, n2));
 
         SingleResourceCapacity s = new SingleResourceCapacity(nodes, "cpu", 4);
 
@@ -100,12 +86,7 @@ public class CSingleResourceCapacityTest extends ConstraintTestMaterial {
 
     @Test
     public void testDiscreteUnsolvable() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
+        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
 
         ShareableResource rc = new DefaultShareableResource("cpu", 5);
         rc.set(vm1, 3);
@@ -115,9 +96,7 @@ public class CSingleResourceCapacityTest extends ConstraintTestMaterial {
         Model mo = new DefaultModel(map);
         mo.attach(rc);
 
-        Set<UUID> nodes = new HashSet<UUID>();
-        nodes.add(n1);
-        nodes.add(n2);
+        Set<UUID> nodes = new HashSet<UUID>(Arrays.asList(n1, n2));
 
         SingleResourceCapacity s = new SingleResourceCapacity(nodes, "cpu", 3);
 
@@ -128,14 +107,7 @@ public class CSingleResourceCapacityTest extends ConstraintTestMaterial {
 
     @Test
     public void testContinuousSolvable() throws SolverException {
-        //ChocoLogging.setVerbosity(Verbosity.FINEST);
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
-        map.addRunningVM(vm3, n2);
-        map.addReadyVM(vm4);
+        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1).run(n2, vm2, vm3).ready(vm4).get();
         ShareableResource rc = new DefaultShareableResource("cpu", 5);
         rc.set(vm1, 3);
         rc.set(vm2, 1);
@@ -145,9 +117,7 @@ public class CSingleResourceCapacityTest extends ConstraintTestMaterial {
         Model mo = new DefaultModel(map);
         mo.attach(rc);
 
-        Set<UUID> nodes = new HashSet<UUID>();
-        nodes.add(n1);
-        nodes.add(n2);
+        Set<UUID> nodes = new HashSet<UUID>(Arrays.asList(n1, n2));
 
         List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
 
