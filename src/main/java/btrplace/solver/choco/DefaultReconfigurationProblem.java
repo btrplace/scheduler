@@ -258,7 +258,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (solver.isFeasible() == Boolean.TRUE) {
             do {
                 int objVal = solver.getObjectiveValue().intValue();
-                int newBound = objAlterer.newBound(objVal);
+                int newBound = objAlterer.tryNewValue(objVal);
                 try {
                     f.set(obj, newBound);
                 } catch (Exception e) {

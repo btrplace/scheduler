@@ -18,19 +18,65 @@
 
 package btrplace.solver.choco;
 
+import choco.kernel.solver.variables.integer.IntDomainVar;
+
 /**
- * An interface to define a
+ * A class to provide a method to customize the optimisation process of the solver.
+ * Instead of trying all the possible values, you will be able to choose the value to try
+ * for the objective variable. This may speed up the improvement phase.
+ * <p/>
+ * As the solver will not longer try all the possible values, the completeness of
+ * the resolution process is no longer guarantee and may remove some (possibly good) solutions.
+ * <p/>
+ * The alterer supposes the objective variable is an integer.
  *
  * @author Fabien Hermenier
  */
-public interface ObjectiveAlterer {
+public abstract class ObjectiveAlterer {
 
     /**
-     * Compute a new target bound for the objective
-     * after a solution has been computed.
+     * The initial lower bound for the objective variable.
+     */
+    protected int lowerBound;
+
+    /**
+     * The initial upper bound for the objective variable.
+     */
+    protected int upperBound;
+
+    /**
+     * The objective variable.
+     */
+    protected IntDomainVar obj;
+
+    /**
+     * The reconfiguration problem to consider.
+     */
+    protected ReconfigurationProblem rp;
+
+    /**
+     * Make a new alterer on a given problem.
+     * The objective variable must have been declared.
+     *
+     * @param rp the reconfiguration problem to consider
+     */
+    public ObjectiveAlterer(ReconfigurationProblem rp) {
+        this.rp = rp;
+        obj = (IntDomainVar) rp.getSolver().getObjective();
+        lowerBound = obj.getInf();
+        upperBound = obj.getSup();
+    }
+
+    /**
+     * Compute a new target bound for the objective one a solution has been computed.
      *
      * @param currentValue the current value of the objective
-     * @return the new bound to set.
+     * @return the new bound to set. It must stay within the objective variable bounds to continue the solving process
      */
-    int newBound(int currentValue);
+    public abstract int tryNewValue(int currentValue);
+
+    @Override
+    public String toString() {
+        return new StringBuilder("objectiveAlterer(").append(obj.getName()).append(')').toString();
+    }
 }

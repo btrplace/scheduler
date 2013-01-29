@@ -486,9 +486,9 @@ public class DefaultReconfigurationProblemTest {
         s.setObjective(nbNodes);
         s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
 
-        ObjectiveAlterer alt = new ObjectiveAlterer() {
+        ObjectiveAlterer alt = new ObjectiveAlterer(rp) {
             @Override
-            public int newBound(int currentValue) {
+            public int tryNewValue(int currentValue) {
                 return currentValue / 2;
             }
         };
@@ -559,11 +559,10 @@ public class DefaultReconfigurationProblemTest {
         s.setObjective(nbNodes);
         s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MAXIMIZE);
 
-        ObjectiveAlterer alt = new ObjectiveAlterer() {
+        ObjectiveAlterer alt = new ObjectiveAlterer(rp) {
             @Override
-            public int newBound(int currentValue) {
-                if (currentValue == 10) return 11; //bound violation
-                return currentValue * 2 > 10 ? 10 : currentValue * 2;
+            public int tryNewValue(int currentValue) {
+                return currentValue * 2;
             }
         };
 
@@ -572,8 +571,10 @@ public class DefaultReconfigurationProblemTest {
         ReconfigurationPlan plan = rp.solve(0, true);
         Assert.assertNotNull(plan);
         Mapping dst = plan.getResult().getMapping();
-        Assert.assertEquals(s.getNbSolutions(), 5);
-        Assert.assertEquals(MappingUtils.usedNodes(dst, EnumSet.of(MappingUtils.State.Runnings)).size(), 10);
+        Assert.assertEquals(MappingUtils.usedNodes(dst, EnumSet.of(MappingUtils.State.Runnings)).size(), 8);
+        //Note: the optimal value would be 10 but we loose the completeness due to the alterer
+        Assert.assertEquals(s.getNbSolutions(), 4);
+
     }
 
     /**
@@ -599,9 +600,9 @@ public class DefaultReconfigurationProblemTest {
         s.setObjective(nbNodes);
         s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
 
-        ObjectiveAlterer alt = new ObjectiveAlterer() {
+        ObjectiveAlterer alt = new ObjectiveAlterer(rp) {
             @Override
-            public int newBound(int currentValue) {
+            public int tryNewValue(int currentValue) {
                 return currentValue / 2;
             }
         };
