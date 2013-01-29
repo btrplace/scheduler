@@ -18,32 +18,31 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
+import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Online;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.MappingBuilder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Unit tests for {@link COnline}.
  *
  * @author Fabien Hermenier
  */
-public class COnlineTest extends ConstraintTestMaterial{
+public class COnlineTest extends ConstraintTestMaterial {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(n1);
-        s.add(n2);
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
         Online on = new Online(s);
         COnline con = new COnline(on);
         Assert.assertEquals(con.toString(), on.toString());
@@ -51,8 +50,7 @@ public class COnlineTest extends ConstraintTestMaterial{
 
     @Test
     public void testSolvableProblem() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOfflineNode(n1);
+        Mapping map = new MappingBuilder().off(n1).get();
         Model mo = new DefaultModel(map);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Online(Collections.singleton(n1))));

@@ -50,10 +50,7 @@ public class CAmongTest extends ConstraintTestMaterial {
                 .run(n1, vm1).run(n2, vm2).run(n3, vm3)
                 .ready(vm4, vm5).get();
 
-        Set<UUID> vms = new HashSet<UUID>();
-        vms.add(vm1);
-        vms.add(vm2);
-        vms.add(vm3);
+        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
 
         Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>();
         Set<UUID> s = new HashSet<UUID>();
@@ -82,27 +79,17 @@ public class CAmongTest extends ConstraintTestMaterial {
                 .run(n1, vm1).run(n2, vm2, vm3)
                 .ready(vm4, vm5).get();
 
-        Set<UUID> vms = new HashSet<UUID>();
-        vms.add(vm1);
-        vms.add(vm2);
-        vms.add(vm5);
+        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm5));
 
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>();
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(n1);
-        s.add(n2);
-        pGrps.add(s);
-
-        s = new HashSet<UUID>();
-        s.add(n3);
-        s.add(n4);
-        pGrps.add(s);
+        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(n3, n4));
+        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(s1, s2));
         Among a = new Among(vms, pGrps);
         a.setContinuous(false);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
         cstrs.add(new Running(map.getAllVMs()));
-        cstrs.add(new Fence(Collections.singleton(vm2), s));
+        cstrs.add(new Fence(Collections.singleton(vm2), s2));
         cstrs.add(a);
 
         Model mo = new DefaultModel(map);
@@ -125,21 +112,13 @@ public class CAmongTest extends ConstraintTestMaterial {
                 .run(n1, vm1).run(n2, vm2, vm3)
                 .ready(vm4, vm5).get();
 
-        Set<UUID> vms = new HashSet<UUID>();
-        vms.add(vm1);
-        vms.add(vm2);
-        vms.add(vm5);
+        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm5));
 
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>();
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(n1);
-        s.add(n2);
-        pGrps.add(s);
 
-        s = new HashSet<UUID>();
-        s.add(n3);
-        s.add(n4);
-        pGrps.add(s);
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(n3, n4));
+        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(s, s2));
+
         Among a = new Among(vms, pGrps);
         a.setContinuous(false);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
@@ -162,23 +141,12 @@ public class CAmongTest extends ConstraintTestMaterial {
                 .run(n1, vm1).run(n2, vm2, vm3)
                 .ready(vm4, vm5).get();
 
-        Set<UUID> vms = new HashSet<UUID>();
-        vms.add(vm1);
-        vms.add(vm2);
-        vms.add(vm5);
-
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>();
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(n1);
-        s.add(n2);
-        pGrps.add(s);
+        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm5));
+        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(n3, n4));
+        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(s1, s2));
 
         Model mo = new DefaultModel(map);
-
-        s = new HashSet<UUID>();
-        s.add(n3);
-        s.add(n4);
-        pGrps.add(s);
         Among a = new Among(vms, pGrps);
         CAmong ca = new CAmong(a);
         Assert.assertEquals(ca.getMisPlacedVMs(mo), Collections.emptySet());
@@ -194,23 +162,12 @@ public class CAmongTest extends ConstraintTestMaterial {
                 .run(n1, vm1).run(n2, vm2, vm3)
                 .ready(vm4, vm5).get();
 
-        Set<UUID> vms = new HashSet<UUID>();
-        vms.add(vm1);
-        vms.add(vm2);
-        vms.add(vm5);
-
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>();
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(n1);
-        s.add(n2);
-        pGrps.add(s);
+        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm5));
+        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(n3, n4));
+        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(s1, s2));
 
         Model mo = new DefaultModel(map);
-
-        s = new HashSet<UUID>();
-        s.add(n3);
-        s.add(n4);
-        pGrps.add(s);
         Among a = new Among(vms, pGrps);
         a.setContinuous(true);
 
@@ -232,23 +189,13 @@ public class CAmongTest extends ConstraintTestMaterial {
                 .run(n1, vm1).run(n2, vm2).run(n3, vm3)
                 .ready(vm4, vm5).get();
 
-        Set<UUID> vms = new HashSet<UUID>();
-        vms.add(vm1);
-        vms.add(vm2);
-        vms.add(vm5);
+        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm5));
 
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>();
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(n1);
-        s.add(n2);
-        pGrps.add(s);
+        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(n3, n4));
+        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(s1, s2));
 
         Model mo = new DefaultModel(map);
-
-        s = new HashSet<UUID>();
-        s.add(n3);
-        s.add(n4);
-        pGrps.add(s);
         Among a = new Among(vms, pGrps);
         a.setContinuous(true);
 

@@ -18,7 +18,10 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
+import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Ready;
 import btrplace.model.constraint.Running;
 import btrplace.model.constraint.SingleRunningCapacity;
@@ -29,6 +32,7 @@ import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.MappingBuilder;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -48,11 +52,7 @@ public class CSingleRunningCapacityTest extends ConstraintTestMaterial {
     @Test
     public void testDiscreteResolution() throws SolverException {
 
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addReadyVM(vm3);
+        Mapping map = new MappingBuilder().on(n1).run(n1, vm1, vm2).ready(vm3).get();
         Model mo = new DefaultModel(map);
         List<SatConstraint> l = new ArrayList<SatConstraint>();
         l.add(new Running(Collections.singleton(vm1)));
@@ -65,18 +65,13 @@ public class CSingleRunningCapacityTest extends ConstraintTestMaterial {
         cra.labelVariables(true);
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
-        Iterator<Action> ite = plan.getActions().iterator();
         Assert.assertEquals(2, plan.getSize());
         Assert.assertEquals(SatConstraint.Sat.SATISFIED, x.isSatisfied(plan.getResult()));
     }
 
     @Test
     public void testContinuousResolution() throws SolverException {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addReadyVM(vm3);
+        Mapping map = new MappingBuilder().on(n1).run(n1, vm1, vm2).ready(vm3).get();
         Model mo = new DefaultModel(map);
         List<SatConstraint> l = new ArrayList<SatConstraint>();
         l.add(new Running(Collections.singleton(vm1)));
@@ -102,14 +97,7 @@ public class CSingleRunningCapacityTest extends ConstraintTestMaterial {
 
     @Test
     public void testGetMisplaced() {
-        Mapping m = new DefaultMapping();
-        m.addOnlineNode(n1);
-        m.addOnlineNode(n2);
-        m.addRunningVM(vm1, n1);
-        m.addReadyVM(vm2);
-
-        m.addRunningVM(vm3, n2);
-        m.addReadyVM(vm4);
+        Mapping m = new MappingBuilder().on(n1, n2).run(n1, vm1).ready(vm2, vm4).run(n2, vm3).get();
         Model mo = new DefaultModel(m);
 
         SingleRunningCapacity c = new SingleRunningCapacity(m.getAllNodes(), 1);

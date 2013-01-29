@@ -61,7 +61,6 @@ public class SatConstraintMapperTest {
     @Test(dependsOnMethods = {"testInstantiate", "testRegister"})
     public void testUnregister() {
         SatConstraintMapper map = new SatConstraintMapper();
-        Builder cb = new Builder();
         Assert.assertNull(map.getBuilder(MockSatConstraint.class));
         Assert.assertFalse(map.unregister(MockSatConstraint.class));
     }

@@ -29,10 +29,7 @@ import btrplace.solver.choco.MappingBuilder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Unit tests for {@link CBan}.
@@ -85,13 +82,9 @@ public class CBanTest extends ConstraintTestMaterial {
                 .run(n3, vm4)
                 .sleep(n4, vm5).get();
 
-        Set<UUID> vms = new HashSet<UUID>();
-        Set<UUID> ns = new HashSet<UUID>();
+        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> ns = new HashSet<UUID>(Arrays.asList(n3, n4));
 
-        vms.add(vm1);
-        vms.add(vm2);
-        ns.add(n3);
-        ns.add(n4);
         CBan c = new CBan(new Ban(vms, ns));
         Model mo = new DefaultModel(m);
         org.testng.Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());

@@ -18,11 +18,11 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.constraint.Running;
+import btrplace.solver.choco.MappingBuilder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -35,10 +35,7 @@ public class CRunningTest extends ConstraintTestMaterial {
 
     @Test
     public void testGetMisplaced() {
-        Mapping m = new DefaultMapping();
-        m.addReadyVM(vm1);
-        m.addOnlineNode(n1);
-        m.addRunningVM(vm2, n1);
+        Mapping m = new MappingBuilder().on(n1).ready(vm1).run(n1, vm2).get();
         Model mo = new DefaultModel(m);
 
         CRunning k = new CRunning(new Running(m.getAllVMs()));

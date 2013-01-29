@@ -92,9 +92,7 @@ public class CSpreadTest extends ConstraintTestMaterial {
         Mapping map = new MappingBuilder().on(n1, n2)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2).get();
-        Set<UUID> vms = new HashSet<UUID>();
-        vms.add(vm1);
-        vms.add(vm2);
+        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2));
         Spread s = new Spread(vms);
         CSpread cs = new CSpread(s);
         Model mo = new DefaultModel(map);
