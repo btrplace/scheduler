@@ -41,6 +41,18 @@ public class SolverException extends Exception {
     }
 
     /**
+     * Make a new exception.
+     *
+     * @param m   the model that lead to the exception
+     * @param msg the error message
+     * @param t   the throwable to re-throw
+     */
+    public SolverException(Model m, String msg, Throwable t) {
+        super(msg, t);
+        model = m;
+    }
+
+    /**
      * Get the model at the source of the exception.
      *
      * @return a Model
