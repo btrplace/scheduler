@@ -18,36 +18,33 @@
 
 package btrplace.solver.choco;
 
-import btrplace.model.view.ShareableResource;
-
-import java.util.Comparator;
+import btrplace.model.ModelView;
+import btrplace.solver.SolverException;
 
 /**
- * Compare slices with regards to the resource consumption of their associated element.
- *
- * @author Fabien Hermenier
+ * Created with IntelliJ IDEA.
+ * User: fhermeni
+ * Date: 30/01/13
+ * Time: 10:12
+ * To change this template use File | Settings | File Templates.
  */
-public class SliceRcComparator implements Comparator<Slice> {
-
-    private ShareableResource rc;
-
-    private int ratio;
+public interface ChocoModelViewBuilder {
 
     /**
-     * Make a new comparator.
+     * Get the class of the SatConstraint associated to the builder.
      *
-     * @param r   the resource used to perform the comparison
-     * @param asc {@code true} for an ascending comparison
+     * @return a Class derived from {@link btrplace.model.ModelView}
      */
-    public SliceRcComparator(ShareableResource r, boolean asc) {
-        this.rc = r;
-        ratio = asc ? 1 : -1;
-    }
+    Class<? extends ModelView> getKey();
 
-    @Override
-    public int compare(Slice s1, Slice s2) {
-        int x = rc.get(s1.getSubject());
-        int y = rc.get(s2.getSubject());
-        return ratio * (x - y);
-    }
+    /**
+     * Build the {@link ChocoModelView} associated to the {@link ModelView}
+     * identified as key.
+     *
+     * @param rp the problem to add
+     * @param v  the model constraint
+     * @throws SolverException if an error occurred while building the view
+     */
+    ChocoModelView build(ReconfigurationProblem rp, ModelView v) throws SolverException;
+
 }

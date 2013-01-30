@@ -18,9 +18,13 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
+import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Preserve;
+import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
@@ -44,7 +48,7 @@ public class CPreserveTest extends ConstraintTestMaterial {
     @Test
     public void testGetMisplaced() {
         Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
-        ShareableResource rc = new DefaultShareableResource("cpu", 7);
+        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 7);
         rc.set(vm1, 3);
         rc.set(vm2, 3);
         rc.set(vm3, 5);
@@ -71,7 +75,7 @@ public class CPreserveTest extends ConstraintTestMaterial {
     @Test
     public void testPreserveWithoutOverbook() throws SolverException {
         Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
-        ShareableResource rc = new DefaultShareableResource("cpu", 10);
+        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 10);
         rc.set(n1, 7);
         rc.set(vm1, 3);
         rc.set(vm2, 3);

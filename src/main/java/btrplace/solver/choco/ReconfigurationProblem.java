@@ -257,19 +257,19 @@ public interface ReconfigurationProblem {
     IntDomainVar makeDuration(String n, int lb, int ub) throws SolverException;
 
     /**
-     * Get a resource mapping from its identifier.
+     * Get the view associated to a given identifier.
      *
-     * @param id the resource identifier
-     * @return the resource mapping if exists, {@code null} otherwise
+     * @param id the view identifier
+     * @return the view if exists, {@code null} otherwise
      */
-    ResourceMapping getResourceMapping(String id);
+    ChocoModelView getView(String id);
 
     /**
-     * Get all the declared resource mappings.
+     * Get all the declared views.
      *
-     * @return a collection of resources
+     * @return a collection of views, may be empty
      */
-    Collection<ResourceMapping> getResourceMappings();
+    Collection<ChocoModelView> getViews();
 
     /**
      * Get the amount of VMs hosted on each node.

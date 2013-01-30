@@ -21,11 +21,12 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.ShareableResource;
 import btrplace.model.constraint.CumulatedResourceCapacity;
 import btrplace.model.constraint.CumulatedRunningCapacity;
+import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.*;
+import btrplace.solver.choco.view.CShareableResource;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntArrayList;
@@ -53,7 +54,7 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
 
-        ResourceMapping rcm = rp.getResourceMapping(cstr.getResource());
+        CShareableResource rcm = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         if (rcm == null) {
             throw new SolverException(rp.getSourceModel(), "No resource associated to identifier '" + cstr.getResource() + "'");
         }
@@ -99,7 +100,7 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-        ShareableResource rc = m.getResource(cstr.getResource());
+        ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         if (rc == null) {
             return map.getRunningVMs(cstr.getInvolvedNodes());
         }

@@ -20,6 +20,7 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.*;
 import btrplace.model.constraint.*;
+import btrplace.model.view.ShareableResource;
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Allocate;
@@ -48,7 +49,7 @@ public class COverbookTest extends ConstraintTestMaterial {
         UUID[] nodes = new UUID[3];
         UUID[] vms = new UUID[9];
         Mapping m = new DefaultMapping();
-        ShareableResource rcCPU = new DefaultShareableResource("cpu");
+        btrplace.model.view.ShareableResource rcCPU = new ShareableResource("cpu");
         for (int i = 0; i < vms.length; i++) {
             if (i < nodes.length) {
                 nodes[i] = UUID.randomUUID();
@@ -87,7 +88,7 @@ public class COverbookTest extends ConstraintTestMaterial {
         UUID[] nodes = new UUID[3];
         UUID[] vms = new UUID[11];
         Mapping m = new DefaultMapping();
-        ShareableResource rcCPU = new DefaultShareableResource("cpu");
+        btrplace.model.view.ShareableResource rcCPU = new ShareableResource("cpu");
         for (int i = 0; i < vms.length; i++) {
             if (i < nodes.length) {
                 nodes[i] = UUID.randomUUID();
@@ -122,7 +123,7 @@ public class COverbookTest extends ConstraintTestMaterial {
         UUID[] nodes = new UUID[10];
         UUID[] vms = new UUID[31];
         Mapping m = new DefaultMapping();
-        ShareableResource rcMem = new DefaultShareableResource("mem");
+        btrplace.model.view.ShareableResource rcMem = new ShareableResource("mem");
         for (int i = 0; i < vms.length; i++) {
             if (i < nodes.length) {
                 nodes[i] = UUID.randomUUID();
@@ -150,7 +151,7 @@ public class COverbookTest extends ConstraintTestMaterial {
                 .run(n1, vm1)
                 .run(n2, vm2, vm3)
                 .run(n3, vm4, vm5, vm6).get();
-        ShareableResource rcCPU = new DefaultShareableResource("cpu", 1);
+        btrplace.model.view.ShareableResource rcCPU = new ShareableResource("cpu", 1);
         Model mo = new DefaultModel(m);
         mo.attach(rcCPU);
         Overbook o1 = new Overbook(Collections.singleton(n1), "cpu", 1);
@@ -169,7 +170,7 @@ public class COverbookTest extends ConstraintTestMaterial {
     public void testWithScheduling1() throws SolverException {
         Mapping m = new MappingBuilder().on(n1).run(n1, vm1).ready(vm3).get();
 
-        ShareableResource rcCPU = new DefaultShareableResource("cpu", 2);
+        btrplace.model.view.ShareableResource rcCPU = new ShareableResource("cpu", 2);
 
         List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
         cstrs.add(new Running(Collections.singleton(vm3)));
@@ -196,7 +197,7 @@ public class COverbookTest extends ConstraintTestMaterial {
         Mapping map = new MappingBuilder().on(n1).run(n1, vm1, vm2).get();
 
         Model mo = new DefaultModel(map);
-        ShareableResource rc = new DefaultShareableResource("foo");
+        btrplace.model.view.ShareableResource rc = new ShareableResource("foo");
         rc.set(n1, 5);
         rc.set(vm1, 3);
         rc.set(vm2, 2);

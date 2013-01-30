@@ -21,11 +21,12 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.ShareableResource;
 import btrplace.model.constraint.Overbook;
+import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.*;
 import btrplace.solver.choco.chocoUtil.ChocoUtils;
+import btrplace.solver.choco.view.CShareableResource;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -55,7 +56,7 @@ public class COverbook implements ChocoSatConstraint {
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
 
         CPSolver s = rp.getSolver();
-        ResourceMapping rcm = rp.getResourceMapping(cstr.getResource());
+        CShareableResource rcm = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         if (rcm == null) {
             throw new SolverException(rp.getSourceModel(), "Unable to get the resource mapping '" + cstr.getResource() + "'");
         }
@@ -96,7 +97,7 @@ public class COverbook implements ChocoSatConstraint {
                 try {
                     realCapa[nIdx].setSup(maxReal);
                 } catch (ContradictionException ex) {
-                    rp.getLogger().error("Unable to restrict the real '{}' capacity of {} to {}: {}", rcm.getIdentifier(), u, maxReal, ex.getMessage());
+                    rp.getLogger().error("Unable to restrict the real '{}' capacity of {} to {}: {}", rcm.getResourceIdentifier(), u, maxReal, ex.getMessage());
                     return false;
                 }
                 IntDomainVar freeReal = s.createBoundIntVar(rp.makeVarLabel("free_real('" + u + "')"), 0, maxReal);
@@ -132,7 +133,7 @@ public class COverbook implements ChocoSatConstraint {
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
-        ShareableResource rc = m.getResource(cstr.getResource());
+        ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         Set<UUID> bads = new HashSet<UUID>();
         if (rc == null) { //Should not occur, if the right model is given
             for (UUID n : cstr.getInvolvedNodes()) {

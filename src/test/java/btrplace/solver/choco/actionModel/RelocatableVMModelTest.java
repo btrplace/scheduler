@@ -22,6 +22,7 @@ import btrplace.model.*;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Overbook;
 import btrplace.model.constraint.Preserve;
+import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
 import btrplace.solver.SolverException;
@@ -147,7 +148,7 @@ public class RelocatableVMModelTest {
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n1);
         map.addRunningVM(vm3, n2);
-        ShareableResource rc = new DefaultShareableResource("cpu", 10);
+        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 10);
         rc.set(n1, 7);
         rc.set(vm1, 3);
         rc.set(vm2, 3);

@@ -18,8 +18,13 @@
 
 package btrplace.solver.choco;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
+import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
+import btrplace.solver.choco.view.CShareableResource;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
@@ -28,7 +33,7 @@ import org.testng.annotations.Test;
 import java.util.UUID;
 
 /**
- * Unit tests for {@link ResourceMapping}.
+ * Unit tests for {@link btrplace.solver.choco.view.CShareableResource}.
  *
  * @author Fabien Hermenier
  */
@@ -52,12 +57,12 @@ public class ResourceMappingTest {
         ma.addRunningVM(vm, n1);
         ma.addRunningVM(vm2, n1);
         ma.addReadyVM(vm3);
-        ShareableResource rc = new DefaultShareableResource("foo", 0);
+        ShareableResource rc = new ShareableResource("foo", 0);
         rc.set(vm2, 3);
         rc.set(n1, 4);
         Model mo = new DefaultModel(ma);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
-        ResourceMapping rcm = new ResourceMapping(rp, rc);
+        CShareableResource rcm = new CShareableResource(rp, rc);
         Assert.assertEquals(rc.getIdentifier(), rcm.getIdentifier());
         Assert.assertEquals(-1, rcm.getVMsAllocation()[rp.getVM(vm)].getInf());
         Assert.assertEquals(-1, rcm.getVMsAllocation()[rp.getVM(vm2)].getInf());
@@ -90,7 +95,7 @@ public class ResourceMappingTest {
         ma.addRunningVM(vm, n1);
         ma.addRunningVM(vm2, n1);
 
-        ShareableResource rc = new DefaultShareableResource("foo", 0);
+        ShareableResource rc = new ShareableResource("foo", 0);
         rc.set(vm, 2);
         rc.set(vm2, 3);
         rc.set(n1, 4);
@@ -103,7 +108,7 @@ public class ResourceMappingTest {
         VMActionModel avm2 = rp.getVMActions()[rp.getVM(vm2)];
         avm1.getDSlice().getHoster().setVal(0);
         avm2.getDSlice().getHoster().setVal(1);
-        ResourceMapping rcm = rp.getResourceMapping("foo");
+        CShareableResource rcm = (CShareableResource) rp.getView(btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo");
         //Basic consumption for the VMs. If would be safe to use Preserve, but I don't want:D
         rcm.getVMsAllocation()[rp.getVM(vm)].setInf(2);
         rcm.getVMsAllocation()[rp.getVM(vm2)].setInf(3);

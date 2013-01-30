@@ -19,9 +19,11 @@
 package btrplace.solver.choco;
 
 import btrplace.model.*;
+import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
+import btrplace.solver.choco.view.CShareableResource;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.AtMostNValue;
 import choco.cp.solver.constraints.global.IncreasingNValue;
@@ -293,7 +295,7 @@ public class DefaultReconfigurationProblemTest {
     @Test
     public void testGetResourceMapping() throws SolverException {
         Model m = defaultModel();
-        ShareableResource rc = new DefaultShareableResource("cpu", 0);
+        ShareableResource rc = new ShareableResource("cpu", 0);
         for (UUID n : m.getMapping().getAllNodes()) {
             rc.set(n, 4);
         }
@@ -303,10 +305,10 @@ public class DefaultReconfigurationProblemTest {
         }
         m.attach(rc);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(m).build();
-        ResourceMapping rcm = rp.getResourceMapping("cpu");
+        CShareableResource rcm = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + "cpu");
         Assert.assertNotNull(rcm);
-        Assert.assertNull(rp.getResourceMapping("bar"));
-        Assert.assertEquals("cpu", rcm.getIdentifier());
+        Assert.assertNull(rp.getView("bar"));
+        Assert.assertEquals("cpu", rcm.getResourceIdentifier());
         Assert.assertEquals(rc, rcm.getSourceResource());
     }
 
@@ -369,14 +371,14 @@ public class DefaultReconfigurationProblemTest {
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n1);
-        ShareableResource rc = new DefaultShareableResource("foo");
+        ShareableResource rc = new ShareableResource("foo");
         rc.set(vm1, 5);
         rc.set(vm2, 7);
 
         Model mo = new DefaultModel(map);
         mo.attach(rc);
 
-        ReconfigurationProblem rp = new DefaultReconfigurationProblem(mo, new DurationEvaluators(),
+        ReconfigurationProblem rp = new DefaultReconfigurationProblem(mo, new DurationEvaluators(), new ModelViewMapper(),
                 map.getReadyVMs(),
                 map.getRunningVMs(),
                 map.getSleepingVMs(),
@@ -386,14 +388,14 @@ public class DefaultReconfigurationProblemTest {
         ReconfigurationPlan p = rp.solve(0, false);
 
         //Check the amount of allocated resources on the RP
-        ResourceMapping rcm = rp.getResourceMapping("foo");
+        CShareableResource rcm = (CShareableResource) rp.getView(btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo");
         Assert.assertEquals(rcm.getVMsAllocation()[rp.getVM(vm1)].getVal(), 5);
         Assert.assertEquals(rcm.getVMsAllocation()[rp.getVM(vm2)].getVal(), 7);
 
         //And on the resulting plan.
         Model res = p.getResult();
-        Assert.assertEquals(res.getResource("foo").get(vm1), 5);
-        Assert.assertEquals(res.getResource("foo").get(vm2), 7);
+        Assert.assertEquals(((ShareableResource) res.getView(btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo")).get(vm1), 5);
+        Assert.assertEquals(((ShareableResource) res.getView(btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo")).get(vm2), 7);
     }
 
     @Test
@@ -411,14 +413,14 @@ public class DefaultReconfigurationProblemTest {
         map.addReadyVM(v2);
         map.addSleepingVM(v3, n1);
         map.addReadyVM(v5);
-        ShareableResource rc = new DefaultShareableResource("foo");
+        ShareableResource rc = new ShareableResource("foo");
         rc.set(v1, 5);
         rc.set(v2, 7);
 
         Model mo = new DefaultModel(map);
         mo.attach(rc);
 
-        ReconfigurationProblem rp = new DefaultReconfigurationProblem(mo, new DurationEvaluators(),
+        ReconfigurationProblem rp = new DefaultReconfigurationProblem(mo, new DurationEvaluators(), new ModelViewMapper(),
                 Collections.singleton(v4),
                 Collections.singleton(v5),
                 Collections.singleton(v1),

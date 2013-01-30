@@ -21,13 +21,13 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.ShareableResource;
 import btrplace.model.constraint.Preserve;
+import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoSatConstraint;
 import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.ResourceMapping;
+import btrplace.solver.choco.view.CShareableResource;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -55,7 +55,7 @@ public class CPreserve implements ChocoSatConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        ResourceMapping map = rp.getResourceMapping(cstr.getResource());
+        CShareableResource map = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         if (map == null) {
             throw new SolverException(rp.getSourceModel(), "Unable to get the resource mapper associated to '" +
                     cstr.getResource() + "'");
@@ -78,7 +78,7 @@ public class CPreserve implements ChocoSatConstraint {
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         Set<UUID> bad = new HashSet<UUID>();
-        ShareableResource rc = m.getResource(cstr.getResource());
+        ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         if (rc == null) {
             bad.addAll(cstr.getInvolvedVMs());
         } else {

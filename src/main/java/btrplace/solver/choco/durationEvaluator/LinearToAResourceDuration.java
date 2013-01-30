@@ -18,7 +18,7 @@
 
 package btrplace.solver.choco.durationEvaluator;
 
-import btrplace.model.ShareableResource;
+import btrplace.model.view.ShareableResource;
 import btrplace.solver.choco.DurationEvaluator;
 
 import java.util.UUID;

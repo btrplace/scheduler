@@ -18,10 +18,14 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
+import btrplace.model.SatConstraint;
 import btrplace.model.constraint.CumulatedResourceCapacity;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Running;
+import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
@@ -46,7 +50,7 @@ public class CCumulatedResourceCapacityTest extends ConstraintTestMaterial {
                 .run(n3, vm3, vm4)
                 .sleep(n2, vm5).get();
 
-        ShareableResource rc = new DefaultShareableResource("cpu", 5);
+        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
         rc.set(vm1, 2);
         rc.set(vm2, 4);
         rc.set(vm3, 3);
@@ -73,7 +77,7 @@ public class CCumulatedResourceCapacityTest extends ConstraintTestMaterial {
 
         Set<UUID> on = new HashSet<UUID>(Arrays.asList(n1, n2));
 
-        ShareableResource rc = new DefaultShareableResource("cpu", 5);
+        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
         rc.set(vm1, 2);
         rc.set(vm2, 4);
         rc.set(vm3, 3);
@@ -103,7 +107,7 @@ public class CCumulatedResourceCapacityTest extends ConstraintTestMaterial {
         Set<UUID> on = new HashSet<UUID>(Arrays.asList(n1, n2));
         Model mo = new DefaultModel(map);
 
-        ShareableResource rc = new DefaultShareableResource("cpu", 5);
+        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
         rc.set(vm1, 2);
         rc.set(vm2, 4);
         rc.set(vm3, 3);
@@ -130,7 +134,7 @@ public class CCumulatedResourceCapacityTest extends ConstraintTestMaterial {
         Mapping m = new MappingBuilder().on(n1, n2, n3)
                 .run(n1, vm1, vm2, vm3).run(n2, vm4).ready(vm5).get();
 
-        ShareableResource rc = new DefaultShareableResource("cpu", 5);
+        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
         rc.set(vm1, 2);
         rc.set(vm2, 4);
         rc.set(vm3, 3);

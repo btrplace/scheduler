@@ -20,7 +20,8 @@ package btrplace.solver.choco;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.ShareableResource;
+import btrplace.model.ModelView;
+import btrplace.model.view.ShareableResource;
 import btrplace.plan.Action;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
@@ -31,6 +32,7 @@ import btrplace.solver.choco.actionModel.*;
 import btrplace.solver.choco.chocoUtil.AliasedCumulatives;
 import btrplace.solver.choco.chocoUtil.AliasedCumulativesBuilder;
 import btrplace.solver.choco.chocoUtil.BinPacking;
+import btrplace.solver.choco.view.CShareableResource;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.BranchAndBound;
 import choco.cp.solver.search.integer.branching.AssignVar;
@@ -93,7 +95,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private DurationEvaluators durEval;
 
-    private Map<String, ResourceMapping> resources;
+    private Map<String, ChocoModelView> views;
 
     private IntDomainVar[] vmsCountOnNodes;
 
@@ -102,6 +104,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private AliasedCumulativesBuilder cumulativesBuilder;
 
     private ObjectiveAlterer objAlterer = null;
+
+    private ModelViewMapper viewMapper;
+
+    private List<CShareableResource> resources;
 
     /**
      * Make a new RP where the next state for every VM is indicated.
@@ -113,13 +119,14 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * @param ready      the VMs that must be in the ready state
      * @param running    the VMs that must be in the running state
      * @param sleeeping  the VMs that must be in the sleeping state
-     * @param manageable the VMs that can be managed by the solver
      * @param label      {@code true} to label the variables (for debugging purpose)
      * @param killed     the VMs that must be killed
+     * @param manageable the VMs that can be managed by the solver
      * @throws SolverException if an error occurred
      */
     public DefaultReconfigurationProblem(Model m,
                                          DurationEvaluators dEval,
+                                         ModelViewMapper viewMapper,
                                          Set<UUID> ready,
                                          Set<UUID> running,
                                          Set<UUID> sleeeping,
@@ -135,11 +142,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         this.useLabels = label;
         model = m;
         durEval = dEval;
-
+        this.viewMapper = viewMapper;
         solver = new CPSolver();
         start = solver.makeConstantIntVar("RP.start", 0);
         end = solver.createBoundIntVar("RP.end", 0, DEFAULT_MAX_TIME);
 
+        this.views = new HashMap<String, ChocoModelView>();
+        resources = new ArrayList<CShareableResource>();
         solver.post(solver.geq(end, start));
 
         fillElements();
@@ -149,7 +158,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         makeNodeActionModels();
         makeVMActionModels();
 
-        makeResources();
+        makeViews();
 
         linkCardinatiesWithSlices();
 
@@ -172,7 +181,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             solver.post(cstr);
         }
 
-        //Let's rock
+        //Set the timeout
         if (timeLimit > 0) {
             solver.setTimeLimit(timeLimit);
         }
@@ -186,31 +195,19 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         solver.generateSearchStrategy();
 
         //Instantiate the VM usage to its LB.
-        for (ResourceMapping rcm : getResourceMappings()) {
+        for (CShareableResource rcm : resources) {
             for (IntDomainVar v : rcm.getVMsAllocation()) {
                 try {
                     v.setVal(v.getInf());
                 } catch (ContradictionException e) {
-                    getLogger().error("Unable to set the VM '{}' consumption to '{}'", rcm.getIdentifier(), v.getInf());
+                    getLogger().error("Unable to set the VM '{}' consumption to '{}'", rcm.getResourceIdentifier(), v.getInf());
                     return null;
                 }
             }
         }
 
-        //Just in case, a default search heuristic for free variables
-        IntDomainVar[] foo = new IntDomainVar[solver.getNbIntVars()];
-        SetVar[] bar = new SetVar[solver.getNbSetVars()];
+        appendNaiveBranchHeuristic();
 
-        for (int i = 0; i < foo.length; i++) {
-            foo[i] = solver.getIntVarQuick(i);
-        }
-
-        for (int i = 0; i < bar.length; i++) {
-            bar[i] = solver.getSetVarQuick(i);
-        }
-
-        solver.addGoal(new AssignVar(new StaticVarOrder(solver, foo), new MinVal()));
-        solver.addGoal(new AssignVar(new StaticSetVarOrder(solver, bar), new MinVal()));
 
         if (objAlterer == null) {
             solver.launch();
@@ -235,6 +232,26 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         assert plan.isApplyable();
         assert checkConsistency(plan);
         return plan;
+    }
+
+    /**
+     * A naïve heuristic to be sure every variables will be instantiated.
+     * In practice, instantiate each of the variables to its lower-bound
+     */
+    private void appendNaiveBranchHeuristic() {
+        IntDomainVar[] foo = new IntDomainVar[solver.getNbIntVars()];
+        SetVar[] bar = new SetVar[solver.getNbSetVars()];
+
+        for (int i = 0; i < foo.length; i++) {
+            foo[i] = solver.getIntVarQuick(i);
+        }
+
+        for (int i = 0; i < bar.length; i++) {
+            bar[i] = solver.getSetVarQuick(i);
+        }
+
+        solver.addGoal(new AssignVar(new StaticVarOrder(solver, foo), new MinVal()));
+        solver.addGoal(new AssignVar(new StaticSetVarOrder(solver, bar), new MinVal()));
     }
 
     /**
@@ -266,15 +283,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 }
             } while (solver.nextSolution() == Boolean.TRUE);
         }
-        //solver.worldPopUntil(solver.getSearchStrategy().baseWorld);
-        //solver.restoreSolution(s);
     }
 
     /**
      * Set the VM resource usage for the result, to its current usage.
      */
     private boolean maintainResourceUsage() {
-        for (ResourceMapping rcm : getResourceMappings()) {
+        for (CShareableResource rcm : resources) {
             for (UUID vm : getSourceModel().getMapping().getAllVMs()) {
                 int vmId = getVM(vm);
                 if (rcm.getVMsAllocation()[vmId].getInf() < 0) {
@@ -283,7 +298,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                         rcm.getVMsAllocation()[vmId].setInf(prevUsage);
                     } catch (ContradictionException e) {
                         getLogger().error("Unable to set the minimal '{}' usage for '{}' to its current usage ({})",
-                                rcm.getIdentifier(), vm, prevUsage);
+                                rcm.getResourceIdentifier(), vm, prevUsage);
                         return false;
                     }
                 }
@@ -311,15 +326,20 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     /**
-     * Create the {@link ResourceMapping} from the {@link ShareableResource}.
+     * Create the {@link btrplace.solver.choco.view.CShareableResource} from the {@link ShareableResource}.
      *
      * @throws SolverException if an error occurred
      */
-    private void makeResources() throws SolverException {
-        resources = new HashMap<String, ResourceMapping>(model.getResources().size());
-        for (ShareableResource rc : model.getResources()) {
-            ResourceMapping rm = new ResourceMapping(this, rc);
-            resources.put(rm.getIdentifier(), rm);
+    private void makeViews() throws SolverException {
+        views = new HashMap<String, ChocoModelView>(model.getViews().size());
+        for (ModelView rc : model.getViews()) {
+            ChocoModelView vv = viewMapper.map(this, rc);
+            if (views.put(vv.getIdentifier(), vv) != null) {
+                throw new SolverException(model, "Cannot store the implementation for view '" + vv.getIdentifier() + "'. The identifier is already used");
+            }
+            if (vv instanceof CShareableResource) {
+                resources.add((CShareableResource) vv);
+            }
         }
     }
 
@@ -473,6 +493,144 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
+    public void insertAllocateAction(ReconfigurationPlan plan, UUID vm, UUID node, int st, int ed) {
+        for (CShareableResource rcm : resources) {
+            String rcId = rcm.getResourceIdentifier();
+            int prev = rcm.getSourceResource().get(vm);
+            int now = rcm.getVMsAllocation()[getVM(vm)].getInf();
+            if (prev != now) {
+                Allocate a = new Allocate(vm, node, rcId, now, st, ed);
+                plan.add(a);
+            }
+        }
+    }
+
+    @Override
+    public void insertNotifyAllocations(Action a, UUID vm, Action.Hook k) {
+        for (CShareableResource rcm : resources) {
+            int prev = rcm.getSourceResource().get(vm);
+            int now = rcm.getVMsAllocation()[getVM(vm)].getInf();
+            if (prev != now) {
+                a.addEvent(k, new AllocateEvent(vm, rcm.getResourceIdentifier(), now));
+            }
+        }
+    }
+
+    private boolean checkConsistency(ReconfigurationPlan p) {
+        if (p.getDuration() != end.getVal()) {
+            logger.error("The plan effective duration ({}) and the computed duration ({}) mismatch", p.getDuration(), end.getVal());
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public IntDomainVar[] getNbRunningVMs() {
+        return vmsCountOnNodes;
+    }
+
+    @Override
+    public ChocoModelView getView(String id) {
+        return views.get(id);
+    }
+
+    @Override
+    public Collection<ChocoModelView> getViews() {
+        return views.values();
+    }
+
+    @Override
+    public CPSolver getSolver() {
+        return solver;
+    }
+
+    @Override
+    public SliceSchedulerBuilder getTaskSchedulerBuilder() {
+        return taskSchedBuilder;
+    }
+
+    @Override
+    public AliasedCumulativesBuilder getAliasedCumulativesBuilder() {
+        return cumulativesBuilder;
+    }
+
+    @Override
+    public IntDomainVar makeHostVariable(String n) {
+        return solver.createEnumIntVar(useLabels ? n : "", 0, nodes.length - 1);
+    }
+
+    @Override
+    public IntDomainVar makeCurrentHost(String n, UUID vmId) throws SolverException {
+        int idx = getVM(vmId);
+        if (idx < 0) {
+            throw new SolverException(model, "Unknown VM '" + vmId + "'");
+        }
+        return makeCurrentNode(useLabels ? n : "", model.getMapping().getVMLocation(vmId));
+    }
+
+    @Override
+    public IntDomainVar makeCurrentNode(String n, UUID nId) throws SolverException {
+        int idx = getNode(nId);
+        if (idx < 0) {
+            throw new SolverException(model, "Unknown node '" + nId + "'");
+        }
+        return solver.makeConstantIntVar(useLabels ? n : "", idx);
+    }
+
+    @Override
+    public IntDomainVar makeDuration(String n) {
+        return solver.createBoundIntVar(useLabels ? n : "", 0, end.getSup());
+    }
+
+    @Override
+    public IntDomainVar makeDuration(String n, int lb, int ub) throws SolverException {
+        if (lb < 0 || ub < lb) {
+            throw new SolverException(model, "Unable to create duration '" + n + "': invalid bounds");
+        }
+        return solver.createBoundIntVar(useLabels ? n : "", lb, ub < end.getSup() ? ub : end.getSup());
+    }
+
+    @Override
+    public String makeVarLabel(String lbl) {
+        return useLabels ? lbl : "";
+    }
+
+    @Override
+    public boolean isVarLabelling() {
+        return useLabels;
+    }
+
+    @Override
+    public Set<UUID> getManageableVMs() {
+        return manageable;
+    }
+
+    @Override
+    public Logger getLogger() {
+        return logger;
+    }
+
+    @Override
+    public ObjectiveAlterer getObjectiveAlterer() {
+        return objAlterer;
+    }
+
+    @Override
+    public void setObjectiveAlterer(ObjectiveAlterer a) {
+        objAlterer = a;
+    }
+
+    @Override
+    public NodeActionModel[] getNodeActions() {
+        return nodeActions;
+    }
+
+    @Override
+    public DurationEvaluators getDurationEvaluators() {
+        return durEval;
+    }
+
+    @Override
     public UUID[] getNodes() {
         return nodes;
     }
@@ -557,146 +715,5 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     public NodeActionModel getNodeAction(UUID id) {
         int idx = getNode(id);
         return idx < 0 ? null : nodeActions[idx];
-    }
-
-    @Override
-    public NodeActionModel[] getNodeActions() {
-        return nodeActions;
-    }
-
-    @Override
-    public DurationEvaluators getDurationEvaluators() {
-        return durEval;
-    }
-
-    @Override
-    public void insertAllocateAction(ReconfigurationPlan plan, UUID vm, UUID node, int st, int ed) {
-        for (Map.Entry<String, ResourceMapping> e : resources.entrySet()) {
-            ResourceMapping rcm = e.getValue();
-            String rcId = e.getKey();
-            int prev = rcm.getSourceResource().get(vm);
-            int now = rcm.getVMsAllocation()[getVM(vm)].getInf();
-            if (prev != now) {
-                Allocate a = new Allocate(vm, node, rcId, now, st, ed);
-                plan.add(a);
-            }
-        }
-    }
-
-    @Override
-    public void insertNotifyAllocations(Action a, UUID vm, Action.Hook k) {
-        for (Map.Entry<String, ResourceMapping> e : resources.entrySet()) {
-            ResourceMapping rcm = e.getValue();
-            String rcId = e.getKey();
-            int prev = rcm.getSourceResource().get(vm);
-            int now = rcm.getVMsAllocation()[getVM(vm)].getInf();
-            if (prev != now) {
-                a.addEvent(k, new AllocateEvent(vm, rcId, now));
-            }
-        }
-    }
-
-    private boolean checkConsistency(ReconfigurationPlan p) {
-        if (p.getDuration() != end.getVal()) {
-            logger.error("The plan effective duration ({}) and the computed duration ({}) mismatch", p.getDuration(), end.getVal());
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public IntDomainVar[] getNbRunningVMs() {
-        return vmsCountOnNodes;
-    }
-
-    @Override
-    public ResourceMapping getResourceMapping(String id) {
-        return resources.get(id);
-    }
-
-    @Override
-    public Collection<ResourceMapping> getResourceMappings() {
-        return resources.values();
-    }
-
-    @Override
-    public CPSolver getSolver() {
-        return solver;
-    }
-
-    @Override
-    public SliceSchedulerBuilder getTaskSchedulerBuilder() {
-        return taskSchedBuilder;
-    }
-
-    @Override
-    public AliasedCumulativesBuilder getAliasedCumulativesBuilder() {
-        return cumulativesBuilder;
-    }
-
-    @Override
-    public IntDomainVar makeHostVariable(String n) {
-        return solver.createEnumIntVar(useLabels ? n : "", 0, nodes.length - 1);
-    }
-
-    @Override
-    public IntDomainVar makeCurrentHost(String n, UUID vmId) throws SolverException {
-        int idx = getVM(vmId);
-        if (idx < 0) {
-            throw new SolverException(model, "Unknown VM '" + vmId + "'");
-        }
-        return makeCurrentNode(useLabels ? n : "", model.getMapping().getVMLocation(vmId));
-    }
-
-    @Override
-    public IntDomainVar makeCurrentNode(String n, UUID nId) throws SolverException {
-        int idx = getNode(nId);
-        if (idx < 0) {
-            throw new SolverException(model, "Unknown node '" + nId + "'");
-        }
-        return solver.makeConstantIntVar(useLabels ? n : "", idx);
-    }
-
-    @Override
-    public IntDomainVar makeDuration(String n) {
-        return solver.createBoundIntVar(useLabels ? n : "", 0, end.getSup());
-    }
-
-    @Override
-    public IntDomainVar makeDuration(String n, int lb, int ub) throws SolverException {
-        if (lb < 0 || ub < lb) {
-            throw new SolverException(model, "Unable to create duration '" + n + "': invalid bounds");
-        }
-        return solver.createBoundIntVar(useLabels ? n : "", lb, ub < end.getSup() ? ub : end.getSup());
-    }
-
-    @Override
-    public String makeVarLabel(String lbl) {
-        return useLabels ? lbl : "";
-    }
-
-    @Override
-    public boolean isVarLabelling() {
-        return useLabels;
-    }
-
-    @Override
-    public Set<UUID> getManageableVMs() {
-        return manageable;
-    }
-
-    @Override
-    public Logger getLogger() {
-        return logger;
-    }
-
-    @Override
-    public ObjectiveAlterer getObjectiveAlterer() {
-        return objAlterer;
-    }
-
-    @Override
-    public void setObjectiveAlterer(ObjectiveAlterer a) {
-        objAlterer = a;
     }
 }

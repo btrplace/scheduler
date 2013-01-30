@@ -41,7 +41,10 @@ public class DefaultReconfigurationProblemBuilder {
 
     private DurationEvaluators dEval;
 
+    private ModelViewMapper viewMapper;
+
     private Set<UUID> runs, waits, over, sleep;
+
     private Set<UUID> manageable;
 
     /**
@@ -71,6 +74,17 @@ public class DefaultReconfigurationProblemBuilder {
      */
     public DefaultReconfigurationProblemBuilder setDurationEvaluatators(DurationEvaluators d) {
         dEval = d;
+        return this;
+    }
+
+    /**
+     * Provide a dedicated {@link ModelViewMapper}.
+     *
+     * @param m the mapper to use
+     * @return the current builder
+     */
+    public DefaultReconfigurationProblemBuilder setViewMapper(ModelViewMapper m) {
+        viewMapper = m;
         return this;
     }
 
@@ -123,11 +137,14 @@ public class DefaultReconfigurationProblemBuilder {
         if (dEval == null) {
             dEval = new DurationEvaluators();
         }
+        if (viewMapper == null) {
+            viewMapper = new ModelViewMapper();
+        }
         if (manageable == null) {
             manageable = new HashSet<UUID>();
             manageable.addAll(model.getMapping().getAllVMs());
         }
-        return new DefaultReconfigurationProblem(model, dEval, waits, runs, sleep, over, manageable, labelVars);
+        return new DefaultReconfigurationProblem(model, dEval, viewMapper, waits, runs, sleep, over, manageable, labelVars);
     }
 
 }

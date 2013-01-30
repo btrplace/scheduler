@@ -16,11 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.view;
 
-import btrplace.model.ShareableResource;
+import btrplace.model.ModelView;
+import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Allocate;
+import btrplace.solver.SolverException;
+import btrplace.solver.choco.*;
 import btrplace.solver.choco.chocoUtil.BinPacking;
 import choco.Choco;
 import choco.cp.solver.CPSolver;
@@ -36,7 +39,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class ResourceMapping {
+public class CShareableResource implements ChocoModelView {
 
     private ShareableResource rc;
 
@@ -48,19 +51,22 @@ public class ResourceMapping {
 
     private ReconfigurationProblem rp;
 
+    private String id;
+
     /**
      * Make a new mapping.
      *
      * @param rp the problem to rely on
      * @param rc the resource to consider
      */
-    public ResourceMapping(ReconfigurationProblem rp, ShareableResource rc) {
+    public CShareableResource(ReconfigurationProblem rp, ShareableResource rc) {
         this.rc = rc;
         this.rp = rp;
         UUID[] nodes = rp.getNodes();
         phyRcUsage = new IntDomainVar[nodes.length];
         virtRcUsage = new IntDomainVar[nodes.length];
 
+        id = ShareableResource.VIEW_ID_BASE + rc.getResourceIdentifier();
         for (int i = 0; i < nodes.length; i++) {
             phyRcUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("phyRcUsage('" + rc.getIdentifier() + "', '" + rp.getNode(i) + "')"), 0, rc.get(nodes[i]));
             virtRcUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("virtRcUsage('" + rc.getIdentifier() + "', '" + rp.getNode(i) + "')"), 0, Choco.MAX_UPPER_BOUND);
@@ -98,8 +104,8 @@ public class ResourceMapping {
      *
      * @return an identifier
      */
-    public String getIdentifier() {
-        return rc.getIdentifier();
+    public String getResourceIdentifier() {
+        return rc.getResourceIdentifier();
     }
 
     /**
@@ -207,4 +213,24 @@ public class ResourceMapping {
         return false;
     }
 
+    @Override
+    public String getIdentifier() {
+        return id;
+    }
+
+    /**
+     * Builder associated to the constraint.
+     */
+    public static class Builder implements ChocoModelViewBuilder {
+        @Override
+        public Class<? extends ModelView> getKey() {
+            return ShareableResource.class;
+        }
+
+        @Override
+        public ChocoModelView build(ReconfigurationProblem rp, ModelView v) throws SolverException {
+            ShareableResource rc = (ShareableResource) v;
+            return new CShareableResource(rp, rc);
+        }
+    }
 }

@@ -18,36 +18,17 @@
 
 package btrplace.solver.choco;
 
-import btrplace.model.view.ShareableResource;
-
-import java.util.Comparator;
-
 /**
- * Compare slices with regards to the resource consumption of their associated element.
+ * Interface denoting the Choco implementation of a {@link btrplace.model.ModelView}.
  *
  * @author Fabien Hermenier
  */
-public class SliceRcComparator implements Comparator<Slice> {
-
-    private ShareableResource rc;
-
-    private int ratio;
+public interface ChocoModelView {
 
     /**
-     * Make a new comparator.
+     * Get the view unique identifier.
      *
-     * @param r   the resource used to perform the comparison
-     * @param asc {@code true} for an ascending comparison
+     * @return a non-empty String
      */
-    public SliceRcComparator(ShareableResource r, boolean asc) {
-        this.rc = r;
-        ratio = asc ? 1 : -1;
-    }
-
-    @Override
-    public int compare(Slice s1, Slice s2) {
-        int x = rc.get(s1.getSubject());
-        int y = rc.get(s2.getSubject());
-        return ratio * (x - y);
-    }
+    String getIdentifier();
 }
