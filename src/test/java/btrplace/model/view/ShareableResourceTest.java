@@ -24,26 +24,26 @@ import org.testng.annotations.Test;
 import java.util.*;
 
 /**
- * Unit tests for {@link btrplace.model.view.DefaultShareableResource}.
+ * Unit tests for {@link ShareableResource}.
  *
  * @author Fabien Hermenier
  */
-public class DefaultShareableResourceTest {
+public class ShareableResourceTest {
 
     @Test
     public void testInstantiation() {
-        ShareableResource rc = new DefaultShareableResource("foo");
+        ShareableResource rc = new ShareableResource("foo");
         Assert.assertEquals(rc.getIdentifier(), "ShareableResource.foo");
         Assert.assertEquals(rc.getResourceIdentifier(), "foo");
-        Assert.assertEquals(rc.getDefaultValue(), DefaultShareableResource.DEFAULT_NO_VALUE);
+        Assert.assertEquals(rc.getDefaultValue(), ShareableResource.DEFAULT_NO_VALUE);
 
-        rc = new DefaultShareableResource("bar", -7);
+        rc = new ShareableResource("bar", -7);
         Assert.assertEquals(rc.getIdentifier(), "ShareableResource.bar");
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testDefinition() {
-        ShareableResource rc = new DefaultShareableResource("foo");
+        ShareableResource rc = new ShareableResource("foo");
         UUID id = UUID.randomUUID();
         Assert.assertFalse(rc.defined(id));
         Assert.assertEquals(rc.get(id), rc.getDefaultValue());
@@ -55,7 +55,7 @@ public class DefaultShareableResourceTest {
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testGets() {
-        ShareableResource rc = new DefaultShareableResource("foo");
+        ShareableResource rc = new ShareableResource("foo");
         List<UUID> ids = new ArrayList<UUID>(10);
         for (int i = 0; i < 10; i++) {
             UUID id = UUID.randomUUID();
@@ -70,7 +70,7 @@ public class DefaultShareableResourceTest {
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testDefined() {
-        ShareableResource rc = new DefaultShareableResource("foo");
+        ShareableResource rc = new ShareableResource("foo");
         List<UUID> ids = new ArrayList<UUID>(10);
         for (int i = 0; i < 10; i++) {
             UUID id = UUID.randomUUID();
@@ -82,7 +82,7 @@ public class DefaultShareableResourceTest {
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testUnset() {
-        ShareableResource rc = new DefaultShareableResource("foo");
+        ShareableResource rc = new ShareableResource("foo");
         UUID id = UUID.randomUUID();
         rc.set(id, 3);
         Assert.assertTrue(rc.unset(id));
@@ -95,7 +95,7 @@ public class DefaultShareableResourceTest {
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testCompare() {
-        ShareableResource rc = new DefaultShareableResource("foo");
+        ShareableResource rc = new ShareableResource("foo");
         UUID i1 = UUID.randomUUID();
         rc.set(i1, 3);
 
@@ -114,7 +114,7 @@ public class DefaultShareableResourceTest {
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testMax() {
-        ShareableResource rc = new DefaultShareableResource("foo");
+        ShareableResource rc = new ShareableResource("foo");
         UUID i1 = UUID.randomUUID();
         rc.set(i1, 3);
 
@@ -131,7 +131,7 @@ public class DefaultShareableResourceTest {
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testMin() {
-        ShareableResource rc = new DefaultShareableResource("foo");
+        ShareableResource rc = new ShareableResource("foo");
         UUID i1 = UUID.randomUUID();
         rc.set(i1, 3);
 
@@ -148,7 +148,7 @@ public class DefaultShareableResourceTest {
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testSum() {
-        ShareableResource rc = new DefaultShareableResource("foo", -5); //-5 as default no code value to detect its presence in sum (would be an error)
+        ShareableResource rc = new ShareableResource("foo", -5); //-5 as default no code value to detect its presence in sum (would be an error)
         UUID i1 = UUID.randomUUID();
         rc.set(i1, 3);
         UUID i2 = UUID.randomUUID();
@@ -165,7 +165,7 @@ public class DefaultShareableResourceTest {
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testToString() {
-        ShareableResource rc = new DefaultShareableResource("foo");
+        ShareableResource rc = new ShareableResource("foo");
         rc.set(UUID.randomUUID(), 1);
         rc.set(UUID.randomUUID(), 2);
         rc.set(UUID.randomUUID(), 3);
@@ -176,9 +176,9 @@ public class DefaultShareableResourceTest {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsAndHashCode() {
-        ShareableResource rc1 = new DefaultShareableResource("foo");
-        ShareableResource rc2 = new DefaultShareableResource("foo");
-        ShareableResource rc3 = new DefaultShareableResource("bar");
+        ShareableResource rc1 = new ShareableResource("foo");
+        ShareableResource rc2 = new ShareableResource("foo");
+        ShareableResource rc3 = new ShareableResource("bar");
         Assert.assertEquals(rc1, rc2);
         Assert.assertEquals(rc2, rc2);
         Assert.assertEquals(rc1.hashCode(), rc2.hashCode());
@@ -191,7 +191,7 @@ public class DefaultShareableResourceTest {
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition", "testEqualsAndHashCode"})
     public void testClone() {
-        ShareableResource rc1 = new DefaultShareableResource("foo", -1);
+        ShareableResource rc1 = new ShareableResource("foo", -1);
         UUID u1 = UUID.randomUUID();
         UUID u2 = UUID.randomUUID();
         rc1.set(u1, 3);

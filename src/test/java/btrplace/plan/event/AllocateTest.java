@@ -22,7 +22,6 @@ import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.view.DefaultShareableResource;
 import btrplace.model.view.ShareableResource;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -61,7 +60,7 @@ public class AllocateTest {
         map.addRunningVM(vm, n1);
         Model mo = new DefaultModel(map);
         Assert.assertFalse(na.apply(mo));
-        ShareableResource rc = new DefaultShareableResource("foo");
+        ShareableResource rc = new ShareableResource("foo");
         mo.attach(rc);
         Assert.assertTrue(na.apply(mo));
         Assert.assertEquals(3, rc.get(vm));

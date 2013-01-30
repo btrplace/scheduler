@@ -22,7 +22,6 @@ import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.view.DefaultShareableResource;
 import btrplace.model.view.ShareableResource;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -71,7 +70,7 @@ public class PreserveTest {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testIsSatisfied() {
-        ShareableResource rc = new DefaultShareableResource("cpu");
+        ShareableResource rc = new ShareableResource("cpu");
         Model m = new DefaultModel(new DefaultMapping());
         m.attach(rc);
         UUID vm1 = UUID.randomUUID();

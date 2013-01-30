@@ -18,7 +18,7 @@
 
 package btrplace.model;
 
-import btrplace.model.view.DefaultShareableResource;
+import btrplace.model.view.ShareableResource;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -33,7 +33,7 @@ public class ElementComparatorTest {
 
     @Test
     public void testSimpleResource() {
-        DefaultShareableResource rc = new DefaultShareableResource("foo");
+        ShareableResource rc = new ShareableResource("foo");
         List<UUID> uuids = new ArrayList<UUID>(10);
         for (int i = 0; i < 10; i++) {
             uuids.add(UUID.randomUUID());
@@ -66,7 +66,7 @@ public class ElementComparatorTest {
         for (int i = 0; i < 7; i++) {
             uuids.add(UUID.randomUUID());
         }
-        DefaultShareableResource rc = new DefaultShareableResource("foo");
+        ShareableResource rc = new ShareableResource("foo");
 
         for (int i = 0; i < 4; i++) {
             rc.set(uuids.get(i), i);
@@ -75,7 +75,7 @@ public class ElementComparatorTest {
         rc.set(uuids.get(5), 2);
         rc.set(uuids.get(6), 3);
 
-        DefaultShareableResource rc2 = new DefaultShareableResource("bar");
+        ShareableResource rc2 = new ShareableResource("bar");
         for (int i = 0; i < 4; i++) {
             rc2.set(uuids.get(i), i / 2);
         }

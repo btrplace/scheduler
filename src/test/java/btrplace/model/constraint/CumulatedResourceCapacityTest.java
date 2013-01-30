@@ -19,7 +19,6 @@
 package btrplace.model.constraint;
 
 import btrplace.model.*;
-import btrplace.model.view.DefaultShareableResource;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
@@ -94,7 +93,7 @@ public class CumulatedResourceCapacityTest {
         map.addRunningVM(vm4, n3);
 
         Model mo = new DefaultModel(map);
-        ShareableResource rc = new DefaultShareableResource("foo", 1);
+        ShareableResource rc = new ShareableResource("foo", 1);
         rc.set(vm2, 2);
         mo.attach(rc);
         Set<UUID> nodes = new HashSet<UUID>();
@@ -124,7 +123,7 @@ public class CumulatedResourceCapacityTest {
         map.addRunningVM(vm4, n3);
 
         Model mo = new DefaultModel(map);
-        ShareableResource rc = new DefaultShareableResource("foo", 1);
+        ShareableResource rc = new ShareableResource("foo", 1);
         rc.set(vm2, 2);
         mo.attach(rc);
         Set<UUID> nodes = new HashSet<UUID>();

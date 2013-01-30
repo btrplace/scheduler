@@ -19,7 +19,6 @@
 package btrplace.model.constraint;
 
 import btrplace.model.*;
-import btrplace.model.view.DefaultShareableResource;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
@@ -69,7 +68,7 @@ public class OverbookTest {
         cfg.addOnlineNode(n1);
         cfg.addOnlineNode(n2);
 
-        ShareableResource rc = new DefaultShareableResource("cpu");
+        ShareableResource rc = new ShareableResource("cpu");
         rc.set(n1, 1);
         rc.set(n2, 4);
 
@@ -117,7 +116,7 @@ public class OverbookTest {
         cfg.addOnlineNode(n1);
         cfg.addOnlineNode(n2);
 
-        ShareableResource rc = new DefaultShareableResource("cpu");
+        ShareableResource rc = new ShareableResource("cpu");
         rc.set(n1, 1);
         rc.set(n2, 4);
 

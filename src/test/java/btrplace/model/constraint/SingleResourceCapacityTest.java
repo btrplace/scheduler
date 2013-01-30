@@ -19,7 +19,6 @@
 package btrplace.model.constraint;
 
 import btrplace.model.*;
-import btrplace.model.view.DefaultShareableResource;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
@@ -96,7 +95,7 @@ public class SingleResourceCapacityTest {
         m.addReadyVM(vm4);
         Model mo = new DefaultModel(m);
 
-        ShareableResource rc = new DefaultShareableResource("foo", 2);
+        ShareableResource rc = new ShareableResource("foo", 2);
         mo.attach(rc);
         SingleResourceCapacity c = new SingleResourceCapacity(m.getAllNodes(), "foo", 3);
         Assert.assertEquals(c.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
@@ -120,7 +119,7 @@ public class SingleResourceCapacityTest {
         m.addReadyVM(vm4);
         Model mo = new DefaultModel(m);
 
-        ShareableResource rc = new DefaultShareableResource("foo", 2);
+        ShareableResource rc = new ShareableResource("foo", 2);
         mo.attach(rc);
         SingleResourceCapacity c = new SingleResourceCapacity(m.getAllNodes(), "foo", 3);
 
