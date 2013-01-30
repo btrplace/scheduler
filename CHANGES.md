@@ -1,6 +1,11 @@
 Release notes
 =======================
 
+v0.9 - ??
+----------------------
+- ModelView to customize a model with new domain-specific informations.
+  ShareableResource becomes possible specialization of ModelView
+- documentation fix
 
 v0.8 - 15 jan. 2012
 ----------------------

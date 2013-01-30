@@ -33,11 +33,12 @@ public class DefaultShareableResourceTest {
     @Test
     public void testInstantiation() {
         ShareableResource rc = new DefaultShareableResource("foo");
-        Assert.assertEquals("foo", rc.getIdentifier());
-        Assert.assertEquals(DefaultShareableResource.DEFAULT_NO_VALUE, rc.getDefaultValue());
+        Assert.assertEquals(rc.getIdentifier(), "ShareableResource.foo");
+        Assert.assertEquals(rc.getResourceIdentifier(), "foo");
+        Assert.assertEquals(rc.getDefaultValue(), DefaultShareableResource.DEFAULT_NO_VALUE);
 
         rc = new DefaultShareableResource("bar", -7);
-        Assert.assertEquals("bar", rc.getIdentifier());
+        Assert.assertEquals(rc.getIdentifier(), "ShareableResource.bar");
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
@@ -49,7 +50,7 @@ public class DefaultShareableResourceTest {
 
         rc.set(id, 3);
         Assert.assertTrue(rc.defined(id));
-        Assert.assertEquals(3, rc.get(id));
+        Assert.assertEquals(rc.get(id), 3);
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})

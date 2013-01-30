@@ -31,14 +31,13 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public interface ShareableResource extends Comparator<UUID>, Cloneable {
+public interface ShareableResource extends Comparator<UUID>, ModelView {
 
     /**
-     * The resource identifier.
-     *
-     * @return a String denoting the identifier resource
+     * The base of the view identifier. Once instantiated, it is completed
+     * by the resource identifier.
      */
-    String getIdentifier();
+    static final String VIEW_ID_BASE = ShareableResource.class.getSimpleName() + '.';
 
     /**
      * Check if the resource is defined for an element.
@@ -135,4 +134,11 @@ public interface ShareableResource extends Comparator<UUID>, Cloneable {
      * @return a new resource object
      */
     ShareableResource clone();
+
+    /**
+     * Get the resource identifier.
+     *
+     * @return a non-empty string
+     */
+    String getResourceIdentifier();
 }

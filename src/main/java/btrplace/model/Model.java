@@ -23,50 +23,51 @@ import java.util.Collection;
 /**
  * A model depicts a consistent snapshot of an infrastructure.
  * Basically, a model is composed by a {@link Mapping} to indicate the state
- * and the location of the elements, a variety of {@link ShareableResource} object
- * to indicate the resource usage or capacity of the elements and finally,
- * a set of {@link SatConstraint} that indicate the constraint that should be satisfied.
+ * and the location of the elements, and a variety of {@link ModelView} to
+ * provide additional data about the elements.
+ * <p/>
+ * In addition, it is possible to declare attributes for specific elements.
  *
  * @author Fabien Hermenier
  */
 public interface Model extends Cloneable {
 
     /**
-     * Get a particular resource attached to this model.
+     * Get a view already attached to the model
      *
-     * @param id the resource identifier
-     * @return the resource if it was attached, {@code null} otherwise
+     * @param id the view identifier
+     * @return the view if it was attached, {@code null} otherwise
      */
-    ShareableResource getResource(String id);
+    ModelView getView(String id);
 
     /**
-     * Get the resources attached to the model.
+     * Get all the view attached to the model.
      *
-     * @return a collection of resources that may be empty.
+     * @return a collection of views that may be empty.
      */
-    Collection<ShareableResource> getResources();
+    Collection<ModelView> getViews();
 
     /**
-     * Attach a resource to this model.
-     * No resources with the same identifier must have been attached earlier.
+     * Attach a view to the model.
+     * No view with the same identifier must have been attached earlier.
      *
-     * @param rc the resource to attach
-     * @return {@code true} iff the resource has been attached
+     * @param v the view to attach
+     * @return {@code true} iff the view has been attached
      */
-    boolean attach(ShareableResource rc);
+    boolean attach(ModelView v);
 
     /**
-     * Detach a resource from this model.
+     * Detach a view from this model.
      *
-     * @param rc the resource
-     * @return {@code true} iff the resource was removed
+     * @param v the view
+     * @return {@code true} iff the view was removed
      */
-    boolean detach(ShareableResource rc);
+    boolean detach(ModelView v);
 
     /**
-     * Detach all the resources from this model.
+     * Detach all the view from this model.
      */
-    void clearResources();
+    void clearViews();
 
     /**
      * Get the mapping associated to this model.

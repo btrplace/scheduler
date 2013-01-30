@@ -21,8 +21,6 @@ package btrplace.model;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -32,43 +30,75 @@ import java.util.UUID;
  */
 public class DefaultModelTest {
 
+    class MockView implements ModelView {
+
+        private String i;
+
+        public MockView(String id) {
+            i = id;
+        }
+
+        @Override
+        public String getIdentifier() {
+            return i;
+        }
+
+        @Override
+        public MockView clone() {
+            return new MockView(i);
+        }
+
+        @Override
+        public int hashCode() {
+            return i.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == this) {
+                return true;
+            }
+            ModelView v = (ModelView) o;
+            return v.getIdentifier().equals(this.getIdentifier());
+        }
+    }
+
     @Test
     public void testInstantiate() {
         Mapping c = new DefaultMapping();
         Model i = new DefaultModel(c);
-        Assert.assertEquals(c, i.getMapping());
-        Assert.assertTrue(i.getResources().isEmpty());
-
-        Set<ShareableResource> rcs = new HashSet<ShareableResource>();
-        rcs.add(new DefaultShareableResource("foo"));
-        rcs.add(new DefaultShareableResource("bar"));
+        Assert.assertEquals(i.getMapping(), c);
+        Assert.assertTrue(i.getViews().isEmpty());
+        Assert.assertNotNull(i.getAttributes());
     }
 
     @Test
-    public void testAttachResource() {
+    public void testAttachView() {
         Model i = new DefaultModel(new DefaultMapping());
-        ShareableResource rc = new DefaultShareableResource("foo");
-        Assert.assertTrue(i.attach(rc));
-        Assert.assertEquals(1, i.getResources().size());
-        Assert.assertEquals(rc, i.getResource("foo"));
-        Assert.assertEquals(null, i.getResource("bar"));
+        ModelView v = new MockView("mock");
 
-        Assert.assertFalse(i.attach(rc));
-        Assert.assertEquals(1, i.getResources().size());
-        Assert.assertEquals(rc, i.getResource("foo"));
+        Assert.assertTrue(i.attach(v));
+        Assert.assertEquals(i.getViews().size(), 1);
+        Assert.assertEquals(i.getView("mock"), v);
+        Assert.assertEquals(i.getView("bar"), null);
 
-        ShareableResource b = new DefaultShareableResource("bar");
-        Assert.assertTrue(i.attach(b));
-        Assert.assertEquals(2, i.getResources().size());
-        Assert.assertEquals(b, i.getResource("bar"));
+        Assert.assertFalse(i.attach(v));
+        Assert.assertEquals(i.getViews().size(), 1);
+        Assert.assertEquals(i.getView("mock"), v);
+
+        ModelView v2 = new MockView("bar");
+
+        Assert.assertTrue(i.attach(v2));
+        Assert.assertEquals(i.getViews().size(), 2);
+        Assert.assertEquals(i.getView("bar"), v2);
     }
 
 
-    @Test(dependsOnMethods = {"testAttachResource", "testInstantiate"})
+    @Test(dependsOnMethods = {"testAttachView", "testInstantiate"})
     public void testEqualsAndHashCode() {
         Model i = new DefaultModel(new DefaultMapping());
-        ShareableResource rc = new DefaultShareableResource("foo");
-        ShareableResource b = new DefaultShareableResource("bar");
+        ModelView rc = new MockView("foo");
+        ModelView b = new MockView("bar");
         i.attach(rc);
         i.attach(b);
 
@@ -88,47 +118,52 @@ public class DefaultModelTest {
         Assert.assertFalse(i.equals(j));
     }
 
-    @Test(dependsOnMethods = {"testInstantiate", "testEqualsAndHashCode", "testAttachResource", "testDetachStackableResource"})
+    @Test(dependsOnMethods = {"testInstantiate", "testEqualsAndHashCode", "testAttachView", "testDetachView", "testAttributes"})
     public void testClone() {
         Model i = new DefaultModel(new DefaultMapping());
-        ShareableResource rc = new DefaultShareableResource("foo");
-        ShareableResource b = new DefaultShareableResource("bar");
+        ModelView v1 = new MockView("foo");
+        ModelView v2 = new MockView("bar");
         UUID u = UUID.randomUUID();
         i.getAttributes().set(u, "foo");
-        i.attach(rc);
-        i.attach(b);
+        i.attach(v1);
+        i.attach(v2);
         Model c = i.clone();
-        Assert.assertTrue(c.equals(i));
         Assert.assertEquals(c.hashCode(), i.hashCode());
-        i.detach(rc);
-        Assert.assertEquals(rc, c.getResource("foo"));
-        c.detach(b);
-        Assert.assertEquals(b, i.getResource("bar"));
+        Assert.assertTrue(c.equals(i));
+        i.detach(v1);
+        Assert.assertEquals(c.getView("foo"), v1);
+        c.detach(v1);
+        Assert.assertEquals(i.getView("bar"), v2);
         Assert.assertEquals(Boolean.TRUE, c.getAttributes().get(u, "foo"));
 
     }
 
-    @Test(dependsOnMethods = {"testAttachResource", "testInstantiate"})
-    public void testDetachStackableResource() {
+    @Test(dependsOnMethods = {"testAttachView", "testInstantiate"})
+    public void testDetachView() {
         Model i = new DefaultModel(new DefaultMapping());
-        ShareableResource rc = new DefaultShareableResource("cpu");
-        i.attach(rc);
-        Assert.assertTrue(i.detach(rc));
-        Assert.assertTrue(i.getResources().isEmpty());
-        Assert.assertNull(i.getResource("cpu"));
-        Assert.assertFalse(i.detach(rc));
+        ModelView v = new MockView("cpu");
+        i.attach(v);
+        Assert.assertTrue(i.detach(v));
+        Assert.assertTrue(i.getViews().isEmpty());
+        Assert.assertNull(i.getView("cpu"));
+        Assert.assertFalse(i.detach(v));
     }
 
-    @Test(dependsOnMethods = {"testAttachResource", "testInstantiate"})
-    public void testClearResource() {
+    @Test(dependsOnMethods = {"testAttachView", "testInstantiate"})
+    public void testClearViews() {
         Model i = new DefaultModel(new DefaultMapping());
-        i.attach(new DefaultShareableResource("cpu"));
-        i.attach(new DefaultShareableResource("mem"));
-        i.clearResources();
-        Assert.assertTrue(i.getResources().isEmpty());
+        i.attach(new MockView("cpu"));
+        i.attach(new MockView("mem"));
+        i.clearViews();
+        Assert.assertTrue(i.getViews().isEmpty());
     }
 
+    @Test
     public void testAttributes() {
-
+        Model i = new DefaultModel(new DefaultMapping());
+        Attributes attrs = new DefaultAttributes();
+        attrs.set(UUID.randomUUID(), "foo");
+        i.setAttributes(attrs);
+        Assert.assertEquals(i.getAttributes(), attrs);
     }
 }

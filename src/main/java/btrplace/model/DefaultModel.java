@@ -31,7 +31,7 @@ public class DefaultModel implements Model, Cloneable {
 
     private Mapping cfg;
 
-    private Map<String, ShareableResource> resources;
+    private Map<String, ModelView> resources;
 
     private Attributes attrs;
 
@@ -42,27 +42,27 @@ public class DefaultModel implements Model, Cloneable {
      */
     public DefaultModel(Mapping m) {
         this.cfg = m;
-        this.resources = new HashMap<String, ShareableResource>();
+        this.resources = new HashMap<String, ModelView>();
         attrs = new DefaultAttributes();
     }
 
 
     @Override
-    public ShareableResource getResource(String id) {
+    public ModelView getView(String id) {
         return this.resources.get(id);
     }
 
     @Override
-    public boolean attach(ShareableResource rc) {
-        if (this.resources.containsKey(rc.getIdentifier())) {
+    public boolean attach(ModelView v) {
+        if (this.resources.containsKey(v.getIdentifier())) {
             return false;
         }
-        this.resources.put(rc.getIdentifier(), rc);
+        this.resources.put(v.getIdentifier(), v);
         return true;
     }
 
     @Override
-    public Collection<ShareableResource> getResources() {
+    public Collection<ModelView> getViews() {
         return this.resources.values();
     }
 
@@ -89,8 +89,8 @@ public class DefaultModel implements Model, Cloneable {
         if (!attrs.equals(that.getAttributes())) {
             return false;
         }
-        Collection<ShareableResource> thatRrcs = that.getResources();
-        return resources.values().containsAll(thatRrcs) && resources.size() == thatRrcs.size();
+        Collection<ModelView> thatRrcs = that.getViews();
+        return resources.size() == thatRrcs.size() && resources.values().containsAll(thatRrcs);
     }
 
     @Override
@@ -102,12 +102,12 @@ public class DefaultModel implements Model, Cloneable {
     }
 
     @Override
-    public boolean detach(ShareableResource rc) {
-        return resources.remove(rc.getIdentifier()) != null;
+    public boolean detach(ModelView v) {
+        return resources.remove(v.getIdentifier()) != null;
     }
 
     @Override
-    public void clearResources() {
+    public void clearViews() {
         this.resources.clear();
     }
 
@@ -124,7 +124,7 @@ public class DefaultModel implements Model, Cloneable {
     @Override
     public Model clone() {
         Model m = new DefaultModel(cfg.clone());
-        for (ShareableResource rc : resources.values()) {
+        for (ModelView rc : resources.values()) {
             m.attach(rc.clone());
         }
         m.setAttributes(this.getAttributes().clone());

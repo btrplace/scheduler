@@ -80,7 +80,7 @@ public class CumulatedResourceCapacity extends SatConstraint {
 
     @Override
     public Sat isSatisfied(Model i) {
-        ShareableResource rc = i.getResource(rcId);
+        ShareableResource rc = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + rcId);
         if (rc == null) {
             return Sat.UNSATISFIED;
         }

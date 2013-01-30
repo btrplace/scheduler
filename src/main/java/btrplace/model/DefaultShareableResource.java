@@ -31,7 +31,9 @@ public class DefaultShareableResource implements ShareableResource, Cloneable {
 
     private int noValue;
 
-    private String id;
+    private String viewId;
+
+    private String rcId;
 
     public static final int DEFAULT_NO_VALUE = 0;
 
@@ -52,7 +54,8 @@ public class DefaultShareableResource implements ShareableResource, Cloneable {
      */
     public DefaultShareableResource(String id, int noValue) {
         values = new HashMap<UUID, Integer>();
-        this.id = id;
+        this.rcId = id;
+        this.viewId = new StringBuilder(ShareableResource.VIEW_ID_BASE).append(rcId).toString();
         this.noValue = noValue;
     }
 
@@ -99,9 +102,19 @@ public class DefaultShareableResource implements ShareableResource, Cloneable {
         return get(o1) - get(o2);
     }
 
+    /**
+     * Get the view identifier.
+     *
+     * @return "ShareableResource.rcId" where rcId is the resource identifier provided to the constructor
+     */
     @Override
     public String getIdentifier() {
-        return id;
+        return viewId;
+    }
+
+    @Override
+    public String getResourceIdentifier() {
+        return rcId;
     }
 
     @Override
@@ -168,17 +181,17 @@ public class DefaultShareableResource implements ShareableResource, Cloneable {
                 return false;
             }
         }
-        return id.equals(that.getIdentifier());
+        return rcId.equals(that.getResourceIdentifier());
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode() + 31 * values.hashCode();
+        return rcId.hashCode() + 31 * values.hashCode();
     }
 
     @Override
     public ShareableResource clone() {
-        DefaultShareableResource rc = new DefaultShareableResource(id, noValue);
+        DefaultShareableResource rc = new DefaultShareableResource(rcId, noValue);
         for (Map.Entry<UUID, Integer> e : values.entrySet()) {
             rc.values.put(e.getKey(), e.getValue());
         }
@@ -187,7 +200,7 @@ public class DefaultShareableResource implements ShareableResource, Cloneable {
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder("rc:").append(id).append(":");
+        StringBuilder buf = new StringBuilder("rc:").append(rcId).append(":");
         for (Iterator<Map.Entry<UUID, Integer>> ite = values.entrySet().iterator(); ite.hasNext(); ) {
             Map.Entry<UUID, Integer> e = ite.next();
             buf.append('<').append(e.getKey().toString()).append(',').append(e.getValue()).append('>');
@@ -196,6 +209,5 @@ public class DefaultShareableResource implements ShareableResource, Cloneable {
             }
         }
         return buf.toString();
-
     }
 }

@@ -99,7 +99,7 @@ public class Overbook extends SatConstraint {
     @Override
     public Sat isSatisfied(Model i) {
         Mapping cfg = i.getMapping();
-        ShareableResource rc = i.getResource(rcId);
+        ShareableResource rc = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + rcId);
         if (rc == null) {
             return Sat.UNSATISFIED;
         }

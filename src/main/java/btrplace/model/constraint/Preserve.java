@@ -57,7 +57,7 @@ public class Preserve extends SatConstraint {
 
     @Override
     public Sat isSatisfied(Model i) {
-        ShareableResource r = i.getResource(rc);
+        ShareableResource r = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + rc);
         if (r == null) {
             return Sat.UNSATISFIED;
         }
