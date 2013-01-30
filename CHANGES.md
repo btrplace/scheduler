@@ -1,6 +1,9 @@
 Release notes
 =======================
 
+v0.10 - ???
+----------------------
+
 v0.9 - 30 jan. 2012
 ----------------------
 - ModelView to customize a model with new domain-specific informations.
