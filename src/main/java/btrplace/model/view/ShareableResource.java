@@ -16,7 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.model;
+package btrplace.model.view;
+
+import btrplace.model.ModelView;
 
 import java.util.*;
 
@@ -27,7 +29,7 @@ import java.util.*;
  * and the amount of virtual resources to allocate to the VMs.
  * By default, their is no mapping between the physical and the virtual resources.
  * To limit the hosting capacity of the nodes it is then a necessary to express this mapping,
- * as an exemple, using {@link btrplace.model.constraint.Overbook} constraints.
+ * as an example, using {@link btrplace.model.constraint.Overbook} constraints.
  *
  * @author Fabien Hermenier
  */

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.model;
+package btrplace.model.view;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -24,7 +24,7 @@ import org.testng.annotations.Test;
 import java.util.*;
 
 /**
- * Unit tests for {@link DefaultShareableResource}.
+ * Unit tests for {@link btrplace.model.view.DefaultShareableResource}.
  *
  * @author Fabien Hermenier
  */
@@ -69,7 +69,7 @@ public class DefaultShareableResourceTest {
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
-    public void testDefineds() {
+    public void testDefined() {
         ShareableResource rc = new DefaultShareableResource("foo");
         List<UUID> ids = new ArrayList<UUID>(10);
         for (int i = 0; i < 10; i++) {

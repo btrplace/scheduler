@@ -19,6 +19,8 @@
 package btrplace.model.constraint;
 
 import btrplace.model.*;
+import btrplace.model.view.DefaultShareableResource;
+import btrplace.model.view.ShareableResource;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Allocate;

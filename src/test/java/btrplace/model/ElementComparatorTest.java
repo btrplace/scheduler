@@ -18,6 +18,7 @@
 
 package btrplace.model;
 
+import btrplace.model.view.DefaultShareableResource;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

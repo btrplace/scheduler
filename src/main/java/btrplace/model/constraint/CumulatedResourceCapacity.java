@@ -20,7 +20,7 @@ package btrplace.model.constraint;
 
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.ShareableResource;
+import btrplace.model.view.ShareableResource;
 
 import java.util.Collections;
 import java.util.Set;

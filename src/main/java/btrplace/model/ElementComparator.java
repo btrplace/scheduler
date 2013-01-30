@@ -18,6 +18,8 @@
 
 package btrplace.model;
 
+import btrplace.model.view.ShareableResource;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;

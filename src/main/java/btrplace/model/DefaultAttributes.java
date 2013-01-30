@@ -54,10 +54,7 @@ public class DefaultAttributes implements Attributes, Cloneable {
     @Override
     public boolean isSet(UUID e, String k) {
         Map<String, Object> m = attrs.get(e);
-        if (m == null) {
-            return false;
-        }
-        return m.containsKey(k);
+        return m != null && m.containsKey(k);
     }
 
     @Override

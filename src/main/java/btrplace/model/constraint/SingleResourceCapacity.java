@@ -21,7 +21,7 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.ShareableResource;
+import btrplace.model.view.ShareableResource;
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
 
