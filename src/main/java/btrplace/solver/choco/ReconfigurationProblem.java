@@ -265,6 +265,14 @@ public interface ReconfigurationProblem {
     ChocoModelView getView(String id);
 
     /**
+     * Get the view mapper that is used to associate
+     * {@link btrplace.model.ModelView} to {@link ChocoModelView}.
+     *
+     * @return the mapper
+     */
+    ModelViewMapper getViewMapper();
+
+    /**
      * Get all the declared views.
      *
      * @return a collection of views, may be empty

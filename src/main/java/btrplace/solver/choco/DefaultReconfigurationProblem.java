@@ -21,7 +21,6 @@ package btrplace.solver.choco;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.ModelView;
-import btrplace.model.view.ShareableResource;
 import btrplace.plan.Action;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
@@ -153,7 +152,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         fillElements();
 
-        makeCardinalities();
+        makeCardinalyVariables();
 
         makeNodeActionModels();
         makeVMActionModels();
@@ -326,7 +325,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     /**
-     * Create the {@link btrplace.solver.choco.view.CShareableResource} from the {@link ShareableResource}.
+     * Create the {@link ChocoModelView} for each of the {@link ModelView}.
      *
      * @throws SolverException if an error occurred
      */
@@ -334,8 +333,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         views = new HashMap<String, ChocoModelView>(model.getViews().size());
         for (ModelView rc : model.getViews()) {
             ChocoModelView vv = viewMapper.map(this, rc);
-            if (views.put(vv.getIdentifier(), vv) != null) {
-                throw new SolverException(model, "Cannot store the implementation for view '" + vv.getIdentifier() + "'. The identifier is already used");
+            ChocoModelView in = views.put(vv.getIdentifier(), vv);
+            if (in != null) {
+                throw new SolverException(model, "Cannot use the implementation '" + vv.getIdentifier() +
+                        "' implementation for '" + rc.getIdentifier() + "'."
+                        + "The '" + in.getIdentifier() + "' implementation is already used");
             }
             if (vv instanceof CShareableResource) {
                 resources.add((CShareableResource) vv);
@@ -344,11 +346,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     /**
-     * Create the cardinalities variables.
+     * Create the cardinality variables.
      *
      * @throws SolverException if an error occurred
      */
-    private void makeCardinalities() throws SolverException {
+    private void makeCardinalyVariables() throws SolverException {
         vmsCountOnNodes = new IntDomainVar[nodes.length];
         int nbVMs = vms.length;
         for (int i = 0; i < vmsCountOnNodes.length; i++) {
@@ -715,5 +717,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     public NodeActionModel getNodeAction(UUID id) {
         int idx = getNode(id);
         return idx < 0 ? null : nodeActions[idx];
+    }
+
+    @Override
+    public ModelViewMapper getViewMapper() {
+        return viewMapper;
     }
 }

@@ -55,6 +55,24 @@ public class DefaultReconfigurationProblemTest {
     private static UUID vm6 = UUID.randomUUID();
     private static UUID vm7 = UUID.randomUUID();
 
+    public class MockCViewModel implements ChocoModelView {
+        @Override
+        public String getIdentifier() {
+            return "cmock";
+        }
+    }
+
+    public class MockView implements ModelView {
+        @Override
+        public String getIdentifier() {
+            return "mock";
+        }
+
+        @Override
+        public ModelView clone() {
+            throw new UnsupportedOperationException();
+        }
+    }
 
     private static Model defaultModel() {
         Mapping map = new DefaultMapping();
@@ -93,6 +111,7 @@ public class DefaultReconfigurationProblemTest {
                 .setDurationEvaluatators(dEval).build();
 
         Assert.assertEquals(dEval, rp.getDurationEvaluators());
+        Assert.assertNotNull(rp.getViewMapper());
         Assert.assertEquals(rp.getFutureReadyVMs(), toWait);
         Assert.assertEquals(rp.getFutureRunningVMs(), toRun);
         Assert.assertEquals(rp.getFutureSleepingVMs(), Collections.singleton(vm3));
@@ -310,6 +329,33 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertNull(rp.getView("bar"));
         Assert.assertEquals("cpu", rcm.getResourceIdentifier());
         Assert.assertEquals(rc, rcm.getSourceResource());
+    }
+
+    public void testViewMapping() throws SolverException {
+        Model m = defaultModel();
+
+        ModelViewMapper mapper = new ModelViewMapper();
+        mapper.register(new ChocoModelViewBuilder() {
+            @Override
+            public Class<? extends ModelView> getKey() {
+                return MockView.class;
+            }
+
+            @Override
+            public ChocoModelView build(ReconfigurationProblem rp, ModelView v) throws SolverException {
+                return new MockCViewModel();
+            }
+        });
+
+        MockView v = new MockView();
+        m.attach(v);
+
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(m)
+                .setViewMapper(mapper)
+                .build();
+
+        Assert.assertNotNull(rp.getView("cmock"));
+        Assert.assertTrue(rp.getView("cmock") instanceof MockCViewModel);
     }
 
     /**

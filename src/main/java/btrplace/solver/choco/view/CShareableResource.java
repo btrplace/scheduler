@@ -218,6 +218,11 @@ public class CShareableResource implements ChocoModelView {
         return id;
     }
 
+    @Override
+    public String toString() {
+        return id;
+    }
+
     /**
      * Builder associated to the constraint.
      */

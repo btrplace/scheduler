@@ -22,16 +22,15 @@ import btrplace.model.ModelView;
 import btrplace.solver.SolverException;
 
 /**
- * Created with IntelliJ IDEA.
- * User: fhermeni
- * Date: 30/01/13
- * Time: 10:12
- * To change this template use File | Settings | File Templates.
+ * The builder that is used by {@link ChocoModelViewBuilder} to create
+ * the solver-side views.
+ *
+ * @author Fabien Hermenier
  */
 public interface ChocoModelViewBuilder {
 
     /**
-     * Get the class of the SatConstraint associated to the builder.
+     * Get the class of the {@link ModelView} that is handled by this builder.
      *
      * @return a Class derived from {@link btrplace.model.ModelView}
      */
