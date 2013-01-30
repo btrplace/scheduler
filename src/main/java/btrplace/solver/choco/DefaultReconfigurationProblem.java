@@ -257,7 +257,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * Launch the solver with a known ObjectiveAlterer.
      * Each time a solution has been computed, the alterer is called to set a new bound for the objective
      *
-     * @return {@code true} iff the injection was successful.
+     * @throws SolverException if an error occurred while trying to use the alterer
      */
     private void launchWithAlterer() throws SolverException {
         BranchAndBound bb = (BranchAndBound) solver.getSearchStrategy();

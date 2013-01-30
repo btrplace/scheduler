@@ -58,10 +58,10 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm 
     boolean doOptimize();
 
     /**
-     * Set the timeout value in seconds.
+     * Set the timeout value for the solving process.
      * Use a negative number to remove any timeout.
      *
-     * @param t
+     * @param t the timeout value, in second.
      */
     void setTimeLimit(int t);
 

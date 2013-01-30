@@ -58,7 +58,6 @@ public class CSplit implements ChocoSatConstraint {
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
         List<List<IntDomainVar>> groups = new ArrayList<List<IntDomainVar>>();
         List<List<UUID>> vmGroups = new ArrayList<List<UUID>>();
-        Set<UUID> runnings = new HashSet<UUID>();
         for (Set<UUID> grp : cstr.getSets()) {
             List<IntDomainVar> l = new ArrayList<IntDomainVar>();
             List<UUID> vl = new ArrayList<UUID>();
@@ -66,7 +65,6 @@ public class CSplit implements ChocoSatConstraint {
                 if (rp.getFutureRunningVMs().contains(vm)) {
                     Slice s = rp.getVMAction(vm).getDSlice();
                     l.add(s.getHoster());
-                    runnings.add(vm);
                     vl.add(vm);
                 }
             }

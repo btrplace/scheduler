@@ -125,9 +125,11 @@ public class AliasedCumulativesBuilder {
     }
 
     /**
-     * Build the constraint.
-     *
-     * @return the resulting constraint
+     * Add a constraint for specific resources.
+     * @param capas the cumulated capacity
+     * @param cUse the usage of each of the c-slices
+     * @param dUse the usage of each of the d-slices
+     * @param alias the resources identifier that compose the alias
      */
     public void add(int capas, int[] cUse, IntDomainVar[] dUse, int[] alias) {
         capacities.add(capas);

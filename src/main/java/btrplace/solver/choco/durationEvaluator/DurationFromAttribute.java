@@ -94,7 +94,7 @@ public class DurationFromAttribute implements DurationEvaluator {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        b.append("d= attr[" + key + "]? attr[" + key + "]:" + parent.toString());
+        b.append("d= attr[").append(key).append("]? attr[").append(key).append("]:").append(parent);
         return b.toString();
     }
 
