@@ -89,7 +89,6 @@ public class CSplitTest extends ConstraintTestMaterial {
         Model mo = new DefaultModel(map);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-
         ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>singleton(s));
         Assert.assertNotNull(p);
         Assert.assertTrue(p.getSize() > 0);
@@ -109,13 +108,14 @@ public class CSplitTest extends ConstraintTestMaterial {
         Model mo = new DefaultModel(map);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-
+        cra.labelVariables(true);
         List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
         cstrs.add(s);
+        //What is running on n1 goes to n3, so VMs vm3, vm4, vm5 which does not belong to vm1, vm2 must
+        //go away before the other arrive.
         cstrs.add(new Fence(map.getRunningVMs(n1), Collections.singleton(n3)));
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
         Assert.assertTrue(p.getSize() > 0);
-        System.out.println(p);
     }
 }

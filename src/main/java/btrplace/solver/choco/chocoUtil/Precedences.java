@@ -59,6 +59,15 @@ public class Precedences extends AbstractLargeIntSConstraint {
 
     private IEnvironment env;
 
+    /**
+     * Make a new constraint.
+     *
+     * @param e          the environment.
+     * @param h          the task host
+     * @param st         the moment the task arrives on resources h
+     * @param othersHost the host of all the other tasks
+     * @param othersEnd  the moment each of the other tasks leave their resource
+     */
     public Precedences(IEnvironment e, IntDomainVar h, IntDomainVar st, int[] othersHost, IntDomainVar[] othersEnd) {
         super(ArrayUtils.append(new IntDomainVar[]{h, st}, othersEnd));
         this.host = h;
@@ -87,9 +96,12 @@ public class Precedences extends AbstractLargeIntSConstraint {
             int p = othersHost[i];
             int lb = othersEnd[i].getInf();
             int ub = othersEnd[i].getSup();
-            horizonLB[p].set(Math.max(lb, horizonLB[p].get()));
-            horizonUB[p].set(Math.max(ub, horizonUB[p].get()));
-            l[p].add(i);
+            if (p < horizonUB.length) {
+                //The other is on a possible host
+                horizonLB[p].set(Math.max(lb, horizonLB[p].get()));
+                horizonUB[p].set(Math.max(ub, horizonUB[p].get()));
+                l[p].add(i);
+            }
         }
         for (int i = 0; i < l.length; i++) {
             endsByHost[i] = l[i].toNativeArray();
@@ -166,16 +178,17 @@ public class Precedences extends AbstractLargeIntSConstraint {
 
     private void recomputeHorizonForHost(int h) {
         //ChocoLogging.getBranchingLogger().finest("recomputeHorizonForHost(" + h + ")");
-        int lb = 0, ub = 0;
-        for (int id : endsByHost[h]) {
-            IntDomainVar end = othersEnd[id];
-            //ChocoLogging.getBranchingLogger().finest("\t check " + end.pretty());
-            lb = Math.max(end.getInf(), lb);
-            ub = Math.max(end.getSup(), ub);
+        if (h < horizonUB.length) {
+            int lb = 0, ub = 0;
+            for (int id : endsByHost[h]) {
+                IntDomainVar end = othersEnd[id];
+                //ChocoLogging.getBranchingLogger().finest("\t check " + end.pretty());
+                lb = Math.max(end.getInf(), lb);
+                ub = Math.max(end.getSup(), ub);
+            }
+            horizonLB[h].set(lb);
+            horizonUB[h].set(ub);
         }
-        horizonLB[h].set(lb);
-        horizonUB[h].set(ub);
-
     }
 
     @Override
@@ -255,10 +268,11 @@ public class Precedences extends AbstractLargeIntSConstraint {
         for (int i = 0; i < othersEnd.length; i++) {
             IntDomainVar end = othersEnd[i];
             int h = othersHost[i];
-            if (end.getInf() > lbs[h]) {
+            //beware of h that can be out of the domain of the watched horizons
+            if (h < lbs.length && end.getInf() > lbs[h]) {
                 lbs[h] = end.getInf();
             }
-            if (end.getSup() > ubs[h]) {
+            if (h < ubs.length && end.getSup() > ubs[h]) {
                 ubs[h] = end.getSup();
             }
         }

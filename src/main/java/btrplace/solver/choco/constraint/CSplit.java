@@ -23,11 +23,9 @@ import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Split;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoSatConstraint;
-import btrplace.solver.choco.ChocoSatConstraintBuilder;
-import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.Slice;
+import btrplace.solver.choco.*;
 import btrplace.solver.choco.chocoUtil.Disjoint;
+import btrplace.solver.choco.chocoUtil.Precedences;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntArrayList;
@@ -100,32 +98,53 @@ public class CSplit implements ChocoSatConstraint {
                 return false;
             } else {
                 Mapping map = rp.getSourceModel().getMapping();
-                //For each group, we create a list of int denoting the position of the VMs
-                //in the other groups
-                List<TIntArrayList> otherPositions = new ArrayList<TIntArrayList>();
-                List<List<IntDomainVar>> otherEnds = new ArrayList<List<IntDomainVar>>();
+                //Each VM on a group, can not go to a node until all the VMs from the other groups have leaved
+                //So, for each group of VM, we create a list containing the c^end and the c^host variable of all
+                //the VMs in the other groups
+
+                TIntArrayList[] otherPositions = new TIntArrayList[vmGroups.size()];
+                List<IntDomainVar>[] otherEnds = new List[vmGroups.size()];
                 for (int i = 0; i < vmGroups.size(); i++) {
-                    otherPositions.add(new TIntArrayList());
-                    otherEnds.add(new ArrayList<IntDomainVar>());
+                    otherPositions[i] = new TIntArrayList();
+                    otherEnds[i] = new ArrayList<IntDomainVar>();
                 }
 
+                //Fullfil the others stuff.
                 for (int i = 0; i < vmGroups.size(); i++) {
                     List<UUID> grp = vmGroups.get(i);
                     for (UUID vm : grp) {
                         if (map.getRunningVMs().contains(vm)) {
-                            int pos = rp.getNode(map.getVMLocation(vm));
+                            int myPos = rp.getNode(map.getVMLocation(vm));
+                            IntDomainVar myEnd = rp.getVMAction(vm).getCSlice().getEnd();
+
                             for (int j = 0; j < vmGroups.size(); j++) {
                                 if (i != j) {
-                                    otherPositions.get(j).add(pos);
-                                    otherEnds.get(j).add(rp.getVMAction(vm).getCSlice().getEnd());
+                                    otherPositions[j].add(myPos);
+                                    otherEnds[j].add(myEnd);
                                 }
                             }
                         }
                     }
                 }
+                int[][] otherPos = new int[groups.size()][];
+                IntDomainVar[][] otherEds = new IntDomainVar[groups.size()][];
+                for (int i = 0; i < vmGroups.size(); i++) {
+                    otherPos[i] = otherPositions[i].toNativeArray();
+                    otherEds[i] = otherEnds[i].toArray(new IntDomainVar[otherEnds[i].size()]);
+                }
 
-                rp.getLogger().error("Continuous restriction is not supported for constraint split");
-                return false;
+                //Now, we just have to put way too many precedences constraint, one per VM.
+                for (int i = 0; i < vmGroups.size(); i++) {
+                    List<UUID> grp = vmGroups.get(i);
+                    for (UUID vm : grp) {
+                        if (rp.getFutureRunningVMs().contains(vm)) {
+                            VMActionModel a = rp.getVMAction(vm);
+                            IntDomainVar myPos = a.getDSlice().getHoster();
+                            IntDomainVar myStart = a.getDSlice().getStart();
+                            s.post(new Precedences(s.getEnvironment(), myPos, myStart, otherPos[i], otherEds[i]));
+                        }
+                    }
+                }
             }
         }
         return true;
