@@ -18,7 +18,7 @@
 
 package btrplace.solver.choco;
 
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.variables.Var;
 
 /**
  * A class to provide a method to customize the optimisation process of the solver.
@@ -27,27 +27,15 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * <p/>
  * As the solver will not longer try all the possible values, the completeness of
  * the resolution process is no longer guarantee and may remove some (possibly good) solutions.
- * <p/>
- * The alterer supposes the objective variable is an integer.
  *
  * @author Fabien Hermenier
  */
 public abstract class ObjectiveAlterer {
 
     /**
-     * The initial lower bound for the objective variable.
-     */
-    protected int lowerBound;
-
-    /**
-     * The initial upper bound for the objective variable.
-     */
-    protected int upperBound;
-
-    /**
      * The objective variable.
      */
-    protected IntDomainVar obj;
+    protected Var obj;
 
     /**
      * The reconfiguration problem to consider.
@@ -62,9 +50,7 @@ public abstract class ObjectiveAlterer {
      */
     public ObjectiveAlterer(ReconfigurationProblem rp) {
         this.rp = rp;
-        obj = (IntDomainVar) rp.getSolver().getObjective();
-        lowerBound = obj.getInf();
-        upperBound = obj.getSup();
+        obj = rp.getSolver().getObjective();
     }
 
     /**
