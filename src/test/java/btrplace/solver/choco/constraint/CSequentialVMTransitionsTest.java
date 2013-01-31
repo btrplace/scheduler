@@ -73,6 +73,6 @@ public class CSequentialVMTransitionsTest extends ConstraintTestMaterial {
         cstrs.add(new SequentialVMTransitions(seq));
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
         Assert.assertNotNull(plan);
-        System.out.println(plan);
+        //System.out.println(plan);
     }
 }

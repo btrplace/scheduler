@@ -93,7 +93,7 @@ public class CCumulatedResourceCapacityTest extends ConstraintTestMaterial {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
-        System.out.println(plan);
+        //System.out.println(plan);
         Assert.assertTrue(plan.getSize() > 0);
     }
 
@@ -125,7 +125,7 @@ public class CCumulatedResourceCapacityTest extends ConstraintTestMaterial {
         cra.labelVariables(true);
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
-        System.out.println(plan);
+        //System.out.println(plan);
         Assert.assertTrue(plan.getSize() > 0);
     }
 

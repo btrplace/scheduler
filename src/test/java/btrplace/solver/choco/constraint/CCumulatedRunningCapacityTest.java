@@ -76,7 +76,7 @@ public class CCumulatedRunningCapacityTest extends ConstraintTestMaterial {
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
-        System.out.println(plan);
+        //System.out.println(plan);
         Assert.assertEquals(plan.getSize(), 1);
     }
 
@@ -88,7 +88,6 @@ public class CCumulatedRunningCapacityTest extends ConstraintTestMaterial {
                 .run(n2, vm3, vm4).ready(vm5).get();
         Set<UUID> on = new HashSet<UUID>(Arrays.asList(n1, n2));
         Model mo = new DefaultModel(map);
-        System.out.println(mo.getMapping());
         List<SatConstraint> l = new ArrayList<SatConstraint>();
         l.add(new Running(Collections.singleton(vm5)));
         l.add(new Fence(Collections.singleton(vm5), Collections.singleton(n1)));
@@ -103,7 +102,7 @@ public class CCumulatedRunningCapacityTest extends ConstraintTestMaterial {
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
-        System.out.println(plan);
+        //System.out.println(plan);
         Assert.assertEquals(plan.getSize(), 2);
     }
 

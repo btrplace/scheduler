@@ -54,6 +54,7 @@ public class BootVMModelTest {
         Mapping map = new DefaultMapping();
         UUID n1 = UUID.randomUUID();
         UUID n2 = UUID.randomUUID();
+
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         UUID vm = UUID.randomUUID();

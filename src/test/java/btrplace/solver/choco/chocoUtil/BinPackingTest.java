@@ -118,9 +118,9 @@ public class BinPackingTest {
 
     @Test(sequential = true)
     public void testLoadSup() {
-        modelPack(5, 5, 5, 2);
+        modelPack(3, 5, 3, 2);
         s.addGoal(BranchingFactory.minDomMinVal(s, bins));
-        testPack(2220);
+        testPack(24);
     }
 
     @Test(sequential = true)

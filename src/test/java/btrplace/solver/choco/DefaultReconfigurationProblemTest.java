@@ -112,6 +112,7 @@ public class DefaultReconfigurationProblemTest {
 
         Assert.assertEquals(dEval, rp.getDurationEvaluators());
         Assert.assertNotNull(rp.getViewMapper());
+        Assert.assertNull(rp.getObjectiveAlterer());
         Assert.assertEquals(rp.getFutureReadyVMs(), toWait);
         Assert.assertEquals(rp.getFutureRunningVMs(), toRun);
         Assert.assertEquals(rp.getFutureSleepingVMs(), Collections.singleton(vm3));
@@ -355,6 +356,7 @@ public class DefaultReconfigurationProblemTest {
                 .setViewMapper(mapper)
                 .build();
 
+        Assert.assertEquals(rp.getViews().size(), 1);
         Assert.assertNotNull(rp.getView("cmock"));
         Assert.assertTrue(rp.getView("cmock") instanceof MockCViewModel);
     }
@@ -553,6 +555,7 @@ public class DefaultReconfigurationProblemTest {
         };
 
         rp.setObjectiveAlterer(alt);
+        Assert.assertEquals(rp.getObjectiveAlterer(), alt);
         ReconfigurationPlan plan = rp.solve(0, true);
         Assert.assertNotNull(plan);
         Assert.assertEquals(s.getNbSolutions(), 4);

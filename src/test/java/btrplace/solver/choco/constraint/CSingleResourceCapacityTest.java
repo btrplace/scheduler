@@ -85,7 +85,7 @@ public class CSingleResourceCapacityTest extends ConstraintTestMaterial {
         ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>singleton(s));
         Assert.assertNotNull(p);
         Assert.assertEquals(p.getSize(), 1);
-        System.out.println(p);
+        //System.out.println(p);
     }
 
     @Test
@@ -136,7 +136,7 @@ public class CSingleResourceCapacityTest extends ConstraintTestMaterial {
         cra.labelVariables(true);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
-        System.out.println(p);
+        //System.out.println(p);
         Assert.assertEquals(p.getSize(), 2);
 
     }

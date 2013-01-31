@@ -74,12 +74,16 @@ public class CShareableResourceTest {
         Assert.assertTrue(pn1.getInf() == 0 && pn1.getSup() == 4);
         Assert.assertTrue(pn2.getInf() == 0 && pn2.getSup() == 0);
 
+        pn1 = rcm.getPhysicalUsage(rp.getNode(n1));
+        Assert.assertTrue(pn1.getInf() == 0 && pn1.getSup() == 4);
+
         IntDomainVar vn1 = rcm.getVirtualUsage()[rp.getNode(n1)];
         IntDomainVar vn2 = rcm.getVirtualUsage()[rp.getNode(n2)];
         Assert.assertEquals(vn1.getInf(), 0);
         Assert.assertEquals(vn2.getInf(), 0);
 
         Assert.assertEquals(rc, rcm.getSourceResource());
+
     }
 
     /**
@@ -104,7 +108,7 @@ public class CShareableResourceTest {
         rc.set(n2, 2);
         Model mo = new DefaultModel(ma);
         mo.attach(rc);
-        //new Running(ma.getAllVMs())
+
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
         VMActionModel avm1 = rp.getVMActions()[rp.getVM(vm)];
         VMActionModel avm2 = rp.getVMActions()[rp.getVM(vm2)];
@@ -117,8 +121,10 @@ public class CShareableResourceTest {
         Assert.assertEquals(rp.getSolver().solve(), Boolean.TRUE);
         Assert.assertEquals(rcm.getVirtualUsage()[0].getInf(), 2);
         Assert.assertEquals(rcm.getVirtualUsage()[0].getSup(), 2);
+        Assert.assertEquals(rcm.getVirtualUsage(0).getInf(), 2);
+        Assert.assertEquals(rcm.getVirtualUsage(0).getSup(), 2);
+
         Assert.assertEquals(rcm.getVirtualUsage()[1].getInf(), 3);
         Assert.assertEquals(rcm.getVirtualUsage()[1].getSup(), 3);
     }
-
 }

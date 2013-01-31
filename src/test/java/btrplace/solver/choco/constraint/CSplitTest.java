@@ -92,7 +92,7 @@ public class CSplitTest extends ConstraintTestMaterial {
         ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>singleton(s));
         Assert.assertNotNull(p);
         Assert.assertTrue(p.getSize() > 0);
-        System.out.println(p);
+        //System.out.println(p);
     }
 
     @Test
