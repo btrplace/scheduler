@@ -37,8 +37,6 @@ import java.util.UUID;
 
 /**
  * Choco implementation of the {@link btrplace.model.constraint.SplitAmong} constraint.
- * <p/>
- * TODO: continuous implementation
  *
  * @author Fabien Hermenier
  */
@@ -58,6 +56,11 @@ public class CSplitAmong implements ChocoSatConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
 
+        if (cstr.isContinuous() && cstr.isSatisfied(rp.getSourceModel()) != SatConstraint.Sat.SATISFIED) {
+            rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
+            return false;
+        }
+
         Set<Set<UUID>> vGrps = cstr.getGroupsOfVMs();
         Set<Set<UUID>> pGrps = cstr.getGroupsOfNodes();
         CPSolver s = rp.getSolver();
@@ -69,6 +72,9 @@ public class CSplitAmong implements ChocoSatConstraint {
         for (Set<UUID> vms : vGrps) {
 
             Among a = new Among(vms, pGrps);
+            //If the constraint is continuous, there is no way a group of VMs already binded to a group of
+            //nodes can move to another group. It also means the group of VMs will never overlap
+            a.setContinuous(cstr.isContinuous());
             CAmong ca = new CAmong(a);
             if (!ca.inject(rp)) {
                 return false;

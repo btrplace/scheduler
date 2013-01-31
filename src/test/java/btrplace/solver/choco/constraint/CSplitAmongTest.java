@@ -22,6 +22,7 @@ import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.SplitAmong;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
@@ -111,7 +112,7 @@ public class CSplitAmongTest extends ConstraintTestMaterial {
         SplitAmong s = new SplitAmong(vgs, pgs);
         s.setContinuous(false);
 
-        //vg1 and vg2 overlap on n1. The two groups are mis-placed
+        //vg1 and vg2 overlap on n2. The two groups are mis-placed
         map.addRunningVM(vm6, n2);
 
         Model mo = new DefaultModel(map);
@@ -122,8 +123,113 @@ public class CSplitAmongTest extends ConstraintTestMaterial {
     }
 
     @Test
-    public void testContinuous() {
-        Assert.fail();
+    public void testContinuousWithAllDiffViolated() throws SolverException {
+        Mapping map = new MappingBuilder().on(n1, n2, n3, n4, n5)
+                .run(n1, vm1, vm3)
+                .run(n2, vm2)
+                .run(n3, vm4, vm6)
+                .run(n4, vm5)
+                .run(n5, vm7).get();
+
+        //Isolated VM not considered by the constraint
+        map.addRunningVM(vm8, n1);
+
+        Set<UUID> vg1 = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
+        Set<UUID> vg2 = new HashSet<UUID>(Arrays.asList(vm4, vm5, vm6));
+        Set<UUID> vg3 = new HashSet<UUID>(Arrays.asList(vm7));
+
+        Set<UUID> pg1 = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> pg2 = new HashSet<UUID>(Arrays.asList(n3, n4));
+        Set<UUID> pg3 = new HashSet<UUID>(Arrays.asList(n5));
+        Set<Set<UUID>> vgs = new HashSet<Set<UUID>>(Arrays.asList(vg1, vg2, vg3));
+        Set<Set<UUID>> pgs = new HashSet<Set<UUID>>(Arrays.asList(pg1, pg2, pg3));
+
+        SplitAmong s = new SplitAmong(vgs, pgs);
+        s.setContinuous(true);
+
+        //vg1 and vg2 overlap on n2.
+        map.addRunningVM(vm6, n2);
+
+        Model mo = new DefaultModel(map);
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        Assert.assertNull(cra.solve(mo, Collections.<SatConstraint>singleton(s)));
+    }
+
+    @Test
+    public void testContinuousWithGroupChange() throws SolverException {
+        Mapping map = new MappingBuilder().on(n1, n2, n3, n4, n5)
+                .run(n1, vm1, vm3)
+                .run(n2, vm2)
+                .run(n3, vm4, vm6)
+                .run(n4, vm5)
+                .run(n5, vm7).get();
+
+        //Isolated VM not considered by the constraint
+        map.addRunningVM(vm8, n1);
+
+        Set<UUID> vg1 = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
+        Set<UUID> vg2 = new HashSet<UUID>(Arrays.asList(vm4, vm5, vm6));
+
+        Set<UUID> pg1 = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> pg2 = new HashSet<UUID>(Arrays.asList(n3, n4));
+        Set<UUID> pg3 = new HashSet<UUID>(Arrays.asList(n5));
+        Set<Set<UUID>> vgs = new HashSet<Set<UUID>>(Arrays.asList(vg1, vg2));
+        Set<Set<UUID>> pgs = new HashSet<Set<UUID>>(Arrays.asList(pg1, pg2, pg3));
+
+        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        SplitAmong s = new SplitAmong(vgs, pgs);
+        s.setContinuous(true);
+
+        //Move group of VMs 1 to the group of nodes 2. Cannot work as
+        //the among part of the constraint will be violated
+        Fence f = new Fence(vg1, pg2);
+
+        Model mo = new DefaultModel(map);
+
+        cstrs.add(s);
+        cstrs.add(f);
+
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        Assert.assertNull(cra.solve(mo, cstrs));
+    }
+
+    @Test
+    public void testDiscreteWithGroupChange() throws SolverException {
+        Mapping map = new MappingBuilder().on(n1, n2, n3, n4, n5)
+                .run(n1, vm1, vm3)
+                .run(n2, vm2)
+                .run(n3, vm4, vm6)
+                .run(n4, vm5)
+                .run(n5, vm7).get();
+
+        //Isolated VM not considered by the constraint
+        map.addRunningVM(vm8, n1);
+
+        Set<UUID> vg1 = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
+        Set<UUID> vg2 = new HashSet<UUID>(Arrays.asList(vm4, vm5, vm6));
+
+        Set<UUID> pg1 = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> pg2 = new HashSet<UUID>(Arrays.asList(n3, n4));
+        Set<UUID> pg3 = new HashSet<UUID>(Arrays.asList(n5));
+        Set<Set<UUID>> vgs = new HashSet<Set<UUID>>(Arrays.asList(vg1, vg2));
+        Set<Set<UUID>> pgs = new HashSet<Set<UUID>>(Arrays.asList(pg1, pg2, pg3));
+
+        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        SplitAmong s = new SplitAmong(vgs, pgs);
+        s.setContinuous(false);
+
+        //Move group of VMs 1 to the group of nodes 2. This is allowed
+        //group of VMs 2 will move to another group of node so at the end, the constraint should be satisfied
+        Fence f = new Fence(vg1, pg2);
+
+        Model mo = new DefaultModel(map);
+
+        cstrs.add(s);
+        cstrs.add(f);
+
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ReconfigurationPlan plan = cra.solve(mo, cstrs);
+        Assert.assertNotNull(plan);
     }
 
 }
