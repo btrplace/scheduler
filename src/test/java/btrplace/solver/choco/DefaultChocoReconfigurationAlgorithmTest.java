@@ -59,6 +59,11 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         cra.labelVariables(true);
         Assert.assertEquals(cra.areVariablesLabelled(), true);
 
+        Assert.assertNotNull(cra.getViewMapper());
+        ModelViewMapper m = new ModelViewMapper();
+        cra.setViewMapper(m);
+        Assert.assertEquals(cra.getViewMapper(), m);
+
         ReconfigurationObjective obj = new ReconfigurationObjective() {
             @Override
             public void inject(ReconfigurationProblem rp) throws SolverException {

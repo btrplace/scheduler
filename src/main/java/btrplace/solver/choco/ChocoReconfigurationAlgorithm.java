@@ -58,6 +58,22 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm 
     boolean doOptimize();
 
     /**
+     * Get the mapper that is used to associate the {@link btrplace.model.ModelView}
+     * to the {@link ChocoModelView}.
+     *
+     * @return the mapper
+     */
+    ModelViewMapper getViewMapper();
+
+    /**
+     * Set the mapper to use to associate the {@link btrplace.model.ModelView}
+     * to the {@link ChocoModelView}.
+     *
+     * @param m the mapper to use
+     */
+    void setViewMapper(ModelViewMapper m);
+
+    /**
      * Set the timeout value for the solving process.
      * Use a negative number to remove any timeout.
      *

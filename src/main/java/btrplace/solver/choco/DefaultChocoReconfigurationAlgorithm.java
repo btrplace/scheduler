@@ -41,6 +41,8 @@ import java.util.*;
  */
 public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfigurationAlgorithm {
 
+    private ModelViewMapper viewMapper;
+
     private SatConstraintMapper cstrMapper;
 
     private boolean optimize = false;
@@ -69,6 +71,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
         cstrMapper = new SatConstraintMapper();
         durationEvaluators = new DurationEvaluators();
+        viewMapper = new ModelViewMapper();
 
         //Default objective
         obj = new MinMTTR();
@@ -153,6 +156,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         //Make the core-RP
         DefaultReconfigurationProblemBuilder rpb = new DefaultReconfigurationProblemBuilder(i)
                 .setNextVMsStates(toForge, toRun, toSleep, toKill)
+                .setViewMapper(viewMapper)
                 .setDurationEvaluatators(durationEvaluators);
         if (repair) {
             Set<UUID> toManage = new HashSet<UUID>();
@@ -270,5 +274,15 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     @Override
     public int getMaxEnd() {
         return this.maxEnd;
+    }
+
+    @Override
+    public ModelViewMapper getViewMapper() {
+        return viewMapper;
+    }
+
+    @Override
+    public void setViewMapper(ModelViewMapper m) {
+        viewMapper = m;
     }
 }
