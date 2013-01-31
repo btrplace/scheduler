@@ -333,6 +333,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         views = new HashMap<String, ChocoModelView>(model.getViews().size());
         for (ModelView rc : model.getViews()) {
             ChocoModelView vv = viewMapper.map(this, rc);
+            if (vv == null) {
+                throw new SolverException(model, "No implementation available for the view '" + rc.getIdentifier() + "'");
+            }
             ChocoModelView in = views.put(vv.getIdentifier(), vv);
             if (in != null) {
                 throw new SolverException(model, "Cannot use the implementation '" + vv.getIdentifier() +

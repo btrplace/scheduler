@@ -88,12 +88,13 @@ public class ModelViewMapper {
      *
      * @param rp the problem to customize
      * @param v  the view to map
+     * @return the solver-side view if a mapping was possible, or {@code null} if no mapping was possible.
      * @throws SolverException if en error occurred while creating the view implementation
      */
     public ChocoModelView map(ReconfigurationProblem rp, ModelView v) throws SolverException {
         ChocoModelViewBuilder b = builders.get(v.getClass());
         if (b == null) {
-            throw new SolverException(rp.getSourceModel(), "Unable to get a implementation for the view '" + v.getClass().getName() + "'");
+            return null;
         }
         return b.build(rp, v);
     }

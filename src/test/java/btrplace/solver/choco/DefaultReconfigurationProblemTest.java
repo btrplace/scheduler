@@ -331,6 +331,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertEquals(rc, rcm.getSourceResource());
     }
 
+    @Test
     public void testViewMapping() throws SolverException {
         Model m = defaultModel();
 
@@ -356,6 +357,16 @@ public class DefaultReconfigurationProblemTest {
 
         Assert.assertNotNull(rp.getView("cmock"));
         Assert.assertTrue(rp.getView("cmock") instanceof MockCViewModel);
+    }
+
+    @Test(expectedExceptions = {SolverException.class})
+    public void testNoViewImplementation() throws SolverException {
+        Model m = defaultModel();
+
+        MockView v = new MockView();
+        m.attach(v);
+
+        new DefaultReconfigurationProblemBuilder(m).build();
     }
 
     /**
