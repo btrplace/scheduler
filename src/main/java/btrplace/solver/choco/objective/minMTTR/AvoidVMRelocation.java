@@ -152,7 +152,7 @@ public class AvoidVMRelocation implements ValSelector<IntDomainVar> {
     }
 
     private int random(IntDomainVar var) {
-        return 0;  //To change body of created methods use File | Settings | File Templates.
+        throw new UnsupportedOperationException();
     }
 
 

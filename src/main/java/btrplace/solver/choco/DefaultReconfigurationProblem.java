@@ -317,10 +317,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     /**
      * Create the cardinality variables.
-     *
-     * @throws SolverException if an error occurred
      */
-    private void makeCardinalyVariables() throws SolverException {
+    private void makeCardinalyVariables() {
         vmsCountOnNodes = new IntDomainVar[nodes.length];
         int nbVMs = vms.length;
         for (int i = 0; i < vmsCountOnNodes.length; i++) {
@@ -328,7 +326,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
     }
 
-    private void linkCardinatiesWithSlices() throws SolverException {
+    private void linkCardinatiesWithSlices() {
         IntDomainVar[] ds = SliceUtils.extractHosters(ActionModelUtils.getDSlices(vmActions));
         IntDomainVar[] usages = new IntDomainVar[ds.length];
         for (int i = 0; i < ds.length; i++) {
@@ -337,7 +335,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         solver.post(new BinPacking(solver.getEnvironment(), vmsCountOnNodes, usages, ds));
     }
 
-    private void fillElements() throws SolverException {
+    private void fillElements() {
 
         Set<UUID> allVMs = new HashSet<UUID>(model.getMapping().getAllVMs());
         allVMs.addAll(ready); //The only VMs that may not appear in the mapping

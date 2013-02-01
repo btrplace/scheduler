@@ -289,10 +289,7 @@ public class AliasedCumulativesFiltering {
     }
 
     private boolean associatedToDSliceOnCurrentNode(int cSlice) {
-        if (revAssociations[cSlice] != NO_ASSOCIATIONS && isIn(revAssociations[cSlice])) {
-            return true;
-        }
-        return false;
+        return revAssociations[cSlice] != NO_ASSOCIATIONS && isIn(revAssociations[cSlice]);
     }
 
     private boolean isIn(int idx) {
@@ -307,14 +304,8 @@ public class AliasedCumulativesFiltering {
     }
 
     private boolean associatedToCSliceOnCurrentNode(int dSlice) {
-        if (associations[dSlice] != NO_ASSOCIATIONS
-                && out.get(associations[dSlice])) {
-            /*if (debug) {
-                ChocoLogging.getBranchingLogger().finest(dStarts[dSlice].getName() + " with " + cEnds[associations[dSlice]]);
-            } */
-            return true;
-        }
-        return false;
+        return associations[dSlice] != NO_ASSOCIATIONS
+                && out.get(associations[dSlice]);
     }
 
     private String prettyProfile(int[] ascMoments, TIntIntHashMap prof) {
@@ -334,7 +325,7 @@ public class AliasedCumulativesFiltering {
         return b.toString();
     }
 
-    public boolean checkInvariant() throws ContradictionException {
+    public boolean checkInvariant() {
         for (int x = 0; x < sortedMinProfile.length; x++) {
             int t = sortedMinProfile[x];
             for (int i = 0; i < nbDims; i++) {

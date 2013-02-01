@@ -19,7 +19,6 @@
 package btrplace.solver.choco.actionModel;
 
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.VMActionModel;
@@ -44,9 +43,8 @@ public class StayAwayVMModel implements VMActionModel {
      *
      * @param rp the RP to use as a basis.
      * @param e  the VM managed by the action
-     * @throws SolverException if an error occurred
      */
-    public StayAwayVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
+    public StayAwayVMModel(ReconfigurationProblem rp, UUID e) {
         vm = e;
         zero = rp.getSolver().makeConstantIntVar(0);
     }

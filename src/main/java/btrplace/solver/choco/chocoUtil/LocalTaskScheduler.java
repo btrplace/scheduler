@@ -301,11 +301,7 @@ public class LocalTaskScheduler {
     }
 
     private boolean associatedToDSliceOnCurrentNode(int cSlice) {
-        if (revAssociations[cSlice] != NO_ASSOCIATIONS
-                && isIn(revAssociations[cSlice])) {
-            return true;
-        }
-        return false;
+        return revAssociations[cSlice] != NO_ASSOCIATIONS && isIn(revAssociations[cSlice]);
     }
 
     private boolean isIn(int idx) {
@@ -320,14 +316,7 @@ public class LocalTaskScheduler {
     }
 
     private boolean associatedToCSliceOnCurrentNode(int dSlice) {
-        if (associations[dSlice] != NO_ASSOCIATIONS
-                && out.get(associations[dSlice])) {
-            /*if (me == DEBUG || DEBUG == -2) {
-                ChocoLogging.getBranchingLogger().finest(me + " " + dStarts[dSlice].getName() + " with " + cEnds[associations[dSlice]]);
-            } */
-            return true;
-        }
-        return false;
+        return associations[dSlice] != NO_ASSOCIATIONS && out.get(associations[dSlice]);
     }
 
     private String prettyProfile(int[] ascMoments, TIntIntHashMap prof) {
@@ -347,7 +336,7 @@ public class LocalTaskScheduler {
         return b.toString();
     }
 
-    public boolean checkInvariant() throws ContradictionException {
+    public boolean checkInvariant() {
         for (int x = 0; x < sortedMinProfile.length; x++) {
             int t = sortedMinProfile[x];
             for (int i = 0; i < nbDims; i++) {
