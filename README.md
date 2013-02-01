@@ -16,20 +16,20 @@ The maven artifact is available through a private repository
 so you have first to edit your 'pom.xml' file to declare it:
 
 ```xml
-    <repositories>
-        <repository>
-            <id>btrp-releases</id>
-            <url>http://btrp.inria.fr:8080/repos/releases</url>
-        </repository>
-        <repository>
-            <id>btrp-snapshots</id>
-            <url>http://btrp.inria.fr:8080/repos/snapshot-releases</url>
-        </repository>
-    </repositories>
+<repositories>
+    <repository>
+        <id>btrp-releases</id>
+        <url>http://btrp.inria.fr:8080/repos/releases</url>
+    </repository>
+    <repository>
+        <id>btrp-snapshots</id>
+        <url>http://btrp.inria.fr:8080/repos/snapshot-releases</url>
+    </repository>
+</repositories>
 ```
 
 Next, just declare the dependency. Don't forget to specify the right version
-(here version 0.1 is for the example)
+(here version 0.1 is for the example):
 
 ```xml
 <dependency>
@@ -42,9 +42,7 @@ Next, just declare the dependency. Don't forget to specify the right version
 ## Documentation ##
 
 * Javadoc for the last snapshot version: http://btrp.inria.fr:8080/apidocs/snapshots/solver-api
-
 * Javadoc for the released versions: http://btrp.inria.fr:8080/apidocs/releases/btrplace/solver-api
-
 
 ## Building from sources ##
 
@@ -54,7 +52,6 @@ Requirements:
 
 The source of the released versions are directly available in the 'Tag' section.
 You can also download them using github features.
-
 Once downloaded, move to the source directory then execute the following command
 to make the jar:
 
