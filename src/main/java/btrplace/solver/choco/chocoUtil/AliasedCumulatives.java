@@ -211,14 +211,7 @@ public class AliasedCumulatives extends AbstractLargeIntSConstraint {
     @Override
     public boolean isConsistent() {
         resource.computeProfiles();
-        try {
-            if (!resource.checkInvariant()) {
-                return false;
-            }
-        } catch (ContradictionException e) {
-            return false;
-        }
-        return true;
+        return resource.checkInvariant();
     }
 
     @Override

@@ -29,8 +29,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Builder to create a unique slices scheduler that aggregates
- * different resources.
+ * Builder to create constraints where slices have to be placed on nodes
+ * with regards to the slice and the nodes capacity.
+ * <p/>
+ * It differs from {@link btrplace.solver.choco.SliceSchedulerBuilder} as
+ * a resource may in fact be an alias to another one. This allows
+ * to create a fake resource that aggregate the capacity of each of
+ * the aliased resources.
  *
  * @author Fabien Hermenier
  */
@@ -125,11 +130,12 @@ public class AliasedCumulativesBuilder {
     }
 
     /**
-     * Add a constraint for specific resources.
-     * @param capas the cumulated capacity
-     * @param cUse the usage of each of the c-slices
-     * @param dUse the usage of each of the d-slices
-     * @param alias the resources identifier that compose the alias
+     * Add a constraint
+     *
+     * @param capas the cumulated capacity of the aliased resources
+     * @param cUse  the usage of each of the c-slices
+     * @param dUse  the usage of each of the d-slices
+     * @param alias the resource identifiers that compose the alias
      */
     public void add(int capas, int[] cUse, IntDomainVar[] dUse, int[] alias) {
         capacities.add(capas);
@@ -138,6 +144,11 @@ public class AliasedCumulativesBuilder {
         aliases.add(alias);
     }
 
+    /**
+     * Get the generated constraints.
+     *
+     * @return a list of constraint that may be empty.
+     */
     public List<AliasedCumulatives> getConstraints() {
         CPSolver s = rp.getSolver();
         List<AliasedCumulatives> cstrs = new ArrayList<AliasedCumulatives>();
@@ -151,16 +162,6 @@ public class AliasedCumulativesBuilder {
             for (IntDomainVar dUseDim : dUsages.get(i)) {
                 dUses[i++] = dUseDim.getInf();
             }
-
-            /*System.out.println(Arrays.toString(alias) +
-                              " " + capa +
-                              " " + Arrays.toString(cHosters) +
-                              " " + Arrays.toString(cUse) +
-                              " " + Arrays.toString(cEnds) +
-                              " " + Arrays.toString(dHosters) +
-                              " " + Arrays.toString(dUses) +
-                              " " + Arrays.toString(dStarts) +
-                              " " + Arrays.toString(associations));  */
             cstrs.add(new AliasedCumulatives(s.getEnvironment(),
                     alias,
                     new int[]{capa},

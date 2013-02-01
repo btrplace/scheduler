@@ -218,11 +218,7 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
     public boolean isConsistent() {
         for (LocalTaskScheduler sc : scheds) {
             sc.computeProfiles();
-            try {
-                if (!sc.checkInvariant()) {
-                    return false;
-                }
-            } catch (ContradictionException e) {
+            if (!sc.checkInvariant()) {
                 return false;
             }
         }
