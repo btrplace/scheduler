@@ -56,8 +56,8 @@ to make the jar:
 
     $ mvn clean install
 
-If the build succeeded, the resulting jar will` be automatically
-installed in your local maven repository and available in the `target sub-folder.
+If the build succeeded, the resulting jar will be automatically
+installed in your local maven repository and available in the `target sub-folder`.
 
 
 ## Copyright ##
