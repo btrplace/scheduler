@@ -50,11 +50,11 @@ public class SingleRunningCapacity extends SatConstraint {
      * Make a new constraint.
      *
      * @param nodes  the involved servers.
-     * @param amount the maximum amount of resource to share among the hosted VMs
+     * @param qty the maximum amount of resource to share among the hosted VMs
      */
-    public SingleRunningCapacity(Set<UUID> nodes, int amount) {
+    public SingleRunningCapacity(Set<UUID> nodes, int qty) {
         super(Collections.<UUID>emptySet(), nodes, false);
-        this.amount = amount;
+        this.amount = qty;
     }
 
     /**

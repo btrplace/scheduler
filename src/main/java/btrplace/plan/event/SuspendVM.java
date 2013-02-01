@@ -40,15 +40,15 @@ public class SuspendVM extends Action implements VMStateTransition {
     /**
      * Make a new suspend action.
      *
-     * @param vm   the virtual machine to suspend
+     * @param vmId   the virtual machine to suspend
      * @param from The node that host the virtual machine
      * @param to   the destination node.
      * @param s    the moment the action starts.
      * @param f    the moment the action finish
      */
-    public SuspendVM(UUID vm, UUID from, UUID to, int s, int f) {
+    public SuspendVM(UUID vmId, UUID from, UUID to, int s, int f) {
         super(s, f);
-        this.vm = vm;
+        this.vm = vmId;
         this.src = from;
         this.dst = to;
 

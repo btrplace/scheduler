@@ -33,6 +33,7 @@ import java.util.*;
  * <p/>
  * When the restriction is discrete, the constraint ensures there is no co-location on
  * only on a given model.
+ * <p/>
  * When the restriction is continuous, the constraint ensures a VM can not be set running
  * on a node that is hosting VMs from another group.
  * <p/>
@@ -47,11 +48,11 @@ public class Split extends SatConstraint {
     /**
      * Make a new constraint.
      *
-     * @param sets the disjoint sets of VMs that must be split
+     * @param s the disjoint sets of VMs that must be split
      */
-    public Split(Collection<Set<UUID>> sets) {
+    public Split(Collection<Set<UUID>> s) {
         super(null, Collections.<UUID>emptySet(), false);
-        this.sets = sets;
+        this.sets = s;
     }
 
     @Override
