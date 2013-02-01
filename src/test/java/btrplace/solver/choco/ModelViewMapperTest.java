@@ -71,6 +71,11 @@ public class ModelViewMapperTest {
         public String getIdentifier() {
             return "mock";
         }
+
+        @Override
+        public boolean beforeSolve(ReconfigurationProblem rp) {
+            return true;
+        }
     }
 
     public class Builder implements ChocoModelViewBuilder {

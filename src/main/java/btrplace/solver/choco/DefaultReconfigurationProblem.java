@@ -40,7 +40,6 @@ import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.cp.solver.search.set.StaticSetVarOrder;
 import choco.kernel.solver.Configuration;
-import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.IObjectiveManager;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
@@ -168,8 +167,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     @Override
     public ReconfigurationPlan solve(int timeLimit, boolean optimize) throws SolverException {
 
-        if (!maintainResourceUsage()) {
-            return null;
+        for (Map.Entry<String, ChocoModelView> cv : views.entrySet()) {
+            if (!cv.getValue().beforeSolve(this)) {
+                return null;
+            }
         }
 
         addContinuousResourceCapacities();
@@ -192,18 +193,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
         solver.getConfiguration().putInt(Configuration.SOLUTION_POOL_CAPACITY, Integer.MAX_VALUE);
         solver.generateSearchStrategy();
-
-        //Instantiate the VM usage to its LB.
-        for (CShareableResource rcm : resources) {
-            for (IntDomainVar v : rcm.getVMsAllocation()) {
-                try {
-                    v.setVal(v.getInf());
-                } catch (ContradictionException e) {
-                    getLogger().error("Unable to set the VM '{}' consumption to '{}'", rcm.getResourceIdentifier(), v.getInf());
-                    return null;
-                }
-            }
-        }
 
         appendNaiveBranchHeuristic();
 
@@ -282,28 +271,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 }
             } while (solver.nextSolution() == Boolean.TRUE);
         }
-    }
-
-    /**
-     * Set the VM resource usage for the result, to its current usage.
-     */
-    private boolean maintainResourceUsage() {
-        for (CShareableResource rcm : resources) {
-            for (UUID vm : getSourceModel().getMapping().getAllVMs()) {
-                int vmId = getVM(vm);
-                if (rcm.getVMsAllocation()[vmId].getInf() < 0) {
-                    int prevUsage = rcm.getSourceResource().get(vm);
-                    try {
-                        rcm.getVMsAllocation()[vmId].setInf(prevUsage);
-                    } catch (ContradictionException e) {
-                        getLogger().error("Unable to set the minimal '{}' usage for '{}' to its current usage ({})",
-                                rcm.getResourceIdentifier(), vm, prevUsage);
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
     }
 
     private void addContinuousResourceCapacities() {

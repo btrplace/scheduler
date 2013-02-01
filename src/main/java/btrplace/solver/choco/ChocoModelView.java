@@ -31,4 +31,12 @@ public interface ChocoModelView {
      * @return a non-empty String
      */
     String getIdentifier();
+
+    /**
+     * An event that is send to indicate a RP will be solved.
+     * The view can then customize the RP a last time.
+     *
+     * @return {@code false} iff there will be no solution to the RP.
+     */
+    boolean beforeSolve(ReconfigurationProblem rp);
 }

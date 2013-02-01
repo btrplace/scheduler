@@ -23,8 +23,10 @@ import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.view.ShareableResource;
+import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
+import btrplace.solver.choco.ModelViewMapper;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.VMActionModel;
 import choco.kernel.solver.ContradictionException;
@@ -126,5 +128,40 @@ public class CShareableResourceTest {
 
         Assert.assertEquals(rcm.getVirtualUsage()[1].getInf(), 3);
         Assert.assertEquals(rcm.getVirtualUsage()[1].getSup(), 3);
+    }
+
+    @Test
+    public void testMaintainResourceUsage() throws SolverException {
+        Mapping map = new DefaultMapping();
+
+        UUID n1 = UUID.randomUUID();
+        UUID vm1 = UUID.randomUUID();
+        UUID vm2 = UUID.randomUUID();
+
+        map.addOnlineNode(n1);
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        ShareableResource rc = new ShareableResource("foo");
+        rc.set(vm1, 5);
+        rc.set(vm2, 7);
+
+        Model mo = new DefaultModel(map);
+        mo.attach(rc);
+
+        ModelViewMapper vMapper = new ModelViewMapper();
+        vMapper.register(new CShareableResource.Builder());
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).setViewMapper(vMapper).build();
+        ReconfigurationPlan p = rp.solve(0, false);
+
+        //Check the amount of allocated resources on the RP
+        CShareableResource rcm = (CShareableResource) rp.getView(rc.getIdentifier());
+        Assert.assertEquals(rcm.getVMsAllocation()[rp.getVM(vm1)].getVal(), 5);
+        Assert.assertEquals(rcm.getVMsAllocation()[rp.getVM(vm2)].getVal(), 7);
+
+        //And on the resulting plan.
+        Model res = p.getResult();
+        ShareableResource resRc = (ShareableResource) res.getView(rc.getIdentifier());
+        Assert.assertEquals(resRc.get(vm1), 5);
+        Assert.assertEquals(resRc.get(vm2), 7);
     }
 }

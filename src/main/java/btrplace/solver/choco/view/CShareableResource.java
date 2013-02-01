@@ -18,6 +18,7 @@
 
 package btrplace.solver.choco.view;
 
+import btrplace.model.Model;
 import btrplace.model.ModelView;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
@@ -27,6 +28,7 @@ import btrplace.solver.choco.*;
 import btrplace.solver.choco.chocoUtil.BinPacking;
 import choco.Choco;
 import choco.cp.solver.CPSolver;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
@@ -53,6 +55,8 @@ public class CShareableResource implements ChocoModelView {
 
     private String id;
 
+    private Model source;
+
     /**
      * Make a new mapping.
      *
@@ -62,6 +66,7 @@ public class CShareableResource implements ChocoModelView {
     public CShareableResource(ReconfigurationProblem rp, ShareableResource rc) {
         this.rc = rc;
         this.rp = rp;
+        this.source = rp.getSourceModel();
         UUID[] nodes = rp.getNodes();
         phyRcUsage = new IntDomainVar[nodes.length];
         virtRcUsage = new IntDomainVar[nodes.length];
@@ -237,5 +242,38 @@ public class CShareableResource implements ChocoModelView {
             ShareableResource rc = (ShareableResource) v;
             return new CShareableResource(rp, rc);
         }
+    }
+
+    /**
+     * Set the resource usage for each of the VM.
+     * If the LB is < 0 , the previous consumption is used to maintain the resource usage.
+     * Otherwise, the usage is set to the variable lower bound.
+     *
+     * @return false if an operation leads to a problem without solution
+     */
+    @Override
+    public boolean beforeSolve(ReconfigurationProblem rp) {
+        for (UUID vm : source.getMapping().getAllVMs()) {
+            int vmId = rp.getVM(vm);
+            IntDomainVar v = vmAllocation[vmId];
+            if (v.getInf() < 0) {
+                int prevUsage = rc.get(vm);
+                try {
+                    v.setInf(prevUsage);
+                } catch (ContradictionException e) {
+                    rp.getLogger().error("Unable to set the minimal '{}' usage for '{}' to its current usage ({})",
+                            rc.getResourceIdentifier(), vm, prevUsage);
+                    return false;
+                }
+            } else {
+                try {
+                    v.setVal(v.getInf());
+                } catch (ContradictionException e) {
+                    rp.getLogger().error("Unable to set the VM '{}' consumption to '{}'", rc.getResourceIdentifier(), v.getInf());
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

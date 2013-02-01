@@ -60,6 +60,11 @@ public class DefaultReconfigurationProblemTest {
         public String getIdentifier() {
             return "cmock";
         }
+
+        @Override
+        public boolean beforeSolve(ReconfigurationProblem rp) {
+            return true;
+        }
     }
 
     public class MockView implements ModelView {
@@ -417,44 +422,6 @@ public class DefaultReconfigurationProblemTest {
         for (int i = 0; i < counts.length; i++) {
             Assert.assertEquals(0, counts[i]);
         }
-    }
-
-    @Test
-    public void testMaintainResourceUsage() throws SolverException {
-        Mapping map = new DefaultMapping();
-
-        UUID n1 = UUID.randomUUID();
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-
-        map.addOnlineNode(n1);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        ShareableResource rc = new ShareableResource("foo");
-        rc.set(vm1, 5);
-        rc.set(vm2, 7);
-
-        Model mo = new DefaultModel(map);
-        mo.attach(rc);
-
-        ReconfigurationProblem rp = new DefaultReconfigurationProblem(mo, new DurationEvaluators(), new ModelViewMapper(),
-                map.getReadyVMs(),
-                map.getRunningVMs(),
-                map.getSleepingVMs(),
-                Collections.<UUID>emptySet(),
-                map.getAllVMs(),
-                false);
-        ReconfigurationPlan p = rp.solve(0, false);
-
-        //Check the amount of allocated resources on the RP
-        CShareableResource rcm = (CShareableResource) rp.getView(btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo");
-        Assert.assertEquals(rcm.getVMsAllocation()[rp.getVM(vm1)].getVal(), 5);
-        Assert.assertEquals(rcm.getVMsAllocation()[rp.getVM(vm2)].getVal(), 7);
-
-        //And on the resulting plan.
-        Model res = p.getResult();
-        Assert.assertEquals(((ShareableResource) res.getView(btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo")).get(vm1), 5);
-        Assert.assertEquals(((ShareableResource) res.getView(btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo")).get(vm2), 7);
     }
 
     @Test
