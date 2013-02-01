@@ -22,7 +22,6 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Gather;
-import btrplace.solver.SolverException;
 import btrplace.solver.choco.*;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.ContradictionException;
@@ -49,18 +48,17 @@ public class CGather implements ChocoSatConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        List<Slice> l = new ArrayList<Slice>();
+    public boolean inject(ReconfigurationProblem rp) {
+        List<Slice> dSlices = new ArrayList<Slice>();
         for (UUID vm : cstr.getInvolvedVMs()) {
             VMActionModel a = rp.getVMAction(vm);
             Slice dSlice = a.getDSlice();
             if (dSlice != null) {
-                l.add(dSlice);
+                dSlices.add(dSlice);
             }
         }
-        CPSolver s = rp.getSolver();
         if (cstr.isContinuous()) {
-            //Check for already running VMs
+            //Check for the already running VMs
             Mapping map = rp.getSourceModel().getMapping();
             UUID loc = null;
             for (UUID vm : cstr.getInvolvedVMs()) {
@@ -74,43 +72,50 @@ public class CGather implements ChocoSatConstraint {
                     }
                 }
             }
-            int nIdx = rp.getNode(loc);
-            for (UUID vm : cstr.getInvolvedVMs()) {
-                if (rp.getFutureRunningVMs().contains(vm)) {
-                    Slice dSlice = rp.getVMAction(vm).getDSlice();
-                    try {
-                        dSlice.getHoster().setVal(nIdx);
-                    } catch (ContradictionException ex) {
-                        rp.getLogger().error("Unable to maintain the co-location of all the future-running VMs in '{}': ", cstr.getInvolvedVMs(), ex.getMessage());
-                        return false;
-                    }
-                }
+            if (loc != null) {
+                return placeDSlices(rp, dSlices, rp.getNode(loc));
+            } else {
+                return forceDiscreteCollocation(rp, dSlices);
             }
-        } else {
-            for (int i = 0; i < l.size(); i++) {
-                for (int j = 0; j < i; j++) {
-                    Slice s1 = l.get(i);
-                    Slice s2 = l.get(j);
-                    IntDomainVar i1 = s1.getHoster();
-                    IntDomainVar i2 = s2.getHoster();
-                    if (i1.isInstantiated() && i2.isInstantiated()) {
-                        if (i1.getVal() != i2.getVal()) {
-                            rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with '" + s2.getSubject() + "'");
-                            return false;
+        }
+        return forceDiscreteCollocation(rp, dSlices);
+    }
+
+    private boolean placeDSlices(ReconfigurationProblem rp, List<Slice> dSlices, int nIdx) {
+        for (Slice s : dSlices) {
+            try {
+                s.getHoster().setVal(nIdx);
+            } catch (ContradictionException ex) {
+                rp.getLogger().error("Unable to maintain the co-location of all the future-running VMs in '{}': ", cstr.getInvolvedVMs(), ex.getMessage());
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean forceDiscreteCollocation(ReconfigurationProblem rp, List<Slice> dSlices) {
+        CPSolver s = rp.getSolver();
+        for (int i = 0; i < dSlices.size(); i++) {
+            for (int j = 0; j < i; j++) {
+                Slice s1 = dSlices.get(i);
+                Slice s2 = dSlices.get(j);
+                IntDomainVar i1 = s1.getHoster();
+                IntDomainVar i2 = s2.getHoster();
+                if (i1.isInstantiated() && i2.isInstantiated() && i1.getVal() != i2.getVal()) {
+                    rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with '" + s2.getSubject() + "'");
+                    return false;
+                } else {
+                    try {
+                        if (i1.isInstantiated()) {
+                            i2.setVal(i1.getVal());
+                        } else if (i2.isInstantiated()) {
+                            i1.setVal(i2.getVal());
+                        } else {
+                            s.post(s.eq(i1, i2));
                         }
-                    } else {
-                        try {
-                            if (i1.isInstantiated()) {
-                                i2.setVal(i1.getVal());
-                            } else if (i2.isInstantiated()) {
-                                i1.setVal(i2.getVal());
-                            } else {
-                                s.post(s.eq(i1, i2));
-                            }
-                        } catch (ContradictionException ex) {
-                            rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with '" + s2.getSubject() + "'");
-                            return false;
-                        }
+                    } catch (ContradictionException ex) {
+                        rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with '" + s2.getSubject() + "'");
+                        return false;
                     }
                 }
             }

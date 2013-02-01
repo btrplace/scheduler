@@ -34,6 +34,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -127,5 +128,17 @@ public class CGatherTest extends ConstraintTestMaterial {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
         Assert.assertNull(plan);
+    }
+
+    @Test
+    public void testContinuousWithNoRunningVMs() throws SolverException {
+        Mapping map = new MappingBuilder().on(n1, n2).ready(vm1, vm2).build();
+        Model mo = new DefaultModel(map);
+        Gather g = new Gather(map.getAllVMs());
+        g.setContinuous(true);
+        List<SatConstraint> cstrs = Arrays.asList(g, new Running(map.getAllVMs()));
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ReconfigurationPlan plan = cra.solve(mo, cstrs);
+        Assert.assertNotNull(plan);
     }
 }
