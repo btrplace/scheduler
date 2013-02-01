@@ -21,14 +21,13 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.model.constraint.Ban;
 import btrplace.model.constraint.Fence;
-import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoSatConstraint;
 import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import choco.kernel.solver.ContradictionException;
-import gnu.trove.TIntHashSet;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -54,7 +53,7 @@ public class CFence implements ChocoSatConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) {
 
         Set<UUID> runnings = new HashSet<UUID>();
         for (UUID vm : cstr.getInvolvedVMs()) {
@@ -67,44 +66,24 @@ public class CFence implements ChocoSatConstraint {
             if (nodes.size() == 1) { //Only 1 possible destination node, so we directly instantiate the variable.
                 for (UUID vm : runnings) {
                     Slice t = rp.getVMAction(vm).getDSlice();
-                    if (t != null) {
-                        UUID n = nodes.iterator().next();
-                        try {
-                            t.getHoster().setVal(rp.getNode(n));
-                        } catch (ContradictionException e) {
-                            rp.getLogger().error("Unable to force VM '{}' to be running on '{}': {}", vm, n, e.getMessage());
-                            return false;
-                        }
+                    UUID n = nodes.iterator().next();
+                    try {
+                        t.getHoster().setVal(rp.getNode(n));
+                    } catch (ContradictionException e) {
+                        rp.getLogger().error("Unable to force VM '{}' to be running on '{}': {}", vm, n, e.getMessage());
+                        return false;
                     }
                 }
             } else {
-                int[] iExlude = new int[rp.getSourceModel().getMapping().getAllNodes().size()];
-                TIntHashSet toKeep = new TIntHashSet(nodes.size());
-                for (UUID n : nodes) {
-                    toKeep.add(rp.getNode(n));
-                }
-                int i = 0;
-                for (UUID n : rp.getSourceModel().getMapping().getOnlineNodes()) {
-                    int idx = rp.getNode(n);
-                    if (!toKeep.contains(idx)) {
-                        iExlude[i++] = idx;
+                //Transformation to a ban constraint that disallow all the other nodes
+                Set<UUID> otherNodes = new HashSet<UUID>(rp.getNodes().length - nodes.size());
+                for (UUID n : rp.getNodes()) {
+                    if (!nodes.contains(n)) {
+                        otherNodes.add(n);
                     }
                 }
+                return new CBan(new Ban(runnings, otherNodes)).inject(rp);
 
-                //Domain restriction. Remove all the non-involved nodes
-                for (UUID vm : runnings) {
-                    Slice t = rp.getVMAction(vm).getDSlice();
-                    if (t != null) {
-                        for (int a = 0; a < i; a++) {
-                            try {
-                                t.getHoster().remVal(iExlude[a]);
-                            } catch (ContradictionException e) {
-                                rp.getLogger().error("Unable to disallow VM '{}' to be running on '{}': {}", vm, rp.getNode(iExlude[a]), e.getMessage());
-                                return false;
-                            }
-                        }
-                    }
-                }
             }
         }
         return true;

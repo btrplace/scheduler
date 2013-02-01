@@ -22,11 +22,11 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Ban;
-import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoSatConstraint;
 import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
+import choco.kernel.solver.ContradictionException;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -52,7 +52,7 @@ public class CBan implements ChocoSatConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) {
         Collection<UUID> nodes = ban.getInvolvedNodes();
         Collection<UUID> vms = ban.getInvolvedVMs();
         int[] nodesIdx = new int[nodes.size()];
@@ -68,7 +68,7 @@ public class CBan implements ChocoSatConstraint {
                     for (int x : nodesIdx) {
                         try {
                             t.getHoster().remVal(x);
-                        } catch (Exception e) {
+                        } catch (ContradictionException e) {
                             rp.getLogger().error("Unable to disallow VM '{}' to be running on '{}': {}", vm, rp.getNode(x), e.getMessage());
                             return false;
                         }
