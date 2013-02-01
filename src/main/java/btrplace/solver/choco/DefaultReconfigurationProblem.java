@@ -115,7 +115,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * @param dEval      to evaluate the duration of every action
      * @param ready      the VMs that must be in the ready state
      * @param running    the VMs that must be in the running state
-     * @param sleeeping  the VMs that must be in the sleeping state
+     * @param sleeping   the VMs that must be in the sleeping state
      * @param label      {@code true} to label the variables (for debugging purpose)
      * @param killed     the VMs that must be killed
      * @param manageable the VMs that can be managed by the solver when they are already running and they must keep running
@@ -124,23 +124,23 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      */
     public DefaultReconfigurationProblem(Model m,
                                          DurationEvaluators dEval,
-                                         ModelViewMapper viewMapper,
+                                         ModelViewMapper vMapper,
                                          Set<UUID> ready,
                                          Set<UUID> running,
-                                         Set<UUID> sleeeping,
+                                         Set<UUID> sleeping,
                                          Set<UUID> killed,
                                          Set<UUID> manageable,
                                          boolean label
     ) throws SolverException {
         this.ready = new HashSet<UUID>(ready);
         this.runnings = new HashSet<UUID>(running);
-        this.sleepings = new HashSet<UUID>(sleeeping);
+        this.sleepings = new HashSet<UUID>(sleeping);
         this.killed = new HashSet<UUID>(killed);
         this.manageable = new HashSet<UUID>(manageable);
         this.useLabels = label;
         model = m;
         durEval = dEval;
-        this.viewMapper = viewMapper;
+        this.viewMapper = vMapper;
         solver = new CPSolver();
         start = solver.makeConstantIntVar("RP.start", 0);
         end = solver.createBoundIntVar("RP.end", 0, DEFAULT_MAX_TIME);
@@ -166,7 +166,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public ReconfigurationPlan solve(int timeLimit, boolean optimize) throws SolverException {
-
         for (Map.Entry<String, ChocoModelView> cv : views.entrySet()) {
             if (!cv.getValue().beforeSolve(this)) {
                 return null;
@@ -203,10 +202,18 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             launchWithAlterer();
         }
 
+        return makeResultingPlan();
+    }
+
+    private ReconfigurationPlan makeResultingPlan() throws SolverException {
+
+        //Check for the solution
         if (Boolean.FALSE == solver.isFeasible()) {
+            //It is certain the CSP has no solution
             return null;
         } else if (solver.isFeasible() == null) {
-            throw new SolverException(model, "Unable to state about the problem feasibility");
+            //We don't know if the CSP has a solution
+            throw new SolverException(model, "Unable to state about the problem feasibility.");
         }
 
         DefaultReconfigurationPlan plan = new DefaultReconfigurationPlan(model);

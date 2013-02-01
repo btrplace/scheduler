@@ -97,15 +97,12 @@ public class SliceBuilder {
         }
 
         if (start != rp.getEnd() && start.getSup() > rp.getEnd().getInf()) {
-            //System.err.println("Restrict " + start.pretty() + " < " + rp.getEnd().pretty());
             rp.getSolver().post(rp.getSolver().leq(start, rp.getEnd()));
         }
         if (end != rp.getEnd() && end.getSup() > rp.getEnd().getInf()) {
-            //System.err.println("Restrict " + end.pretty() + " < " + rp.getEnd().pretty());
             rp.getSolver().post(rp.getSolver().leq(end, rp.getEnd()));
         }
         if (duration != rp.getEnd() && duration.getSup() > rp.getEnd().getInf()) {
-            //System.err.println("Restrict " + duration.pretty() + " < " + rp.getEnd().pretty());
             rp.getSolver().post(rp.getSolver().leq(duration, rp.getEnd()));
         }
         CPSolver s = rp.getSolver();
