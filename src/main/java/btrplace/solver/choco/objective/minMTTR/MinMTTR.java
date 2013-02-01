@@ -199,6 +199,10 @@ public class MinMTTR implements ReconfigurationObjective {
         s.addGoal(new AssignOrForbidIntVarVal(new PureIncomingFirst2(rp, actions), new MinVal()));
 
         s.addGoal(new AssignVar(new StaticVarOrder(rp.getSolver(), new IntDomainVar[]{rp.getEnd(), cost}), new MinVal()));
+    }
 
+    @Override
+    public Set<UUID> getMisPlacedVMs(Model m) {
+        return Collections.emptySet();
     }
 }

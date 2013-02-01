@@ -77,7 +77,7 @@ public class MappingBuilder {
         return this;
     }
 
-    public Mapping get() {
+    public Mapping build() {
         return map;
     }
 }

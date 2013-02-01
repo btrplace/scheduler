@@ -46,7 +46,7 @@ public class CSingleResourceCapacityTest extends ConstraintTestMaterial {
 
     @Test
     public void testGetMisplaced() {
-        Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).get();
+        Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).build();
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
         rc.set(vm1, 3);
@@ -67,7 +67,7 @@ public class CSingleResourceCapacityTest extends ConstraintTestMaterial {
 
     @Test
     public void testDiscreteSolvable() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
+        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).build();
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
         rc.set(vm1, 3);
@@ -90,7 +90,7 @@ public class CSingleResourceCapacityTest extends ConstraintTestMaterial {
 
     @Test
     public void testDiscreteUnsolvable() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
+        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).build();
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
         rc.set(vm1, 3);
@@ -111,7 +111,7 @@ public class CSingleResourceCapacityTest extends ConstraintTestMaterial {
 
     @Test
     public void testContinuousSolvable() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1).run(n2, vm2, vm3).ready(vm4).get();
+        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1).run(n2, vm2, vm3).ready(vm4).build();
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
         rc.set(vm1, 3);
         rc.set(vm2, 1);

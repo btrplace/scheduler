@@ -18,18 +18,14 @@
 
 package btrplace.solver.choco;
 
-import btrplace.model.Model;
 import btrplace.solver.SolverException;
-
-import java.util.Set;
-import java.util.UUID;
 
 /**
  * An interface to describe a constraint implementation for the solver.
  *
  * @author Fabien Hermenier
  */
-public interface ChocoSatConstraint {
+public interface ChocoSatConstraint extends MisplacedVMsEstimator {
 
     /**
      * Inject the constraint into the problem.
@@ -39,16 +35,4 @@ public interface ChocoSatConstraint {
      * @throws SolverException if an error occurred while injecting.
      */
     boolean inject(ReconfigurationProblem rp) throws SolverException;
-
-
-    /**
-     * Get the VMs that are supposed to be mis-placed.
-     * This set may not be minimal but will be used
-     * but it is considered good enough to be able to compute a solution
-     * by only managing these VMs.
-     *
-     * @param m the model to use to inspect the VMs.
-     * @return a set of VMs identifier that may be empty (if the constraint is satisfied)
-     */
-    Set<UUID> getMisPlacedVMs(Model m);
 }

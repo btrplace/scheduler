@@ -57,7 +57,7 @@ public class CSplitTest extends ConstraintTestMaterial {
                 .run(n2, vm3)
                 .run(n3, vm4, vm5)
                 .run(n4, vm6)
-                .run(n5, vm7, vm8).get();
+                .run(n5, vm7, vm8).build();
 
         Split s = new Split(grps);
         CSplit cs = new CSplit(s);
@@ -82,7 +82,7 @@ public class CSplitTest extends ConstraintTestMaterial {
         Mapping map = new MappingBuilder().on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm2, vm3/* violation*/)
                 .run(n3, vm4, vm5, vm6/*violation*/)
-                .run(n5, vm7, vm8).get();
+                .run(n5, vm7, vm8).build();
 
         Split s = new Split(grps);
 
@@ -101,7 +101,7 @@ public class CSplitTest extends ConstraintTestMaterial {
         Mapping map = new MappingBuilder().on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm2)
                 .run(n3, vm3, vm4, vm5)
-                .run(n5, vm6, vm7, vm8).get();
+                .run(n5, vm6, vm7, vm8).build();
 
         Split s = new Split(grps);
         s.setContinuous(true);

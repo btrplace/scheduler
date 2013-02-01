@@ -35,7 +35,7 @@ public class CRunningTest extends ConstraintTestMaterial {
 
     @Test
     public void testGetMisplaced() {
-        Mapping m = new MappingBuilder().on(n1).ready(vm1).run(n1, vm2).get();
+        Mapping m = new MappingBuilder().on(n1).ready(vm1).run(n1, vm2).build();
         Model mo = new DefaultModel(m);
 
         CRunning k = new CRunning(new Running(m.getAllVMs()));

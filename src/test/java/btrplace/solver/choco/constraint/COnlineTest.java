@@ -50,7 +50,7 @@ public class COnlineTest extends ConstraintTestMaterial {
 
     @Test
     public void testSolvableProblem() throws SolverException {
-        Mapping map = new MappingBuilder().off(n1).get();
+        Mapping map = new MappingBuilder().off(n1).build();
         Model mo = new DefaultModel(map);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Online(Collections.singleton(n1))));

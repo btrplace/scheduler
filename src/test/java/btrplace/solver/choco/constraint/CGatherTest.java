@@ -46,7 +46,7 @@ public class CGatherTest extends ConstraintTestMaterial {
 
     @Test
     public void testDiscreteWithoutRunningVM() throws SolverException {
-        Mapping map = new MappingBuilder().ready(vm1).on(n1, n2).run(n2, vm2).get();
+        Mapping map = new MappingBuilder().ready(vm1).on(n1, n2).run(n2, vm2).build();
         Model mo = new DefaultModel(map);
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(false);
@@ -63,7 +63,7 @@ public class CGatherTest extends ConstraintTestMaterial {
 
     @Test
     public void testDiscreteWithRunningVMs() throws SolverException {
-        Mapping map = new MappingBuilder().ready(vm1).on(n1, n2).run(n2, vm2).get();
+        Mapping map = new MappingBuilder().ready(vm1).on(n1, n2).run(n2, vm2).build();
         Model mo = new DefaultModel(map);
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(false);
@@ -83,7 +83,7 @@ public class CGatherTest extends ConstraintTestMaterial {
 
     @Test
     public void testGetMisplaced() {
-        Mapping map = new MappingBuilder().ready(vm1).on(n1, n2).run(n2, vm2).get();
+        Mapping map = new MappingBuilder().ready(vm1).on(n1, n2).run(n2, vm2).build();
         Model mo = new DefaultModel(map);
         Gather g = new Gather(map.getAllVMs());
         CGather c = new CGather(g);
@@ -97,7 +97,7 @@ public class CGatherTest extends ConstraintTestMaterial {
 
     @Test
     public void testContinuousWithPartialRunning() throws SolverException {
-        Mapping map = new MappingBuilder().ready(vm1).on(n1, n2).run(n2, vm2).get();
+        Mapping map = new MappingBuilder().ready(vm1).on(n1, n2).run(n2, vm2).build();
         Model mo = new DefaultModel(map);
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(true);
@@ -116,7 +116,7 @@ public class CGatherTest extends ConstraintTestMaterial {
      */
     @Test
     public void testContinuousWithRelocationOfVMs() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2).run(n2, vm1, vm2).get();
+        Mapping map = new MappingBuilder().on(n1, n2).run(n2, vm1, vm2).build();
         Model mo = new DefaultModel(map);
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(true);

@@ -29,7 +29,14 @@ import java.util.TreeSet;
  */
 public class SolvingStatistics {
 
+    /**
+     * The number of VMs actually managed by the problem.
+     */
+    private int nbManagedVMs;
 
+    /**
+     * The total duration of the solving process in milliseconds.
+     */
     private int time;
 
     /**
@@ -69,12 +76,14 @@ public class SolvingStatistics {
     /**
      * Make new statistics.
      *
-     * @param t   the moment in milliseconds
-     * @param nbN the number of opened nodes at the moment
-     * @param nbB the number of backtracks at the moment
-     * @param to  {@code true} to indicate the solver hit a timeout
+     * @param managedVMs the number of VMs managed by the algorithm.
+     * @param t          the moment in milliseconds
+     * @param nbN        the number of opened nodes at the moment
+     * @param nbB        the number of backtracks at the moment
+     * @param to         {@code true} to indicate the solver hit a timeout
      */
-    public SolvingStatistics(int t, int nbN, int nbB, boolean to) {
+    public SolvingStatistics(int managedVMs, int t, int nbN, int nbB, boolean to) {
+        this.nbManagedVMs = managedVMs;
         time = t;
         nbNodes = nbN;
         nbBacktracks = nbB;
@@ -136,6 +145,15 @@ public class SolvingStatistics {
         return solutions;
     }
 
+    /**
+     * Get the number of VMs managed by the algorithm.
+     *
+     * @return a positive number
+     */
+    public int getNbManagedVMs() {
+        return nbManagedVMs;
+    }
+
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
@@ -146,7 +164,8 @@ public class SolvingStatistics {
             b.append(" (terminated)");
         }
         b.append(": ")
-                .append(nbNodes).append(" nodes, ")
+                .append(nbManagedVMs).append(" VMs to manage. ")
+                .append(nbNodes).append(" opened search nodes, ")
                 .append(nbBacktracks).append(" backtracks, ")
                 .append(solutions.size()).append(" solutions:\n");
         int i = 0;

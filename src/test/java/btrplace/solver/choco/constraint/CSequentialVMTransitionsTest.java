@@ -45,7 +45,7 @@ public class CSequentialVMTransitionsTest extends ConstraintTestMaterial {
 
     @Test
     public void testWithOnlyTransitions() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2).ready(vm1).run(n1, vm2, vm4).sleep(n2, vm3).get();
+        Mapping map = new MappingBuilder().on(n1, n2).ready(vm1).run(n1, vm2, vm4).sleep(n2, vm3).build();
         List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
         Model mo = new DefaultModel(map);
         cstrs.add(new Running(Collections.singleton(vm1)));
@@ -61,7 +61,7 @@ public class CSequentialVMTransitionsTest extends ConstraintTestMaterial {
 
     @Test
     public void testWithVMsWithNoTransitions() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2).ready(vm1).run(n1, vm2, vm4).run(n2, vm3).get();
+        Mapping map = new MappingBuilder().on(n1, n2).ready(vm1).run(n1, vm2, vm4).run(n2, vm3).build();
         List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
         Model mo = new DefaultModel(map);
         cstrs.add(new Running(Collections.singleton(vm1)));

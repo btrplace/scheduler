@@ -43,7 +43,7 @@ public class CQuarantineTest extends ConstraintTestMaterial {
 
     @Test
     public void testWithSatisfiedModel() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).get();
+        Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).build();
         Model mo = new DefaultModel(map);
         Set<UUID> ns = new HashSet<UUID>(Arrays.asList(n1, n2));
         Quarantine q = new Quarantine(ns);
@@ -59,7 +59,7 @@ public class CQuarantineTest extends ConstraintTestMaterial {
      */
     @Test
     public void testWithNoSolution1() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).get();
+        Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).build();
         Model mo = new DefaultModel(map);
         Set<UUID> ns = new HashSet<UUID>(Arrays.asList(n1, n2));
         Quarantine q = new Quarantine(ns);
@@ -78,7 +78,7 @@ public class CQuarantineTest extends ConstraintTestMaterial {
      */
     @Test
     public void testWithNoSolution2() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).get();
+        Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).build();
         Model mo = new DefaultModel(map);
         Set<UUID> ns = new HashSet<UUID>(Arrays.asList(n1, n2));
         Quarantine q = new Quarantine(ns);

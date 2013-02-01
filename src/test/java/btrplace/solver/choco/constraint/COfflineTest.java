@@ -54,7 +54,7 @@ public class COfflineTest extends ConstraintTestMaterial {
      */
     @Test
     public void simpleTest() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2).get();
+        Mapping map = new MappingBuilder().on(n1, n2).build();
 
         Model model = new DefaultModel(map);
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
@@ -71,7 +71,7 @@ public class COfflineTest extends ConstraintTestMaterial {
 
     @Test
     public void testGetMisplacedAndSatisfied() {
-        Mapping map = new MappingBuilder().on(n1, n2).get();
+        Mapping map = new MappingBuilder().on(n1, n2).build();
 
         Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
         Offline off = new Offline(s);
@@ -87,7 +87,7 @@ public class COfflineTest extends ConstraintTestMaterial {
 
     @Test
     public void testSolvableProblem() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1).get();
+        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1).build();
         Model mo = new DefaultModel(map);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Offline(Collections.singleton(n1))));
@@ -98,7 +98,7 @@ public class COfflineTest extends ConstraintTestMaterial {
 
     @Test
     public void testUnsolvableProblem() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1).run(n1, vm1).get();
+        Mapping map = new MappingBuilder().on(n1).run(n1, vm1).build();
         Model mo = new DefaultModel(map);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Offline(Collections.singleton(n1))));

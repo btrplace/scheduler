@@ -163,6 +163,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
             for (ChocoSatConstraint cstr : cConstraints) {
                 toManage.addAll(cstr.getMisPlacedVMs(i));
             }
+            toManage.addAll(obj.getMisPlacedVMs(i));
             rpb.setManageableVMs(toManage);
         }
         if (useLabels) {
@@ -239,9 +240,10 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     @Override
     public SolvingStatistics getSolvingStatistics() {
         if (rp == null) {
-            return new SolvingStatistics(0, 0, 0, false);
+            return new SolvingStatistics(0, 0, 0, 0, false);
         }
         SolvingStatistics st = new SolvingStatistics(
+                rp.getManageableVMs().size(),
                 rp.getSolver().getTimeCount(),
                 rp.getSolver().getNodeCount(),
                 rp.getSolver().getBackTrackCount(),

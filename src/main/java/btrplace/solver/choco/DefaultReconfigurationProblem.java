@@ -110,7 +110,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     /**
      * Make a new RP where the next state for every VM is indicated.
      * If the state for a VM is omitted, it is considered as unchanged
-     * {@link DefaultReconfigurationProblemBuilder} can be used to simplify the instantiation process
      *
      * @param m          the initial model
      * @param dEval      to evaluate the duration of every action
@@ -119,8 +118,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * @param sleeeping  the VMs that must be in the sleeping state
      * @param label      {@code true} to label the variables (for debugging purpose)
      * @param killed     the VMs that must be killed
-     * @param manageable the VMs that can be managed by the solver
+     * @param manageable the VMs that can be managed by the solver when they are already running and they must keep running
      * @throws SolverException if an error occurred
+     * @see DefaultReconfigurationProblemBuilder to ease the instantiation process
      */
     public DefaultReconfigurationProblem(Model m,
                                          DurationEvaluators dEval,

@@ -52,7 +52,7 @@ public class CSingleRunningCapacityTest extends ConstraintTestMaterial {
     @Test
     public void testDiscreteResolution() throws SolverException {
 
-        Mapping map = new MappingBuilder().on(n1).run(n1, vm1, vm2).ready(vm3).get();
+        Mapping map = new MappingBuilder().on(n1).run(n1, vm1, vm2).ready(vm3).build();
         Model mo = new DefaultModel(map);
         List<SatConstraint> l = new ArrayList<SatConstraint>();
         l.add(new Running(Collections.singleton(vm1)));
@@ -71,7 +71,7 @@ public class CSingleRunningCapacityTest extends ConstraintTestMaterial {
 
     @Test
     public void testContinuousResolution() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1).run(n1, vm1, vm2).ready(vm3).get();
+        Mapping map = new MappingBuilder().on(n1).run(n1, vm1, vm2).ready(vm3).build();
         Model mo = new DefaultModel(map);
         List<SatConstraint> l = new ArrayList<SatConstraint>();
         l.add(new Running(Collections.singleton(vm1)));
@@ -97,7 +97,7 @@ public class CSingleRunningCapacityTest extends ConstraintTestMaterial {
 
     @Test
     public void testGetMisplaced() {
-        Mapping m = new MappingBuilder().on(n1, n2).run(n1, vm1).ready(vm2, vm4).run(n2, vm3).get();
+        Mapping m = new MappingBuilder().on(n1, n2).run(n1, vm1).ready(vm2, vm4).run(n2, vm3).build();
         Model mo = new DefaultModel(m);
 
         SingleRunningCapacity c = new SingleRunningCapacity(m.getAllNodes(), 1);

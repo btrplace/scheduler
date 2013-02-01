@@ -16,29 +16,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.constraint;
+package btrplace.solver.choco;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.constraint.Sleeping;
-import btrplace.solver.choco.MappingBuilder;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+
+import java.util.Set;
+import java.util.UUID;
 
 /**
- * Unit tests for {@link CSleeping}.
+ * An interface to specify an object that can estimated a supposed
+ * set of misplaced VMs in a model.
+ * <p/>
+ * This information will be used by the {@link ChocoReconfigurationAlgorithm}
+ * to restrict the amount of VMs to consider in the reconfiguration algorithm
+ * to a minimum.
+ * <p/>
+ * The set of mis-placed VMs is not necessarily optimal but it must
+ * be good enough to be able to compute a solution by only managing
+ * these VMs.
  *
  * @author Fabien Hermenier
  */
-public class CSleepingTest extends ConstraintTestMaterial {
+public interface MisplacedVMsEstimator {
 
-    @Test
-    public void testGetMisplaced() {
-        Mapping m = new MappingBuilder().on(n1).ready(vm1).run(n1, vm2).sleep(n1, vm3).build();
-        Model mo = new DefaultModel(m);
-        CSleeping k = new CSleeping(new Sleeping(m.getAllVMs()));
-        Assert.assertEquals(2, k.getMisPlacedVMs(mo).size());
-        Assert.assertFalse(k.getMisPlacedVMs(mo).contains(vm3));
-    }
+    /**
+     * Get the VMs that are supposed to be mis-placed.
+     *
+     * @param m the model to use to inspect the VMs.
+     * @return a set of VMs identifier that may be empty (when no VMs are misplaced)
+     */
+    Set<UUID> getMisPlacedVMs(Model m);
 }

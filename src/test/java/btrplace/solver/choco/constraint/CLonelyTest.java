@@ -46,7 +46,7 @@ public class CLonelyTest extends ConstraintTestMaterial {
         //ChocoLogging.setVerbosity(Verbosity.SEARCH);
         Mapping map = new MappingBuilder().on(n1, n2, n3)
                 .run(n1, vm1, vm2)
-                .run(n2, vm3, vm4, vm5).get();
+                .run(n2, vm3, vm4, vm5).build();
 
         Set<UUID> mine = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
@@ -71,7 +71,7 @@ public class CLonelyTest extends ConstraintTestMaterial {
         //ChocoLogging.setVerbosity(Verbosity.FINEST);
         Mapping map = new MappingBuilder().on(n1, n2, n3)
                 .run(n1, vm1, vm2, vm3)
-                .run(n2, vm4, vm5).get();
+                .run(n2, vm4, vm5).build();
         Set<UUID> mine = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
@@ -90,7 +90,7 @@ public class CLonelyTest extends ConstraintTestMaterial {
 
         Mapping map = new MappingBuilder().on(n1, n2, n3)
                 .run(n1, vm1, vm2, vm3)
-                .run(n2, vm4, vm5).get();
+                .run(n2, vm4, vm5).build();
         Set<UUID> mine = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
 
         Model mo = new DefaultModel(map);

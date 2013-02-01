@@ -47,7 +47,7 @@ public class CCumulatedRunningCapacityTest extends ConstraintTestMaterial {
         Mapping map = new MappingBuilder().on(n1, n2, n3)
                 .run(n1, vm1, vm2)
                 .run(n3, vm3, vm4)
-                .sleep(n2, vm5).get();
+                .sleep(n2, vm5).build();
         Model mo = new DefaultModel(map);
         List<SatConstraint> l = new ArrayList<SatConstraint>();
         CumulatedRunningCapacity x = new CumulatedRunningCapacity(map.getAllNodes(), 4);
@@ -64,7 +64,7 @@ public class CCumulatedRunningCapacityTest extends ConstraintTestMaterial {
     public void testDiscreteSatisfaction() throws SolverException {
         Mapping map = new MappingBuilder().on(n1, n2, n3)
                 .run(n1, vm1, vm2)
-                .run(n2, vm3, vm4, vm5).get();
+                .run(n2, vm3, vm4, vm5).build();
         Set<UUID> on = new HashSet<UUID>(Arrays.asList(n1, n2));
         Model mo = new DefaultModel(map);
         List<SatConstraint> l = new ArrayList<SatConstraint>();
@@ -85,7 +85,7 @@ public class CCumulatedRunningCapacityTest extends ConstraintTestMaterial {
     public void testFeasibleContinuousResolution() throws SolverException {
         Mapping map = new MappingBuilder().on(n1, n2, n3)
                 .run(n1, vm1, vm2)
-                .run(n2, vm3, vm4).ready(vm5).get();
+                .run(n2, vm3, vm4).ready(vm5).build();
         Set<UUID> on = new HashSet<UUID>(Arrays.asList(n1, n2));
         Model mo = new DefaultModel(map);
         List<SatConstraint> l = new ArrayList<SatConstraint>();
@@ -112,7 +112,7 @@ public class CCumulatedRunningCapacityTest extends ConstraintTestMaterial {
                 .ready(vm1)
                 .run(n1, vm2)
                 .run(n2, vm3, vm4)
-                .run(n3, vm5).get();
+                .run(n3, vm5).build();
 
         Model mo = new DefaultModel(map);
         List<SatConstraint> l = new ArrayList<SatConstraint>();
@@ -144,7 +144,7 @@ public class CCumulatedRunningCapacityTest extends ConstraintTestMaterial {
     public void testGetMisplaced() {
         Mapping map = new MappingBuilder().on(n1, n2, n3)
                 .run(n1, vm1, vm2, vm3)
-                .run(n2, vm4).ready(vm5).get();
+                .run(n2, vm4).ready(vm5).build();
 
         Model mo = new DefaultModel(map);
 

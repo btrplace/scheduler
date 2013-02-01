@@ -48,7 +48,7 @@ public class CAmongTest extends ConstraintTestMaterial {
         Mapping map = new MappingBuilder()
                 .on(n1, n2, n3, n4)
                 .run(n1, vm1).run(n2, vm2).run(n3, vm3)
-                .ready(vm4, vm5).get();
+                .ready(vm4, vm5).build();
 
         Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
 
@@ -77,7 +77,7 @@ public class CAmongTest extends ConstraintTestMaterial {
         Mapping map = new MappingBuilder()
                 .on(n1, n2, n3, n4)
                 .run(n1, vm1).run(n2, vm2, vm3)
-                .ready(vm4, vm5).get();
+                .ready(vm4, vm5).build();
 
         Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm5));
 
@@ -110,7 +110,7 @@ public class CAmongTest extends ConstraintTestMaterial {
         Mapping map = new MappingBuilder()
                 .on(n1, n2, n3, n4)
                 .run(n1, vm1).run(n2, vm2, vm3)
-                .ready(vm4, vm5).get();
+                .ready(vm4, vm5).build();
 
         Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm5));
 
@@ -139,7 +139,7 @@ public class CAmongTest extends ConstraintTestMaterial {
         Mapping map = new MappingBuilder()
                 .on(n1, n2, n3, n4)
                 .run(n1, vm1).run(n2, vm2, vm3)
-                .ready(vm4, vm5).get();
+                .ready(vm4, vm5).build();
 
         Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm5));
         Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(n1, n2));
@@ -160,7 +160,7 @@ public class CAmongTest extends ConstraintTestMaterial {
         Mapping map = new MappingBuilder()
                 .on(n1, n2, n3, n4)
                 .run(n1, vm1).run(n2, vm2, vm3)
-                .ready(vm4, vm5).get();
+                .ready(vm4, vm5).build();
 
         Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm5));
         Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(n1, n2));
@@ -187,7 +187,7 @@ public class CAmongTest extends ConstraintTestMaterial {
         Mapping map = new MappingBuilder()
                 .on(n1, n2, n3, n4)
                 .run(n1, vm1).run(n2, vm2).run(n3, vm3)
-                .ready(vm4, vm5).get();
+                .ready(vm4, vm5).build();
 
         Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm5));
 

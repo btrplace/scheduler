@@ -124,7 +124,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertEquals(rp.getFutureKilledVMs(), Collections.singleton(vm2));
         Assert.assertEquals(rp.getVMs().length, 7);
         Assert.assertEquals(rp.getNodes().length, 3);
-
+        Assert.assertEquals(rp.getManageableVMs(), m.getMapping().getAllVMs());
         Assert.assertTrue(rp.getStart().isInstantiated() && rp.getStart().getVal() == 0);
 
         //Test the index values of the nodes and the VMs.
@@ -140,6 +140,29 @@ public class DefaultReconfigurationProblemTest {
         }
         Assert.assertEquals(-1, rp.getNode(UUID.randomUUID()));
     }
+
+    @Test
+    public void testManageableVMs() throws SolverException {
+        Model mo = defaultModel();
+        Mapping map = mo.getMapping();
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).
+                setManageableVMs(map.getRunningVMs(nOn1)).build();
+        Set<UUID> manageable = rp.getManageableVMs();
+
+        //Check the action model that has been used for each of the VM.
+        for (UUID vm : map.getAllVMs()) {
+            if (map.getRunningVMs().contains(vm) && rp.getFutureRunningVMs().contains(vm)) {
+                if (!manageable.contains(vm)) {
+                    Assert.assertEquals(rp.getVMAction(vm).getClass(), StayRunningVMModel.class);
+                } else {
+                    Assert.assertEquals(rp.getVMAction(vm).getClass(), RelocatableVMModel.class);
+                }
+            } else {
+                Assert.assertNotEquals(rp.getVMAction(vm).getClass(), StayRunningVMModel.class);
+            }
+        }
+    }
+
 
     @Test
     public void testVMToWaiting() throws SolverException {

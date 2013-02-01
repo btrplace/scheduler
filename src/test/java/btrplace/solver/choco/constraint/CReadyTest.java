@@ -35,7 +35,7 @@ public class CReadyTest extends ConstraintTestMaterial {
 
     @Test
     public void testGetMisplaced() {
-        Mapping m = new MappingBuilder().ready(vm1).on(n1).run(n1, vm2, vm3).get();
+        Mapping m = new MappingBuilder().ready(vm1).on(n1).run(n1, vm2, vm3).build();
         Model mo = new DefaultModel(m);
         CReady k = new CReady(new Ready(m.getAllVMs()));
         Assert.assertEquals(2, k.getMisPlacedVMs(mo).size());

@@ -150,7 +150,7 @@ public class COverbookTest extends ConstraintTestMaterial {
         Mapping m = new MappingBuilder().on(n1, n2, n3)
                 .run(n1, vm1)
                 .run(n2, vm2, vm3)
-                .run(n3, vm4, vm5, vm6).get();
+                .run(n3, vm4, vm5, vm6).build();
         btrplace.model.view.ShareableResource rcCPU = new ShareableResource("cpu", 1);
         Model mo = new DefaultModel(m);
         mo.attach(rcCPU);
@@ -168,7 +168,7 @@ public class COverbookTest extends ConstraintTestMaterial {
 
     @Test
     public void testWithScheduling1() throws SolverException {
-        Mapping m = new MappingBuilder().on(n1).run(n1, vm1).ready(vm3).get();
+        Mapping m = new MappingBuilder().on(n1).run(n1, vm1).ready(vm3).build();
 
         btrplace.model.view.ShareableResource rcCPU = new ShareableResource("cpu", 2);
 
@@ -194,7 +194,7 @@ public class COverbookTest extends ConstraintTestMaterial {
      */
     @Test
     public void testWithIncrease() throws SolverException, ContradictionException {
-        Mapping map = new MappingBuilder().on(n1).run(n1, vm1, vm2).get();
+        Mapping map = new MappingBuilder().on(n1).run(n1, vm1, vm2).build();
 
         Model mo = new DefaultModel(map);
         btrplace.model.view.ShareableResource rc = new ShareableResource("foo");

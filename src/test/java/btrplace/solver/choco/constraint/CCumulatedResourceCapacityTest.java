@@ -48,7 +48,7 @@ public class CCumulatedResourceCapacityTest extends ConstraintTestMaterial {
         Mapping map = new MappingBuilder().on(n1, n2, n3)
                 .run(n1, vm1, vm2)
                 .run(n3, vm3, vm4)
-                .sleep(n2, vm5).get();
+                .sleep(n2, vm5).build();
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
         rc.set(vm1, 2);
@@ -73,7 +73,7 @@ public class CCumulatedResourceCapacityTest extends ConstraintTestMaterial {
 
         Mapping map = new MappingBuilder().on(n1, n2, n3)
                 .run(n1, vm1, vm2)
-                .run(n2, vm3, vm4, vm5).get();
+                .run(n2, vm3, vm4, vm5).build();
 
         Set<UUID> on = new HashSet<UUID>(Arrays.asList(n1, n2));
 
@@ -103,7 +103,7 @@ public class CCumulatedResourceCapacityTest extends ConstraintTestMaterial {
         Mapping map = new MappingBuilder().on(n1, n2, n3)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3, vm4)
-                .ready(vm5).get();
+                .ready(vm5).build();
         Set<UUID> on = new HashSet<UUID>(Arrays.asList(n1, n2));
         Model mo = new DefaultModel(map);
 
@@ -132,7 +132,7 @@ public class CCumulatedResourceCapacityTest extends ConstraintTestMaterial {
     @Test
     public void testGetMisplaced() {
         Mapping m = new MappingBuilder().on(n1, n2, n3)
-                .run(n1, vm1, vm2, vm3).run(n2, vm4).ready(vm5).get();
+                .run(n1, vm1, vm2, vm3).run(n2, vm4).ready(vm5).build();
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
         rc.set(vm1, 2);

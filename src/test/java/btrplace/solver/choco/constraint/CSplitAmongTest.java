@@ -48,7 +48,7 @@ public class CSplitAmongTest extends ConstraintTestMaterial {
                 .run(n2, vm2)
                 .run(n3, vm4, vm6)
                 .run(n4, vm5)
-                .run(n5, vm7).get();
+                .run(n5, vm7).build();
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
@@ -94,7 +94,7 @@ public class CSplitAmongTest extends ConstraintTestMaterial {
                 .run(n2, vm2)
                 .run(n3, vm4, vm6)
                 .run(n4, vm5)
-                .run(n5, vm7).get();
+                .run(n5, vm7).build();
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
@@ -129,7 +129,7 @@ public class CSplitAmongTest extends ConstraintTestMaterial {
                 .run(n2, vm2)
                 .run(n3, vm4, vm6)
                 .run(n4, vm5)
-                .run(n5, vm7).get();
+                .run(n5, vm7).build();
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
@@ -162,7 +162,7 @@ public class CSplitAmongTest extends ConstraintTestMaterial {
                 .run(n2, vm2)
                 .run(n3, vm4, vm6)
                 .run(n4, vm5)
-                .run(n5, vm7).get();
+                .run(n5, vm7).build();
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
@@ -200,7 +200,7 @@ public class CSplitAmongTest extends ConstraintTestMaterial {
                 .run(n2, vm2)
                 .run(n3, vm4, vm6)
                 .run(n4, vm5)
-                .run(n5, vm7).get();
+                .run(n5, vm7).build();
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);

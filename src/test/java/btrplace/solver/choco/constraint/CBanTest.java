@@ -80,7 +80,7 @@ public class CBanTest extends ConstraintTestMaterial {
                 .run(n1, vm1, vm2)
                 .run(n2, vm3)
                 .run(n3, vm4)
-                .sleep(n4, vm5).get();
+                .sleep(n4, vm5).build();
 
         Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2));
         Set<UUID> ns = new HashSet<UUID>(Arrays.asList(n3, n4));

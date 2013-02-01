@@ -47,7 +47,7 @@ public class CPreserveTest extends ConstraintTestMaterial {
 
     @Test
     public void testGetMisplaced() {
-        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
+        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).build();
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 7);
         rc.set(vm1, 3);
         rc.set(vm2, 3);
@@ -74,7 +74,7 @@ public class CPreserveTest extends ConstraintTestMaterial {
      */
     @Test
     public void testPreserveWithoutOverbook() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
+        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).build();
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 10);
         rc.set(n1, 7);
         rc.set(vm1, 3);

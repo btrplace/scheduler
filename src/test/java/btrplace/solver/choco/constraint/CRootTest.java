@@ -44,7 +44,7 @@ public class CRootTest extends ConstraintTestMaterial {
 
     @Test
     public void testBasic() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).ready(vm3).get();
+        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).ready(vm3).build();
 
         Model mo = new DefaultModel(map);
 

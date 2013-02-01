@@ -25,7 +25,7 @@ import btrplace.solver.SolverException;
  *
  * @author Fabien Hermenier
  */
-public interface ReconfigurationObjective {
+public interface ReconfigurationObjective extends MisplacedVMsEstimator {
 
     /**
      * Inject the objective into a given problem
