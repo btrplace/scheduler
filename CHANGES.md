@@ -1,7 +1,7 @@
 Release notes
 =======================
 
-v0.2 - ??
+v0.2 - 2 feb. 2013
 -----------------------
 - The repair mode is back to simplify the problems.
 - Bug fix in CGather
