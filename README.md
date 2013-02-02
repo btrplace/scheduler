@@ -5,7 +5,7 @@ manage a virtualized hosting platform. The algorithm can be customized
 and extended on demand to support new placement constraints.
 
 This reconfiguration algorithm relies on the Constraint Programming
-solver CHOCO to compute solutions.
+solver CHOCO (http://choco.emn.fr) to compute solutions.
 
 Contact: fabien.hermenier@unice.fr
 
