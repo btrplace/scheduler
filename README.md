@@ -27,14 +27,13 @@ so you have first to edit your `pom.xml` to declare it:
 </repositories>
 ```
 
-Next, just declare the dependency. Don't forget to specify the right version
-(here version 0.1 is for the example):
+Next, just declare the dependency:
 
 ```xml
 <dependency>
    <groupId>btrplace</groupId>
    <artifactId>solver-choco</artifactId>
-   <version>0.1</version>
+   <version>0.2</version>
 </dependency>
 ```
 
