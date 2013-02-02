@@ -26,8 +26,10 @@ import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public final class MyElement extends AbstractBinIntSConstraint {
-    int[] lval;
-    int cste;
+
+    private int[] lval;
+
+    private int cste;
 
     /**
      * To indicate the ordering of the index value
@@ -54,13 +56,13 @@ public final class MyElement extends AbstractBinIntSConstraint {
     /**
      * The current ordering
      */
-    private Sort s;
+    private Sort sortType;
 
     public MyElement(IntDomainVar index, int[] values, IntDomainVar var, int offset, Sort s) {
         super(index, var);
         this.lval = values;
         this.cste = offset;
-        this.s = s;
+        this.sortType = s;
     }
 
     public MyElement(IntDomainVar index, int[] values, IntDomainVar var) {
@@ -98,61 +100,60 @@ public final class MyElement extends AbstractBinIntSConstraint {
     }
 
     protected void updateValueFromIndex() throws ContradictionException {
-        int minVal = Integer.MAX_VALUE;
-        int maxVal = Integer.MIN_VALUE;
-
-        if (s == Sort.descending) {
+        if (sortType == Sort.descending) {
             this.v1.updateInf(this.lval[v0.getSup() - cste], this, false);
             this.v1.updateSup(this.lval[v0.getInf() - cste], this, false);
-        } else if (s == Sort.ascending) {
+        } else if (sortType == Sort.ascending) {
             this.v1.updateInf(this.lval[v0.getInf() - cste], this, false);
             this.v1.updateSup(this.lval[v0.getSup() - cste], this, false);
 
         } else {
-            DisposableIntIterator iter = this.v0.getDomain().getIterator();
-            boolean isDsc = true;
-            boolean isAsc = true;
-            int prev = this.lval[v0.getInf() - cste];
-            //System.err.println("Parse from " + prev);
-            try {
-                while (iter.hasNext()) {
-                    int index = iter.next();
-                    int val = this.lval[index - cste];
-                    //System.err.println("current: " + val + " prev=" + prev + " " + isDsc + " " + isAsc);
-                    if (minVal > val) {
-                        minVal = val;
-                    }
-                    if (maxVal < val) {
-                        maxVal = val;
-                    }
-                    if (s == Sort.detect) {
-                        if (val > prev) {
-                            isDsc = false;
-                        }
-                        if (val < prev) {
-                            isAsc = false;
-                        }
-                    }
-                    prev = val;
-                }
-                if (s == Sort.detect && isDsc) {
-                    //ChocoLogging.getBranchingLogger().warning(isDsc + " " + isAsc + " Index is sorted decreasingly:" + Arrays.toString(lval));
-                    //System.exit(0);
-                    s = Sort.descending;
-                } else if (s == Sort.detect && isAsc) {
-                    //ChocoLogging.getBranchingLogger().warning(isDsc + " " + isAsc + " Index is sorted increasingly:" + Arrays.toString(lval));
-                    s = Sort.ascending;
-                } else if (s == Sort.detect && !isAsc && !isDsc) {
-                    //ChocoLogging.getBranchingLogger().warning(isDsc + " " + isAsc + " Index is not sorted "+ Arrays.toString(lval));
-                    s = Sort.none;
-                }
-                this.v1.updateInf(minVal, this, false);
-                this.v1.updateSup(maxVal, this, false);
-            } finally {
-                iter.dispose();
-            }
+            computeMinMaxValue();
         }
         // todo : <hcambaza> : why it does not perform AC on the value variable ?
+    }
+
+    private void computeMinMaxValue() throws ContradictionException{
+        int minVal = Integer.MAX_VALUE;
+        int maxVal = Integer.MIN_VALUE;
+        DisposableIntIterator iter = this.v0.getDomain().getIterator();
+        boolean isDsc = true;
+        boolean isAsc = true;
+        int prev = this.lval[v0.getInf() - cste];
+        try {
+            while (iter.hasNext()) {
+                int index = iter.next();
+                int val = this.lval[index - cste];
+                if (minVal > val) {
+                    minVal = val;
+                }
+                if (maxVal < val) {
+                    maxVal = val;
+                }
+                if (sortType == Sort.detect) {
+                    if (val > prev) {
+                        isDsc = false;
+                    }
+                    if (val < prev) {
+                        isAsc = false;
+                    }
+                }
+                prev = val;
+            }
+            if (sortType == Sort.detect) {
+                if (isDsc) {
+                    sortType = Sort.descending;
+                } else if (isAsc) {
+                    sortType = Sort.ascending;
+                } else {
+                    sortType = Sort.none;
+                }
+            }
+            this.v1.updateInf(minVal, this, false);
+            this.v1.updateSup(maxVal, this, false);
+        } finally {
+            iter.dispose();
+        }
     }
 
     protected void updateIndexFromValue() throws ContradictionException {

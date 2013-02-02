@@ -49,7 +49,7 @@ Requirements:
 * JDK 6+
 * maven 3+
 
-The source of the released versions are directly available in the `Tag section.
+The source of the released versions are directly available in the `Tag` section.
 You can also download them using github features.
 Once downloaded, move to the source directory then execute the following command
 to make the jar:
@@ -57,7 +57,7 @@ to make the jar:
     $ mvn clean install
 
 If the build succeeded, the resulting jar will be automatically
-installed in your local maven repository and available in the `target sub-folder`.
+installed in your local maven repository and available in the `target` sub-folder.
 
 
 ## Copyright ##
