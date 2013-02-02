@@ -27,7 +27,7 @@ so you have first to edit your `pom.xml` to declare it:
 </repositories>
 ```
 
-Next, just declare the dependency. Don't forget to specify the right version:
+Next, just declare the dependency:
 
 ```xml
 <dependency>
