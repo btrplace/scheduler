@@ -36,22 +36,31 @@ import java.util.UUID;
  * <p/>
  * If the restriction is continuous, the constraint ensure no VMs are relocated to a node hosting a VM
  * involved in the same Spread constraint.
+ * <p/>
  * If the restriction is discrete, the constraint only ensures that there is no co-location
  * at the end of the reconfiguration plan.
- * <p/>
- * By default, the restriction is continuous.
  *
  * @author Fabien Hermenier
  */
 public class Spread extends SatConstraint {
 
     /**
-     * Make a new constraint.
+     * Make a new constraint having a continuous restriction.
      *
      * @param vms the VMs to consider
      */
     public Spread(Set<UUID> vms) {
-        super(vms, Collections.<UUID>emptySet(), true);
+        this(vms, true);
+    }
+
+    /**
+     * Make a new constraint.
+     *
+     * @param vms        the VMs to consider
+     * @param continuous {@code true} for a continuous restriction.
+     */
+    public Spread(Set<UUID> vms, boolean continuous) {
+        super(vms, Collections.<UUID>emptySet(), continuous);
     }
 
     @Override

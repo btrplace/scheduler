@@ -36,8 +36,6 @@ import java.util.*;
  * <p/>
  * When the restriction is continuous, the constraint ensures a VM can not be set running
  * on a node that is hosting VMs from another group.
- * <p/>
- * By default, the restriction provided by the constraint is discrete.
  *
  * @author Fabien Hermenier
  */
@@ -46,14 +44,25 @@ public class Split extends SatConstraint {
     private Collection<Set<UUID>> sets;
 
     /**
-     * Make a new constraint.
+     * Make a new constraint having a discrete restriction.
      *
      * @param s the disjoint sets of VMs that must be split
      */
     public Split(Collection<Set<UUID>> s) {
-        super(null, Collections.<UUID>emptySet(), false);
+        this(s, false);
+    }
+
+    /**
+     * Make a new constraint.
+     *
+     * @param s          the disjoint sets of VMs that must be split
+     * @param continuous {@code true} for a continuous restriction
+     */
+    public Split(Collection<Set<UUID>> s, boolean continuous) {
+        super(null, Collections.<UUID>emptySet(), continuous);
         this.sets = s;
     }
+
 
     @Override
     public Collection<UUID> getInvolvedVMs() {

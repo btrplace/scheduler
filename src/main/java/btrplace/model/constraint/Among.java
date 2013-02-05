@@ -30,15 +30,12 @@ import java.util.*;
  * A constraint to force a set of VMs to be hosted on a single group of nodes
  * among those available.
  * <p/>
- * <p/>
  * When the restriction is discrete, the constraint only ensure that the VMs are not spread over several
  * group of nodes at the end of the reconfiguration process. However, this situation may occur temporary during
  * the reconfiguration. Basically, this allows to select a new group of nodes for the VMs.
  * <p/>
  * When the restriction is continuous, if some VMs are already running, on a group of nodes,
  * it will not be possible to relocated the VMs to a new group of nodes.
- * <p/>
- * By default, the constraint provides a discrete restriction.
  *
  * @author Fabien Hermenier
  */
@@ -51,13 +48,25 @@ public class Among extends SatConstraint {
 
 
     /**
-     * Make a new constraint.
+     * Make a new constraint with a discrete restriction.
      *
-     * @param vms   the group of VMs
+     * @param vms       the group of VMs
      * @param phyGroups the candidate group of nodes.
      */
     public Among(Set<UUID> vms, Set<Set<UUID>> phyGroups) {
-        super(vms, null, false);
+        this(vms, phyGroups, false);
+
+    }
+
+    /**
+     * Make a new constraint.
+     *
+     * @param vms        the group of VMs
+     * @param phyGroups  the candidate group of nodes.
+     * @param continuous {@code true} for a continuous restriction
+     */
+    public Among(Set<UUID> vms, Set<Set<UUID>> phyGroups, boolean continuous) {
+        super(vms, null, continuous);
         this.pGrps = phyGroups;
     }
 

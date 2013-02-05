@@ -39,10 +39,6 @@ import java.util.*;
  * <p/>
  * If the constraint is set to provide a continuous restriction, the constraint must be satisfied initially, then the VMs
  * of a single group can never spread on multiple groups of nodes nor change of group.
- * <p/>
- * <p/>
- * <p/>
- * By default, the constraint provides a discrete restriction.
  *
  * @author Fabien Hermenier
  */
@@ -59,13 +55,25 @@ public class SplitAmong extends SatConstraint {
     private Set<Set<UUID>> pGrps;
 
     /**
-     * Make a new constraint.
+     * Make a new constraint having a discrete restriction.
      *
      * @param vGrps the set of set of VMs. Sets of VMs must be disjoint
      * @param pGrps the set of set of nodes. Sets of nodes must be disjoint
      */
     public SplitAmong(Set<Set<UUID>> vGrps, Set<Set<UUID>> pGrps) {
-        super(null, null, false);
+        this(vGrps, pGrps, false);
+    }
+
+
+    /**
+     * Make a new constraint.
+     *
+     * @param vGrps      the set of set of VMs. Sets of VMs must be disjoint
+     * @param pGrps      the set of set of nodes. Sets of nodes must be disjoint
+     * @param continuous {@code true} for a continuous restriction
+     */
+    public SplitAmong(Set<Set<UUID>> vGrps, Set<Set<UUID>> pGrps, boolean continuous) {
+        super(null, null, continuous);
         this.vGrps = vGrps;
         this.pGrps = pGrps;
     }

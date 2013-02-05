@@ -34,22 +34,31 @@ import java.util.UUID;
  * <p/>
  * If the restriction is discrete, VMs may then be temporary not co-located during the reconfiguration process but they
  * are ensure of being co-located at the end of the reconfiguration.
+ * <p/>
  * If the restriction is continuous, VMs will always be co-located. In practice, if the VMs are all running, they
  * have to already be co-located and it will not possible to relocate them to avoid a potential temporary separation.
- * <p/>
- * By default, the restriction is discrete.
  *
  * @author Fabien Hermenier
  */
 public class Gather extends SatConstraint {
 
     /**
-     * Make a new constraint.
+     * Make a new constraint with a discrete restriction.
      *
      * @param vms the VMs to group
      */
     public Gather(Set<UUID> vms) {
-        super(vms, Collections.<UUID>emptySet(), false);
+        this(vms, false);
+    }
+
+    /**
+     * Make a new constraint.
+     *
+     * @param vms        the VMs to group
+     * @param continuous {@code true} for a continuous restriction
+     */
+    public Gather(Set<UUID> vms, boolean continuous) {
+        super(vms, Collections.<UUID>emptySet(), continuous);
     }
 
 

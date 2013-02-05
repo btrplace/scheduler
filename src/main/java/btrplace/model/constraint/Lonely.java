@@ -33,26 +33,33 @@ import java.util.UUID;
  * to not share their host with other VMs. Co-location between
  * the VMs given as argument is still possible.
  * <p/>
- * <p/>
  * If the restriction is discrete, then the constraint ensures the given VMs
  * will not be co-located with other VMs only at the end of the reconfiguration process.
+ * <p/>
  * If the restriction is continuous, then no co-location is possible during the reconfiguration
  * process.
- * <p/>
- * By default, the restriction is discrete.
- * <p/>
  *
  * @author Fabien Hermenier
  */
 public class Lonely extends SatConstraint {
 
     /**
-     * Make a new constraint.
+     * Make a new constraint with a discrete restriction.
      *
      * @param vms the set of VMs to consider
      */
     public Lonely(Set<UUID> vms) {
-        super(vms, Collections.<UUID>emptySet(), false);
+        this(vms, false);
+    }
+
+    /**
+     * Make a new constraint.
+     *
+     * @param vms        the set of VMs to consider
+     * @param continuous {@code true} for a continuous restriction
+     */
+    public Lonely(Set<UUID> vms, boolean continuous) {
+        super(vms, Collections.<UUID>emptySet(), continuous);
     }
 
     @Override

@@ -37,12 +37,9 @@ import java.util.UUID;
  * To compute the virtual capacity of a server, its physical capacity is multiplied
  * by the overbooking factor. The result is then truncated.
  * <p/>
- * <p/>
  * The restriction provided by the constraint can be either discrete or continuous.
  * If the restriction is continuous, then the constraint imposes the restriction
  * in the source model, during the reconfiguration and at the end.
- * <p/>
- * By default, the restriction is continuous.
  *
  * @author Fabien Hermenier
  */
@@ -53,14 +50,26 @@ public class Overbook extends SatConstraint {
     private double ratio;
 
     /**
-     * Make a new constraint.
+     * Make a new constraint with a continuous restriction.
      *
      * @param nodes the nodes identifiers
      * @param rcId  the resource identifier
      * @param r     the overbooking ratio
      */
     public Overbook(Set<UUID> nodes, String rcId, double r) {
-        super(Collections.<UUID>emptySet(), nodes, true);
+        this(nodes, rcId, r, true);
+    }
+
+    /**
+     * Make a new constraint.
+     *
+     * @param nodes      the nodes identifiers
+     * @param rcId       the resource identifier
+     * @param r          the overbooking ratio
+     * @param continuous {@code true} for a continuous restriction
+     */
+    public Overbook(Set<UUID> nodes, String rcId, double r, boolean continuous) {
+        super(Collections.<UUID>emptySet(), nodes, continuous);
         this.rcId = rcId;
         this.ratio = r;
     }

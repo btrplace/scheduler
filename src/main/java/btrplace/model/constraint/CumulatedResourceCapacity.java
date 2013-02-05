@@ -33,10 +33,9 @@ import java.util.UUID;
  * The restriction provided by the constraint can be either discrete or continuous.
  * If it is discrete, the constraint only considers the model obtained as the end
  * of the reconfiguration process.
+ * <p/>
  * If the restriction is continuous, then the cumulated resource usage must never exceed
  * the given amount, in the source model, during the reconfiguration and at the end.
- * <p/>
- * By default, the restriction is discrete.
  *
  * @author Fabien Hermenier
  */
@@ -47,17 +46,28 @@ public class CumulatedResourceCapacity extends SatConstraint {
     private String rcId;
 
     /**
-     * Make a new constraint.
+     * Make a new constraint with a discrete restriction.
      *
      * @param servers the server involved in the constraint
      * @param rc      the resource to consider
      * @param amount  the total amount of resource consumed by all the VMs running on the given servers
      */
     public CumulatedResourceCapacity(Set<UUID> servers, String rc, int amount) {
-        super(Collections.<UUID>emptySet(), servers, false);
+        this(servers, rc, amount, false);
+    }
+
+    /**
+     * Make a new constraint.
+     *
+     * @param servers    the server involved in the constraint
+     * @param rc         the resource to consider
+     * @param amount     the total amount of resource consumed by all the VMs running on the given servers
+     * @param continuous {@code true} for a continuous restriction.
+     */
+    public CumulatedResourceCapacity(Set<UUID> servers, String rc, int amount, boolean continuous) {
+        super(Collections.<UUID>emptySet(), servers, continuous);
         this.qty = amount;
         this.rcId = rc;
-
     }
 
     /**

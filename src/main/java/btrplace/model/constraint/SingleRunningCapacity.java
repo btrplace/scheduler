@@ -35,10 +35,9 @@ import java.util.UUID;
  * The restriction provided by the constraint can be either discrete or continuous.
  * If it is discrete, the constraint only considers the model obtained as the end
  * of the reconfiguration process.
+ * <p/>
  * If the restriction is continuous, then the usage must never exceed
  * the given amount, in the source model, during the reconfiguration and at the end.
- * <p/>
- * By default, the constraint provides a discrete restriction.
  *
  * @author Fabien Hermenier
  */
@@ -47,15 +46,27 @@ public class SingleRunningCapacity extends SatConstraint {
     private int amount;
 
     /**
-     * Make a new constraint.
+     * Make a new constraint having a discrete restriction.
      *
-     * @param nodes  the involved servers.
-     * @param qty the maximum amount of resource to share among the hosted VMs
+     * @param nodes the involved servers.
+     * @param qty   the maximum amount of resource to share among the hosted VMs
      */
     public SingleRunningCapacity(Set<UUID> nodes, int qty) {
-        super(Collections.<UUID>emptySet(), nodes, false);
+        this(nodes, qty, false);
+    }
+
+    /**
+     * Make a new constraint.
+     *
+     * @param nodes      the involved servers.
+     * @param qty        the maximum amount of resource to share among the hosted VMs
+     * @param continuous {@code true} for a continuous restriction
+     */
+    public SingleRunningCapacity(Set<UUID> nodes, int qty, boolean continuous) {
+        super(Collections.<UUID>emptySet(), nodes, continuous);
         this.amount = qty;
     }
+
 
     /**
      * Get the amount of resources

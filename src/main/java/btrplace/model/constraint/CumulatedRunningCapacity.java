@@ -34,6 +34,7 @@ import java.util.UUID;
  * The restriction provided by the constraint can be either discrete or continuous.
  * If it is discrete, the constraint only considers the model obtained as the end
  * of the reconfiguration process.
+ * <p/>
  * If the restriction is continuous, then the cumulated usage must never exceed
  * the given amount, in the source model, during the reconfiguration and at the end.
  * <p/>
