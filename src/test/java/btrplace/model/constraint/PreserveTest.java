@@ -26,6 +26,7 @@ import btrplace.model.view.ShareableResource;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -35,13 +36,11 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class PreserveTest {
+public class PreserveTest extends ConstraintTestMaterial {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> vms = new HashSet<UUID>();
-        vms.add(UUID.randomUUID());
-        vms.add(UUID.randomUUID());
+        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2));
         Preserve p = new Preserve(vms, "cpu", 3);
         Assert.assertEquals(vms, p.getInvolvedVMs());
         Assert.assertTrue(p.getInvolvedNodes().isEmpty());
@@ -55,9 +54,7 @@ public class PreserveTest {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsAndHashCode() {
-        Set<UUID> vms = new HashSet<UUID>();
-        vms.add(UUID.randomUUID());
-        vms.add(UUID.randomUUID());
+        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2));
         Preserve p = new Preserve(vms, "cpu", 3);
         Preserve p2 = new Preserve(vms, "cpu", 3);
         Assert.assertTrue(p.equals(p));
@@ -73,13 +70,7 @@ public class PreserveTest {
         ShareableResource rc = new ShareableResource("cpu");
         Model m = new DefaultModel(new DefaultMapping());
         m.attach(rc);
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(vm1);
-        s.add(vm2);
-        s.add(vm3);
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
         Preserve p = new Preserve(s, "cpu", 3);
         rc.set(vm1, 3);
         rc.set(vm2, 4);

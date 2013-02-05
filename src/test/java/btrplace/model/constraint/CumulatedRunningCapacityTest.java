@@ -26,6 +26,7 @@ import btrplace.plan.event.ShutdownVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -35,13 +36,11 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class CumulatedRunningCapacityTest {
+public class CumulatedRunningCapacityTest extends ConstraintTestMaterial {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(UUID.randomUUID());
-        s.add(UUID.randomUUID());
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
         CumulatedRunningCapacity c = new CumulatedRunningCapacity(s, 3);
         Assert.assertEquals(s, c.getInvolvedNodes());
         Assert.assertEquals(3, c.getAmount());
@@ -60,9 +59,7 @@ public class CumulatedRunningCapacityTest {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsAndHashCode() {
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(UUID.randomUUID());
-        s.add(UUID.randomUUID());
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
         CumulatedRunningCapacity c = new CumulatedRunningCapacity(s, 3);
         CumulatedRunningCapacity c2 = new CumulatedRunningCapacity(s, 3);
         Assert.assertTrue(c.equals(c));
@@ -76,19 +73,13 @@ public class CumulatedRunningCapacityTest {
     @Test
     public void testDiscreteIsSatisfied() {
         Mapping m = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
         m.addOnlineNode(n1);
         m.addOnlineNode(n2);
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
-        UUID vm4 = UUID.randomUUID();
         m.addRunningVM(vm1, n1);
         m.addReadyVM(vm2);
-
         m.addRunningVM(vm3, n2);
         m.addReadyVM(vm4);
+
         Model mo = new DefaultModel(m);
         CumulatedRunningCapacity c = new CumulatedRunningCapacity(m.getAllNodes(), 2);
         c.setContinuous(false);
@@ -100,14 +91,8 @@ public class CumulatedRunningCapacityTest {
     @Test
     public void testContinuousIsSatisfied() {
         Mapping m = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
         m.addOnlineNode(n1);
         m.addOnlineNode(n2);
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
-        UUID vm4 = UUID.randomUUID();
         m.addRunningVM(vm1, n1);
         m.addReadyVM(vm2);
 

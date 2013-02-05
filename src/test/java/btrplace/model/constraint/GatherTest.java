@@ -26,6 +26,7 @@ import btrplace.plan.event.MigrateVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -35,15 +36,11 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class GatherTest {
+public class GatherTest extends ConstraintTestMaterial {
 
     @Test
     public void testInstantiate() {
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(vm1);
-        s.add(vm2);
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2));
         Gather g = new Gather(s);
         Assert.assertTrue(g.getInvolvedNodes().isEmpty());
         Assert.assertEquals(g.getInvolvedVMs(), s);
@@ -59,11 +56,7 @@ public class GatherTest {
 
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testEqualsHashCode() {
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(vm1);
-        s.add(vm2);
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2));
         Gather g = new Gather(s);
         Assert.assertTrue(g.equals(g));
         Assert.assertFalse(g.equals(new Object()));
@@ -76,14 +69,7 @@ public class GatherTest {
 
     @Test
     public void testDiscreteIsSatisfied() {
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(vm1);
-        s.add(vm2);
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2));
         Gather g = new Gather(s);
 
         Mapping map = new DefaultMapping();
@@ -103,14 +89,7 @@ public class GatherTest {
 
     @Test(dependsOnMethods = {"testDiscreteIsSatisfied"})
     public void testContinuousIsSatisfied() {
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(vm1);
-        s.add(vm2);
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2));
         Gather g = new Gather(s);
         g.setContinuous(true);
         Mapping map = new DefaultMapping();

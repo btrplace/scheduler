@@ -26,6 +26,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,23 +35,12 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class SequentialVMTransitionsTest {
-
-    UUID n1 = UUID.randomUUID();
-    UUID n2 = UUID.randomUUID();
-    UUID vm1 = UUID.randomUUID();
-    UUID vm2 = UUID.randomUUID();
-    UUID vm3 = UUID.randomUUID();
-    UUID vm4 = UUID.randomUUID();
-
+public class SequentialVMTransitionsTest extends ConstraintTestMaterial {
 
     @Test
     public void testInstantiation() {
 
-        List<UUID> l = new ArrayList<UUID>();
-        l.add(UUID.randomUUID());
-        l.add(UUID.randomUUID());
-        l.add(UUID.randomUUID());
+        List<UUID> l = Arrays.asList(vm1, vm2, vm3);
         SequentialVMTransitions c = new SequentialVMTransitions(l);
         Assert.assertEquals(l, c.getInvolvedVMs());
         Assert.assertTrue(c.getInvolvedNodes().isEmpty());
@@ -64,10 +54,7 @@ public class SequentialVMTransitionsTest {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEquals() {
-        List<UUID> l = new ArrayList<UUID>();
-        l.add(UUID.randomUUID());
-        l.add(UUID.randomUUID());
-        l.add(UUID.randomUUID());
+        List<UUID> l = Arrays.asList(vm1, vm2, vm3);
         SequentialVMTransitions c = new SequentialVMTransitions(l);
         List<UUID> l2 = new ArrayList<UUID>(l);
         SequentialVMTransitions c2 = new SequentialVMTransitions(l2);
@@ -86,11 +73,7 @@ public class SequentialVMTransitionsTest {
         map.addReadyVM(vm2);
         map.addSleepingVM(vm3, n1);
         map.addRunningVM(vm4, n1);
-        List<UUID> l = new ArrayList<UUID>();
-        l.add(vm1);
-        l.add(vm2);
-        l.add(vm3);
-        l.add(vm4);
+        List<UUID> l = Arrays.asList(vm1, vm2, vm3, vm4);
         SequentialVMTransitions c = new SequentialVMTransitions(l);
         Model mo = new DefaultModel(map);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
@@ -134,11 +117,8 @@ public class SequentialVMTransitionsTest {
         p.add(new SuspendVM(vm3, n2, n2, 1, 2));
         p.add(new ShutdownVM(vm4, n1, 2, 3));
 
-        List<UUID> seq = new ArrayList<UUID>();
-        seq.add(vm1);
-        seq.add(vm2);
-        seq.add(vm3);
-        seq.add(vm4);
+        List<UUID> seq = Arrays.asList(vm1, vm2, vm3, vm4);
+
         SequentialVMTransitions cstr = new SequentialVMTransitions(seq);
         Assert.assertEquals(cstr.isSatisfied(p), SatConstraint.Sat.SATISFIED);
     }

@@ -27,6 +27,7 @@ import btrplace.plan.event.ShutdownVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -36,22 +37,12 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class SingleResourceCapacityTest {
-
-    UUID n1 = UUID.randomUUID();
-    UUID n2 = UUID.randomUUID();
-
-    UUID vm1 = UUID.randomUUID();
-    UUID vm2 = UUID.randomUUID();
-    UUID vm3 = UUID.randomUUID();
-    UUID vm4 = UUID.randomUUID();
-
+public class SingleResourceCapacityTest extends ConstraintTestMaterial {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(UUID.randomUUID());
-        s.add(UUID.randomUUID());
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
+
         SingleResourceCapacity c = new SingleResourceCapacity(s, "foo", 3);
         Assert.assertEquals(s, c.getInvolvedNodes());
         Assert.assertEquals("foo", c.getResource());
@@ -69,9 +60,7 @@ public class SingleResourceCapacityTest {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsAndHashCode() {
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(UUID.randomUUID());
-        s.add(UUID.randomUUID());
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
         SingleResourceCapacity c = new SingleResourceCapacity(s, "foo", 3);
         SingleResourceCapacity c2 = new SingleResourceCapacity(s, "foo", 3);
         Assert.assertTrue(c.equals(c));

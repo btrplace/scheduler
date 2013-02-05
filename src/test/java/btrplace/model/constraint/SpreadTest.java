@@ -25,6 +25,7 @@ import btrplace.plan.event.MigrateVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -34,13 +35,11 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class SpreadTest {
+public class SpreadTest extends ConstraintTestMaterial {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> x = new HashSet<UUID>();
-        x.add(UUID.randomUUID());
-        x.add(UUID.randomUUID());
+        Set<UUID> x = new HashSet<UUID>(Arrays.asList(vm1, vm2));
         Spread s = new Spread(x);
         Assert.assertEquals(x, s.getInvolvedVMs());
         Assert.assertTrue(s.getInvolvedNodes().isEmpty());
@@ -56,18 +55,14 @@ public class SpreadTest {
 
     @Test
     public void testEquals() {
-        Set<UUID> x = new HashSet<UUID>();
-        x.add(UUID.randomUUID());
-        x.add(UUID.randomUUID());
+        Set<UUID> x = new HashSet<UUID>(Arrays.asList(vm1, vm2));
         Spread s = new Spread(x);
 
         Assert.assertTrue(s.equals(s));
         Assert.assertTrue(new Spread(x).equals(s));
         Assert.assertEquals(s.hashCode(), new Spread(x).hashCode());
-        x = new HashSet<UUID>();
-        x.add(UUID.randomUUID());
+        x = new HashSet<UUID>(Arrays.asList(vm3));
         Assert.assertFalse(new Spread(x).equals(s));
-        Assert.assertNotSame(s.hashCode(), new Spread(x).hashCode());
     }
 
     /**
@@ -75,13 +70,6 @@ public class SpreadTest {
      */
     @Test
     public void testDiscreteIsSatisfied() {
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        UUID n3 = UUID.randomUUID();
-        UUID n4 = UUID.randomUUID();
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
 
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
@@ -105,13 +93,6 @@ public class SpreadTest {
 
     @Test
     public void testContinuousIsSatisfied() {
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        UUID n3 = UUID.randomUUID();
-        UUID n4 = UUID.randomUUID();
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
 
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);

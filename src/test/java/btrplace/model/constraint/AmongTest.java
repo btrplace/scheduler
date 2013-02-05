@@ -25,6 +25,7 @@ import btrplace.plan.event.MigrateVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -34,31 +35,15 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class AmongTest {
-
-    UUID n1 = UUID.randomUUID();
-    UUID n2 = UUID.randomUUID();
-    UUID n3 = UUID.randomUUID();
-
-    UUID vm1 = UUID.randomUUID();
-    UUID vm2 = UUID.randomUUID();
-    UUID vm3 = UUID.randomUUID();
-
+public class AmongTest extends ConstraintTestMaterial {
 
     @Test
     public void testInstantiation() {
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>();
-        Set<UUID> s1 = new HashSet<UUID>();
-        Set<UUID> s2 = new HashSet<UUID>();
-        s1.add(n1);
-        s1.add(n2);
-        s2.add(n3);
-        pGrps.add(s1);
-        pGrps.add(s2);
-        Set<UUID> vms = new HashSet<UUID>();
-        vms.add(vm1);
-        vms.add(vm2);
-        vms.add(vm3);
+
+        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(n3));
+        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(s1, s2));
+        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
         Among a = new Among(vms, pGrps);
         Assert.assertEquals(a.getInvolvedVMs(), vms);
         Assert.assertEquals(a.getGroupsOfNodes(), pGrps);
@@ -77,18 +62,12 @@ public class AmongTest {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsHashCode() {
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>();
-        Set<UUID> s1 = new HashSet<UUID>();
-        Set<UUID> s2 = new HashSet<UUID>();
-        s1.add(n1);
-        s1.add(n2);
-        s2.add(n3);
-        pGrps.add(s1);
-        pGrps.add(s2);
-        Set<UUID> vms = new HashSet<UUID>();
-        vms.add(vm1);
-        vms.add(vm2);
-        vms.add(vm3);
+
+        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(n3));
+        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(s1, s2));
+        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
+
         Among a = new Among(vms, pGrps);
         Assert.assertTrue(a.equals(a));
         Assert.assertTrue(a.equals(new Among(new HashSet<UUID>(vms), pGrps)));
@@ -102,20 +81,11 @@ public class AmongTest {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testDiscreteIsSatisfied() {
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>();
-        Set<UUID> s1 = new HashSet<UUID>();
-        Set<UUID> s2 = new HashSet<UUID>();
 
-        s1.add(n1);
-        s1.add(n2);
-        s2.add(n3);
-        pGrps.add(s1);
-        pGrps.add(s2);
-        Set<UUID> vms = new HashSet<UUID>();
-
-        vms.add(vm1);
-        vms.add(vm2);
-        vms.add(vm3);
+        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(n3));
+        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(s1, s2));
+        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
 
         Among a = new Among(vms, pGrps);
 
@@ -137,20 +107,11 @@ public class AmongTest {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testContinuousIsSatisfied() {
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>();
-        Set<UUID> s1 = new HashSet<UUID>();
-        Set<UUID> s2 = new HashSet<UUID>();
 
-        s1.add(n1);
-        s1.add(n2);
-        s2.add(n3);
-        pGrps.add(s1);
-        pGrps.add(s2);
-        Set<UUID> vms = new HashSet<UUID>();
-
-        vms.add(vm1);
-        vms.add(vm2);
-        vms.add(vm3);
+        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(n3));
+        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(s1, s2));
+        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
 
         Among a = new Among(vms, pGrps);
 

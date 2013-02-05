@@ -26,6 +26,7 @@ import btrplace.plan.event.ShutdownVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -35,15 +36,11 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class QuarantineTest {
+public class QuarantineTest extends ConstraintTestMaterial {
 
     @Test
     public void testInstantiation() {
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(n1);
-        s.add(n2);
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
         Quarantine q = new Quarantine(s);
         Assert.assertTrue(q.getInvolvedVMs().isEmpty());
         Assert.assertEquals(q.getInvolvedNodes(), s);
@@ -57,11 +54,7 @@ public class QuarantineTest {
 
     @Test
     public void testEqualsHashCode() {
-        Set<UUID> s = new HashSet<UUID>();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        s.add(n1);
-        s.add(n2);
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
         Quarantine q = new Quarantine(s);
         Assert.assertTrue(q.equals(q));
         Assert.assertTrue(q.equals(new Quarantine(new HashSet<UUID>(s))));
@@ -71,13 +64,6 @@ public class QuarantineTest {
 
     @Test
     public void testContinuousIsSatisfied() {
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
-
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);

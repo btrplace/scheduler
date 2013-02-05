@@ -22,6 +22,7 @@ import btrplace.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -31,14 +32,12 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class FenceTest {
+public class FenceTest extends ConstraintTestMaterial {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> vms = new HashSet<UUID>();
-        Set<UUID> nodes = new HashSet<UUID>();
-        vms.add(UUID.randomUUID());
-        nodes.add(UUID.randomUUID());
+        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1));
+        Set<UUID> nodes = new HashSet<UUID>(Arrays.asList(n1));
         Fence f = new Fence(vms, nodes);
         Assert.assertEquals(vms, f.getInvolvedVMs());
         Assert.assertEquals(nodes, f.getInvolvedNodes());
@@ -51,27 +50,17 @@ public class FenceTest {
     @Test
     public void testIsSatisfied() {
 
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        UUID n3 = UUID.randomUUID();
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addOnlineNode(n3);
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n2);
         map.addRunningVM(vm3, n2);
-        Set<UUID> vms = new HashSet<UUID>();
-        vms.add(vm1);
-        vms.add(vm2);
-        vms.add(vm3);
+        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
 
-        Set<UUID> nodes = new HashSet<UUID>();
-        nodes.add(n1);
-        nodes.add(n2);
+        Set<UUID> nodes = new HashSet<UUID>(Arrays.asList(n1, n2));
+
         Fence f = new Fence(vms, nodes);
         Model m = new DefaultModel(map);
         Assert.assertEquals(SatConstraint.Sat.SATISFIED, f.isSatisfied(m));
@@ -81,16 +70,8 @@ public class FenceTest {
 
     @Test
     public void testEquals() {
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        Set<UUID> vms = new HashSet<UUID>();
-        vms.add(vm1);
-        vms.add(vm2);
-        Set<UUID> nodes = new HashSet<UUID>();
-        nodes.add(n1);
-        nodes.add(n2);
+        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> nodes = new HashSet<UUID>(Arrays.asList(n1, n2));
         Fence f = new Fence(vms, nodes);
         Assert.assertTrue(f.equals(f));
         Assert.assertTrue(new Fence(vms, nodes).equals(f));

@@ -25,23 +25,18 @@ import btrplace.plan.event.MigrateVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Unit tests for {@link btrplace.model.constraint.Root}.
  *
  * @author Fabien Hermenier
  */
-public class RootTest {
+public class RootTest extends ConstraintTestMaterial {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> x = new HashSet<UUID>();
-        x.add(UUID.randomUUID());
-        x.add(UUID.randomUUID());
+        Set<UUID> x = new HashSet<UUID>(Arrays.asList(vm1, vm2));
         Root s = new Root(x);
         Assert.assertEquals(x, s.getInvolvedVMs());
         Assert.assertTrue(s.getInvolvedNodes().isEmpty());
@@ -56,29 +51,22 @@ public class RootTest {
 
     @Test
     public void testEquals() {
-        Set<UUID> x = new HashSet<UUID>();
-        x.add(UUID.randomUUID());
-        x.add(UUID.randomUUID());
+        Set<UUID> x = new HashSet<UUID>(Arrays.asList(vm1, vm2));
         Root s = new Root(x);
 
         Assert.assertTrue(s.equals(s));
         Assert.assertTrue(new Root(x).equals(s));
         Assert.assertEquals(s.hashCode(), new Root(x).hashCode());
-        x = new HashSet<UUID>();
-        x.add(UUID.randomUUID());
+        x = Collections.singleton(vm3);
         Assert.assertFalse(new Root(x).equals(s));
     }
 
     @Test
     public void testIsSatisfied() {
         Mapping c = new DefaultMapping();
-        UUID n = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        c.addReadyVM(n);
+        c.addReadyVM(n1);
         c.addReadyVM(n2);
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(n);
-        s.add(n2);
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
         Root o = new Root(s);
 
         Model i = new DefaultModel(c);
@@ -91,9 +79,6 @@ public class RootTest {
     @Test
     public void testContinuousIsSatisfied() {
         Mapping map = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        UUID vm1 = UUID.randomUUID();
         Model mo = new DefaultModel(map);
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);

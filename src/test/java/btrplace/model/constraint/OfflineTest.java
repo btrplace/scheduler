@@ -26,6 +26,7 @@ import btrplace.plan.event.ShutdownVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -35,13 +36,11 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class OfflineTest {
+public class OfflineTest extends ConstraintTestMaterial {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(UUID.randomUUID());
-        s.add(UUID.randomUUID());
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
         Offline o = new Offline(s);
         Assert.assertEquals(o.getInvolvedNodes(), s);
         Assert.assertTrue(o.getInvolvedVMs().isEmpty());
@@ -52,13 +51,9 @@ public class OfflineTest {
     @Test
     public void testIsSatisfied() {
         Mapping c = new DefaultMapping();
-        UUID n = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        c.addOfflineNode(n);
+        c.addOfflineNode(n1);
         c.addOfflineNode(n2);
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(n);
-        s.add(n2);
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
         Offline o = new Offline(s);
 
         Model i = new DefaultModel(c);
@@ -71,23 +66,19 @@ public class OfflineTest {
     @Test
     public void testContinuousIsSatisfied() {
         Mapping map = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
 
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(n1);
-        s.add(n2);
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
         Offline off = new Offline(s);
-        UUID vm = UUID.randomUUID();
-        map.addRunningVM(vm, n1);
+
+        map.addRunningVM(vm1, n1);
 
         Model mo = new DefaultModel(map);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(off.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
         plan.add(new ShutdownNode(n2, 0, 1));
-        plan.add(new ShutdownVM(vm, n1, 0, 1));
+        plan.add(new ShutdownVM(vm1, n1, 0, 1));
         Assert.assertEquals(off.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
         plan.add(new ShutdownNode(n1, 1, 2));
         Assert.assertEquals(off.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
@@ -96,16 +87,13 @@ public class OfflineTest {
 
     @Test
     public void testEquals() {
-        Set<UUID> x = new HashSet<UUID>();
-        x.add(UUID.randomUUID());
-        x.add(UUID.randomUUID());
+        Set<UUID> x = new HashSet<UUID>(Arrays.asList(n1, n2));
         Offline s = new Offline(x);
 
         Assert.assertTrue(s.equals(s));
         Assert.assertTrue(new Offline(x).equals(s));
         Assert.assertEquals(new Offline(x).hashCode(), s.hashCode());
-        x = new HashSet<UUID>();
-        x.add(UUID.randomUUID());
+        x = new HashSet<UUID>(Arrays.asList(n3));
         Assert.assertFalse(new Offline(x).equals(s));
     }
 }

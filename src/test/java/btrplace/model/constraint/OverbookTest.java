@@ -27,6 +27,7 @@ import btrplace.plan.event.ShutdownVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -36,13 +37,11 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class OverbookTest {
+public class OverbookTest extends ConstraintTestMaterial {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(UUID.randomUUID());
-        s.add(UUID.randomUUID());
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
         Overbook o = new Overbook(s, "foo", 1.5);
         Assert.assertEquals(s, o.getInvolvedNodes());
         Assert.assertEquals("foo", o.getResource());
@@ -60,12 +59,7 @@ public class OverbookTest {
 
     @Test
     public void testDiscreteIsSatisfied() {
-        Set<UUID> s = new HashSet<UUID>();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-
-        s.add(n1);
-        s.add(n2);
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
 
         Mapping cfg = new DefaultMapping();
         cfg.addOnlineNode(n1);
@@ -74,11 +68,6 @@ public class OverbookTest {
         ShareableResource rc = new ShareableResource("cpu");
         rc.set(n1, 1);
         rc.set(n2, 4);
-
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
-        UUID vm4 = UUID.randomUUID();
 
         rc.set(vm1, 2);
         rc.set(vm2, 2);
@@ -108,12 +97,7 @@ public class OverbookTest {
 
     @Test
     public void testContinuousIsSatisfied() {
-        Set<UUID> s = new HashSet<UUID>();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-
-        s.add(n1);
-        s.add(n2);
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
 
         Mapping cfg = new DefaultMapping();
         cfg.addOnlineNode(n1);
@@ -122,11 +106,6 @@ public class OverbookTest {
         ShareableResource rc = new ShareableResource("cpu");
         rc.set(n1, 1);
         rc.set(n2, 4);
-
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
-        UUID vm4 = UUID.randomUUID();
 
         rc.set(vm1, 2);
         rc.set(vm2, 2);
@@ -165,9 +144,7 @@ public class OverbookTest {
 
     @Test
     public void testEquals() {
-        Set<UUID> x = new HashSet<UUID>();
-        x.add(UUID.randomUUID());
-        x.add(UUID.randomUUID());
+        Set<UUID> x = new HashSet<UUID>(Arrays.asList(n1, n2));
         Overbook s = new Overbook(x, "foo", 3);
 
         Assert.assertTrue(s.equals(s));
@@ -176,8 +153,7 @@ public class OverbookTest {
         Assert.assertEquals(o2.hashCode(), s.hashCode());
         Assert.assertFalse(new Overbook(x, "bar", 3).equals(s));
         Assert.assertFalse(new Overbook(x, "foo", 2).equals(s));
-        x = new HashSet<UUID>();
-        x.add(UUID.randomUUID());
+        x = new HashSet<UUID>(Arrays.asList(n3));
         Assert.assertFalse(new Overbook(x, "foo", 3).equals(s));
     }
 }

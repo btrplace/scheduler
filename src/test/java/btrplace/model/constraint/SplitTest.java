@@ -34,27 +34,13 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class SplitTest {
-
-    UUID n1 = UUID.randomUUID();
-    UUID n2 = UUID.randomUUID();
-    UUID n3 = UUID.randomUUID();
-
-    UUID vm1 = UUID.randomUUID();
-    UUID vm2 = UUID.randomUUID();
-    UUID vm3 = UUID.randomUUID();
-    UUID vm4 = UUID.randomUUID();
-
+public class SplitTest extends ConstraintTestMaterial {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s1 = new HashSet<UUID>();
-        Set<UUID> s2 = new HashSet<UUID>();
-        s1.add(UUID.randomUUID());
-        s2.add(UUID.randomUUID());
-        List<Set<UUID>> args = new ArrayList<Set<UUID>>();
-        args.add(s1);
-        args.add(s2);
+        Set<UUID> s1 = Collections.singleton(vm1);
+        Set<UUID> s2 = Collections.singleton(vm2);
+        List<Set<UUID>> args = Arrays.asList(s1, s2);
         Split sp = new Split(args);
         Assert.assertEquals(args, sp.getSets());
         Assert.assertEquals(2, sp.getInvolvedVMs().size());
@@ -73,13 +59,9 @@ public class SplitTest {
 
     @Test
     public void testEquals() {
-        Set<UUID> s1 = new HashSet<UUID>();
-        Set<UUID> s2 = new HashSet<UUID>();
-        s1.add(UUID.randomUUID());
-        s2.add(UUID.randomUUID());
-        List<Set<UUID>> args = new ArrayList<Set<UUID>>();
-        args.add(s1);
-        args.add(s2);
+        Set<UUID> s1 = Collections.singleton(vm1);
+        Set<UUID> s2 = Collections.singleton(vm2);
+        List<Set<UUID>> args = Arrays.asList(s1, s2);
         Split sp = new Split(args);
         Assert.assertTrue(sp.equals(sp));
         Assert.assertTrue(new Split(args).equals(sp));
@@ -96,18 +78,12 @@ public class SplitTest {
         map.addOnlineNode(n2);
         map.addOnlineNode(n3);
 
-        Set<Set<UUID>> args = new HashSet<Set<UUID>>();
-        Set<UUID> s1 = new HashSet<UUID>();
-        s1.add(vm1);
-        s1.add(vm2);
-        Set<UUID> s2 = new HashSet<UUID>();
-        s2.add(vm3);
-        s2.add(vm4);
-        Set<UUID> s3 = new HashSet<UUID>();
-        s3.add(UUID.randomUUID());
-        args.add(s1);
-        args.add(s2);
-        args.add(s3);
+
+        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(vm3, vm4));
+        Set<UUID> s3 = Collections.singleton(vm5);
+        Set<Set<UUID>> args = new HashSet<Set<UUID>>(Arrays.asList(s1, s2, s3));
+
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n1);
         map.addRunningVM(vm3, n2);
@@ -129,18 +105,11 @@ public class SplitTest {
         map.addOnlineNode(n2);
         map.addOnlineNode(n3);
 
-        Set<Set<UUID>> args = new HashSet<Set<UUID>>();
-        Set<UUID> s1 = new HashSet<UUID>();
-        s1.add(vm1);
-        s1.add(vm2);
-        Set<UUID> s2 = new HashSet<UUID>();
-        s2.add(vm3);
-        s2.add(vm4);
-        Set<UUID> s3 = new HashSet<UUID>();
-        s3.add(UUID.randomUUID());
-        args.add(s1);
-        args.add(s2);
-        args.add(s3);
+        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(vm3, vm4));
+        Set<UUID> s3 = Collections.singleton(vm5);
+        Set<Set<UUID>> args = new HashSet<Set<UUID>>(Arrays.asList(s1, s2, s3));
+
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n1);
         map.addRunningVM(vm3, n2);

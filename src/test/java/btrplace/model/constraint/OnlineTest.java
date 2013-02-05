@@ -22,6 +22,7 @@ import btrplace.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -31,13 +32,11 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class OnlineTest {
+public class OnlineTest extends ConstraintTestMaterial {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(UUID.randomUUID());
-        s.add(UUID.randomUUID());
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
         Online o = new Online(s);
         Assert.assertEquals(o.getInvolvedNodes(), s);
         Assert.assertTrue(o.getInvolvedVMs().isEmpty());
@@ -48,13 +47,9 @@ public class OnlineTest {
     @Test
     public void testIsSatisfied() {
         Mapping c = new DefaultMapping();
-        UUID n = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        c.addOnlineNode(n);
+        c.addOnlineNode(n1);
         c.addOnlineNode(n2);
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(n);
-        s.add(n2);
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
         Online o = new Online(s);
 
         Model i = new DefaultModel(c);
@@ -66,16 +61,13 @@ public class OnlineTest {
 
     @Test
     public void testEquals() {
-        Set<UUID> x = new HashSet<UUID>();
-        x.add(UUID.randomUUID());
-        x.add(UUID.randomUUID());
+        Set<UUID> x = new HashSet<UUID>(Arrays.asList(n1, n2));
         Online s = new Online(x);
 
         Assert.assertTrue(s.equals(s));
         Assert.assertTrue(new Online(x).equals(s));
         Assert.assertEquals(new Online(x).hashCode(), s.hashCode());
-        x = new HashSet<UUID>();
-        x.add(UUID.randomUUID());
+        x = new HashSet<UUID>(Arrays.asList(n3));
         Assert.assertFalse(new Online(x).equals(s));
     }
 }

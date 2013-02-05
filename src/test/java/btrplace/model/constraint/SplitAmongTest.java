@@ -25,6 +25,7 @@ import btrplace.plan.event.MigrateVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -34,43 +35,20 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class SplitAmongTest {
-
-    UUID vm1 = UUID.randomUUID();
-    UUID vm2 = UUID.randomUUID();
-    UUID vm3 = UUID.randomUUID();
-    UUID vm4 = UUID.randomUUID();
-
-    UUID n1 = UUID.randomUUID();
-    UUID n2 = UUID.randomUUID();
-    UUID n3 = UUID.randomUUID();
-    UUID n4 = UUID.randomUUID();
+public class SplitAmongTest extends ConstraintTestMaterial {
 
     @Test
     public void testInstantiation() {
-        Set<Set<UUID>> vGrps = new HashSet<Set<UUID>>();
-        Set<UUID> vs1 = new HashSet<UUID>();
-        vs1.add(vm1);
-        vs1.add(vm2);
 
-        Set<UUID> vs2 = new HashSet<UUID>();
-        vs2.add(vm3);
-        vs2.add(vm4);
+        Set<UUID> vs1 = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> vs2 = new HashSet<UUID>(Arrays.asList(vm3, vm4));
 
-        vGrps.add(vs1);
-        vGrps.add(vs2);
+        Set<Set<UUID>> vGrps = new HashSet<Set<UUID>>(Arrays.asList(vs1, vs2));
 
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>();
-        Set<UUID> ps1 = new HashSet<UUID>();
-        ps1.add(n1);
-        ps1.add(n2);
 
-        Set<UUID> ps2 = new HashSet<UUID>();
-        ps2.add(n3);
-        ps2.add(n4);
-
-        pGrps.add(ps1);
-        pGrps.add(ps2);
+        Set<UUID> ps1 = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> ps2 = new HashSet<UUID>(Arrays.asList(n3, n4));
+        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(ps1, ps2));
 
         SplitAmong sp = new SplitAmong(vGrps, pGrps);
         Assert.assertEquals(sp.getGroupsOfVMs(), vGrps);
@@ -94,29 +72,15 @@ public class SplitAmongTest {
 
     @Test
     public void testEqualsAndHashCode() {
-        Set<Set<UUID>> vGrps = new HashSet<Set<UUID>>();
-        Set<UUID> vs1 = new HashSet<UUID>();
-        vs1.add(vm1);
-        vs1.add(vm2);
 
-        Set<UUID> vs2 = new HashSet<UUID>();
-        vs2.add(vm3);
-        vs2.add(vm4);
+        Set<UUID> vs1 = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> vs2 = new HashSet<UUID>(Arrays.asList(vm3, vm4));
+        Set<Set<UUID>> vGrps = new HashSet<Set<UUID>>(Arrays.asList(vs1, vs2));
 
-        vGrps.add(vs1);
-        vGrps.add(vs2);
 
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>();
-        Set<UUID> ps1 = new HashSet<UUID>();
-        ps1.add(n1);
-        ps1.add(n2);
-
-        Set<UUID> ps2 = new HashSet<UUID>();
-        ps2.add(n3);
-        ps2.add(n4);
-
-        pGrps.add(ps1);
-        pGrps.add(ps2);
+        Set<UUID> ps1 = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> ps2 = new HashSet<UUID>(Arrays.asList(n3, n4));
+        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(ps1, ps2));
 
         SplitAmong sp = new SplitAmong(vGrps, pGrps);
         Assert.assertTrue(sp.equals(sp));
@@ -132,29 +96,15 @@ public class SplitAmongTest {
 
     @Test
     public void testDiscreteIsSatisfied() {
-        Set<Set<UUID>> vGrps = new HashSet<Set<UUID>>();
-        Set<UUID> vs1 = new HashSet<UUID>();
-        vs1.add(vm1);
-        vs1.add(vm2);
 
-        Set<UUID> vs2 = new HashSet<UUID>();
-        vs2.add(vm3);
-        vs2.add(vm4);
+        Set<UUID> vs1 = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> vs2 = new HashSet<UUID>(Arrays.asList(vm3, vm4));
+        Set<Set<UUID>> vGrps = new HashSet<Set<UUID>>(Arrays.asList(vs1, vs2));
 
-        vGrps.add(vs1);
-        vGrps.add(vs2);
 
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>();
-        Set<UUID> ps1 = new HashSet<UUID>();
-        ps1.add(n1);
-        ps1.add(n2);
-
-        Set<UUID> ps2 = new HashSet<UUID>();
-        ps2.add(n3);
-        ps2.add(n4);
-
-        pGrps.add(ps1);
-        pGrps.add(ps2);
+        Set<UUID> ps1 = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> ps2 = new HashSet<UUID>(Arrays.asList(n3, n4));
+        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(ps1, ps2));
 
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
@@ -183,29 +133,15 @@ public class SplitAmongTest {
 
     @Test
     public void testContinuousIsSatisfied() {
-        Set<Set<UUID>> vGrps = new HashSet<Set<UUID>>();
-        Set<UUID> vs1 = new HashSet<UUID>();
-        vs1.add(vm1);
-        vs1.add(vm2);
 
-        Set<UUID> vs2 = new HashSet<UUID>();
-        vs2.add(vm3);
-        vs2.add(vm4);
+        Set<UUID> vs1 = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> vs2 = new HashSet<UUID>(Arrays.asList(vm3, vm4));
+        Set<Set<UUID>> vGrps = new HashSet<Set<UUID>>(Arrays.asList(vs1, vs2));
 
-        vGrps.add(vs1);
-        vGrps.add(vs2);
 
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>();
-        Set<UUID> ps1 = new HashSet<UUID>();
-        ps1.add(n1);
-        ps1.add(n2);
-
-        Set<UUID> ps2 = new HashSet<UUID>();
-        ps2.add(n3);
-        ps2.add(n4);
-
-        pGrps.add(ps1);
-        pGrps.add(ps2);
+        Set<UUID> ps1 = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> ps2 = new HashSet<UUID>(Arrays.asList(n3, n4));
+        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(ps1, ps2));
 
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);

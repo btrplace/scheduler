@@ -26,6 +26,7 @@ import btrplace.plan.event.ShutdownVM;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -35,24 +36,11 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class LonelyTest {
-
-    UUID vm1 = UUID.randomUUID();
-    UUID vm2 = UUID.randomUUID();
-    UUID vm3 = UUID.randomUUID();
-    UUID vm4 = UUID.randomUUID();
-
-    UUID n1 = UUID.randomUUID();
-    UUID n2 = UUID.randomUUID();
-    UUID n3 = UUID.randomUUID();
-
+public class LonelyTest extends ConstraintTestMaterial {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(vm1);
-        s.add(vm2);
-        s.add(vm3);
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
         Lonely l = new Lonely(s);
         Assert.assertFalse(l.toString().contains("null"));
         Assert.assertEquals(l.getInvolvedVMs(), s);
@@ -68,10 +56,7 @@ public class LonelyTest {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsHashCode() {
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(vm1);
-        s.add(vm2);
-        s.add(vm3);
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
         Lonely l = new Lonely(s);
         Assert.assertTrue(l.equals(l));
         Assert.assertTrue(l.equals(new Lonely(new HashSet<UUID>(s))));
@@ -81,7 +66,7 @@ public class LonelyTest {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testContinuousIsSatisfied() {
-        Set<UUID> s = new HashSet<UUID>();
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2));
 
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
@@ -95,8 +80,6 @@ public class LonelyTest {
 
         Model mo = new DefaultModel(map);
 
-        s.add(vm1);
-        s.add(vm2);
         Lonely l = new Lonely(s);
 
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
@@ -112,7 +95,7 @@ public class LonelyTest {
 
     @Test
     public void testDiscreteIsSatisfied() {
-        Set<UUID> s = new HashSet<UUID>();
+
 
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
@@ -125,8 +108,7 @@ public class LonelyTest {
 
         Model mo = new DefaultModel(map);
 
-        s.add(vm1);
-        s.add(vm2);
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2));
         Lonely l = new Lonely(s);
 
         Assert.assertEquals(l.isSatisfied(mo), SatConstraint.Sat.SATISFIED);

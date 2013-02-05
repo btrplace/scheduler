@@ -22,6 +22,7 @@ import btrplace.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -31,13 +32,11 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class KilledTest {
+public class KilledTest extends ConstraintTestMaterial {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> x = new HashSet<UUID>();
-        x.add(UUID.randomUUID());
-        x.add(UUID.randomUUID());
+        Set<UUID> x = new HashSet<UUID>(Arrays.asList(vm1, vm2));
         Killed s = new Killed(x);
         Assert.assertEquals(x, s.getInvolvedVMs());
         Assert.assertTrue(s.getInvolvedNodes().isEmpty());
@@ -47,37 +46,30 @@ public class KilledTest {
 
     @Test
     public void testEquals() {
-        Set<UUID> x = new HashSet<UUID>();
-        x.add(UUID.randomUUID());
-        x.add(UUID.randomUUID());
+        Set<UUID> x = new HashSet<UUID>(Arrays.asList(vm1, vm2));
         Killed s = new Killed(x);
 
         Assert.assertTrue(s.equals(s));
         Assert.assertTrue(new Killed(x).equals(s));
         Assert.assertEquals(new Killed(x).hashCode(), s.hashCode());
-        x = new HashSet<UUID>();
-        x.add(UUID.randomUUID());
+        x = new HashSet<UUID>(Arrays.asList(vm3));
         Assert.assertFalse(new Killed(x).equals(s));
     }
 
     @Test
     public void testIsSatisfied() {
         Mapping c = new DefaultMapping();
-        UUID v1 = UUID.randomUUID();
-        UUID v2 = UUID.randomUUID();
-        Set<UUID> s = new HashSet<UUID>();
-        s.add(v1);
-        s.add(v2);
+        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2));
         Killed d = new Killed(s);
         Model i = new DefaultModel(c);
         Assert.assertEquals(d.isSatisfied(i), SatConstraint.Sat.SATISFIED);
-        c.addReadyVM(v1);
+        c.addReadyVM(vm1);
         Assert.assertEquals(d.isSatisfied(i), SatConstraint.Sat.UNSATISFIED);
         UUID n = UUID.randomUUID();
         c.addOnlineNode(n);
-        c.addRunningVM(v1, n);
+        c.addRunningVM(vm1, n);
         Assert.assertEquals(d.isSatisfied(i), SatConstraint.Sat.UNSATISFIED);
-        c.addSleepingVM(v1, n);
+        c.addSleepingVM(vm1, n);
         Assert.assertEquals(d.isSatisfied(i), SatConstraint.Sat.UNSATISFIED);
     }
 }
