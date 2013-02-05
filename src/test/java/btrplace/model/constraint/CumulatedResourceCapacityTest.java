@@ -61,6 +61,10 @@ public class CumulatedResourceCapacityTest {
         Assert.assertFalse(c.isContinuous());
         Assert.assertTrue(c.setContinuous(true));
         Assert.assertTrue(c.isContinuous());
+
+        c = new CumulatedResourceCapacity(s, "foo", 3, true);
+        Assert.assertTrue(c.isContinuous());
+
         System.out.println(c);
     }
 

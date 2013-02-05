@@ -66,6 +66,9 @@ public class SplitTest {
         Assert.assertTrue(sp.setContinuous(false));
         Assert.assertFalse(sp.isContinuous());
         System.out.println(sp);
+
+        sp = new Split(args, true);
+        Assert.assertTrue(sp.isContinuous());
     }
 
     @Test

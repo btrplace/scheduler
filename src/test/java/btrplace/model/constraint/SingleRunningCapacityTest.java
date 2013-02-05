@@ -53,6 +53,9 @@ public class SingleRunningCapacityTest {
         Assert.assertTrue(c.isContinuous());
         System.out.println(c);
 
+        c = new SingleRunningCapacity(s, 3, true);
+        Assert.assertTrue(c.isContinuous());
+
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})

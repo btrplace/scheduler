@@ -87,6 +87,9 @@ public class SplitAmongTest {
 
         Assert.assertTrue(sp.setContinuous(false));
         Assert.assertFalse(sp.isContinuous());
+
+        sp = new SplitAmong(vGrps, pGrps, true);
+        Assert.assertTrue(sp.isContinuous());
     }
 
     @Test

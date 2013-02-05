@@ -53,6 +53,9 @@ public class OverbookTest {
         Assert.assertTrue(o.setContinuous(false));
         Assert.assertFalse(o.isContinuous());
         System.out.println(o);
+
+        o = new Overbook(s, "foo", 1.5, true);
+        Assert.assertTrue(o.isContinuous());
     }
 
     @Test

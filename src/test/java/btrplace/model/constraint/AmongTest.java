@@ -70,6 +70,9 @@ public class AmongTest {
         Assert.assertFalse(a.isContinuous());
         Assert.assertTrue(a.setContinuous(true));
         Assert.assertTrue(a.setContinuous(false));
+
+        a = new Among(vms, pGrps, true);
+        Assert.assertTrue(a.isContinuous());
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})

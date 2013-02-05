@@ -62,6 +62,9 @@ public class SingleResourceCapacityTest {
         Assert.assertFalse(c.isContinuous());
         Assert.assertTrue(c.setContinuous(true));
         Assert.assertTrue(c.isContinuous());
+
+        c = new SingleResourceCapacity(s, "foo", 3, true);
+        Assert.assertTrue(c.isContinuous());
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
