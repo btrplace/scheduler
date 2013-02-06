@@ -18,10 +18,7 @@
 
 package btrplace.model;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Default implementation for {@link Attributes}.
@@ -48,7 +45,8 @@ public class DefaultAttributes implements Attributes, Cloneable {
         return m.put(k, v) != null;
     }
 
-    private Object getObject(UUID e, String k) {
+    @Override
+    public Object get(UUID e, String k) {
         Map<String, Object> m = attrs.get(e);
         if (m == null) {
             return null;
@@ -148,21 +146,30 @@ public class DefaultAttributes implements Attributes, Cloneable {
 
     @Override
     public Boolean getBoolean(UUID e, String k) {
-        return (Boolean) getObject(e, k);
+        return (Boolean) get(e, k);
     }
 
     @Override
     public Long getLong(UUID e, String k) {
-        return (Long) getObject(e, k);
+        return (Long) get(e, k);
     }
 
     @Override
     public String getString(UUID e, String k) {
-        return (String) getObject(e, k);
+        return (String) get(e, k);
     }
 
     @Override
     public Double getDouble(UUID e, String k) {
-        return (Double) getObject(e, k);
+        return (Double) get(e, k);
+    }
+
+    @Override
+    public Set<String> getKeys(UUID u) {
+        Map<String, Object> m = attrs.get(u);
+        if (m == null) {
+            return Collections.emptySet();
+        }
+        return m.keySet();
     }
 }

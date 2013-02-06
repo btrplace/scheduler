@@ -23,6 +23,7 @@ import java.util.UUID;
 
 /**
  * Allow to specify attributes related to managed elements.
+ * Attributes are key/value pair, where values are Java primitives (long, double, String, boolean)
  *
  * @author Fabien Hermenier
  */
@@ -67,6 +68,15 @@ public interface Attributes extends Cloneable {
      * @return {@code true} if a previous value was overridden
      */
     boolean put(UUID e, String k, double d);
+
+    /**
+     * Get an attribute value as a simple Object.
+     *
+     * @param e the element identifier
+     * @param k the attribute value
+     * @return the value if it has been stated. {@code null} otherwise
+     */
+    Object get(UUID e, String k);
 
     /**
      * Get an attribute value as a boolean.
@@ -135,6 +145,14 @@ public interface Attributes extends Cloneable {
      * @return a set that may be empty
      */
     Set<UUID> getElements();
+
+    /**
+     * Get all the attributes keys that are registered for an element.
+     *
+     * @param u the element identifier
+     * @return a set that may be empty
+     */
+    Set<String> getKeys(UUID u);
 
     /**
      * Remove all the attributes.
