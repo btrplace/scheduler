@@ -1,7 +1,7 @@
 Release notes
 =======================
 
-version ??????
+version 0.10 - 06 Feb 2013
 ----------------------
 - non-critical API update
 - documentation and tests

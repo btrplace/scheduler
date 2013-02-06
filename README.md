@@ -34,7 +34,7 @@ Next, just declare the dependency:
 <dependency>
    <groupId>btrplace</groupId>
    <artifactId>solver-api</artifactId>
-   <version>0.1</version>
+   <version>0.10</version>
 </dependency>
 ```
 
