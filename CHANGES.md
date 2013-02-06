@@ -1,6 +1,10 @@
 Release notes
 =======================
 
+version ??????
+----------------------
+- non-critical API update in Attributes
+
 version 0.10 - 06 Feb 2013
 ----------------------
 - non-critical API update

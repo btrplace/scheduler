@@ -129,6 +129,11 @@ public class DefaultAttributes implements Attributes, Cloneable {
     }
 
     @Override
+    public Set<UUID> getElements() {
+        return attrs.keySet();
+    }
+
+    @Override
     public void clear() {
         this.attrs.clear();
     }

@@ -36,6 +36,7 @@ public class DefaultAttributesTest {
         Assert.assertFalse(attrs.toString().contains("null"));
         Assert.assertTrue(attrs.get(UUID.randomUUID()).isEmpty());
         Assert.assertNull(attrs.get(UUID.randomUUID(), "foo"));
+        Assert.assertTrue(attrs.getElements().isEmpty());
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
@@ -53,6 +54,8 @@ public class DefaultAttributesTest {
         Assert.assertEquals(Boolean.TRUE, attrs.set(u, "fi", Boolean.FALSE));
         Assert.assertEquals(Boolean.FALSE, attrs.get(u, "fi"));
 
+        Assert.assertEquals(attrs.getElements().size(), 1);
+        Assert.assertTrue(attrs.getElements().contains(u));
         System.out.println(attrs);
     }
 
@@ -147,5 +150,6 @@ public class DefaultAttributesTest {
         for (UUID u : l) {
             Assert.assertTrue(attrs.get(u).isEmpty());
         }
+        Assert.assertTrue(attrs.getElements().isEmpty());
     }
 }

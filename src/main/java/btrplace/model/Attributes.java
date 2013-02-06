@@ -91,6 +91,13 @@ public interface Attributes extends Cloneable {
     Attributes clone();
 
     /**
+     * Get the elements having attributes defined.
+     *
+     * @return a set that may be empty
+     */
+    Set<UUID> getElements();
+
+    /**
      * Remove all the attributes.
      */
     void clear();
