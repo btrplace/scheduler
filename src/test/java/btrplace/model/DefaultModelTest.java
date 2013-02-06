@@ -103,9 +103,9 @@ public class DefaultModelTest {
         i.attach(b);
 
         UUID u = UUID.randomUUID();
-        i.getAttributes().set(u, "foo");
+        i.getAttributes().put(u, "foo", true);
         Model j = new DefaultModel(i.getMapping().clone());
-        j.getAttributes().set(u, "foo");
+        j.getAttributes().put(u, "foo", true);
         j.attach(rc);
         j.attach(b);
         Assert.assertTrue(i.equals(i));
@@ -124,7 +124,7 @@ public class DefaultModelTest {
         ModelView v1 = new MockView("foo");
         ModelView v2 = new MockView("bar");
         UUID u = UUID.randomUUID();
-        i.getAttributes().set(u, "foo");
+        i.getAttributes().put(u, "foo", false);
         i.attach(v1);
         i.attach(v2);
         Model c = i.clone();
@@ -134,7 +134,7 @@ public class DefaultModelTest {
         Assert.assertEquals(c.getView("foo"), v1);
         c.detach(v1);
         Assert.assertEquals(i.getView("bar"), v2);
-        Assert.assertEquals(Boolean.TRUE, c.getAttributes().get(u, "foo"));
+        Assert.assertEquals(c.getAttributes().getBoolean(u, "foo"), Boolean.FALSE);
 
     }
 
@@ -162,7 +162,7 @@ public class DefaultModelTest {
     public void testAttributes() {
         Model i = new DefaultModel(new DefaultMapping());
         Attributes attrs = new DefaultAttributes();
-        attrs.set(UUID.randomUUID(), "foo");
+        attrs.put(UUID.randomUUID(), "foo", true);
         i.setAttributes(attrs);
         Assert.assertEquals(i.getAttributes(), attrs);
     }
