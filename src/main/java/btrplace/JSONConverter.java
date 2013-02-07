@@ -16,37 +16,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.instance.json;
+package btrplace;
 
-import org.json.simple.JSONArray;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import org.json.simple.JSONObject;
 
 /**
- * Tools to help at converting object to JSON.
+ * Basic abstract solver-API/JSON objects converter.
  *
  * @author Fabien Hermenier
  */
-public class Utils {
+public interface JSONConverter<E> {
 
-    private Utils() {
-    }
+    E fromJSON(JSONObject in);
 
-    public static Set<UUID> fromJSON(JSONArray a) {
-        Set<UUID> s = new HashSet<UUID>(a.size());
-        for (Object o : a) {
-            s.add(UUID.fromString((String) o));
-        }
-        return s;
-    }
-
-    public static JSONArray toJSON(Set<UUID> s) {
-        JSONArray a = new JSONArray();
-        for (UUID u : s) {
-            a.add(u.toString());
-        }
-        return a;
-    }
+    JSONObject toJSON(E e);
 }

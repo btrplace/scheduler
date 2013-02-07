@@ -14,14 +14,15 @@
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
   ~ You should have received a copy of the GNU General Public License
-  ~ along with this program.  If not, see <http://www.gnu.org/licenses />.
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>btrplace</groupId>
-    <artifactId>model-json</artifactId>
+    <artifactId>solver-json</artifactId>
     <version>0.3-SNAPSHOT</version>
 
     <description>Read and write model according to the JSON format</description>
@@ -69,48 +70,42 @@
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>6.2</version>
+            <version>6.8</version>
             <type>jar</type>
             <scope>test</scope>
             <optional>false</optional>
         </dependency>
         <dependency>
             <groupId>btrplace</groupId>
-            <artifactId>model</artifactId>
-            <version>0.3</version>
+            <artifactId>solver-api</artifactId>
+            <version>0.11-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
-            <version>1.1</version>
+            <version>1.1.1</version>
         </dependency>
     </dependencies>
 
     <scm>
-        <connection>scm:git:git://github.com/fhermeni/btrplace-model-json.git</connection>
-        <url>scm:git:git@github.com:fhermeni/btrplace-model-json</url>
-        <developerConnection>scm:git:git@github.com:fhermeni/btrplace-model-json.git</developerConnection>
+        <connection>scm:git:git://github.com/fhermeni/btrplace-solver-json.git</connection>
+        <url>scm:git:git@github.com:fhermeni/btrplace-solver-json</url>
+        <developerConnection>scm:git:git@github.com:fhermeni/btrplace-solver-json.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
-    <distributionManagement>
+    <repositories>
         <repository>
-            <uniqueVersion>false</uniqueVersion>
-            <id>btrp</id>
-            <name>Corporate Repository</name>
-            <url>
-                scpexe://btrp.inria.fr:/home/maven/repos/releases
-            </url>
-            <layout>default</layout>
+            <id>choco.repos</id>
+            <url>http://www.emn.fr/z-info/choco-repo/mvn/repository/</url>
         </repository>
-        <snapshotRepository>
-            <uniqueVersion>false</uniqueVersion>
-            <id>btrp</id>
-            <name>Corporate Repository</name>
-            <url>
-                scpexe://btrp.inria.fr:/home/maven/repos/snapshot-releases
-            </url>
-            <layout>default</layout>
-        </snapshotRepository>
-    </distributionManagement>
+        <repository>
+            <id>btrp-releases</id>
+            <url>http://btrp.inria.fr:8080/repos/releases</url>
+        </repository>
+        <repository>
+            <id>btrp-snapshots</id>
+            <url>http://btrp.inria.fr:8080/repos/snapshot-releases</url>
+        </repository>
+    </repositories>
 </project>

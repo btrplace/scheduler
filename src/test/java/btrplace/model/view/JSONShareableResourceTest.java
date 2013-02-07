@@ -16,35 +16,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.instance.json;
+package btrplace.model.view;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.Mapping;
 import junit.framework.Assert;
-import org.json.simple.JSONObject;
 import org.testng.annotations.Test;
 
 import java.util.UUID;
 
 /**
- * Unit tests for {@link JSONMapping}.
+ * Unit tests for {@link btrplace.model.view.JSONShareableResource}.
  *
  * @author Fabien Hermenier
  */
-public class JSONMappingTest {
+public class JSONShareableResourceTest {
 
     @Test
-    public void testTo() {
-        Mapping c = new DefaultMapping();
-        c.addOnlineNode(UUID.randomUUID());
-        c.addOfflineNode(UUID.randomUUID());
-        c.addOfflineNode(UUID.randomUUID());
-        c.addWaitingVM(UUID.randomUUID());
-        c.addWaitingVM(UUID.randomUUID());
-        c.addWaitingVM(UUID.randomUUID());
-        JSONMapping json = new JSONMapping();
-        JSONObject ob = json.toJSON(c);
-        Mapping c2 = json.fromJSON(ob.toJSONString());
-        Assert.assertEquals(c, c2);
+    public void testSimple() {
+        ShareableResource rc = new ShareableResource("foo");
+        rc.set(UUID.randomUUID(), 3);
+        rc.set(UUID.randomUUID(), 4);
+        rc.set(UUID.randomUUID(), 5);
+        rc.set(UUID.randomUUID(), 6);
+        JSONShareableResource s = new JSONShareableResource();
+        ShareableResource rc2 = s.fromJSON(s.toJSON(rc));
+
+        Assert.assertEquals(rc.getIdentifier(), rc2.getIdentifier());
+        Assert.assertEquals(rc.getResourceIdentifier(), rc2.getResourceIdentifier());
+        Assert.assertEquals(rc.getDefined(), rc2.getDefined());
+        for (UUID u : rc.getDefined()) {
+            Assert.assertEquals(rc.get(u), rc2.get(u));
+        }
     }
 }

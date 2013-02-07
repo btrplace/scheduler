@@ -16,37 +16,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.instance.json;
+package btrplace.model;
 
-import btrplace.model.DefaultIntResource;
-import btrplace.model.IntResource;
 import junit.framework.Assert;
+import org.json.simple.JSONObject;
 import org.testng.annotations.Test;
 
 import java.util.UUID;
 
 /**
- * Unit tests for {@link JSONIntResource}.
+ * Unit tests for {@link btrplace.model.JSONMapping}.
  *
  * @author Fabien Hermenier
  */
-public class JSONIntResourceTest {
+public class JSONMappingTest {
 
     @Test
     public void testSimple() {
-        IntResource rc = new DefaultIntResource("foo");
-        rc.set(UUID.randomUUID(), 3);
-        rc.set(UUID.randomUUID(), 4);
-        rc.set(UUID.randomUUID(), 5);
-        rc.set(UUID.randomUUID(), 6);
-        JSONIntResource s = new JSONIntResource();
-        String str = s.toJSON(rc).toString();
-        IntResource rc2 = s.fromJSON(str);
+        Mapping c = new DefaultMapping();
+        UUID n1 = UUID.randomUUID();
+        UUID n2 = UUID.randomUUID();
+        UUID n3 = UUID.randomUUID();
+        UUID vm1 = UUID.randomUUID();
+        UUID vm2 = UUID.randomUUID();
+        UUID vm3 = UUID.randomUUID();
+        UUID vm4 = UUID.randomUUID();
 
-        Assert.assertEquals(rc.identifier(), rc2.identifier());
-        Assert.assertEquals(rc.getDefined(), rc2.getDefined());
-        for (UUID u : rc.getDefined()) {
-            Assert.assertEquals(rc.get(u), rc2.get(u));
-        }
+        c.addOnlineNode(n1);
+        c.addOfflineNode(n2);
+        c.addRunningVM(vm1, n1);
+        c.addSleepingVM(vm2, n1);
+        c.addReadyVM(vm3);
+        c.addOnlineNode(n3);
+        c.addRunningVM(vm4, n3);
+        JSONMapping json = new JSONMapping();
+        JSONObject ob = json.toJSON(c);
+        Mapping c2 = json.fromJSON(ob);
+        Assert.assertEquals(c, c2);
     }
 }
