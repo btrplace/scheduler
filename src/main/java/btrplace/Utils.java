@@ -30,7 +30,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class Utils {
+public final class Utils {
 
     private Utils() {
     }
@@ -50,10 +50,10 @@ public class Utils {
     }
 
     /**
-     * Convert an array of UUID in the java format to a json array.
+     * Convert an array of UUIDs in the java format to a json array.
      *
-     * @param a the collection of UUID
-     * @return the json formatted array of UUID
+     * @param s the collection of UUIDs
+     * @return the json formatted array of UUIDs
      */
     public static JSONArray toJSON(Collection<UUID> s) {
         JSONArray a = new JSONArray();

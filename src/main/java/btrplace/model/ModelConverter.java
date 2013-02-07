@@ -36,16 +36,29 @@ public class ModelConverter implements JSONConverter<Model> {
 
     private ModelViewsConverter viewsConverter;
 
+    /**
+     * Make a new converter.
+     */
     public ModelConverter() {
         cfgParser = new MappingConverter();
         attrsParser = new AttributesConverter();
         viewsConverter = new ModelViewsConverter();
     }
 
+    /**
+     * Get the converter that manage the views.
+     *
+     * @return the used converter
+     */
     public ModelViewsConverter getViewsConverter() {
         return viewsConverter;
     }
 
+    /**
+     * set the converter that manage the views.
+     *
+     * @param c the converter to use
+     */
     public void setModelViewConverters(ModelViewsConverter c) {
         this.viewsConverter = c;
     }
