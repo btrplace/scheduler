@@ -54,7 +54,7 @@ public class PreserveConverter implements SatConstraintConverter<Preserve> {
     public JSONObject toJSON(Preserve o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", Utils.toJSON(o.getInvolvedNodes()));
+        c.put("vms", Utils.toJSON(o.getInvolvedVMs()));
         c.put("rcId", o.getResource());
         c.put("amount", o.getAmount());
         return c;
