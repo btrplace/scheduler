@@ -60,7 +60,7 @@ public class SatConstraintsConverter implements JSONConverter<SatConstraint> {
         register(new ReadyConverter());
         register(new RootConverter());
         register(new RunningConverter());
-        register(new JSONSequentialVMTransitions());
+        register(new SequentialVMTransitionsConverter());
         register(new SingleResourceCapacityConverter());
         register(new SingleRunningCapacityConverter());
         register(new SleepingConverter());
