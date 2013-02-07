@@ -16,30 +16,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace;
+package btrplace.model.view;
 
-import org.json.simple.JSONObject;
+import btrplace.JSONConverter;
+import btrplace.model.ModelView;
 
 /**
- * Basic abstract solver-API/JSON objects converter.
+ * Specify a JSON converter for a {@link btrplace.model.ModelView}.
  *
  * @author Fabien Hermenier
  */
-public interface JSONConverter<E> {
+public interface ModelViewConverter<E extends ModelView> extends JSONConverter<E> {
 
     /**
-     * JSON to Java object conversion
+     * Get the classname of the view that is supported by the converter.
      *
-     * @param in the json object
-     * @return the conversion result
+     * @return The view class
      */
-    E fromJSON(JSONObject in);
+    Class<E> getSupportedConstraint();
 
     /**
-     * Java to JSON conversion
+     * Get the JSON identifier for the view.
      *
-     * @param e the Java object to convert
-     * @return the conversion result
+     * @return a non-empty string
      */
-    JSONObject toJSON(E e);
+    String getJSONId();
 }

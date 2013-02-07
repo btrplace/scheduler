@@ -22,45 +22,38 @@ import btrplace.Utils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 /**
- * JSON converter for the {@link btrplace.model.constraint.SequentialVMTransitions} constraint.
+ * JSON Converter for the constraint {@link Ready}.
  *
  * @author Fabien Hermenier
  */
-public class SequentialVMTransitionsConverter implements SatConstraintConverter<SequentialVMTransitions> {
+public class ReadyConverter implements SatConstraintConverter<Ready> {
+
 
     @Override
-    public Class<SequentialVMTransitions> getSupportedConstraint() {
-        return SequentialVMTransitions.class;
+    public Class<Ready> getSupportedConstraint() {
+        return Ready.class;
     }
 
     @Override
     public String getJSONId() {
-        return "sequentialVMTransitions";
+        return "ready";
     }
 
     @Override
-    public SequentialVMTransitions fromJSON(JSONObject o) {
+    public Ready fromJSON(JSONObject o) {
         String id = o.get("id").toString();
         if (!id.equals(getJSONId())) {
             return null;
         }
-        List<UUID> s = new ArrayList<UUID>();
-        for (Object ob : (JSONArray) o.get("vms")) {
-            s.add(UUID.fromString((String) ob));
-        }
-        return new SequentialVMTransitions(s);
+        return new Ready(Utils.fromJSON((JSONArray) o.get("vms")));
     }
 
     @Override
-    public JSONObject toJSON(SequentialVMTransitions o) {
+    public JSONObject toJSON(Ready o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", Utils.toJSON(o.getInvolvedVMs()));
+        c.put("vms", Utils.toJSON(o.getInvolvedNodes()));
         return c;
     }
 }

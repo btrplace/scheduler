@@ -22,45 +22,43 @@ import btrplace.Utils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 /**
- * JSON converter for the {@link btrplace.model.constraint.SequentialVMTransitions} constraint.
+ * JSON Converter for the constraint {@link SingleResourceCapacityConverter}.
  *
  * @author Fabien Hermenier
  */
-public class SequentialVMTransitionsConverter implements SatConstraintConverter<SequentialVMTransitions> {
+public class SingleResourceCapacityConverter implements SatConstraintConverter<SingleResourceCapacity> {
 
     @Override
-    public Class<SequentialVMTransitions> getSupportedConstraint() {
-        return SequentialVMTransitions.class;
+    public Class<SingleResourceCapacity> getSupportedConstraint() {
+        return SingleResourceCapacity.class;
     }
 
     @Override
     public String getJSONId() {
-        return "sequentialVMTransitions";
+        return "singleResourceCapacity";
     }
 
     @Override
-    public SequentialVMTransitions fromJSON(JSONObject o) {
+    public SingleResourceCapacity fromJSON(JSONObject o) {
         String id = o.get("id").toString();
         if (!id.equals(getJSONId())) {
             return null;
         }
-        List<UUID> s = new ArrayList<UUID>();
-        for (Object ob : (JSONArray) o.get("vms")) {
-            s.add(UUID.fromString((String) ob));
-        }
-        return new SequentialVMTransitions(s);
+        return new SingleResourceCapacity(Utils.fromJSON((JSONArray) o.get("nodes")),
+                (String) o.get("rcId"),
+                (Integer) o.get("amount"),
+                (Boolean) o.get("continuous"));
     }
 
     @Override
-    public JSONObject toJSON(SequentialVMTransitions o) {
+    public JSONObject toJSON(SingleResourceCapacity o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", Utils.toJSON(o.getInvolvedVMs()));
+        c.put("nodes", Utils.toJSON(o.getInvolvedNodes()));
+        c.put("rcId", o.getResource());
+        c.put("amount", o.getAmount());
+        c.put("continuous", o.isContinuous());
         return c;
     }
 }

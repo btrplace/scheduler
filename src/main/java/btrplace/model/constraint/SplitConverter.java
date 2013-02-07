@@ -22,45 +22,52 @@ import btrplace.Utils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 /**
- * JSON converter for the {@link btrplace.model.constraint.SequentialVMTransitions} constraint.
+ * JSON converter for the {@link btrplace.model.constraint.Split} constraint.
  *
  * @author Fabien Hermenier
  */
-public class SequentialVMTransitionsConverter implements SatConstraintConverter<SequentialVMTransitions> {
+public class SplitConverter implements SatConstraintConverter<Split> {
 
     @Override
-    public Class<SequentialVMTransitions> getSupportedConstraint() {
-        return SequentialVMTransitions.class;
+    public Class<Split> getSupportedConstraint() {
+        return Split.class;
     }
 
     @Override
     public String getJSONId() {
-        return "sequentialVMTransitions";
+        return "split";
     }
 
     @Override
-    public SequentialVMTransitions fromJSON(JSONObject o) {
+    public Split fromJSON(JSONObject o) {
         String id = o.get("id").toString();
         if (!id.equals(getJSONId())) {
             return null;
         }
-        List<UUID> s = new ArrayList<UUID>();
-        for (Object ob : (JSONArray) o.get("vms")) {
-            s.add(UUID.fromString((String) ob));
+        Set<Set<UUID>> vGroups = new HashSet<Set<UUID>>();
+        for (Object obj : (JSONArray) o.get("vms")) {
+            vGroups.add(Utils.fromJSON((JSONArray) obj));
         }
-        return new SequentialVMTransitions(s);
+        return new Split(vGroups, (Boolean) o.get("continuous"));
     }
 
     @Override
-    public JSONObject toJSON(SequentialVMTransitions o) {
+    public JSONObject toJSON(Split o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", Utils.toJSON(o.getInvolvedVMs()));
+
+        JSONArray a = new JSONArray();
+        for (Set<UUID> grp : o.getSets()) {
+            a.add(Utils.toJSON(grp));
+        }
+
+        c.put("vms", a);
+        c.put("continuous", o.isContinuous());
         return c;
     }
 }

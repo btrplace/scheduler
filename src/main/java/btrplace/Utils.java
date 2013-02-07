@@ -35,6 +35,12 @@ public class Utils {
     private Utils() {
     }
 
+    /**
+     * Convert an array of UUID in the json format to a set.
+     *
+     * @param a the json array
+     * @return the set of UUID
+     */
     public static Set<UUID> fromJSON(JSONArray a) {
         Set<UUID> s = new HashSet<UUID>(a.size());
         for (Object o : a) {
@@ -43,6 +49,12 @@ public class Utils {
         return s;
     }
 
+    /**
+     * Convert an array of UUID in the java format to a json array.
+     *
+     * @param a the collection of UUID
+     * @return the json formatted array of UUID
+     */
     public static JSONArray toJSON(Collection<UUID> s) {
         JSONArray a = new JSONArray();
         for (UUID u : s) {

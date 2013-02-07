@@ -22,45 +22,43 @@ import btrplace.Utils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 /**
- * JSON converter for the {@link btrplace.model.constraint.SequentialVMTransitions} constraint.
+ * JSON Converter for the constraint {@link OverbookConverter}.
  *
  * @author Fabien Hermenier
  */
-public class SequentialVMTransitionsConverter implements SatConstraintConverter<SequentialVMTransitions> {
+public class OverbookConverter implements SatConstraintConverter<Overbook> {
 
     @Override
-    public Class<SequentialVMTransitions> getSupportedConstraint() {
-        return SequentialVMTransitions.class;
+    public Class<Overbook> getSupportedConstraint() {
+        return Overbook.class;
     }
 
     @Override
     public String getJSONId() {
-        return "sequentialVMTransitions";
+        return "overbook";
     }
 
     @Override
-    public SequentialVMTransitions fromJSON(JSONObject o) {
+    public Overbook fromJSON(JSONObject o) {
         String id = o.get("id").toString();
         if (!id.equals(getJSONId())) {
             return null;
         }
-        List<UUID> s = new ArrayList<UUID>();
-        for (Object ob : (JSONArray) o.get("vms")) {
-            s.add(UUID.fromString((String) ob));
-        }
-        return new SequentialVMTransitions(s);
+        return new Overbook(Utils.fromJSON((JSONArray) o.get("vms")),
+                (String) o.get("rcId"),
+                (Double) o.get("ratio"),
+                (Boolean) o.get("continuous"));
     }
 
     @Override
-    public JSONObject toJSON(SequentialVMTransitions o) {
+    public JSONObject toJSON(Overbook o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", Utils.toJSON(o.getInvolvedVMs()));
+        c.put("vms", Utils.toJSON(o.getInvolvedNodes()));
+        c.put("rcId", o.getResource());
+        c.put("ratio", o.getRatio());
+        c.put("continuous", o.isContinuous());
         return c;
     }
 }

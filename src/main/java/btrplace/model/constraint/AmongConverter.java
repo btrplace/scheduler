@@ -22,45 +22,53 @@ import btrplace.Utils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 /**
- * JSON converter for the {@link btrplace.model.constraint.SequentialVMTransitions} constraint.
+ * JSON converter for the {@link Among} constraint.
  *
  * @author Fabien Hermenier
  */
-public class SequentialVMTransitionsConverter implements SatConstraintConverter<SequentialVMTransitions> {
+public class AmongConverter implements SatConstraintConverter<Among> {
 
     @Override
-    public Class<SequentialVMTransitions> getSupportedConstraint() {
-        return SequentialVMTransitions.class;
+    public Class<Among> getSupportedConstraint() {
+        return Among.class;
     }
 
     @Override
     public String getJSONId() {
-        return "sequentialVMTransitions";
+        return "among";
     }
 
     @Override
-    public SequentialVMTransitions fromJSON(JSONObject o) {
+    public Among fromJSON(JSONObject o) {
         String id = o.get("id").toString();
         if (!id.equals(getJSONId())) {
             return null;
         }
-        List<UUID> s = new ArrayList<UUID>();
-        for (Object ob : (JSONArray) o.get("vms")) {
-            s.add(UUID.fromString((String) ob));
+        Set<Set<UUID>> pGroups = new HashSet<Set<UUID>>();
+        for (Object obj : (JSONArray) o.get("nodes")) {
+            pGroups.add(Utils.fromJSON((JSONArray) obj));
         }
-        return new SequentialVMTransitions(s);
+        return new Among(Utils.fromJSON((JSONArray) o.get("vms")),
+                pGroups,
+                (Boolean) o.get("continuous"));
     }
 
     @Override
-    public JSONObject toJSON(SequentialVMTransitions o) {
+    public JSONObject toJSON(Among o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
         c.put("vms", Utils.toJSON(o.getInvolvedVMs()));
+        JSONArray a = new JSONArray();
+        for (Set<UUID> grp : o.getGroupsOfNodes()) {
+            a.add(Utils.toJSON(grp));
+        }
+        c.put("nodes", a);
+        c.put("continuous", o.isContinuous());
         return c;
     }
 }

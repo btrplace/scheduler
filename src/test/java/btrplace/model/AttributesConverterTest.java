@@ -16,30 +16,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace;
+package btrplace.model;
 
 import org.json.simple.JSONObject;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+import java.io.IOException;
+import java.util.UUID;
 
 /**
- * Basic abstract solver-API/JSON objects converter.
+ * Unit tests for {@link AttributesConverter}.
  *
  * @author Fabien Hermenier
  */
-public interface JSONConverter<E> {
+public class AttributesConverterTest {
 
-    /**
-     * JSON to Java object conversion
-     *
-     * @param in the json object
-     * @return the conversion result
-     */
-    E fromJSON(JSONObject in);
+    @Test
+    public void testSimple() throws IOException {
+        Attributes attrs = new DefaultAttributes();
+        UUID n1 = UUID.randomUUID();
+        UUID n2 = UUID.randomUUID();
 
-    /**
-     * Java to JSON conversion
-     *
-     * @param e the Java object to convert
-     * @return the conversion result
-     */
-    JSONObject toJSON(E e);
+        attrs.put(n1, "foo", true);
+        attrs.put(n2, "foo", false);
+        attrs.put(n1, "bar", 5);
+        attrs.put(n2, "baz", "zab");
+        attrs.put(n2, "ba", 1.34);
+
+        AttributesConverter json = new AttributesConverter();
+        JSONObject o = json.toJSON(attrs);
+        Attributes attrs2 = json.fromJSON(o);
+        Assert.assertTrue(attrs.equals(attrs2));
+    }
 }

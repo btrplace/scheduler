@@ -22,45 +22,42 @@ import btrplace.Utils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 /**
- * JSON converter for the {@link btrplace.model.constraint.SequentialVMTransitions} constraint.
+ * JSON Converter for the constraint {@link CumulatedRunningCapacityConverter}.
  *
  * @author Fabien Hermenier
  */
-public class SequentialVMTransitionsConverter implements SatConstraintConverter<SequentialVMTransitions> {
+public class CumulatedRunningCapacityConverter implements SatConstraintConverter<CumulatedRunningCapacity> {
 
     @Override
-    public Class<SequentialVMTransitions> getSupportedConstraint() {
-        return SequentialVMTransitions.class;
+    public Class<CumulatedRunningCapacity> getSupportedConstraint() {
+        return CumulatedRunningCapacity.class;
     }
 
     @Override
     public String getJSONId() {
-        return "sequentialVMTransitions";
+        return "cumulatedRunningCapacity";
     }
 
+
     @Override
-    public SequentialVMTransitions fromJSON(JSONObject o) {
+    public CumulatedRunningCapacity fromJSON(JSONObject o) {
         String id = o.get("id").toString();
         if (!id.equals(getJSONId())) {
             return null;
         }
-        List<UUID> s = new ArrayList<UUID>();
-        for (Object ob : (JSONArray) o.get("vms")) {
-            s.add(UUID.fromString((String) ob));
-        }
-        return new SequentialVMTransitions(s);
+        return new CumulatedRunningCapacity(Utils.fromJSON((JSONArray) o.get("nodes")),
+                (Integer) o.get("amount"),
+                (Boolean) o.get("continuous"));
     }
 
     @Override
-    public JSONObject toJSON(SequentialVMTransitions o) {
+    public JSONObject toJSON(CumulatedRunningCapacity o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", Utils.toJSON(o.getInvolvedVMs()));
+        c.put("nodes", Utils.toJSON(o.getInvolvedNodes()));
+        c.put("amount", o.getAmount());
+        c.put("continuous", o.isContinuous());
         return c;
     }
 }

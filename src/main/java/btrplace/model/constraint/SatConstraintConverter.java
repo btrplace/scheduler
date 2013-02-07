@@ -16,30 +16,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace;
+package btrplace.model.constraint;
 
-import org.json.simple.JSONObject;
+import btrplace.JSONConverter;
+import btrplace.model.SatConstraint;
 
 /**
- * Basic abstract solver-API/JSON objects converter.
+ * Specify a JSON converter for a {@link btrplace.model.SatConstraint}.
  *
  * @author Fabien Hermenier
  */
-public interface JSONConverter<E> {
+public interface SatConstraintConverter<E extends SatConstraint> extends JSONConverter<E> {
 
     /**
-     * JSON to Java object conversion
+     * Get the name of the constraint that is supported by the converter.
      *
-     * @param in the json object
-     * @return the conversion result
+     * @return The constraint class
      */
-    E fromJSON(JSONObject in);
+    Class<E> getSupportedConstraint();
 
     /**
-     * Java to JSON conversion
+     * Get the JSON identifier for the constraint.
      *
-     * @param e the Java object to convert
-     * @return the conversion result
+     * @return a non-empty string
      */
-    JSONObject toJSON(E e);
+    String getJSONId();
 }
