@@ -53,7 +53,7 @@ public class RunningConverter implements SatConstraintConverter<Running> {
     public JSONObject toJSON(Running o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", Utils.toJSON(o.getInvolvedNodes()));
+        c.put("vms", Utils.toJSON(o.getInvolvedVMs()));
         return c;
     }
 }

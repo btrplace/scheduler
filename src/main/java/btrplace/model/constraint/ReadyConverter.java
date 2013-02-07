@@ -53,7 +53,7 @@ public class ReadyConverter implements SatConstraintConverter<Ready> {
     public JSONObject toJSON(Ready o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", Utils.toJSON(o.getInvolvedNodes()));
+        c.put("vms", Utils.toJSON(o.getInvolvedVMs()));
         return c;
     }
 }
