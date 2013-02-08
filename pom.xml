@@ -14,16 +14,15 @@
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
   ~ You should have received a copy of the GNU General Public License
-  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses />.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>btrplace</groupId>
     <artifactId>solver-api</artifactId>
-    <version>0.11-SNAPSHOT</version>
+    <version>0.11</version>
 
     <description>Core components for a reconfiguration algorithm</description>
     <properties>
@@ -82,7 +81,7 @@
         <connection>scm:git:git://github.com/fhermeni/btrplace-solver-api.git</connection>
         <url>scm:git:git@github.com:fhermeni/btrplace-solver-api</url>
         <developerConnection>scm:git:git@github.com:fhermeni/btrplace-solver-api.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>btrplace-solver-api-0.11</tag>
     </scm>
 
     <distributionManagement>
