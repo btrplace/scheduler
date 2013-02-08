@@ -21,7 +21,11 @@ package btrplace;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 
+import java.io.IOException;
+import java.io.Reader;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -76,7 +80,7 @@ public final class Utils {
     public static Set<Set<UUID>> requiredSets(JSONObject o, String id) throws JSONConverterException {
         Set<Set<UUID>> res = new HashSet<Set<UUID>>();
         Object x = o.get(id);
-        if (x == null || !(x instanceof JSONArray)) {
+        if (!(x instanceof JSONArray)) {
             throw new JSONConverterException("Set of UUIDs sets expected at key '" + id + "'");
         }
         for (Object obj : (JSONArray) o.get(id)) {
@@ -95,7 +99,7 @@ public final class Utils {
      */
     public static Set<UUID> requiredUUIDs(JSONObject o, String id) throws JSONConverterException {
         Object x = o.get(id);
-        if (x == null || !(x instanceof JSONArray)) {
+        if (!(x instanceof JSONArray)) {
             throw new JSONConverterException("Set of UUIDs expected at key '" + id + "'");
         }
         return fromJSON((JSONArray) x);
@@ -127,7 +131,7 @@ public final class Utils {
      */
     public static long requiredLong(JSONObject o, String id) throws JSONConverterException {
         Object x = o.get(id);
-        if (x == null || !(x instanceof Long)) {
+        if (!(x instanceof Long)) {
             throw new JSONConverterException("Integer expected at key '" + id + ".");
         }
         return (Long) x;
@@ -143,7 +147,7 @@ public final class Utils {
      */
     public static double requiredDouble(JSONObject o, String id) throws JSONConverterException {
         Object x = o.get(id);
-        if (x == null || !(x instanceof Double)) {
+        if (!(x instanceof Double)) {
             throw new JSONConverterException("Real number expected at key '" + id + "'");
         }
         return (Double) x;
@@ -159,9 +163,46 @@ public final class Utils {
      */
     public static boolean requiredBoolean(JSONObject o, String id) throws JSONConverterException {
         Object x = o.get(id);
-        if (x == null || !(x instanceof Boolean)) {
+        if (!(x instanceof Boolean)) {
             throw new JSONConverterException("Boolean expected at key '" + id + "'");
         }
         return (Boolean) x;
+    }
+
+    /**
+     * Extract one JSON object from a string
+     *
+     * @param str the string to parse
+     * @return the resulting JSONObject
+     * @throws ParseException if an error occurred while parsing
+     */
+    public static JSONObject readObject(String str) throws ParseException, JSONConverterException {
+        JSONParser p = new JSONParser(JSONParser.MODE_RFC4627);
+        Object o = p.parse(str);
+        if (!(o instanceof JSONObject)) {
+            throw new JSONConverterException("Unable to parse a JSON object");
+        }
+        return (JSONObject) o;
+    }
+
+    /**
+     * Extract one JSON object from a stream.
+     * The stream is closed afterward
+     *
+     * @param in the stream to read
+     * @return the resulting JSONObject
+     * @throws ParseException if an error occurred while parsing
+     */
+    public static JSONObject readObject(Reader in) throws ParseException, JSONConverterException, IOException {
+        try {
+            JSONParser p = new JSONParser(JSONParser.MODE_RFC4627);
+            Object o = p.parse(in);
+            if (!(o instanceof JSONObject)) {
+                throw new JSONConverterException("Unable to parse a JSON object");
+            }
+            return (JSONObject) o;
+        } finally {
+            in.close();
+        }
     }
 }

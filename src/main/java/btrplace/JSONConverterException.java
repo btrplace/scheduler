@@ -25,6 +25,11 @@ package btrplace;
  */
 public class JSONConverterException extends Exception {
 
+    /**
+     * Make a new exception.
+     *
+     * @param msg the error message
+     */
     public JSONConverterException(String msg) {
         super(msg);
     }

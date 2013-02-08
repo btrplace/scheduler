@@ -44,6 +44,13 @@ public abstract class SatConstraintConverter<E extends SatConstraint> implements
      */
     public abstract String getJSONId();
 
+    /**
+     * Check if the JSON object can be converted using this converter.
+     * For being convertible, the key 'id' must be equals to {@link #getJSONId()}.
+     *
+     * @param o the object to test
+     * @throws JSONConverterException if the object is not compatible
+     */
     public void checkId(JSONObject o) throws JSONConverterException {
         Object id = o.get("id");
         if (id != null && !id.toString().equals(getJSONId())) {
