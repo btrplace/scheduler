@@ -68,8 +68,8 @@ public class ShareableResourceConverter implements ModelViewConverter<ShareableR
 
         ShareableResource rc = new ShareableResource(rcId);
         JSONObject values = (JSONObject) o.get("values");
-        for (Object k : values.keySet()) {
-            UUID u = UUID.fromString(k.toString());
+        for (String k : values.keySet()) {
+            UUID u = UUID.fromString(k);
             int v = Integer.parseInt(values.get(k).toString());
             rc.set(u, v);
         }

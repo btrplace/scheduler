@@ -65,7 +65,7 @@ public class ModelConverter implements JSONConverter<Model> {
     }
 
     @Override
-    public JSONObject toJSON(Model i) {
+    public JSONObject toJSON(Model i) throws JSONConverterException {
         JSONArray rcs = new JSONArray();
 
         for (ModelView v : i.getViews()) {

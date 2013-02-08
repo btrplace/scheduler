@@ -41,6 +41,7 @@ public interface JSONConverter<E> {
      *
      * @param e the Java object to convert
      * @return the conversion result
+     * @throws JSONConverterException if an error occurred while converting the object
      */
-    JSONObject toJSON(E e);
+    JSONObject toJSON(E e) throws JSONConverterException;
 }

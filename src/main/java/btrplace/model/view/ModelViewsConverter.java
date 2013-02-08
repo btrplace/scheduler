@@ -81,19 +81,22 @@ public class ModelViewsConverter implements JSONConverter<ModelView> {
 
     @Override
     public ModelView fromJSON(JSONObject in) throws JSONConverterException {
-        String id = in.get("id").toString();
-        ModelViewConverter<? extends ModelView> c = json2java.get(id);
+        Object id = in.get("id");
+        if (id == null) {
+            throw new JSONConverterException("No 'id' key in the object to choose the converter to use");
+        }
+        ModelViewConverter<? extends ModelView> c = json2java.get(id.toString());
         if (c == null) {
-            return null;
+            throw new JSONConverterException("No converter available for a view having id '" + id + "'");
         }
         return c.fromJSON(in);
     }
 
     @Override
-    public JSONObject toJSON(ModelView o) {
+    public JSONObject toJSON(ModelView o) throws JSONConverterException {
         ModelViewConverter c = java2json.get(o.getClass());
         if (c == null) {
-            return null;
+            throw new JSONConverterException("No converter available for a view with the '" + o.getClass() + "' classname");
         }
         return c.toJSON(o);
     }

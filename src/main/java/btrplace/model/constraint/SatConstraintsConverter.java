@@ -109,16 +109,16 @@ public class SatConstraintsConverter implements JSONConverter<SatConstraint> {
         }
         SatConstraintConverter<? extends SatConstraint> c = json2java.get(id.toString());
         if (c == null) {
-            throw new JSONConverterException("No converter available for a constraint with id '" + id + "'");
+            throw new JSONConverterException("No converter available for a constraint having id '" + id + "'");
         }
         return c.fromJSON(in);
     }
 
     @Override
-    public JSONObject toJSON(SatConstraint o) {
+    public JSONObject toJSON(SatConstraint o) throws JSONConverterException {
         SatConstraintConverter c = java2json.get(o.getClass());
         if (c == null) {
-            return null;
+            throw new JSONConverterException("No converter available for a constraint with the '" + o.getClass() + "' classname");
         }
         return c.toJSON(o);
     }
