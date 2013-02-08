@@ -1,7 +1,7 @@
 Release notes
 =======================
 
-version ???
+version 0.3 - 08 Feb 2013
 -----------------------
 - Synchronize with solver-api
 

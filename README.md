@@ -29,7 +29,7 @@ Next, just declare the dependency:
 <dependency>
    <groupId>btrplace</groupId>
    <artifactId>solver-json</artifactId>
-   <version>0.3-SNAPSHOT</version>
+   <version>0.3</version>
 </dependency>
 ```
 
