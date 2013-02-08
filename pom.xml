@@ -107,4 +107,25 @@
             <url>http://btrp.inria.fr:8080/repos/snapshot-releases</url>
         </repository>
     </repositories>
+
+    <distributionManagement>
+        <repository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>btrp-releases</id>
+            <name>Corporate Repository</name>
+            <url>
+                scp://btrp.inria.fr:/home/maven/repos/releases
+            </url>
+            <layout>default</layout>
+        </repository>
+        <snapshotRepository>
+            <uniqueVersion>true</uniqueVersion>
+            <id>btrp-snapshots</id>
+            <name>Corporate Repository</name>
+            <url>
+                scp://btrp.inria.fr:/home/maven/repos/snapshot-releases
+            </url>
+            <layout>default</layout>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
