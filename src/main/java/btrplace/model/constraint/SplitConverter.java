@@ -18,11 +18,11 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import btrplace.Utils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,7 +31,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class SplitConverter implements SatConstraintConverter<Split> {
+public class SplitConverter extends SatConstraintConverter<Split> {
 
     @Override
     public Class<Split> getSupportedConstraint() {
@@ -44,16 +44,9 @@ public class SplitConverter implements SatConstraintConverter<Split> {
     }
 
     @Override
-    public Split fromJSON(JSONObject o) {
-        String id = o.get("id").toString();
-        if (!id.equals(getJSONId())) {
-            return null;
-        }
-        Set<Set<UUID>> vGroups = new HashSet<Set<UUID>>();
-        for (Object obj : (JSONArray) o.get("vms")) {
-            vGroups.add(Utils.fromJSON((JSONArray) obj));
-        }
-        return new Split(vGroups, (Boolean) o.get("continuous"));
+    public Split fromJSON(JSONObject o) throws JSONConverterException {
+        checkId(o);
+        return new Split(Utils.requiredSets(o, "vms"), Utils.requiredBoolean(o, "continuous"));
     }
 
     @Override

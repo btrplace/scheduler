@@ -18,16 +18,16 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import btrplace.Utils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONObject;
 
 /**
  * JSON converter for the {@link btrplace.model.constraint.Ban} constraint.
  *
  * @author Fabien Hermenier
  */
-public class BanConverter implements SatConstraintConverter<Ban> {
+public class BanConverter extends SatConstraintConverter<Ban> {
 
     @Override
     public Class<Ban> getSupportedConstraint() {
@@ -40,13 +40,10 @@ public class BanConverter implements SatConstraintConverter<Ban> {
     }
 
     @Override
-    public Ban fromJSON(JSONObject o) {
-        String id = o.get("id").toString();
-        if (!id.equals(getJSONId())) {
-            return null;
-        }
-        return new Ban(Utils.fromJSON((JSONArray) o.get("vms")),
-                Utils.fromJSON((JSONArray) o.get("nodes")));
+    public Ban fromJSON(JSONObject o) throws JSONConverterException {
+        checkId(o);
+        return new Ban(Utils.requiredUUIDs(o, "vms"),
+                Utils.requiredUUIDs(o, "nodes"));
     }
 
     @Override

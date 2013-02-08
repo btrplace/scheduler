@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -35,7 +36,7 @@ public class FenceConverterTest implements ConstraintTestMaterial {
     private static FenceConverter conv = new FenceConverter();
 
     @Test
-    public void testViables() {
+    public void testViables() throws JSONConverterException {
         Fence d = new Fence(new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3)),
                 new HashSet<UUID>(Arrays.asList(n1, n2, n3)));
 

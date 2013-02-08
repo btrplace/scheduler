@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -36,7 +37,7 @@ public class SplitConverterTest implements ConstraintTestMaterial {
     private static SplitConverter conv = new SplitConverter();
 
     @Test
-    public void testViables() {
+    public void testViables() throws JSONConverterException {
         Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
         Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(vm4, vm5, vm6));
         Set<UUID> s3 = new HashSet<UUID>(Arrays.asList(vm7, vm8));

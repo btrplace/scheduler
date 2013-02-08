@@ -18,16 +18,16 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import btrplace.Utils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONObject;
 
 /**
  * JSON Converter for the constraint {@link btrplace.model.constraint.Running}.
  *
  * @author Fabien Hermenier
  */
-public class RunningConverter implements SatConstraintConverter<Running> {
+public class RunningConverter extends SatConstraintConverter<Running> {
 
 
     @Override
@@ -41,12 +41,9 @@ public class RunningConverter implements SatConstraintConverter<Running> {
     }
 
     @Override
-    public Running fromJSON(JSONObject o) {
-        String id = o.get("id").toString();
-        if (!id.equals(getJSONId())) {
-            return null;
-        }
-        return new Running(Utils.fromJSON((JSONArray) o.get("vms")));
+    public Running fromJSON(JSONObject o) throws JSONConverterException {
+        checkId(o);
+        return new Running(Utils.requiredUUIDs(o, "vms"));
     }
 
     @Override

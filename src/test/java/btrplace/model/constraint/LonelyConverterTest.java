@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -35,7 +36,7 @@ public class LonelyConverterTest implements ConstraintTestMaterial {
     private static LonelyConverter conv = new LonelyConverter();
 
     @Test
-    public void testViables() {
+    public void testViables() throws JSONConverterException {
         Lonely d = new Lonely(new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3)), false);
         Lonely c = new Lonely(new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3)), true);
         Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);

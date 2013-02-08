@@ -18,16 +18,17 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import btrplace.Utils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONObject;
+
 
 /**
  * JSON Converter for the constraint {@link SingleRunningCapacityConverter}.
  *
  * @author Fabien Hermenier
  */
-public class SingleRunningCapacityConverter implements SatConstraintConverter<SingleRunningCapacity> {
+public class SingleRunningCapacityConverter extends SatConstraintConverter<SingleRunningCapacity> {
 
     @Override
     public Class<SingleRunningCapacity> getSupportedConstraint() {
@@ -40,14 +41,11 @@ public class SingleRunningCapacityConverter implements SatConstraintConverter<Si
     }
 
     @Override
-    public SingleRunningCapacity fromJSON(JSONObject o) {
-        String id = o.get("id").toString();
-        if (!id.equals(getJSONId())) {
-            return null;
-        }
-        return new SingleRunningCapacity(Utils.fromJSON((JSONArray) o.get("nodes")),
-                (Integer) o.get("amount"),
-                (Boolean) o.get("continuous"));
+    public SingleRunningCapacity fromJSON(JSONObject o) throws JSONConverterException {
+        checkId(o);
+        return new SingleRunningCapacity(Utils.requiredUUIDs(o, "nodes"),
+                (int) Utils.requiredLong(o, "amount"),
+                Utils.requiredBoolean(o, "continuous"));
     }
 
     @Override
@@ -55,7 +53,7 @@ public class SingleRunningCapacityConverter implements SatConstraintConverter<Si
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
         c.put("nodes", Utils.toJSON(o.getInvolvedNodes()));
-        c.put("amount", o.getAmount());
+        c.put("amount", (long) o.getAmount());
         c.put("continuous", o.isContinuous());
         return c;
     }

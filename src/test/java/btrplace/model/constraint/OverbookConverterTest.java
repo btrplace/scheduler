@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -35,7 +36,7 @@ public class OverbookConverterTest implements ConstraintTestMaterial {
     private static OverbookConverter conv = new OverbookConverter();
 
     @Test
-    public void testViables() {
+    public void testViables() throws JSONConverterException {
         Overbook d = new Overbook(new HashSet<UUID>(Arrays.asList(n1, n2, n3)), "foo", 1.4);
         Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
     }

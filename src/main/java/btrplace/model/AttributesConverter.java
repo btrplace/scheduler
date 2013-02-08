@@ -19,7 +19,7 @@
 package btrplace.model;
 
 import btrplace.JSONConverter;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONObject;
 
 import java.util.UUID;
 

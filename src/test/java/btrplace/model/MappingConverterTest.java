@@ -18,8 +18,9 @@
 
 package btrplace.model;
 
+import btrplace.JSONConverterException;
 import junit.framework.Assert;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONObject;
 import org.testng.annotations.Test;
 
 import java.util.UUID;
@@ -32,7 +33,7 @@ import java.util.UUID;
 public class MappingConverterTest {
 
     @Test
-    public void testSimple() {
+    public void testSimple() throws JSONConverterException {
         Mapping c = new DefaultMapping();
         UUID n1 = UUID.randomUUID();
         UUID n2 = UUID.randomUUID();

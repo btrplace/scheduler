@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -33,7 +34,7 @@ public class SequentialVMTransitionsConverterTest implements ConstraintTestMater
     private static SequentialVMTransitionsConverter conv = new SequentialVMTransitionsConverter();
 
     @Test
-    public void testViables() {
+    public void testViables() throws JSONConverterException {
         SequentialVMTransitions d = new SequentialVMTransitions(Arrays.asList(vm1, vm2, vm3));
         SequentialVMTransitions c = new SequentialVMTransitions(Arrays.asList(vm1, vm2, vm3));
         Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);

@@ -18,11 +18,11 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import btrplace.Utils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,7 +31,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class AmongConverter implements SatConstraintConverter<Among> {
+public class AmongConverter extends SatConstraintConverter<Among> {
 
     @Override
     public Class<Among> getSupportedConstraint() {
@@ -44,17 +44,10 @@ public class AmongConverter implements SatConstraintConverter<Among> {
     }
 
     @Override
-    public Among fromJSON(JSONObject o) {
-        String id = o.get("id").toString();
-        if (!id.equals(getJSONId())) {
-            return null;
-        }
-        Set<Set<UUID>> pGroups = new HashSet<Set<UUID>>();
-        for (Object obj : (JSONArray) o.get("nodes")) {
-            pGroups.add(Utils.fromJSON((JSONArray) obj));
-        }
-        return new Among(Utils.fromJSON((JSONArray) o.get("vms")),
-                pGroups,
+    public Among fromJSON(JSONObject o) throws JSONConverterException {
+        checkId(o);
+        return new Among(Utils.requiredUUIDs(o, "vms"),
+                Utils.requiredSets(o, "nodes"),
                 (Boolean) o.get("continuous"));
     }
 

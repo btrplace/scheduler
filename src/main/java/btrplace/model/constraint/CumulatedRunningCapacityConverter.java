@@ -18,16 +18,16 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import btrplace.Utils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONObject;
 
 /**
  * JSON Converter for the constraint {@link CumulatedRunningCapacityConverter}.
  *
  * @author Fabien Hermenier
  */
-public class CumulatedRunningCapacityConverter implements SatConstraintConverter<CumulatedRunningCapacity> {
+public class CumulatedRunningCapacityConverter extends SatConstraintConverter<CumulatedRunningCapacity> {
 
     @Override
     public Class<CumulatedRunningCapacity> getSupportedConstraint() {
@@ -41,14 +41,11 @@ public class CumulatedRunningCapacityConverter implements SatConstraintConverter
 
 
     @Override
-    public CumulatedRunningCapacity fromJSON(JSONObject o) {
-        String id = o.get("id").toString();
-        if (!id.equals(getJSONId())) {
-            return null;
-        }
-        return new CumulatedRunningCapacity(Utils.fromJSON((JSONArray) o.get("nodes")),
-                (Integer) o.get("amount"),
-                (Boolean) o.get("continuous"));
+    public CumulatedRunningCapacity fromJSON(JSONObject o) throws JSONConverterException {
+        checkId(o);
+        return new CumulatedRunningCapacity(Utils.requiredUUIDs(o, "nodes"),
+                (int) Utils.requiredLong(o, "amount"),
+                Utils.requiredBoolean(o, "continuous"));
     }
 
     @Override
@@ -56,7 +53,7 @@ public class CumulatedRunningCapacityConverter implements SatConstraintConverter
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
         c.put("nodes", Utils.toJSON(o.getInvolvedNodes()));
-        c.put("amount", o.getAmount());
+        c.put("amount", (long) o.getAmount());
         c.put("continuous", o.isContinuous());
         return c;
     }

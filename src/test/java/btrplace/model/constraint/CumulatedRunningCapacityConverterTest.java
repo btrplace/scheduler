@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -35,7 +36,7 @@ public class CumulatedRunningCapacityConverterTest implements ConstraintTestMate
     private static CumulatedRunningCapacityConverter conv = new CumulatedRunningCapacityConverter();
 
     @Test
-    public void testViables() {
+    public void testViables() throws JSONConverterException {
         CumulatedRunningCapacity d = new CumulatedRunningCapacity(new HashSet<UUID>(Arrays.asList(n1, n2, n3)), 5, false);
         CumulatedRunningCapacity c = new CumulatedRunningCapacity(new HashSet<UUID>(Arrays.asList(n1, n2, n3)), 5, true);
         Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);

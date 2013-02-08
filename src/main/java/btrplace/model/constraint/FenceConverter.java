@@ -18,16 +18,16 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import btrplace.Utils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONObject;
 
 /**
  * JSON converter for the {@link Fence} constraint.
  *
  * @author Fabien Hermenier
  */
-public class FenceConverter implements SatConstraintConverter<Fence> {
+public class FenceConverter extends SatConstraintConverter<Fence> {
 
     @Override
     public Class<Fence> getSupportedConstraint() {
@@ -40,13 +40,10 @@ public class FenceConverter implements SatConstraintConverter<Fence> {
     }
 
     @Override
-    public Fence fromJSON(JSONObject o) {
-        String id = o.get("id").toString();
-        if (!id.equals(getJSONId())) {
-            return null;
-        }
-        return new Fence(Utils.fromJSON((JSONArray) o.get("vms")),
-                Utils.fromJSON((JSONArray) o.get("nodes")));
+    public Fence fromJSON(JSONObject o) throws JSONConverterException {
+        checkId(o);
+        return new Fence(Utils.requiredUUIDs(o, "vms"),
+                Utils.requiredUUIDs(o, "nodes"));
     }
 
     @Override

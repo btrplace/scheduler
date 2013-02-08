@@ -18,16 +18,16 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import btrplace.Utils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONObject;
 
 /**
  * JSON converter for the {@link Spread} constraint.
  *
  * @author Fabien Hermenier
  */
-public class SpreadConverter implements SatConstraintConverter<Spread> {
+public class SpreadConverter extends SatConstraintConverter<Spread> {
 
     @Override
     public Class<Spread> getSupportedConstraint() {
@@ -40,12 +40,9 @@ public class SpreadConverter implements SatConstraintConverter<Spread> {
     }
 
     @Override
-    public Spread fromJSON(JSONObject o) {
-        String id = o.get("id").toString();
-        if (!id.equals(getJSONId())) {
-            return null;
-        }
-        return new Spread(Utils.fromJSON((JSONArray) o.get("vms")), (Boolean) o.get("continuous"));
+    public Spread fromJSON(JSONObject o) throws JSONConverterException {
+        checkId(o);
+        return new Spread(Utils.requiredUUIDs(o, "vms"), Utils.requiredBoolean(o, "continuous"));
     }
 
     @Override

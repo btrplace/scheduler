@@ -19,26 +19,36 @@
 package btrplace.model.constraint;
 
 import btrplace.JSONConverter;
+import btrplace.JSONConverterException;
 import btrplace.model.SatConstraint;
+import net.minidev.json.JSONObject;
 
 /**
  * Specify a JSON converter for a {@link btrplace.model.SatConstraint}.
  *
  * @author Fabien Hermenier
  */
-public interface SatConstraintConverter<E extends SatConstraint> extends JSONConverter<E> {
+public abstract class SatConstraintConverter<E extends SatConstraint> implements JSONConverter<E> {
 
     /**
      * Get the name of the constraint that is supported by the converter.
      *
      * @return The constraint class
      */
-    Class<E> getSupportedConstraint();
+    public abstract Class<E> getSupportedConstraint();
 
     /**
      * Get the JSON identifier for the constraint.
      *
      * @return a non-empty string
      */
-    String getJSONId();
+    public abstract String getJSONId();
+
+    public void checkId(JSONObject o) throws JSONConverterException {
+        Object id = o.get("id");
+        if (id != null && !id.toString().equals(getJSONId())) {
+            throw new JSONConverterException("Incorrect converter for " + o.toJSONString() + ". Expecting a constraint id '" + id + "'");
+        }
+
+    }
 }

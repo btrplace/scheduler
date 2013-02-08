@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -35,7 +36,7 @@ public class QuarantineConverterTest implements ConstraintTestMaterial {
     private static QuarantineConverter conv = new QuarantineConverter();
 
     @Test
-    public void testViables() {
+    public void testViables() throws JSONConverterException {
         Quarantine d = new Quarantine(new HashSet<UUID>(Arrays.asList(n1, n2, n3)));
         Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
     }

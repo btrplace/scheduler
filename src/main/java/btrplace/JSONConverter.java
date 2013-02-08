@@ -18,7 +18,7 @@
 
 package btrplace;
 
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONObject;
 
 /**
  * Basic abstract solver-API/JSON objects converter.
@@ -32,8 +32,9 @@ public interface JSONConverter<E> {
      *
      * @param in the json object
      * @return the conversion result
+     * @throws JSONConverterException if an error occurred while converting the object
      */
-    E fromJSON(JSONObject in);
+    E fromJSON(JSONObject in) throws JSONConverterException;
 
     /**
      * Java to JSON conversion

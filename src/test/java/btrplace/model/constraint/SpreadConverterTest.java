@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -35,7 +36,7 @@ public class SpreadConverterTest implements ConstraintTestMaterial {
     private static SpreadConverter conv = new SpreadConverter();
 
     @Test
-    public void testViables() {
+    public void testViables() throws JSONConverterException {
         Spread d = new Spread(new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3)), false);
         Spread c = new Spread(new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3)), true);
         Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);

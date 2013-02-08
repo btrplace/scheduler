@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -35,7 +36,7 @@ public class OfflineConverterTest implements ConstraintTestMaterial {
     private static OfflineConverter conv = new OfflineConverter();
 
     @Test
-    public void testViables() {
+    public void testViables() throws JSONConverterException {
         Offline d = new Offline(new HashSet<UUID>(Arrays.asList(n1, n2, n3)));
         Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
     }

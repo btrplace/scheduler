@@ -19,9 +19,10 @@
 package btrplace.model;
 
 import btrplace.JSONConverter;
+import btrplace.JSONConverterException;
 import btrplace.model.view.ModelViewsConverter;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 
 /**
  * Class to serialize/unserialize a model using the JSON format.
@@ -79,7 +80,7 @@ public class ModelConverter implements JSONConverter<Model> {
     }
 
     @Override
-    public Model fromJSON(JSONObject o) {
+    public Model fromJSON(JSONObject o) throws JSONConverterException {
         if (!o.containsKey("mapping")) {
             return null;
         }

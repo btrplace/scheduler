@@ -81,8 +81,8 @@
             <version>0.11-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.googlecode.json-simple</groupId>
-            <artifactId>json-simple</artifactId>
+            <groupId>net.minidev</groupId>
+            <artifactId>json-smart</artifactId>
             <version>1.1.1</version>
         </dependency>
     </dependencies>

@@ -18,16 +18,16 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import btrplace.Utils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONObject;
 
 /**
  * JSON converter for the {@link btrplace.model.constraint.Root} constraint.
  *
  * @author Fabien Hermenier
  */
-public class RootConverter implements SatConstraintConverter<Root> {
+public class RootConverter extends SatConstraintConverter<Root> {
 
 
     @Override
@@ -41,12 +41,9 @@ public class RootConverter implements SatConstraintConverter<Root> {
     }
 
     @Override
-    public Root fromJSON(JSONObject o) {
-        String id = o.get("id").toString();
-        if (!id.equals(getJSONId())) {
-            return null;
-        }
-        return new Root(Utils.fromJSON((JSONArray) o.get("vms")));
+    public Root fromJSON(JSONObject o) throws JSONConverterException {
+        checkId(o);
+        return new Root(Utils.requiredUUIDs(o, "vms"));
     }
 
     @Override

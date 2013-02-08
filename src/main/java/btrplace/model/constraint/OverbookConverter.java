@@ -18,16 +18,16 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import btrplace.Utils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONObject;
 
 /**
  * JSON Converter for the constraint {@link OverbookConverter}.
  *
  * @author Fabien Hermenier
  */
-public class OverbookConverter implements SatConstraintConverter<Overbook> {
+public class OverbookConverter extends SatConstraintConverter<Overbook> {
 
     @Override
     public Class<Overbook> getSupportedConstraint() {
@@ -40,15 +40,12 @@ public class OverbookConverter implements SatConstraintConverter<Overbook> {
     }
 
     @Override
-    public Overbook fromJSON(JSONObject o) {
-        String id = o.get("id").toString();
-        if (!id.equals(getJSONId())) {
-            return null;
-        }
-        return new Overbook(Utils.fromJSON((JSONArray) o.get("vms")),
-                (String) o.get("rcId"),
-                (Double) o.get("ratio"),
-                (Boolean) o.get("continuous"));
+    public Overbook fromJSON(JSONObject o) throws JSONConverterException {
+        checkId(o);
+        return new Overbook(Utils.requiredUUIDs(o, "vms"),
+                Utils.requiredString(o, "rcId"),
+                Utils.requiredDouble(o, "ratio"),
+                Utils.requiredBoolean(o, "continuous"));
     }
 
     @Override

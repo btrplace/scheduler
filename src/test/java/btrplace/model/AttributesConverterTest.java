@@ -18,7 +18,7 @@
 
 package btrplace.model;
 
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

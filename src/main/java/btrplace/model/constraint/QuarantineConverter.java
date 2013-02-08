@@ -18,16 +18,16 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import btrplace.Utils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONObject;
 
 /**
  * JSON Converter for the constraint {@link btrplace.model.constraint.Quarantine}.
  *
  * @author Fabien Hermenier
  */
-public class QuarantineConverter implements SatConstraintConverter<Quarantine> {
+public class QuarantineConverter extends SatConstraintConverter<Quarantine> {
 
 
     @Override
@@ -41,12 +41,9 @@ public class QuarantineConverter implements SatConstraintConverter<Quarantine> {
     }
 
     @Override
-    public Quarantine fromJSON(JSONObject o) {
-        String id = o.get("id").toString();
-        if (!id.equals(getJSONId())) {
-            return null;
-        }
-        return new Quarantine(Utils.fromJSON((JSONArray) o.get("nodes")));
+    public Quarantine fromJSON(JSONObject o) throws JSONConverterException {
+        checkId(o);
+        return new Quarantine(Utils.requiredUUIDs(o, "nodes"));
     }
 
     @Override

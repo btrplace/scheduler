@@ -18,17 +18,17 @@
 
 package btrplace.model.constraint;
 
+
+import btrplace.JSONConverterException;
 import btrplace.Utils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONObject;
 
 /**
  * JSON Converter for the constraint {@link btrplace.model.constraint.Killed}.
  *
  * @author Fabien Hermenier
  */
-public class KilledConverter implements SatConstraintConverter<Killed> {
-
+public class KilledConverter extends SatConstraintConverter<Killed> {
 
     @Override
     public Class<Killed> getSupportedConstraint() {
@@ -42,12 +42,9 @@ public class KilledConverter implements SatConstraintConverter<Killed> {
 
 
     @Override
-    public Killed fromJSON(JSONObject o) {
-        String id = o.get("id").toString();
-        if (!id.equals(getJSONId())) {
-            return null;
-        }
-        return new Killed(Utils.fromJSON((JSONArray) o.get("vms")));
+    public Killed fromJSON(JSONObject o) throws JSONConverterException {
+        checkId(o);
+        return new Killed(Utils.requiredUUIDs(o, "vms"));
     }
 
     @Override

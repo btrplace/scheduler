@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -35,7 +36,7 @@ public class BanConverterTest implements ConstraintTestMaterial {
     private static BanConverter conv = new BanConverter();
 
     @Test
-    public void testViables() {
+    public void testViables() throws JSONConverterException {
         Ban d = new Ban(new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3)),
                 new HashSet<UUID>(Arrays.asList(n1, n2, n3)));
 

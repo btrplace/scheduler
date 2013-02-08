@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -35,7 +36,7 @@ public class RootConverterTest implements ConstraintTestMaterial {
     private static RootConverter conv = new RootConverter();
 
     @Test
-    public void testViables() {
+    public void testViables() throws JSONConverterException {
         Root d = new Root(new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3)));
         Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
     }

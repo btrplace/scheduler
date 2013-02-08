@@ -18,16 +18,16 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import btrplace.Utils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONObject;
 
 /**
  * JSON Converter for the constraint {@link Sleeping}.
  *
  * @author Fabien Hermenier
  */
-public class SleepingConverter implements SatConstraintConverter<Sleeping> {
+public class SleepingConverter extends SatConstraintConverter<Sleeping> {
 
 
     @Override
@@ -41,12 +41,9 @@ public class SleepingConverter implements SatConstraintConverter<Sleeping> {
     }
 
     @Override
-    public Sleeping fromJSON(JSONObject o) {
-        String id = o.get("id").toString();
-        if (!id.equals(getJSONId())) {
-            return null;
-        }
-        return new Sleeping(Utils.fromJSON((JSONArray) o.get("vms")));
+    public Sleeping fromJSON(JSONObject o) throws JSONConverterException {
+        checkId(o);
+        return new Sleeping(Utils.requiredUUIDs(o, "vms"));
     }
 
     @Override

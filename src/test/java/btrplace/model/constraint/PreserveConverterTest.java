@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -26,7 +27,7 @@ import java.util.HashSet;
 import java.util.UUID;
 
 /**
- * Unit tests for {@link PreserveCapacity}.
+ * Unit tests for {@link Preserve}.
  *
  * @author Fabien Hermenier
  */
@@ -35,7 +36,7 @@ public class PreserveConverterTest implements ConstraintTestMaterial {
     private static PreserveConverter conv = new PreserveConverter();
 
     @Test
-    public void testViables() {
+    public void testViables() throws JSONConverterException {
         Preserve d = new Preserve(new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3)), "cpu", 5);
         Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
     }

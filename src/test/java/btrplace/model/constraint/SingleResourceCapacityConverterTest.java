@@ -18,6 +18,7 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -35,7 +36,7 @@ public class SingleResourceCapacityConverterTest implements ConstraintTestMateri
     private static SingleResourceCapacityConverter conv = new SingleResourceCapacityConverter();
 
     @Test
-    public void testViables() {
+    public void testViables() throws JSONConverterException {
         SingleResourceCapacity d = new SingleResourceCapacity(new HashSet<UUID>(Arrays.asList(n1, n2, n3)), "cpu", 5, false);
         SingleResourceCapacity c = new SingleResourceCapacity(new HashSet<UUID>(Arrays.asList(n1, n2, n3)), "mem", 5, true);
         Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);

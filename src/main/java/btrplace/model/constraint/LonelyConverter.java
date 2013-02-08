@@ -18,16 +18,16 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import btrplace.Utils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONObject;
 
 /**
  * JSON converter for the {@link Lonely} constraint.
  *
  * @author Fabien Hermenier
  */
-public class LonelyConverter implements SatConstraintConverter<Lonely> {
+public class LonelyConverter extends SatConstraintConverter<Lonely> {
 
     @Override
     public Class<Lonely> getSupportedConstraint() {
@@ -41,12 +41,9 @@ public class LonelyConverter implements SatConstraintConverter<Lonely> {
 
 
     @Override
-    public Lonely fromJSON(JSONObject o) {
-        String id = o.get("id").toString();
-        if (!id.equals(getJSONId())) {
-            return null;
-        }
-        return new Lonely(Utils.fromJSON((JSONArray) o.get("vms")));
+    public Lonely fromJSON(JSONObject o) throws JSONConverterException {
+        checkId(o);
+        return new Lonely(Utils.requiredUUIDs(o, "vms"));
     }
 
     @Override

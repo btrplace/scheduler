@@ -18,16 +18,16 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import btrplace.Utils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONObject;
 
 /**
  * JSON Converter for the constraint {@link PreserveConverter}.
  *
  * @author Fabien Hermenier
  */
-public class PreserveConverter implements SatConstraintConverter<Preserve> {
+public class PreserveConverter extends SatConstraintConverter<Preserve> {
 
     @Override
     public Class<Preserve> getSupportedConstraint() {
@@ -40,14 +40,11 @@ public class PreserveConverter implements SatConstraintConverter<Preserve> {
     }
 
     @Override
-    public Preserve fromJSON(JSONObject o) {
-        String id = o.get("id").toString();
-        if (!id.equals(getJSONId())) {
-            return null;
-        }
-        return new Preserve(Utils.fromJSON((JSONArray) o.get("vms")),
-                (String) o.get("rcId"),
-                (Integer) o.get("amount"));
+    public Preserve fromJSON(JSONObject o) throws JSONConverterException {
+        checkId(o);
+        return new Preserve(Utils.requiredUUIDs(o, "vms"),
+                Utils.requiredString(o, "rcId"),
+                (int) Utils.requiredLong(o, "amount"));
     }
 
     @Override
@@ -56,7 +53,7 @@ public class PreserveConverter implements SatConstraintConverter<Preserve> {
         c.put("id", getJSONId());
         c.put("vms", Utils.toJSON(o.getInvolvedVMs()));
         c.put("rcId", o.getResource());
-        c.put("amount", o.getAmount());
+        c.put("amount", (long) o.getAmount());
         return c;
     }
 }

@@ -18,7 +18,7 @@
 
 package btrplace.model.view;
 
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONObject;
 
 import java.util.Set;
 import java.util.UUID;
@@ -48,7 +48,7 @@ public class ShareableResourceConverter implements ModelViewConverter<ShareableR
         Set<UUID> elems = rc.getDefined();
         JSONObject values = new JSONObject();
         for (UUID u : elems) {
-            values.put(u, rc.get(u));
+            values.put(u.toString(), rc.get(u));
         }
         o.put("values", values);
         return o;

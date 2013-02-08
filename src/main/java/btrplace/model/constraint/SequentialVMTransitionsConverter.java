@@ -18,9 +18,10 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import btrplace.Utils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class SequentialVMTransitionsConverter implements SatConstraintConverter<SequentialVMTransitions> {
+public class SequentialVMTransitionsConverter extends SatConstraintConverter<SequentialVMTransitions> {
 
     @Override
     public Class<SequentialVMTransitions> getSupportedConstraint() {
@@ -44,11 +45,8 @@ public class SequentialVMTransitionsConverter implements SatConstraintConverter<
     }
 
     @Override
-    public SequentialVMTransitions fromJSON(JSONObject o) {
-        String id = o.get("id").toString();
-        if (!id.equals(getJSONId())) {
-            return null;
-        }
+    public SequentialVMTransitions fromJSON(JSONObject o) throws JSONConverterException {
+        checkId(o);
         List<UUID> s = new ArrayList<UUID>();
         for (Object ob : (JSONArray) o.get("vms")) {
             s.add(UUID.fromString((String) ob));

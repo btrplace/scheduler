@@ -19,9 +19,9 @@
 package btrplace.model;
 
 import btrplace.JSONConverter;
+import btrplace.JSONConverterException;
 import btrplace.Utils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONObject;
 
 import java.util.UUID;
 
@@ -50,30 +50,23 @@ public class MappingConverter implements JSONConverter<Mapping> {
     }
 
     @Override
-    public Mapping fromJSON(JSONObject o) {
+    public Mapping fromJSON(JSONObject o) throws JSONConverterException {
         Mapping c = new DefaultMapping();
-        if (!o.containsKey("offlineNodes") || !o.containsKey("readyVMs")
-                || !o.containsKey("onlineNodes")) {
-            return null;
-        }
-        for (UUID u : Utils.fromJSON((JSONArray) o.get("offlineNodes"))) {
+        for (UUID u : Utils.requiredUUIDs(o, "offlineNodes")) {
             c.addOfflineNode(u);
         }
-        for (UUID u : Utils.fromJSON((JSONArray) o.get("readyVMs"))) {
+        for (UUID u : Utils.requiredUUIDs(o, "readyVMs")) {
             c.addReadyVM(u);
         }
         JSONObject ons = (JSONObject) o.get("onlineNodes");
         for (Object k : ons.keySet()) {
             UUID u = UUID.fromString((String) k);
             JSONObject on = (JSONObject) ons.get(k);
-            if (!on.containsKey("runningVMs") || !on.containsKey("sleepingVMs")) {
-                return null;
-            }
             c.addOnlineNode(u);
-            for (UUID vmId : Utils.fromJSON((JSONArray) on.get("runningVMs"))) {
+            for (UUID vmId : Utils.requiredUUIDs(on, "runningVMs")) {
                 c.addRunningVM(vmId, u);
             }
-            for (UUID vmId : Utils.fromJSON((JSONArray) on.get("sleepingVMs"))) {
+            for (UUID vmId : Utils.requiredUUIDs(on, "sleepingVMs")) {
                 c.addSleepingVM(vmId, u);
             }
         }

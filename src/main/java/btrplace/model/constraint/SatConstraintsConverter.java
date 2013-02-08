@@ -19,8 +19,9 @@
 package btrplace.model.constraint;
 
 import btrplace.JSONConverter;
+import btrplace.JSONConverterException;
 import btrplace.model.SatConstraint;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -101,7 +102,7 @@ public class SatConstraintsConverter implements JSONConverter<SatConstraint> {
     }
 
     @Override
-    public SatConstraint fromJSON(JSONObject in) {
+    public SatConstraint fromJSON(JSONObject in) throws JSONConverterException {
         String id = in.get("id").toString();
         SatConstraintConverter<? extends SatConstraint> c = json2java.get(id);
         if (c == null) {

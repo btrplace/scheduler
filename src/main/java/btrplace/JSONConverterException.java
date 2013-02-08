@@ -16,30 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.model.constraint;
-
-import btrplace.JSONConverterException;
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.UUID;
+package btrplace;
 
 /**
- * Unit tests for {@link btrplace.model.constraint.SpreadConverter}.
+ * An exception related to a conversion process.
  *
  * @author Fabien Hermenier
  */
-public class GatherConverterTest implements ConstraintTestMaterial {
+public class JSONConverterException extends Exception {
 
-    private static GatherConverter conv = new GatherConverter();
-
-    @Test
-    public void testViables() throws JSONConverterException {
-        Gather d = new Gather(new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3)), false);
-        Gather c = new Gather(new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3)), true);
-        Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
-        Assert.assertEquals(conv.fromJSON(conv.toJSON(c)), c);
+    public JSONConverterException(String msg) {
+        super(msg);
     }
 }

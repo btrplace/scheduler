@@ -19,8 +19,9 @@
 package btrplace.model.view;
 
 import btrplace.JSONConverter;
+import btrplace.JSONConverterException;
 import btrplace.model.ModelView;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -79,7 +80,7 @@ public class ModelViewsConverter implements JSONConverter<ModelView> {
     }
 
     @Override
-    public ModelView fromJSON(JSONObject in) {
+    public ModelView fromJSON(JSONObject in) throws JSONConverterException {
         String id = in.get("id").toString();
         ModelViewConverter<? extends ModelView> c = json2java.get(id);
         if (c == null) {

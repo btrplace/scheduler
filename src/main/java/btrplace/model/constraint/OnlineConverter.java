@@ -18,16 +18,16 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import btrplace.Utils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONObject;
 
 /**
  * JSON Converter for the constraint {@link Online}.
  *
  * @author Fabien Hermenier
  */
-public class OnlineConverter implements SatConstraintConverter<Online> {
+public class OnlineConverter extends SatConstraintConverter<Online> {
 
 
     @Override
@@ -42,12 +42,9 @@ public class OnlineConverter implements SatConstraintConverter<Online> {
 
 
     @Override
-    public Online fromJSON(JSONObject o) {
-        String id = o.get("id").toString();
-        if (!id.equals(getJSONId())) {
-            return null;
-        }
-        return new Online(Utils.fromJSON((JSONArray) o.get("nodes")));
+    public Online fromJSON(JSONObject o) throws JSONConverterException {
+        checkId(o);
+        return new Online(Utils.requiredUUIDs(o, "nodes"));
     }
 
     @Override

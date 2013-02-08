@@ -18,16 +18,16 @@
 
 package btrplace.model.constraint;
 
+import btrplace.JSONConverterException;
 import btrplace.Utils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import net.minidev.json.JSONObject;
 
 /**
  * JSON converter for the {@link Gather} constraint.
  *
  * @author Fabien Hermenier
  */
-public class GatherConverter implements SatConstraintConverter<Gather> {
+public class GatherConverter extends SatConstraintConverter<Gather> {
 
     @Override
     public Class<Gather> getSupportedConstraint() {
@@ -41,12 +41,9 @@ public class GatherConverter implements SatConstraintConverter<Gather> {
 
 
     @Override
-    public Gather fromJSON(JSONObject o) {
-        String id = o.get("id").toString();
-        if (!id.equals(getJSONId())) {
-            return null;
-        }
-        return new Gather(Utils.fromJSON((JSONArray) o.get("vms")));
+    public Gather fromJSON(JSONObject o) throws JSONConverterException {
+        checkId(o);
+        return new Gather(Utils.requiredUUIDs(o, "vms"));
     }
 
     @Override
