@@ -1,6 +1,10 @@
 Release notes
 =======================
 
+version ??????
+----------------------
+- Restrict Attributes to only store basic primitives
+
 version 0.10 - 06 Feb 2013
 ----------------------
 - non-critical API update

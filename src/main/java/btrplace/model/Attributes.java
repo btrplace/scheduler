@@ -23,30 +23,96 @@ import java.util.UUID;
 
 /**
  * Allow to specify attributes related to managed elements.
+ * Attributes are key/value pair, where values are Java primitives (long, double, String, boolean)
  *
  * @author Fabien Hermenier
  */
 public interface Attributes extends Cloneable {
 
     /**
-     * declare an attribute for a given element.
-     * Equivalent to {@code set(e, k, Boolean.TRUE)}
+     * Put a boolean value.
      *
-     * @param e the element
+     * @param e the element identifier
      * @param k the attribute identifier
-     * @return the previous attribute value if the attribute was stated earlier, {@code null} otherwise
+     * @param b the value to set
+     * @return {@code true} if a previous value was overridden
      */
-    Object set(UUID e, String k);
+    boolean put(UUID e, String k, boolean b);
 
     /**
-     * set an attribute value for a given element.
+     * Put a String value.
      *
-     * @param e the element
+     * @param e the element identifier
      * @param k the attribute identifier
-     * @param v the attribute value
-     * @return the previous attribute value if the attribute was stated earlier, {@code null} otherwise
+     * @param s the value to set
+     * @return {@code true} if a previous value was overridden
      */
-    Object set(UUID e, String k, Object v);
+    boolean put(UUID e, String k, String s);
+
+    /**
+     * Put a long value.
+     *
+     * @param e the element identifier
+     * @param k the attribute identifier
+     * @param l the value to set
+     * @return {@code true} if a previous value was overridden
+     */
+    boolean put(UUID e, String k, long l);
+
+    /**
+     * Put a double value.
+     *
+     * @param e the element identifier
+     * @param k the attribute identifier
+     * @param d the value to set
+     * @return {@code true} if a previous value was overridden
+     */
+    boolean put(UUID e, String k, double d);
+
+    /**
+     * Get an attribute value as a simple Object.
+     *
+     * @param e the element identifier
+     * @param k the attribute value
+     * @return the value if it has been stated. {@code null} otherwise
+     */
+    Object get(UUID e, String k);
+
+    /**
+     * Get an attribute value as a boolean.
+     *
+     * @param e the element identifier
+     * @param k the attribute value
+     * @return the value if it has been stated. {@code null} otherwise
+     */
+    Boolean getBoolean(UUID e, String k);
+
+    /**
+     * Get an attribute value as a long.
+     *
+     * @param e the element identifier
+     * @param k the attribute value
+     * @return the value if it has been stated. {@code null} otherwise
+     */
+    Long getLong(UUID e, String k);
+
+    /**
+     * Get an attribute value as a string.
+     *
+     * @param e the element identifier
+     * @param k the attribute value
+     * @return the value if it has been stated. {@code null} otherwise
+     */
+    String getString(UUID e, String k);
+
+    /**
+     * Get an attribute value as a double.
+     *
+     * @param e the element identifier
+     * @param k the attribute value
+     * @return the value if it has been stated. {@code null} otherwise
+     */
+    Double getDouble(UUID e, String k);
 
     /**
      * Check if an attribute is set for a given element.
@@ -62,26 +128,9 @@ public interface Attributes extends Cloneable {
      *
      * @param e the element identifier
      * @param k the attribute identifier
-     * @return the previous value if the attribute was already stated, @{@code null} otherwise
+     * @return {@code true} iff a value was removed
      */
-    Object unset(UUID e, String k);
-
-    /**
-     * Get all the declared attribute for a given element.
-     *
-     * @param e the element identifier
-     * @return a set of attribute identifier that may be empty
-     */
-    Set<String> get(UUID e);
-
-    /**
-     * Get the value associated to an attribute.
-     *
-     * @param e the element identifier
-     * @param k the attribute identifier
-     * @return the attribute value iff it was stated earlier, {@code null} otherwise
-     */
-    Object get(UUID e, String k);
+    boolean unset(UUID e, String k);
 
     /**
      * Clone the attributes.
@@ -89,6 +138,21 @@ public interface Attributes extends Cloneable {
      * @return a new set of attributes
      */
     Attributes clone();
+
+    /**
+     * Get the elements having attributes defined.
+     *
+     * @return a set that may be empty
+     */
+    Set<UUID> getElements();
+
+    /**
+     * Get all the attributes keys that are registered for an element.
+     *
+     * @param u the element identifier
+     * @return a set that may be empty
+     */
+    Set<String> getKeys(UUID u);
 
     /**
      * Remove all the attributes.

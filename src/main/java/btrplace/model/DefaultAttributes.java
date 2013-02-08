@@ -36,44 +36,13 @@ public class DefaultAttributes implements Attributes, Cloneable {
         attrs = new HashMap<UUID, Map<String, Object>>();
     }
 
-    @Override
-    public Object set(UUID e, String k) {
-        return set(e, k, Boolean.TRUE);
-    }
-
-    @Override
-    public Object set(UUID e, String k, Object v) {
+    private boolean putObject(UUID e, String k, Object v) {
         Map<String, Object> m = attrs.get(e);
         if (m == null) {
             m = new HashMap<String, Object>();
             attrs.put(e, m);
         }
-        return m.put(k, v);
-    }
-
-    @Override
-    public boolean isSet(UUID e, String k) {
-        Map<String, Object> m = attrs.get(e);
-        return m != null && m.containsKey(k);
-    }
-
-    @Override
-    public Object unset(UUID e, String k) {
-        Map<String, Object> m = attrs.get(e);
-        if (m == null) {
-            return null;
-        }
-        return m.remove(k);
-
-    }
-
-    @Override
-    public Set<String> get(UUID e) {
-        Map<String, Object> m = attrs.get(e);
-        if (m == null) {
-            return Collections.emptySet();
-        }
-        return m.keySet();
+        return m.put(k, v) != null;
     }
 
     @Override
@@ -83,6 +52,23 @@ public class DefaultAttributes implements Attributes, Cloneable {
             return null;
         }
         return m.get(k);
+    }
+
+
+    @Override
+    public boolean isSet(UUID e, String k) {
+        Map<String, Object> m = attrs.get(e);
+        return m != null && m.containsKey(k);
+    }
+
+    @Override
+    public boolean unset(UUID e, String k) {
+        Map<String, Object> m = attrs.get(e);
+        if (m == null) {
+            return false;
+        }
+        return m.remove(k) != null;
+
     }
 
     @Override
@@ -101,7 +87,7 @@ public class DefaultAttributes implements Attributes, Cloneable {
             b.append(e.getKey());
             b.append(':');
             for (Map.Entry<String, Object> attr : e.getValue().entrySet()) {
-                b.append(" <").append(attr.getKey()).append(",").append(attr.getValue()).append('>');
+                b.append(" <").append(attr.getKey()).append(',').append(attr.getValue()).append('>');
             }
             b.append('\n');
         }
@@ -129,7 +115,61 @@ public class DefaultAttributes implements Attributes, Cloneable {
     }
 
     @Override
+    public Set<UUID> getElements() {
+        return attrs.keySet();
+    }
+
+    @Override
     public void clear() {
         this.attrs.clear();
+    }
+
+    @Override
+    public boolean put(UUID e, String k, boolean b) {
+        return putObject(e, k, b);
+    }
+
+    @Override
+    public boolean put(UUID e, String k, String s) {
+        return putObject(e, k, s);
+    }
+
+    @Override
+    public boolean put(UUID e, String k, long l) {
+        return putObject(e, k, l);
+    }
+
+    @Override
+    public boolean put(UUID e, String k, double d) {
+        return putObject(e, k, d);
+    }
+
+    @Override
+    public Boolean getBoolean(UUID e, String k) {
+        return (Boolean) get(e, k);
+    }
+
+    @Override
+    public Long getLong(UUID e, String k) {
+        return (Long) get(e, k);
+    }
+
+    @Override
+    public String getString(UUID e, String k) {
+        return (String) get(e, k);
+    }
+
+    @Override
+    public Double getDouble(UUID e, String k) {
+        return (Double) get(e, k);
+    }
+
+    @Override
+    public Set<String> getKeys(UUID u) {
+        Map<String, Object> m = attrs.get(u);
+        if (m == null) {
+            return Collections.emptySet();
+        }
+        return m.keySet();
     }
 }
