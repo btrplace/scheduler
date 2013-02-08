@@ -1,7 +1,7 @@
 Release notes
 =======================
 
-version ??????
+version 0.11 - 08 Feb 2013
 ----------------------
 - Restrict Attributes to only store basic primitives
 
