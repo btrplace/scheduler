@@ -1,7 +1,7 @@
 Release notes
 =======================
 
-version ?????????
+version 0.12 - 14 Feb 2013
 ----------------------
 - An helper in DefaultAttribute to cast values if possible
 
