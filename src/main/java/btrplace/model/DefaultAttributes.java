@@ -172,4 +172,35 @@ public class DefaultAttributes implements Attributes, Cloneable {
         }
         return m.keySet();
     }
+
+    /**
+     * Put a value but try to cast into to a supported primitive if possible.
+     * First, it tries to cast {@code v} first to a boolean, then to a long value,
+     * finally to a double value. If none of the cast succeeded, the value is let
+     * as a string.
+     *
+     * @param u the element identifier
+     * @param k the attribute identifier
+     * @param v the value to set
+     * @return {@code true} if a previous value was overridden
+     */
+    public boolean castAndPut(UUID u, String k, String v) {
+        String x = v.toLowerCase().trim();
+        if (x.equals("true")) {
+            return put(u, k, true);
+        } else if (x.equals("false")) {
+            return put(u, k, false);
+        }
+        try {
+            return put(u, k, Long.parseLong(x));
+        } catch (NumberFormatException ex) {
+        }
+
+        try {
+            return put(u, k, Double.parseDouble(x));
+        } catch (NumberFormatException ex) {
+        }
+
+        return put(u, k, v);
+    }
 }

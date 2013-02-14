@@ -80,6 +80,28 @@ public class DefaultAttributesTest {
         Assert.assertEquals(attrs.getBoolean(u, "foo"), Boolean.FALSE);
     }
 
+    @Test(dependsOnMethods = {"testInstantiation"})
+    public void testCastAndPut() {
+        DefaultAttributes attrs = new DefaultAttributes();
+        UUID u = UUID.randomUUID();
+        attrs.castAndPut(u, "foo", "foo");
+        Assert.assertEquals(attrs.get(u, "foo").getClass(), String.class);
+        attrs.castAndPut(u, "foo", "true");
+        Assert.assertEquals(attrs.get(u, "foo").getClass(), Boolean.class);
+
+        attrs.castAndPut(u, "foo", "false");
+        Assert.assertEquals(attrs.get(u, "foo").getClass(), Boolean.class);
+
+        attrs.castAndPut(u, "foo", "True");
+        Assert.assertEquals(attrs.get(u, "foo").getClass(), Boolean.class);
+
+        attrs.castAndPut(u, "foo", "135");
+        Assert.assertEquals(attrs.get(u, "foo").getClass(), Long.class);
+
+        attrs.castAndPut(u, "foo", "13.56");
+        Assert.assertEquals(attrs.get(u, "foo").getClass(), Double.class);
+    }
+
     @Test(dependsOnMethods = {"testPutAndGetString", "testInstantiation"})
     public void testIsSet() {
         Attributes attrs = new DefaultAttributes();

@@ -1,6 +1,10 @@
 Release notes
 =======================
 
+version ?????????
+----------------------
+- An helper in DefaultAttribute to cast values if possible
+
 version 0.11 - 08 Feb 2013
 ----------------------
 - Restrict Attributes to only store basic primitives
