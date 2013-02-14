@@ -155,7 +155,20 @@ public interface Attributes extends Cloneable {
     Set<String> getKeys(UUID u);
 
     /**
-     * Remove all the attributes.
+     * Put a value but try to cast into to a supported primitive if possible.
+     * First, it tries to cast {@code v} first to a boolean, then to a long value,
+     * finally to a double value. If none of the cast succeeded, the value is let
+     * as a string.
+     *
+     * @param u the element identifier
+     * @param k the attribute identifier
+     * @param v the value to set
+     * @return {@code true} if a previous value was overridden
      */
+    boolean castAndPut(UUID u, String k, String v);
+
+        /**
+         * Remove all the attributes.
+         */
     void clear();
 }
