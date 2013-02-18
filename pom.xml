@@ -77,7 +77,7 @@
         <dependency>
             <groupId>btrplace</groupId>
             <artifactId>solver-api</artifactId>
-            <version>0.11</version>
+            <version>0.12</version>
         </dependency>
         <dependency>
             <groupId>net.minidev</groupId>
@@ -114,7 +114,7 @@
             <id>btrp-releases</id>
             <name>Corporate Repository</name>
             <url>
-                scp://btrp.inria.fr:/home/maven/repos/releases
+                scpexe://btrp.inria.fr:/home/maven/repos/releases
             </url>
             <layout>default</layout>
         </repository>
@@ -123,7 +123,7 @@
             <id>btrp-snapshots</id>
             <name>Corporate Repository</name>
             <url>
-                scp://btrp.inria.fr:/home/maven/repos/snapshot-releases
+                scpexe://btrp.inria.fr:/home/maven/repos/snapshot-releases
             </url>
             <layout>default</layout>
         </snapshotRepository>
