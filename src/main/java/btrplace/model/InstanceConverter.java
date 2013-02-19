@@ -24,9 +24,6 @@ import btrplace.model.constraint.SatConstraintsConverter;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * A JSON converter for {@link Instance}.
  *
@@ -42,13 +39,7 @@ public class InstanceConverter implements JSONConverter<Instance> {
 
         Model mo = moc.fromJSON((JSONObject) in.get("model"));
 
-        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
-        JSONArray arr = (JSONArray) in.get("constraints");
-        for (Object o : arr) {
-            cstrs.add(cstrc.fromJSON((JSONObject) o));
-        }
-
-        return new Instance(mo, cstrs);
+        return new Instance(mo, cstrc.fromJSON((JSONArray) in.get("constraints")));
     }
 
     @Override
@@ -57,11 +48,7 @@ public class InstanceConverter implements JSONConverter<Instance> {
         SatConstraintsConverter cstrc = new SatConstraintsConverter();
         JSONObject ob = new JSONObject();
         ob.put("model", moc.toJSON(instance.getModel()));
-        JSONArray arr = new JSONArray();
-        for (SatConstraint cstr : instance.getConstraints()) {
-            arr.add(cstrc.toJSON(cstr));
-        }
-        ob.put("constraints", arr);
+        ob.put("constraints", cstrc.toJSON(instance.getConstraints()));
         return ob;
     }
 }

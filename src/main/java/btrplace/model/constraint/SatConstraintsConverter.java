@@ -21,11 +21,10 @@ package btrplace.model.constraint;
 import btrplace.JSONConverter;
 import btrplace.JSONConverterException;
 import btrplace.model.SatConstraint;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Extensible converter for {@link btrplace.model.SatConstraint}.
@@ -121,5 +120,35 @@ public class SatConstraintsConverter implements JSONConverter<SatConstraint> {
             throw new JSONConverterException("No converter available for a constraint with the '" + o.getClass() + "' classname");
         }
         return c.toJSON(o);
+    }
+
+    /**
+     * Convert a collection of constraint to a JSON array.
+     *
+     * @param cstrs the constraint to convert
+     * @return the resulting array
+     * @throws JSONConverterException if an error occurred
+     */
+    public JSONArray toJSON(Collection<SatConstraint> cstrs) throws JSONConverterException {
+        JSONArray arr = new JSONArray();
+        for (SatConstraint cstr : cstrs) {
+            arr.add(toJSON(cstr));
+        }
+        return arr;
+    }
+
+    /**
+     * Convert a JSON array of constraint to a list of constraints.
+     *
+     * @param arr the array to browse
+     * @return the resulting list of constraints
+     * @throws JSONConverterException if an error occurred
+     */
+    public List<SatConstraint> fromJSON(JSONArray arr) throws JSONConverterException {
+        List<SatConstraint> cstrs = new ArrayList<SatConstraint>(arr.size());
+        for (Object o : arr) {
+            cstrs.add(fromJSON((JSONObject) o));
+        }
+        return cstrs;
     }
 }
