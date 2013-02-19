@@ -131,10 +131,10 @@ public final class Utils {
      */
     public static long requiredLong(JSONObject o, String id) throws JSONConverterException {
         Object x = o.get(id);
-        if (!(x instanceof Long)) {
-            throw new JSONConverterException("Integer expected at key '" + id + "' but was '" + x.getClass() + "'.");
+        if (!(x instanceof Number) || Math.floor(((Number) x).doubleValue()) != ((Number) x).intValue()) {
+            throw new JSONConverterException("Natural number expected at key '" + id + "' but was '" + x.getClass() + "'.");
         }
-        return (Long) x;
+        return ((Number) x).longValue();
     }
 
     /**
