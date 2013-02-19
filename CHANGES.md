@@ -1,7 +1,7 @@
 Release notes
 =======================
 
-version ????
+version 0.4 - 19 Feb 2013
 -----------------------
 - bug fixes
 - additional tools to ease the conversion
