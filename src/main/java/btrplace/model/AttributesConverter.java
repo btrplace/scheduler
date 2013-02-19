@@ -49,8 +49,10 @@ public class AttributesConverter implements JSONConverter<Attributes> {
                     attrs.put(u, entry.toString(), (String) value);
                 } else if (value.getClass().equals(Double.class)) {
                     attrs.put(u, entry.toString(), (Double) value);
+                } else if (value.getClass().equals(Integer.class)) {
+                    attrs.put(u, entry.toString(), (Integer) value);
                 } else {
-                    throw new ClassCastException(value.toString() + " is not a basic type");
+                    throw new ClassCastException(value.toString() + " is not a basic type (" + value.getClass() + ")");
                 }
 
             }

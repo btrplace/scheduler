@@ -132,7 +132,7 @@ public final class Utils {
     public static long requiredLong(JSONObject o, String id) throws JSONConverterException {
         Object x = o.get(id);
         if (!(x instanceof Long)) {
-            throw new JSONConverterException("Integer expected at key '" + id + ".");
+            throw new JSONConverterException("Integer expected at key '" + id + "' but was '" + x.getClass() + "'.");
         }
         return (Long) x;
     }
@@ -148,7 +148,7 @@ public final class Utils {
     public static double requiredDouble(JSONObject o, String id) throws JSONConverterException {
         Object x = o.get(id);
         if (!(x instanceof Double)) {
-            throw new JSONConverterException("Real number expected at key '" + id + "'");
+            throw new JSONConverterException("Real number expected at key '" + id + "' but was '" + x.getClass() + "'.");
         }
         return (Double) x;
     }
@@ -164,7 +164,7 @@ public final class Utils {
     public static boolean requiredBoolean(JSONObject o, String id) throws JSONConverterException {
         Object x = o.get(id);
         if (!(x instanceof Boolean)) {
-            throw new JSONConverterException("Boolean expected at key '" + id + "'");
+            throw new JSONConverterException("Boolean expected at key '" + id + "' but was '" + x.getClass() + "'.");
         }
         return (Boolean) x;
     }

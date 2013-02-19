@@ -87,7 +87,7 @@ public class ModelConverter implements JSONConverter<Model> {
         Mapping cfg = cfgParser.fromJSON((JSONObject) o.get("mapping"));
         Model i = new DefaultModel(cfg);
         if (o.containsKey("attributes")) {
-            i.setAttributes(attrsParser.fromJSON(o));
+            i.setAttributes(attrsParser.fromJSON((JSONObject) o.get("attributes")));
         }
 
         if (o.containsKey("views")) {
