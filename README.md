@@ -1,0 +1,77 @@
+# Btrplace solver #
+
+This repository contains the main sources of the flexible VM placement
+algorithm btrPlace (http://btrp.inria.fr)
+
+Contact: fabien.hermenier@unice.fr
+
+## Usage ##
+
+### Inside a maven project ###
+
+The maven artifacts are in private repositories so you have first to edit your `pom.xml` to declare them:
+
+```xml
+<repositories>
+    <repository>
+        <id>btrp-releases</id>
+        <url>http://btrp.inria.fr:8080/repos/releases</url>
+    </repository>
+    <repository>
+        <id>btrp-snapshots</id>
+        <url>http://btrp.inria.fr:8080/repos/snapshot-releases</url>
+    </repository>
+</repositories>
+```
+
+Next, just declare the dependency:
+
+```xml
+<dependency>
+   <groupId>btrplace</groupId>
+   <artifactId>solver</artifactId>
+   <version>0.20-SNAPSHOT</version>
+</dependency>
+```
+
+`btrplace:solver` is an aggregate for different sub-modules. If you don't need all of then it is still possible
+ to declare each dependency separately. In practice, `btrplace:solver` is composed of:
+
+* `btrplace:solver-api`: the API defining a reconfiguration algorithm and the element it manipulates
+* `btrplace:solver-choco`: the default implementation of a reconfiguration algorithm using the Constraint Programming
+solver Choco
+* `btrplace:solver-json`: to serialize models using JSON
+
+### Inside a non-maven project ###
+
+For each version of Btrplace, a bundle containing the three basics artifacts (`btrplace:solver-api`,
+`btrplace:solver-choco`, `btrplace:solver-json`) and their dependencies is made available.
+
+The jar can be downloaded from this URL:
+
+* http://btrp.inria.fr:8080/repos/releases/btrplace/solver-bundle/0.20/solver-bundle-0.20.jar
+
+
+## Documentation ##
+
+* Javadoc for the last snapshot version: http://btrp.inria.fr:8080/apidocs/snapshots/solver
+* Javadoc for the released versions: http://btrp.inria.fr:8080/apidocs/releases/btrplace/solver
+
+## Building from sources ##
+
+Requirements:
+* JDK 6+
+* maven 3+
+
+The source of the released versions are directly available in the `Tag` section.
+You can also download them using github features.
+Once downloaded, move to the source directory then execute the following command
+to make the jar:
+
+    $ mvn clean install
+
+If the build succeeded, the resulting jars will be automatically installed in your local maven repository.
+
+
+## Copyright ##
+Copyright (c) 2013 University of Nice-Sophia Antipolis. See `LICENSE.txt` for details
