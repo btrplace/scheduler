@@ -1,7 +1,7 @@
 Release notes
 =======================
 
-version ??????
+version 0.3 - 25 Feb 2013
 ----------------------
 
 version 0.20 - 25 Feb 2013
