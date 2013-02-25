@@ -19,65 +19,22 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+      <groupId>btrplace</groupId>
+      <artifactId>solver</artifactId>
+      <version>0.15-SNAPSHOT</version>
+    </parent>
 
-    <groupId>btrplace</groupId>
     <artifactId>solver-json</artifactId>
-    <version>0.5-SNAPSHOT</version>
 
     <description>Read and write model according to the JSON format</description>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
-    <developers>
-        <developer>
-            <name>Fabien Hermenier</name>
-            <email>fabien.hermenier@unice.fr</email>
-        </developer>
-    </developers>
-
-    <build>
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh-external</artifactId>
-                <version>2.0</version>
-            </extension>
-        </extensions>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <tagNameFormat>@{project.groupId}-@{project.artifactId}-@{project.version}</tagNameFormat>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
     <dependencies>
         <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>6.8</version>
-            <type>jar</type>
-            <scope>test</scope>
-            <optional>false</optional>
-        </dependency>
-        <dependency>
             <groupId>btrplace</groupId>
             <artifactId>solver-api</artifactId>
-            <version>0.12</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>net.minidev</groupId>
@@ -86,46 +43,4 @@
         </dependency>
     </dependencies>
 
-    <scm>
-        <connection>scm:git:git://github.com/fhermeni/btrplace-solver-json.git</connection>
-        <url>scm:git:git@github.com:fhermeni/btrplace-solver-json</url>
-        <developerConnection>scm:git:git@github.com:fhermeni/btrplace-solver-json.git</developerConnection>
-        <tag>HEAD</tag>
-    </scm>
-
-    <repositories>
-        <repository>
-            <id>choco.repos</id>
-            <url>http://www.emn.fr/z-info/choco-repo/mvn/repository/</url>
-        </repository>
-        <repository>
-            <id>btrp-releases</id>
-            <url>http://btrp.inria.fr:8080/repos/releases</url>
-        </repository>
-        <repository>
-            <id>btrp-snapshots</id>
-            <url>http://btrp.inria.fr:8080/repos/snapshot-releases</url>
-        </repository>
-    </repositories>
-
-    <distributionManagement>
-        <repository>
-            <uniqueVersion>false</uniqueVersion>
-            <id>btrp-releases</id>
-            <name>Corporate Repository</name>
-            <url>
-                scpexe://btrp.inria.fr:/home/maven/repos/releases
-            </url>
-            <layout>default</layout>
-        </repository>
-        <snapshotRepository>
-            <uniqueVersion>true</uniqueVersion>
-            <id>btrp-snapshots</id>
-            <name>Corporate Repository</name>
-            <url>
-                scpexe://btrp.inria.fr:/home/maven/repos/snapshot-releases
-            </url>
-            <layout>default</layout>
-        </snapshotRepository>
-    </distributionManagement>
 </project>
