@@ -55,7 +55,7 @@ public class DurationFromAttribute implements DurationEvaluator {
     public int evaluate(UUID e) {
         if (attrs.isSet(e, key)) {
             try {
-                return (Integer) attrs.get(e, key);
+                return attrs.getLong(e, key).intValue();
             } catch (Exception ex) {
                 return parent.evaluate(e);
             }

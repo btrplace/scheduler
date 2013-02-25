@@ -44,7 +44,7 @@ public class DurationFromAttributeTest {
         Assert.assertEquals("boot", dev.getAttributeKey());
         Assert.assertEquals(15, dev.evaluate(e));
 
-        attrs.set(e, "boot", 7);
+        attrs.put(e, "boot", 7);
         Assert.assertEquals(7, dev.evaluate(e));
 
         parent = new ConstantDuration(2);
