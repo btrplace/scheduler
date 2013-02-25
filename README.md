@@ -53,7 +53,7 @@ The jar can be downloaded from this URL:
 ## Documentation ##
 
 * Javadoc for the last snapshot version: http://btrp.inria.fr:8080/apidocs/snapshots/btrplace/solver/0.20-SNAPSHOT/
-* Javadoc for the released versions: http://btrp.inria.fr:8080/apidocs/releases/btrplace/solver/last/
+* Javadoc for the released versions: http://btrp.inria.fr:8080/apidocs/releases/btrplace/solver/0.20/
 
 ## Building from sources ##
 
