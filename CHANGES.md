@@ -1,6 +1,9 @@
 Release notes
 =======================
 
+version ??????
+----------------------
+
 version 0.20 - 25 Feb 2013
 ----------------------
 - merge repositories for solver-api, solver-choco and solver-json
