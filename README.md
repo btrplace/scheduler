@@ -34,7 +34,7 @@ Next, just declare the dependency:
 </dependency>
 ```
 
-`btrplace:solver` is an aggregate for different sub-modules. If you don't need all of then it is still possible
+`btrplace:solver` is an aggregate of different sub-modules. If you don't need all of then, it is still possible
  to declare each dependency separately. In practice, `btrplace:solver` is composed of:
 
 * `btrplace:solver-api`: the API defining a reconfiguration algorithm and the element it manipulates
@@ -44,9 +44,7 @@ solver Choco
 
 ### Inside a non-maven project ###
 
-For each version of Btrplace, a bundle containing the three basics artifacts (`btrplace:solver-api`,
-`btrplace:solver-choco`, `btrplace:solver-json`) and their dependencies is made available.
-
+For each version of Btrplace, a bundle containing the three basics artifacts and their dependencies is made available.
 The jar can be downloaded from this URL:
 
 * http://btrp.inria.fr:8080/repos/releases/btrplace/solver-bundle/0.20/solver-bundle-0.20.jar
