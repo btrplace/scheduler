@@ -28,7 +28,7 @@ prepare)
     echo "Branch $RELEASE_BRANCH is ready"
     ;;
 perform)
-    git remote -a
+    git remote -v
     if [ $(hostname) != "btrp" ]; then
             echo "This script must be executed on btrp.inria.fr"
             exit 1
