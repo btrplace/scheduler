@@ -19,8 +19,11 @@ function getBranch {
 case $1 in
 
 prepare)        
-    RELEASE_BRANCH="release/$(getVersionToRelease)"    
+    VERSION=$(getVersionToRelease)
+    RELEASE_BRANCH="release/$VERSION"    
     git checkout -b ${RELEASE_BRANCH} || exit 1
+    echo $VERSION > .version
+    git add .version
     git push origin ${RELEASE_BRANCH} || exit 1
     echo "Branch $RELEASE_BRANCH is ready"
     ;;
@@ -30,9 +33,9 @@ perform)
             exit 1
     fi
     set -x
-    CURRENT_BRANCH=$(getBranch)    
-    VERSION=${CURRENT_BRANCH##release/}    
-    
+    #CURRENT_BRANCH=$(getBranch)    
+    #VERSION=${CURRENT_BRANCH##release/}    
+    VERSION=$(cat .version)
     #Code update and maven release process
     ./bump_release.sh code $VERSION || exit 1
     mvn -B release:prepare || exit 1
