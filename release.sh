@@ -16,8 +16,9 @@ function getBranch {
     git symbolic-ref --short HEAD
 }
 
+ls
+set -x
 case $1 in
-
 prepare)        
     VERSION=$(getVersionToRelease)
     RELEASE_BRANCH="release/$VERSION"    
