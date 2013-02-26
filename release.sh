@@ -39,6 +39,7 @@ perform)
     VERSION=$(cat .version)
     #Code update and maven release process
     ./bump_release.sh code $VERSION || exit 1
+    git commit -m "Bump the code to version $VERSION" -a
     mvn -B release:prepare || exit 1
     mvn release:perform || exit 1
 
