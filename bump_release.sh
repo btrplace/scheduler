@@ -12,6 +12,7 @@ VERSION=$2
 REPO_URL="http://btrp.inria.fr:8080/repos"
 APIDOC_URL="http://btrp.inria.fr:8080/apidocs"
 
+set -x
 case $1	in
 
 site)
