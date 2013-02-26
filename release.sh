@@ -29,7 +29,7 @@ perform)
             echo "This script must be executed on btrp.inria.fr"
             exit 1
     fi
-
+    set -x
     CURRENT_BRANCH=$(getBranch)    
     VERSION=${CURRENT_BRANCH##release/}    
     
