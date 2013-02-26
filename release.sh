@@ -41,6 +41,8 @@ perform)
     ./bump_release.sh code $VERSION || exit 1
     git commit -m "Bump the code to version $VERSION" -a
     mvn -B release:prepare || exit 1
+    git push origin
+    git push origin --tags
     mvn release:perform || exit 1
 
     #We generate the big javadoc and put it on the webserver
