@@ -30,8 +30,8 @@ perform)
             exit 1
     fi
 
-    CURRENT_BRANCH=$(getBranch)
-    VERSION=${$CURRENT_BRANCH##release\/}
+    CURRENT_BRANCH=$(getBranch)    
+    VERSION=${CURRENT_BRANCH##release/}    
     
     #Code update and maven release process
     ./bump_release.sh code $VERSION || exit 1
