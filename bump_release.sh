@@ -31,22 +31,22 @@ site)
 code)
 	## The README.md
 	# Update of the version number for maven usage
-	sed  -i '' "s%<version>.*</version>%<version>$VERSION</version>%"  README.md
+	sed  -i'' "s%<version>.*</version>%<version>$VERSION</version>%"  README.md
 
 	snapshot=0
 	echo $VERSION | grep "\-SNAPSHOT$" > /dev/null && snapshot=1
 	if [ $snapshot = 0 ]; then 
 		# Update the bundle and the apidoc location		
-		sed  -i '' "s%$REPO_URL.*solver\-bundle.*%$REPO_URL/releases/btrplace/solver\-bundle/$VERSION/solver\-bundle\-$VERSION\.jar%" README.md		
-		sed  -i '' "s%$APIDOC_URL/.*%$APIDOC_URL/releases/btrplace/solver/$VERSION/%" README.md
+		sed  -i'' "s%$REPO_URL.*solver\-bundle.*%$REPO_URL/releases/btrplace/solver\-bundle/$VERSION/solver\-bundle\-$VERSION\.jar%" README.md		
+		sed  -i'' "s%$APIDOC_URL/.*%$APIDOC_URL/releases/btrplace/solver/$VERSION/%" README.md
 	else 
 		# Update the bundle and the apidoc location
-		sed  -i '' "s%$REPO_URL.*solver\-bundle.*%$REPO_URL/snapshot-releases/btrplace/solver\-bundle/$VERSION/%" README.md	 #There is multiple jar for the snapshots, so we refer to the directory
-		sed  -i '' "s%$APIDOC_URL/.*%$APIDOC_URL/snapshots/btrplace/solver/%" README.md
+		sed  -i'' "s%$REPO_URL.*solver\-bundle.*%$REPO_URL/snapshot-releases/btrplace/solver\-bundle/$VERSION/%" README.md	 #There is multiple jar for the snapshots, so we refer to the directory
+		sed  -i'' "s%$APIDOC_URL/.*%$APIDOC_URL/snapshots/btrplace/solver/%" README.md
 	fi	
 	## The CHANGES.md file
 	d=`LANG=en_US.utf8 date +"%d %b %Y"`
-	sed  -i '' "s%????*%$VERSION - $d%" CHANGES.md 
+	sed  -i'' "s%????*%$VERSION - $d%" CHANGES.md 
 	;;
 	*)
 		echo "Target must be either 'site' or 'code'"
