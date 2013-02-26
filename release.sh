@@ -22,10 +22,10 @@ prepare)
     RELEASE_BRANCH="release/$(getVersionToRelease)"    
     git checkout -b ${RELEASE_BRANCH} || exit 1
     git push origin ${RELEASE_BRANCH} || exit 1
-    "Branch $RELEASE_BRANCH is ready"
+    echo "Branch $RELEASE_BRANCH is ready"
     ;;
 perform)
-    if [ $(hostname) -ne "btrp" ]; then
+    if [ $(hostname) != "btrp" ]; then
             echo "This script must be executed on btrp.inria.fr"
             exit 1
     fi
