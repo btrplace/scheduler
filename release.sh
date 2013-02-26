@@ -17,7 +17,6 @@ function getBranch {
 }
 
 ls
-set -x
 case $1 in
 prepare)        
     VERSION=$(getVersionToRelease)
@@ -29,13 +28,11 @@ prepare)
     echo "Branch $RELEASE_BRANCH is ready"
     ;;
 perform)
+    git remote -a
     if [ $(hostname) != "btrp" ]; then
             echo "This script must be executed on btrp.inria.fr"
             exit 1
-    fi
-    set -x
-    #CURRENT_BRANCH=$(getBranch)    
-    #VERSION=${CURRENT_BRANCH##release/}    
+    fi    
     VERSION=$(cat .version)
     #Code update and maven release process
     ./bump_release.sh code $VERSION || exit 1
