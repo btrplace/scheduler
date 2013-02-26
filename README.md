@@ -53,7 +53,7 @@ The jar can be downloaded from this URL:
 
 ## Documentation ##
 
-* apidoc: http://btrp.inria.fr:8080/apidocs/snapshots/btrplace/solver/0.21-SNAPSHOT/
+* apidoc: http://btrp.inria.fr:8080/apidocs/snapshots/btrplace/solver/
 
 ## Building from sources ##
 

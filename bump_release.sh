@@ -41,7 +41,7 @@ code)
 	else 
 		# Update the bundle and the apidoc location
 		sed  -i '' "s%$REPO_URL.*solver\-bundle.*%$REPO_URL/snapshot-releases/btrplace/solver\-bundle/$VERSION/%" README.md	 #There is multiple jar for the snapshots, so we refer to the directory
-		sed  -i '' "s%$APIDOC_URL/.*%$APIDOC_URL/snapshots/btrplace/solver/$VERSION/%" README.md
+		sed  -i '' "s%$APIDOC_URL/.*%$APIDOC_URL/snapshots/btrplace/solver/%" README.md
 	fi	
 	## The CHANGES.md file
 	d=`LANG=en_US.utf8 date +"%d %b %Y"`
