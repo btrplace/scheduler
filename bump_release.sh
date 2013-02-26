@@ -31,7 +31,7 @@ code)
 	sed  -i '' "s%<version>.*</version>%<version>$VERSION</version>%"  README.md
 
 	# Update the bundle location
-	sed  -i '' "s%repos/releases.*%repos/releases/btrplace/solver\-bundle/$VERSION/solver\-bundle\-$VERSION\.jar%" README.md
+	sed  -i '' "s%repos/releases.*jar%repos/releases/btrplace/solver\-bundle/$VERSION/solver\-bundle\-$VERSION\.jar%" README.md
 
 	# apidoc
 	sed  -i '' "s%apidoc/releases.*%apidoc/releases/btrplace/solver/$VERSION/%" README.md

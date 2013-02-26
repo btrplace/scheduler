@@ -15,11 +15,11 @@ The maven artifacts are in private repositories so you have first to edit your `
 <repositories>
     <repository>
         <id>btrp-releases</id>
-        <url>http://btrp.inria.fr:8080/YEAH
+        <url>http://btrp.inria.fr:8080/repos/releases</url>
     </repository>
     <repository>
         <id>btrp-snapshots</id>
-        <url>http://btrp.inria.fr:8080/YEAH
+        <url>http://btrp.inria.fr:8080/repos/snapshot-releases</url>
     </repository>
 </repositories>
 ```
@@ -30,7 +30,7 @@ Next, just declare the dependency:
 <dependency>
    <groupId>btrplace</groupId>
    <artifactId>solver</artifactId>
-   <version>0.3</version>
+   <version>0.20</version>
 </dependency>
 ```
 
@@ -47,13 +47,13 @@ solver Choco
 For each version of Btrplace, a bundle that contains the three basics artifacts and their dependencies is made available.
 The jar can be downloaded from this URL:
 
-* http://btrp.inria.fr:8080/repos/releases/btrplace/solver-bundle/0.3/solver-bundle-0.3.jar
+* http://btrp.inria.fr:8080/repos/releases/btrplace/solver-bundle/0.20/solver-bundle-0.20.jar
 
 
 
 ## Documentation ##
 
-* apidoc: http://btrp.inria.fr:8080/apidoc/releases/btrplace/solver/0.3/
+* apidoc: http://btrp.inria.fr:8080/apidoc/releases/btrplace/solver/0.20/
 
 ## Building from sources ##
 
