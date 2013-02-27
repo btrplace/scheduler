@@ -49,22 +49,24 @@ perform)
     mv target/apidoc ${APIDOC_ROOT}/${VERSION}
     
     # merge the version changes back into develop so that folks are working against the new release 
-    git checkout develop || exit 1
-    git merge --no-ff release/$VERSION || exit 1
+    git checkout develop
+    git merge --no-ff -m "integrate the release" release/$VERSION || exit 1
  
     # housekeeping -- rewind the release branch by one commit to fix its version at $VERSION
     #   excuse the force push, it's because maven will have already pushed the next dev version
     #   to origin with this branch, and I don't want that version (or a diverging revert commit)
     #   in the release or master branches.
-    git checkout release/$VERSION || exit 1
+    git checkout release/$VERSION
     git reset --hard HEAD~1 || exit 1
     git push --force origin release/$VERSION || exit 1
  
     # finally, if & when the code gets deployed to production
     git checkout master || exit 1
-    git merge --no-ff release/$VERSION || exit 1
+    git merge --no-ff release/$VERSION
     git branch -d release/$VERSION || exit 1
 
+    git push
+    git push origin :release/$VERSION
     ./bump_release.sh site ${VERSION}
     ;;
 esac
