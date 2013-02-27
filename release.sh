@@ -45,12 +45,12 @@ perform)
     echo "-- Prepare the release --"
     mvn -B release:prepare || exit 1
 
+    echo "-- Perform the release --"
+    mvn release:perform || exit 1
+
     #echo "-- Push the changes and the tags --"
     git push
     git push origin --tags
-
-    echo "-- Perform the release --"
-    mvn release:perform || exit 1
     
     # merge the version changes back into develop so that folks are working against the new release 
     echo "-- Integrate the next version into the develop branch --"
