@@ -30,9 +30,9 @@ site)
 code)
 
 	#Darwin specificities about "in place" editing
-	IN_PLACE="-i ''"
+	IN_PLACE="-i''"
 	if [ $(uname) = "Darwin" ]; then		
-		IN_PLACE="-i''"
+		IN_PLACE="-i ''"
 	fi
 
 	## The README.md
