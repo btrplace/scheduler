@@ -73,6 +73,7 @@ perform)
     mvn javadoc:aggregate > /dev/null
     APIDOC_ROOT="/usr/share/nginx/html/apidocs/releases/btrplace/solver/"
     mkdir -p $APIDOC_ROOT > /dev/null
+    rm -rf ${APIDOC_ROOT}/${VERSION}
     mv target/site/apidocs ${APIDOC_ROOT}/${VERSION}
 
 
