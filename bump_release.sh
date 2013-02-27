@@ -1,6 +1,13 @@
 #!/bin/sh
 #Script to notify the website about a release
 
+function sedInPlace {
+	if [ $(uname) = "Darwin" ]; then			
+		sed -i '' "$1" $2
+	else
+		sed -i'' "$1" $2
+	fi
+}
 
 if [ $# -ne 2 ]; then
     echo "Usage: $0 [site|code] version_number"
@@ -29,31 +36,27 @@ site)
 	;;
 code)
 
-	#Darwin specificities about "in place" editing
-	IN_PLACE="-i''"
-	if [ $(uname) = "Darwin" ]; then		
-		IN_PLACE="-i ''"
-	fi
-
 	## The README.md
-	# Update of the version number for maven usage
-	sed  ${IN_PLACE} "s%<version>.*</version>%<version>$VERSION</version>%"  README.md
-
+	# Update of the version number for maven usage	
+		
+	sedInPlace "s%<version>.*</version>%<version>$VERSION</version>%"  README.md
+	
 	snapshot=0
 	echo $VERSION | grep "\-SNAPSHOT$" > /dev/null && snapshot=1
 
 	if [ $snapshot = 0 ]; then 
 		# Update the bundle and the apidoc location			
-		sed ${IN_PLACE} "s%$REPO_URL.*solver\-bundle.*%$REPO_URL/releases/btrplace/solver\-bundle/$VERSION/solver\-bundle\-$VERSION\.jar%" README.md		
-		sed ${IN_PLACE} "s%$APIDOC_URL/.*%$APIDOC_URL/releases/btrplace/solver/$VERSION/%" README.md
+		sedInPlace "s%$REPO_URL.*solver\-bundle.*%$REPO_URL/releases/btrplace/solver\-bundle/$VERSION/solver\-bundle\-$VERSION\.jar%" README.md		
+		sedInPlace "s%$APIDOC_URL/.*%$APIDOC_URL/releases/btrplace/solver/$VERSION/%" README.md
 	else 
 		# Update the bundle and the apidoc location
-		sed ${IN_PLACE} "s%$REPO_URL.*solver\-bundle.*%$REPO_URL/snapshot-releases/btrplace/solver\-bundle/$VERSION/%" README.md	 #There is multiple jar for the snapshots, so we refer to the directory
-		sed ${IN_PLACE} "s%$APIDOC_URL/.*%$APIDOC_URL/snapshots/btrplace/solver/%" README.md
+		sedInPlace "s%$REPO_URL.*solver\-bundle.*%$REPO_URL/snapshot-releases/btrplace/solver\-bundle/$VERSION/%" README.md	 #There is multiple jar for the snapshots, so we refer to the directory
+		sedInPlace "s%$APIDOC_URL/.*%$APIDOC_URL/snapshots/btrplace/solver/%" README.md
 	fi	
 	## The CHANGES.md file
 	d=`LANG=en_US.utf8 date +"%d %b %Y"`
-	sed  ${IN_PLACE} "s%????*%$VERSION - $d%" CHANGES.md 
+	REGEX="s%????*%${VERSION} - ${d}%"	
+	sedInPlace "${REGEX}" CHANGES.md 
 	;;
 	*)
 		echo "Target must be either 'site' or 'code'"

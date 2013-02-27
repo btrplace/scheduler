@@ -24,12 +24,16 @@ prepare)
     VERSION=$(getVersionToRelease)
     RELEASE_BRANCH="release/$VERSION"        
     git checkout -b ${RELEASE_BRANCH} || exit 1
+
+    echo "-- Prepare the code for release ${VERSION} in branch ${RELEASE_BRANCH} --"
     echo $VERSION > .version
-    git add .version
-    git commit -m "file that indicate the released version" -a
+    git add .version    
+    ./bump_release.sh code $VERSION || exit 1
+    
+    git commit -m "Prepare the code for release ${VERSION}" -a
     git push origin ${RELEASE_BRANCH} || exit 1
     git checkout develop
-    echo "Branch $RELEASE_BRANCH is ready"
+    echo "Branch $RELEASE_BRANCH is ready for the releasing process"
     ;;
 perform)    
     if [ $(hostname) != "btrp" ]; then
@@ -37,15 +41,11 @@ perform)
             exit 1
     fi    
     VERSION=$(cat .version)
-    #Code update and maven release process
-    echo "-- Bump the code version to $VERSION --"
-    ./bump_release.sh code $VERSION || exit 1
-    git commit -m "Bump the code to the release version $VERSION" -a
-    
+        
     echo "-- Prepare the release --"
     mvn -B release:prepare || exit 1
 
-    echo "-- Push the changes and the tags --"
+    #echo "-- Push the changes and the tags --"
     git push
     git push origin --tags
 
@@ -64,27 +64,28 @@ perform)
     #   excuse the force push, it's because maven will have already pushed the next dev version
     #   to origin with this branch, and I don't want that version (or a diverging revert commit)
     #   in the release or master branches.
-    echo "-- Remove the next version from the release branch --"
+    echo "-- Remove ${NEW_VERSION} from the release branch --"
     git checkout release/$VERSION
     git reset --hard HEAD~1 || exit 1
     git push --force origin release/$VERSION || exit 1
          
-    echo "-- Generate the Javadoc for the release --"
+    echo "-- Generate the javadoc for release ${VERSION} --"
     mvn javadoc:aggregate > /dev/null
     APIDOC_ROOT="/usr/share/nginx/html/apidocs/releases/btrplace/solver/"
     mkdir -p $APIDOC_ROOT > /dev/null
+    rm -rf ${APIDOC_ROOT}/${VERSION}
     mv target/site/apidocs ${APIDOC_ROOT}/${VERSION}
 
 
     # finally, if & when the code gets deployed to production
-    echo "-- Integrate the release into the master branch --"
+    echo "-- Integrate release ${VERSION} into the master branch --"
     git checkout master || exit 1
     git merge --no-ff -m "integrate the release" remotes/origin/release/$VERSION
 #    git branch -d release/$VERSION || exit 1
     git push
 #    git push origin :release/$VERSION
 
-    echo "-- Notify the website for the release --"
+    echo "-- Notify the website for release ${VERSION} --"
     ./bump_release.sh site ${VERSION}
     ;;
 esac
