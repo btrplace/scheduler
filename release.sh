@@ -57,7 +57,7 @@ perform)
     mvn javadoc:aggregate > /dev/null
     APIDOC_ROOT="/usr/share/nginx/html/apidocs/releases/btrplace/solver/"
     mkdir -p $APIDOC_ROOT > /dev/null
-    mv target/apidoc ${APIDOC_ROOT}/${VERSION}
+    mv target/site/apidocs ${APIDOC_ROOT}/${VERSION}
     
     # merge the version changes back into develop so that folks are working against the new release 
     echo "-- Integrate the next version into the develop branch --"
