@@ -26,6 +26,7 @@ prepare)
     git checkout -b ${RELEASE_BRANCH} || exit 1
     echo $VERSION > .version
     git add .version
+    git commit -m "file that indicate the released version" -a
     git push origin ${RELEASE_BRANCH} || exit 1
     git checkout develop
     echo "Branch $RELEASE_BRANCH is ready"
