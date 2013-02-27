@@ -24,12 +24,16 @@ prepare)
     VERSION=$(getVersionToRelease)
     RELEASE_BRANCH="release/$VERSION"        
     git checkout -b ${RELEASE_BRANCH} || exit 1
+
+    echo "-- Prepare the code for release ${VERSION} in branch ${RELEASE_BRANCH} --"
     echo $VERSION > .version
-    git add .version
-    git commit -m "file that indicate the released version" -a
+    git add .version    
+    ./bump_release.sh code $VERSION || exit 1
+    
+    git commit -m "Prepare the code for release ${VERSION}" -a
     git push origin ${RELEASE_BRANCH} || exit 1
     git checkout develop
-    echo "Branch $RELEASE_BRANCH is ready"
+    echo "Branch $RELEASE_BRANCH is ready for the releasing process"
     ;;
 perform)    
     if [ $(hostname) != "btrp" ]; then
@@ -37,15 +41,11 @@ perform)
             exit 1
     fi    
     VERSION=$(cat .version)
-    #Code update and maven release process
-    echo "-- Bump the code version to $VERSION --"
-    ./bump_release.sh code $VERSION || exit 1
-    git commit -m "Bump the code to the release version $VERSION" -a
-    
+        
     echo "-- Prepare the release --"
     mvn -B release:prepare || exit 1
 
-    echo "-- Push the changes and the tags --"
+    #echo "-- Push the changes and the tags --"
     git push
     git push origin --tags
 
