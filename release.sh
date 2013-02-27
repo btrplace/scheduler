@@ -20,11 +20,12 @@ ls
 case $1 in
 prepare)        
     VERSION=$(getVersionToRelease)
-    RELEASE_BRANCH="release/$VERSION"    
+    RELEASE_BRANCH="release/$VERSION"        
     git checkout -b ${RELEASE_BRANCH} || exit 1
     echo $VERSION > .version
     git add .version
     git push origin ${RELEASE_BRANCH} || exit 1
+    git checkout develop
     echo "Branch $RELEASE_BRANCH is ready"
     ;;
 perform)    
