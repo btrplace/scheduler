@@ -64,12 +64,12 @@ perform)
     #   excuse the force push, it's because maven will have already pushed the next dev version
     #   to origin with this branch, and I don't want that version (or a diverging revert commit)
     #   in the release or master branches.
-    echo "-- Remove the next version from the release branch --"
+    echo "-- Remove ${NEW_VERSION} from the release branch --"
     git checkout release/$VERSION
     git reset --hard HEAD~1 || exit 1
     git push --force origin release/$VERSION || exit 1
          
-    echo "-- Generate the Javadoc for the release --"
+    echo "-- Generate the javadoc for release ${VERSION} --"
     mvn javadoc:aggregate > /dev/null
     APIDOC_ROOT="/usr/share/nginx/html/apidocs/releases/btrplace/solver/"
     mkdir -p $APIDOC_ROOT > /dev/null
@@ -77,14 +77,14 @@ perform)
 
 
     # finally, if & when the code gets deployed to production
-    echo "-- Integrate the release into the master branch --"
+    echo "-- Integrate release ${VERSION} into the master branch --"
     git checkout master || exit 1
     git merge --no-ff -m "integrate the release" remotes/origin/release/$VERSION
 #    git branch -d release/$VERSION || exit 1
     git push
 #    git push origin :release/$VERSION
 
-    echo "-- Notify the website for the release --"
+    echo "-- Notify the website for release ${VERSION} --"
     ./bump_release.sh site ${VERSION}
     ;;
 esac
