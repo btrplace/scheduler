@@ -40,18 +40,26 @@ perform)
             echo "This script must be executed on btrp.inria.fr"
             exit 1
     fi    
+    if [ ! -f .version ]; then
+        echo "Missing .version file"
+        exit 1
+    fi
     VERSION=$(cat .version)
         
     echo "-- Prepare the release --"
-    mvn -B release:prepare || exit 1
+    mvn -B release:prepare || exit 1
 
     echo "-- Perform the release --"
     mvn release:perform || exit 1
-    rm .version #To prevent for loop
-    exit 1
-    #Store HEAD that point to the next -SNAPSHOT: eb76d6e370d158fe39ce0a1858538e406dd39ce3
-
+    rm .version #To prevent for an infinite loop
+    
+    DEV_HEAD=$(git rev-parse HEAD)
     RELEASE_BRANCH="release/${VERSION}"
+    # The current tree looks like:
+    # * HEAD -> next dev version, it is a detached head due to jenkins git plugin
+    # * (tag ...) -> the tag made by maven release:prepare on the relased version == ${DEV_HEAD}~1
+    # * ($RELEASE_BRANCH) -> the pointer on the released branch that was set by the client with ./release.sh request
+    
     # merge the version changes back into develop so that folks are working against the new release 
     echo "-- Integrate the next version into the develop branch --"
     git checkout develop
@@ -60,17 +68,12 @@ perform)
     ./bump_release.sh code ${NEW_VERSION}
     git commit -m "code prepared for development version ${NEW_VERSION}" -a
 
-    # housekeeping -- rewind the release branch by one commit to fix its version at $VERSION
-    #   excuse the force push, it's because maven will have already pushed the next dev version
-    #   to origin with this branch, and I don't want that version (or a diverging revert commit)
-    #   in the release or master branches.
     
     echo "-- Integrate release ${VERSION} into the master branch --"
     git checkout ${RELEASE_BRANCH}
-#    git reset --hard HEAD~1
     git merge -s ours master -m "merge master into the release"
     git checkout master    
-    git merge --no-ff ${RELEASE_BRANCH} -m "integrate the release " #No, the TAG, or ${DEV_HEAD}^
+    git merge --no-ff ${DEV_HEAD}~1 -m "integrate release ${VERSION} to master"
 
     echo "-- Generate the javadoc for release ${VERSION} --"
     mvn javadoc:aggregate > /dev/null
@@ -79,19 +82,18 @@ perform)
     rm -rf ${APIDOC_ROOT}/${VERSION}
     mv target/site/apidocs ${APIDOC_ROOT}/${VERSION}
 
-    # echo "-- Remove ${NEW_VERSION} from the release branch --"
-    # git checkout release/${VERSION}
-    # git reset --hard HEAD~1 || exit 1    
          
-    #echo "-- Push the changes and the tags --"
+    echo "-- Push the changes and the tags --"
     git checkout develop
-    git branch -d release/$VERSION
+    git branch -d release/$VERSION    
     git push origin :release/$VERSION
-
     git push
     git push origin --tags
 
     echo "-- Notify the website for release ${VERSION} --"
     ./bump_release.sh site ${VERSION}
     ;;
+    *)
+        echo "Unsupported operation '$1'"
+        exit 1
 esac
