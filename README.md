@@ -29,13 +29,13 @@ Next, just declare the dependency:
 ```xml
 <dependency>
    <groupId>btrplace</groupId>
-   <artifactId>solver</artifactId>
+   <artifactId>solver-bundle</artifactId>
    <version>0.23-SNAPSHOT</version>
 </dependency>
 ```
 
-`btrplace:solver` is an aggregate of different sub-modules. If you don't need all of then, it is still possible
- to declare each dependency separately. In practice, `btrplace:solver` is composed of:
+`btrplace:solver-bundle` is an aggregate of different sub-modules. If you don't need all of then, it is still possible
+ to declare each dependency separately. In practice, `btrplace:solver-bundle` is composed of:
 
 * `btrplace:solver-api`: the API defining a reconfiguration algorithm and the element it manipulates
 * `btrplace:solver-choco`: the default implementation of a reconfiguration algorithm using the Constraint Programming
