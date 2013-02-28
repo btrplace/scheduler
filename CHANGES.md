@@ -1,7 +1,7 @@
 Release notes
 ======================
 
-version ???????
+version 0.23 - 28 Feb 2013
 ----------------------
 - code refactoring for the JSON parser
 
