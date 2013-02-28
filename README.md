@@ -29,13 +29,13 @@ Next, just declare the dependency:
 ```xml
 <dependency>
    <groupId>btrplace</groupId>
-   <artifactId>solver</artifactId>
-   <version>0.22</version>
+   <artifactId>solver-bundle</artifactId>
+   <version>0.23</version>
 </dependency>
 ```
 
-`btrplace:solver` is an aggregate of different sub-modules. If you don't need all of then, it is still possible
- to declare each dependency separately. In practice, `btrplace:solver` is composed of:
+`btrplace:solver-bundle` is an aggregate of different sub-modules. If you don't need all of then, it is still possible
+ to declare each dependency separately. In practice, `btrplace:solver-bundle` is composed of:
 
 * `btrplace:solver-api`: the API defining a reconfiguration algorithm and the element it manipulates
 * `btrplace:solver-choco`: the default implementation of a reconfiguration algorithm using the Constraint Programming
@@ -47,13 +47,13 @@ solver Choco
 For each version of Btrplace, a bundle that contains the three basics artifacts and their dependencies is made available.
 The jar can be downloaded from this URL:
 
-* http://btrp.inria.fr:8080/repos/releases/btrplace/solver-bundle/0.22/solver-bundle-0.22.jar
+* http://btrp.inria.fr:8080/repos/releases/btrplace/solver-bundle/0.23/solver-bundle-0.23.jar
 
 
 
 ## Documentation ##
 
-* apidoc: http://btrp.inria.fr:8080/apidocs/releases/btrplace/solver/0.22/
+* apidoc: http://btrp.inria.fr:8080/apidocs/releases/btrplace/solver/0.23/
 
 ## Building from sources ##
 

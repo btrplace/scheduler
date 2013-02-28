@@ -1,8 +1,9 @@
 Release notes
 ======================
 
-version 0.22-SNAPSHOT - 27 Feb 2013
+version 0.23 - 28 Feb 2013
 ----------------------
+- code refactoring for the JSON parser
 
 version 0.20 - 25 Feb 2013
 ----------------------
@@ -13,7 +14,7 @@ versions prior to 0.20
 ----------------------
 
 The following changelogs were dedicated to each of the previous
-repository.
+repositories.
 
 ### solver-api ###
 

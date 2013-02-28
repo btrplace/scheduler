@@ -82,9 +82,9 @@ perform)
     # git reset --hard HEAD~1 || exit 1    
          
     #echo "-- Push the changes and the tags --"
-    #    git branch -d release/$VERSION || exit 1
-    #    git push origin :release/$VERSION
+    git branch -d release/$VERSION
     git push
+    git push origin :release/$VERSION
     git push origin --tags
 
     echo "-- Notify the website for release ${VERSION} --"
