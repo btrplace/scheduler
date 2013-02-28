@@ -23,7 +23,7 @@
     <parent>
       <groupId>btrplace</groupId>
       <artifactId>solver</artifactId>
-      <version>0.23</version>
+      <version>0.24-SNAPSHOT</version>
     </parent>
     <artifactId>solver-choco</artifactId>
     <description>Implementation of a reconfiguration algorithm that use
