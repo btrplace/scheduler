@@ -16,6 +16,14 @@ public interface ActionVisitor {
     Object visit(Allocate a);
 
     /**
+     * Visit an {@link AllocateEvent} event.
+     *
+     * @param e the event to visit
+     * @return a possible value
+     */
+    Object visit(AllocateEvent a);
+
+    /**
      * Visit an {@link BootNode} action.
      *
      * @param a the action to visit

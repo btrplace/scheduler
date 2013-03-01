@@ -4,6 +4,7 @@ import btrplace.json.JSONConverter;
 import btrplace.json.JSONConverterException;
 import btrplace.json.JSONUtils;
 import btrplace.plan.Action;
+import btrplace.plan.Event;
 import btrplace.plan.event.*;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -27,34 +28,63 @@ public class ActionConverter implements JSONConverter<Action>, ActionVisitor {
             throw new JSONConverterException("The action identifier is expected on the key 'id'");
         }
 
+        Action a = null;
         if (id.equals("bootVM")) {
-            return bootVMFromJSON(in);
+            a = bootVMFromJSON(in);
         } else if (id.equals("shutdownVM")) {
-            return shutdownVMFromJSON(in);
+            a = shutdownVMFromJSON(in);
         } else if (id.equals("shutdownNode")) {
-            return shutdownNodeFromJSON(in);
+            a = shutdownNodeFromJSON(in);
         } else if (id.equals("bootNode")) {
-            return bootNodeFromJSON(in);
+            a = bootNodeFromJSON(in);
         } else if (id.equals("forgeVM")) {
-            return forgeVMFromJSON(in);
+            a = forgeVMFromJSON(in);
         } else if (id.equals("killVM")) {
-            return killVMFromJSON(in);
+            a = killVMFromJSON(in);
         } else if (id.equals("migrateVM")) {
-            return migrateVMFromJSON(in);
+            a = migrateVMFromJSON(in);
         } else if (id.equals("resumeVM")) {
-            return resumeVMFromJSON(in);
+            a = resumeVMFromJSON(in);
         } else if (id.equals("suspendVM")) {
-            return suspendVMFromJSON(in);
+            a = suspendVMFromJSON(in);
         } else if (id.equals("allocate")) {
-            return allocateFromJSON(in);
+            a = allocateFromJSON(in);
+        } else {
+            throw new JSONConverterException(("Unsupported type of action '" + id + "'"));
+        }
+
+        //Decorate with the events
+        if (in.containsKey("hooks")) {
+            JSONObject hooks = (JSONObject) in.get("hooks");
+            for (String k : hooks.keySet()) {
+                Action.Hook h = Action.Hook.valueOf(k);
+                if (h == null) {
+                    throw new JSONConverterException(("Unsupported hook type '" + k + "'"));
+                }
+                for (Object o : (JSONArray) hooks.get(k)) {
+                    a.addEvent(h, eventFromJSON((JSONObject) o));
+                }
+            }
+        }
+        return a;
+    }
+
+    private Event eventFromJSON(JSONObject o) throws JSONConverterException {
+        String id = o.get("id").toString();
+        if (id == null) {
+            throw new JSONConverterException("The action identifier is expected on the key 'id'");
+        }
+        if (id.equals("allocate")) {
+            return allocateEventFromJSON(o);
         } else {
             throw new JSONConverterException(("Unsupported type of action '" + id + "'"));
         }
     }
 
+
     @Override
     public JSONObject visit(BootVM a) {
-        JSONObject o = makeSkeleton(a);
+        JSONObject o = makeActionSkeleton(a);
         o.put("id", "bootVM");
         o.put("vm", a.getVM().toString());
         o.put("destination", a.getDestinationNode().toString());
@@ -70,7 +100,7 @@ public class ActionConverter implements JSONConverter<Action>, ActionVisitor {
 
     @Override
     public JSONObject visit(ShutdownVM a) {
-        JSONObject o = makeSkeleton(a);
+        JSONObject o = makeActionSkeleton(a);
         o.put("id", "shutdownVM");
         o.put("vm", a.getVM().toString());
         o.put("location", a.getNode().toString());
@@ -86,7 +116,7 @@ public class ActionConverter implements JSONConverter<Action>, ActionVisitor {
 
     @Override
     public JSONObject visit(ShutdownNode a) {
-        JSONObject o = makeSkeleton(a);
+        JSONObject o = makeActionSkeleton(a);
         o.put("id", "shutdownNode");
         o.put("node", a.getNode().toString());
         return o;
@@ -100,7 +130,7 @@ public class ActionConverter implements JSONConverter<Action>, ActionVisitor {
 
     @Override
     public JSONObject visit(BootNode a) {
-        JSONObject o = makeSkeleton(a);
+        JSONObject o = makeActionSkeleton(a);
         o.put("id", "bootNode");
         o.put("node", a.getNode().toString());
         return o;
@@ -114,7 +144,7 @@ public class ActionConverter implements JSONConverter<Action>, ActionVisitor {
 
     @Override
     public JSONObject visit(MigrateVM a) {
-        JSONObject o = makeSkeleton(a);
+        JSONObject o = makeActionSkeleton(a);
         o.put("id", "migrateVM");
         o.put("vm", a.getVM().toString());
         o.put("destination", a.getDestinationNode().toString());
@@ -133,7 +163,7 @@ public class ActionConverter implements JSONConverter<Action>, ActionVisitor {
 
     @Override
     public JSONObject visit(SuspendVM a) {
-        JSONObject o = makeSkeleton(a);
+        JSONObject o = makeActionSkeleton(a);
         o.put("id", "suspendVM");
         o.put("vm", a.getVM().toString());
         o.put("destination", a.getDestinationNode().toString());
@@ -151,7 +181,7 @@ public class ActionConverter implements JSONConverter<Action>, ActionVisitor {
 
     @Override
     public JSONObject visit(ResumeVM a) {
-        JSONObject o = makeSkeleton(a);
+        JSONObject o = makeActionSkeleton(a);
         o.put("id", "resumeVM");
         o.put("vm", a.getVM().toString());
         o.put("destination", a.getDestinationNode().toString());
@@ -169,7 +199,7 @@ public class ActionConverter implements JSONConverter<Action>, ActionVisitor {
 
     @Override
     public JSONObject visit(KillVM a) {
-        JSONObject o = makeSkeleton(a);
+        JSONObject o = makeActionSkeleton(a);
         o.put("id", "killVM");
         o.put("vm", a.getVM().toString());
         o.put("location", a.getNode().toString());
@@ -186,7 +216,7 @@ public class ActionConverter implements JSONConverter<Action>, ActionVisitor {
 
     @Override
     public JSONObject visit(ForgeVM a) {
-        JSONObject o = makeSkeleton(a);
+        JSONObject o = makeActionSkeleton(a);
         o.put("id", "forgeVM");
         o.put("vm", a.getVM().toString());
         return o;
@@ -201,7 +231,7 @@ public class ActionConverter implements JSONConverter<Action>, ActionVisitor {
 
     @Override
     public JSONObject visit(Allocate a) {
-        JSONObject o = makeSkeleton(a);
+        JSONObject o = makeActionSkeleton(a);
         o.put("id", "allocate");
         o.put("vm", a.getVM());
         o.put("rc", a.getResourceId());
@@ -217,6 +247,22 @@ public class ActionConverter implements JSONConverter<Action>, ActionVisitor {
                 (int) JSONUtils.requiredLong(in, "qty"),
                 (int) JSONUtils.requiredLong(in, "start"),
                 (int) JSONUtils.requiredLong(in, "end"));
+    }
+
+    @Override
+    public Object visit(AllocateEvent a) {
+        JSONObject o = new JSONObject();
+        o.put("id", "allocate");
+        o.put("rc", a.getResourceId());
+        o.put("vm", a.getVM().toString());
+        o.put("qty", a.getAmount());
+        return o;
+    }
+
+    private AllocateEvent allocateEventFromJSON(JSONObject o) throws JSONConverterException {
+        return new AllocateEvent(JSONUtils.requiredUUID(o, "vm"),
+                JSONUtils.requiredString(o, "rc"),
+                (int) JSONUtils.requiredLong(o, "qty"));
     }
 
     @Override
@@ -264,10 +310,23 @@ public class ActionConverter implements JSONConverter<Action>, ActionVisitor {
      * @param a the action to convert
      * @return a skeleton JSONObject
      */
-    private JSONObject makeSkeleton(Action a) {
+    private JSONObject makeActionSkeleton(Action a) {
         JSONObject o = new JSONObject();
         o.put("start", a.getStart());
         o.put("end", a.getEnd());
+        JSONObject hooks = new JSONObject();
+        for (Action.Hook k : Action.Hook.values()) {
+            JSONArray arr = new JSONArray();
+            for (Event e : a.getEvents(k)) {
+                arr.add(toJSON(e));
+            }
+            hooks.put(k.toString(), arr);
+        }
+        o.put("hooks", hooks);
         return o;
+    }
+
+    private JSONObject toJSON(Event e) {
+        return (JSONObject) e.visit(this);
     }
 }

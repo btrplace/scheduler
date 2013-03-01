@@ -19,7 +19,6 @@
 package btrplace.plan;
 
 import btrplace.model.Model;
-import btrplace.plan.event.ActionVisitor;
 
 import java.util.*;
 
@@ -176,11 +175,4 @@ public abstract class Action implements Event {
         b.append('}');
         return b.toString();
     }
-
-    /**
-     * Notify a visitor to visit the action.
-     *
-     * @param v the visitor to notify
-     */
-    public abstract Object visit(ActionVisitor v);
 }

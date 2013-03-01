@@ -19,6 +19,7 @@
 package btrplace.plan;
 
 import btrplace.model.Model;
+import btrplace.plan.event.ActionVisitor;
 
 /**
  * A event to apply on a model to modify it.
@@ -34,4 +35,12 @@ public interface Event {
      * @return {@code true} iff the modification succeeded
      */
     boolean apply(Model m);
+
+
+    /**
+     * Notify a visitor to visit the action.
+     *
+     * @param v the visitor to notify
+     */
+    Object visit(ActionVisitor v);
 }
