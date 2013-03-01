@@ -19,6 +19,7 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
+import btrplace.json.TestMaterial;
 import btrplace.model.constraint.Online;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -32,7 +33,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class OnlineConverterTest implements ConstraintTestMaterial {
+public class OnlineConverterTest implements TestMaterial {
 
     private static OnlineConverter conv = new OnlineConverter();
 

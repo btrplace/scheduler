@@ -19,6 +19,7 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
+import btrplace.json.TestMaterial;
 import btrplace.model.constraint.Overbook;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -32,7 +33,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class OverbookConverterTest implements ConstraintTestMaterial {
+public class OverbookConverterTest implements TestMaterial {
 
     private static OverbookConverter conv = new OverbookConverter();
 

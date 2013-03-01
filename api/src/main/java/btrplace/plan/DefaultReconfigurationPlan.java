@@ -138,4 +138,25 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
         }
         return true;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        ReconfigurationPlan op = (ReconfigurationPlan) o;
+
+        return (actions.equals(op.getActions()) && src.equals(op.getOrigin()));
+    }
+
+    @Override
+    public int hashCode() {
+        int result = src.hashCode();
+        result = 31 * result + actions.hashCode();
+        return result;
+    }
 }

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.json.model.constraint;
+package btrplace.json;
 
 import java.util.UUID;
 
@@ -25,7 +25,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public interface ConstraintTestMaterial {
+public interface TestMaterial {
 
     static final UUID vm1 = new UUID(0, 1);
     static final UUID vm2 = new UUID(0, 2);

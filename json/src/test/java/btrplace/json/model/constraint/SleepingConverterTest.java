@@ -19,6 +19,7 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
+import btrplace.json.TestMaterial;
 import btrplace.model.constraint.Sleeping;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -32,7 +33,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class SleepingConverterTest implements ConstraintTestMaterial {
+public class SleepingConverterTest implements TestMaterial {
 
     private static SleepingConverter conv = new SleepingConverter();
 

@@ -21,6 +21,7 @@ package btrplace.plan;
 import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
+import btrplace.plan.event.ActionVisitor;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -93,6 +94,11 @@ public class DefaultReconfigurationPlanTest {
         @Override
         public String pretty() {
             return "";
+        }
+
+        @Override
+        public Object visit(ActionVisitor v) {
+            throw new UnsupportedOperationException();
         }
     }
 }

@@ -28,7 +28,7 @@ public class ActionConverter implements JSONConverter<Action>, ActionVisitor {
             throw new JSONConverterException("The action identifier is expected on the key 'id'");
         }
 
-        Action a = null;
+        Action a;
         if (id.equals("bootVM")) {
             a = bootVMFromJSON(in);
         } else if (id.equals("shutdownVM")) {
