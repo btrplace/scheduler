@@ -41,10 +41,10 @@ public class BootVM extends Action implements VMStateTransition, RunningVMPlacem
     /**
      * Make a new time-bounded run.
      *
-     * @param vmId  the virtual machine to run
-     * @param to  the destination node
-     * @param st  the moment the action starts.
-     * @param end the moment the action finish
+     * @param vmId the virtual machine to run
+     * @param to   the destination node
+     * @param st   the moment the action starts.
+     * @param end  the moment the action finish
      */
     public BootVM(UUID vmId, UUID to, int st, int end) {
         super(st, end);
@@ -115,5 +115,10 @@ public class BootVM extends Action implements VMStateTransition, RunningVMPlacem
     @Override
     public VMState getNextState() {
         return VMState.running;
+    }
+
+    @Override
+    public Object visit(ActionVisitor v) {
+        return v.visit(this);
     }
 }

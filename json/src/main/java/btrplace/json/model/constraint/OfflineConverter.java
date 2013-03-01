@@ -19,7 +19,7 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.Utils;
+import btrplace.json.JSONUtils;
 import btrplace.model.constraint.Offline;
 import net.minidev.json.JSONObject;
 
@@ -45,14 +45,14 @@ public class OfflineConverter extends SatConstraintConverter<Offline> {
     @Override
     public Offline fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Offline(Utils.requiredUUIDs(o, "nodes"));
+        return new Offline(JSONUtils.requiredUUIDs(o, "nodes"));
     }
 
     @Override
     public JSONObject toJSON(Offline o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("nodes", Utils.toJSON(o.getInvolvedNodes()));
+        c.put("nodes", JSONUtils.toJSON(o.getInvolvedNodes()));
         return c;
     }
 }

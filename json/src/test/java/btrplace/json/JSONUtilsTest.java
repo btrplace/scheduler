@@ -25,16 +25,16 @@ import net.minidev.json.parser.ParseException;
 import org.testng.annotations.Test;
 
 /**
- * Unit tests for {@link btrplace.json.Utils}.
+ * Unit tests for {@link JSONUtils}.
  *
  * @author Fabien Hermenier
  */
-public class UtilsTest {
+public class JSONUtilsTest {
 
     @Test
     public void testReadObject() throws ParseException, JSONConverterException {
         String json = "{\"foo\":\"fooV\",\"bar\":[1,2,3,4,5],\"bool\":false}";
-        JSONObject o = Utils.readObject(json);
+        JSONObject o = JSONUtils.readObject(json);
         Assert.assertTrue(o.get("foo") instanceof String);
         Assert.assertTrue(o.get("bool") instanceof Boolean);
         Assert.assertTrue(o.get("bar") instanceof JSONArray);

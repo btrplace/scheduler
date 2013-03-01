@@ -109,4 +109,9 @@ public class KillVM extends Action implements VMStateTransition {
     public VMState getNextState() {
         return VMState.killed;
     }
+
+    @Override
+    public Object visit(ActionVisitor v) {
+        return v.visit(this);
+    }
 }

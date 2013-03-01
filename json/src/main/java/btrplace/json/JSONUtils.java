@@ -36,9 +36,9 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public final class Utils {
+public final class JSONUtils {
 
-    private Utils() {
+    private JSONUtils() {
     }
 
     /**
@@ -84,7 +84,7 @@ public final class Utils {
             throw new JSONConverterException("Set of UUIDs sets expected at key '" + id + "'");
         }
         for (Object obj : (JSONArray) o.get(id)) {
-            res.add(Utils.fromJSON((JSONArray) obj));
+            res.add(JSONUtils.fromJSON((JSONArray) obj));
         }
         return res;
     }
