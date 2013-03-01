@@ -106,6 +106,25 @@ public final class JSONUtils {
     }
 
     /**
+     * Read an expected UUID.
+     *
+     * @param o  the object to parse
+     * @param id the id in the map that should point to the UUID.
+     * @return the UUID
+     * @throws JSONConverterException if the key does not point to a UUID
+     */
+    public static UUID requiredUUID(JSONObject o, String id) throws JSONConverterException {
+        if (!o.containsKey(id)) {
+            throw new JSONConverterException("Key '" + id + "' expected to read a UUID");
+        }
+        try {
+            return UUID.fromString(o.get(id).toString());
+        } catch (Exception e) {
+            throw new JSONConverterException("Unable to read a UUID from string '" + id + "'");
+        }
+    }
+
+    /**
      * Read an expected string.
      *
      * @param o  the object to parse

@@ -5,6 +5,7 @@ import btrplace.json.JSONConverterException;
 import btrplace.json.model.ModelConverter;
 import btrplace.model.Model;
 import btrplace.plan.Action;
+import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -17,8 +18,24 @@ import net.minidev.json.JSONObject;
 public class ReconfigurationPlanConverter implements JSONConverter<ReconfigurationPlan> {
 
     @Override
-    public ReconfigurationPlan fromJSON(JSONObject in) throws JSONConverterException {
-        throw new UnsupportedOperationException();
+    public ReconfigurationPlan fromJSON(JSONObject ob) throws JSONConverterException {
+
+        if (!ob.containsKey("origin")) {
+            throw new JSONConverterException("Key 'origin' is expected to extract the source model from the plan");
+        }
+
+        if (!ob.containsKey("actions")) {
+            throw new JSONConverterException("Key 'actions' is expected to extract the list of actions from the plan");
+        }
+
+        ModelConverter c = new ModelConverter();
+        ActionConverter ac = new ActionConverter();
+        Model m = c.fromJSON((JSONObject) ob.get("origin"));
+        ReconfigurationPlan plan = new DefaultReconfigurationPlan(m);
+        for (Action a : ac.fromJSON((JSONArray) ob.get("actions"))) {
+            plan.add(a);
+        }
+        return plan;
     }
 
     @Override
