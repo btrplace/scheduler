@@ -182,7 +182,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         //Set the timeout
         if (timeLimit > 0) {
-            solver.setTimeLimit(timeLimit);
+            solver.setTimeLimit(timeLimit * 1000);
         }
 
         if (objAlterer == null) {
