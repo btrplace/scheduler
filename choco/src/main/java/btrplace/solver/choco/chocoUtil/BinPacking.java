@@ -259,6 +259,7 @@ public class BinPacking extends AbstractLargeIntSConstraint {
         int[] rLoads = new int[nbBins];
         int[] cLoads = new int[nbBins];
 
+        long st = System.currentTimeMillis();
         for (int i = 0; i < bins.length; i++) {
             bins[i].updateInf(0, this, false);
             bins[i].updateSup(nbBins - 1, this, false);
@@ -269,7 +270,7 @@ public class BinPacking extends AbstractLargeIntSConstraint {
                 try {
                     while (it.hasNext()) {
                         int b = it.next();
-                        candidates[b].set(varsToBs[i]/*i*/);
+                        candidates[b].set(varsToBs[i]);
                         cLoads[b] += iSizes[i];
                     }
                 } finally {
@@ -277,7 +278,10 @@ public class BinPacking extends AbstractLargeIntSConstraint {
                 }
             }
         }
+        long ed = System.currentTimeMillis();
+        System.out.println((ed - st) + " ms to make the candidates");
 
+        st = System.currentTimeMillis();
         int slb = 0;
         int slu = 0;
         for (int b = 0; b < nbBins; b++) {
@@ -291,9 +295,11 @@ public class BinPacking extends AbstractLargeIntSConstraint {
             slb += loads[b].getInf();
             slu += loads[b].getSup();
         }
+        ed = System.currentTimeMillis();
         this.sumLoadInf = env.makeInt(slb);
         this.sumLoadSup = env.makeInt(slu);
         this.loadsHaveChanged = env.makeBool(false);
+        System.out.println((ed - st) + " ms to make the loads");
 
         assert checkLoadConsistency() && checkCandidatesConsistency();
         int minRemaining = Choco.MAX_UPPER_BOUND;

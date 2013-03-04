@@ -120,7 +120,10 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
     @Override
     public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs) throws SolverException {
+        long st, ed;
         rp = null;
+
+        st = System.currentTimeMillis();
         //Build the RP. As VM state management is not possible
         //We extract VM-state related constraints first.
         //For other constraint, we just create the right choco constraint
@@ -171,6 +174,8 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         }
         rp = rpb.build();
 
+        ed = System.currentTimeMillis();
+        rp.getLogger().debug("{} ms to build the RP", (ed - st));
         //Set the maximum duration
         try {
             rp.getEnd().setSup(maxEnd);
@@ -179,7 +184,9 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
             return null;
         }
 
+
         //Customize with the constraints
+        st = System.currentTimeMillis();
         for (ChocoSatConstraint ccstr : cConstraints) {
             if (!ccstr.inject(rp)) {
                 return null;
@@ -188,7 +195,8 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
         //The objective
         obj.inject(rp);
-
+        ed = System.currentTimeMillis();
+        rp.getLogger().debug("{} ms to specialize the RP", ed - st);
         ReconfigurationPlan p = rp.solve(timeLimit, optimize);
         if (p != null) {
             assert checkSatisfaction(p, cstrs);
