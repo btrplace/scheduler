@@ -29,8 +29,9 @@ site)
 	\"date\":\"$d\",\
 	\"title\":\"solver\",\
 	\"apidoc\":\"$APIDOC_URL/releases/btrplace/solver/$VERSION/\",\
-	\"changelog\":\"https://github.com/fhermeni/btrplace-solver/tree/btrplace-solver-$VERSION\",\
-	\"link\":\"$REPO_URL/releases/btrplace/solver-bundle/$VERSION/solver-bundle-$VERSION.jar\"\
+	\"changelog\":\"https://github.com/fhermeni/btrplace-solver/tree/btrplace-solver-$VERSION/CHANGES.md\",\
+	\"binary\":\"$REPO_URL/releases/btrplace/solver-bundle/$VERSION/solver-bundle-$VERSION.jar\",\
+	\"sources\":\"https://github.com/fhermeni/btrplace-solver/tree/btrplace-solver-$VERSION\"
 	}"
 	curl -X POST --data "data=$JSON" $WWW_HOOK
 	;;
