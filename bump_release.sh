@@ -21,12 +21,10 @@ APIDOC_URL="http://btrp.inria.fr:8080/apidocs"
 
 case $1	in
 
-site)
-	d=`LANG=en_US.utf8 date +"%d %b %Y"`
+site)	
 	WWW_HOOK="http://btrp.inria.fr:8080/www/admin/bump_release.php"
 
-	JSON="{\"version\":\"$VERSION\",\
-	\"date\":\"$d\",\
+	JSON="{\"version\":\"$VERSION\",\	
 	\"title\":\"solver\",\
 	\"apidoc\":\"$APIDOC_URL/releases/btrplace/solver/$VERSION/\",\
 	\"changelog\":\"https://github.com/fhermeni/btrplace-solver/tree/btrplace-solver-$VERSION/CHANGES.md\",\
