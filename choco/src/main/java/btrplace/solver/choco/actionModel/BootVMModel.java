@@ -65,11 +65,11 @@ public class BootVMModel implements VMActionModel {
 
         int d = rp.getDurationEvaluators().evaluate(BootVM.class, e);
         this.rp = rp;
-        start = rp.makeDuration("bootVM(" + e + ").start", 0, rp.getEnd().getSup() - d);
-        end = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel("bootVM(" + e + ").end"), start, d);
-        duration = rp.makeDuration("bootVM.duration(" + e + ")", d, d);
-        dSlice = new SliceBuilder(rp, e, "bootVM(" + e + ").dSlice").setStart(start)
-                .setDuration(rp.makeDuration("bootVM(" + e + ").dSlice_duration", d, rp.getEnd().getSup()))
+        start = rp.makeDuration(new StringBuilder("bootVM(").append(e).append(").start").toString(), 0, rp.getEnd().getSup() - d);
+        end = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel(new StringBuilder("bootVM(").append(e).append(").end").toString()), start, d);
+        duration = rp.makeDuration(new StringBuilder("bootVM.duration(").append(e).append(')').toString(), d, d);
+        dSlice = new SliceBuilder(rp, e, new StringBuilder("bootVM(").append(e).append(").dSlice").toString()).setStart(start)
+                .setDuration(rp.makeDuration(new StringBuilder("bootVM(").append(e).append(").dSlice_duration").toString(), d, rp.getEnd().getSup()))
                 .build();
         CPSolver s = rp.getSolver();
         s.post(s.leq(start, rp.getEnd()));

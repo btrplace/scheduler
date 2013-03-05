@@ -244,12 +244,13 @@ public class BinPacking extends AbstractLargeIntSConstraint {
         return true;
     }
 
-    @Override
+
     /**
      * initialize the internal data: availableBins, candidates, binRequiredLoads, binTotalLoads, sumLoadInf, sumLoadSup
      * shrink the item-to-bins assignment variables: 0 <= bins[i] <= nbBins
      * shrink the bin load variables: binRequiredLoad <= binLoad <= binTotalLoad
      */
+    @Override
     public void awake() throws ContradictionException {
 
         sortIndices();
@@ -281,7 +282,6 @@ public class BinPacking extends AbstractLargeIntSConstraint {
             }
         }
         long ed = System.currentTimeMillis();
-        System.out.println((ed - st) + " ms to make the candidates");
 
         int slb = 0;
         int slu = 0;
