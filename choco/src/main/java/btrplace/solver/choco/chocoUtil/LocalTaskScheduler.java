@@ -446,9 +446,6 @@ public class LocalTaskScheduler {
                     }
                 }
                 if (lastT != -1) {
-                    /*if (me == DEBUG || DEBUG == -2) {
-                        ChocoLogging.getBranchingLogger().finest(me + ": " + cEnds[i].pretty() + " cEndsSup =" + lastT);
-                    } */
                     cEnds[i].setSup(Math.min(lastT, last.getSup()));
                 }
 
