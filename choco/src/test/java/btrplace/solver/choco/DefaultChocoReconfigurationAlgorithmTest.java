@@ -113,8 +113,8 @@ public class DefaultChocoReconfigurationAlgorithmTest {
 
         SolvingStatistics st = cra.getSolvingStatistics();
         Assert.assertEquals(st.getNbBacktracks(), 0);
-        Assert.assertEquals(st.getNbNodes(), 0);
-        Assert.assertEquals(st.getTime(), 0);
+        Assert.assertEquals(st.getNbSearchNodes(), 0);
+        Assert.assertEquals(st.getSolvingDuration(), 0);
         Assert.assertTrue(st.getSolutions().isEmpty());
         Assert.assertFalse(st.isTimeout());
 

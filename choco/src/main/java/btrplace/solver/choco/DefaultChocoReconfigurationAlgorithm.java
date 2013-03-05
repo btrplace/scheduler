@@ -58,6 +58,8 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
     private ReconfigurationProblem rp;
 
+    private Collection<SatConstraint> cstrs;
+
     private DurationEvaluators durationEvaluators;
 
     private ReconfigurationObjective obj;
@@ -120,10 +122,10 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
     @Override
     public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs) throws SolverException {
-        long st, ed;
+        long coreRPDuration, speDuration;
         rp = null;
-
-        st = System.currentTimeMillis();
+        this.cstrs = cstrs;
+        coreRPDuration = -System.currentTimeMillis();
         //Build the RP. As VM state management is not possible
         //We extract VM-state related constraints first.
         //For other constraint, we just create the right choco constraint
@@ -174,8 +176,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         }
         rp = rpb.build();
 
-        ed = System.currentTimeMillis();
-        rp.getLogger().debug("{} ms to build the RP", (ed - st));
+        coreRPDuration += System.currentTimeMillis();
         //Set the maximum duration
         try {
             rp.getEnd().setSup(maxEnd);
@@ -186,7 +187,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
 
         //Customize with the constraints
-        st = System.currentTimeMillis();
+        speDuration = -System.currentTimeMillis();
         for (ChocoSatConstraint ccstr : cConstraints) {
             if (!ccstr.inject(rp)) {
                 return null;
@@ -195,8 +196,8 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
         //The objective
         obj.inject(rp);
-        ed = System.currentTimeMillis();
-        rp.getLogger().debug("{} ms to specialize the RP", ed - st);
+        speDuration += System.currentTimeMillis();
+        rp.getLogger().debug("{} ms to build the core-RP + {} ms for tune it", coreRPDuration, speDuration);
         ReconfigurationPlan p = rp.solve(timeLimit, optimize);
         if (p != null) {
             assert checkSatisfaction(p, cstrs);
@@ -248,9 +249,14 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     @Override
     public SolvingStatistics getSolvingStatistics() {
         if (rp == null) {
-            return new SolvingStatistics(0, 0, 0, 0, false);
+            return new SolvingStatistics(0, 0, 0, optimize, getTimeLimit(), 0, 0, 0, 0, false);
         }
         SolvingStatistics st = new SolvingStatistics(
+                rp.getNodes().length,
+                rp.getVMs().length,
+                cstrs.size(),
+                optimize,
+                getTimeLimit(),
                 rp.getManageableVMs().size(),
                 rp.getSolver().getTimeCount(),
                 rp.getSolver().getNodeCount(),

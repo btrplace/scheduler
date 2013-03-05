@@ -22,19 +22,13 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.*;
-import btrplace.solver.choco.actionModel.RelocatableVMModel;
-import btrplace.solver.choco.actionModel.ResumeVMModel;
 import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarVal;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
-import choco.kernel.solver.Configuration;
-import choco.kernel.solver.ResolutionPolicy;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import gnu.trove.TIntHashSet;
-import gnu.trove.TLongIntHashMap;
 
 import java.util.*;
 
@@ -73,7 +67,6 @@ public class MinMTTR implements ReconfigurationObjective {
 
     private void injectPlacementHeuristic(ReconfigurationProblem rp, Set<UUID> managedVMs, IntDomainVar cost) {
 
-        System.out.println("to manage: " + managedVMs.size());
         Model mo = rp.getSourceModel();
         Mapping map = mo.getMapping();
 
