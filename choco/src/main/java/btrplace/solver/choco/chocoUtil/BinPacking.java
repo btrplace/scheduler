@@ -29,6 +29,8 @@ import choco.kernel.memory.IStateBool;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.variables.Domain;
+import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.*;
@@ -310,6 +312,21 @@ public class BinPacking extends AbstractLargeIntSConstraint {
             }
         }
         propagate();
+    }
+    private int [] getContiguousValues(IntDomainVar v, int from) {
+        IntDomain dom = v.getDomain();
+        int ub = dom.getSup();
+        int prev = dom.getNextValue(from - 1);
+        int val = prev;
+        for (val = dom.getNextValue(from - 1); val <= ub ; val = dom.getNextValue(val)) {
+            if (val != prev && val == prev + 1) {
+
+            } else {
+                 //Not contiguous
+                return new int[]{prev, val};
+            }
+        }
+        return new int[]{prev, val};
     }
 
     @Override
