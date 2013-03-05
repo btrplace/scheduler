@@ -242,12 +242,13 @@ public class BinPacking extends AbstractLargeIntSConstraint {
         return true;
     }
 
-    @Override
+
     /**
      * initialize the internal data: availableBins, candidates, binRequiredLoads, binTotalLoads, sumLoadInf, sumLoadSup
      * shrink the item-to-bins assignment variables: 0 <= bins[i] <= nbBins
      * shrink the bin load variables: binRequiredLoad <= binLoad <= binTotalLoad
      */
+    @Override
     public void awake() throws ContradictionException {
 
         sortIndices();
@@ -279,7 +280,6 @@ public class BinPacking extends AbstractLargeIntSConstraint {
             }
         }
         long ed = System.currentTimeMillis();
-        System.out.println((ed - st) + " ms to make the candidates");
 
         st = System.currentTimeMillis();
         int slb = 0;
@@ -299,7 +299,6 @@ public class BinPacking extends AbstractLargeIntSConstraint {
         this.sumLoadInf = env.makeInt(slb);
         this.sumLoadSup = env.makeInt(slu);
         this.loadsHaveChanged = env.makeBool(false);
-        System.out.println((ed - st) + " ms to make the loads");
 
         assert checkLoadConsistency() && checkCandidatesConsistency();
         int minRemaining = Choco.MAX_UPPER_BOUND;
