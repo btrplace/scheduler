@@ -30,7 +30,7 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
 import btrplace.solver.choco.chocoUtil.AliasedCumulatives;
 import btrplace.solver.choco.chocoUtil.AliasedCumulativesBuilder;
-import btrplace.solver.choco.chocoUtil.BinPacking;
+import btrplace.solver.choco.chocoUtil.LightBinPacking;
 import btrplace.solver.choco.view.CShareableResource;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.BranchAndBound;
@@ -339,7 +339,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         for (int i = 0; i < ds.length; i++) {
             usages[i] = solver.makeConstantIntVar(1);
         }
-        solver.post(new BinPacking(solver.getEnvironment(), vmsCountOnNodes, usages, ds));
+        solver.post(new LightBinPacking(solver.getEnvironment(), vmsCountOnNodes, usages, ds));
     }
 
     private void fillElements() {

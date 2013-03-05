@@ -31,30 +31,24 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
- * A bin packing constraint similar to {@link choco.cp.solver.constraints.global.pack.PackSConstraint}
- * but oriented satisfaction rather than optimization as the number of empty bins is not considered here.
- * It enforces a list of constant-size items (in decreasing order of size) to be packed into bins of limited capacities (their maximum loads), using 2 invariants:
- * 1) global load O(nbBins): the sum of the bin loads is equal to the sum of the size items
- * 2) knapsack on each bin  O(nbItems x nbBins): the bin load is bounded by the total size of the assigned items and the total size of the assigned and candidate items.
- * A simple improvement of this latter upper bound is possible by activating the "big items" optimization:
- * big items are defined for a given bin such that no two of them can be assigned simultaneously to the bin without violating its capacity.
- * The upper bound then becomes the total size of the assigned and candidate small items + the maximal size among the big candidate items.
- * With option ({@code BigItemsPolicy.STATIC}) the list of big candidates is computed once for each bin according to its initial capacity,
- * but as items are ordered, the list can also be maintained dynamically for almost free at each item assignment/removal ({@code BigItemsPolicy.DYNAMIC})
+ * Lighter but faster version of {@link BinPacking} that does not provide the knapsack filtering
  *
- * @author Sophie Demassey, Fabien Hermenier
- * @see choco.cp.solver.constraints.global.pack.PackSConstraint
+ * @author Fabien Hermenier
  */
-public class BinPacking extends AbstractLargeIntSConstraint {
+public class LightBinPacking extends AbstractLargeIntSConstraint {
 
     /**
      * The solver environment.
      */
     private IEnvironment env;
 
+    private IStateInt[] candidates;
     /**
      * The number of bins.
      */
@@ -81,11 +75,6 @@ public class BinPacking extends AbstractLargeIntSConstraint {
      * The load of each bin.
      */
     private final IntDomainVar[] loads;
-
-    /**
-     * The candidate items for each bin (possible but not required assignments)
-     */
-    private IStateBitSet[] candidates;
 
     /**
      * The total size of the required + candidate items for each bin.
@@ -135,7 +124,7 @@ public class BinPacking extends AbstractLargeIntSConstraint {
      * @param sizes       array of nbItems variables, each figuring the item size. Only the LB will be considered!
      * @param bins        array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
      */
-    public BinPacking(IEnvironment environment, IntDomainVar[] loads, IntDomainVar[] sizes, IntDomainVar[] bins) {
+    public LightBinPacking(IEnvironment environment, IntDomainVar[] loads, IntDomainVar[] sizes, IntDomainVar[] bins) {
         super(ArrayUtils.append(bins, loads));
 
         this.env = environment;
@@ -151,10 +140,6 @@ public class BinPacking extends AbstractLargeIntSConstraint {
 
     public final int getRemainingSpace(int bin) {
         return loads[bin].getSup() - bRLoads[bin].get();
-    }
-
-    public IStateBitSet getCandidates(int bin) {
-        return candidates[bin];
     }
 
     private void sortIndices() {
@@ -195,20 +180,6 @@ public class BinPacking extends AbstractLargeIntSConstraint {
             }
         }
         return true;
-    }
-
-    /**
-     * print the list of candidate items for a given bin
-     *
-     * @param bin bin index
-     * @return list of the item indices, between braces, separated by spaces
-     */
-    public String prettyCandidates(int bin) {
-        StringBuilder s = new StringBuilder("{");
-        for (int i = candidates[bin].nextSetBit(0); i >= 0; i = candidates[bin].nextSetBit(i + 1)) {
-            s.append(bsToVars[i]).append(' ');
-        }
-        return s.append('}').toString();
     }
 
     //****************************************************************//
@@ -253,15 +224,13 @@ public class BinPacking extends AbstractLargeIntSConstraint {
 
         sortIndices();
         availableBins = env.makeBitSet(nbBins);
-        candidates = new IStateBitSet[nbBins];
-        for (int b = 0; b < nbBins; b++) {
-            candidates[b] = env.makeBitSet(bins.length);
-
-        }
         int[] rLoads = new int[nbBins];
         int[] cLoads = new int[nbBins];
 
-        long st = System.currentTimeMillis();
+        candidates = new IStateInt[nbBins];
+        for (int i = 0; i < nbBins; i++) {
+            candidates[i] = env.makeInt(0);
+        }
         for (int i = 0; i < bins.length; i++) {
             bins[i].updateInf(0, this, false);
             bins[i].updateSup(nbBins - 1, this, false);
@@ -272,7 +241,7 @@ public class BinPacking extends AbstractLargeIntSConstraint {
                 try {
                     while (it.hasNext()) {
                         int b = it.next();
-                        candidates[b].set(varsToBs[i]);
+                        candidates[b].add(1);
                         cLoads[b] += iSizes[i];
                     }
                 } finally {
@@ -289,7 +258,7 @@ public class BinPacking extends AbstractLargeIntSConstraint {
             bTLoads[b] = env.makeInt(rLoads[b] + cLoads[b]);
             loads[b].updateInf(rLoads[b], this, false);
             loads[b].updateSup(rLoads[b] + cLoads[b], this, false);
-            if (!candidates[b].isEmpty()) {
+            if (candidates[b].get() > 0) {
                 availableBins.set(b);
             }
             slb += loads[b].getInf();
@@ -300,7 +269,7 @@ public class BinPacking extends AbstractLargeIntSConstraint {
         this.sumLoadSup = env.makeInt(slu);
         this.loadsHaveChanged = env.makeBool(false);
 
-        assert checkLoadConsistency() && checkCandidatesConsistency();
+        assert checkLoadConsistency();
         int minRemaining = Choco.MAX_UPPER_BOUND;
         for (int i = 0; i < loads.length; i++) {
             int m = getRemainingSpace(i);
@@ -335,10 +304,9 @@ public class BinPacking extends AbstractLargeIntSConstraint {
             for (int b = availableBins.nextSetBit(0); b >= 0; b = availableBins.nextSetBit(b + 1)) {
                 noFixPoint |= filterLoadInf(b, Math.max(bRLoads[b].get(), (int) sumISizes - sumLoadSup.get() + loads[b].getSup()));
                 noFixPoint |= filterLoadSup(b, Math.min(bTLoads[b].get(), (int) sumISizes - sumLoadInf.get() + loads[b].getInf()));
-                noFixPoint |= propagateKnapsack(b);
             }
         }
-        assert checkLoadConsistency() && checkCandidatesConsistency();
+        assert checkLoadConsistency();
     }
 
     /**
@@ -415,13 +383,11 @@ public class BinPacking extends AbstractLargeIntSConstraint {
      *          on the load[bin] variable
      */
     private void assignItem(int item, int bin) throws ContradictionException {
-        if (candidates[bin].get(item)) {
-            int r = bRLoads[bin].add(iSizes[bsToVars[item]]);
-            filterLoadInf(bin, r);
-            candidates[bin].clear(item);
-            if (candidates[bin].isEmpty()) {
-                availableBins.clear(bin);
-            }
+        int r = bRLoads[bin].add(iSizes[bsToVars[item]]);
+        filterLoadInf(bin, r);
+        int v = candidates[bin].add(-1);
+        if (v == 0) {
+            availableBins.clear(bin);
         }
     }
 
@@ -436,14 +402,14 @@ public class BinPacking extends AbstractLargeIntSConstraint {
      *          on the load[bin] variable
      */
     private void removeItem(int item, int bin) throws ContradictionException {
-        if (candidates[bin].get(item)) {
-            candidates[bin].clear(item);
-            if (candidates[bin].isEmpty()) {
-                availableBins.clear(bin);
-            }
-            int r = bTLoads[bin].add(-1 * iSizes[bsToVars[item]]);
-            filterLoadSup(bin, r);
+        //if (candidates[bin].get(item)) {
+        int v = candidates[bin].add(-1);
+        if (v == 0) {
+            availableBins.clear(bin);
         }
+        int r = bTLoads[bin].add(-1 * iSizes[bsToVars[item]]);
+        filterLoadSup(bin, r);
+        //}
     }
 
     /**
@@ -488,57 +454,6 @@ public class BinPacking extends AbstractLargeIntSConstraint {
             return true;
         }
         return false;
-    }
-
-    /**
-     * propagate the knapsack constraint on a given bin:
-     * 1) remove the candidate items bigger than the remaining free space (when binRequiredLoad + itemSize > binLoadSup)
-     * 2) pack the candidate items necessary to reach the load LB (when binTotalLoad - itemSize < binLoadInf).
-     * code optimized according to the decreasing order of the item sizes.
-     * the loads are also filtered within this constraint (rather in the propagate loop) because considered bins eventually become unavailable
-     *
-     * @param bin bin index
-     * @return {@code true} if at least one item is removed or packed.
-     * @throws choco.kernel.solver.ContradictionException
-     *          on the bins or loads variables
-     */
-    private boolean propagateKnapsack(int bin) throws ContradictionException {
-        boolean ret = false;
-        //ibIdx= item in the bitset, its size is at iSize[bsToVars[i]].
-        //System.out.println("Start knapsack on " + bin);
-        for (int ibIdx = candidates[bin].nextSetBit(0); ibIdx >= 0; ibIdx = candidates[bin].nextSetBit(ibIdx + 1)) {
-            int iSize = iSizes[bsToVars[ibIdx]];
-            if (iSize + bRLoads[bin].get() > loads[bin].getSup()) {
-                //System.out.println("\t" + ibIdx + " too big");
-                removeItem(ibIdx, bin);
-                bins[bsToVars[ibIdx]].removeVal(bin, this, false);
-                if (bins[bsToVars[ibIdx]].isInstantiated()) {
-                    assignItem(ibIdx, bins[bsToVars[ibIdx]].getVal());
-                }
-                ret = true;
-            } else if (bTLoads[bin].get() - iSize < loads[bin].getInf()) {
-                //System.out.println("\t" + ibIdx + " need to be!");
-                assignItem(ibIdx, bin);
-                DisposableIntIterator domain = bins[bsToVars[ibIdx]].getDomain().getIterator();
-                try {
-                    while (domain.hasNext()) {
-                        int b = domain.next();
-                        if (b != bin) {
-                            removeItem(ibIdx, b);
-                        }
-                    }
-                } finally {
-                    domain.dispose();
-                }
-                bins[bsToVars[ibIdx]].instantiate(bin, this, false);
-                ret = true;
-            } else {
-                //System.out.println("\tNothing to say");
-                break;
-            }
-        }
-        //System.out.println("Stop knapsack on " + bin);
-        return ret;
     }
 
     //****************************************************************//
@@ -612,41 +527,5 @@ public class BinPacking extends AbstractLargeIntSConstraint {
             }
         }
         return check;
-    }
-
-    /**
-     * Check that the candidate lists are aligned with the assignment variables:
-     * item is in candidates[bin] iff bin is in bins[item]
-     *
-     * @return {@code false} if not consistent.
-     */
-    private boolean checkCandidatesConsistency() {
-        BitSet[] bs = new BitSet[nbBins];
-        for (int bin = 0; bin < nbBins; bin++) {
-            bs[bin] = new BitSet(iSizes.length);
-        }
-        for (int i = 0; i < bins.length; i++) {
-            if (!bins[i].isInstantiated()) {
-                DisposableIntIterator it = bins[i].getDomain().getIterator();
-                try {
-                    while (it.hasNext()) {
-                        bs[it.next()].set(varsToBs[i]);
-                    }
-                } finally {
-                    it.dispose();
-                }
-            }
-        }
-        for (int b = 0; b < nbBins; b++) {
-            for (int i = 0; i < bs[b].size(); i++) {
-                if (bs[b].get(i) != candidates[b].get(i)) {
-                    ChocoLogging.getBranchingLogger().warning("candidate i '" + i + "' for bin '" + b + ": " + candidates[b].get(i) + " expected: " + bs[b].get(i));
-                    ChocoLogging.getBranchingLogger().warning("candidates for b: " + this.prettyCandidates(b));
-                    ChocoLogging.flushLogs();
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 }
