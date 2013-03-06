@@ -19,8 +19,8 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.TestMaterial;
 import btrplace.model.constraint.Fence;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -33,7 +33,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class FenceConverterTest implements TestMaterial {
+public class FenceConverterTest implements PremadeElements {
 
     private static FenceConverter conv = new FenceConverter();
 

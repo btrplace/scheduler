@@ -19,8 +19,8 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.TestMaterial;
 import btrplace.model.constraint.Ready;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -33,7 +33,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class ReadyConverterTest implements TestMaterial {
+public class ReadyConverterTest implements PremadeElements {
 
     private static ReadyConverter conv = new ReadyConverter();
 

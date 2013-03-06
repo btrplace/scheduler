@@ -23,25 +23,22 @@ import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.view.ShareableResource;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.util.UUID;
 
 /**
  * Unit tests for {@link Allocate}.
  *
  * @author Fabien Hermenier
  */
-public class AllocateTest {
+public class AllocateTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        UUID vm = UUID.randomUUID();
-        UUID node = UUID.randomUUID();
-        Allocate a = new Allocate(vm, node, "foo", 3, 1, 5);
-        Assert.assertEquals(vm, a.getVM());
-        Assert.assertEquals(node, a.getHost());
+        Allocate a = new Allocate(vm1, n1, "foo", 3, 1, 5);
+        Assert.assertEquals(vm1, a.getVM());
+        Assert.assertEquals(n1, a.getHost());
         Assert.assertEquals("foo", a.getResourceId());
         Assert.assertEquals(3, a.getAmount());
         Assert.assertEquals(1, a.getStart());
@@ -51,37 +48,32 @@ public class AllocateTest {
 
     @Test
     public void testApply() {
-        UUID vm = UUID.randomUUID();
-        UUID node = UUID.randomUUID();
-        Allocate na = new Allocate(vm, node, "foo", 3, 3, 5);
+        Allocate na = new Allocate(vm1, n2, "foo", 3, 3, 5);
         Mapping map = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
         map.addOnlineNode(n1);
-        map.addRunningVM(vm, n1);
+        map.addRunningVM(vm1, n1);
         Model mo = new DefaultModel(map);
         Assert.assertFalse(na.apply(mo));
         ShareableResource rc = new ShareableResource("foo");
         mo.attach(rc);
         Assert.assertTrue(na.apply(mo));
-        Assert.assertEquals(3, rc.get(vm));
+        Assert.assertEquals(3, rc.get(vm1));
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEquals() {
-        UUID n = UUID.randomUUID();
-        UUID vm = UUID.randomUUID();
-        Allocate a = new Allocate(vm, n, "foo", 5, 3, 5);
-        Allocate b = new Allocate(vm, n, "foo", 5, 3, 5);
+        Allocate a = new Allocate(vm1, n1, "foo", 5, 3, 5);
+        Allocate b = new Allocate(vm1, n1, "foo", 5, 3, 5);
         Assert.assertFalse(a.equals(new Object()));
         Assert.assertTrue(a.equals(a));
         Assert.assertEquals(a, b);
         Assert.assertEquals(a.hashCode(), b.hashCode());
-        Assert.assertNotSame(a, new Allocate(UUID.randomUUID(), n, "foo", 5, 3, 5));
-        Assert.assertNotSame(a, new Allocate(vm, UUID.randomUUID(), "foo", 5, 3, 5));
-        Assert.assertNotSame(a, new Allocate(vm, n, "bar", 5, 3, 5));
-        Assert.assertNotSame(a, new Allocate(vm, n, "foo", 6, 3, 5));
-        Assert.assertNotSame(a, new Allocate(vm, n, "foo", 5, 4, 5));
-        Assert.assertNotSame(a, new Allocate(vm, n, "foo", 5, 3, 7));
+        Assert.assertNotSame(a, new Allocate(vm3, n1, "foo", 5, 3, 5));
+        Assert.assertNotSame(a, new Allocate(vm1, n2, "foo", 5, 3, 5));
+        Assert.assertNotSame(a, new Allocate(vm1, n1, "bar", 5, 3, 5));
+        Assert.assertNotSame(a, new Allocate(vm1, n1, "foo", 6, 3, 5));
+        Assert.assertNotSame(a, new Allocate(vm1, n1, "foo", 5, 4, 5));
+        Assert.assertNotSame(a, new Allocate(vm1, n1, "foo", 5, 3, 7));
     }
 
 }

@@ -1,7 +1,6 @@
 package btrplace.json.plan;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.TestMaterial;
 import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
@@ -11,6 +10,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootNode;
 import btrplace.plan.event.BootVM;
 import btrplace.plan.event.MigrateVM;
+import btrplace.test.PremadeElements;
 import net.minidev.json.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -20,7 +20,7 @@ import org.testng.annotations.Test;
  *
  * @author Fabien Hermenier
  */
-public class ReconfigurationPlanConverterTest implements TestMaterial {
+public class ReconfigurationPlanConverterTest implements PremadeElements {
 
     @Test
     public void testConversion() throws JSONConverterException {

@@ -19,8 +19,8 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.TestMaterial;
 import btrplace.model.constraint.Offline;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -33,7 +33,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class OfflineConverterTest implements TestMaterial {
+public class OfflineConverterTest implements PremadeElements {
 
     private static OfflineConverter conv = new OfflineConverter();
 

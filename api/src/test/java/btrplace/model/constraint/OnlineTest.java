@@ -19,6 +19,7 @@
 package btrplace.model.constraint;
 
 import btrplace.model.*;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -32,7 +33,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class OnlineTest extends ConstraintTestMaterial {
+public class OnlineTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {

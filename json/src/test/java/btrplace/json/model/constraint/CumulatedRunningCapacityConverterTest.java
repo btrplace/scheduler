@@ -19,8 +19,8 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.TestMaterial;
 import btrplace.model.constraint.CumulatedRunningCapacity;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -33,7 +33,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class CumulatedRunningCapacityConverterTest implements TestMaterial {
+public class CumulatedRunningCapacityConverterTest implements PremadeElements {
 
     private static CumulatedRunningCapacityConverter conv = new CumulatedRunningCapacityConverter();
 

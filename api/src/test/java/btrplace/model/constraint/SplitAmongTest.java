@@ -22,6 +22,7 @@ import btrplace.model.*;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -35,7 +36,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class SplitAmongTest extends ConstraintTestMaterial {
+public class SplitAmongTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
@@ -163,7 +164,6 @@ public class SplitAmongTest extends ConstraintTestMaterial {
         plan.add(new MigrateVM(vm1, n1, n2, 3, 4));
         Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
 
-        UUID vm5 = UUID.randomUUID();
         map.addRunningVM(vm5, n4);
         Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
         plan.add(new MigrateVM(vm2, n1, n3, 0, 2));

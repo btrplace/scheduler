@@ -21,29 +21,21 @@ package btrplace.json.model;
 import btrplace.json.JSONConverterException;
 import btrplace.model.DefaultMapping;
 import btrplace.model.Mapping;
+import btrplace.test.PremadeElements;
 import junit.framework.Assert;
 import net.minidev.json.JSONObject;
 import org.testng.annotations.Test;
-
-import java.util.UUID;
 
 /**
  * Unit tests for {@link btrplace.json.model.MappingConverter}.
  *
  * @author Fabien Hermenier
  */
-public class MappingConverterTest {
+public class MappingConverterTest implements PremadeElements {
 
     @Test
     public void testSimple() throws JSONConverterException {
         Mapping c = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        UUID n3 = UUID.randomUUID();
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
-        UUID vm4 = UUID.randomUUID();
 
         c.addOnlineNode(n1);
         c.addOfflineNode(n2);

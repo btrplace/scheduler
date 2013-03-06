@@ -23,6 +23,7 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.constraint.Running;
 import btrplace.solver.choco.MappingBuilder;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -31,7 +32,7 @@ import org.testng.annotations.Test;
  *
  * @author Fabien Hermenier
  */
-public class CRunningTest extends ConstraintTestMaterial {
+public class CRunningTest implements PremadeElements {
 
     @Test
     public void testGetMisplaced() {

@@ -19,8 +19,8 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.TestMaterial;
 import btrplace.model.constraint.SingleResourceCapacity;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -33,7 +33,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class SingleResourceCapacityConverterTest implements TestMaterial {
+public class SingleResourceCapacityConverterTest implements PremadeElements {
 
     private static SingleResourceCapacityConverter conv = new SingleResourceCapacityConverter();
 

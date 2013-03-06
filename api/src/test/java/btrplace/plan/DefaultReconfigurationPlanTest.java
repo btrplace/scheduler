@@ -22,6 +22,7 @@ import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.plan.event.ActionVisitor;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -32,7 +33,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class DefaultReconfigurationPlanTest {
+public class DefaultReconfigurationPlanTest implements PremadeElements {
 
     @Test
     public void testInstantiate() {
@@ -50,10 +51,10 @@ public class DefaultReconfigurationPlanTest {
     public void testAddDurationAndSize() {
         Model m = new DefaultModel(new DefaultMapping());
         DefaultReconfigurationPlan p = new DefaultReconfigurationPlan(m);
-        Action a1 = new MockAction(UUID.randomUUID(), 1, 3);
-        Action a2 = new MockAction(UUID.randomUUID(), 2, 4);
-        Action a3 = new MockAction(UUID.randomUUID(), 2, 4);
-        Action a4 = new MockAction(UUID.randomUUID(), 1, 3);
+        Action a1 = new MockAction(vm1, 1, 3);
+        Action a2 = new MockAction(vm2, 2, 4);
+        Action a3 = new MockAction(vm3, 2, 4);
+        Action a4 = new MockAction(vm4, 1, 3);
         Assert.assertTrue(p.add(a1));
         Assert.assertEquals(3, p.getDuration());
         Assert.assertTrue(p.add(a4));

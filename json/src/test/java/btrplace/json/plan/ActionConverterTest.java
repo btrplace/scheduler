@@ -1,9 +1,9 @@
 package btrplace.json.plan;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.TestMaterial;
 import btrplace.plan.Action;
 import btrplace.plan.event.*;
+import btrplace.test.PremadeElements;
 import net.minidev.json.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -13,7 +13,7 @@ import org.testng.annotations.Test;
  *
  * @author Fabien Hermenier
  */
-public class ActionConverterTest implements TestMaterial {
+public class ActionConverterTest implements PremadeElements {
 
     @Test
     public void testMigrate() throws JSONConverterException {

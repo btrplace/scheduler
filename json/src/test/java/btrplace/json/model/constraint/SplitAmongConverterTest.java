@@ -19,8 +19,8 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.TestMaterial;
 import btrplace.model.constraint.SplitAmong;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -34,7 +34,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class SplitAmongConverterTest implements TestMaterial {
+public class SplitAmongConverterTest implements PremadeElements {
 
     private static SplitAmongConverter conv = new SplitAmongConverter();
 
