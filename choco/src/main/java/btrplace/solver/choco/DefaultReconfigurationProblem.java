@@ -111,14 +111,14 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * Make a new RP where the next state for every VM is indicated.
      * If the state for a VM is omitted, it is considered as unchanged
      *
-     * @param m          the initial model
-     * @param dEval      to evaluate the duration of every action
-     * @param ready      the VMs that must be in the ready state
-     * @param running    the VMs that must be in the running state
-     * @param sleeping   the VMs that must be in the sleeping state
-     * @param label      {@code true} to label the variables (for debugging purpose)
-     * @param killed     the VMs that must be killed
-     * @param manageable the VMs that can be managed by the solver when they are already running and they must keep running
+     * @param m                  the initial model
+     * @param dEval              to evaluate the duration of every action
+     * @param ready              the VMs that must be in the ready state
+     * @param running            the VMs that must be in the running state
+     * @param sleeping           the VMs that must be in the sleeping state
+     * @param label              {@code true} to label the variables (for debugging purpose)
+     * @param killed             the VMs that must be killed
+     * @param runningsToConsider the VMs that can be managed by the solver when they are already running and they must keep running
      * @throws SolverException if an error occurred
      * @see DefaultReconfigurationProblemBuilder to ease the instantiation process
      */
@@ -129,14 +129,14 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                                          Set<UUID> running,
                                          Set<UUID> sleeping,
                                          Set<UUID> killed,
-                                         Set<UUID> manageable,
+                                         Set<UUID> runningsToConsider,
                                          boolean label
     ) throws SolverException {
         this.ready = new HashSet<UUID>(ready);
         this.runnings = new HashSet<UUID>(running);
         this.sleepings = new HashSet<UUID>(sleeping);
         this.killed = new HashSet<UUID>(killed);
-        this.manageable = new HashSet<UUID>(manageable);
+        this.manageable = new HashSet<UUID>(runningsToConsider);
         this.useLabels = label;
         model = m;
         durEval = dEval;
@@ -373,6 +373,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             if (runnings.contains(vmId)) {
                 if (map.getSleepingVMs().contains(vmId)) {
                     vmActions[i] = new ResumeVMModel(this, vmId);
+                    manageable.add(vmId);
                 } else if (map.getRunningVMs().contains(vmId)) {
                     if (manageable.contains(vmId)) {
                         vmActions[i] = new RelocatableVMModel(this, vmId);
@@ -381,6 +382,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                     }
                 } else if (map.getReadyVMs().contains(vmId)) {
                     vmActions[i] = new BootVMModel(this, vmId);
+                    manageable.add(vmId);
                 } else {
                     throw new SolverException(model, "Unable to set VM '" + vmId + "' running: not ready");
                 }
@@ -390,10 +392,12 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
                 } else if (!map.getAllVMs().contains(vmId)) {
                     vmActions[i] = new ForgeVMModel(this, vmId);
+                    manageable.add(vmId);
                 } else if (map.getReadyVMs().contains(vmId)) {
                     vmActions[i] = new StayAwayVMModel(this, vmId);
                 } else if (map.getRunningVMs().contains(vmId)) {
                     vmActions[i] = new ShutdownVMModel(this, vmId);
+                    manageable.add(vmId);
                 } else {
                     throw new SolverException(model, "Unable to set VM '" + vmId + "' ready: not in the 'running' state or already forged");
                 }
@@ -403,6 +407,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
                 } else if (map.getRunningVMs().contains(vmId)) {
                     vmActions[i] = new SuspendVMModel(this, vmId);
+                    manageable.add(vmId);
                 } else if (map.getSleepingVMs().contains(vmId)) {
                     vmActions[i] = new StayAwayVMModel(this, vmId);
                 } else {
@@ -414,6 +419,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
                 } else if (map.containsVM(vmId)) {
                     vmActions[i] = new KillVMActionModel(this, vmId);
+                    manageable.add(vmId);
                 } else {
                     throw new SolverException(model, "Unable to kill VM '" + vmId + "': unknown");
                 }

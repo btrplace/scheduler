@@ -124,7 +124,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertEquals(rp.getFutureKilledVMs(), Collections.singleton(vm2));
         Assert.assertEquals(rp.getVMs().length, 7);
         Assert.assertEquals(rp.getNodes().length, 3);
-        Assert.assertEquals(rp.getManageableVMs(), m.getMapping().getAllVMs());
+        Assert.assertEquals(rp.getManageableVMs().size(), rp.getVMs().length);
         Assert.assertTrue(rp.getStart().isInstantiated() && rp.getStart().getVal() == 0);
 
         //Test the index values of the nodes and the VMs.
@@ -145,10 +145,16 @@ public class DefaultReconfigurationProblemTest {
     public void testManageableVMs() throws SolverException {
         Model mo = defaultModel();
         Mapping map = mo.getMapping();
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).
-                setManageableVMs(map.getRunningVMs(nOn1)).build();
+        Set<UUID> runnings = new HashSet<UUID>(map.getRunningVMs());
+        runnings.add(vm6);
+        runnings.add(vm5);
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setNextVMsStates(Collections.<UUID>emptySet(), runnings, map.getSleepingVMs(), Collections.<UUID>emptySet())
+                .setManageableVMs(map.getRunningVMs(nOn1)).build();
         Set<UUID> manageable = rp.getManageableVMs();
 
+        Assert.assertEquals(manageable.size(), 4);
+        Assert.assertTrue(manageable.containsAll(Arrays.asList(vm6, vm5, vm1, vm2)));
         //Check the action model that has been used for each of the VM.
         for (UUID vm : map.getAllVMs()) {
             if (map.getRunningVMs().contains(vm) && rp.getFutureRunningVMs().contains(vm)) {
