@@ -90,7 +90,7 @@ public class SolvingStatistics {
      * @param nbVMs         the number of VMs in the model
      * @param nbConstraints the number of constraints
      * @param doOptimize    {@code true} to indicate the solver tried to improve the computed solution
-     * @param timeout       the timeout value for the solver in milliseconds
+     * @param timeout       the timeout value for the solver in seconds
      * @param managedVMs    the number of VMs managed by the algorithm.
      * @param t             the solving duration in milliseconds
      * @param nbN           the number of opened nodes at the moment
@@ -205,7 +205,7 @@ public class SolvingStatistics {
     /**
      * Get the maximum solving duration.
      *
-     * @return a duration is milliseconds. A negative number for no timeout.
+     * @return a duration is seconds. A negative number for no timeout.
      */
     public int getTimeout() {
         return maxDuration;
@@ -223,18 +223,20 @@ public class SolvingStatistics {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        b.append("optimize: ").append(doOptimize);
-                if (maxDuration > 0) {
-                    b.append("; timeout: ").append(maxDuration);
-                } else {
-                    b.append("; no timeout");
-                }
-                b.append("; node(s): ").append(nbNodes)
-                .append("; VM(s): ").append(nbVMs)
-                .append("; managed VM(s): ").append(nbManagedVMs)
-                .append("; constraint(s): ").append(nbConstraints)
-                .append('\n');
-        b.append("After ").append(time).append("ms");
+        b.append(nbNodes).append(" node(s)")
+                .append("; ").append(nbVMs).append(" VM(s)");
+        if (nbManagedVMs != nbVMs) {
+            b.append(" ( ").append(nbManagedVMs).append(" managed)");
+        }
+        b.append("; ").append(nbConstraints).append(" constraint(s)");
+
+        if (doOptimize) {
+            b.append("; optimize");
+        }
+        if (maxDuration > 0) {
+            b.append("; timeout:").append(maxDuration).append("s");
+        }
+        b.append("\nAfter ").append(time).append("ms");
         if (timeout) {
             b.append(" (timeout)");
         } else {
