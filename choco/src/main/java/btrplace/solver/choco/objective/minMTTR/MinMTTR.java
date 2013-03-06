@@ -62,10 +62,10 @@ public class MinMTTR implements ReconfigurationObjective {
         s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
         s.setObjective(cost);
   */
-        injectPlacementHeuristic(rp, new HashSet<UUID>(), cost);
+        injectPlacementHeuristic(rp, cost);
     }
 
-    private void injectPlacementHeuristic(ReconfigurationProblem rp, Set<UUID> managedVMs, IntDomainVar cost) {
+    private void injectPlacementHeuristic(ReconfigurationProblem rp, IntDomainVar cost) {
 
         Model mo = rp.getSourceModel();
         Mapping map = mo.getMapping();
@@ -94,11 +94,16 @@ public class MinMTTR implements ReconfigurationObjective {
         CPSolver s = rp.getSolver();
 
         //Get the VMs to move for exclusion issue
-        Set<UUID> vmsToExlude = new HashSet<UUID>(managedVMs);
-
+        Set<UUID> vmsToExclude = new HashSet<UUID>(rp.getManageableVMs());
+        for (Iterator<UUID> ite = vmsToExclude.iterator(); ite.hasNext(); ) {
+            UUID vm = ite.next();
+            if (!(map.getRunningVMs().contains(vm) && rp.getFutureRunningVMs().contains(vm))) {
+                ite.remove();
+            }
+        }
         Map<IntDomainVar, UUID> pla = VMPlacementUtils.makePlacementMap(rp);
 
-        s.addGoal(new AssignVar(new MovingVMs(rp, map, vmsToExlude), new RandomVMPlacement(rp, pla, true)));
+        s.addGoal(new AssignVar(new MovingVMs(rp, map, vmsToExclude), new RandomVMPlacement(rp, pla, true)));
 
         HostingVariableSelector selectForBads = new HostingVariableSelector(rp, ActionModelUtils.getDSlices(badActions));
         s.addGoal(new AssignVar(selectForBads, new RandomVMPlacement(rp, pla, true)));

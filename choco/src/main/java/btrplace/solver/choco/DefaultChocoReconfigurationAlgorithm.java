@@ -197,7 +197,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         //The objective
         obj.inject(rp);
         speDuration += System.currentTimeMillis();
-        rp.getLogger().debug("{} ms to build the core-RP + {} ms for tune it", coreRPDuration, speDuration);
+        rp.getLogger().debug("{} ms to build the core-RP + {} ms to tune it", coreRPDuration, speDuration);
         ReconfigurationPlan p = rp.solve(timeLimit, optimize);
         if (p != null) {
             assert checkSatisfaction(p, cstrs);
