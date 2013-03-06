@@ -24,6 +24,7 @@ import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.IStateIntVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import gnu.trove.TIntArrayList;
 import gnu.trove.TIntIntHashMap;
 
 import java.util.Arrays;
@@ -183,10 +184,10 @@ public class LocalTaskScheduler {
     public void computeProfiles() {
 
         for (int i = 0; i < nbDims; i++) {
-            //Sur de ce qui est utilise sur la ressource
+            //What is necessarily used on the resource
             profilesMin[i].clear();
 
-            //Maximum simultanee dans le pire des cas sur la ressource
+            //Maximum possible usage on the resource
             profilesMax[i].clear();
 
             profilesMax[i].put(0, capacities[i][me] - startupFree[i]);

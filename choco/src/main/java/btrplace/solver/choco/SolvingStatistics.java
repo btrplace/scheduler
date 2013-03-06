@@ -223,9 +223,13 @@ public class SolvingStatistics {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        b.append("optimize: ").append(doOptimize)
-                .append("; timeout: ").append(maxDuration)
-                .append("; node(s): ").append(nbNodes)
+        b.append("optimize: ").append(doOptimize);
+                if (maxDuration > 0) {
+                    b.append("; timeout: ").append(maxDuration);
+                } else {
+                    b.append("; no timeout");
+                }
+                b.append("; node(s): ").append(nbNodes)
                 .append("; VM(s): ").append(nbVMs)
                 .append("; managed VM(s): ").append(nbManagedVMs)
                 .append("; constraint(s): ").append(nbConstraints)
