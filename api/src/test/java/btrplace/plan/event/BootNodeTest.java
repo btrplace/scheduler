@@ -22,23 +22,21 @@ import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.util.UUID;
 
 /**
  * Unit tests for {@link BootNode}.
  *
  * @author Fabien Hermenier
  */
-public class BootNodeTest {
+public class BootNodeTest implements PremadeElements {
 
     @Test
     public void testInstantiate() {
-        UUID n = UUID.randomUUID();
-        BootNode a = new BootNode(n, 3, 5);
-        Assert.assertEquals(n, a.getNode());
+        BootNode a = new BootNode(n1, 3, 5);
+        Assert.assertEquals(n1, a.getNode());
         Assert.assertEquals(3, a.getStart());
         Assert.assertEquals(5, a.getEnd());
         Assert.assertFalse(a.toString().contains("null"));
@@ -48,26 +46,24 @@ public class BootNodeTest {
     public void testApply() {
         Mapping map = new DefaultMapping();
         Model m = new DefaultModel(map);
-        UUID n = UUID.randomUUID();
-        map.addOfflineNode(n);
-        BootNode b = new BootNode(n, 3, 5);
+        map.addOfflineNode(n1);
+        BootNode b = new BootNode(n1, 3, 5);
         Assert.assertTrue(b.apply(m));
-        Assert.assertTrue(map.getOnlineNodes().contains(n));
+        Assert.assertTrue(map.getOnlineNodes().contains(n1));
 
         Assert.assertFalse(b.apply(m));
     }
 
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testEquals() {
-        UUID n = UUID.randomUUID();
-        BootNode a = new BootNode(n, 3, 5);
-        BootNode b = new BootNode(n, 3, 5);
+        BootNode a = new BootNode(n1, 3, 5);
+        BootNode b = new BootNode(n1, 3, 5);
         Assert.assertFalse(a.equals(new Object()));
         Assert.assertTrue(a.equals(a));
         Assert.assertEquals(a, b);
         Assert.assertEquals(a.hashCode(), b.hashCode());
-        Assert.assertNotSame(a, new BootNode(n, 4, 5));
-        Assert.assertNotSame(a, new BootNode(n, 3, 4));
-        Assert.assertNotSame(a, new BootNode(UUID.randomUUID(), 3, 5));
+        Assert.assertNotSame(a, new BootNode(n1, 4, 5));
+        Assert.assertNotSame(a, new BootNode(n1, 3, 4));
+        Assert.assertNotSame(a, new BootNode(n2, 3, 5));
     }
 }

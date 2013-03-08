@@ -40,7 +40,7 @@ public class SuspendVM extends Action implements VMStateTransition {
     /**
      * Make a new suspend action.
      *
-     * @param vmId   the virtual machine to suspend
+     * @param vmId the virtual machine to suspend
      * @param from The node that host the virtual machine
      * @param to   the destination node.
      * @param s    the moment the action starts.
@@ -138,5 +138,10 @@ public class SuspendVM extends Action implements VMStateTransition {
     @Override
     public VMState getNextState() {
         return VMState.sleeping;
+    }
+
+    @Override
+    public Object visit(ActionVisitor v) {
+        return v.visit(this);
     }
 }

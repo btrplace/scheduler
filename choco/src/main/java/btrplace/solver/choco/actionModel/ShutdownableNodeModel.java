@@ -61,22 +61,22 @@ public class ShutdownableNodeModel implements NodeActionModel {
      */
     public ShutdownableNodeModel(ReconfigurationProblem rp, UUID e) throws SolverException {
         this.node = e;
-        isOnline = rp.getSolver().createBooleanVar(rp.makeVarLabel("shutdownnableNode(" + e + ").online"));
+        isOnline = rp.getSolver().createBooleanVar(rp.makeVarLabel(new StringBuilder("shutdownnableNode(").append(e).append(").online").toString()));
 
         CPSolver s = rp.getSolver();
 
-        isOffline = s.createBooleanVar(rp.makeVarLabel("shutdownnableNode(" + e + ").offline"));
+        isOffline = s.createBooleanVar(rp.makeVarLabel(new StringBuilder("shutdownnableNode(").append(e).append(").offline").toString()));
         s.post(s.neq(isOnline, isOffline));
         //new BoolVarNot(s, rp.makeVarLabel("shutdownnableNode(" + e + ").offline"), (BooleanVarImpl) isOnline);
 
         int d = rp.getDurationEvaluators().evaluate(ShutdownNode.class, e);
         //Action duration is either 0 (no shutdown) or 'd' (shutdown)
-        duration = s.createEnumIntVar(rp.makeVarLabel("shutdownableNode(" + e + ").duration"), new int[]{0, d});
+        duration = s.createEnumIntVar(rp.makeVarLabel(new StringBuilder("shutdownableNode(").append(e).append(").duration").toString()), new int[]{0, d});
 
         //The node is already online, so it can host VMs at the beginning of the RP
         hostingStart = rp.getStart();
         //The moment the node can no longer host VMs varies depending on its next state
-        hostingEnd = rp.makeDuration("shutdownableNode(" + e + ").hostingEnd");
+        hostingEnd = rp.makeDuration(new StringBuilder("shutdownableNode(").append(e).append(").hostingEnd").toString());
 
         //The duration between the moment the node can not host VMs anymore and the end of the RP
         //online: hostingEnd == RP.end
@@ -85,10 +85,10 @@ public class ShutdownableNodeModel implements NodeActionModel {
         s.post(s.eq(hostingEnd, CPSolver.minus(rp.getEnd(), duration)));
         s.post(new FastIFFEq(isOnline, duration, 0));
 
-        start = rp.makeDuration("shutdownableNode(" + e + ").start");
+        start = rp.makeDuration(new StringBuilder("shutdownableNode(").append(e).append(").start").toString());
         s.post(s.eq(start, ChocoUtils.mult(s, isOffline, hostingEnd)));
 
-        end = rp.makeDuration("shutdownableNode(" + e + ").end");
+        end = rp.makeDuration(new StringBuilder("shutdownableNode(").append(e).append(").end").toString());
         s.post(s.eq(end, s.plus(start, duration)));
         s.post(s.leq(duration, rp.getEnd()));
         s.post(s.leq(end, rp.getEnd()));

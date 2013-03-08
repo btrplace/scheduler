@@ -36,9 +36,9 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public final class Utils {
+public final class JSONUtils {
 
-    private Utils() {
+    private JSONUtils() {
     }
 
     /**
@@ -84,7 +84,7 @@ public final class Utils {
             throw new JSONConverterException("Set of UUIDs sets expected at key '" + id + "'");
         }
         for (Object obj : (JSONArray) o.get(id)) {
-            res.add(Utils.fromJSON((JSONArray) obj));
+            res.add(JSONUtils.fromJSON((JSONArray) obj));
         }
         return res;
     }
@@ -103,6 +103,25 @@ public final class Utils {
             throw new JSONConverterException("Set of UUIDs expected at key '" + id + "'");
         }
         return fromJSON((JSONArray) x);
+    }
+
+    /**
+     * Read an expected UUID.
+     *
+     * @param o  the object to parse
+     * @param id the id in the map that should point to the UUID.
+     * @return the UUID
+     * @throws JSONConverterException if the key does not point to a UUID
+     */
+    public static UUID requiredUUID(JSONObject o, String id) throws JSONConverterException {
+        if (!o.containsKey(id)) {
+            throw new JSONConverterException("Key '" + id + "' expected to read a UUID");
+        }
+        try {
+            return UUID.fromString(o.get(id).toString());
+        } catch (Exception e) {
+            throw new JSONConverterException("Unable to read a UUID from string '" + id + "'");
+        }
     }
 
     /**

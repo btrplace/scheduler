@@ -23,6 +23,7 @@ import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.view.ShareableResource;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -36,7 +37,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class PreserveTest extends ConstraintTestMaterial {
+public class PreserveTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {

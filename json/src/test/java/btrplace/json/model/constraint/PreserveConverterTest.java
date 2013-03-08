@@ -20,6 +20,7 @@ package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
 import btrplace.model.constraint.Preserve;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -32,7 +33,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class PreserveConverterTest implements ConstraintTestMaterial {
+public class PreserveConverterTest implements PremadeElements {
 
     private static PreserveConverter conv = new PreserveConverter();
 

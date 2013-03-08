@@ -20,10 +20,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-      <groupId>btrplace</groupId>
-      <artifactId>solver</artifactId>
-      <version>0.23</version>
+        <groupId>btrplace</groupId>
+        <artifactId>solver</artifactId>
+        <version>0.24</version>
     </parent>
     <artifactId>solver-api</artifactId>
     <description>Core components for a reconfiguration algorithm</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>btrplace</groupId>
+            <artifactId>solver-testMaterial</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>

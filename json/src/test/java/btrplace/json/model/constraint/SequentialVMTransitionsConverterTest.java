@@ -20,6 +20,7 @@ package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
 import btrplace.model.constraint.SequentialVMTransitions;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -30,7 +31,7 @@ import java.util.Arrays;
  *
  * @author Fabien Hermenier
  */
-public class SequentialVMTransitionsConverterTest implements ConstraintTestMaterial {
+public class SequentialVMTransitionsConverterTest implements PremadeElements {
 
     private static SequentialVMTransitionsConverter conv = new SequentialVMTransitionsConverter();
 

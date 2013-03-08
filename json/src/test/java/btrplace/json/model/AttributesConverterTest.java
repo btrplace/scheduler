@@ -20,25 +20,23 @@ package btrplace.json.model;
 
 import btrplace.model.Attributes;
 import btrplace.model.DefaultAttributes;
+import btrplace.test.PremadeElements;
 import net.minidev.json.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.util.UUID;
 
 /**
  * Unit tests for {@link btrplace.json.model.AttributesConverter}.
  *
  * @author Fabien Hermenier
  */
-public class AttributesConverterTest {
+public class AttributesConverterTest implements PremadeElements {
 
     @Test
     public void testSimple() throws IOException {
         Attributes attrs = new DefaultAttributes();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
 
         attrs.put(n1, "foo", true);
         attrs.put(n2, "foo", false);

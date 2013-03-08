@@ -18,6 +18,7 @@
 
 package btrplace.model.view;
 
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -28,7 +29,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class ShareableResourceTest {
+public class ShareableResourceTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
@@ -44,13 +45,12 @@ public class ShareableResourceTest {
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testDefinition() {
         ShareableResource rc = new ShareableResource("foo");
-        UUID id = UUID.randomUUID();
-        Assert.assertFalse(rc.defined(id));
-        Assert.assertEquals(rc.get(id), rc.getDefaultValue());
+        Assert.assertFalse(rc.defined(vm1));
+        Assert.assertEquals(rc.get(vm1), rc.getDefaultValue());
 
-        rc.set(id, 3);
-        Assert.assertTrue(rc.defined(id));
-        Assert.assertEquals(rc.get(id), 3);
+        rc.set(vm1, 3);
+        Assert.assertTrue(rc.defined(vm1));
+        Assert.assertEquals(rc.get(vm1), 3);
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
@@ -83,92 +83,83 @@ public class ShareableResourceTest {
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testUnset() {
         ShareableResource rc = new ShareableResource("foo");
-        UUID id = UUID.randomUUID();
-        rc.set(id, 3);
-        Assert.assertTrue(rc.unset(id));
-        Assert.assertFalse(rc.defined(id));
+        rc.set(vm1, 3);
+        Assert.assertTrue(rc.unset(vm1));
+        Assert.assertFalse(rc.defined(vm1));
 
         //Next, id is not defined so not 'unsetable'
-        Assert.assertFalse(rc.unset(id));
+        Assert.assertFalse(rc.unset(vm1));
 
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testCompare() {
         ShareableResource rc = new ShareableResource("foo");
-        UUID i1 = UUID.randomUUID();
-        rc.set(i1, 3);
+        rc.set(vm1, 3);
 
-        UUID i2 = UUID.randomUUID();
-        rc.set(i2, 7);
+        rc.set(vm2, 7);
 
-        Assert.assertTrue(rc.compare(i1, i2) < 0);
-        Assert.assertTrue(rc.compare(i2, i1) > 0);
+        Assert.assertTrue(rc.compare(vm1, vm2) < 0);
+        Assert.assertTrue(rc.compare(vm2, vm1) > 0);
 
-        UUID i3 = UUID.randomUUID();
-        rc.set(i3, 3);
-        Assert.assertTrue(rc.compare(i3, i1) == 0);
+        rc.set(vm3, 3);
+        Assert.assertTrue(rc.compare(vm3, vm1) == 0);
 
-        Assert.assertTrue(rc.compare(UUID.randomUUID(), i1) < 0);
+        Assert.assertTrue(rc.compare(vm4, vm1) < 0);
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testMax() {
         ShareableResource rc = new ShareableResource("foo");
-        UUID i1 = UUID.randomUUID();
-        rc.set(i1, 3);
+        rc.set(vm1, 3);
 
-        UUID i2 = UUID.randomUUID();
-        rc.set(i2, 7);
+        rc.set(vm2, 7);
         Assert.assertEquals(7, rc.max(rc.getDefined(), false));
         Set<UUID> x = new HashSet<UUID>();
-        x.add(i1);
+        x.add(vm1);
         Assert.assertEquals(3, rc.max(x, false));
-        rc.set(i1, -15);
-        x.add(UUID.randomUUID());
+        rc.set(vm1, -15);
+        x.add(vm3);
         Assert.assertEquals(-15, rc.max(x, false)); //If the default value would have been counted, it would have return 0
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testMin() {
         ShareableResource rc = new ShareableResource("foo");
-        UUID i1 = UUID.randomUUID();
-        rc.set(i1, 3);
+        rc.set(vm1, 3);
 
-        UUID i2 = UUID.randomUUID();
-        rc.set(i2, 7);
+        rc.set(vm2, 7);
         Assert.assertEquals(3, rc.min(rc.getDefined(), false));
         Set<UUID> x = new HashSet<UUID>();
-        x.add(i2);
+        x.add(vm2);
         Assert.assertEquals(7, rc.min(x, false));
-        rc.set(i2, 18);
-        x.add(UUID.randomUUID());
+        rc.set(vm2, 18);
+        x.add(vm3);
         Assert.assertEquals(18, rc.min(x, false)); //If the default value would have been counted, it would have return 0
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testSum() {
         ShareableResource rc = new ShareableResource("foo", -5); //-5 as default no code value to detect its presence in sum (would be an error)
-        UUID i1 = UUID.randomUUID();
-        rc.set(i1, 3);
-        UUID i2 = UUID.randomUUID();
-        rc.set(i2, 7);
+
+        rc.set(vm1, 3);
+        rc.set(vm2, 7);
         Assert.assertEquals(10, rc.sum(rc.getDefined(), false));
         Set<UUID> x = new HashSet<UUID>();
-        x.add(i2);
+        x.add(vm2);
         Assert.assertEquals(7, rc.sum(x, false));
-        rc.set(i2, 18);
+        rc.set(vm2, 18);
         x.clear();
-        x.add(UUID.randomUUID());
+        x.add(vm3);
         Assert.assertEquals(0, rc.sum(x, false));
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testToString() {
         ShareableResource rc = new ShareableResource("foo");
-        rc.set(UUID.randomUUID(), 1);
-        rc.set(UUID.randomUUID(), 2);
-        rc.set(UUID.randomUUID(), 3);
+        rc.set(vm1, 1);
+        rc.set(vm2, 2);
+        rc.set(vm3, 3);
         //Simple test to be resilient
         Assert.assertNotNull(rc.toString());
     }
@@ -192,21 +183,19 @@ public class ShareableResourceTest {
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition", "testEqualsAndHashCode"})
     public void testClone() {
         ShareableResource rc1 = new ShareableResource("foo", -1);
-        UUID u1 = UUID.randomUUID();
-        UUID u2 = UUID.randomUUID();
-        rc1.set(u1, 3);
-        rc1.set(u2, 5);
+        rc1.set(vm1, 3);
+        rc1.set(vm2, 5);
         ShareableResource rc2 = rc1.clone();
         Assert.assertEquals(rc1, rc2);
         Assert.assertEquals(rc1.hashCode(), rc2.hashCode());
 
-        rc1.set(u1, -5);
+        rc1.set(vm1, -5);
         Assert.assertNotEquals(rc1, rc2);
 
-        rc1.set(u1, 3);
+        rc1.set(vm1, 3);
         Assert.assertEquals(rc1, rc2);
 
-        rc2.unset(u2);
+        rc2.unset(vm2);
         Assert.assertNotEquals(rc1, rc2);
 
     }

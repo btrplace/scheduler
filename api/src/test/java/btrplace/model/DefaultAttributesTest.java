@@ -18,6 +18,7 @@
 
 package btrplace.model;
 
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -30,7 +31,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class DefaultAttributesTest {
+public class DefaultAttributesTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
@@ -43,83 +44,83 @@ public class DefaultAttributesTest {
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testPutAndGetString() {
         Attributes attrs = new DefaultAttributes();
-        UUID u = UUID.randomUUID();
-        Assert.assertFalse(attrs.put(u, "foo", "bar"));
-        Assert.assertEquals(attrs.getString(u, "foo"), "bar");
-        Assert.assertTrue(attrs.put(u, "foo", "baz"));
-        Assert.assertEquals(attrs.getString(u, "foo"), "baz");
+
+        Assert.assertFalse(attrs.put(vm1, "foo", "bar"));
+        Assert.assertEquals(attrs.getString(vm1, "foo"), "bar");
+        Assert.assertTrue(attrs.put(vm1, "foo", "baz"));
+        Assert.assertEquals(attrs.getString(vm1, "foo"), "baz");
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testPutAndGetLong() {
         Attributes attrs = new DefaultAttributes();
-        UUID u = UUID.randomUUID();
-        Assert.assertFalse(attrs.put(u, "foo", 17L));
-        Assert.assertEquals(attrs.getLong(u, "foo").longValue(), 17L);
-        Assert.assertTrue(attrs.put(u, "foo", 24L));
-        Assert.assertEquals(attrs.getLong(u, "foo").intValue(), 24);
+
+        Assert.assertFalse(attrs.put(vm1, "foo", 17L));
+        Assert.assertEquals(attrs.getLong(vm1, "foo").longValue(), 17L);
+        Assert.assertTrue(attrs.put(vm1, "foo", 24L));
+        Assert.assertEquals(attrs.getLong(vm1, "foo").intValue(), 24);
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testPutAndGetDouble() {
         Attributes attrs = new DefaultAttributes();
-        UUID u = UUID.randomUUID();
-        Assert.assertFalse(attrs.put(u, "foo", 17.3));
-        Assert.assertEquals(attrs.getDouble(u, "foo"), 17.3);
-        Assert.assertTrue(attrs.put(u, "foo", 24L));
-        Assert.assertEquals(attrs.getLong(u, "foo").longValue(), 24L);
+
+        Assert.assertFalse(attrs.put(vm1, "foo", 17.3));
+        Assert.assertEquals(attrs.getDouble(vm1, "foo"), 17.3);
+        Assert.assertTrue(attrs.put(vm1, "foo", 24L));
+        Assert.assertEquals(attrs.getLong(vm1, "foo").longValue(), 24L);
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testPutAndGetBoolean() {
         Attributes attrs = new DefaultAttributes();
-        UUID u = UUID.randomUUID();
-        Assert.assertFalse(attrs.put(u, "foo", true));
-        Assert.assertEquals(attrs.getBoolean(u, "foo"), Boolean.TRUE);
-        Assert.assertTrue(attrs.put(u, "foo", false));
-        Assert.assertEquals(attrs.getBoolean(u, "foo"), Boolean.FALSE);
+
+        Assert.assertFalse(attrs.put(vm1, "foo", true));
+        Assert.assertEquals(attrs.getBoolean(vm1, "foo"), Boolean.TRUE);
+        Assert.assertTrue(attrs.put(vm1, "foo", false));
+        Assert.assertEquals(attrs.getBoolean(vm1, "foo"), Boolean.FALSE);
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testCastAndPut() {
         DefaultAttributes attrs = new DefaultAttributes();
-        UUID u = UUID.randomUUID();
-        attrs.castAndPut(u, "foo", "foo");
-        Assert.assertEquals(attrs.get(u, "foo").getClass(), String.class);
-        attrs.castAndPut(u, "foo", "true");
-        Assert.assertEquals(attrs.get(u, "foo").getClass(), Boolean.class);
 
-        attrs.castAndPut(u, "foo", "false");
-        Assert.assertEquals(attrs.get(u, "foo").getClass(), Boolean.class);
+        attrs.castAndPut(vm1, "foo", "foo");
+        Assert.assertEquals(attrs.get(vm1, "foo").getClass(), String.class);
+        attrs.castAndPut(vm1, "foo", "true");
+        Assert.assertEquals(attrs.get(vm1, "foo").getClass(), Boolean.class);
 
-        attrs.castAndPut(u, "foo", "True");
-        Assert.assertEquals(attrs.get(u, "foo").getClass(), Boolean.class);
+        attrs.castAndPut(vm1, "foo", "false");
+        Assert.assertEquals(attrs.get(vm1, "foo").getClass(), Boolean.class);
 
-        attrs.castAndPut(u, "foo", "135");
-        Assert.assertEquals(attrs.get(u, "foo").getClass(), Long.class);
+        attrs.castAndPut(vm1, "foo", "True");
+        Assert.assertEquals(attrs.get(vm1, "foo").getClass(), Boolean.class);
 
-        attrs.castAndPut(u, "foo", "13.56");
-        Assert.assertEquals(attrs.get(u, "foo").getClass(), Double.class);
+        attrs.castAndPut(vm1, "foo", "135");
+        Assert.assertEquals(attrs.get(vm1, "foo").getClass(), Long.class);
+
+        attrs.castAndPut(vm1, "foo", "13.56");
+        Assert.assertEquals(attrs.get(vm1, "foo").getClass(), Double.class);
     }
 
     @Test(dependsOnMethods = {"testPutAndGetString", "testInstantiation"})
     public void testIsSet() {
         Attributes attrs = new DefaultAttributes();
-        UUID e = UUID.randomUUID();
-        Assert.assertFalse(attrs.isSet(e, "foo"));
-        attrs.put(e, "foo", "bar");
-        Assert.assertTrue(attrs.isSet(e, "foo"));
+
+        Assert.assertFalse(attrs.isSet(vm1, "foo"));
+        attrs.put(vm1, "foo", "bar");
+        Assert.assertTrue(attrs.isSet(vm1, "foo"));
     }
 
     @Test(dependsOnMethods = {"testPutAndGetString", "testInstantiation"})
     public void testUnset() {
         Attributes attrs = new DefaultAttributes();
-        UUID e = UUID.randomUUID();
-        Assert.assertFalse(attrs.unset(e, "foo"));
-        attrs.put(e, "foo", "bar");
-        Assert.assertTrue(attrs.unset(e, "foo"));
-        Assert.assertFalse(attrs.isSet(e, "foo"));
-        Assert.assertFalse(attrs.unset(e, "foo"));
+
+        Assert.assertFalse(attrs.unset(vm1, "foo"));
+        attrs.put(vm1, "foo", "bar");
+        Assert.assertTrue(attrs.unset(vm1, "foo"));
+        Assert.assertFalse(attrs.isSet(vm1, "foo"));
+        Assert.assertFalse(attrs.unset(vm1, "foo"));
     }
 
     @Test(dependsOnMethods = {"testPutAndGetLong", "testInstantiation", "testUnset"})
@@ -133,7 +134,6 @@ public class DefaultAttributesTest {
         }
         Attributes attrs2 = attrs.clone();
 
-        UUID f = UUID.randomUUID();
         attrs.unset(l.get(0), "0");
         Assert.assertEquals(attrs2.getLong(l.get(0), "0").longValue(), 0);
 

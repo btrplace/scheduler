@@ -24,6 +24,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootVM;
 import btrplace.plan.event.ResumeVM;
 import btrplace.plan.event.ShutdownVM;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -37,7 +38,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class SingleRunningCapacityTest extends ConstraintTestMaterial {
+public class SingleRunningCapacityTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {

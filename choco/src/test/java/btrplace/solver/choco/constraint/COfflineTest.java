@@ -30,6 +30,7 @@ import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.MappingBuilder;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -40,7 +41,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class COfflineTest extends ConstraintTestMaterial {
+public class COfflineTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {

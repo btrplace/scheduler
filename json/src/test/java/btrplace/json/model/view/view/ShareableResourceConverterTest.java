@@ -20,6 +20,7 @@ package btrplace.json.model.view.view;
 
 import btrplace.json.model.view.ShareableResourceConverter;
 import btrplace.model.view.ShareableResource;
+import btrplace.test.PremadeElements;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
@@ -30,15 +31,15 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class ShareableResourceConverterTest {
+public class ShareableResourceConverterTest implements PremadeElements {
 
     @Test
     public void testSimple() {
         ShareableResource rc = new ShareableResource("foo");
-        rc.set(UUID.randomUUID(), 3);
-        rc.set(UUID.randomUUID(), 4);
-        rc.set(UUID.randomUUID(), 5);
-        rc.set(UUID.randomUUID(), 6);
+        rc.set(vm1, 3);
+        rc.set(vm2, 4);
+        rc.set(vm3, 5);
+        rc.set(vm4, 6);
         ShareableResourceConverter s = new ShareableResourceConverter();
         ShareableResource rc2 = s.fromJSON(s.toJSON(rc));
 

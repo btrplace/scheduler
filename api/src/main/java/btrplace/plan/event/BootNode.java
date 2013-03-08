@@ -100,4 +100,9 @@ public class BootNode extends Action implements NodeEvent {
         }
         return false;
     }
+
+    @Override
+    public Object visit(ActionVisitor v) {
+        return v.visit(this);
+    }
 }

@@ -126,4 +126,9 @@ public class ShutdownVM extends Action implements VMStateTransition {
     public VMState getNextState() {
         return VMState.ready;
     }
+
+    @Override
+    public Object visit(ActionVisitor v) {
+        return v.visit(this);
+    }
 }

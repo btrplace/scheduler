@@ -19,6 +19,7 @@
 package btrplace.model.constraint;
 
 import btrplace.model.*;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -32,7 +33,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class KilledTest extends ConstraintTestMaterial {
+public class KilledTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
@@ -65,11 +66,10 @@ public class KilledTest extends ConstraintTestMaterial {
         Assert.assertEquals(d.isSatisfied(i), SatConstraint.Sat.SATISFIED);
         c.addReadyVM(vm1);
         Assert.assertEquals(d.isSatisfied(i), SatConstraint.Sat.UNSATISFIED);
-        UUID n = UUID.randomUUID();
-        c.addOnlineNode(n);
-        c.addRunningVM(vm1, n);
+        c.addOnlineNode(n1);
+        c.addRunningVM(vm1, n1);
         Assert.assertEquals(d.isSatisfied(i), SatConstraint.Sat.UNSATISFIED);
-        c.addSleepingVM(vm1, n);
+        c.addSleepingVM(vm1, n1);
         Assert.assertEquals(d.isSatisfied(i), SatConstraint.Sat.UNSATISFIED);
     }
 }

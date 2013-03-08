@@ -19,7 +19,7 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.Utils;
+import btrplace.json.JSONUtils;
 import btrplace.model.constraint.Among;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -47,8 +47,8 @@ public class AmongConverter extends SatConstraintConverter<Among> {
     @Override
     public Among fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Among(Utils.requiredUUIDs(o, "vms"),
-                Utils.requiredSets(o, "nodes"),
+        return new Among(JSONUtils.requiredUUIDs(o, "vms"),
+                JSONUtils.requiredSets(o, "nodes"),
                 (Boolean) o.get("continuous"));
     }
 
@@ -56,10 +56,10 @@ public class AmongConverter extends SatConstraintConverter<Among> {
     public JSONObject toJSON(Among o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", Utils.toJSON(o.getInvolvedVMs()));
+        c.put("vms", JSONUtils.toJSON(o.getInvolvedVMs()));
         JSONArray a = new JSONArray();
         for (Set<UUID> grp : o.getGroupsOfNodes()) {
-            a.add(Utils.toJSON(grp));
+            a.add(JSONUtils.toJSON(grp));
         }
         c.put("nodes", a);
         c.put("continuous", o.isContinuous());

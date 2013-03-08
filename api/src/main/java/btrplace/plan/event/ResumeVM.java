@@ -130,4 +130,9 @@ public class ResumeVM extends Action implements VMStateTransition, RunningVMPlac
     public VMState getNextState() {
         return VMState.running;
     }
+
+    @Override
+    public Object visit(ActionVisitor v) {
+        return v.visit(this);
+    }
 }

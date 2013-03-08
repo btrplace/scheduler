@@ -21,6 +21,7 @@ package btrplace.plan;
 import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
+import btrplace.plan.event.ActionVisitor;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -49,6 +50,11 @@ public class ActionTest {
         public String pretty() {
             return "pretty()";
         }
+
+        @Override
+        public Object visit(ActionVisitor v) {
+            throw new UnsupportedOperationException();
+        }
     }
 
     public static class MockEvent implements Event {
@@ -63,6 +69,11 @@ public class ActionTest {
 
         public String toString() {
             return "event()";
+        }
+
+        @Override
+        public Object visit(ActionVisitor v) {
+            throw new UnsupportedOperationException();
         }
     }
 

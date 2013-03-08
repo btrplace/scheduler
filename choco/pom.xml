@@ -21,9 +21,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-      <groupId>btrplace</groupId>
-      <artifactId>solver</artifactId>
-      <version>0.23</version>
+        <groupId>btrplace</groupId>
+        <artifactId>solver</artifactId>
+        <version>0.24</version>
     </parent>
     <artifactId>solver-choco</artifactId>
     <description>Implementation of a reconfiguration algorithm that use
@@ -35,6 +35,12 @@
             <groupId>btrplace</groupId>
             <artifactId>solver-api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>btrplace</groupId>
+            <artifactId>solver-testMaterial</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>net.sf.trove4j</groupId>

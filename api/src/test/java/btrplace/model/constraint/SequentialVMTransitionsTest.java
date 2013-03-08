@@ -22,6 +22,7 @@ import btrplace.model.*;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.*;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -35,7 +36,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class SequentialVMTransitionsTest extends ConstraintTestMaterial {
+public class SequentialVMTransitionsTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {

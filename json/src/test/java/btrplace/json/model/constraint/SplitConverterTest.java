@@ -20,6 +20,7 @@ package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
 import btrplace.model.constraint.Split;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -33,7 +34,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class SplitConverterTest implements ConstraintTestMaterial {
+public class SplitConverterTest implements PremadeElements {
 
     private static SplitConverter conv = new SplitConverter();
 

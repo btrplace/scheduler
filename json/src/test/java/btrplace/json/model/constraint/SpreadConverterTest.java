@@ -20,6 +20,7 @@ package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
 import btrplace.model.constraint.Spread;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -32,7 +33,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class SpreadConverterTest implements ConstraintTestMaterial {
+public class SpreadConverterTest implements PremadeElements {
 
     private static SpreadConverter conv = new SpreadConverter();
 

@@ -41,7 +41,7 @@ public class AllocateEvent implements VMEvent {
     /**
      * Make a new event.
      *
-     * @param vmId     the VM that is subject to the resource allocation
+     * @param vmId   the VM that is subject to the resource allocation
      * @param rcId   the resource identifier
      * @param amount the amount of resources to allocate
      */
@@ -114,5 +114,10 @@ public class AllocateEvent implements VMEvent {
         res = res * 31 + rc.hashCode();
         res = res * 31 + vm.hashCode();
         return res;
+    }
+
+    @Override
+    public Object visit(ActionVisitor v) {
+        return v.visit(this);
     }
 }

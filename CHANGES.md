@@ -1,6 +1,12 @@
 Release notes
 ======================
 
+version 0.24 - 08 Mar 2013
+----------------------
+- JSON conversion for plans
+- improve performance
+- re-organize the code to provide a module dedicated to test helpers
+
 version 0.23 - 28 Feb 2013
 ----------------------
 - code refactoring for the JSON parser

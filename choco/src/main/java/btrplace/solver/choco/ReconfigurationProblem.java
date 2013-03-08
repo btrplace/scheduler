@@ -304,10 +304,8 @@ public interface ReconfigurationProblem {
 
     /**
      * Get the VMs managed by the solver.
-     * This set contains the VMs that are already running and must keep running.
-     * It equals the set passed to the constructor.
-     * Only the VM in this set will be considered for potentially relocatable by the solver.
-     * The others will necessarily stay on their current hosting node.
+     * This set contains all the VMs that will have their state changed
+     * plus the set of manageable running VMs that was passed to the constructor.
      *
      * @return a set of VMs identifier
      */
