@@ -19,7 +19,7 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.Utils;
+import btrplace.json.JSONUtils;
 import btrplace.model.constraint.SingleResourceCapacity;
 import net.minidev.json.JSONObject;
 
@@ -43,17 +43,17 @@ public class SingleResourceCapacityConverter extends SatConstraintConverter<Sing
     @Override
     public SingleResourceCapacity fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new SingleResourceCapacity(Utils.requiredUUIDs(o, "nodes"),
-                Utils.requiredString(o, "rcId"),
-                (int) Utils.requiredLong(o, "amount"),
-                Utils.requiredBoolean(o, "continuous"));
+        return new SingleResourceCapacity(JSONUtils.requiredUUIDs(o, "nodes"),
+                JSONUtils.requiredString(o, "rcId"),
+                (int) JSONUtils.requiredLong(o, "amount"),
+                JSONUtils.requiredBoolean(o, "continuous"));
     }
 
     @Override
     public JSONObject toJSON(SingleResourceCapacity o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("nodes", Utils.toJSON(o.getInvolvedNodes()));
+        c.put("nodes", JSONUtils.toJSON(o.getInvolvedNodes()));
         c.put("rcId", o.getResource());
         c.put("amount", (long) o.getAmount());
         c.put("continuous", o.isContinuous());

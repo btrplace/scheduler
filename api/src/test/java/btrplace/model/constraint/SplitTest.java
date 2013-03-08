@@ -24,6 +24,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
 import btrplace.plan.event.ShutdownVM;
 import btrplace.plan.event.SuspendVM;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -34,7 +35,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class SplitTest extends ConstraintTestMaterial {
+public class SplitTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
@@ -67,7 +68,7 @@ public class SplitTest extends ConstraintTestMaterial {
         Assert.assertTrue(new Split(args).equals(sp));
         Assert.assertEquals(new Split(args).hashCode(), sp.hashCode());
         List<Set<UUID>> args2 = new ArrayList<Set<UUID>>(args);
-        args2.add(Collections.singleton(UUID.randomUUID()));
+        args2.add(Collections.singleton(vm3));
         Assert.assertFalse(new Split(args2).equals(sp));
     }
 

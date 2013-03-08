@@ -42,7 +42,7 @@ public class SolvingStatistics {
     /**
      * The total number of opened nodes.
      */
-    private int nbNodes;
+    private int nbSearchNodes;
 
     /**
      * The total number of backtracks.
@@ -54,7 +54,17 @@ public class SolvingStatistics {
      */
     private boolean timeout;
 
+    private int nbVMs;
+
+    private int nbNodes;
+
+    private boolean doOptimize;
+
+    private int maxDuration;
+
     private Set<SolutionStatistics> solutions;
+
+    private int nbConstraints;
 
     /**
      * Compare the solution by their moment. If equal, the number of nodes then the number of backtracks.
@@ -76,19 +86,38 @@ public class SolvingStatistics {
     /**
      * Make new statistics.
      *
-     * @param managedVMs the number of VMs managed by the algorithm.
-     * @param t          the moment in milliseconds
-     * @param nbN        the number of opened nodes at the moment
-     * @param nbB        the number of backtracks at the moment
-     * @param to         {@code true} to indicate the solver hit a timeout
+     * @param nbNodes       the number of nodes in the model
+     * @param nbVMs         the number of VMs in the model
+     * @param nbConstraints the number of constraints
+     * @param doOptimize    {@code true} to indicate the solver tried to improve the computed solution
+     * @param timeout       the timeout value for the solver in seconds
+     * @param managedVMs    the number of VMs managed by the algorithm.
+     * @param t             the solving duration in milliseconds
+     * @param nbN           the number of opened nodes at the moment
+     * @param nbB           the number of backtracks at the moment
+     * @param to            {@code true} to indicate the solver hit a timeout
      */
-    public SolvingStatistics(int managedVMs, int t, int nbN, int nbB, boolean to) {
-        this.nbManagedVMs = managedVMs;
+    public SolvingStatistics(int nbNodes, int nbVMs, int nbConstraints, boolean doOptimize, int timeout, int managedVMs, int t, int nbN, int nbB, boolean to) {
+        nbManagedVMs = managedVMs;
+        this.nbNodes = nbNodes;
+        this.nbVMs = nbVMs;
+        this.nbConstraints = nbConstraints;
         time = t;
-        nbNodes = nbN;
+        nbSearchNodes = nbN;
         nbBacktracks = nbB;
-        timeout = to;
+        this.maxDuration = timeout;
+        this.timeout = to;
+        this.doOptimize = doOptimize;
         solutions = new TreeSet<SolutionStatistics>(solutionsCmp);
+    }
+
+    /**
+     * Get the number of constraints to satisfy
+     *
+     * @return a positive number
+     */
+    public int getNbConstraints() {
+        return nbConstraints;
     }
 
     /**
@@ -96,17 +125,18 @@ public class SolvingStatistics {
      *
      * @return a duration in milliseconds
      */
-    public int getTime() {
+    public int getSolvingDuration() {
         return time;
     }
+
 
     /**
      * Get the number of opened nodes.
      *
      * @return a positive number
      */
-    public int getNbNodes() {
-        return nbNodes;
+    public int getNbSearchNodes() {
+        return nbSearchNodes;
     }
 
     /**
@@ -146,6 +176,42 @@ public class SolvingStatistics {
     }
 
     /**
+     * Get the number of VMs in the model.
+     *
+     * @return a positive integer
+     */
+    public int getNbVMs() {
+        return nbVMs;
+    }
+
+    /**
+     * Get the number of nodes in the model.
+     *
+     * @return a positive integer
+     */
+    public int getNbNodes() {
+        return nbNodes;
+    }
+
+    /**
+     * Tell if the solver tried to optimize the computed solution.
+     *
+     * @return {@code true} iff the solver was configured for optimization
+     */
+    public boolean doOptimize() {
+        return doOptimize;
+    }
+
+    /**
+     * Get the maximum solving duration.
+     *
+     * @return a duration is seconds. A negative number for no timeout.
+     */
+    public int getTimeout() {
+        return maxDuration;
+    }
+
+    /**
      * Get the number of VMs managed by the algorithm.
      *
      * @return a positive number
@@ -157,23 +223,35 @@ public class SolvingStatistics {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        b.append("After ").append(time).append("ms");
+        b.append(nbNodes).append(" node(s)")
+                .append("; ").append(nbVMs).append(" VM(s)");
+        if (nbManagedVMs != nbVMs) {
+            b.append(" ( ").append(nbManagedVMs).append(" managed)");
+        }
+        b.append("; ").append(nbConstraints).append(" constraint(s)");
+
+        if (doOptimize) {
+            b.append("; optimize");
+        }
+        if (maxDuration > 0) {
+            b.append("; timeout:").append(maxDuration).append("s");
+        }
+        b.append("\nAfter ").append(time).append("ms");
         if (timeout) {
             b.append(" (timeout)");
         } else {
             b.append(" (terminated)");
         }
         b.append(": ")
-                .append(nbManagedVMs).append(" VMs to manage. ")
-                .append(nbNodes).append(" opened search nodes, ")
-                .append(nbBacktracks).append(" backtracks, ")
-                .append(solutions.size()).append(" solutions:\n");
-        int i = 0;
+                .append(nbSearchNodes).append(" opened search node(s), ")
+                .append(nbBacktracks).append(" backtrack(s), ")
+                .append(solutions.size()).append(" solution(s):\n");
+        int i = 1;
         for (SolutionStatistics st : solutions) {
             b.append("\t").append(i).append(")")
                     .append(" at ").append(st.getTime()).append("ms: ")
-                    .append(st.getNbNodes()).append(" nodes, ")
-                    .append(st.getNbBacktracks()).append(" backtracks");
+                    .append(st.getNbNodes()).append(" node(s), ")
+                    .append(st.getNbBacktracks()).append(" backtrack(s)");
             if (st.hasObjective()) {
                 b.append(", obj: ").append(st.getOptValue());
             }

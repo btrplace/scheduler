@@ -25,7 +25,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Allocate;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.*;
-import btrplace.solver.choco.chocoUtil.BinPacking;
+import btrplace.solver.choco.chocoUtil.LightBinPacking;
 import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.ContradictionException;
@@ -100,7 +100,7 @@ public class CShareableResource implements ChocoModelView {
 
         }
         //We create a BP with only the VMs requiring a not null amount of resources
-        s.post(new BinPacking(s.getEnvironment(), virtRcUsage, notNullUsage.toArray(new IntDomainVar[notNullUsage.size()]), hosters.toArray(new IntDomainVar[hosters.size()])));
+        s.post(new LightBinPacking(s.getEnvironment(), virtRcUsage, notNullUsage.toArray(new IntDomainVar[notNullUsage.size()]), hosters.toArray(new IntDomainVar[hosters.size()])));
 
     }
 

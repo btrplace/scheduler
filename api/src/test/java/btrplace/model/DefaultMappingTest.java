@@ -18,6 +18,7 @@
 
 package btrplace.model;
 
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -30,7 +31,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class DefaultMappingTest {
+public class DefaultMappingTest implements PremadeElements {
 
 
     /**
@@ -71,7 +72,6 @@ public class DefaultMappingTest {
     public void testOnlineNode() {
 
         Mapping c = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
 
         c.addOnlineNode(n1);
         //Basic getters for online
@@ -101,7 +101,6 @@ public class DefaultMappingTest {
     public void testOfflineNode() {
         Mapping c = new DefaultMapping();
         //Add an offline node
-        UUID n2 = UUID.randomUUID();
         Assert.assertTrue(c.addOfflineNode(n2));
         Assert.assertEquals(1, c.getAllNodes().size());
         Assert.assertTrue(c.getAllNodes().contains(n2));
@@ -113,7 +112,6 @@ public class DefaultMappingTest {
     @Test(dependsOnMethods = {"testInstantiation", "testRunningVM", "testSleeping", "testOnlineNode", "testOfflineNode"})
     public void testRemoveNode() {
         Mapping c = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
 
         //Remove empty online node
         c.addOnlineNode(n1);
@@ -137,7 +135,6 @@ public class DefaultMappingTest {
         Assert.assertTrue(c.getOnlineNodes().contains(n1));
 
         //Remove a node with a sleeping VM on it. Must fail
-        UUID n2 = UUID.randomUUID();
         c.addOnlineNode(n2);
         c.addSleepingVM(UUID.randomUUID(), n2);
         Assert.assertFalse(c.removeNode(n2));
@@ -153,44 +150,36 @@ public class DefaultMappingTest {
     @Test(dependsOnMethods = {"testOfflineNode", "testOnlineNode"})
     public void testRunningVM() {
         Mapping c = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-
-        UUID vm = UUID.randomUUID();
         c.addOnlineNode(n1);
         c.addOfflineNode(n2);
 
-        Assert.assertTrue(c.addRunningVM(vm, n1));
-        Assert.assertTrue(c.getRunningVMs().size() == 1 && c.getRunningVMs().contains(vm));
-        Assert.assertTrue(c.getRunningVMs(n1).size() == 1 && c.getRunningVMs(n1).contains(vm));
-        Assert.assertTrue(c.getAllVMs().size() == 1 && c.getAllVMs().contains(vm));
+        Assert.assertTrue(c.addRunningVM(vm1, n1));
+        Assert.assertTrue(c.getRunningVMs().size() == 1 && c.getRunningVMs().contains(vm1));
+        Assert.assertTrue(c.getRunningVMs(n1).size() == 1 && c.getRunningVMs(n1).contains(vm1));
+        Assert.assertTrue(c.getAllVMs().size() == 1 && c.getAllVMs().contains(vm1));
         Assert.assertTrue(c.getSleepingVMs().isEmpty() && c.getReadyVMs().isEmpty());
-        Assert.assertEquals(c.getVMLocation(vm), n1);
+        Assert.assertEquals(c.getVMLocation(vm1), n1);
 
         Assert.assertFalse(c.addRunningVM(UUID.randomUUID(), n2));
         Assert.assertEquals(1, c.getAllVMs().size());
 
-        Assert.assertFalse(c.addRunningVM(vm, UUID.randomUUID()));
+        Assert.assertFalse(c.addRunningVM(vm1, UUID.randomUUID()));
         Assert.assertEquals(1, c.getAllVMs().size());
 
-        Assert.assertTrue(c.removeVM(vm));
+        Assert.assertTrue(c.removeVM(vm1));
         Assert.assertTrue(c.getAllVMs().isEmpty());
 
-        UUID n3 = UUID.randomUUID();
         c.addOnlineNode(n3);
-        UUID v2 = UUID.randomUUID();
-        UUID v3 = UUID.randomUUID();
-        UUID n4 = UUID.randomUUID();
         c.addOnlineNode(n4);
-        c.addRunningVM(v2, n1);
-        c.addRunningVM(v3, n4);
-        c.addRunningVM(vm, n3);
+        c.addRunningVM(vm2, n1);
+        c.addRunningVM(vm3, n4);
+        c.addRunningVM(vm1, n3);
 
         Set<UUID> nodes = new HashSet<UUID>();
         nodes.add(n1);
         nodes.add(n3);
         Set<UUID> on = c.getRunningVMs(nodes);
-        Assert.assertTrue(on.size() == 2 && on.contains(vm) && on.contains(v2));
+        Assert.assertTrue(on.size() == 2 && on.contains(vm1) && on.contains(vm2));
     }
 
     /**
@@ -199,27 +188,23 @@ public class DefaultMappingTest {
     @Test(dependsOnMethods = {"testOfflineNode", "testOnlineNode"})
     public void testSleeping() {
         Mapping c = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-
-        UUID vm = UUID.randomUUID();
         c.addOnlineNode(n1);
         c.addOfflineNode(n2);
 
-        Assert.assertTrue(c.addSleepingVM(vm, n1));
-        Assert.assertTrue(c.getSleepingVMs().size() == 1 && c.getSleepingVMs().contains(vm));
-        Assert.assertTrue(c.getSleepingVMs(n1).size() == 1 && c.getSleepingVMs(n1).contains(vm));
-        Assert.assertTrue(c.getAllVMs().size() == 1 && c.getAllVMs().contains(vm));
+        Assert.assertTrue(c.addSleepingVM(vm1, n1));
+        Assert.assertTrue(c.getSleepingVMs().size() == 1 && c.getSleepingVMs().contains(vm1));
+        Assert.assertTrue(c.getSleepingVMs(n1).size() == 1 && c.getSleepingVMs(n1).contains(vm1));
+        Assert.assertTrue(c.getAllVMs().size() == 1 && c.getAllVMs().contains(vm1));
         Assert.assertTrue(c.getRunningVMs().isEmpty() && c.getReadyVMs().isEmpty());
-        Assert.assertEquals(c.getVMLocation(vm), n1);
+        Assert.assertEquals(c.getVMLocation(vm1), n1);
 
         Assert.assertFalse(c.addSleepingVM(UUID.randomUUID(), n2));
         Assert.assertEquals(1, c.getAllVMs().size());
 
-        Assert.assertFalse(c.addSleepingVM(vm, UUID.randomUUID()));
+        Assert.assertFalse(c.addSleepingVM(vm1, UUID.randomUUID()));
         Assert.assertEquals(1, c.getAllVMs().size());
 
-        Assert.assertTrue(c.removeVM(vm));
+        Assert.assertTrue(c.removeVM(vm1));
         Assert.assertTrue(c.getAllVMs().isEmpty());
 
     }
@@ -230,15 +215,13 @@ public class DefaultMappingTest {
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testWaiting() {
         Mapping c = new DefaultMapping();
-        UUID vm = UUID.randomUUID();
-
-        c.addReadyVM(vm);
-        Assert.assertTrue(c.getAllVMs().size() == 1 && c.getAllVMs().contains(vm));
-        Assert.assertTrue(c.getReadyVMs().size() == 1 && c.getReadyVMs().contains(vm));
+        c.addReadyVM(vm1);
+        Assert.assertTrue(c.getAllVMs().size() == 1 && c.getAllVMs().contains(vm1));
+        Assert.assertTrue(c.getReadyVMs().size() == 1 && c.getReadyVMs().contains(vm1));
         Assert.assertTrue(c.getRunningVMs().isEmpty() && c.getSleepingVMs().isEmpty());
-        Assert.assertEquals(c.getVMLocation(vm), null);
+        Assert.assertEquals(c.getVMLocation(vm1), null);
 
-        Assert.assertTrue(c.removeVM(vm));
+        Assert.assertTrue(c.removeVM(vm1));
         Assert.assertTrue(c.getAllVMs().isEmpty());
     }
 
@@ -246,7 +229,6 @@ public class DefaultMappingTest {
     public void testSwitchNodeState() {
         Mapping c = new DefaultMapping();
 
-        UUID n1 = UUID.randomUUID();
 
         //Set online then offline then online. Everything is ok
         c.addOnlineNode(n1);
@@ -256,17 +238,16 @@ public class DefaultMappingTest {
         Assert.assertTrue(c.getAllNodes().size() == 1 && c.getOnlineNodes().contains(n1) && c.getOfflineNodes().isEmpty());
 
         //A VM is running on the node, no way it can be turned off
-        c.addRunningVM(UUID.randomUUID(), n1);
+        c.addRunningVM(vm1, n1);
         Assert.assertFalse(c.addOfflineNode(n1));
         Assert.assertTrue(c.getAllNodes().size() == 1 && c.getOnlineNodes().contains(n1) && c.getOfflineNodes().isEmpty());
 
 
         //The same but with a sleeping VM
-        UUID n2 = UUID.randomUUID();
         c.addOnlineNode(n2);
-        c.addSleepingVM(UUID.randomUUID(), n2);
+        c.addSleepingVM(vm1, n2);
 
-        Assert.assertFalse(c.addOfflineNode(n1));
+        Assert.assertFalse(c.addOfflineNode(n2));
         Assert.assertTrue(c.getAllNodes().size() == 2 && c.getOnlineNodes().contains(n2) && c.getOfflineNodes().isEmpty());
 
     }
@@ -275,125 +256,115 @@ public class DefaultMappingTest {
     @Test(dependsOnMethods = {"testInstantiation", "testRunningVM"})
     public void testReplaceRunningVM() {
         Mapping c = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        UUID n3 = UUID.randomUUID();
-        UUID vm = UUID.randomUUID();
         c.addOnlineNode(n1);
         c.addOnlineNode(n2);
         c.addOfflineNode(n3);
 
-        c.addRunningVM(vm, n1);
+        c.addRunningVM(vm1, n1);
         //Replace a running VM to another place
-        Assert.assertTrue(c.addRunningVM(vm, n2));
+        Assert.assertTrue(c.addRunningVM(vm1, n2));
         Assert.assertEquals(1, c.getAllVMs().size());
-        Assert.assertTrue(c.getRunningVMs(n1).isEmpty() && c.getRunningVMs(n2).size() == 1 && c.getVMLocation(vm) == n2);
+        Assert.assertTrue(c.getRunningVMs(n1).isEmpty() && c.getRunningVMs(n2).size() == 1 && c.getVMLocation(vm1) == n2);
 
         //Yep, unable to replace as the node is offline
-        Assert.assertFalse(c.addRunningVM(vm, n3));
-        Assert.assertTrue(c.addRunningVM(vm, n2));
+        Assert.assertFalse(c.addRunningVM(vm1, n3));
+        Assert.assertTrue(c.addRunningVM(vm1, n2));
         Assert.assertEquals(1, c.getAllVMs().size());
-        Assert.assertTrue(c.getRunningVMs(n1).isEmpty() && c.getRunningVMs(n2).size() == 1 && c.getVMLocation(vm) == n2);
+        Assert.assertTrue(c.getRunningVMs(n1).isEmpty() && c.getRunningVMs(n2).size() == 1 && c.getVMLocation(vm1) == n2);
 
         //From running to sleeping state
         //Stay on the same node but the state change
-        Assert.assertTrue(c.addSleepingVM(vm, n2));
+        Assert.assertTrue(c.addSleepingVM(vm1, n2));
         Assert.assertEquals(1, c.getAllVMs().size());
-        Assert.assertTrue(c.getRunningVMs(n2).isEmpty() && c.getSleepingVMs(n2).size() == 1 && c.getVMLocation(vm) == n2);
+        Assert.assertTrue(c.getRunningVMs(n2).isEmpty() && c.getSleepingVMs(n2).size() == 1 && c.getVMLocation(vm1) == n2);
 
         //On a new node
-        Assert.assertTrue(c.removeVM(vm));
-        c.addRunningVM(vm, n1);
-        Assert.assertTrue(c.addSleepingVM(vm, n2));
+        Assert.assertTrue(c.removeVM(vm1));
+        c.addRunningVM(vm1, n1);
+        Assert.assertTrue(c.addSleepingVM(vm1, n2));
         Assert.assertEquals(1, c.getAllVMs().size());
-        Assert.assertTrue(c.getRunningVMs(n2).isEmpty() && c.getSleepingVMs(n2).size() == 1 && c.getVMLocation(vm) == n2);
+        Assert.assertTrue(c.getRunningVMs(n2).isEmpty() && c.getSleepingVMs(n2).size() == 1 && c.getVMLocation(vm1) == n2);
 
         //From running to waiting state
-        c.removeVM(vm);
-        c.addRunningVM(vm, n2);
-        c.addReadyVM(vm);
+        c.removeVM(vm1);
+        c.addRunningVM(vm1, n2);
+        c.addReadyVM(vm1);
         Assert.assertEquals(1, c.getAllVMs().size());
-        Assert.assertTrue(c.getRunningVMs(n2).isEmpty() && c.getVMLocation(vm) == null && c.getReadyVMs().contains(vm));
+        Assert.assertTrue(c.getRunningVMs(n2).isEmpty() && c.getVMLocation(vm1) == null && c.getReadyVMs().contains(vm1));
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testSleeping"})
     public void testReplaceSleepingVM() {
         Mapping c = new DefaultMapping();
 
-        UUID n1 = UUID.randomUUID();
-        UUID vm = UUID.randomUUID();
-
         c.addOnlineNode(n1);
-        c.addSleepingVM(vm, n1);
+        c.addSleepingVM(vm1, n1);
 
         //To run to the same node
-        Assert.assertTrue(c.addRunningVM(vm, n1));
+        Assert.assertTrue(c.addRunningVM(vm1, n1));
         Assert.assertEquals(c.getAllVMs().size(), 1);
         Assert.assertEquals(c.getRunningVMs().size(), 1);
         Assert.assertTrue(c.getSleepingVMs().isEmpty());
-        Assert.assertEquals(c.getVMLocation(vm), n1);
+        Assert.assertEquals(c.getVMLocation(vm1), n1);
 
         //Run on another node
-        c.removeVM(vm);
-        c.addSleepingVM(vm, n1);
-        UUID n2 = UUID.randomUUID();
+        c.removeVM(vm1);
+        c.addSleepingVM(vm1, n1);
         c.addOnlineNode(n2);
-        Assert.assertTrue(c.addRunningVM(vm, n2));
+        Assert.assertTrue(c.addRunningVM(vm1, n2));
         Assert.assertEquals(c.getAllVMs().size(), 1);
         Assert.assertEquals(c.getRunningVMs().size(), 1);
         Assert.assertTrue(c.getSleepingVMs().isEmpty());
-        Assert.assertEquals(c.getVMLocation(vm), n2);
+        Assert.assertEquals(c.getVMLocation(vm1), n2);
 
         //Sleep somewhere else
         c.clear();
         c.addOnlineNode(n1);
         c.addOnlineNode(n2);
-        c.removeVM(vm);
-        c.addSleepingVM(vm, n1);
-        Assert.assertTrue(c.addSleepingVM(vm, n2));
+        c.removeVM(vm1);
+        c.addSleepingVM(vm1, n1);
+        Assert.assertTrue(c.addSleepingVM(vm1, n2));
         Assert.assertEquals(c.getAllVMs().size(), 1);
         Assert.assertTrue(c.getSleepingVMs(n1).isEmpty());
-        Assert.assertTrue(c.getSleepingVMs(n2).contains(vm));
-        Assert.assertTrue(c.getSleepingVMs().contains(vm));
-        Assert.assertEquals(c.getVMLocation(vm), n2);
+        Assert.assertTrue(c.getSleepingVMs(n2).contains(vm1));
+        Assert.assertTrue(c.getSleepingVMs().contains(vm1));
+        Assert.assertEquals(c.getVMLocation(vm1), n2);
 
 
         //Go waiting
         c.clear();
         c.addOnlineNode(n1);
-        c.addSleepingVM(vm, n1);
-        c.addReadyVM(vm);
+        c.addSleepingVM(vm1, n1);
+        c.addReadyVM(vm1);
         Assert.assertEquals(1, c.getAllVMs().size());
         Assert.assertEquals(1, c.getReadyVMs().size());
-        Assert.assertTrue(c.getAllVMs().contains(vm));
+        Assert.assertTrue(c.getAllVMs().contains(vm1));
         Assert.assertTrue(c.getSleepingVMs(n1).isEmpty());
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testClear", "testWaiting", "testRunningVM", "testSleeping"})
     public void testReplaceWaitingVM() {
         Mapping c = new DefaultMapping();
-        UUID vm = UUID.randomUUID();
-        c.addReadyVM(vm);
-        UUID n = UUID.randomUUID();
-        c.addOnlineNode(n);
+        c.addReadyVM(vm1);
+        c.addOnlineNode(n1);
 
         //Waiting -> run
-        Assert.assertTrue(c.addRunningVM(vm, n));
-        Assert.assertTrue(c.getAllVMs().contains(vm));
+        Assert.assertTrue(c.addRunningVM(vm1, n1));
+        Assert.assertTrue(c.getAllVMs().contains(vm1));
         Assert.assertEquals(1, c.getAllVMs().size());
-        Assert.assertEquals(1, c.getRunningVMs(n).size());
-        Assert.assertTrue(c.getRunningVMs(n).contains(vm));
+        Assert.assertEquals(1, c.getRunningVMs(n1).size());
+        Assert.assertTrue(c.getRunningVMs(n1).contains(vm1));
         Assert.assertTrue(c.getReadyVMs().isEmpty());
 
         //Waiting -> sleeping
         c.clear();
-        c.addOnlineNode(n);
-        c.addReadyVM(vm);
-        Assert.assertTrue(c.addSleepingVM(vm, n));
-        Assert.assertTrue(c.getAllVMs().contains(vm));
+        c.addOnlineNode(n1);
+        c.addReadyVM(vm1);
+        Assert.assertTrue(c.addSleepingVM(vm1, n1));
+        Assert.assertTrue(c.getAllVMs().contains(vm1));
         Assert.assertEquals(1, c.getAllVMs().size());
-        Assert.assertEquals(1, c.getSleepingVMs(n).size());
-        Assert.assertTrue(c.getSleepingVMs(n).contains(vm));
+        Assert.assertEquals(1, c.getSleepingVMs(n1).size());
+        Assert.assertTrue(c.getSleepingVMs(n1).contains(vm1));
         Assert.assertTrue(c.getReadyVMs().isEmpty());
 
 
@@ -403,41 +374,27 @@ public class DefaultMappingTest {
     public void testToString() {
         Mapping c = new DefaultMapping();
 
-        UUID n3 = UUID.randomUUID();
-        UUID n4 = UUID.randomUUID();
-
-        UUID n1 = UUID.randomUUID();
         c.addOnlineNode(n1);
-        c.addRunningVM(UUID.randomUUID(), n1);
-        c.addRunningVM(UUID.randomUUID(), n1);
-        c.addSleepingVM(UUID.randomUUID(), n1);
+        c.addRunningVM(vm1, n1);
+        c.addRunningVM(vm2, n1);
+        c.addSleepingVM(vm3, n1);
 
-        UUID n2 = UUID.randomUUID();
         c.addOnlineNode(n2);
-        c.addSleepingVM(UUID.randomUUID(), n2);
-        c.addSleepingVM(UUID.randomUUID(), n2);
+        c.addSleepingVM(vm4, n2);
+        c.addSleepingVM(vm5, n2);
 
         c.addOnlineNode(n3);
 
         c.addOfflineNode(n4);
 
-        c.addReadyVM(UUID.randomUUID());
-        c.addReadyVM(UUID.randomUUID());
+        c.addReadyVM(vm6);
+        c.addReadyVM(vm7);
         Assert.assertNotNull(c.toString());
     }
 
     @Test
     public void testClone() {
         Mapping c1 = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        UUID n3 = UUID.randomUUID();
-
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
-        UUID vm4 = UUID.randomUUID();
-        UUID vm5 = UUID.randomUUID();
 
         c1.addOnlineNode(n1);
         c1.addOnlineNode(n2);
@@ -452,12 +409,11 @@ public class DefaultMappingTest {
 
         Assert.assertEquals(c1, c2);
 
-        UUID lastVM = UUID.randomUUID();
-        c1.addReadyVM(lastVM);
+        c1.addReadyVM(vm10);
         Assert.assertFalse(c1.equals(c2));
         Assert.assertFalse(c2.equals(c1));
 
-        c1.removeVM(lastVM);
+        c1.removeVM(vm10);
         Assert.assertEquals(c1, c2);
 
     }
@@ -465,15 +421,6 @@ public class DefaultMappingTest {
     @Test(dependsOnMethods = {"testClone"})
     public void testEquals() {
         Mapping c1 = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        UUID n3 = UUID.randomUUID();
-
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
-        UUID vm4 = UUID.randomUUID();
-        UUID vm5 = UUID.randomUUID();
 
         c1.addOnlineNode(n1);
         c1.addOnlineNode(n2);
@@ -513,13 +460,12 @@ public class DefaultMappingTest {
     @Test(dependsOnMethods = {"testInstantiation", "testOnlineNode", "testOfflineNode", "testRunningVM", "testWaiting", "testSleeping"})
     public void testClear() {
         Mapping c = new DefaultMapping();
-        c.addOfflineNode(UUID.randomUUID());
-        UUID n = UUID.randomUUID();
-        c.addOnlineNode(n);
-        c.addRunningVM(UUID.randomUUID(), n);
-        c.addRunningVM(UUID.randomUUID(), n);
-        c.addSleepingVM(UUID.randomUUID(), n);
-        c.addReadyVM(UUID.randomUUID());
+        c.addOfflineNode(n2);
+        c.addOnlineNode(n1);
+        c.addRunningVM(vm1, n1);
+        c.addRunningVM(vm2, n1);
+        c.addSleepingVM(vm3, n1);
+        c.addReadyVM(vm4);
 
         c.clear();
         Assert.assertTrue(c.getAllNodes().isEmpty());
@@ -529,20 +475,19 @@ public class DefaultMappingTest {
         Assert.assertTrue(c.getReadyVMs().isEmpty());
         Assert.assertTrue(c.getOnlineNodes().isEmpty());
         Assert.assertTrue(c.getOfflineNodes().isEmpty());
-        Assert.assertTrue(c.getRunningVMs(n).isEmpty());
-        Assert.assertTrue(c.getSleepingVMs(n).isEmpty());
+        Assert.assertTrue(c.getRunningVMs(n1).isEmpty());
+        Assert.assertTrue(c.getSleepingVMs(n1).isEmpty());
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testOnlineNode", "testOfflineNode", "testRunningVM", "testWaiting", "testSleeping"})
     public void testClearAllVMs() {
         Mapping c = new DefaultMapping();
-        c.addOfflineNode(UUID.randomUUID());
-        UUID n = UUID.randomUUID();
-        c.addOnlineNode(n);
-        c.addRunningVM(UUID.randomUUID(), n);
-        c.addRunningVM(UUID.randomUUID(), n);
-        c.addSleepingVM(UUID.randomUUID(), n);
-        c.addReadyVM(UUID.randomUUID());
+        c.addOfflineNode(n1);
+        c.addOnlineNode(n2);
+        c.addRunningVM(vm1, n2);
+        c.addRunningVM(vm2, n2);
+        c.addSleepingVM(vm3, n2);
+        c.addReadyVM(vm4);
 
         c.clearAllVMs();
         Assert.assertEquals(c.getAllNodes().size(), 2);
@@ -552,22 +497,20 @@ public class DefaultMappingTest {
         Assert.assertTrue(c.getReadyVMs().isEmpty());
         Assert.assertEquals(c.getOnlineNodes().size(), 1);
         Assert.assertEquals(c.getOfflineNodes().size(), 1);
-        Assert.assertTrue(c.getRunningVMs(n).isEmpty());
-        Assert.assertTrue(c.getSleepingVMs(n).isEmpty());
+        Assert.assertTrue(c.getRunningVMs(n2).isEmpty());
+        Assert.assertTrue(c.getSleepingVMs(n2).isEmpty());
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testClearNode() {
         Mapping c = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
         c.addOnlineNode(n1);
         c.addOnlineNode(n2);
-        c.addRunningVM(UUID.randomUUID(), n1);
-        c.addRunningVM(UUID.randomUUID(), n2);
-        c.addSleepingVM(UUID.randomUUID(), n1);
-        c.addSleepingVM(UUID.randomUUID(), n2);
-        c.addReadyVM(UUID.randomUUID());
+        c.addRunningVM(vm1, n1);
+        c.addRunningVM(vm2, n2);
+        c.addSleepingVM(vm3, n1);
+        c.addSleepingVM(vm4, n2);
+        c.addReadyVM(vm5);
         c.clearNode(n1);
         Assert.assertEquals(3, c.getAllVMs().size());
         Assert.assertTrue(c.getRunningVMs(n1).isEmpty());

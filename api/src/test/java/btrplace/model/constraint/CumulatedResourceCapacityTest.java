@@ -24,6 +24,7 @@ import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Allocate;
 import btrplace.plan.event.MigrateVM;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -37,7 +38,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class CumulatedResourceCapacityTest extends ConstraintTestMaterial {
+public class CumulatedResourceCapacityTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {

@@ -19,7 +19,7 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.Utils;
+import btrplace.json.JSONUtils;
 import btrplace.model.constraint.Online;
 import net.minidev.json.JSONObject;
 
@@ -45,14 +45,14 @@ public class OnlineConverter extends SatConstraintConverter<Online> {
     @Override
     public Online fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Online(Utils.requiredUUIDs(o, "nodes"));
+        return new Online(JSONUtils.requiredUUIDs(o, "nodes"));
     }
 
     @Override
     public JSONObject toJSON(Online o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("nodes", Utils.toJSON(o.getInvolvedNodes()));
+        c.put("nodes", JSONUtils.toJSON(o.getInvolvedNodes()));
         return c;
     }
 }

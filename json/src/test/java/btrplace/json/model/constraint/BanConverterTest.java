@@ -20,6 +20,7 @@ package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
 import btrplace.model.constraint.Ban;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -32,7 +33,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class BanConverterTest implements ConstraintTestMaterial {
+public class BanConverterTest implements PremadeElements {
 
     private static BanConverter conv = new BanConverter();
 

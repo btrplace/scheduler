@@ -134,4 +134,9 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
                 .append(", to=").append(dst)
                 .append(')').toString();
     }
+
+    @Override
+    public Object visit(ActionVisitor v) {
+        return v.visit(this);
+    }
 }

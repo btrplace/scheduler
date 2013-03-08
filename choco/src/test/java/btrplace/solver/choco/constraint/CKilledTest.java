@@ -23,6 +23,7 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.constraint.Killed;
 import btrplace.solver.choco.MappingBuilder;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -34,7 +35,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class CKilledTest extends ConstraintTestMaterial {
+public class CKilledTest implements PremadeElements {
 
     @Test
     public void testGetMisplaced() {

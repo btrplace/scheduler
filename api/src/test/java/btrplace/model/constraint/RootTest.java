@@ -22,6 +22,7 @@ import btrplace.model.*;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -32,7 +33,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class RootTest extends ConstraintTestMaterial {
+public class RootTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {

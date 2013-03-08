@@ -29,6 +29,7 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.MappingBuilder;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -39,7 +40,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class CSplitTest extends ConstraintTestMaterial {
+public class CSplitTest implements PremadeElements {
 
     private static Set<UUID> g1 = new HashSet<UUID>(Arrays.asList(vm1, vm2));
     private static Set<UUID> g2 = new HashSet<UUID>(Arrays.asList(vm3, vm4, vm5));

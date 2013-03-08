@@ -16,27 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.json;
-
-import junit.framework.Assert;
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
-import net.minidev.json.parser.ParseException;
-import org.testng.annotations.Test;
-
 /**
- * Unit tests for {@link btrplace.json.Utils}.
- *
- * @author Fabien Hermenier
+ * Converters for a plan and its sub-components.
  */
-public class UtilsTest {
-
-    @Test
-    public void testReadObject() throws ParseException, JSONConverterException {
-        String json = "{\"foo\":\"fooV\",\"bar\":[1,2,3,4,5],\"bool\":false}";
-        JSONObject o = Utils.readObject(json);
-        Assert.assertTrue(o.get("foo") instanceof String);
-        Assert.assertTrue(o.get("bool") instanceof Boolean);
-        Assert.assertTrue(o.get("bar") instanceof JSONArray);
-    }
-}
+package btrplace.json.plan;

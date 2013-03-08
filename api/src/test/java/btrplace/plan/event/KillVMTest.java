@@ -23,25 +23,22 @@ import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.plan.VMStateTransition;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.util.UUID;
 
 /**
  * Unit tests for {@link KillVM}.
  *
  * @author Fabien Hermenier
  */
-public class KillVMTest {
+public class KillVMTest implements PremadeElements {
 
     @Test
     public void testInstantiate() {
-        UUID vm = UUID.randomUUID();
-        UUID n = UUID.randomUUID();
-        KillVM a = new KillVM(vm, n, 3, 5);
-        Assert.assertEquals(vm, a.getVM());
-        Assert.assertEquals(n, a.getNode());
+        KillVM a = new KillVM(vm1, n1, 3, 5);
+        Assert.assertEquals(vm1, a.getVM());
+        Assert.assertEquals(n1, a.getNode());
         Assert.assertEquals(3, a.getStart());
         Assert.assertEquals(5, a.getEnd());
         Assert.assertFalse(a.toString().contains("null"));
@@ -53,36 +50,32 @@ public class KillVMTest {
     public void testApply() {
         Mapping map = new DefaultMapping();
         Model m = new DefaultModel(map);
-        UUID vm = UUID.randomUUID();
-        UUID n = UUID.randomUUID();
-        KillVM a = new KillVM(vm, n, 3, 5);
-        map.addOnlineNode(n);
-        map.addRunningVM(vm, n);
+        KillVM a = new KillVM(vm1, n1, 3, 5);
+        map.addOnlineNode(n1);
+        map.addRunningVM(vm1, n1);
         Assert.assertTrue(a.apply(m));
-        Assert.assertFalse(map.containsVM(vm));
+        Assert.assertFalse(map.containsVM(vm1));
 
         Assert.assertFalse(a.apply(m));
 
-        map.addSleepingVM(vm, n);
+        map.addSleepingVM(vm1, n1);
         Assert.assertTrue(a.apply(m));
 
-        map.addReadyVM(vm);
+        map.addReadyVM(vm1);
         Assert.assertTrue(a.apply(m));
     }
 
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testEquals() {
-        UUID n = UUID.randomUUID();
-        UUID vm = UUID.randomUUID();
-        KillVM a = new KillVM(vm, n, 3, 5);
-        KillVM b = new KillVM(vm, n, 3, 5);
+        KillVM a = new KillVM(vm1, n1, 3, 5);
+        KillVM b = new KillVM(vm1, n1, 3, 5);
         Assert.assertFalse(a.equals(new Object()));
         Assert.assertTrue(a.equals(a));
         Assert.assertEquals(a, b);
         Assert.assertEquals(a.hashCode(), b.hashCode());
-        Assert.assertNotSame(a, new KillVM(vm, n, 4, 5));
-        Assert.assertNotSame(a, new KillVM(vm, n, 3, 4));
-        Assert.assertNotSame(a, new KillVM(vm, UUID.randomUUID(), 3, 5));
-        Assert.assertNotSame(a, new KillVM(UUID.randomUUID(), n, 4, 5));
+        Assert.assertNotSame(a, new KillVM(vm1, n1, 4, 5));
+        Assert.assertNotSame(a, new KillVM(vm1, n1, 3, 4));
+        Assert.assertNotSame(a, new KillVM(vm1, n2, 3, 5));
+        Assert.assertNotSame(a, new KillVM(vm2, n1, 4, 5));
     }
 }

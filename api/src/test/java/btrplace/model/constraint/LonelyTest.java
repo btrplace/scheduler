@@ -23,6 +23,7 @@ import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
 import btrplace.plan.event.ShutdownVM;
+import btrplace.test.PremadeElements;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
@@ -36,7 +37,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class LonelyTest extends ConstraintTestMaterial {
+public class LonelyTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {

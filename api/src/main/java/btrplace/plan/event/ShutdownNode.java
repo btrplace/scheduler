@@ -101,4 +101,9 @@ public class ShutdownNode extends Action implements NodeEvent {
         Mapping map = c.getMapping();
         return (!map.getOfflineNodes().contains(node) && map.addOfflineNode(node));
     }
+
+    @Override
+    public Object visit(ActionVisitor v) {
+        return v.visit(this);
+    }
 }

@@ -32,20 +32,22 @@ public class SolvingStatisticsTest {
 
     @Test
     public void testInstantiate() {
-        SolvingStatistics st = new SolvingStatistics(100, 1, 2, 3, false);
+        SolvingStatistics st = new SolvingStatistics(10, 20, 44, true, 40, 100, 1, 2, 3, false);
+        Assert.assertEquals(st.getNbNodes(), 10);
+        Assert.assertEquals(st.getNbVMs(), 20);
+        Assert.assertEquals(st.getNbConstraints(), 44);
+        Assert.assertEquals(st.doOptimize(), true);
+        Assert.assertEquals(st.getTimeout(), 40);
         Assert.assertEquals(st.getNbManagedVMs(), 100);
-        Assert.assertEquals(1, st.getTime());
-        Assert.assertEquals(2, st.getNbNodes());
-        Assert.assertEquals(3, st.getNbBacktracks());
+        Assert.assertEquals(st.getSolvingDuration(), 1);
+        Assert.assertEquals(st.getNbSearchNodes(), 2);
+        Assert.assertEquals(st.getNbBacktracks(), 3);
         Assert.assertFalse(st.isTimeout());
-        st = new SolvingStatistics(100, 1, 2, 3, true);
-        Assert.assertTrue(st.isTimeout());
-        Assert.assertNotNull(st.toString());
     }
 
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testAddSolution() {
-        SolvingStatistics st = new SolvingStatistics(100, 1, 2, 3, false);
+        SolvingStatistics st = new SolvingStatistics(10, 20, 44, true, 40, 100, 1, 2, 3, false);
         SolutionStatistics s0 = new SolutionStatistics(1, 2, 3, 4);
         SolutionStatistics s1 = new SolutionStatistics(2, 2, 3, 4);
         SolutionStatistics s2 = new SolutionStatistics(2, 3, 4, 3);

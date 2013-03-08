@@ -127,4 +127,9 @@ public class Allocate extends Action implements VMEvent {
         res = res + 31 + node.hashCode();
         return res;
     }
+
+    @Override
+    public Object visit(ActionVisitor v) {
+        return v.visit(this);
+    }
 }

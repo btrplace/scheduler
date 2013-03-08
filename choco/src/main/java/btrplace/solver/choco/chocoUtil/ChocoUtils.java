@@ -27,7 +27,10 @@ import choco.cp.solver.constraints.reified.ReifiedFactory;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.Arrays;
 
 /**
  * Utility class to ease the creation of some constraints on Choco.
@@ -213,5 +216,37 @@ public final class ChocoUtils {
             }
         }
         return new int[]{min, max};
+    }
+
+    /**
+     * Get the next interval of possible contiguous values for an enumerated variable.
+     * @param v the variable to inspect
+     * @param from the initial value to consider.
+     * @return an interval of values
+     */
+    public static int [] getNextContiguousValues(IntDomainVar v, int from) {
+        IntDomain dom = v.getDomain();
+        int ub = dom.getSup();
+        int lb = dom.getNextValue(from - 1); //from - 1 to include the 'from' value if needed
+        int prev = lb;
+        for (int val = dom.getNextValue(lb); val <= ub ; val = dom.getNextValue(val)) {
+            if (val == prev || val == prev + 1) {
+                prev++;
+            } else {
+                //Not contiguous
+                return new int[]{lb, prev};
+            }
+        }
+        return new int[]{lb, ub};
+    }
+
+    public static String prettyContiguous(IntDomainVar v) {
+        int [] zone = getNextContiguousValues(v, v.getInf());
+        StringBuilder buf = new StringBuilder(Arrays.toString(zone));
+        while (zone[1] < v.getSup()) {
+            zone = getNextContiguousValues(v, zone[1] + 1);
+            buf.append(' ').append(Arrays.toString(zone));
+        }
+        return buf.toString();
     }
 }

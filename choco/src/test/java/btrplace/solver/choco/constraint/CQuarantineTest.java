@@ -29,6 +29,7 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.MappingBuilder;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -39,7 +40,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class CQuarantineTest extends ConstraintTestMaterial {
+public class CQuarantineTest implements PremadeElements {
 
     @Test
     public void testWithSatisfiedModel() throws SolverException {

@@ -19,7 +19,7 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.Utils;
+import btrplace.json.JSONUtils;
 import btrplace.model.constraint.CumulatedResourceCapacity;
 import net.minidev.json.JSONObject;
 
@@ -43,17 +43,17 @@ public class CumulatedResourceCapacityConverter extends SatConstraintConverter<C
     @Override
     public CumulatedResourceCapacity fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new CumulatedResourceCapacity(Utils.requiredUUIDs(o, "nodes"),
-                Utils.requiredString(o, "rcId"),
-                (int) Utils.requiredLong(o, "amount"),
-                Utils.requiredBoolean(o, "continuous"));
+        return new CumulatedResourceCapacity(JSONUtils.requiredUUIDs(o, "nodes"),
+                JSONUtils.requiredString(o, "rcId"),
+                (int) JSONUtils.requiredLong(o, "amount"),
+                JSONUtils.requiredBoolean(o, "continuous"));
     }
 
     @Override
     public JSONObject toJSON(CumulatedResourceCapacity o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("nodes", Utils.toJSON(o.getInvolvedNodes()));
+        c.put("nodes", JSONUtils.toJSON(o.getInvolvedNodes()));
         c.put("rcId", o.getResource());
         c.put("amount", (long) o.getAmount());
         c.put("continuous", o.isContinuous());
