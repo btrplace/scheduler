@@ -1,7 +1,7 @@
 Release notes
 ======================
 
-version ???????
+version 0.24 - 08 Mar 2013
 ----------------------
 - JSON conversion for plans
 - improve performance
