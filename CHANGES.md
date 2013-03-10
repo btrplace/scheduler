@@ -1,6 +1,11 @@
 Release notes
 ======================
 
+version ????
+----------------------
+- a 'sample' module to provide the source code of some
+online tutorials
+
 version 0.24 - 08 Mar 2013
 ----------------------
 - JSON conversion for plans

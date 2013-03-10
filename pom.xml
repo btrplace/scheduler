@@ -31,6 +31,7 @@
         <module>api</module>
         <module>bundle</module>
         <module>testMaterial</module>
+        <module>samples</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
