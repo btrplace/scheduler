@@ -1,7 +1,7 @@
 Release notes
 ======================
 
-version ?????????
+version 0.25 - 11 Mar 2013
 ----------------------
 - New release to fit with the website arrival
 - ChocoReconfigurationAlgorithm#setVerbosityLevel to indicate the level of
