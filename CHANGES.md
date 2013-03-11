@@ -3,6 +3,7 @@ Release notes
 
 version ?????????
 ----------------------
+- New release to fit with the website arrival
 - ChocoReconfigurationAlgorithm#setVerbosityLevel to indicate the level of
 verbosity
 
