@@ -153,4 +153,12 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm 
      */
     int getMaxEnd();
 
+    /*
+     * Set the verbosity level of the solver.
+     * At level 0, their is no information about the solving process.
+     * Increasing the level increases the verbosity. The highest level
+     * of verbosity is the level 3.
+     * @param lvl the level of verbosity
+     */
+    void setVerbosity(int lvl);
 }

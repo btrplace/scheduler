@@ -1,6 +1,11 @@
 Release notes
 ======================
 
+version ?????????
+----------------------
+- ChocoReconfigurationAlgorithm#setVerbosityLevel to indicate the level of
+verbosity
+
 version 0.24 - 08 Mar 2013
 ----------------------
 - JSON conversion for plans
