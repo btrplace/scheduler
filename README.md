@@ -30,7 +30,7 @@ Next, just declare the dependency:
 <dependency>
    <groupId>btrplace</groupId>
    <artifactId>solver-bundle</artifactId>
-   <version>0.25</version>
+   <version>0.25-SNAPSHOT</version>
 </dependency>
 ```
 
