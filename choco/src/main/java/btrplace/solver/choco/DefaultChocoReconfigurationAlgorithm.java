@@ -28,6 +28,8 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.constraint.SatConstraintMapper;
 import btrplace.solver.choco.objective.minMTTR.MinMTTR;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.search.measure.IMeasures;
@@ -300,5 +302,24 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     @Override
     public void setViewMapper(ModelViewMapper m) {
         viewMapper = m;
+    }
+
+    @Override
+    public void setVerbosity(int lvl) {
+        if (lvl <= 0) {
+            ChocoLogging.setVerbosity(Verbosity.SILENT);
+            labelVariables(false);
+        } else {
+            if (lvl >= 1) {
+                labelVariables(true);
+                ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+            }
+            if (lvl == 2) {
+                ChocoLogging.setVerbosity(Verbosity.SEARCH);
+                ChocoLogging.setLoggingMaxDepth(Integer.MAX_VALUE);
+            } else {
+                ChocoLogging.setVerbosity(Verbosity.FINEST);
+            }
+        }
     }
 }

@@ -16,13 +16,13 @@ if [ $# -ne 2 ]; then
     exit 1
 fi
 VERSION=$2
-REPO_URL="http://btrp.inria.fr:8080/repos"
-APIDOC_URL="http://btrp.inria.fr:8080/apidocs"
+REPO_URL="http://btrp.inria.fr/repos"
+APIDOC_URL="http://btrp.inria.fr/apidocs"
 
 case $1	in
 
 site)	
-	WWW_HOOK="http://btrp.inria.fr:8080/www/admin/bump_release.php"
+	WWW_HOOK="http://btrp.inria.fr/admin/bump_release.php"
 
 	JSON="{\"version\":\"$VERSION\",\	
 	\"title\":\"solver\",\
