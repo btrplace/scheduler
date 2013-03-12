@@ -82,6 +82,12 @@ perform)
     rm -rf ${APIDOC_ROOT}/${VERSION}
     mv target/site/apidocs ${APIDOC_ROOT}/${VERSION}
 
+    #Symbolic link to the javadoc
+    cd ${APIDOC_ROOT}
+    rm -rf last
+    ln -s ${VERSION} last
+    cd -
+
          
     echo "-- Push the changes and the tags --"
     git checkout develop
