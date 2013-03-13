@@ -72,7 +72,7 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
     public DefaultReconfigurationPlan(Model src) {
         this.src = src;
         this.actions = new TreeSet<Action>(startFirstComparator);
-        this.depsExtractor = new DependenciesExtractor();
+        this.depsExtractor = new DependenciesExtractor(src);
     }
 
     @Override
