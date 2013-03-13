@@ -83,4 +83,13 @@ public interface ReconfigurationPlan extends Iterable<Action> {
      * @return {@code true} iff the actions can be applied
      */
     boolean isApplyable();
+
+    /**
+     * Get the actions that have to be executed before
+     * a given action. Transitive dependencies are ignored.
+     *
+     * @param a the action
+     * @return a set of dependencies that may be empty.
+     */
+    Set<Action> getDirectDependencies(Action a);
 }

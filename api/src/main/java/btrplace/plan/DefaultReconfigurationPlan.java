@@ -36,6 +36,8 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
 
     private Set<Action> actions;
 
+    private DependenciesExtractor depsExtractor;
+
     /**
      * A comparator to sort the actions in the increasing order of their start moment.
      * If they start at the same moment, the action that ends first in considered
@@ -70,6 +72,7 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
     public DefaultReconfigurationPlan(Model src) {
         this.src = src;
         this.actions = new TreeSet<Action>(startFirstComparator);
+        this.depsExtractor = new DependenciesExtractor();
     }
 
     @Override
@@ -79,7 +82,11 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
 
     @Override
     public boolean add(Action a) {
-        return this.actions.add(a);
+        boolean ret = this.actions.add(a);
+        if (ret) {
+            a.visit(depsExtractor);
+        }
+        return ret;
     }
 
     @Override
@@ -158,5 +165,10 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
         int result = src.hashCode();
         result = 31 * result + actions.hashCode();
         return result;
+    }
+
+    @Override
+    public Set<Action> getDirectDependencies(Action a) {
+        return depsExtractor.getDependencies(a);
     }
 }
