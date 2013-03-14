@@ -7,11 +7,13 @@ import btrplace.plan.event.*;
 import java.util.*;
 
 /**
+ * Detect dependencies between actions.
+ *
  * @author Fabien Hermenier
  */
 public class DependenciesExtractor implements ActionVisitor {
 
-    private Map<Action, Set<Action>> deps;
+    private Map<Action, UUID> demandingUUID;
 
     private Map<UUID, Set<Action>> freeings;
 
@@ -25,9 +27,9 @@ public class DependenciesExtractor implements ActionVisitor {
      * @param o the model at the source of the reconfiguration plan
      */
     public DependenciesExtractor(Model o) {
-        deps = new HashMap<Action, Set<Action>>();
         demandings = new HashMap<UUID, Set<Action>>();
         freeings = new HashMap<UUID, Set<Action>>();
+        this.demandingUUID = new HashMap<Action, UUID>();
         origin = o;
     }
 
@@ -80,7 +82,9 @@ public class DependenciesExtractor implements ActionVisitor {
 
     @Override
     public Boolean visit(BootVM a) {
-        return getDemandings(a.getDestinationNode()).add(a);
+        boolean ret = getDemandings(a.getDestinationNode()).add(a);
+        demandingUUID.put(a, a.getDestinationNode());
+        return ret;
     }
 
     @Override
@@ -95,17 +99,23 @@ public class DependenciesExtractor implements ActionVisitor {
 
     @Override
     public Boolean visit(MigrateVM a) {
-        return getFreeings(a.getSourceNode()).add(a) && getDemandings(a.getDestinationNode()).add(a);
+        boolean ret = getFreeings(a.getSourceNode()).add(a) && getDemandings(a.getDestinationNode()).add(a);
+        demandingUUID.put(a, a.getDestinationNode());
+        return ret;
     }
 
     @Override
     public Boolean visit(ResumeVM a) {
-        return getDemandings(a.getDestinationNode()).add(a);
+        boolean ret = getDemandings(a.getDestinationNode()).add(a);
+        demandingUUID.put(a, a.getDestinationNode());
+        return ret;
     }
 
     @Override
     public Boolean visit(ShutdownNode a) {
-        return getDemandings(a.getNode()).add(a);
+        boolean ret = getDemandings(a.getNode()).add(a);
+        demandingUUID.put(a, a.getNode());
+        return ret;
     }
 
     @Override
@@ -119,7 +129,19 @@ public class DependenciesExtractor implements ActionVisitor {
     }
 
     public Set<Action> getDependencies(Action a) {
-        //Get all the freeing actions associated to this one, return those who end before this action.
-        return deps.get(a);
+
+        UUID n = demandingUUID.get(a);
+        if (n == null) {
+            return Collections.emptySet();
+        } else {
+            Set<Action> allActions = getFreeings(n);
+            Set<Action> pre = new HashSet<Action>();
+            for (Action action : allActions) {
+                if (action != a && a.getStart() >= action.getEnd()) {
+                    pre.add(action);
+                }
+            }
+            return pre;
+        }
     }
 }

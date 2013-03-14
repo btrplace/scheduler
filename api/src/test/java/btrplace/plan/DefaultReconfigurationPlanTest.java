@@ -21,12 +21,9 @@ package btrplace.plan;
 import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
-import btrplace.plan.event.ActionVisitor;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.util.UUID;
 
 /**
  * Unit tests for {@link DefaultReconfigurationPlan}.
@@ -71,35 +68,5 @@ public class DefaultReconfigurationPlanTest implements PremadeElements {
         Assert.assertEquals(4, p.getSize());
 
         Assert.assertFalse(p.toString().contains("null"));
-    }
-
-
-    static class MockAction extends Action {
-
-        private UUID e;
-
-        public MockAction(UUID elmt, int st, int ed) {
-            super(st, ed);
-            e = elmt;
-        }
-
-        public boolean equals(Object o) {
-            return o instanceof MockAction && ((MockAction) o).e.equals(e);
-        }
-
-        @Override
-        public boolean applyAction(Model i) {
-            return false;
-        }
-
-        @Override
-        public String pretty() {
-            return "";
-        }
-
-        @Override
-        public Object visit(ActionVisitor v) {
-            throw new UnsupportedOperationException();
-        }
     }
 }

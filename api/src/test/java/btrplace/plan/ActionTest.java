@@ -25,37 +25,14 @@ import btrplace.plan.event.ActionVisitor;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.UUID;
+
 /**
  * Unit tests for {@link Action}.
  *
  * @author Fabien Hermenier
  */
 public class ActionTest {
-
-    public static class MockAction extends Action {
-
-        int count = 0;
-
-        public MockAction(int st, int ed) {
-            super(st, ed);
-        }
-
-        @Override
-        public boolean applyAction(Model i) {
-            count++;
-            return true;
-        }
-
-        @Override
-        public String pretty() {
-            return "pretty()";
-        }
-
-        @Override
-        public Object visit(ActionVisitor v) {
-            throw new UnsupportedOperationException();
-        }
-    }
 
     public static class MockEvent implements Event {
 
@@ -79,7 +56,7 @@ public class ActionTest {
 
     @Test
     public void testBasics() {
-        Action a1 = new MockAction(1, 3);
+        Action a1 = new MockAction(UUID.randomUUID(), 1, 3);
         Assert.assertEquals(1, a1.getStart());
         Assert.assertEquals(3, a1.getEnd());
         Assert.assertTrue(a1.getEvents(Action.Hook.pre).isEmpty());
@@ -88,7 +65,7 @@ public class ActionTest {
 
     @Test
     public void testEvents() {
-        Action a1 = new MockAction(1, 3);
+        Action a1 = new MockAction(UUID.randomUUID(), 1, 3);
         MockEvent n1 = new MockEvent();
         a1.addEvent(Action.Hook.pre, n1);
         Assert.assertEquals(1, a1.getEvents(Action.Hook.pre).size());
@@ -99,7 +76,7 @@ public class ActionTest {
 
     @Test
     public void testApply() {
-        MockAction a1 = new MockAction(1, 3);
+        MockAction a1 = new MockAction(UUID.randomUUID(), 1, 3);
         MockEvent n1 = new MockEvent();
         a1.addEvent(Action.Hook.pre, n1);
         a1.addEvent(Action.Hook.post, n1);

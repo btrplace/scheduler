@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * TODO: Must be thread-safe
+ *
  * @author Fabien Hermenier
  */
 public class DefaultReconfigurationPlanExecutor implements ReconfigurationPlanExecutor {
@@ -75,5 +77,15 @@ public class DefaultReconfigurationPlanExecutor implements ReconfigurationPlanEx
             }
         }
         return true;
+    }
+
+    @Override
+    public Set<Action> getWaitingActions() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isOver() {
+        throw new UnsupportedOperationException();
     }
 }
