@@ -54,7 +54,6 @@ public class DefaultReconfigurationPlanExecutorTest implements PremadeElements {
         Assert.assertEquals(exec.getWaitingActions().size(), 1, exec.getFeasibleActions().toString());
         Assert.assertTrue(exec.getWaitingActions().containsAll(Arrays.asList(a3)), exec.getFeasibleActions().toString());
 
-
         Assert.assertTrue(exec.commit(a4));
         Assert.assertFalse(exec.isOver());
         Assert.assertFalse(exec.commit(a3));
@@ -73,6 +72,41 @@ public class DefaultReconfigurationPlanExecutorTest implements PremadeElements {
         Assert.assertTrue(exec.commit(a3));
         Assert.assertTrue(exec.isOver());
 
-
+        Assert.assertEquals(exec.getCurrentModel(), plan.getResult());
     }
+
+   /* @Test
+    public void testComplex() {
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOnlineNode(n3);
+        map.addOfflineNode(n4);
+
+        map.addRunningVM(vm1, n3);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm3, n2);
+        map.addRunningVM(vm4, n2);
+        BootNode bN4 = new BootNode(n4, 3, 5);
+        MigrateVM mVM1 = new MigrateVM(vm1, n3, n4, 6, 7);
+        Allocate aVM3 = new Allocate(vm3, n2, "cpu", 7,8, 9);
+        MigrateVM mVM2 = new MigrateVM(vm2, n1, n2, 1, 3);
+        MigrateVM mVM4 = new MigrateVM(vm4, n2, n3, 1, 7);
+        ShutdownNode sN1 = new ShutdownNode(n1, 5, 7);
+
+        ShareableResource rc = new ShareableResource("cpu");
+        rc.set(vm3, 3);
+
+        Model mo = new DefaultModel(map);
+        mo.attach(rc);
+        ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
+        plan.add(bN4);
+        plan.add(mVM1);
+        plan.add(aVM3);
+        plan.add(mVM2);
+        plan.add(mVM4);
+        plan.add(sN1);
+
+        Assert.assertTrue(plan.isApplyable());
+    }       */
 }

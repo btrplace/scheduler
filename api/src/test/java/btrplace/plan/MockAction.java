@@ -34,6 +34,7 @@ public class MockAction extends Action {
 
     @Override
     public Object visit(ActionVisitor v) {
-        throw new UnsupportedOperationException();
+        count++;
+        return true;
     }
 }
