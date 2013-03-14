@@ -8,6 +8,7 @@ import java.util.*;
 
 /**
  * Detect dependencies between actions.
+ * Actions are inserted using the {@code #visit(...)} methods.
  *
  * @author Fabien Hermenier
  */
@@ -63,11 +64,11 @@ public class DependenciesExtractor implements ActionVisitor {
         }
         int oldAmount = rc.get(a.getVM());
         if (newAmount > oldAmount) {
-            getDemandings(a.getHost()).add(a);
+            demandingUUID.put(a, a.getHost());
+            return getDemandings(a.getHost()).add(a);
         } else {
-            getFreeings(a.getHost()).add(a);
+            return getFreeings(a.getHost()).add(a);
         }
-        return true;
     }
 
     @Override
@@ -128,8 +129,13 @@ public class DependenciesExtractor implements ActionVisitor {
         return getFreeings(a.getSourceNode()).add(a);
     }
 
+    /**
+     * Get the dependencies for an action.
+     *
+     * @param a the action to check
+     * @return its dependencies, may be empty
+     */
     public Set<Action> getDependencies(Action a) {
-
         UUID n = demandingUUID.get(a);
         if (n == null) {
             return Collections.emptySet();
