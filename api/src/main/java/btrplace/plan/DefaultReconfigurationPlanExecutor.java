@@ -29,7 +29,9 @@ public class DefaultReconfigurationPlanExecutor implements ReconfigurationPlanEx
 
     private Set<Action> feasibleActions;
 
-    private Set<Action> waitingActions;
+    private Set<Action> pendingActions;
+
+    private Set<Action> blockedActions;
 
     /**
      * Make a new executor.
@@ -51,13 +53,13 @@ public class DefaultReconfigurationPlanExecutor implements ReconfigurationPlanEx
         curModel = plan.getOrigin().clone();
         pre = new HashMap<Action, Set<Dependency>>();
         feasibleActions = new HashSet<Action>();
-        waitingActions = new HashSet<Action>();
+        blockedActions = new HashSet<Action>();
         for (Action a : plan) {
             Set<Action> dependencies = plan.getDirectDependencies(a);
             if (dependencies.isEmpty()) {
                 feasibleActions.add(a);
             } else {
-                waitingActions.add(a);
+                blockedActions.add(a);
                 Dependency dep = new Dependency(a, dependencies);
                 for (Action x : dep.getDependencies()) {
                     Set<Dependency> pres = pre.get(x);
@@ -94,12 +96,17 @@ public class DefaultReconfigurationPlanExecutor implements ReconfigurationPlanEx
                 actions.remove(a);
                 if (actions.isEmpty()) {
                     feasibleActions.add(dep.getAction());
-                    waitingActions.remove(dep.getAction());
+                    blockedActions.remove(dep.getAction());
                 }
             }
         }
         assert !deadlock();
         return true;
+    }
+
+    @Override
+    public boolean begin(Action a) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -108,16 +115,16 @@ public class DefaultReconfigurationPlanExecutor implements ReconfigurationPlanEx
      * @return {@code true} iff there is a deadlock
      */
     private boolean deadlock() {
-        return feasibleActions.isEmpty() && !waitingActions.isEmpty();
+        return feasibleActions.isEmpty() && !blockedActions.isEmpty();
     }
 
     @Override
-    public Set<Action> getWaitingActions() {
-        return waitingActions;
+    public Set<Action> getBlockedActions() {
+        return blockedActions;
     }
 
     @Override
     public boolean isOver() {
-        return getWaitingActions().isEmpty() && getFeasibleActions().isEmpty();
+        return getBlockedActions().isEmpty() && getFeasibleActions().isEmpty();
     }
 }

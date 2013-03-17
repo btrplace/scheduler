@@ -15,8 +15,8 @@ import java.util.Set;
 public interface ReconfigurationPlanExecutor {
 
     /**
-     * Get all the feasible actions, i.e. actions having
-     * all of their dependencies met.
+     * Get all the feasible actions that
+     * are not currently pending.
      *
      * @return a set of actions that may be empty.
      */
@@ -46,17 +46,24 @@ public interface ReconfigurationPlanExecutor {
     boolean commit(Action a);
 
     /**
+     * Indicates a given feasible action is started
+     * @param a the action
+     * @return {@code true} iff the acion is allowed to start
+     */
+    boolean begin(Action a);
+
+    /**
      * Get the actions that cannot be executed for the
      * moment due to un-met dependencies.
      *
      * @return a set of actions that may be empty.
      */
-    Set<Action> getWaitingActions();
+    Set<Action> getBlockedActions();
 
     /**
      * Indicate whether a reconfiguration is terminated or not.
      * A reconfiguration is terminated if all the actions in the plan
-     * have been committed. This means {@link #getFeasibleActions()} and {@link #getWaitingActions()}
+     * have been committed. This means {@link #getFeasibleActions()} and {@link #getBlockedActions()}
      * are empty.
      *
      * @return {@code true} iff the reconfiguration is terminated

@@ -4,9 +4,8 @@ import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.plan.event.BootNode;
-import btrplace.plan.event.BootVM;
-import btrplace.plan.event.MigrateVM;
+import btrplace.model.view.ShareableResource;
+import btrplace.plan.event.*;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -51,8 +50,8 @@ public class DefaultReconfigurationPlanExecutorTest implements PremadeElements {
         Assert.assertTrue(exec.getFeasibleActions().containsAll(Arrays.asList(a1, a2, a4)), exec.getFeasibleActions().toString());
         Assert.assertFalse(exec.isOver());
 
-        Assert.assertEquals(exec.getWaitingActions().size(), 1, exec.getFeasibleActions().toString());
-        Assert.assertTrue(exec.getWaitingActions().containsAll(Arrays.asList(a3)), exec.getFeasibleActions().toString());
+        Assert.assertEquals(exec.getBlockedActions().size(), 1, exec.getFeasibleActions().toString());
+        Assert.assertTrue(exec.getBlockedActions().containsAll(Arrays.asList(a3)), exec.getFeasibleActions().toString());
 
         Assert.assertTrue(exec.commit(a4));
         Assert.assertFalse(exec.isOver());
@@ -65,7 +64,7 @@ public class DefaultReconfigurationPlanExecutorTest implements PremadeElements {
         Assert.assertFalse(exec.isOver());
         Assert.assertEquals(exec.getFeasibleActions().size(), 2);
         Assert.assertTrue(exec.getFeasibleActions().containsAll(Arrays.asList(a2, a3)), exec.getFeasibleActions().toString());
-        Assert.assertTrue(exec.getWaitingActions().isEmpty());
+        Assert.assertTrue(exec.getBlockedActions().isEmpty());
 
         Assert.assertTrue(exec.commit(a2));
         Assert.assertFalse(exec.isOver());
@@ -75,7 +74,7 @@ public class DefaultReconfigurationPlanExecutorTest implements PremadeElements {
         Assert.assertEquals(exec.getCurrentModel(), plan.getResult());
     }
 
-   /* @Test
+    @Test
     public void testComplex() {
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
@@ -108,5 +107,5 @@ public class DefaultReconfigurationPlanExecutorTest implements PremadeElements {
         plan.add(sN1);
 
         Assert.assertTrue(plan.isApplyable());
-    }       */
+    }
 }
