@@ -83,6 +83,7 @@
                             <artifact>btrplace:solver-choco</artifact>
                         </filter>
                     </filters>
+                    <createSourcesJar>true</createSourcesJar>
                 </configuration>
             </execution>
           </executions>
