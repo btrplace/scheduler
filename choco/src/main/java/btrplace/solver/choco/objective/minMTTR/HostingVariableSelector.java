@@ -34,25 +34,33 @@ import java.util.List;
  */
 public class HostingVariableSelector extends AbstractIntVarSelector {
 
+    private ReconfigurationProblem rp;
+
+    private String label;
+
     /**
      * Make a new heuristic.
      * By default, the heuristic doesn't touch the scheduling constraints.
      *
+     * @param dbgLbl the debug label
      * @param rp     the rp to rely on
      * @param slices the slices to consider
      */
-    public HostingVariableSelector(ReconfigurationProblem rp, List<Slice> slices) {
+    public HostingVariableSelector(String dbgLbl, ReconfigurationProblem rp, List<Slice> slices) {
         super(rp.getSolver(), SliceUtils.extractHosters(slices));
+        this.rp = rp;
+        label = dbgLbl;
     }
 
     @Override
     public IntDomainVar selectVar() {
         for (int i = 0; i < vars.length; i++) {
             if (!vars[i].isInstantiated()) {
+                rp.getLogger().debug("{}: focus on VM {}", label, vars[i]);
                 return vars[i];
             }
         }
-        //Plan.logger.debug("No move VMs to place");
+        rp.getLogger().debug("{}: no more VMs to handle", label);
         return null;
     }
 
