@@ -69,25 +69,29 @@ public class BootableNodeModel implements NodeActionModel {
         IntDomainVar isOffline = s.createBooleanVar(rp.makeVarLabel("bootableNode(" + nId + ").offline"));
         s.post(s.neq(isOffline, isOnline));
         s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNode(nId)], 0));
-        start = rp.getStart();
+
         end = rp.makeDuration("bootableNode(" + nId + ").end");
 
         hostingStart = rp.makeDuration("bootableNode(" + nId + ").hostingStart");
         s.post(new TimesXYZ(isOnline, hostingStart, end));
-        //s.post(new TimesXYZ(isOffline, rp.getEnd(), hostingStart));
         s.post(s.leq(hostingEnd, rp.getEnd()));
         s.post(s.leq(end, rp.getEnd()));
         s.post(s.leq(hostingStart, rp.getEnd()));
         IntDomainVar cDur = s.makeConstantIntVar(d);
 
+        //node stay offline: start = 0, end = 0, duration = 0;
+        //node get online: start = end - duration
+        start = rp.makeDuration(new StringBuilder("bootableNode(").append(nId).append(").start").toString());//rp.getStart();
+
         /**
-         * if isOnline == 0, hostingStart = cDur , the boot duration
+         * if isOnline == 0, hostingStart = cDur + start , the boot duration
          * else            , hostingStart = rp.getEnd(), so no dSlice
          */
         s.post(new ElementV(new IntDomainVar[]{rp.getEnd(), cDur, isOnline, hostingStart}, 0, s.getEnvironment()));
         hostingEnd = rp.getEnd();
         duration = rp.makeDuration("bootableNode(" + nId + ").duration");
         s.post(s.eq(duration, CPSolver.minus(end, start)));
+        s.post(s.eq(duration, CPSolver.minus(hostingStart, start)));
     }
 
     @Override
