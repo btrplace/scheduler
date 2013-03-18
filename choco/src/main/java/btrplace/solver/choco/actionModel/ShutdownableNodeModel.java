@@ -78,11 +78,11 @@ public class ShutdownableNodeModel implements NodeActionModel {
         //The moment the node can no longer host VMs varies depending on its next state
         hostingEnd = rp.makeDuration(new StringBuilder("shutdownableNode(").append(e).append(").hostingEnd").toString());
 
-        //The duration between the moment the node can not host VMs anymore and the end of the RP
+        //The duration between the moment the node can not host VMs anymore and the end of the RP:
         //online: hostingEnd == RP.end
-        //offline: hostingEnd == RP.end - duration
+        //offline: hostingEnd <= RP.end - duration, so that the node can be turned off asap.
         //duration = {O, K}
-        s.post(s.eq(hostingEnd, CPSolver.minus(rp.getEnd(), duration)));
+        s.post(s.leq(hostingEnd, CPSolver.minus(rp.getEnd(), duration)));
         s.post(new FastIFFEq(isOnline, duration, 0));
 
         start = rp.makeDuration(new StringBuilder("shutdownableNode(").append(e).append(").start").toString());

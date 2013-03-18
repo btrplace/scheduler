@@ -224,7 +224,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             action.insertActions(plan);
         }
 
-        assert plan.isApplyable();
+        assert plan.isApplyable() : "The following plan cannot be applied:\n" + plan;
         assert checkConsistency(plan);
         return plan;
     }

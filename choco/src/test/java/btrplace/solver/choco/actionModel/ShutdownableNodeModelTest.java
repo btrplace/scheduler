@@ -30,6 +30,10 @@ import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.DurationEvaluators;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
+import btrplace.test.PremadeElements;
+import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -42,11 +46,10 @@ import java.util.UUID;
  *
  * @author Fabien hermenier
  */
-public class ShutdownableNodeModelTest {
+public class ShutdownableNodeModelTest implements PremadeElements {
 
     @Test
     public void testBasics() throws SolverException {
-        UUID n1 = UUID.randomUUID();
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         Model mo = new DefaultModel(map);
@@ -60,7 +63,6 @@ public class ShutdownableNodeModelTest {
 
     @Test
     public void testForcedOnline() throws SolverException, ContradictionException {
-        UUID n1 = UUID.randomUUID();
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         Model mo = new DefaultModel(map);
@@ -86,7 +88,6 @@ public class ShutdownableNodeModelTest {
 
     @Test
     public void testForcedOffline() throws SolverException, ContradictionException {
-        UUID n1 = UUID.randomUUID();
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         Model mo = new DefaultModel(map);
@@ -114,8 +115,6 @@ public class ShutdownableNodeModelTest {
 
     @Test
     public void testScheduledShutdown() throws SolverException, ContradictionException {
-        UUID n1 = UUID.randomUUID();
-        UUID vm1 = UUID.randomUUID();
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);
@@ -143,6 +142,66 @@ public class ShutdownableNodeModelTest {
 
         Model res = p.getResult();
         Assert.assertTrue(res.getMapping().getOfflineNodes().contains(n1));
+    }
+
+    /**
+     * The 2 nodes are set offline but n2 will start being offline after n1
+     *
+     * @throws SolverException
+     * @throws ContradictionException
+     */
+    @Test
+    public void testCascadedShutdown() throws SolverException, ContradictionException {
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        Model mo = new DefaultModel(map);
+        DurationEvaluators dev = new DurationEvaluators();
+        dev.register(ShutdownVM.class, new ConstantDuration(2));
+        dev.register(ShutdownNode.class, new ConstantDuration(5));
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setDurationEvaluatators(dev)
+                .labelVariables()
+                .build();
+        ShutdownableNodeModel ma1 = (ShutdownableNodeModel) rp.getNodeAction(n1);
+        ShutdownableNodeModel ma2 = (ShutdownableNodeModel) rp.getNodeAction(n2);
+        ma1.getState().setVal(0);
+        ma2.getState().setVal(0);
+
+        CPSolver solver = rp.getSolver();
+        solver.post(solver.eq(ma2.getStart(), ma1.getEnd()));
+
+        ReconfigurationPlan p = rp.solve(0, false);
+        Assert.assertNotNull(p);
+        System.out.println(p);
+        Assert.assertEquals(ma1.getStart().getVal(), 0);
+        Assert.assertEquals(ma2.getStart().getVal(), ma1.getEnd().getVal());
+        Model res = p.getResult();
+        Assert.assertEquals(res.getMapping().getOfflineNodes().size(), 2);
+    }
+
+    @Test
+    public void testShutdownBeforeVMsLeave() throws SolverException, ContradictionException {
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addRunningVM(vm1, n1);
+        Model mo = new DefaultModel(map);
+        DurationEvaluators dev = new DurationEvaluators();
+        dev.register(ShutdownVM.class, new ConstantDuration(2));
+        dev.register(ShutdownNode.class, new ConstantDuration(5));
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setNextVMsStates(Collections.singleton(vm1), Collections.<UUID>emptySet(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setDurationEvaluatators(dev)
+                .labelVariables()
+                .build();
+        ShutdownableNodeModel ma1 = (ShutdownableNodeModel) rp.getNodeAction(n1);
+        ChocoLogging.setVerbosity(Verbosity.SEARCH);
+        ma1.getState().setVal(0);
+        ma1.getHostingEnd().setVal(0);
+        rp.getEnd().setSup(10);
+        ReconfigurationPlan p = rp.solve(0, false);
+        Assert.assertNull(p);
+        System.out.println(p);
     }
 
 }

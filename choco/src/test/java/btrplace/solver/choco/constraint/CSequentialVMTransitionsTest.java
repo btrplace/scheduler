@@ -53,6 +53,7 @@ public class CSequentialVMTransitionsTest implements PremadeElements {
         cstrs.add(new Sleeping(Collections.singleton(vm2)));
         cstrs.add(new Running(Collections.singleton(vm3)));
         cstrs.add(new Ready(Collections.singleton(vm4)));
+        //cstrs.add(new Online(map.getAllNodes()));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<UUID> seq = Arrays.asList(vm1, vm2, vm3, vm4);
         cstrs.add(new SequentialVMTransitions(seq));
