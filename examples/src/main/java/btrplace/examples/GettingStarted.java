@@ -145,8 +145,7 @@ public class GettingStarted implements Example {
         Set<SatConstraint> cstrs = makeConstraints();
 
         ChocoReconfigurationAlgorithm ra = new DefaultChocoReconfigurationAlgorithm();
-        //ra.setVerbosity(3);
-        //ra.setMaxEnd(10);
+        //ra.setVerbosity(3); // Set the debugging flag
         ReconfigurationPlan plan = ra.solve(model, cstrs);
         System.out.println(plan);
         return (plan != null);

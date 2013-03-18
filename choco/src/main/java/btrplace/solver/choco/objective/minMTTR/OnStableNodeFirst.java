@@ -114,7 +114,7 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
                 BitSet in = ins[x];
                 for (int i = in.nextSetBit(0); i >= 0; i = in.nextSetBit(i + 1)) {
                     if (starts[i] != null && !starts[i].isInstantiated()) {
-                        rp.getLogger().debug("{}: focus on {}, placed on {} ({})", label, starts[i], rp.getNode(hoster[i].getVal()));
+                        //rp.getLogger().debug("{}: focus on {}, placed on {} ({})", label, starts[i], rp.getNode(hoster[i].getVal()));
                         return starts[i];
                     }
                 }
@@ -126,7 +126,7 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
         for (int i = move.nextSetBit(0); i >= 0; i = move.nextSetBit(i + 1)) {
             if (starts[i] != null && !starts[i].isInstantiated()) {
                 if (oldPos[i] != hoster[i].getVal()) {
-                    rp.getLogger().debug("{}: focus on {}, placed on {} ({})", label, starts[i], rp.getNode(hoster[i].getVal()));
+                    //rp.getLogger().debug("{}: focus on {}, placed on {} ({})", label, starts[i], rp.getNode(hoster[i].getVal()));
                     return starts[i];
                 }
             }
@@ -134,7 +134,7 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
 
         IntDomainVar earlyVar = null;
         int x = -1;
-        rp.getLogger().debug("{}: focus on staying VMs", label);
+        //rp.getLogger().debug("{}: focus on staying VMs", label);
         for (int i = stays.nextSetBit(0); i >= 0; i = stays.nextSetBit(i + 1)) {
             if (starts[i] != null && !starts[i].isInstantiated()) {
                 if (earlyVar == null) {
@@ -149,7 +149,7 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
             }
         }
         if (earlyVar != null) {
-            rp.getLogger().debug("{}: focus on {} placed on {}", label, earlyVar, hoster[x].getVal());
+            //rp.getLogger().debug("{}: focus on {} placed on {}", label, earlyVar, hoster[x].getVal());
             return earlyVar;
         }
         return minInf();
@@ -167,7 +167,7 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
                 }
             }
         }
-        rp.getLogger().debug("{}: focus on {} (earlier start)", label, best);
+        //rp.getLogger().debug("{}: focus on {} (earlier start)", label, best);
         return best;
     }
 }
