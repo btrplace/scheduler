@@ -23,6 +23,7 @@ import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.BootNode;
 import btrplace.plan.event.ShutdownNode;
 import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
@@ -203,4 +204,30 @@ public class ShutdownableNodeModelTest implements PremadeElements {
         System.out.println(p);
     }
 
+    @Test
+    public void testSwitchState() throws ContradictionException, SolverException {
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOfflineNode(n2);
+        Model mo = new DefaultModel(map);
+        DurationEvaluators dev = new DurationEvaluators();
+        dev.register(BootNode.class, new ConstantDuration(2));
+        dev.register(ShutdownNode.class, new ConstantDuration(5));
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setDurationEvaluatators(dev)
+                .labelVariables()
+                .build();
+        ShutdownableNodeModel ma1 = (ShutdownableNodeModel) rp.getNodeAction(n1);
+        BootableNodeModel ma2 = (BootableNodeModel) rp.getNodeAction(n2);
+        ma1.getState().setVal(0);
+        ma2.getState().setVal(1);
+        CPSolver solver = rp.getSolver();
+        ChocoLogging.setVerbosity(Verbosity.SEARCH);
+        solver.post(solver.eq(ma1.getEnd(), ma2.getStart()));
+        ReconfigurationPlan p = rp.solve(0, false);
+        ChocoLogging.flushLogs();
+        Assert.assertNotNull(p);
+        System.out.println(p);
+        System.out.flush();
+    }
 }

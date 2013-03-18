@@ -23,10 +23,13 @@ import btrplace.plan.event.BootNode;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.NodeActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.chocoUtil.FastIFFEq;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.ElementV;
 import choco.cp.solver.constraints.integer.TimesXYZ;
+import choco.cp.solver.variables.integer.IntDomainVarAddCste;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.UUID;
@@ -74,24 +77,23 @@ public class BootableNodeModel implements NodeActionModel {
 
         hostingStart = rp.makeDuration("bootableNode(" + nId + ").hostingStart");
         s.post(new TimesXYZ(isOnline, hostingStart, end));
-        s.post(s.leq(hostingEnd, rp.getEnd()));
         s.post(s.leq(end, rp.getEnd()));
         s.post(s.leq(hostingStart, rp.getEnd()));
-        IntDomainVar cDur = s.makeConstantIntVar(d);
 
         //node stay offline: start = 0, end = 0, duration = 0;
         //node get online: start = end - duration
-        start = rp.makeDuration(new StringBuilder("bootableNode(").append(nId).append(").start").toString());//rp.getStart();
-
+        start = rp.makeDuration(new StringBuilder("bootableNode(").append(nId).append(").start").toString());
+        s.post(s.leq(start, rp.getEnd()));
+        IntDomainVar av = new IntDomainVarAddCste(s, new StringBuilder("bootableNode(").append(nId).append(").availability").toString(), start, d);
         /**
          * if isOnline == 0, hostingStart = cDur + start , the boot duration
          * else            , hostingStart = rp.getEnd(), so no dSlice
          */
-        s.post(new ElementV(new IntDomainVar[]{rp.getEnd(), cDur, isOnline, hostingStart}, 0, s.getEnvironment()));
+        SConstraint c = new ElementV(new IntDomainVar[]{rp.getEnd(), av, isOnline, hostingStart}, 0, s.getEnvironment());
+        s.post(c);
         hostingEnd = rp.getEnd();
-        duration = rp.makeDuration("bootableNode(" + nId + ").duration");
-        s.post(s.eq(duration, CPSolver.minus(end, start)));
-        s.post(s.eq(duration, CPSolver.minus(hostingStart, start)));
+        duration = s.createEnumIntVar(rp.makeVarLabel(new StringBuilder("bootableNode(").append(nId).append(").duration").toString()), new int[]{0, d});
+        s.post(new FastIFFEq(isOnline, duration, d));
     }
 
     @Override

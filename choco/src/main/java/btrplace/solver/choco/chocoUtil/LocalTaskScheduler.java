@@ -281,13 +281,13 @@ public class LocalTaskScheduler {
             for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
                 ChocoLogging.getBranchingLogger().finest((cEnds[i].isInstantiated() ? "!" : "?") + " " + cEnds[i].pretty() + " " + Arrays.toString(getUsages(cUsages, i)));
             }
-            //ChocoLogging.getBranchingLogger().finest("---");
 
 
             for (int i = 0; i < nbDims; i++) {
                 ChocoLogging.getBranchingLogger().finest("profileMin dim " + i + "=" + prettyProfile(sortedMinProfile, profilesMin[i]));
                 ChocoLogging.getBranchingLogger().finest("profileMax dim " + i + "=" + prettyProfile(sortedMaxProfile, profilesMax[i]));
             }
+            ChocoLogging.getBranchingLogger().finest("/--- " + me + "---/");
         }
     }
 
@@ -351,9 +351,9 @@ public class LocalTaskScheduler {
         //invariant related to the last and the early.
         for (int idx = 0; idx < vIn.size(); idx++) {
             int i = vIn.get(idx);
-            if (dStarts[i].getSup() < early.getSup()) {
+            if (dStarts[i].getSup() < early.getInf()) {
                 if (me == DEBUG || DEBUG == -2) {
-                    ChocoLogging.getBranchingLogger().info("(" + me + ") The dSlice " + i + " has to start too early (max is " + dStarts[i].pretty() + ") (min expected=" + early.pretty() + ")");
+                    ChocoLogging.getBranchingLogger().info("(" + me + ") The dSlice " + i + " starts too early (" + dStarts[i].pretty() + ") (min expected=" + early.pretty() + ")");
                     ChocoLogging.flushLogs();
                 }
                 return false;
