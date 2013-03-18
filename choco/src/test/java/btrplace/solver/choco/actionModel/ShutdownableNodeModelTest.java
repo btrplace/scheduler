@@ -195,7 +195,6 @@ public class ShutdownableNodeModelTest implements PremadeElements {
                 .labelVariables()
                 .build();
         ShutdownableNodeModel ma1 = (ShutdownableNodeModel) rp.getNodeAction(n1);
-        ChocoLogging.setVerbosity(Verbosity.SEARCH);
         ma1.getState().setVal(0);
         ma1.getHostingEnd().setVal(0);
         rp.getEnd().setSup(10);
