@@ -72,7 +72,6 @@ public class CPreserve implements ChocoSatConstraint {
                     return false;
                 }
                 if (rp.getSourceModel().getMapping().getRunningVMs().contains(vm)) {
-
                     //If the resource allocation increase or stay the same, then the start moment of the dSlice can be set to rp.getEnd()
                     if (map.getSourceResource().get(vm) <= cstr.getAmount()) {
                         CPSolver solver = rp.getSolver();
