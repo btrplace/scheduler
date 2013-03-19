@@ -1,4 +1,4 @@
-# Btrplace solver API #
+# Btrplace solver examples #
 
 This maven modules contains the tutorials related to BtrPlace.
 The complete documentation attached to each tutorial is available on
