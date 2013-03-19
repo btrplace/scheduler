@@ -77,11 +77,12 @@ perform)
 
     echo "-- Generate the javadoc for release ${VERSION} --"
     mvn javadoc:aggregate > /dev/null
+    mvn javadoc:aggregate-jar > /dev/null
     APIDOC_ROOT="/usr/share/nginx/html/apidocs/releases/btrplace/solver/"
     mkdir -p $APIDOC_ROOT > /dev/null
     rm -rf ${APIDOC_ROOT}/${VERSION}
     mv target/site/apidocs ${APIDOC_ROOT}/${VERSION}
-
+    mv target/site/solver-${VERSION}-javadoc.jar ${APIDOC_ROOT}/
     #Symbolic link to the javadoc
     cd ${APIDOC_ROOT}
     rm -rf last
