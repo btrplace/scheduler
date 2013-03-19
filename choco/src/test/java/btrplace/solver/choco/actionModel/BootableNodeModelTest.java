@@ -127,8 +127,13 @@ public class BootableNodeModelTest implements PremadeElements {
                 .labelVariables()
                 .setDurationEvaluatators(dev)
                 .build();
-        rp.getEnd().setSup(10);
+
+        BootableNodeModel na = (BootableNodeModel) rp.getNodeAction(n1);
         Assert.assertNotNull(rp.solve(0, false));
+        Assert.assertEquals(na.getStart().getVal(), 0);
+        Assert.assertEquals(na.getEnd().getVal(), 5);
+        Assert.assertEquals(na.getHostingStart().getVal(), 5);
+        Assert.assertEquals(na.getHostingEnd().getVal(), 7);
     }
 
     @Test

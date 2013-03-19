@@ -34,7 +34,6 @@ import btrplace.solver.choco.durationEvaluator.ConstantDuration;
 import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -66,23 +65,32 @@ public class ShutdownableNodeModelTest implements PremadeElements {
     public void testForcedOnline() throws SolverException, ContradictionException {
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
+        map.addOfflineNode(n2);
         Model mo = new DefaultModel(map);
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(ShutdownNode.class, new ConstantDuration(5));
+        dev.register(BootNode.class, new ConstantDuration(10));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setDurationEvaluatators(dev)
                 .labelVariables()
                 .build();
         ShutdownableNodeModel ma = (ShutdownableNodeModel) rp.getNodeAction(n1);
-        ma.getState().setVal(1);
+        ma.getState().setVal(1);   //stay online
+
+        //To make the result plan 10 seconds long
+        BootableNodeModel ma2 = (BootableNodeModel) rp.getNodeAction(n2);
+        ma2.getState().setVal(1); //go online
         ReconfigurationPlan p = rp.solve(0, false);
+        Assert.assertNotNull(p);
+        System.out.println(p);
         Assert.assertEquals(ma.getDuration().getVal(), 0);
         Assert.assertEquals(ma.getStart().getVal(), 0);
         Assert.assertEquals(ma.getEnd().getVal(), 0);
         Assert.assertEquals(ma.getHostingStart().getVal(), 0);
-        Assert.assertEquals(ma.getHostingEnd().getVal(), 0);
+        Assert.assertEquals(ma.getHostingEnd().getVal(), 10);
 
-        Assert.assertNotNull(p);
-        Assert.assertEquals(p.getSize(), 0);
+
+        Assert.assertEquals(p.getSize(), 1);
         Model res = p.getResult();
         Assert.assertTrue(res.getMapping().getOnlineNodes().contains(n1));
     }
@@ -222,7 +230,6 @@ public class ShutdownableNodeModelTest implements PremadeElements {
         ma1.getState().setVal(0);
         ma2.getState().setVal(1);
         CPSolver solver = rp.getSolver();
-        ChocoLogging.setVerbosity(Verbosity.SEARCH);
         solver.post(solver.eq(ma1.getEnd(), ma2.getStart()));
         ReconfigurationPlan p = rp.solve(0, false);
         ChocoLogging.flushLogs();
@@ -230,4 +237,60 @@ public class ShutdownableNodeModelTest implements PremadeElements {
         System.out.println(p);
         System.out.flush();
     }
+
+    /**
+     * Issue #2 about NodeActionModel.
+     *
+     * @throws SolverException
+     * @throws ContradictionException
+     */
+    @Test
+    public void testNodeHostingEnd() throws SolverException, ContradictionException {
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOfflineNode(n3);
+        Model model = new DefaultModel(map);
+        DurationEvaluators dev = new DurationEvaluators();
+        dev.register(ShutdownNode.class, new ConstantDuration(5));
+        dev.register(BootNode.class, new ConstantDuration(10));
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
+                .setDurationEvaluatators(dev)
+                .labelVariables()
+                .build();
+        ShutdownableNodeModel shd = (ShutdownableNodeModel) rp.getNodeAction(n1);
+        shd.getState().setVal(1); //Stay online
+
+        ShutdownableNodeModel shd2 = (ShutdownableNodeModel) rp.getNodeAction(n2);
+        shd2.getState().setVal(0);  //Go offline
+        shd2.getStart().setVal(1); //Start going offline at 1
+
+        BootableNodeModel bn = (BootableNodeModel) rp.getNodeAction(n3);
+        bn.getState().setVal(1); //Go online
+        bn.getStart().setVal(6); //Start going online at 6
+        ReconfigurationPlan p = rp.solve(0, false);
+        Assert.assertNotNull(p);
+        System.out.println(p);
+        Assert.assertEquals(shd.getDuration().getVal(), 0);
+        Assert.assertEquals(shd.getStart().getVal(), 0);
+        Assert.assertEquals(shd.getEnd().getVal(), 0);
+        Assert.assertEquals(shd.getHostingStart().getVal(), 0);
+        Assert.assertEquals(shd.getHostingEnd().getVal(), 16);
+        Assert.assertEquals(shd2.getDuration().getVal(), 5);
+        Assert.assertEquals(shd2.getStart().getVal(), 1);
+        Assert.assertEquals(shd2.getEnd().getVal(), 6);
+        Assert.assertEquals(shd2.getHostingStart().getVal(), 0);
+        Assert.assertEquals(shd2.getHostingEnd().getVal(), 1);
+        Assert.assertEquals(bn.getStart().getVal(), 6);
+        Assert.assertEquals(bn.getDuration().getVal(), 10);
+        Assert.assertEquals(bn.getEnd().getVal(), 16);
+        Assert.assertEquals(bn.getHostingStart().getVal(), 16);
+        Assert.assertEquals(bn.getHostingEnd().getVal(), 16);
+        Assert.assertEquals(p.getSize(), 2);
+        Model res = p.getResult();
+        Assert.assertTrue(res.getMapping().getOnlineNodes().contains(n1));
+        Assert.assertTrue(res.getMapping().getOnlineNodes().contains(n3));
+        Assert.assertTrue(res.getMapping().getOfflineNodes().contains(n2));
+    }
+
 }

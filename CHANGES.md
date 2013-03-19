@@ -6,7 +6,10 @@ version ??????
 - a 'examples' module to provide the source code of some
 online tutorials
 - Improve Preserve implementation for better performance on the scheduling part
-- Bug fix
+- several random bug fix
+- close #2
+- A zipped version of the Javadoc is generated and deployed
+- improve the state management of the nodes
 
 version 0.25 - 11 Mar 2013
 ----------------------

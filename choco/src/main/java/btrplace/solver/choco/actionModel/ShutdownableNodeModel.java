@@ -85,6 +85,10 @@ public class ShutdownableNodeModel implements NodeActionModel {
         s.post(s.leq(hostingEnd, CPSolver.minus(rp.getEnd(), duration)));
         s.post(new FastIFFEq(isOnline, duration, 0));
 
+        //stay online: hostingEnd = rp.getEnd(); start = end = duration = 0
+        //go offline: hostingEnd < rp.getEnd() - duration, start = hostingEnd, end = hostingEnd + duration
+
+        ChocoUtils.postImplies(s, isOnline, s.eq(hostingEnd, rp.getEnd()));
         start = rp.makeDuration(new StringBuilder("shutdownableNode(").append(e).append(").start").toString());
         s.post(s.eq(start, ChocoUtils.mult(s, isOffline, hostingEnd)));
 
