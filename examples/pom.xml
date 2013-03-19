@@ -16,15 +16,9 @@
     <dependencies>
         <dependency>
             <groupId>btrplace</groupId>
-            <artifactId>solver-api</artifactId>
+            <artifactId>solver-bundle</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>btrplace</groupId>
-            <artifactId>solver-choco</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
     </dependencies>
 
     <build>
