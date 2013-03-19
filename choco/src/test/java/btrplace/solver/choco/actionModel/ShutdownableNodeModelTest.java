@@ -292,5 +292,4 @@ public class ShutdownableNodeModelTest implements PremadeElements {
         Assert.assertTrue(res.getMapping().getOnlineNodes().contains(n3));
         Assert.assertTrue(res.getMapping().getOfflineNodes().contains(n2));
     }
-
 }
