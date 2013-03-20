@@ -103,14 +103,14 @@ public class MinMTTR implements ReconfigurationObjective {
         }
         Map<IntDomainVar, UUID> pla = VMPlacementUtils.makePlacementMap(rp);
 
-        s.addGoal(new AssignVar(new MovingVMs(rp, map, vmsToExclude), new RandomVMPlacement(rp, pla, true)));
+        s.addGoal(new AssignVar(new MovingVMs("movingVMs", rp, map, vmsToExclude), new RandomVMPlacement("movingVMs", rp, pla, true)));
 
-        HostingVariableSelector selectForBads = new HostingVariableSelector(rp, ActionModelUtils.getDSlices(badActions));
-        s.addGoal(new AssignVar(selectForBads, new RandomVMPlacement(rp, pla, true)));
+        HostingVariableSelector selectForBads = new HostingVariableSelector("selectForBads", rp, ActionModelUtils.getDSlices(badActions));
+        s.addGoal(new AssignVar(selectForBads, new RandomVMPlacement("selectForBads", rp, pla, true)));
 
 
-        HostingVariableSelector selectForGoods = new HostingVariableSelector(rp, ActionModelUtils.getDSlices(goodActions));
-        s.addGoal(new AssignVar(selectForGoods, new RandomVMPlacement(rp, pla, true)));
+        HostingVariableSelector selectForGoods = new HostingVariableSelector("selectForGoods", rp, ActionModelUtils.getDSlices(goodActions));
+        s.addGoal(new AssignVar(selectForGoods, new RandomVMPlacement("selectForGoods", rp, pla, true)));
 
         //VMs to run
         Set<UUID> vmsToRun = new HashSet<UUID>(map.getReadyVMs());
@@ -121,15 +121,15 @@ public class MinMTTR implements ReconfigurationObjective {
         for (UUID vm : vmsToRun) {
             runActions[i++] = rp.getVMAction(vm);
         }
-        HostingVariableSelector selectForRuns = new HostingVariableSelector(rp, ActionModelUtils.getDSlices(runActions));
+        HostingVariableSelector selectForRuns = new HostingVariableSelector("selectForRuns", rp, ActionModelUtils.getDSlices(runActions));
 
 
-        s.addGoal(new AssignVar(selectForRuns, new RandomVMPlacement(rp, pla, true)));
+        s.addGoal(new AssignVar(selectForRuns, new RandomVMPlacement("selectForRuns", rp, pla, true)));
 
         ///SCHEDULING PROBLEM
         List<ActionModel> actions = new ArrayList<ActionModel>();
         Collections.addAll(actions, rp.getVMActions());
-        s.addGoal(new AssignOrForbidIntVarVal(new OnStableNodeFirst(rp, actions), new MinVal()));
+        s.addGoal(new AssignOrForbidIntVarVal(new OnStableNodeFirst("stableNodeFirst", rp, actions), new MinVal()));
 
         s.addGoal(new AssignVar(new StaticVarOrder(rp.getSolver(), new IntDomainVar[]{rp.getEnd(), cost}), new MinVal()));
     }

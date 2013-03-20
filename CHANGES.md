@@ -1,6 +1,16 @@
 Release notes
 ======================
 
+version 0.26 - 20 Mar 2013
+----------------------
+- a 'examples' module to provide the source code of some
+online tutorials
+- Improve Preserve implementation for better performance on the scheduling part
+- several random bug fix
+- close #2
+- A zipped version of the Javadoc is generated and deployed
+- improve the node state management.
+
 version 0.25 - 11 Mar 2013
 ----------------------
 - New release to fit with the website arrival

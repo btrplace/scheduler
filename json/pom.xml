@@ -21,13 +21,12 @@
     <parent>
         <groupId>btrplace</groupId>
         <artifactId>solver</artifactId>
-        <version>0.25</version>
+        <version>0.26</version>
     </parent>
 
     <artifactId>solver-json</artifactId>
 
     <description>Read and write model according to the JSON format</description>
-
 
     <dependencies>
         <dependency>

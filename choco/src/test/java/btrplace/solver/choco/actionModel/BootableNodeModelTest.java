@@ -24,11 +24,15 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootNode;
+import btrplace.plan.event.BootVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.DurationEvaluators;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
+import btrplace.test.PremadeElements;
+import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -41,11 +45,10 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class BootableNodeModelTest {
+public class BootableNodeModelTest implements PremadeElements {
 
     @Test
     public void testBasic() throws SolverException {
-        UUID n1 = UUID.randomUUID();
         Mapping map = new DefaultMapping();
         map.addOfflineNode(n1);
 
@@ -53,13 +56,10 @@ public class BootableNodeModelTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         BootableNodeModel na = (BootableNodeModel) rp.getNodeAction(n1);
         Assert.assertEquals(na.getNode(), n1);
-        Assert.assertTrue(na.getStart().isInstantiatedTo(0));
-
     }
 
     @Test
     public void testForcingBoot() throws SolverException, ContradictionException {
-        UUID n1 = UUID.randomUUID();
         Mapping map = new DefaultMapping();
         map.addOfflineNode(n1);
 
@@ -86,7 +86,6 @@ public class BootableNodeModelTest {
 
     @Test
     public void testForcingOffline() throws SolverException, ContradictionException {
-        UUID n1 = UUID.randomUUID();
         Mapping map = new DefaultMapping();
         map.addOfflineNode(n1);
 
@@ -100,6 +99,7 @@ public class BootableNodeModelTest {
         BootableNodeModel na = (BootableNodeModel) rp.getNodeAction(n1);
         na.getState().setVal(0);
         ReconfigurationPlan p = rp.solve(0, false);
+        Assert.assertNotNull(p);
         Assert.assertEquals(na.getDuration().getVal(), 0);
         Assert.assertEquals(na.getStart().getVal(), 0);
         Assert.assertEquals(na.getEnd().getVal(), 0);
@@ -114,8 +114,6 @@ public class BootableNodeModelTest {
 
     @Test
     public void testRequiredOnline() throws SolverException, ContradictionException {
-        UUID n1 = UUID.randomUUID();
-        UUID vm1 = UUID.randomUUID();
         Mapping map = new DefaultMapping();
         map.addOfflineNode(n1);
         map.addReadyVM(vm1);
@@ -123,12 +121,62 @@ public class BootableNodeModelTest {
         Model mo = new DefaultModel(map);
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(BootNode.class, new ConstantDuration(5));
+        dev.register(BootVM.class, new ConstantDuration(2));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<UUID>emptySet(), Collections.singleton(vm1), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
                 .labelVariables()
                 .setDurationEvaluatators(dev)
                 .build();
+
+        BootableNodeModel na = (BootableNodeModel) rp.getNodeAction(n1);
         Assert.assertNotNull(rp.solve(0, false));
+        Assert.assertEquals(na.getStart().getVal(), 0);
+        Assert.assertEquals(na.getEnd().getVal(), 5);
+        Assert.assertEquals(na.getHostingStart().getVal(), 5);
+        Assert.assertEquals(na.getHostingEnd().getVal(), 7);
+    }
+
+    @Test
+    public void testBootCascade() throws SolverException, ContradictionException {
+        Mapping map = new DefaultMapping();
+        map.addOfflineNode(n1);
+        map.addOfflineNode(n2);
+
+        Model mo = new DefaultModel(map);
+        DurationEvaluators dev = new DurationEvaluators();
+        dev.register(BootNode.class, new ConstantDuration(5));
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .labelVariables()
+                .setDurationEvaluatators(dev)
+                .build();
+        BootableNodeModel na1 = (BootableNodeModel) rp.getNodeAction(n1);
+        BootableNodeModel na2 = (BootableNodeModel) rp.getNodeAction(n2);
+        na1.getState().setVal(1);
+        na2.getState().setVal(1);
+        CPSolver solver = rp.getSolver();
+        solver.post(solver.eq(na1.getEnd(), na2.getStart()));
+        Assert.assertNotNull(rp.solve(0, false));
+    }
+
+    @Test
+    public void testDelayedBooting() throws ContradictionException, SolverException {
+        Mapping map = new DefaultMapping();
+        map.addOfflineNode(n2);
+        Model mo = new DefaultModel(map);
+        DurationEvaluators dev = new DurationEvaluators();
+        dev.register(BootNode.class, new ConstantDuration(2));
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setDurationEvaluatators(dev)
+                .labelVariables()
+                .build();
+        BootableNodeModel ma2 = (BootableNodeModel) rp.getNodeAction(n2);
+        ma2.getState().setVal(1);
+        ma2.getStart().setInf(5);
+        ReconfigurationPlan p = rp.solve(0, false);
+        ChocoLogging.flushLogs();
+        Assert.assertNotNull(p);
+        System.out.println(p);
+        System.out.flush();
     }
 
 }
