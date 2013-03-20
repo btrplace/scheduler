@@ -136,17 +136,16 @@ public class GettingStarted implements Example {
         ShareableResource rcCPU = makeCPUResourceView();
         ShareableResource rcMem = makeMemResourceView();
 
-        //We create a model that aggregates the mapping and
-        //the views
-        Model model = new DefaultModel(map);
-        model.attach(rcCPU);
-        model.attach(rcMem);
+        //We create a model that aggregates the mapping and the views
+        Model origin = new DefaultModel(map);
+        origin.attach(rcCPU);
+        origin.attach(rcMem);
 
         Set<SatConstraint> cstrs = makeConstraints();
 
         ChocoReconfigurationAlgorithm ra = new DefaultChocoReconfigurationAlgorithm();
         //ra.setVerbosity(3); // Set the debugging flag
-        ReconfigurationPlan plan = ra.solve(model, cstrs);
+        ReconfigurationPlan plan = ra.solve(origin, cstrs);
         System.out.println(plan);
         return (plan != null);
     }

@@ -9,7 +9,7 @@ online tutorials
 - several random bug fix
 - close #2
 - A zipped version of the Javadoc is generated and deployed
-- improve the state management of the nodes
+- improve the node state management.
 
 version 0.25 - 11 Mar 2013
 ----------------------
