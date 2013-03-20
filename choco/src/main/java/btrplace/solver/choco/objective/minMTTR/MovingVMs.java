@@ -47,6 +47,8 @@ public class MovingVMs extends AbstractIntVarSelector {
 
     private ReconfigurationProblem rp;
 
+    private String label;
+
     /**
      * Make a new heuristic.
      * By default, the heuristic doesn't touch the scheduling constraints.
@@ -55,9 +57,9 @@ public class MovingVMs extends AbstractIntVarSelector {
      * @param m   the initial configuration
      * @param vms the VMs to consider
      */
-    public MovingVMs(ReconfigurationProblem s, Mapping m, Set<UUID> vms) {
+    public MovingVMs(String label, ReconfigurationProblem s, Mapping m, Set<UUID> vms) {
         super(s.getSolver());
-
+        this.label = label;
         map = m;
 
         this.rp = s;
@@ -80,11 +82,13 @@ public class MovingVMs extends AbstractIntVarSelector {
                     //VM was running
                     Slice slice = a.getDSlice();
                     if (!slice.getHoster().canBeInstantiatedTo(rp.getNode(nId))) {
+                        rp.getLogger().debug("{} - focus on VM {}", label, slice.getSubject());
                         return slice.getHoster();
                     }
                 }
             }
         }
+        rp.getLogger().debug("{} - No more VMs to handle", label);
         return null;
     }
 }

@@ -100,6 +100,11 @@ public class FastImpliesEq extends AbstractBinIntSConstraint {
 
     @Override
     public String toString() {
-        return "FastImpliesEq(" + vars[0].pretty() + "," + vars[1].pretty() + "," + constante + ")";
+        return vars[0].pretty() + " -> " + vars[1].pretty() + " = " + constante;
+    }
+
+    @Override
+    public String pretty() {
+        return toString();
     }
 }

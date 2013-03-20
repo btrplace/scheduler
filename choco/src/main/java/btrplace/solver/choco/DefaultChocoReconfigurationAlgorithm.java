@@ -310,14 +310,12 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
             ChocoLogging.setVerbosity(Verbosity.SILENT);
             labelVariables(false);
         } else {
-            if (lvl >= 1) {
-                labelVariables(true);
-                ChocoLogging.setVerbosity(Verbosity.SOLUTION);
-            }
+            labelVariables(true);
+            ChocoLogging.setVerbosity(Verbosity.SOLUTION);
             if (lvl == 2) {
                 ChocoLogging.setVerbosity(Verbosity.SEARCH);
                 ChocoLogging.setLoggingMaxDepth(Integer.MAX_VALUE);
-            } else {
+            } else if (lvl > 2) {
                 ChocoLogging.setVerbosity(Verbosity.FINEST);
             }
         }

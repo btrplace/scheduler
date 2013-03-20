@@ -37,7 +37,6 @@ public class PrecedencesTest {
     @Test
     public void dummyTest() {
         CPSolver s = new CPSolver();
-        //ChocoLogging.setVerbosity(Verbosity.FINEST);
 
         IntDomainVar[] ends = new IntDomainVar[5];
         int[] others = new int[5];
@@ -75,7 +74,6 @@ public class PrecedencesTest {
     @Test
     public void simpleTest() {
         CPSolver s = new CPSolver();
-        //ChocoLogging.setVerbosity(Verbosity.FINEST);
 
         IntDomainVar[] ends = new IntDomainVar[3];
         int[] others = new int[3];
