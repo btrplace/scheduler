@@ -175,7 +175,7 @@ public class AvoidVMRelocation implements ValSelector<IntDomainVar> {
     public int getBestVal(IntDomainVar var) {
         int val = this.oldLocation.get(var.getIndex());
         if (this.oldLocation.containsKey(var.getIndex()) && var.canBeInstantiatedTo(val)) {
-            //System.out.println(var.getName() + " stay on " + rp.getNode(val));
+            System.out.println(var.getName() + " stay on " + rp.getNode(val));
             //The VM can stay on the current node
             return val;
         }
@@ -196,7 +196,7 @@ public class AvoidVMRelocation implements ValSelector<IntDomainVar> {
             default:
                 to = var.getInf();
         }
-        //System.out.println(var.getName() + " move to " + rp.getNode(to));
+        System.out.println(var.getName() + " move to " + rp.getNode(to));
         return to;
     }
 }

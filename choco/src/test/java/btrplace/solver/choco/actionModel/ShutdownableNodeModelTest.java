@@ -23,6 +23,7 @@ import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.BootNode;
 import btrplace.plan.event.ShutdownNode;
 import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
@@ -30,6 +31,9 @@ import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.DurationEvaluators;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
+import btrplace.test.PremadeElements;
+import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -42,11 +46,10 @@ import java.util.UUID;
  *
  * @author Fabien hermenier
  */
-public class ShutdownableNodeModelTest {
+public class ShutdownableNodeModelTest implements PremadeElements {
 
     @Test
     public void testBasics() throws SolverException {
-        UUID n1 = UUID.randomUUID();
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         Model mo = new DefaultModel(map);
@@ -60,33 +63,40 @@ public class ShutdownableNodeModelTest {
 
     @Test
     public void testForcedOnline() throws SolverException, ContradictionException {
-        UUID n1 = UUID.randomUUID();
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
+        map.addOfflineNode(n2);
         Model mo = new DefaultModel(map);
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(ShutdownNode.class, new ConstantDuration(5));
+        dev.register(BootNode.class, new ConstantDuration(10));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setDurationEvaluatators(dev)
                 .labelVariables()
                 .build();
         ShutdownableNodeModel ma = (ShutdownableNodeModel) rp.getNodeAction(n1);
-        ma.getState().setVal(1);
+        ma.getState().setVal(1);   //stay online
+
+        //To make the result plan 10 seconds long
+        BootableNodeModel ma2 = (BootableNodeModel) rp.getNodeAction(n2);
+        ma2.getState().setVal(1); //go online
         ReconfigurationPlan p = rp.solve(0, false);
+        Assert.assertNotNull(p);
+        System.out.println(p);
         Assert.assertEquals(ma.getDuration().getVal(), 0);
         Assert.assertEquals(ma.getStart().getVal(), 0);
         Assert.assertEquals(ma.getEnd().getVal(), 0);
         Assert.assertEquals(ma.getHostingStart().getVal(), 0);
-        Assert.assertEquals(ma.getHostingEnd().getVal(), 0);
+        Assert.assertEquals(ma.getHostingEnd().getVal(), 10);
 
-        Assert.assertNotNull(p);
-        Assert.assertEquals(p.getSize(), 0);
+
+        Assert.assertEquals(p.getSize(), 1);
         Model res = p.getResult();
         Assert.assertTrue(res.getMapping().getOnlineNodes().contains(n1));
     }
 
     @Test
     public void testForcedOffline() throws SolverException, ContradictionException {
-        UUID n1 = UUID.randomUUID();
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         Model mo = new DefaultModel(map);
@@ -114,8 +124,6 @@ public class ShutdownableNodeModelTest {
 
     @Test
     public void testScheduledShutdown() throws SolverException, ContradictionException {
-        UUID n1 = UUID.randomUUID();
-        UUID vm1 = UUID.randomUUID();
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);
@@ -145,4 +153,143 @@ public class ShutdownableNodeModelTest {
         Assert.assertTrue(res.getMapping().getOfflineNodes().contains(n1));
     }
 
+    /**
+     * The 2 nodes are set offline but n2 will start being offline after n1
+     *
+     * @throws SolverException
+     * @throws ContradictionException
+     */
+    @Test
+    public void testCascadedShutdown() throws SolverException, ContradictionException {
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        Model mo = new DefaultModel(map);
+        DurationEvaluators dev = new DurationEvaluators();
+        dev.register(ShutdownVM.class, new ConstantDuration(2));
+        dev.register(ShutdownNode.class, new ConstantDuration(5));
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setDurationEvaluatators(dev)
+                .labelVariables()
+                .build();
+        ShutdownableNodeModel ma1 = (ShutdownableNodeModel) rp.getNodeAction(n1);
+        ShutdownableNodeModel ma2 = (ShutdownableNodeModel) rp.getNodeAction(n2);
+        ma1.getState().setVal(0);
+        ma2.getState().setVal(0);
+
+        CPSolver solver = rp.getSolver();
+        solver.post(solver.eq(ma2.getStart(), ma1.getEnd()));
+
+        ReconfigurationPlan p = rp.solve(0, false);
+        Assert.assertNotNull(p);
+        System.out.println(p);
+        Assert.assertEquals(ma1.getStart().getVal(), 0);
+        Assert.assertEquals(ma2.getStart().getVal(), ma1.getEnd().getVal());
+        Model res = p.getResult();
+        Assert.assertEquals(res.getMapping().getOfflineNodes().size(), 2);
+    }
+
+    @Test
+    public void testShutdownBeforeVMsLeave() throws SolverException, ContradictionException {
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addRunningVM(vm1, n1);
+        Model mo = new DefaultModel(map);
+        DurationEvaluators dev = new DurationEvaluators();
+        dev.register(ShutdownVM.class, new ConstantDuration(2));
+        dev.register(ShutdownNode.class, new ConstantDuration(5));
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setNextVMsStates(Collections.singleton(vm1), Collections.<UUID>emptySet(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setDurationEvaluatators(dev)
+                .labelVariables()
+                .build();
+        ShutdownableNodeModel ma1 = (ShutdownableNodeModel) rp.getNodeAction(n1);
+        ma1.getState().setVal(0);
+        ma1.getHostingEnd().setVal(0);
+        rp.getEnd().setSup(10);
+        ReconfigurationPlan p = rp.solve(0, false);
+        Assert.assertNull(p);
+        System.out.println(p);
+    }
+
+    @Test
+    public void testSwitchState() throws ContradictionException, SolverException {
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOfflineNode(n2);
+        Model mo = new DefaultModel(map);
+        DurationEvaluators dev = new DurationEvaluators();
+        dev.register(BootNode.class, new ConstantDuration(2));
+        dev.register(ShutdownNode.class, new ConstantDuration(5));
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setDurationEvaluatators(dev)
+                .labelVariables()
+                .build();
+        ShutdownableNodeModel ma1 = (ShutdownableNodeModel) rp.getNodeAction(n1);
+        BootableNodeModel ma2 = (BootableNodeModel) rp.getNodeAction(n2);
+        ma1.getState().setVal(0);
+        ma2.getState().setVal(1);
+        CPSolver solver = rp.getSolver();
+        solver.post(solver.eq(ma1.getEnd(), ma2.getStart()));
+        ReconfigurationPlan p = rp.solve(0, false);
+        ChocoLogging.flushLogs();
+        Assert.assertNotNull(p);
+        System.out.println(p);
+        System.out.flush();
+    }
+
+    /**
+     * Issue #2 about NodeActionModel.
+     *
+     * @throws SolverException
+     * @throws ContradictionException
+     */
+    @Test
+    public void testNodeHostingEnd() throws SolverException, ContradictionException {
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOfflineNode(n3);
+        Model model = new DefaultModel(map);
+        DurationEvaluators dev = new DurationEvaluators();
+        dev.register(ShutdownNode.class, new ConstantDuration(5));
+        dev.register(BootNode.class, new ConstantDuration(10));
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
+                .setDurationEvaluatators(dev)
+                .labelVariables()
+                .build();
+        ShutdownableNodeModel shd = (ShutdownableNodeModel) rp.getNodeAction(n1);
+        shd.getState().setVal(1); //Stay online
+
+        ShutdownableNodeModel shd2 = (ShutdownableNodeModel) rp.getNodeAction(n2);
+        shd2.getState().setVal(0);  //Go offline
+        shd2.getStart().setVal(1); //Start going offline at 1
+
+        BootableNodeModel bn = (BootableNodeModel) rp.getNodeAction(n3);
+        bn.getState().setVal(1); //Go online
+        bn.getStart().setVal(6); //Start going online at 6
+        ReconfigurationPlan p = rp.solve(0, false);
+        Assert.assertNotNull(p);
+        System.out.println(p);
+        Assert.assertEquals(shd.getDuration().getVal(), 0);
+        Assert.assertEquals(shd.getStart().getVal(), 0);
+        Assert.assertEquals(shd.getEnd().getVal(), 0);
+        Assert.assertEquals(shd.getHostingStart().getVal(), 0);
+        Assert.assertEquals(shd.getHostingEnd().getVal(), 16);
+        Assert.assertEquals(shd2.getDuration().getVal(), 5);
+        Assert.assertEquals(shd2.getStart().getVal(), 1);
+        Assert.assertEquals(shd2.getEnd().getVal(), 6);
+        Assert.assertEquals(shd2.getHostingStart().getVal(), 0);
+        Assert.assertEquals(shd2.getHostingEnd().getVal(), 1);
+        Assert.assertEquals(bn.getStart().getVal(), 6);
+        Assert.assertEquals(bn.getDuration().getVal(), 10);
+        Assert.assertEquals(bn.getEnd().getVal(), 16);
+        Assert.assertEquals(bn.getHostingStart().getVal(), 16);
+        Assert.assertEquals(bn.getHostingEnd().getVal(), 16);
+        Assert.assertEquals(p.getSize(), 2);
+        Model res = p.getResult();
+        Assert.assertTrue(res.getMapping().getOnlineNodes().contains(n1));
+        Assert.assertTrue(res.getMapping().getOnlineNodes().contains(n3));
+        Assert.assertTrue(res.getMapping().getOfflineNodes().contains(n2));
+    }
 }

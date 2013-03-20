@@ -49,15 +49,19 @@ public class RandomVMPlacement implements ValSelector<IntDomainVar> {
 
     private TIntHashSet[] ranks;
 
+    private String dbgLbl;
+
     /**
      * Make a new heuristic.
      *
+     * @param dbgLbl      the debug label
      * @param rp          the problem to rely on
      * @param pVarMapping a map to indicate the VM associated to each of the placement variable
      * @param stayFirst   {@code true} to force an already VM to stay on its current node if possible
      */
-    public RandomVMPlacement(ReconfigurationProblem rp, Map<IntDomainVar, UUID> pVarMapping, boolean stayFirst) {
+    public RandomVMPlacement(String dbgLbl, ReconfigurationProblem rp, Map<IntDomainVar, UUID> pVarMapping, boolean stayFirst) {
         this(rp, pVarMapping, null, stayFirst);
+        this.dbgLbl = dbgLbl;
     }
 
     /**
@@ -135,17 +139,22 @@ public class RandomVMPlacement implements ValSelector<IntDomainVar> {
         if (stay) {
             UUID vm = vmPlacement.get(x);
             if (VMPlacementUtils.canStay(rp, vm)) {
+                rp.getLogger().debug("{} - VM {} stays on {} ({})", dbgLbl, vm, rp.getSourceModel().getMapping().getVMLocation(vm), rp.getNode(rp.getSourceModel().getMapping().getVMLocation(vm)));
                 return rp.getNode(rp.getSourceModel().getMapping().getVMLocation(vm));
             }
         }
 
         if (!x.isInstantiated()) {
+            int nIdx;
             if (ranks != null) {
-                return randomWithRankedValues(x);
+                nIdx = randomWithRankedValues(x);
             } else {
-                return randomValue(x);
+                nIdx = randomValue(x);
             }
+            rp.getLogger().debug("{} - VM {} move to {} ({})", dbgLbl, vmPlacement.get(x), rp.getNode(nIdx), nIdx);
+            return nIdx;
         }
+        rp.getLogger().debug("{} - {} ", dbgLbl, x);
         return x.getVal();
     }
 }

@@ -28,6 +28,7 @@ import btrplace.plan.event.MigrateVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.*;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
+import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
@@ -43,17 +44,14 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class RelocatableVMModelTest {
+public class RelocatableVMModelTest implements PremadeElements {
 
     @Test
     public void testForcedToMove() throws SolverException, ContradictionException {
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        UUID vm = UUID.randomUUID();
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
-        map.addRunningVM(vm, n1);
+        map.addRunningVM(vm1, n1);
 
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(MigrateVM.class, new ConstantDuration(5));
@@ -65,8 +63,8 @@ public class RelocatableVMModelTest {
                 .build();
         rp.getNodeActions()[0].getState().setVal(1);
         rp.getNodeActions()[1].getState().setVal(1);
-        RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm);
-        Assert.assertEquals(vm, am.getVM());
+        RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm1);
+        Assert.assertEquals(vm1, am.getVM());
         Assert.assertEquals(2, am.getDuration().getDomainSize());
         Assert.assertEquals(0, am.getDuration().getInf());
         Assert.assertEquals(5, am.getDuration().getSup());
@@ -86,25 +84,22 @@ public class RelocatableVMModelTest {
 
         Assert.assertNotNull(p);
         Model m = p.getResult();
-        Assert.assertEquals(n2, m.getMapping().getVMLocation(vm));
+        Assert.assertEquals(n2, m.getMapping().getVMLocation(vm1));
 
         MigrateVM a = (MigrateVM) p.getActions().iterator().next();
         Assert.assertEquals(0, a.getStart());
         Assert.assertEquals(5, a.getEnd());
         Assert.assertEquals(n1, a.getSourceNode());
         Assert.assertEquals(n2, a.getDestinationNode());
-        Assert.assertEquals(vm, a.getVM());
+        Assert.assertEquals(vm1, a.getVM());
     }
 
     @Test
     public void testForcedToStay() throws SolverException, ContradictionException {
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        UUID vm = UUID.randomUUID();
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
-        map.addRunningVM(vm, n1);
+        map.addRunningVM(vm1, n1);
 
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(MigrateVM.class, new ConstantDuration(5));
@@ -115,7 +110,7 @@ public class RelocatableVMModelTest {
                 .build();
         rp.getNodeActions()[0].getState().setVal(1);
         rp.getNodeActions()[1].getState().setVal(1);
-        RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm);
+        RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm1);
 
         //No VMs on n2
         rp.getNbRunningVMs()[rp.getNode(n2)].setVal(0);
@@ -131,17 +126,12 @@ public class RelocatableVMModelTest {
 
 
         Model m = p.getResult();
-        Assert.assertEquals(n1, m.getMapping().getVMLocation(vm));
+        Assert.assertEquals(n1, m.getMapping().getVMLocation(vm1));
     }
 
     @Test
     public void testRelocateDueToPreserve() throws SolverException {
         Mapping map = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
 
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
