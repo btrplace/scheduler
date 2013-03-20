@@ -1,7 +1,7 @@
 Release notes
 ======================
 
-version ??????????
+version 0.26 - 20 Mar 2013
 ----------------------
 - a 'examples' module to provide the source code of some
 online tutorials
