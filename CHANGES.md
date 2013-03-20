@@ -1,7 +1,7 @@
 Release notes
 ======================
 
-version ??????
+version ??????????
 ----------------------
 - a 'examples' module to provide the source code of some
 online tutorials
