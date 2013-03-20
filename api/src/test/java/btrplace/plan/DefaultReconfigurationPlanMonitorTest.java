@@ -87,34 +87,39 @@ public class DefaultReconfigurationPlanMonitorTest implements PremadeElements {
         Assert.assertFalse(exec.commit(a4)); //not started, fail
         Assert.assertTrue(exec.begin(a4));
         Assert.assertTrue(exec.commit(a4));
+        Assert.assertFalse(exec.getFeasibleActions().contains(a4));
+        Assert.assertFalse(exec.getPendingActions().contains(a4));
         Assert.assertFalse(exec.commit(a4)); //double commit, fail
     }
 
-    @Test(dependsOnMethods = {"testInit", "testBegin"})
-    public void testCommit2() {
+    @Test(dependsOnMethods = {"testInit", "testBegin", "testCommit"})
+    public void testCommitWithUnblocking() {
         ReconfigurationPlan plan = makePlan();
         ReconfigurationPlanMonitor exec = new DefaultReconfigurationPlanMonitor(plan);
 
-        Assert.assertFalse(exec.commit(a3));  //not started
-        Assert.assertFalse(exec.isOver());
-        Assert.assertEquals(exec.getFeasibleActions().size(), 2);
-        Assert.assertTrue(exec.getFeasibleActions().containsAll(Arrays.asList(a1, a2)), exec.getFeasibleActions().toString());
+        Assert.assertFalse(exec.begin(a3));
+        Assert.assertTrue(exec.begin(a1));
+        Assert.assertFalse(exec.begin(a3));
+        Assert.assertTrue(exec.commit(a1));
+        Assert.assertTrue(exec.begin(a3));
+        Assert.assertTrue(exec.getBlockedActions().isEmpty());
+    }
+
+    @Test(dependsOnMethods = {"testInit", "testBegin", "testCommit", "testCommitWithUnblocking"})
+    public void testOver() {
+        ReconfigurationPlan plan = makePlan();
+        ReconfigurationPlanMonitor exec = new DefaultReconfigurationPlanMonitor(plan);
 
         Assert.assertTrue(exec.begin(a1));
-        Assert.assertTrue(exec.commit(a1));
-        Assert.assertFalse(exec.isOver());
-        Assert.assertEquals(exec.getFeasibleActions().size(), 2);
-        Assert.assertTrue(exec.getFeasibleActions().containsAll(Arrays.asList(a2, a3)), exec.getFeasibleActions().toString());
-        Assert.assertTrue(exec.getBlockedActions().isEmpty());
-
+        Assert.assertTrue(exec.begin(a4));
         Assert.assertTrue(exec.begin(a2));
         Assert.assertTrue(exec.commit(a2));
-        Assert.assertFalse(exec.isOver());
+        Assert.assertTrue(exec.commit(a4));
+        Assert.assertTrue(exec.commit(a1));
         Assert.assertTrue(exec.begin(a3));
+        Assert.assertFalse(exec.isOver());
         Assert.assertTrue(exec.commit(a3));
         Assert.assertTrue(exec.isOver());
-
-        Assert.assertEquals(exec.getCurrentModel(), plan.getResult());
     }
 
     @Test
@@ -131,7 +136,7 @@ public class DefaultReconfigurationPlanMonitorTest implements PremadeElements {
         map.addRunningVM(vm4, n2);
         BootNode bN4 = new BootNode(n4, 3, 5);
         MigrateVM mVM1 = new MigrateVM(vm1, n3, n4, 6, 7);
-        Allocate aVM3 = new Allocate(vm3, n2, "cpu", 7,8, 9);
+        Allocate aVM3 = new Allocate(vm3, n2, "cpu", 7, 8, 9);
         MigrateVM mVM2 = new MigrateVM(vm2, n1, n2, 1, 3);
         MigrateVM mVM4 = new MigrateVM(vm4, n2, n3, 1, 7);
         ShutdownNode sN1 = new ShutdownNode(n1, 5, 7);
