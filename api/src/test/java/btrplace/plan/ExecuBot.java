@@ -7,7 +7,7 @@ import java.util.Set;
  */
 public class ExecuBot {
 
-    public void execute(ReconfigurationPlanExecutor exe) {
+    public void execute(ReconfigurationPlanMonitor exe) {
 
         while (!exe.isOver()) {
             Set<Action> feasible = exe.getFeasibleActions();
@@ -20,17 +20,18 @@ public class ExecuBot {
     public static class ActionExecutor extends Thread {
 
         Action a;
-        ReconfigurationPlanExecutor executor;
+        ReconfigurationPlanMonitor executor;
 
-        public ActionExecutor(Action a, ReconfigurationPlanExecutor exec) {
+        public ActionExecutor(Action a, ReconfigurationPlanMonitor exec) {
             this.a = a;
             this.executor = exec;
 
         }
+
         @Override
         public void run() {
             try {
-                Thread.sleep((long)(Math.random() * 1000));
+                Thread.sleep((long) (Math.random() * 1000));
                 executor.commit(a);
             } catch (InterruptedException ex) {
                 throw new RuntimeException(ex);

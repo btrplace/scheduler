@@ -1,79 +1,63 @@
 package btrplace.plan;
 
-import btrplace.model.Model;
+import btrplace.plan.event.ActionVisitor;
 
 import java.util.Set;
 
 /**
- * This allows to execute a reconfiguration plan while
- * considering the dependencies between actions rather than only their start moment
- * and duration. Each time an action is committed, it updates the running model
- * to reflect the changes.
+ * Execute a reconfiguration plan with the help of
+ * a {@link ReconfigurationPlanMonitor}.
+ * <p/>
+ * Each time an action is feasible, the executor starts to execute
+ * the action in parallel. Once the action execution is terminated, the
+ * action is committed and the new feasible actions are executed.
+ * This is repeated until the reconfiguration plan has been completely applied.
+ * <p/>
+ * The practical execution of each of the action is performed by the implementation of an {@link ActionVisitor}.
  *
  * @author Fabien Hermenier
  */
-public interface ReconfigurationPlanExecutor {
+public class ReconfigurationPlanExecutor {
+
+    private ReconfigurationPlanMonitor rpe;
+
+    private ActionVisitor executor;
 
     /**
-     * Get all the feasible actions that
-     * are not currently pending.
+     * Make a new executor.
      *
-     * @return a set of actions that may be empty.
+     * @param rpe      the monitor to rely on.
+     * @param executor the object that will execute an action in practice.
      */
-    Set<Action> getFeasibleActions();
+    public ReconfigurationPlanExecutor(ReconfigurationPlanMonitor rpe, ActionVisitor executor) {
+        this.rpe = rpe;
+        this.executor = executor;
+    }
 
     /**
-     * Get the actions that cannot be executed for the
-     * moment due to un-met dependencies.
-     *
-     * @return a set of actions that may be empty.
+     * Start the reconfiguration.
      */
-    Set<Action> getBlockedActions();
+    public void run() {
+        Set<Action> feasible = rpe.getFeasibleActions();
+        for (final Action a : feasible) {
+            executeInParallel(a);
+        }
+    }
 
-    /**
-     * Get the actions that have began but that
-     * are not committed.
-     * @return a set of actions that may be empty.
-     */
-    Set<Action> getPendingActions();
+    private void commitAndContinue(Action a) {
+        rpe.commit(a);
+        for (final Action a2 : rpe.getFeasibleActions()) {
+            executeInParallel(a2);
+        }
+    }
 
-    /**
-     * Reset the executor.
-     */
-    void reset();
-
-    /**
-     * Get the current model.
-     *
-     * @return a model
-     */
-    Model getCurrentModel();
-
-    /**
-     * Commit an action.
-     * If it is theoretically possible to execute the action
-     * on the current model, the model is updated to reflect the action
-     * execution.
-     *
-     * @param a the action to commit
-     * @return {@code true} iff the action was executed on the current model.
-     */
-    boolean commit(Action a);
-
-    /**
-     * Indicates a given feasible action is started
-     * @param a the action
-     * @return {@code true} iff the acion is allowed to start
-     */
-    boolean begin(Action a);
-
-    /**
-     * Indicate whether a reconfiguration is terminated or not.
-     * A reconfiguration is terminated if all the actions in the plan
-     * have been committed. This means {@link #getFeasibleActions()} and {@link #getBlockedActions()}
-     * are empty.
-     *
-     * @return {@code true} iff the reconfiguration is terminated
-     */
-    boolean isOver();
+    private void executeInParallel(final Action a) {
+        Thread t = new Thread() {
+            public void run() {
+                a.visit(executor);
+                commitAndContinue(a);
+            }
+        };
+        t.start();
+    }
 }
