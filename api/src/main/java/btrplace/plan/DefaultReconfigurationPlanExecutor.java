@@ -2,10 +2,7 @@ package btrplace.plan;
 
 import btrplace.model.Model;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Simulated execution of a {@link ReconfigurationPlan}.
@@ -27,11 +24,11 @@ public class DefaultReconfigurationPlanExecutor implements ReconfigurationPlanEx
 
     private Map<Action, Set<Dependency>> pre;
 
-    private Set<Action> feasibleActions;
+    private final Set<Action> feasibleActions;
 
-    private Set<Action> pendingActions;
+    private final Set<Action> pendingActions;
 
-    private Set<Action> blockedActions;
+    private final Set<Action> blockedActions;
 
     /**
      * Make a new executor.
@@ -40,38 +37,61 @@ public class DefaultReconfigurationPlanExecutor implements ReconfigurationPlanEx
      */
     public DefaultReconfigurationPlanExecutor(ReconfigurationPlan plan) {
         this.plan = plan;
+
+        feasibleActions = new HashSet<Action>();
+        blockedActions = new HashSet<Action>();
+        pendingActions = new HashSet<Action>();
+
         reset();
     }
 
     @Override
     public Set<Action> getFeasibleActions() {
-        return feasibleActions;
+        return Collections.unmodifiableSet(feasibleActions);
     }
 
     @Override
+    public Set<Action> getPendingActions() {
+        return Collections.unmodifiableSet(pendingActions);
+    }
+
+    @Override
+    public Set<Action> getBlockedActions() {
+        return Collections.unmodifiableSet(blockedActions);
+    }
+
+
+    @Override
     public void reset() {
-        curModel = plan.getOrigin().clone();
-        pre = new HashMap<Action, Set<Dependency>>();
-        feasibleActions = new HashSet<Action>();
-        blockedActions = new HashSet<Action>();
-        for (Action a : plan) {
-            Set<Action> dependencies = plan.getDirectDependencies(a);
-            if (dependencies.isEmpty()) {
-                feasibleActions.add(a);
-            } else {
-                blockedActions.add(a);
-                Dependency dep = new Dependency(a, dependencies);
-                for (Action x : dep.getDependencies()) {
-                    Set<Dependency> pres = pre.get(x);
-                    if (pres == null) {
-                        pres = new HashSet<Dependency>();
-                        pre.put(x, pres);
+        synchronized(feasibleActions) {
+            synchronized (blockedActions) {
+                synchronized (pendingActions) {
+                    curModel = plan.getOrigin().clone();
+                    pre = new HashMap<Action, Set<Dependency>>();
+                    pendingActions.clear();
+                }
+                feasibleActions.clear();
+                blockedActions.clear();
+
+                for (Action a : plan) {
+                    Set<Action> dependencies = plan.getDirectDependencies(a);
+                    if (dependencies.isEmpty()) {
+                        feasibleActions.add(a);
+                    } else {
+                        blockedActions.add(a);
+                        Dependency dep = new Dependency(a, dependencies);
+                        for (Action x : dep.getDependencies()) {
+                            Set<Dependency> pres = pre.get(x);
+                            if (pres == null) {
+                                pres = new HashSet<Dependency>();
+                                pre.put(x, pres);
+                            }
+                            pres.add(dep);
+                        }
                     }
-                    pres.add(dep);
                 }
             }
         }
-
     }
 
     @Override
@@ -81,8 +101,10 @@ public class DefaultReconfigurationPlanExecutor implements ReconfigurationPlanEx
 
     @Override
     public boolean commit(Action a) {
-        if (!feasibleActions.remove(a)) {
-            return false;
+        synchronized (pendingActions) {
+            if (!pendingActions.remove(a)) {
+                return false;
+            }
         }
         boolean ret = a.apply(curModel);
         if (!ret) {
@@ -95,36 +117,53 @@ public class DefaultReconfigurationPlanExecutor implements ReconfigurationPlanEx
                 Set<Action> actions = dep.getDependencies();
                 actions.remove(a);
                 if (actions.isEmpty()) {
-                    feasibleActions.add(dep.getAction());
-                    blockedActions.remove(dep.getAction());
+                    synchronized(feasibleActions) {
+                        synchronized (blockedActions) {
+                            feasibleActions.add(dep.getAction());
+                            blockedActions.remove(dep.getAction());
+                        }
+                    }
                 }
             }
         }
-        assert !deadlock();
+
+        /**
+         * Check if there is a deadlock.
+         * A deadlock occurs when some actions are blocked while their is no feasible and pending actions.
+         */
+        assert !deadLock();
         return true;
+    }
+
+    private boolean deadLock() {
+        synchronized(feasibleActions) {
+            synchronized (pendingActions) {
+                synchronized (blockedActions) {
+                    return feasibleActions.isEmpty() && pendingActions.isEmpty() && !blockedActions.isEmpty();
+                }
+            }
+        }
     }
 
     @Override
     public boolean begin(Action a) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Check if there is a deadlock
-     *
-     * @return {@code true} iff there is a deadlock
-     */
-    private boolean deadlock() {
-        return feasibleActions.isEmpty() && !blockedActions.isEmpty();
-    }
-
-    @Override
-    public Set<Action> getBlockedActions() {
-        return blockedActions;
+        synchronized(feasibleActions) {
+            synchronized (pendingActions) {
+                return feasibleActions.remove(a) && pendingActions.add(a);
+            }
+        }
     }
 
     @Override
     public boolean isOver() {
-        return getBlockedActions().isEmpty() && getFeasibleActions().isEmpty();
+        synchronized(feasibleActions) {
+            synchronized (pendingActions) {
+                synchronized (blockedActions) {
+                    return getBlockedActions().isEmpty()
+                            && getFeasibleActions().isEmpty()
+                            && getPendingActions().isEmpty();
+                }
+            }
+        }
     }
 }

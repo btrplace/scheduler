@@ -53,6 +53,7 @@ public class DefaultReconfigurationPlanExecutorTest implements PremadeElements {
         Assert.assertEquals(exec.getBlockedActions().size(), 1, exec.getFeasibleActions().toString());
         Assert.assertTrue(exec.getBlockedActions().containsAll(Arrays.asList(a3)), exec.getFeasibleActions().toString());
 
+        Assert.assertTrue(exec.begin(a4));
         Assert.assertTrue(exec.commit(a4));
         Assert.assertFalse(exec.isOver());
         Assert.assertFalse(exec.commit(a3));
@@ -60,14 +61,17 @@ public class DefaultReconfigurationPlanExecutorTest implements PremadeElements {
         Assert.assertEquals(exec.getFeasibleActions().size(), 2);
         Assert.assertTrue(exec.getFeasibleActions().containsAll(Arrays.asList(a1, a2)), exec.getFeasibleActions().toString());
 
+        Assert.assertTrue(exec.begin(a1));
         Assert.assertTrue(exec.commit(a1));
         Assert.assertFalse(exec.isOver());
         Assert.assertEquals(exec.getFeasibleActions().size(), 2);
         Assert.assertTrue(exec.getFeasibleActions().containsAll(Arrays.asList(a2, a3)), exec.getFeasibleActions().toString());
         Assert.assertTrue(exec.getBlockedActions().isEmpty());
 
+        Assert.assertTrue(exec.begin(a2));
         Assert.assertTrue(exec.commit(a2));
         Assert.assertFalse(exec.isOver());
+        Assert.assertTrue(exec.begin(a3));
         Assert.assertTrue(exec.commit(a3));
         Assert.assertTrue(exec.isOver());
 

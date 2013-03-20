@@ -6,8 +6,8 @@ import java.util.Set;
 
 /**
  * This allows to execute a reconfiguration plan while
- * considering the dependencies between actions rather only their start moment
- * and duration. Each time an action is committed, it update the running model
+ * considering the dependencies between actions rather than only their start moment
+ * and duration. Each time an action is committed, it updates the running model
  * to reflect the changes.
  *
  * @author Fabien Hermenier
@@ -21,6 +21,21 @@ public interface ReconfigurationPlanExecutor {
      * @return a set of actions that may be empty.
      */
     Set<Action> getFeasibleActions();
+
+    /**
+     * Get the actions that cannot be executed for the
+     * moment due to un-met dependencies.
+     *
+     * @return a set of actions that may be empty.
+     */
+    Set<Action> getBlockedActions();
+
+    /**
+     * Get the actions that have began but that
+     * are not committed.
+     * @return a set of actions that may be empty.
+     */
+    Set<Action> getPendingActions();
 
     /**
      * Reset the executor.
@@ -51,14 +66,6 @@ public interface ReconfigurationPlanExecutor {
      * @return {@code true} iff the acion is allowed to start
      */
     boolean begin(Action a);
-
-    /**
-     * Get the actions that cannot be executed for the
-     * moment due to un-met dependencies.
-     *
-     * @return a set of actions that may be empty.
-     */
-    Set<Action> getBlockedActions();
 
     /**
      * Indicate whether a reconfiguration is terminated or not.
