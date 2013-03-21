@@ -4,9 +4,8 @@ import btrplace.plan.event.ActionVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Execute a reconfiguration plan with the help of
@@ -20,8 +19,6 @@ import java.util.concurrent.locks.ReentrantLock;
  * The practical execution of each of the action is performed by the implementation of an {@link ActionVisitor}
  * where is {@code visit} method should return a non-null value to indicate the success of the operation.
  * <p/>
- * <p/>
- * TODO: Error reporting
  *
  * @author Fabien Hermenier
  */
@@ -33,7 +30,7 @@ public class ReconfigurationPlanExecutor {
 
     private final Logger logger = LoggerFactory.getLogger("PlanExecutor");
 
-    private Lock lock;
+    private final Object locker;
 
     /**
      * Make a new executor.
@@ -44,48 +41,63 @@ public class ReconfigurationPlanExecutor {
     public ReconfigurationPlanExecutor(ReconfigurationPlanMonitor rpe, ActionVisitor executor) {
         this.rpe = rpe;
         this.executor = executor;
+        locker = new Object();
     }
 
     /**
      * Start the reconfiguration.
      */
-    public void run() {
+    public void run() throws InterruptedException, ReconfigurationPlanMonitorException {
 
-        Set<Action> feasible = rpe.getFeasibleActions();
+        Set<Action> feasible = new HashSet<Action>();
+        for (Action a : rpe.getReconfigurationPlan()) {
+            if (!rpe.isBlocked(a)) {
+                feasible.add(a);
+            }
+        }
         if (!feasible.isEmpty()) {
-            lock = new ReentrantLock();
-            lock.lock();
-            for (final Action a : feasible) {
+            for (Action a : feasible) {
                 executeInParallel(a);
             }
-            lock.lock();
+            synchronized (locker) {
+                locker.wait();
+            }
         }
     }
 
-    private void commitAndContinue(Action a) {
-        rpe.commit(a);
-        Set<Action> feasible = rpe.getFeasibleActions();
-        if (feasible.isEmpty()) {
-            if (!rpe.isOver()) {
-                logger.error("No more feasible actions but the execution is not over:\npendings={}\nblocked={}\n", rpe.getPendingActions(), rpe.getBlockedActions());
+    private void commitAndContinue(Action a) throws ReconfigurationPlanMonitorException {
+        logger.debug("action committed: {}", a);
+        Set<Action> unblocked = rpe.commit(a);
+        if (unblocked.isEmpty()) {
+            if (rpe.isOver()) {
+                synchronized (locker) {
+                    locker.notify();
+                }
             }
-            lock.unlock();
         } else {
-            for (final Action a2 : rpe.getFeasibleActions()) {
+            for (final Action a2 : unblocked) {
                 executeInParallel(a2);
             }
         }
     }
 
-    private void executeInParallel(final Action a) {
+    private void executeInParallel(final Action a) throws ReconfigurationPlanMonitorException {
+        logger.debug("Start action :{}", a);
+        rpe.begin(a);
         Thread t = new Thread() {
             public void run() {
                 if (a.visit(executor) != null) {
-                    commitAndContinue(a);
+                    try {
+                        commitAndContinue(a);
+                    } catch (ReconfigurationPlanMonitorException ex) {
+                        System.err.println(ex.getMessage() + "\n" + ex.getAction() + "\n" + ex.getModel().getMapping());
+                    }
                 } else {
                     //We stop the execution here
-                    logger.error("No more feasible actions but the execution is not over:\npendings={}\nblocked={}\n", rpe.getPendingActions(), rpe.getBlockedActions());
-                    lock.unlock();
+                    logger.error("No more feasible actions but the execution is not over");
+                    synchronized (locker) {
+                        locker.notify();
+                    }
                 }
             }
         };

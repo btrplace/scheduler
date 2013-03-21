@@ -12,7 +12,6 @@ import java.util.*;
  * The dependencies are updated each time an action is committed, which means the action
  * have been successfully executed.
  * <p/>
- * TODO: must be thread-safe
  *
  * @author Fabien Hermenier
  */
@@ -22,13 +21,15 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
 
     private Model curModel;
 
-    private Map<Action, Set<Dependency>> pre;
+    private final Map<Action, Set<Dependency>> pre;
 
-    private final Set<Action> feasibleActions;
+    private final Map<Action, Dependency> deps;
 
     private final Set<Action> pendingActions;
 
-    private final Set<Action> blockedActions;
+    private final Object lock;
+
+    private int nbCommitted;
 
     /**
      * Make a new executor.
@@ -38,56 +39,33 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
     public DefaultReconfigurationPlanMonitor(ReconfigurationPlan plan) {
         this.plan = plan;
 
-        feasibleActions = new HashSet<Action>();
-        blockedActions = new HashSet<Action>();
         pendingActions = new HashSet<Action>();
-
+        pre = new HashMap<Action, Set<Dependency>>();
+        deps = new HashMap<Action, Dependency>();
+        lock = new Object();
         reset();
     }
 
-    @Override
-    public Set<Action> getFeasibleActions() {
-        return Collections.unmodifiableSet(feasibleActions);
-    }
-
-    @Override
-    public Set<Action> getPendingActions() {
-        return Collections.unmodifiableSet(pendingActions);
-    }
-
-    @Override
-    public Set<Action> getBlockedActions() {
-        return Collections.unmodifiableSet(blockedActions);
-    }
-
-
-    @Override
-    public void reset() {
-        synchronized(feasibleActions) {
-            synchronized (blockedActions) {
-                synchronized (pendingActions) {
-                    curModel = plan.getOrigin().clone();
-                    pre = new HashMap<Action, Set<Dependency>>();
-                    pendingActions.clear();
-                }
-                feasibleActions.clear();
-                blockedActions.clear();
-
-                for (Action a : plan) {
-                    Set<Action> dependencies = plan.getDirectDependencies(a);
-                    if (dependencies.isEmpty()) {
-                        feasibleActions.add(a);
-                    } else {
-                        blockedActions.add(a);
-                        Dependency dep = new Dependency(a, dependencies);
-                        for (Action x : dep.getDependencies()) {
-                            Set<Dependency> pres = pre.get(x);
-                            if (pres == null) {
-                                pres = new HashSet<Dependency>();
-                                pre.put(x, pres);
-                            }
-                            pres.add(dep);
+    private void reset() {
+        synchronized (lock) {
+            curModel = plan.getOrigin().clone();
+            pre.clear();
+            pendingActions.clear();
+            nbCommitted = 0;
+            for (Action a : plan) {
+                Set<Action> dependencies = plan.getDirectDependencies(a);
+                if (dependencies.isEmpty()) {
+                    deps.put(a, new Dependency(a, Collections.<Action>emptySet()));
+                } else {
+                    Dependency dep = new Dependency(a, dependencies);
+                    deps.put(a, dep);
+                    for (Action x : dep.getDependencies()) {
+                        Set<Dependency> pres = pre.get(x);
+                        if (pres == null) {
+                            pres = new HashSet<Dependency>();
+                            pre.put(x, pres);
                         }
+                        pres.add(dep);
                     }
                 }
             }
@@ -100,70 +78,57 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
     }
 
     @Override
-    public boolean commit(Action a) {
-        synchronized (pendingActions) {
+    public Set<Action> commit(Action a) throws ReconfigurationPlanMonitorException {
+        Set<Action> s = new HashSet<Action>();
+        synchronized (lock) {
             if (!pendingActions.remove(a)) {
-                return false;
+                throw new ReconfigurationPlanMonitorException(curModel, a, "The action was not supposed to be executed");
             }
-        }
-        boolean ret = a.apply(curModel);
-        if (!ret) {
-            return false;
-        }
-        //Browse all its dependencies for the action
-        Set<Dependency> deps = pre.get(a);
-        if (deps != null) {
-            for (Dependency dep : deps) {
-                Set<Action> actions = dep.getDependencies();
-                actions.remove(a);
-                if (actions.isEmpty()) {
-                    synchronized(feasibleActions) {
-                        synchronized (blockedActions) {
-                            feasibleActions.add(dep.getAction());
-                            blockedActions.remove(dep.getAction());
-                        }
+            boolean ret = a.apply(curModel);
+            if (!ret) {
+                throw new ReconfigurationPlanMonitorException(curModel, a, "unable to apply the action of the model");
+            }
+            nbCommitted++;
+            //Browse all its dependencies for the action
+            Set<Dependency> deps = pre.get(a);
+            if (deps != null) {
+                for (Dependency dep : deps) {
+                    Set<Action> actions = dep.getDependencies();
+                    actions.remove(a);
+                    if (actions.isEmpty()) {
+                        Action x = dep.getAction();
+                        s.add(x);
                     }
                 }
             }
         }
-
-        /**
-         * Check if there is a deadlock.
-         * A deadlock occurs when some actions are blocked while their is no feasible and pending actions.
-         */
-        assert !deadLock();
-        return true;
-    }
-
-    private boolean deadLock() {
-        synchronized(feasibleActions) {
-            synchronized (pendingActions) {
-                synchronized (blockedActions) {
-                    return feasibleActions.isEmpty() && pendingActions.isEmpty() && !blockedActions.isEmpty();
-                }
-            }
-        }
+        return s;
     }
 
     @Override
     public boolean begin(Action a) {
-        synchronized(feasibleActions) {
-            synchronized (pendingActions) {
-                return feasibleActions.remove(a) && pendingActions.add(a);
-            }
+        synchronized (lock) {
+            Dependency dep = deps.get(a);
+            return dep.getDependencies().isEmpty() && pendingActions.add(a);
         }
     }
 
     @Override
     public boolean isOver() {
-        synchronized(feasibleActions) {
-            synchronized (pendingActions) {
-                synchronized (blockedActions) {
-                    return getBlockedActions().isEmpty()
-                            && getFeasibleActions().isEmpty()
-                            && getPendingActions().isEmpty();
-                }
-            }
+        synchronized (lock) {
+            return plan.getSize() == nbCommitted;
         }
+    }
+
+    @Override
+    public boolean isBlocked(Action a) {
+        synchronized (lock) {
+            return !deps.get(a).getDependencies().isEmpty();
+        }
+    }
+
+    @Override
+    public ReconfigurationPlan getReconfigurationPlan() {
+        return plan;
     }
 }
