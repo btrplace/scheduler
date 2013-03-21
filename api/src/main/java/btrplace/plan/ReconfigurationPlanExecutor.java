@@ -32,6 +32,10 @@ public class ReconfigurationPlanExecutor {
 
     private final Object locker;
 
+    private final int nbActions;
+
+    private ReconfigurationPlanExecutorException ex = null;
+
     /**
      * Make a new executor.
      *
@@ -42,12 +46,13 @@ public class ReconfigurationPlanExecutor {
         this.rpe = rpe;
         this.executor = executor;
         locker = new Object();
+        nbActions = rpe.getReconfigurationPlan().getSize();
     }
 
     /**
      * Start the reconfiguration.
      */
-    public void run() throws InterruptedException, ReconfigurationPlanMonitorException {
+    public void run() throws InterruptedException, ReconfigurationPlanExecutorException {
 
         Set<Action> feasible = new HashSet<Action>();
         for (Action a : rpe.getReconfigurationPlan()) {
@@ -62,45 +67,86 @@ public class ReconfigurationPlanExecutor {
             synchronized (locker) {
                 locker.wait();
             }
+            if (ex != null) {
+                throw ex;
+            }
         }
     }
 
-    private void commitAndContinue(Action a) throws ReconfigurationPlanMonitorException {
-        logger.debug("action committed: {}", a);
-        Set<Action> unblocked = rpe.commit(a);
-        if (unblocked.isEmpty()) {
-            if (rpe.isOver()) {
+    public void commit(ActionExecutor ae) {
+        if (!ae.succeeded()) {
+            logger.error("Action execution failure: " + ae.getAction());
+            ex = new ReconfigurationPlanExecutorException(rpe.getReconfigurationPlan(),
+                    rpe.getCurrentModel(),
+                    ae.getAction(),
+                    "The action execution failed");
+            synchronized (locker) {
+                locker.notify();
+            }
+        } else {
+            logger.debug("Action committed: {}", ae.getAction());
+            Set<Action> unblocked = rpe.commit(ae.getAction());
+            if (unblocked == null) { //Not applyable action
+                ex = new ReconfigurationPlanExecutorException(rpe.getReconfigurationPlan(),
+                        rpe.getCurrentModel(),
+                        ae.getAction(),
+                        "The action was not applyable on the model");
+                logger.error("Action was not applyable: " + ae.getAction());
                 synchronized (locker) {
                     locker.notify();
                 }
-            }
-        } else {
-            for (final Action a2 : unblocked) {
-                executeInParallel(a2);
+            } else {
+                if (unblocked.isEmpty()) {
+                    if (rpe.getNbCommitted() == nbActions) {
+                        //End of the reconfiguration
+                        logger.debug("End of the reconfiguration");
+                        synchronized (locker) {
+                            locker.notify();
+                        }
+                    }
+                } else {
+                    for (final Action a2 : unblocked) {
+                        executeInParallel(a2);
+                    }
+                }
             }
         }
     }
 
-    private void executeInParallel(final Action a) throws ReconfigurationPlanMonitorException {
+    private void executeInParallel(final Action a) {
         logger.debug("Start action :{}", a);
-        rpe.begin(a);
-        Thread t = new Thread() {
-            public void run() {
-                if (a.visit(executor) != null) {
-                    try {
-                        commitAndContinue(a);
-                    } catch (ReconfigurationPlanMonitorException ex) {
-                        System.err.println(ex.getMessage() + "\n" + ex.getAction() + "\n" + ex.getModel().getMapping());
-                    }
-                } else {
-                    //We stop the execution here
-                    logger.error("No more feasible actions but the execution is not over");
-                    synchronized (locker) {
-                        locker.notify();
-                    }
-                }
+        ActionExecutor ae = new ActionExecutor(executor, a);
+        ae.start();
+    }
+
+    public class ActionExecutor extends Thread {
+
+        private Action action;
+
+        private boolean succeed;
+
+        private ActionVisitor executor;
+
+        public ActionExecutor(ActionVisitor executor, Action a) {
+            action = a;
+            succeed = false;
+            this.executor = executor;
+        }
+
+        @Override
+        public void run() {
+            if (action.visit(executor) != null) {
+                succeed = true;
+                commit(this);
             }
-        };
-        t.start();
+        }
+
+        public boolean succeeded() {
+            return succeed;
+        }
+
+        public Action getAction() {
+            return action;
+        }
     }
 }

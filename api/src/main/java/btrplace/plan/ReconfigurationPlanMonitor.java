@@ -24,34 +24,22 @@ public interface ReconfigurationPlanMonitor {
     Model getCurrentModel();
 
     /**
-     * Commit an action.
-     * If it is theoretically possible to execute the action
-     * on the current model, the model is updated to reflect the action
-     * execution.
+     * Commit an action that must not be blocked.
+     * If it is theoretically possible to execute the action on the current model,
+     * the model is updated accordingly.
      *
      * @param a the action to commit
-     * @return a set of unblocked actions that may be empty
-     * @throws ReconfigurationPlanMonitorException
-     *          if the commit is not possible
+     * @return a set of unblocked actions that may be empty if the operation succeed.
+     *         {@code null} if the commit was not allowed because the action was not applyable
      */
-    Set<Action> commit(Action a) throws ReconfigurationPlanMonitorException;
+    Set<Action> commit(Action a);
 
     /**
-     * Indicates a given feasible action is started
+     * Get the number of actions that have been committed.
      *
-     * @param a the action
-     * @return {@code true} iff the action is allowed to start
+     * @return a number between 0 and {@link btrplace.plan.ReconfigurationPlan#getSize()}
      */
-    boolean begin(Action a);
-
-    /**
-     * Indicate whether a reconfiguration is terminated or not.
-     * A reconfiguration is terminated if all the actions in the plan
-     * have been committed.
-     *
-     * @return {@code true} iff the reconfiguration is terminated
-     */
-    boolean isOver();
+    int getNbCommitted();
 
     boolean isBlocked(Action a);
 

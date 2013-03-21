@@ -57,74 +57,50 @@ public class DefaultReconfigurationPlanMonitorTest implements PremadeElements {
         Assert.assertFalse(exec.isBlocked(a2));
         Assert.assertTrue(exec.isBlocked(a3));
         Assert.assertFalse(exec.isBlocked(a4));
-        Assert.assertFalse(exec.isOver());
+        Assert.assertEquals(exec.getNbCommitted(), 0);
     }
+
 
     @Test(dependsOnMethods = {"testInit"})
-    public void testBegin() {
+    public void testGoodCommits() {
         ReconfigurationPlan plan = makePlan();
         ReconfigurationPlanMonitor exec = new DefaultReconfigurationPlanMonitor(plan);
-
-        //Begin a feasible action. Should work
-        Assert.assertTrue(exec.begin(a4));
-
-        //Begin a blocked action. Fail
-        Assert.assertFalse(exec.begin(a3));
-
-        //Begin a pending action. Fail
-        Assert.assertFalse(exec.begin(a4));
-    }
-
-    @Test(dependsOnMethods = {"testInit", "testBegin"})
-    public void testGoodCommits() throws ReconfigurationPlanMonitorException {
-        ReconfigurationPlan plan = makePlan();
-        ReconfigurationPlanMonitor exec = new DefaultReconfigurationPlanMonitor(plan);
-
-        Assert.assertTrue(exec.begin(a4));
-        Assert.assertTrue(exec.begin(a1));
 
         Assert.assertTrue(exec.commit(a4).isEmpty());
+        Assert.assertEquals(exec.getNbCommitted(), 1);
         Set<Action> released = exec.commit(a1);
+        Assert.assertNotNull(released);
         Assert.assertEquals(released.size(), 1);
         Assert.assertTrue(released.contains(a3));
         Assert.assertFalse(exec.isBlocked(a3));
     }
 
-    @Test(dependsOnMethods = {"testInit", "testBegin", "testGoodCommits"}, expectedExceptions = {ReconfigurationPlanMonitorException.class})
-    public void testCommitUnStarted() throws ReconfigurationPlanMonitorException {
+    @Test(dependsOnMethods = {"testInit", "testGoodCommits"})
+    public void testCommitBlocked() {
         ReconfigurationPlan plan = makePlan();
         ReconfigurationPlanMonitor exec = new DefaultReconfigurationPlanMonitor(plan);
-        exec.commit(a1);
+        Assert.assertNull(exec.commit(a3));
     }
 
-    @Test(dependsOnMethods = {"testInit", "testBegin", "testGoodCommits"}, expectedExceptions = {ReconfigurationPlanMonitorException.class})
-    public void testDoubleCommit() throws ReconfigurationPlanMonitorException {
+    @Test(dependsOnMethods = {"testInit", "testGoodCommits"})
+    public void testDoubleCommit() {
         ReconfigurationPlan plan = makePlan();
         ReconfigurationPlanMonitor exec = new DefaultReconfigurationPlanMonitor(plan);
-        exec.begin(a1);
-        try {
-            exec.commit(a1);
-        } catch (ReconfigurationPlanMonitorException ex) {
-            Assert.fail();
-        }
-        exec.commit(a1);
+        Assert.assertNotNull(exec.commit(a1));
+        Assert.assertNull(exec.commit(a1));
     }
 
-    @Test(dependsOnMethods = {"testInit", "testBegin", "testGoodCommits"})
-    public void testOver() throws ReconfigurationPlanMonitorException {
+    @Test(dependsOnMethods = {"testInit", "testGoodCommits"})
+    public void testOver() {
         ReconfigurationPlan plan = makePlan();
         ReconfigurationPlanMonitor exec = new DefaultReconfigurationPlanMonitor(plan);
 
-        Assert.assertTrue(exec.begin(a1));
-        Assert.assertTrue(exec.begin(a4));
-        Assert.assertTrue(exec.begin(a2));
         Assert.assertTrue(exec.commit(a2).isEmpty());
         Assert.assertTrue(exec.commit(a4).isEmpty());
         Assert.assertFalse(exec.commit(a1).isEmpty());
-        Assert.assertTrue(exec.begin(a3));
-        Assert.assertFalse(exec.isOver());
+        Assert.assertEquals(exec.getNbCommitted(), 3);
         Assert.assertTrue(exec.commit(a3).isEmpty());
-        Assert.assertTrue(exec.isOver());
+        Assert.assertEquals(exec.getNbCommitted(), 4);
     }
 
     @Test

@@ -53,18 +53,13 @@ public class ReconfigurationPlanExecutorTest implements PremadeElements {
     }
 
     @Test
-    public void test() throws InterruptedException, ReconfigurationPlanMonitorException {
+    public void test() throws InterruptedException, ReconfigurationPlanExecutorException {
         ReconfigurationPlan plan = makePlan();
         ReconfigurationPlanMonitor monitor = new DefaultReconfigurationPlanMonitor(plan);
         DummyExecutor de = new DummyExecutor();
         ReconfigurationPlanExecutor exec = new ReconfigurationPlanExecutor(monitor, de);
-        try {
-            exec.run();
-            Assert.assertEquals(de.visited, plan.getSize());
-        } catch (ReconfigurationPlanMonitorException ex) {
-            System.err.println(ex.getMessage() + "\n" + ex.getAction() + "\n" + ex.getModel());
-            throw ex;
-        }
+        exec.run();
+        Assert.assertEquals(de.visited, plan.getSize());
     }
 
     public static class DummyExecutor implements ActionVisitor {
@@ -78,7 +73,7 @@ public class ReconfigurationPlanExecutorTest implements PremadeElements {
             } catch (InterruptedException ex) {
                 Assert.fail(ex.getMessage(), ex);
             }
-            return a;
+            return null;
         }
 
         @Override

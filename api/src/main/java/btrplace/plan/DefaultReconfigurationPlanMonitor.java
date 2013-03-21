@@ -25,8 +25,6 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
 
     private final Map<Action, Dependency> deps;
 
-    private final Set<Action> pendingActions;
-
     private final Object lock;
 
     private int nbCommitted;
@@ -39,7 +37,6 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
     public DefaultReconfigurationPlanMonitor(ReconfigurationPlan plan) {
         this.plan = plan;
 
-        pendingActions = new HashSet<Action>();
         pre = new HashMap<Action, Set<Dependency>>();
         deps = new HashMap<Action, Dependency>();
         lock = new Object();
@@ -50,7 +47,6 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
         synchronized (lock) {
             curModel = plan.getOrigin().clone();
             pre.clear();
-            pendingActions.clear();
             nbCommitted = 0;
             for (Action a : plan) {
                 Set<Action> dependencies = plan.getDirectDependencies(a);
@@ -78,15 +74,12 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
     }
 
     @Override
-    public Set<Action> commit(Action a) throws ReconfigurationPlanMonitorException {
+    public Set<Action> commit(Action a) {
         Set<Action> s = new HashSet<Action>();
         synchronized (lock) {
-            if (!pendingActions.remove(a)) {
-                throw new ReconfigurationPlanMonitorException(curModel, a, "The action was not supposed to be executed");
-            }
             boolean ret = a.apply(curModel);
             if (!ret) {
-                throw new ReconfigurationPlanMonitorException(curModel, a, "unable to apply the action of the model");
+                return null;
             }
             nbCommitted++;
             //Browse all its dependencies for the action
@@ -106,17 +99,9 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
     }
 
     @Override
-    public boolean begin(Action a) {
+    public int getNbCommitted() {
         synchronized (lock) {
-            Dependency dep = deps.get(a);
-            return dep.getDependencies().isEmpty() && pendingActions.add(a);
-        }
-    }
-
-    @Override
-    public boolean isOver() {
-        synchronized (lock) {
-            return plan.getSize() == nbCommitted;
+            return nbCommitted;
         }
     }
 
