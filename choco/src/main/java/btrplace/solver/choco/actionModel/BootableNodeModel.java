@@ -38,14 +38,14 @@ import java.util.UUID;
  * <li>Definition of the node state. If the node is offline, they no VMs can run on it:
  * <ul>
  * <li>{@link #getState()} = {0,1}</li>
- * <li>{@link #getState()} = 0 -> {@code btrplace.solver.choco.ReconfigurationProblem#getNbRunningVMs()[nIdx] = 0}</li>
+ * <li>{@link #getState()} = 0 -> {@code btrplace.solver.choco.ReconfigurationProblem.getNbRunningVMs()[nIdx] = 0}</li>
  * </ul>
  * </li>
  * <li>The action duration equals 0 if the node stays offline. Otherwise, it equals the evaluated action duration {@code d}
  * retrieved from {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()}:
  * <ul>
  * <li>{@link #getDuration()} = {0,d}</li>
- * <li>{@link #getDuration()} = {@link #getState()} * d}</li>
+ * <li>{@link #getDuration()} = {@link #getState()} * d</li>
  * </ul>
  * </li>
  * <li>The action starts and ends necessarily before the end of the reconfiguration problem. Their difference
@@ -60,7 +60,7 @@ import java.util.UUID;
  * the end of the reconfiguration. Otherwise, it is never capable of hosting VMs (the deadline equals 0)
  * <ul>
  * <li>{@link #getHostingStart()} = {@link #getEnd()}</li>
- * <li>{@code T} = { {@code 0,} {@link btrplace.solver.choco.ReconfigurationProblem#getEnd()} }; {@link #getHostingEnd()} = T[{@link #getState()}]}</li>
+ * <li>{@code T} = { {@code 0,} {@link btrplace.solver.choco.ReconfigurationProblem#getEnd()} }; {@link #getHostingEnd()} = T[{@link #getState()}]</li>
  * </ul>
  * </li>
  * </ul>
