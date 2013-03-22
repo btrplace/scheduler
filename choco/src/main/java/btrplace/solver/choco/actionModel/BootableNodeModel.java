@@ -23,19 +23,55 @@ import btrplace.plan.event.BootNode;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.NodeActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.chocoUtil.FastIFFEq;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.ElementV;
 import choco.cp.solver.constraints.integer.TimesXYZ;
-import choco.cp.solver.variables.integer.IntDomainVarAddCste;
-import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.UUID;
 
 /**
- * Model an action that allow a node to be booted if necessary.
+ * Model an action that allows a node to be booted if necessary. The action is modeled as follow:
+ * <p/>
+ * <ul>
+ * <li>Definition of the node state. If the node is offline, then no VMs can run on it:
+ * <ul>
+ * <li>{@link #getState()} = {0,1}</li>
+ * <li>{@link #getState()} = 0 -> {@code btrplace.solver.choco.ReconfigurationProblem.getNbRunningVMs()[nIdx] = 0}</li>
+ * </ul>
+ * </li>
+ * <li>The action duration equals 0 if the node stays offline. Otherwise, it equals the evaluated action duration {@code d}
+ * retrieved from {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()}:
+ * <ul>
+ * <li>{@link #getDuration()} = {0,d}</li>
+ * <li>{@link #getDuration()} = {@link #getState()} * d</li>
+ * </ul>
+ * </li>
+ * <li>The action starts and ends necessarily before the end of the reconfiguration problem. Their difference
+ * equals the action duration. If the node stays offline then the action starts and ends at moment 0.
+ * <ul>
+ * <li>{@link #getStart()} < {@link btrplace.solver.choco.ReconfigurationProblem#getEnd()}</li>
+ * <li>{@link #getEnd()} < {@link btrplace.solver.choco.ReconfigurationProblem#getEnd()}</li>
+ * <li>{@link #getEnd()} = {@link #getStart()} + {@link #getDuration()}</li>
+ * </ul>
+ * </li>
+ * <li>The node can start hosting VMs and the end of the action. If the node goes online, it can stop hosting VMs at
+ * the end of the reconfiguration. Otherwise, it is never capable of hosting VMs (the deadline equals 0)
+ * <ul>
+ * <li>{@link #getHostingStart()} = {@link #getEnd()}</li>
+ * <li>{@code T} = { {@code 0}, {@link btrplace.solver.choco.ReconfigurationProblem#getEnd()} }; {@link #getHostingEnd()} = T[{@link #getState()}]</li>
+ * </ul>
+ * </li>
+ * <li>
+ * The moment the node is powered up and down equals the moment the action starts and the moment it can not host VMs.
+ * If the node is not powered up, these duration equals then 0
+ * <ul>
+ * <li>{@link #getPoweringStart()} = {@link #getStart()}</li>
+ * <li>{@link #getPoweringEnd()} = {@link #getHostingEnd()}</li>
+ * </ul>
+ * </li>
+ * </ul>
  *
  * @author Fabien Hermenier
  */
@@ -51,7 +87,7 @@ public class BootableNodeModel implements NodeActionModel {
 
     private IntDomainVar hostingEnd;
 
-    private IntDomainVar duration;
+    private IntDomainVar effectiveDuration;
 
     private UUID node;
 
@@ -68,32 +104,46 @@ public class BootableNodeModel implements NodeActionModel {
         int d = rp.getDurationEvaluators().evaluate(BootNode.class, nId);
         CPSolver s = rp.getSolver();
 
-        isOnline = s.createBooleanVar(rp.makeVarLabel("bootableNode(" + nId + ").online"));
-        IntDomainVar isOffline = s.createBooleanVar(rp.makeVarLabel("bootableNode(" + nId + ").offline"));
+        /*
+            - If the node is hosting running VMs, it is necessarily online
+            - If the node is offline, it is sure it cannot host any running VMs
+        */
+        isOnline = s.createBooleanVar(rp.makeVarLabel(new StringBuilder("bootableNode(").append(nId).append(").online").toString()));
+        IntDomainVar isOffline = s.createBooleanVar(rp.makeVarLabel(new StringBuilder("bootableNode(").append(nId).append(").offline").toString()));
         s.post(s.neq(isOffline, isOnline));
         s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNode(nId)], 0));
 
-        end = rp.makeDuration("bootableNode(" + nId + ").end");
 
-        hostingStart = rp.makeDuration("bootableNode(" + nId + ").hostingStart");
-        s.post(new TimesXYZ(isOnline, hostingStart, end));
-        s.post(s.leq(end, rp.getEnd()));
-        s.post(s.leq(hostingStart, rp.getEnd()));
+        /*
+        * D = {0, d}
+        * D = St * d;
+        */
+        effectiveDuration = s.createEnumIntVar(
+                rp.makeVarLabel(new StringBuilder("bootableNode(").append(nId).append(").effectiveDuration").toString())
+                , new int[]{0, d});
+        s.post(new TimesXYZ(isOnline, s.makeConstantIntVar(d), effectiveDuration));
 
-        //node stay offline: start = 0, end = 0, duration = 0;
-        //node get online: start = end - duration
+        /* As */
         start = rp.makeDuration(new StringBuilder("bootableNode(").append(nId).append(").start").toString());
+        /* Ae */
+        end = rp.makeDuration(new StringBuilder("bootableNode(").append(nId).append(").end").toString());
         s.post(s.leq(start, rp.getEnd()));
-        IntDomainVar av = new IntDomainVarAddCste(s, new StringBuilder("bootableNode(").append(nId).append(").availability").toString(), start, d);
-        /**
-         * if isOnline == 0, hostingStart = cDur + start , the boot duration
-         * else            , hostingStart = rp.getEnd(), so no dSlice
+        s.post(s.leq(end, rp.getEnd()));
+        /* Ae = As + D */
+        s.post(s.eq(end, s.plus(start, effectiveDuration)));
+
+
+        /* Hs = Ae */
+        hostingStart = end;
+        hostingEnd = rp.makeDuration(new StringBuilder("bootableNode(").append(nId).append(").hostingEnd").toString());
+        s.post(s.leq(hostingEnd, rp.getEnd()));
+
+
+        /*
+          T = { 0, RP.end}
+          He = T[St]
          */
-        SConstraint c = new ElementV(new IntDomainVar[]{rp.getEnd(), av, isOnline, hostingStart}, 0, s.getEnvironment());
-        s.post(c);
-        hostingEnd = rp.getEnd();
-        duration = s.createEnumIntVar(rp.makeVarLabel(new StringBuilder("bootableNode(").append(nId).append(").duration").toString()), new int[]{0, d});
-        s.post(new FastIFFEq(isOnline, duration, d));
+        s.post(new ElementV(new IntDomainVar[]{s.makeConstantIntVar(0), rp.getEnd(), isOnline, hostingEnd}, 0, s.getEnvironment()));
     }
 
     @Override
@@ -116,7 +166,7 @@ public class BootableNodeModel implements NodeActionModel {
 
     @Override
     public IntDomainVar getDuration() {
-        return duration;
+        return effectiveDuration;
     }
 
     @Override
@@ -141,6 +191,16 @@ public class BootableNodeModel implements NodeActionModel {
 
     @Override
     public IntDomainVar getHostingEnd() {
+        return hostingEnd;
+    }
+
+    @Override
+    public IntDomainVar getPoweringStart() {
+        return start;
+    }
+
+    @Override
+    public IntDomainVar getPoweringEnd() {
         return hostingEnd;
     }
 }

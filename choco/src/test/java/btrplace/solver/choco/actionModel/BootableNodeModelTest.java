@@ -25,6 +25,7 @@ import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootNode;
 import btrplace.plan.event.BootVM;
+import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.DurationEvaluators;
@@ -73,13 +74,15 @@ public class BootableNodeModelTest implements PremadeElements {
         BootableNodeModel na = (BootableNodeModel) rp.getNodeAction(n1);
         na.getState().setVal(1);
         ReconfigurationPlan p = rp.solve(0, false);
+        Assert.assertNotNull(p);
+        System.out.println(p);
         Assert.assertEquals(na.getDuration().getVal(), 5);
         Assert.assertEquals(na.getStart().getVal(), 0);
         Assert.assertEquals(na.getEnd().getVal(), 5);
         Assert.assertEquals(na.getHostingStart().getVal(), 5);
         Assert.assertEquals(na.getHostingEnd().getVal(), 5);
 
-        Assert.assertNotNull(p);
+
         Model res = p.getResult();
         Assert.assertTrue(res.getMapping().getOnlineNodes().contains(n1));
     }
@@ -179,4 +182,39 @@ public class BootableNodeModelTest implements PremadeElements {
         System.out.flush();
     }
 
+    /**
+     * Unit test for issue #3
+     */
+    @Test
+    public void testActionDurationSimple() throws SolverException, ContradictionException {
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOfflineNode(n4);
+        Model model = new DefaultModel(map);
+        DurationEvaluators dev = new DurationEvaluators();
+        dev.register(ShutdownNode.class, new ConstantDuration(5));
+        dev.register(BootNode.class, new ConstantDuration(3));
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
+                .setDurationEvaluatators(dev)
+                .labelVariables()
+                .build();
+
+        ShutdownableNodeModel sn1 = (ShutdownableNodeModel) rp.getNodeAction(n1);
+        sn1.getState().setVal(0);
+        BootableNodeModel bn4 = (BootableNodeModel) rp.getNodeAction(n4);
+        bn4.getState().setVal(0);
+
+        ReconfigurationPlan p = rp.solve(0, false);
+        Assert.assertNotNull(p);
+        System.out.println(p);
+        Assert.assertEquals(bn4.getStart().getVal(), 0);
+        Assert.assertEquals(bn4.getDuration().getVal(), 0);
+        Assert.assertEquals(bn4.getEnd().getVal(), 0);
+        Assert.assertEquals(bn4.getHostingStart().getVal(), 0);
+        Assert.assertEquals(bn4.getHostingEnd().getVal(), 0);
+        Assert.assertEquals(p.getSize(), 1);
+        Model res = p.getResult();
+        Assert.assertTrue(res.getMapping().getOfflineNodes().contains(n1));
+        Assert.assertTrue(res.getMapping().getOfflineNodes().contains(n4));
+    }
 }

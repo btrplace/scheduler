@@ -3,7 +3,9 @@ package btrplace.examples;
 import btrplace.model.*;
 import btrplace.model.constraint.*;
 import btrplace.model.view.ShareableResource;
+import btrplace.plan.DependencyBasedPlanApplier;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.TimeBasedPlanApplier;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 
@@ -146,7 +148,10 @@ public class GettingStarted implements Example {
         ChocoReconfigurationAlgorithm ra = new DefaultChocoReconfigurationAlgorithm();
         //ra.setVerbosity(3); // Set the debugging flag
         ReconfigurationPlan plan = ra.solve(origin, cstrs);
-        System.out.println(plan);
+        System.out.println("Time-based plan:");
+        System.out.println(TimeBasedPlanApplier.getInstance().toString(plan));
+        System.out.println("\nDependency based plan:");
+        System.out.println(DependencyBasedPlanApplier.getInstance().toString(plan));
         return (plan != null);
     }
 

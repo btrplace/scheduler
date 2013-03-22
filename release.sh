@@ -82,7 +82,7 @@ perform)
     mkdir -p $APIDOC_ROOT > /dev/null
     rm -rf ${APIDOC_ROOT}/${VERSION}
     mv target/site/apidocs ${APIDOC_ROOT}/${VERSION}
-    mv target/site/solver-${VERSION}-javadoc.jar ${APIDOC_ROOT}/
+    mv target/solver-${VERSION}-javadoc.jar ${APIDOC_ROOT}/
     #Symbolic link to the javadoc, needed by the Wiki
     cd ${APIDOC_ROOT}
     rm -rf last

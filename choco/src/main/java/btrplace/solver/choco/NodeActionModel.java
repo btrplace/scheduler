@@ -49,4 +49,18 @@ public interface NodeActionModel extends ActionModel {
      * @return a variable
      */
     IntDomainVar getHostingEnd();
+
+    /**
+     * Get the moment the server has been powered up.
+     *
+     * @return a variable
+     */
+    IntDomainVar getPoweringStart();
+
+    /**
+     * Get the moment the server has been powered down.
+     *
+     * @return a variable
+     */
+    IntDomainVar getPoweringEnd();
 }

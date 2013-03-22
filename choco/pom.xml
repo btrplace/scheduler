@@ -23,7 +23,7 @@
     <parent>
         <groupId>btrplace</groupId>
         <artifactId>solver</artifactId>
-        <version>0.26</version>
+        <version>0.27</version>
     </parent>
     <artifactId>solver-choco</artifactId>
     <description>Implementation of a reconfiguration algorithm that use
@@ -62,16 +62,6 @@
             <type>jar</type>
             <scope>compile</scope>
             <optional>false</optional>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.0.7</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.2</version>
         </dependency>
     </dependencies>
 </project>
