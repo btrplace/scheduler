@@ -27,7 +27,13 @@ import btrplace.solver.choco.chocoUtil.ChocoUtils;
 import btrplace.solver.choco.chocoUtil.FastIFFEq;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.integer.ElementV;
+import choco.cp.solver.constraints.reified.IfThenElse;
+import choco.kernel.solver.constraints.SConstraintType;
+import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import com.sun.org.apache.xpath.internal.operations.Equals;
+import org.GNOME.Accessibility.TEXT_BOUNDARY_TYPEHelper;
 
 import java.util.UUID;
 
@@ -52,6 +58,10 @@ public class ShutdownableNodeModel implements NodeActionModel {
 
     private IntDomainVar start;
 
+    private IntDomainVar powerStart;
+
+    private IntDomainVar powerEnd;
+
     /**
      * Make a new model.
      *
@@ -69,6 +79,12 @@ public class ShutdownableNodeModel implements NodeActionModel {
         s.post(s.neq(isOnline, isOffline));
         //new BoolVarNot(s, rp.makeVarLabel("shutdownnableNode(" + e + ").offline"), (BooleanVarImpl) isOnline);
 
+        //The moment of shutdown action start
+        start = rp.makeDuration(new StringBuilder("shutdownableNode(").append(e).append(").start").toString());
+        //The moment of shutdown action end
+        end = rp.makeDuration(new StringBuilder("shutdownableNode(").append(e).append(").end").toString());
+
+
         int d = rp.getDurationEvaluators().evaluate(ShutdownNode.class, e);
         //Action duration is either 0 (no shutdown) or 'd' (shutdown)
         duration = s.createEnumIntVar(rp.makeVarLabel(new StringBuilder("shutdownableNode(").append(e).append(").duration").toString()), new int[]{0, d});
@@ -78,6 +94,11 @@ public class ShutdownableNodeModel implements NodeActionModel {
         //The moment the node can no longer host VMs varies depending on its next state
         hostingEnd = rp.makeDuration(new StringBuilder("shutdownableNode(").append(e).append(").hostingEnd").toString());
 
+        //The node is already online, so it starts at the beginning of the RP
+        powerStart = rp.getStart();
+        //The moment the node is offline. It depends on the hosting end time and the duration of the shutdown action
+        powerEnd = rp.makeDuration(new StringBuilder("shutdownableNode(").append(e).append(").powerEnd").toString());
+
         //The duration between the moment the node can not host VMs anymore and the end of the RP:
         //online: hostingEnd == RP.end
         //offline: hostingEnd <= RP.end - duration, so that the node can be turned off asap.
@@ -85,20 +106,27 @@ public class ShutdownableNodeModel implements NodeActionModel {
         s.post(s.leq(hostingEnd, CPSolver.minus(rp.getEnd(), duration)));
         s.post(new FastIFFEq(isOnline, duration, 0));
 
-        //stay online: hostingEnd = rp.getEnd(); start = end = duration = 0
-        //go offline: hostingEnd < rp.getEnd() - duration, start = hostingEnd, end = hostingEnd + duration
+        //stay online: hostingEnd = rp.getEnd(); duration = 0;
+        //go offline:  hostingEnd = start; duration = K;
 
-        ChocoUtils.postImplies(s, isOnline, s.eq(hostingEnd, rp.getEnd()));
-        start = rp.makeDuration(new StringBuilder("shutdownableNode(").append(e).append(").start").toString());
-        s.post(s.eq(start, ChocoUtils.mult(s, isOffline, hostingEnd)));
+        // TRUE for both online/offline
+        // hostingStart = powerStart = rp.getStart() ,  powerEnd = hostingEnd + duration,
+        // hostingEnd < rp.getEnd() - duration, start = hostingEnd, end = start + duration
 
-        end = rp.makeDuration(new StringBuilder("shutdownableNode(").append(e).append(").end").toString());
+        IfThenElse ifelse = new IfThenElse(isOnline, (AbstractIntSConstraint) s.eq(hostingEnd, rp.getEnd()),
+                                                            (AbstractIntSConstraint) s.eq(hostingEnd, start));
+        s.post(ifelse);
+
         s.post(s.eq(end, s.plus(start, duration)));
         s.post(s.leq(duration, rp.getEnd()));
         s.post(s.leq(end, rp.getEnd()));
-        s.post(s.leq(hostingStart, rp.getEnd()));
+
         s.post(s.leq(hostingEnd, rp.getEnd()));
         s.post(s.leq(start, rp.getEnd()));
+        s.post(s.eq(powerEnd, s.plus(hostingEnd, duration)));
+        s.post(s.eq(hostingStart, rp.getStart()));
+
+
 
         /**
          * If it is state to shutdown the node, then the duration of the dSlice is not null
@@ -153,5 +181,15 @@ public class ShutdownableNodeModel implements NodeActionModel {
     @Override
     public IntDomainVar getHostingEnd() {
         return hostingEnd;
+    }
+
+
+    public IntDomainVar getPowerStart() {
+        return powerStart;
+    }
+
+
+    public IntDomainVar getPowerEnd() {
+        return powerEnd;
     }
 }
