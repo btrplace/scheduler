@@ -38,31 +38,9 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
 
     private DependenciesExtractor depsExtractor;
 
-    /**
-     * A comparator to sort the actions in the increasing order of their start moment.
-     * If they start at the same moment, the action that ends first in considered
-     */
-    private static Comparator<Action> startFirstComparator = new Comparator<Action>() {
-        @Override
-        public int compare(Action a1, Action a2) {
-            int d = a1.getStart() - a2.getStart();
-            if (d == 0) {
-                if (a1.equals(a2)) {
-                    return 0;
-                } else {
-                    d = a1.getEnd() - a2.getEnd();
-                    //At this level we don't care but we must not return 0 because the action will
-                    //not be added
-                    if (d == 0) {
-                        return -1;
-                    }
-                    return d;
-                }
-            } else {
-                return d;
-            }
-        }
-    };
+    private static Comparator<Action> startFirstComparator = new TimedBasedActionComparator(true);
+
+    private ReconfigurationPlanApplier applier = TimeBasedPlanApplier.getInstance();
 
     /**
      * Make a new plan that starts for a given model.
@@ -117,33 +95,17 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
 
     @Override
     public Model getResult() {
-        Model res = src.clone();
-        for (Action a : actions) {
-            if (!a.apply(res)) {
-                return null;
-            }
-        }
-        return res;
+        return applier.apply(this);
     }
 
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder();
-        for (Action a : actions) {
-            b.append(a.getStart()).append(':').append(a.getEnd()).append(' ').append(a.toString()).append('\n');
-        }
-        return b.toString();
+        return applier.toString(this);
     }
 
     @Override
     public boolean isApplyable() {
-        Model m = src.clone();
-        for (Action a : actions) {
-            if (!a.apply(m)) {
-                return false;
-            }
-        }
-        return true;
+        return applier.apply(this) != null;
     }
 
     @Override
@@ -170,5 +132,15 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
     @Override
     public Set<Action> getDirectDependencies(Action a) {
         return depsExtractor.getDependencies(a);
+    }
+
+    @Override
+    public ReconfigurationPlanApplier getReconfigurationApplier() {
+        return applier;
+    }
+
+    @Override
+    public void setReconfigurationApplier(ReconfigurationPlanApplier ra) {
+        this.applier = ra;
     }
 }

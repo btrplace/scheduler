@@ -25,12 +25,48 @@ import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+
 /**
  * Unit tests for {@link DefaultReconfigurationPlan}.
  *
  * @author Fabien Hermenier
  */
 public class DefaultReconfigurationPlanTest implements PremadeElements {
+
+    @Test
+    public void testApplierGetAndSet() {
+        Model m = new DefaultModel(new DefaultMapping());
+        ReconfigurationPlan p = new DefaultReconfigurationPlan(m);
+        ReconfigurationPlanApplier ap = mock(ReconfigurationPlanApplier.class);
+        p.setReconfigurationApplier(ap);
+        Assert.assertEquals(p.getReconfigurationApplier(), ap);
+    }
+
+    @Test(dependsOnMethods = {"testApplierGetAndSet"})
+    public void testApply() {
+        Model m = new DefaultModel(new DefaultMapping());
+        ReconfigurationPlan p = new DefaultReconfigurationPlan(m);
+        ReconfigurationPlanApplier ap = mock(ReconfigurationPlanApplier.class);
+        p.setReconfigurationApplier(ap);
+
+        Model mo = new DefaultModel(new DefaultMapping());
+        when(ap.apply(p)).thenReturn(mo);
+        Assert.assertTrue(p.getResult() == mo);
+    }
+
+    @Test(dependsOnMethods = {"testApplierGetAndSet"})
+    public void testToString() {
+        Model m = new DefaultModel(new DefaultMapping());
+        ReconfigurationPlan p = new DefaultReconfigurationPlan(m);
+        ReconfigurationPlanApplier ap = mock(ReconfigurationPlanApplier.class);
+        p.setReconfigurationApplier(ap);
+
+        when(ap.toString(p)).thenReturn("foo");
+        Assert.assertEquals(p.toString(), "foo");
+    }
 
     @Test
     public void testInstantiate() {
@@ -41,6 +77,7 @@ public class DefaultReconfigurationPlanTest implements PremadeElements {
         Assert.assertEquals(0, p.getDuration());
         Assert.assertTrue(p.getActions().isEmpty());
         Assert.assertFalse(p.toString().contains("null"));
+        Assert.assertEquals(p.getReconfigurationApplier(), TimeBasedPlanApplier.getInstance());
 
     }
 
