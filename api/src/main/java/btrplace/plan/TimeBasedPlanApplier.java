@@ -35,7 +35,6 @@ public class TimeBasedPlanApplier implements ReconfigurationPlanApplier {
         Model res = p.getOrigin().clone();
         List<Action> actions = new ArrayList<Action>(p.getActions());
         Collections.sort(actions, startFirstComparator);
-        System.err.println(actions);
         for (Action a : actions) {
             if (!a.apply(res)) {
                 return null;
