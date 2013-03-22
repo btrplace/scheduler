@@ -2,7 +2,7 @@ package btrplace.solver.choco.objective.minMTTR;
 
 import btrplace.model.Mapping;
 import btrplace.solver.choco.*;
-import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -15,6 +15,7 @@ import java.util.UUID;
  * @author Fabien Hermenier
  */
 public class OnStableNodeFirst extends AbstractIntVarSelector {
+
     private IntDomainVar[] hoster;
 
     private IntDomainVar[] starts;
@@ -27,15 +28,13 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
 
     private BitSet[] ins;
 
-    private boolean first = true;
-
     private ReconfigurationProblem rp;
 
     private String label;
 
-    private List<SConstraint> costConstraints = new ArrayList<SConstraint>();
-
     private MinMTTR obj;
+
+    private IStateInt firstFree;
 
     /**
      * Make a new heuristics
@@ -45,6 +44,7 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
      */
     public OnStableNodeFirst(String lbl, ReconfigurationProblem rp, List<ActionModel> actions, MinMTTR obj) {
         super(rp.getSolver(), ActionModelUtils.getStarts(actions.toArray(new ActionModel[actions.size()])));
+        firstFree = rp.getSolver().getEnvironment().makeInt(0);
         this.obj = obj;
         this.rp = rp;
         this.label = lbl;
@@ -87,6 +87,10 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
         }
     }
 
+    private long d1, d2, d3, d4, d5;
+
+    private BitSet stays, move;
+
     @Override
     public IntDomainVar selectVar() {
 
@@ -94,24 +98,28 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
             in.clear();
         }
 
-        BitSet stays = new BitSet();
-        BitSet move = new BitSet();
-        //At this moment, all the hoster of the demanding slices are computed.
+        //At this moment, all the hosters of the demanding slices are computed.
         //for each node, we compute the number of incoming and outgoing
-        for (int i = 0; i < hoster.length; i++) {
-            if (hoster[i] != null && hoster[i].isInstantiated()) {
-                int newPos = hoster[i].getVal();
-                if (oldPos[i] != -1 && newPos != oldPos[i]) {
-                    //rp.getLogger().debug("{}: {} from {} to {} start={}", label, hoster[i], oldPos[i], newPos, starts[i]);
-                    //The VM has move
-                    ins[newPos].set(i);
-                    move.set(i);
-                } else if (newPos == oldPos[i]) {
-                    //rp.getLogger().debug("{}: {} stays on {} start={}", label, hoster[i], oldPos[i], starts[i]);
-                    stays.set(i);
+        if (stays == null || move == null) {
+            //TODO: This lazy computation may be dangerous if we backtrack to nodes upper to the scheduling part
+            stays = new BitSet();
+            move = new BitSet();
+            for (int i = 0; i < hoster.length; i++) {
+                if (hoster[i] != null && hoster[i].isInstantiated()) {
+                    int newPos = hoster[i].getVal();
+                    if (oldPos[i] != -1 && newPos != oldPos[i]) {
+                        //rp.getLogger().debug("{}: {} from {} to {} start={}", label, hoster[i], oldPos[i], newPos, starts[i]);
+                        //The VM has move
+                        ins[newPos].set(i);
+                        move.set(i);
+                    } else if (newPos == oldPos[i]) {
+                        //rp.getLogger().debug("{}: {} stays on {} start={}", label, hoster[i], oldPos[i], starts[i]);
+                        stays.set(i);
+                    }
                 }
             }
         }
+
 
         //VMs going on nodes with no outgoing actions, so actions that can start with no delay
         rp.getLogger().debug("{}: focus on actions to nodes without outgoings", label);
@@ -160,13 +168,19 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
 
     private IntDomainVar minInf() {
         IntDomainVar best = null;
-        for (int i = 0; i < starts.length; i++) {
+        for (int i = firstFree.get(); i < starts.length; i++) {
             IntDomainVar v = starts[i];
-            if (i < vms.size() - 1) {
-                UUID vm = vms.get(i);
-                if (vm != null && v != null && !v.isInstantiated() &&
-                        (best == null || best.getInf() > v.getInf())) {
-                    best = v;
+            UUID vm = vms.get(i);
+            if (vm != null && v != null) {
+                if (!v.isInstantiated()) {
+                    if (best == null || best.getInf() < v.getInf()) {
+                        best = v;
+                        if (best.getInf() == 0) {
+                            break;
+                        }
+                    }
+                } else {
+                    firstFree.increment();
                 }
             }
         }
