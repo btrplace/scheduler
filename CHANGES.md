@@ -8,6 +8,7 @@ version ????????
   moment the servers are powered up and down
 - API documentation
 - Interface to specify application protocols for a ReconfigurationPlan.
+- close #2, #3, #4
 
 version 0.26 - 20 Mar 2013
 ----------------------
