@@ -35,7 +35,7 @@ import java.util.UUID;
  * Model an action that allows a node to be booted if necessary. The action is modeled as follow:
  * <p/>
  * <ul>
- * <li>Definition of the node state. If the node is offline, they no VMs can run on it:
+ * <li>Definition of the node state. If the node is offline, then no VMs can run on it:
  * <ul>
  * <li>{@link #getState()} = {0,1}</li>
  * <li>{@link #getState()} = 0 -> {@code btrplace.solver.choco.ReconfigurationProblem.getNbRunningVMs()[nIdx] = 0}</li>
@@ -60,7 +60,15 @@ import java.util.UUID;
  * the end of the reconfiguration. Otherwise, it is never capable of hosting VMs (the deadline equals 0)
  * <ul>
  * <li>{@link #getHostingStart()} = {@link #getEnd()}</li>
- * <li>{@code T} = { {@code 0,} {@link btrplace.solver.choco.ReconfigurationProblem#getEnd()} }; {@link #getHostingEnd()} = T[{@link #getState()}]</li>
+ * <li>{@code T} = { {@code 0}, {@link btrplace.solver.choco.ReconfigurationProblem#getEnd()} }; {@link #getHostingEnd()} = T[{@link #getState()}]</li>
+ * </ul>
+ * </li>
+ * <li>
+ * The moment the node is powered up and down equals the moment the action starts and the moment it can not host VMs.
+ * If the node is not powered up, these duration equals then 0
+ * <ul>
+ * <li>{@link #getPoweringStart()} = {@link #getStart()}</li>
+ * <li>{@link #getPoweringEnd()} = {@link #getHostingEnd()}</li>
  * </ul>
  * </li>
  * </ul>
