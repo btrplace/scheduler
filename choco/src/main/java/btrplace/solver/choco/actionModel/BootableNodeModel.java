@@ -185,4 +185,14 @@ public class BootableNodeModel implements NodeActionModel {
     public IntDomainVar getHostingEnd() {
         return hostingEnd;
     }
+
+    @Override
+    public IntDomainVar getPoweringStart() {
+        return start;
+    }
+
+    @Override
+    public IntDomainVar getPoweringEnd() {
+        return hostingEnd;
+    }
 }

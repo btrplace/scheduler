@@ -23,17 +23,12 @@ import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.NodeActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.chocoUtil.ChocoUtils;
 import btrplace.solver.choco.chocoUtil.FastIFFEq;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.integer.ElementV;
 import choco.cp.solver.constraints.reified.IfThenElse;
-import choco.kernel.solver.constraints.SConstraintType;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import com.sun.org.apache.xpath.internal.operations.Equals;
-import org.GNOME.Accessibility.TEXT_BOUNDARY_TYPEHelper;
 
 import java.util.UUID;
 
@@ -114,7 +109,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
         // hostingEnd < rp.getEnd() - duration, start = hostingEnd, end = start + duration
 
         IfThenElse ifelse = new IfThenElse(isOnline, (AbstractIntSConstraint) s.eq(hostingEnd, rp.getEnd()),
-                                                            (AbstractIntSConstraint) s.eq(hostingEnd, start));
+                (AbstractIntSConstraint) s.eq(hostingEnd, start));
         s.post(ifelse);
 
         s.post(s.eq(end, s.plus(start, duration)));
@@ -125,7 +120,6 @@ public class ShutdownableNodeModel implements NodeActionModel {
         s.post(s.leq(start, rp.getEnd()));
         s.post(s.eq(powerEnd, s.plus(hostingEnd, duration)));
         s.post(s.eq(hostingStart, rp.getStart()));
-
 
 
         /**
@@ -183,13 +177,13 @@ public class ShutdownableNodeModel implements NodeActionModel {
         return hostingEnd;
     }
 
-
-    public IntDomainVar getPowerStart() {
+    @Override
+    public IntDomainVar getPoweringStart() {
         return powerStart;
     }
 
-
-    public IntDomainVar getPowerEnd() {
+    @Override
+    public IntDomainVar getPoweringEnd() {
         return powerEnd;
     }
 }
