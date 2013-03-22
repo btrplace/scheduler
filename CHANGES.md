@@ -1,7 +1,7 @@
 Release notes
 ======================
 
-version ????????
+version 0.27 - 22 Mar 2013
 ----------------------
 - Bug fix
 - Refactor the NodeActionModel implementation. New variables to denote the
