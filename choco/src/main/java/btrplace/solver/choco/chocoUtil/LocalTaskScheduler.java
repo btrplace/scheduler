@@ -57,7 +57,7 @@ public class LocalTaskScheduler {
 
     private int[] startupFree;
 
-    public static final int DEBUG = -2;
+    public static final int DEBUG = -5;
 
     private int[] associations;
 
