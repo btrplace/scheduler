@@ -2,6 +2,7 @@ package btrplace.solver.choco.objective.minMTTR;
 
 import btrplace.model.Mapping;
 import btrplace.solver.choco.*;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -32,14 +33,19 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
 
     private String label;
 
+    private List<SConstraint> costConstraints = new ArrayList<SConstraint>();
+
+    private MinMTTR obj;
+
     /**
      * Make a new heuristics
      *
      * @param rp      the problem to rely on
      * @param actions the actions to consider.
      */
-    public OnStableNodeFirst(String lbl, ReconfigurationProblem rp, List<ActionModel> actions) {
+    public OnStableNodeFirst(String lbl, ReconfigurationProblem rp, List<ActionModel> actions, MinMTTR obj) {
         super(rp.getSolver(), ActionModelUtils.getStarts(actions.toArray(new ActionModel[actions.size()])));
+        this.obj = obj;
         this.rp = rp;
         this.label = lbl;
         Mapping cfg = rp.getSourceModel().getMapping();
@@ -84,8 +90,8 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
     @Override
     public IntDomainVar selectVar() {
 
-        for (int i = 0; i < ins.length; i++) {
-            ins[i].clear();
+        for (BitSet in : ins) {
+            in.clear();
         }
 
         BitSet stays = new BitSet();
@@ -133,25 +139,22 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
         }
 
         IntDomainVar earlyVar = null;
-        int x = -1;
         //rp.getLogger().debug("{}: focus on staying VMs", label);
         for (int i = stays.nextSetBit(0); i >= 0; i = stays.nextSetBit(i + 1)) {
             if (starts[i] != null && !starts[i].isInstantiated()) {
                 if (earlyVar == null) {
                     earlyVar = starts[i];
-                    x = i;
                 } else {
                     if (earlyVar.getInf() > starts[i].getInf()) {
                         earlyVar = starts[i];
-                        x = i;
                     }
                 }
             }
         }
         if (earlyVar != null) {
-            //rp.getLogger().debug("{}: focus on {} placed on {}", label, earlyVar, hoster[x].getVal());
             return earlyVar;
         }
+
         return minInf();
     }
 
@@ -168,6 +171,10 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
             }
         }
         //rp.getLogger().debug("{}: focus on {} (earlier start)", label, best);
+        if (best == null) {
+            //Plug the cost constraints
+            obj.postCostConstraints();
+        }
         return best;
     }
 }

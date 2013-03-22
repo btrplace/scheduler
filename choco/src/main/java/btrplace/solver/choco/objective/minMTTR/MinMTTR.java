@@ -28,8 +28,11 @@ import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarVal;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
+import choco.kernel.common.Constant;
 import choco.kernel.solver.Configuration;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.ResolutionPolicy;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.*;
@@ -41,12 +44,18 @@ import java.util.*;
  */
 public class MinMTTR implements ReconfigurationObjective {
 
-    public MinMTTR() {
+    private List<SConstraint> costConstraints;
 
+    private ReconfigurationProblem rp;
+
+    public MinMTTR() {
+        costConstraints = new ArrayList<SConstraint>();
     }
 
     @Override
     public void inject(ReconfigurationProblem rp) throws SolverException {
+        this.rp = rp;
+        costConstraints.clear();
         List<IntDomainVar> mttrs = new ArrayList<IntDomainVar>();
         for (ActionModel m : rp.getVMActions()) {
             mttrs.add(m.getEnd());
@@ -58,7 +67,8 @@ public class MinMTTR implements ReconfigurationObjective {
         CPSolver s = rp.getSolver();
         IntDomainVar cost = s.createBoundIntVar(rp.makeVarLabel("globalCost"), 0, Choco.MAX_UPPER_BOUND);
 
-        s.post(s.eq(cost, CPSolver.sum(costs)));
+        SConstraint costConstraint = s.eq(cost, CPSolver.sum(costs));
+        costConstraints.add(costConstraint);
 
         s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
         s.setObjective(cost);
@@ -130,13 +140,33 @@ public class MinMTTR implements ReconfigurationObjective {
         ///SCHEDULING PROBLEM
         List<ActionModel> actions = new ArrayList<ActionModel>();
         Collections.addAll(actions, rp.getVMActions());
-        s.addGoal(new AssignOrForbidIntVarVal(new OnStableNodeFirst("stableNodeFirst", rp, actions), new MinVal()));
+        s.addGoal(new AssignOrForbidIntVarVal(new OnStableNodeFirst("stableNodeFirst", rp, actions, this), new MinVal()));
 
+        //At this stage only it matters to plug the cost constraints
         s.addGoal(new AssignVar(new StaticVarOrder(rp.getSolver(), new IntDomainVar[]{rp.getEnd(), cost}), new MinVal()));
     }
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         return Collections.emptySet();
+    }
+
+    private boolean costActivated = false;
+
+    public void postCostConstraints() {
+        rp.getLogger().debug("Post the cost-oriented constraints");
+        if (!costActivated) {
+            costActivated = true;
+            CPSolver s = rp.getSolver();
+            for (SConstraint c : costConstraints) {
+                s.postCut(c);
+            }
+            try {
+                s.propagate();
+            } catch (ContradictionException e) {
+                s.setFeasible(false);
+                s.post(Constant.FALSE);
+            }
+        }
     }
 }

@@ -56,7 +56,7 @@ public class HostingVariableSelector extends AbstractIntVarSelector {
     public IntDomainVar selectVar() {
         for (int i = 0; i < vars.length; i++) {
             if (!vars[i].isInstantiated()) {
-                rp.getLogger().debug("{}: focus on VM {}", label, vars[i]);
+                //rp.getLogger().debug("{}: focus on VM {}", label, vars[i]);
                 return vars[i];
             }
         }
