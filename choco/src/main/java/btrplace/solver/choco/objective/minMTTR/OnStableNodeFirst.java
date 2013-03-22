@@ -170,17 +170,19 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
         IntDomainVar best = null;
         for (int i = firstFree.get(); i < starts.length; i++) {
             IntDomainVar v = starts[i];
-            UUID vm = vms.get(i);
-            if (vm != null && v != null) {
-                if (!v.isInstantiated()) {
-                    if (best == null || best.getInf() < v.getInf()) {
-                        best = v;
-                        if (best.getInf() == 0) {
-                            break;
+            if (i < vms.size() - 1) {
+                UUID vm = vms.get(i);
+                if (vm != null && v != null) {
+                    if (!v.isInstantiated()) {
+                        if (best == null || best.getInf() < v.getInf()) {
+                            best = v;
+                            if (best.getInf() == 0) {
+                                break;
+                            }
                         }
+                    } else {
+                        firstFree.increment();
                     }
-                } else {
-                    firstFree.increment();
                 }
             }
         }
