@@ -28,6 +28,8 @@ import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarVal;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
+import choco.kernel.solver.Configuration;
+import choco.kernel.solver.ResolutionPolicy;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.*;
@@ -55,13 +57,12 @@ public class MinMTTR implements ReconfigurationObjective {
         IntDomainVar[] costs = mttrs.toArray(new IntDomainVar[mttrs.size()]);
         CPSolver s = rp.getSolver();
         IntDomainVar cost = s.createBoundIntVar(rp.makeVarLabel("globalCost"), 0, Choco.MAX_UPPER_BOUND);
-/*
-       s.post(s.eq(cost, CPSolver.sum(costs)));
 
+        s.post(s.eq(cost, CPSolver.sum(costs)));
 
         s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
         s.setObjective(cost);
-  */
+
         injectPlacementHeuristic(rp, cost);
     }
 

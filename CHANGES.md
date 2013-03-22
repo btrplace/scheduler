@@ -1,6 +1,15 @@
 Release notes
 ======================
 
+version 0.27 - 22 Mar 2013
+----------------------
+- Bug fix
+- Refactor the NodeActionModel implementation. New variables to denote the
+  moment the servers are powered up and down
+- API documentation
+- Interface to specify application protocols for a ReconfigurationPlan.
+- close #2, #3, #4
+
 version 0.26 - 20 Mar 2013
 ----------------------
 - a 'examples' module to provide the source code of some

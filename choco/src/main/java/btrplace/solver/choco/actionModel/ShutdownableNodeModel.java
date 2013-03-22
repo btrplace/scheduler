@@ -23,18 +23,57 @@ import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.NodeActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.chocoUtil.ChocoUtils;
 import btrplace.solver.choco.chocoUtil.FastIFFEq;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.integer.ElementV;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.UUID;
 
 /**
  * Model an action that allow a node to boot if necessary.
+ * <ul>
+ * <li>Definition of the node state. If the node is offline, then no VMs can run on it:
+ * <ul>
+ * <li>{@link #getState()} = {0,1}</li>
+ * <li>{@link #getState()} = 0 -> {@code btrplace.solver.choco.ReconfigurationProblem.getNbRunningVMs()[nIdx] = 0}</li>
+ * </ul>
+ * </li>
+ * <li>The action duration equals 0 if the node stays offline. Otherwise, it equals the evaluated action duration {@code d}
+ * retrieved from {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()}:
+ * <ul>
+ * <li>{@link #getDuration()} = {0,d}</li>
+ * <li>{@link #getDuration()} = {@link #getState()} * d</li>
+ * </ul>
+ * </li>
+ * <li>The action starts and ends necessarily before the end of the reconfiguration problem. Their difference
+ * equals the action duration. If the node stays online then the action starts and ends at moment 0.
+ * <ul>
+ * <li>{@link #getStart()} < {@link btrplace.solver.choco.ReconfigurationProblem#getEnd()}</li>
+ * <li>{@link #getEnd()} < {@link btrplace.solver.choco.ReconfigurationProblem#getEnd()}</li>
+ * <li>{@link #getEnd()} = {@link #getStart()} + {@link #getDuration()}</li>
+ * </ul>
+ * </li>
+ * <li>The node can start hosting VMs and the beginning of the reconfiguration plan. If the node goes offline, it stops hosting VMs at
+ * the beginning of the action. Otherwise, it equals the end of the reconfiguration process so that it is always capable
+ * of hosting VMs.
+ * <ul>
+ * <li>{@link #getHostingStart()} = {@link btrplace.solver.choco.ReconfigurationProblem#getStart()}</li>
+ * <li>{@code T} = { {@link #getStart()}, {@link btrplace.solver.choco.ReconfigurationProblem#getEnd()} }; {@link #getHostingEnd()} = T[{@link #getState()}]</li>
+ * </ul>
+ * </li>
+ * <li>
+ * The moment the node is powered up equals the moment the reconfiguration starts as the node is already online.
+ * The moment the node is powered down equals the moment the node can no longer host VMs plus the action duration.
+ * <ul>
+ * <li>{@link #getPoweringStart()} = {@link #getStart()}</li>
+ * <li>{@link #getPoweringEnd()} = {@link #getHostingEnd()} + {@link #getDuration()}</li>
+ * </ul>
+ * </li>
+ * </ul>
  *
- * @author Fabien Hermenier
+ * @author Fabien Hermenier, Tu Dang
  */
 public class ShutdownableNodeModel implements NodeActionModel {
 
@@ -52,6 +91,10 @@ public class ShutdownableNodeModel implements NodeActionModel {
 
     private IntDomainVar start;
 
+    private IntDomainVar powerStart;
+
+    private IntDomainVar powerEnd;
+
     /**
      * Make a new model.
      *
@@ -61,49 +104,56 @@ public class ShutdownableNodeModel implements NodeActionModel {
      */
     public ShutdownableNodeModel(ReconfigurationProblem rp, UUID e) throws SolverException {
         this.node = e;
-        isOnline = rp.getSolver().createBooleanVar(rp.makeVarLabel(new StringBuilder("shutdownnableNode(").append(e).append(").online").toString()));
+
 
         CPSolver s = rp.getSolver();
 
+        /*
+            - If the node is hosting running VMs, it is necessarily online
+            - If the node is offline, it is sure it cannot host any running VMs
+        */
+        isOnline = s.createBooleanVar(rp.makeVarLabel(new StringBuilder("shutdownnableNode(").append(e).append(").online").toString()));
         isOffline = s.createBooleanVar(rp.makeVarLabel(new StringBuilder("shutdownnableNode(").append(e).append(").offline").toString()));
         s.post(s.neq(isOnline, isOffline));
-        //new BoolVarNot(s, rp.makeVarLabel("shutdownnableNode(" + e + ").offline"), (BooleanVarImpl) isOnline);
+        s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNode(e)], 0));
 
+        /*
+        * D = {0, d}
+        * D = St * d;
+        */
         int d = rp.getDurationEvaluators().evaluate(ShutdownNode.class, e);
-        //Action duration is either 0 (no shutdown) or 'd' (shutdown)
         duration = s.createEnumIntVar(rp.makeVarLabel(new StringBuilder("shutdownableNode(").append(e).append(").duration").toString()), new int[]{0, d});
+        s.post(new FastIFFEq(isOnline, duration, 0));
+
+        //The moment of shutdown action start
+        /* As */
+        start = rp.makeDuration(new StringBuilder("shutdownableNode(").append(e).append(").start").toString());
+        //The moment of shutdown action end
+        /* Ae */
+        end = rp.makeDuration(new StringBuilder("shutdownableNode(").append(e).append(").end").toString());
+        s.post(s.leq(end, rp.getEnd()));
+        s.post(s.leq(start, rp.getEnd()));
+        /* Ae = As + D */
+        s.post(s.eq(end, s.plus(start, duration)));
 
         //The node is already online, so it can host VMs at the beginning of the RP
         hostingStart = rp.getStart();
         //The moment the node can no longer host VMs varies depending on its next state
         hostingEnd = rp.makeDuration(new StringBuilder("shutdownableNode(").append(e).append(").hostingEnd").toString());
-
-        //The duration between the moment the node can not host VMs anymore and the end of the RP:
-        //online: hostingEnd == RP.end
-        //offline: hostingEnd <= RP.end - duration, so that the node can be turned off asap.
-        //duration = {O, K}
-        s.post(s.leq(hostingEnd, CPSolver.minus(rp.getEnd(), duration)));
-        s.post(new FastIFFEq(isOnline, duration, 0));
-
-        //stay online: hostingEnd = rp.getEnd(); start = end = duration = 0
-        //go offline: hostingEnd < rp.getEnd() - duration, start = hostingEnd, end = hostingEnd + duration
-
-        ChocoUtils.postImplies(s, isOnline, s.eq(hostingEnd, rp.getEnd()));
-        start = rp.makeDuration(new StringBuilder("shutdownableNode(").append(e).append(").start").toString());
-        s.post(s.eq(start, ChocoUtils.mult(s, isOffline, hostingEnd)));
-
-        end = rp.makeDuration(new StringBuilder("shutdownableNode(").append(e).append(").end").toString());
-        s.post(s.eq(end, s.plus(start, duration)));
-        s.post(s.leq(duration, rp.getEnd()));
-        s.post(s.leq(end, rp.getEnd()));
-        s.post(s.leq(hostingStart, rp.getEnd()));
         s.post(s.leq(hostingEnd, rp.getEnd()));
-        s.post(s.leq(start, rp.getEnd()));
 
-        /**
-         * If it is state to shutdown the node, then the duration of the dSlice is not null
+        /*
+          T = { As, RP.end}
+          He = T[St]
          */
-        s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNode(e)], 0)); //Packing stuff; isOffline -> no VMs running
+        s.post(new ElementV(new IntDomainVar[]{start, rp.getEnd(), isOnline, hostingEnd}, 0, s.getEnvironment()));
+
+
+        //The node is already online, so it starts at the beginning of the RP
+        powerStart = rp.getStart();
+        //The moment the node is offline. It depends on the hosting end time and the duration of the shutdown action
+        powerEnd = rp.makeDuration(new StringBuilder("shutdownableNode(").append(e).append(").powerEnd").toString());
+        s.post(s.eq(powerEnd, s.plus(hostingEnd, duration)));
     }
 
 
@@ -153,5 +203,15 @@ public class ShutdownableNodeModel implements NodeActionModel {
     @Override
     public IntDomainVar getHostingEnd() {
         return hostingEnd;
+    }
+
+    @Override
+    public IntDomainVar getPoweringStart() {
+        return powerStart;
+    }
+
+    @Override
+    public IntDomainVar getPoweringEnd() {
+        return powerEnd;
     }
 }

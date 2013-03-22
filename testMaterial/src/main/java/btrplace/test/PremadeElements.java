@@ -44,5 +44,11 @@ public interface PremadeElements {
     static final UUID n3 = new UUID(1, 3);
     static final UUID n4 = new UUID(1, 4);
     static final UUID n5 = new UUID(1, 5);
+    static final UUID n6 = new UUID(1, 6);
+    static final UUID n7 = new UUID(1, 7);
+    static final UUID n8 = new UUID(1, 8);
+    static final UUID n9 = new UUID(1, 9);
+    static final UUID n10 = new UUID(1, 10);
+
 
 }
