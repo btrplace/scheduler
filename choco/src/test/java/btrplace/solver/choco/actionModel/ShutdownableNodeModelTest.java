@@ -34,6 +34,7 @@ import btrplace.solver.choco.durationEvaluator.ConstantDuration;
 import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -325,5 +326,50 @@ public class ShutdownableNodeModelTest implements PremadeElements {
         Model res = p.getResult();
         Assert.assertTrue(res.getMapping().getOfflineNodes().contains(n1));
         Assert.assertTrue(res.getMapping().getOfflineNodes().contains(n4));
+    }
+
+    @Test
+    public void testShutdownable() throws SolverException, ContradictionException {
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n4);
+        Model model = new DefaultModel(map);
+        DurationEvaluators dev = new DurationEvaluators();
+        dev.register(ShutdownNode.class, new ConstantDuration(5));
+        dev.register(BootNode.class, new ConstantDuration(3));
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
+                .setDurationEvaluatators(dev)
+                .labelVariables()
+                .build();
+
+        ShutdownableNodeModel sn1 = (ShutdownableNodeModel) rp.getNodeAction(n1);
+        sn1.getState().setVal(0);
+        sn1.getStart().setVal(2);
+        ShutdownableNodeModel sn4 = (ShutdownableNodeModel) rp.getNodeAction(n4);
+        sn4.getState().setVal(1);
+
+        ReconfigurationPlan p = rp.solve(0, false);
+
+        Assert.assertNotNull(p);
+        System.out.println(p);
+        Assert.assertEquals(rp.getStart().getVal(), 0);
+        Assert.assertEquals(rp.getEnd().getVal(), 7);
+
+        Assert.assertEquals(sn1.getStart().getVal(), 2);
+        Assert.assertEquals(sn1.getDuration().getVal(), 5);
+        Assert.assertEquals(sn1.getEnd().getVal(), 7);
+        Assert.assertEquals(sn1.getHostingStart().getVal(), 0);
+        Assert.assertEquals(sn1.getHostingEnd().getVal(), 2);
+
+        Assert.assertEquals(rp.getStart().getVal(), 0);
+        Assert.assertEquals(sn4.getStart().getVal(), 0);
+        Assert.assertEquals(sn4.getDuration().getVal(), 0);
+        Assert.assertEquals(sn4.getEnd().getVal(), 0);
+        Assert.assertEquals(sn4.getHostingStart().getVal(), 0);
+        Assert.assertEquals(sn4.getHostingEnd().getVal(), 7);
+        Assert.assertEquals(p.getSize(), 1);
+        Model res = p.getResult();
+        Assert.assertTrue(res.getMapping().getOnlineNodes().contains(n4));
+        Assert.assertTrue(res.getMapping().getOfflineNodes().contains(n1));
     }
 }
