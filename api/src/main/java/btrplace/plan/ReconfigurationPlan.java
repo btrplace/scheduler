@@ -25,6 +25,9 @@ import java.util.Set;
 /**
  * A reconfiguration plan is a set of actions to execute
  * to reconfigure an infrastructure starting from a given model.
+ * <p/>
+ * Actions must be sorted using a {@link TimedBasedActionComparator} that differentiate
+ * simultaneous but not equals actions.
  *
  * @author Fabien Hermenier
  */
@@ -83,4 +86,28 @@ public interface ReconfigurationPlan extends Iterable<Action> {
      * @return {@code true} iff the actions can be applied
      */
     boolean isApplyable();
+
+    /**
+     * Get the actions that have to be executed before
+     * a given action. Transitive dependencies are ignored.
+     *
+     * @param a the action
+     * @return a set of dependencies that may be empty.
+     */
+    Set<Action> getDirectDependencies(Action a);
+
+    /**
+     * Get the applier that is used to simulate the actions application
+     * on the origin model.
+     *
+     * @return the applier in use.
+     */
+    ReconfigurationPlanApplier getReconfigurationApplier();
+
+    /**
+     * Set the applier to use to simulate the actions application.
+     *
+     * @param ra the applier to use
+     */
+    void setReconfigurationApplier(ReconfigurationPlanApplier ra);
 }

@@ -130,4 +130,19 @@ public class DefaultModel implements Model, Cloneable {
         m.setAttributes(this.getAttributes().clone());
         return m;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+        b.append("Mapping:");
+        b.append(getMapping());
+        b.append("Attributes");
+        b.append(getAttributes());
+        b.append("Views:");
+        for (Map.Entry<String, ModelView> entry : resources.entrySet()) {
+            b.append(entry.getKey());
+            b.append(entry.getValue());
+        }
+        return b.toString();
+    }
 }

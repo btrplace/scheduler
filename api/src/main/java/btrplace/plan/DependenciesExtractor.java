@@ -1,0 +1,153 @@
+package btrplace.plan;
+
+import btrplace.model.Model;
+import btrplace.model.view.ShareableResource;
+import btrplace.plan.event.*;
+
+import java.util.*;
+
+/**
+ * Detect dependencies between actions.
+ * Actions are inserted using the {@code #visit(...)} methods.
+ *
+ * @author Fabien Hermenier
+ */
+public class DependenciesExtractor implements ActionVisitor {
+
+    private Map<Action, UUID> demandingUUID;
+
+    private Map<UUID, Set<Action>> freeings;
+
+    private Map<UUID, Set<Action>> demandings;
+
+    private Model origin;
+
+    /**
+     * Make a new instance.
+     *
+     * @param o the model at the source of the reconfiguration plan
+     */
+    public DependenciesExtractor(Model o) {
+        demandings = new HashMap<UUID, Set<Action>>();
+        freeings = new HashMap<UUID, Set<Action>>();
+        this.demandingUUID = new HashMap<Action, UUID>();
+        origin = o;
+    }
+
+    private Set<Action> getFreeings(UUID u) {
+        Set<Action> actions = freeings.get(u);
+        if (actions == null) {
+            actions = new HashSet<Action>();
+            freeings.put(u, actions);
+        }
+        return actions;
+    }
+
+    private Set<Action> getDemandings(UUID u) {
+        Set<Action> actions = demandings.get(u);
+        if (actions == null) {
+            actions = new HashSet<Action>();
+            demandings.put(u, actions);
+        }
+        return actions;
+    }
+
+    @Override
+    public Boolean visit(Allocate a) {
+        //If the resource allocation is increasing, it's
+        //a consuming action. Otherwise, it's a freeing action
+        String rcId = a.getResourceId();
+        int newAmount = a.getAmount();
+        ShareableResource rc = (ShareableResource) origin.getView(ShareableResource.VIEW_ID_BASE + rcId);
+        if (rc == null) {
+            return false;
+        }
+        int oldAmount = rc.get(a.getVM());
+        if (newAmount > oldAmount) {
+            demandingUUID.put(a, a.getHost());
+            return getDemandings(a.getHost()).add(a);
+        } else {
+            return getFreeings(a.getHost()).add(a);
+        }
+    }
+
+    @Override
+    public Boolean visit(AllocateEvent a) {
+        return true;
+    }
+
+    @Override
+    public Boolean visit(BootNode a) {
+        return getFreeings(a.getNode()).add(a);
+    }
+
+    @Override
+    public Boolean visit(BootVM a) {
+        boolean ret = getDemandings(a.getDestinationNode()).add(a);
+        demandingUUID.put(a, a.getDestinationNode());
+        return ret;
+    }
+
+    @Override
+    public Boolean visit(ForgeVM a) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Boolean visit(KillVM a) {
+        return getFreeings(a.getNode()).add(a);
+    }
+
+    @Override
+    public Boolean visit(MigrateVM a) {
+        boolean ret = getFreeings(a.getSourceNode()).add(a) && getDemandings(a.getDestinationNode()).add(a);
+        demandingUUID.put(a, a.getDestinationNode());
+        return ret;
+    }
+
+    @Override
+    public Boolean visit(ResumeVM a) {
+        boolean ret = getDemandings(a.getDestinationNode()).add(a);
+        demandingUUID.put(a, a.getDestinationNode());
+        return ret;
+    }
+
+    @Override
+    public Boolean visit(ShutdownNode a) {
+        boolean ret = getDemandings(a.getNode()).add(a);
+        demandingUUID.put(a, a.getNode());
+        return ret;
+    }
+
+    @Override
+    public Boolean visit(ShutdownVM a) {
+        return getFreeings(a.getNode()).add(a);
+    }
+
+    @Override
+    public Boolean visit(SuspendVM a) {
+        return getFreeings(a.getSourceNode()).add(a);
+    }
+
+    /**
+     * Get the dependencies for an action.
+     *
+     * @param a the action to check
+     * @return its dependencies, may be empty
+     */
+    public Set<Action> getDependencies(Action a) {
+        UUID n = demandingUUID.get(a);
+        if (n == null) {
+            return Collections.emptySet();
+        } else {
+            Set<Action> allActions = getFreeings(n);
+            Set<Action> pre = new HashSet<Action>();
+            for (Action action : allActions) {
+                if (action != a && a.getStart() >= action.getEnd()) {
+                    pre.add(action);
+                }
+            }
+            return pre;
+        }
+    }
+}
