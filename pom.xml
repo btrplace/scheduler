@@ -17,13 +17,12 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses />.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>btrplace</groupId>
     <artifactId>solver</artifactId>
-    <version>0.27-SNAPSHOT</version>
+    <version>0.27</version>
     <description>A flexible VM placement algorithm for hosting platforms.</description>
     <packaging>pom</packaging>
     <modules>
@@ -92,7 +91,7 @@
         <connection>scm:git:git://github.com/fhermeni/btrplace-solver.git</connection>
         <url>scm:git:git@github.com:fhermeni/btrplace-solver</url>
         <developerConnection>scm:git:git@github.com:fhermeni/btrplace-solver.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>btrplace-solver-0.27</tag>
     </scm>
 
     <build>
