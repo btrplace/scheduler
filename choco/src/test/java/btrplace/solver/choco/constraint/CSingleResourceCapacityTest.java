@@ -134,7 +134,6 @@ public class CSingleResourceCapacityTest implements PremadeElements {
         cstrs.add(new Running(Collections.singleton(vm4)));
         cstrs.add(new Overbook(map.getAllNodes(), "cpu", 1));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
         //System.out.println(p);

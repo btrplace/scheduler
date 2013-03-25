@@ -82,7 +82,7 @@ public class MovingVMs extends AbstractIntVarSelector {
                     //VM was running
                     Slice slice = a.getDSlice();
                     if (!slice.getHoster().canBeInstantiatedTo(rp.getNode(nId))) {
-                        rp.getLogger().debug("{} - focus on VM {}", label, slice.getSubject());
+                        //rp.getLogger().debug("{} - focus on VM {}", label, slice.getSubject());
                         return slice.getHoster();
                     }
                 }

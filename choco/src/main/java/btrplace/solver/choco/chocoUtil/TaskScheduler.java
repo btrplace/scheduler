@@ -188,6 +188,7 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
 
     @Override
     public void awakeOnInst(int idx) throws ContradictionException {
+        //ChocoLogging.getBranchingLogger().info("awakeOnInst(" + vars[idx] + ")");
         if (idx < dHosters.length) {
             toInstantiate.add(-1);
             int nIdx = vars[idx].getVal();

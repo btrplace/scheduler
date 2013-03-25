@@ -86,7 +86,7 @@ public class MinMTTR implements ReconfigurationObjective {
         OnStableNodeFirst schedHeuristic = new OnStableNodeFirst("stableNodeFirst", rp, actions, this);
 
         //Get the VMs to move
-        Set<UUID> onBadNodes = new HashSet<UUID>();
+        Set<UUID> onBadNodes = rp.getManageableVMs();
 
         for (UUID vm : map.getSleepingVMs()) {
             if (rp.getFutureRunningVMs().contains(vm)) {
@@ -141,6 +141,7 @@ public class MinMTTR implements ReconfigurationObjective {
 
         s.addGoal(new AssignVar(selectForRuns, new RandomVMPlacement("selectForRuns", rp, pla, true)));
 
+        //s.addGoal(new AssignVar(new StartingNodes("startingNodes", rp, rp.getNodeActions()), new MinVal()));
         ///SCHEDULING PROBLEM
         s.addGoal(new AssignOrForbidIntVarVal(schedHeuristic, new MinVal()));
 

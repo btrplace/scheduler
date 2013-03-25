@@ -57,7 +57,7 @@ public class LocalTaskScheduler {
 
     private int[] startupFree;
 
-    public static final int DEBUG = -5;
+    public static final int DEBUG = -2;
 
     private int[] associations;
 
@@ -400,12 +400,12 @@ public class LocalTaskScheduler {
                         break;
                     }
                 }
-                if (lastT != -1) {
-                    if (DEBUG == me || DEBUG == -2) {
-                        ChocoLogging.getBranchingLogger().finest("(" + me + ") - set to max(" + Math.max(lastT, early.getInf()) + ")");
-                    }
-                    dStarts[i].setInf(Math.max(lastT, early.getInf()));
-                }
+                //if (lastT != -1) {
+                //if (DEBUG == me || DEBUG == -2) {
+                //     ChocoLogging.getBranchingLogger().info("(" + me + ") - set to max(" + Math.max(lastT, early.getInf()) + ")");
+                //}
+                dStarts[i].setInf(Math.max(lastT, early.getInf()));
+                //}
             }
         }
     }
@@ -424,14 +424,12 @@ public class LocalTaskScheduler {
                 break;
             }
         }
-        /*if (me == DEBUG || DEBUG == -2) {
-            ChocoLogging.getBranchingLogger().finest(me + ": lastSup=" + lastSup);
-        } */
         if (lastSup != -1) {
             for (int x = 0; x < vIn.size(); x++) {
                 int i = vIn.get(x);
-                if (!dStarts[i].isInstantiated() && !associatedToCSliceOnCurrentNode(i) && dStarts[i].getSup() > lastSup) {
+                if (!dStarts[i].isInstantiated() && !associatedToCSliceOnCurrentNode(i)) {
                     int s = Math.max(dStarts[i].getInf(), lastSup);
+                    //ChocoLogging.getBranchingLogger().info("Update UB" + dStarts[i].getName() + " to max(" + s + "," + early.getSup() + ")");
                     dStarts[i].setSup(Math.max(s, early.getSup()));
                 }
             }

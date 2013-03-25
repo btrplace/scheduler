@@ -177,7 +177,6 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
             rpb.labelVariables();
         }
         rp = rpb.build();
-
         coreRPDuration += System.currentTimeMillis();
         //Set the maximum duration
         try {
@@ -200,6 +199,10 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         obj.inject(rp);
         speDuration += System.currentTimeMillis();
         rp.getLogger().debug("{} ms to build the core-RP + {} ms to tune it", coreRPDuration, speDuration);
+
+        rp.getLogger().debug("{} nodes; {} VMs; {} constraints", rp.getNodes().length, rp.getVMs().length, cstrs.size());
+        rp.getLogger().debug("optimize: {}; timeLimit: {}; manageableVMs: {}", optimize, getTimeLimit(), rp.getManageableVMs().size());
+
         ReconfigurationPlan p = rp.solve(timeLimit, optimize);
         if (p != null) {
             assert checkSatisfaction(p, cstrs);

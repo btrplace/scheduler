@@ -99,6 +99,11 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
     @Override
     public IntDomainVar selectVar() {
 
+/*        for (NodeActionModel a : rp.getNodeActions()) {
+            if (a.getState().isInstantiatedTo(1) && rp.getSourceModel().getMapping().getOfflineNodes().contains(a.getNode())) {
+                System.out.println(a.getNode() + " " + a.getState().pretty() + " " + a.getEnd().pretty());
+            }
+        }*/
         for (BitSet in : ins) {
             in.clear();
         }
@@ -126,7 +131,7 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
 
 
         //VMs going on nodes with no outgoing actions, so actions that can start with no delay
-        rp.getLogger().debug("{}: focus on actions to nodes without outgoings", label);
+        //rp.getLogger().debug("{}: focus on actions to nodes without outgoings", label);
         for (int x = 0; x < outs.length; x++) {   //Node per node
             if (outs[x].cardinality() == 0) { //no outgoing VMs, can be launched directly.
                 BitSet in = ins[x];
@@ -140,7 +145,7 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
         }
 
         //VMs that are moving
-        rp.getLogger().debug("{}: focus on VMs that are moved elsewhere", label);
+        //rp.getLogger().debug("{}: focus on VMs that are moved elsewhere", label);
         for (int i = move.nextSetBit(0); i >= 0; i = move.nextSetBit(i + 1)) {
             if (starts[i] != null && !starts[i].isInstantiated()) {
                 if (oldPos[i] != hoster[i].getVal()) {
