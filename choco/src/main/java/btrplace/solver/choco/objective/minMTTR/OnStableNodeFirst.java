@@ -91,6 +91,11 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
 
     private BitSet stays, move;
 
+    public void invalidPlacement() {
+        stays = null;
+        move = null;
+    }
+
     @Override
     public IntDomainVar selectVar() {
 
@@ -100,8 +105,7 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
 
         //At this moment, all the hosters of the demanding slices are computed.
         //for each node, we compute the number of incoming and outgoing
-        if (stays == null || move == null) {
-            //TODO: This lazy computation may be dangerous if we backtrack to nodes upper to the scheduling part
+        if (stays == null && move == null) {
             stays = new BitSet();
             move = new BitSet();
             for (int i = 0; i < hoster.length; i++) {

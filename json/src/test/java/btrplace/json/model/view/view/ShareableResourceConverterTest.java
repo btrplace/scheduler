@@ -50,4 +50,24 @@ public class ShareableResourceConverterTest implements PremadeElements {
             Assert.assertEquals(rc.get(u), rc2.get(u));
         }
     }
+
+    @Test(dependsOnMethods = {"testSimple"})
+    public void testWithDifferentRcId() {
+        ShareableResourceConverter s = new ShareableResourceConverter();
+
+        ShareableResource rc = new ShareableResource("foo");
+        rc.set(vm1, 3).set(vm2, 4).set(vm3, 5).set(vm4, 6);
+        ShareableResource rcBis = s.fromJSON(s.toJSON(rc));
+
+        ShareableResource rc2 = new ShareableResource("bar");
+        rc2.set(vm1, 3).set(vm2, 4).set(vm3, 5).set(vm4, 6);
+
+        ShareableResource rc2Bis = s.fromJSON(s.toJSON(rc2));
+        System.out.println(s.toJSON(rc));
+        System.out.println(s.toJSON(rc2));
+        System.out.println(rcBis);
+        System.out.println(rc2Bis);
+        Assert.assertFalse(rcBis.equals(rc2Bis));
+
+    }
 }

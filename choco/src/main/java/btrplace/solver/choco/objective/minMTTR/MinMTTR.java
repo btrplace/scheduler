@@ -81,6 +81,10 @@ public class MinMTTR implements ReconfigurationObjective {
         Model mo = rp.getSourceModel();
         Mapping map = mo.getMapping();
 
+        List<ActionModel> actions = new ArrayList<ActionModel>();
+        Collections.addAll(actions, rp.getVMActions());
+        OnStableNodeFirst schedHeuristic = new OnStableNodeFirst("stableNodeFirst", rp, actions, this);
+
         //Get the VMs to move
         Set<UUID> onBadNodes = new HashSet<UUID>();
 
@@ -116,11 +120,11 @@ public class MinMTTR implements ReconfigurationObjective {
 
         s.addGoal(new AssignVar(new MovingVMs("movingVMs", rp, map, vmsToExclude), new RandomVMPlacement("movingVMs", rp, pla, true)));
 
-        HostingVariableSelector selectForBads = new HostingVariableSelector("selectForBads", rp, ActionModelUtils.getDSlices(badActions));
+        HostingVariableSelector selectForBads = new HostingVariableSelector("selectForBads", rp, ActionModelUtils.getDSlices(badActions), schedHeuristic);
         s.addGoal(new AssignVar(selectForBads, new RandomVMPlacement("selectForBads", rp, pla, true)));
 
 
-        HostingVariableSelector selectForGoods = new HostingVariableSelector("selectForGoods", rp, ActionModelUtils.getDSlices(goodActions));
+        HostingVariableSelector selectForGoods = new HostingVariableSelector("selectForGoods", rp, ActionModelUtils.getDSlices(goodActions), schedHeuristic);
         s.addGoal(new AssignVar(selectForGoods, new RandomVMPlacement("selectForGoods", rp, pla, true)));
 
         //VMs to run
@@ -132,15 +136,13 @@ public class MinMTTR implements ReconfigurationObjective {
         for (UUID vm : vmsToRun) {
             runActions[i++] = rp.getVMAction(vm);
         }
-        HostingVariableSelector selectForRuns = new HostingVariableSelector("selectForRuns", rp, ActionModelUtils.getDSlices(runActions));
+        HostingVariableSelector selectForRuns = new HostingVariableSelector("selectForRuns", rp, ActionModelUtils.getDSlices(runActions), schedHeuristic);
 
 
         s.addGoal(new AssignVar(selectForRuns, new RandomVMPlacement("selectForRuns", rp, pla, true)));
 
         ///SCHEDULING PROBLEM
-        List<ActionModel> actions = new ArrayList<ActionModel>();
-        Collections.addAll(actions, rp.getVMActions());
-        s.addGoal(new AssignOrForbidIntVarVal(new OnStableNodeFirst("stableNodeFirst", rp, actions, this), new MinVal()));
+        s.addGoal(new AssignOrForbidIntVarVal(schedHeuristic, new MinVal()));
 
         //At this stage only it matters to plug the cost constraints
         s.addGoal(new AssignVar(new StaticVarOrder(rp.getSolver(), new IntDomainVar[]{rp.getEnd(), cost}), new MinVal()));

@@ -1,6 +1,12 @@
 Release notes
 ======================
 
+version ???????
+----------------------
+- migration to JDK 7
+- better performance
+- bug fix
+
 version 0.27 - 22 Mar 2013
 ----------------------
 - Bug fix
