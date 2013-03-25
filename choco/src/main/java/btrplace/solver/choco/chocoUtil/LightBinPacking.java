@@ -48,7 +48,11 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      */
     private IEnvironment env;
 
+    /**
+     * The number of items that can be placed on each bin.
+     */
     private IStateInt[] candidates;
+
     /**
      * The number of bins.
      */
