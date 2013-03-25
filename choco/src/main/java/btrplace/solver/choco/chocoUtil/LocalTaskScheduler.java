@@ -430,7 +430,7 @@ public class LocalTaskScheduler {
                 if (!dStarts[i].isInstantiated() && !associatedToCSliceOnCurrentNode(i)) {
                     int s = Math.max(dStarts[i].getInf(), lastSup);
                     //ChocoLogging.getBranchingLogger().info("Update UB" + dStarts[i].getName() + " to max(" + s + "," + early.getSup() + ")");
-                    dStarts[i].setSup(Math.max(s, early.getSup()));
+                    dStarts[i].setSup(s/*Math.max(s, early.getSup())*/);
                 }
             }
         }
@@ -454,6 +454,8 @@ public class LocalTaskScheduler {
                 }
                 if (lastT != -1) {
                     cEnds[i].setSup(Math.min(lastT, last.getSup()));
+                } else {
+                    cEnds[i].setSup(last.getSup());
                 }
 
             }
