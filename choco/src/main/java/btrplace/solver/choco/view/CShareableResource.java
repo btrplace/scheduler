@@ -25,6 +25,8 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Allocate;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.*;
+import btrplace.solver.choco.actionModel.KeepRunningVMModel;
+import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import btrplace.solver.choco.chocoUtil.LightBinPacking;
 import choco.Choco;
 import choco.cp.solver.CPSolver;
@@ -275,6 +277,31 @@ public class CShareableResource implements ChocoModelView {
                 }
             }
         }
+
+        CPSolver s = rp.getSolver();
+
+        //Symetry breaking for VMs that are running and that will stay running
+        for (UUID vm : rp.getFutureRunningVMs()) {
+            VMActionModel a = rp.getVMAction(vm);
+            Slice dSlice = a.getDSlice();
+            Slice cSlice = a.getCSlice();
+            if (dSlice != null && cSlice != null) {
+                IntDomainVar stay = ((KeepRunningVMModel) a).isStaying();
+
+                if (getSourceResource().get(vm) <= getVMsAllocation(rp.getVM(vm)).getVal()) {
+                    //If the resource usage will be increasing
+                    //Then the duration of the dSlice can be set to 0
+                    //(the allocation will be performed at the end of the reconfiguration process)
+                    s.post(new FastImpliesEq(stay, dSlice.getDuration(), 0));
+                } else {
+                    //Else, the resource usage is decreasing, so
+                    // we set the cSlice duration to 0 to directly reduce the resource allocation
+                    s.post(new FastImpliesEq(stay, cSlice.getDuration(), 0));
+                }
+            }
+        }
+
+
         return true;
     }
 }

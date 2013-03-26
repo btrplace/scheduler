@@ -245,7 +245,12 @@ public class SolvingStatistics {
         b.append(": ")
                 .append(nbSearchNodes).append(" opened search node(s), ")
                 .append(nbBacktracks).append(" backtrack(s), ")
-                .append(solutions.size()).append(" solution(s):\n");
+                .append(solutions.size()).append(" solution(s)");
+        if (!solutions.isEmpty()) {
+            b.append(":\n");
+        } else {
+            b.append('.');
+        }
         int i = 1;
         for (SolutionStatistics st : solutions) {
             b.append("\t").append(i).append(")")
