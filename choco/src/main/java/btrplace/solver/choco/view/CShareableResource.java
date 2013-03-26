@@ -27,7 +27,6 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.*;
 import btrplace.solver.choco.actionModel.KeepRunningVMModel;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
-import btrplace.solver.choco.chocoUtil.LightBinPacking;
 import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.ContradictionException;
@@ -102,8 +101,9 @@ public class CShareableResource implements ChocoModelView {
 
         }
         //We create a BP with only the VMs requiring a not null amount of resources
-        s.post(new LightBinPacking(s.getEnvironment(), virtRcUsage, notNullUsage.toArray(new IntDomainVar[notNullUsage.size()]), hosters.toArray(new IntDomainVar[hosters.size()])));
+        //s.post(new LightBinPacking(s.getEnvironment(), virtRcUsage, notNullUsage.toArray(new IntDomainVar[notNullUsage.size()]), hosters.toArray(new IntDomainVar[hosters.size()])));
         //s.post(new BinPacking(s.getEnvironment(), virtRcUsage, notNullUsage.toArray(new IntDomainVar[notNullUsage.size()]), hosters.toArray(new IntDomainVar[hosters.size()])));
+        rp.getBinPackingBuilder().add(virtRcUsage, notNullUsage.toArray(new IntDomainVar[notNullUsage.size()]), hosters.toArray(new IntDomainVar[hosters.size()]));
 
     }
 
@@ -288,7 +288,7 @@ public class CShareableResource implements ChocoModelView {
             if (dSlice != null && cSlice != null) {
                 IntDomainVar stay = ((KeepRunningVMModel) a).isStaying();
 
-                if (getSourceResource().get(vm) <= getVMsAllocation(rp.getVM(vm)).getVal()) {
+                if (getSourceResource().get(vm) <= getVMsAllocation(rp.getVM(vm)).getInf()) {
                     //If the resource usage will be increasing
                     //Then the duration of the dSlice can be set to 0
                     //(the allocation will be performed at the end of the reconfiguration process)

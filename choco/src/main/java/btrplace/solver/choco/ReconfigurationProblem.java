@@ -349,6 +349,13 @@ public interface ReconfigurationProblem {
     AliasedCumulativesBuilder getAliasedCumulativesBuilder();
 
     /**
+     * Get the builder that handle the VM placement at the end of the reconfiguration process.
+     *
+     * @return the builder
+     */
+    BinPackingBuilder getBinPackingBuilder();
+
+    /**
      * Get the logger.
      *
      * @return well, the logger

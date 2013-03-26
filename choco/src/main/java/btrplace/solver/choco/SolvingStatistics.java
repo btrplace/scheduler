@@ -226,7 +226,7 @@ public class SolvingStatistics {
         b.append(nbNodes).append(" node(s)")
                 .append("; ").append(nbVMs).append(" VM(s)");
         if (nbManagedVMs != nbVMs) {
-            b.append(" ( ").append(nbManagedVMs).append(" managed)");
+            b.append(" (").append(nbManagedVMs).append(" managed)");
         }
         b.append("; ").append(nbConstraints).append(" constraint(s)");
 

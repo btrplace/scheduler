@@ -29,19 +29,18 @@ import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ModelViewMapper;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.VMActionModel;
+import btrplace.test.PremadeElements;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.util.UUID;
 
 /**
  * Unit tests for {@link CShareableResource}.
  *
  * @author Fabien Hermenier
  */
-public class CShareableResourceTest {
+public class CShareableResourceTest implements PremadeElements {
 
     /**
      * Test the instantiation and the creation of the variables.
@@ -51,14 +50,9 @@ public class CShareableResourceTest {
     @Test
     public void testSimple() throws SolverException {
         Mapping ma = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        UUID vm = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
         ma.addOnlineNode(n1);
         ma.addOfflineNode(n2);
-        ma.addRunningVM(vm, n1);
+        ma.addRunningVM(vm1, n1);
         ma.addRunningVM(vm2, n1);
         ma.addReadyVM(vm3);
         ShareableResource rc = new ShareableResource("foo", 0);
@@ -68,7 +62,7 @@ public class CShareableResourceTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         CShareableResource rcm = new CShareableResource(rp, rc);
         Assert.assertEquals(rc.getIdentifier(), rcm.getIdentifier());
-        Assert.assertEquals(-1, rcm.getVMsAllocation()[rp.getVM(vm)].getInf());
+        Assert.assertEquals(-1, rcm.getVMsAllocation()[rp.getVM(vm1)].getInf());
         Assert.assertEquals(-1, rcm.getVMsAllocation()[rp.getVM(vm2)].getInf());
         Assert.assertEquals(0, rcm.getVMsAllocation()[rp.getVM(vm3)].getSup()); //Will not be running so 0
         IntDomainVar pn1 = rcm.getPhysicalUsage()[rp.getNode(n1)];
@@ -94,17 +88,14 @@ public class CShareableResourceTest {
     @Test
     public void testRealNodeUsage() throws SolverException, ContradictionException {
         Mapping ma = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        UUID vm = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
+
         ma.addOnlineNode(n1);
         ma.addOnlineNode(n2);
-        ma.addRunningVM(vm, n1);
+        ma.addRunningVM(vm1, n1);
         ma.addRunningVM(vm2, n1);
 
         ShareableResource rc = new ShareableResource("foo", 0);
-        rc.set(vm, 2);
+        rc.set(vm1, 2);
         rc.set(vm2, 3);
         rc.set(n1, 4);
         rc.set(n2, 2);
@@ -112,15 +103,16 @@ public class CShareableResourceTest {
         mo.attach(rc);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
-        VMActionModel avm1 = rp.getVMActions()[rp.getVM(vm)];
+        VMActionModel avm1 = rp.getVMActions()[rp.getVM(vm1)];
         VMActionModel avm2 = rp.getVMActions()[rp.getVM(vm2)];
         avm1.getDSlice().getHoster().setVal(0);
         avm2.getDSlice().getHoster().setVal(1);
         CShareableResource rcm = (CShareableResource) rp.getView(btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo");
         //Basic consumption for the VMs. If would be safe to use Preserve, but I don't want:D
-        rcm.getVMsAllocation()[rp.getVM(vm)].setInf(2);
+        rcm.getVMsAllocation()[rp.getVM(vm1)].setInf(2);
         rcm.getVMsAllocation()[rp.getVM(vm2)].setInf(3);
-        Assert.assertEquals(rp.getSolver().solve(), Boolean.TRUE);
+        ReconfigurationPlan p = rp.solve(-1, false);
+        Assert.assertNotNull(p);
         Assert.assertEquals(rcm.getVirtualUsage()[0].getInf(), 2);
         Assert.assertEquals(rcm.getVirtualUsage()[0].getSup(), 2);
         Assert.assertEquals(rcm.getVirtualUsage(0).getInf(), 2);
@@ -133,10 +125,6 @@ public class CShareableResourceTest {
     @Test
     public void testMaintainResourceUsage() throws SolverException {
         Mapping map = new DefaultMapping();
-
-        UUID n1 = UUID.randomUUID();
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
 
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);

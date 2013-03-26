@@ -21,8 +21,6 @@ package btrplace.solver.choco.chocoUtil;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.ElementV;
 import choco.cp.solver.search.BranchingFactory;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.solver.Configuration;
 import choco.kernel.solver.Solver;
@@ -128,7 +126,6 @@ public class BinPackingTest {
         modelPack(2, 100, 3, 30);
         IntDomainVar margeLoad = s.createBoundIntVar("margeLoad", 0, 50);
         s.post(nth(bins[0], loads, margeLoad));
-        ChocoLogging.setVerbosity(Verbosity.SILENT);
         testPack(2);
     }
 

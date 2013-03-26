@@ -146,12 +146,15 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
         return loads[bin].getSup() - bRLoads[bin].get();
     }
 
-    private void sortIndices() {
+    private void sortIndices() throws ContradictionException {
         long sum = 0;
         //l denotes the ordering of the items, so bsToVars
         List<Integer> l = new ArrayList<Integer>(iSizes.length);
         for (int i = 0; i < iSizes.length; i++) {
             l.add(i);
+            if (!sizes[i].isInstantiated()) {
+                throw new RuntimeException();
+            }
             iSizes[i] = sizes[i].getInf();
             sum += iSizes[i];
         }

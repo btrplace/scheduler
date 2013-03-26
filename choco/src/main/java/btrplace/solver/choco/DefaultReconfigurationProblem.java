@@ -30,7 +30,6 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
 import btrplace.solver.choco.chocoUtil.AliasedCumulatives;
 import btrplace.solver.choco.chocoUtil.AliasedCumulativesBuilder;
-import btrplace.solver.choco.chocoUtil.LightBinPacking;
 import btrplace.solver.choco.view.CShareableResource;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.BranchAndBound;
@@ -40,6 +39,7 @@ import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.cp.solver.search.set.StaticSetVarOrder;
 import choco.kernel.solver.Configuration;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.IObjectiveManager;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
@@ -101,6 +101,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private AliasedCumulativesBuilder cumulativesBuilder;
 
+    private BinPackingBuilder bpBuilder;
+
     private ObjectiveAlterer objAlterer = null;
 
     private ModelViewMapper viewMapper;
@@ -149,6 +151,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         resources = new ArrayList<CShareableResource>();
         solver.post(solver.geq(end, start));
 
+
         fillElements();
 
         makeCardinalyVariables();
@@ -156,20 +159,29 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         makeNodeActionModels();
         makeVMActionModels();
 
+        bpBuilder = new BinPackingBuilder(this);
+        taskSchedBuilder = new SliceSchedulerBuilder(this);
+        cumulativesBuilder = new AliasedCumulativesBuilder(this);
+
         makeViews();
 
         linkCardinatiesWithSlices();
 
-        taskSchedBuilder = new SliceSchedulerBuilder(this);
-        cumulativesBuilder = new AliasedCumulativesBuilder(this);
     }
 
     @Override
     public ReconfigurationPlan solve(int timeLimit, boolean optimize) throws SolverException {
+
         for (Map.Entry<String, ChocoModelView> cv : views.entrySet()) {
             if (!cv.getValue().beforeSolve(this)) {
                 return null;
             }
+        }
+
+        try {
+            bpBuilder.inject();
+        } catch (ContradictionException ex) {
+            throw new SolverException(model, ex.getMessage());
         }
 
         addContinuousResourceCapacities();
@@ -339,8 +351,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         for (int i = 0; i < ds.length; i++) {
             usages[i] = solver.makeConstantIntVar(1);
         }
-        solver.post(new LightBinPacking(solver.getEnvironment(), vmsCountOnNodes, usages, ds));
+        //solver.post(new LightBinPacking(solver.getEnvironment(), vmsCountOnNodes, usages, ds));
         //solver.post(new BinPacking(solver.getEnvironment(), vmsCountOnNodes, usages, ds));
+        bpBuilder.add(vmsCountOnNodes, usages, ds);
     }
 
     private void fillElements() {
@@ -536,6 +549,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     @Override
     public AliasedCumulativesBuilder getAliasedCumulativesBuilder() {
         return cumulativesBuilder;
+    }
+
+    @Override
+    public BinPackingBuilder getBinPackingBuilder() {
+        return bpBuilder;
     }
 
     @Override
