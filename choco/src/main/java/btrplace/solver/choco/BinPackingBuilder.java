@@ -81,11 +81,14 @@ public class BinPackingBuilder {
             IntDomainVar[] s = sizes.get(i);
             IntDomainVar[] b = bins.get(i);
 
+            int[] iSizes = new int[s.length];
+            int x = 0;
             //Instantiate the item sizes to their LB
             for (IntDomainVar ss : s) {
+                iSizes[x++] = ss.getInf();
                 ss.setVal(ss.getInf());
             }
-            solver.post(new LightBinPacking(solver.getEnvironment(), l, s, b));
+            solver.post(new LightBinPacking(solver.getEnvironment(), l, iSizes, b));
         }
 
 

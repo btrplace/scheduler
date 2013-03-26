@@ -433,7 +433,6 @@ public class DefaultReconfigurationProblemTest {
         for (IntDomainVar capa : rp.getNbRunningVMs()) {
             capa.setSup(5);
         }
-
         //Restrict the capacity to 2 at most
         ReconfigurationPlan p = rp.solve(-1, false);
         Assert.assertNotNull(p);

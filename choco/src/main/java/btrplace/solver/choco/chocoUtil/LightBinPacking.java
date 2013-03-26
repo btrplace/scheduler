@@ -31,11 +31,6 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 /**
  * Lighter but faster version of {@link BinPacking} that does not provide the knapsack filtering
  *
@@ -67,8 +62,6 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      * The constant size of each item in decreasing order.
      */
     private final int[] iSizes;
-
-    private IntDomainVar[] sizes;
 
     /**
      * The sum of the item sizes.
@@ -106,16 +99,6 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
     private IStateBool loadsHaveChanged;
 
     /**
-     * provide the items index in iSizes from its position in the bitset.
-     */
-    private int[] bsToVars;
-
-    /**
-     * Provide the item position in the bitset from its position in iSizes.
-     */
-    private int[] varsToBs;
-
-    /**
      * The bins having candidate items.
      */
     private IStateBitSet availableBins;
@@ -128,15 +111,14 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      * @param sizes       array of nbItems variables, each figuring the item size. Only the LB will be considered!
      * @param bins        array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
      */
-    public LightBinPacking(IEnvironment environment, IntDomainVar[] loads, IntDomainVar[] sizes, IntDomainVar[] bins) {
+    public LightBinPacking(IEnvironment environment, IntDomainVar[] loads, int[] sizes, IntDomainVar[] bins) {
         super(ArrayUtils.append(bins, loads));
 
         this.env = environment;
         this.loads = loads;
         this.nbBins = loads.length;
         this.bins = bins;
-        this.iSizes = new int[sizes.length];
-        this.sizes = sizes;
+        this.iSizes = sizes;
 
         this.bTLoads = new IStateInt[nbBins];
         this.bRLoads = new IStateInt[nbBins];
@@ -144,33 +126,6 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
 
     public final int getRemainingSpace(int bin) {
         return loads[bin].getSup() - bRLoads[bin].get();
-    }
-
-    private void sortIndices() throws ContradictionException {
-        long sum = 0;
-        //l denotes the ordering of the items, so bsToVars
-        List<Integer> l = new ArrayList<Integer>(iSizes.length);
-        for (int i = 0; i < iSizes.length; i++) {
-            l.add(i);
-            if (!sizes[i].isInstantiated()) {
-                throw new RuntimeException();
-            }
-            iSizes[i] = sizes[i].getInf();
-            sum += iSizes[i];
-        }
-        this.sumISizes = sum;
-        Collections.sort(l, new Comparator<Integer>() {
-            @Override
-            public int compare(Integer i1, Integer i2) {
-                return iSizes[i2] - iSizes[i1];
-            }
-        });
-        bsToVars = new int[iSizes.length];
-        varsToBs = new int[iSizes.length];
-        for (int i = 0; i < bsToVars.length; i++) {
-            bsToVars[i] = l.get(i);
-            varsToBs[l.get(i)] = i;
-        }
     }
 
     @Override
@@ -228,7 +183,6 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      */
     @Override
     public void awake() throws ContradictionException {
-
         sortIndices();
         availableBins = env.makeBitSet(nbBins);
         int[] rLoads = new int[nbBins];
@@ -285,6 +239,15 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
             }
         }
         propagate();
+    }
+
+    private void sortIndices() throws ContradictionException {
+        long sum = 0;
+        //l denotes the ordering of the items, so bsToVars
+        for (int i = 0; i < iSizes.length; i++) {
+            sum += iSizes[i];
+        }
+        this.sumISizes = sum;
     }
 
     @Override
@@ -364,13 +327,13 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
     public void awakeOnRemovals(int iIdx, DisposableIntIterator deltaDomain) throws ContradictionException {
         try {
             while (deltaDomain.hasNext()) {
-                removeItem(varsToBs[iIdx], deltaDomain.next());
+                removeItem(iIdx, deltaDomain.next());
             }
         } finally {
             deltaDomain.dispose();
         }
         if (vars[iIdx].getInf() == vars[iIdx].getSup()) {
-            assignItem(varsToBs[iIdx], vars[iIdx].getVal());
+            assignItem(iIdx, vars[iIdx].getVal());
         }
         this.constAwake(false);
     }
@@ -390,7 +353,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      *          on the load[bin] variable
      */
     private void assignItem(int item, int bin) throws ContradictionException {
-        int r = bRLoads[bin].add(iSizes[bsToVars[item]]);
+        int r = bRLoads[bin].add(iSizes[item]);
         filterLoadInf(bin, r);
         int v = candidates[bin].add(-1);
         if (v == 0) {
@@ -414,7 +377,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
         if (v == 0) {
             availableBins.clear(bin);
         }
-        int r = bTLoads[bin].add(-1 * iSizes[bsToVars[item]]);
+        int r = bTLoads[bin].add(-1 * iSizes[item]);
         filterLoadSup(bin, r);
         //}
     }
