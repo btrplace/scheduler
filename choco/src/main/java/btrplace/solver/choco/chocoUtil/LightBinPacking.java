@@ -30,8 +30,6 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.Arrays;
-
 /**
  * Lighter but faster version of {@link BinPacking} that does not provide the knapsack filtering
  *
@@ -70,7 +68,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
     /**
      * The sum of the item sizes per dimension. [nbItems]
      */
-    private long []sumISizes;
+    private long[] sumISizes;
 
     /**
      * The load of each bin per dimension. [nbDims][nbBins]
@@ -90,12 +88,12 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
     /**
      * The sum of the bin load LBs. [nbDims]
      */
-    private IStateInt []sumLoadInf;
+    private IStateInt[] sumLoadInf;
 
     /**
      * The sum of the bin load UBs. [nbDims]
      */
-    private IStateInt [] sumLoadSup;
+    private IStateInt[] sumLoadSup;
 
     /**
      * Has some bin load variable changed since the last propagation ?
@@ -107,9 +105,10 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      */
     private IStateBitSet availableBins;
 
-    private String [] name;
+    private String[] name;
 
     private long d;
+
     /**
      * constructor of the FastBinPacking global constraint
      *
@@ -118,7 +117,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      * @param sizes       array of nbItems variables, each figuring the item size. Only the LB will be considered!
      * @param bins        array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
      */
-    public LightBinPacking(String [] name, IEnvironment environment, IntDomainVar[][] loads, int[][] sizes, IntDomainVar[] bins) {
+    public LightBinPacking(String[] name, IEnvironment environment, IntDomainVar[][] loads, int[][] sizes, IntDomainVar[] bins) {
         super(ArrayUtils.append(bins, ArrayUtils.flatten(loads)));
         this.name = name;
         this.env = environment;
@@ -241,8 +240,8 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
         }
         long ed = System.currentTimeMillis();
 
-        int []slb = new int[nbDims];
-        int []slu = new int[nbDims];
+        int[] slb = new int[nbDims];
+        int[] slu = new int[nbDims];
         for (int b = 0; b < nbBins; b++) {
             for (int d = 0; d < nbDims; d++) {
                 bRLoads[d][b] = env.makeInt(rLoads[d][b]);
@@ -293,12 +292,12 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
                 }
             }
             noFixPoint = false;
-            for (int b = availableBins.nextSetBit(0); b >= 0; b = availableBins.nextSetBit(b + 1)) {
+            /*for (int b = availableBins.nextSetBit(0); b >= 0; b = availableBins.nextSetBit(b + 1)) {
                 for (int d = 0; d < nbDims; d++) {
                     noFixPoint |= filterLoadInf(d, b, Math.max(bRLoads[d][b].get(), (int) sumISizes[d] - sumLoadSup[d].get() + loads[d][b].getSup()));
                     noFixPoint |= filterLoadSup(d, b, Math.min(bTLoads[d][b].get(), (int) sumISizes[d] - sumLoadInf[d].get() + loads[d][b].getInf()));
                 }
-            }
+            } */
         }
         assert checkLoadConsistency();
         //d += System.currentTimeMillis();
@@ -484,7 +483,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
                     while (it.hasNext()) {
                         int v = it.next();
                         for (int d = 0; d < nbDims; d++) {
-                       //     System.out.println(d + " " + v + " " + d + " " + i);
+                            //     System.out.println(d + " " + v + " " + d + " " + i);
                             cs[d][v] += iSizes[d][i];
                         }
                     }
