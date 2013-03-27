@@ -74,8 +74,8 @@ public class CShareableResource implements ChocoModelView {
 
         id = ShareableResource.VIEW_ID_BASE + rc.getResourceIdentifier();
         for (int i = 0; i < nodes.length; i++) {
-            phyRcUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("phyRcUsage('" + rc.getIdentifier() + "', '" + rp.getNode(i) + "')"), 0, rc.get(nodes[i]));
-            virtRcUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("virtRcUsage('" + rc.getIdentifier() + "', '" + rp.getNode(i) + "')"), 0, Choco.MAX_UPPER_BOUND);
+            phyRcUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("phyRcUsage('" + rc.getResourceIdentifier() + "', '" + rp.getNode(i) + "')"), 0, rc.get(nodes[i]));
+            virtRcUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("virtRcUsage('" + rc.getResourceIdentifier() + "', '" + rp.getNode(i) + "')"), 0, Choco.MAX_UPPER_BOUND);
         }
 
 
@@ -90,11 +90,11 @@ public class CShareableResource implements ChocoModelView {
             VMActionModel a = rp.getVMAction(vmId);
             Slice slice = a.getDSlice();
             if (slice == null) { //The VMs will not be running, so its consumption is set to 0
-                vmAllocation[i] = s.makeConstantIntVar(rp.makeVarLabel("vmAllocation('" + rc.getIdentifier() + "', '" + vmId + "'"), 0);
+                vmAllocation[i] = s.makeConstantIntVar(rp.makeVarLabel("vmAllocation('" + rc.getResourceIdentifier() + "', '" + vmId + "'"), 0);
             } else {
                 //We don't know about the next VM usage for the moment, -1 is used by default to allow to detect an
                 //non-updated value.
-                vmAllocation[i] = s.createBoundIntVar("vmAllocation('" + rc.getIdentifier() + "', '" + vmId + "')", -1, Choco.MAX_UPPER_BOUND);
+                vmAllocation[i] = s.createBoundIntVar("vmAllocation('" + rc.getResourceIdentifier() + "', '" + vmId + "')", -1, Choco.MAX_UPPER_BOUND);
                 notNullUsage.add(vmAllocation[i]);
                 hosters.add(slice.getHoster());
             }
@@ -292,11 +292,30 @@ public class CShareableResource implements ChocoModelView {
                     //If the resource usage will be increasing
                     //Then the duration of the dSlice can be set to 0
                     //(the allocation will be performed at the end of the reconfiguration process)
-                    s.post(new FastImpliesEq(stay, dSlice.getDuration(), 0));
+                    if (stay.isInstantiatedTo(1)) {
+                        try {
+                            dSlice.getDuration().setVal(0);
+                        } catch (ContradictionException ex) {
+                            rp.getLogger().info("Unable to set the dSlice duration of {} to 0", dSlice.getSubject());
+                            return false;
+                        }
+                    } else {
+                        s.post(new FastImpliesEq(stay, dSlice.getDuration(), 0));
+                    }
+
                 } else {
                     //Else, the resource usage is decreasing, so
                     // we set the cSlice duration to 0 to directly reduce the resource allocation
-                    s.post(new FastImpliesEq(stay, cSlice.getDuration(), 0));
+                    if (stay.isInstantiatedTo(1)) {
+                        try {
+                            cSlice.getDuration().setVal(0);
+                        } catch (ContradictionException ex) {
+                            rp.getLogger().info("Unable to set the cSlice duration of {} to 0", cSlice.getSubject());
+                            return false;
+                        }
+                    } else {
+                        s.post(new FastImpliesEq(stay, cSlice.getDuration(), 0));
+                    }
                 }
             }
         }

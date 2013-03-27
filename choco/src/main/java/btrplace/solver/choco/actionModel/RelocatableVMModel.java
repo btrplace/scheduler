@@ -84,12 +84,6 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
         s.post(new FastIFFEq(stay, duration, 0));
 
-        /*boolean increase = false;
-        if (!increase) {
-            s.post(new FastImpliesEq(stay, cSlice.getDuration(), 0));
-        } else {
-            s.post(new FastImpliesEq(stay, dSlice.getDuration(), 0));
-        } */
         s.post(s.leq(duration, cSlice.getDuration()));
         s.post(s.leq(duration, dSlice.getDuration()));
         s.post(s.eq(cSlice.getEnd(), s.plus(dSlice.getStart(), duration)));

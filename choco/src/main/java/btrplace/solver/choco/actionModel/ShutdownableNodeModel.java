@@ -27,6 +27,8 @@ import btrplace.solver.choco.chocoUtil.FastIFFEq;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.ElementV;
+import choco.cp.solver.variables.integer.BoolVarNot;
+import choco.cp.solver.variables.integer.BooleanVarImpl;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.UUID;
@@ -113,8 +115,8 @@ public class ShutdownableNodeModel implements NodeActionModel {
             - If the node is offline, it is sure it cannot host any running VMs
         */
         isOnline = s.createBooleanVar(rp.makeVarLabel(new StringBuilder("shutdownnableNode(").append(e).append(").online").toString()));
-        isOffline = s.createBooleanVar(rp.makeVarLabel(new StringBuilder("shutdownnableNode(").append(e).append(").offline").toString()));
-        s.post(s.neq(isOnline, isOffline));
+        isOffline = new BoolVarNot(s, new StringBuilder("shutdownnableNode(").append(e).append(").offline").toString(), (BooleanVarImpl) isOnline);//s.createBooleanVar(rp.makeVarLabel(new StringBuilder("shutdownnableNode(").append(e).append(").offline").toString()));
+        //s.post(s.neq(isOnline, isOffline));
         s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNode(e)], 0));
 
         /*

@@ -149,8 +149,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         this.views = new HashMap<String, ChocoModelView>();
         resources = new ArrayList<CShareableResource>();
-        solver.post(solver.geq(end, start));
-
 
         fillElements();
 
@@ -208,6 +206,12 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         appendNaiveBranchHeuristic();
 
 
+        int nbIntVars = solver.getNbIntVars();
+        int nbBoolVars = solver.getNbBooleanVars();
+        int nbCstes = solver.getNbConstants();
+        int nbCstrs = solver.getNbConstraints();
+        getLogger().debug("{} constraints; Variables: {} int(s), {} bool(s), {} constant(s).", nbCstrs, nbIntVars, nbBoolVars, nbCstes);
+        //getLogger().debug(solver.pretty());
         if (objAlterer == null) {
             solver.launch();
         } else if (optimize) {
