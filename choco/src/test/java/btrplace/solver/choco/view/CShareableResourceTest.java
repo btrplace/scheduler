@@ -138,7 +138,10 @@ public class CShareableResourceTest implements PremadeElements {
 
         ModelViewMapper vMapper = new ModelViewMapper();
         vMapper.register(new CShareableResource.Builder());
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).setViewMapper(vMapper).build();
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                                .setViewMapper(vMapper)
+                                .labelVariables()
+                                .build();
         ReconfigurationPlan p = rp.solve(0, false);
 
         //Check the amount of allocated resources on the RP

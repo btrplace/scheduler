@@ -41,6 +41,7 @@ public class BinPackingBuilder {
 
     private List<IntDomainVar[]> sizes;
 
+    private List<String> names;
     /**
      * Make a new builder.
      *
@@ -51,6 +52,7 @@ public class BinPackingBuilder {
         loads = new ArrayList<IntDomainVar[]>();
         bins = new ArrayList<IntDomainVar[]>();
         sizes = new ArrayList<IntDomainVar[]>();
+        names = new ArrayList<String>();
 
     }
 
@@ -61,10 +63,11 @@ public class BinPackingBuilder {
      * @param sizes the resource usage of each of the cSlices
      * @param bins  the resource usage of each of the dSlices
      */
-    public void add(IntDomainVar[] loads, IntDomainVar[] sizes, IntDomainVar[] bins) {
+    public void add(String name,IntDomainVar[] loads, IntDomainVar[] sizes, IntDomainVar[] bins) {
         this.loads.add(loads);
         this.sizes.add(sizes);
         this.bins.add(bins);
+        this.names.add(name);
     }
 
     /**
@@ -74,9 +77,19 @@ public class BinPackingBuilder {
      */
     public void inject() throws ContradictionException {
         CPSolver solver = rp.getSolver();
+        int [][] iSizes = new int[sizes.size()][sizes.get(0).length];
+        for (int i = 0; i < sizes.size(); i++) {
+            IntDomainVar [] s = sizes.get(i);
+            int x = 0;
+            for (IntDomainVar ss : s) {
+                iSizes[i][x++] = ss.getInf();
+                ss.setVal(ss.getInf());
+            }
 
-
-        for (int i = 0; i < loads.size(); i++) {
+        }
+        //TODO: Items must always be in the same order.
+        solver.post(new LightBinPacking(names.toArray(new String[names.size()]), solver.getEnvironment(), loads.toArray(new IntDomainVar[loads.size()][]), iSizes, bins.get(0)));
+        /*for (int i = 0; i < loads.size(); i++) {
             IntDomainVar[] l = loads.get(i);
             IntDomainVar[] s = sizes.get(i);
             IntDomainVar[] b = bins.get(i);
@@ -88,8 +101,8 @@ public class BinPackingBuilder {
                 iSizes[x++] = ss.getInf();
                 ss.setVal(ss.getInf());
             }
-            solver.post(new LightBinPacking(solver.getEnvironment(), l, iSizes, b));
-        }
+            solver.post(new LightBinPacking(names.get(i), solver.getEnvironment(), new IntDomainVar[][]{l}, new int[][]{iSizes}, b));
+        }         */
 
 
     }

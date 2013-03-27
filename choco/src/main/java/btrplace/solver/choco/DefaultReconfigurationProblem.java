@@ -353,7 +353,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
         //solver.post(new LightBinPacking(solver.getEnvironment(), vmsCountOnNodes, usages, ds));
         //solver.post(new BinPacking(solver.getEnvironment(), vmsCountOnNodes, usages, ds));
-        bpBuilder.add(vmsCountOnNodes, usages, ds);
+        bpBuilder.add("vmsOnNodes", vmsCountOnNodes, usages, ds);
     }
 
     private void fillElements() {
