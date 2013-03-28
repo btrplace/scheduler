@@ -355,8 +355,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         for (int i = 0; i < ds.length; i++) {
             usages[i] = solver.makeConstantIntVar(1);
         }
-        //solver.post(new LightBinPacking(solver.getEnvironment(), vmsCountOnNodes, usages, ds));
-        //solver.post(new BinPacking(solver.getEnvironment(), vmsCountOnNodes, usages, ds));
         bpBuilder.add("vmsOnNodes", vmsCountOnNodes, usages, ds);
     }
 

@@ -101,6 +101,8 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
 
     private IStateBitSet notEntailedDims;
 
+    private IStateInt[] candidates;
+
     /**
      * constructor of the FastBinPacking global constraint
      *
@@ -199,6 +201,8 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
         int[][] cLoads = new int[nbDims][nbBins];
 
         int[] nbUnassigned = new int[nbDims];
+        candidates = new IStateInt[nbBins];
+        int[] cs = new int[nbBins];
         for (int i = 0; i < bins.length; i++) {
             bins[i].updateInf(0, this, false);
             bins[i].updateSup(nbBins - 1, this, false);
@@ -216,6 +220,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
                         int b = it.next();
                         for (int d = 0; d < nbDims; d++) {
                             cLoads[d][b] += iSizes[d][i];
+                            cs[b]++;
                         }
                     }
                 } finally {
@@ -234,6 +239,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
                 loads[d][b].updateSup(rLoads[d][b] + cLoads[d][b], this, false);
                 slb[d] += loads[d][b].getInf();
                 slu[d] += loads[d][b].getSup();
+                candidates[b] = env.makeInt(cs[b]);
             }
         }
 
@@ -345,7 +351,14 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
     public void awakeOnRemovals(int iIdx, DisposableIntIterator deltaDomain) throws ContradictionException {
         try {
             while (deltaDomain.hasNext()) {
-                removeItem(iIdx, deltaDomain.next());
+                int b = deltaDomain.next();
+                /*int r = candidates[b].decrement();
+                if (r == 0) {
+                    for (int d = 0; d < nbDims; d++) {
+                        loads[d][b].instantiate(loads[d][b].getInf(), this, false);
+                    }
+                } */
+                removeItem(iIdx, b);
             }
 
         } finally {

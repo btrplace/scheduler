@@ -115,8 +115,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
             - If the node is offline, it is sure it cannot host any running VMs
         */
         isOnline = s.createBooleanVar(rp.makeVarLabel(new StringBuilder("shutdownableNode(").append(e).append(").online").toString()));
-        isOffline = new BoolVarNot(s, new StringBuilder("shutdownableNode(").append(e).append(").offline").toString(), (BooleanVarImpl) isOnline);//s.createBooleanVar(rp.makeVarLabel(new StringBuilder("shutdownnableNode(").append(e).append(").offline").toString()));
-        //s.post(s.neq(isOnline, isOffline));
+        isOffline = new BoolVarNot(s, new StringBuilder("shutdownableNode(").append(e).append(").offline").toString(), (BooleanVarImpl) isOnline);
         s.post(new FastImpliesEq0(isOffline, rp.getNbRunningVMs()[rp.getNode(e)]));
 
         /*
