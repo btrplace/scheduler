@@ -30,6 +30,8 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import java.util.Arrays;
+
 /**
  * Lighter but faster version of {@link BinPacking} that does not provide the knapsack filtering
  *
@@ -41,11 +43,6 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      * The solver environment.
      */
     private IEnvironment env;
-
-    /**
-     * The number of items that can be placed on each bin.
-     */
-    private IStateInt[] candidates;
 
     /**
      * The number of bins.
@@ -100,14 +97,9 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      */
     private IStateBool loadsHaveChanged;
 
-    /**
-     * The bins having candidate items.
-     */
-    private IStateBitSet availableBins;
-
     private String[] name;
 
-    private long d;
+    private IStateBitSet notEntailedDims;
 
     /**
      * constructor of the FastBinPacking global constraint
@@ -129,10 +121,6 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
 
         this.bTLoads = new IStateInt[nbDims][nbBins];
         this.bRLoads = new IStateInt[nbDims][nbBins];
-    }
-
-    public final int getRemainingSpace(int dim, int bin) {
-        return loads[dim][bin].getSup() - bRLoads[dim][bin].get();
     }
 
     @Override
@@ -161,7 +149,6 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
         if (idx < bins.length) {
             return IntVarEvent.REMVAL_MASK;
         }
-        //return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
         return IntVarEvent.BOUNDS_MASK;
     }
 
@@ -198,7 +185,8 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
     public void awake() throws ContradictionException {
 
         sumISizes = new long[nbDims];
-
+        notEntailedDims = env.makeBitSet(nbDims);
+        notEntailedDims.clear(0, 3);
         for (int d = 0; d < nbDims; d++) {
             long sum = 0;
             for (int i = 0; i < iSizes[d].length; i++) {
@@ -207,15 +195,10 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
             this.sumISizes[d] = sum;
         }
 
-
-        availableBins = env.makeBitSet(nbBins);
         int[][] rLoads = new int[nbDims][nbBins];
         int[][] cLoads = new int[nbDims][nbBins];
 
-        candidates = new IStateInt[nbBins];
-        for (int i = 0; i < nbBins; i++) {
-            candidates[i] = env.makeInt(0);
-        }
+        int[] nbUnassigned = new int[nbDims];
         for (int i = 0; i < bins.length; i++) {
             bins[i].updateInf(0, this, false);
             bins[i].updateSup(nbBins - 1, this, false);
@@ -224,11 +207,13 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
                     rLoads[d][bins[i].getVal()] += iSizes[d][i];
                 }
             } else {
+                for (int d = 0; d < nbDims; d++) {
+                    nbUnassigned[d] += iSizes[d][i];
+                }
                 DisposableIntIterator it = bins[i].getDomain().getIterator();
                 try {
                     while (it.hasNext()) {
                         int b = it.next();
-                        candidates[b].add(1);
                         for (int d = 0; d < nbDims; d++) {
                             cLoads[d][b] += iSizes[d][i];
                         }
@@ -238,7 +223,6 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
                 }
             }
         }
-        long ed = System.currentTimeMillis();
 
         int[] slb = new int[nbDims];
         int[] slu = new int[nbDims];
@@ -248,9 +232,6 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
                 bTLoads[d][b] = env.makeInt(rLoads[d][b] + cLoads[d][b]);
                 loads[d][b].updateInf(rLoads[d][b], this, false);
                 loads[d][b].updateSup(rLoads[d][b] + cLoads[d][b], this, false);
-                if (candidates[b].get() > 0) {
-                    availableBins.set(b);
-                }
                 slb[d] += loads[d][b].getInf();
                 slu[d] += loads[d][b].getSup();
             }
@@ -265,7 +246,17 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
 
         this.loadsHaveChanged = env.makeBool(false);
 
+        for (int d = 0; d < nbDims; d++) {
+            for (int b = 0; b < nbBins; b++) {
+                if (loads[d][b].getSup() - loads[d][b].getInf() < nbUnassigned[d]) {
+                    ChocoLogging.getBranchingLogger().info(sumISizes[d] + " >= ub(" + loads[d][b].pretty() + ")" + cLoads[d][b]);
+                    notEntailedDims.set(d);
+                    break;
+                }
+            }
+        }
         assert checkLoadConsistency();
+        ChocoLogging.getBranchingLogger().info(Arrays.toString(name) + " " + Arrays.toString(cLoads) + " notEntailed: " + notEntailedDims);
         propagate();
     }
 
@@ -284,24 +275,24 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
     public void propagate() throws ContradictionException {
         recomputeLoadSums();
         //d -= System.currentTimeMillis();
-        boolean noFixPoint = true;
-        while (noFixPoint) {
-            for (int d = 0; d < nbDims; d++) {
-                if (sumISizes[d] > sumLoadSup[d].get() || sumISizes[d] < sumLoadInf[d].get()) {
-                    fail();
-                }
+        //boolean noFixPoint = true;
+        //while (noFixPoint) {
+
+        for (int d = 0; d < nbDims; d++) {
+            if (sumISizes[d] > sumLoadSup[d].get() || sumISizes[d] < sumLoadInf[d].get()) {
+                fail();
             }
-            noFixPoint = false;
+        }
+        //  noFixPoint = false;
             /*for (int b = availableBins.nextSetBit(0); b >= 0; b = availableBins.nextSetBit(b + 1)) {
                 for (int d = 0; d < nbDims; d++) {
                     noFixPoint |= filterLoadInf(d, b, Math.max(bRLoads[d][b].get(), (int) sumISizes[d] - sumLoadSup[d].get() + loads[d][b].getSup()));
                     noFixPoint |= filterLoadSup(d, b, Math.min(bTLoads[d][b].get(), (int) sumISizes[d] - sumLoadInf[d].get() + loads[d][b].getInf()));
                 }
             } */
-        }
+        //}
         assert checkLoadConsistency();
         //d += System.currentTimeMillis();
-        //System.out.println(name + " " + d + "ms");
     }
 
     /**
@@ -356,6 +347,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
             while (deltaDomain.hasNext()) {
                 removeItem(iIdx, deltaDomain.next());
             }
+
         } finally {
             deltaDomain.dispose();
         }
@@ -380,10 +372,6 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      *          on the load[bin] variable
      */
     private void assignItem(int item, int bin) throws ContradictionException {
-        int v = candidates[bin].add(-1);
-        if (v == 0) {
-            availableBins.clear(bin);
-        }
         for (int d = 0; d < nbDims; d++) {
             int r = bRLoads[d][bin].add(iSizes[d][item]);
             filterLoadInf(d, bin, r);
@@ -401,16 +389,10 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      *          on the load[bin] variable
      */
     private void removeItem(int item, int bin) throws ContradictionException {
-        //if (candidates[bin].get(item)) {
-        int v = candidates[bin].add(-1);
-        if (v == 0) {
-            availableBins.clear(bin);
-        }
-        for (int d = 0; d < nbDims; d++) {
+        for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
             int r = bTLoads[d][bin].add(-1 * iSizes[d][item]);
             filterLoadSup(d, bin, r);
         }
-        //}
     }
 
     /**
@@ -493,7 +475,8 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
             }
         }
 
-        for (int d = 0; d < nbDims; d++) {
+//        for (int d = 0; d < nbDims; d++) {
+        for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
             int sli = 0;
             int sls = 0;
             for (int b = 0; b < rs[d].length; b++) {
