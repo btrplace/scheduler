@@ -9,13 +9,22 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
+ * Tools to ease the management of the VM placement.
+ *
  * @author Fabien Hermenier
  */
-public class VMPlacementUtils {
+public final class VMPlacementUtils {
 
     private VMPlacementUtils() {
     }
 
+    /**
+     * Map a map where keys are the placement variable of the future-running VMs
+     * and values are the VM identifier.
+     *
+     * @param rp the problem
+     * @return the resulting map.
+     */
     public static Map<IntDomainVar, UUID> makePlacementMap(ReconfigurationProblem rp) {
         Map<IntDomainVar, UUID> m = new HashMap<IntDomainVar, UUID>();
         for (UUID vm : rp.getFutureRunningVMs()) {
@@ -25,6 +34,13 @@ public class VMPlacementUtils {
         return m;
     }
 
+    /**
+     * Check if a VM can stay on its current node.
+     *
+     * @param rp the reconfiguration problem.
+     * @param vm the VM
+     * @return {@code true} iff the VM can stay
+     */
     public static boolean canStay(ReconfigurationProblem rp, UUID vm) {
         Mapping m = rp.getSourceModel().getMapping();
         if (m.getRunningVMs().contains(vm)) {

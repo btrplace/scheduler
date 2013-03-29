@@ -103,12 +103,6 @@ public class GettingStarted implements Example {
     private static Set<SatConstraint> makeConstraints() {
         Set<SatConstraint> cstrs = new HashSet<SatConstraint>();
 
-        //We disallow CPU and memory overbooking, so each unit of virtual resource
-        //consumes one unit of physical resource on every nodes
-        Set<UUID> allNodes = new HashSet<UUID>(Arrays.asList(n1, n2, n3, n4));
-        cstrs.add(new Overbook(allNodes, "cpu", 1));
-        cstrs.add(new Overbook(allNodes, "mem", 1));
-
         //VMs VM2 and VM3 must be running on distinct nodes
         cstrs.add(new Spread(new HashSet<UUID>(Arrays.asList(vm2, vm3))));
 

@@ -23,7 +23,6 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
-import btrplace.solver.choco.VMActionModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -34,13 +33,15 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class StayRunningVMModel implements VMActionModel {
+public class StayRunningVMModel implements KeepRunningVMModel {
 
     private Slice cSlice, dSlice;
 
     private ReconfigurationProblem rp;
 
     private UUID vm;
+
+    private IntDomainVar stay;
 
     /**
      * Make a new model.
@@ -59,10 +60,12 @@ public class StayRunningVMModel implements VMActionModel {
                 .build();
         dSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").dSlice")
                 .setHoster(host)
-                .setStart(rp.makeDuration("stayRunningVM(" + e + ").dSlice_start"))
+                .setStart(cSlice.getEnd()/*rp.makeDuration("stayRunningVM(" + e + ").dSlice_start")*/)
                 .build();
         CPSolver s = rp.getSolver();
-        s.post(s.eq(cSlice.getEnd(), dSlice.getStart()));
+        //s.post(s.eq(cSlice.getEnd(), dSlice.getStart()));
+
+        stay = s.makeConstantIntVar(1);
     }
 
     @Override
@@ -113,4 +116,8 @@ public class StayRunningVMModel implements VMActionModel {
         v.visit(this);
     }
 
+    @Override
+    public IntDomainVar isStaying() {
+        return stay;
+    }
 }

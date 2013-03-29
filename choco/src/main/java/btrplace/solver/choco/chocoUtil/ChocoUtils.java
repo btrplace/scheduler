@@ -51,14 +51,14 @@ public final class ChocoUtils {
      * @param c2 the second constraint
      */
     public static void postImplies(Solver s, SConstraint<IntDomainVar> c1, SConstraint<IntDomainVar> c2) {
-        IntDomainVar bC1 = s.createBooleanVar("bC1");
+        IntDomainVar bC1 = s.createBooleanVar("isSatisfied(" + c1.pretty() + ")");
         s.post(ReifiedFactory.builder(bC1, c1, s));
 
-        IntDomainVar bC2 = s.createBooleanVar("bC2");
+        IntDomainVar bC2 = s.createBooleanVar("isSatisfied(" + c2.pretty() + ")");
         s.post(ReifiedFactory.builder(bC2, c2, s));
 
         SConstraint cNotC1 = BooleanFactory.not(bC1);
-        IntDomainVar bNotC1 = s.createBooleanVar("!c1");
+        IntDomainVar bNotC1 = s.createBooleanVar("not(" + bC1.getName() + ")");
         s.post(ReifiedFactory.builder(bNotC1, cNotC1, s));
 
 
@@ -75,10 +75,10 @@ public final class ChocoUtils {
      */
     public static void postImplies(Solver s, IntDomainVar b1, SConstraint<IntDomainVar> c2) {
 
-        IntDomainVar bC2 = s.createBooleanVar("bC2");
+        IntDomainVar bC2 = s.createBooleanVar("isSatisfied(" + c2.pretty() + ")");
         s.post(ReifiedFactory.builder(bC2, c2, s));
 
-        IntDomainVar notB1 = s.createBooleanVar("!b1");
+        IntDomainVar notB1 = s.createBooleanVar("not(" + b1.getName() + ")");
         s.post(s.neq(b1, notB1));
 
         s.post(BooleanFactory.or(s.getEnvironment(), notB1, bC2));
@@ -92,19 +92,19 @@ public final class ChocoUtils {
      * @param c2 the second constraint
      */
     public static void postIfOnlyIf(Solver s, IntDomainVar b1, SConstraint c2) {
-        IntDomainVar notBC1 = s.createBooleanVar("!(" + b1.pretty() + ")");
+        IntDomainVar notBC1 = s.createBooleanVar("not(" + b1.getName() + ")");
         s.post(s.neq(b1, notBC1));
 
-        IntDomainVar bC2 = s.createBooleanVar("boolean(" + c2.pretty() + ")");
+        IntDomainVar bC2 = s.createBooleanVar("isSatisfied(" + c2.pretty() + ")");
         s.post(ReifiedFactory.builder(bC2, c2, s));
 
-        IntDomainVar notBC2 = s.createBooleanVar("!(" + c2.pretty() + ")");
+        IntDomainVar notBC2 = s.createBooleanVar("not(" + bC2.getName() + ")");
         s.post(s.neq(notBC2, bC2));
 
-        IntDomainVar or1 = s.createBooleanVar("or1");
+        IntDomainVar or1 = s.createBooleanVar("or(" + b1.getName() + "," + notBC2.getName() + ")");
         s.post(ReifiedFactory.builder(or1, BooleanFactory.or(s.getEnvironment(), b1, notBC2), s));
 
-        IntDomainVar or2 = s.createBooleanVar("or2");
+        IntDomainVar or2 = s.createBooleanVar("or(" + notBC1.getName() + "," + bC2.getName() + ")");
         s.post(ReifiedFactory.builder(or2, BooleanFactory.or(s.getEnvironment(), notBC1, bC2), s));
 
         s.post(BooleanFactory.and(or1, or2));
@@ -220,16 +220,17 @@ public final class ChocoUtils {
 
     /**
      * Get the next interval of possible contiguous values for an enumerated variable.
-     * @param v the variable to inspect
+     *
+     * @param v    the variable to inspect
      * @param from the initial value to consider.
      * @return an interval of values
      */
-    public static int [] getNextContiguousValues(IntDomainVar v, int from) {
+    public static int[] getNextContiguousValues(IntDomainVar v, int from) {
         IntDomain dom = v.getDomain();
         int ub = dom.getSup();
         int lb = dom.getNextValue(from - 1); //from - 1 to include the 'from' value if needed
         int prev = lb;
-        for (int val = dom.getNextValue(lb); val <= ub ; val = dom.getNextValue(val)) {
+        for (int val = dom.getNextValue(lb); val <= ub; val = dom.getNextValue(val)) {
             if (val == prev || val == prev + 1) {
                 prev++;
             } else {
@@ -241,7 +242,7 @@ public final class ChocoUtils {
     }
 
     public static String prettyContiguous(IntDomainVar v) {
-        int [] zone = getNextContiguousValues(v, v.getInf());
+        int[] zone = getNextContiguousValues(v, v.getInf());
         StringBuilder buf = new StringBuilder(Arrays.toString(zone));
         while (zone[1] < v.getSup()) {
             zone = getNextContiguousValues(v, zone[1] + 1);

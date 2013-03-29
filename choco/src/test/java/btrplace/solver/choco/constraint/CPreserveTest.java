@@ -67,9 +67,8 @@ public class CPreserveTest implements PremadeElements {
 
     /**
      * A preserve constraint asks for a minimum amount of resources but
-     * their is no overbook ratio so, their should be no relocation,
-     * but also no allocate action ?
-     * TODO: Consistent or not ?
+     * their is no overbook ratio so, the default value of 1 is used
+     * and vm1 or vm2 is moved to n2
      *
      * @throws SolverException
      */
@@ -92,8 +91,6 @@ public class CPreserveTest implements PremadeElements {
         cstrs.add(pr);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
-        //No relocation
-        Assert.assertEquals(p.getResult().getMapping(), map);
 
     }
 }

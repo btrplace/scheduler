@@ -14,7 +14,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class DependencyBasedPlanApplier implements ReconfigurationPlanApplier {
+public final class DependencyBasedPlanApplier implements ReconfigurationPlanApplier {
 
     private static final DependencyBasedPlanApplier instance = new DependencyBasedPlanApplier();
 

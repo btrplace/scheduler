@@ -28,8 +28,11 @@ import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarVal;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
+import choco.kernel.common.Constant;
 import choco.kernel.solver.Configuration;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.ResolutionPolicy;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.*;
@@ -41,12 +44,21 @@ import java.util.*;
  */
 public class MinMTTR implements ReconfigurationObjective {
 
-    public MinMTTR() {
+    private List<SConstraint> costConstraints;
 
+    private ReconfigurationProblem rp;
+
+    /**
+     * Make a new objective.
+     */
+    public MinMTTR() {
+        costConstraints = new ArrayList<SConstraint>();
     }
 
     @Override
     public void inject(ReconfigurationProblem rp) throws SolverException {
+        this.rp = rp;
+        costConstraints.clear();
         List<IntDomainVar> mttrs = new ArrayList<IntDomainVar>();
         for (ActionModel m : rp.getVMActions()) {
             mttrs.add(m.getEnd());
@@ -58,7 +70,8 @@ public class MinMTTR implements ReconfigurationObjective {
         CPSolver s = rp.getSolver();
         IntDomainVar cost = s.createBoundIntVar(rp.makeVarLabel("globalCost"), 0, Choco.MAX_UPPER_BOUND);
 
-        s.post(s.eq(cost, CPSolver.sum(costs)));
+        SConstraint costConstraint = s.eq(cost, CPSolver.sum(costs));
+        costConstraints.add(costConstraint);
 
         s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
         s.setObjective(cost);
@@ -71,8 +84,12 @@ public class MinMTTR implements ReconfigurationObjective {
         Model mo = rp.getSourceModel();
         Mapping map = mo.getMapping();
 
+        List<ActionModel> actions = new ArrayList<ActionModel>();
+        Collections.addAll(actions, rp.getVMActions());
+        OnStableNodeFirst schedHeuristic = new OnStableNodeFirst("stableNodeFirst", rp, actions, this);
+
         //Get the VMs to move
-        Set<UUID> onBadNodes = new HashSet<UUID>();
+        Set<UUID> onBadNodes = rp.getManageableVMs();
 
         for (UUID vm : map.getSleepingVMs()) {
             if (rp.getFutureRunningVMs().contains(vm)) {
@@ -106,11 +123,11 @@ public class MinMTTR implements ReconfigurationObjective {
 
         s.addGoal(new AssignVar(new MovingVMs("movingVMs", rp, map, vmsToExclude), new RandomVMPlacement("movingVMs", rp, pla, true)));
 
-        HostingVariableSelector selectForBads = new HostingVariableSelector("selectForBads", rp, ActionModelUtils.getDSlices(badActions));
+        HostingVariableSelector selectForBads = new HostingVariableSelector("selectForBads", rp, ActionModelUtils.getDSlices(badActions), schedHeuristic);
         s.addGoal(new AssignVar(selectForBads, new RandomVMPlacement("selectForBads", rp, pla, true)));
 
 
-        HostingVariableSelector selectForGoods = new HostingVariableSelector("selectForGoods", rp, ActionModelUtils.getDSlices(goodActions));
+        HostingVariableSelector selectForGoods = new HostingVariableSelector("selectForGoods", rp, ActionModelUtils.getDSlices(goodActions), schedHeuristic);
         s.addGoal(new AssignVar(selectForGoods, new RandomVMPlacement("selectForGoods", rp, pla, true)));
 
         //VMs to run
@@ -122,21 +139,43 @@ public class MinMTTR implements ReconfigurationObjective {
         for (UUID vm : vmsToRun) {
             runActions[i++] = rp.getVMAction(vm);
         }
-        HostingVariableSelector selectForRuns = new HostingVariableSelector("selectForRuns", rp, ActionModelUtils.getDSlices(runActions));
+        HostingVariableSelector selectForRuns = new HostingVariableSelector("selectForRuns", rp, ActionModelUtils.getDSlices(runActions), schedHeuristic);
 
 
         s.addGoal(new AssignVar(selectForRuns, new RandomVMPlacement("selectForRuns", rp, pla, true)));
 
+        //s.addGoal(new AssignVar(new StartingNodes("startingNodes", rp, rp.getNodeActions()), new MinVal()));
         ///SCHEDULING PROBLEM
-        List<ActionModel> actions = new ArrayList<ActionModel>();
-        Collections.addAll(actions, rp.getVMActions());
-        s.addGoal(new AssignOrForbidIntVarVal(new OnStableNodeFirst("stableNodeFirst", rp, actions), new MinVal()));
+        s.addGoal(new AssignOrForbidIntVarVal(schedHeuristic, new MinVal()));
 
+        //At this stage only it matters to plug the cost constraints
         s.addGoal(new AssignVar(new StaticVarOrder(rp.getSolver(), new IntDomainVar[]{rp.getEnd(), cost}), new MinVal()));
     }
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         return Collections.emptySet();
+    }
+
+    private boolean costActivated = false;
+
+    /**
+     * Post the constraints related to the objective.
+     */
+    public void postCostConstraints() {
+        rp.getLogger().debug("Post the cost-oriented constraints");
+        if (!costActivated) {
+            costActivated = true;
+            CPSolver s = rp.getSolver();
+            for (SConstraint c : costConstraints) {
+                s.postCut(c);
+            }
+            try {
+                s.propagate();
+            } catch (ContradictionException e) {
+                s.setFeasible(false);
+                s.post(Constant.FALSE);
+            }
+        }
     }
 }

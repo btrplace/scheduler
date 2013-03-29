@@ -275,13 +275,9 @@ public class DefaultMapping implements Mapping, Cloneable {
 
     @Override
     public Set<UUID> getRunningVMs(Collection<UUID> ns) {
-        int nb = 0;
+        Set<UUID> vms = new HashSet<UUID>();
         for (UUID n : ns) {
-            nb += host[RUNNING_STATE].get(n).size();
-        }
-        Set<UUID> vms = new HashSet<UUID>(nb);
-        for (UUID n : ns) {
-            vms.addAll(host[RUNNING_STATE].get(n));
+            vms.addAll(getRunningVMs(n));
         }
         return vms;
     }

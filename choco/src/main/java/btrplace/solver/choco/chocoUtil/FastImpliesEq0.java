@@ -25,30 +25,28 @@ import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
- * A fast implementation for BVAR <=> VAR = CSTE
+ * A fast implementation for BVAR <=> VAR[0,x] = 0
  * <br/>
  *
- * @author Charles Prud'homme
- * @since 29/06/11
+ * @author Fabien Hermenier
  */
-public class FastImpliesEq extends AbstractBinIntSConstraint {
-
-    private final int constante;
+public class FastImpliesEq0 extends AbstractBinIntSConstraint {
 
     /**
      * New instance.
      *
-     * @param b        the boolean variable
-     * @param var      the variable
-     * @param constant the constant to use to set the variable if the boolean variable is set to true
+     * @param b   the boolean variable
+     * @param var the variable
      */
-    public FastImpliesEq(IntDomainVar b, IntDomainVar var, int constant) {
+    public FastImpliesEq0(IntDomainVar b, IntDomainVar var) {
         super(b, var);
         if ((!b.isInstantiated() && !b.hasBooleanDomain())
                 || (b.isInstantiated() && !b.isInstantiatedTo(0) && !b.isInstantiatedTo(1))) {
             throw new SolverException(b.getName() + " is not a boolean variable");
         }
-        this.constante = constant;
+        if (var.getInf() < 0) {
+            throw new SolverException(var.getName() + " should have a lb >= 0");
+        }
     }
 
     @Override
@@ -56,36 +54,63 @@ public class FastImpliesEq extends AbstractBinIntSConstraint {
         if (idx == 0) {
             return IntVarEvent.INSTINT_MASK;
         } else {
-            return IntVarEvent.REMVAL_MASK;
+            return IntVarEvent.INCINF_MASK + IntVarEvent.INSTINT_MASK;
+        }
+    }
+
+    @Override
+    public void awake() throws ContradictionException {
+        if (v0.isInstantiatedTo(1)) {
+            v1.instantiate(0, this, false);
+            this.setEntailed();
+        }
+        if (v1.getInf() > 0) {
+            v0.instantiate(0, this, false);
+            this.setEntailed();
         }
     }
 
     @Override
     public void propagate() throws ContradictionException {
+        //ChocoLogging.getBranchingLogger().info(v0.pretty() + " propagate()");
         if (v0.isInstantiatedTo(1)) {
-            v1.instantiate(constante, this, false);
+            v1.instantiate(0, this, false);
             this.setEntailed();
         }
-        if (!v1.canBeInstantiatedTo(constante)) {
+        if (v1.getInf() > 0) {
             v0.instantiate(0, this, false);
             this.setEntailed();
+        }
+    }
+
+    @Override
+    public void awakeOnInf(int varIdx) throws ContradictionException {
+        //    ChocoLogging.getBranchingLogger().info(vars[varIdx].pretty());
+        if (varIdx == 1) {//Cause the lb of v1 is supposed to be 0
+            v0.instantiate(0, this, false);
+            setEntailed();
+        } else {
+            throw new SolverException("awakeOnInf(" + varIdx + ")");
         }
     }
 
     @Override
     public void awakeOnInst(int idx) throws ContradictionException {
         if (idx == 0 && v0.getVal() == 1) {
-            v1.instantiate(constante, this, false);
+            v1.instantiate(0, this, false);
+        } else if (idx == 1 && v1.getVal() != 0) {
+            v0.instantiate(0, this, false);
         }
     }
 
     @Override
     public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
+        throw new SolverException("foo");
         //ChocoLogging.getBranchingLogger().info(vars[idx].pretty() + " " + deltaDomain.toString());
-        if (idx == 1 && !v1.canBeInstantiatedTo(constante)) {
+        /*if (idx == 1 && !v1.canBeInstantiatedTo(constante)) {
             v0.instantiate(0, this, false);
             this.setEntailed();
-        }
+        } */
     }
 
     @Override
@@ -95,22 +120,22 @@ public class FastImpliesEq extends AbstractBinIntSConstraint {
 
     @Override
     public boolean isSatisfied(int[] tuple) {
-        return (tuple[0] == 1 && tuple[1] == constante) || tuple[0] == 0;
+        return (tuple[0] == 1 && tuple[1] == 0) || tuple[0] == 0;
     }
 
     @Override
     public boolean isConsistent() {
         if (vars[0].isInstantiatedTo(1)) {
-            return (vars[1].isInstantiatedTo(constante));
+            return (vars[1].isInstantiatedTo(0));
         } else if (vars[0].isInstantiatedTo(1)) {
-            return (!vars[1].canBeInstantiatedTo(constante));
+            return (!vars[1].canBeInstantiatedTo(0));
         }
         return true;
     }
 
     @Override
     public String toString() {
-        return vars[0].pretty() + " -> " + vars[1].pretty() + " = " + constante;
+        return vars[0].pretty() + " -> " + vars[1].pretty() + " = 0";
     }
 
     @Override

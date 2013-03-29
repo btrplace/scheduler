@@ -22,10 +22,7 @@ import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.constraint.Fence;
-import btrplace.model.constraint.Overbook;
-import btrplace.model.constraint.Running;
-import btrplace.model.constraint.SingleResourceCapacity;
+import btrplace.model.constraint.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
@@ -70,9 +67,9 @@ public class CSingleResourceCapacityTest implements PremadeElements {
     public void testDiscreteSolvable() throws SolverException {
         Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).build();
 
-        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
+        ShareableResource rc = new ShareableResource("cpu", 5);
         rc.set(vm1, 3);
-        rc.set(vm2, 3);
+        rc.set(vm2, 1);
         rc.set(vm3, 1);
 
         Model mo = new DefaultModel(map);
@@ -83,7 +80,7 @@ public class CSingleResourceCapacityTest implements PremadeElements {
         SingleResourceCapacity s = new SingleResourceCapacity(nodes, "cpu", 4);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>singleton(s));
+        ReconfigurationPlan p = cra.solve(mo, Arrays.asList(s, new Preserve(Collections.singleton(vm2), "cpu", 3)));
         Assert.assertNotNull(p);
         Assert.assertEquals(p.getSize(), 1);
         //System.out.println(p);
@@ -134,7 +131,6 @@ public class CSingleResourceCapacityTest implements PremadeElements {
         cstrs.add(new Running(Collections.singleton(vm4)));
         cstrs.add(new Overbook(map.getAllNodes(), "cpu", 1));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
         //System.out.println(p);

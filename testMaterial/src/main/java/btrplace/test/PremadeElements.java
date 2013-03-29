@@ -27,28 +27,28 @@ import java.util.UUID;
  */
 public interface PremadeElements {
 
-    static final UUID vm1 = new UUID(0, 1);
-    static final UUID vm2 = new UUID(0, 2);
-    static final UUID vm3 = new UUID(0, 3);
-    static final UUID vm4 = new UUID(0, 4);
-    static final UUID vm5 = new UUID(0, 5);
-    static final UUID vm6 = new UUID(0, 6);
-    static final UUID vm7 = new UUID(0, 7);
-    static final UUID vm8 = new UUID(0, 8);
-    static final UUID vm9 = new UUID(0, 9);
-    static final UUID vm10 = new UUID(0, 10);
+    UUID vm1 = new UUID(0, 1);
+    UUID vm2 = new UUID(0, 2);
+    UUID vm3 = new UUID(0, 3);
+    UUID vm4 = new UUID(0, 4);
+    UUID vm5 = new UUID(0, 5);
+    UUID vm6 = new UUID(0, 6);
+    UUID vm7 = new UUID(0, 7);
+    UUID vm8 = new UUID(0, 8);
+    UUID vm9 = new UUID(0, 9);
+    UUID vm10 = new UUID(0, 10);
 
 
-    static final UUID n1 = new UUID(1, 1);
-    static final UUID n2 = new UUID(1, 2);
-    static final UUID n3 = new UUID(1, 3);
-    static final UUID n4 = new UUID(1, 4);
-    static final UUID n5 = new UUID(1, 5);
-    static final UUID n6 = new UUID(1, 6);
-    static final UUID n7 = new UUID(1, 7);
-    static final UUID n8 = new UUID(1, 8);
-    static final UUID n9 = new UUID(1, 9);
-    static final UUID n10 = new UUID(1, 10);
+    UUID n1 = new UUID(1, 1);
+    UUID n2 = new UUID(1, 2);
+    UUID n3 = new UUID(1, 3);
+    UUID n4 = new UUID(1, 4);
+    UUID n5 = new UUID(1, 5);
+    UUID n6 = new UUID(1, 6);
+    UUID n7 = new UUID(1, 7);
+    UUID n8 = new UUID(1, 8);
+    UUID n9 = new UUID(1, 9);
+    UUID n10 = new UUID(1, 10);
 
 
 }

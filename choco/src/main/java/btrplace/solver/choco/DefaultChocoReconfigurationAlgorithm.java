@@ -68,6 +68,10 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
     private int maxEnd = DefaultReconfigurationProblem.DEFAULT_MAX_TIME;
 
+    private long coreRPDuration;
+
+    private long speRPDuration;
+
     /**
      * Make a new algorithm.
      */
@@ -124,7 +128,6 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
     @Override
     public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs) throws SolverException {
-        long coreRPDuration, speDuration;
         rp = null;
         this.cstrs = cstrs;
         coreRPDuration = -System.currentTimeMillis();
@@ -178,7 +181,6 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         }
         rp = rpb.build();
 
-        coreRPDuration += System.currentTimeMillis();
         //Set the maximum duration
         try {
             rp.getEnd().setSup(maxEnd);
@@ -186,10 +188,10 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
             rp.getLogger().error("Unable to restrict the maximum plan duration to {}", maxEnd);
             return null;
         }
-
+        coreRPDuration += System.currentTimeMillis();
 
         //Customize with the constraints
-        speDuration = -System.currentTimeMillis();
+        speRPDuration = -System.currentTimeMillis();
         for (ChocoSatConstraint ccstr : cConstraints) {
             if (!ccstr.inject(rp)) {
                 return null;
@@ -198,8 +200,12 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
         //The objective
         obj.inject(rp);
-        speDuration += System.currentTimeMillis();
-        rp.getLogger().debug("{} ms to build the core-RP + {} ms to tune it", coreRPDuration, speDuration);
+        speRPDuration += System.currentTimeMillis();
+        rp.getLogger().debug("{} ms to build the core-RP + {} ms to tune it", coreRPDuration, speRPDuration);
+
+        rp.getLogger().debug("{} nodes; {} VMs; {} constraints", rp.getNodes().length, rp.getVMs().length, cstrs.size());
+        rp.getLogger().debug("optimize: {}; timeLimit: {}; manageableVMs: {}", optimize, getTimeLimit(), rp.getManageableVMs().size());
+
         ReconfigurationPlan p = rp.solve(timeLimit, optimize);
         if (p != null) {
             assert checkSatisfaction(p, cstrs);
@@ -251,7 +257,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     @Override
     public SolvingStatistics getSolvingStatistics() {
         if (rp == null) {
-            return new SolvingStatistics(0, 0, 0, optimize, getTimeLimit(), 0, 0, 0, 0, false);
+            return new SolvingStatistics(0, 0, 0, optimize, getTimeLimit(), 0, 0, 0, 0, false, 0, 0);
         }
         SolvingStatistics st = new SolvingStatistics(
                 rp.getNodes().length,
@@ -263,7 +269,9 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
                 rp.getSolver().getTimeCount(),
                 rp.getSolver().getNodeCount(),
                 rp.getSolver().getBackTrackCount(),
-                rp.getSolver().isEncounteredLimit());
+                rp.getSolver().isEncounteredLimit(),
+                coreRPDuration,
+                speRPDuration);
 
         for (Solution s : rp.getSolver().getSearchStrategy().getStoredSolutions()) {
             IMeasures m = s.getMeasures();

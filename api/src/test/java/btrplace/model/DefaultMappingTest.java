@@ -516,4 +516,21 @@ public class DefaultMappingTest implements PremadeElements {
         Assert.assertTrue(c.getRunningVMs(n1).isEmpty());
         Assert.assertTrue(c.getSleepingVMs(n1).isEmpty());
     }
+
+    @Test
+    public void testGetRunningVMsOnOfflineNodes() {
+        Mapping m = new DefaultMapping();
+        m.addOnlineNode(n1);
+        m.addOnlineNode(n2);
+        m.addRunningVM(vm1, n1);
+        m.addRunningVM(vm2, n1);
+        m.addRunningVM(vm3, n2);
+        m.addRunningVM(vm4, n2);
+
+        m.addOfflineNode(n3);
+        Assert.assertTrue(m.getRunningVMs(n3).isEmpty());
+        Set<UUID> ns = new HashSet<UUID>();
+        ns.add(n3);
+        Assert.assertTrue(m.getRunningVMs(ns).isEmpty());
+    }
 }

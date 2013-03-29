@@ -66,6 +66,10 @@ public class SolvingStatistics {
 
     private int nbConstraints;
 
+    private long coreRPBuildDuration;
+
+    private long speRPDuration;
+
     /**
      * Compare the solution by their moment. If equal, the number of nodes then the number of backtracks.
      */
@@ -86,18 +90,21 @@ public class SolvingStatistics {
     /**
      * Make new statistics.
      *
-     * @param nbNodes       the number of nodes in the model
-     * @param nbVMs         the number of VMs in the model
-     * @param nbConstraints the number of constraints
-     * @param doOptimize    {@code true} to indicate the solver tried to improve the computed solution
-     * @param timeout       the timeout value for the solver in seconds
-     * @param managedVMs    the number of VMs managed by the algorithm.
-     * @param t             the solving duration in milliseconds
-     * @param nbN           the number of opened nodes at the moment
-     * @param nbB           the number of backtracks at the moment
-     * @param to            {@code true} to indicate the solver hit a timeout
+     * @param nbNodes             the number of nodes in the model
+     * @param nbVMs               the number of VMs in the model
+     * @param nbConstraints       the number of constraints
+     * @param doOptimize          {@code true} to indicate the solver tried to improve the computed solution
+     * @param timeout             the timeout value for the solver in seconds
+     * @param managedVMs          the number of VMs managed by the algorithm.
+     * @param t                   the solving duration in milliseconds
+     * @param nbN                 the number of opened nodes at the moment
+     * @param nbB                 the number of backtracks at the moment
+     * @param to                  {@code true} to indicate the solver hit a timeout
+     * @param coreRPBuildDuration the duration of the core-RP building process
+     * @param speRPDuration       the duration of the core-RP specialization process
      */
-    public SolvingStatistics(int nbNodes, int nbVMs, int nbConstraints, boolean doOptimize, int timeout, int managedVMs, int t, int nbN, int nbB, boolean to) {
+    public SolvingStatistics(int nbNodes, int nbVMs, int nbConstraints, boolean doOptimize, int timeout, int managedVMs,
+                             int t, int nbN, int nbB, boolean to, long coreRPBuildDuration, long speRPDuration) {
         nbManagedVMs = managedVMs;
         this.nbNodes = nbNodes;
         this.nbVMs = nbVMs;
@@ -109,6 +116,8 @@ public class SolvingStatistics {
         this.timeout = to;
         this.doOptimize = doOptimize;
         solutions = new TreeSet<SolutionStatistics>(solutionsCmp);
+        this.coreRPBuildDuration = coreRPBuildDuration;
+        this.speRPDuration = speRPDuration;
     }
 
     /**
@@ -129,6 +138,23 @@ public class SolvingStatistics {
         return time;
     }
 
+    /**
+     * Get the time that was necessary to build the core-RP.
+     *
+     * @return a duration in milliseconds
+     */
+    public long getCoreRPBuildDuration() {
+        return coreRPBuildDuration;
+    }
+
+    /**
+     * Get the time that was necessary to specialize the core-CP.
+     *
+     * @return a duratio in milliseconds
+     */
+    public long getSpeRPDuration() {
+        return speRPDuration;
+    }
 
     /**
      * Get the number of opened nodes.
@@ -226,7 +252,7 @@ public class SolvingStatistics {
         b.append(nbNodes).append(" node(s)")
                 .append("; ").append(nbVMs).append(" VM(s)");
         if (nbManagedVMs != nbVMs) {
-            b.append(" ( ").append(nbManagedVMs).append(" managed)");
+            b.append(" (").append(nbManagedVMs).append(" managed)");
         }
         b.append("; ").append(nbConstraints).append(" constraint(s)");
 
@@ -236,7 +262,8 @@ public class SolvingStatistics {
         if (maxDuration > 0) {
             b.append("; timeout:").append(maxDuration).append("s");
         }
-        b.append("\nAfter ").append(time).append("ms");
+        b.append("\nBuilding duration: " + coreRPBuildDuration + "ms (core-RP) + " + speRPDuration + "ms (specialization)");
+        b.append("\nAfter ").append(time).append("ms of search");
         if (timeout) {
             b.append(" (timeout)");
         } else {
@@ -245,7 +272,12 @@ public class SolvingStatistics {
         b.append(": ")
                 .append(nbSearchNodes).append(" opened search node(s), ")
                 .append(nbBacktracks).append(" backtrack(s), ")
-                .append(solutions.size()).append(" solution(s):\n");
+                .append(solutions.size()).append(" solution(s)");
+        if (!solutions.isEmpty()) {
+            b.append(":\n");
+        } else {
+            b.append('.');
+        }
         int i = 1;
         for (SolutionStatistics st : solutions) {
             b.append("\t").append(i).append(")")

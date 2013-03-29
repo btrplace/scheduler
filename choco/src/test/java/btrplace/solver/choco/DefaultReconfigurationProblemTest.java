@@ -433,10 +433,9 @@ public class DefaultReconfigurationProblemTest {
         for (IntDomainVar capa : rp.getNbRunningVMs()) {
             capa.setSup(5);
         }
-
         //Restrict the capacity to 2 at most
-        Assert.assertEquals(Boolean.TRUE, rp.getSolver().solve());
-
+        ReconfigurationPlan p = rp.solve(-1, false);
+        Assert.assertNotNull(p);
         //Check consistency between the counting and the hoster variables
         int[] counts = new int[map.getAllNodes().size()];
         for (UUID n : map.getOnlineNodes()) {
@@ -445,11 +444,11 @@ public class DefaultReconfigurationProblemTest {
         }
         for (UUID vm : rp.getFutureRunningVMs()) {
             VMActionModel mo = rp.getVMActions()[rp.getVM(vm)];
-            int on = mo.getDSlice().getHoster().getInf();
+            int on = mo.getDSlice().getHoster().getVal();
             counts[on]--;
         }
         for (int i = 0; i < counts.length; i++) {
-            Assert.assertEquals(0, counts[i]);
+            Assert.assertEquals(counts[i], 0);
         }
     }
 

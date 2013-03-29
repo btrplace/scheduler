@@ -30,7 +30,6 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
 import btrplace.solver.choco.chocoUtil.AliasedCumulatives;
 import btrplace.solver.choco.chocoUtil.AliasedCumulativesBuilder;
-import btrplace.solver.choco.chocoUtil.LightBinPacking;
 import btrplace.solver.choco.view.CShareableResource;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.BranchAndBound;
@@ -40,6 +39,7 @@ import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.cp.solver.search.set.StaticSetVarOrder;
 import choco.kernel.solver.Configuration;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.IObjectiveManager;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
@@ -67,6 +67,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * The maximum duration of a plan in seconds: One hour.
      */
     public static final int DEFAULT_MAX_TIME = 3600;
+
+    public static final double REAL_VALUE_PRECISION = 0.01;
 
     private Model model;
 
@@ -100,6 +102,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private SliceSchedulerBuilder taskSchedBuilder;
 
     private AliasedCumulativesBuilder cumulativesBuilder;
+
+    private BinPackingBuilder bpBuilder;
 
     private ObjectiveAlterer objAlterer = null;
 
@@ -142,12 +146,14 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         durEval = dEval;
         this.viewMapper = vMapper;
         solver = new CPSolver();
+        //Precision for the real values
+        solver.getConfiguration().putDouble(Configuration.REAL_PRECISION, REAL_VALUE_PRECISION);
+
         start = solver.makeConstantIntVar("RP.start", 0);
         end = solver.createBoundIntVar("RP.end", 0, DEFAULT_MAX_TIME);
 
         this.views = new HashMap<String, ChocoModelView>();
         resources = new ArrayList<CShareableResource>();
-        solver.post(solver.geq(end, start));
 
         fillElements();
 
@@ -156,20 +162,29 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         makeNodeActionModels();
         makeVMActionModels();
 
+        bpBuilder = new BinPackingBuilder(this);
+        taskSchedBuilder = new SliceSchedulerBuilder(this);
+        cumulativesBuilder = new AliasedCumulativesBuilder(this);
+
         makeViews();
 
         linkCardinatiesWithSlices();
 
-        taskSchedBuilder = new SliceSchedulerBuilder(this);
-        cumulativesBuilder = new AliasedCumulativesBuilder(this);
     }
 
     @Override
     public ReconfigurationPlan solve(int timeLimit, boolean optimize) throws SolverException {
+
         for (Map.Entry<String, ChocoModelView> cv : views.entrySet()) {
             if (!cv.getValue().beforeSolve(this)) {
                 return null;
             }
+        }
+
+        try {
+            bpBuilder.inject();
+        } catch (ContradictionException ex) {
+            throw new SolverException(model, ex.getMessage());
         }
 
         addContinuousResourceCapacities();
@@ -196,6 +211,12 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         appendNaiveBranchHeuristic();
 
 
+        int nbIntVars = solver.getNbIntVars();
+        int nbBoolVars = solver.getNbBooleanVars();
+        int nbCstes = solver.getNbConstants();
+        int nbCstrs = solver.getNbConstraints();
+        getLogger().debug("{} constraints; Variables: {} int(s), {} bool(s), {} constant(s).", nbCstrs, nbIntVars, nbBoolVars, nbCstes);
+        //getLogger().debug(solver.pretty());
         if (objAlterer == null) {
             solver.launch();
         } else if (optimize) {
@@ -339,7 +360,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         for (int i = 0; i < ds.length; i++) {
             usages[i] = solver.makeConstantIntVar(1);
         }
-        solver.post(new LightBinPacking(solver.getEnvironment(), vmsCountOnNodes, usages, ds));
+        bpBuilder.add("vmsOnNodes", vmsCountOnNodes, usages, ds);
     }
 
     private void fillElements() {
@@ -535,6 +556,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     @Override
     public AliasedCumulativesBuilder getAliasedCumulativesBuilder() {
         return cumulativesBuilder;
+    }
+
+    @Override
+    public BinPackingBuilder getBinPackingBuilder() {
+        return bpBuilder;
     }
 
     @Override

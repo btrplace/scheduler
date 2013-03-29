@@ -32,7 +32,7 @@ public class SolvingStatisticsTest {
 
     @Test
     public void testInstantiate() {
-        SolvingStatistics st = new SolvingStatistics(10, 20, 44, true, 40, 100, 1, 2, 3, false);
+        SolvingStatistics st = new SolvingStatistics(10, 20, 44, true, 40, 100, 1, 2, 3, false, 7, 34);
         Assert.assertEquals(st.getNbNodes(), 10);
         Assert.assertEquals(st.getNbVMs(), 20);
         Assert.assertEquals(st.getNbConstraints(), 44);
@@ -43,11 +43,14 @@ public class SolvingStatisticsTest {
         Assert.assertEquals(st.getNbSearchNodes(), 2);
         Assert.assertEquals(st.getNbBacktracks(), 3);
         Assert.assertFalse(st.isTimeout());
+        Assert.assertEquals(st.getCoreRPBuildDuration(), 7);
+        Assert.assertEquals(st.getSpeRPDuration(), 34);
+        System.out.println(st);
     }
 
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testAddSolution() {
-        SolvingStatistics st = new SolvingStatistics(10, 20, 44, true, 40, 100, 1, 2, 3, false);
+        SolvingStatistics st = new SolvingStatistics(10, 20, 44, true, 40, 100, 1, 2, 3, false, 7, 34);
         SolutionStatistics s0 = new SolutionStatistics(1, 2, 3, 4);
         SolutionStatistics s1 = new SolutionStatistics(2, 2, 3, 4);
         SolutionStatistics s2 = new SolutionStatistics(2, 3, 4, 3);
