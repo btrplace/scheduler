@@ -88,7 +88,8 @@ public class CPreserve implements ChocoSatConstraint {
                     Mapping map = m.getMapping();
                     //TODO: Very inefficient. Resources may be  available
                     // but not allocated.
-                    bad.addAll(map.getRunningVMs(map.getVMLocation(vm)));
+                    //bad.addAll(map.getRunningVMs(map.getVMLocation(vm)));
+                    bad.add(vm);
                 }
             }
         }
