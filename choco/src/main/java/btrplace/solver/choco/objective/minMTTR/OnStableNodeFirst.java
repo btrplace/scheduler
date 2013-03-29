@@ -12,6 +12,12 @@ import java.util.List;
 import java.util.UUID;
 
 /**
+ * A heuristic that first focus on scheduling the VMs
+ * on nodes that are the source of actions liberating resources.
+ * <p/>
+ * For performance reason, the VM placement is put into a cache
+ * that must be invalidated each time the placement is modified
+ *
  * @author Fabien Hermenier
  */
 public class OnStableNodeFirst extends AbstractIntVarSelector {
@@ -39,6 +45,7 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
     /**
      * Make a new heuristics
      *
+     * @param lbl     the heuristic label (for debugging purpose)
      * @param rp      the problem to rely on
      * @param actions the actions to consider.
      */
@@ -91,6 +98,11 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
 
     private BitSet stays, move;
 
+    /**
+     * Invalidate the VM placement.
+     * This must be called each time the placement is modified to
+     * clear the VM placement cache.
+     */
     public void invalidPlacement() {
         stays = null;
         move = null;

@@ -48,6 +48,9 @@ public class MinMTTR implements ReconfigurationObjective {
 
     private ReconfigurationProblem rp;
 
+    /**
+     * Make a new objective.
+     */
     public MinMTTR() {
         costConstraints = new ArrayList<SConstraint>();
     }
@@ -156,6 +159,9 @@ public class MinMTTR implements ReconfigurationObjective {
 
     private boolean costActivated = false;
 
+    /**
+     * Post the constraints related to the objective.
+     */
     public void postCostConstraints() {
         rp.getLogger().debug("Post the cost-oriented constraints");
         if (!costActivated) {

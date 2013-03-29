@@ -6,6 +6,8 @@ import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
+ * Very basic variable selector that focus the moment where node actions start.
+ *
  * @author Fabien Hermenier
  */
 public class StartingNodes extends AbstractIntVarSelector {
@@ -16,6 +18,13 @@ public class StartingNodes extends AbstractIntVarSelector {
 
     private ReconfigurationProblem rp;
 
+    /**
+     * Make a new heuristic.
+     *
+     * @param lbl         the heuristic label (for debugging purpose)
+     * @param rp          the problem to consider
+     * @param nodeActions the actions to consider
+     */
     public StartingNodes(String lbl, ReconfigurationProblem rp, NodeActionModel[] nodeActions) {
         super(rp.getSolver());
         actions = nodeActions;

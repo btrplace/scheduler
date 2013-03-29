@@ -35,13 +35,20 @@ public class FastImpliesEq extends AbstractBinIntSConstraint {
 
     private final int constante;
 
-    public FastImpliesEq(IntDomainVar b, IntDomainVar var, int constante) {
+    /**
+     * New instance.
+     *
+     * @param b        the boolean variable
+     * @param var      the variable
+     * @param constant the constant to use to set the variable if the boolean variable is set to true
+     */
+    public FastImpliesEq(IntDomainVar b, IntDomainVar var, int constant) {
         super(b, var);
         if ((!b.isInstantiated() && !b.hasBooleanDomain())
                 || (b.isInstantiated() && !b.isInstantiatedTo(0) && !b.isInstantiatedTo(1))) {
             throw new SolverException(b.getName() + " is not a boolean variable");
         }
-        this.constante = constante;
+        this.constante = constant;
     }
 
     @Override

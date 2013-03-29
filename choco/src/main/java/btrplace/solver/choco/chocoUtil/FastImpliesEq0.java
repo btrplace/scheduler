@@ -32,7 +32,12 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public class FastImpliesEq0 extends AbstractBinIntSConstraint {
 
-
+    /**
+     * New instance.
+     *
+     * @param b   the boolean variable
+     * @param var the variable
+     */
     public FastImpliesEq0(IntDomainVar b, IntDomainVar var) {
         super(b, var);
         if ((!b.isInstantiated() && !b.hasBooleanDomain())
