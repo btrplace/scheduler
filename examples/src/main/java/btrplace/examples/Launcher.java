@@ -1,17 +1,21 @@
 package btrplace.examples;
 
 /**
- * Launcher
+ * CLI app to launch tutorials.
  *
  * @author Fabien Hermenier
  */
 public class Launcher {
 
 
+    /**
+     * CLI. First value of the array should be the name of a class inheriting from {@link btrplace.examples.Example}.
+     * @param args
+     */
     public static void main(String[] args) {
 
         if (args.length == 0) {
-            System.err.println("Expecting a class that inherit from btrplace.examples.sample as a parameter");
+            System.err.println("Expecting a class that inherit from btrplace.examples.Example as a parameter");
             System.exit(1);
         }
         try {
