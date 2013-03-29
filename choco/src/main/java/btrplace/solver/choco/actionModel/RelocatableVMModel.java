@@ -25,7 +25,6 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
-import btrplace.solver.choco.VMActionModel;
 import btrplace.solver.choco.chocoUtil.FastIFFEq;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.ReifiedFactory;
@@ -41,7 +40,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class RelocatableVMModel implements VMActionModel {
+public class RelocatableVMModel implements KeepRunningVMModel {
 
     private Slice cSlice, dSlice;
 
@@ -53,6 +52,7 @@ public class RelocatableVMModel implements VMActionModel {
 
     private IntDomainVar duration;
 
+    private IntDomainVar stay;
 
     /**
      * Make a new model.
@@ -80,16 +80,10 @@ public class RelocatableVMModel implements VMActionModel {
         IntDomainVar move = s.createBooleanVar(rp.makeVarLabel("relocatable(" + e + ").move"));
         s.post(ReifiedFactory.builder(move, s.neq(cSlice.getHoster(), dSlice.getHoster()), s));
 
-        IntDomainVar stay = new BoolVarNot(s, rp.makeVarLabel("relocatable(" + e + ").stay"), (BooleanVarImpl) move);
+        stay = new BoolVarNot(s, rp.makeVarLabel("relocatable(" + e + ").stay"), (BooleanVarImpl) move);
 
         s.post(new FastIFFEq(stay, duration, 0));
 
-        /*boolean increase = false;
-        if (!increase) {
-            s.post(new FastImpliesEq(stay, cSlice.getDuration(), 0));
-        } else {
-            s.post(new FastImpliesEq(stay, dSlice.getDuration(), 0));
-        } */
         s.post(s.leq(duration, cSlice.getDuration()));
         s.post(s.leq(duration, dSlice.getDuration()));
         s.post(s.eq(cSlice.getEnd(), s.plus(dSlice.getStart(), duration)));
@@ -157,4 +151,8 @@ public class RelocatableVMModel implements VMActionModel {
         v.visit(this);
     }
 
+    @Override
+    public IntDomainVar isStaying() {
+        return stay;
+    }
 }

@@ -41,7 +41,18 @@ public interface ReconfigurationPlanMonitor {
      */
     int getNbCommitted();
 
+    /**
+     * Check if an action is blocked.
+     *
+     * @param a the action to check
+     * @return {@code true} iff the action is blocked
+     */
     boolean isBlocked(Action a);
 
+    /**
+     * Get the plan associated to the monitor.
+     *
+     * @return a non-null plan
+     */
     ReconfigurationPlan getReconfigurationPlan();
 }

@@ -157,13 +157,14 @@ public class BinPacking extends AbstractLargeIntSConstraint {
         return candidates[bin];
     }
 
-    private void sortIndices() {
+    private void sortIndices() throws ContradictionException {
         long sum = 0;
         //l denotes the ordering of the items, so bsToVars
         List<Integer> l = new ArrayList<Integer>(iSizes.length);
         for (int i = 0; i < iSizes.length; i++) {
             l.add(i);
             iSizes[i] = sizes[i].getInf();
+            sizes[i].setVal(sizes[i].getInf());
             sum += iSizes[i];
         }
         this.sumISizes = sum;

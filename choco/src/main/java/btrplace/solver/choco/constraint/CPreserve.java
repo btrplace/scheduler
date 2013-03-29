@@ -24,11 +24,10 @@ import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Preserve;
 import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.*;
-import btrplace.solver.choco.chocoUtil.FastImpliesEq;
+import btrplace.solver.choco.ChocoSatConstraint;
+import btrplace.solver.choco.ChocoSatConstraintBuilder;
+import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.view.CShareableResource;
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.reified.ReifiedFactory;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -71,23 +70,6 @@ public class CPreserve implements ChocoSatConstraint {
                     rp.getLogger().error("Unable to set the '{}' consumption for VM '{}' to '{}'", cstr.getResource(), cstr.getAmount(), ex.getMessage());
                     return false;
                 }
-                if (rp.getSourceModel().getMapping().getRunningVMs().contains(vm)) {
-                    //If the resource allocation increase or stay the same, then the start moment of the dSlice can be set to rp.getEnd()
-                    if (map.getSourceResource().get(vm) <= cstr.getAmount()) {
-                        CPSolver solver = rp.getSolver();
-                        VMActionModel m = rp.getVMAction(vm);
-                        Slice dSlice = m.getDSlice();
-                        Slice cSlice = m.getCSlice();
-                        if (dSlice.getHoster().isInstantiated()) {
-                            solver.post(solver.eq(m.getDSlice().getStart(), rp.getEnd()));
-                            solver.post(solver.eq(m.getCSlice().getEnd(), rp.getEnd()));
-                        } else {
-                            IntDomainVar stay = solver.createBooleanVar(rp.makeVarLabel(new StringBuilder("mv(").append(vm).append(")").toString()));
-                            solver.post(ReifiedFactory.builder(stay, solver.eq(cSlice.getHoster(), dSlice.getHoster()), solver));
-                            solver.post(new FastImpliesEq(stay, dSlice.getDuration(), 0));
-                        }
-                    }
-                }
             }
         }
         return true;
@@ -104,7 +86,10 @@ public class CPreserve implements ChocoSatConstraint {
                 int x = rc.get(vm);
                 if (x < cstr.getAmount()) {
                     Mapping map = m.getMapping();
-                    bad.addAll(map.getRunningVMs(map.getVMLocation(vm)));
+                    //TODO: Very inefficient. Resources may be  available
+                    // but not allocated.
+                    //bad.addAll(map.getRunningVMs(map.getVMLocation(vm)));
+                    bad.add(vm);
                 }
             }
         }

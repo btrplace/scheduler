@@ -22,7 +22,7 @@
 
     <groupId>btrplace</groupId>
     <artifactId>solver</artifactId>
-    <version>0.27</version>
+    <version>0.28</version>
     <description>A flexible VM placement algorithm for hosting platforms.</description>
     <packaging>pom</packaging>
     <modules>
@@ -91,7 +91,7 @@
         <connection>scm:git:git://github.com/fhermeni/btrplace-solver.git</connection>
         <url>scm:git:git@github.com:fhermeni/btrplace-solver</url>
         <developerConnection>scm:git:git@github.com:fhermeni/btrplace-solver.git</developerConnection>
-        <tag>btrplace-solver-0.27</tag>
+        <tag>btrplace-solver-0.28</tag>
     </scm>
 
     <build>
@@ -109,8 +109,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
             <plugin>

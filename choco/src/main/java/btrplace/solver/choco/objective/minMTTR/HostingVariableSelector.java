@@ -38,6 +38,8 @@ public class HostingVariableSelector extends AbstractIntVarSelector {
 
     private String label;
 
+    private OnStableNodeFirst schedHeuristic;
+
     /**
      * Make a new heuristic.
      * By default, the heuristic doesn't touch the scheduling constraints.
@@ -46,8 +48,9 @@ public class HostingVariableSelector extends AbstractIntVarSelector {
      * @param rp     the rp to rely on
      * @param slices the slices to consider
      */
-    public HostingVariableSelector(String dbgLbl, ReconfigurationProblem rp, List<Slice> slices) {
+    public HostingVariableSelector(String dbgLbl, ReconfigurationProblem rp, List<Slice> slices, OnStableNodeFirst sched) {
         super(rp.getSolver(), SliceUtils.extractHosters(slices));
+        this.schedHeuristic = sched;
         this.rp = rp;
         label = dbgLbl;
     }
@@ -56,7 +59,10 @@ public class HostingVariableSelector extends AbstractIntVarSelector {
     public IntDomainVar selectVar() {
         for (int i = 0; i < vars.length; i++) {
             if (!vars[i].isInstantiated()) {
-                rp.getLogger().debug("{}: focus on VM {}", label, vars[i]);
+                //rp.getLogger().debug("{}: focus on VM {}", label, vars[i]);
+                if (schedHeuristic != null) {
+                    schedHeuristic.invalidPlacement();
+                }
                 return vars[i];
             }
         }

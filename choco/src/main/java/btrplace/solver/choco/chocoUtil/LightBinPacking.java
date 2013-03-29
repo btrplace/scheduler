@@ -18,7 +18,6 @@
 
 package btrplace.solver.choco.chocoUtil;
 
-import choco.Choco;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
@@ -30,11 +29,6 @@ import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * Lighter but faster version of {@link BinPacking} that does not provide the knapsack filtering
@@ -48,11 +42,12 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      */
     private IEnvironment env;
 
-    private IStateInt[] candidates;
     /**
      * The number of bins.
      */
     private final int nbBins;
+
+    private final int nbDims;
 
     /**
      * The bin assigned to each item.
@@ -61,60 +56,50 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
 
     /**
      * The constant size of each item in decreasing order.
+     * [nbDims][nbItems]
      */
-    private final int[] iSizes;
-
-    private IntDomainVar[] sizes;
-
-    /**
-     * The sum of the item sizes.
-     */
-    private long sumISizes;
+    private final int[][] iSizes;
 
     /**
-     * The load of each bin.
+     * The sum of the item sizes per dimension. [nbItems]
      */
-    private final IntDomainVar[] loads;
+    private long[] sumISizes;
 
     /**
-     * The total size of the required + candidate items for each bin.
+     * The load of each bin per dimension. [nbDims][nbBins]
      */
-    private IStateInt[] bTLoads;
+    private final IntDomainVar[][] loads;
 
     /**
-     * The total size of the required items for each bin.
+     * The total size of the required + candidate items for each bin. [nbDims][nbBins]
      */
-    private IStateInt[] bRLoads;
+    private IStateInt[][] bTLoads;
 
     /**
-     * The sum of the bin load LBs.
+     * The total size of the required items for each bin. [nbDims][nbBins]
      */
-    private IStateInt sumLoadInf;
+    private IStateInt[][] bRLoads;
 
     /**
-     * The sum of the bin load UBs.
+     * The sum of the bin load LBs. [nbDims]
      */
-    private IStateInt sumLoadSup;
+    private IStateInt[] sumLoadInf;
+
+    /**
+     * The sum of the bin load UBs. [nbDims]
+     */
+    private IStateInt[] sumLoadSup;
 
     /**
      * Has some bin load variable changed since the last propagation ?
      */
     private IStateBool loadsHaveChanged;
 
-    /**
-     * provide the items index in iSizes from its position in the bitset.
-     */
-    private int[] bsToVars;
+    private String[] name;
 
-    /**
-     * Provide the item position in the bitset from its position in iSizes.
-     */
-    private int[] varsToBs;
+    private IStateBitSet notEntailedDims;
 
-    /**
-     * The bins having candidate items.
-     */
-    private IStateBitSet availableBins;
+    private IStateInt[] candidates;
 
     /**
      * constructor of the FastBinPacking global constraint
@@ -124,58 +109,31 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      * @param sizes       array of nbItems variables, each figuring the item size. Only the LB will be considered!
      * @param bins        array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
      */
-    public LightBinPacking(IEnvironment environment, IntDomainVar[] loads, IntDomainVar[] sizes, IntDomainVar[] bins) {
-        super(ArrayUtils.append(bins, loads));
-
+    public LightBinPacking(String[] name, IEnvironment environment, IntDomainVar[][] loads, int[][] sizes, IntDomainVar[] bins) {
+        super(ArrayUtils.append(bins, ArrayUtils.flatten(loads)));
+        this.name = name;
         this.env = environment;
         this.loads = loads;
-        this.nbBins = loads.length;
+        this.nbBins = loads[0].length;
+        this.nbDims = loads.length;
         this.bins = bins;
-        this.iSizes = new int[sizes.length];
-        this.sizes = sizes;
+        this.iSizes = sizes;
 
-        this.bTLoads = new IStateInt[nbBins];
-        this.bRLoads = new IStateInt[nbBins];
-    }
-
-    public final int getRemainingSpace(int bin) {
-        return loads[bin].getSup() - bRLoads[bin].get();
-    }
-
-    private void sortIndices() {
-        long sum = 0;
-        //l denotes the ordering of the items, so bsToVars
-        List<Integer> l = new ArrayList<Integer>(iSizes.length);
-        for (int i = 0; i < iSizes.length; i++) {
-            l.add(i);
-            iSizes[i] = sizes[i].getInf();
-            sum += iSizes[i];
-        }
-        this.sumISizes = sum;
-        Collections.sort(l, new Comparator<Integer>() {
-            @Override
-            public int compare(Integer i1, Integer i2) {
-                return iSizes[i2] - iSizes[i1];
-            }
-        });
-        bsToVars = new int[iSizes.length];
-        varsToBs = new int[iSizes.length];
-        for (int i = 0; i < bsToVars.length; i++) {
-            bsToVars[i] = l.get(i);
-            varsToBs[l.get(i)] = i;
-        }
+        this.bTLoads = new IStateInt[nbDims][nbBins];
+        this.bRLoads = new IStateInt[nbDims][nbBins];
     }
 
     @Override
     public boolean isConsistent() {
-        int[] l = new int[nbBins];
-        int[] c = new int[nbBins];
+        int[][] l = new int[nbDims][nbBins];
         for (int i = 0; i < bins.length; i++) { //Assignment variable
             if (bins[i].isInstantiated()) {
-                int v = bins[i].getVal();
-                l[v] += iSizes[i];
-                if (l[v] > loads[v].getSup()) {
-                    return false;
+                for (int d = 0; d < nbDims; d++) {
+                    int v = bins[i].getVal();
+                    l[d][v] += iSizes[d][i];
+                    if (l[d][v] > loads[d][v].getSup()) {
+                        return false;
+                    }
                 }
             }
         }
@@ -191,23 +149,27 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
         if (idx < bins.length) {
             return IntVarEvent.REMVAL_MASK;
         }
-        //return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
         return IntVarEvent.BOUNDS_MASK;
     }
 
     @Override
     public boolean isSatisfied(int[] tuple) {
-        int[] l = new int[nbBins];
-        int[] c = new int[nbBins];
+        int[][] l = new int[nbDims][nbBins];
+        int[][] c = new int[nbDims][nbBins];
         for (int i = 0; i < bins.length; i++) {
             final int b = tuple[i];
-            l[b] += iSizes[i];
-            c[b]++;
+            for (int d = 0; d < nbDims; d++) {
+                l[d][b] += iSizes[d][i];
+                c[d][b]++;
+            }
         }
         for (int b = 0; b < nbBins; b++) {
-            if (tuple[b + bins.length] != l[b]) {
-                ChocoLogging.getBranchingLogger().warning("Bad load of " + b + " = " + tuple[b + bins.length] + " expected =" + l[b]);
-                return false;
+            for (int d = 0; d < nbDims; d++) {
+                int loadPos = iSizes[0].length + d * nbBins + b;
+                if (tuple[loadPos] != l[d][b]) {
+                    ChocoLogging.getBranchingLogger().warning("Bad load of " + b + " = " + tuple[loadPos] + " expected =" + l[d][b]);
+                    return false;
+                }
             }
         }
         return true;
@@ -222,61 +184,83 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
     @Override
     public void awake() throws ContradictionException {
 
-        sortIndices();
-        availableBins = env.makeBitSet(nbBins);
-        int[] rLoads = new int[nbBins];
-        int[] cLoads = new int[nbBins];
-
-        candidates = new IStateInt[nbBins];
-        for (int i = 0; i < nbBins; i++) {
-            candidates[i] = env.makeInt(0);
+        sumISizes = new long[nbDims];
+        notEntailedDims = env.makeBitSet(nbDims);
+        notEntailedDims.clear(0, 3);
+        for (int d = 0; d < nbDims; d++) {
+            long sum = 0;
+            for (int i = 0; i < iSizes[d].length; i++) {
+                sum += iSizes[d][i];
+            }
+            this.sumISizes[d] = sum;
         }
+
+        int[][] rLoads = new int[nbDims][nbBins];
+        int[][] cLoads = new int[nbDims][nbBins];
+
+        int[] nbUnassigned = new int[nbDims];
+        candidates = new IStateInt[nbBins];
+        int[] cs = new int[nbBins];
         for (int i = 0; i < bins.length; i++) {
             bins[i].updateInf(0, this, false);
             bins[i].updateSup(nbBins - 1, this, false);
             if (bins[i].isInstantiated()) {
-                rLoads[bins[i].getVal()] += iSizes[i];
+                for (int d = 0; d < nbDims; d++) {
+                    rLoads[d][bins[i].getVal()] += iSizes[d][i];
+                }
             } else {
+                for (int d = 0; d < nbDims; d++) {
+                    nbUnassigned[d] += iSizes[d][i];
+                }
                 DisposableIntIterator it = bins[i].getDomain().getIterator();
                 try {
                     while (it.hasNext()) {
                         int b = it.next();
-                        candidates[b].add(1);
-                        cLoads[b] += iSizes[i];
+                        for (int d = 0; d < nbDims; d++) {
+                            cLoads[d][b] += iSizes[d][i];
+                            cs[b]++;
+                        }
                     }
                 } finally {
                     it.dispose();
                 }
             }
         }
-        long ed = System.currentTimeMillis();
 
-        int slb = 0;
-        int slu = 0;
+        int[] slb = new int[nbDims];
+        int[] slu = new int[nbDims];
         for (int b = 0; b < nbBins; b++) {
-            bRLoads[b] = env.makeInt(rLoads[b]);
-            bTLoads[b] = env.makeInt(rLoads[b] + cLoads[b]);
-            loads[b].updateInf(rLoads[b], this, false);
-            loads[b].updateSup(rLoads[b] + cLoads[b], this, false);
-            if (candidates[b].get() > 0) {
-                availableBins.set(b);
+            for (int d = 0; d < nbDims; d++) {
+                bRLoads[d][b] = env.makeInt(rLoads[d][b]);
+                bTLoads[d][b] = env.makeInt(rLoads[d][b] + cLoads[d][b]);
+                loads[d][b].updateInf(rLoads[d][b], this, false);
+                loads[d][b].updateSup(rLoads[d][b] + cLoads[d][b], this, false);
+                slb[d] += loads[d][b].getInf();
+                slu[d] += loads[d][b].getSup();
+                candidates[b] = env.makeInt(cs[b]);
             }
-            slb += loads[b].getInf();
-            slu += loads[b].getSup();
         }
 
-        this.sumLoadInf = env.makeInt(slb);
-        this.sumLoadSup = env.makeInt(slu);
+        sumLoadInf = new IStateInt[nbDims];
+        sumLoadSup = new IStateInt[nbDims];
+        for (int d = 0; d < nbDims; d++) {
+            this.sumLoadInf[d] = env.makeInt(slb[d]);
+            this.sumLoadSup[d] = env.makeInt(slu[d]);
+        }
+
         this.loadsHaveChanged = env.makeBool(false);
 
-        assert checkLoadConsistency();
-        int minRemaining = Choco.MAX_UPPER_BOUND;
-        for (int i = 0; i < loads.length; i++) {
-            int m = getRemainingSpace(i);
-            if (m < minRemaining) {
-                minRemaining = m;
+        for (int d = 0; d < nbDims; d++) {
+            for (int b = 0; b < nbBins; b++) {
+                if (loads[d][b].getSup() - loads[d][b].getInf() < nbUnassigned[d]) {
+                    ChocoLogging.getBranchingLogger().info(sumISizes[d] + " >= ub(" + loads[d][b].pretty() + ")" + cLoads[d][b]);
+                    notEntailedDims.set(d);
+                    break;
+                }
             }
         }
+        assert checkLoadConsistency();
+        //ChocoLogging.getBranchingLogger().info(Arrays.toString(name) + " " + Arrays.toString(cLoads) + " notEntailed: " + notEntailedDims);
         propagate();
     }
 
@@ -294,19 +278,25 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      */
     public void propagate() throws ContradictionException {
         recomputeLoadSums();
+        //d -= System.currentTimeMillis();
+        //boolean noFixPoint = true;
+        //while (noFixPoint) {
 
-        boolean noFixPoint = true;
-        while (noFixPoint) {
-            if (sumISizes > sumLoadSup.get() || sumISizes < sumLoadInf.get()) {
+        for (int d = 0; d < nbDims; d++) {
+            if (sumISizes[d] > sumLoadSup[d].get() || sumISizes[d] < sumLoadInf[d].get()) {
                 fail();
             }
-            noFixPoint = false;
-            for (int b = availableBins.nextSetBit(0); b >= 0; b = availableBins.nextSetBit(b + 1)) {
-                noFixPoint |= filterLoadInf(b, Math.max(bRLoads[b].get(), (int) sumISizes - sumLoadSup.get() + loads[b].getSup()));
-                noFixPoint |= filterLoadSup(b, Math.min(bTLoads[b].get(), (int) sumISizes - sumLoadInf.get() + loads[b].getInf()));
-            }
         }
+        //  noFixPoint = false;
+            /*for (int b = availableBins.nextSetBit(0); b >= 0; b = availableBins.nextSetBit(b + 1)) {
+                for (int d = 0; d < nbDims; d++) {
+                    noFixPoint |= filterLoadInf(d, b, Math.max(bRLoads[d][b].get(), (int) sumISizes[d] - sumLoadSup[d].get() + loads[d][b].getSup()));
+                    noFixPoint |= filterLoadSup(d, b, Math.min(bTLoads[d][b].get(), (int) sumISizes[d] - sumLoadInf[d].get() + loads[d][b].getInf()));
+                }
+            } */
+        //}
         assert checkLoadConsistency();
+        //d += System.currentTimeMillis();
     }
 
     /**
@@ -317,15 +307,17 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
             return;
         }
         loadsHaveChanged.set(false);
-        int sli = 0;
-        int sls = 0;
-        for (int b = 0; b < nbBins; b++) {
-            sli += loads[b].getInf();
-            sls += loads[b].getSup();
-        }
+        for (int d = 0; d < nbDims; d++) {
+            int sli = 0;
+            int sls = 0;
+            for (int b = 0; b < nbBins; b++) {
+                sli += loads[d][b].getInf();
+                sls += loads[d][b].getSup();
+            }
 
-        this.sumLoadInf.set(sli);
-        this.sumLoadSup.set(sls);
+            this.sumLoadInf[d].set(sli);
+            this.sumLoadSup[d].set(sls);
+        }
     }
 
     /**
@@ -357,13 +349,21 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
     public void awakeOnRemovals(int iIdx, DisposableIntIterator deltaDomain) throws ContradictionException {
         try {
             while (deltaDomain.hasNext()) {
-                removeItem(varsToBs[iIdx], deltaDomain.next());
+                int b = deltaDomain.next();
+                /*int r = candidates[b].decrement();
+                if (r == 0) {
+                    for (int d = 0; d < nbDims; d++) {
+                        loads[d][b].instantiate(loads[d][b].getInf(), this, false);
+                    }
+                } */
+                removeItem(iIdx, b);
             }
+
         } finally {
             deltaDomain.dispose();
         }
         if (vars[iIdx].getInf() == vars[iIdx].getSup()) {
-            assignItem(varsToBs[iIdx], vars[iIdx].getVal());
+            assignItem(iIdx, vars[iIdx].getVal());
         }
         this.constAwake(false);
     }
@@ -383,11 +383,9 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      *          on the load[bin] variable
      */
     private void assignItem(int item, int bin) throws ContradictionException {
-        int r = bRLoads[bin].add(iSizes[bsToVars[item]]);
-        filterLoadInf(bin, r);
-        int v = candidates[bin].add(-1);
-        if (v == 0) {
-            availableBins.clear(bin);
+        for (int d = 0; d < nbDims; d++) {
+            int r = bRLoads[d][bin].add(iSizes[d][item]);
+            filterLoadInf(d, bin, r);
         }
     }
 
@@ -402,14 +400,10 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      *          on the load[bin] variable
      */
     private void removeItem(int item, int bin) throws ContradictionException {
-        //if (candidates[bin].get(item)) {
-        int v = candidates[bin].add(-1);
-        if (v == 0) {
-            availableBins.clear(bin);
+        for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
+            int r = bTLoads[d][bin].add(-1 * iSizes[d][item]);
+            filterLoadSup(d, bin, r);
         }
-        int r = bTLoads[bin].add(-1 * iSizes[bsToVars[item]]);
-        filterLoadSup(bin, r);
-        //}
     }
 
     /**
@@ -421,12 +415,12 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      * @throws choco.kernel.solver.ContradictionException
      *          on the load[bin] variable
      */
-    private boolean filterLoadInf(int bin, int newLoadInf) throws ContradictionException {
-        int inc = newLoadInf - loads[bin].getInf();
+    private boolean filterLoadInf(int dim, int bin, int newLoadInf) throws ContradictionException {
+        int inc = newLoadInf - loads[dim][bin].getInf();
         if (inc > 0) {
-            loads[bin].updateInf(newLoadInf, this, false);
-            int r = sumLoadInf.add(inc);
-            if (sumISizes < r) {
+            loads[dim][bin].updateInf(newLoadInf, this, false);
+            int r = sumLoadInf[dim].add(inc);
+            if (sumISizes[dim] < r) {
                 fail();
             }
             return true;
@@ -443,12 +437,12 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      * @throws choco.kernel.solver.ContradictionException
      *          on the load[bin] variable
      */
-    private boolean filterLoadSup(int bin, int newLoadSup) throws ContradictionException {
-        int dec = newLoadSup - loads[bin].getSup();
+    private boolean filterLoadSup(int dim, int bin, int newLoadSup) throws ContradictionException {
+        int dec = newLoadSup - loads[dim][bin].getSup();
         if (dec < 0) {
-            loads[bin].updateSup(newLoadSup, this, false);
-            int r = sumLoadSup.add(dec);
-            if (sumISizes > r) {
+            loads[dim][bin].updateSup(newLoadSup, this, false);
+            int r = sumLoadSup[dim].add(dec);
+            if (sumISizes[dim] > r) {
                 fail();
             }
             return true;
@@ -469,61 +463,71 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      */
     private boolean checkLoadConsistency() {
         boolean check = true;
-        int[] rs = new int[nbBins];
-        int[] cs = new int[nbBins];
+        int[][] rs = new int[nbDims][nbBins];
+        int[][] cs = new int[nbDims][nbBins];
         for (int i = 0; i < bins.length; i++) {
             if (bins[i].isInstantiated()) {
-                rs[bins[i].getVal()] += iSizes[i];
+                for (int d = 0; d < nbDims; d++) {
+                    rs[d][bins[i].getVal()] += iSizes[d][i];
+                }
             } else {
                 DisposableIntIterator it = bins[i].getDomain().getIterator();
                 try {
                     while (it.hasNext()) {
-                        cs[it.next()] += iSizes[i];
+                        int v = it.next();
+                        for (int d = 0; d < nbDims; d++) {
+                            //     System.out.println(d + " " + v + " " + d + " " + i);
+                            cs[d][v] += iSizes[d][i];
+                        }
                     }
                 } finally {
                     it.dispose();
                 }
             }
         }
-        int sli = 0;
-        int sls = 0;
-        for (int b = 0; b < rs.length; b++) {
-            if (rs[b] != bRLoads[b].get()) {
-                ChocoLogging.getBranchingLogger().warning(loads[b].pretty() + " required=" + bRLoads[b].get() + " expected=" + rs[b]);
+
+//        for (int d = 0; d < nbDims; d++) {
+        for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
+            int sli = 0;
+            int sls = 0;
+            for (int b = 0; b < rs[d].length; b++) {
+                if (rs[d][b] != bRLoads[d][b].get()) {
+                    ChocoLogging.getBranchingLogger().warning(name[d] + ": " + loads[d][b].pretty() + " required=" + bRLoads[d][b].get() + " expected=" + rs[b]);
+                    check = false;
+                }
+                if (rs[d][b] + cs[d][b] != bTLoads[d][b].get()) {
+                    ChocoLogging.getBranchingLogger().warning(name[d] + ": " + loads[d][b].pretty() + " total=" + bTLoads[d][b].get() + " expected=" + (rs[d][b] + cs[d][b]));
+                    check = false;
+                }
+                if (loads[d][b].getInf() < rs[d][b]) {
+                    ChocoLogging.getBranchingLogger().warning(name[d] + ": " + loads[d][b].pretty() + " LB expected >=" + rs[d][b]);
+                    check = false;
+                }
+                if (loads[d][b].getSup() > rs[d][b] + cs[d][b]) {
+                    ChocoLogging.getBranchingLogger().warning(name[d] + ": " + loads[d][b].pretty() + " UB expected <=" + (rs[d][b] + cs[d][b]));
+                    check = false;
+                }
+                sli += loads[d][b].getInf();
+                sls += loads[d][b].getSup();
+            }
+            if (this.sumLoadInf[d].get() != sli) {
+                ChocoLogging.getBranchingLogger().warning(name[d] + ": " + "Sum Load LB = " + this.sumLoadInf[d].get() + " expected =" + sli);
                 check = false;
             }
-            if (rs[b] + cs[b] != bTLoads[b].get()) {
-                ChocoLogging.getBranchingLogger().warning(loads[b].pretty() + " total=" + bTLoads[b].get() + " expected=" + (rs[b] + cs[b]));
+            if (this.sumLoadSup[d].get() != sls) {
+                ChocoLogging.getBranchingLogger().warning(name[d] + ": " + "Sum Load UB = " + this.sumLoadSup[d].get() + " expected =" + sls);
                 check = false;
             }
-            if (loads[b].getInf() < rs[b]) {
-                ChocoLogging.getBranchingLogger().warning(loads[b].pretty() + " LB expected >=" + rs[b]);
-                check = false;
-            }
-            if (loads[b].getSup() > rs[b] + cs[b]) {
-                ChocoLogging.getBranchingLogger().warning(loads[b].pretty() + " UB expected <=" + (rs[b] + cs[b]));
-                check = false;
-            }
-            sli += loads[b].getInf();
-            sls += loads[b].getSup();
-        }
-        if (this.sumLoadInf.get() != sli) {
-            ChocoLogging.getBranchingLogger().warning("Sum Load LB = " + this.sumLoadInf.get() + " expected =" + sli);
-            check = false;
-        }
-        if (this.sumLoadSup.get() != sls) {
-            ChocoLogging.getBranchingLogger().warning("Sum Load UB = " + this.sumLoadSup.get() + " expected =" + sls);
-            check = false;
-        }
-        ChocoLogging.flushLogs();
-        if (!check) {
-            for (int b = 0; b < rs.length; b++) {
-                ChocoLogging.getBranchingLogger().severe(loads[b].pretty() + " required=" + bRLoads[b].get() + " (" + rs[b] + ") total=" + bTLoads[b].get() + " (" + (rs[b] + cs[b]) + ")");
-            }
-            ChocoLogging.getBranchingLogger().severe("Sum Load LB = " + this.sumLoadInf.get() + " (" + sumLoadInf + ")");
-            ChocoLogging.getBranchingLogger().severe("Sum Load UB = " + this.sumLoadSup.get() + " (" + sumLoadSup + ")");
-            for (int i = 0; i < bins.length; i++) {
-                ChocoLogging.getBranchingLogger().severe(bins[i].pretty());
+            ChocoLogging.flushLogs();
+            if (!check) {
+                for (int b = 0; b < rs[d].length; b++) {
+                    ChocoLogging.getBranchingLogger().severe(name[d] + ": " + loads[d][b].pretty() + " required=" + bRLoads[d][b].get() + " (" + rs[d][b] + ") total=" + bTLoads[d][b].get() + " (" + (rs[d][b] + cs[d][b]) + ")");
+                }
+                ChocoLogging.getBranchingLogger().severe(name[d] + ": " + "Sum Load LB = " + this.sumLoadInf[d].get() + " (" + sumLoadInf[d] + ")");
+                ChocoLogging.getBranchingLogger().severe(name[d] + ": " + "Sum Load UB = " + this.sumLoadSup[d].get() + " (" + sumLoadSup[d] + ")");
+                for (int i = 0; i < bins.length; i++) {
+                    ChocoLogging.getBranchingLogger().info(bins[i].pretty());
+                }
             }
         }
         return check;

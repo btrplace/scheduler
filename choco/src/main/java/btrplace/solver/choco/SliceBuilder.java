@@ -106,7 +106,12 @@ public class SliceBuilder {
             rp.getSolver().post(rp.getSolver().leq(duration, rp.getEnd()));
         }
         CPSolver s = rp.getSolver();
-        s.post(s.eq(end, s.plus(start, duration)));
+        if (start.isInstantiatedTo(0)) {
+            s.post(s.eq(duration, end));
+        } else {
+            //System.out.println(lblPrefix + " end:" + end.isInstantiated() + " " + end.getVal() + " start:" + start.isInstantiated() + " " + start.getVal() + " duration:" + duration.isInstantiated()+ " " + duration.getVal());
+            s.post(s.eq(end, s.plus(start, duration)));
+        }
         return new Slice(e, start, end, duration, hoster);
     }
 
