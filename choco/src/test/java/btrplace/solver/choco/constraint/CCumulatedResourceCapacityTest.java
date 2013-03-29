@@ -53,7 +53,7 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
         rc.set(vm1, 2);
-        rc.set(vm2, 4);
+        rc.set(vm2, 3);
         rc.set(vm3, 3);
         rc.set(vm4, 1);
         rc.set(vm5, 5);
@@ -66,6 +66,7 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
         l.add(x);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan plan = cra.solve(mo, l);
+        Assert.assertNotNull(plan);
         Assert.assertEquals(plan.getSize(), 0);
     }
 
@@ -80,21 +81,20 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
         rc.set(vm1, 2);
-        rc.set(vm2, 4);
+        rc.set(vm2, 3);
         rc.set(vm3, 3);
         rc.set(vm4, 1);
-        rc.set(vm5, 5);
+        rc.set(vm5, 1);
 
         Model mo = new DefaultModel(map);
         mo.attach(rc);
         List<SatConstraint> l = new ArrayList<SatConstraint>();
-        CumulatedResourceCapacity x = new CumulatedResourceCapacity(on, "cpu", 10);
+        CumulatedResourceCapacity x = new CumulatedResourceCapacity(on, "cpu", 9);
         x.setContinuous(false);
         l.add(x);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
-        //System.out.println(plan);
         Assert.assertTrue(plan.getSize() > 0);
     }
 
@@ -110,7 +110,7 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
         rc.set(vm1, 2);
-        rc.set(vm2, 4);
+        rc.set(vm2, 3);
         rc.set(vm3, 3);
         rc.set(vm4, 1);
         rc.set(vm5, 5);
@@ -137,7 +137,7 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
         rc.set(vm1, 2);
-        rc.set(vm2, 4);
+        rc.set(vm2, 3);
         rc.set(vm3, 3);
         rc.set(vm4, 1);
         rc.set(vm5, 5);

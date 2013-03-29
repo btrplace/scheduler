@@ -94,8 +94,8 @@ public class CShareableResourceTest implements PremadeElements {
         ShareableResource rc = new ShareableResource("foo", 0);
         rc.set(vm1, 2);
         rc.set(vm2, 3);
-        rc.set(n1, 4);
-        rc.set(n2, 2);
+        rc.set(n1, 5);
+        rc.set(n2, 3);
         Model mo = new DefaultModel(ma);
         mo.attach(rc);
 
@@ -108,15 +108,10 @@ public class CShareableResourceTest implements PremadeElements {
         //Basic consumption for the VMs. If would be safe to use Preserve, but I don't want:D
         rcm.getVMsAllocation()[rp.getVM(vm1)].setInf(2);
         rcm.getVMsAllocation()[rp.getVM(vm2)].setInf(3);
-        ReconfigurationPlan p = rp.solve(-1, false);
+        ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
-        Assert.assertEquals(rcm.getVirtualUsage()[0].getInf(), 2);
-        Assert.assertEquals(rcm.getVirtualUsage()[0].getSup(), 2);
-        Assert.assertEquals(rcm.getVirtualUsage(0).getInf(), 2);
-        Assert.assertEquals(rcm.getVirtualUsage(0).getSup(), 2);
-
-        Assert.assertEquals(rcm.getVirtualUsage()[1].getInf(), 3);
-        Assert.assertEquals(rcm.getVirtualUsage()[1].getSup(), 3);
+        Assert.assertTrue(rcm.getVirtualUsage(0).isInstantiatedTo(2));
+        Assert.assertTrue(rcm.getVirtualUsage(1).isInstantiatedTo(3));
     }
 
     @Test

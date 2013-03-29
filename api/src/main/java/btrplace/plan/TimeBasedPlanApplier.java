@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class TimeBasedPlanApplier implements ReconfigurationPlanApplier {
+public final class TimeBasedPlanApplier implements ReconfigurationPlanApplier {
 
     private static Comparator<Action> startFirstComparator = new TimedBasedActionComparator();
 

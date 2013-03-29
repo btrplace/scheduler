@@ -7,6 +7,8 @@ version ???????
 - much better performance for both the placement and the scheduling part
 - bug fixes
 - finer statistics
+- When resources are manipulated, it is no longer a necessary to state a
+Overbook constraint. An overbooking ratio of 1 is assumed
 
 version 0.27 - 22 Mar 2013
 ----------------------

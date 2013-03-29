@@ -30,8 +30,6 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.Arrays;
-
 /**
  * Lighter but faster version of {@link BinPacking} that does not provide the knapsack filtering
  *
@@ -262,7 +260,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
             }
         }
         assert checkLoadConsistency();
-        ChocoLogging.getBranchingLogger().info(Arrays.toString(name) + " " + Arrays.toString(cLoads) + " notEntailed: " + notEntailedDims);
+        //ChocoLogging.getBranchingLogger().info(Arrays.toString(name) + " " + Arrays.toString(cLoads) + " notEntailed: " + notEntailedDims);
         propagate();
     }
 

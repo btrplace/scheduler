@@ -11,7 +11,7 @@ import java.util.UUID;
 /**
  * @author Fabien Hermenier
  */
-public class VMPlacementUtils {
+public final class VMPlacementUtils {
 
     private VMPlacementUtils() {
     }
