@@ -27,8 +27,6 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.*;
 import btrplace.test.PremadeElements;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
@@ -178,7 +176,6 @@ public class CShareableResourceTest implements PremadeElements {
         CShareableResource rcm = (CShareableResource) rp.getView(btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo");
         //Basic consumption for the VMs. If would be safe to use Preserve, but I don't want:D
         rcm.getVMsAllocation()[rp.getVM(vm2)].setInf(4);
-        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNull(p);
     }
