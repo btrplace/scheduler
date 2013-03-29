@@ -4,8 +4,9 @@ Release notes
 version ???????
 ----------------------
 - migration to JDK 7
-- better performance
-- bug fix
+- much better performance for both the placement and the scheduling part
+- bug fixes
+- finer statistics
 
 version 0.27 - 22 Mar 2013
 ----------------------
