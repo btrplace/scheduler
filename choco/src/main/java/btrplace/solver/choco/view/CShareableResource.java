@@ -26,11 +26,15 @@ import btrplace.plan.event.Allocate;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.*;
 import btrplace.solver.choco.actionModel.KeepRunningVMModel;
+import btrplace.solver.choco.chocoUtil.ChocoUtils;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.variables.real.RealIntervalConstant;
+import choco.kernel.solver.variables.real.RealVar;
+import gnu.trove.TIntArrayList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,11 +56,20 @@ public class CShareableResource implements ChocoModelView {
 
     private IntDomainVar[] vmAllocation;
 
+    private RealVar[] ratios;
+
     private ReconfigurationProblem rp;
+
+    private CPSolver solver;
 
     private String id;
 
     private Model source;
+
+    /**
+     * The default value of ratio is not logical to detect an unchanged value
+     */
+    public static final double UNCHECKED_RATIO = Double.MAX_VALUE / 100;
 
     /**
      * Make a new mapping.
@@ -67,15 +80,18 @@ public class CShareableResource implements ChocoModelView {
     public CShareableResource(ReconfigurationProblem rp, ShareableResource rc) {
         this.rc = rc;
         this.rp = rp;
+        solver = rp.getSolver();
         this.source = rp.getSourceModel();
         UUID[] nodes = rp.getNodes();
         phyRcUsage = new IntDomainVar[nodes.length];
         virtRcUsage = new IntDomainVar[nodes.length];
-
+        this.ratios = new RealVar[nodes.length];
         id = ShareableResource.VIEW_ID_BASE + rc.getResourceIdentifier();
         for (int i = 0; i < nodes.length; i++) {
-            phyRcUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("phyRcUsage('" + rc.getResourceIdentifier() + "', '" + rp.getNode(i) + "')"), 0, rc.get(nodes[i]));
-            virtRcUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("virtRcUsage('" + rc.getResourceIdentifier() + "', '" + rp.getNode(i) + "')"), 0, Choco.MAX_UPPER_BOUND);
+            UUID nId = rp.getNode(i);
+            phyRcUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("phyRcUsage('" + rc.getResourceIdentifier() + "', '" + nId + "')"), 0, rc.get(nodes[i]));
+            virtRcUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("virtRcUsage('" + rc.getResourceIdentifier() + "', '" + nId + "')"), 0, Choco.MAX_UPPER_BOUND);
+            ratios[i] = rp.getSolver().createRealVal("overbook('" + rc.getResourceIdentifier() + "', '" + nId + "')", 1, UNCHECKED_RATIO);
         }
 
 
@@ -200,6 +216,27 @@ public class CShareableResource implements ChocoModelView {
     }
 
     /**
+     * Get the overbooking ratio for a node.
+     * <b>WARNING: it is only allowed to reduce the upper-bound of the ratio using {@code #setSup(x)} methods</b>
+     *
+     * @param nId the node identifier
+     * @return an array of ratios.
+     */
+    public RealVar getOverbookRatio(int nId) {
+        return ratios[nId];
+    }
+
+    /**
+     * Get the overbooking ratios for every nodes.
+     * <b>WARNING: it is only allowed to reduce the upper-bound of the ratio using {@code #setSup(x)} methods</b>
+     *
+     * @return an array of ratios.
+     */
+    public RealVar[] getOverbookRatios() {
+        return ratios;
+    }
+
+    /**
      * Generate and add an {@link btrplace.plan.event.Allocate} action if the amount of
      * resources allocated to a VM has changed.
      * The action schedule must be known.
@@ -278,9 +315,15 @@ public class CShareableResource implements ChocoModelView {
             }
         }
 
-        CPSolver s = rp.getSolver();
+        return symmetryBreakingForStatingVMs() && linkVirtualToPhysicalUsage();
+    }
 
-        //Symetry breaking for VMs that are running and that will stay running
+    /**
+     * Symetry breaking for VMs that stay running, on the same node.
+     *
+     * @return
+     */
+    private boolean symmetryBreakingForStatingVMs() {
         for (UUID vm : rp.getFutureRunningVMs()) {
             VMActionModel a = rp.getVMAction(vm);
             Slice dSlice = a.getDSlice();
@@ -300,7 +343,7 @@ public class CShareableResource implements ChocoModelView {
                             return false;
                         }
                     } else {
-                        s.post(new FastImpliesEq(stay, dSlice.getDuration(), 0));
+                        solver.post(new FastImpliesEq(stay, dSlice.getDuration(), 0));
                     }
 
                 } else {
@@ -314,13 +357,95 @@ public class CShareableResource implements ChocoModelView {
                             return false;
                         }
                     } else {
-                        s.post(new FastImpliesEq(stay, cSlice.getDuration(), 0));
+                        rp.getSolver().post(new FastImpliesEq(stay, cSlice.getDuration(), 0));
                     }
                 }
             }
         }
-
-
         return true;
     }
+
+    private boolean linkVirtualToPhysicalUsage() {
+        for (int nIdx = 0; nIdx < ratios.length; nIdx++) {
+            if (!linkVirtualToPhysicalUsage(nIdx)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean linkVirtualToPhysicalUsage(int nIdx) {
+
+        double r = ratios[nIdx].getSup();
+        if (r == UNCHECKED_RATIO) {
+            //Default overbooking ratio is 1.
+            r = 1;
+        }
+
+        try {
+            ratios[nIdx].intersect(new RealIntervalConstant(r, r));
+        } catch (ContradictionException ex) {
+            rp.getLogger().error("Unable to set '{}' to {}", ratios[nIdx], r);
+            return false;
+        }
+
+        if (r == 1) {
+            solver.post(solver.eq(phyRcUsage[nIdx], virtRcUsage[nIdx]));
+            try {
+                virtRcUsage[nIdx].setSup(phyRcUsage[nIdx].getSup());
+            } catch (ContradictionException ex) {
+                rp.getLogger().error("Unable to restrict the virtual '{}' capacity of {} to {}: ", rp.getNode(nIdx), phyRcUsage[nIdx].getSup(), ex.getMessage());
+                return false;
+            }
+        } else {
+            //beware of truncation made by choco: 3 = 7 / 2 while here, 4 pCPU will be used
+            //The hack consists in computing the number of free pCPU
+                /*
+                int maxRaw = ...;
+                int maxReal = maxRaw * factor;
+                freeReal = var(0,maxReal)
+                post(eq(freeReal, minus(maxReal,usageReal))
+                freeRaw = div(freeReal,factor);
+                eq(usageRaw, minus(maxRaw,freeRaw)
+                 */
+            //example: 6 pCPU, 7 vCPU, factor= 2
+            //freePCpu = ((2 * 6) - 7) / 2 = 2
+            //usedPCPU = 6 - 2 = 4 \o/
+            int maxRaw = getSourceResource().get(rp.getNode(nIdx));
+            int maxReal = (int) (maxRaw * r); //Truncation, we ignore partial virtual resource so it's correct
+            try {
+                virtRcUsage[nIdx].setSup(maxReal);
+            } catch (ContradictionException ex) {
+                rp.getLogger().error("Unable to restrict the virtual '{}' capacity of {} to {}: {}", getResourceIdentifier(), rp.getNode(nIdx), maxReal, ex.getMessage());
+                return false;
+            }
+            IntDomainVar freeReal = solver.createBoundIntVar(rp.makeVarLabel("free_real('" + rp.getNode(nIdx) + "')"), 0, maxReal);
+            solver.post(solver.eq(freeReal, CPSolver.minus(maxReal, virtRcUsage[nIdx])));
+            IntDomainVar freeRaw = ChocoUtils.div(solver, freeReal, (int) r); //TODO: check for the correctness of the truncation
+            solver.post(solver.eq(phyRcUsage[nIdx], CPSolver.minus(maxRaw, freeRaw)));
+        }
+
+        //The slice scheduling constraint that is necessary
+        //TODO: a slice on both the real and the raw resource usage ?
+        TIntArrayList cUse = new TIntArrayList();
+        List<IntDomainVar> dUse = new ArrayList<IntDomainVar>();
+
+        for (UUID vmId : rp.getVMs()) {
+            VMActionModel a = rp.getVMAction(vmId);
+            Slice c = a.getCSlice();
+            Slice d = a.getDSlice();
+            if (c != null) {
+                cUse.add(getSourceResource().get(vmId));
+            }
+            if (d != null) {
+                dUse.add(vmAllocation[rp.getVM(vmId)]);
+            }
+        }
+
+        IntDomainVar[] capa = new IntDomainVar[rp.getNodes().length];
+        System.arraycopy(virtRcUsage, 0, capa, 0, rp.getNodes().length);
+        rp.getTaskSchedulerBuilder().add(capa, cUse.toNativeArray(), dUse.toArray(new IntDomainVar[dUse.size()]));
+        return true;
+    }
+
 }

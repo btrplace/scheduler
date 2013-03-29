@@ -25,11 +25,10 @@ import btrplace.model.Model;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
-import btrplace.solver.choco.ModelViewMapper;
-import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.VMActionModel;
+import btrplace.solver.choco.*;
 import btrplace.test.PremadeElements;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
@@ -132,6 +131,7 @@ public class CShareableResourceTest implements PremadeElements {
         ShareableResource rc = new ShareableResource("foo");
         rc.set(vm1, 5);
         rc.set(vm2, 7);
+        rc.set(n1, 25);
 
         Model mo = new DefaultModel(map);
         mo.attach(rc);
@@ -139,11 +139,11 @@ public class CShareableResourceTest implements PremadeElements {
         ModelViewMapper vMapper = new ModelViewMapper();
         vMapper.register(new CShareableResource.Builder());
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                                .setViewMapper(vMapper)
-                                .labelVariables()
-                                .build();
+                .setViewMapper(vMapper)
+                .labelVariables()
+                .build();
         ReconfigurationPlan p = rp.solve(0, false);
-
+        Assert.assertNotNull(p);
         //Check the amount of allocated resources on the RP
         CShareableResource rcm = (CShareableResource) rp.getView(rc.getIdentifier());
         Assert.assertEquals(rcm.getVMsAllocation()[rp.getVM(vm1)].getVal(), 5);
@@ -154,5 +154,32 @@ public class CShareableResourceTest implements PremadeElements {
         ShareableResource resRc = (ShareableResource) res.getView(rc.getIdentifier());
         Assert.assertEquals(resRc.get(vm1), 5);
         Assert.assertEquals(resRc.get(vm2), 7);
+    }
+
+    /**
+     * The default overbooking ratio of 1 will make this problem having no solution.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testDefaultOverbookRatio() throws ContradictionException, SolverException {
+        Mapping ma = new MappingBuilder().on(n1).run(n1, vm1, vm2).build();
+
+        ShareableResource rc = new ShareableResource("foo", 0);
+        rc.set(vm1, 2);
+        rc.set(vm2, 3);
+        rc.set(n1, 5);
+        Model mo = new DefaultModel(ma);
+        mo.attach(rc);
+
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
+        VMActionModel avm1 = rp.getVMActions()[rp.getVM(vm1)];
+        avm1.getDSlice().getHoster().setVal(0);
+        CShareableResource rcm = (CShareableResource) rp.getView(btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo");
+        //Basic consumption for the VMs. If would be safe to use Preserve, but I don't want:D
+        rcm.getVMsAllocation()[rp.getVM(vm2)].setInf(4);
+        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+        ReconfigurationPlan p = rp.solve(0, false);
+        Assert.assertNull(p);
     }
 }

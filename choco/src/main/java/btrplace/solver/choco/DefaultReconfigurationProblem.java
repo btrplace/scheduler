@@ -68,6 +68,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      */
     public static final int DEFAULT_MAX_TIME = 3600;
 
+    public static final double REAL_VALUE_PRECISION = 0.01;
+
     private Model model;
 
     private CPSolver solver;
@@ -144,6 +146,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         durEval = dEval;
         this.viewMapper = vMapper;
         solver = new CPSolver();
+        //Precision for the real values
+        solver.getConfiguration().putDouble(Configuration.REAL_PRECISION, REAL_VALUE_PRECISION);
+
         start = solver.makeConstantIntVar("RP.start", 0);
         end = solver.createBoundIntVar("RP.end", 0, DEFAULT_MAX_TIME);
 

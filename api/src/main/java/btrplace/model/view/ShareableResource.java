@@ -27,9 +27,9 @@ import java.util.*;
  * <p/>
  * The interface allows to specify the physical resource capacity of the nodes
  * and the amount of virtual resources to allocate to the VMs.
- * By default, their is no mapping between the physical and the virtual resources.
- * To limit the hosting capacity of the nodes it is then a necessary to express this mapping,
- * as an example, using {@link btrplace.model.constraint.Overbook} constraints.
+ * By default, one unit of virtual resource corresponds to one unit of physical resource.
+ * It is however possible to create a overbooking factor using
+ * {@link btrplace.model.constraint.Overbook} constraints.
  *
  * @author Fabien Hermenier
  */

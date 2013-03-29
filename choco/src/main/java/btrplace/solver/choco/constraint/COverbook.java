@@ -24,15 +24,18 @@ import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Overbook;
 import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.*;
-import btrplace.solver.choco.chocoUtil.ChocoUtils;
+import btrplace.solver.choco.ChocoSatConstraint;
+import btrplace.solver.choco.ChocoSatConstraintBuilder;
+import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.view.CShareableResource;
-import choco.cp.solver.CPSolver;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import gnu.trove.TIntArrayList;
+import choco.kernel.solver.variables.real.RealInterval;
+import choco.kernel.solver.variables.real.RealIntervalConstant;
+import choco.kernel.solver.variables.real.RealVar;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Choco implementation of {@link btrplace.model.SatConstraint}.
@@ -55,79 +58,23 @@ public class COverbook implements ChocoSatConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
 
-        CPSolver s = rp.getSolver();
+
         CShareableResource rcm = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         if (rcm == null) {
             throw new SolverException(rp.getSourceModel(), "Unable to get the resource mapping '" + cstr.getResource() + "'");
         }
 
-        IntDomainVar[] rawCapa = rcm.getPhysicalUsage();
-        IntDomainVar[] realCapa = rcm.getVirtualUsage();
-
-        if (cstr.getRatio() == 1) {
-            for (UUID u : cstr.getInvolvedNodes()) {
-                int nIdx = rp.getNode(u);
-                s.post(s.eq(realCapa[nIdx], rawCapa[nIdx]));
-                try {
-                    realCapa[nIdx].setSup(rawCapa[nIdx].getSup());
-                } catch (ContradictionException ex) {
-                    rp.getLogger().error("Unable to restrict the real '{}' capacity of {} to {}: ", u, rawCapa[nIdx].getSup(), ex.getMessage());
-                    return false;
-                }
-            }
-        } else {
-            double ratio = cstr.getRatio();
-            for (UUID u : cstr.getInvolvedNodes()) {
-                int nIdx = rp.getNode(u);
-                //beware of truncation made by choco: 3 = 7 / 2 while here, 4 pCPU will be used
-                //The hack consists in computing the number of free pCPU
-                /*
-                int maxRaw = ...;
-                int maxReal = maxRaw * factor;
-                freeReal = var(0,maxReal)
-                post(eq(freeReal, minus(maxReal,usageReal))
-                freeRaw = div(freeReal,factor);
-                eq(usageRaw, minus(maxRaw,freeRaw)
-                 */
-                //example: 6 pCPU, 7 vCPU, factor= 2
-                //freePCpu = ((2 * 6) - 7) / 2 = 2
-                //usedPCPU = 6 - 2 = 4 \o/
-                int maxRaw = rcm.getSourceResource().get(u);
-                int maxReal = (int) (maxRaw * ratio); //Truncation, we ignore partial virtual resource so it's correct
-                try {
-                    realCapa[nIdx].setSup(maxReal);
-                } catch (ContradictionException ex) {
-                    rp.getLogger().error("Unable to restrict the real '{}' capacity of {} to {}: {}", rcm.getResourceIdentifier(), u, maxReal, ex.getMessage());
-                    return false;
-                }
-                IntDomainVar freeReal = s.createBoundIntVar(rp.makeVarLabel("free_real('" + u + "')"), 0, maxReal);
-                s.post(s.eq(freeReal, CPSolver.minus(maxReal, realCapa[nIdx])));
-                IntDomainVar freeRaw = ChocoUtils.div(s, freeReal, (int) ratio); //TODO: check for the correctness of the truncation
-                s.post(s.eq(rawCapa[nIdx], CPSolver.minus(maxRaw, freeRaw)));
+        for (UUID u : cstr.getInvolvedNodes()) {
+            RealVar v = rcm.getOverbookRatio(rp.getNode(u));
+            v.getSup();
+            RealInterval ric = new RealIntervalConstant(v.getInf(), cstr.getRatio());
+            try {
+                v.intersect(ric);
+            } catch (ContradictionException ex) {
+                rp.getLogger().error("Unable to restrict {} to up to {}", v.getName(), cstr.getRatio());
+                return false;
             }
         }
-        //The slice scheduling constraint that is necessary
-        //TODO: a slice on both the real and the raw resource usage ?
-
-        TIntArrayList cUse = new TIntArrayList();
-        List<IntDomainVar> dUse = new ArrayList<IntDomainVar>();
-
-        for (UUID vmId : rp.getVMs()) {
-            VMActionModel a = rp.getVMAction(vmId);
-            Slice c = a.getCSlice();
-            Slice d = a.getDSlice();
-            if (c != null) {
-                cUse.add(rcm.getSourceResource().get(vmId));
-            }
-            if (d != null) {
-                dUse.add(rcm.getVMsAllocation()[rp.getVM(vmId)]);
-            }
-        }
-
-        IntDomainVar[] capa = new IntDomainVar[rp.getNodes().length];
-        System.arraycopy(realCapa, 0, capa, 0, rp.getNodes().length);
-
-        rp.getTaskSchedulerBuilder().add(capa, cUse.toNativeArray(), dUse.toArray(new IntDomainVar[dUse.size()]));
         return true;
     }
 
