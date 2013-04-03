@@ -30,6 +30,8 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import java.util.Arrays;
+
 /**
  * Lighter but faster version of {@link BinPacking} that does not provide the knapsack filtering
  *
@@ -167,7 +169,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
             for (int d = 0; d < nbDims; d++) {
                 int loadPos = iSizes[0].length + d * nbBins + b;
                 if (tuple[loadPos] != l[d][b]) {
-                    ChocoLogging.getBranchingLogger().warning("Bad load of " + b + " = " + tuple[loadPos] + " expected =" + l[d][b]);
+                    ChocoLogging.getBranchingLogger().warning("Invalid load for bin " + b + " on dimension " + d + ". Was " + tuple[loadPos] + ", expected " + l[d][b]);
                     return false;
                 }
             }
@@ -260,7 +262,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
             }
         }
         assert checkLoadConsistency();
-        //ChocoLogging.getBranchingLogger().info(Arrays.toString(name) + " " + Arrays.toString(cLoads) + " notEntailed: " + notEntailedDims);
+        ChocoLogging.getBranchingLogger().info(Arrays.toString(name) + " " + Arrays.toString(cLoads) + " notEntailed: " + notEntailedDims);
         propagate();
     }
 
@@ -278,7 +280,6 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      */
     public void propagate() throws ContradictionException {
         recomputeLoadSums();
-        //d -= System.currentTimeMillis();
         //boolean noFixPoint = true;
         //while (noFixPoint) {
 
@@ -287,24 +288,22 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
                 fail();
             }
         }
-        //  noFixPoint = false;
-            /*for (int b = availableBins.nextSetBit(0); b >= 0; b = availableBins.nextSetBit(b + 1)) {
-                for (int d = 0; d < nbDims; d++) {
-                    noFixPoint |= filterLoadInf(d, b, Math.max(bRLoads[d][b].get(), (int) sumISizes[d] - sumLoadSup[d].get() + loads[d][b].getSup()));
-                    noFixPoint |= filterLoadSup(d, b, Math.min(bTLoads[d][b].get(), (int) sumISizes[d] - sumLoadInf[d].get() + loads[d][b].getInf()));
-                }
-            } */
-        //}
+
+        for (int b = 0; b < nbBins; b++) {
+            for (int d = 0; d < nbDims; d++) {
+                filterLoadInf(d, b, Math.max(bRLoads[d][b].get(), (int) sumISizes[d] - sumLoadSup[d].get() + loads[d][b].getSup()));
+                filterLoadSup(d, b, Math.min(bTLoads[d][b].get(), (int) sumISizes[d] - sumLoadInf[d].get() + loads[d][b].getInf()));
+            }
+        }
         assert checkLoadConsistency();
-        //d += System.currentTimeMillis();
     }
 
     /**
      * recompute the sum of the min/max loads only if at least one variable bound has been updated outside the constraint
      */
-    private void recomputeLoadSums() {
+    private boolean recomputeLoadSums() {
         if (!loadsHaveChanged.get()) {
-            return;
+            return false;
         }
         loadsHaveChanged.set(false);
         for (int d = 0; d < nbDims; d++) {
@@ -318,6 +317,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
             this.sumLoadInf[d].set(sli);
             this.sumLoadSup[d].set(sls);
         }
+        return true;
     }
 
     /**

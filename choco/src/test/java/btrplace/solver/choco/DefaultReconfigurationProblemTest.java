@@ -24,9 +24,12 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
 import btrplace.solver.choco.view.CShareableResource;
+import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.AtMostNValue;
 import choco.cp.solver.constraints.global.IncreasingNValue;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.ResolutionPolicy;
@@ -41,19 +44,11 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class DefaultReconfigurationProblemTest {
+public class DefaultReconfigurationProblemTest implements PremadeElements {
 
     private static UUID nOn1 = UUID.randomUUID();
     private static UUID nOn2 = UUID.randomUUID();
     private static UUID nOff = UUID.randomUUID();
-
-    private static UUID vm1 = UUID.randomUUID();
-    private static UUID vm2 = UUID.randomUUID();
-    private static UUID vm3 = UUID.randomUUID();
-    private static UUID vm4 = UUID.randomUUID();
-    private static UUID vm5 = UUID.randomUUID();
-    private static UUID vm6 = UUID.randomUUID();
-    private static UUID vm7 = UUID.randomUUID();
 
     public class MockCViewModel implements ChocoModelView {
         @Override
@@ -667,5 +662,36 @@ public class DefaultReconfigurationProblemTest {
         rp.setObjectiveAlterer(alt);
         ReconfigurationPlan plan = rp.solve(0, true);
         Assert.assertNull(plan);
+    }
+
+    @Test
+    public void testWeird() throws SolverException {
+
+        Mapping map = new MappingBuilder().on(n1, n2, n3)
+                .run(n2, vm1, vm2, vm3, vm4).build();
+
+        Model model = new DefaultModel(map);
+
+        ChocoLogging.setVerbosity(Verbosity.SEARCH);
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
+                .labelVariables()
+                .build();
+
+        IntDomainVar[] nodes_state = rp.getNbRunningVMs();
+        IntDomainVar[] nodeVM = new IntDomainVar[map.getAllNodes().size()];
+
+        int i = 0;
+
+        for (UUID n : map.getAllNodes()) {
+            nodeVM[i++] = nodes_state[rp.getNode(n)];
+        }
+        CPSolver solver = rp.getSolver();
+        IntDomainVar idle = solver.createBoundIntVar("Nidles", 0, map.getAllNodes().size());
+
+        solver.post(solver.occurence(nodeVM, idle, 0));
+        solver.post(solver.leq(idle, 1));
+
+        ReconfigurationPlan plan = rp.solve(0, false);
+        Assert.assertNotNull(plan);
     }
 }
