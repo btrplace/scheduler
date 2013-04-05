@@ -662,6 +662,9 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
         Assert.assertNull(plan);
     }
 
+    /**
+     * Test a suspicious bug in issue #5
+     */
     @Test
     public void testWeird() throws SolverException, ContradictionException {
 
@@ -692,7 +695,7 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
         Assert.assertNotNull(plan);
     }
 
-    /*@Test
+/*    @Test
     public void testWeird3() throws SolverException {
 
         ShareableResource resources = new ShareableResource("vcpu", 1);
@@ -756,6 +759,39 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
 
         ReconfigurationPlan plan = rp.solve(0, false);
         Assert.assertNotNull(plan);
-    }                 */
+    }          */
 
+    /**
+     * Test a suspicious bug in issue #5
+     */
+    @Test
+    public void testSatisfiedWithAmountGt0() throws SolverException {
+
+        Mapping map = new MappingBuilder().on(n1, n2, n3)
+                .run(n2, vm1, vm2, vm3, vm4).build();
+
+        Model model = new DefaultModel(map);
+
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
+                .labelVariables()
+                .build();
+
+        IntDomainVar[] nodes_state = rp.getNbRunningVMs();
+        IntDomainVar[] nodeVM = new IntDomainVar[map.getAllNodes().size()];
+
+        int i = 0;
+
+        for (UUID n : map.getAllNodes()) {
+            nodeVM[i++] = nodes_state[rp.getNode(n)];
+        }
+        CPSolver solver = rp.getSolver();
+        IntDomainVar idle = solver.createBoundIntVar("Nidles", 0, map.getAllNodes().size());
+
+        solver.post(solver.occurence(nodeVM, idle, 0));
+        // Amount of maxSpareNode =  1
+        solver.post(solver.leq(idle, 1));
+
+        ReconfigurationPlan plan = rp.solve(0, false);
+        Assert.assertNotNull(plan);
+    }
 }

@@ -163,8 +163,8 @@ public class MinMTTR implements ReconfigurationObjective {
      * Post the constraints related to the objective.
      */
     public void postCostConstraints() {
-        rp.getLogger().debug("Post the cost-oriented constraints");
         if (!costActivated) {
+            rp.getLogger().debug("Post the cost-oriented constraints");
             costActivated = true;
             CPSolver s = rp.getSolver();
             for (SConstraint c : costConstraints) {
