@@ -371,6 +371,27 @@ public class CShareableResource implements ChocoModelView {
                 return false;
             }
         }
+
+        //The slice scheduling constraint that is necessary
+        //TODO: a slice on both the real and the raw resource usage ?
+        TIntArrayList cUse = new TIntArrayList();
+        List<IntDomainVar> dUse = new ArrayList<IntDomainVar>();
+
+        for (UUID vmId : rp.getVMs()) {
+            VMActionModel a = rp.getVMAction(vmId);
+            Slice c = a.getCSlice();
+            Slice d = a.getDSlice();
+            if (c != null) {
+                cUse.add(getSourceResource().get(vmId));
+            }
+            if (d != null) {
+                dUse.add(vmAllocation[rp.getVM(vmId)]);
+            }
+        }
+
+        IntDomainVar[] capa = new IntDomainVar[rp.getNodes().length];
+        System.arraycopy(virtRcUsage, 0, capa, 0, rp.getNodes().length);
+        rp.getTaskSchedulerBuilder().add(capa, cUse.toNativeArray(), dUse.toArray(new IntDomainVar[dUse.size()]));
         return true;
     }
 
@@ -424,28 +445,8 @@ public class CShareableResource implements ChocoModelView {
             IntDomainVar freeRaw = ChocoUtils.div(solver, freeReal, (int) r); //TODO: check for the correctness of the truncation
             solver.post(solver.eq(phyRcUsage[nIdx], CPSolver.minus(maxRaw, freeRaw)));
         }
-
-        //The slice scheduling constraint that is necessary
-        //TODO: a slice on both the real and the raw resource usage ?
-        TIntArrayList cUse = new TIntArrayList();
-        List<IntDomainVar> dUse = new ArrayList<IntDomainVar>();
-
-        for (UUID vmId : rp.getVMs()) {
-            VMActionModel a = rp.getVMAction(vmId);
-            Slice c = a.getCSlice();
-            Slice d = a.getDSlice();
-            if (c != null) {
-                cUse.add(getSourceResource().get(vmId));
-            }
-            if (d != null) {
-                dUse.add(vmAllocation[rp.getVM(vmId)]);
-            }
-        }
-
-        IntDomainVar[] capa = new IntDomainVar[rp.getNodes().length];
-        System.arraycopy(virtRcUsage, 0, capa, 0, rp.getNodes().length);
-        rp.getTaskSchedulerBuilder().add(capa, cUse.toNativeArray(), dUse.toArray(new IntDomainVar[dUse.size()]));
         return true;
+
     }
 
 }

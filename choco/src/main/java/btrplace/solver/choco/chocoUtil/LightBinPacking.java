@@ -120,7 +120,6 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
         this.nbDims = loads.length;
         this.bins = bins;
         this.iSizes = sizes;
-
         this.bTLoads = new IStateInt[nbDims][nbBins];
         this.bRLoads = new IStateInt[nbDims][nbBins];
     }
@@ -254,12 +253,12 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
 
         for (int d = 0; d < nbDims; d++) {
             for (int b = 0; b < nbBins; b++) {
-                /*if (loads[d][b].getSup() - loads[d][b].getInf() < nbUnassigned[d]) {
+                if (loads[d][b].getSup() - loads[d][b].getInf() < nbUnassigned[d]) {
                     ChocoLogging.getBranchingLogger().info(sumISizes[d] + " >= ub(" + loads[d][b].pretty() + ")" + cLoads[d][b]);
                     notEntailedDims.set(d);
                     break;
-                } */
-                notEntailedDims.set(d);
+                }
+                //notEntailedDims.set(d);
             }
         }
         assert checkLoadConsistency();
@@ -289,13 +288,13 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
                 fail();
             }
         }
-
+                 /*
         for (int b = 0; b < nbBins; b++) {
             for (int d = 0; d < nbDims; d++) {
                 filterLoadInf(d, b, Math.max(bRLoads[d][b].get(), (int) sumISizes[d] - sumLoadSup[d].get() + loads[d][b].getSup()));
                 filterLoadSup(d, b, Math.min(bTLoads[d][b].get(), (int) sumISizes[d] - sumLoadInf[d].get() + loads[d][b].getInf()));
             }
-        }
+        }          */
         assert checkLoadConsistency();
     }
 
@@ -321,12 +320,28 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
         return true;
     }
 
+    @Override
+    public void awakeOnInst(int idx) throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void awakeOnBounds(int varIndex) throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void awakeOnRem(int varIdx, int val) throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * on loads variables: delay propagation
      */
     @Override
     public void awakeOnInf(int varIdx) throws ContradictionException {
         loadsHaveChanged.set(true);
+        constAwake(false);
     }
 
     /**
@@ -335,6 +350,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
     @Override
     public void awakeOnSup(int varIdx) throws ContradictionException {
         loadsHaveChanged.set(true);
+        constAwake(false);
     }
 
 
