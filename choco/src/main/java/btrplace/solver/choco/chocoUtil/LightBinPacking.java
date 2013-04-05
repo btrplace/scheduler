@@ -254,11 +254,12 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
 
         for (int d = 0; d < nbDims; d++) {
             for (int b = 0; b < nbBins; b++) {
-                if (loads[d][b].getSup() - loads[d][b].getInf() < nbUnassigned[d]) {
+                /*if (loads[d][b].getSup() - loads[d][b].getInf() < nbUnassigned[d]) {
                     ChocoLogging.getBranchingLogger().info(sumISizes[d] + " >= ub(" + loads[d][b].pretty() + ")" + cLoads[d][b]);
                     notEntailedDims.set(d);
                     break;
-                }
+                } */
+                notEntailedDims.set(d);
             }
         }
         assert checkLoadConsistency();
