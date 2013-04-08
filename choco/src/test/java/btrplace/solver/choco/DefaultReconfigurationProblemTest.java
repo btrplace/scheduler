@@ -465,6 +465,7 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
         mo.attach(rc);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblem(mo, new DurationEvaluators(), new ModelViewMapper(),
+                new InMemoryUUIDPool(),
                 Collections.singleton(vm4),
                 Collections.singleton(vm5),
                 Collections.singleton(vm1),

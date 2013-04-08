@@ -376,4 +376,11 @@ public interface ReconfigurationProblem {
      * @param a the alterer to use
      */
     void setObjectiveAlterer(ObjectiveAlterer a);
+
+    /**
+     * Get the pool that is used to book UUIDs.
+     *
+     * @return the pool
+     */
+    UUIDPool getUUIDPool();
 }

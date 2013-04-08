@@ -111,6 +111,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private List<CShareableResource> resources;
 
+    private UUIDPool uuidPool;
+
     /**
      * Make a new RP where the next state for every VM is indicated.
      * If the state for a VM is omitted, it is considered as unchanged
@@ -129,6 +131,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     public DefaultReconfigurationProblem(Model m,
                                          DurationEvaluators dEval,
                                          ModelViewMapper vMapper,
+                                         UUIDPool uuidPool,
                                          Set<UUID> ready,
                                          Set<UUID> running,
                                          Set<UUID> sleeping,
@@ -142,6 +145,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         this.killed = new HashSet<UUID>(killed);
         this.manageable = new HashSet<UUID>(runningsToConsider);
         this.useLabels = label;
+        this.uuidPool = uuidPool;
         model = m;
         durEval = dEval;
         this.viewMapper = vMapper;
@@ -729,5 +733,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     @Override
     public ModelViewMapper getViewMapper() {
         return viewMapper;
+    }
+
+    @Override
+    public UUIDPool getUUIDPool() {
+        return uuidPool;
     }
 }
