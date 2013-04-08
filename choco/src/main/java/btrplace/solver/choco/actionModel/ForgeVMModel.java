@@ -33,6 +33,8 @@ import java.util.UUID;
 
 /**
  * Model an action that forge a VM to put it into the ready state.
+ * The VM must has an attribute {@code template} which indicate the template
+ * to use to build the VM.
  *
  * @author Fabien Hermenier
  */
