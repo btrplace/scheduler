@@ -37,8 +37,6 @@ public class InMemoryUUIDPool implements UUIDPool {
 
     private long nextLow;
 
-    private long size;
-
     private long free;
 
     private final Set<UUID> used = new HashSet<UUID>();
@@ -53,8 +51,7 @@ public class InMemoryUUIDPool implements UUIDPool {
      * Make a new pool of element.
      */
     public InMemoryUUIDPool(long s) {
-        size = s;
-        free = size;
+        free = s;
         nextHi = 0;
         nextLow = 0;
         available = new Stack<UUID>();
@@ -63,13 +60,10 @@ public class InMemoryUUIDPool implements UUIDPool {
     @Override
     public UUID request() {
         synchronized (used) {
-            if (used.size() == size) {
-                return null;
-            }
-            UUID r;
             if (free <= 0) {
                 return null;
             }
+            UUID r;
             if (available.isEmpty()) {
                 nextLow = (nextLow + 1) % Long.MAX_VALUE;
                 if (nextLow == 0) {
@@ -103,6 +97,6 @@ public class InMemoryUUIDPool implements UUIDPool {
 
     @Override
     public boolean inUse(UUID u) {
-        throw new UnsupportedOperationException();
+        return used.contains(u);
     }
 }
