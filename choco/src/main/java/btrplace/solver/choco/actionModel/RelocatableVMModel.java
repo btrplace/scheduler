@@ -18,6 +18,7 @@
 
 package btrplace.solver.choco.actionModel;
 
+import btrplace.model.Attributes;
 import btrplace.model.Model;
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
@@ -54,7 +55,6 @@ import java.util.UUID;
  * set to {@code true}. The re-instantiation duration is then estimated. If it is shorter than
  * the migration duration, then re-instantiation will be preferred.
  * <p/>
- * TODO: template stuff ?
  *
  * @author Fabien Hermenier
  */
@@ -95,9 +95,10 @@ public class RelocatableVMModel implements KeepRunningVMModel {
     public RelocatableVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
         this.vm = e;
         this.rp = rp;
+        uuidPool = rp.getUUIDPool();
 
         int d = checkForReinstantiation();
-        uuidPool = rp.getUUIDPool();
+
         CPSolver s = rp.getSolver();
         duration = s.createEnumIntVar(rp.makeVarLabel("relocatable(" + e + ").duration"), new int[]{0, d});
         cSlice = new SliceBuilder(rp, e, "relocatable(" + e + ").cSlice")
@@ -155,11 +156,16 @@ public class RelocatableVMModel implements KeepRunningVMModel {
             if (reInstantD <= migD) {
                 doReinstantiate = true;
                 newVM = uuidPool.request();
+                //Copy all the attributes of vm to newVM
+                Attributes attrs = mo.getAttributes();
+                for (String k : attrs.getKeys(vm)) {
+                    attrs.castAndPut(newVM, k, attrs.get(vm, k).toString());
+                }
                 if (newVM == null) {
                     throw new SolverException(mo, "Unable to get a new UUID to allow the re-instantiation of '" + vm + "'");
                 }
                 forgeModel = new ForgeVMModel(rp, newVM);
-                return reInstantD;
+                return newVMBootDuration + oldVMShutdownDuration;
             }
         }
         return migD;
