@@ -33,6 +33,8 @@ import java.util.UUID;
 
 /**
  * Model an action that forge a VM to put it into the ready state.
+ * The VM must have an attribute (provided by {@link btrplace.model.Model#getAttributes()}
+ * {@code template} that indicate the template identifier to use to build the VM image.
  *
  * @author Fabien Hermenier
  */
@@ -48,6 +50,8 @@ public class ForgeVMModel implements VMActionModel {
 
     private Slice dSlice;
 
+    private String template;
+
     /**
      * Make a new model.
      *
@@ -60,6 +64,10 @@ public class ForgeVMModel implements VMActionModel {
          * We don't make any "real" dslice cause it may impacts the TaskScheduler
          */
         int d = rp.getDurationEvaluators().evaluate(ForgeVM.class, e);
+        template = rp.getSourceModel().getAttributes().getString(e, "template");
+        if (template == null) {
+            throw new SolverException(rp.getSourceModel(), "Unable to forge the VM '" + e + "'. The required attribute 'template' is missing from the model");
+        }
         CPSolver s = rp.getSolver();
         duration = s.makeConstantIntVar(d);
         state = s.makeConstantIntVar(0);
@@ -118,4 +126,12 @@ public class ForgeVMModel implements VMActionModel {
         v.visit(this);
     }
 
+    /**
+     * Get the template to use to build the VM.
+     *
+     * @return the template identifier
+     */
+    public String getTemplate() {
+        return template;
+    }
 }

@@ -49,6 +49,8 @@ public class DefaultAttributesTest implements PremadeElements {
         Assert.assertEquals(attrs.getString(vm1, "foo"), "bar");
         Assert.assertTrue(attrs.put(vm1, "foo", "baz"));
         Assert.assertEquals(attrs.getString(vm1, "foo"), "baz");
+
+        Assert.assertNull(attrs.getString(vm1, "__"));
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})

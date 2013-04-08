@@ -156,7 +156,8 @@ public class DefaultAttributes implements Attributes, Cloneable {
 
     @Override
     public String getString(UUID e, String k) {
-        return get(e, k).toString();
+        Object o = get(e, k);
+        return o == null ? null : o.toString();
     }
 
     @Override
