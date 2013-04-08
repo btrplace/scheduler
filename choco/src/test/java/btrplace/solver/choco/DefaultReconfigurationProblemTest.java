@@ -23,14 +23,17 @@ import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
+import btrplace.solver.choco.chocoUtil.ChocoUtils;
 import btrplace.solver.choco.view.CShareableResource;
 import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.AtMostNValue;
 import choco.cp.solver.constraints.global.IncreasingNValue;
+import choco.cp.solver.constraints.integer.ElementV;
 import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.ResolutionPolicy;
+import choco.kernel.solver.constraints.integer.IntExp;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -692,7 +695,12 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
         Assert.assertNotNull(plan);
     }
 
-/*    @Test
+    /**
+     * Another test related to issue #5.
+     *
+     * @throws SolverException
+     */
+    @Test
     public void testWeird3() throws SolverException {
 
         ShareableResource resources = new ShareableResource("vcpu", 1);
@@ -721,7 +729,7 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
         int i = 0;
         int maxVMs = rp.getSourceModel().getMapping().getAllVMs().size();
         for (UUID n : map.getAllNodes()) {
-            vmsOnInvolvedNodes[i] = solver.createBoundIntVar("nVMs", 0, maxVMs);
+            vmsOnInvolvedNodes[i] = solver.createBoundIntVar("nVMs", -1, maxVMs);
             IntDomainVar state = rp.getNodeAction(n).getState();
             // If the node is offline -> the temporary variable is -1, otherwise, it equals the number of VMs on that node
             IntDomainVar[] c = new IntDomainVar[]{solver.makeConstantIntVar(-1), VMsOnAllNodes[rp.getNode(n)],
@@ -742,7 +750,7 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
 
         // Extract all the state of the involved nodes (all nodes in this case)
         IntDomainVar[] states = new IntDomainVar[NUMBER_OF_NODE];
-        int j=0;
+        int j = 0;
         for (UUID n : map.getAllNodes()) {
             states[j++] = rp.getNodeAction(n).getState();
         }
@@ -756,7 +764,7 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
 
         ReconfigurationPlan plan = rp.solve(0, false);
         Assert.assertNotNull(plan);
-    }          */
+    }
 
     /**
      * Test a suspicious bug in issue #5
