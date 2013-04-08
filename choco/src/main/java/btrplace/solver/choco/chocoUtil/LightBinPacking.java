@@ -258,7 +258,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
                     notEntailedDims.set(d);
                     break;
                 }
-                //notEntailedDims.set(d);
+                notEntailedDims.set(d);
             }
         }
         assert checkLoadConsistency();
@@ -288,8 +288,8 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
                 fail();
             }
         }
-                 /*
-        for (int b = 0; b < nbBins; b++) {
+
+       /* for (int b = 0; b < nbBins; b++) {
             for (int d = 0; d < nbDims; d++) {
                 filterLoadInf(d, b, Math.max(bRLoads[d][b].get(), (int) sumISizes[d] - sumLoadSup[d].get() + loads[d][b].getSup()));
                 filterLoadSup(d, b, Math.min(bTLoads[d][b].get(), (int) sumISizes[d] - sumLoadInf[d].get() + loads[d][b].getInf()));

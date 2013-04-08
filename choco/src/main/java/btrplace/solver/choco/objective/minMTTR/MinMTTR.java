@@ -76,7 +76,7 @@ public class MinMTTR implements ReconfigurationObjective {
         s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
         s.setObjective(cost);
 
-        injectPlacementHeuristic(rp, cost);
+        //injectPlacementHeuristic(rp, cost);
     }
 
     private void injectPlacementHeuristic(ReconfigurationProblem rp, IntDomainVar cost) {
