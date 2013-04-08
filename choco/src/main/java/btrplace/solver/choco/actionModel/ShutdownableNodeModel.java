@@ -35,6 +35,11 @@ import java.util.UUID;
 
 /**
  * Model an action that allow a node to boot if necessary.
+ * The model must provide an estimation of the action duration through a
+ * {@link btrplace.solver.choco.DurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code ShutdownNode.class}
+ * <p/>
+ * The action is modeled as follow:
  * <ul>
  * <li>Definition of the node state. If the node is offline, then no VMs can run on it:
  * <ul>
@@ -74,6 +79,9 @@ import java.util.UUID;
  * </ul>
  * </li>
  * </ul>
+ * <p/>
+ * If the reconfiguration problem has a solution, a {@link btrplace.plan.event.ShutdownNode} action is inserted
+ * into the resulting reconfiguration plan if the node is turned offline.
  *
  * @author Fabien Hermenier, Tu Dang
  */

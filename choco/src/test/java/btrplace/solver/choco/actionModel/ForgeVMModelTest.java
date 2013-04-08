@@ -28,6 +28,7 @@ import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.DurationEvaluators;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -39,14 +40,13 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class ForgeVMModelTest {
+public class ForgeVMModelTest implements PremadeElements {
 
     @Test
     public void testBasics() throws SolverException {
         Mapping m = new DefaultMapping();
-        UUID vm1 = UUID.randomUUID();
         Model mo = new DefaultModel(m);
-
+        mo.getAttributes().put(vm1, "template", "small");
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(ForgeVM.class, new ConstantDuration(7));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
@@ -55,12 +55,25 @@ public class ForgeVMModelTest {
                 .build();
         ForgeVMModel ma = (ForgeVMModel) rp.getVMAction(vm1);
         Assert.assertEquals(vm1, ma.getVM());
+        Assert.assertEquals(ma.getTemplate(), "small");
         Assert.assertTrue(ma.getDuration().isInstantiatedTo(7));
         Assert.assertFalse(ma.getStart().isInstantiated());
         Assert.assertFalse(ma.getEnd().isInstantiated());
         Assert.assertTrue(ma.getState().isInstantiatedTo(0));
         Assert.assertNull(ma.getCSlice());
         Assert.assertNull(ma.getDSlice());
+    }
+
+    @Test(expectedExceptions = {SolverException.class})
+    public void testWithoutTemplate() throws SolverException {
+        Mapping m = new DefaultMapping();
+        Model mo = new DefaultModel(m);
+        DurationEvaluators dev = new DurationEvaluators();
+        dev.register(ForgeVM.class, new ConstantDuration(7));
+        new DefaultReconfigurationProblemBuilder(mo)
+                .setDurationEvaluatators(dev)
+                .setNextVMsStates(Collections.singleton(vm1), Collections.<UUID>emptySet(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .build();
 
     }
 

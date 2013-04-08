@@ -103,6 +103,7 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
         toRun.add(vm5);
         toRun.add(vm4);
         toRun.add(vm1);
+        m.getAttributes().put(vm7, "template", "small");
         DurationEvaluators dEval = new DurationEvaluators();
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(m)
                 .setNextVMsStates(toWait, toRun, Collections.singleton(vm3), Collections.singleton(vm2))
@@ -166,16 +167,17 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
     @Test
     public void testVMToWaiting() throws SolverException {
         Mapping m = new DefaultMapping();
-        UUID vm = UUID.randomUUID();
+        Model mo = new DefaultModel(m);
+        mo.getAttributes().put(vm1, "template", "small");
         ReconfigurationProblem rp =
-                new DefaultReconfigurationProblemBuilder(new DefaultModel(m))
-                        .setNextVMsStates(Collections.singleton(vm),
+                new DefaultReconfigurationProblemBuilder(mo)
+                        .setNextVMsStates(Collections.singleton(vm1),
                                 new HashSet<UUID>(),
                                 new HashSet<UUID>(),
                                 new HashSet<UUID>()).build();
 
         ActionModel a = rp.getVMActions()[0];
-        Assert.assertEquals(a, rp.getVMAction(vm));
+        Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(ForgeVMModel.class, a.getClass());
     }
 
@@ -449,36 +451,31 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
     public void testMaintainState() throws SolverException {
         Mapping map = new DefaultMapping();
 
-        UUID n1 = UUID.randomUUID();
-        UUID v1 = UUID.randomUUID();
-        UUID v2 = UUID.randomUUID();
-        UUID v3 = UUID.randomUUID();
-        UUID v4 = UUID.randomUUID();
-        UUID v5 = UUID.randomUUID();
         map.addOnlineNode(n1);
-        map.addRunningVM(v1, n1);
-        map.addReadyVM(v2);
-        map.addSleepingVM(v3, n1);
-        map.addReadyVM(v5);
+        map.addRunningVM(vm1, n1);
+        map.addReadyVM(vm2);
+        map.addSleepingVM(vm3, n1);
+        map.addReadyVM(vm5);
         ShareableResource rc = new ShareableResource("foo");
-        rc.set(v1, 5);
-        rc.set(v2, 7);
+        rc.set(vm1, 5);
+        rc.set(vm2, 7);
 
         Model mo = new DefaultModel(map);
+        mo.getAttributes().put(vm4, "template", "small");
         mo.attach(rc);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblem(mo, new DurationEvaluators(), new ModelViewMapper(),
-                Collections.singleton(v4),
-                Collections.singleton(v5),
-                Collections.singleton(v1),
+                Collections.singleton(vm4),
+                Collections.singleton(vm5),
+                Collections.singleton(vm1),
                 Collections.<UUID>emptySet(),
                 map.getAllVMs(),
                 false);
-        Assert.assertTrue(rp.getFutureSleepingVMs().contains(v1));
-        Assert.assertTrue(rp.getFutureReadyVMs().contains(v2));
-        Assert.assertTrue(rp.getFutureSleepingVMs().contains(v3));
-        Assert.assertTrue(rp.getFutureReadyVMs().contains(v4));
-        Assert.assertTrue(rp.getFutureRunningVMs().contains(v5));
+        Assert.assertTrue(rp.getFutureSleepingVMs().contains(vm1));
+        Assert.assertTrue(rp.getFutureReadyVMs().contains(vm2));
+        Assert.assertTrue(rp.getFutureSleepingVMs().contains(vm3));
+        Assert.assertTrue(rp.getFutureReadyVMs().contains(vm4));
+        Assert.assertTrue(rp.getFutureRunningVMs().contains(vm5));
     }
 
     /**

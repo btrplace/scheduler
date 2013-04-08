@@ -32,9 +32,17 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import java.util.UUID;
 
 /**
- * Model an action that forge a VM to put it into the ready state.
+ * Model an action that forge a VM to put it into the ready state. *
+ * <p/>
  * The VM must have an attribute (provided by {@link btrplace.model.Model#getAttributes()}
  * {@code template} that indicate the template identifier to use to build the VM image.
+ * <p/>
+ * The model must provide an estimation of the action duration through a
+ * {@link btrplace.solver.choco.DurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code ForgeVM.class}
+ * <p/>
+ * If the reconfiguration problem has a solution, a {@link btrplace.plan.event.ForgeVM} action
+ * will inserted into the resulting reconfiguration plan.
  *
  * @author Fabien Hermenier
  */

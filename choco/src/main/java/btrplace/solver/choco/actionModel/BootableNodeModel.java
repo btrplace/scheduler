@@ -32,7 +32,12 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import java.util.UUID;
 
 /**
- * Model an action that allows a node to be booted if necessary. The action is modeled as follow:
+ * Model an action that allows a node to be booted if necessary.
+ * The model must provide an estimation of the action duration through a
+ * {@link btrplace.solver.choco.DurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code BootNode.class}
+ * <p/>
+ * The action is modeled as follow:
  * <p/>
  * <ul>
  * <li>Definition of the node state. If the node is offline, then no VMs can run on it:
@@ -72,6 +77,9 @@ import java.util.UUID;
  * </ul>
  * </li>
  * </ul>
+ * <p/>
+ * If the reconfiguration problem has a solution, a {@link btrplace.plan.event.BootNode} action
+ * is inserted into the resulting reconfiguration plan iff the node has to be turned online.
  *
  * @author Fabien Hermenier
  */
