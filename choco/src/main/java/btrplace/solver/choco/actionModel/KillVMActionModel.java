@@ -32,6 +32,13 @@ import java.util.UUID;
 
 /**
  * An action to model a VM that is killed.
+ * The model must provide an estimation of the action duration through a
+ * {@link btrplace.solver.choco.DurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code KillVM.class}
+ * <p/>
+ * If the reconfiguration problem has a solution, a {@link btrplace.plan.event.KillVM} action
+ * is inserted into the resulting reconfiguration plan.
+ * <p/>
  * The kill necessarily occurs at the beginning of the reconfiguration process and
  * can consider a VM that is either in the ready, the running, and the sleeping state.
  *

@@ -34,7 +34,12 @@ import java.util.UUID;
 
 /**
  * Model an action that resume a sleeping VM.
+ * The model must provide an estimation of the action duration through a
+ * {@link btrplace.solver.choco.DurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code ResumeVM.class}
  * <p/>
+ * If the reconfiguration problem has a solution, a {@link btrplace.plan.event.ResumeVM} action
+ * is inserted into the resulting reconfiguration plan.
  *
  * @author Fabien Hermenier
  */

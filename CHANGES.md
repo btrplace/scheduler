@@ -1,6 +1,13 @@
 Release notes
 ======================
 
+version ???????????
+----------------------
+- Bug fix in the placement model
+- Complete the forgeVM model. It is now required to declare
+  a template for the VMs to forge using a "template" attribute
+  in the model
+
 version 0.28 - 29 Mar 2013
 ----------------------
 - migration to JDK 7
