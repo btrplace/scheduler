@@ -30,6 +30,7 @@ import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.DurationEvaluators;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
+import btrplace.test.PremadeElements;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -43,7 +44,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class KillVMActionModelTest {
+public class KillVMActionModelTest implements PremadeElements {
 
     /**
      * Test the action model with different action models.
@@ -54,11 +55,6 @@ public class KillVMActionModelTest {
     @Test
     public void testBasics() throws ContradictionException, SolverException {
         Mapping map = new DefaultMapping();
-
-        UUID n1 = UUID.randomUUID();
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
 
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);

@@ -119,13 +119,13 @@ public class ActionModelUtilsTest {
             c = s.createBoundIntVar("cost" + nb, nb, nb + 1);
             state = s.createBoundIntVar("state" + nb, nb, nb + 1);
             if (nb % 2 == 0) {
-                cSlice = new Slice(UUID.randomUUID(),
+                cSlice = new Slice(new UUID(0, nb),
                         s.createBoundIntVar("cS" + nb + "-st", nb, nb + 1),
                         s.createBoundIntVar("cS" + nb + "-ed", nb, nb + 1),
                         s.createBoundIntVar("cS" + nb + "-d", nb, nb + 1),
                         s.createBoundIntVar("cS" + nb + "-h", nb, nb + 1));
             } else {
-                dSlice = new Slice(UUID.randomUUID(),
+                dSlice = new Slice(new UUID(0, nb),
                         s.createBoundIntVar("dS" + nb + "-st", nb, nb + 1),
                         s.createBoundIntVar("dS" + nb + "-ed", nb, nb + 1),
                         s.createBoundIntVar("dS" + nb + "-d", nb, nb + 1),

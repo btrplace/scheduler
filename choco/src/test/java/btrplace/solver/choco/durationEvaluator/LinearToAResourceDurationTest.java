@@ -19,29 +19,27 @@
 package btrplace.solver.choco.durationEvaluator;
 
 import btrplace.model.view.ShareableResource;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.util.UUID;
 
 /**
  * Unit tests for {@link LinearToAResourceDuration}.
  *
  * @author Fabien Hermenier
  */
-public class LinearToAResourceDurationTest {
+public class LinearToAResourceDurationTest implements PremadeElements {
 
     @Test
     public void testSimple() {
         ShareableResource rc = new ShareableResource("foo", 0);
-        UUID u = UUID.randomUUID();
-        rc.set(u, 3);
+        rc.set(vm1, 3);
         LinearToAResourceDuration d = new LinearToAResourceDuration(rc, 3);
-        Assert.assertEquals(d.evaluate(u), 9);
-        Assert.assertEquals(d.evaluate(UUID.randomUUID()), 0);
+        Assert.assertEquals(d.evaluate(vm1), 9);
+        Assert.assertEquals(d.evaluate(vm2), 0);
 
         d = new LinearToAResourceDuration(rc, 3, 4);
-        Assert.assertEquals(d.evaluate(u), 13);
-        Assert.assertEquals(d.evaluate(UUID.randomUUID()), 4);
+        Assert.assertEquals(d.evaluate(vm1), 13);
+        Assert.assertEquals(d.evaluate(vm2), 4);
     }
 }

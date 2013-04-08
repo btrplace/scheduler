@@ -30,6 +30,7 @@ import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.DurationEvaluators;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
+import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
@@ -44,15 +45,13 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class ShutdownVMModelTest {
+public class ShutdownVMModelTest implements PremadeElements {
 
     @Test
     public void testBasic() throws ContradictionException, SolverException {
         Mapping map = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
         map.addOnlineNode(n1);
-        UUID vm = UUID.randomUUID();
-        map.addRunningVM(vm, n1);
+        map.addRunningVM(vm1, n1);
 
         Model mo = new DefaultModel(map);
         DurationEvaluators dev = new DurationEvaluators();
@@ -64,7 +63,7 @@ public class ShutdownVMModelTest {
                 .build();
         rp.getNodeActions()[0].getState().setVal(1);
         ShutdownVMModel m = (ShutdownVMModel) rp.getVMActions()[0];
-        Assert.assertEquals(vm, m.getVM());
+        Assert.assertEquals(vm1, m.getVM());
         Assert.assertNull(m.getDSlice());
         Assert.assertTrue(m.getDuration().isInstantiatedTo(5));
         Assert.assertTrue(m.getState().isInstantiatedTo(0));
@@ -73,7 +72,7 @@ public class ShutdownVMModelTest {
         ReconfigurationPlan p = rp.solve(0, false);
         ShutdownVM a = (ShutdownVM) p.getActions().iterator().next();
 
-        Assert.assertEquals(vm, a.getVM());
+        Assert.assertEquals(vm1, a.getVM());
         Assert.assertEquals(5, a.getEnd() - a.getStart());
     }
 
@@ -85,10 +84,7 @@ public class ShutdownVMModelTest {
     @Test
     public void testShutdownSequence() throws SolverException, ContradictionException {
         Mapping map = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
         map.addOnlineNode(n1);
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n1);
 

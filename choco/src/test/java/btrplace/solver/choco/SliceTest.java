@@ -18,6 +18,7 @@
 
 package btrplace.solver.choco;
 
+import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
@@ -30,14 +31,14 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class SliceTest {
+public class SliceTest implements PremadeElements {
 
     /**
      * It's a container so we only tests the instantiation and the getters.
      */
     @Test
     public void testInstantiation() {
-        UUID e = UUID.randomUUID();
+        UUID e = vm1;
         CPSolver s = new CPSolver();
         IntDomainVar st = s.createIntegerConstant("start", 1);
         IntDomainVar ed = s.createIntegerConstant("end", 3);

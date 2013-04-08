@@ -45,7 +45,7 @@ public class COfflineTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Offline b = new Offline(Collections.singleton(UUID.randomUUID()));
+        Offline b = new Offline(Collections.singleton(vm1));
         COffline c = new COffline(b);
         Assert.assertEquals(c.toString(), b.toString());
     }
@@ -81,8 +81,7 @@ public class COfflineTest implements PremadeElements {
 
         Assert.assertTrue(coff.getMisPlacedVMs(mo).isEmpty());
 
-        UUID vm = UUID.randomUUID();
-        map.addRunningVM(vm, n1);
+        map.addRunningVM(vm1, n1);
         Assert.assertEquals(coff.getMisPlacedVMs(mo), map.getAllVMs());
     }
 

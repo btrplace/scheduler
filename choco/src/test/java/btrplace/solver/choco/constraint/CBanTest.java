@@ -47,8 +47,8 @@ public class CBanTest implements PremadeElements {
         Set<UUID> sVMs = new HashSet<UUID>();
         Set<UUID> sNodes = new HashSet<UUID>();
         for (int i = 0; i < vms.length; i++) {
-            nodes[i] = UUID.randomUUID();
-            vms[i] = UUID.randomUUID();
+            nodes[i] = new UUID(0, i);
+            vms[i] = new UUID(1, i);
             m.addOnlineNode(nodes[i]);
             m.addRunningVM(vms[i], nodes[i]);
             if (i % 2 == 0) {

@@ -28,7 +28,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Collections;
-import java.util.UUID;
 
 /**
  * Unit tests for {@link CKilled}.
@@ -42,7 +41,7 @@ public class CKilledTest implements PremadeElements {
         Mapping m = new MappingBuilder().ready(vm1).on(n1).run(n1, vm2).build();
         Model mo = new DefaultModel(m);
 
-        CKilled k = new CKilled(new Killed(Collections.singleton(UUID.randomUUID())));
+        CKilled k = new CKilled(new Killed(Collections.singleton(vm10)));
         Assert.assertTrue(k.getMisPlacedVMs(mo).isEmpty());
         k = new CKilled(new Killed(m.getAllVMs()));
         Assert.assertEquals(2, k.getMisPlacedVMs(mo).size());

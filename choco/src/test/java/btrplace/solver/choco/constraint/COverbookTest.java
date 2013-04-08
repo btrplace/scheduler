@@ -53,11 +53,11 @@ public class COverbookTest implements PremadeElements {
         btrplace.model.view.ShareableResource rcCPU = new ShareableResource("cpu");
         for (int i = 0; i < vms.length; i++) {
             if (i < nodes.length) {
-                nodes[i] = UUID.randomUUID();
+                nodes[i] = new UUID(0, i);
                 rcCPU.set(nodes[i], 2);
                 m.addOnlineNode(nodes[i]);
             }
-            vms[i] = UUID.randomUUID();
+            vms[i] = new UUID(1, i);
             rcCPU.set(vms[i], 1);
 
             m.addReadyVM(vms[i]);
@@ -92,11 +92,11 @@ public class COverbookTest implements PremadeElements {
         btrplace.model.view.ShareableResource rcCPU = new ShareableResource("cpu");
         for (int i = 0; i < vms.length; i++) {
             if (i < nodes.length) {
-                nodes[i] = UUID.randomUUID();
+                nodes[i] = new UUID(0, i);
                 rcCPU.set(nodes[i], 2);
                 m.addOnlineNode(nodes[i]);
             }
-            vms[i] = UUID.randomUUID();
+            vms[i] = new UUID(1, i);
             rcCPU.set(vms[i], 1);
 
             m.addReadyVM(vms[i]);
@@ -127,11 +127,11 @@ public class COverbookTest implements PremadeElements {
         btrplace.model.view.ShareableResource rcMem = new ShareableResource("mem");
         for (int i = 0; i < vms.length; i++) {
             if (i < nodes.length) {
-                nodes[i] = UUID.randomUUID();
+                nodes[i] = new UUID(0, i);
                 rcMem.set(nodes[i], 3);
                 m.addOnlineNode(nodes[i]);
             }
-            vms[i] = UUID.randomUUID();
+            vms[i] = new UUID(1, i);
             rcMem.set(vms[i], 1);
             m.addReadyVM(vms[i]);
         }
