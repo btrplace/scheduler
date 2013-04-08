@@ -106,10 +106,10 @@ public class RelocatableVMModel implements KeepRunningVMModel {
                 .setEnd(rp.makeDuration("relocatable(" + e + ").cSlice_end"))
                 .build();
 
-        dSlice = new SliceBuilder(rp, e, "relocatable(" + e + ").dSlice")
-                .setStart(rp.makeDuration("relocatable(" + e + ").dSlice_start"))
+        dSlice = new SliceBuilder(rp, isReinstantiated() ? newVM : e, "relocatable(" + (isReinstantiated() ? newVM : e) + ").dSlice")
+                .setStart(rp.makeDuration("relocatable(" + (isReinstantiated() ? newVM : e) + ").dSlice_start"))
                 .build();
-        IntDomainVar move = s.createBooleanVar(rp.makeVarLabel("relocatable(" + e + ").move"));
+        IntDomainVar move = s.createBooleanVar(rp.makeVarLabel("relocatable(" + (isReinstantiated() ? newVM : e) + ").move"));
         s.post(ReifiedFactory.builder(move, s.neq(cSlice.getHoster(), dSlice.getHoster()), s));
 
         stay = new BoolVarNot(s, rp.makeVarLabel("relocatable(" + e + ").stay"), (BooleanVarImpl) move);
@@ -125,7 +125,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
         if (doReinstantiate) {
             int forgeD = rp.getDurationEvaluators().evaluate(ForgeVM.class, vm);
-            IntDomainVar forgeCost = s.createEnumIntVar(rp.makeVarLabel("forge(" + vm + ")"), new int[]{0, forgeD});
+            IntDomainVar forgeCost = s.createEnumIntVar(rp.makeVarLabel("forge(" + newVM + ")"), new int[]{0, forgeD});
 
             s.post(new FastIFFEq(stay, forgeCost, 0));
             s.post(s.geq(this.dSlice.getStart(), forgeCost));

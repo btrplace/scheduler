@@ -224,6 +224,39 @@ public class RelocatableVMModelTest implements PremadeElements {
         Assert.assertEquals(res.getMapping().getRunningVMs(n1).size(), 0);
         Assert.assertEquals(res.getMapping().getRunningVMs(n2).size(), 1);
         Assert.assertNotNull(p);
+    }
 
+    @Test
+    public void testReinstantiationWithPreserve() throws SolverException {
+        Mapping map = new DefaultMapping();
+
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addRunningVM(vm7, n1);
+        map.addRunningVM(vm8, n1);
+        map.addRunningVM(vm9, n2);
+        ShareableResource rc = new ShareableResource("cpu", 10);
+        rc.set(n1, 7);
+        rc.set(vm1, 3);
+        rc.set(vm2, 3);
+        rc.set(vm3, 5);
+
+        Model mo = new DefaultModel(map);
+
+        for (UUID vm : map.getAllVMs()) {
+            mo.getAttributes().put(vm, "template", "small");
+            mo.getAttributes().put(vm, "clone", true);
+        }
+        Preserve pr = new Preserve(map.getAllVMs(), "cpu", 5);
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.setVerbosity(1);
+        cra.getDurationEvaluators().register(MigrateVM.class, new ConstantDuration(20));
+
+        mo.attach(rc);
+        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        cstrs.add(new Online(map.getAllNodes()));
+        cstrs.add(pr);
+        ReconfigurationPlan p = cra.solve(mo, cstrs);
+        Assert.assertNotNull(p);
     }
 }
