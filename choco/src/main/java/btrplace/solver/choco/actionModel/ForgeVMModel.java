@@ -26,7 +26,6 @@ import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
 import btrplace.solver.choco.VMActionModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.UUID;
@@ -54,8 +53,6 @@ public class ForgeVMModel implements VMActionModel {
 
     private IntDomainVar state;
 
-    private IntDomainVar end;
-
     private Slice dSlice;
 
     private String template;
@@ -68,9 +65,6 @@ public class ForgeVMModel implements VMActionModel {
      * @throws SolverException if an error occurred
      */
     public ForgeVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
-        /*
-         * We don't make any "real" dslice cause it may impacts the TaskScheduler
-         */
         int d = rp.getDurationEvaluators().evaluate(ForgeVM.class, e);
         template = rp.getSourceModel().getAttributes().getString(e, "template");
         if (template == null) {
@@ -81,17 +75,24 @@ public class ForgeVMModel implements VMActionModel {
         state = s.makeConstantIntVar(0);
         vm = e;
 
+        /*
+         * We don't make any "real" dslice cause it may impacts the TaskScheduler
+         * so the hosting variable is set to -1 to be sure the VM is not hosted on a node
+         */
+
         dSlice = new SliceBuilder(rp, e, rp.makeVarLabel("forge(" + e + ").dSlice"))
-                .setEnd(rp.getEnd())
+                .setDuration(duration)
                 .setStart(rp.makeDuration("forge(" + e + ").start"))
+                .setHoster(-1)
                 .build();
         s.post(s.leq(d, dSlice.getDuration()));
-        end = new IntDomainVarAddCste(s, rp.makeVarLabel("forge(" + e + ").start"), dSlice.getStart(), -d);
+        s.post(s.leq(dSlice.getEnd(), rp.getEnd()));
     }
 
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
-        return true;
+        ForgeVM a = new ForgeVM(vm, getStart().getVal(), getEnd().getVal());
+        return plan.add(a);
     }
 
     @Override
@@ -106,7 +107,7 @@ public class ForgeVMModel implements VMActionModel {
 
     @Override
     public IntDomainVar getEnd() {
-        return end;
+        return dSlice.getEnd();
     }
 
     @Override

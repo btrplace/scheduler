@@ -22,6 +22,7 @@ import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ForgeVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
@@ -75,6 +76,27 @@ public class ForgeVMModelTest implements PremadeElements {
                 .setNextVMsStates(Collections.singleton(vm1), Collections.<UUID>emptySet(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
                 .build();
 
+    }
+
+    @Test
+    public void testResolution() throws SolverException {
+        Mapping m = new DefaultMapping();
+        Model mo = new DefaultModel(m);
+        mo.getAttributes().put(vm1, "template", "small");
+        DurationEvaluators dev = new DurationEvaluators();
+        dev.register(ForgeVM.class, new ConstantDuration(7));
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setDurationEvaluatators(dev)
+                .setNextVMsStates(Collections.singleton(vm1), Collections.<UUID>emptySet(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .labelVariables()
+                .build();
+        ReconfigurationPlan p = rp.solve(0, false);
+        Assert.assertNotNull(p);
+        ForgeVM action = (ForgeVM) p.getActions().iterator().next();
+        Assert.assertTrue(p.getResult().getMapping().getReadyVMs().contains(vm1));
+        Assert.assertEquals(action.getVM(), vm1);
+        Assert.assertEquals(action.getEnd(), 7);
+        Assert.assertEquals(action.getStart(), 0);
     }
 
 }

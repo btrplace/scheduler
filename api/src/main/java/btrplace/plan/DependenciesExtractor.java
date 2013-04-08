@@ -90,7 +90,10 @@ public class DependenciesExtractor implements ActionVisitor {
 
     @Override
     public Boolean visit(ForgeVM a) {
-        throw new UnsupportedOperationException();
+        /*TODO: true for the moment, but if we allow to chain
+         forge with boot, it will no longer be as there will
+        be a dependency on the VM (and not the node)*/
+        return true;
     }
 
     @Override
