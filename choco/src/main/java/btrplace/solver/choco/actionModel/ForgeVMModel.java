@@ -76,13 +76,13 @@ public class ForgeVMModel implements VMActionModel {
         vm = e;
 
         /*
-         * We don't make any "real" dslice cause it may impacts the TaskScheduler
+         * We don't make any "real" d-slice cause it may impacts the TaskScheduler
          * so the hosting variable is set to -1 to be sure the VM is not hosted on a node
          */
-
         dSlice = new SliceBuilder(rp, e, rp.makeVarLabel("forge(" + e + ").dSlice"))
                 .setDuration(duration)
                 .setStart(rp.makeDuration("forge(" + e + ").start"))
+                .setEnd(rp.makeDuration("forge(" + e + ").stop"))
                 .setHoster(-1)
                 .build();
         s.post(s.leq(d, dSlice.getDuration()));
