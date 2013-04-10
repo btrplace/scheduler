@@ -132,18 +132,15 @@ public class RandomVMPlacement implements ValSelector<IntDomainVar> {
         } finally {
             ite.dispose();
         }
-        ChocoLogging.getBranchingLogger().info(x.pretty() + " Pick " + pos + " among " + x.getDomain().pretty());
         return pos;
     }
 
     @Override
     public int getBestVal(IntDomainVar x) {
-        ChocoLogging.getBranchingLogger().info("--> " + x.pretty());
         if (stay) {
             UUID vm = vmPlacement.get(x);
             if (VMPlacementUtils.canStay(rp, vm)) {
-                rp.getLogger().debug("{} - VM {} stays on {} ({})", dbgLbl, vm, rp.getSourceModel().getMapping().getVMLocation(vm), rp.getNode(rp.getSourceModel().getMapping().getVMLocation(vm)));
-                ChocoLogging.getBranchingLogger().info(x.pretty() + " try to stay on " + rp.getNode(rp.getSourceModel().getMapping().getVMLocation(vm)));
+                //rp.getLogger().debug("{} - VM {} stays on {} ({})", dbgLbl, vm, rp.getSourceModel().getMapping().getVMLocation(vm), rp.getNode(rp.getSourceModel().getMapping().getVMLocation(vm)));
                 return rp.getNode(rp.getSourceModel().getMapping().getVMLocation(vm));
             }
         }
@@ -155,10 +152,10 @@ public class RandomVMPlacement implements ValSelector<IntDomainVar> {
             } else {
                 nIdx = randomValue(x);
             }
-            rp.getLogger().debug("{} - VM {} move to {} ({})", dbgLbl, vmPlacement.get(x), rp.getNode(nIdx), nIdx);
+            //rp.getLogger().debug("{} - VM {} move to {} ({})", dbgLbl, vmPlacement.get(x), rp.getNode(nIdx), nIdx);
             return nIdx;
         }
-        rp.getLogger().debug("{} - {} ", dbgLbl, x);
+        //rp.getLogger().debug("{} - {} ", dbgLbl, x);
         return x.getVal();
     }
 }

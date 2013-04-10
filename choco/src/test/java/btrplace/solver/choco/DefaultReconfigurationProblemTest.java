@@ -490,8 +490,8 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
     public void testMinimize() throws SolverException {
         Mapping map = new DefaultMapping();
         for (int i = 0; i < 10; i++) {
-            UUID n = UUID.randomUUID();
-            UUID vm = UUID.randomUUID();
+            UUID n = new UUID(2, i);
+            UUID vm = new UUID(3, i);
             map.addOnlineNode(n);
             map.addRunningVM(vm, n);
         }
@@ -521,8 +521,8 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
     public void testMinimizationWithAlterer() throws SolverException {
         Mapping map = new DefaultMapping();
         for (int i = 0; i < 10; i++) {
-            UUID n = UUID.randomUUID();
-            UUID vm = UUID.randomUUID();
+            UUID n = new UUID(2, i);
+            UUID vm = new UUID(3, i);
             map.addOnlineNode(n);
             map.addRunningVM(vm, n);
         }
@@ -559,11 +559,10 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
     @Test
     public void testMaximization() throws SolverException {
         Mapping map = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
         map.addOnlineNode(n1);
         for (int i = 0; i < 10; i++) {
-            UUID n = UUID.randomUUID();
-            UUID vm = UUID.randomUUID();
+            UUID n = new UUID(2, i);
+            UUID vm = new UUID(3, i);
             map.addOnlineNode(n);
             map.addRunningVM(vm, n1);
         }
@@ -592,11 +591,10 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
     @Test
     public void testMaximizationWithAlterer() throws SolverException {
         Mapping map = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
         map.addOnlineNode(n1);
         for (int i = 0; i < 10; i++) {
-            UUID n = UUID.randomUUID();
-            UUID vm = UUID.randomUUID();
+            UUID n = new UUID(2, i);
+            UUID vm = new UUID(3, i);
             map.addOnlineNode(n);
             map.addRunningVM(vm, n1);
         }
@@ -636,8 +634,8 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
     public void testUnfeasibleOptimizeWithAlterer() throws SolverException {
         Mapping map = new DefaultMapping();
         for (int i = 0; i < 10; i++) {
-            UUID n = UUID.randomUUID();
-            UUID vm = UUID.randomUUID();
+            UUID n = new UUID(2, i);
+            UUID vm = new UUID(3, i);
             map.addOnlineNode(n);
             map.addRunningVM(vm, n);
         }

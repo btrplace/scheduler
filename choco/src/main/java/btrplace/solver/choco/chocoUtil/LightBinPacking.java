@@ -252,12 +252,12 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
 
         for (int d = 0; d < nbDims; d++) {
             for (int b = 0; b < nbBins; b++) {
-               /* if (loads[d][b].getSup() - loads[d][b].getInf() < nbUnassigned[d]) {
+                if (loads[d][b].getSup() - loads[d][b].getInf() < nbUnassigned[d]) {
                     ChocoLogging.getBranchingLogger().info(sumISizes[d] + " >= ub(" + loads[d][b].pretty() + ")" + cLoads[d][b]);
                     notEntailedDims.set(d);
                     break;
-                }*/
-                notEntailedDims.set(d);
+                }
+               // notEntailedDims.set(d);
             }
         }
         assert checkLoadConsistency();
@@ -279,24 +279,18 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      */
     public void propagate() throws ContradictionException {
         recomputeLoadSums();
-        boolean noFixPoint = true;
-        while (noFixPoint) {
-
-        //for (int d = 0; d < nbDims; d++) {
         for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
             if (sumISizes[d] > sumLoadSup[d].get() || sumISizes[d] < sumLoadInf[d].get()) {
                 fail();
             }
         }
 
-            noFixPoint = false;
-            for (int b = 0; b < nbBins; b++) {
+            /*for (int b = 0; b < nbBins; b++) {
                 for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
-                    noFixPoint |= filterLoadInf(d, b, Math.max(bRLoads[d][b].get(), (int) sumISizes[d] - sumLoadSup[d].get() + loads[d][b].getSup()));
-                    noFixPoint |= filterLoadSup(d, b, Math.min(bTLoads[d][b].get(), (int) sumISizes[d] - sumLoadInf[d].get() + loads[d][b].getInf()));
+                    filterLoadInf(d, b, Math.max(bRLoads[d][b].get(), (int) sumISizes[d] - sumLoadSup[d].get() + loads[d][b].getSup()));
+                    filterLoadSup(d, b, Math.min(bTLoads[d][b].get(), (int) sumISizes[d] - sumLoadInf[d].get() + loads[d][b].getInf()));
                 }
-            }
-        }
+            } */
         assert checkLoadConsistency();
     }
 

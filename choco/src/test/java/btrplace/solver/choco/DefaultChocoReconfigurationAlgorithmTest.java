@@ -22,6 +22,7 @@ import btrplace.model.*;
 import btrplace.model.constraint.Fence;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
+import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.AtMostNValue;
 import choco.kernel.solver.Configuration;
@@ -37,7 +38,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class DefaultChocoReconfigurationAlgorithmTest {
+public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements {
 
     @Test
     public void testGetsAndSets() {
@@ -81,11 +82,10 @@ public class DefaultChocoReconfigurationAlgorithmTest {
     @Test
     public void testGetStatistics() throws SolverException {
         Mapping map = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
         map.addOnlineNode(n1);
         for (int i = 0; i < 10; i++) {
-            UUID n = UUID.randomUUID();
-            UUID vm = UUID.randomUUID();
+            UUID n = new UUID(2, i);
+            UUID vm = new UUID(3, i);
             map.addOnlineNode(n);
             map.addRunningVM(vm, n);
         }
@@ -127,16 +127,6 @@ public class DefaultChocoReconfigurationAlgorithmTest {
 
     @Test
     public void testSolvableRepair() throws SolverException {
-
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
-        UUID n3 = UUID.randomUUID();
-
-        UUID vm1 = UUID.randomUUID();
-        final UUID vm2 = UUID.randomUUID();
-        final UUID vm3 = UUID.randomUUID();
-        UUID vm4 = UUID.randomUUID();
-        UUID vm5 = UUID.randomUUID();
 
         Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5).build();
 

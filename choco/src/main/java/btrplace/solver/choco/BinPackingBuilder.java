@@ -90,17 +90,7 @@ public class BinPackingBuilder {
 
         }
         //TODO: Items must always be in the same order.
-        //solver.post(new LightBinPacking(names.toArray(new String[names.size()]), solver.getEnvironment(), loads.toArray(new IntDomainVar[loads.size()][]), iSizes, bins.get(0)));
-        for (int i = 0; i < loads.size(); i++) {
-            IntDomainVar[] l = loads.get(i);
-            IntDomainVar[] s = sizes.get(i);
-            IntDomainVar[] b = bins.get(i);
-            System.err.println(Arrays.toString(l));
-            System.err.println(Arrays.toString(s));
-            System.err.println(Arrays.toString(b));
-            solver.post(new BinPacking(solver.getEnvironment(), l, s, b));
-        }
-
+        solver.post(new LightBinPacking(names.toArray(new String[names.size()]), solver.getEnvironment(), loads.toArray(new IntDomainVar[loads.size()][]), iSizes, bins.get(0)));
 
     }
 }

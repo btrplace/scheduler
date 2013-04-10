@@ -62,8 +62,7 @@ public class Issues implements PremadeElements {
 
         IntDomainVar[] busy = new IntDomainVar[NUMBER_OF_NODE];
 
-        ChocoLogging.setVerbosity(Verbosity.SEARCH);
-        //rp.getEnd().setSup(10);
+        rp.getEnd().setSup(10);
         int i = 0;
         int maxVMs = rp.getSourceModel().getMapping().getAllVMs().size();
         for (UUID n : map.getAllNodes()) {
@@ -213,7 +212,6 @@ public class Issues implements PremadeElements {
         MinMTTR obj = new MinMTTR();
         obj.inject(rp);
         //System.err.println(solver.pretty());
-        ChocoLogging.setVerbosity(Verbosity.SEARCH);
         ChocoLogging.setLoggingMaxDepth(100);
         ReconfigurationPlan plan = rp.solve(0, false);
         Assert.assertNotNull(plan);

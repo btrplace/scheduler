@@ -24,7 +24,7 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.NodeActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.chocoUtil.FastIFFEq;
-import btrplace.solver.choco.chocoUtil.FastImpliesEq0;
+import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.ElementV;
 import choco.cp.solver.variables.integer.BoolVarNot;
@@ -124,7 +124,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
         */
         isOnline = s.createBooleanVar(rp.makeVarLabel(new StringBuilder("shutdownableNode(").append(e).append(").online").toString()));
         isOffline = new BoolVarNot(s, new StringBuilder("shutdownableNode(").append(e).append(").offline").toString(), (BooleanVarImpl) isOnline);
-        s.post(new FastImpliesEq0(isOffline, rp.getNbRunningVMs()[rp.getNode(e)]));
+        s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNode(e)], 0));
 
         /*
         * D = {0, d}
@@ -149,7 +149,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
         hostingStart = rp.getStart();
         //The moment the node can no longer host VMs varies depending on its next state
         hostingEnd = rp.makeDuration(new StringBuilder("shutdownableNode(").append(e).append(").hostingEnd").toString());
-        //s.post(s.leq(hostingEnd, rp.getEnd()));
+        s.post(s.leq(hostingEnd, rp.getEnd()));
 
         /*
           T = { As, RP.end}
