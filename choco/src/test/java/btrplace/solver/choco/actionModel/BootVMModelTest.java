@@ -30,6 +30,7 @@ import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.DurationEvaluators;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
+import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
@@ -44,7 +45,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class BootVMModelTest {
+public class BootVMModelTest implements PremadeElements {
 
     /**
      * Just boot a VM on a  node.
@@ -52,13 +53,11 @@ public class BootVMModelTest {
     @Test
     public void testBasics() throws SolverException, ContradictionException {
         Mapping map = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
 
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
-        UUID vm = UUID.randomUUID();
-        map.addReadyVM(vm);
+
+        map.addReadyVM(vm1);
 
         Model mo = new DefaultModel(map);
         DurationEvaluators dev = new DurationEvaluators();
@@ -71,7 +70,7 @@ public class BootVMModelTest {
         rp.getNodeActions()[0].getState().setVal(1);
         rp.getNodeActions()[1].getState().setVal(1);
         BootVMModel m = (BootVMModel) rp.getVMActions()[0];
-        Assert.assertEquals(vm, m.getVM());
+        Assert.assertEquals(vm1, m.getVM());
         Assert.assertNull(m.getCSlice());
         Assert.assertTrue(m.getDuration().isInstantiatedTo(5));
         Assert.assertTrue(m.getState().isInstantiatedTo(1));
@@ -83,7 +82,7 @@ public class BootVMModelTest {
         BootVM a = (BootVM) p.getActions().iterator().next();
 
         UUID dest = rp.getNode(m.getDSlice().getHoster().getVal());
-        Assert.assertEquals(vm, a.getVM());
+        Assert.assertEquals(vm1, a.getVM());
         Assert.assertEquals(dest, a.getDestinationNode());
         Assert.assertEquals(5, a.getEnd() - a.getStart());
     }
@@ -96,12 +95,8 @@ public class BootVMModelTest {
     @Test
     public void testBootSequence() throws SolverException, ContradictionException {
         Mapping map = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID n2 = UUID.randomUUID();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
         map.addReadyVM(vm1);
         map.addReadyVM(vm2);
 

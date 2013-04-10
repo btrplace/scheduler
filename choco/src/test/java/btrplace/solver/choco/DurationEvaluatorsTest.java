@@ -20,17 +20,16 @@ package btrplace.solver.choco;
 
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.util.UUID;
 
 /**
  * Unit tests for {@link DurationEvaluator}.
  *
  * @author Fabien Hermenier
  */
-public class DurationEvaluatorsTest {
+public class DurationEvaluatorsTest implements PremadeElements {
 
     @Test
     public void testInstantiateAndIsRegistered() {
@@ -78,20 +77,20 @@ public class DurationEvaluatorsTest {
         DurationEvaluators d = new DurationEvaluators();
         DurationEvaluator ev = new ConstantDuration(7);
         d.register(btrplace.plan.event.MigrateVM.class, ev);
-        Assert.assertEquals(d.evaluate(btrplace.plan.event.MigrateVM.class, UUID.randomUUID()), 7);
+        Assert.assertEquals(d.evaluate(btrplace.plan.event.MigrateVM.class, vm1), 7);
     }
 
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testUnregister"}, expectedExceptions = {SolverException.class})
     public void testEvaluateUnregisteredAction() throws SolverException {
         DurationEvaluators d = new DurationEvaluators();
         d.unregister(btrplace.plan.event.MigrateVM.class);
-        d.evaluate(btrplace.plan.event.MigrateVM.class, UUID.randomUUID());
+        d.evaluate(btrplace.plan.event.MigrateVM.class, vm1);
     }
 
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testRegister"}, expectedExceptions = {SolverException.class})
     public void testEvaluateWithError() throws SolverException {
         DurationEvaluators d = new DurationEvaluators();
         d.register(btrplace.plan.event.MigrateVM.class, new ConstantDuration(-5));
-        d.evaluate(btrplace.plan.event.MigrateVM.class, UUID.randomUUID());
+        d.evaluate(btrplace.plan.event.MigrateVM.class, vm1);
     }
 }
