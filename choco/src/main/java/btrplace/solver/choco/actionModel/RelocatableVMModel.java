@@ -85,6 +85,8 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
     private int oldVMShutdownDuration;
 
+    private UUID src;
+
     /**
      * Make a new model.
      *
@@ -98,6 +100,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
         uuidPool = rp.getUUIDPool();
 
         int d = checkForReinstantiation();
+        src = rp.getSourceModel().getMapping().getVMLocation(e);
 
         CPSolver s = rp.getSolver();
         duration = s.createEnumIntVar(rp.makeVarLabel("relocatable(" + e + ").duration"), new int[]{0, d});
@@ -173,7 +176,6 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
-        UUID src = rp.getNode(cSlice.getHoster().getVal());
         if (cSlice.getHoster().getVal() != dSlice.getHoster().getVal()) {
             UUID dst = rp.getNode(dSlice.getHoster().getVal());
             if (!isReinstantiated()) {
@@ -255,5 +257,16 @@ public class RelocatableVMModel implements KeepRunningVMModel {
      */
     public boolean isReinstantiated() {
         return doReinstantiate;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+        b.append("relocate(vm=").append(vm)
+                .append(" ,from=").append(src)
+                .append("(").append(rp.getNode(src)).append(")")
+                .append(" ,to=").append(dSlice.getHoster().getDomain().pretty())
+                .append(")");
+        return b.toString();
     }
 }

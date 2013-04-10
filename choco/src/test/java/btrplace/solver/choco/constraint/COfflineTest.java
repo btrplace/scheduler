@@ -45,7 +45,7 @@ public class COfflineTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Offline b = new Offline(Collections.singleton(vm1));
+        Offline b = new Offline(Collections.singleton(n1));
         COffline c = new COffline(b);
         Assert.assertEquals(c.toString(), b.toString());
     }

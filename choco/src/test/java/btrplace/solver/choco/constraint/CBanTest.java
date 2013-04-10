@@ -47,8 +47,8 @@ public class CBanTest implements PremadeElements {
         Set<UUID> sVMs = new HashSet<UUID>();
         Set<UUID> sNodes = new HashSet<UUID>();
         for (int i = 0; i < vms.length; i++) {
-            nodes[i] = new UUID(0, i);
-            vms[i] = new UUID(1, i);
+            nodes[i] = new UUID(1, i);
+            vms[i] = new UUID(0, i);
             m.addOnlineNode(nodes[i]);
             m.addRunningVM(vms[i], nodes[i]);
             if (i % 2 == 0) {
@@ -66,9 +66,13 @@ public class CBanTest implements PremadeElements {
 
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
+        cra.setVerbosity(0);
         cra.setTimeLimit(-1);
         ReconfigurationPlan p = cra.solve(mo, s);
+        Assert.assertNotNull(p);
+        System.out.println(p);
         //Assert.assertEquals(SatConstraint.Sat.SATISFIED, b.isSatisfied(p.getResult()));
+
         Assert.assertEquals(3, p.getSize());
     }
 

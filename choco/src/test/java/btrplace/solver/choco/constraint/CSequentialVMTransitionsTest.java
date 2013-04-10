@@ -64,7 +64,7 @@ public class CSequentialVMTransitionsTest implements PremadeElements {
         List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
         Model mo = new DefaultModel(map);
         cstrs.add(new Running(Collections.singleton(vm1)));
-        cstrs.add(new Sleeping(Collections.singleton(vm2)));
+        cstrs.add(new Running(Collections.singleton(vm2)));
         cstrs.add(new Running(Collections.singleton(vm3)));
         cstrs.add(new Ready(Collections.singleton(vm4)));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();

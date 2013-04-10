@@ -122,7 +122,6 @@ public class MinMTTR implements ReconfigurationObjective {
         Map<IntDomainVar, UUID> pla = VMPlacementUtils.makePlacementMap(rp);
 
         s.addGoal(new AssignVar(new MovingVMs("movingVMs", rp, map, vmsToExclude), new RandomVMPlacement("movingVMs", rp, pla, true)));
-
         HostingVariableSelector selectForBads = new HostingVariableSelector("selectForBads", rp, ActionModelUtils.getDSlices(badActions), schedHeuristic);
         s.addGoal(new AssignVar(selectForBads, new RandomVMPlacement("selectForBads", rp, pla, true)));
 
@@ -140,11 +139,9 @@ public class MinMTTR implements ReconfigurationObjective {
             runActions[i++] = rp.getVMAction(vm);
         }
         HostingVariableSelector selectForRuns = new HostingVariableSelector("selectForRuns", rp, ActionModelUtils.getDSlices(runActions), schedHeuristic);
-
-
         s.addGoal(new AssignVar(selectForRuns, new RandomVMPlacement("selectForRuns", rp, pla, true)));
 
-        //s.addGoal(new AssignVar(new StartingNodes("startingNodes", rp, rp.getNodeActions()), new MinVal()));
+        s.addGoal(new AssignVar(new StartingNodes("startingNodes", rp, rp.getNodeActions()), new MinVal()));
         ///SCHEDULING PROBLEM
         s.addGoal(new AssignOrForbidIntVarVal(schedHeuristic, new MinVal()));
 

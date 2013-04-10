@@ -84,8 +84,8 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         for (int i = 0; i < 10; i++) {
-            UUID n = new UUID(0, i);
-            UUID vm = new UUID(1, i);
+            UUID n = new UUID(2, i);
+            UUID vm = new UUID(3, i);
             map.addOnlineNode(n);
             map.addRunningVM(vm, n);
         }
@@ -117,7 +117,7 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
         Assert.assertEquals(st.getSolvingDuration(), 0);
         Assert.assertTrue(st.getSolutions().isEmpty());
         Assert.assertFalse(st.isTimeout());
-
+        //cra.setVerbosity(3);
         ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>emptyList());
         Mapping res = p.getResult().getMapping();
         Assert.assertEquals(MappingUtils.usedNodes(res, EnumSet.of(MappingUtils.State.Runnings)).size(), 1);

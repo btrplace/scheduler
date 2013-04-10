@@ -40,6 +40,6 @@ public class LinearToAResourceDurationTest implements PremadeElements {
 
         d = new LinearToAResourceDuration(rc, 3, 4);
         Assert.assertEquals(d.evaluate(vm1), 13);
-        Assert.assertEquals(d.evaluate(vm2), 4);
+        Assert.assertEquals(d.evaluate(vm3), 4);
     }
 }

@@ -232,9 +232,9 @@ public class RelocatableVMModelTest implements PremadeElements {
 
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
-        map.addRunningVM(vm7, n1);
-        map.addRunningVM(vm8, n1);
-        map.addRunningVM(vm9, n2);
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm3, n2);
         ShareableResource rc = new ShareableResource("cpu", 10);
         rc.set(n1, 7);
         rc.set(vm1, 3);
