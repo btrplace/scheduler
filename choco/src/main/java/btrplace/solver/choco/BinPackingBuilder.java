@@ -18,12 +18,14 @@
 
 package btrplace.solver.choco;
 
+import btrplace.solver.choco.chocoUtil.BinPacking;
 import btrplace.solver.choco.chocoUtil.LightBinPacking;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -88,21 +90,16 @@ public class BinPackingBuilder {
 
         }
         //TODO: Items must always be in the same order.
-        solver.post(new LightBinPacking(names.toArray(new String[names.size()]), solver.getEnvironment(), loads.toArray(new IntDomainVar[loads.size()][]), iSizes, bins.get(0)));
-        /*for (int i = 0; i < loads.size(); i++) {
+        //solver.post(new LightBinPacking(names.toArray(new String[names.size()]), solver.getEnvironment(), loads.toArray(new IntDomainVar[loads.size()][]), iSizes, bins.get(0)));
+        for (int i = 0; i < loads.size(); i++) {
             IntDomainVar[] l = loads.get(i);
             IntDomainVar[] s = sizes.get(i);
             IntDomainVar[] b = bins.get(i);
-
-            int[] iSizes = new int[s.length];
-            int x = 0;
-            //Instantiate the item sizes to their LB
-            for (IntDomainVar ss : s) {
-                iSizes[x++] = ss.getInf();
-                ss.setVal(ss.getInf());
-            }
-            solver.post(new LightBinPacking(names.get(i), solver.getEnvironment(), new IntDomainVar[][]{l}, new int[][]{iSizes}, b));
-        }         */
+            System.err.println(Arrays.toString(l));
+            System.err.println(Arrays.toString(s));
+            System.err.println(Arrays.toString(b));
+            solver.post(new BinPacking(solver.getEnvironment(), l, s, b));
+        }
 
 
     }

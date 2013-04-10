@@ -54,6 +54,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
     private IntDomainVar stay;
 
+    private UUID src;
     /**
      * Make a new model.
      *
@@ -66,7 +67,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
         this.rp = rp;
 
         int d = rp.getDurationEvaluators().evaluate(MigrateVM.class, e);
-
+        src = rp.getSourceModel().getMapping().getVMLocation(e);
         CPSolver s = rp.getSolver();
         duration = s.createEnumIntVar(rp.makeVarLabel("relocatable(" + e + ").duration"), new int[]{0, d});
         cSlice = new SliceBuilder(rp, e, "relocatable(" + e + ").cSlice")
@@ -96,7 +97,6 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
-        UUID src = rp.getNode(cSlice.getHoster().getVal());
         if (cSlice.getHoster().getVal() != dSlice.getHoster().getVal()) {
             UUID dst = rp.getNode(dSlice.getHoster().getVal());
             int st = getStart().getVal();
@@ -154,5 +154,16 @@ public class RelocatableVMModel implements KeepRunningVMModel {
     @Override
     public IntDomainVar isStaying() {
         return stay;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+        b.append("relocate(vm=").append(vm)
+                                .append(" ,from=").append(src)
+                                .append("(").append(rp.getNode(src)).append(")")
+                                .append(" ,to=").append(dSlice.getHoster().getDomain().pretty())
+                                .append(")");
+        return b.toString();
     }
 }
