@@ -117,7 +117,7 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
         Assert.assertEquals(st.getSolvingDuration(), 0);
         Assert.assertTrue(st.getSolutions().isEmpty());
         Assert.assertFalse(st.isTimeout());
-
+        //cra.setVerbosity(3);
         ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>emptyList());
         Mapping res = p.getResult().getMapping();
         Assert.assertEquals(MappingUtils.usedNodes(res, EnumSet.of(MappingUtils.State.Runnings)).size(), 1);
