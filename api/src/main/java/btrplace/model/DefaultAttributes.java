@@ -87,7 +87,14 @@ public class DefaultAttributes implements Attributes, Cloneable {
             b.append(e.getKey());
             b.append(':');
             for (Map.Entry<String, Object> attr : e.getValue().entrySet()) {
-                b.append(" <").append(attr.getKey()).append(',').append(attr.getValue()).append('>');
+                b.append(" <").append(attr.getKey()).append(',');
+                Object val = attr.getValue();
+                if (val instanceof String) {
+                    b.append('"').append(val).append('"');
+                } else {
+                    b.append(val);
+                }
+                b.append('>');
             }
             b.append('\n');
         }
