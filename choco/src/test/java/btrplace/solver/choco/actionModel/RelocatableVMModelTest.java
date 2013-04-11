@@ -232,14 +232,14 @@ public class RelocatableVMModelTest implements PremadeElements {
 
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
+        map.addRunningVM(vm5, n1);
+        map.addRunningVM(vm6, n1);
+        map.addRunningVM(vm7, n2);
         ShareableResource rc = new ShareableResource("cpu", 10);
         rc.set(n1, 7);
-        rc.set(vm1, 3);
-        rc.set(vm2, 3);
-        rc.set(vm3, 5);
+        rc.set(vm5, 3);
+        rc.set(vm6, 3);
+        rc.set(vm7, 5);
 
         Model mo = new DefaultModel(map);
 
@@ -249,7 +249,6 @@ public class RelocatableVMModelTest implements PremadeElements {
         }
         Preserve pr = new Preserve(map.getAllVMs(), "cpu", 5);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.setVerbosity(1);
         cra.getDurationEvaluators().register(MigrateVM.class, new ConstantDuration(20));
 
         mo.attach(rc);

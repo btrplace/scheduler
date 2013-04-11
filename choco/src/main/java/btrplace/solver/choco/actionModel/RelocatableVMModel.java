@@ -68,7 +68,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
     private ReconfigurationProblem rp;
 
-    private UUID vm;
+    private final UUID vm;
 
     private UUID newVM;
 
@@ -82,8 +82,6 @@ public class RelocatableVMModel implements KeepRunningVMModel {
     private ForgeVMModel forgeModel;
 
     private int newVMBootDuration;
-
-    private int oldVMShutdownDuration;
 
     private UUID src;
 
@@ -99,18 +97,20 @@ public class RelocatableVMModel implements KeepRunningVMModel {
         this.rp = rp;
         uuidPool = rp.getUUIDPool();
 
-        int d = checkForReinstantiation();
         src = rp.getSourceModel().getMapping().getVMLocation(e);
 
+        int d = checkForReinstantiation();
+
         CPSolver s = rp.getSolver();
+
         duration = s.createEnumIntVar(rp.makeVarLabel("relocatable(" + e + ").duration"), new int[]{0, d});
         cSlice = new SliceBuilder(rp, e, "relocatable(" + e + ").cSlice")
                 .setHoster(rp.getNode(rp.getSourceModel().getMapping().getVMLocation(e)))
                 .setEnd(rp.makeDuration("relocatable(" + e + ").cSlice_end"))
                 .build();
 
-        dSlice = new SliceBuilder(rp, isReinstantiated() ? newVM : e, "relocatable(" + (isReinstantiated() ? newVM : e) + ").dSlice")
-                .setStart(rp.makeDuration("relocatable(" + (isReinstantiated() ? newVM : e) + ").dSlice_start"))
+        dSlice = new SliceBuilder(rp, vm, "relocatable(" + vm + ").dSlice")
+                .setStart(rp.makeDuration("relocatable(" + vm + ").dSlice_start"))
                 .build();
         IntDomainVar move = s.createBooleanVar(rp.makeVarLabel("relocatable(" + (isReinstantiated() ? newVM : e) + ").move"));
         s.post(ReifiedFactory.builder(move, s.neq(cSlice.getHoster(), dSlice.getHoster()), s));
@@ -152,7 +152,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
         Boolean cloneable = mo.getAttributes().getBoolean(vm, "clone");
         if (Boolean.TRUE.equals(cloneable)) {
             newVMBootDuration = dev.evaluate(BootVM.class, vm);
-            oldVMShutdownDuration = dev.evaluate(ShutdownVM.class, vm);
+            int oldVMShutdownDuration = dev.evaluate(ShutdownVM.class, vm);
             int reInstantD = dev.evaluate(ForgeVM.class, vm)
                     + newVMBootDuration
                     + oldVMShutdownDuration;
@@ -177,13 +177,14 @@ public class RelocatableVMModel implements KeepRunningVMModel {
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
         if (cSlice.getHoster().getVal() != dSlice.getHoster().getVal()) {
+            Action a;
             UUID dst = rp.getNode(dSlice.getHoster().getVal());
             if (!isReinstantiated()) {
                 int st = getStart().getVal();
                 int ed = getEnd().getVal();
-                MigrateVM a = new MigrateVM(vm, src, dst, st, ed);
-                rp.insertNotifyAllocations(a, vm, Action.Hook.post);
+                a = new MigrateVM(vm, src, dst, st, ed);
                 plan.add(a);
+                rp.insertNotifyAllocations(a, vm, Action.Hook.post);
             } else {
                 //forge the new VM from a template
                 if (!forgeModel.insertActions(plan)) {
@@ -192,6 +193,11 @@ public class RelocatableVMModel implements KeepRunningVMModel {
                 //Boot the new VM
                 int endForging = forgeModel.getEnd().getVal();
                 BootVM boot = new BootVM(forgeModel.getVM(), dst, endForging, endForging + newVMBootDuration);
+                //This notification is about the old VM. This is needed to satisfy potential constraints looking
+                //at the old VM UUID
+                rp.insertNotifyAllocations(boot, vm, Action.Hook.pre);
+                //We replicate the Event on the new VM
+                rp.insertNotifyAllocations(boot, newVM, Action.Hook.pre);
                 return plan.add(boot) && plan.add(new ShutdownVM(vm, src, boot.getEnd(), cSlice.getEnd().getVal()));
             }
         } else {
@@ -262,7 +268,9 @@ public class RelocatableVMModel implements KeepRunningVMModel {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        b.append("relocate(vm=").append(vm)
+        b.append("relocate(method=");
+        b.append(isReinstantiated() ? "re-instantiate" : "migrate");
+        b.append(" ,vm=").append(vm)
                 .append(" ,from=").append(src)
                 .append("(").append(rp.getNode(src)).append(")")
                 .append(" ,to=").append(dSlice.getHoster().getDomain().pretty())

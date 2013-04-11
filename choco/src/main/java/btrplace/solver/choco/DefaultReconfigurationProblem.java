@@ -516,10 +516,18 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     @Override
     public void insertNotifyAllocations(Action a, UUID vm, Action.Hook k) {
         for (CShareableResource rcm : resources) {
-            int prev = rcm.getSourceResource().get(vm);
-            int now = rcm.getVMsAllocation()[getVM(vm)].getInf();
+            int prev = 0;
+            if (rcm.getSourceResource().defined(vm)) {
+                prev = rcm.getSourceResource().get(vm);
+            }
+            int now = 0;
+            IntDomainVar nowI = rcm.getVMsAllocation(getVM(vm));
+            if (nowI != null) {
+                now = nowI.getInf();
+            }
             if (prev != now) {
-                a.addEvent(k, new AllocateEvent(vm, rcm.getResourceIdentifier(), now));
+                AllocateEvent ev = new AllocateEvent(vm, rcm.getResourceIdentifier(), now);
+                a.addEvent(k, ev);
             }
         }
     }
