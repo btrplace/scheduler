@@ -7,6 +7,8 @@ version ???????????
 - Complete the forgeVM model. It is now required to declare
   a template for the VMs to forge using a "template" attribute
   in the model
+- Fix bugs reported in #5, #10
+- Support VM relocation through a re-instantiation.
 
 version 0.28 - 29 Mar 2013
 ----------------------
