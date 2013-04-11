@@ -11,6 +11,21 @@ import btrplace.model.Model;
 public interface ReconfigurationPlanApplier {
 
     /**
+     * Add a listener that will be notified upon event termination.
+     *
+     * @param l the listener to add
+     */
+    void addEventCommittedListener(EventCommittedListener l);
+
+    /**
+     * Remove a listener.
+     *
+     * @param l the listener
+     * @return {@code true} iff the listener was removed
+     */
+    boolean removeEventCommittedListener(EventCommittedListener l);
+
+    /**
      * Apply a plan.
      *
      * @param p the plan to apply
