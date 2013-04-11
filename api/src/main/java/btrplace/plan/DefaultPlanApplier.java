@@ -33,7 +33,8 @@ public abstract class DefaultPlanApplier implements ReconfigurationPlanApplier, 
     }
 
     /**
-     * Propagate the event to every listener that was added with {@link #addEventCommittedListener(EventCommittedListener)}.
+     * Propagate the event to every listener added by
+     * {@link #addEventCommittedListener(EventCommittedListener)}.
      *
      * @param a the event to propagate
      */
