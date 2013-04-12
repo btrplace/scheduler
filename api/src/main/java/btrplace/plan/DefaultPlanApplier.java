@@ -38,11 +38,18 @@ public abstract class DefaultPlanApplier implements ReconfigurationPlanApplier, 
      *
      * @param a the event to propagate
      */
-    protected void fireAction(Event a) {
+    protected void fireAction(Action a) {
         for (EventCommittedListener l : listeners) {
             a.visit(this);
         }
     }
+
+    protected void fireEvent(Event e) {
+        for (EventCommittedListener l : listeners) {
+            e.visit(this);
+        }
+    }
+
 
     @Override
     public Object visit(SuspendVM a) {
@@ -58,13 +65,13 @@ public abstract class DefaultPlanApplier implements ReconfigurationPlanApplier, 
 
     @Override
     public Object visit(AllocateEvent a) {
-        fireAction(a);
+        fireEvent(a);
         return Boolean.TRUE;
     }
 
     @Override
     public Object visit(SubstitutedVMEvent a) {
-        fireAction(a);
+        fireEvent(a);
         return Boolean.TRUE;
     }
 

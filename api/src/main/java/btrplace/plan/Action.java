@@ -74,17 +74,18 @@ public abstract class Action implements Event {
      * @return {@code true} if the action and all the events were applied successfully
      */
     public boolean apply(Model i) {
-        List<Event> nots = getEvents(Hook.pre);
-        for (Event n : nots) {
-            if (!n.apply(i)) {
-                return false;
-            }
-        }
-        if (!applyAction(i)) {
-            return false;
-        }
-        nots = getEvents(Hook.post);
-        for (Event n : nots) {
+        return applyEvents(Hook.pre, i) && applyAction(i) && applyEvents(Hook.post, i);
+    }
+
+    /**
+     * Apply all the events linked to a given hook
+     *
+     * @param k the hook
+     * @param i the model to modify with the application of the events
+     * @return {@code true} iff all the events were applied successfully
+     */
+    public boolean applyEvents(Hook k, Model i) {
+        for (Event n : getEvents(k)) {
             if (!n.apply(i)) {
                 return false;
             }
