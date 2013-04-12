@@ -19,7 +19,7 @@ public abstract class DefaultPlanApplier implements ReconfigurationPlanApplier, 
      * Make a new applier.
      */
     public DefaultPlanApplier() {
-        listeners = new ArrayList<EventCommittedListener>();
+        listeners = new ArrayList<>();
     }
 
     @Override
@@ -33,93 +33,118 @@ public abstract class DefaultPlanApplier implements ReconfigurationPlanApplier, 
     }
 
     /**
-     * Propagate the event to every listener added by
+     * Propagate the action to every listener added by
      * {@link #addEventCommittedListener(EventCommittedListener)}.
+     * Events hooked on {@link btrplace.plan.Action.Hook#pre} are propagated.
+     * Then the real action is propagated. Finally, events hooked on {@link btrplace.plan.Action.Hook#post}
+     * are propagated
      *
      * @param a the event to propagate
      */
-    protected void fireAction(Action a) {
-        for (EventCommittedListener l : listeners) {
-            a.visit(this);
-        }
-    }
-
-    protected void fireEvent(Event e) {
-        for (EventCommittedListener l : listeners) {
+    public void fireAction(Action a) {
+        for (Event e : a.getEvents(Action.Hook.pre)) {
             e.visit(this);
         }
-    }
+        a.visit(this);
+        for (Event e : a.getEvents(Action.Hook.post)) {
+            e.visit(this);
+        }
 
+    }
 
     @Override
     public Object visit(SuspendVM a) {
-        fireAction(a);
+        for (EventCommittedListener l : listeners) {
+            l.committed(a);
+        }
         return Boolean.TRUE;
     }
 
     @Override
     public Object visit(Allocate a) {
-        fireAction(a);
+        for (EventCommittedListener l : listeners) {
+            l.committed(a);
+        }
         return Boolean.TRUE;
     }
 
     @Override
     public Object visit(AllocateEvent a) {
-        fireEvent(a);
+        for (EventCommittedListener l : listeners) {
+            l.committed(a);
+        }
         return Boolean.TRUE;
     }
 
     @Override
     public Object visit(SubstitutedVMEvent a) {
-        fireEvent(a);
+        for (EventCommittedListener l : listeners) {
+            l.committed(a);
+        }
         return Boolean.TRUE;
     }
 
     @Override
     public Object visit(BootNode a) {
-        fireAction(a);
+        for (EventCommittedListener l : listeners) {
+            l.committed(a);
+        }
         return Boolean.TRUE;
     }
 
     @Override
     public Object visit(BootVM a) {
-        fireAction(a);
+        for (EventCommittedListener l : listeners) {
+            l.committed(a);
+        }
         return Boolean.TRUE;
     }
 
     @Override
     public Object visit(ForgeVM a) {
-        fireAction(a);
+        for (EventCommittedListener l : listeners) {
+            l.committed(a);
+        }
         return Boolean.TRUE;
     }
 
     @Override
     public Object visit(KillVM a) {
-        fireAction(a);
+        for (EventCommittedListener l : listeners) {
+            l.committed(a);
+        }
         return Boolean.TRUE;
     }
 
     @Override
     public Object visit(MigrateVM a) {
-        fireAction(a);
+        for (EventCommittedListener l : listeners) {
+            l.committed(a);
+        }
         return Boolean.TRUE;
     }
 
     @Override
     public Object visit(ResumeVM a) {
-        fireAction(a);
+        for (EventCommittedListener l : listeners) {
+            l.committed(a);
+        }
         return Boolean.TRUE;
     }
 
     @Override
     public Object visit(ShutdownNode a) {
-        fireAction(a);
+        for (EventCommittedListener l : listeners) {
+            l.committed(a);
+        }
         return Boolean.TRUE;
     }
 
     @Override
     public Object visit(ShutdownVM a) {
-        fireAction(a);
+        for (EventCommittedListener l : listeners) {
+            l.committed(a);
+        }
         return Boolean.TRUE;
     }
 }
