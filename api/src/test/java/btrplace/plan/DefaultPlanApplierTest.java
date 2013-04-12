@@ -3,6 +3,7 @@ package btrplace.plan;
 import btrplace.model.Model;
 import btrplace.plan.event.*;
 import btrplace.test.PremadeElements;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -66,6 +67,25 @@ public class DefaultPlanApplierTest implements PremadeElements {
         ForgeVM fvm = new ForgeVM(vm1, 0, 5);
         app.fireAction(fvm);
         verify(ev, times(1)).committed(fvm);
+    }
+
+    @Test
+    public void testFireComposedAction() {
+        DefaultPlanApplier app = new MockApplier();
+        EventCommittedListener ev = mock(EventCommittedListener.class);
+        app.addEventCommittedListener(ev);
+
+        BootVM b = new BootVM(vm1, n1, 0, 5);
+        AllocateEvent pre = new AllocateEvent(vm1, "cpu", 7);
+        b.addEvent(Action.Hook.pre, pre);
+        SubstitutedVMEvent post = new SubstitutedVMEvent(vm1, vm4);
+        b.addEvent(Action.Hook.post, post);
+
+        InOrder order = inOrder(ev);
+        app.fireAction(b);
+        order.verify(ev).committed(pre);
+        order.verify(ev).committed(b);
+        order.verify(ev).committed(post);
     }
 
     class MockApplier extends DefaultPlanApplier {

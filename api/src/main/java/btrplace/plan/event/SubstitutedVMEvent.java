@@ -52,7 +52,7 @@ public class SubstitutedVMEvent implements VMEvent {
 
     @Override
     public Object visit(ActionVisitor v) {
-        return Boolean.TRUE;
+        return v.visit(this);
     }
 
     @Override
