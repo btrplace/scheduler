@@ -26,12 +26,17 @@ import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 /**
  * Unit tests for {@link MigrateVM}.
  *
  * @author Fabien Hermenier
  */
 public class MigrateVMTest implements PremadeElements {
+
+    static MigrateVM a = new MigrateVM(vm1, n1, n2, 3, 5);
 
     @Test
     public void testInstantiate() {
@@ -92,6 +97,12 @@ public class MigrateVMTest implements PremadeElements {
         Assert.assertNotSame(a, new MigrateVM(vm2, n1, n2, 3, 5));
         Assert.assertNotSame(a, new MigrateVM(vm1, n3, n2, 3, 5));
         Assert.assertNotSame(a, new MigrateVM(vm1, n1, n3, 3, 5));
+    }
 
+    @Test
+    public void testVisit() {
+        ActionVisitor visitor = mock(ActionVisitor.class);
+        a.visit(visitor);
+        verify(visitor).visit(a);
     }
 }
