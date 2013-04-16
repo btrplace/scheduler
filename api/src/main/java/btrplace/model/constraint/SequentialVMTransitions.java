@@ -93,9 +93,9 @@ public class SequentialVMTransitions extends SatConstraint {
 
     @Override
     public Sat isSatisfied(ReconfigurationPlan plan) {
-        Set<UUID> pending = new HashSet<UUID>(getInvolvedVMs()); //all the VMAction we expect
+        Set<UUID> pending = new HashSet<>(getInvolvedVMs()); //all the VMAction we expect
 
-        Map<UUID, Action> actions = new HashMap<UUID, Action>(); //The action associated to the VM if it is an action
+        Map<UUID, Action> actions = new HashMap<>(); //The action associated to the VM if it is an action
         //to consider
         for (Action a : plan) {
             if (a instanceof VMStateTransition) {

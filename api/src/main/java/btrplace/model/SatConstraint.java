@@ -19,6 +19,7 @@
 package btrplace.model;
 
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlanValidator;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -161,5 +162,14 @@ public abstract class SatConstraint {
      */
     public boolean isContinuous() {
         return continuous;
+    }
+
+    /**
+     * Get the validator to use to validate a plan with regards to the constraint.
+     *
+     * @return a non-null {@link ReconfigurationPlanValidator}
+     */
+    public ReconfigurationPlanValidator getValidator() {
+        throw new UnsupportedOperationException();
     }
 }

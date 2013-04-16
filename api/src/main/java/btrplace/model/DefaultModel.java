@@ -42,7 +42,7 @@ public class DefaultModel implements Model, Cloneable {
      */
     public DefaultModel(Mapping m) {
         this.cfg = m;
-        this.resources = new HashMap<String, ModelView>();
+        this.resources = new HashMap<>();
         attrs = new DefaultAttributes();
     }
 

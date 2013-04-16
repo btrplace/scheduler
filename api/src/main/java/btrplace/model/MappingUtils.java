@@ -56,7 +56,7 @@ public final class MappingUtils {
      * @return subset of node that may be empty
      */
     public static Set<UUID> usedNodes(Mapping cfg, EnumSet<State> wrt) {
-        Set<UUID> ns = new HashSet<UUID>();
+        Set<UUID> ns = new HashSet<>();
 
         if (wrt.contains(State.Runnings)) {
             for (UUID vm : cfg.getRunningVMs()) {
@@ -80,7 +80,7 @@ public final class MappingUtils {
      * @return a subset of node that may be empty
      */
     public static Set<UUID> unusedNodes(Mapping cfg, State wrt) {
-        Set<UUID> ns = new HashSet<UUID>();
+        Set<UUID> ns = new HashSet<>();
         for (UUID n : cfg.getOnlineNodes()) {
             if (wrt == State.Runnings && cfg.getRunningVMs(n).isEmpty()) {
                 ns.add(n);
@@ -174,8 +174,8 @@ public final class MappingUtils {
      * @return {@code true} iff all the mapping are disjoint
      */
     public static boolean areDisjoint(Mapping... cfgs) {
-        Set<UUID> nodes = new HashSet<UUID>();
-        Set<UUID> vms = new HashSet<UUID>();
+        Set<UUID> nodes = new HashSet<>();
+        Set<UUID> vms = new HashSet<>();
         for (Mapping cfg : cfgs) {
             Set<UUID> curNodes = cfg.getAllNodes();
             Set<UUID> curVMs = cfg.getAllVMs();

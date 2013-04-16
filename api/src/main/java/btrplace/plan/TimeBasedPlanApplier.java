@@ -26,7 +26,7 @@ public class TimeBasedPlanApplier extends DefaultPlanApplier {
     @Override
     public Model apply(ReconfigurationPlan p) {
         Model res = p.getOrigin().clone();
-        List<Action> actions = new ArrayList<Action>(p.getActions());
+        List<Action> actions = new ArrayList<>(p.getActions());
         Collections.sort(actions, startFirstComparator);
         for (Action a : actions) {
             if (!a.apply(res)) {

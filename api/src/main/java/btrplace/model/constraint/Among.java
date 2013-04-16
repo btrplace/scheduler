@@ -124,7 +124,7 @@ public class Among extends SatConstraint {
 
     @Override
     public Collection<UUID> getInvolvedNodes() {
-        Set<UUID> s = new HashSet<UUID>();
+        Set<UUID> s = new HashSet<>();
         for (Set<UUID> x : pGrps) {
             s.addAll(x);
         }

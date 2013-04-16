@@ -1,25 +1,36 @@
 package btrplace.plan;
 
-import btrplace.plan.event.*;
+import btrplace.plan.event.NotificationDispatcher;
+import btrplace.plan.event.ValidatorDispatcher;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A skeleton for {@link ReconfigurationPlanApplier} that provide the material
+ * A skeleton for {@link ReconfigurationPlanApplier}.
+ * It provides that provide the material
  * to propagate the notifications related to the termination of the actions.
  *
  * @author Fabien Hermenier
  */
-public abstract class DefaultPlanApplier implements ReconfigurationPlanApplier, ActionVisitor {
+public abstract class DefaultPlanApplier implements ReconfigurationPlanApplier {
 
     private List<EventCommittedListener> listeners;
+
+    private List<ReconfigurationPlanValidator> validators;
+
+    private NotificationDispatcher notificationDispatcher;
+
+    private ValidatorDispatcher validatorDispatcher;
 
     /**
      * Make a new applier.
      */
     public DefaultPlanApplier() {
         listeners = new ArrayList<>();
+        validators = new ArrayList<>();
+        notificationDispatcher = new NotificationDispatcher(listeners);
+        validatorDispatcher = new ValidatorDispatcher(validators);
     }
 
     @Override
@@ -32,119 +43,51 @@ public abstract class DefaultPlanApplier implements ReconfigurationPlanApplier, 
         return this.listeners.remove(l);
     }
 
+    @Override
+    public void addValidator(ReconfigurationPlanValidator v) {
+        this.validators.add(v);
+    }
+
+    @Override
+    public boolean removeValidator(ReconfigurationPlanValidator v) {
+        return validators.remove(v);
+    }
+
     /**
      * Propagate the action to every listener added by
      * {@link #addEventCommittedListener(EventCommittedListener)}.
-     * Events hooked on {@link btrplace.plan.Action.Hook#pre} are propagated.
+     * iff it is validated by all the validators declared by {@link #addValidator(ReconfigurationPlanValidator)}.
+     * <p/>
+     * Events hooked on {@link btrplace.plan.Action.Hook#pre} are propagated in first
      * Then the real action is propagated. Finally, events hooked on {@link btrplace.plan.Action.Hook#post}
      * are propagated
      *
      * @param a the event to propagate
+     * @return {@code true} iff the action has been allowed by all the validators.
      */
-    public void fireAction(Action a) {
+    public boolean fireAction(Action a) {
+
         for (Event e : a.getEvents(Action.Hook.pre)) {
-            e.visit(this);
+            if (Boolean.TRUE.equals(e.visit(validatorDispatcher))) {
+                e.visit(notificationDispatcher);
+            } else {
+                return false;
+            }
         }
-        a.visit(this);
+        if (Boolean.TRUE.equals(a.visit(validatorDispatcher))) {
+            a.visit(notificationDispatcher);
+        } else {
+            return false;
+        }
+
         for (Event e : a.getEvents(Action.Hook.post)) {
-            e.visit(this);
+            if (Boolean.TRUE.equals(e.visit(validatorDispatcher))) {
+                e.visit(notificationDispatcher);
+            } else {
+                return false;
+            }
         }
-
+        return true;
     }
 
-    @Override
-    public Object visit(SuspendVM a) {
-        for (EventCommittedListener l : listeners) {
-            l.committed(a);
-        }
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Object visit(Allocate a) {
-        for (EventCommittedListener l : listeners) {
-            l.committed(a);
-        }
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Object visit(AllocateEvent a) {
-        for (EventCommittedListener l : listeners) {
-            l.committed(a);
-        }
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Object visit(SubstitutedVMEvent a) {
-        for (EventCommittedListener l : listeners) {
-            l.committed(a);
-        }
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Object visit(BootNode a) {
-        for (EventCommittedListener l : listeners) {
-            l.committed(a);
-        }
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Object visit(BootVM a) {
-        for (EventCommittedListener l : listeners) {
-            l.committed(a);
-        }
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Object visit(ForgeVM a) {
-        for (EventCommittedListener l : listeners) {
-            l.committed(a);
-        }
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Object visit(KillVM a) {
-        for (EventCommittedListener l : listeners) {
-            l.committed(a);
-        }
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Object visit(MigrateVM a) {
-        for (EventCommittedListener l : listeners) {
-            l.committed(a);
-        }
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Object visit(ResumeVM a) {
-        for (EventCommittedListener l : listeners) {
-            l.committed(a);
-        }
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Object visit(ShutdownNode a) {
-        for (EventCommittedListener l : listeners) {
-            l.committed(a);
-        }
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Object visit(ShutdownVM a) {
-        for (EventCommittedListener l : listeners) {
-            l.committed(a);
-        }
-        return Boolean.TRUE;
-    }
 }

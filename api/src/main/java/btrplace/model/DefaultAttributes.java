@@ -33,13 +33,13 @@ public class DefaultAttributes implements Attributes, Cloneable {
      * Make a new empty list of attributes.
      */
     public DefaultAttributes() {
-        attrs = new HashMap<UUID, Map<String, Object>>();
+        attrs = new HashMap<>();
     }
 
     private boolean putObject(UUID e, String k, Object v) {
         Map<String, Object> m = attrs.get(e);
         if (m == null) {
-            m = new HashMap<String, Object>();
+            m = new HashMap<>();
             attrs.put(e, m);
         }
         return m.put(k, v) != null;
@@ -75,7 +75,7 @@ public class DefaultAttributes implements Attributes, Cloneable {
     public Attributes clone() {
         DefaultAttributes cpy = new DefaultAttributes();
         for (Map.Entry<UUID, Map<String, Object>> e : attrs.entrySet()) {
-            cpy.attrs.put(e.getKey(), new HashMap<String, Object>(e.getValue()));
+            cpy.attrs.put(e.getKey(), new HashMap<>(e.getValue()));
         }
         return cpy;
     }

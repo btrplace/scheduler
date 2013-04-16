@@ -58,7 +58,7 @@ public class Quarantine extends SatConstraint {
         }
         Model src = plan.getOrigin();
         Model mo = plan.getOrigin().clone();
-        Map<UUID, Set<UUID>> on = new HashMap<UUID, Set<UUID>>();
+        Map<UUID, Set<UUID>> on = new HashMap<>();
         for (UUID n : getInvolvedNodes()) {
             on.put(n, mo.getMapping().getRunningVMs(n));
         }
@@ -69,7 +69,7 @@ public class Quarantine extends SatConstraint {
             }
             //New VMs went to the quarantine ?
             for (UUID n : getInvolvedNodes()) {
-                Set<UUID> in = new HashSet<UUID>(mo.getMapping().getRunningVMs(n));
+                Set<UUID> in = new HashSet<>(mo.getMapping().getRunningVMs(n));
                 //New VMs went into the node. Violation
                 if (!on.get(n).containsAll(in)) {
                     return Sat.UNSATISFIED;

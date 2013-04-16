@@ -59,8 +59,8 @@ public class ElementComparator implements Comparator<UUID> {
      * @param asc {@code true} for an ascending comparison
      */
     public ElementComparator(ShareableResource rc, boolean asc) {
-        this.rcs = new ArrayList<ShareableResource>();
-        this.ascs = new ArrayList<Integer>();
+        this.rcs = new ArrayList<>();
+        this.ascs = new ArrayList<>();
 
         rcs.add(rc);
         ascs.add(asc ? 1 : -1);

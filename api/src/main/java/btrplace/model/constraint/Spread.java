@@ -66,7 +66,7 @@ public class Spread extends SatConstraint {
     @Override
     public Sat isSatisfied(Model i) {
         Mapping c = i.getMapping();
-        Set<UUID> used = new HashSet<UUID>();
+        Set<UUID> used = new HashSet<>();
         for (UUID vm : getInvolvedVMs()) {
             if (c.getRunningVMs().contains(vm) && !used.add(c.getVMLocation(vm))) {
                 return Sat.UNSATISFIED;
@@ -92,7 +92,7 @@ public class Spread extends SatConstraint {
             UUID destNode;
             if (a instanceof RunningVMPlacement) {
                 destNode = ((RunningVMPlacement) a).getDestinationNode();
-                Set<UUID> on = new HashSet<UUID>(cur.getMapping().getRunningVMs(destNode));
+                Set<UUID> on = new HashSet<>(cur.getMapping().getRunningVMs(destNode));
                 //If there is 2 VMs here that are involved in
                 //the constraint, it's a failure
                 on.retainAll(getInvolvedVMs());

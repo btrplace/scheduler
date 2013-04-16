@@ -21,6 +21,10 @@ package btrplace.model.constraint;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.view.ShareableResource;
+import btrplace.plan.ReconfigurationPlanValidator;
+import btrplace.plan.event.Allocate;
+import btrplace.plan.event.AllocateEvent;
+import btrplace.plan.event.DefaultReconfigurationPlanValidator;
 
 import java.util.Collections;
 import java.util.Set;
@@ -115,7 +119,7 @@ public class Preserve extends SatConstraint {
                 .append(", rc=").append(rc)
                 .append(", amount=").append(amount)
                 .append(", discrete")
-                .append(")").toString();
+                .append(')').toString();
     }
 
     @Override
@@ -124,6 +128,49 @@ public class Preserve extends SatConstraint {
             return super.setContinuous(b);
         }
         return !b;
+    }
+
+    @Override
+    public ReconfigurationPlanValidator getValidator() {
+        return new PChecker((Set<UUID>) getInvolvedVMs());
+    }
+
+    private class PChecker extends DefaultReconfigurationPlanValidator {
+
+        public PChecker(Set<UUID> vms) {
+            super(vms);
+        }
+
+        @Override
+        public boolean accept(AllocateEvent a) {
+            if (isTracked(a.getVM()) && a.getResourceId().equals(getResource())) {
+                return a.getAmount() < getAmount();
+            }
+            return true;
+        }
+
+        @Override
+        public boolean accept(Allocate a) {
+            if (a.getResourceId().equals(getResource()) && isTracked(a.getVM())) {
+                return a.getAmount() < getAmount();
+            }
+            return true;
+        }
+
+        @Override
+        public boolean accept(Model mo) {
+            ShareableResource r = (ShareableResource) mo.getView(ShareableResource.VIEW_ID_BASE + rc);
+            if (r == null) {
+                return false;
+            }
+            for (UUID vmId : getInvolvedVMs()) {
+                int v = r.get(vmId);
+                if (v < amount) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 }
 

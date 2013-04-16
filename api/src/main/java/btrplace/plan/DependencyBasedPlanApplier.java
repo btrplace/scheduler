@@ -28,14 +28,14 @@ public class DependencyBasedPlanApplier extends DefaultPlanApplier {
     public Model apply(ReconfigurationPlan p) {
         int nbCommitted = 0;
         ReconfigurationPlanMonitor rpm = new DefaultReconfigurationPlanMonitor(p);
-        Set<Action> feasible = new HashSet<Action>();
+        Set<Action> feasible = new HashSet<>();
         for (Action a : p.getActions()) {
             if (!rpm.isBlocked(a)) {
                 feasible.add(a);
             }
         }
         while (nbCommitted != p.getSize()) {
-            Set<Action> newFeasibles = new HashSet<Action>();
+            Set<Action> newFeasibles = new HashSet<>();
             for (Action a : feasible) {
                 Set<Action> s = rpm.commit(a);
                 if (s == null) {

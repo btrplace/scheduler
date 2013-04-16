@@ -67,7 +67,7 @@ public class ShareableResource implements ModelView, Cloneable, Comparator<UUID>
      * @param noValue the value to use to denote an undefined value
      */
     public ShareableResource(String id, int noValue) {
-        values = new HashMap<UUID, Integer>();
+        values = new HashMap<>();
         this.rcId = id;
         this.viewId = new StringBuilder(VIEW_ID_BASE).append(rcId).toString();
         this.noValue = noValue;
@@ -95,7 +95,7 @@ public class ShareableResource implements ModelView, Cloneable, Comparator<UUID>
      * @return a list of values.
      */
     public List<Integer> get(List<UUID> ids) {
-        List<Integer> res = new ArrayList<Integer>(ids.size());
+        List<Integer> res = new ArrayList<>(ids.size());
         for (UUID u : ids) {
             res.add(get(u));
         }

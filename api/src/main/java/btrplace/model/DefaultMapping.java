@@ -62,19 +62,19 @@ public class DefaultMapping implements Mapping, Cloneable {
      */
     public DefaultMapping() {
         nodeState = new Set[2];
-        nodeState[ONLINE_STATE] = new HashSet<UUID>();
-        nodeState[OFFLINE_STATE] = new HashSet<UUID>();
+        nodeState[ONLINE_STATE] = new HashSet<>();
+        nodeState[OFFLINE_STATE] = new HashSet<>();
 
         vmState = new Set[3];
-        vmState[RUNNING_STATE] = new HashSet<UUID>();
-        vmState[SLEEPING_STATE] = new HashSet<UUID>();
-        vmState[READY_STATE] = new HashSet<UUID>();
+        vmState[RUNNING_STATE] = new HashSet<>();
+        vmState[SLEEPING_STATE] = new HashSet<>();
+        vmState[READY_STATE] = new HashSet<>();
 
-        place = new HashMap<UUID, UUID>();
+        place = new HashMap<>();
 
         host = new Map[2];
-        host[RUNNING_STATE] = new HashMap<UUID, Set<UUID>>();
-        host[SLEEPING_STATE] = new HashMap<UUID, Set<UUID>>();
+        host[RUNNING_STATE] = new HashMap<>();
+        host[SLEEPING_STATE] = new HashMap<>();
 
     }
 
@@ -227,7 +227,7 @@ public class DefaultMapping implements Mapping, Cloneable {
     public Set<UUID> getSleepingVMs(UUID n) {
         Set<UUID> in = host[SLEEPING_STATE].get(n);
         if (in == null) {
-            return new HashSet<UUID>();
+            return new HashSet<>();
         }
         return in;
     }
@@ -236,7 +236,7 @@ public class DefaultMapping implements Mapping, Cloneable {
     public Set<UUID> getRunningVMs(UUID n) {
         Set<UUID> in = host[RUNNING_STATE].get(n);
         if (in == null) {
-            return new HashSet<UUID>();
+            return new HashSet<>();
         }
         return in;
     }
@@ -248,7 +248,7 @@ public class DefaultMapping implements Mapping, Cloneable {
 
     @Override
     public Set<UUID> getAllVMs() {
-        Set<UUID> vms = new HashSet<UUID>(
+        Set<UUID> vms = new HashSet<>(
                 vmState[READY_STATE].size() +
                         vmState[SLEEPING_STATE].size() +
                         vmState[RUNNING_STATE].size());
@@ -260,7 +260,7 @@ public class DefaultMapping implements Mapping, Cloneable {
 
     @Override
     public Set<UUID> getAllNodes() {
-        Set<UUID> ns = new HashSet<UUID>(
+        Set<UUID> ns = new HashSet<>(
                 nodeState[OFFLINE_STATE].size() +
                         nodeState[ONLINE_STATE].size());
         ns.addAll(nodeState[OFFLINE_STATE]);
@@ -275,7 +275,7 @@ public class DefaultMapping implements Mapping, Cloneable {
 
     @Override
     public Set<UUID> getRunningVMs(Collection<UUID> ns) {
-        Set<UUID> vms = new HashSet<UUID>();
+        Set<UUID> vms = new HashSet<>();
         for (UUID n : ns) {
             vms.addAll(getRunningVMs(n));
         }

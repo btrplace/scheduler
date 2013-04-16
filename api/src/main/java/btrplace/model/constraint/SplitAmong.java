@@ -80,7 +80,7 @@ public class SplitAmong extends SatConstraint {
 
     @Override
     public Collection<UUID> getInvolvedVMs() {
-        Set<UUID> s = new HashSet<UUID>();
+        Set<UUID> s = new HashSet<>();
         for (Set<UUID> x : vGrps) {
             s.addAll(x);
         }
@@ -89,7 +89,7 @@ public class SplitAmong extends SatConstraint {
 
     @Override
     public Collection<UUID> getInvolvedNodes() {
-        Set<UUID> s = new HashSet<UUID>();
+        Set<UUID> s = new HashSet<>();
         for (Set<UUID> x : pGrps) {
             s.addAll(x);
         }
@@ -135,7 +135,7 @@ public class SplitAmong extends SatConstraint {
     @Override
     public Sat isSatisfied(Model i) {
         Mapping m = i.getMapping();
-        Set<Set<UUID>> pUsed = new HashSet<Set<UUID>>(); //The pgroups that are used
+        Set<Set<UUID>> pUsed = new HashSet<>(); //The pgroups that are used
         for (Set<UUID> vgrp : vGrps) {
             Set<UUID> choosedGroup = null;
 

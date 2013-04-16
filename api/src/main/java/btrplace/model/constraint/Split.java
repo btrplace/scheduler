@@ -66,7 +66,7 @@ public class Split extends SatConstraint {
 
     @Override
     public Collection<UUID> getInvolvedVMs() {
-        Set<UUID> s = new HashSet<UUID>();
+        Set<UUID> s = new HashSet<>();
         for (Set<UUID> set : sets) {
             s.addAll(set);
         }
@@ -100,9 +100,9 @@ public class Split extends SatConstraint {
     @Override
     public Sat isSatisfied(Model i) {
         Mapping m = i.getMapping();
-        List<Set<UUID>> used = new ArrayList<Set<UUID>>(sets.size()); //The pgroups that are used
+        List<Set<UUID>> used = new ArrayList<>(sets.size()); //The pgroups that are used
         for (Set<UUID> vgrp : sets) {
-            Set<UUID> myGroup = new HashSet<UUID>();
+            Set<UUID> myGroup = new HashSet<>();
 
             //Get the servers used by this group of VMs
             for (UUID vmId : vgrp) {

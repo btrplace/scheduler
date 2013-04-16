@@ -25,6 +25,8 @@ import btrplace.model.constraint.Ready;
 import btrplace.model.constraint.Running;
 import btrplace.model.constraint.Sleeping;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlanApplier;
+import btrplace.plan.ReconfigurationPlanValidator;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.constraint.SatConstraintMapper;
 import btrplace.solver.choco.objective.minMTTR.MinMTTR;
@@ -230,6 +232,28 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
                 return false;
             }
 
+        }
+        return true;
+    }
+
+    private boolean checkSatisfaction(ReconfigurationPlan p) {
+        ReconfigurationPlanApplier applier = p.getReconfigurationApplier();
+        List<ReconfigurationPlanValidator> validators = new ArrayList<>();
+        for (SatConstraint cstr : cstrs) {
+            validators.add(cstr.getValidator());
+        }
+        for (ReconfigurationPlanValidator v : validators) {
+            applier.addValidator(v);
+        }
+        Model mo = applier.apply(p);
+        if (mo == null) {
+            return false;
+        }
+        for (ReconfigurationPlanValidator v : validators) {
+            if (!v.accept(mo)) {
+                return false;
+            }
+            applier.removeValidator(v);
         }
         return true;
     }
