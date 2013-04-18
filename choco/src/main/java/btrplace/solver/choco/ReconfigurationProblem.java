@@ -334,6 +334,8 @@ public interface ReconfigurationProblem {
      */
     void insertNotifyAllocations(Action a, UUID vm, Action.Hook k);
 
+    void insertVMSubstitution(Action a, UUID oldVM, UUID newVM, Action.Hook k);
+
     /**
      * Get the builder that handle the scheduling part of the problem.
      *

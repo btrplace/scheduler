@@ -5,8 +5,12 @@ package btrplace.examples;
  *
  * @author Fabien Hermenier
  */
-public class Launcher {
+public final class Launcher {
 
+    /**
+     * CLI. No instantiation.
+     */
+    private Launcher() {}
 
     /**
      * CLI. First value of the array should be the name of a class inheriting from {@link btrplace.examples.Example}.

@@ -21,11 +21,13 @@ package btrplace.solver.choco;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.ModelView;
+import btrplace.model.view.ShareableResource;
 import btrplace.plan.Action;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Allocate;
 import btrplace.plan.event.AllocateEvent;
+import btrplace.plan.event.SubstitutedVMEvent;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
 import btrplace.solver.choco.chocoUtil.AliasedCumulatives;
@@ -516,7 +518,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     @Override
     public void insertNotifyAllocations(Action a, UUID vm, Action.Hook k) {
         for (CShareableResource rcm : resources) {
-            int prev = 0;
+            int prev = -1;
             if (rcm.getSourceResource().defined(vm)) {
                 prev = rcm.getSourceResource().get(vm);
             }
@@ -525,11 +527,20 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             if (nowI != null) {
                 now = nowI.getInf();
             }
-            if (prev != now) {
+            if (prev < 0 || prev != now) {
                 AllocateEvent ev = new AllocateEvent(vm, rcm.getResourceIdentifier(), now);
                 a.addEvent(k, ev);
             }
         }
+    }
+
+    @Override
+    public void insertVMSubstitution(Action a, UUID oldVM, UUID newVM, Action.Hook k) {
+     /*   for (CShareableResource rcm : resources) {
+            ShareableResource sr = rcm.getSourceResource();
+            sr.set(newVM, sr.get(oldVM));
+        }
+        a.addEvent(Action.Hook.pre, new SubstitutedVMEvent(oldVM, newVM));  */
     }
 
     private boolean checkConsistency(ReconfigurationPlan p) {

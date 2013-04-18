@@ -22,10 +22,7 @@ import btrplace.model.Attributes;
 import btrplace.model.Model;
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.event.BootVM;
-import btrplace.plan.event.ForgeVM;
-import btrplace.plan.event.MigrateVM;
-import btrplace.plan.event.ShutdownVM;
+import btrplace.plan.event.*;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.*;
 import btrplace.solver.choco.chocoUtil.FastIFFEq;
@@ -195,8 +192,9 @@ public class RelocatableVMModel implements KeepRunningVMModel {
                 BootVM boot = new BootVM(forgeModel.getVM(), dst, endForging, endForging + newVMBootDuration);
                 //This notification is about the old VM. This is needed to satisfy potential constraints looking
                 //at the old VM UUID
-                rp.insertNotifyAllocations(boot, vm, Action.Hook.pre);
+                //rp.insertNotifyAllocations(boot, vm, Action.Hook.pre);
                 //We replicate the Event on the new VM
+                boot.addEvent(Action.Hook.pre, new SubstitutedVMEvent(vm, newVM));
                 rp.insertNotifyAllocations(boot, newVM, Action.Hook.pre);
                 return plan.add(boot) && plan.add(new ShutdownVM(vm, src, boot.getEnd(), cSlice.getEnd().getVal()));
             }

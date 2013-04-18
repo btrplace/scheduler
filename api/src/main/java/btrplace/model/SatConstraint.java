@@ -165,7 +165,7 @@ public abstract class SatConstraint {
     }
 
     /**
-     * Get the validator to use to validate a plan with regards to the constraint.
+     * Get the validator used to check if a plan satisfies the constraint.
      *
      * @return a non-null {@link ReconfigurationPlanValidator}
      */

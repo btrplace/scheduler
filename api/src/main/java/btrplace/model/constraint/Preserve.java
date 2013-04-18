@@ -132,12 +132,15 @@ public class Preserve extends SatConstraint {
 
     @Override
     public ReconfigurationPlanValidator getValidator() {
-        return new PChecker((Set<UUID>) getInvolvedVMs());
+        return new PreserveChecker((Set<UUID>) getInvolvedVMs());
     }
 
-    private class PChecker extends DefaultReconfigurationPlanValidator {
+    /**
+     * Checker for the constraint.
+     */
+    private class PreserveChecker extends DefaultReconfigurationPlanValidator {
 
-        public PChecker(Set<UUID> vms) {
+        public PreserveChecker(Set<UUID> vms) {
             super(vms);
         }
 

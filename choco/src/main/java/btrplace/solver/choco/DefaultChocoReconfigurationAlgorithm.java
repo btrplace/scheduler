@@ -210,7 +210,8 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
         ReconfigurationPlan p = rp.solve(timeLimit, optimize);
         if (p != null) {
-            assert checkSatisfaction(p, cstrs);
+            //assert checkSatisfaction(p, cstrs);
+            assert checkSatisfaction2(p, cstrs);
             return p;
         } else {
             return null;
@@ -236,7 +237,8 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         return true;
     }
 
-    private boolean checkSatisfaction(ReconfigurationPlan p) {
+    private boolean checkSatisfaction2(ReconfigurationPlan p, Collection<SatConstraint> cstrs) {
+        System.err.println(p);
         ReconfigurationPlanApplier applier = p.getReconfigurationApplier();
         List<ReconfigurationPlanValidator> validators = new ArrayList<>();
         for (SatConstraint cstr : cstrs) {

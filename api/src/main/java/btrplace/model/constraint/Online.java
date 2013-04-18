@@ -21,8 +21,12 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.plan.ReconfigurationPlanValidator;
+import btrplace.plan.event.DefaultReconfigurationPlanValidator;
+import btrplace.plan.event.ShutdownNode;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -85,5 +89,35 @@ public class Online extends SatConstraint {
     @Override
     public boolean setContinuous(boolean b) {
         return !b;
+    }
+
+    @Override
+    public ReconfigurationPlanValidator getValidator() {
+        return new OnlineChecker();
+    }
+
+    private class OnlineChecker extends DefaultReconfigurationPlanValidator {
+
+        public OnlineChecker() {
+            super(Collections.<UUID>emptySet());
+        }
+        @Override
+        public boolean accept(ShutdownNode a) {
+            if (getInvolvedNodes().contains(a.getNode())) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public boolean accept(Model mo) {
+            Mapping c = mo.getMapping();
+            for (UUID n : getInvolvedNodes()) {
+                if (!c.getOnlineNodes().contains(n)) {
+                        return false;
+                }
+            }
+            return true;
+        }
     }
 }
