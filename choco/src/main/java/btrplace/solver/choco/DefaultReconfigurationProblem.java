@@ -354,7 +354,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         vmsCountOnNodes = new IntDomainVar[nodes.length];
         int nbVMs = vms.length;
         for (int i = 0; i < vmsCountOnNodes.length; i++) {
-            vmsCountOnNodes[i] = solver.createBoundIntVar(makeVarLabel("nbVMsOn('" + getNode(i) + "')"), 0, nbVMs);
+            vmsCountOnNodes[i] = solver.createBoundIntVar(makeVarLabel("nbVMsOn('", getNode(i), "')"), 0, nbVMs);
         }
     }
 
@@ -612,8 +612,15 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public String makeVarLabel(String lbl) {
-        return useLabels ? lbl : "";
+    public String makeVarLabel(Object... lbl) {
+        if (useLabels) {
+            StringBuilder b = new StringBuilder();
+            for (Object s : lbl) {
+                b.append(s);
+            }
+            return b.toString();
+        }
+        return "";
     }
 
     @Override

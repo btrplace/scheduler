@@ -122,8 +122,8 @@ public class ShutdownableNodeModel implements NodeActionModel {
             - If the node is hosting running VMs, it is necessarily online
             - If the node is offline, it is sure it cannot host any running VMs
         */
-        isOnline = s.createBooleanVar(rp.makeVarLabel(new StringBuilder("shutdownableNode(").append(e).append(").online").toString()));
-        isOffline = new BoolVarNot(s, new StringBuilder("shutdownableNode(").append(e).append(").offline").toString(), (BooleanVarImpl) isOnline);
+        isOnline = s.createBooleanVar(rp.makeVarLabel("shutdownableNode(", e, ").online"));
+        isOffline = new BoolVarNot(s, rp.makeVarLabel("shutdownableNode(", e, ").offline"), (BooleanVarImpl) isOnline);
         s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNode(e)], 0));
 
         /*
@@ -131,7 +131,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
         * D = St * d;
         */
         int d = rp.getDurationEvaluators().evaluate(ShutdownNode.class, e);
-        duration = s.createEnumIntVar(rp.makeVarLabel(new StringBuilder("shutdownableNode(").append(e).append(").duration").toString()), new int[]{0, d});
+        duration = s.createEnumIntVar(rp.makeVarLabel("shutdownableNode(", e, ").duration"), new int[]{0, d});
         s.post(new FastIFFEq(isOnline, duration, 0));
 
         //The moment of shutdown action start

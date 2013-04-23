@@ -293,7 +293,7 @@ public interface ReconfigurationProblem {
      * @param lbl the label to make
      * @return the label that will be used in practice
      */
-    String makeVarLabel(String lbl);
+    String makeVarLabel(Object... lbl);
 
     /**
      * Check if variables labelling is enabled.
