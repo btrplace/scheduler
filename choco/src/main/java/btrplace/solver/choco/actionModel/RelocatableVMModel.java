@@ -26,10 +26,13 @@ import btrplace.plan.event.ForgeVM;
 import btrplace.plan.event.MigrateVM;
 import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.*;
+import btrplace.solver.choco.DurationEvaluators;
+import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.Slice;
+import btrplace.solver.choco.SliceBuilder;
 import btrplace.solver.choco.chocoUtil.ChocoUtils;
-import btrplace.solver.choco.chocoUtil.FastIFFEq;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.integer.channeling.BooleanChanneling;
 import choco.cp.solver.constraints.reified.ReifiedFactory;
 import choco.cp.solver.variables.integer.BoolVarNot;
 import choco.cp.solver.variables.integer.BooleanVarImpl;
@@ -59,10 +62,6 @@ import java.util.UUID;
  */
 public class RelocatableVMModel implements KeepRunningVMModel {
 
-    private UUIDPool uuidPool;
-
-    private boolean doReinstantiate = false;
-
     private Slice cSlice, dSlice;
 
     private ReconfigurationProblem rp;
@@ -75,6 +74,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
     private IntDomainVar stay;
 
+    private int migrateDuration, reInstantiateDuration;
 
     private UUID src;
 
@@ -115,8 +115,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
         stay = new BoolVarNot(s, rp.makeVarLabel("relocatable(", e, ").stay"), (BooleanVarImpl) move);
 
-        s.post(new FastIFFEq(stay, duration, 0));
-
+        //s.post(new FastIFFEq(stay, duration, 0));
         s.post(s.leq(duration, cSlice.getDuration()));
         s.post(s.leq(duration, dSlice.getDuration()));
         s.post(s.eq(cSlice.getEnd(), s.plus(dSlice.getStart(), duration)));
@@ -126,10 +125,14 @@ public class RelocatableVMModel implements KeepRunningVMModel {
         s.post(s.leq(dSlice.getEnd(), rp.getEnd()));
 
         //If we allow re-instantiate, then the dSlice duration will start necessarily after the forgeDuration
-        if (doReinstantiate) {
-            //TODO: not very compatible with the ForgeActionModel but forge is useless for the moment
+        s.post(new BooleanChanneling(stay, duration, 0));
+
+        if (!getRelocationMethod().isInstantiated()) {
+            //TODO: not very compliant with the ForgeActionModel but forge is useless for the moment
             int forgeD = rp.getDurationEvaluators().evaluate(ForgeVM.class, vm);
             s.post(s.geq(this.dSlice.getStart(), ChocoUtils.mult(s, method, forgeD)));
+
+            s.post(new BooleanChanneling(method, duration, reInstantiateDuration));
         }
         state = s.makeConstantIntVar(1);
     }
@@ -139,12 +142,12 @@ public class RelocatableVMModel implements KeepRunningVMModel {
         Boolean cloneable = mo.getAttributes().getBoolean(vm, "clone");
         DurationEvaluators dev = rp.getDurationEvaluators();
         CPSolver s = rp.getSolver();
-        int migrateDuration = dev.evaluate(MigrateVM.class, vm);
+        migrateDuration = dev.evaluate(MigrateVM.class, vm);
         if (Boolean.TRUE.equals(cloneable) && mo.getAttributes().isSet(vm, "template")) {
-            method = rp.getSolver().createBooleanVar("relocation_method(" + vm + ")");
+            method = rp.getSolver().createBooleanVar(rp.makeVarLabel("relocation_method(", vm, ")"));
             int bootDuration = dev.evaluate(BootVM.class, vm);
             int shutdownDuration = dev.evaluate(ShutdownVM.class, vm);
-            int reInstantiateDuration = bootDuration + shutdownDuration;
+            reInstantiateDuration = bootDuration + shutdownDuration;
             duration = s.createEnumIntVar(rp.makeVarLabel("relocatable(", vm, ").duration"),
                     new int[]{0, Math.min(migrateDuration, reInstantiateDuration),
                             Math.max(migrateDuration, reInstantiateDuration)});
@@ -173,7 +176,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
                         rp.getLogger().error("Unable to get a new UUID to plan the re-instantiate of VM {}", vm);
                         return false;
                     }
-                    ForgeVM fvm = new ForgeVM(newVM, dSlice.getEnd().getVal() - dev.evaluate(ForgeVM.class, vm), dSlice.getEnd().getVal());
+                    ForgeVM fvm = new ForgeVM(newVM, dSlice.getStart().getVal() - dev.evaluate(ForgeVM.class, vm), dSlice.getStart().getVal());
                     //forge the new VM from a template
                     plan.add(fvm);
                     //Boot the new VM

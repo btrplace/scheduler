@@ -23,10 +23,10 @@ import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.NodeActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.chocoUtil.FastIFFEq;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.ElementV;
+import choco.cp.solver.constraints.integer.channeling.BooleanChanneling;
 import choco.cp.solver.variables.integer.BoolVarNot;
 import choco.cp.solver.variables.integer.BooleanVarImpl;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -132,7 +132,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
         */
         int d = rp.getDurationEvaluators().evaluate(ShutdownNode.class, e);
         duration = s.createEnumIntVar(rp.makeVarLabel("shutdownableNode(", e, ").duration"), new int[]{0, d});
-        s.post(new FastIFFEq(isOnline, duration, 0));
+        s.post(new BooleanChanneling(isOnline, duration, 0));
 
         //The moment of shutdown action start
         /* As */
