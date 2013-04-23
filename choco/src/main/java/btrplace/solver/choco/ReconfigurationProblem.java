@@ -210,10 +210,10 @@ public interface ReconfigurationProblem {
     /**
      * Create a variable that indicate the placement of an element on a node.
      *
-     * @param n the variable label
+     * @param n the variable label as a possible concatenation of objects
      * @return a variable
      */
-    IntDomainVar makeHostVariable(String n);
+    IntDomainVar makeHostVariable(Object... n);
 
     /**
      * Create a variable that indicate the current placement of a VM.
@@ -240,10 +240,10 @@ public interface ReconfigurationProblem {
     /**
      * Create a variable denoting a duration.
      *
-     * @param n the variable label
+     * @param n the variable label. The toString() representation of the objects will be used
      * @return the created variable.
      */
-    IntDomainVar makeDuration(String n);
+    IntDomainVar makeDuration(Object... n);
 
     /**
      * Create a variable that indicate a moment.

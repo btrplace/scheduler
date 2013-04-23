@@ -67,7 +67,7 @@ public class SliceBuilder {
      */
     public Slice build() throws SolverException {
         if (hoster == null) {
-            hoster = rp.makeHostVariable(lblPrefix + "_hoster");
+            hoster = rp.makeHostVariable(lblPrefix, "_hoster");
         }
         if (start == null) {
             start = rp.getStart();

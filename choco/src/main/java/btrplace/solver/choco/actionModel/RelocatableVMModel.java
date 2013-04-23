@@ -107,7 +107,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
                 .build();
 
         dSlice = new SliceBuilder(rp, vm, "relocatable(" + vm + ").dSlice")
-                .setStart(rp.makeDuration("relocatable(" + vm + ").dSlice_start"))
+                .setStart(rp.makeDuration("relocatable(", vm, ").dSlice_start"))
                 .build();
 
         IntDomainVar move = s.createBooleanVar(rp.makeVarLabel("relocatable(", vm, ").move"));

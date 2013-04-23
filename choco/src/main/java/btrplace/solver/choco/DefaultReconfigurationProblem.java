@@ -576,8 +576,16 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public IntDomainVar makeHostVariable(String n) {
-        return solver.createEnumIntVar(useLabels ? n : "", 0, nodes.length - 1);
+    public IntDomainVar makeHostVariable(Object... n) {
+        String str = "";
+        if (useLabels) {
+            StringBuilder b = new StringBuilder();
+            for (Object o : n) {
+                b.append(o);
+            }
+            str = b.toString();
+        }
+        return solver.createEnumIntVar(str, 0, nodes.length - 1);
     }
 
     @Override
@@ -599,8 +607,16 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public IntDomainVar makeDuration(String n) {
-        return solver.createBoundIntVar(useLabels ? n : "", 0, end.getSup());
+    public IntDomainVar makeDuration(Object... n) {
+        String str = "";
+        if (useLabels) {
+            StringBuilder b = new StringBuilder();
+            for (Object s : n) {
+                b.append(s);
+            }
+            str = b.toString();
+        }
+        return solver.createBoundIntVar(str, 0, end.getSup());
     }
 
     @Override
