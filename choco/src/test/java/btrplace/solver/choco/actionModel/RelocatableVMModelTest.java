@@ -220,7 +220,6 @@ public class RelocatableVMModelTest implements PremadeElements {
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
         am.getDSlice().getHoster().setVal(rp.getNode(n2));
         new MinMTTR().inject(rp);
-        ChocoLogging.setVerbosity(Verbosity.SEARCH);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);
@@ -263,7 +262,6 @@ public class RelocatableVMModelTest implements PremadeElements {
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
         am.getDSlice().getHoster().setVal(rp.getNode(n2));
         new MinMTTR().inject(rp);
-        ChocoLogging.setVerbosity(Verbosity.SEARCH);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);
@@ -301,7 +299,6 @@ public class RelocatableVMModelTest implements PremadeElements {
         am.getRelocationMethod().setVal(1);
         am.getDSlice().getHoster().setVal(rp.getNode(n2));
         new MinMTTR().inject(rp);
-        ChocoLogging.setVerbosity(Verbosity.SEARCH);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);
@@ -339,7 +336,6 @@ public class RelocatableVMModelTest implements PremadeElements {
         am.getRelocationMethod().setVal(0);
         am.getDSlice().getHoster().setVal(rp.getNode(n2));
         new MinMTTR().inject(rp);
-        ChocoLogging.setVerbosity(Verbosity.SEARCH);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);
