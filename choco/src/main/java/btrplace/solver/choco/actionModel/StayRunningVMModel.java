@@ -72,7 +72,6 @@ public class StayRunningVMModel implements KeepRunningVMModel {
     public boolean insertActions(ReconfigurationPlan plan) {
         int st = dSlice.getStart().getVal();
         UUID src = rp.getNode(cSlice.getHoster().getVal());
-        rp.insertAllocateAction(plan, vm, src, st, st);
         return true;
     }
 

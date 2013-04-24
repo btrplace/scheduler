@@ -55,7 +55,7 @@ public class CFence implements ChocoSatConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) {
 
-        Set<UUID> runnings = new HashSet<UUID>();
+        Set<UUID> runnings = new HashSet<>();
         for (UUID vm : cstr.getInvolvedVMs()) {
             if (rp.getFutureRunningVMs().contains(vm)) {
                 runnings.add(vm);
@@ -76,7 +76,7 @@ public class CFence implements ChocoSatConstraint {
                 }
             } else {
                 //Transformation to a ban constraint that disallow all the other nodes
-                Set<UUID> otherNodes = new HashSet<UUID>(rp.getNodes().length - nodes.size());
+                Set<UUID> otherNodes = new HashSet<>(rp.getNodes().length - nodes.size());
                 for (UUID n : rp.getNodes()) {
                     if (!nodes.contains(n)) {
                         otherNodes.add(n);
@@ -92,7 +92,7 @@ public class CFence implements ChocoSatConstraint {
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-        Set<UUID> bad = new HashSet<UUID>();
+        Set<UUID> bad = new HashSet<>();
         for (UUID vm : cstr.getInvolvedVMs()) {
             if (map.getRunningVMs().contains(vm) && !cstr.getInvolvedNodes().contains(map.getVMLocation(vm))) {
                 bad.add(vm);

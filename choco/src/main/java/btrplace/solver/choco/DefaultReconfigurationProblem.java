@@ -21,16 +21,12 @@ package btrplace.solver.choco;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.ModelView;
-import btrplace.plan.Action;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.event.Allocate;
-import btrplace.plan.event.AllocateEvent;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
 import btrplace.solver.choco.chocoUtil.AliasedCumulatives;
 import btrplace.solver.choco.chocoUtil.AliasedCumulativesBuilder;
-import btrplace.solver.choco.view.CShareableResource;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.BranchAndBound;
 import choco.cp.solver.search.integer.branching.AssignVar;
@@ -109,8 +105,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private ModelViewMapper viewMapper;
 
-    private List<CShareableResource> resources;
-
     private UUIDPool uuidPool;
 
     /**
@@ -139,11 +133,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                                          Set<UUID> runningsToConsider,
                                          boolean label
     ) throws SolverException {
-        this.ready = new HashSet<UUID>(ready);
-        this.runnings = new HashSet<UUID>(running);
-        this.sleepings = new HashSet<UUID>(sleeping);
-        this.killed = new HashSet<UUID>(killed);
-        this.manageable = new HashSet<UUID>(runningsToConsider);
+        this.ready = new HashSet<>(ready);
+        this.runnings = new HashSet<>(running);
+        this.sleepings = new HashSet<>(sleeping);
+        this.killed = new HashSet<>(killed);
+        this.manageable = new HashSet<>(runningsToConsider);
         this.useLabels = label;
         this.uuidPool = uuidPool;
         model = m;
@@ -156,8 +150,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         start = solver.makeConstantIntVar("RP.start", 0);
         end = solver.createBoundIntVar("RP.end", 0, DEFAULT_MAX_TIME);
 
-        this.views = new HashMap<String, ChocoModelView>();
-        resources = new ArrayList<CShareableResource>();
+        this.views = new HashMap();
 
         fillElements();
 
@@ -245,8 +238,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         for (ActionModel action : nodeActions) {
             action.insertActions(plan);
         }
+
         for (ActionModel action : vmActions) {
             action.insertActions(plan);
+        }
+
+        for (ChocoModelView view : views.values()) {
+            view.insertActions(this, plan);
         }
 
         assert plan.isApplyable() : "The following plan cannot be applied:\n" + plan;
@@ -307,7 +305,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private void addContinuousResourceCapacities() {
         TIntArrayList cUse = new TIntArrayList();
-        List<IntDomainVar> iUse = new ArrayList<IntDomainVar>();
+        List<IntDomainVar> iUse = new ArrayList<>();
         for (int j = 0; j < getVMs().length; j++) {
             VMActionModel a = vmActions[j];
             if (a.getDSlice() != null) {
@@ -329,7 +327,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * @throws SolverException if an error occurred
      */
     private void makeViews() throws SolverException {
-        views = new HashMap<String, ChocoModelView>(model.getViews().size());
+        views = new HashMap<>(model.getViews().size());
         for (ModelView rc : model.getViews()) {
             ChocoModelView vv = viewMapper.map(this, rc);
             if (vv == null) {
@@ -340,9 +338,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 throw new SolverException(model, "Cannot use the implementation '" + vv.getIdentifier() +
                         "' implementation for '" + rc.getIdentifier() + "'."
                         + "The '" + in.getIdentifier() + "' implementation is already used");
-            }
-            if (vv instanceof CShareableResource) {
-                resources.add((CShareableResource) vv);
             }
         }
     }
@@ -369,11 +364,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private void fillElements() {
 
-        Set<UUID> allVMs = new HashSet<UUID>(model.getMapping().getAllVMs());
+        Set<UUID> allVMs = new HashSet<>(model.getMapping().getAllVMs());
         allVMs.addAll(ready); //The only VMs that may not appear in the mapping
 
         vms = new UUID[allVMs.size()];
-        revVMs = new TObjectIntHashMap<UUID>(allVMs.size(), 0.5f, -1); //0.5f is the default load factor
+        revVMs = new TObjectIntHashMap<>(allVMs.size(), 0.5f, -1); //0.5f is the default load factor
 
         int i = 0;
         for (UUID vm : allVMs) {
@@ -382,7 +377,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
 
         nodes = new UUID[model.getMapping().getAllNodes().size()];
-        revNodes = new TObjectIntHashMap<UUID>(nodes.length, 0.5f, -1);
+        revNodes = new TObjectIntHashMap<>(nodes.length, 0.5f, -1);
         i = 0;
         for (UUID nId : model.getMapping().getAllNodes()) {
             nodes[i] = nId;
@@ -498,38 +493,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
         UUID nodeId = model.getMapping().getVMLocation(id);
         return nodeId == null ? -1 : getNode(nodeId);
-    }
-
-    @Override
-    public void insertAllocateAction(ReconfigurationPlan plan, UUID vm, UUID node, int st, int ed) {
-        for (CShareableResource rcm : resources) {
-            String rcId = rcm.getResourceIdentifier();
-            int prev = rcm.getSourceResource().get(vm);
-            int now = rcm.getVMsAllocation()[getVM(vm)].getInf();
-            if (prev != now) {
-                Allocate a = new Allocate(vm, node, rcId, now, st, ed);
-                plan.add(a);
-            }
-        }
-    }
-
-    @Override
-    public void insertNotifyAllocations(Action a, UUID vm, Action.Hook k) {
-        for (CShareableResource rcm : resources) {
-            int prev = 0;
-            if (rcm.getSourceResource().defined(vm)) {
-                prev = rcm.getSourceResource().get(vm);
-            }
-            int now = 0;
-            IntDomainVar nowI = rcm.getVMsAllocation(getVM(vm));
-            if (nowI != null) {
-                now = nowI.getInf();
-            }
-            if (prev != now) {
-                AllocateEvent ev = new AllocateEvent(vm, rcm.getResourceIdentifier(), now);
-                a.addEvent(k, ev);
-            }
-        }
     }
 
     private boolean checkConsistency(ReconfigurationPlan p) {

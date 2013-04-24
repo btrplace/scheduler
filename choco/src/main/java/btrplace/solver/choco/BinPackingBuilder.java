@@ -50,10 +50,10 @@ public class BinPackingBuilder {
      */
     public BinPackingBuilder(ReconfigurationProblem rp) {
         this.rp = rp;
-        loads = new ArrayList<IntDomainVar[]>();
-        bins = new ArrayList<IntDomainVar[]>();
-        sizes = new ArrayList<IntDomainVar[]>();
-        names = new ArrayList<String>();
+        loads = new ArrayList<>();
+        bins = new ArrayList<>();
+        sizes = new ArrayList<>();
+        names = new ArrayList<>();
 
     }
 

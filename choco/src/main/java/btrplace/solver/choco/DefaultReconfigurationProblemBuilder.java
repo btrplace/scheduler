@@ -162,7 +162,7 @@ public class DefaultReconfigurationProblemBuilder {
             viewMapper = new ModelViewMapper();
         }
         if (manageable == null) {
-            manageable = new HashSet<UUID>();
+            manageable = new HashSet<>();
             manageable.addAll(model.getMapping().getAllVMs());
         }
         if (uuidPool == null) {

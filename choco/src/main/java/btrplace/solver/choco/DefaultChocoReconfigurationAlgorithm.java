@@ -134,12 +134,12 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         //Build the RP. As VM state management is not possible
         //We extract VM-state related constraints first.
         //For other constraint, we just create the right choco constraint
-        Set<UUID> toRun = new HashSet<UUID>();
-        Set<UUID> toForge = new HashSet<UUID>();
-        Set<UUID> toKill = new HashSet<UUID>();
-        Set<UUID> toSleep = new HashSet<UUID>();
+        Set<UUID> toRun = new HashSet<>();
+        Set<UUID> toForge = new HashSet<>();
+        Set<UUID> toKill = new HashSet<>();
+        Set<UUID> toSleep = new HashSet<>();
 
-        List<ChocoSatConstraint> cConstraints = new ArrayList<ChocoSatConstraint>();
+        List<ChocoSatConstraint> cConstraints = new ArrayList<>();
         for (SatConstraint cstr : cstrs) {
             if (cstr instanceof Running) {
                 toRun.addAll(cstr.getInvolvedVMs());
@@ -169,7 +169,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
                 .setViewMapper(viewMapper)
                 .setDurationEvaluatators(durationEvaluators);
         if (repair) {
-            Set<UUID> toManage = new HashSet<UUID>();
+            Set<UUID> toManage = new HashSet<>();
             for (ChocoSatConstraint cstr : cConstraints) {
                 toManage.addAll(cstr.getMisPlacedVMs(i));
             }

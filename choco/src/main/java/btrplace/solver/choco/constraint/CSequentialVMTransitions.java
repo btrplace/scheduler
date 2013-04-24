@@ -60,7 +60,7 @@ public class CSequentialVMTransitions implements ChocoSatConstraint {
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
         List<UUID> seq = cstr.getInvolvedVMs();
 
-        List<ActionModel> ams = new ArrayList<ActionModel>();
+        List<ActionModel> ams = new ArrayList<>();
         for (UUID vmId : seq) {
             ActionModel am = rp.getVMAction(vmId);
 

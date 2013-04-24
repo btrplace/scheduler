@@ -52,14 +52,14 @@ public class MinMTTR implements ReconfigurationObjective {
      * Make a new objective.
      */
     public MinMTTR() {
-        costConstraints = new ArrayList<SConstraint>();
+        costConstraints = new ArrayList<>();
     }
 
     @Override
     public void inject(ReconfigurationProblem rp) throws SolverException {
         this.rp = rp;
         costConstraints.clear();
-        List<IntDomainVar> mttrs = new ArrayList<IntDomainVar>();
+        List<IntDomainVar> mttrs = new ArrayList<>();
         for (ActionModel m : rp.getVMActions()) {
             mttrs.add(m.getEnd());
         }
@@ -84,7 +84,7 @@ public class MinMTTR implements ReconfigurationObjective {
         Model mo = rp.getSourceModel();
         Mapping map = mo.getMapping();
 
-        List<ActionModel> actions = new ArrayList<ActionModel>();
+        List<ActionModel> actions = new ArrayList<>();
         Collections.addAll(actions, rp.getVMActions());
         OnStableNodeFirst schedHeuristic = new OnStableNodeFirst("stableNodeFirst", rp, actions, this);
 
@@ -97,14 +97,14 @@ public class MinMTTR implements ReconfigurationObjective {
             }
         }
 
-        Set<UUID> onGoodNodes = new HashSet<UUID>(map.getRunningVMs());
+        Set<UUID> onGoodNodes = new HashSet<>(map.getRunningVMs());
         onGoodNodes.removeAll(onBadNodes);
 
-        List<VMActionModel> goodActions = new ArrayList<VMActionModel>();
+        List<VMActionModel> goodActions = new ArrayList<>();
         for (UUID vm : onGoodNodes) {
             goodActions.add(rp.getVMAction(vm));
         }
-        List<VMActionModel> badActions = new ArrayList<VMActionModel>();
+        List<VMActionModel> badActions = new ArrayList<>();
         for (UUID vm : onBadNodes) {
             badActions.add(rp.getVMAction(vm));
         }
@@ -112,7 +112,7 @@ public class MinMTTR implements ReconfigurationObjective {
         CPSolver s = rp.getSolver();
 
         //Get the VMs to move for exclusion issue
-        Set<UUID> vmsToExclude = new HashSet<UUID>(rp.getManageableVMs());
+        Set<UUID> vmsToExclude = new HashSet<>(rp.getManageableVMs());
         for (Iterator<UUID> ite = vmsToExclude.iterator(); ite.hasNext(); ) {
             UUID vm = ite.next();
             if (!(map.getRunningVMs().contains(vm) && rp.getFutureRunningVMs().contains(vm))) {
@@ -130,7 +130,7 @@ public class MinMTTR implements ReconfigurationObjective {
         s.addGoal(new AssignVar(selectForGoods, new RandomVMPlacement("selectForGoods", rp, pla, true)));
 
         //VMs to run
-        Set<UUID> vmsToRun = new HashSet<UUID>(map.getReadyVMs());
+        Set<UUID> vmsToRun = new HashSet<>(map.getReadyVMs());
         vmsToRun.removeAll(rp.getFutureReadyVMs());
 
         VMActionModel[] runActions = new VMActionModel[vmsToRun.size()];

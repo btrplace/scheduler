@@ -68,11 +68,11 @@ public class CAmong implements ChocoSatConstraint {
         int nextGrp = -1;
         int curGrp = -1;
 
-        List<Set<UUID>> groups = new ArrayList<Set<UUID>>();
+        List<Set<UUID>> groups = new ArrayList<>();
         groups.addAll(cstr.getGroupsOfNodes());
 
         //Browse every VM, check if one is already placed and isolate future runnings
-        Set<UUID> runnings = new HashSet<UUID>();
+        Set<UUID> runnings = new HashSet<>();
         Mapping src = rp.getSourceModel().getMapping();
         for (UUID vm : cstr.getInvolvedVMs()) {
             if (rp.getFutureRunningVMs().contains(vm)) { //The VM will be running
@@ -111,7 +111,7 @@ public class CAmong implements ChocoSatConstraint {
         } else {
             if (groups.size() == 1 && !groups.iterator().next().equals(rp.getSourceModel().getMapping().getAllNodes())) {
                 //Only 1 group of nodes, it's just a fence constraint
-                new CFence(new Fence(new HashSet<UUID>(runnings), groups.get(0))).inject(rp);
+                new CFence(new Fence(new HashSet<>(runnings), groups.get(0))).inject(rp);
                 vmGrpId = rp.getSolver().makeConstantIntVar(rp.makeVarLabel("among#pGrp"), 0);
             } else {
                 //Now, we create a variable to indicate on which group of nodes the VMs will be
@@ -119,7 +119,7 @@ public class CAmong implements ChocoSatConstraint {
                     vmGrpId = rp.getSolver().createEnumIntVar(rp.makeVarLabel("among#pGrp"), 0, groups.size() - 1);
                     //grp: A table to indicate the group each node belong to, -1 for no group
                     int[] grps = new int[rp.getNodes().length];
-                    Set<UUID> possibleNodes = new HashSet<UUID>();
+                    Set<UUID> possibleNodes = new HashSet<>();
                     for (int i = 0; i < grps.length; i++) {
                         UUID n = rp.getNodes()[i];
                         int idx = getGroup(n);
@@ -129,7 +129,7 @@ public class CAmong implements ChocoSatConstraint {
                         }
                     }
                     //In any case, the VMs cannot go to nodes that are in no groups
-                    new CFence(new Fence(runnings, new HashSet<UUID>(possibleNodes))).inject(rp);
+                    new CFence(new Fence(runnings, new HashSet<>(possibleNodes))).inject(rp);
                     //We link the VM placement variable with the group variable
                     for (UUID vm : runnings) {
                         IntDomainVar assign = rp.getVMAction(vm).getDSlice().getHoster();
@@ -166,7 +166,7 @@ public class CAmong implements ChocoSatConstraint {
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         if (!cstr.isSatisfied(m).equals(SatConstraint.Sat.SATISFIED)) {
-            return new HashSet<UUID>(cstr.getInvolvedVMs());
+            return new HashSet<>(cstr.getInvolvedVMs());
         }
         return Collections.emptySet();
     }

@@ -184,7 +184,6 @@ public class RelocatableVMModel implements KeepRunningVMModel {
                 int ed = getEnd().getVal();
                 a = new MigrateVM(vm, src, dst, st, ed);
                 plan.add(a);
-                rp.insertNotifyAllocations(a, vm, Action.Hook.post);
             } else {
                 //forge the new VM from a template
                 if (!forgeModel.insertActions(plan)) {
@@ -195,14 +194,10 @@ public class RelocatableVMModel implements KeepRunningVMModel {
                 BootVM boot = new BootVM(forgeModel.getVM(), dst, endForging, endForging + newVMBootDuration);
                 //This notification is about the old VM. This is needed to satisfy potential constraints looking
                 //at the old VM UUID
-                rp.insertNotifyAllocations(boot, vm, Action.Hook.pre);
-                //We replicate the Event on the new VM
-                rp.insertNotifyAllocations(boot, newVM, Action.Hook.pre);
                 return plan.add(boot) && plan.add(new ShutdownVM(vm, src, boot.getEnd(), cSlice.getEnd().getVal()));
             }
         } else {
             int st = dSlice.getStart().getVal();
-            rp.insertAllocateAction(plan, vm, src, st, st);
             if (doReinstantiate) {
                 uuidPool.release(newVM);
             }

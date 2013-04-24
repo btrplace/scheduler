@@ -58,7 +58,7 @@ public class CRunning implements ChocoSatConstraint {
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
-        Set<UUID> bad = new HashSet<UUID>();
+        Set<UUID> bad = new HashSet<>();
         Mapping map = m.getMapping();
         for (UUID vm : cstr.getInvolvedVMs()) {
             if (!map.getRunningVMs().contains(vm)) {

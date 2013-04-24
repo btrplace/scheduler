@@ -18,7 +18,6 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootVM;
 import btrplace.solver.SolverException;
@@ -90,7 +89,6 @@ public class BootVMModel implements VMActionModel {
         UUID node = rp.getNode(dSlice.getHoster().getVal());
         BootVM a = new BootVM(vm, node, start.getVal(), end.getVal());
         plan.add(a);
-        rp.insertNotifyAllocations(a, vm, Action.Hook.pre);
         return true;
     }
 

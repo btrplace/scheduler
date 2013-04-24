@@ -19,7 +19,6 @@
 package btrplace.solver.choco;
 
 import btrplace.model.Model;
-import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.chocoUtil.AliasedCumulativesBuilder;
@@ -310,29 +309,6 @@ public interface ReconfigurationProblem {
      * @return a set of VMs identifier
      */
     Set<UUID> getManageableVMs();
-
-    /**
-     * Insert {@link btrplace.plan.event.Allocate} actions if the amount of
-     * resources allocated to a VM has changed.
-     * The action schedule must be known in advance
-     *
-     * @param vm   the VM identifier
-     * @param node the identifier of the node that is currently hosting the VM
-     * @param st   the moment that action starts
-     * @param ed   the moment the action ends
-     */
-    void insertAllocateAction(ReconfigurationPlan plan, UUID vm, UUID node, int st, int ed);
-
-
-    /**
-     * Insert {@link btrplace.plan.event.AllocateEvent} notifications if the amount of
-     * resources allocated to a VM has changed.
-     *
-     * @param a  the action on which the notification have to be inserted
-     * @param vm the VM identifier
-     * @param k  the hook for the notifications
-     */
-    void insertNotifyAllocations(Action a, UUID vm, Action.Hook k);
 
     /**
      * Get the builder that handle the scheduling part of the problem.

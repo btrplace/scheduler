@@ -112,7 +112,7 @@ public class CSplitAmong implements ChocoSatConstraint {
 
         Mapping map = m.getMapping();
 
-        Set<UUID> bad = new HashSet<UUID>();
+        Set<UUID> bad = new HashSet<>();
         for (Set<UUID> vms : cstr.getGroupsOfVMs()) {
             int grp = -1;
             for (UUID vm : vms) {

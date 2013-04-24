@@ -18,7 +18,6 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ResumeVM;
 import btrplace.solver.SolverException;
@@ -91,7 +90,6 @@ public class ResumeVMModel implements VMActionModel {
         UUID src = rp.getSourceModel().getMapping().getVMLocation(vm);
         UUID dst = rp.getNode(dSlice.getHoster().getVal());
         ResumeVM a = new ResumeVM(vm, src, dst, st, ed);
-        rp.insertNotifyAllocations(a, vm, Action.Hook.pre);
         plan.add(a);
         return true;
     }

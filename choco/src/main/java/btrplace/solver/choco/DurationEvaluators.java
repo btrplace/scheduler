@@ -39,7 +39,7 @@ public class DurationEvaluators {
      * Make a new mapper.
      */
     public DurationEvaluators() {
-        durations = new HashMap<Class<? extends Action>, DurationEvaluator>();
+        durations = new HashMap<>();
 
 
         //Default constructors

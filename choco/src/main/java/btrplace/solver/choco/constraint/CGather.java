@@ -49,7 +49,7 @@ public class CGather implements ChocoSatConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) {
-        List<Slice> dSlices = new ArrayList<Slice>();
+        List<Slice> dSlices = new ArrayList<>();
         for (UUID vm : cstr.getInvolvedVMs()) {
             VMActionModel a = rp.getVMAction(vm);
             Slice dSlice = a.getDSlice();
@@ -132,7 +132,7 @@ public class CGather implements ChocoSatConstraint {
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         if (!cstr.isSatisfied(m).equals(SatConstraint.Sat.SATISFIED)) {
-            return new HashSet<UUID>(cstr.getInvolvedVMs());
+            return new HashSet<>(cstr.getInvolvedVMs());
         }
         return Collections.emptySet();
     }

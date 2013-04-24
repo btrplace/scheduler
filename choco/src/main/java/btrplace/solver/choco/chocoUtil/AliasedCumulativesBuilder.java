@@ -69,14 +69,14 @@ public class AliasedCumulativesBuilder {
     public AliasedCumulativesBuilder(ReconfigurationProblem rp) {
         this.rp = rp;
 
-        List<Slice> dS = new ArrayList<Slice>();
-        List<Slice> cS = new ArrayList<Slice>();
+        List<Slice> dS = new ArrayList<>();
+        List<Slice> cS = new ArrayList<>();
 
-        cUsages = new ArrayList<int[]>();
-        dUsages = new ArrayList<IntDomainVar[]>();
-        aliases = new ArrayList<int[]>();
+        cUsages = new ArrayList<>();
+        dUsages = new ArrayList<>();
+        aliases = new ArrayList<>();
         capacities = new TIntArrayList();
-        List<int[]> linked = new ArrayList<int[]>();
+        List<int[]> linked = new ArrayList<>();
         int dIdx = 0, cIdx = 0;
 
         for (VMActionModel a : rp.getVMActions()) {
@@ -151,7 +151,7 @@ public class AliasedCumulativesBuilder {
      */
     public List<AliasedCumulatives> getConstraints() {
         CPSolver s = rp.getSolver();
-        List<AliasedCumulatives> cstrs = new ArrayList<AliasedCumulatives>();
+        List<AliasedCumulatives> cstrs = new ArrayList<>();
 
 
         for (int i = 0; i < aliases.size(); i++) {

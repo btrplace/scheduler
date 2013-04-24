@@ -39,7 +39,7 @@ public class ModelViewMapper {
      * Make a new mapper.
      */
     public ModelViewMapper() {
-        builders = new HashMap<Class<? extends ModelView>, ChocoModelViewBuilder>();
+        builders = new HashMap<>();
         builders.put(ShareableResource.class, new CShareableResource.Builder());
     }
 

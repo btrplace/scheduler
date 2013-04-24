@@ -101,8 +101,8 @@ public class CShareableResource implements ChocoModelView {
 
         //Bin packing for the node vmAllocation
         CPSolver s = rp.getSolver();
-        List<IntDomainVar> notNullUsage = new ArrayList<IntDomainVar>();
-        List<IntDomainVar> hosters = new ArrayList<IntDomainVar>();
+        List<IntDomainVar> notNullUsage = new ArrayList<>();
+        List<IntDomainVar> hosters = new ArrayList<>();
 
         vmAllocation = new IntDomainVar[rp.getVMs().length];
         for (int i = 0; i < vmAllocation.length; i++) {
@@ -433,7 +433,7 @@ public class CShareableResource implements ChocoModelView {
         //The slice scheduling constraint that is necessary
         //TODO: a slice on both the real and the raw resource usage ?
         TIntArrayList cUse = new TIntArrayList();
-        List<IntDomainVar> dUse = new ArrayList<IntDomainVar>();
+        List<IntDomainVar> dUse = new ArrayList<>();
 
         for (UUID vmId : rp.getVMs()) {
             VMActionModel a = rp.getVMAction(vmId);

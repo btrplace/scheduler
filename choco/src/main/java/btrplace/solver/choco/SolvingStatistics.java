@@ -115,7 +115,7 @@ public class SolvingStatistics {
         this.maxDuration = timeout;
         this.timeout = to;
         this.doOptimize = doOptimize;
-        solutions = new TreeSet<SolutionStatistics>(solutionsCmp);
+        solutions = new TreeSet<>(solutionsCmp);
         this.coreRPBuildDuration = coreRPBuildDuration;
         this.speRPDuration = speRPDuration;
     }

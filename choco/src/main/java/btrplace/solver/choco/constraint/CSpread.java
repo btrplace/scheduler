@@ -52,7 +52,7 @@ public class CSpread implements ChocoSatConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) {
 
-        List<IntDomainVar> onlyRunnings = new ArrayList<IntDomainVar>();
+        List<IntDomainVar> onlyRunnings = new ArrayList<>();
         for (UUID vmId : cstr.getInvolvedVMs()) {
             if (rp.getFutureRunningVMs().contains(vmId)) {
                 VMActionModel a = rp.getVMAction(vmId);
@@ -117,8 +117,8 @@ public class CSpread implements ChocoSatConstraint {
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
-        Map<UUID, Set<UUID>> spots = new HashMap<UUID, Set<UUID>>();
-        Set<UUID> bad = new HashSet<UUID>();
+        Map<UUID, Set<UUID>> spots = new HashMap<>();
+        Set<UUID> bad = new HashSet<>();
         Mapping map = m.getMapping();
         for (UUID vm : cstr.getInvolvedVMs()) {
             UUID h = map.getVMLocation(vm);
