@@ -21,10 +21,7 @@ package btrplace.solver.choco.actionModel;
 import btrplace.model.Model;
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.event.BootVM;
-import btrplace.plan.event.ForgeVM;
-import btrplace.plan.event.MigrateVM;
-import btrplace.plan.event.ShutdownVM;
+import btrplace.plan.event.*;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DurationEvaluators;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -170,7 +167,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
                 plan.add(a);
             } else {
                 try {
-                    UUID newVM = rp.getUUIDPool().request();
+                    UUID newVM = rp.cloneVM(vm);
                     if (newVM == null) {
                         rp.getLogger().error("Unable to get a new UUID to plan the re-instantiate of VM {}", vm);
                         return false;
@@ -180,7 +177,8 @@ public class RelocatableVMModel implements KeepRunningVMModel {
                     plan.add(fvm);
                     //Boot the new VM
                     int endForging = fvm.getEnd();
-                    BootVM boot = new BootVM(newVM, dst, endForging, endForging + dev.evaluate(BootVM.class, vm));
+                    BootVM boot = new BootVM(newVM, dst, endForging, endForging + dev.evaluate(BootVM.class, newVM));
+                    boot.addEvent(Action.Hook.pre, new SubstitutedVMEvent(vm, newVM));
                     return plan.add(boot) && plan.add(new ShutdownVM(vm, src, boot.getEnd(), cSlice.getEnd().getVal()));
                 } catch (SolverException ex) {
                     rp.getLogger().error(ex.getMessage());

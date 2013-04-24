@@ -20,6 +20,8 @@ package btrplace.solver.choco;
 
 import btrplace.plan.ReconfigurationPlan;
 
+import java.util.UUID;
+
 /**
  * Interface denoting the Choco implementation of a {@link btrplace.model.ModelView}.
  *
@@ -50,4 +52,6 @@ public interface ChocoModelView {
      * @return {@code true} iff the insertion succeeded
      */
     boolean insertActions(ReconfigurationProblem rp, ReconfigurationPlan p);
+
+    boolean cloneVM(UUID vm, UUID clone);
 }

@@ -59,6 +59,11 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
         public boolean insertActions(ReconfigurationProblem rp, ReconfigurationPlan p) {
             throw new UnsupportedOperationException();
         }
+
+        @Override
+        public boolean cloneVM(UUID vm, UUID clone) {
+            throw new UnsupportedOperationException();
+        }
     }
 
     public class MockView implements ModelView {

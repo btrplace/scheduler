@@ -359,4 +359,6 @@ public interface ReconfigurationProblem {
      * @return the pool
      */
     UUIDPool getUUIDPool();
+
+    UUID cloneVM(UUID vm);
 }

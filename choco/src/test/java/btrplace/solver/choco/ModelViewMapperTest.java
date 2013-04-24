@@ -26,6 +26,8 @@ import btrplace.solver.choco.view.CShareableResource;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.UUID;
+
 /**
  * Unit tests for {@link ModelViewMapper}.
  *
@@ -80,6 +82,11 @@ public class ModelViewMapperTest {
 
         @Override
         public boolean insertActions(ReconfigurationProblem rp, ReconfigurationPlan p) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean cloneVM(UUID vm, UUID clone) {
             throw new UnsupportedOperationException();
         }
     }

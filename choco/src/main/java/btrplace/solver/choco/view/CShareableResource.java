@@ -40,9 +40,7 @@ import choco.kernel.solver.variables.real.RealIntervalConstant;
 import choco.kernel.solver.variables.real.RealVar;
 import gnu.trove.TIntArrayList;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Specify, for a given resource, the physical resource usage associated to each server,
@@ -70,6 +68,9 @@ public class CShareableResource implements ChocoModelView {
 
     private Model source;
 
+    private Map<UUID, UUID> references;
+    private Map<UUID, UUID> clones;
+
     /**
      * The default value of ratio is not logical to detect an unchanged value
      */
@@ -84,6 +85,8 @@ public class CShareableResource implements ChocoModelView {
     public CShareableResource(ReconfigurationProblem rp, ShareableResource rc) {
         this.rc = rc;
         this.rp = rp;
+        this.references = new HashMap<>();
+        this.clones = new HashMap<>();
         solver = rp.getSolver();
         this.source = rp.getSourceModel();
         UUID[] nodes = rp.getNodes();
@@ -332,14 +335,18 @@ public class CShareableResource implements ChocoModelView {
 
             if (srcMapping.getRunningVMs().contains(vm) && destNode.equals(srcMapping.getVMLocation(vm))) {
                 //Was running and stay on the same node
+
+                //Check if the VM has been cloned
+
                 insertAllocateAction(p, vm, destNode, dSlice.getStart().getVal());
             } else {
                 //TODO: not constant time operation. Maybe a big failure
+                UUID dVM = clones.containsKey(vm) ? clones.get(vm) : vm;
                 for (Action a : p) {
                     if (a instanceof RunningVMPlacement) {
                         RunningVMPlacement tmp = (RunningVMPlacement) a;
-                        if (tmp.getVM().equals(vm)) {
-                            insertAllocateEvent(a, vm);
+                        if (tmp.getVM().equals(dVM)) {
+                            insertAllocateEvent(a, dVM);
                             break;
                         }
                     }
@@ -351,11 +358,12 @@ public class CShareableResource implements ChocoModelView {
 
     private void insertAllocateEvent(Action a, UUID vm) {
         int prev = 0;
-        if (rc.defined(vm)) {
-            prev = rc.get(vm);
+        UUID sVM = references.containsKey(vm) ? references.get(vm) : vm;
+        if (rc.defined(sVM)) {
+            prev = rc.get(sVM);
         }
         int now = 0;
-        IntDomainVar nowI = getVMsAllocation(rp.getVM(vm));
+        IntDomainVar nowI = getVMsAllocation(rp.getVM(sVM));
         if (nowI != null) {
             now = nowI.getInf();
         }
@@ -504,7 +512,13 @@ public class CShareableResource implements ChocoModelView {
             solver.post(solver.eq(phyRcUsage[nIdx], CPSolver.minus(maxRaw, freeRaw)));
         }
         return true;
+    }
 
+    @Override
+    public boolean cloneVM(UUID vm, UUID clone) {
+        this.references.put(clone, vm);
+        this.clones.put(vm, clone);
+        return true;
     }
 
 }

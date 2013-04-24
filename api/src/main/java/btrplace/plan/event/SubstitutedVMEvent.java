@@ -47,7 +47,8 @@ public class SubstitutedVMEvent implements VMEvent {
 
     @Override
     public boolean apply(Model m) {
-        throw new UnsupportedOperationException();
+//        throw new UnsupportedOperationException();
+        return true;
     }
 
     @Override

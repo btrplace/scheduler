@@ -733,4 +733,18 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     public UUIDPool getUUIDPool() {
         return uuidPool;
     }
+
+    @Override
+    public UUID cloneVM(UUID vm) {
+        UUID newVM = uuidPool.request();
+        if (newVM == null) {
+            return null;
+        }
+        for (ChocoModelView v : views.values()) {
+            if (!v.cloneVM(vm, newVM)) {
+                uuidPool.release(newVM);
+            }
+        }
+        return newVM;
+    }
 }
