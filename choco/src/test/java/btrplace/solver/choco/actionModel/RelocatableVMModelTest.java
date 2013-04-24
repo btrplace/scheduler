@@ -34,8 +34,6 @@ import btrplace.solver.choco.durationEvaluator.ConstantDuration;
 import btrplace.solver.choco.objective.minMTTR.MinMTTR;
 import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -377,7 +375,10 @@ public class RelocatableVMModelTest implements PremadeElements {
         List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
         cstrs.add(new Online(map.getAllNodes()));
         cstrs.add(pr);
+        cra.doOptimize(true);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
+        System.err.println(p);
+        Assert.fail();
     }
 }
