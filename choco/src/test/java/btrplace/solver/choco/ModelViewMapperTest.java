@@ -20,6 +20,7 @@ package btrplace.solver.choco;
 
 import btrplace.model.ModelView;
 import btrplace.model.view.ShareableResource;
+import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.view.CShareableResource;
 import org.testng.Assert;
@@ -75,6 +76,11 @@ public class ModelViewMapperTest {
         @Override
         public boolean beforeSolve(ReconfigurationProblem rp) {
             return true;
+        }
+
+        @Override
+        public boolean insertActions(ReconfigurationProblem rp, ReconfigurationPlan p) {
+            throw new UnsupportedOperationException();
         }
     }
 

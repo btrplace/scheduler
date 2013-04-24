@@ -18,11 +18,15 @@
 
 package btrplace.solver.choco.view;
 
+import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.ModelView;
 import btrplace.model.view.ShareableResource;
+import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.RunningVMPlacement;
 import btrplace.plan.event.Allocate;
+import btrplace.plan.event.AllocateEvent;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.*;
 import btrplace.solver.choco.actionModel.KeepRunningVMModel;
@@ -318,8 +322,62 @@ public class CShareableResource implements ChocoModelView {
         return symmetryBreakingForStatingVMs() && linkVirtualToPhysicalUsage();
     }
 
+    @Override
+    public boolean insertActions(ReconfigurationProblem rp, ReconfigurationPlan p) {
+        Mapping srcMapping = rp.getSourceModel().getMapping();
+
+        for (UUID vm : rp.getFutureRunningVMs()) {
+            Slice dSlice = rp.getVMAction(vm).getDSlice();
+            UUID destNode = rp.getNode(dSlice.getHoster().getVal());
+
+            if (srcMapping.getRunningVMs().contains(vm) && destNode.equals(srcMapping.getVMLocation(vm))) {
+                //Was running and stay on the same node
+                insertAllocateAction(p, vm, destNode, dSlice.getStart().getVal());
+            } else {
+                //TODO: not constant time operation. Maybe a big failure
+                for (Action a : p) {
+                    if (a instanceof RunningVMPlacement) {
+                        RunningVMPlacement tmp = (RunningVMPlacement) a;
+                        if (tmp.getVM().equals(vm)) {
+                            insertAllocateEvent(a, vm);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    private void insertAllocateEvent(Action a, UUID vm) {
+        int prev = 0;
+        if (rc.defined(vm)) {
+            prev = rc.get(vm);
+        }
+        int now = 0;
+        IntDomainVar nowI = getVMsAllocation(rp.getVM(vm));
+        if (nowI != null) {
+            now = nowI.getInf();
+        }
+        if (prev != now) {
+            AllocateEvent ev = new AllocateEvent(vm, getResourceIdentifier(), now);
+            a.addEvent(Action.Hook.pre, ev);
+        }
+    }
+
+    private boolean insertAllocateAction(ReconfigurationPlan p, UUID vm, UUID destNode, int st) {
+        String rcId = getResourceIdentifier();
+        int prev = rc.get(vm);
+        int now = getVMsAllocation()[rp.getVM(vm)].getVal();
+        if (prev != now) {
+            Allocate a = new Allocate(vm, destNode, rcId, now, st, st);
+            return p.add(a);
+        }
+        return false;
+    }
+
     /**
-     * Symetry breaking for VMs that stay running, on the same node.
+     * Symmetry breaking for VMs that stay running, on the same node.
      *
      * @return
      */

@@ -54,6 +54,11 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
         public boolean beforeSolve(ReconfigurationProblem rp) {
             return true;
         }
+
+        @Override
+        public boolean insertActions(ReconfigurationProblem rp, ReconfigurationPlan p) {
+            throw new UnsupportedOperationException();
+        }
     }
 
     public class MockView implements ModelView {
