@@ -79,7 +79,7 @@ public class CSingleRunningCapacity implements ChocoSatConstraint {
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-        Set<UUID> bad = new HashSet<UUID>();
+        Set<UUID> bad = new HashSet<>();
         for (UUID n : cstr.getInvolvedNodes()) {
             if (map.getRunningVMs(n).size() > cstr.getAmount()) {
                 bad.addAll(map.getRunningVMs(n));

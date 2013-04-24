@@ -18,6 +18,8 @@
 
 package btrplace.solver.choco;
 
+import btrplace.plan.ReconfigurationPlan;
+
 /**
  * Interface denoting the Choco implementation of a {@link btrplace.model.ModelView}.
  *
@@ -39,4 +41,13 @@ public interface ChocoModelView {
      * @return {@code false} iff there will be no solution to the RP.
      */
     boolean beforeSolve(ReconfigurationProblem rp);
+
+    /**
+     * Allow the insertion of actions on the plan computed for a given problem.
+     *
+     * @param rp the solver problem
+     * @param p  the computed plan
+     * @return {@code true} iff the insertion succeeded
+     */
+    boolean insertActions(ReconfigurationProblem rp, ReconfigurationPlan p);
 }

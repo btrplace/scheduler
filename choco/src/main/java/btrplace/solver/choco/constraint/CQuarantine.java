@@ -54,8 +54,8 @@ public class CQuarantine implements ChocoSatConstraint {
         // It is just a composition of a root constraint on the VMs on the given nodes (the zone)
         // plus a ban on the other VMs to prevent them for being hosted in the zone
         Mapping map = rp.getSourceModel().getMapping();
-        Set<UUID> toRoot = new HashSet<UUID>();
-        Set<UUID> toBan = new HashSet<UUID>();
+        Set<UUID> toRoot = new HashSet<>();
+        Set<UUID> toBan = new HashSet<>();
         Collection<UUID> zone = cstr.getInvolvedNodes();
         for (UUID vm : rp.getFutureRunningVMs()) {
             if (zone.contains(map.getVMLocation(vm))) {
@@ -68,7 +68,7 @@ public class CQuarantine implements ChocoSatConstraint {
         map.getRunningVMs(cstr.getInvolvedNodes());
 
         CRoot r = new CRoot(new Root(toRoot));
-        CBan b = new CBan(new Ban(toBan, new HashSet<UUID>(zone)));
+        CBan b = new CBan(new Ban(toBan, new HashSet<>(zone)));
         return (r.inject(rp) && b.inject(rp));
 
     }

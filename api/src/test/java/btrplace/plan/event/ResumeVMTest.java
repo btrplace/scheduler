@@ -27,12 +27,17 @@ import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 /**
  * Unit tests for {@link ResumeVM}.
  *
  * @author Fabien Hermenier
  */
 public class ResumeVMTest implements PremadeElements {
+
+    static ResumeVM a = new ResumeVM(vm1, n1, n2, 3, 5);
 
     @Test
     public void testInstantiate() {
@@ -95,6 +100,12 @@ public class ResumeVMTest implements PremadeElements {
         Assert.assertNotSame(a, new ResumeVM(vm2, n1, n2, 3, 5));
         Assert.assertNotSame(a, new ResumeVM(vm1, n3, n2, 3, 5));
         Assert.assertNotSame(a, new ResumeVM(vm1, n1, n3, 3, 5));
+    }
 
+    @Test
+    public void testVisit() {
+        ActionVisitor visitor = mock(ActionVisitor.class);
+        a.visit(visitor);
+        verify(visitor).visit(a);
     }
 }

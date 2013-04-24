@@ -81,7 +81,7 @@ public class COverbook implements ChocoSatConstraint {
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
-        Set<UUID> bads = new HashSet<UUID>();
+        Set<UUID> bads = new HashSet<>();
         if (rc == null) { //Should not occur, if the right model is given
             for (UUID n : cstr.getInvolvedNodes()) {
                 bads.addAll(m.getMapping().getRunningVMs(n));

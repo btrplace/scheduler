@@ -70,7 +70,7 @@ public class CCumulatedRunningCapacity implements ChocoSatConstraint {
                 rp.getAliasedCumulativesBuilder().add(cstr.getAmount(), cUse, dUse, alias);
             }
         }
-        List<IntDomainVar> vs = new ArrayList<IntDomainVar>();
+        List<IntDomainVar> vs = new ArrayList<>();
         for (UUID u : cstr.getInvolvedNodes()) {
             vs.add(rp.getNbRunningVMs()[rp.getNode(u)]);
         }
@@ -81,7 +81,7 @@ public class CCumulatedRunningCapacity implements ChocoSatConstraint {
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-        Set<UUID> bad = new HashSet<UUID>();
+        Set<UUID> bad = new HashSet<>();
         int remainder = cstr.getAmount();
         for (UUID n : cstr.getInvolvedNodes()) {
             remainder -= map.getRunningVMs(n).size();

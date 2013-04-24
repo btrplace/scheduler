@@ -56,10 +56,10 @@ public class CLonely implements ChocoSatConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
         //Remove non future-running VMs
-        List<IntDomainVar> myHosts = new ArrayList<IntDomainVar>();
-        List<IntDomainVar> otherHosts = new ArrayList<IntDomainVar>();
-        Collection<UUID> vms = new HashSet<UUID>();
-        Set<UUID> otherVMs = new HashSet<UUID>();
+        List<IntDomainVar> myHosts = new ArrayList<>();
+        List<IntDomainVar> otherHosts = new ArrayList<>();
+        Collection<UUID> vms = new HashSet<>();
+        Set<UUID> otherVMs = new HashSet<>();
         for (UUID vm : rp.getFutureRunningVMs()) {
             IntDomainVar host = rp.getVMAction(vm).getDSlice().getHoster();
             if (cstr.getInvolvedVMs().contains(vm)) {
@@ -80,8 +80,8 @@ public class CLonely implements ChocoSatConstraint {
             //Get the position of all the others c-slices and their associated end moment
             TIntArrayList otherPos = new TIntArrayList();
             TIntArrayList minePos = new TIntArrayList();
-            List<IntDomainVar> otherEnds = new ArrayList<IntDomainVar>();
-            List<IntDomainVar> mineEnds = new ArrayList<IntDomainVar>();
+            List<IntDomainVar> otherEnds = new ArrayList<>();
+            List<IntDomainVar> mineEnds = new ArrayList<>();
             Mapping map = rp.getSourceModel().getMapping();
             for (UUID vm : map.getRunningVMs()) {
                 if (!vms.contains(vm)) {
@@ -118,8 +118,8 @@ public class CLonely implements ChocoSatConstraint {
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
-        Set<UUID> bad = new HashSet<UUID>();
-        Set<UUID> hosters = new HashSet<UUID>();
+        Set<UUID> bad = new HashSet<>();
+        Set<UUID> hosters = new HashSet<>();
         Collection<UUID> vms = cstr.getInvolvedVMs();
         Mapping map = m.getMapping();
         for (UUID vm : vms) {

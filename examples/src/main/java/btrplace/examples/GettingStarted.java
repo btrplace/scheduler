@@ -1,7 +1,10 @@
 package btrplace.examples;
 
 import btrplace.model.*;
-import btrplace.model.constraint.*;
+import btrplace.model.constraint.Fence;
+import btrplace.model.constraint.Offline;
+import btrplace.model.constraint.Preserve;
+import btrplace.model.constraint.Spread;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.DependencyBasedPlanApplier;
 import btrplace.plan.ReconfigurationPlan;
@@ -143,9 +146,9 @@ public class GettingStarted implements Example {
         //ra.setVerbosity(3); // Set the debugging flag
         ReconfigurationPlan plan = ra.solve(origin, cstrs);
         System.out.println("Time-based plan:");
-        System.out.println(TimeBasedPlanApplier.getInstance().toString(plan));
+        System.out.println(new TimeBasedPlanApplier().toString(plan));
         System.out.println("\nDependency based plan:");
-        System.out.println(DependencyBasedPlanApplier.getInstance().toString(plan));
+        System.out.println(new DependencyBasedPlanApplier().toString(plan));
         return (plan != null);
     }
 

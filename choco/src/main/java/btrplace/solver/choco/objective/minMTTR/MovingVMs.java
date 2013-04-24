@@ -63,7 +63,7 @@ public class MovingVMs extends AbstractIntVarSelector {
         map = m;
 
         this.rp = s;
-        this.actions = new LinkedList<VMActionModel>();
+        this.actions = new LinkedList<>();
         //Get all the involved slices
         for (UUID vm : vms) {
             if (rp.getFutureRunningVMs().contains(vm)) {

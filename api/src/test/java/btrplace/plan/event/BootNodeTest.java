@@ -26,12 +26,17 @@ import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 /**
  * Unit tests for {@link BootNode}.
  *
  * @author Fabien Hermenier
  */
 public class BootNodeTest implements PremadeElements {
+
+    static BootNode a = new BootNode(n1, 3, 5);
 
     @Test
     public void testInstantiate() {
@@ -65,5 +70,12 @@ public class BootNodeTest implements PremadeElements {
         Assert.assertNotSame(a, new BootNode(n1, 4, 5));
         Assert.assertNotSame(a, new BootNode(n1, 3, 4));
         Assert.assertNotSame(a, new BootNode(n2, 3, 5));
+    }
+
+    @Test
+    public void testVisit() {
+        ActionVisitor visitor = mock(ActionVisitor.class);
+        a.visit(visitor);
+        verify(visitor).visit(a);
     }
 }

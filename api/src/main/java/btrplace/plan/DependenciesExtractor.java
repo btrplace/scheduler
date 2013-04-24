@@ -132,6 +132,11 @@ public class DependenciesExtractor implements ActionVisitor {
         return getFreeings(a.getSourceNode()).add(a);
     }
 
+    @Override
+    public Object visit(SubstitutedVMEvent a) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Get the dependencies for an action.
      *

@@ -59,15 +59,15 @@ public class SliceSchedulerBuilder {
      */
     public SliceSchedulerBuilder(ReconfigurationProblem rp) {
         this.rp = rp;
-        capacities = new ArrayList<IntDomainVar[]>();
-        cUsages = new ArrayList<int[]>();
-        dUsages = new ArrayList<IntDomainVar[]>();
+        capacities = new ArrayList<>();
+        cUsages = new ArrayList<>();
+        dUsages = new ArrayList<>();
 
-        List<Slice> dS = new ArrayList<Slice>();
-        List<Slice> cS = new ArrayList<Slice>();
+        List<Slice> dS = new ArrayList<>();
+        List<Slice> cS = new ArrayList<>();
 
 
-        List<int[]> linked = new ArrayList<int[]>();
+        List<int[]> linked = new ArrayList<>();
         int dIdx = 0, cIdx = 0;
 
         for (VMActionModel a : rp.getVMActions()) {

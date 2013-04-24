@@ -69,7 +69,7 @@ public class COffline implements ChocoSatConstraint {
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         Mapping mapping = m.getMapping();
-        Set<UUID> bad = new HashSet<UUID>();
+        Set<UUID> bad = new HashSet<>();
         bad.addAll(mapping.getRunningVMs(cstr.getInvolvedNodes()));
         return bad;
     }

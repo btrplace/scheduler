@@ -27,6 +27,9 @@ import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 /**
  * Unit tests for {@link ShutdownVM}.
  *
@@ -34,9 +37,11 @@ import org.testng.annotations.Test;
  */
 public class ShutdownVMTest implements PremadeElements {
 
+    static ShutdownVM a = new ShutdownVM(vm1, n1, 3, 5);
+
     @Test
     public void testInstantiate() {
-        ShutdownVM a = new ShutdownVM(vm1, n1, 3, 5);
+
         Assert.assertEquals(vm1, a.getVM());
         Assert.assertEquals(n1, a.getNode());
         Assert.assertEquals(3, a.getStart());
@@ -82,5 +87,12 @@ public class ShutdownVMTest implements PremadeElements {
         Assert.assertNotSame(a, new ShutdownVM(vm1, n1, 3, 4));
         Assert.assertNotSame(a, new ShutdownVM(vm1, n2, 3, 5));
         Assert.assertNotSame(a, new ShutdownVM(vm2, n1, 4, 5));
+    }
+
+    @Test
+    public void testVisit() {
+        ActionVisitor visitor = mock(ActionVisitor.class);
+        a.visit(visitor);
+        verify(visitor).visit(a);
     }
 }

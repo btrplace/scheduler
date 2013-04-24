@@ -27,6 +27,7 @@ import java.util.TreeSet;
 
 /**
  * Default implementation for {@link ReconfigurationPlan}.
+ * By default, the instance relies on a {@link TimeBasedPlanApplier} to check for the plan applicability.
  *
  * @author Fabien Hermenier
  */
@@ -40,7 +41,7 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
 
     private static Comparator<Action> startFirstComparator = new TimedBasedActionComparator(true);
 
-    private ReconfigurationPlanApplier applier = TimeBasedPlanApplier.getInstance();
+    private ReconfigurationPlanApplier applier = new TimeBasedPlanApplier();
 
     /**
      * Make a new plan that starts for a given model.

@@ -39,7 +39,7 @@ public class InMemoryUUIDPool implements UUIDPool {
 
     private long free;
 
-    private final Set<UUID> used = new HashSet<UUID>();
+    private final Set<UUID> used = new HashSet<>();
 
     public static final long DEFAULT_SIZE = Long.MAX_VALUE;
 
@@ -54,7 +54,7 @@ public class InMemoryUUIDPool implements UUIDPool {
         free = s;
         nextHi = 0;
         nextLow = 0;
-        available = new Stack<UUID>();
+        available = new Stack<>();
     }
 
     @Override

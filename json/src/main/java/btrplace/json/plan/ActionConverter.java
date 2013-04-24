@@ -76,6 +76,8 @@ public class ActionConverter implements JSONConverter<Action>, ActionVisitor {
         }
         if (id.equals("allocate")) {
             return allocateEventFromJSON(o);
+        } else if (id.equals("substitutedVM")) {
+            return substitutedVMEventFromJSON(o);
         } else {
             throw new JSONConverterException(("Unsupported type of action '" + id + "'"));
         }
@@ -263,6 +265,20 @@ public class ActionConverter implements JSONConverter<Action>, ActionVisitor {
         return new AllocateEvent(JSONUtils.requiredUUID(o, "vm"),
                 JSONUtils.requiredString(o, "rc"),
                 (int) JSONUtils.requiredLong(o, "qty"));
+    }
+
+    @Override
+    public Object visit(SubstitutedVMEvent a) {
+        JSONObject o = new JSONObject();
+        o.put("id", "substitutedVM");
+        o.put("vm", a.getVM().toString());
+        o.put("newUUID", a.getNewUUID().toString());
+        return o;
+    }
+
+    private SubstitutedVMEvent substitutedVMEventFromJSON(JSONObject o) throws JSONConverterException {
+        return new SubstitutedVMEvent(JSONUtils.requiredUUID(o, "vm"),
+                JSONUtils.requiredUUID(o, "newUUID"));
     }
 
     @Override

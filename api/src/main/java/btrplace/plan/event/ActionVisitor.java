@@ -24,6 +24,14 @@ public interface ActionVisitor {
     Object visit(AllocateEvent a);
 
     /**
+     * Visit an {@link SubstitutedVMEvent} event.
+     *
+     * @param a the event to visit
+     * @return a possible value
+     */
+    Object visit(SubstitutedVMEvent a);
+
+    /**
      * Visit an {@link BootNode} action.
      *
      * @param a the action to visit

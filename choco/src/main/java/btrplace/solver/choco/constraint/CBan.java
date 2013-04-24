@@ -83,7 +83,7 @@ public class CBan implements ChocoSatConstraint {
     public Set<UUID> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
 
-        Set<UUID> bad = new HashSet<UUID>();
+        Set<UUID> bad = new HashSet<>();
         for (UUID vm : ban.getInvolvedVMs()) {
             if (map.getRunningVMs().contains(vm) && ban.getInvolvedNodes().contains(map.getVMLocation(vm))) {
                 bad.add(vm);

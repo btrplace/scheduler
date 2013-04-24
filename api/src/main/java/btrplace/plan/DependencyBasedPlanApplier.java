@@ -14,11 +14,14 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public final class DependencyBasedPlanApplier implements ReconfigurationPlanApplier {
+public class DependencyBasedPlanApplier extends DefaultPlanApplier {
 
-    private static final DependencyBasedPlanApplier instance = new DependencyBasedPlanApplier();
 
-    private DependencyBasedPlanApplier() {
+    /**
+     * Make a new applier.
+     */
+    public DependencyBasedPlanApplier() {
+        super();
     }
 
     @Override
@@ -38,6 +41,7 @@ public final class DependencyBasedPlanApplier implements ReconfigurationPlanAppl
                 if (s == null) {
                     return null;
                 }
+                fireAction(a);
                 newFeasibles.addAll(s);
                 nbCommitted++;
             }
@@ -56,12 +60,4 @@ public final class DependencyBasedPlanApplier implements ReconfigurationPlanAppl
         return b.toString();
     }
 
-    /**
-     * Get the unique instance of this applier.
-     *
-     * @return the singleton
-     */
-    public static DependencyBasedPlanApplier getInstance() {
-        return instance;
-    }
 }

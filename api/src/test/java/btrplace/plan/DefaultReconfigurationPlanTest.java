@@ -77,7 +77,7 @@ public class DefaultReconfigurationPlanTest implements PremadeElements {
         Assert.assertEquals(0, p.getDuration());
         Assert.assertTrue(p.getActions().isEmpty());
         Assert.assertFalse(p.toString().contains("null"));
-        Assert.assertEquals(p.getReconfigurationApplier(), TimeBasedPlanApplier.getInstance());
+        Assert.assertEquals(p.getReconfigurationApplier().getClass(), TimeBasedPlanApplier.class);
 
     }
 

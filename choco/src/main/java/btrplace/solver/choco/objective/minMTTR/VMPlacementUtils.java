@@ -26,7 +26,7 @@ public final class VMPlacementUtils {
      * @return the resulting map.
      */
     public static Map<IntDomainVar, UUID> makePlacementMap(ReconfigurationProblem rp) {
-        Map<IntDomainVar, UUID> m = new HashMap<IntDomainVar, UUID>();
+        Map<IntDomainVar, UUID> m = new HashMap<>();
         for (UUID vm : rp.getFutureRunningVMs()) {
             IntDomainVar v = rp.getVMAction(vm).getDSlice().getHoster();
             m.put(v, vm);

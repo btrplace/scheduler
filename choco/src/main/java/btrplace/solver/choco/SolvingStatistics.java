@@ -115,7 +115,7 @@ public class SolvingStatistics {
         this.maxDuration = timeout;
         this.timeout = to;
         this.doOptimize = doOptimize;
-        solutions = new TreeSet<SolutionStatistics>(solutionsCmp);
+        solutions = new TreeSet<>(solutionsCmp);
         this.coreRPBuildDuration = coreRPBuildDuration;
         this.speRPDuration = speRPDuration;
     }
@@ -262,7 +262,7 @@ public class SolvingStatistics {
         if (maxDuration > 0) {
             b.append("; timeout:").append(maxDuration).append("s");
         }
-        b.append("\nBuilding duration: " + coreRPBuildDuration + "ms (core-RP) + " + speRPDuration + "ms (specialization)");
+        b.append("\nBuilding duration: ").append(coreRPBuildDuration).append("ms (core-RP) + ").append(speRPDuration).append("ms (specialization)");
         b.append("\nAfter ").append(time).append("ms of search");
         if (timeout) {
             b.append(" (timeout)");

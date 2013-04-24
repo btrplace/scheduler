@@ -72,7 +72,7 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
                 }
 
                 TIntArrayList cUse = new TIntArrayList();
-                List<IntDomainVar> dUse = new ArrayList<IntDomainVar>();
+                List<IntDomainVar> dUse = new ArrayList<>();
 
                 for (UUID vmId : rp.getVMs()) {
                     VMActionModel a = rp.getVMAction(vmId);
@@ -88,7 +88,7 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
                 rp.getAliasedCumulativesBuilder().add(cstr.getAmount(), cUse.toNativeArray(), dUse.toArray(new IntDomainVar[dUse.size()]), alias);
             }
         }
-        List<IntDomainVar> vs = new ArrayList<IntDomainVar>();
+        List<IntDomainVar> vs = new ArrayList<>();
         for (UUID u : cstr.getInvolvedNodes()) {
             vs.add(rcm.getVirtualUsage()[rp.getNode(u)]);
         }
@@ -104,7 +104,7 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
         if (rc == null) {
             return map.getRunningVMs(cstr.getInvolvedNodes());
         }
-        Set<UUID> bad = new HashSet<UUID>();
+        Set<UUID> bad = new HashSet<>();
         int remainder = cstr.getAmount();
         for (UUID n : cstr.getInvolvedNodes()) {
             for (UUID v : map.getRunningVMs(n)) {

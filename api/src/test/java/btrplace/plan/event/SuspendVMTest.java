@@ -27,6 +27,9 @@ import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 /**
  * Unit tests for {@link SuspendVM}.
  *
@@ -34,9 +37,11 @@ import org.testng.annotations.Test;
  */
 public class SuspendVMTest implements PremadeElements {
 
+    static SuspendVM a = new SuspendVM(vm1, n1, n2, 3, 5);
+
     @Test
     public void testInstantiate() {
-        SuspendVM a = new SuspendVM(vm1, n1, n2, 3, 5);
+
         Assert.assertEquals(vm1, a.getVM());
         Assert.assertEquals(n1, a.getSourceNode());
         Assert.assertEquals(n2, a.getDestinationNode());
@@ -94,6 +99,12 @@ public class SuspendVMTest implements PremadeElements {
         Assert.assertNotSame(a, new SuspendVM(vm2, n1, n2, 3, 5));
         Assert.assertNotSame(a, new SuspendVM(vm1, n3, n2, 3, 5));
         Assert.assertNotSame(a, new SuspendVM(vm1, n1, n3, 3, 5));
+    }
 
+    @Test
+    public void testVisit() {
+        ActionVisitor visitor = mock(ActionVisitor.class);
+        a.visit(visitor);
+        verify(visitor).visit(a);
     }
 }

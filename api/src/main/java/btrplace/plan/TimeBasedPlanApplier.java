@@ -12,22 +12,15 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public final class TimeBasedPlanApplier implements ReconfigurationPlanApplier {
+public class TimeBasedPlanApplier extends DefaultPlanApplier {
 
     private static Comparator<Action> startFirstComparator = new TimedBasedActionComparator();
 
-    private static final TimeBasedPlanApplier instance = new TimeBasedPlanApplier();
-
-    private TimeBasedPlanApplier() {
-    }
-
     /**
-     * Get the unique instance of this applier.
-     *
-     * @return the singleton
+     * Make a new applier.
      */
-    public static TimeBasedPlanApplier getInstance() {
-        return instance;
+    public TimeBasedPlanApplier() {
+        super();
     }
 
     @Override
@@ -39,6 +32,7 @@ public final class TimeBasedPlanApplier implements ReconfigurationPlanApplier {
             if (!a.apply(res)) {
                 return null;
             }
+            fireAction(a);
         }
         return res;
     }

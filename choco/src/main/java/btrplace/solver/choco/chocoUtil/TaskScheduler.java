@@ -330,7 +330,7 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
     }
 
     private TIntObjectHashMap<int[]> myChanges(TIntIntHashMap[][] changes, int nIdx) {
-        TIntObjectHashMap<int[]> map = new TIntObjectHashMap<int[]>();
+        TIntObjectHashMap<int[]> map = new TIntObjectHashMap<>();
         for (int d = 0; d < changes.length; d++) {
             TIntIntHashMap ch = changes[d][nIdx];
             //ChocoLogging.getBranchingLogger().info("rc " + nIdx + " changes for d=" + d + ": " + ch);

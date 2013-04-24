@@ -39,7 +39,7 @@ public class SatConstraintMapper {
      * Make a new mapper.
      */
     public SatConstraintMapper() {
-        builders = new HashMap<Class<? extends SatConstraint>, ChocoSatConstraintBuilder>();
+        builders = new HashMap<>();
 
         builders.put(Spread.class, new CSpread.Builder());
         builders.put(Split.class, new CSplit.Builder());

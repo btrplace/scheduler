@@ -89,7 +89,7 @@ public class CSingleResourceCapacity implements ChocoSatConstraint {
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-        Set<UUID> bad = new HashSet<UUID>();
+        Set<UUID> bad = new HashSet<>();
         ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         for (UUID n : cstr.getInvolvedNodes()) {
             int remainder = cstr.getAmount();

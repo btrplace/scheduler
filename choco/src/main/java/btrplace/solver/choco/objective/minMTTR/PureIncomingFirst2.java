@@ -68,7 +68,7 @@ public class PureIncomingFirst2 extends AbstractIntVarSelector {
         hoster = new IntDomainVar[vmActions.length];
         starts = new IntDomainVar[vmActions.length];
 
-        this.vms = new ArrayList<UUID>(rp.getFutureRunningVMs());
+        this.vms = new ArrayList<>(rp.getFutureRunningVMs());
 
         oldPos = new int[hoster.length];
         outs = new BitSet[rp.getNodes().length];
