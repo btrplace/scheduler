@@ -89,9 +89,9 @@ public class CShareableResource implements ChocoModelView {
         id = ShareableResource.VIEW_ID_BASE + rc.getResourceIdentifier();
         for (int i = 0; i < nodes.length; i++) {
             UUID nId = rp.getNode(i);
-            phyRcUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("phyRcUsage('" + rc.getResourceIdentifier() + "', '" + nId + "')"), 0, rc.get(nodes[i]));
-            virtRcUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("virtRcUsage('" + rc.getResourceIdentifier() + "', '" + nId + "')"), 0, Choco.MAX_UPPER_BOUND);
-            ratios[i] = rp.getSolver().createRealVal("overbook('" + rc.getResourceIdentifier() + "', '" + nId + "')", 1, UNCHECKED_RATIO);
+            phyRcUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("phyRcUsage('", rc.getResourceIdentifier(), "', '", nId, "')"), 0, rc.get(nodes[i]));
+            virtRcUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("virtRcUsage('", rc.getResourceIdentifier(), "', '", nId, "')"), 0, Choco.MAX_UPPER_BOUND);
+            ratios[i] = rp.getSolver().createRealVal(rp.makeVarLabel("overbook('", rc.getResourceIdentifier(), "', '", nId, "')"), 1, UNCHECKED_RATIO);
         }
 
 
@@ -106,11 +106,11 @@ public class CShareableResource implements ChocoModelView {
             VMActionModel a = rp.getVMAction(vmId);
             Slice slice = a.getDSlice();
             if (slice == null) { //The VMs will not be running, so its consumption is set to 0
-                vmAllocation[i] = s.makeConstantIntVar(rp.makeVarLabel("vmAllocation('" + rc.getResourceIdentifier() + "', '" + vmId + "'"), 0);
+                vmAllocation[i] = s.makeConstantIntVar(rp.makeVarLabel("vmAllocation('", rc.getResourceIdentifier(), "', '", vmId, "'"), 0);
             } else {
                 //We don't know about the next VM usage for the moment, -1 is used by default to allow to detect an
                 //non-updated value.
-                vmAllocation[i] = s.createBoundIntVar("vmAllocation('" + rc.getResourceIdentifier() + "', '" + vmId + "')", -1, Choco.MAX_UPPER_BOUND);
+                vmAllocation[i] = s.createBoundIntVar(rp.makeVarLabel("vmAllocation('", rc.getResourceIdentifier(), "', '", vmId, "')"), -1, Choco.MAX_UPPER_BOUND);
                 notNullUsage.add(vmAllocation[i]);
                 hosters.add(slice.getHoster());
             }
@@ -440,7 +440,7 @@ public class CShareableResource implements ChocoModelView {
                 rp.getLogger().error("Unable to restrict the virtual '{}' capacity of {} to {}: {}", getResourceIdentifier(), rp.getNode(nIdx), maxReal, ex.getMessage());
                 return false;
             }
-            IntDomainVar freeReal = solver.createBoundIntVar(rp.makeVarLabel("free_real('" + rp.getNode(nIdx) + "')"), 0, maxReal);
+            IntDomainVar freeReal = solver.createBoundIntVar(rp.makeVarLabel("free_real('", rp.getNode(nIdx), "')"), 0, maxReal);
             solver.post(solver.eq(freeReal, CPSolver.minus(maxReal, virtRcUsage[nIdx])));
             IntDomainVar freeRaw = ChocoUtils.div(solver, freeReal, (int) r); //TODO: check for the correctness of the truncation
             solver.post(solver.eq(phyRcUsage[nIdx], CPSolver.minus(maxRaw, freeRaw)));

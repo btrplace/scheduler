@@ -31,8 +31,11 @@ import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.*;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
+import btrplace.solver.choco.objective.minMTTR.MinMTTR;
 import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -67,7 +70,7 @@ public class RelocatableVMModelTest implements PremadeElements {
         rp.getNodeActions()[0].getState().setVal(1);
         rp.getNodeActions()[1].getState().setVal(1);
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm1);
-        Assert.assertFalse(am.isReinstantiated());
+        Assert.assertTrue(am.getRelocationMethod().isInstantiatedTo(0));
         Assert.assertEquals(vm1, am.getVM());
         Assert.assertEquals(2, am.getDuration().getDomainSize());
         Assert.assertEquals(0, am.getDuration().getInf());
@@ -184,7 +187,7 @@ public class RelocatableVMModelTest implements PremadeElements {
                 .labelVariables()
                 .build();
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm1);
-        Assert.assertFalse(am.isReinstantiated());
+        Assert.assertFalse(am.getRelocationMethod().isInstantiated());
     }
 
     /**
@@ -212,13 +215,132 @@ public class RelocatableVMModelTest implements PremadeElements {
                 .setNextVMsStates(Collections.<UUID>emptySet(), map.getAllVMs(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
                 .setDurationEvaluatators(dev)
                 .labelVariables()
+                .setManageableVMs(map.getAllVMs())
                 .build();
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
         am.getDSlice().getHoster().setVal(rp.getNode(n2));
-        Assert.assertTrue(am.isReinstantiated());
-
-        ReconfigurationPlan p = rp.solve(0, false);
+        new MinMTTR().inject(rp);
+        ReconfigurationPlan p = rp.solve(10, true);
+        Assert.assertNotNull(p);
+        System.out.println(p);
+        Assert.assertTrue(am.getRelocationMethod().isInstantiatedTo(1));
         Assert.assertEquals(p.getSize(), 3);
+        Model res = p.getResult();
+        //Check the VM has been relocated
+        Assert.assertEquals(res.getMapping().getRunningVMs(n1).size(), 0);
+        Assert.assertEquals(res.getMapping().getRunningVMs(n2).size(), 1);
+        Assert.assertNotNull(p);
+    }
+
+    /**
+     * The re-instantiation is possible and worthy.
+     *
+     * @throws SolverException
+     * @throws ContradictionException
+     */
+    @Test
+    public void testWorthlessReInstantiation() throws SolverException, ContradictionException {
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addRunningVM(vm10, n1); //Not using vm1 because UUIDPool starts at 0 so their will be multiple (0,1) VMs.
+        DurationEvaluators dev = new DurationEvaluators();
+        dev.register(MigrateVM.class, new ConstantDuration(2));
+        dev.register(ForgeVM.class, new ConstantDuration(3));
+        dev.register(BootVM.class, new ConstantDuration(2));
+        dev.register(ShutdownVM.class, new ConstantDuration(1));
+        Model mo = new DefaultModel(map);
+
+        mo.getAttributes().put(vm10, "template", "small");
+        mo.getAttributes().put(vm10, "clone", true);
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setNextVMsStates(Collections.<UUID>emptySet(), map.getAllVMs(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setDurationEvaluatators(dev)
+                .labelVariables()
+                .setManageableVMs(map.getAllVMs())
+                .build();
+        RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
+        am.getDSlice().getHoster().setVal(rp.getNode(n2));
+        new MinMTTR().inject(rp);
+        ReconfigurationPlan p = rp.solve(10, true);
+        Assert.assertNotNull(p);
+        System.out.println(p);
+        Assert.assertTrue(am.getRelocationMethod().isInstantiatedTo(0));
+        Assert.assertEquals(p.getSize(), 1);
+        Model res = p.getResult();
+        //Check the VM has been relocated
+        Assert.assertEquals(res.getMapping().getRunningVMs(n1).size(), 0);
+        Assert.assertEquals(res.getMapping().getRunningVMs(n2).size(), 1);
+        Assert.assertNotNull(p);
+    }
+
+    @Test
+    public void testForcedReInstantiation() throws SolverException, ContradictionException {
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addRunningVM(vm10, n1); //Not using vm1 because UUIDPool starts at 0 so their will be multiple (0,1) VMs.
+        DurationEvaluators dev = new DurationEvaluators();
+        dev.register(MigrateVM.class, new ConstantDuration(20));
+        dev.register(ForgeVM.class, new ConstantDuration(3));
+        dev.register(BootVM.class, new ConstantDuration(2));
+        dev.register(ShutdownVM.class, new ConstantDuration(1));
+        Model mo = new DefaultModel(map);
+
+        mo.getAttributes().put(vm10, "template", "small");
+        mo.getAttributes().put(vm10, "clone", true);
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setNextVMsStates(Collections.<UUID>emptySet(), map.getAllVMs(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setDurationEvaluatators(dev)
+                .labelVariables()
+                .setManageableVMs(map.getAllVMs())
+                .build();
+        RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
+        am.getRelocationMethod().setVal(1);
+        am.getDSlice().getHoster().setVal(rp.getNode(n2));
+        new MinMTTR().inject(rp);
+        ReconfigurationPlan p = rp.solve(10, true);
+        Assert.assertNotNull(p);
+        System.out.println(p);
+        Assert.assertTrue(am.getRelocationMethod().isInstantiatedTo(1));
+        Assert.assertEquals(p.getSize(), 3);
+        Model res = p.getResult();
+        //Check the VM has been relocated
+        Assert.assertEquals(res.getMapping().getRunningVMs(n1).size(), 0);
+        Assert.assertEquals(res.getMapping().getRunningVMs(n2).size(), 1);
+        Assert.assertNotNull(p);
+    }
+
+    @Test
+    public void testForcedMigration() throws SolverException, ContradictionException {
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addRunningVM(vm10, n1); //Not using vm1 because UUIDPool starts at 0 so their will be multiple (0,1) VMs.
+        DurationEvaluators dev = new DurationEvaluators();
+        dev.register(MigrateVM.class, new ConstantDuration(20));
+        dev.register(ForgeVM.class, new ConstantDuration(3));
+        dev.register(BootVM.class, new ConstantDuration(2));
+        dev.register(ShutdownVM.class, new ConstantDuration(1));
+        Model mo = new DefaultModel(map);
+
+        mo.getAttributes().put(vm10, "template", "small");
+        mo.getAttributes().put(vm10, "clone", true);
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setNextVMsStates(Collections.<UUID>emptySet(), map.getAllVMs(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setDurationEvaluatators(dev)
+                .labelVariables()
+                .setManageableVMs(map.getAllVMs())
+                .build();
+        RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
+        am.getRelocationMethod().setVal(0);
+        am.getDSlice().getHoster().setVal(rp.getNode(n2));
+        new MinMTTR().inject(rp);
+        ReconfigurationPlan p = rp.solve(10, true);
+        Assert.assertNotNull(p);
+        System.out.println(p);
+        Assert.assertTrue(am.getRelocationMethod().isInstantiatedTo(0));
+        Assert.assertEquals(p.getSize(), 1);
         Model res = p.getResult();
         //Check the VM has been relocated
         Assert.assertEquals(res.getMapping().getRunningVMs(n1).size(), 0);

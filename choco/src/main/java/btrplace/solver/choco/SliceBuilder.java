@@ -67,7 +67,7 @@ public class SliceBuilder {
      */
     public Slice build() throws SolverException {
         if (hoster == null) {
-            hoster = rp.makeHostVariable(lblPrefix + "_hoster");
+            hoster = rp.makeHostVariable(lblPrefix, "_hoster");
         }
         if (start == null) {
             start = rp.getStart();
@@ -83,7 +83,7 @@ public class SliceBuilder {
                 if (start.isInstantiatedTo(0)) {
                     duration = end;
                 } else {
-                    duration = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel(lblPrefix + "_duration"), end, -start.getVal());
+                    duration = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel(lblPrefix, "_duration"), end, -start.getVal());
                 }
             } else {
                 int inf = end.getInf() - start.getSup();
@@ -166,7 +166,7 @@ public class SliceBuilder {
      * @return the current builder
      */
     public SliceBuilder setHoster(int v) {
-        this.hoster = rp.getSolver().createIntegerConstant(rp.makeVarLabel(lblPrefix + "_hoster(" + e + ")"), v);
+        this.hoster = rp.getSolver().createIntegerConstant(rp.makeVarLabel(lblPrefix, "_hoster(", e, ")"), v);
         return this;
     }
 }

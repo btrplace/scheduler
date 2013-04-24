@@ -356,7 +356,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         vmsCountOnNodes = new IntDomainVar[nodes.length];
         int nbVMs = vms.length;
         for (int i = 0; i < vmsCountOnNodes.length; i++) {
-            vmsCountOnNodes[i] = solver.createBoundIntVar(makeVarLabel("nbVMsOn('" + getNode(i) + "')"), 0, nbVMs);
+            vmsCountOnNodes[i] = solver.createBoundIntVar(makeVarLabel("nbVMsOn('", getNode(i), "')"), 0, nbVMs);
         }
     }
 
@@ -587,8 +587,16 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public IntDomainVar makeHostVariable(String n) {
-        return solver.createEnumIntVar(useLabels ? n : "", 0, nodes.length - 1);
+    public IntDomainVar makeHostVariable(Object... n) {
+        String str = "";
+        if (useLabels) {
+            StringBuilder b = new StringBuilder();
+            for (Object o : n) {
+                b.append(o);
+            }
+            str = b.toString();
+        }
+        return solver.createEnumIntVar(str, 0, nodes.length - 1);
     }
 
     @Override
@@ -610,8 +618,16 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public IntDomainVar makeDuration(String n) {
-        return solver.createBoundIntVar(useLabels ? n : "", 0, end.getSup());
+    public IntDomainVar makeDuration(Object... n) {
+        String str = "";
+        if (useLabels) {
+            StringBuilder b = new StringBuilder();
+            for (Object s : n) {
+                b.append(s);
+            }
+            str = b.toString();
+        }
+        return solver.createBoundIntVar(str, 0, end.getSup());
     }
 
     @Override
@@ -623,8 +639,15 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public String makeVarLabel(String lbl) {
-        return useLabels ? lbl : "";
+    public String makeVarLabel(Object... lbl) {
+        if (useLabels) {
+            StringBuilder b = new StringBuilder();
+            for (Object s : lbl) {
+                b.append(s);
+            }
+            return b.toString();
+        }
+        return "";
     }
 
     @Override

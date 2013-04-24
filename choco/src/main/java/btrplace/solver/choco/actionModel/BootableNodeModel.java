@@ -116,8 +116,8 @@ public class BootableNodeModel implements NodeActionModel {
             - If the node is hosting running VMs, it is necessarily online
             - If the node is offline, it is sure it cannot host any running VMs
         */
-        isOnline = s.createBooleanVar(rp.makeVarLabel(new StringBuilder("bootableNode(").append(nId).append(").online").toString()));
-        IntDomainVar isOffline = s.createBooleanVar(rp.makeVarLabel(new StringBuilder("bootableNode(").append(nId).append(").offline").toString()));
+        isOnline = s.createBooleanVar(rp.makeVarLabel("bootableNode(", nId, ").online"));
+        IntDomainVar isOffline = s.createBooleanVar(rp.makeVarLabel("bootableNode(", nId, ").offline"));
         s.post(s.neq(isOffline, isOnline));
         s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNode(nId)], 0));
 
@@ -127,14 +127,14 @@ public class BootableNodeModel implements NodeActionModel {
         * D = St * d;
         */
         effectiveDuration = s.createEnumIntVar(
-                rp.makeVarLabel(new StringBuilder("bootableNode(").append(nId).append(").effectiveDuration").toString())
+                rp.makeVarLabel("bootableNode(", nId, ").effectiveDuration")
                 , new int[]{0, d});
         s.post(new TimesXYZ(isOnline, s.makeConstantIntVar(d), effectiveDuration));
 
         /* As */
-        start = rp.makeDuration(new StringBuilder("bootableNode(").append(nId).append(").start").toString());
+        start = rp.makeDuration("bootableNode(", nId, ").start");
         /* Ae */
-        end = rp.makeDuration(new StringBuilder("bootableNode(").append(nId).append(").end").toString());
+        end = rp.makeDuration("bootableNode(", nId, ").end");
         s.post(s.leq(start, rp.getEnd()));
         s.post(s.leq(end, rp.getEnd()));
         /* Ae = As + D */
@@ -143,7 +143,7 @@ public class BootableNodeModel implements NodeActionModel {
 
         /* Hs = Ae */
         hostingStart = end;
-        hostingEnd = rp.makeDuration(new StringBuilder("bootableNode(").append(nId).append(").hostingEnd").toString());
+        hostingEnd = rp.makeDuration("bootableNode(", nId, ").hostingEnd");
         s.post(s.leq(hostingEnd, rp.getEnd()));
 
 

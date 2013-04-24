@@ -23,10 +23,10 @@ import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.NodeActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.chocoUtil.FastIFFEq;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.ElementV;
+import choco.cp.solver.constraints.integer.channeling.BooleanChanneling;
 import choco.cp.solver.variables.integer.BoolVarNot;
 import choco.cp.solver.variables.integer.BooleanVarImpl;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -122,8 +122,8 @@ public class ShutdownableNodeModel implements NodeActionModel {
             - If the node is hosting running VMs, it is necessarily online
             - If the node is offline, it is sure it cannot host any running VMs
         */
-        isOnline = s.createBooleanVar(rp.makeVarLabel(new StringBuilder("shutdownableNode(").append(e).append(").online").toString()));
-        isOffline = new BoolVarNot(s, new StringBuilder("shutdownableNode(").append(e).append(").offline").toString(), (BooleanVarImpl) isOnline);
+        isOnline = s.createBooleanVar(rp.makeVarLabel("shutdownableNode(", e, ").online"));
+        isOffline = new BoolVarNot(s, rp.makeVarLabel("shutdownableNode(", e, ").offline"), (BooleanVarImpl) isOnline);
         s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNode(e)], 0));
 
         /*
@@ -131,15 +131,15 @@ public class ShutdownableNodeModel implements NodeActionModel {
         * D = St * d;
         */
         int d = rp.getDurationEvaluators().evaluate(ShutdownNode.class, e);
-        duration = s.createEnumIntVar(rp.makeVarLabel(new StringBuilder("shutdownableNode(").append(e).append(").duration").toString()), new int[]{0, d});
-        s.post(new FastIFFEq(isOnline, duration, 0));
+        duration = s.createEnumIntVar(rp.makeVarLabel("shutdownableNode(", e, ").duration"), new int[]{0, d});
+        s.post(new BooleanChanneling(isOnline, duration, 0));
 
         //The moment of shutdown action start
         /* As */
-        start = rp.makeDuration(new StringBuilder("shutdownableNode(").append(e).append(").start").toString());
+        start = rp.makeDuration("shutdownableNode(", e, ").start");
         //The moment of shutdown action end
         /* Ae */
-        end = rp.makeDuration(new StringBuilder("shutdownableNode(").append(e).append(").end").toString());
+        end = rp.makeDuration("shutdownableNode(", e, ").end");
         s.post(s.leq(end, rp.getEnd()));
         s.post(s.leq(start, rp.getEnd()));
         /* Ae = As + D */
@@ -148,7 +148,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
         //The node is already online, so it can host VMs at the beginning of the RP
         hostingStart = rp.getStart();
         //The moment the node can no longer host VMs varies depending on its next state
-        hostingEnd = rp.makeDuration(new StringBuilder("shutdownableNode(").append(e).append(").hostingEnd").toString());
+        hostingEnd = rp.makeDuration("shutdownableNode(", e, ").hostingEnd");
         s.post(s.leq(hostingEnd, rp.getEnd()));
 
         /*
@@ -161,7 +161,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
         //The node is already online, so it starts at the beginning of the RP
         powerStart = rp.getStart();
         //The moment the node is offline. It depends on the hosting end time and the duration of the shutdown action
-        powerEnd = rp.makeDuration(new StringBuilder("shutdownableNode(").append(e).append(").powerEnd").toString());
+        powerEnd = rp.makeDuration("shutdownableNode(", e, ").powerEnd");
         s.post(s.eq(powerEnd, s.plus(hostingEnd, duration)));
     }
 
