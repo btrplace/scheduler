@@ -43,6 +43,7 @@ public class CumulatedRunningCapacityTest implements PremadeElements {
     public void testInstantiation() {
         Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
         CumulatedRunningCapacity c = new CumulatedRunningCapacity(s, 3);
+        Assert.assertNotNull(c.getValidator());
         Assert.assertEquals(s, c.getInvolvedNodes());
         Assert.assertEquals(3, c.getAmount());
         Assert.assertTrue(c.getInvolvedVMs().isEmpty());

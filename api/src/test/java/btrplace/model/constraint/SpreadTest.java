@@ -42,6 +42,7 @@ public class SpreadTest implements PremadeElements {
     public void testInstantiation() {
         Set<UUID> x = new HashSet<UUID>(Arrays.asList(vm1, vm2));
         Spread s = new Spread(x);
+        Assert.assertNotNull(s.getValidator());
         Assert.assertEquals(x, s.getInvolvedVMs());
         Assert.assertTrue(s.getInvolvedNodes().isEmpty());
         Assert.assertTrue(s.isContinuous());

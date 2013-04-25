@@ -24,6 +24,8 @@ import btrplace.model.SatConstraint;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlanValidator;
+import btrplace.plan.event.DefaultReconfigurationPlanValidator;
 
 import java.util.Collections;
 import java.util.Set;
@@ -171,6 +173,41 @@ public class Overbook extends SatConstraint {
         result = 31 * result + ratio;
         result = 31 * result + getInvolvedNodes().hashCode();
         return Double.valueOf(result).hashCode();
+    }
+
+    @Override
+    public ReconfigurationPlanValidator getValidator() {
+        return new Checker();
+    }
+
+    private class Checker extends DefaultReconfigurationPlanValidator {
+
+        public Checker() {
+            super(Collections.<UUID>emptySet());
+        }
+
+        @Override
+        public boolean acceptResultingModel(Model i) {
+            Mapping cfg = i.getMapping();
+            ShareableResource rc = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + rcId);
+            if (rc == null) {
+                return false;
+            }
+            for (UUID nId : getInvolvedNodes()) {
+                if (cfg.getOnlineNodes().contains(nId)) {
+                    //Server capacity with the ratio
+                    double capa = rc.get(nId) * ratio;
+                    //Minus the VMs usage
+                    for (UUID vmId : cfg.getRunningVMs(nId)) {
+                        capa -= rc.get(vmId);
+                        if (capa < 0) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
     }
 }
 

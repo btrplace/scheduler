@@ -161,7 +161,12 @@ public class Preserve extends SatConstraint {
         }
 
         @Override
-        public boolean accept(Model mo) {
+        public boolean acceptOriginModel(Model mo) {
+            return true;
+        }
+
+        @Override
+        public boolean acceptResultingModel(Model mo) {
             ShareableResource r = (ShareableResource) mo.getView(ShareableResource.VIEW_ID_BASE + rc);
             if (r == null) {
                 return false;

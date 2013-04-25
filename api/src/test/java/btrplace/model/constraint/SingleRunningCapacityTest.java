@@ -45,6 +45,7 @@ public class SingleRunningCapacityTest implements PremadeElements {
         Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
 
         SingleRunningCapacity c = new SingleRunningCapacity(s, 3);
+        Assert.assertNotNull(c.getValidator());
         Assert.assertEquals(s, c.getInvolvedNodes());
         Assert.assertEquals(3, c.getAmount());
         Assert.assertTrue(c.getInvolvedVMs().isEmpty());

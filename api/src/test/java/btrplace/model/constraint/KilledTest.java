@@ -39,6 +39,7 @@ public class KilledTest implements PremadeElements {
     public void testInstantiation() {
         Set<UUID> x = new HashSet<UUID>(Arrays.asList(vm1, vm2));
         Killed s = new Killed(x);
+        Assert.assertNotNull(s.getValidator());
         Assert.assertEquals(x, s.getInvolvedVMs());
         Assert.assertTrue(s.getInvolvedNodes().isEmpty());
         Assert.assertNotNull(s.toString());

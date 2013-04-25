@@ -45,6 +45,7 @@ public class BanTest implements PremadeElements {
         Assert.assertFalse(b.toString().contains("null"));
         Assert.assertFalse(b.isContinuous());
         Assert.assertFalse(b.setContinuous(true));
+        Assert.assertNotNull(b.getValidator());
         System.out.println(b);
     }
 

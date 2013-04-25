@@ -151,7 +151,7 @@ public class Spread extends SatConstraint {
         }
 
         @Override
-        public boolean accept(Model mo) {
+        public boolean acceptResultingModel(Model mo) {
             Mapping c = mo.getMapping();
             Set<UUID> used = new HashSet<>();
             for (UUID vm : getInvolvedVMs()) {

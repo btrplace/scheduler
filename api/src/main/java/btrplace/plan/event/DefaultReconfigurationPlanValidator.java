@@ -3,6 +3,7 @@ package btrplace.plan.event;
 import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlanValidator;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
@@ -19,6 +20,10 @@ import java.util.UUID;
 public class DefaultReconfigurationPlanValidator implements ReconfigurationPlanValidator {
 
     private Set<UUID> trackedVMs;
+
+    public DefaultReconfigurationPlanValidator() {
+        this(Collections.<UUID>emptySet());
+    }
 
     public DefaultReconfigurationPlanValidator(Set<UUID> myVMs) {
         this.trackedVMs = myVMs;
@@ -117,7 +122,12 @@ public class DefaultReconfigurationPlanValidator implements ReconfigurationPlanV
     }
 
     @Override
-    public boolean accept(Model mo) {
+    public boolean acceptResultingModel(Model mo) {
+        return true;
+    }
+
+    @Override
+    public boolean acceptOriginModel(Model mo) {
         return true;
     }
 }

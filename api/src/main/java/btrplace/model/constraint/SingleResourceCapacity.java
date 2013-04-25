@@ -104,7 +104,6 @@ public class SingleResourceCapacity extends SatConstraint {
             }
         }
         return Sat.SATISFIED;
-
     }
 
     @Override

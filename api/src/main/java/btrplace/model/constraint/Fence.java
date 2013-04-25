@@ -115,7 +115,12 @@ public class Fence extends SatConstraint {
         }
 
         @Override
-        public boolean accept(Model mo) {
+        public boolean acceptOriginModel(Model mo) {
+            return true;
+        }
+
+        @Override
+        public boolean acceptResultingModel(Model mo) {
             Mapping c = mo.getMapping();
             Set<UUID> runnings = c.getRunningVMs();
             for (UUID vm : getTrackedVMs()) {

@@ -24,7 +24,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
 import btrplace.plan.event.ShutdownVM;
 import btrplace.test.PremadeElements;
-import junit.framework.Assert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
@@ -43,6 +43,7 @@ public class LonelyTest implements PremadeElements {
     public void testInstantiation() {
         Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
         Lonely l = new Lonely(s);
+        Assert.assertNotNull(l.getValidator());
         Assert.assertFalse(l.toString().contains("null"));
         Assert.assertEquals(l.getInvolvedVMs(), s);
         Assert.assertTrue(l.getInvolvedNodes().isEmpty());

@@ -52,6 +52,7 @@ public class SplitAmongTest implements PremadeElements {
         Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(ps1, ps2));
 
         SplitAmong sp = new SplitAmong(vGrps, pGrps);
+        Assert.assertNotNull(sp.getValidator());
         Assert.assertEquals(sp.getGroupsOfVMs(), vGrps);
         Assert.assertEquals(sp.getGroupsOfNodes(), pGrps);
         Assert.assertTrue(sp.getInvolvedVMs().containsAll(vs1));

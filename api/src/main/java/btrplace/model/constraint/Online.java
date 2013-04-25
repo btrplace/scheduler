@@ -26,16 +26,16 @@ import btrplace.plan.event.DefaultReconfigurationPlanValidator;
 import btrplace.plan.event.ShutdownNode;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 /**
  * A constraint to force a set of nodes at being online.
- *
+ * <p/>
  * The restriction provided by the constraint is discrete.
  * however, if some of the nodes are already offline, then
  * their state will be unchanged.
+ *
  * @author Fabien Hermenier
  */
 public class Online extends SatConstraint {
@@ -93,28 +93,27 @@ public class Online extends SatConstraint {
 
     @Override
     public ReconfigurationPlanValidator getValidator() {
-        return new OnlineChecker();
+        return new Checker();
     }
 
-    private class OnlineChecker extends DefaultReconfigurationPlanValidator {
+    private class Checker extends DefaultReconfigurationPlanValidator {
 
-        public OnlineChecker() {
-            super(Collections.<UUID>emptySet());
-        }
         @Override
         public boolean accept(ShutdownNode a) {
-            if (getInvolvedNodes().contains(a.getNode())) {
-                return false;
-            }
+            return !getInvolvedNodes().contains(a.getNode());
+        }
+
+        @Override
+        public boolean acceptOriginModel(Model mo) {
             return true;
         }
 
         @Override
-        public boolean accept(Model mo) {
+        public boolean acceptResultingModel(Model mo) {
             Mapping c = mo.getMapping();
             for (UUID n : getInvolvedNodes()) {
                 if (!c.getOnlineNodes().contains(n)) {
-                        return false;
+                    return false;
                 }
             }
             return true;

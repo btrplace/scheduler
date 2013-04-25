@@ -40,6 +40,7 @@ public class FenceTest implements PremadeElements {
         Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1));
         Set<UUID> nodes = new HashSet<UUID>(Arrays.asList(n1));
         Fence f = new Fence(vms, nodes);
+        Assert.assertNotNull(f.getValidator());
         Assert.assertEquals(vms, f.getInvolvedVMs());
         Assert.assertEquals(nodes, f.getInvolvedNodes());
         Assert.assertFalse(f.toString().contains("null"));

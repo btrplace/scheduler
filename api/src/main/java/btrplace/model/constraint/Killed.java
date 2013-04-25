@@ -21,8 +21,12 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.plan.ReconfigurationPlanValidator;
+import btrplace.plan.event.DefaultReconfigurationPlanValidator;
+import btrplace.plan.event.KillVM;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -86,4 +90,31 @@ public class Killed extends SatConstraint {
         return !b;
     }
 
+    @Override
+    public ReconfigurationPlanValidator getValidator() {
+        return new Checker(new HashSet<>(getInvolvedVMs()));
+    }
+
+    private class Checker extends DefaultReconfigurationPlanValidator {
+
+        public Checker(Set<UUID> vms) {
+            super(vms);
+        }
+
+        @Override
+        public boolean accept(KillVM a) {
+            return true;
+        }
+
+        @Override
+        public boolean acceptResultingModel(Model i) {
+            Mapping c = i.getMapping();
+            for (UUID vm : getTrackedVMs()) {
+                if (c.getAllVMs().contains(vm)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
 }

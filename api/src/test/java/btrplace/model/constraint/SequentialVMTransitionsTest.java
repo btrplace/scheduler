@@ -43,6 +43,7 @@ public class SequentialVMTransitionsTest implements PremadeElements {
 
         List<UUID> l = Arrays.asList(vm1, vm2, vm3);
         SequentialVMTransitions c = new SequentialVMTransitions(l);
+        Assert.assertNotNull(c.getValidator());
         Assert.assertEquals(l, c.getInvolvedVMs());
         Assert.assertTrue(c.getInvolvedNodes().isEmpty());
         Assert.assertFalse(c.toString().contains("null"));

@@ -44,6 +44,7 @@ public class CumulatedResourceCapacityTest implements PremadeElements {
     public void testInstantiation() {
         Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
         CumulatedResourceCapacity c = new CumulatedResourceCapacity(s, "foo", 3);
+        Assert.assertNotNull(c.getValidator());
         Assert.assertEquals(s, c.getInvolvedNodes());
         Assert.assertEquals("foo", c.getResource());
         Assert.assertEquals(3, c.getAmount());

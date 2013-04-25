@@ -25,7 +25,6 @@ import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlanValidator;
 import btrplace.plan.event.DefaultReconfigurationPlanValidator;
-import btrplace.plan.event.MigrateVM;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -149,7 +148,7 @@ public class Gather extends SatConstraint {
         }
 
         @Override
-        public boolean accept(Model mo) {
+        public boolean acceptResultingModel(Model mo) {
             UUID used = null;
             Mapping map = mo.getMapping();
             for (UUID vm : getTrackedVMs()) {

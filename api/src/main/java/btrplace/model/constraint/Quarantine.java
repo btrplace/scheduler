@@ -18,10 +18,16 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlanValidator;
+import btrplace.plan.event.BootVM;
+import btrplace.plan.event.DefaultReconfigurationPlanValidator;
+import btrplace.plan.event.MigrateVM;
+import btrplace.plan.event.ResumeVM;
 
 import java.util.*;
 
@@ -86,6 +92,11 @@ public class Quarantine extends SatConstraint {
     }
 
     @Override
+    public ReconfigurationPlanValidator getValidator() {
+        return new Checker();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -117,5 +128,40 @@ public class Quarantine extends SatConstraint {
             return super.setContinuous(b);
         }
         return b;
+    }
+
+    /**
+     * Checker for the constraint.
+     */
+    private class Checker extends DefaultReconfigurationPlanValidator {
+
+        @Override
+        public boolean accept(BootVM a) {
+            return !getInvolvedNodes().contains(a.getDestinationNode());
+        }
+
+        @Override
+        public boolean accept(MigrateVM a) {
+            if (isTracked(a.getVM())) { //the VM can not move elsewhere
+                return false;
+            }
+            return !getInvolvedNodes().contains(a.getDestinationNode());
+        }
+
+        @Override
+        public boolean accept(ResumeVM a) {
+            return !getInvolvedNodes().contains(a.getDestinationNode());
+        }
+
+        @Override
+        public boolean acceptResultingModel(Model mo) {
+            return true;
+        }
+
+        @Override
+        public boolean acceptOriginModel(Model mo) {
+            Mapping map = mo.getMapping();
+            return getTrackedVMs().addAll(map.getRunningVMs(getInvolvedNodes()));
+        }
     }
 }

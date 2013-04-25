@@ -108,11 +108,22 @@ public interface ReconfigurationPlanValidator {
     boolean accept(SuspendVM a);
 
     /**
-     * Accept or not the given model at the end
-     * of the reconfiguration
+     * Accept or not the model that result from
+     * the whole acceptation of the plan.
      *
      * @param mo the model to test
      * @return {@code true} to accept the action.
      */
-    boolean accept(Model mo);
+    boolean acceptResultingModel(Model mo);
+
+    /**
+     * Accept or not the given model that is
+     * at the origin of a reconfiguration plan.
+     * This method usually only meaningful for continuous constraints.
+     *
+     * @param mo the model to test
+     * @return {@code true} to accept the action.
+     */
+    boolean acceptOriginModel(Model mo);
+
 }

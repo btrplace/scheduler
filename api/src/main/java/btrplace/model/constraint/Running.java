@@ -22,7 +22,10 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.plan.ReconfigurationPlanValidator;
-import btrplace.plan.event.*;
+import btrplace.plan.event.BootVM;
+import btrplace.plan.event.MigrateVM;
+import btrplace.plan.event.ResumeVM;
+import btrplace.plan.event.VMStateChangeValidator;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -99,35 +102,29 @@ public class Running extends SatConstraint {
     /**
      * Checker for the constraint.
      */
-    private class Checker extends DefaultReconfigurationPlanValidator {
+    private class Checker extends VMStateChangeValidator {
 
         public Checker(Set<UUID> vms) {
             super(vms);
         }
 
-
         @Override
-        public boolean accept(ForgeVM a) {
-            return !isTracked(a.getVM());
+        public boolean accept(BootVM a) {
+            return true;
         }
 
         @Override
-        public boolean accept(KillVM a) {
-            return !isTracked(a.getVM());
+        public boolean accept(MigrateVM a) {
+            return true;
         }
 
         @Override
-        public boolean accept(SuspendVM a) {
-            return !isTracked(a.getVM());
+        public boolean accept(ResumeVM a) {
+            return true;
         }
 
         @Override
-        public boolean accept(ShutdownVM a) {
-            return !isTracked(a.getVM());
-        }
-
-        @Override
-        public boolean accept(Model mo) {
+        public boolean acceptResultingModel(Model mo) {
             Mapping c = mo.getMapping();
             for (UUID vm : getInvolvedVMs()) {
                 if (!c.getRunningVMs().contains(vm)) {
