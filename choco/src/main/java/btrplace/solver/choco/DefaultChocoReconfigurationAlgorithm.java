@@ -252,7 +252,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
             return false;
         }
         for (ReconfigurationPlanValidator v : validators) {
-            if (!v.accept(mo)) {
+            if (!v.acceptResultingModel(mo)) {
                 return false;
             }
             applier.removeValidator(v);
