@@ -23,7 +23,9 @@ import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlanValidator;
 import btrplace.plan.RunningVMPlacement;
+import btrplace.plan.event.DefaultReconfigurationPlanValidator;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -131,5 +133,33 @@ public class Spread extends SatConstraint {
     @Override
     public int hashCode() {
         return getInvolvedVMs().hashCode();
+    }
+
+    @Override
+    public ReconfigurationPlanValidator getValidator() {
+        return new Checker(new HashSet<>(getInvolvedVMs()));
+    }
+
+    /**
+     * Checker for the constraint.
+     * TODO: possible to implement migrate
+     */
+    private class Checker extends DefaultReconfigurationPlanValidator {
+
+        public Checker(Set<UUID> vms) {
+            super(vms);
+        }
+
+        @Override
+        public boolean accept(Model mo) {
+            Mapping c = mo.getMapping();
+            Set<UUID> used = new HashSet<>();
+            for (UUID vm : getInvolvedVMs()) {
+                if (c.getRunningVMs().contains(vm) && !used.add(c.getVMLocation(vm))) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 }
