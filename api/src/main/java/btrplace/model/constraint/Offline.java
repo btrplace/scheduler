@@ -21,17 +21,22 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.plan.ReconfigurationPlanValidator;
+import btrplace.plan.event.BootNode;
+import btrplace.plan.event.DefaultReconfigurationPlanValidator;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 /**
  * A constraint to force a set of nodes at being offline.
- *
+ * <p/>
  * The restriction provided by the constraint is discrete.
  * however, if some of the nodes are already offline, then
  * their state will be unchanged.
+ *
  * @author Fabien Hermenier
  */
 public class Offline extends SatConstraint {
@@ -88,4 +93,34 @@ public class Offline extends SatConstraint {
         return !b;
     }
 
+    @Override
+    public ReconfigurationPlanValidator getValidator() {
+        return new Checker(new HashSet<>(getInvolvedVMs()));
+    }
+
+    /**
+     * Checker for the constraint.
+     */
+    private class Checker extends DefaultReconfigurationPlanValidator {
+
+        public Checker(Set<UUID> vms) {
+            super(vms);
+        }
+
+        @Override
+        public boolean accept(BootNode a) {
+            return !getInvolvedNodes().contains(a.getNode());
+        }
+
+        @Override
+        public boolean accept(Model mo) {
+            Mapping c = mo.getMapping();
+            for (UUID n : getInvolvedNodes()) {
+                if (!c.getOfflineNodes().contains(n)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
 }
