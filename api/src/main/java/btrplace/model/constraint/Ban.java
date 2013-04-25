@@ -21,6 +21,10 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.plan.event.BootVM;
+import btrplace.plan.event.DefaultReconfigurationPlanValidator;
+import btrplace.plan.event.MigrateVM;
+import btrplace.plan.event.ResumeVM;
 
 import java.util.Set;
 import java.util.UUID;
@@ -72,5 +76,46 @@ public class Ban extends SatConstraint {
             super.setContinuous(b);
         }
         return !b;
+    }
+
+    /**
+     * Checker for the constraint.
+     */
+    private class Checker extends DefaultReconfigurationPlanValidator {
+
+        public Checker(Set<UUID> vms) {
+            super(vms);
+        }
+
+        @Override
+        public boolean accept(BootVM a) {
+            return !onDenied(a.getVM(), a.getDestinationNode());
+        }
+
+        private boolean onDenied(UUID vm, UUID n) {
+            return isTracked(vm) && getInvolvedNodes().contains(n);
+        }
+
+        @Override
+        public boolean accept(MigrateVM a) {
+            return !onDenied(a.getVM(), a.getDestinationNode());
+        }
+
+        @Override
+        public boolean accept(ResumeVM a) {
+            return !onDenied(a.getVM(), a.getDestinationNode());
+        }
+
+        @Override
+        public boolean accept(Model mo) {
+            Mapping c = mo.getMapping();
+            Set<UUID> runnings = c.getRunningVMs();
+            for (UUID vm : getTrackedVMs()) {
+                if (runnings.contains(vm) && getInvolvedNodes().contains(c.getVMLocation(vm))) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 }
