@@ -21,11 +21,13 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.plan.ReconfigurationPlanValidator;
 import btrplace.plan.event.BootVM;
 import btrplace.plan.event.DefaultReconfigurationPlanValidator;
 import btrplace.plan.event.MigrateVM;
 import btrplace.plan.event.ResumeVM;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -76,6 +78,11 @@ public class Ban extends SatConstraint {
             super.setContinuous(b);
         }
         return !b;
+    }
+
+    @Override
+    public ReconfigurationPlanValidator getValidator() {
+        return new Checker(new HashSet<>(getInvolvedVMs()));
     }
 
     /**
