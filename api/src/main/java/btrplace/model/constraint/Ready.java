@@ -21,17 +21,21 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.plan.ReconfigurationPlanValidator;
+import btrplace.plan.event.*;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 /**
  * A constraint to force a set of VMs at being ready for running.
- *
+ * <p/>
  * The restriction provided by the constraint is discrete
  * however, if some of the VMs are already in the ready state, then
  * their state will be unchanged.
+ *
  * @author Fabien Hermenier
  */
 public class Ready extends SatConstraint {
@@ -84,5 +88,56 @@ public class Ready extends SatConstraint {
     @Override
     public boolean setContinuous(boolean b) {
         return !b;
+    }
+
+    @Override
+    public ReconfigurationPlanValidator getValidator() {
+        return new Checker(new HashSet<>(getInvolvedVMs()));
+    }
+
+    /**
+     * Checker for the constraint.
+     */
+    private class Checker extends DefaultReconfigurationPlanValidator {
+
+        public Checker(Set<UUID> vms) {
+            super(vms);
+        }
+
+        @Override
+        public boolean accept(BootVM a) {
+            return !isTracked(a.getVM());
+        }
+
+        @Override
+        public boolean accept(KillVM a) {
+            return !isTracked(a.getVM());
+        }
+
+        @Override
+        public boolean accept(MigrateVM a) {
+            return !isTracked(a.getVM());
+        }
+
+        @Override
+        public boolean accept(ResumeVM a) {
+            return !isTracked(a.getVM());
+        }
+
+        @Override
+        public boolean accept(SuspendVM a) {
+            return !isTracked(a.getVM());
+        }
+
+        @Override
+        public boolean accept(Model mo) {
+            Mapping c = mo.getMapping();
+            for (UUID vm : getInvolvedVMs()) {
+                if (!c.getReadyVMs().contains(vm)) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 }
