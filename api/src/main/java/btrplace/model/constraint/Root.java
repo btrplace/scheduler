@@ -22,8 +22,12 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlanValidator;
+import btrplace.plan.event.DefaultReconfigurationPlanValidator;
+import btrplace.plan.event.MigrateVM;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -102,6 +106,26 @@ public class Root extends SatConstraint {
             return super.setContinuous(b);
         }
         return b;
+    }
+
+    @Override
+    public ReconfigurationPlanValidator getValidator() {
+        return new Checker(new HashSet<>(getInvolvedVMs()));
+    }
+
+    /**
+     * Checker for the constraint.
+     */
+    private class Checker extends DefaultReconfigurationPlanValidator {
+
+        public Checker(Set<UUID> vms) {
+            super(vms);
+        }
+
+        @Override
+        public boolean accept(MigrateVM a) {
+            return !isTracked(a.getVM());
+        }
     }
 
 }
