@@ -22,10 +22,8 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.plan.*;
-import btrplace.plan.event.DefaultReconfigurationPlanValidator;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -129,43 +127,14 @@ public class Gather extends SatConstraint {
     }
 
     @Override
-    public ReconfigurationPlanValidator getValidator() {
-        return new Checker(new HashSet<>(getInvolvedVMs()));
+    public ReconfigurationPlanChecker getChecker() {
+        return new Checker(this);
     }
 
-    /**
-     * Checker for the constraint.
-     * TODO: Need to implement migrate for continuous restriction
-     */
-    private class Checker extends DefaultReconfigurationPlanValidator {
+    private class Checker extends DefaultReconfigurationPlanChecker {
 
-        private UUID pos;
-
-        public Checker(Set<UUID> vms) {
-            super(vms);
-        }
-
-        @Override
-        public boolean acceptResultingModel(Model mo) {
-            UUID used = null;
-            Mapping map = mo.getMapping();
-            for (UUID vm : getTrackedVMs()) {
-                if (map.getRunningVMs().contains(vm)) {
-                    if (used == null) {
-                        used = map.getVMLocation(vm);
-                    } else if (!used.equals(map.getVMLocation(vm))) {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-    }
-
-    private class Checker2 extends DefaultReconfigurationPlanChecker {
-
-        public Checker2(Set<UUID> vs, Set<UUID> ns) {
-            super(vs, ns);
+        public Checker(Gather g) {
+            super(g);
         }
 
         private UUID usedInContinuous;

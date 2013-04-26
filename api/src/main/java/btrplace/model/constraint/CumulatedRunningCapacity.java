@@ -24,9 +24,12 @@ import btrplace.model.SatConstraint;
 import btrplace.plan.Action;
 import btrplace.plan.DefaultReconfigurationPlanChecker;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlanChecker;
 import btrplace.plan.event.*;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Restrict to a given value, the cumulated amount of VMs running
@@ -147,16 +150,19 @@ public class CumulatedRunningCapacity extends SatConstraint {
         return b.toString();
     }
 
-    private class Checker2 extends DefaultReconfigurationPlanChecker {
+    @Override
+    public ReconfigurationPlanChecker getChecker() {
+        return new Checker(this);
+    }
+
+    private class Checker extends DefaultReconfigurationPlanChecker {
 
         private int usage;
 
         private Set<UUID> srcRunnings;
 
-        public Checker2(Set<UUID> vs, Set<UUID> ns) {
-            super(vs, ns);
-            usage = 0;
-            srcRunnings = new HashSet<>();
+        public Checker(CumulatedRunningCapacity c) {
+            super(c);
         }
 
         private boolean leave(UUID n) {

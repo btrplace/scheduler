@@ -21,10 +21,10 @@ package btrplace.model.constraint;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.view.ShareableResource;
-import btrplace.plan.ReconfigurationPlanValidator;
+import btrplace.plan.DefaultReconfigurationPlanChecker;
+import btrplace.plan.ReconfigurationPlanChecker;
 import btrplace.plan.event.Allocate;
 import btrplace.plan.event.AllocateEvent;
-import btrplace.plan.event.DefaultReconfigurationPlanValidator;
 
 import java.util.Collections;
 import java.util.Set;
@@ -131,42 +131,42 @@ public class Preserve extends SatConstraint {
     }
 
     @Override
-    public ReconfigurationPlanValidator getValidator() {
-        return new PreserveChecker((Set<UUID>) getInvolvedVMs());
+    public ReconfigurationPlanChecker getChecker() {
+        return new Checker(this);
     }
 
     /**
      * Checker for the constraint.
      */
-    private class PreserveChecker extends DefaultReconfigurationPlanValidator {
+    private class Checker extends DefaultReconfigurationPlanChecker {
 
-        public PreserveChecker(Set<UUID> vms) {
-            super(vms);
+        public Checker(Preserve p) {
+            super(p);
         }
 
         @Override
-        public boolean accept(AllocateEvent a) {
-            if (isTracked(a.getVM()) && a.getResourceId().equals(getResource())) {
+        public boolean start(AllocateEvent a) {
+            if (vms.contains(a.getVM()) && a.getResourceId().equals(getResource())) {
                 return a.getAmount() < getAmount();
             }
             return true;
         }
 
         @Override
-        public boolean accept(Allocate a) {
-            if (a.getResourceId().equals(getResource()) && isTracked(a.getVM())) {
+        public boolean start(Allocate a) {
+            if (a.getResourceId().equals(getResource()) && vms.contains(a.getVM())) {
                 return a.getAmount() < getAmount();
             }
             return true;
         }
 
         @Override
-        public boolean acceptOriginModel(Model mo) {
+        public boolean startsWith(Model mo) {
             return true;
         }
 
         @Override
-        public boolean acceptResultingModel(Model mo) {
+        public boolean endsWith(Model mo) {
             ShareableResource r = (ShareableResource) mo.getView(ShareableResource.VIEW_ID_BASE + rc);
             if (r == null) {
                 return false;

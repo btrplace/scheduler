@@ -21,10 +21,16 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.plan.*;
+import btrplace.plan.Action;
+import btrplace.plan.DefaultReconfigurationPlanChecker;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlanChecker;
 import btrplace.plan.event.*;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Restrict the hosting capacity of each of the given server to a given
@@ -138,115 +144,17 @@ public class SingleRunningCapacity extends SatConstraint {
     }
 
     @Override
-    public ReconfigurationPlanValidator getValidator() {
-        return new Checker();
+    public ReconfigurationPlanChecker getChecker() {
+        return new Checker(this);
     }
 
-    /**
-     * Checker for the constraint.
-     */
-    private class Checker extends DefaultReconfigurationPlanValidator {
+
+    private class Checker extends DefaultReconfigurationPlanChecker {
 
         private Map<UUID, Integer> usage;
 
-        public Checker() {
-            usage = new HashMap<>(getInvolvedNodes().size());
-        }
-
-        @Override
-        public boolean accept(BootNode a) {
-            if (getInvolvedNodes().contains(a.getNode())) {
-                usage.put(a.getNode(), 0);
-            }
-            return true;
-        }
-
-        @Override
-        public boolean accept(BootVM a) {
-            return arrive(a.getDestinationNode());
-        }
-
-        @Override
-        public boolean accept(KillVM a) {
-            return leave(a.getNode());
-        }
-
-        @Override
-        public boolean accept(MigrateVM a) {
-            return leave(a.getSourceNode()) && arrive(a.getDestinationNode());
-        }
-
-        @Override
-        public boolean accept(ResumeVM a) {
-            return arrive(a.getDestinationNode());
-        }
-
-        @Override
-        public boolean accept(ShutdownVM a) {
-            return leave(a.getNode());
-        }
-
-        @Override
-        public boolean accept(SuspendVM a) {
-            return leave(a.getSourceNode());
-        }
-
-        private boolean leave(UUID n) {
-            if (isContinuous() && getInvolvedNodes().contains(n)) {
-                usage.put(n, usage.get(n) - 1);
-            }
-            return true;
-        }
-
-        private boolean arrive(UUID n) {
-            if (isContinuous() && getInvolvedNodes().contains(n)) {
-                int u = usage.get(n);
-                if (u == amount) {
-                    return false;
-                }
-                usage.put(n, u + 1);
-            }
-            return true;
-        }
-
-        @Override
-        public boolean acceptResultingModel(Model mo) {
-            if (!isContinuous()) {
-                Mapping map = mo.getMapping();
-                for (UUID n : getInvolvedNodes()) {
-                    if (map.getRunningVMs(n).size() > amount) {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-
-        @Override
-        public boolean acceptOriginModel(Model mo) {
-            if (isContinuous()) {
-                Mapping map = mo.getMapping();
-                for (UUID n : getInvolvedNodes()) {
-                    int nb = map.getRunningVMs(n).size();
-                    if (nb > amount) {
-                        return false;
-                    }
-                    usage.put(n, nb);
-                }
-                return true;
-            }
-            return true;
-        }
-    }
-
-    private class Checker2 extends DefaultReconfigurationPlanChecker {
-
-        private Map<UUID, Integer> usage;
-
-        public Checker2(Set<UUID> vs, Set<UUID> ns) {
-            super(vs, ns);
-            usage = new HashMap<>(ns.size());
-            srcRunnings = new HashSet<>();
+        public Checker(SingleRunningCapacity s) {
+            super(s);
         }
 
         private boolean leave(UUID n) {

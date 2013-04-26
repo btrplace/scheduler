@@ -21,10 +21,8 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.ReconfigurationPlanValidator;
-import btrplace.plan.event.*;
+import btrplace.plan.*;
+import btrplace.plan.event.BootNode;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -135,28 +133,28 @@ public class Lonely extends SatConstraint {
     }
 
     @Override
-    public ReconfigurationPlanValidator getValidator() {
-        return new Checker(new HashSet<>(getInvolvedVMs()));
+    public ReconfigurationPlanChecker getChecker() {
+        return new Checker(this);
     }
 
     /**
      * Checker for the constraint.
      */
-    private class Checker extends DefaultReconfigurationPlanValidator {
+    private class Checker extends DefaultReconfigurationPlanChecker {
 
         private Set<UUID> idleNodes;
 
         private Set<UUID> privateNodes;
 
-        public Checker(Set<UUID> vms) {
-            super(vms);
+        public Checker(Lonely l) {
+            super(l);
             idleNodes = new HashSet<>();
             privateNodes = new HashSet<>();
         }
 
         private boolean checkDestination(UUID vm, UUID n) {
             if (isContinuous()) {
-                if (isTracked(vm)) {
+                if (vms.contains(vm)) {
                     if (!idleNodes.remove(n)) { //The node was not idle
                         return privateNodes.add(n); //So it must be private
                     }
@@ -173,31 +171,20 @@ public class Lonely extends SatConstraint {
         }
 
         @Override
-        public boolean accept(BootVM a) {
-            return checkDestination(a.getVM(), a.getDestinationNode());
-        }
-
-
-        @Override
-        public boolean accept(MigrateVM a) {
-            return checkDestination(a.getVM(), a.getDestinationNode());
-        }
-
-        @Override
-        public boolean accept(ResumeVM a) {
+        public boolean startRunningVMPlacement(RunningVMPlacement a) {
             return checkDestination(a.getVM(), a.getDestinationNode());
         }
 
         private boolean discreteCheck(Model mo) {
             Mapping map = mo.getMapping();
-            for (UUID vm : getTrackedVMs()) {
+            for (UUID vm : vms) {
                 if (map.getRunningVMs().contains(vm)) {
                     UUID host = map.getVMLocation(vm);
                     Set<UUID> on = map.getRunningVMs(host);
                     //Check for other VMs on the node. If they are not in the constraint
                     //it's a violation
                     for (UUID vm2 : on) {
-                        if (!vm2.equals(vm) && !getTrackedVMs().contains(vm2)) {
+                        if (!vm2.equals(vm) && !vms.contains(vm2)) {
                             return false;
                         }
                     }
@@ -207,22 +194,22 @@ public class Lonely extends SatConstraint {
         }
 
         @Override
-        public boolean accept(BootNode a) {
+        public boolean start(BootNode a) {
             return idleNodes.add(a.getNode());
         }
 
         @Override
-        public boolean acceptResultingModel(Model mo) {
+        public boolean endsWith(Model mo) {
             return isContinuous() || discreteCheck(mo);
         }
 
         @Override
-        public boolean acceptOriginModel(Model mo) {
+        public boolean startsWith(Model mo) {
             if (isContinuous()) {
                 boolean ret = discreteCheck(mo);
                 if (ret) {
                     Mapping map = mo.getMapping();
-                    for (UUID vm : getTrackedVMs()) {
+                    for (UUID vm : vms) {
                         if (map.getRunningVMs().contains(vm)) {
                             privateNodes.add(map.getVMLocation(vm));
                         }

@@ -39,7 +39,7 @@ public class OnlineTest implements PremadeElements {
     public void testInstantiation() {
         Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
         Online o = new Online(s);
-        Assert.assertNotNull(o.getValidator());
+        Assert.assertNotNull(o.getChecker());
         Assert.assertEquals(o.getInvolvedNodes(), s);
         Assert.assertTrue(o.getInvolvedVMs().isEmpty());
         Assert.assertNotNull(o.toString());

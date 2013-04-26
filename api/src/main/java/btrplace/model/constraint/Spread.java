@@ -22,7 +22,10 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.plan.*;
-import btrplace.plan.event.*;
+import btrplace.plan.event.KillVM;
+import btrplace.plan.event.MigrateVM;
+import btrplace.plan.event.ShutdownVM;
+import btrplace.plan.event.SuspendVM;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -133,37 +136,15 @@ public class Spread extends SatConstraint {
     }
 
     @Override
-    public ReconfigurationPlanValidator getValidator() {
-        return new Checker(new HashSet<>(getInvolvedVMs()));
+    public ReconfigurationPlanChecker getChecker() {
+        return new Checker(this);
     }
 
-    /**
-     * Checker for the constraint.
-     * TODO: possible to implement migrate
-     */
-    private class Checker extends DefaultReconfigurationPlanValidator {
 
-        public Checker(Set<UUID> vms) {
-            super(vms);
-        }
+    private class Checker extends DefaultReconfigurationPlanChecker {
 
-        @Override
-        public boolean acceptResultingModel(Model mo) {
-            Mapping c = mo.getMapping();
-            Set<UUID> used = new HashSet<>();
-            for (UUID vm : getInvolvedVMs()) {
-                if (c.getRunningVMs().contains(vm) && !used.add(c.getVMLocation(vm))) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
-
-    private class Checker2 extends DefaultReconfigurationPlanChecker {
-
-        public Checker2(Set<UUID> vs, Set<UUID> ns) {
-            super(vs, ns);
+        public Checker(Spread s) {
+            super(s);
             denied = new HashSet<>();
         }
 

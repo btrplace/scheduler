@@ -21,13 +21,10 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.plan.*;
-import btrplace.plan.event.BootVM;
-import btrplace.plan.event.DefaultReconfigurationPlanValidator;
-import btrplace.plan.event.MigrateVM;
-import btrplace.plan.event.ResumeVM;
+import btrplace.plan.DefaultReconfigurationPlanChecker;
+import btrplace.plan.ReconfigurationPlanChecker;
+import btrplace.plan.RunningVMPlacement;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -81,60 +78,14 @@ public class Ban extends SatConstraint {
     }
 
     @Override
-    public ReconfigurationPlanValidator getValidator() {
-        return new Checker(new HashSet<>(getInvolvedVMs()));
+    public ReconfigurationPlanChecker getChecker() {
+        return new Checker(this);
     }
 
-    /**
-     * Checker for the constraint.
-     */
-    private class Checker extends DefaultReconfigurationPlanValidator {
+    private class Checker extends DefaultReconfigurationPlanChecker {
 
-        public Checker(Set<UUID> vms) {
-            super(vms);
-        }
-
-        @Override
-        public boolean accept(BootVM a) {
-            return !onDenied(a.getVM(), a.getDestinationNode());
-        }
-
-        private boolean onDenied(UUID vm, UUID n) {
-            return isTracked(vm) && getInvolvedNodes().contains(n);
-        }
-
-        @Override
-        public boolean accept(MigrateVM a) {
-            return !onDenied(a.getVM(), a.getDestinationNode());
-        }
-
-        @Override
-        public boolean accept(ResumeVM a) {
-            return !onDenied(a.getVM(), a.getDestinationNode());
-        }
-
-        @Override
-        public boolean acceptOriginModel(Model mo) {
-            return true;
-        }
-
-        @Override
-        public boolean acceptResultingModel(Model mo) {
-            Mapping c = mo.getMapping();
-            Set<UUID> runnings = c.getRunningVMs();
-            for (UUID vm : getTrackedVMs()) {
-                if (runnings.contains(vm) && getInvolvedNodes().contains(c.getVMLocation(vm))) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
-
-    private class Checker2 extends DefaultReconfigurationPlanChecker {
-
-        public Checker2(Set<UUID> vs, Set<UUID> ns) {
-            super(vs, ns);
+        public Checker(Ban b) {
+            super(b);
         }
 
         @Override

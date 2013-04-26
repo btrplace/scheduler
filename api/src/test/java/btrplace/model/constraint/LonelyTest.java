@@ -43,7 +43,7 @@ public class LonelyTest implements PremadeElements {
     public void testInstantiation() {
         Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
         Lonely l = new Lonely(s);
-        Assert.assertNotNull(l.getValidator());
+        Assert.assertNotNull(l.getChecker());
         Assert.assertFalse(l.toString().contains("null"));
         Assert.assertEquals(l.getInvolvedVMs(), s);
         Assert.assertTrue(l.getInvolvedNodes().isEmpty());

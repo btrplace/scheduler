@@ -43,7 +43,7 @@ public class GatherTest implements PremadeElements {
     public void testInstantiate() {
         Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2));
         Gather g = new Gather(s);
-        Assert.assertNotNull(g.getValidator());
+        Assert.assertNotNull(g.getChecker());
         Assert.assertTrue(g.getInvolvedNodes().isEmpty());
         Assert.assertEquals(g.getInvolvedVMs(), s);
         Assert.assertFalse(g.toString().contains("null"));

@@ -43,7 +43,7 @@ public class SplitTest implements PremadeElements {
         Set<UUID> s2 = Collections.singleton(vm2);
         List<Set<UUID>> args = Arrays.asList(s1, s2);
         Split sp = new Split(args);
-        Assert.assertNotNull(sp.getValidator());
+        Assert.assertNotNull(sp.getChecker());
         Assert.assertEquals(args, sp.getSets());
         Assert.assertEquals(2, sp.getInvolvedVMs().size());
         Assert.assertTrue(sp.getInvolvedNodes().isEmpty());

@@ -23,9 +23,9 @@ import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.Action;
+import btrplace.plan.DefaultReconfigurationPlanChecker;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.ReconfigurationPlanValidator;
-import btrplace.plan.event.DefaultReconfigurationPlanValidator;
+import btrplace.plan.ReconfigurationPlanChecker;
 
 import java.util.Collections;
 import java.util.Set;
@@ -176,18 +176,18 @@ public class Overbook extends SatConstraint {
     }
 
     @Override
-    public ReconfigurationPlanValidator getValidator() {
-        return new Checker();
+    public ReconfigurationPlanChecker getChecker() {
+        return new Checker(this);
     }
 
-    private class Checker extends DefaultReconfigurationPlanValidator {
+    private class Checker extends DefaultReconfigurationPlanChecker {
 
-        public Checker() {
-            super(Collections.<UUID>emptySet());
+        public Checker(Overbook o) {
+            super(o);
         }
 
         @Override
-        public boolean acceptResultingModel(Model i) {
+        public boolean endsWith(Model i) {
             Mapping cfg = i.getMapping();
             ShareableResource rc = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + rcId);
             if (rc == null) {

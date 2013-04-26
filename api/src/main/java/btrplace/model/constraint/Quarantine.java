@@ -22,10 +22,7 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.plan.*;
-import btrplace.plan.event.BootVM;
-import btrplace.plan.event.DefaultReconfigurationPlanValidator;
 import btrplace.plan.event.MigrateVM;
-import btrplace.plan.event.ResumeVM;
 
 import java.util.*;
 
@@ -90,8 +87,8 @@ public class Quarantine extends SatConstraint {
     }
 
     @Override
-    public ReconfigurationPlanValidator getValidator() {
-        return new Checker();
+    public ReconfigurationPlanChecker getChecker() {
+        return new Checker(this);
     }
 
     @Override
@@ -128,45 +125,10 @@ public class Quarantine extends SatConstraint {
         return b;
     }
 
-    /**
-     * Checker for the constraint.
-     */
-    private class Checker extends DefaultReconfigurationPlanValidator {
+    public class Checker extends DefaultReconfigurationPlanChecker {
 
-        @Override
-        public boolean accept(BootVM a) {
-            return !getInvolvedNodes().contains(a.getDestinationNode());
-        }
-
-        @Override
-        public boolean accept(MigrateVM a) {
-            if (isTracked(a.getVM())) { //the VM can not move elsewhere
-                return false;
-            }
-            return !getInvolvedNodes().contains(a.getDestinationNode());
-        }
-
-        @Override
-        public boolean accept(ResumeVM a) {
-            return !getInvolvedNodes().contains(a.getDestinationNode());
-        }
-
-        @Override
-        public boolean acceptResultingModel(Model mo) {
-            return true;
-        }
-
-        @Override
-        public boolean acceptOriginModel(Model mo) {
-            Mapping map = mo.getMapping();
-            return getTrackedVMs().addAll(map.getRunningVMs(getInvolvedNodes()));
-        }
-    }
-
-    public class Checker2 extends DefaultReconfigurationPlanChecker {
-
-        public Checker2(Set<UUID> vs, Set<UUID> ns) {
-            super(vs, ns);
+        public Checker(Quarantine q) {
+            super(q);
         }
 
         @Override

@@ -19,6 +19,7 @@
 package btrplace.model;
 
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlanChecker;
 import btrplace.plan.ReconfigurationPlanValidator;
 
 import java.util.Collection;
@@ -169,7 +170,7 @@ public abstract class SatConstraint {
      *
      * @return a non-null {@link ReconfigurationPlanValidator}
      */
-    public ReconfigurationPlanValidator getValidator() {
+    public ReconfigurationPlanChecker getChecker() {
         throw new UnsupportedOperationException();
     }
 }

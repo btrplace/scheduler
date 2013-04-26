@@ -43,7 +43,7 @@ public class QuarantineTest implements PremadeElements {
     public void testInstantiation() {
         Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
         Quarantine q = new Quarantine(s);
-        Assert.assertNotNull(q.getValidator());
+        Assert.assertNotNull(q.getChecker());
         Assert.assertTrue(q.getInvolvedVMs().isEmpty());
         Assert.assertEquals(q.getInvolvedNodes(), s);
         Assert.assertTrue(q.isContinuous());

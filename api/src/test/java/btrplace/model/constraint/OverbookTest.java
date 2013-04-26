@@ -44,7 +44,7 @@ public class OverbookTest implements PremadeElements {
     public void testInstantiation() {
         Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
         Overbook o = new Overbook(s, "foo", 1.5);
-        Assert.assertNotNull(o.getValidator());
+        Assert.assertNotNull(o.getChecker());
         Assert.assertEquals(s, o.getInvolvedNodes());
         Assert.assertEquals("foo", o.getResource());
         Assert.assertTrue(o.getInvolvedVMs().isEmpty());

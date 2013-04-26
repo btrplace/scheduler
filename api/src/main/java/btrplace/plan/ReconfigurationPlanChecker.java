@@ -1,6 +1,7 @@
 package btrplace.plan;
 
 import btrplace.model.Model;
+import btrplace.model.SatConstraint;
 import btrplace.plan.event.*;
 
 /**
@@ -17,30 +18,39 @@ public interface ReconfigurationPlanChecker {
     boolean startsWith(Model mo);
 
     boolean start(MigrateVM a);
+
     void end(MigrateVM a);
 
     boolean start(BootVM a);
+
     void end(BootVM a);
 
     boolean start(BootNode a);
+
     void end(BootNode a);
 
     boolean start(ShutdownVM a);
+
     void end(ShutdownVM a);
 
     boolean start(ShutdownNode a);
+
     void end(ShutdownNode a);
 
     boolean start(ResumeVM a);
+
     void end(ResumeVM a);
 
     boolean start(SuspendVM a);
+
     void end(SuspendVM a);
 
     boolean start(KillVM a);
+
     void end(KillVM a);
 
     boolean start(ForgeVM a);
+
     void end(ForgeVM a);
 
     boolean start(SubstitutedVMEvent e);
@@ -48,7 +58,10 @@ public interface ReconfigurationPlanChecker {
     boolean start(AllocateEvent e);
 
     boolean start(Allocate e);
+
     void end(Allocate e);
 
     boolean endsWith(Model mo);
+
+    SatConstraint getConstraint();
 }

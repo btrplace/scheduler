@@ -1,8 +1,10 @@
 package btrplace.plan;
 
 import btrplace.model.Model;
+import btrplace.model.SatConstraint;
 import btrplace.plan.event.*;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -15,9 +17,12 @@ public abstract class DefaultReconfigurationPlanChecker implements Reconfigurati
 
     protected Set<UUID> nodes;
 
-    public DefaultReconfigurationPlanChecker(Set<UUID> vms, Set<UUID> nodes) {
-        this.vms = vms;
-        this.nodes = nodes;
+    private SatConstraint cstr;
+
+    public DefaultReconfigurationPlanChecker(SatConstraint cstr) {
+        this.vms = new HashSet<>(cstr.getInvolvedVMs());
+        this.nodes = new HashSet<>(cstr.getInvolvedVMs());
+        this.cstr = cstr;
     }
 
     @Override
@@ -146,5 +151,10 @@ public abstract class DefaultReconfigurationPlanChecker implements Reconfigurati
 
     public void endRunningVMPlacement(RunningVMPlacement a) {
 
+    }
+
+    @Override
+    public SatConstraint getConstraint() {
+        return cstr;
     }
 }

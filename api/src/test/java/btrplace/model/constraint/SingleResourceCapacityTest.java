@@ -45,7 +45,7 @@ public class SingleResourceCapacityTest implements PremadeElements {
         Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
 
         SingleResourceCapacity c = new SingleResourceCapacity(s, "foo", 3);
-        Assert.assertNotNull(c.getValidator());
+        Assert.assertNotNull(c.getChecker());
         Assert.assertEquals(s, c.getInvolvedNodes());
         Assert.assertEquals("foo", c.getResource());
         Assert.assertEquals(3, c.getAmount());

@@ -21,14 +21,11 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.plan.DefaultReconfigurationPlanChecker;
 import btrplace.plan.DenyMyVMsActions;
-import btrplace.plan.ReconfigurationPlanValidator;
+import btrplace.plan.ReconfigurationPlanChecker;
 import btrplace.plan.RunningVMPlacement;
-import btrplace.plan.event.*;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -95,50 +92,14 @@ public class Running extends SatConstraint {
     }
 
     @Override
-    public ReconfigurationPlanValidator getValidator() {
-        return new Checker(new HashSet<>(getInvolvedVMs()));
+    public ReconfigurationPlanChecker getChecker() {
+        return new Checker(this);
     }
 
-    /**
-     * Checker for the constraint.
-     */
-    private class Checker extends VMStateChangeValidator {
+    private class Checker extends DenyMyVMsActions {
 
-        public Checker(Set<UUID> vms) {
-            super(vms);
-        }
-
-        @Override
-        public boolean accept(BootVM a) {
-            return true;
-        }
-
-        @Override
-        public boolean accept(MigrateVM a) {
-            return true;
-        }
-
-        @Override
-        public boolean accept(ResumeVM a) {
-            return true;
-        }
-
-        @Override
-        public boolean acceptResultingModel(Model mo) {
-            Mapping c = mo.getMapping();
-            for (UUID vm : getInvolvedVMs()) {
-                if (!c.getRunningVMs().contains(vm)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
-
-    private class Checker2 extends DenyMyVMsActions {
-
-        public Checker2(Set<UUID> vs, Set<UUID> ns) {
-            super(vs, ns);
+        public Checker(Running r) {
+            super(r);
         }
 
         @Override

@@ -22,10 +22,8 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.plan.DefaultReconfigurationPlanChecker;
-import btrplace.plan.ReconfigurationPlanValidator;
-import btrplace.plan.RunningVMPlacement;
+import btrplace.plan.ReconfigurationPlanChecker;
 import btrplace.plan.event.BootNode;
-import btrplace.plan.event.DefaultReconfigurationPlanValidator;
 
 import java.util.Collections;
 import java.util.Set;
@@ -95,38 +93,14 @@ public class Offline extends SatConstraint {
     }
 
     @Override
-    public ReconfigurationPlanValidator getValidator() {
-        return new Checker();
+    public ReconfigurationPlanChecker getChecker() {
+        return new Checker(this);
     }
 
-    private class Checker extends DefaultReconfigurationPlanValidator {
+    private class Checker extends DefaultReconfigurationPlanChecker {
 
-        @Override
-        public boolean accept(BootNode a) {
-            return !getInvolvedNodes().contains(a.getNode());
-        }
-
-        @Override
-        public boolean acceptOriginModel(Model mo) {
-            return true;
-        }
-
-        @Override
-        public boolean acceptResultingModel(Model mo) {
-            Mapping c = mo.getMapping();
-            for (UUID n : getInvolvedNodes()) {
-                if (!c.getOnlineNodes().contains(n)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
-
-    private class Checker2 extends DefaultReconfigurationPlanChecker {
-
-        public Checker2(Set<UUID> vs, Set<UUID> ns) {
-            super(vs, ns);
+        public Checker(Offline o) {
+            super(o);
         }
 
         @Override

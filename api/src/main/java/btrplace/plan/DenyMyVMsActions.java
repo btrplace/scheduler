@@ -1,6 +1,7 @@
 package btrplace.plan;
 
 import btrplace.model.Model;
+import btrplace.model.SatConstraint;
 import btrplace.plan.event.*;
 
 import java.util.Set;
@@ -15,9 +16,10 @@ public abstract class DenyMyVMsActions implements ReconfigurationPlanChecker {
 
     protected Set<UUID> nodes;
 
-    public DenyMyVMsActions(Set<UUID> vms, Set<UUID> nodes) {
-        this.vms = vms;
-        this.nodes = nodes;
+    private SatConstraint cstr;
+
+    public DenyMyVMsActions(SatConstraint s) {
+        cstr = s;
     }
 
     @Override
@@ -146,5 +148,10 @@ public abstract class DenyMyVMsActions implements ReconfigurationPlanChecker {
 
     public void endRunningVMPlacement(RunningVMPlacement a) {
 
+    }
+
+    @Override
+    public SatConstraint getConstraint() {
+        return cstr;
     }
 }

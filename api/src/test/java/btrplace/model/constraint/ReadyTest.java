@@ -39,7 +39,7 @@ public class ReadyTest implements PremadeElements {
     public void testInstantiation() {
         Set<UUID> x = new HashSet<UUID>(Arrays.asList(vm1, vm2));
         Ready s = new Ready(x);
-        Assert.assertNotNull(s.getValidator());
+        Assert.assertNotNull(s.getChecker());
         Assert.assertEquals(x, s.getInvolvedVMs());
         Assert.assertTrue(s.getInvolvedNodes().isEmpty());
         Assert.assertNotNull(s.toString());

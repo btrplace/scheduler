@@ -43,7 +43,7 @@ public class PreserveTest implements PremadeElements {
     public void testInstantiation() {
         Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2));
         Preserve p = new Preserve(vms, "cpu", 3);
-        Assert.assertNotNull(p.getValidator());
+        Assert.assertNotNull(p.getChecker());
         Assert.assertEquals(vms, p.getInvolvedVMs());
         Assert.assertTrue(p.getInvolvedNodes().isEmpty());
         Assert.assertEquals(3, p.getAmount());

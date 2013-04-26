@@ -46,7 +46,7 @@ public class AmongTest implements PremadeElements {
         Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(s1, s2));
         Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
         Among a = new Among(vms, pGrps);
-        Assert.assertNotNull(a.getValidator());
+        Assert.assertNotNull(a.getChecker());
         Assert.assertEquals(a.getInvolvedVMs(), vms);
         Assert.assertEquals(a.getGroupsOfNodes(), pGrps);
         Assert.assertEquals(a.getInvolvedNodes().size(), s1.size() + s2.size());
