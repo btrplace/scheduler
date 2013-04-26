@@ -39,7 +39,7 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
 
     private DependenciesExtractor depsExtractor;
 
-    private static Comparator<Action> startFirstComparator = new TimedBasedActionComparator(true);
+    private static Comparator<Action> startFirstComparator = new TimedBasedActionComparator(true, true);
 
     private ReconfigurationPlanApplier applier = new TimeBasedPlanApplier();
 
