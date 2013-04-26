@@ -21,9 +21,7 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.ReconfigurationPlanValidator;
+import btrplace.plan.*;
 import btrplace.plan.event.DefaultReconfigurationPlanValidator;
 
 import java.util.Collections;
@@ -157,6 +155,61 @@ public class Gather extends SatConstraint {
                         used = map.getVMLocation(vm);
                     } else if (!used.equals(map.getVMLocation(vm))) {
                         return false;
+                    }
+                }
+            }
+            return true;
+        }
+    }
+
+    private class Checker2 extends DefaultReconfigurationPlanChecker {
+
+        public Checker2(Set<UUID> vs, Set<UUID> ns) {
+            super(vs, ns);
+        }
+
+        private UUID usedInContinuous;
+
+        @Override
+        public boolean startsWith(Model mo) {
+            if (isContinuous()) {
+                UUID used = null;
+                Mapping map = mo.getMapping();
+                for (UUID vm : vms) {
+                    if (map.getRunningVMs().contains(vm)) {
+                        if (used == null) {
+                            used = map.getVMLocation(vm);
+                        } else if (!used.equals(map.getVMLocation(vm))) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        @Override
+        public boolean startRunningVMPlacement(RunningVMPlacement a) {
+            if (isContinuous() && vms.contains(a.getVM())) {
+                if (a.getDestinationNode() != usedInContinuous) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        @Override
+        public boolean endsWith(Model mo) {
+            if (!isContinuous()) {
+                UUID used = null;
+                Mapping map = mo.getMapping();
+                for (UUID vm : vms) {
+                    if (map.getRunningVMs().contains(vm)) {
+                        if (used == null) {
+                            used = map.getVMLocation(vm);
+                        } else if (!used.equals(map.getVMLocation(vm))) {
+                            return false;
+                        }
                     }
                 }
             }

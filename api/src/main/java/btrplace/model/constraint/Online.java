@@ -21,7 +21,9 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.plan.DefaultReconfigurationPlanChecker;
 import btrplace.plan.ReconfigurationPlanValidator;
+import btrplace.plan.event.BootNode;
 import btrplace.plan.event.DefaultReconfigurationPlanValidator;
 import btrplace.plan.event.ShutdownNode;
 
@@ -112,6 +114,29 @@ public class Online extends SatConstraint {
         public boolean acceptResultingModel(Model mo) {
             Mapping c = mo.getMapping();
             for (UUID n : getInvolvedNodes()) {
+                if (!c.getOnlineNodes().contains(n)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
+    private class Checker2 extends DefaultReconfigurationPlanChecker {
+
+        public Checker2(Set<UUID> vs, Set<UUID> ns) {
+            super(vs, ns);
+        }
+
+        @Override
+        public boolean start(ShutdownNode a) {
+            return !nodes.contains(a.getNode());
+        }
+
+        @Override
+        public boolean endsWith(Model mo) {
+            Mapping c = mo.getMapping();
+            for (UUID n : nodes) {
                 if (!c.getOnlineNodes().contains(n)) {
                     return false;
                 }

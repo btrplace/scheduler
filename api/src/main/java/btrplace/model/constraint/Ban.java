@@ -21,7 +21,7 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.plan.ReconfigurationPlanValidator;
+import btrplace.plan.*;
 import btrplace.plan.event.BootVM;
 import btrplace.plan.event.DefaultReconfigurationPlanValidator;
 import btrplace.plan.event.MigrateVM;
@@ -124,6 +124,30 @@ public class Ban extends SatConstraint {
             Set<UUID> runnings = c.getRunningVMs();
             for (UUID vm : getTrackedVMs()) {
                 if (runnings.contains(vm) && getInvolvedNodes().contains(c.getVMLocation(vm))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
+    private class Checker2 extends DefaultReconfigurationPlanChecker {
+
+        public Checker2(Set<UUID> vs, Set<UUID> ns) {
+            super(vs, ns);
+        }
+
+        @Override
+        public boolean startRunningVMPlacement(RunningVMPlacement r) {
+            return vms.contains(r.getVM()) && nodes.contains(r.getDestinationNode());
+        }
+
+        @Override
+        public boolean endsWith(Model mo) {
+            Mapping c = mo.getMapping();
+            Set<UUID> runnings = c.getRunningVMs();
+            for (UUID vm : vms) {
+                if (runnings.contains(vm) && nodes.contains(c.getVMLocation(vm))) {
                     return false;
                 }
             }

@@ -21,9 +21,7 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.ReconfigurationPlanValidator;
+import btrplace.plan.*;
 import btrplace.plan.event.BootVM;
 import btrplace.plan.event.DefaultReconfigurationPlanValidator;
 import btrplace.plan.event.MigrateVM;
@@ -163,5 +161,38 @@ public class Quarantine extends SatConstraint {
             Mapping map = mo.getMapping();
             return getTrackedVMs().addAll(map.getRunningVMs(getInvolvedNodes()));
         }
+    }
+
+    public class Checker2 extends DefaultReconfigurationPlanChecker {
+
+        public Checker2(Set<UUID> vs, Set<UUID> ns) {
+            super(vs, ns);
+        }
+
+        @Override
+        public boolean start(MigrateVM a) {
+            if (vms.contains(a.getVM())) { //the VM can not move elsewhere
+                return false;
+            }
+            return startRunningVMPlacement(a);
+        }
+
+        @Override
+        public boolean startRunningVMPlacement(RunningVMPlacement a) {
+            return !nodes.contains(a.getDestinationNode());
+        }
+
+        @Override
+        public boolean endsWith(Model mo) {
+            return true;
+        }
+
+        @Override
+        public boolean startsWith(Model mo) {
+            Mapping map = mo.getMapping();
+            vms.clear();
+            return vms.addAll(map.getRunningVMs(nodes));
+        }
+
     }
 }

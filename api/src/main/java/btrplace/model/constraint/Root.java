@@ -21,6 +21,7 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.plan.DefaultReconfigurationPlanChecker;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlanValidator;
 import btrplace.plan.event.DefaultReconfigurationPlanValidator;
@@ -125,6 +126,21 @@ public class Root extends SatConstraint {
         @Override
         public boolean accept(MigrateVM a) {
             return !isTracked(a.getVM());
+        }
+    }
+
+    /**
+     * Checker for the constraint.
+     */
+    private class Checker2 extends DefaultReconfigurationPlanChecker {
+
+        public Checker2(Set<UUID> vs, Set<UUID> ns) {
+            super(vs, ns);
+        }
+
+        @Override
+        public boolean start(MigrateVM a) {
+            return !vms.contains(a.getVM());
         }
     }
 

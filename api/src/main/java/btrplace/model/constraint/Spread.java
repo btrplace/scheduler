@@ -21,11 +21,8 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.ReconfigurationPlanValidator;
-import btrplace.plan.RunningVMPlacement;
-import btrplace.plan.event.DefaultReconfigurationPlanValidator;
+import btrplace.plan.*;
+import btrplace.plan.event.*;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -157,6 +154,87 @@ public class Spread extends SatConstraint {
             for (UUID vm : getInvolvedVMs()) {
                 if (c.getRunningVMs().contains(vm) && !used.add(c.getVMLocation(vm))) {
                     return false;
+                }
+            }
+            return true;
+        }
+    }
+
+    private class Checker2 extends DefaultReconfigurationPlanChecker {
+
+        public Checker2(Set<UUID> vs, Set<UUID> ns) {
+            super(vs, ns);
+            denied = new HashSet<>();
+        }
+
+        private Set<UUID> denied;
+
+        @Override
+        public boolean startsWith(Model mo) {
+            if (isContinuous()) {
+                Mapping map = mo.getMapping();
+                for (UUID vm : vms) {
+                    UUID n = map.getVMLocation(vm);
+                    if (n != null) {
+                        denied.add(n);
+                    }
+                }
+            }
+            return true;
+        }
+
+        @Override
+        public boolean startRunningVMPlacement(RunningVMPlacement a) {
+            if (isContinuous() && vms.contains(a.getVM())) {
+                if (denied.contains(a.getDestinationNode())) {
+                    return false;
+                }
+                denied.add(a.getDestinationNode());
+            }
+            return true;
+        }
+
+        @Override
+        public void end(MigrateVM a) {
+            unDenied(a.getVM(), a.getSourceNode());
+        }
+
+        private void unDenied(UUID vm, UUID n) {
+            if (isContinuous()) {
+                if (vms.contains(vm)) {
+                    denied.remove(n);
+                }
+            }
+        }
+
+        @Override
+        public void end(ShutdownVM a) {
+            unDenied(a.getVM(), a.getNode());
+        }
+
+        @Override
+        public void end(SuspendVM a) {
+            unDenied(a.getVM(), a.getSourceNode());
+        }
+
+        @Override
+        public void end(KillVM a) {
+            unDenied(a.getVM(), a.getNode());
+        }
+
+        @Override
+        public boolean endsWith(Model mo) {
+            if (!isContinuous()) {
+                UUID used = null;
+                Mapping map = mo.getMapping();
+                for (UUID vm : vms) {
+                    if (map.getRunningVMs().contains(vm)) {
+                        if (used == null) {
+                            used = map.getVMLocation(vm);
+                        } else if (!used.equals(map.getVMLocation(vm))) {
+                            return false;
+                        }
+                    }
                 }
             }
             return true;

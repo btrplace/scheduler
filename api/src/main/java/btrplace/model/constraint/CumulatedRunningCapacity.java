@@ -18,14 +18,15 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.plan.Action;
+import btrplace.plan.DefaultReconfigurationPlanChecker;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.*;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Restrict to a given value, the cumulated amount of VMs running
@@ -144,5 +145,104 @@ public class CumulatedRunningCapacity extends SatConstraint {
         b.append(')');
 
         return b.toString();
+    }
+
+    private class Checker2 extends DefaultReconfigurationPlanChecker {
+
+        private int usage;
+
+        private Set<UUID> srcRunnings;
+
+        public Checker2(Set<UUID> vs, Set<UUID> ns) {
+            super(vs, ns);
+            usage = 0;
+            srcRunnings = new HashSet<>();
+        }
+
+        private boolean leave(UUID n) {
+            if (isContinuous() && nodes.contains(n)) {
+                usage--;
+            }
+            return true;
+        }
+
+        private boolean arrive(UUID n) {
+            if (isContinuous() && nodes.contains(n)) {
+                if (usage++ == qty) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        @Override
+        public boolean start(BootVM a) {
+            return arrive(a.getDestinationNode());
+        }
+
+        @Override
+        public boolean start(KillVM a) {
+            if (isContinuous() && srcRunnings.remove(a.getVM())) {
+                return leave(a.getNode());
+            }
+            return true;
+        }
+
+        @Override
+        public boolean start(MigrateVM a) {
+            if (isContinuous()) {
+                if (!(nodes.contains(a.getSourceNode()) && nodes.contains(a.getDestinationNode()))) {
+                    return leave(a.getSourceNode()) && arrive(a.getDestinationNode());
+                }
+            }
+            return true;
+        }
+
+        @Override
+        public boolean start(ResumeVM a) {
+            return arrive(a.getDestinationNode());
+        }
+
+        @Override
+        public boolean start(ShutdownVM a) {
+            return leave(a.getNode());
+        }
+
+        @Override
+        public boolean start(SuspendVM a) {
+            return leave(a.getSourceNode());
+        }
+
+        @Override
+        public boolean startsWith(Model mo) {
+            if (isContinuous()) {
+                int nb = 0;
+                Mapping map = mo.getMapping();
+                for (UUID n : nodes) {
+                    nb += map.getRunningVMs(n).size();
+                    if (nb > qty) {
+                        return false;
+                    }
+                }
+                srcRunnings.addAll(map.getRunningVMs());
+            }
+            return true;
+        }
+
+        @Override
+        public boolean endsWith(Model mo) {
+            if (isContinuous()) {
+                int nb = 0;
+                Mapping map = mo.getMapping();
+                for (UUID n : nodes) {
+                    nb += map.getRunningVMs(n).size();
+                    if (nb > qty) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            return true;
+        }
     }
 }

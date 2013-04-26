@@ -60,4 +60,26 @@ public class TimedBasedActionComparatorTest {
         Assert.assertTrue(startCmp.compare(a, b) > 0);
         Assert.assertTrue(stopCmp.compare(a, b) > 0);
     }
+
+    /**
+     * 0:2 1:3 3:7 1:5 2:3 0:3
+     *
+     * source Model
+     * s(0:2)
+     * s(0:3)
+     *
+     * s(1:3)
+     * s(1:5)
+     *
+     * e(0:2)
+     *
+     * e(0:3)
+     * e(2:3)
+     * e(1:3)
+     * s(3:7)
+     *
+     * e(1:5)
+     * e(1:7)
+     * endsWith(dstModel)
+     */
 }
