@@ -4,6 +4,7 @@ import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.plan.event.*;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -20,6 +21,7 @@ public abstract class DenyMyVMsActions implements ReconfigurationPlanChecker {
 
     public DenyMyVMsActions(SatConstraint s) {
         cstr = s;
+        vms = new HashSet<>(s.getInvolvedVMs());
     }
 
     @Override

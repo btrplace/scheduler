@@ -20,7 +20,6 @@ package btrplace.model;
 
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlanChecker;
-import btrplace.plan.ReconfigurationPlanValidator;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -108,7 +107,9 @@ public abstract class SatConstraint {
      * @param i the model to check
      * @return {@code true} iff the constraint is not violated
      */
-    public abstract Sat isSatisfied(Model i);
+    public Sat isSatisfied(Model i) {
+        return getChecker().endsWith(i) ? Sat.SATISFIED : Sat.UNSATISFIED;
+    }
 
     /**
      * Check if a plan satisfies the constraint.
@@ -168,7 +169,7 @@ public abstract class SatConstraint {
     /**
      * Get the validator used to check if a plan satisfies the constraint.
      *
-     * @return a non-null {@link ReconfigurationPlanValidator}
+     * @return a non-null {@link ReconfigurationPlanChecker}
      */
     public ReconfigurationPlanChecker getChecker() {
         throw new UnsupportedOperationException();

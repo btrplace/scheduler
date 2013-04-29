@@ -66,18 +66,6 @@ public class Spread extends SatConstraint {
     }
 
     @Override
-    public Sat isSatisfied(Model i) {
-        Mapping c = i.getMapping();
-        Set<UUID> used = new HashSet<>();
-        for (UUID vm : getInvolvedVMs()) {
-            if (c.getRunningVMs().contains(vm) && !used.add(c.getVMLocation(vm))) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
     public Sat isSatisfied(ReconfigurationPlan plan) {
         if (plan.getSize() == 0) {
             return isSatisfied(plan.getOrigin());
@@ -205,16 +193,12 @@ public class Spread extends SatConstraint {
 
         @Override
         public boolean endsWith(Model mo) {
-            if (!isContinuous()) {
-                UUID used = null;
-                Mapping map = mo.getMapping();
-                for (UUID vm : vms) {
-                    if (map.getRunningVMs().contains(vm)) {
-                        if (used == null) {
-                            used = map.getVMLocation(vm);
-                        } else if (!used.equals(map.getVMLocation(vm))) {
-                            return false;
-                        }
+            Set<UUID> forbidden = new HashSet<>();
+            Mapping map = mo.getMapping();
+            for (UUID vm : vms) {
+                if (map.getRunningVMs().contains(vm)) {
+                    if (!forbidden.add(map.getVMLocation(vm))) {
+                        return false;
                     }
                 }
             }

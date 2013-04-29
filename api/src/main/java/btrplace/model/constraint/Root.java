@@ -52,11 +52,6 @@ public class Root extends SatConstraint {
     }
 
     @Override
-    public Sat isSatisfied(Model i) {
-        return Sat.SATISFIED;
-    }
-
-    @Override
     public Sat isSatisfied(ReconfigurationPlan plan) {
         Model r = plan.getResult();
         if (r == null) {

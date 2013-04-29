@@ -50,7 +50,7 @@ public class Ready extends SatConstraint {
         super(vms, Collections.<UUID>emptySet(), false);
     }
 
-    @Override
+    /*@Override
     public Sat isSatisfied(Model i) {
         Mapping c = i.getMapping();
         for (UUID vm : getInvolvedVMs()) {
@@ -59,7 +59,7 @@ public class Ready extends SatConstraint {
             }
         }
         return Sat.SATISFIED;
-    }
+    }*/
 
     @Override
     public boolean equals(Object o) {

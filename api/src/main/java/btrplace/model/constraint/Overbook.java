@@ -108,29 +108,6 @@ public class Overbook extends SatConstraint {
     }
 
     @Override
-    public Sat isSatisfied(Model i) {
-        Mapping cfg = i.getMapping();
-        ShareableResource rc = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + rcId);
-        if (rc == null) {
-            return Sat.UNSATISFIED;
-        }
-        for (UUID nId : getInvolvedNodes()) {
-            if (cfg.getOnlineNodes().contains(nId)) {
-                //Server capacity with the ratio
-                double capa = rc.get(nId) * ratio;
-                //Minus the VMs usage
-                for (UUID vmId : cfg.getRunningVMs(nId)) {
-                    capa -= rc.get(vmId);
-                    if (capa < 0) {
-                        return Sat.UNSATISFIED;
-                    }
-                }
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
     public Sat isSatisfied(ReconfigurationPlan plan) {
         Sat res = isSatisfied(plan.getOrigin());
         if (!res.equals(Sat.SATISFIED)) {

@@ -26,22 +26,6 @@ public interface ReconfigurationPlanApplier {
     boolean removeEventCommittedListener(EventCommittedListener l);
 
     /**
-     * Add a validator that will used to validate or not each of the actions
-     * in a plan.
-     *
-     * @param v the validator to use
-     */
-    void addValidator(ReconfigurationPlanValidator v);
-
-    /**
-     * Remove a validator.
-     *
-     * @param v the validator to remove
-     * @return {@code true} iff the validator was removed
-     */
-    boolean removeValidator(ReconfigurationPlanValidator v);
-
-    /**
      * Apply a plan.
      *
      * @param p the plan to apply

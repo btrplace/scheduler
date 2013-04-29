@@ -50,7 +50,7 @@ public class QuarantineTest implements PremadeElements {
         Assert.assertFalse(q.setContinuous(false));
         Assert.assertTrue(q.setContinuous(true));
         Assert.assertFalse(q.toString().contains("null"));
-        Assert.assertEquals(q.isSatisfied(new DefaultModel(new DefaultMapping())), SatConstraint.Sat.UNDEFINED);
+//        Assert.assertEquals(q.isSatisfied(new DefaultModel(new DefaultMapping())), SatConstraint.Sat.UNDEFINED);
         System.out.println(q);
     }
 

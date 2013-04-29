@@ -48,17 +48,6 @@ public class Killed extends SatConstraint {
     }
 
     @Override
-    public Sat isSatisfied(Model i) {
-        Mapping c = i.getMapping();
-        for (UUID vm : getInvolvedVMs()) {
-            if (c.getAllVMs().contains(vm)) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -109,7 +98,7 @@ public class Killed extends SatConstraint {
         public boolean endsWith(Model mo) {
             Mapping c = mo.getMapping();
             for (UUID vm : vms) {
-                if (!c.getAllVMs().contains(vm)) {
+                if (c.getAllVMs().contains(vm)) {
                     return false;
                 }
             }

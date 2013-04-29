@@ -48,11 +48,6 @@ public class Quarantine extends SatConstraint {
     }
 
     @Override
-    public Sat isSatisfied(Model i) {
-        return Sat.UNDEFINED;
-    }
-
-    @Override
     public Sat isSatisfied(ReconfigurationPlan plan) {
         if (plan.getSize() == 0) {
             return Sat.SATISFIED;

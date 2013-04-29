@@ -21,9 +21,7 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.plan.Action;
 import btrplace.plan.DefaultReconfigurationPlanChecker;
-import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlanChecker;
 import btrplace.plan.event.*;
 
@@ -70,21 +68,7 @@ public class CumulatedRunningCapacity extends SatConstraint {
         this.qty = amount;
     }
 
-    @Override
-    public Sat isSatisfied(Model i) {
-        int remainder = qty;
-        for (UUID id : getInvolvedNodes()) {
-            if (i.getMapping().getOnlineNodes().contains(id)) {
-                remainder -= i.getMapping().getRunningVMs(id).size();
-                if (remainder < 0) {
-                    return Sat.UNSATISFIED;
-                }
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
+    /*@Override
     public Sat isSatisfied(ReconfigurationPlan p) {
         Model mo = p.getOrigin();
         if (!isSatisfied(mo).equals(Sat.SATISFIED)) {
@@ -100,7 +84,7 @@ public class CumulatedRunningCapacity extends SatConstraint {
             }
         }
         return Sat.SATISFIED;
-    }
+    }*/
 
     @Override
     public boolean equals(Object o) {
@@ -237,16 +221,13 @@ public class CumulatedRunningCapacity extends SatConstraint {
 
         @Override
         public boolean endsWith(Model mo) {
-            if (isContinuous()) {
-                int nb = 0;
-                Mapping map = mo.getMapping();
-                for (UUID n : nodes) {
-                    nb += map.getRunningVMs(n).size();
-                    if (nb > qty) {
-                        return false;
-                    }
+            int nb = 0;
+            Mapping map = mo.getMapping();
+            for (UUID n : nodes) {
+                nb += map.getRunningVMs(n).size();
+                if (nb > qty) {
+                    return false;
                 }
-                return true;
             }
             return true;
         }

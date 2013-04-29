@@ -50,18 +50,6 @@ public class Offline extends SatConstraint {
     }
 
     @Override
-    public Sat isSatisfied(Model i) {
-        Mapping c = i.getMapping();
-        for (UUID n : getInvolvedNodes()) {
-            if (!c.getOfflineNodes().contains(n)) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -112,7 +100,7 @@ public class Offline extends SatConstraint {
         public boolean endsWith(Model mo) {
             Mapping c = mo.getMapping();
             for (UUID n : nodes) {
-                if (!c.getOnlineNodes().contains(n)) {
+                if (!c.getOfflineNodes().contains(n)) {
                     return false;
                 }
             }

@@ -60,23 +60,6 @@ public class Gather extends SatConstraint {
         super(vms, Collections.<UUID>emptySet(), continuous);
     }
 
-
-    @Override
-    public Sat isSatisfied(Model i) {
-        UUID used = null;
-        Mapping map = i.getMapping();
-        for (UUID vm : getInvolvedVMs()) {
-            if (map.getRunningVMs().contains(vm)) {
-                if (used == null) {
-                    used = map.getVMLocation(vm);
-                } else if (!used.equals(map.getVMLocation(vm))) {
-                    return Sat.UNSATISFIED;
-                }
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
     @Override
     public Sat isSatisfied(ReconfigurationPlan p) {
         Model mo = p.getOrigin();
@@ -169,16 +152,14 @@ public class Gather extends SatConstraint {
 
         @Override
         public boolean endsWith(Model mo) {
-            if (!isContinuous()) {
-                UUID used = null;
-                Mapping map = mo.getMapping();
-                for (UUID vm : vms) {
-                    if (map.getRunningVMs().contains(vm)) {
-                        if (used == null) {
-                            used = map.getVMLocation(vm);
-                        } else if (!used.equals(map.getVMLocation(vm))) {
-                            return false;
-                        }
+            UUID used = null;
+            Mapping map = mo.getMapping();
+            for (UUID vm : vms) {
+                if (map.getRunningVMs().contains(vm)) {
+                    if (used == null) {
+                        used = map.getVMLocation(vm);
+                    } else if (!used.equals(map.getVMLocation(vm))) {
+                        return false;
                     }
                 }
             }

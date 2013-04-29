@@ -49,19 +49,6 @@ public class Fence extends SatConstraint {
     }
 
     @Override
-    public Sat isSatisfied(Model i) {
-        Mapping c = i.getMapping();
-        Set<UUID> runnings = c.getRunningVMs();
-
-        for (UUID vm : getInvolvedVMs()) {
-            if (runnings.contains(vm) && !getInvolvedNodes().contains(c.getVMLocation(vm))) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
     public String toString() {
         return new StringBuilder("fence(vms=")
                 .append(getInvolvedVMs())
@@ -99,7 +86,7 @@ public class Fence extends SatConstraint {
             Mapping c = mo.getMapping();
             Set<UUID> runnings = c.getRunningVMs();
             for (UUID vm : vms) {
-                if (runnings.contains(vm) && !vms.contains(c.getVMLocation(vm))) {
+                if (runnings.contains(vm) && !nodes.contains(c.getVMLocation(vm))) {
                     return false;
                 }
             }

@@ -21,7 +21,7 @@ public abstract class DefaultReconfigurationPlanChecker implements Reconfigurati
 
     public DefaultReconfigurationPlanChecker(SatConstraint cstr) {
         this.vms = new HashSet<>(cstr.getInvolvedVMs());
-        this.nodes = new HashSet<>(cstr.getInvolvedVMs());
+        this.nodes = new HashSet<>(cstr.getInvolvedNodes());
         this.cstr = cstr;
     }
 

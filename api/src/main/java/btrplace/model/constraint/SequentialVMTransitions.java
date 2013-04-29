@@ -20,9 +20,8 @@ package btrplace.model.constraint;
 
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.VMStateTransition;
+import btrplace.plan.*;
+import btrplace.plan.event.*;
 
 import java.util.*;
 
@@ -46,11 +45,6 @@ public class SequentialVMTransitions extends SatConstraint {
     public SequentialVMTransitions(List<UUID> seq) {
         super(seq, new ArrayList<UUID>(), true);
         order = seq;
-    }
-
-    @Override
-    public Sat isSatisfied(Model i) {
-        return Sat.UNDEFINED;
     }
 
     @Override
@@ -127,5 +121,78 @@ public class SequentialVMTransitions extends SatConstraint {
             }
         }
         return Sat.SATISFIED;
+    }
+
+    @Override
+    public ReconfigurationPlanChecker getChecker() {
+        return new Checker(this);
+    }
+
+    /**
+     * TODO: make it resilient to substitution.
+     */
+    private class Checker extends DefaultReconfigurationPlanChecker {
+
+        private Set<UUID> runnings;
+
+        private List<UUID> order;
+
+        public Checker(SequentialVMTransitions s) {
+            super(s);
+            order = new ArrayList<>(s.order);
+        }
+
+        @Override
+        public boolean start(BootVM a) {
+            if (runnings.contains(a.getVM())) {
+                return wasNext(a.getVM());
+            }
+            return true;
+        }
+
+        @Override
+        public boolean startsWith(Model mo) {
+            runnings = new HashSet<UUID>(mo.getMapping().getRunningVMs());
+            return true;
+        }
+
+        @Override
+        public boolean start(MigrateVM a) {
+            //If the VM belong to the order we remove it
+            order.remove(a.getVM());
+            return true;
+        }
+
+        private boolean wasNext(UUID vm) {
+            if (vms.contains(vm)) {
+                if (order.get(0).equals(vm)) {
+                    order.remove(0);
+                    return true;
+                }
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public boolean start(ShutdownVM a) {
+            return wasNext(a.getVM());
+        }
+
+        @Override
+        public boolean start(ResumeVM a) {
+            return wasNext(a.getVM());
+        }
+
+        @Override
+        public boolean start(SuspendVM a) {
+            return wasNext(a.getVM());
+        }
+
+        @Override
+        public boolean start(KillVM a) {
+            //TODO: only if was not ready
+            return wasNext(a.getVM());
+        }
     }
 }

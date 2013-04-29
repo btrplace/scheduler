@@ -21,6 +21,8 @@ package btrplace.model.constraint;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.view.ShareableResource;
+import btrplace.plan.DefaultReconfigurationPlanChecker;
+import btrplace.plan.ReconfigurationPlanChecker;
 
 import java.util.Collections;
 import java.util.Set;
@@ -89,27 +91,6 @@ public class CumulatedResourceCapacity extends SatConstraint {
     }
 
     @Override
-    public Sat isSatisfied(Model i) {
-        ShareableResource rc = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + rcId);
-        if (rc == null) {
-            return Sat.UNSATISFIED;
-        }
-
-        int remainder = qty;
-        for (UUID id : getInvolvedNodes()) {
-            if (i.getMapping().getOnlineNodes().contains(id)) {
-                for (UUID vmId : i.getMapping().getRunningVMs(id)) {
-                    remainder -= rc.get(vmId);
-                    if (remainder < 0) {
-                        return Sat.UNSATISFIED;
-                    }
-                }
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -156,4 +137,36 @@ public class CumulatedResourceCapacity extends SatConstraint {
         return b.toString();
     }
 
+    @Override
+    public ReconfigurationPlanChecker getChecker() {
+        return new Checker(this);
+    }
+
+    private class Checker extends DefaultReconfigurationPlanChecker {
+
+        public Checker(CumulatedResourceCapacity s) {
+            super(s);
+        }
+
+        @Override
+        public boolean endsWith(Model i) {
+            ShareableResource rc = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + rcId);
+            if (rc == null) {
+                return false;
+            }
+
+            int remainder = qty;
+            for (UUID id : getInvolvedNodes()) {
+                if (i.getMapping().getOnlineNodes().contains(id)) {
+                    for (UUID vmId : i.getMapping().getRunningVMs(id)) {
+                        remainder -= rc.get(vmId);
+                        if (remainder < 0) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+    }
 }

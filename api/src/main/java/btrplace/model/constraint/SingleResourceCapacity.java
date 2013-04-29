@@ -23,7 +23,9 @@ import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.Action;
+import btrplace.plan.DefaultReconfigurationPlanChecker;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlanChecker;
 
 import java.util.Collections;
 import java.util.Set;
@@ -92,21 +94,6 @@ public class SingleResourceCapacity extends SatConstraint {
     }
 
     @Override
-    public Sat isSatisfied(Model i) {
-        ShareableResource rc = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + rcId);
-        if (rc == null) {
-            return Sat.UNSATISFIED;
-        }
-        Mapping map = i.getMapping();
-        for (UUID n : getInvolvedNodes()) {
-            if (rc.sum(map.getRunningVMs(n), true) > amount) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
     public Sat isSatisfied(ReconfigurationPlan plan) {
         Model mo = plan.getOrigin();
         if (!isSatisfied(mo).equals(SatConstraint.Sat.SATISFIED)) {
@@ -161,5 +148,32 @@ public class SingleResourceCapacity extends SatConstraint {
         }
 
         return b.append(')').toString();
+    }
+
+    @Override
+    public ReconfigurationPlanChecker getChecker() {
+        return new Checker(this);
+    }
+
+    private class Checker extends DefaultReconfigurationPlanChecker {
+
+        public Checker(SingleResourceCapacity s) {
+            super(s);
+        }
+
+        @Override
+        public boolean endsWith(Model i) {
+            ShareableResource rc = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + rcId);
+            if (rc == null) {
+                return false;
+            }
+            Mapping map = i.getMapping();
+            for (UUID n : getInvolvedNodes()) {
+                if (rc.sum(map.getRunningVMs(n), true) > amount) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 }

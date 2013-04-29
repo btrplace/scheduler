@@ -50,17 +50,6 @@ public class Sleeping extends SatConstraint {
     }
 
     @Override
-    public Sat isSatisfied(Model i) {
-        Mapping c = i.getMapping();
-        for (UUID vm : getInvolvedVMs()) {
-            if (!c.getSleepingVMs().contains(vm)) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;

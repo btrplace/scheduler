@@ -22,7 +22,9 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.plan.Action;
+import btrplace.plan.DefaultReconfigurationPlanChecker;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlanChecker;
 
 import java.util.*;
 
@@ -83,25 +85,6 @@ public class Among extends SatConstraint {
             }
         }
         return null;
-    }
-
-    @Override
-    public Sat isSatisfied(Model i) {
-        Mapping map = i.getMapping();
-        Set<UUID> choosedGroup = null;
-        for (UUID vm : getInvolvedVMs()) {
-            if (map.getRunningVMs().contains(vm)) {
-                Set<UUID> nodes = getAssociatedPGroup((map.getVMLocation(vm)));
-                if (nodes == null) {
-                    return Sat.UNSATISFIED;
-                } else if (choosedGroup == null) {
-                    choosedGroup = nodes;
-                } else if (!choosedGroup.equals(nodes)) {
-                    return Sat.UNSATISFIED;
-                }
-            }
-        }
-        return Sat.SATISFIED;
     }
 
     @Override
@@ -181,5 +164,36 @@ public class Among extends SatConstraint {
             b.append(", discrete");
         }
         return b.append(")").toString();
+    }
+
+    @Override
+    public ReconfigurationPlanChecker getChecker() {
+        return new Checker(this);
+    }
+
+    private class Checker extends DefaultReconfigurationPlanChecker {
+
+        public Checker(Among a) {
+            super(a);
+        }
+
+        @Override
+        public boolean endsWith(Model i) {
+            Mapping map = i.getMapping();
+            Set<UUID> choosedGroup = null;
+            for (UUID vm : getInvolvedVMs()) {
+                if (map.getRunningVMs().contains(vm)) {
+                    Set<UUID> nodes = getAssociatedPGroup((map.getVMLocation(vm)));
+                    if (nodes == null) {
+                        return false;
+                    } else if (choosedGroup == null) {
+                        choosedGroup = nodes;
+                    } else if (!choosedGroup.equals(nodes)) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
     }
 }

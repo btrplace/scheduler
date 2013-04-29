@@ -82,17 +82,6 @@ public class SingleRunningCapacity extends SatConstraint {
     }
 
     @Override
-    public Sat isSatisfied(Model i) {
-        Mapping map = i.getMapping();
-        for (UUID n : getInvolvedNodes()) {
-            if (map.getRunningVMs(n).size() > amount) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
     public Sat isSatisfied(ReconfigurationPlan plan) {
         Model mo = plan.getOrigin();
         if (!isSatisfied(mo).equals(SatConstraint.Sat.SATISFIED)) {
@@ -234,16 +223,11 @@ public class SingleRunningCapacity extends SatConstraint {
 
         @Override
         public boolean endsWith(Model mo) {
-            if (isContinuous()) {
-                Mapping map = mo.getMapping();
-                for (UUID n : nodes) {
-                    int nb = map.getRunningVMs(n).size();
-                    if (nb > amount) {
-                        return false;
-                    }
-                    usage.put(n, nb);
+            Mapping map = mo.getMapping();
+            for (UUID n : nodes) {
+                if (map.getRunningVMs(n).size() > amount) {
+                    return false;
                 }
-                return true;
             }
             return true;
         }

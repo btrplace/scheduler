@@ -64,25 +64,6 @@ public class Lonely extends SatConstraint {
     }
 
     @Override
-    public Sat isSatisfied(Model i) {
-        Mapping map = i.getMapping();
-        for (UUID vm : getInvolvedVMs()) {
-            if (map.getRunningVMs().contains(vm)) {
-                UUID host = map.getVMLocation(vm);
-                Set<UUID> on = map.getRunningVMs(host);
-                //Check for other VMs on the node. If they are not in the constraint
-                //it's a violation
-                for (UUID vm2 : on) {
-                    if (!vm2.equals(vm) && !getInvolvedVMs().contains(vm2)) {
-                        return Sat.UNSATISFIED;
-                    }
-                }
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
     public Sat isSatisfied(ReconfigurationPlan p) {
         Model mo = p.getOrigin();
         if (!isSatisfied(mo).equals(Sat.SATISFIED)) {
@@ -200,7 +181,7 @@ public class Lonely extends SatConstraint {
 
         @Override
         public boolean endsWith(Model mo) {
-            return isContinuous() || discreteCheck(mo);
+            return discreteCheck(mo);
         }
 
         @Override

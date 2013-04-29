@@ -21,9 +21,7 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.RunningVMPlacement;
+import btrplace.plan.*;
 
 import java.util.*;
 
@@ -98,31 +96,6 @@ public class Split extends SatConstraint {
     }
 
     @Override
-    public Sat isSatisfied(Model i) {
-        Mapping m = i.getMapping();
-        List<Set<UUID>> used = new ArrayList<>(sets.size()); //The pgroups that are used
-        for (Set<UUID> vgrp : sets) {
-            Set<UUID> myGroup = new HashSet<>();
-
-            //Get the servers used by this group of VMs
-            for (UUID vmId : vgrp) {
-                if (m.getRunningVMs().contains(vmId)) {
-                    UUID nId = m.getVMLocation(vmId);
-                    //Is this server inside another group ?
-                    for (Set<UUID> pGroup : used) {
-                        if (pGroup.contains(nId)) {
-                            return Sat.UNSATISFIED;
-                        }
-                    }
-                    myGroup.add(nId);
-                }
-            }
-            used.add(myGroup);
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
     public Sat isSatisfied(ReconfigurationPlan plan) {
         if (plan.getSize() == 0) {
             return isSatisfied(plan.getOrigin());
@@ -193,5 +166,42 @@ public class Split extends SatConstraint {
             b.append(", discrete");
         }
         return b.append(')').toString();
+    }
+
+    @Override
+    public ReconfigurationPlanChecker getChecker() {
+        return new Checker(this);
+    }
+
+    private class Checker extends DefaultReconfigurationPlanChecker {
+
+        public Checker(Split s) {
+            super(s);
+        }
+
+        @Override
+        public boolean endsWith(Model mo) {
+            Mapping m = mo.getMapping();
+            List<Set<UUID>> used = new ArrayList<>(sets.size()); //The pgroups that are used
+            for (Set<UUID> vgrp : sets) {
+                Set<UUID> myGroup = new HashSet<>();
+
+                //Get the servers used by this group of VMs
+                for (UUID vmId : vgrp) {
+                    if (m.getRunningVMs().contains(vmId)) {
+                        UUID nId = m.getVMLocation(vmId);
+                        //Is this server inside another group ?
+                        for (Set<UUID> pGroup : used) {
+                            if (pGroup.contains(nId)) {
+                                return false;
+                            }
+                        }
+                        myGroup.add(nId);
+                    }
+                }
+                used.add(myGroup);
+            }
+            return true;
+        }
     }
 }

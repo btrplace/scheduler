@@ -59,21 +59,6 @@ public class Preserve extends SatConstraint {
         this.amount = amount;
     }
 
-    @Override
-    public Sat isSatisfied(Model i) {
-        ShareableResource r = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + rc);
-        if (r == null) {
-            return Sat.UNSATISFIED;
-        }
-        for (UUID vmId : getInvolvedVMs()) {
-            int v = r.get(vmId);
-            if (v < amount) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
     /**
      * Get the resource identifier.
      *
