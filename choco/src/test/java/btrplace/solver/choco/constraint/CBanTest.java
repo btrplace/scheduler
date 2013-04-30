@@ -71,7 +71,6 @@ public class CBanTest implements PremadeElements {
         ReconfigurationPlan p = cra.solve(mo, s);
         Assert.assertNotNull(p);
         System.out.println(p);
-        //Assert.assertEquals(SatConstraint.Sat.SATISFIED, b.isSatisfied(p.getResult()));
 
         Assert.assertEquals(3, p.getSize());
     }

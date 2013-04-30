@@ -129,9 +129,9 @@ public class Gather extends SatConstraint {
                 Mapping map = mo.getMapping();
                 for (UUID vm : vms) {
                     if (map.getRunningVMs().contains(vm)) {
-                        if (used == null) {
-                            used = map.getVMLocation(vm);
-                        } else if (!used.equals(map.getVMLocation(vm))) {
+                        if (usedInContinuous == null) {
+                            usedInContinuous = map.getVMLocation(vm);
+                        } else if (!usedInContinuous.equals(map.getVMLocation(vm))) {
                             return false;
                         }
                     }
@@ -143,8 +143,10 @@ public class Gather extends SatConstraint {
         @Override
         public boolean startRunningVMPlacement(RunningVMPlacement a) {
             if (isContinuous() && vms.contains(a.getVM())) {
-                if (a.getDestinationNode() != usedInContinuous) {
+                if (usedInContinuous != null && a.getDestinationNode() != usedInContinuous) {
                     return false;
+                } else if (usedInContinuous == null) {
+                    usedInContinuous = a.getDestinationNode();
                 }
             }
             return true;

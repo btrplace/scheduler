@@ -78,7 +78,10 @@ public class Fence extends SatConstraint {
 
         @Override
         public boolean startRunningVMPlacement(RunningVMPlacement r) {
-            return vms.contains(r.getVM()) && !nodes.contains(r.getDestinationNode());
+            if (vms.contains(r.getVM())) {
+                return nodes.contains(r.getDestinationNode());
+            }
+            return true;
         }
 
         @Override

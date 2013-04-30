@@ -74,9 +74,7 @@ public class CSpreadTest implements PremadeElements {
         List<SatConstraint> cstr = new ArrayList<SatConstraint>();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
-        Spread s = new Spread(m.getMapping().getAllVMs());
-        s.setContinuous(true);
-        cstr.add(s);
+        cstr.add(new Spread(m.getMapping().getAllVMs(), true));
         cstr.add(new Online(m.getMapping().getAllNodes()));
         cstr.add(new Fence(Collections.singleton(vm1), Collections.singleton(n2)));
         ReconfigurationPlan p = cra.solve(m, cstr);

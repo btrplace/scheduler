@@ -24,10 +24,9 @@ import btrplace.model.constraint.Killed;
 import btrplace.model.constraint.Ready;
 import btrplace.model.constraint.Running;
 import btrplace.model.constraint.Sleeping;
-import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.SatConstraintChecker;
-import btrplace.plan.TimedBasedActionComparator;
+import btrplace.plan.ReconfigurationPlanChecker;
+import btrplace.plan.ReconfigurationPlanCheckerException;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.constraint.SatConstraintMapper;
 import btrplace.solver.choco.objective.minMTTR.MinMTTR;
@@ -117,7 +116,6 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     public boolean repair() {
         return repair;
     }
-
 
     @Override
     public void labelVariables(boolean b) {
@@ -210,65 +208,23 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         rp.getLogger().debug("optimize: {}; timeLimit: {}; manageableVMs: {}", optimize, getTimeLimit(), rp.getManageableVMs().size());
 
         ReconfigurationPlan p = rp.solve(timeLimit, optimize);
-        if (p != null) {
-            //assert checkSatisfaction(p, cstrs);
-            assert checkSatisfaction2(p, cstrs);
-            return p;
-        } else {
+        if (p == null) {
             return null;
         }
+        checkSatisfaction2(p, cstrs);
+        return p;
     }
 
-    private boolean checkSatisfaction(ReconfigurationPlan p, Collection<SatConstraint> cstrs) {
-        Model res = p.getResult();
-        if (res == null) {
-            rp.getLogger().error("Applying the following plan does not conclude to a model:\n{}", p);
-            return false;
+    private void checkSatisfaction2(ReconfigurationPlan p, Collection<SatConstraint> cstrs) throws SolverException {
+        ReconfigurationPlanChecker chk = new ReconfigurationPlanChecker();
+        for (SatConstraint c : cstrs) {
+            chk.addChecker(c.getChecker());
         }
-        for (SatConstraint cstr : cstrs) {
-            if (cstr.isContinuous() && !cstr.isSatisfied(p).equals(SatConstraint.Sat.SATISFIED)) {
-                rp.getLogger().error("The following plan does not satisfy {}:\n{}", cstr.toString(), p);
-                return false;
-            } else if (!cstr.isContinuous() && !cstr.isSatisfied(res).equals(SatConstraint.Sat.SATISFIED)) {
-                rp.getLogger().error("The following model does not satisfy {}:\n{}", cstr.toString(), res);
-                return false;
-            }
-
+        try {
+            chk.check(p);
+        } catch (ReconfigurationPlanCheckerException ex) {
+            throw new SolverException(p.getOrigin(), ex.getMessage());
         }
-        return true;
-    }
-
-    private boolean checkSatisfaction2(ReconfigurationPlan p, Collection<SatConstraint> cstrs) {
-        if (cstrs.isEmpty()) {
-            return true;
-        }
-        PriorityQueue<Action> starts = new PriorityQueue<>(cstrs.size(), new TimedBasedActionComparator(true, true));
-        PriorityQueue<Action> ends = new PriorityQueue<>(cstrs.size(), new TimedBasedActionComparator(false, true));
-        List<SatConstraintChecker> checkers = new ArrayList<>(cstrs.size());
-        for (Action a : p) {
-            starts.add(a);
-            ends.add(a);
-        }
-        for (SatConstraint s : cstrs) {
-            checkers.add(s.getChecker());
-        }
-
-        //TODO: starts/end moment too;
-        for (SatConstraintChecker chk : checkers) {
-            if (!chk.startsWith(rp.getSourceModel())) {
-                rp.getLogger().error("The source model does not satisfy the constraint '{}'", chk.getConstraint());
-                return false;
-            }
-        }
-
-        Model res = p.getResult();
-        for (SatConstraintChecker chk : checkers) {
-            if (!chk.startsWith(res)) {
-                rp.getLogger().error("The resulting model does not satisfy the constraint '{}'", chk.getConstraint());
-                return false;
-            }
-        }
-        return true;
     }
 
     @Override
