@@ -18,12 +18,9 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.constraint.checker.DenyMyVMsActions;
+import btrplace.model.constraint.checker.KilledChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
-import btrplace.plan.event.KillVM;
 
 import java.util.Collections;
 import java.util.Set;
@@ -80,29 +77,7 @@ public class Killed extends SatConstraint {
 
     @Override
     public SatConstraintChecker getChecker() {
-        return new Checker(this);
+        return new KilledChecker(this);
     }
 
-    private class Checker extends DenyMyVMsActions {
-
-        public Checker(Killed k) {
-            super(k);
-        }
-
-        @Override
-        public boolean start(KillVM a) {
-            return true;
-        }
-
-        @Override
-        public boolean endsWith(Model mo) {
-            Mapping c = mo.getMapping();
-            for (UUID vm : vms) {
-                if (c.getAllVMs().contains(vm)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
 }

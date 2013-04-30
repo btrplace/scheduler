@@ -18,18 +18,14 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.constraint.checker.DefaultSatConstraintChecker;
+import btrplace.model.constraint.checker.LonelyChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.RunningVMPlacement;
-import btrplace.plan.event.BootNode;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -119,95 +115,7 @@ public class Lonely extends SatConstraint {
 
     @Override
     public SatConstraintChecker getChecker() {
-        return new Checker(this);
+        return new LonelyChecker(this);
     }
 
-    /**
-     * Checker for the constraint.
-     */
-    private class Checker extends DefaultSatConstraintChecker {
-
-        private Set<UUID> idleNodes;
-
-        private Set<UUID> privateNodes;
-
-        public Checker(Lonely l) {
-            super(l);
-            idleNodes = new HashSet<>();
-            privateNodes = new HashSet<>();
-        }
-
-        private boolean checkDestination(UUID vm, UUID n) {
-            if (isContinuous()) {
-                if (vms.contains(vm)) {
-                    if (!idleNodes.remove(n)) { //The node was not idle
-                        return privateNodes.add(n); //So it must be private
-                    }
-                    //The node is now longer idle, just private
-                    return privateNodes.add(n);
-                } else {
-                    //Not tracked, so just don't go on a private node
-                    if (!idleNodes.remove(n)) {
-                        return !privateNodes.contains(n);
-                    }
-                }
-            }
-            return true;
-        }
-
-        @Override
-        public boolean startRunningVMPlacement(RunningVMPlacement a) {
-            return checkDestination(a.getVM(), a.getDestinationNode());
-        }
-
-        private boolean discreteCheck(Model mo) {
-            Mapping map = mo.getMapping();
-            for (UUID vm : vms) {
-                if (map.getRunningVMs().contains(vm)) {
-                    UUID host = map.getVMLocation(vm);
-                    Set<UUID> on = map.getRunningVMs(host);
-                    //Check for other VMs on the node. If they are not in the constraint
-                    //it's a violation
-                    for (UUID vm2 : on) {
-                        if (!vm2.equals(vm) && !vms.contains(vm2)) {
-                            return false;
-                        }
-                    }
-                }
-            }
-            return true;
-        }
-
-        @Override
-        public boolean start(BootNode a) {
-            return idleNodes.add(a.getNode());
-        }
-
-        @Override
-        public boolean endsWith(Model mo) {
-            return discreteCheck(mo);
-        }
-
-        @Override
-        public boolean startsWith(Model mo) {
-            if (isContinuous()) {
-                boolean ret = discreteCheck(mo);
-                if (ret) {
-                    Mapping map = mo.getMapping();
-                    for (UUID vm : vms) {
-                        if (map.getRunningVMs().contains(vm)) {
-                            privateNodes.add(map.getVMLocation(vm));
-                        }
-                    }
-                    for (UUID n : map.getOnlineNodes()) {
-                        if (map.getRunningVMs(n).isEmpty()) {
-                            idleNodes.add(n);
-                        }
-                    }
-                }
-                return ret;
-            }
-            return true;
-        }
-    }
 }

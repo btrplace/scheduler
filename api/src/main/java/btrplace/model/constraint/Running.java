@@ -18,12 +18,9 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.constraint.checker.DenyMyVMsActions;
+import btrplace.model.constraint.checker.RunningChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
-import btrplace.plan.RunningVMPlacement;
 
 import java.util.Collections;
 import java.util.Set;
@@ -82,29 +79,7 @@ public class Running extends SatConstraint {
 
     @Override
     public SatConstraintChecker getChecker() {
-        return new Checker(this);
+        return new RunningChecker(this);
     }
 
-    private class Checker extends DenyMyVMsActions {
-
-        public Checker(Running r) {
-            super(r);
-        }
-
-        @Override
-        public boolean startRunningVMPlacement(RunningVMPlacement a) {
-            return true;
-        }
-
-        @Override
-        public boolean endsWith(Model mo) {
-            Mapping c = mo.getMapping();
-            for (UUID vm : vms) {
-                if (!c.getRunningVMs().contains(vm)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
 }

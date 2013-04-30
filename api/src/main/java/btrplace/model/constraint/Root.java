@@ -21,10 +21,9 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.constraint.checker.DefaultSatConstraintChecker;
+import btrplace.model.constraint.checker.RootChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.event.MigrateVM;
 
 import java.util.Collections;
 import java.util.Set;
@@ -104,22 +103,7 @@ public class Root extends SatConstraint {
 
     @Override
     public SatConstraintChecker getChecker() {
-        return new Checker(this);
-    }
-
-    /**
-     * Checker for the constraint.
-     */
-    private class Checker extends DefaultSatConstraintChecker {
-
-        public Checker(Root r) {
-            super(r);
-        }
-
-        @Override
-        public boolean start(MigrateVM a) {
-            return !vms.contains(a.getVM());
-        }
+        return new RootChecker(this);
     }
 
 }

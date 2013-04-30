@@ -18,11 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.constraint.checker.DefaultSatConstraintChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
+import btrplace.model.constraint.checker.SplitAmongChecker;
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.RunningVMPlacement;
@@ -116,7 +115,7 @@ public class SplitAmong extends SatConstraint {
         return pGrps;
     }
 
-    private Set<UUID> getAssociatedPGroup(UUID u) {
+    public Set<UUID> getAssociatedPGroup(UUID u) {
         for (Set<UUID> pGrp : pGrps) {
             if (pGrp.contains(u)) {
                 return pGrp;
@@ -125,7 +124,7 @@ public class SplitAmong extends SatConstraint {
         return null;
     }
 
-    private Set<UUID> getAssociatedVGroup(UUID u) {
+    public Set<UUID> getAssociatedVGroup(UUID u) {
         for (Set<UUID> vGrp : vGrps) {
             if (vGrp.contains(u)) {
                 return vGrp;
@@ -217,39 +216,7 @@ public class SplitAmong extends SatConstraint {
 
     @Override
     public SatConstraintChecker getChecker() {
-        return new Checker(this);
+        return new SplitAmongChecker(this);
     }
 
-    private class Checker extends DefaultSatConstraintChecker {
-
-        public Checker(SplitAmong s) {
-            super(s);
-        }
-
-        @Override
-        public boolean endsWith(Model i) {
-            Mapping m = i.getMapping();
-            Set<Set<UUID>> pUsed = new HashSet<>(); //The pgroups that are used
-            for (Set<UUID> vgrp : vGrps) {
-                Set<UUID> choosedGroup = null;
-
-                //Check every running VM in a single vgroup are running in the same pgroup
-                for (UUID vmId : vgrp) {
-                    if (m.getRunningVMs().contains(vmId)) {
-                        if (choosedGroup == null) {
-                            choosedGroup = getAssociatedPGroup(m.getVMLocation(vmId));
-                            if (choosedGroup == null) { //THe VM is running but on an unknown group. It is an error
-                                return false;
-                            } else if (!pUsed.add(choosedGroup)) { //The pgroup has already been used for another set of VMs.
-                                return false;
-                            }
-                        } else if (!choosedGroup.contains(m.getVMLocation(vmId))) { //The VM is not in the group with the other
-                            return false;
-                        }
-                    }
-                }
-            }
-            return true;
-        }
-    }
 }

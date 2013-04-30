@@ -18,12 +18,9 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.constraint.checker.DefaultSatConstraintChecker;
+import btrplace.model.constraint.checker.FenceChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
-import btrplace.plan.RunningVMPlacement;
 
 import java.util.Set;
 import java.util.UUID;
@@ -67,33 +64,7 @@ public class Fence extends SatConstraint {
 
     @Override
     public SatConstraintChecker getChecker() {
-        return new Checker(this);
+        return new FenceChecker(this);
     }
 
-    private class Checker extends DefaultSatConstraintChecker {
-
-        public Checker(Fence f) {
-            super(f);
-        }
-
-        @Override
-        public boolean startRunningVMPlacement(RunningVMPlacement r) {
-            if (vms.contains(r.getVM())) {
-                return nodes.contains(r.getDestinationNode());
-            }
-            return true;
-        }
-
-        @Override
-        public boolean endsWith(Model mo) {
-            Mapping c = mo.getMapping();
-            Set<UUID> runnings = c.getRunningVMs();
-            for (UUID vm : vms) {
-                if (runnings.contains(vm) && !nodes.contains(c.getVMLocation(vm))) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
 }

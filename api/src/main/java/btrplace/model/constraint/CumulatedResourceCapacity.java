@@ -18,11 +18,9 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.constraint.checker.DefaultSatConstraintChecker;
+import btrplace.model.constraint.checker.CumulatedResourceCapacityChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
-import btrplace.model.view.ShareableResource;
 
 import java.util.Collections;
 import java.util.Set;
@@ -139,34 +137,7 @@ public class CumulatedResourceCapacity extends SatConstraint {
 
     @Override
     public SatConstraintChecker getChecker() {
-        return new Checker(this);
+        return new CumulatedResourceCapacityChecker(this);
     }
 
-    private class Checker extends DefaultSatConstraintChecker {
-
-        public Checker(CumulatedResourceCapacity s) {
-            super(s);
-        }
-
-        @Override
-        public boolean endsWith(Model i) {
-            ShareableResource rc = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + rcId);
-            if (rc == null) {
-                return false;
-            }
-
-            int remainder = qty;
-            for (UUID id : getInvolvedNodes()) {
-                if (i.getMapping().getOnlineNodes().contains(id)) {
-                    for (UUID vmId : i.getMapping().getRunningVMs(id)) {
-                        remainder -= rc.get(vmId);
-                        if (remainder < 0) {
-                            return false;
-                        }
-                    }
-                }
-            }
-            return true;
-        }
-    }
 }

@@ -18,12 +18,9 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.constraint.checker.DefaultSatConstraintChecker;
+import btrplace.model.constraint.checker.OnlineChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
-import btrplace.plan.event.ShutdownNode;
 
 import java.util.Collections;
 import java.util.Set;
@@ -82,29 +79,7 @@ public class Online extends SatConstraint {
 
     @Override
     public SatConstraintChecker getChecker() {
-        return new Checker(this);
+        return new OnlineChecker(this);
     }
 
-    private class Checker extends DefaultSatConstraintChecker {
-
-        public Checker(Online o) {
-            super(o);
-        }
-
-        @Override
-        public boolean start(ShutdownNode a) {
-            return !nodes.contains(a.getNode());
-        }
-
-        @Override
-        public boolean endsWith(Model mo) {
-            Mapping c = mo.getMapping();
-            for (UUID n : nodes) {
-                if (!c.getOnlineNodes().contains(n)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
 }

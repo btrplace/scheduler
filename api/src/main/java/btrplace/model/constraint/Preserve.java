@@ -18,13 +18,9 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.constraint.checker.DefaultSatConstraintChecker;
+import btrplace.model.constraint.checker.PreserveChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
-import btrplace.model.view.ShareableResource;
-import btrplace.plan.event.Allocate;
-import btrplace.plan.event.AllocateEvent;
 
 import java.util.Collections;
 import java.util.Set;
@@ -117,54 +113,9 @@ public class Preserve extends SatConstraint {
 
     @Override
     public SatConstraintChecker getChecker() {
-        return new Checker(this);
+        return new PreserveChecker(this);
     }
 
-    /**
-     * Checker for the constraint.
-     */
-    private class Checker extends DefaultSatConstraintChecker {
-
-        public Checker(Preserve p) {
-            super(p);
-        }
-
-        @Override
-        public boolean consume(AllocateEvent a) {
-            if (vms.contains(a.getVM()) && a.getResourceId().equals(getResource())) {
-                return a.getAmount() >= getAmount();
-            }
-            return true;
-        }
-
-        @Override
-        public boolean start(Allocate a) {
-            if (a.getResourceId().equals(getResource()) && vms.contains(a.getVM())) {
-                return a.getAmount() >= getAmount();
-            }
-            return true;
-        }
-
-        @Override
-        public boolean startsWith(Model mo) {
-            return true;
-        }
-
-        @Override
-        public boolean endsWith(Model mo) {
-            ShareableResource r = (ShareableResource) mo.getView(ShareableResource.VIEW_ID_BASE + rc);
-            if (r == null) {
-                return false;
-            }
-            for (UUID vmId : getInvolvedVMs()) {
-                int v = r.get(vmId);
-                if (v < amount) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
 }
 
 

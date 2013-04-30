@@ -18,12 +18,9 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.constraint.checker.DenyMyVMsActions;
 import btrplace.model.constraint.checker.SatConstraintChecker;
-import btrplace.plan.event.SuspendVM;
+import btrplace.model.constraint.checker.SleepingChecker;
 
 import java.util.Collections;
 import java.util.Set;
@@ -82,29 +79,7 @@ public class Sleeping extends SatConstraint {
 
     @Override
     public SatConstraintChecker getChecker() {
-        return new Checker(this);
+        return new SleepingChecker(this);
     }
 
-    private class Checker extends DenyMyVMsActions {
-
-        public Checker(Sleeping s) {
-            super(s);
-        }
-
-        @Override
-        public boolean start(SuspendVM a) {
-            return true;
-        }
-
-        @Override
-        public boolean endsWith(Model mo) {
-            Mapping c = mo.getMapping();
-            for (UUID vm : vms) {
-                if (!c.getSleepingVMs().contains(vm)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
 }

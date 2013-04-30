@@ -18,13 +18,9 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.constraint.checker.DenyMyVMsActions;
+import btrplace.model.constraint.checker.ReadyChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
-import btrplace.plan.event.ForgeVM;
-import btrplace.plan.event.ShutdownVM;
 
 import java.util.Collections;
 import java.util.Set;
@@ -49,17 +45,6 @@ public class Ready extends SatConstraint {
     public Ready(Set<UUID> vms) {
         super(vms, Collections.<UUID>emptySet(), false);
     }
-
-    /*@Override
-    public Sat isSatisfied(Model i) {
-        Mapping c = i.getMapping();
-        for (UUID vm : getInvolvedVMs()) {
-            if (!c.getReadyVMs().contains(vm)) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
-    }*/
 
     @Override
     public boolean equals(Object o) {
@@ -93,34 +78,7 @@ public class Ready extends SatConstraint {
 
     @Override
     public SatConstraintChecker getChecker() {
-        return new Checker(this);
+        return new ReadyChecker(this);
     }
 
-    private class Checker extends DenyMyVMsActions {
-
-        public Checker(Ready r) {
-            super(r);
-        }
-
-        @Override
-        public boolean start(ForgeVM a) {
-            return true;
-        }
-
-        @Override
-        public boolean start(ShutdownVM a) {
-            return true;
-        }
-
-        @Override
-        public boolean endsWith(Model mo) {
-            Mapping c = mo.getMapping();
-            for (UUID vm : vms) {
-                if (!c.getReadyVMs().contains(vm)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
 }

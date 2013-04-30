@@ -18,11 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.constraint.checker.DefaultSatConstraintChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
+import btrplace.model.constraint.checker.SplitChecker;
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.RunningVMPlacement;
@@ -174,38 +173,7 @@ public class Split extends SatConstraint {
 
     @Override
     public SatConstraintChecker getChecker() {
-        return new Checker(this);
+        return new SplitChecker(this);
     }
 
-    private class Checker extends DefaultSatConstraintChecker {
-
-        public Checker(Split s) {
-            super(s);
-        }
-
-        @Override
-        public boolean endsWith(Model mo) {
-            Mapping m = mo.getMapping();
-            List<Set<UUID>> used = new ArrayList<>(sets.size()); //The pgroups that are used
-            for (Set<UUID> vgrp : sets) {
-                Set<UUID> myGroup = new HashSet<>();
-
-                //Get the servers used by this group of VMs
-                for (UUID vmId : vgrp) {
-                    if (m.getRunningVMs().contains(vmId)) {
-                        UUID nId = m.getVMLocation(vmId);
-                        //Is this server inside another group ?
-                        for (Set<UUID> pGroup : used) {
-                            if (pGroup.contains(nId)) {
-                                return false;
-                            }
-                        }
-                        myGroup.add(nId);
-                    }
-                }
-                used.add(myGroup);
-            }
-            return true;
-        }
-    }
 }

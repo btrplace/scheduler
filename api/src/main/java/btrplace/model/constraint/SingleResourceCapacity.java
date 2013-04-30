@@ -18,12 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.constraint.checker.DefaultSatConstraintChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
-import btrplace.model.view.ShareableResource;
+import btrplace.model.constraint.checker.SingleResourceCapacityChecker;
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
 
@@ -152,28 +150,7 @@ public class SingleResourceCapacity extends SatConstraint {
 
     @Override
     public SatConstraintChecker getChecker() {
-        return new Checker(this);
+        return new SingleResourceCapacityChecker(this);
     }
 
-    private class Checker extends DefaultSatConstraintChecker {
-
-        public Checker(SingleResourceCapacity s) {
-            super(s);
-        }
-
-        @Override
-        public boolean endsWith(Model i) {
-            ShareableResource rc = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + rcId);
-            if (rc == null) {
-                return false;
-            }
-            Mapping map = i.getMapping();
-            for (UUID n : getInvolvedNodes()) {
-                if (rc.sum(map.getRunningVMs(n), true) > amount) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
 }

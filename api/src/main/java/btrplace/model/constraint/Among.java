@@ -18,10 +18,9 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.constraint.checker.DefaultSatConstraintChecker;
+import btrplace.model.constraint.checker.AmongChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
@@ -78,7 +77,7 @@ public class Among extends SatConstraint {
      * @param u the node identifier
      * @return the group of nodes if exists, {@code null} otherwise
      */
-    private Set<UUID> getAssociatedPGroup(UUID u) {
+    public Set<UUID> getAssociatedPGroup(UUID u) {
         for (Set<UUID> pGrp : pGrps) {
             if (pGrp.contains(u)) {
                 return pGrp;
@@ -168,32 +167,7 @@ public class Among extends SatConstraint {
 
     @Override
     public SatConstraintChecker getChecker() {
-        return new Checker(this);
+        return new AmongChecker(this);
     }
 
-    private class Checker extends DefaultSatConstraintChecker {
-
-        public Checker(Among a) {
-            super(a);
-        }
-
-        @Override
-        public boolean endsWith(Model i) {
-            Mapping map = i.getMapping();
-            Set<UUID> choosedGroup = null;
-            for (UUID vm : getInvolvedVMs()) {
-                if (map.getRunningVMs().contains(vm)) {
-                    Set<UUID> nodes = getAssociatedPGroup((map.getVMLocation(vm)));
-                    if (nodes == null) {
-                        return false;
-                    } else if (choosedGroup == null) {
-                        choosedGroup = nodes;
-                    } else if (!choosedGroup.equals(nodes)) {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-    }
 }

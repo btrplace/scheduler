@@ -18,12 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.constraint.checker.DefaultSatConstraintChecker;
+import btrplace.model.constraint.checker.OverbookChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
-import btrplace.model.view.ShareableResource;
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
 
@@ -154,38 +152,9 @@ public class Overbook extends SatConstraint {
 
     @Override
     public SatConstraintChecker getChecker() {
-        return new Checker(this);
+        return new OverbookChecker(this);
     }
 
-    private class Checker extends DefaultSatConstraintChecker {
-
-        public Checker(Overbook o) {
-            super(o);
-        }
-
-        @Override
-        public boolean endsWith(Model i) {
-            Mapping cfg = i.getMapping();
-            ShareableResource rc = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + rcId);
-            if (rc == null) {
-                return false;
-            }
-            for (UUID nId : getInvolvedNodes()) {
-                if (cfg.getOnlineNodes().contains(nId)) {
-                    //Server capacity with the ratio
-                    double capa = rc.get(nId) * ratio;
-                    //Minus the VMs usage
-                    for (UUID vmId : cfg.getRunningVMs(nId)) {
-                        capa -= rc.get(vmId);
-                        if (capa < 0) {
-                            return false;
-                        }
-                    }
-                }
-            }
-            return true;
-        }
-    }
 }
 
 
