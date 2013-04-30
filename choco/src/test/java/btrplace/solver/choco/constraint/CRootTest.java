@@ -54,7 +54,7 @@ public class CRootTest implements PremadeElements {
         cra.labelVariables(true);
         Root r1 = new Root(map.getAllVMs());
         Online n = new Online(map.getAllNodes());
-        List<SatConstraint> l = new ArrayList<SatConstraint>();
+        List<SatConstraint> l = new ArrayList<>();
         l.add(r1);
         l.add(n);
         ReconfigurationPlan p = cra.solve(mo, l);

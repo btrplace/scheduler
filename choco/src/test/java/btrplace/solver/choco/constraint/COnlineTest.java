@@ -43,7 +43,7 @@ public class COnlineTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
         Online on = new Online(s);
         COnline con = new COnline(on);
         Assert.assertEquals(con.toString(), on.toString());

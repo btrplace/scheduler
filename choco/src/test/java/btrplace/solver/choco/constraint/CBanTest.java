@@ -44,8 +44,8 @@ public class CBanTest implements PremadeElements {
         UUID[] nodes = new UUID[5];
         UUID[] vms = new UUID[5];
         Mapping m = new DefaultMapping();
-        Set<UUID> sVMs = new HashSet<UUID>();
-        Set<UUID> sNodes = new HashSet<UUID>();
+        Set<UUID> sVMs = new HashSet<>();
+        Set<UUID> sNodes = new HashSet<>();
         for (int i = 0; i < vms.length; i++) {
             nodes[i] = new UUID(1, i);
             vms[i] = new UUID(0, i);
@@ -59,7 +59,7 @@ public class CBanTest implements PremadeElements {
 
         Model mo = new DefaultModel(m);
         Ban b = new Ban(sVMs, sNodes);
-        Collection<SatConstraint> s = new HashSet<SatConstraint>();
+        Collection<SatConstraint> s = new HashSet<>();
         s.add(b);
         s.add(new Running(m.getAllVMs()));
         s.add(new Online(m.getAllNodes()));
@@ -86,8 +86,8 @@ public class CBanTest implements PremadeElements {
                 .run(n3, vm4)
                 .sleep(n4, vm5).build();
 
-        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2));
-        Set<UUID> ns = new HashSet<UUID>(Arrays.asList(n3, n4));
+        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<UUID> ns = new HashSet<>(Arrays.asList(n3, n4));
 
         CBan c = new CBan(new Ban(vms, ns));
         Model mo = new DefaultModel(m);

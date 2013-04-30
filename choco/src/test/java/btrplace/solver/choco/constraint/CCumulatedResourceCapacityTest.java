@@ -60,7 +60,7 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
 
         Model mo = new DefaultModel(map);
         mo.attach(rc);
-        List<SatConstraint> l = new ArrayList<SatConstraint>();
+        List<SatConstraint> l = new ArrayList<>();
         CumulatedResourceCapacity x = new CumulatedResourceCapacity(map.getAllNodes(), "cpu", 10);
         x.setContinuous(false);
         l.add(x);
@@ -77,7 +77,7 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
                 .run(n1, vm1, vm2)
                 .run(n2, vm3, vm4, vm5).build();
 
-        Set<UUID> on = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> on = new HashSet<>(Arrays.asList(n1, n2));
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
         rc.set(vm1, 2);
@@ -88,7 +88,7 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
 
         Model mo = new DefaultModel(map);
         mo.attach(rc);
-        List<SatConstraint> l = new ArrayList<SatConstraint>();
+        List<SatConstraint> l = new ArrayList<>();
         CumulatedResourceCapacity x = new CumulatedResourceCapacity(on, "cpu", 9);
         x.setContinuous(false);
         l.add(x);
@@ -105,7 +105,7 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
                 .run(n1, vm1, vm2)
                 .run(n2, vm3, vm4)
                 .ready(vm5).build();
-        Set<UUID> on = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> on = new HashSet<>(Arrays.asList(n1, n2));
         Model mo = new DefaultModel(map);
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
@@ -116,7 +116,7 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
         rc.set(vm5, 5);
         mo.attach(rc);
 
-        List<SatConstraint> l = new ArrayList<SatConstraint>();
+        List<SatConstraint> l = new ArrayList<>();
         l.add(new Running(Collections.singleton(vm5)));
         l.add(new Fence(Collections.singleton(vm5), Collections.singleton(n1)));
         CumulatedResourceCapacity x = new CumulatedResourceCapacity(on, "cpu", 10);

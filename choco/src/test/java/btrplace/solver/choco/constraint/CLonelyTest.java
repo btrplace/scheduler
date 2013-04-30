@@ -48,7 +48,7 @@ public class CLonelyTest implements PremadeElements {
                 .run(n1, vm1, vm2)
                 .run(n2, vm3, vm4, vm5).build();
 
-        Set<UUID> mine = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
+        Set<UUID> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
         Model mo = new DefaultModel(map);
@@ -71,13 +71,13 @@ public class CLonelyTest implements PremadeElements {
         Mapping map = new MappingBuilder().on(n1, n2, n3)
                 .run(n1, vm1, vm2, vm3)
                 .run(n2, vm4, vm5).build();
-        Set<UUID> mine = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
+        Set<UUID> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
         Model mo = new DefaultModel(map);
         Lonely l = new Lonely(mine);
         l.setContinuous(true);
-        Set<SatConstraint> cstrs = new HashSet<SatConstraint>();
+        Set<SatConstraint> cstrs = new HashSet<>();
         cstrs.add(l);
         cstrs.add(new Fence(Collections.singleton(vm3), Collections.singleton(n2)));
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
@@ -90,7 +90,7 @@ public class CLonelyTest implements PremadeElements {
         Mapping map = new MappingBuilder().on(n1, n2, n3)
                 .run(n1, vm1, vm2, vm3)
                 .run(n2, vm4, vm5).build();
-        Set<UUID> mine = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
+        Set<UUID> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
 
         Model mo = new DefaultModel(map);
 
