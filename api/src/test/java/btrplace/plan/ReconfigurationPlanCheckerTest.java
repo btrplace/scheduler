@@ -4,6 +4,7 @@ import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.plan.event.BootNode;
 import btrplace.plan.event.BootVM;
 import btrplace.plan.event.MigrateVM;

@@ -18,8 +18,8 @@
 
 package btrplace.model;
 
+import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.SatConstraintChecker;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -169,7 +169,7 @@ public abstract class SatConstraint {
     /**
      * Get the validator used to check if a plan satisfies the constraint.
      *
-     * @return a non-null {@link btrplace.plan.SatConstraintChecker}
+     * @return a non-null {@link btrplace.model.constraint.checker.SatConstraintChecker}
      */
     public SatConstraintChecker getChecker() {
         throw new UnsupportedOperationException();

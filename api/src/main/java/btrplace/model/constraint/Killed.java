@@ -21,8 +21,8 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.plan.DenyMyVMsActions;
-import btrplace.plan.SatConstraintChecker;
+import btrplace.model.constraint.checker.DenyMyVMsActions;
+import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.plan.event.KillVM;
 
 import java.util.Collections;

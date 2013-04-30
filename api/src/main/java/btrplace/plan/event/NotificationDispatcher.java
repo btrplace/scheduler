@@ -5,12 +5,20 @@ import btrplace.plan.EventCommittedListener;
 import java.util.List;
 
 /**
+ * Dispatcher that propagate every visited action or event
+ * to a given list of {@link EventCommittedListener}.
+ *
  * @author Fabien Hermenier
  */
 public class NotificationDispatcher implements ActionVisitor {
 
     private List<EventCommittedListener> listeners;
 
+    /**
+     * Make a new dispatcher.
+     *
+     * @param l the listener to notify for each of the visited actions and event.
+     */
     public NotificationDispatcher(List<EventCommittedListener> l) {
         listeners = l;
     }

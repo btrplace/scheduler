@@ -2,6 +2,7 @@ package btrplace.plan;
 
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.plan.event.*;
 
 import java.util.ArrayList;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 /**
- * Checker to verify if a reconfiguration plan satisfies a set of {@link SatConstraintChecker}.
+ * Checker to verify if a reconfiguration plan satisfies a set of {@link btrplace.model.constraint.checker.SatConstraintChecker}.
  * <p/>
  * In practice, the origin model is sends to each of the checkers.
  * Then it notifies all the checker for the consume then the end moment of each of the action and event.

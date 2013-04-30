@@ -21,10 +21,10 @@ package btrplace.model.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.model.constraint.checker.DefaultSatConstraintChecker;
+import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.plan.Action;
-import btrplace.plan.DefaultSatConstraintChecker;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.SatConstraintChecker;
 import btrplace.plan.event.*;
 
 import java.util.*;

@@ -1,7 +1,8 @@
-package btrplace.plan;
+package btrplace.model.constraint.checker;
 
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.plan.RunningVMPlacement;
 import btrplace.plan.event.*;
 
 import java.util.HashSet;
