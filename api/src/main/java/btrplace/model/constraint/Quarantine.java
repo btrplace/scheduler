@@ -82,7 +82,7 @@ public class Quarantine extends SatConstraint {
     }
 
     @Override
-    public ReconfigurationPlanChecker getChecker() {
+    public SatConstraintChecker getChecker() {
         return new Checker(this);
     }
 
@@ -120,7 +120,7 @@ public class Quarantine extends SatConstraint {
         return b;
     }
 
-    public class Checker extends DefaultReconfigurationPlanChecker {
+    public class Checker extends DefaultSatConstraintChecker {
 
         public Checker(Quarantine q) {
             super(q);

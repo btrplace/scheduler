@@ -14,23 +14,23 @@ public class MomentBasedPlanApplier extends DefaultPlanApplier implements Action
 
     private static final TimedBasedActionComparator startsCmp = new TimedBasedActionComparator(true, true);
     private static final TimedBasedActionComparator endsCmp = new TimedBasedActionComparator(false, true);
-    private List<ReconfigurationPlanChecker> checkers;
+    private List<SatConstraintChecker> checkers;
 
     public MomentBasedPlanApplier() {
         checkers = new ArrayList<>();
     }
 
-    public void addChecker(ReconfigurationPlanChecker c) {
+    public void addChecker(SatConstraintChecker c) {
         checkers.add(c);
     }
 
-    public void removeChecker(ReconfigurationPlanChecker c) {
+    public void removeChecker(SatConstraintChecker c) {
         checkers.remove(c);
     }
 
     @Override
     public Object visit(Allocate a) {
-        for (ReconfigurationPlanChecker c : checkers) {
+        for (SatConstraintChecker c : checkers) {
             if (startingEvent) {
                 if (!c.start(a)) {
                     return Boolean.FALSE;
@@ -54,7 +54,7 @@ public class MomentBasedPlanApplier extends DefaultPlanApplier implements Action
 
     @Override
     public Object visit(BootNode a) {
-        for (ReconfigurationPlanChecker c : checkers) {
+        for (SatConstraintChecker c : checkers) {
             if (startingEvent) {
                 if (!c.start(a)) {
                     return Boolean.FALSE;
@@ -69,7 +69,7 @@ public class MomentBasedPlanApplier extends DefaultPlanApplier implements Action
 
     @Override
     public Object visit(BootVM a) {
-        for (ReconfigurationPlanChecker c : checkers) {
+        for (SatConstraintChecker c : checkers) {
             if (startingEvent) {
                 if (!c.start(a)) {
                     return Boolean.FALSE;
@@ -84,7 +84,7 @@ public class MomentBasedPlanApplier extends DefaultPlanApplier implements Action
 
     @Override
     public Object visit(ForgeVM a) {
-        for (ReconfigurationPlanChecker c : checkers) {
+        for (SatConstraintChecker c : checkers) {
             if (startingEvent) {
                 if (!c.start(a)) {
                     return Boolean.FALSE;
@@ -99,7 +99,7 @@ public class MomentBasedPlanApplier extends DefaultPlanApplier implements Action
 
     @Override
     public Object visit(KillVM a) {
-        for (ReconfigurationPlanChecker c : checkers) {
+        for (SatConstraintChecker c : checkers) {
             if (startingEvent) {
                 if (!c.start(a)) {
                     return Boolean.FALSE;
@@ -113,7 +113,7 @@ public class MomentBasedPlanApplier extends DefaultPlanApplier implements Action
 
     @Override
     public Object visit(MigrateVM a) {
-        for (ReconfigurationPlanChecker c : checkers) {
+        for (SatConstraintChecker c : checkers) {
             if (startingEvent) {
                 if (!c.start(a)) {
                     return Boolean.FALSE;
@@ -127,7 +127,7 @@ public class MomentBasedPlanApplier extends DefaultPlanApplier implements Action
 
     @Override
     public Object visit(ResumeVM a) {
-        for (ReconfigurationPlanChecker c : checkers) {
+        for (SatConstraintChecker c : checkers) {
             if (startingEvent) {
                 if (!c.start(a)) {
                     return Boolean.FALSE;
@@ -141,7 +141,7 @@ public class MomentBasedPlanApplier extends DefaultPlanApplier implements Action
 
     @Override
     public Object visit(ShutdownNode a) {
-        for (ReconfigurationPlanChecker c : checkers) {
+        for (SatConstraintChecker c : checkers) {
             if (startingEvent) {
                 if (!c.start(a)) {
                     return Boolean.FALSE;
@@ -155,7 +155,7 @@ public class MomentBasedPlanApplier extends DefaultPlanApplier implements Action
 
     @Override
     public Object visit(ShutdownVM a) {
-        for (ReconfigurationPlanChecker c : checkers) {
+        for (SatConstraintChecker c : checkers) {
             if (startingEvent) {
                 if (!c.start(a)) {
                     return Boolean.FALSE;
@@ -169,7 +169,7 @@ public class MomentBasedPlanApplier extends DefaultPlanApplier implements Action
 
     @Override
     public Object visit(SuspendVM a) {
-        for (ReconfigurationPlanChecker c : checkers) {
+        for (SatConstraintChecker c : checkers) {
             if (startingEvent) {
                 if (!c.start(a)) {
                     return Boolean.FALSE;

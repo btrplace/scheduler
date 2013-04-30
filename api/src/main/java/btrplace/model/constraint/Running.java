@@ -22,8 +22,8 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.plan.DenyMyVMsActions;
-import btrplace.plan.ReconfigurationPlanChecker;
 import btrplace.plan.RunningVMPlacement;
+import btrplace.plan.SatConstraintChecker;
 
 import java.util.Collections;
 import java.util.Set;
@@ -81,7 +81,7 @@ public class Running extends SatConstraint {
     }
 
     @Override
-    public ReconfigurationPlanChecker getChecker() {
+    public SatConstraintChecker getChecker() {
         return new Checker(this);
     }
 

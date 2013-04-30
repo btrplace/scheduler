@@ -11,7 +11,7 @@ import java.util.UUID;
 /**
  * @author Fabien Hermenier
  */
-public abstract class DenyMyVMsActions implements ReconfigurationPlanChecker {
+public abstract class DenyMyVMsActions implements SatConstraintChecker {
 
     protected Set<UUID> vms;
 

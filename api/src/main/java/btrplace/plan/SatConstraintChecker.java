@@ -5,7 +5,8 @@ import btrplace.model.SatConstraint;
 import btrplace.plan.event.*;
 
 /**
- * Check for the validity of a reconfiguration plan.
+ * Check if a constraint is satisfied by a reconfiguration plan.
+ * <p/>
  * Once started, actions are started wrt. their starting date, in
  * the increase order.
  * Actions that ends at a moment 't', are notified before actions that start
@@ -13,7 +14,7 @@ import btrplace.plan.event.*;
  *
  * @author Fabien Hermenier
  */
-public interface ReconfigurationPlanChecker {
+public interface SatConstraintChecker {
 
     boolean startsWith(Model mo);
 

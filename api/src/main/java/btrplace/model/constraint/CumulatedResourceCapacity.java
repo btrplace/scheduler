@@ -21,8 +21,8 @@ package btrplace.model.constraint;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.view.ShareableResource;
-import btrplace.plan.DefaultReconfigurationPlanChecker;
-import btrplace.plan.ReconfigurationPlanChecker;
+import btrplace.plan.DefaultSatConstraintChecker;
+import btrplace.plan.SatConstraintChecker;
 
 import java.util.Collections;
 import java.util.Set;
@@ -138,11 +138,11 @@ public class CumulatedResourceCapacity extends SatConstraint {
     }
 
     @Override
-    public ReconfigurationPlanChecker getChecker() {
+    public SatConstraintChecker getChecker() {
         return new Checker(this);
     }
 
-    private class Checker extends DefaultReconfigurationPlanChecker {
+    private class Checker extends DefaultSatConstraintChecker {
 
         public Checker(CumulatedResourceCapacity s) {
             super(s);

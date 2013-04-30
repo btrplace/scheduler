@@ -26,7 +26,7 @@ import btrplace.model.constraint.Running;
 import btrplace.model.constraint.Sleeping;
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.ReconfigurationPlanChecker;
+import btrplace.plan.SatConstraintChecker;
 import btrplace.plan.TimedBasedActionComparator;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.constraint.SatConstraintMapper;
@@ -239,9 +239,12 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     private boolean checkSatisfaction2(ReconfigurationPlan p, Collection<SatConstraint> cstrs) {
+        if (cstrs.isEmpty()) {
+            return true;
+        }
         PriorityQueue<Action> starts = new PriorityQueue<>(cstrs.size(), new TimedBasedActionComparator(true, true));
         PriorityQueue<Action> ends = new PriorityQueue<>(cstrs.size(), new TimedBasedActionComparator(false, true));
-        List<ReconfigurationPlanChecker> checkers = new ArrayList<>(cstrs.size());
+        List<SatConstraintChecker> checkers = new ArrayList<>(cstrs.size());
         for (Action a : p) {
             starts.add(a);
             ends.add(a);
@@ -251,7 +254,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         }
 
         //TODO: starts/end moment too;
-        for (ReconfigurationPlanChecker chk : checkers) {
+        for (SatConstraintChecker chk : checkers) {
             if (!chk.startsWith(rp.getSourceModel())) {
                 rp.getLogger().error("The source model does not satisfy the constraint '{}'", chk.getConstraint());
                 return false;
@@ -259,7 +262,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         }
 
         Model res = p.getResult();
-        for (ReconfigurationPlanChecker chk : checkers) {
+        for (SatConstraintChecker chk : checkers) {
             if (!chk.startsWith(res)) {
                 rp.getLogger().error("The resulting model does not satisfy the constraint '{}'", chk.getConstraint());
                 return false;

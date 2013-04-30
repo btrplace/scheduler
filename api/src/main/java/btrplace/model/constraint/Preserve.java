@@ -21,8 +21,8 @@ package btrplace.model.constraint;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.view.ShareableResource;
-import btrplace.plan.DefaultReconfigurationPlanChecker;
-import btrplace.plan.ReconfigurationPlanChecker;
+import btrplace.plan.DefaultSatConstraintChecker;
+import btrplace.plan.SatConstraintChecker;
 import btrplace.plan.event.Allocate;
 import btrplace.plan.event.AllocateEvent;
 
@@ -116,14 +116,14 @@ public class Preserve extends SatConstraint {
     }
 
     @Override
-    public ReconfigurationPlanChecker getChecker() {
+    public SatConstraintChecker getChecker() {
         return new Checker(this);
     }
 
     /**
      * Checker for the constraint.
      */
-    private class Checker extends DefaultReconfigurationPlanChecker {
+    private class Checker extends DefaultSatConstraintChecker {
 
         public Checker(Preserve p) {
             super(p);

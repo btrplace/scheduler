@@ -169,11 +169,11 @@ public class Split extends SatConstraint {
     }
 
     @Override
-    public ReconfigurationPlanChecker getChecker() {
+    public SatConstraintChecker getChecker() {
         return new Checker(this);
     }
 
-    private class Checker extends DefaultReconfigurationPlanChecker {
+    private class Checker extends DefaultSatConstraintChecker {
 
         public Checker(Split s) {
             super(s);

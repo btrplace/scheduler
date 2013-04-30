@@ -22,7 +22,7 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.plan.DenyMyVMsActions;
-import btrplace.plan.ReconfigurationPlanChecker;
+import btrplace.plan.SatConstraintChecker;
 import btrplace.plan.event.KillVM;
 
 import java.util.Collections;
@@ -79,7 +79,7 @@ public class Killed extends SatConstraint {
     }
 
     @Override
-    public ReconfigurationPlanChecker getChecker() {
+    public SatConstraintChecker getChecker() {
         return new Checker(this);
     }
 

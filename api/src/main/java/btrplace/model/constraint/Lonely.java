@@ -114,14 +114,14 @@ public class Lonely extends SatConstraint {
     }
 
     @Override
-    public ReconfigurationPlanChecker getChecker() {
+    public SatConstraintChecker getChecker() {
         return new Checker(this);
     }
 
     /**
      * Checker for the constraint.
      */
-    private class Checker extends DefaultReconfigurationPlanChecker {
+    private class Checker extends DefaultSatConstraintChecker {
 
         private Set<UUID> idleNodes;
 

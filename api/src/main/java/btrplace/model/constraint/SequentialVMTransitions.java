@@ -124,14 +124,14 @@ public class SequentialVMTransitions extends SatConstraint {
     }
 
     @Override
-    public ReconfigurationPlanChecker getChecker() {
+    public SatConstraintChecker getChecker() {
         return new Checker(this);
     }
 
     /**
      * TODO: make it resilient to substitution.
      */
-    private class Checker extends DefaultReconfigurationPlanChecker {
+    private class Checker extends DefaultSatConstraintChecker {
 
         private Set<UUID> runnings;
 

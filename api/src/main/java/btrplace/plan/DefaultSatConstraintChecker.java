@@ -11,7 +11,7 @@ import java.util.UUID;
 /**
  * @author Fabien Hermenier
  */
-public abstract class DefaultReconfigurationPlanChecker implements ReconfigurationPlanChecker {
+public abstract class DefaultSatConstraintChecker implements SatConstraintChecker {
 
     protected Set<UUID> vms;
 
@@ -19,7 +19,7 @@ public abstract class DefaultReconfigurationPlanChecker implements Reconfigurati
 
     private SatConstraint cstr;
 
-    public DefaultReconfigurationPlanChecker(SatConstraint cstr) {
+    public DefaultSatConstraintChecker(SatConstraint cstr) {
         this.vms = new HashSet<>(cstr.getInvolvedVMs());
         this.nodes = new HashSet<>(cstr.getInvolvedNodes());
         this.cstr = cstr;

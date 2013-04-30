@@ -102,7 +102,7 @@ public class Spread extends SatConstraint {
         } else {
             b.append(", continuous");
         }
-        return b.append(")").toString();
+        return b.append(')').toString();
     }
 
     @Override
@@ -124,12 +124,12 @@ public class Spread extends SatConstraint {
     }
 
     @Override
-    public ReconfigurationPlanChecker getChecker() {
+    public SatConstraintChecker getChecker() {
         return new Checker(this);
     }
 
 
-    private class Checker extends DefaultReconfigurationPlanChecker {
+    private class Checker extends DefaultSatConstraintChecker {
 
         public Checker(Spread s) {
             super(s);
