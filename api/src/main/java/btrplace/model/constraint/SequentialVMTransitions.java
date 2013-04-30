@@ -152,7 +152,7 @@ public class SequentialVMTransitions extends SatConstraint {
 
         @Override
         public boolean startsWith(Model mo) {
-            runnings = new HashSet<UUID>(mo.getMapping().getRunningVMs());
+            runnings = new HashSet<>(mo.getMapping().getRunningVMs());
             return true;
         }
 
@@ -165,9 +165,10 @@ public class SequentialVMTransitions extends SatConstraint {
 
         private boolean wasNext(UUID vm) {
             if (vms.contains(vm)) {
-                if (order.get(0).equals(vm)) {
-                    order.remove(0);
-                    return true;
+                while (!order.isEmpty()) {
+                    if (order.remove(0).equals(vm)) {
+                        return true;
+                    }
                 }
                 return false;
             }
