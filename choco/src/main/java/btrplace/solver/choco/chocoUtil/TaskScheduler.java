@@ -259,7 +259,7 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
             for (int j = 0; j < dHostersVals.length; j++) { //for each placed dSlices
                 int r = dHostersVals[j]; //on which resource it is placed
                 int st = dStartsVals[j];
-                //ChocoLogging.getBranchingLogger().info("d= "+ d + ", j=" + dHosters[j].pretty() + " j.val=" + r + ", " + "start=" + dStarts[j].pretty() + " val=" + st);
+                //ChocoLogging.getBranchingLogger().info("d= "+ d + ", j=" + dHosters[j].pretty() + " j.val=" + r + ", " + "consume=" + dStarts[j].pretty() + " val=" + st);
                 changes[d][r].put(st, changes[d][r].get(st) - dUsages[d][j]);
             }
         }

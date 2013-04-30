@@ -130,9 +130,9 @@ public class Preserve extends SatConstraint {
         }
 
         @Override
-        public boolean start(AllocateEvent a) {
+        public boolean consume(AllocateEvent a) {
             if (vms.contains(a.getVM()) && a.getResourceId().equals(getResource())) {
-                return a.getAmount() < getAmount();
+                return a.getAmount() >= getAmount();
             }
             return true;
         }
@@ -140,7 +140,7 @@ public class Preserve extends SatConstraint {
         @Override
         public boolean start(Allocate a) {
             if (a.getResourceId().equals(getResource()) && vms.contains(a.getVM())) {
-                return a.getAmount() < getAmount();
+                return a.getAmount() >= getAmount();
             }
             return true;
         }

@@ -26,7 +26,7 @@ import btrplace.plan.NodeEvent;
 import java.util.UUID;
 
 /**
- * An action to start an offline node. Once the execution is finished, the node is online.
+ * An action to consume an offline node. Once the execution is finished, the node is online.
  *
  * @author Fabien Hermenier
  */
@@ -37,7 +37,7 @@ public class BootNode extends Action implements NodeEvent {
     /**
      * Create a new startup action on an offline node.
      *
-     * @param n The node to start
+     * @param n The node to consume
      * @param s the moment the action starts
      * @param f the moment the action is finished
      */

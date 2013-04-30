@@ -126,12 +126,12 @@ public abstract class DefaultSatConstraintChecker implements SatConstraintChecke
     }
 
     @Override
-    public boolean start(SubstitutedVMEvent e) {
+    public boolean consume(SubstitutedVMEvent e) {
         return !vms.remove(e.getVM()) || vms.add(e.getNewUUID());
     }
 
     @Override
-    public boolean start(AllocateEvent e) {
+    public boolean consume(AllocateEvent e) {
         return true;
     }
 

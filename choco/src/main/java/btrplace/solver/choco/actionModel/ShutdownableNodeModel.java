@@ -62,7 +62,7 @@ import java.util.UUID;
  * <li>{@link #getEnd()} = {@link #getStart()} + {@link #getDuration()}</li>
  * </ul>
  * </li>
- * <li>The node can start hosting VMs and the beginning of the reconfiguration plan. If the node goes offline, it stops hosting VMs at
+ * <li>The node can consume hosting VMs and the beginning of the reconfiguration plan. If the node goes offline, it stops hosting VMs at
  * the beginning of the action. Otherwise, it equals the end of the reconfiguration process so that it is always capable
  * of hosting VMs.
  * <ul>
@@ -134,7 +134,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
         duration = s.createEnumIntVar(rp.makeVarLabel("shutdownableNode(", e, ").duration"), new int[]{0, d});
         s.post(new BooleanChanneling(isOnline, duration, 0));
 
-        //The moment of shutdown action start
+        //The moment of shutdown action consume
         /* As */
         start = rp.makeDuration("shutdownableNode(", e, ").start");
         //The moment of shutdown action end

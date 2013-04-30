@@ -9,7 +9,7 @@ import btrplace.plan.event.*;
  * <p/>
  * Once started, actions are started wrt. their starting date, in
  * the increase order.
- * Actions that ends at a moment 't', are notified before actions that start
+ * Actions that ends at a moment 't', are notified before actions that consume
  * at the same moment.
  *
  * @author Fabien Hermenier
@@ -54,9 +54,9 @@ public interface SatConstraintChecker {
 
     void end(ForgeVM a);
 
-    boolean start(SubstitutedVMEvent e);
+    boolean consume(SubstitutedVMEvent e);
 
-    boolean start(AllocateEvent e);
+    boolean consume(AllocateEvent e);
 
     boolean start(Allocate e);
 

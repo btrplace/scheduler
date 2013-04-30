@@ -3,8 +3,8 @@ package btrplace.plan;
 import java.util.Comparator;
 
 /**
- * A comparator to sort the actions in the increasing order of their start moment.
- * If they start at the same moment, the action that ends first in considered.
+ * A comparator to sort the actions in the increasing order of their consume moment.
+ * If they consume at the same moment, the action that ends first in considered.
  * <p/>
  * It is possible to indicate the comparator to differentiate two actions that are simultaneous but not equals.
  * This is meaningful to sort set of actions as otherwise, actions that are equals

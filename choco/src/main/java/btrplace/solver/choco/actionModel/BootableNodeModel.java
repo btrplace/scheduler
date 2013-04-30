@@ -61,7 +61,7 @@ import java.util.UUID;
  * <li>{@link #getEnd()} = {@link #getStart()} + {@link #getDuration()}</li>
  * </ul>
  * </li>
- * <li>The node can start hosting VMs and the end of the action. If the node goes online, it can stop hosting VMs at
+ * <li>The node can consume hosting VMs and the end of the action. If the node goes online, it can stop hosting VMs at
  * the end of the reconfiguration. Otherwise, it is never capable of hosting VMs (the deadline equals 0)
  * <ul>
  * <li>{@link #getHostingStart()} = {@link #getEnd()}</li>

@@ -27,10 +27,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.SatConstraintChecker;
 import btrplace.plan.event.*;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Restrict the hosting capacity of each of the given server to a given
@@ -209,14 +206,17 @@ public class SingleRunningCapacity extends SatConstraint {
 
         @Override
         public boolean startsWith(Model mo) {
-            if (!isContinuous()) {
+            if (isContinuous()) {
                 Mapping map = mo.getMapping();
+                usage = new HashMap<>(nodes.size());
                 for (UUID n : nodes) {
-                    if (map.getRunningVMs(n).size() > amount) {
+                    int s = map.getRunningVMs(n).size();
+                    if (s > amount) {
                         return false;
                     }
+                    usage.put(n, s);
                 }
-                srcRunnings.addAll(map.getRunningVMs());
+                srcRunnings = new HashSet<>(map.getRunningVMs());
             }
             return true;
         }

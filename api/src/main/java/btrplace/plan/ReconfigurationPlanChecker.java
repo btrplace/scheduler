@@ -12,10 +12,10 @@ import java.util.PriorityQueue;
  * Checker to verify if a reconfiguration plan satisfies a set of {@link SatConstraintChecker}.
  * <p/>
  * In practice, the origin model is sends to each of the checkers.
- * Then it notifies all the checker for the start then the end moment of each of the action and event.
+ * Then it notifies all the checker for the consume then the end moment of each of the action and event.
  * Finally, it sends the resulting model to each of the checkers.
  * <p/>
- * Action start and end moment are notified in the increasing order of their associated moment.
+ * Action consume and end moment are notified in the increasing order of their associated moment.
  *
  * @author Fabien Hermenier
  */
@@ -70,12 +70,22 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
 
     @Override
     public Object visit(AllocateEvent a) {
-        throw new UnsupportedOperationException();
+        for (SatConstraintChecker c : checkers) {
+            if (!c.consume(a)) {
+                return c.getConstraint();
+            }
+        }
+        return null;
     }
 
     @Override
     public SatConstraint visit(SubstitutedVMEvent a) {
-        throw new UnsupportedOperationException();
+        for (SatConstraintChecker c : checkers) {
+            if (!c.consume(a)) {
+                return c.getConstraint();
+            }
+        }
+        return null;
     }
 
     @Override
@@ -238,6 +248,13 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
                 if (c != null) {
                     throw new ReconfigurationPlanCheckerException(c, a);
                 }
+                for (Event e : a.getEvents(Action.Hook.post)) {
+                    c = (SatConstraint) e.visit(this);
+                    if (c != null) {
+                        throw new ReconfigurationPlanCheckerException(c, a);
+                    }
+                }
+
                 a = ends.peek();
             }
 
@@ -245,6 +262,12 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
             while (a != null && a.getStart() == curMoment) {
                 starts.remove();
                 startingEvent = true;
+                for (Event e : a.getEvents(Action.Hook.pre)) {
+                    c = (SatConstraint) e.visit(this);
+                    if (c != null) {
+                        throw new ReconfigurationPlanCheckerException(c, a);
+                    }
+                }
                 c = (SatConstraint) a.visit(this);
                 if (c != null) {
                     throw new ReconfigurationPlanCheckerException(c, a);

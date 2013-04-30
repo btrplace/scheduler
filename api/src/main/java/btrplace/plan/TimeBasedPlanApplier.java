@@ -8,7 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * An applier that rely on the estimated start moment and duration of the actions to execute a plan.
+ * An applier that rely on the estimated consume moment and duration of the actions to execute a plan.
  *
  * @author Fabien Hermenier
  */

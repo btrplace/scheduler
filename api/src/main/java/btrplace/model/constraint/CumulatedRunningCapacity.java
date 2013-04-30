@@ -26,6 +26,7 @@ import btrplace.plan.SatConstraintChecker;
 import btrplace.plan.event.*;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -204,6 +205,11 @@ public class CumulatedRunningCapacity extends SatConstraint {
         }
 
         @Override
+        public boolean consume(SubstitutedVMEvent e) {
+            return super.consume(e);    //To change body of overridden methods use File | Settings | File Templates.
+        }
+
+        @Override
         public boolean startsWith(Model mo) {
             if (isContinuous()) {
                 int nb = 0;
@@ -214,7 +220,7 @@ public class CumulatedRunningCapacity extends SatConstraint {
                         return false;
                     }
                 }
-                srcRunnings.addAll(map.getRunningVMs());
+                srcRunnings = new HashSet<>(map.getRunningVMs());
             }
             return true;
         }
