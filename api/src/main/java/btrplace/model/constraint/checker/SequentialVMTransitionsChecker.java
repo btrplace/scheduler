@@ -39,6 +39,7 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker {
     @Override
     public boolean startsWith(Model mo) {
         runnings = new HashSet<>(mo.getMapping().getRunningVMs());
+        track(runnings);
         return true;
     }
 

@@ -17,6 +17,7 @@ import java.util.UUID;
 public class PreserveChecker extends AllowAllConstraintChecker {
 
     private int amount;
+
     private String id;
 
     /**

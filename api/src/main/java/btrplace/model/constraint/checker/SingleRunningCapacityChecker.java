@@ -8,20 +8,25 @@ import btrplace.plan.event.*;
 import java.util.*;
 
 /**
+ * Checker for the {@link btrplace.model.constraint.SingleRunningCapacity} constraint
+ *
  * @author Fabien Hermenier
+ * @see btrplace.model.constraint.SingleRunningCapacity
  */
-public class Checker extends AllowAllConstraintChecker {
+public class SingleRunningCapacityChecker extends AllowAllConstraintChecker {
 
     private Map<UUID, Integer> usage;
 
     private int amount;
+
+    private Set<UUID> srcRunnings;
 
     /**
      * Make a new checker.
      *
      * @param s the associated constraint
      */
-    public Checker(SingleRunningCapacity s) {
+    public SingleRunningCapacityChecker(SingleRunningCapacity s) {
         super(s);
         amount = s.getAmount();
     }
@@ -85,8 +90,6 @@ public class Checker extends AllowAllConstraintChecker {
         return leave(a.getSourceNode());
     }
 
-    private Set<UUID> srcRunnings;
-
     @Override
     public boolean startsWith(Model mo) {
         if (cstr.isContinuous()) {
@@ -100,6 +103,7 @@ public class Checker extends AllowAllConstraintChecker {
                 usage.put(n, s);
             }
             srcRunnings = new HashSet<>(map.getRunningVMs());
+            track(srcRunnings);
         }
         return true;
     }

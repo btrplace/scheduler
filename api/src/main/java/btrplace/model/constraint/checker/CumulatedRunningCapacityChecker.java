@@ -104,6 +104,7 @@ public class CumulatedRunningCapacityChecker extends AllowAllConstraintChecker {
                 }
             }
             srcRunnings = new HashSet<>(map.getRunningVMs());
+            track(srcRunnings);
         }
         return true;
     }

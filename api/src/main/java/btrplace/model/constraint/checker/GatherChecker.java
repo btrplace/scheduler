@@ -15,6 +15,8 @@ import java.util.UUID;
  */
 public class GatherChecker extends AllowAllConstraintChecker {
 
+    private UUID usedInContinuous;
+
     /**
      * Make a new checker.
      *
@@ -23,8 +25,6 @@ public class GatherChecker extends AllowAllConstraintChecker {
     public GatherChecker(Gather g) {
         super(g);
     }
-
-    private UUID usedInContinuous;
 
     @Override
     public boolean startsWith(Model mo) {

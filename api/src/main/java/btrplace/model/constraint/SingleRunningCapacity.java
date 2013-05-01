@@ -20,8 +20,8 @@ package btrplace.model.constraint;
 
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.constraint.checker.Checker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
+import btrplace.model.constraint.checker.SingleRunningCapacityChecker;
 import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
 
@@ -131,7 +131,7 @@ public class SingleRunningCapacity extends SatConstraint {
 
     @Override
     public SatConstraintChecker getChecker() {
-        return new Checker(this);
+        return new SingleRunningCapacityChecker(this);
     }
 
 

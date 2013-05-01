@@ -15,7 +15,6 @@ import java.util.UUID;
  */
 public class SingleResourceCapacityChecker extends AllowAllConstraintChecker {
 
-
     /**
      * Make a new checker.
      *
