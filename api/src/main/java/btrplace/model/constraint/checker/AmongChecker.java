@@ -8,10 +8,18 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
+ * Checker for the {@link Among} constraint
+ *
  * @author Fabien Hermenier
+ * @see Among
  */
 public class AmongChecker extends AllowAllConstraintChecker {
 
+    /**
+     * Make a new checker.
+     *
+     * @param a the associated constraint
+     */
     public AmongChecker(Among a) {
         super(a);
     }

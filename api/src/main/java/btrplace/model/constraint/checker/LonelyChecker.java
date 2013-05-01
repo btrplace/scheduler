@@ -11,7 +11,10 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Checker for the constraint.
+ * Checker for the {@link btrplace.model.constraint.Lonely} constraint
+ *
+ * @author Fabien Hermenier
+ * @see btrplace.model.constraint.Lonely
  */
 public class LonelyChecker extends AllowAllConstraintChecker {
 
@@ -19,6 +22,11 @@ public class LonelyChecker extends AllowAllConstraintChecker {
 
     private Set<UUID> privateNodes;
 
+    /**
+     * Make a new checker.
+     *
+     * @param l the associated constraint
+     */
     public LonelyChecker(Lonely l) {
         super(l);
         idleNodes = new HashSet<>();

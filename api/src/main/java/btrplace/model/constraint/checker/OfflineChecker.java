@@ -8,10 +8,18 @@ import btrplace.plan.event.BootNode;
 import java.util.UUID;
 
 /**
+ * Checker for the {@link btrplace.model.constraint.Offline} constraint
+ *
  * @author Fabien Hermenier
+ * @see btrplace.model.constraint.Offline
  */
 public class OfflineChecker extends AllowAllConstraintChecker {
 
+    /**
+     * Make a new checker.
+     *
+     * @param o the associated constraint
+     */
     public OfflineChecker(Offline o) {
         super(o);
     }

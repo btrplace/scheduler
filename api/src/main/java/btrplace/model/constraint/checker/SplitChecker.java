@@ -7,12 +7,20 @@ import btrplace.model.constraint.Split;
 import java.util.*;
 
 /**
+ * Checker for the {@link btrplace.model.constraint.Split} constraint
+ *
  * @author Fabien Hermenier
+ * @see btrplace.model.constraint.Split
  */
 public class SplitChecker extends AllowAllConstraintChecker {
 
     private Collection<Set<UUID>> sets;
 
+    /**
+     * Make a new checker.
+     *
+     * @param s the associated constraint
+     */
     public SplitChecker(Split s) {
         super(s);
         sets = s.getSets();

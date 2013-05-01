@@ -8,10 +8,18 @@ import btrplace.plan.event.SuspendVM;
 import java.util.UUID;
 
 /**
+ * Checker for the {@link btrplace.model.constraint.Sleeping} constraint
+ *
  * @author Fabien Hermenier
+ * @see btrplace.model.constraint.Sleeping
  */
 public class SleepingChecker extends DenyMyVMsActions {
 
+    /**
+     * Make a new checker.
+     *
+     * @param s the associated constraint
+     */
     public SleepingChecker(Sleeping s) {
         super(s);
     }

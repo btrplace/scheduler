@@ -7,10 +7,18 @@ import btrplace.model.view.ShareableResource;
 import java.util.UUID;
 
 /**
+ * Checker for the {@link btrplace.model.constraint.CumulatedResourceCapacity} constraint
+ *
  * @author Fabien Hermenier
+ * @see btrplace.model.constraint.CumulatedResourceCapacity
  */
 public class CumulatedResourceCapacityChecker extends AllowAllConstraintChecker {
 
+    /**
+     * Make a new checker.
+     *
+     * @param s the associated constraint
+     */
     public CumulatedResourceCapacityChecker(CumulatedResourceCapacity s) {
         super(s);
     }

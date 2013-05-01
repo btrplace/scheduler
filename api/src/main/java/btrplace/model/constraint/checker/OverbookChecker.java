@@ -8,7 +8,10 @@ import btrplace.model.view.ShareableResource;
 import java.util.UUID;
 
 /**
+ * Checker for the {@link btrplace.model.constraint.Overbook} constraint
+ *
  * @author Fabien Hermenier
+ * @see btrplace.model.constraint.Overbook
  */
 public class OverbookChecker extends AllowAllConstraintChecker {
 
@@ -16,6 +19,11 @@ public class OverbookChecker extends AllowAllConstraintChecker {
 
     private double ratio;
 
+    /**
+     * Make a new checker.
+     *
+     * @param o the associated constraint
+     */
     public OverbookChecker(Overbook o) {
         super(o);
         id = o.getResource();

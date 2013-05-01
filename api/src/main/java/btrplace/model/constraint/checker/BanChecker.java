@@ -9,10 +9,18 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
+ * Checker for the {@link Ban} constraint
+ *
  * @author Fabien Hermenier
+ * @see Ban
  */
 public class BanChecker extends AllowAllConstraintChecker {
 
+    /**
+     * Make a new checker.
+     *
+     * @param b the associated constraint
+     */
     public BanChecker(Ban b) {
         super(b);
     }

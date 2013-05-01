@@ -10,7 +10,10 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
+ * Checker for the {@link btrplace.model.constraint.CumulatedRunningCapacity} constraint
+ *
  * @author Fabien Hermenier
+ * @see btrplace.model.constraint.CumulatedRunningCapacity
  */
 public class CumulatedRunningCapacityChecker extends AllowAllConstraintChecker {
 
@@ -20,6 +23,11 @@ public class CumulatedRunningCapacityChecker extends AllowAllConstraintChecker {
 
     private int qty;
 
+    /**
+     * Make a new checker.
+     *
+     * @param c the associated constraint
+     */
     public CumulatedRunningCapacityChecker(CumulatedRunningCapacity c) {
         super(c);
         qty = c.getAmount();

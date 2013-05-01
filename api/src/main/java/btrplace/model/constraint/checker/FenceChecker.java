@@ -9,10 +9,18 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
+ * Checker for the {@link btrplace.model.constraint.Fence} constraint
+ *
  * @author Fabien Hermenier
+ * @see btrplace.model.constraint.Fence
  */
 public class FenceChecker extends AllowAllConstraintChecker {
 
+    /**
+     * Make a new checker.
+     *
+     * @param f the associated constraint
+     */
     public FenceChecker(Fence f) {
         super(f);
     }

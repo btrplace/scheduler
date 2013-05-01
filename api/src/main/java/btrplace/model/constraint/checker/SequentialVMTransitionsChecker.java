@@ -7,7 +7,10 @@ import btrplace.plan.event.*;
 import java.util.*;
 
 /**
- * TODO: make it resilient to substitution.
+ * Checker for the {@link btrplace.model.constraint.SequentialVMTransitions} constraint
+ *
+ * @author Fabien Hermenier
+ * @see btrplace.model.constraint.SequentialVMTransitions
  */
 public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker {
 
@@ -15,6 +18,11 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker {
 
     private List<UUID> order;
 
+    /**
+     * Make a new checker.
+     *
+     * @param s the associated constraint
+     */
     public SequentialVMTransitionsChecker(SequentialVMTransitions s) {
         super(s);
         order = new ArrayList<>(s.getInvolvedVMs());

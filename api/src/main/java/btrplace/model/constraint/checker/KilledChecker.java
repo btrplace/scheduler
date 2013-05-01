@@ -8,10 +8,18 @@ import btrplace.plan.event.KillVM;
 import java.util.UUID;
 
 /**
+ * Checker for the {@link btrplace.model.constraint.Killed} constraint
+ *
  * @author Fabien Hermenier
+ * @see btrplace.model.constraint.Killed
  */
 public class KilledChecker extends DenyMyVMsActions {
 
+    /**
+     * Make a new checker.
+     *
+     * @param k the associated constraint
+     */
     public KilledChecker(Killed k) {
         super(k);
     }

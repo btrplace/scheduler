@@ -8,10 +8,18 @@ import btrplace.plan.RunningVMPlacement;
 import java.util.UUID;
 
 /**
+ * Checker for the {@link btrplace.model.constraint.Running} constraint
+ *
  * @author Fabien Hermenier
+ * @see btrplace.model.constraint.Running
  */
 public class RunningChecker extends DenyMyVMsActions {
 
+    /**
+     * Make a new checker.
+     *
+     * @param r the associated constraint
+     */
     public RunningChecker(Running r) {
         super(r);
     }

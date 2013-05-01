@@ -9,10 +9,18 @@ import btrplace.plan.event.ShutdownVM;
 import java.util.UUID;
 
 /**
+ * Checker for the {@link btrplace.model.constraint.Ready} constraint
+ *
  * @author Fabien Hermenier
+ * @see btrplace.model.constraint.Ready
  */
 public class ReadyChecker extends DenyMyVMsActions {
 
+    /**
+     * Make a new checker.
+     *
+     * @param r the associated constraint
+     */
     public ReadyChecker(Ready r) {
         super(r);
     }

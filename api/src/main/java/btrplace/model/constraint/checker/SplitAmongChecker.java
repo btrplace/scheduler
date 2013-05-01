@@ -10,12 +10,20 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
+ * Checker for the {@link btrplace.model.constraint.SplitAmong} constraint
+ *
  * @author Fabien Hermenier
+ * @see btrplace.model.constraint.SplitAmong
  */
 public class SplitAmongChecker extends AllowAllConstraintChecker {
 
     private Collection<Set<UUID>> vGrps;
 
+    /**
+     * Make a new checker.
+     *
+     * @param s the associated constraint
+     */
     public SplitAmongChecker(SplitAmong s) {
         super(s);
         vGrps = s.getGroupsOfVMs();

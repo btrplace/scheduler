@@ -9,13 +9,21 @@ import btrplace.plan.event.AllocateEvent;
 import java.util.UUID;
 
 /**
- * Checker for the constraint.
+ * Checker for the {@link btrplace.model.constraint.Preserve} constraint
+ *
+ * @author Fabien Hermenier
+ * @see btrplace.model.constraint.Preserve
  */
 public class PreserveChecker extends AllowAllConstraintChecker {
 
     private int amount;
     private String id;
 
+    /**
+     * Make a new checker.
+     *
+     * @param p the associated constraint
+     */
     public PreserveChecker(Preserve p) {
         super(p);
         id = p.getResource();

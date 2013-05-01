@@ -16,6 +16,11 @@ public class Checker extends AllowAllConstraintChecker {
 
     private int amount;
 
+    /**
+     * Make a new checker.
+     *
+     * @param s the associated constraint
+     */
     public Checker(SingleRunningCapacity s) {
         super(s);
         amount = s.getAmount();

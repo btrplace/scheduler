@@ -8,10 +8,18 @@ import btrplace.plan.RunningVMPlacement;
 import java.util.UUID;
 
 /**
+ * Checker for the {@link btrplace.model.constraint.Gather} constraint
+ *
  * @author Fabien Hermenier
+ * @see btrplace.model.constraint.Gather
  */
 public class GatherChecker extends AllowAllConstraintChecker {
 
+    /**
+     * Make a new checker.
+     *
+     * @param g the associated constraint
+     */
     public GatherChecker(Gather g) {
         super(g);
     }

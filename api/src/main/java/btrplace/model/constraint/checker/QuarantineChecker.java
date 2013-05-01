@@ -7,10 +7,18 @@ import btrplace.plan.RunningVMPlacement;
 import btrplace.plan.event.MigrateVM;
 
 /**
+ * Checker for the {@link btrplace.model.constraint.Quarantine} constraint
+ *
  * @author Fabien Hermenier
+ * @see btrplace.model.constraint.Quarantine
  */
 public class QuarantineChecker extends AllowAllConstraintChecker {
 
+    /**
+     * Make a new checker.
+     *
+     * @param q the associated constraint
+     */
     public QuarantineChecker(Quarantine q) {
         super(q);
     }

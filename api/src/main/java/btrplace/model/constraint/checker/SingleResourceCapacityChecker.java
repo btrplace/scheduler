@@ -8,11 +8,19 @@ import btrplace.model.view.ShareableResource;
 import java.util.UUID;
 
 /**
+ * Checker for the {@link btrplace.model.constraint.SingleResourceCapacity} constraint
+ *
  * @author Fabien Hermenier
+ * @see btrplace.model.constraint.SingleResourceCapacity
  */
 public class SingleResourceCapacityChecker extends AllowAllConstraintChecker {
 
 
+    /**
+     * Make a new checker.
+     *
+     * @param s the associated constraint
+     */
     public SingleResourceCapacityChecker(SingleResourceCapacity s) {
         super(s);
     }

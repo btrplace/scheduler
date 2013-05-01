@@ -8,10 +8,18 @@ import btrplace.plan.event.ShutdownNode;
 import java.util.UUID;
 
 /**
+ * Checker for the {@link btrplace.model.constraint.Online} constraint
+ *
  * @author Fabien Hermenier
+ * @see btrplace.model.constraint.Online
  */
 public class OnlineChecker extends AllowAllConstraintChecker {
 
+    /**
+     * Make a new checker.
+     *
+     * @param o the associated constraint
+     */
     public OnlineChecker(Online o) {
         super(o);
     }

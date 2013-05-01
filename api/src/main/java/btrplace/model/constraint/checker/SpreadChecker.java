@@ -14,10 +14,18 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
+ * Checker for the {@link btrplace.model.constraint.Spread} constraint
+ *
  * @author Fabien Hermenier
+ * @see btrplace.model.constraint.Ban
  */
 public class SpreadChecker extends AllowAllConstraintChecker {
 
+    /**
+     * Make a new checker.
+     *
+     * @param s the associated constraint
+     */
     public SpreadChecker(Spread s) {
         super(s);
         denied = new HashSet<>();
