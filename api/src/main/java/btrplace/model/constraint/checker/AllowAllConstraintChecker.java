@@ -138,12 +138,12 @@ public abstract class AllowAllConstraintChecker implements SatConstraintChecker 
 
     @Override
     public boolean start(ResumeVM a) {
-        return true;
+        return startRunningVMPlacement(a);
     }
 
     @Override
     public void end(ResumeVM a) {
-
+        endRunningVMPlacement(a);
     }
 
     @Override
