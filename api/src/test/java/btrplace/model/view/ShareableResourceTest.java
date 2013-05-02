@@ -197,6 +197,15 @@ public class ShareableResourceTest implements PremadeElements {
 
         rc2.unset(vm2);
         Assert.assertNotEquals(rc1, rc2);
+    }
 
+    @Test
+    public void testSubstitution() {
+        ShareableResource rc = new ShareableResource("foo");
+        rc.set(vm1, 3);
+        Assert.assertTrue(rc.substitute(vm1, vm10));
+        Assert.assertEquals(rc.get(vm10), 3);
+        Assert.assertTrue(rc.substitute(vm3, vm7));
+        Assert.assertEquals(rc.get(vm7), 0);
     }
 }
