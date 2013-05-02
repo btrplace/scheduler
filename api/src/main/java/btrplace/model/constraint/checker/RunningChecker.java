@@ -4,6 +4,7 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.constraint.Running;
 import btrplace.plan.RunningVMPlacement;
+import btrplace.plan.event.AllocateEvent;
 
 import java.util.UUID;
 
@@ -30,9 +31,14 @@ public class RunningChecker extends DenyMyVMsActions<Running> {
     }
 
     @Override
+    public boolean consume(AllocateEvent e) {
+        return true;
+    }
+
+    @Override
     public boolean endsWith(Model mo) {
         Mapping c = mo.getMapping();
-        for (UUID vm : vms) {
+        for (UUID vm : getVMs()) {
             if (!c.getRunningVMs().contains(vm)) {
                 return false;
             }

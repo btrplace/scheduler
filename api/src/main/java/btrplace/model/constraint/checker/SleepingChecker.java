@@ -32,7 +32,7 @@ public class SleepingChecker extends DenyMyVMsActions<Sleeping> {
     @Override
     public boolean endsWith(Model mo) {
         Mapping c = mo.getMapping();
-        for (UUID vm : vms) {
+        for (UUID vm : getVMs()) {
             if (!c.getSleepingVMs().contains(vm)) {
                 return false;
             }
