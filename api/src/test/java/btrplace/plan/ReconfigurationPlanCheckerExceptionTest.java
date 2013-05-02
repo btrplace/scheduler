@@ -27,6 +27,7 @@ public class ReconfigurationPlanCheckerExceptionTest {
 
         ex = new ReconfigurationPlanCheckerException(c, m, false);
         Assert.assertEquals(ex.isOrigin(), false);
+        Assert.assertEquals(ex.getConstraint(), c);
     }
 
     @Test

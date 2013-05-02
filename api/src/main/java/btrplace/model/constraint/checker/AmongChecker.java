@@ -19,7 +19,7 @@ public class AmongChecker extends AllowAllConstraintChecker<Among> {
     /**
      * Current group (for the continuous restriction). {@code null} if no group has been selected.
      */
-    Set<UUID> choosedGroup = null;
+    private Set<UUID> choosedGroup = null;
 
     /**
      * Make a new checker.
@@ -34,7 +34,6 @@ public class AmongChecker extends AllowAllConstraintChecker<Among> {
     public boolean startsWith(Model mo) {
         if (getConstraint().isContinuous()) {
             Mapping map = mo.getMapping();
-            Set<UUID> choosedGroup = null;
             for (UUID vm : getVMs()) {
                 if (map.getRunningVMs().contains(vm)) {
                     Set<UUID> nodes = getConstraint().getAssociatedPGroup((map.getVMLocation(vm)));
@@ -72,15 +71,15 @@ public class AmongChecker extends AllowAllConstraintChecker<Among> {
     @Override
     public boolean endsWith(Model i) {
         Mapping map = i.getMapping();
-        Set<UUID> choosedGroup = null;
+        Set<UUID> grp = null;
         for (UUID vm : getVMs()) {
             if (map.getRunningVMs().contains(vm)) {
                 Set<UUID> nodes = getConstraint().getAssociatedPGroup((map.getVMLocation(vm)));
                 if (nodes == null) {
                     return false;
-                } else if (choosedGroup == null) {
-                    choosedGroup = nodes;
-                } else if (!choosedGroup.equals(nodes)) {
+                } else if (grp == null) {
+                    grp = nodes;
+                } else if (!grp.equals(nodes)) {
                     return false;
                 }
             }

@@ -34,9 +34,6 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
 
     private BitSet[] ins;
 
-    private ReconfigurationProblem rp;
-
-    private String label;
 
     private MinMTTR obj;
 
@@ -53,8 +50,6 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
         super(rp.getSolver(), ActionModelUtils.getStarts(actions.toArray(new ActionModel[actions.size()])));
         firstFree = rp.getSolver().getEnvironment().makeInt(0);
         this.obj = obj;
-        this.rp = rp;
-        this.label = lbl;
         Mapping cfg = rp.getSourceModel().getMapping();
 
         VMActionModel[] vmActions = rp.getVMActions();
@@ -93,8 +88,6 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
             }
         }
     }
-
-    private long d1, d2, d3, d4, d5;
 
     private BitSet stays, move;
 

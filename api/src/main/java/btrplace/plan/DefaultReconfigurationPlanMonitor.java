@@ -24,7 +24,7 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
 
     private final Map<Action, Set<Dependency>> pre;
 
-    private final Map<Action, Dependency> deps;
+    private final Map<Action, Dependency> dependencies;
 
     private final Object lock;
 
@@ -39,7 +39,7 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
         this.plan = plan;
 
         pre = new HashMap<>();
-        deps = new HashMap<>();
+        dependencies = new HashMap<>();
         lock = new Object();
         reset();
     }
@@ -52,10 +52,10 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
             for (Action a : plan) {
                 Set<Action> dependencies = plan.getDirectDependencies(a);
                 if (dependencies.isEmpty()) {
-                    deps.put(a, new Dependency(a, Collections.<Action>emptySet()));
+                    this.dependencies.put(a, new Dependency(a, Collections.<Action>emptySet()));
                 } else {
                     Dependency dep = new Dependency(a, dependencies);
-                    deps.put(a, dep);
+                    this.dependencies.put(a, dep);
                     for (Action x : dep.getDependencies()) {
                         Set<Dependency> pres = pre.get(x);
                         if (pres == null) {
@@ -109,7 +109,7 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
     @Override
     public boolean isBlocked(Action a) {
         synchronized (lock) {
-            return !deps.get(a).getDependencies().isEmpty();
+            return !dependencies.get(a).getDependencies().isEmpty();
         }
     }
 
