@@ -37,8 +37,8 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
     public DefaultReconfigurationPlanMonitor(ReconfigurationPlan plan) {
         this.plan = plan;
 
-        pre = new HashMap<Action, Set<Dependency>>();
-        deps = new HashMap<Action, Dependency>();
+        pre = new HashMap<>();
+        deps = new HashMap<>();
         lock = new Object();
         reset();
     }
@@ -58,7 +58,7 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
                     for (Action x : dep.getDependencies()) {
                         Set<Dependency> pres = pre.get(x);
                         if (pres == null) {
-                            pres = new HashSet<Dependency>();
+                            pres = new HashSet<>();
                             pre.put(x, pres);
                         }
                         pres.add(dep);
@@ -75,7 +75,7 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
 
     @Override
     public Set<Action> commit(Action a) {
-        Set<Action> s = new HashSet<Action>();
+        Set<Action> s = new HashSet<>();
         synchronized (lock) {
             boolean ret = a.apply(curModel);
             if (!ret) {

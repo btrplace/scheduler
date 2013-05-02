@@ -86,7 +86,7 @@ public final class ActionModelUtils {
     }
 
     /**
-     * Extract the start moments of an array of actions.
+     * Extract the consume moments of an array of actions.
      * The ordering is maintained
      *
      * @return an array of variable

@@ -43,6 +43,9 @@ public class InMemoryUUIDPool implements UUIDPool {
 
     public static final long DEFAULT_SIZE = Long.MAX_VALUE;
 
+    /**
+     * Make a new pool with a default size of {@link #DEFAULT_SIZE}
+     */
     public InMemoryUUIDPool() {
         this(DEFAULT_SIZE);
     }

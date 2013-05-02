@@ -74,7 +74,7 @@ public class COfflineTest implements PremadeElements {
     public void testGetMisplacedAndSatisfied() {
         Mapping map = new MappingBuilder().on(n1, n2).build();
 
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
         Offline off = new Offline(s);
         COffline coff = new COffline(off);
         Model mo = new DefaultModel(map);

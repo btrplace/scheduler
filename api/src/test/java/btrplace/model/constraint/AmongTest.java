@@ -41,11 +41,12 @@ public class AmongTest implements PremadeElements {
     @Test
     public void testInstantiation() {
 
-        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(n1, n2));
-        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(n3));
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(s1, s2));
-        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
+        Set<UUID> s1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<UUID> s2 = new HashSet<>(Arrays.asList(n3));
+        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         Among a = new Among(vms, pGrps);
+        Assert.assertNotNull(a.getChecker());
         Assert.assertEquals(a.getInvolvedVMs(), vms);
         Assert.assertEquals(a.getGroupsOfNodes(), pGrps);
         Assert.assertEquals(a.getInvolvedNodes().size(), s1.size() + s2.size());
@@ -64,18 +65,18 @@ public class AmongTest implements PremadeElements {
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsHashCode() {
 
-        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(n1, n2));
-        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(n3));
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(s1, s2));
-        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
+        Set<UUID> s1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<UUID> s2 = new HashSet<>(Arrays.asList(n3));
+        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
 
         Among a = new Among(vms, pGrps);
         Assert.assertTrue(a.equals(a));
-        Assert.assertTrue(a.equals(new Among(new HashSet<UUID>(vms), pGrps)));
-        Assert.assertEquals(a.hashCode(), new Among(new HashSet<UUID>(vms), pGrps).hashCode());
+        Assert.assertTrue(a.equals(new Among(new HashSet<>(vms), pGrps)));
+        Assert.assertEquals(a.hashCode(), new Among(new HashSet<>(vms), pGrps).hashCode());
         Assert.assertFalse(a.equals(new Among(new HashSet<UUID>(), pGrps)));
-        Assert.assertFalse(a.equals(new Among(new HashSet<UUID>(vms), new HashSet<Set<UUID>>())));
-        Among a2 = new Among(new HashSet<UUID>(vms), new HashSet<Set<UUID>>());
+        Assert.assertFalse(a.equals(new Among(new HashSet<>(vms), new HashSet<Set<UUID>>())));
+        Among a2 = new Among(new HashSet<>(vms), new HashSet<Set<UUID>>());
         a2.setContinuous(true);
         Assert.assertFalse(a.equals(a2));
     }
@@ -83,10 +84,10 @@ public class AmongTest implements PremadeElements {
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testDiscreteIsSatisfied() {
 
-        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(n1, n2));
-        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(n3));
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(s1, s2));
-        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
+        Set<UUID> s1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<UUID> s2 = new HashSet<>(Arrays.asList(n3));
+        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
 
         Among a = new Among(vms, pGrps);
 
@@ -109,12 +110,12 @@ public class AmongTest implements PremadeElements {
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testContinuousIsSatisfied() {
 
-        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(n1, n2));
-        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(n3));
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(s1, s2));
-        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
+        Set<UUID> s1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<UUID> s2 = new HashSet<>(Arrays.asList(n3));
+        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
 
-        Among a = new Among(vms, pGrps);
+        Among a = new Among(vms, pGrps, true);
 
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);

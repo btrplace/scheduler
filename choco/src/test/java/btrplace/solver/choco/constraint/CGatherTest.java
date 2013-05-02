@@ -72,7 +72,7 @@ public class CGatherTest implements PremadeElements {
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
-        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(g);
         cstrs.add(new Running(map.getAllVMs()));
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
@@ -103,7 +103,7 @@ public class CGatherTest implements PremadeElements {
         Model mo = new DefaultModel(map);
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(true);
-        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Running(map.getAllVMs()));
         cstrs.add(g);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
@@ -122,7 +122,7 @@ public class CGatherTest implements PremadeElements {
         Model mo = new DefaultModel(map);
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(true);
-        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Running(map.getAllVMs()));
         cstrs.add(g);
         cstrs.add(new Fence(map.getAllVMs(), Collections.singleton(n1)));

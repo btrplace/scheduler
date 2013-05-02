@@ -44,7 +44,7 @@ public class CSequentialVMTransitionsTest implements PremadeElements {
     @Test
     public void testWithOnlyTransitions() throws SolverException {
         Mapping map = new MappingBuilder().on(n1, n2).ready(vm1).run(n1, vm2, vm4).sleep(n2, vm3).build();
-        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstrs = new ArrayList<>();
         Model mo = new DefaultModel(map);
         cstrs.add(new Running(Collections.singleton(vm1)));
         cstrs.add(new Sleeping(Collections.singleton(vm2)));
@@ -61,7 +61,7 @@ public class CSequentialVMTransitionsTest implements PremadeElements {
     @Test
     public void testWithVMsWithNoTransitions() throws SolverException {
         Mapping map = new MappingBuilder().on(n1, n2).ready(vm1).run(n1, vm2, vm4).run(n2, vm3).build();
-        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstrs = new ArrayList<>();
         Model mo = new DefaultModel(map);
         cstrs.add(new Running(Collections.singleton(vm1)));
         cstrs.add(new Running(Collections.singleton(vm2)));

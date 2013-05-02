@@ -18,12 +18,13 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
+import btrplace.model.constraint.checker.QuarantineChecker;
+import btrplace.model.constraint.checker.SatConstraintChecker;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * A constraint to put some nodes into quarantine.
@@ -47,42 +48,8 @@ public class Quarantine extends SatConstraint {
     }
 
     @Override
-    public Sat isSatisfied(Model i) {
-        return Sat.UNDEFINED;
-    }
-
-    @Override
-    public Sat isSatisfied(ReconfigurationPlan plan) {
-        if (plan.getSize() == 0) {
-            return Sat.SATISFIED;
-        }
-        Model src = plan.getOrigin();
-        Model mo = plan.getOrigin().clone();
-        Map<UUID, Set<UUID>> on = new HashMap<UUID, Set<UUID>>();
-        for (UUID n : getInvolvedNodes()) {
-            on.put(n, mo.getMapping().getRunningVMs(n));
-        }
-
-        for (Action a : plan) {
-            if (!a.apply(mo)) {
-                return Sat.UNSATISFIED;
-            }
-            //New VMs went to the quarantine ?
-            for (UUID n : getInvolvedNodes()) {
-                Set<UUID> in = new HashSet<UUID>(mo.getMapping().getRunningVMs(n));
-                //New VMs went into the node. Violation
-                if (!on.get(n).containsAll(in)) {
-                    return Sat.UNSATISFIED;
-                }
-                for (UUID vm : on.get(n)) {
-                    if (mo.getMapping().getRunningVMs().contains(vm) &&
-                            !mo.getMapping().getVMLocation(vm).equals(src.getMapping().getVMLocation(vm))) {
-                        return Sat.UNSATISFIED;
-                    }
-                }
-            }
-        }
-        return Sat.SATISFIED;
+    public SatConstraintChecker getChecker() {
+        return new QuarantineChecker(this);
     }
 
     @Override
@@ -118,4 +85,5 @@ public class Quarantine extends SatConstraint {
         }
         return b;
     }
+
 }

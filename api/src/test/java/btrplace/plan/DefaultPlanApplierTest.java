@@ -18,15 +18,14 @@ import static org.mockito.Mockito.*;
 public class DefaultPlanApplierTest implements PremadeElements {
 
     @Test
-    public void testListeners() {
+    public void testEventCommittedListeners() {
         DefaultPlanApplier app = new MockApplier();
         EventCommittedListener ev = Mockito.mock(EventCommittedListener.class);
         app.addEventCommittedListener(ev);
         Assert.assertTrue(app.removeEventCommittedListener(ev));
-
     }
 
-    @Test(dependsOnMethods = {"testListeners"})
+    @Test(dependsOnMethods = {"testEventCommittedListeners"})
     public void testFireSimpleAction() {
         DefaultPlanApplier app = new MockApplier();
         EventCommittedListener ev = mock(EventCommittedListener.class);

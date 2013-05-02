@@ -18,9 +18,9 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.model.constraint.checker.ReadyChecker;
+import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
 import java.util.Set;
@@ -28,10 +28,11 @@ import java.util.UUID;
 
 /**
  * A constraint to force a set of VMs at being ready for running.
- *
+ * <p/>
  * The restriction provided by the constraint is discrete
  * however, if some of the VMs are already in the ready state, then
  * their state will be unchanged.
+ *
  * @author Fabien Hermenier
  */
 public class Ready extends SatConstraint {
@@ -43,17 +44,6 @@ public class Ready extends SatConstraint {
      */
     public Ready(Set<UUID> vms) {
         super(vms, Collections.<UUID>emptySet(), false);
-    }
-
-    @Override
-    public Sat isSatisfied(Model i) {
-        Mapping c = i.getMapping();
-        for (UUID vm : getInvolvedVMs()) {
-            if (!c.getReadyVMs().contains(vm)) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
     }
 
     @Override
@@ -85,4 +75,10 @@ public class Ready extends SatConstraint {
     public boolean setContinuous(boolean b) {
         return !b;
     }
+
+    @Override
+    public SatConstraintChecker getChecker() {
+        return new ReadyChecker(this);
+    }
+
 }

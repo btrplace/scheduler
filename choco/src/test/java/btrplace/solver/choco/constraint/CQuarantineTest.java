@@ -46,7 +46,7 @@ public class CQuarantineTest implements PremadeElements {
     public void testWithSatisfiedModel() throws SolverException {
         Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).build();
         Model mo = new DefaultModel(map);
-        Set<UUID> ns = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> ns = new HashSet<>(Arrays.asList(n1, n2));
         Quarantine q = new Quarantine(ns);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>singleton(q));
@@ -62,9 +62,9 @@ public class CQuarantineTest implements PremadeElements {
     public void testWithNoSolution1() throws SolverException {
         Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).build();
         Model mo = new DefaultModel(map);
-        Set<UUID> ns = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> ns = new HashSet<>(Arrays.asList(n1, n2));
         Quarantine q = new Quarantine(ns);
-        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(q);
         cstrs.add(new Fence(Collections.singleton(vm4), Collections.singleton(n1)));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
@@ -81,9 +81,9 @@ public class CQuarantineTest implements PremadeElements {
     public void testWithNoSolution2() throws SolverException {
         Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).build();
         Model mo = new DefaultModel(map);
-        Set<UUID> ns = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> ns = new HashSet<>(Arrays.asList(n1, n2));
         Quarantine q = new Quarantine(ns);
-        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(q);
         cstrs.add(new Fence(Collections.singleton(vm1), Collections.singleton(n2)));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();

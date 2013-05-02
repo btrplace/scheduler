@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * An heuristic to branch first on the start moment of actions
+ * An heuristic to branch first on the consume moment of actions
  * that arrive on nodes without any outgoing actions.
  *
  * @author Fabien Hermenier
@@ -122,7 +122,7 @@ public class PureIncomingFirst2 extends AbstractIntVarSelector {
             }
         }
 
-        //TODO: start with nodes with a sufficient amount of free resources at startup
+        //TODO: consume with nodes with a sufficient amount of free resources at startup
         for (int x = 0; x < outs.length; x++) {   //Node per node
             if (outs[x].cardinality() == 0) { //no outgoing VMs, can be launched directly.
                 BitSet in = ins[x];

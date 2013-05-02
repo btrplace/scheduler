@@ -8,7 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * An applier that rely on the estimated start moment and duration of the actions to execute a plan.
+ * An applier that rely on the estimated consume moment and duration of the actions to execute a plan.
  *
  * @author Fabien Hermenier
  */
@@ -26,7 +26,7 @@ public class TimeBasedPlanApplier extends DefaultPlanApplier {
     @Override
     public Model apply(ReconfigurationPlan p) {
         Model res = p.getOrigin().clone();
-        List<Action> actions = new ArrayList<Action>(p.getActions());
+        List<Action> actions = new ArrayList<>(p.getActions());
         Collections.sort(actions, startFirstComparator);
         for (Action a : actions) {
             if (!a.apply(res)) {

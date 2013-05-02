@@ -65,7 +65,7 @@ public class COverbookTest implements PremadeElements {
         Model mo = new DefaultModel(m);
         mo.attach(rcCPU);
         Overbook o = new Overbook(m.getAllNodes(), "cpu", 2);
-        Collection<SatConstraint> c = new HashSet<SatConstraint>();
+        Collection<SatConstraint> c = new HashSet<>();
         c.add(o);
         c.add(new Running(m.getAllVMs()));
         c.add(new Preserve(m.getAllVMs(), "cpu", 1));
@@ -103,7 +103,7 @@ public class COverbookTest implements PremadeElements {
         }
         Model mo = new DefaultModel(m);
         mo.attach(rcCPU);
-        Collection<SatConstraint> c = new HashSet<SatConstraint>();
+        Collection<SatConstraint> c = new HashSet<>();
         c.add(new Overbook(Collections.singleton(nodes[0]), "cpu", 1));
         c.add(new Overbook(Collections.singleton(nodes[1]), "cpu", 2));
         c.add(new Overbook(Collections.singleton(nodes[2]), "cpu", 3));
@@ -137,7 +137,7 @@ public class COverbookTest implements PremadeElements {
         }
         Model mo = new DefaultModel(m);
         mo.attach(rcMem);
-        Collection<SatConstraint> c = new HashSet<SatConstraint>();
+        Collection<SatConstraint> c = new HashSet<>();
         c.add(new Overbook(m.getAllNodes(), "mem", 1));
         c.add(new Running(m.getAllVMs()));
         c.add(new Preserve(m.getAllVMs(), "mem", 1));
@@ -173,7 +173,7 @@ public class COverbookTest implements PremadeElements {
 
         btrplace.model.view.ShareableResource rcCPU = new ShareableResource("cpu", 2);
 
-        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Running(Collections.singleton(vm3)));
         cstrs.add(new Sleeping(Collections.singleton(vm1)));
         cstrs.add(new Online(m.getAllNodes()));
@@ -206,7 +206,7 @@ public class COverbookTest implements PremadeElements {
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
-        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Online(map.getAllNodes()));
         Overbook o = new Overbook(map.getAllNodes(), "foo", 1);
         o.setContinuous(true);

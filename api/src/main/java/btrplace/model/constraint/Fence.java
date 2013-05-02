@@ -18,9 +18,9 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.model.constraint.checker.FenceChecker;
+import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Set;
 import java.util.UUID;
@@ -46,19 +46,6 @@ public class Fence extends SatConstraint {
     }
 
     @Override
-    public Sat isSatisfied(Model i) {
-        Mapping c = i.getMapping();
-        Set<UUID> runnings = c.getRunningVMs();
-
-        for (UUID vm : getInvolvedVMs()) {
-            if (runnings.contains(vm) && !getInvolvedNodes().contains(c.getVMLocation(vm))) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
     public String toString() {
         return new StringBuilder("fence(vms=")
                 .append(getInvolvedVMs())
@@ -67,8 +54,6 @@ public class Fence extends SatConstraint {
                 .append(")").toString();
     }
 
-
-
     @Override
     public boolean setContinuous(boolean b) {
         if (!b) {
@@ -76,4 +61,10 @@ public class Fence extends SatConstraint {
         }
         return !b;
     }
+
+    @Override
+    public SatConstraintChecker getChecker() {
+        return new FenceChecker(this);
+    }
+
 }

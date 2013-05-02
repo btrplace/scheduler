@@ -86,7 +86,7 @@ public class CPreserveTest implements PremadeElements {
         cra.labelVariables(true);
         Model mo = new DefaultModel(map);
         mo.attach(rc);
-        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Online(map.getAllNodes()));
         cstrs.add(pr);
         ReconfigurationPlan p = cra.solve(mo, cstrs);

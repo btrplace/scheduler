@@ -52,7 +52,7 @@ public class CSpreadTest implements PremadeElements {
     @Test
     public void testDiscrete() throws SolverException {
         Model m = getModel();
-        List<SatConstraint> cstr = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstr = new ArrayList<>();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
         Spread s = new Spread(m.getMapping().getAllVMs());
@@ -71,12 +71,10 @@ public class CSpreadTest implements PremadeElements {
     @Test
     public void testContinuous() throws SolverException {
         Model m = getModel();
-        List<SatConstraint> cstr = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstr = new ArrayList<>();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
-        Spread s = new Spread(m.getMapping().getAllVMs());
-        s.setContinuous(true);
-        cstr.add(s);
+        cstr.add(new Spread(m.getMapping().getAllVMs(), true));
         cstr.add(new Online(m.getMapping().getAllNodes()));
         cstr.add(new Fence(Collections.singleton(vm1), Collections.singleton(n2)));
         ReconfigurationPlan p = cra.solve(m, cstr);
@@ -93,7 +91,7 @@ public class CSpreadTest implements PremadeElements {
         Mapping map = new MappingBuilder().on(n1, n2)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2).build();
-        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2));
         Spread s = new Spread(vms);
         CSpread cs = new CSpread(s);
         Model mo = new DefaultModel(map);
@@ -111,7 +109,7 @@ public class CSpreadTest implements PremadeElements {
         Model m = getModel();
         Mapping map = m.getMapping();
         map.addRunningVM(vm2, n1);
-        List<SatConstraint> cstr = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstr = new ArrayList<>();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
         Spread s = new Spread(m.getMapping().getAllVMs());

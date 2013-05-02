@@ -55,7 +55,7 @@ public class CSingleRunningCapacityTest implements PremadeElements {
 
         Mapping map = new MappingBuilder().on(n1).run(n1, vm1, vm2).ready(vm3).build();
         Model mo = new DefaultModel(map);
-        List<SatConstraint> l = new ArrayList<SatConstraint>();
+        List<SatConstraint> l = new ArrayList<>();
         l.add(new Running(Collections.singleton(vm1)));
         l.add(new Ready(Collections.singleton(vm2)));
         l.add(new Running(Collections.singleton(vm3)));
@@ -74,7 +74,7 @@ public class CSingleRunningCapacityTest implements PremadeElements {
     public void testContinuousResolution() throws SolverException {
         Mapping map = new MappingBuilder().on(n1).run(n1, vm1, vm2).ready(vm3).build();
         Model mo = new DefaultModel(map);
-        List<SatConstraint> l = new ArrayList<SatConstraint>();
+        List<SatConstraint> l = new ArrayList<>();
         l.add(new Running(Collections.singleton(vm1)));
         l.add(new Ready(Collections.singleton(vm2)));
         l.add(new Running(Collections.singleton(vm3)));

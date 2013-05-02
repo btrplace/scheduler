@@ -37,8 +37,9 @@ public class RootTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> x = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> x = new HashSet<>(Arrays.asList(vm1, vm2));
         Root s = new Root(x);
+        Assert.assertNotNull(s.getChecker());
         Assert.assertEquals(x, s.getInvolvedVMs());
         Assert.assertTrue(s.getInvolvedNodes().isEmpty());
         Assert.assertNotNull(s.toString());
@@ -52,7 +53,7 @@ public class RootTest implements PremadeElements {
 
     @Test
     public void testEquals() {
-        Set<UUID> x = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> x = new HashSet<>(Arrays.asList(vm1, vm2));
         Root s = new Root(x);
 
         Assert.assertTrue(s.equals(s));
@@ -67,7 +68,7 @@ public class RootTest implements PremadeElements {
         Mapping c = new DefaultMapping();
         c.addReadyVM(n1);
         c.addReadyVM(n2);
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
         Root o = new Root(s);
 
         Model i = new DefaultModel(c);

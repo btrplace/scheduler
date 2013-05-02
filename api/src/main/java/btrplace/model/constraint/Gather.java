@@ -18,11 +18,9 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
+import btrplace.model.constraint.checker.GatherChecker;
+import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
 import java.util.Set;
@@ -61,41 +59,6 @@ public class Gather extends SatConstraint {
         super(vms, Collections.<UUID>emptySet(), continuous);
     }
 
-
-    @Override
-    public Sat isSatisfied(Model i) {
-        UUID used = null;
-        Mapping map = i.getMapping();
-        for (UUID vm : getInvolvedVMs()) {
-            if (map.getRunningVMs().contains(vm)) {
-                if (used == null) {
-                    used = map.getVMLocation(vm);
-                } else if (!used.equals(map.getVMLocation(vm))) {
-                    return Sat.UNSATISFIED;
-                }
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
-    public Sat isSatisfied(ReconfigurationPlan p) {
-        Model mo = p.getOrigin();
-        if (!isSatisfied(mo).equals(Sat.SATISFIED)) {
-            return Sat.UNSATISFIED;
-        }
-        mo = p.getOrigin().clone();
-        for (Action a : p) {
-            if (!a.apply(mo)) {
-                return Sat.UNSATISFIED;
-            }
-            if (!isSatisfied(mo).equals(Sat.SATISFIED)) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -126,4 +89,10 @@ public class Gather extends SatConstraint {
         }
         return sb.append(')').toString();
     }
+
+    @Override
+    public SatConstraintChecker getChecker() {
+        return new GatherChecker(this);
+    }
+
 }

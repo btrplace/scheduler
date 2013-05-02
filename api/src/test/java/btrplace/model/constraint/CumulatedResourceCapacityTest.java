@@ -42,8 +42,9 @@ public class CumulatedResourceCapacityTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
         CumulatedResourceCapacity c = new CumulatedResourceCapacity(s, "foo", 3);
+        Assert.assertNotNull(c.getChecker());
         Assert.assertEquals(s, c.getInvolvedNodes());
         Assert.assertEquals("foo", c.getResource());
         Assert.assertEquals(3, c.getAmount());
@@ -61,7 +62,7 @@ public class CumulatedResourceCapacityTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsAndHashCode() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
         CumulatedResourceCapacity c = new CumulatedResourceCapacity(s, "foo", 3);
         CumulatedResourceCapacity c2 = new CumulatedResourceCapacity(s, "foo", 3);
         Assert.assertTrue(c.equals(c));
@@ -89,7 +90,7 @@ public class CumulatedResourceCapacityTest implements PremadeElements {
         ShareableResource rc = new ShareableResource("foo", 1);
         rc.set(vm2, 2);
         mo.attach(rc);
-        Set<UUID> nodes = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
         CumulatedResourceCapacity cc = new CumulatedResourceCapacity(nodes, "foo", 4);
         Assert.assertEquals(cc.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
         Assert.assertEquals(new CumulatedResourceCapacity(nodes, "bar", 100).isSatisfied(mo), SatConstraint.Sat.UNSATISFIED);
@@ -117,7 +118,7 @@ public class CumulatedResourceCapacityTest implements PremadeElements {
         ShareableResource rc = new ShareableResource("foo", 1);
         rc.set(vm2, 2);
         mo.attach(rc);
-        Set<UUID> nodes = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
         CumulatedResourceCapacity cc = new CumulatedResourceCapacity(nodes, "foo", 4);
 
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);

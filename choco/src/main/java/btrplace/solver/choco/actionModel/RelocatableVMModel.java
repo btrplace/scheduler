@@ -121,7 +121,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
         s.post(s.leq(dSlice.getDuration(), rp.getEnd()));
         s.post(s.leq(dSlice.getEnd(), rp.getEnd()));
 
-        //If we allow re-instantiate, then the dSlice duration will start necessarily after the forgeDuration
+        //If we allow re-instantiate, then the dSlice duration will consume necessarily after the forgeDuration
         s.post(new BooleanChanneling(stay, duration, 0));
 
         if (!getRelocationMethod().isInstantiated()) {

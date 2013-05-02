@@ -18,9 +18,9 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.model.view.ShareableResource;
+import btrplace.model.constraint.checker.PreserveChecker;
+import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
 import java.util.Set;
@@ -53,21 +53,6 @@ public class Preserve extends SatConstraint {
         super(vms, Collections.<UUID>emptySet(), false);
         this.rc = rcId;
         this.amount = amount;
-    }
-
-    @Override
-    public Sat isSatisfied(Model i) {
-        ShareableResource r = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + rc);
-        if (r == null) {
-            return Sat.UNSATISFIED;
-        }
-        for (UUID vmId : getInvolvedVMs()) {
-            int v = r.get(vmId);
-            if (v < amount) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
     }
 
     /**
@@ -115,7 +100,7 @@ public class Preserve extends SatConstraint {
                 .append(", rc=").append(rc)
                 .append(", amount=").append(amount)
                 .append(", discrete")
-                .append(")").toString();
+                .append(')').toString();
     }
 
     @Override
@@ -125,6 +110,12 @@ public class Preserve extends SatConstraint {
         }
         return !b;
     }
+
+    @Override
+    public SatConstraintChecker getChecker() {
+        return new PreserveChecker(this);
+    }
+
 }
 
 

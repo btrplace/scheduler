@@ -6,7 +6,7 @@ import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
- * Very basic variable selector that focus the moment where node actions start.
+ * Very basic variable selector that focus the moment where node actions consume.
  *
  * @author Fabien Hermenier
  */

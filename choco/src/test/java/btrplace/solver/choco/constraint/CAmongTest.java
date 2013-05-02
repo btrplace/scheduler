@@ -51,17 +51,17 @@ public class CAmongTest implements PremadeElements {
                 .run(n1, vm1).run(n2, vm2).run(n3, vm3)
                 .ready(vm4, vm5).build();
 
-        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
+        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
 
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>();
-        Set<UUID> s = new HashSet<UUID>();
+        Set<Set<UUID>> pGrps = new HashSet<>();
+        Set<UUID> s = new HashSet<>();
         s.add(n1);
         s.add(n2);
         pGrps.add(s);
         Among a = new Among(vms, pGrps);
         a.setContinuous(false);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Running(map.getAllVMs()));
         cstrs.add(a);
 
@@ -80,15 +80,15 @@ public class CAmongTest implements PremadeElements {
                 .run(n1, vm1).run(n2, vm2, vm3)
                 .ready(vm4, vm5).build();
 
-        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm5));
+        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
 
-        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(n1, n2));
-        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(n3, n4));
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(s1, s2));
+        Set<UUID> s1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<UUID> s2 = new HashSet<>(Arrays.asList(n3, n4));
+        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
         Among a = new Among(vms, pGrps);
         a.setContinuous(false);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Running(map.getAllVMs()));
         cstrs.add(new Fence(Collections.singleton(vm2), s2));
         cstrs.add(a);
@@ -113,17 +113,17 @@ public class CAmongTest implements PremadeElements {
                 .run(n1, vm1).run(n2, vm2, vm3)
                 .ready(vm4, vm5).build();
 
-        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm5));
+        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
 
 
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
-        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(n3, n4));
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(s, s2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Set<UUID> s2 = new HashSet<>(Arrays.asList(n3, n4));
+        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(s, s2));
 
         Among a = new Among(vms, pGrps);
         a.setContinuous(false);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Running(map.getAllVMs()));
         cstrs.add(new Fence(Collections.singleton(vm2), Collections.singleton(n3)));
         cstrs.add(new Fence(Collections.singleton(vm1), Collections.singleton(n1)));
@@ -142,10 +142,10 @@ public class CAmongTest implements PremadeElements {
                 .run(n1, vm1).run(n2, vm2, vm3)
                 .ready(vm4, vm5).build();
 
-        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm5));
-        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(n1, n2));
-        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(n3, n4));
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(s1, s2));
+        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
+        Set<UUID> s1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<UUID> s2 = new HashSet<>(Arrays.asList(n3, n4));
+        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
 
         Model mo = new DefaultModel(map);
         Among a = new Among(vms, pGrps);
@@ -163,16 +163,16 @@ public class CAmongTest implements PremadeElements {
                 .run(n1, vm1).run(n2, vm2, vm3)
                 .ready(vm4, vm5).build();
 
-        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm5));
-        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(n1, n2));
-        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(n3, n4));
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(s1, s2));
+        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
+        Set<UUID> s1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<UUID> s2 = new HashSet<>(Arrays.asList(n3, n4));
+        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
 
         Model mo = new DefaultModel(map);
         Among a = new Among(vms, pGrps);
         a.setContinuous(true);
 
-        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Running(map.getAllVMs()));
         cstrs.add(a);
 
@@ -190,17 +190,17 @@ public class CAmongTest implements PremadeElements {
                 .run(n1, vm1).run(n2, vm2).run(n3, vm3)
                 .ready(vm4, vm5).build();
 
-        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm5));
+        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
 
-        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(n1, n2));
-        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(n3, n4));
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(s1, s2));
+        Set<UUID> s1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<UUID> s2 = new HashSet<>(Arrays.asList(n3, n4));
+        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
 
         Model mo = new DefaultModel(map);
         Among a = new Among(vms, pGrps);
         a.setContinuous(true);
 
-        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Running(map.getAllVMs()));
         cstrs.add(new Fence(Collections.singleton(vm2), Collections.singleton(n3)));
         cstrs.add(a);

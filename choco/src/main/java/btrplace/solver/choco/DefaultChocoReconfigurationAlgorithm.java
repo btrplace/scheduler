@@ -25,6 +25,8 @@ import btrplace.model.constraint.Ready;
 import btrplace.model.constraint.Running;
 import btrplace.model.constraint.Sleeping;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlanChecker;
+import btrplace.plan.ReconfigurationPlanCheckerException;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.constraint.SatConstraintMapper;
 import btrplace.solver.choco.objective.minMTTR.MinMTTR;
@@ -114,7 +116,6 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     public boolean repair() {
         return repair;
     }
-
 
     @Override
     public void labelVariables(boolean b) {
@@ -207,31 +208,23 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         rp.getLogger().debug("optimize: {}; timeLimit: {}; manageableVMs: {}", optimize, getTimeLimit(), rp.getManageableVMs().size());
 
         ReconfigurationPlan p = rp.solve(timeLimit, optimize);
-        if (p != null) {
-            assert checkSatisfaction(p, cstrs);
-            return p;
-        } else {
+        if (p == null) {
             return null;
         }
+        checkSatisfaction2(p, cstrs);
+        return p;
     }
 
-    private boolean checkSatisfaction(ReconfigurationPlan p, Collection<SatConstraint> cstrs) {
-        Model res = p.getResult();
-        if (res == null) {
-            rp.getLogger().error("Applying the following plan does not conclude to a model:\n{}", p);
-            return false;
+    private void checkSatisfaction2(ReconfigurationPlan p, Collection<SatConstraint> cstrs) throws SolverException {
+        ReconfigurationPlanChecker chk = new ReconfigurationPlanChecker();
+        for (SatConstraint c : cstrs) {
+            chk.addChecker(c.getChecker());
         }
-        for (SatConstraint cstr : cstrs) {
-            if (cstr.isContinuous() && !cstr.isSatisfied(p).equals(SatConstraint.Sat.SATISFIED)) {
-                rp.getLogger().error("The following plan does not satisfy {}:\n{}", cstr.toString(), p);
-                return false;
-            } else if (!cstr.isContinuous() && !cstr.isSatisfied(res).equals(SatConstraint.Sat.SATISFIED)) {
-                rp.getLogger().error("The following model does not satisfy {}:\n{}", cstr.toString(), res);
-                return false;
-            }
-
+        try {
+            chk.check(p);
+        } catch (ReconfigurationPlanCheckerException ex) {
+            throw new SolverException(p.getOrigin(), ex.getMessage());
         }
-        return true;
     }
 
     @Override

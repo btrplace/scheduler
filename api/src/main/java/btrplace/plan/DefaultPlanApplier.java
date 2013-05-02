@@ -1,25 +1,29 @@
 package btrplace.plan;
 
-import btrplace.plan.event.*;
+import btrplace.plan.event.NotificationDispatcher;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A skeleton for {@link ReconfigurationPlanApplier} that provide the material
+ * A skeleton for {@link ReconfigurationPlanApplier}.
+ * It provides that provide the material
  * to propagate the notifications related to the termination of the actions.
  *
  * @author Fabien Hermenier
  */
-public abstract class DefaultPlanApplier implements ReconfigurationPlanApplier, ActionVisitor {
+public abstract class DefaultPlanApplier implements ReconfigurationPlanApplier {
 
     private List<EventCommittedListener> listeners;
+
+    private NotificationDispatcher notificationDispatcher;
 
     /**
      * Make a new applier.
      */
     public DefaultPlanApplier() {
         listeners = new ArrayList<>();
+        notificationDispatcher = new NotificationDispatcher(listeners);
     }
 
     @Override
@@ -35,116 +39,22 @@ public abstract class DefaultPlanApplier implements ReconfigurationPlanApplier, 
     /**
      * Propagate the action to every listener added by
      * {@link #addEventCommittedListener(EventCommittedListener)}.
-     * Events hooked on {@link btrplace.plan.Action.Hook#pre} are propagated.
+     * Events hooked on {@link btrplace.plan.Action.Hook#pre} are propagated in first
      * Then the real action is propagated. Finally, events hooked on {@link btrplace.plan.Action.Hook#post}
      * are propagated
      *
      * @param a the event to propagate
      */
     public void fireAction(Action a) {
+
         for (Event e : a.getEvents(Action.Hook.pre)) {
-            e.visit(this);
+            e.visit(notificationDispatcher);
         }
-        a.visit(this);
+        a.visit(notificationDispatcher);
+
         for (Event e : a.getEvents(Action.Hook.post)) {
-            e.visit(this);
+            e.visit(notificationDispatcher);
         }
-
     }
 
-    @Override
-    public Object visit(SuspendVM a) {
-        for (EventCommittedListener l : listeners) {
-            l.committed(a);
-        }
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Object visit(Allocate a) {
-        for (EventCommittedListener l : listeners) {
-            l.committed(a);
-        }
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Object visit(AllocateEvent a) {
-        for (EventCommittedListener l : listeners) {
-            l.committed(a);
-        }
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Object visit(SubstitutedVMEvent a) {
-        for (EventCommittedListener l : listeners) {
-            l.committed(a);
-        }
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Object visit(BootNode a) {
-        for (EventCommittedListener l : listeners) {
-            l.committed(a);
-        }
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Object visit(BootVM a) {
-        for (EventCommittedListener l : listeners) {
-            l.committed(a);
-        }
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Object visit(ForgeVM a) {
-        for (EventCommittedListener l : listeners) {
-            l.committed(a);
-        }
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Object visit(KillVM a) {
-        for (EventCommittedListener l : listeners) {
-            l.committed(a);
-        }
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Object visit(MigrateVM a) {
-        for (EventCommittedListener l : listeners) {
-            l.committed(a);
-        }
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Object visit(ResumeVM a) {
-        for (EventCommittedListener l : listeners) {
-            l.committed(a);
-        }
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Object visit(ShutdownNode a) {
-        for (EventCommittedListener l : listeners) {
-            l.committed(a);
-        }
-        return Boolean.TRUE;
-    }
-
-    @Override
-    public Object visit(ShutdownVM a) {
-        for (EventCommittedListener l : listeners) {
-            l.committed(a);
-        }
-        return Boolean.TRUE;
-    }
 }

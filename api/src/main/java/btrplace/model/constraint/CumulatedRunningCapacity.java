@@ -18,10 +18,9 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
+import btrplace.model.constraint.checker.CumulatedRunningCapacityChecker;
+import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
 import java.util.Set;
@@ -64,38 +63,6 @@ public class CumulatedRunningCapacity extends SatConstraint {
     public CumulatedRunningCapacity(Set<UUID> servers, int amount, boolean continuous) {
         super(Collections.<UUID>emptySet(), servers, continuous);
         this.qty = amount;
-    }
-
-    @Override
-    public Sat isSatisfied(Model i) {
-        int remainder = qty;
-        for (UUID id : getInvolvedNodes()) {
-            if (i.getMapping().getOnlineNodes().contains(id)) {
-                remainder -= i.getMapping().getRunningVMs(id).size();
-                if (remainder < 0) {
-                    return Sat.UNSATISFIED;
-                }
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
-    public Sat isSatisfied(ReconfigurationPlan p) {
-        Model mo = p.getOrigin();
-        if (!isSatisfied(mo).equals(Sat.SATISFIED)) {
-            return Sat.UNSATISFIED;
-        }
-        mo = p.getOrigin().clone();
-        for (Action a : p) {
-            if (!a.apply(mo)) {
-                return Sat.UNSATISFIED;
-            }
-            if (!isSatisfied(mo).equals(Sat.SATISFIED)) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
     }
 
     @Override
@@ -145,4 +112,10 @@ public class CumulatedRunningCapacity extends SatConstraint {
 
         return b.toString();
     }
+
+    @Override
+    public SatConstraintChecker getChecker() {
+        return new CumulatedRunningCapacityChecker(this);
+    }
+
 }

@@ -61,7 +61,7 @@ public abstract class Action implements Event {
     public Action(int st, int ed) {
         this.start = st;
         this.stop = ed;
-        events = new HashMap<Hook, List<Event>>(2);
+        events = new HashMap<>(2);
     }
 
     /**
@@ -131,7 +131,7 @@ public abstract class Action implements Event {
     public boolean addEvent(Hook k, Event n) {
         List<Event> l = events.get(k);
         if (l == null) {
-            l = new ArrayList<Event>();
+            l = new ArrayList<>();
             events.put(k, l);
         }
         return l.add(n);

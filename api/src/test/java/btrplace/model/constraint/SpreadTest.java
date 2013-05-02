@@ -40,8 +40,9 @@ public class SpreadTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> x = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> x = new HashSet<>(Arrays.asList(vm1, vm2));
         Spread s = new Spread(x);
+        Assert.assertNotNull(s.getChecker());
         Assert.assertEquals(x, s.getInvolvedVMs());
         Assert.assertTrue(s.getInvolvedNodes().isEmpty());
         Assert.assertTrue(s.isContinuous());
@@ -56,13 +57,13 @@ public class SpreadTest implements PremadeElements {
 
     @Test
     public void testEquals() {
-        Set<UUID> x = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> x = new HashSet<>(Arrays.asList(vm1, vm2));
         Spread s = new Spread(x);
 
         Assert.assertTrue(s.equals(s));
         Assert.assertTrue(new Spread(x).equals(s));
         Assert.assertEquals(s.hashCode(), new Spread(x).hashCode());
-        x = new HashSet<UUID>(Arrays.asList(vm3));
+        x = new HashSet<>(Arrays.asList(vm3));
         Assert.assertFalse(new Spread(x).equals(s));
     }
 
@@ -122,6 +123,7 @@ public class SpreadTest implements PremadeElements {
         map.addRunningVM(vm3, n2);
         s = new Spread(map.getAllVMs());
         p = new DefaultReconfigurationPlan(mo);
+        System.out.println(p.getOrigin() + "\n" + p.getResult());
         Assert.assertEquals(s.isSatisfied(p), SatConstraint.Sat.UNSATISFIED);
         p.add(new MigrateVM(vm3, n2, n3, 0, 5));
         Assert.assertEquals(s.isSatisfied(p), SatConstraint.Sat.SATISFIED);

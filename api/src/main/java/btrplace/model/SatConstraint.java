@@ -18,7 +18,10 @@
 
 package btrplace.model;
 
+import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlanChecker;
+import btrplace.plan.ReconfigurationPlanCheckerException;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -106,7 +109,9 @@ public abstract class SatConstraint {
      * @param i the model to check
      * @return {@code true} iff the constraint is not violated
      */
-    public abstract Sat isSatisfied(Model i);
+    public Sat isSatisfied(Model i) {
+        return getChecker().endsWith(i) ? Sat.SATISFIED : Sat.UNSATISFIED;
+    }
 
     /**
      * Check if a plan satisfies the constraint.
@@ -117,11 +122,14 @@ public abstract class SatConstraint {
      * @return {@code true} iff the plan satisfies the constraint
      */
     public Sat isSatisfied(ReconfigurationPlan p) {
-        Model m = p.getResult();
-        if (m == null) {
+        ReconfigurationPlanChecker chk = new ReconfigurationPlanChecker();
+        chk.addChecker(getChecker());
+        try {
+            chk.check(p);
+        } catch (ReconfigurationPlanCheckerException ex) {
             return Sat.UNSATISFIED;
         }
-        return isSatisfied(m);
+        return Sat.SATISFIED;
     }
 
     @Override
@@ -161,5 +169,14 @@ public abstract class SatConstraint {
      */
     public boolean isContinuous() {
         return continuous;
+    }
+
+    /**
+     * Get the validator used to check if a plan satisfies the constraint.
+     *
+     * @return a non-null {@link btrplace.model.constraint.checker.SatConstraintChecker}
+     */
+    public SatConstraintChecker getChecker() {
+        throw new UnsupportedOperationException();
     }
 }

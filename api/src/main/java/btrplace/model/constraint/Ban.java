@@ -18,9 +18,9 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.model.constraint.checker.BanChecker;
+import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Set;
 import java.util.UUID;
@@ -46,17 +46,6 @@ public class Ban extends SatConstraint {
         super(vms, nodes, false);
     }
 
-    @Override
-    public Sat isSatisfied(Model i) {
-        Mapping c = i.getMapping();
-        Set<UUID> runnings = c.getRunningVMs();
-        for (UUID vm : getInvolvedVMs()) {
-            if (runnings.contains(vm) && getInvolvedNodes().contains(c.getVMLocation(vm))) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
-    }
 
     @Override
     public String toString() {
@@ -73,4 +62,10 @@ public class Ban extends SatConstraint {
         }
         return !b;
     }
+
+    @Override
+    public SatConstraintChecker getChecker() {
+        return new BanChecker(this);
+    }
+
 }

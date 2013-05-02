@@ -29,7 +29,7 @@ public class MockAction extends Action {
 
     @Override
     public String pretty() {
-        return "pretty()";
+        return "pretty(" + u + ", start= " + getStart() + ", end=" + getEnd() + ")";
     }
 
     @Override

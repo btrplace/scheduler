@@ -39,7 +39,7 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
 
     private DependenciesExtractor depsExtractor;
 
-    private static Comparator<Action> startFirstComparator = new TimedBasedActionComparator(true);
+    private static Comparator<Action> startFirstComparator = new TimedBasedActionComparator(true, true);
 
     private ReconfigurationPlanApplier applier = new TimeBasedPlanApplier();
 
@@ -50,7 +50,7 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
      */
     public DefaultReconfigurationPlan(Model src) {
         this.src = src;
-        this.actions = new TreeSet<Action>(startFirstComparator);
+        this.actions = new TreeSet<>(startFirstComparator);
         this.depsExtractor = new DependenciesExtractor(src);
     }
 

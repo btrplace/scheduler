@@ -42,8 +42,9 @@ public class OverbookTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
         Overbook o = new Overbook(s, "foo", 1.5);
+        Assert.assertNotNull(o.getChecker());
         Assert.assertEquals(s, o.getInvolvedNodes());
         Assert.assertEquals("foo", o.getResource());
         Assert.assertTrue(o.getInvolvedVMs().isEmpty());
@@ -60,7 +61,7 @@ public class OverbookTest implements PremadeElements {
 
     @Test
     public void testDiscreteIsSatisfied() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
 
         Mapping cfg = new DefaultMapping();
         cfg.addOnlineNode(n1);
@@ -98,7 +99,7 @@ public class OverbookTest implements PremadeElements {
 
     @Test
     public void testContinuousIsSatisfied() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
 
         Mapping cfg = new DefaultMapping();
         cfg.addOnlineNode(n1);
@@ -145,7 +146,7 @@ public class OverbookTest implements PremadeElements {
 
     @Test
     public void testEquals() {
-        Set<UUID> x = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> x = new HashSet<>(Arrays.asList(n1, n2));
         Overbook s = new Overbook(x, "foo", 3);
 
         Assert.assertTrue(s.equals(s));
@@ -154,7 +155,7 @@ public class OverbookTest implements PremadeElements {
         Assert.assertEquals(o2.hashCode(), s.hashCode());
         Assert.assertFalse(new Overbook(x, "bar", 3).equals(s));
         Assert.assertFalse(new Overbook(x, "foo", 2).equals(s));
-        x = new HashSet<UUID>(Arrays.asList(n3));
+        x = new HashSet<>(Arrays.asList(n3));
         Assert.assertFalse(new Overbook(x, "foo", 3).equals(s));
     }
 }

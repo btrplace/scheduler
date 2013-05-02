@@ -129,12 +129,12 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
                 if (hoster[i] != null && hoster[i].isInstantiated()) {
                     int newPos = hoster[i].getVal();
                     if (oldPos[i] != -1 && newPos != oldPos[i]) {
-                        //rp.getLogger().debug("{}: {} from {} to {} start={}", label, hoster[i], oldPos[i], newPos, starts[i]);
+                        //rp.getLogger().debug("{}: {} from {} to {} consume={}", label, hoster[i], oldPos[i], newPos, starts[i]);
                         //The VM has move
                         ins[newPos].set(i);
                         move.set(i);
                     } else if (newPos == oldPos[i]) {
-                        //rp.getLogger().debug("{}: {} stays on {} start={}", label, hoster[i], oldPos[i], starts[i]);
+                        //rp.getLogger().debug("{}: {} stays on {} consume={}", label, hoster[i], oldPos[i], starts[i]);
                         stays.set(i);
                     }
                 }
@@ -142,7 +142,7 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
         }
 
 
-        //VMs going on nodes with no outgoing actions, so actions that can start with no delay
+        //VMs going on nodes with no outgoing actions, so actions that can consume with no delay
         //rp.getLogger().debug("{}: focus on actions to nodes without outgoings", label);
         for (int x = 0; x < outs.length; x++) {   //Node per node
             if (outs[x].cardinality() == 0) { //no outgoing VMs, can be launched directly.
@@ -207,7 +207,7 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
                 }
             }
         }
-        //rp.getLogger().debug("{}: focus on {} (earlier start)", label, best);
+        //rp.getLogger().debug("{}: focus on {} (earlier consume)", label, best);
         if (best == null) {
             //Plug the cost constraints
             obj.postCostConstraints();

@@ -175,7 +175,7 @@ public class DefaultMappingTest implements PremadeElements {
         c.addRunningVM(vm3, n4);
         c.addRunningVM(vm1, n3);
 
-        Set<UUID> nodes = new HashSet<UUID>();
+        Set<UUID> nodes = new HashSet<>();
         nodes.add(n1);
         nodes.add(n3);
         Set<UUID> on = c.getRunningVMs(nodes);
@@ -529,7 +529,7 @@ public class DefaultMappingTest implements PremadeElements {
 
         m.addOfflineNode(n3);
         Assert.assertTrue(m.getRunningVMs(n3).isEmpty());
-        Set<UUID> ns = new HashSet<UUID>();
+        Set<UUID> ns = new HashSet<>();
         ns.add(n3);
         Assert.assertTrue(m.getRunningVMs(ns).isEmpty());
     }

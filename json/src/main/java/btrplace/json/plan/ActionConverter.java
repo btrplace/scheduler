@@ -321,7 +321,7 @@ public class ActionConverter implements JSONConverter<Action>, ActionVisitor {
     }
 
     /**
-     * Just create the JSONObject and set the start and the end attribute.
+     * Just create the JSONObject and set the consume and the end attribute.
      *
      * @param a the action to convert
      * @return a skeleton JSONObject

@@ -23,7 +23,7 @@ public class Dependency {
      */
     public Dependency(Action action, Set<Action> dependencies) {
         a = action;
-        deps = new HashSet<Action>(dependencies);
+        deps = new HashSet<>(dependencies);
     }
 
     /**

@@ -128,7 +128,7 @@ public class DefaultAttributesTest implements PremadeElements {
     @Test(dependsOnMethods = {"testPutAndGetLong", "testInstantiation", "testUnset"})
     public void testClone() {
         Attributes attrs = new DefaultAttributes();
-        List<UUID> l = new ArrayList<UUID>();
+        List<UUID> l = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             UUID u = UUID.randomUUID();
             attrs.put(u, Integer.toString(i), i);
@@ -146,7 +146,7 @@ public class DefaultAttributesTest implements PremadeElements {
     @Test(dependsOnMethods = {"testPutAndGetLong", "testInstantiation", "testUnset", "testClone"})
     public void testEqualsHashCode() {
         Attributes attrs = new DefaultAttributes();
-        List<UUID> l = new ArrayList<UUID>();
+        List<UUID> l = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             UUID u = UUID.randomUUID();
             attrs.put(u, Integer.toString(i), i);

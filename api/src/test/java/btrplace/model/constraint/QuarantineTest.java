@@ -41,25 +41,26 @@ public class QuarantineTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
         Quarantine q = new Quarantine(s);
+        Assert.assertNotNull(q.getChecker());
         Assert.assertTrue(q.getInvolvedVMs().isEmpty());
         Assert.assertEquals(q.getInvolvedNodes(), s);
         Assert.assertTrue(q.isContinuous());
         Assert.assertFalse(q.setContinuous(false));
         Assert.assertTrue(q.setContinuous(true));
         Assert.assertFalse(q.toString().contains("null"));
-        Assert.assertEquals(q.isSatisfied(new DefaultModel(new DefaultMapping())), SatConstraint.Sat.UNDEFINED);
+//        Assert.assertEquals(q.isSatisfied(new DefaultModel(new DefaultMapping())), SatConstraint.Sat.UNDEFINED);
         System.out.println(q);
     }
 
     @Test
     public void testEqualsHashCode() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
         Quarantine q = new Quarantine(s);
         Assert.assertTrue(q.equals(q));
-        Assert.assertTrue(q.equals(new Quarantine(new HashSet<UUID>(s))));
-        Assert.assertEquals(q.hashCode(), new Quarantine(new HashSet<UUID>(s)).hashCode());
+        Assert.assertTrue(q.equals(new Quarantine(new HashSet<>(s))));
+        Assert.assertEquals(q.hashCode(), new Quarantine(new HashSet<>(s)).hashCode());
         Assert.assertFalse(q.equals(new Quarantine(new HashSet<UUID>())));
     }
 

@@ -18,11 +18,9 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
+import btrplace.model.constraint.checker.AmongChecker;
+import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.*;
 
@@ -76,7 +74,7 @@ public class Among extends SatConstraint {
      * @param u the node identifier
      * @return the group of nodes if exists, {@code null} otherwise
      */
-    private Set<UUID> getAssociatedPGroup(UUID u) {
+    public Set<UUID> getAssociatedPGroup(UUID u) {
         for (Set<UUID> pGrp : pGrps) {
             if (pGrp.contains(u)) {
                 return pGrp;
@@ -86,45 +84,8 @@ public class Among extends SatConstraint {
     }
 
     @Override
-    public Sat isSatisfied(Model i) {
-        Mapping map = i.getMapping();
-        Set<UUID> choosedGroup = null;
-        for (UUID vm : getInvolvedVMs()) {
-            if (map.getRunningVMs().contains(vm)) {
-                Set<UUID> nodes = getAssociatedPGroup((map.getVMLocation(vm)));
-                if (nodes == null) {
-                    return Sat.UNSATISFIED;
-                } else if (choosedGroup == null) {
-                    choosedGroup = nodes;
-                } else if (!choosedGroup.equals(nodes)) {
-                    return Sat.UNSATISFIED;
-                }
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
-    public Sat isSatisfied(ReconfigurationPlan p) {
-        Model mo = p.getOrigin();
-        if (!isSatisfied(mo).equals(Sat.SATISFIED)) {
-            return Sat.UNSATISFIED;
-        }
-        mo = p.getOrigin().clone();
-        for (Action a : p) {
-            if (!a.apply(mo)) {
-                return Sat.UNSATISFIED;
-            }
-            if (!isSatisfied(mo).equals(Sat.SATISFIED)) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
     public Collection<UUID> getInvolvedNodes() {
-        Set<UUID> s = new HashSet<UUID>();
+        Set<UUID> s = new HashSet<>();
         for (Set<UUID> x : pGrps) {
             s.addAll(x);
         }
@@ -182,4 +143,10 @@ public class Among extends SatConstraint {
         }
         return b.append(")").toString();
     }
+
+    @Override
+    public SatConstraintChecker getChecker() {
+        return new AmongChecker(this);
+    }
+
 }

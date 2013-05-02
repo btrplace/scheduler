@@ -18,9 +18,9 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.model.constraint.checker.KilledChecker;
+import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
 import java.util.Set;
@@ -42,17 +42,6 @@ public class Killed extends SatConstraint {
      */
     public Killed(Set<UUID> vms) {
         super(vms, Collections.<UUID>emptySet(), false);
-    }
-
-    @Override
-    public Sat isSatisfied(Model i) {
-        Mapping c = i.getMapping();
-        for (UUID vm : getInvolvedVMs()) {
-            if (c.getAllVMs().contains(vm)) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
     }
 
     @Override
@@ -84,6 +73,11 @@ public class Killed extends SatConstraint {
     @Override
     public boolean setContinuous(boolean b) {
         return !b;
+    }
+
+    @Override
+    public SatConstraintChecker getChecker() {
+        return new KilledChecker(this);
     }
 
 }

@@ -18,10 +18,9 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
-import btrplace.plan.ReconfigurationPlan;
+import btrplace.model.constraint.checker.RootChecker;
+import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
 import java.util.Set;
@@ -46,28 +45,6 @@ public class Root extends SatConstraint {
      */
     public Root(Set<UUID> vms) {
         super(vms, Collections.<UUID>emptySet(), true);
-    }
-
-    @Override
-    public Sat isSatisfied(Model i) {
-        return Sat.SATISFIED;
-    }
-
-    @Override
-    public Sat isSatisfied(ReconfigurationPlan plan) {
-        Model r = plan.getResult();
-        if (r == null) {
-            return Sat.UNSATISFIED;
-        }
-        Mapping dst = r.getMapping();
-        Mapping src = plan.getOrigin().getMapping();
-        for (UUID vm : getInvolvedVMs()) {
-            if (src.getRunningVMs().contains(vm) && dst.getRunningVMs().contains(vm)
-                    && !src.getVMLocation(vm).equals(dst.getVMLocation(vm))) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
     }
 
     @Override
@@ -102,6 +79,11 @@ public class Root extends SatConstraint {
             return super.setContinuous(b);
         }
         return b;
+    }
+
+    @Override
+    public SatConstraintChecker getChecker() {
+        return new RootChecker(this);
     }
 
 }

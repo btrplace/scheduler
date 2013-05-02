@@ -41,8 +41,9 @@ public class CumulatedRunningCapacityTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
         CumulatedRunningCapacity c = new CumulatedRunningCapacity(s, 3);
+        Assert.assertNotNull(c.getChecker());
         Assert.assertEquals(s, c.getInvolvedNodes());
         Assert.assertEquals(3, c.getAmount());
         Assert.assertTrue(c.getInvolvedVMs().isEmpty());
@@ -60,7 +61,7 @@ public class CumulatedRunningCapacityTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsAndHashCode() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
         CumulatedRunningCapacity c = new CumulatedRunningCapacity(s, 3);
         CumulatedRunningCapacity c2 = new CumulatedRunningCapacity(s, 3);
         Assert.assertTrue(c.equals(c));
