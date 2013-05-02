@@ -2,6 +2,7 @@ package btrplace.plan;
 
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
+import btrplace.plan.event.Action;
 
 /**
  * Exception that notifies a constraint violation inside a reconfiguration plan.

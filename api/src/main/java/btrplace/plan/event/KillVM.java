@@ -19,8 +19,6 @@
 package btrplace.plan.event;
 
 import btrplace.model.Model;
-import btrplace.plan.Action;
-import btrplace.plan.VMStateTransition;
 
 import java.util.UUID;
 

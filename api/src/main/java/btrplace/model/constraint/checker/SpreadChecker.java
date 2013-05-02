@@ -3,7 +3,7 @@ package btrplace.model.constraint.checker;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.constraint.Spread;
-import btrplace.plan.RunningVMPlacement;
+import btrplace.plan.event.RunningVMPlacement;
 import btrplace.plan.event.KillVM;
 import btrplace.plan.event.MigrateVM;
 import btrplace.plan.event.ShutdownVM;

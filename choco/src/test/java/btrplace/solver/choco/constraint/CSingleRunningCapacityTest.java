@@ -25,7 +25,7 @@ import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Ready;
 import btrplace.model.constraint.Running;
 import btrplace.model.constraint.SingleRunningCapacity;
-import btrplace.plan.Action;
+import btrplace.plan.event.Action;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootVM;
 import btrplace.plan.event.ShutdownVM;

@@ -19,7 +19,7 @@
 package btrplace.solver.choco.actionModel;
 
 import btrplace.model.Model;
-import btrplace.plan.Action;
+import btrplace.plan.event.Action;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.*;
 import btrplace.solver.SolverException;

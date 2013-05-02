@@ -153,7 +153,7 @@ public class DefaultReconfigurationProblemBuilder {
             runs = map.getRunningVMs();
             waits = map.getReadyVMs();
             sleep = map.getSleepingVMs();
-            over = Collections.<UUID>emptySet();
+            over = Collections.emptySet();
         }
         if (dEval == null) {
             dEval = new DurationEvaluators();

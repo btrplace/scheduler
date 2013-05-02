@@ -1,5 +1,7 @@
 package btrplace.plan;
 
+import btrplace.plan.event.Action;
+import btrplace.plan.event.Event;
 import btrplace.plan.event.NotificationDispatcher;
 
 import java.util.ArrayList;
@@ -39,8 +41,8 @@ public abstract class DefaultPlanApplier implements ReconfigurationPlanApplier {
     /**
      * Propagate the action to every listener added by
      * {@link #addEventCommittedListener(EventCommittedListener)}.
-     * Events hooked on {@link btrplace.plan.Action.Hook#pre} are propagated in first
-     * Then the real action is propagated. Finally, events hooked on {@link btrplace.plan.Action.Hook#post}
+     * Events hooked on {@link btrplace.plan.event.Action.Hook#pre} are propagated in first
+     * Then the real action is propagated. Finally, events hooked on {@link btrplace.plan.event.Action.Hook#post}
      * are propagated
      *
      * @param a the event to propagate

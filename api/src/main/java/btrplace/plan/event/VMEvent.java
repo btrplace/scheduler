@@ -16,34 +16,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.plan;
+package btrplace.plan.event;
+
+import java.util.UUID;
 
 /**
- * A interface to indicate an event realize a transition
- * on a VM state.
+ * A event to apply on a VM.
  *
  * @author Fabien Hermenier
  */
-public interface VMStateTransition extends VMEvent {
+public interface VMEvent extends Event {
 
     /**
-     * The possible state for a VM.
-     */
-    public static enum VMState {
-        init, ready, running, sleeping, killed
-    }
-
-    /**
-     * Get the current state of the VM.
+     * Get the VM to involved in the action.
      *
-     * @return a State
+     * @return the VM identifier
      */
-    VMState getCurrentState();
-
-    /**
-     * Get the next state of the VM.
-     *
-     * @return a State
-     */
-    VMState getNextState();
+    UUID getVM();
 }

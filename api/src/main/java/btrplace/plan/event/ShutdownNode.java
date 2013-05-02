@@ -20,8 +20,6 @@ package btrplace.plan.event;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.plan.Action;
-import btrplace.plan.NodeEvent;
 
 import java.util.UUID;
 

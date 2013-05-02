@@ -1,7 +1,5 @@
 package btrplace.plan.event;
 
-import btrplace.plan.Action;
-import btrplace.plan.Event;
 import btrplace.plan.EventCommittedListener;
 
 /**

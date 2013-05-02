@@ -16,31 +16,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.plan;
+package btrplace.plan.event;
 
-import btrplace.model.Model;
-import btrplace.plan.event.ActionVisitor;
+import java.util.UUID;
 
 /**
- * A event to apply on a model to modify it.
+ * A event to apply on a node.
  *
  * @author Fabien Hermenier
  */
-public interface Event {
+public interface NodeEvent extends Event {
 
     /**
-     * Apply the event on a given model.
+     * Get the node to involved in the action.
      *
-     * @param m the model to modify
-     * @return {@code true} iff the modification succeeded
+     * @return the node identifier
      */
-    boolean apply(Model m);
-
-
-    /**
-     * Notify a visitor to visit the action.
-     *
-     * @param v the visitor to notify
-     */
-    Object visit(ActionVisitor v);
+    UUID getNode();
 }

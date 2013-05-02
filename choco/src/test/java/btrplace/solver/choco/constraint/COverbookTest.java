@@ -21,7 +21,7 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.*;
 import btrplace.model.constraint.*;
 import btrplace.model.view.ShareableResource;
-import btrplace.plan.Action;
+import btrplace.plan.event.Action;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Allocate;
 import btrplace.plan.event.BootVM;

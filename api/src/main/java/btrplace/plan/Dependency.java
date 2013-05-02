@@ -1,5 +1,7 @@
 package btrplace.plan;
 
+import btrplace.plan.event.Action;
+
 import java.util.HashSet;
 import java.util.Set;
 

@@ -19,6 +19,7 @@
 package btrplace.plan;
 
 import btrplace.model.Model;
+import btrplace.plan.event.Action;
 
 import java.util.Comparator;
 import java.util.Iterator;

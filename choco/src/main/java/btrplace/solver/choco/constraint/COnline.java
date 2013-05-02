@@ -66,7 +66,7 @@ public class COnline implements ChocoSatConstraint {
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
-        return Collections.<UUID>emptySet();
+        return Collections.emptySet();
     }
 
     @Override

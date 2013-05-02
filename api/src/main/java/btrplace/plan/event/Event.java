@@ -16,21 +16,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.plan;
+package btrplace.plan.event;
 
-import java.util.UUID;
+import btrplace.model.Model;
+import btrplace.plan.event.ActionVisitor;
 
 /**
- * A event to apply on a VM.
+ * A event to apply on a model to modify it.
  *
  * @author Fabien Hermenier
  */
-public interface VMEvent extends Event {
+public interface Event {
 
     /**
-     * Get the VM to involved in the action.
+     * Apply the event on a given model.
      *
-     * @return the VM identifier
+     * @param m the model to modify
+     * @return {@code true} iff the modification succeeded
      */
-    UUID getVM();
+    boolean apply(Model m);
+
+
+    /**
+     * Notify a visitor to visit the action.
+     *
+     * @param v the visitor to notify
+     */
+    Object visit(ActionVisitor v);
 }

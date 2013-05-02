@@ -1,5 +1,6 @@
 package btrplace.plan;
 
+import btrplace.plan.event.Action;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

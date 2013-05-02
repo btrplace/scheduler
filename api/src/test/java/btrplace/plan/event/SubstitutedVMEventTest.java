@@ -1,9 +1,11 @@
 package btrplace.plan.event;
 
+import btrplace.model.*;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -28,5 +30,19 @@ public class SubstitutedVMEventTest implements PremadeElements {
         ActionVisitor visitor = mock(ActionVisitor.class);
         s.visit(visitor);
         verify(visitor).visit(s);
+    }
+
+    @Test
+    public void testApply() {
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addReadyVM(vm1);
+        map.addReadyVM(vm3);
+        ModelView v = mock(ModelView.class);
+        Model mo = new DefaultModel(map);
+        mo.attach(v);
+        Assert.assertTrue(s.apply(mo));
+        verify(v).clone();
     }
 }

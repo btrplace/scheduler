@@ -3,7 +3,7 @@ package btrplace.model.constraint.checker;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.constraint.Lonely;
-import btrplace.plan.RunningVMPlacement;
+import btrplace.plan.event.RunningVMPlacement;
 import btrplace.plan.event.BootNode;
 
 import java.util.HashSet;

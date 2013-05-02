@@ -22,7 +22,7 @@ import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.plan.Action;
+import btrplace.plan.event.Action;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.KillVM;
 import btrplace.solver.SolverException;

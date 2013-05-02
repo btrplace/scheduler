@@ -20,7 +20,6 @@ package btrplace.plan.event;
 
 import btrplace.model.Model;
 import btrplace.model.view.ShareableResource;
-import btrplace.plan.VMEvent;
 
 import java.util.UUID;
 
