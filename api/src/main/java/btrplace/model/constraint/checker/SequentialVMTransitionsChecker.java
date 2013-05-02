@@ -43,7 +43,7 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<Se
         return true;
     }
 
-    public boolean makePending(UUID vm) {
+    private boolean makePending(UUID vm) {
         if (getVMs().contains(vm)) {
             if (pending == null) {
                 //Burn all the VMs in order that are before vm

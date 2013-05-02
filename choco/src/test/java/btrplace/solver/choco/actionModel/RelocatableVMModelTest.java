@@ -377,7 +377,13 @@ public class RelocatableVMModelTest implements PremadeElements {
         List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
         cstrs.add(new Online(map.getAllNodes()));
         cstrs.add(pr);
-        ReconfigurationPlan p = cra.solve(mo, cstrs);
-        Assert.assertNotNull(p);
+        cra.doOptimize(true);
+        try {
+            ReconfigurationPlan p = cra.solve(mo, cstrs);
+            System.out.println(p);
+            Assert.assertNotNull(p);
+        } catch( Exception e) {
+            Assert.fail(e.getMessage(), e);
+        }
     }
 }
