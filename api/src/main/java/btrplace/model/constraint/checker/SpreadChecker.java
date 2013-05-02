@@ -19,7 +19,7 @@ import java.util.UUID;
  * @author Fabien Hermenier
  * @see btrplace.model.constraint.Ban
  */
-public class SpreadChecker extends AllowAllConstraintChecker {
+public class SpreadChecker extends AllowAllConstraintChecker<Spread> {
 
     /**
      * Make a new checker.
@@ -35,9 +35,9 @@ public class SpreadChecker extends AllowAllConstraintChecker {
 
     @Override
     public boolean startsWith(Model mo) {
-        if (cstr.isContinuous()) {
+        if (getConstraint().isContinuous()) {
             Mapping map = mo.getMapping();
-            for (UUID vm : vms) {
+            for (UUID vm : getVMs()) {
                 UUID n = map.getVMLocation(vm);
                 if (n != null) {
                     denied.add(n);
@@ -49,7 +49,7 @@ public class SpreadChecker extends AllowAllConstraintChecker {
 
     @Override
     public boolean startRunningVMPlacement(RunningVMPlacement a) {
-        if (cstr.isContinuous() && vms.contains(a.getVM())) {
+        if (getConstraint().isContinuous() && getVMs().contains(a.getVM())) {
             if (denied.contains(a.getDestinationNode())) {
                 return false;
             }
@@ -64,8 +64,8 @@ public class SpreadChecker extends AllowAllConstraintChecker {
     }
 
     private void unDenied(UUID vm, UUID n) {
-        if (cstr.isContinuous()) {
-            if (vms.contains(vm)) {
+        if (getConstraint().isContinuous()) {
+            if (getVMs().contains(vm)) {
                 denied.remove(n);
             }
         }
@@ -90,7 +90,7 @@ public class SpreadChecker extends AllowAllConstraintChecker {
     public boolean endsWith(Model mo) {
         Set<UUID> forbidden = new HashSet<>();
         Mapping map = mo.getMapping();
-        for (UUID vm : vms) {
+        for (UUID vm : getVMs()) {
             if (map.getRunningVMs().contains(vm)) {
                 if (!forbidden.add(map.getVMLocation(vm))) {
                     return false;

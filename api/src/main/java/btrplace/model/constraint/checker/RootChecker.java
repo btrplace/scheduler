@@ -9,7 +9,7 @@ import btrplace.plan.event.MigrateVM;
  * @author Fabien Hermenier
  * @see btrplace.model.constraint.Root
  */
-public class RootChecker extends AllowAllConstraintChecker {
+public class RootChecker extends AllowAllConstraintChecker<Root> {
 
     /**
      * Make a new checker.
@@ -22,6 +22,6 @@ public class RootChecker extends AllowAllConstraintChecker {
 
     @Override
     public boolean start(MigrateVM a) {
-        return !vms.contains(a.getVM());
+        return !getVMs().contains(a.getVM());
     }
 }

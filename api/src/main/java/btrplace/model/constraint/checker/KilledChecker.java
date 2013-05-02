@@ -13,7 +13,7 @@ import java.util.UUID;
  * @author Fabien Hermenier
  * @see btrplace.model.constraint.Killed
  */
-public class KilledChecker extends DenyMyVMsActions {
+public class KilledChecker extends DenyMyVMsActions<Killed> {
 
     /**
      * Make a new checker.

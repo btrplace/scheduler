@@ -13,7 +13,7 @@ import java.util.UUID;
  * @author Fabien Hermenier
  * @see btrplace.model.constraint.Running
  */
-public class RunningChecker extends DenyMyVMsActions {
+public class RunningChecker extends DenyMyVMsActions<Running> {
 
     /**
      * Make a new checker.

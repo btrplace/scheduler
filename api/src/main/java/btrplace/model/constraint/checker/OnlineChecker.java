@@ -13,7 +13,7 @@ import java.util.UUID;
  * @author Fabien Hermenier
  * @see btrplace.model.constraint.Online
  */
-public class OnlineChecker extends AllowAllConstraintChecker {
+public class OnlineChecker extends AllowAllConstraintChecker<Online> {
 
     /**
      * Make a new checker.
@@ -26,13 +26,13 @@ public class OnlineChecker extends AllowAllConstraintChecker {
 
     @Override
     public boolean start(ShutdownNode a) {
-        return !nodes.contains(a.getNode());
+        return !getNodes().contains(a.getNode());
     }
 
     @Override
     public boolean endsWith(Model mo) {
         Mapping c = mo.getMapping();
-        for (UUID n : nodes) {
+        for (UUID n : getNodes()) {
             if (!c.getOnlineNodes().contains(n)) {
                 return false;
             }

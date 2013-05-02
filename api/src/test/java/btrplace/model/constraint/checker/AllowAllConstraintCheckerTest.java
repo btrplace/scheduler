@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
 public class AllowAllConstraintCheckerTest implements PremadeElements {
 
     static SatConstraint cstr = mock(SatConstraint.class);
-    static Set<UUID> ns = new HashSet<UUID>(Arrays.asList(n1, n2, n3));
+    static Set<UUID> ns = new HashSet<>(Arrays.asList(n1, n2, n3));
     static Set<UUID> vs = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
 
 
@@ -33,8 +33,8 @@ public class AllowAllConstraintCheckerTest implements PremadeElements {
         AllowAllConstraintChecker c = new AllowAllConstraintChecker(cstr) {
         };
         Assert.assertEquals(c.getConstraint(), cstr);
-        Assert.assertEquals(c.vms, vs);
-        Assert.assertEquals(c.nodes, ns);
+        Assert.assertEquals(c.getVMs(), vs);
+        Assert.assertEquals(c.getNodes(), ns);
     }
 
     @Test
@@ -104,13 +104,13 @@ public class AllowAllConstraintCheckerTest implements PremadeElements {
 
         //VM1 (one of the involved vms) has to be removed to be substituted by vm10
         c.consume(new SubstitutedVMEvent(vm1, vm10));
-        Assert.assertTrue(c.vms.contains(vm10));
-        Assert.assertFalse(c.vms.contains(vm1));
+        Assert.assertTrue(c.getVMs().contains(vm10));
+        Assert.assertFalse(c.getVMs().contains(vm1));
 
         //VM5 is not involved, no removal
         c.consume(new SubstitutedVMEvent(vm5, vm7));
-        Assert.assertFalse(c.vms.contains(vm5));
-        Assert.assertFalse(c.vms.contains(vm7));
+        Assert.assertFalse(c.getVMs().contains(vm5));
+        Assert.assertFalse(c.getVMs().contains(vm7));
     }
 
     @Test(dependsOnMethods = "testInstantiation")

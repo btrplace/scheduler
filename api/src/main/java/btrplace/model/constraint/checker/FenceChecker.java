@@ -14,7 +14,7 @@ import java.util.UUID;
  * @author Fabien Hermenier
  * @see btrplace.model.constraint.Fence
  */
-public class FenceChecker extends AllowAllConstraintChecker {
+public class FenceChecker extends AllowAllConstraintChecker<Fence> {
 
     /**
      * Make a new checker.
@@ -27,8 +27,8 @@ public class FenceChecker extends AllowAllConstraintChecker {
 
     @Override
     public boolean startRunningVMPlacement(RunningVMPlacement r) {
-        if (vms.contains(r.getVM())) {
-            return nodes.contains(r.getDestinationNode());
+        if (getVMs().contains(r.getVM())) {
+            return getNodes().contains(r.getDestinationNode());
         }
         return true;
     }
@@ -37,8 +37,8 @@ public class FenceChecker extends AllowAllConstraintChecker {
     public boolean endsWith(Model mo) {
         Mapping c = mo.getMapping();
         Set<UUID> runnings = c.getRunningVMs();
-        for (UUID vm : vms) {
-            if (runnings.contains(vm) && !nodes.contains(c.getVMLocation(vm))) {
+        for (UUID vm : getVMs()) {
+            if (runnings.contains(vm) && !getNodes().contains(c.getVMLocation(vm))) {
                 return false;
             }
         }

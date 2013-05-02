@@ -16,7 +16,7 @@ import java.util.UUID;
  * @author Fabien Hermenier
  * @see btrplace.model.constraint.Lonely
  */
-public class LonelyChecker extends AllowAllConstraintChecker {
+public class LonelyChecker extends AllowAllConstraintChecker<Lonely> {
 
     private Set<UUID> idleNodes;
 
@@ -34,8 +34,8 @@ public class LonelyChecker extends AllowAllConstraintChecker {
     }
 
     private boolean checkDestination(UUID vm, UUID n) {
-        if (cstr.isContinuous()) {
-            if (vms.contains(vm)) {
+        if (getConstraint().isContinuous()) {
+            if (getVMs().contains(vm)) {
                 if (!idleNodes.remove(n)) { //The node was not idle
                     return privateNodes.add(n); //So it must be private
                 }
@@ -58,14 +58,14 @@ public class LonelyChecker extends AllowAllConstraintChecker {
 
     private boolean discreteCheck(Model mo) {
         Mapping map = mo.getMapping();
-        for (UUID vm : vms) {
+        for (UUID vm : getVMs()) {
             if (map.getRunningVMs().contains(vm)) {
                 UUID host = map.getVMLocation(vm);
                 Set<UUID> on = map.getRunningVMs(host);
                 //Check for other VMs on the node. If they are not in the constraint
                 //it's a violation
                 for (UUID vm2 : on) {
-                    if (!vm2.equals(vm) && !vms.contains(vm2)) {
+                    if (!vm2.equals(vm) && !getVMs().contains(vm2)) {
                         return false;
                     }
                 }
@@ -86,11 +86,11 @@ public class LonelyChecker extends AllowAllConstraintChecker {
 
     @Override
     public boolean startsWith(Model mo) {
-        if (cstr.isContinuous()) {
+        if (getConstraint().isContinuous()) {
             boolean ret = discreteCheck(mo);
             if (ret) {
                 Mapping map = mo.getMapping();
-                for (UUID vm : vms) {
+                for (UUID vm : getVMs()) {
                     if (map.getRunningVMs().contains(vm)) {
                         privateNodes.add(map.getVMLocation(vm));
                     }

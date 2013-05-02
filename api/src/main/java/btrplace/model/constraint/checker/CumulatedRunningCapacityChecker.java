@@ -15,7 +15,7 @@ import java.util.UUID;
  * @author Fabien Hermenier
  * @see btrplace.model.constraint.CumulatedRunningCapacity
  */
-public class CumulatedRunningCapacityChecker extends AllowAllConstraintChecker {
+public class CumulatedRunningCapacityChecker extends AllowAllConstraintChecker<CumulatedRunningCapacity> {
 
     private int usage;
 
@@ -34,14 +34,14 @@ public class CumulatedRunningCapacityChecker extends AllowAllConstraintChecker {
     }
 
     private boolean leave(UUID n) {
-        if (cstr.isContinuous() && nodes.contains(n)) {
+        if (getConstraint().isContinuous() && getNodes().contains(n)) {
             usage--;
         }
         return true;
     }
 
     private boolean arrive(UUID n) {
-        if (cstr.isContinuous() && nodes.contains(n)) {
+        if (getConstraint().isContinuous() && getNodes().contains(n)) {
             if (usage++ == qty) {
                 return false;
             }
@@ -56,7 +56,7 @@ public class CumulatedRunningCapacityChecker extends AllowAllConstraintChecker {
 
     @Override
     public boolean start(KillVM a) {
-        if (cstr.isContinuous() && srcRunnings.remove(a.getVM())) {
+        if (getConstraint().isContinuous() && srcRunnings.remove(a.getVM())) {
             return leave(a.getNode());
         }
         return true;
@@ -64,8 +64,8 @@ public class CumulatedRunningCapacityChecker extends AllowAllConstraintChecker {
 
     @Override
     public boolean start(MigrateVM a) {
-        if (cstr.isContinuous()) {
-            if (!(nodes.contains(a.getSourceNode()) && nodes.contains(a.getDestinationNode()))) {
+        if (getConstraint().isContinuous()) {
+            if (!(getNodes().contains(a.getSourceNode()) && getNodes().contains(a.getDestinationNode()))) {
                 return leave(a.getSourceNode()) && arrive(a.getDestinationNode());
             }
         }
@@ -88,16 +88,11 @@ public class CumulatedRunningCapacityChecker extends AllowAllConstraintChecker {
     }
 
     @Override
-    public boolean consume(SubstitutedVMEvent e) {
-        return super.consume(e);    //To change body of overridden methods use File | Settings | File Templates.
-    }
-
-    @Override
     public boolean startsWith(Model mo) {
-        if (cstr.isContinuous()) {
+        if (getConstraint().isContinuous()) {
             int nb = 0;
             Mapping map = mo.getMapping();
-            for (UUID n : nodes) {
+            for (UUID n : getNodes()) {
                 nb += map.getRunningVMs(n).size();
                 if (nb > qty) {
                     return false;
@@ -113,7 +108,7 @@ public class CumulatedRunningCapacityChecker extends AllowAllConstraintChecker {
     public boolean endsWith(Model mo) {
         int nb = 0;
         Mapping map = mo.getMapping();
-        for (UUID n : nodes) {
+        for (UUID n : getNodes()) {
             nb += map.getRunningVMs(n).size();
             if (nb > qty) {
                 return false;

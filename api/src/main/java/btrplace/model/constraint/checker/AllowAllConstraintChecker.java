@@ -15,20 +15,20 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public abstract class AllowAllConstraintChecker implements SatConstraintChecker {
+public abstract class AllowAllConstraintChecker<C extends SatConstraint> implements SatConstraintChecker<C> {
 
     /**
      * VMs involved in the constraint.
      * Updated after each {@link btrplace.plan.event.SubstitutedVMEvent} event.
      */
-    protected Set<UUID> vms;
+    private Set<UUID> vms;
 
     /**
      * Nodes involved in the constraint.
      */
-    protected Set<UUID> nodes;
+    private Set<UUID> nodes;
 
-    protected SatConstraint cstr;
+    private C cstr;
 
     private List<Collection<UUID>> tracked;
 
@@ -37,7 +37,7 @@ public abstract class AllowAllConstraintChecker implements SatConstraintChecker 
      *
      * @param cstr the constraint associated to the checker.
      */
-    public AllowAllConstraintChecker(SatConstraint cstr) {
+    public AllowAllConstraintChecker(C cstr) {
         this.vms = new HashSet<>(cstr.getInvolvedVMs());
         this.nodes = new HashSet<>(cstr.getInvolvedNodes());
         this.cstr = cstr;
@@ -215,7 +215,26 @@ public abstract class AllowAllConstraintChecker implements SatConstraintChecker 
     }
 
     @Override
-    public SatConstraint getConstraint() {
+    public C getConstraint() {
         return cstr;
+    }
+
+    /**
+     * Get the VMs involved in the constraint.
+     * The set is automatically updated by the {@link SubstitutedVMEvent} events.
+     *
+     * @return a set of VMs that may be empty
+     */
+    public Set<UUID> getVMs() {
+        return vms;
+    }
+
+    /**
+     * Get the nodes involved in the constraint.
+     *
+     * @return a set of nodes that may be empty
+     */
+    public Set<UUID> getNodes() {
+        return nodes;
     }
 }

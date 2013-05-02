@@ -13,7 +13,7 @@ import java.util.UUID;
  * @author Fabien Hermenier
  * @see btrplace.model.constraint.Offline
  */
-public class OfflineChecker extends AllowAllConstraintChecker {
+public class OfflineChecker extends AllowAllConstraintChecker<Offline> {
 
     /**
      * Make a new checker.
@@ -26,13 +26,13 @@ public class OfflineChecker extends AllowAllConstraintChecker {
 
     @Override
     public boolean start(BootNode a) {
-        return !nodes.contains(a.getNode());
+        return !getNodes().contains(a.getNode());
     }
 
     @Override
     public boolean endsWith(Model mo) {
         Mapping c = mo.getMapping();
-        for (UUID n : nodes) {
+        for (UUID n : getNodes()) {
             if (!c.getOfflineNodes().contains(n)) {
                 return false;
             }

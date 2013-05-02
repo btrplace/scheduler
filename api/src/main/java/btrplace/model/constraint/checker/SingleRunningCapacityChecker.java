@@ -13,7 +13,7 @@ import java.util.*;
  * @author Fabien Hermenier
  * @see btrplace.model.constraint.SingleRunningCapacity
  */
-public class SingleRunningCapacityChecker extends AllowAllConstraintChecker {
+public class SingleRunningCapacityChecker extends AllowAllConstraintChecker<SingleRunningCapacity> {
 
     private Map<UUID, Integer> usage;
 
@@ -32,14 +32,14 @@ public class SingleRunningCapacityChecker extends AllowAllConstraintChecker {
     }
 
     private boolean leave(UUID n) {
-        if (cstr.isContinuous() && nodes.contains(n)) {
+        if (getConstraint().isContinuous() && getNodes().contains(n)) {
             usage.put(n, usage.get(n) - 1);
         }
         return true;
     }
 
     private boolean arrive(UUID n) {
-        if (cstr.isContinuous() && nodes.contains(n)) {
+        if (getConstraint().isContinuous() && getNodes().contains(n)) {
             int u = usage.get(n);
             if (u == amount) {
                 return false;
@@ -51,7 +51,7 @@ public class SingleRunningCapacityChecker extends AllowAllConstraintChecker {
 
     @Override
     public boolean start(BootNode a) {
-        if (nodes.contains(a.getNode())) {
+        if (getNodes().contains(a.getNode())) {
             usage.put(a.getNode(), 0);
         }
         return true;
@@ -64,7 +64,7 @@ public class SingleRunningCapacityChecker extends AllowAllConstraintChecker {
 
     @Override
     public boolean start(KillVM a) {
-        if (cstr.isContinuous() && srcRunnings.remove(a.getVM())) {
+        if (getConstraint().isContinuous() && srcRunnings.remove(a.getVM())) {
             return leave(a.getNode());
         }
         return true;
@@ -92,10 +92,10 @@ public class SingleRunningCapacityChecker extends AllowAllConstraintChecker {
 
     @Override
     public boolean startsWith(Model mo) {
-        if (cstr.isContinuous()) {
+        if (getConstraint().isContinuous()) {
             Mapping map = mo.getMapping();
-            usage = new HashMap<>(nodes.size());
-            for (UUID n : nodes) {
+            usage = new HashMap<>(getNodes().size());
+            for (UUID n : getNodes()) {
                 int s = map.getRunningVMs(n).size();
                 if (s > amount) {
                     return false;
@@ -111,7 +111,7 @@ public class SingleRunningCapacityChecker extends AllowAllConstraintChecker {
     @Override
     public boolean endsWith(Model mo) {
         Mapping map = mo.getMapping();
-        for (UUID n : nodes) {
+        for (UUID n : getNodes()) {
             if (map.getRunningVMs(n).size() > amount) {
                 return false;
             }

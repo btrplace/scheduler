@@ -13,7 +13,7 @@ import java.util.UUID;
  * @author Fabien Hermenier
  * @see btrplace.model.constraint.Overbook
  */
-public class OverbookChecker extends AllowAllConstraintChecker {
+public class OverbookChecker extends AllowAllConstraintChecker<Overbook> {
 
     private String id;
 
@@ -37,7 +37,7 @@ public class OverbookChecker extends AllowAllConstraintChecker {
         if (rc == null) {
             return false;
         }
-        for (UUID nId : nodes) {
+        for (UUID nId : getNodes()) {
             if (cfg.getOnlineNodes().contains(nId)) {
                 //Server capacity with the ratio
                 double capa = rc.get(nId) * ratio;

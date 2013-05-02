@@ -12,7 +12,7 @@ import java.util.*;
  * @author Fabien Hermenier
  * @see btrplace.model.constraint.SequentialVMTransitions
  */
-public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker {
+public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<SequentialVMTransitions> {
 
     private Set<UUID> runnings;
 
@@ -51,7 +51,7 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker {
     }
 
     private boolean wasNext(UUID vm) {
-        if (vms.contains(vm)) {
+        if (getVMs().contains(vm)) {
             while (!order.isEmpty()) {
                 if (order.remove(0).equals(vm)) {
                     return true;

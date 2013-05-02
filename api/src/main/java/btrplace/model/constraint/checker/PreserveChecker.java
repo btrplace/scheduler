@@ -14,7 +14,7 @@ import java.util.UUID;
  * @author Fabien Hermenier
  * @see btrplace.model.constraint.Preserve
  */
-public class PreserveChecker extends AllowAllConstraintChecker {
+public class PreserveChecker extends AllowAllConstraintChecker<Preserve> {
 
     private int amount;
 
@@ -33,7 +33,7 @@ public class PreserveChecker extends AllowAllConstraintChecker {
 
     @Override
     public boolean consume(AllocateEvent a) {
-        if (vms.contains(a.getVM()) && a.getResourceId().equals(id)) {
+        if (getVMs().contains(a.getVM()) && a.getResourceId().equals(id)) {
             return a.getAmount() >= amount;
         }
         return true;
@@ -41,7 +41,7 @@ public class PreserveChecker extends AllowAllConstraintChecker {
 
     @Override
     public boolean start(Allocate a) {
-        if (a.getResourceId().equals(id) && vms.contains(a.getVM())) {
+        if (a.getResourceId().equals(id) && getVMs().contains(a.getVM())) {
             return a.getAmount() >= amount;
         }
         return true;
@@ -58,7 +58,7 @@ public class PreserveChecker extends AllowAllConstraintChecker {
         if (r == null) {
             return false;
         }
-        for (UUID vmId : vms) {
+        for (UUID vmId : getVMs()) {
             int v = r.get(vmId);
             if (v < amount) {
                 return false;

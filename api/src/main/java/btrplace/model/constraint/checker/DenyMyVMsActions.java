@@ -12,15 +12,15 @@ import java.util.UUID;
 /**
  * @author Fabien Hermenier
  */
-public abstract class DenyMyVMsActions implements SatConstraintChecker {
+public abstract class DenyMyVMsActions<C extends SatConstraint> implements SatConstraintChecker<C> {
 
     protected Set<UUID> vms;
 
     protected Set<UUID> nodes;
 
-    private SatConstraint cstr;
+    private C cstr;
 
-    public DenyMyVMsActions(SatConstraint s) {
+    public DenyMyVMsActions(C s) {
         cstr = s;
         vms = new HashSet<>(s.getInvolvedVMs());
     }
@@ -154,7 +154,7 @@ public abstract class DenyMyVMsActions implements SatConstraintChecker {
     }
 
     @Override
-    public SatConstraint getConstraint() {
+    public C getConstraint() {
         return cstr;
     }
 }

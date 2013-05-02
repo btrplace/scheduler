@@ -13,7 +13,7 @@ import java.util.UUID;
  * @author Fabien Hermenier
  * @see Among
  */
-public class AmongChecker extends AllowAllConstraintChecker {
+public class AmongChecker extends AllowAllConstraintChecker<Among> {
 
     /**
      * Make a new checker.
@@ -28,9 +28,9 @@ public class AmongChecker extends AllowAllConstraintChecker {
     public boolean endsWith(Model i) {
         Mapping map = i.getMapping();
         Set<UUID> choosedGroup = null;
-        for (UUID vm : vms) {
+        for (UUID vm : getVMs()) {
             if (map.getRunningVMs().contains(vm)) {
-                Set<UUID> nodes = ((Among) cstr).getAssociatedPGroup((map.getVMLocation(vm)));
+                Set<UUID> nodes = getConstraint().getAssociatedPGroup((map.getVMLocation(vm)));
                 if (nodes == null) {
                     return false;
                 } else if (choosedGroup == null) {

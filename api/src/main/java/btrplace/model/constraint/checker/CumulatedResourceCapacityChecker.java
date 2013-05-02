@@ -12,7 +12,7 @@ import java.util.UUID;
  * @author Fabien Hermenier
  * @see btrplace.model.constraint.CumulatedResourceCapacity
  */
-public class CumulatedResourceCapacityChecker extends AllowAllConstraintChecker {
+public class CumulatedResourceCapacityChecker extends AllowAllConstraintChecker<CumulatedResourceCapacity> {
 
     /**
      * Make a new checker.
@@ -25,13 +25,13 @@ public class CumulatedResourceCapacityChecker extends AllowAllConstraintChecker 
 
     @Override
     public boolean endsWith(Model i) {
-        ShareableResource rc = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + ((CumulatedResourceCapacity) cstr).getResource());
+        ShareableResource rc = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + getConstraint().getResource());
         if (rc == null) {
             return false;
         }
 
-        int remainder = ((CumulatedResourceCapacity) cstr).getAmount();
-        for (UUID id : nodes) {
+        int remainder = getConstraint().getAmount();
+        for (UUID id : getNodes()) {
             if (i.getMapping().getOnlineNodes().contains(id)) {
                 for (UUID vmId : i.getMapping().getRunningVMs(id)) {
                     remainder -= rc.get(vmId);

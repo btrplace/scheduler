@@ -12,7 +12,7 @@ import btrplace.plan.event.MigrateVM;
  * @author Fabien Hermenier
  * @see btrplace.model.constraint.Quarantine
  */
-public class QuarantineChecker extends AllowAllConstraintChecker {
+public class QuarantineChecker extends AllowAllConstraintChecker<Quarantine> {
 
     /**
      * Make a new checker.
@@ -25,7 +25,7 @@ public class QuarantineChecker extends AllowAllConstraintChecker {
 
     @Override
     public boolean start(MigrateVM a) {
-        if (vms.contains(a.getVM())) { //the VM can not move elsewhere
+        if (getVMs().contains(a.getVM())) { //the VM can not move elsewhere
             return false;
         }
         return startRunningVMPlacement(a);
@@ -33,7 +33,7 @@ public class QuarantineChecker extends AllowAllConstraintChecker {
 
     @Override
     public boolean startRunningVMPlacement(RunningVMPlacement a) {
-        return !nodes.contains(a.getDestinationNode());
+        return !getNodes().contains(a.getDestinationNode());
     }
 
     @Override
@@ -44,8 +44,8 @@ public class QuarantineChecker extends AllowAllConstraintChecker {
     @Override
     public boolean startsWith(Model mo) {
         Mapping map = mo.getMapping();
-        vms.clear();
-        return vms.addAll(map.getRunningVMs(nodes));
+        getVMs().clear();
+        return getVMs().addAll(map.getRunningVMs(getNodes()));
     }
 
 }

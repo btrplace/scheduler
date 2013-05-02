@@ -13,7 +13,7 @@ import java.util.UUID;
  * @author Fabien Hermenier
  * @see btrplace.model.constraint.Gather
  */
-public class GatherChecker extends AllowAllConstraintChecker {
+public class GatherChecker extends AllowAllConstraintChecker<Gather> {
 
     private UUID usedInContinuous;
 
@@ -28,9 +28,9 @@ public class GatherChecker extends AllowAllConstraintChecker {
 
     @Override
     public boolean startsWith(Model mo) {
-        if (cstr.isContinuous()) {
+        if (getConstraint().isContinuous()) {
             Mapping map = mo.getMapping();
-            for (UUID vm : vms) {
+            for (UUID vm : getVMs()) {
                 if (map.getRunningVMs().contains(vm)) {
                     if (usedInContinuous == null) {
                         usedInContinuous = map.getVMLocation(vm);
@@ -45,7 +45,7 @@ public class GatherChecker extends AllowAllConstraintChecker {
 
     @Override
     public boolean startRunningVMPlacement(RunningVMPlacement a) {
-        if (cstr.isContinuous() && vms.contains(a.getVM())) {
+        if (getConstraint().isContinuous() && getVMs().contains(a.getVM())) {
             if (usedInContinuous != null && a.getDestinationNode() != usedInContinuous) {
                 return false;
             } else if (usedInContinuous == null) {
@@ -59,7 +59,7 @@ public class GatherChecker extends AllowAllConstraintChecker {
     public boolean endsWith(Model mo) {
         UUID used = null;
         Mapping map = mo.getMapping();
-        for (UUID vm : vms) {
+        for (UUID vm : getVMs()) {
             if (map.getRunningVMs().contains(vm)) {
                 if (used == null) {
                     used = map.getVMLocation(vm);

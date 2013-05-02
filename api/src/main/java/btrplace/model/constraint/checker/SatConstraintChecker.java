@@ -21,7 +21,7 @@ import btrplace.plan.event.*;
  * @author Fabien Hermenier
  * @see btrplace.plan.ReconfigurationPlanChecker
  */
-public interface SatConstraintChecker {
+public interface SatConstraintChecker<C extends SatConstraint> {
 
     /**
      * Notify for the model at the source of the reconfiguration.
@@ -193,7 +193,7 @@ public interface SatConstraintChecker {
     /**
      * Notify for the end of an action.
      *
-     * @param a the action that ends
+     * @param e the action that ends
      */
     void end(Allocate e);
 
@@ -210,5 +210,5 @@ public interface SatConstraintChecker {
      *
      * @return a non-null constraint
      */
-    SatConstraint getConstraint();
+    C getConstraint();
 }

@@ -13,7 +13,7 @@ import java.util.UUID;
  * @author Fabien Hermenier
  * @see btrplace.model.constraint.Sleeping
  */
-public class SleepingChecker extends DenyMyVMsActions {
+public class SleepingChecker extends DenyMyVMsActions<Sleeping> {
 
     /**
      * Make a new checker.

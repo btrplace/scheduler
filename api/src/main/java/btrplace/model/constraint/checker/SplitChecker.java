@@ -12,7 +12,7 @@ import java.util.*;
  * @author Fabien Hermenier
  * @see btrplace.model.constraint.Split
  */
-public class SplitChecker extends AllowAllConstraintChecker {
+public class SplitChecker extends AllowAllConstraintChecker<Split> {
 
     private Collection<Set<UUID>> sets;
 

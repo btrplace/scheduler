@@ -15,7 +15,7 @@ import java.util.UUID;
  * @author Fabien Hermenier
  * @see btrplace.model.constraint.SplitAmong
  */
-public class SplitAmongChecker extends AllowAllConstraintChecker {
+public class SplitAmongChecker extends AllowAllConstraintChecker<SplitAmong> {
 
     private Collection<Set<UUID>> vGrps;
 
@@ -40,7 +40,7 @@ public class SplitAmongChecker extends AllowAllConstraintChecker {
             for (UUID vmId : vgrp) {
                 if (m.getRunningVMs().contains(vmId)) {
                     if (choosedGroup == null) {
-                        choosedGroup = ((SplitAmong) cstr).getAssociatedPGroup(m.getVMLocation(vmId));
+                        choosedGroup = getConstraint().getAssociatedPGroup(m.getVMLocation(vmId));
                         if (choosedGroup == null) { //THe VM is running but on an unknown group. It is an error
                             return false;
                         } else if (!pUsed.add(choosedGroup)) { //The pgroup has already been used for another set of VMs.

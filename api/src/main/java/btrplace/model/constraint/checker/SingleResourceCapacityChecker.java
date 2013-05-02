@@ -13,7 +13,7 @@ import java.util.UUID;
  * @author Fabien Hermenier
  * @see btrplace.model.constraint.SingleResourceCapacity
  */
-public class SingleResourceCapacityChecker extends AllowAllConstraintChecker {
+public class SingleResourceCapacityChecker extends AllowAllConstraintChecker<SingleResourceCapacity> {
 
     /**
      * Make a new checker.
@@ -26,13 +26,13 @@ public class SingleResourceCapacityChecker extends AllowAllConstraintChecker {
 
     @Override
     public boolean endsWith(Model i) {
-        ShareableResource rc = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + ((SingleResourceCapacity) cstr).getResource());
+        ShareableResource rc = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + getConstraint().getResource());
         if (rc == null) {
             return false;
         }
         Mapping map = i.getMapping();
-        for (UUID n : nodes) {
-            if (rc.sum(map.getRunningVMs(n), true) > ((SingleResourceCapacity) cstr).getAmount()) {
+        for (UUID n : getNodes()) {
+            if (rc.sum(map.getRunningVMs(n), true) > getConstraint().getAmount()) {
                 return false;
             }
         }

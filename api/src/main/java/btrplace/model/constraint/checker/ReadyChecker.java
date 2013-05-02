@@ -14,7 +14,7 @@ import java.util.UUID;
  * @author Fabien Hermenier
  * @see btrplace.model.constraint.Ready
  */
-public class ReadyChecker extends DenyMyVMsActions {
+public class ReadyChecker extends DenyMyVMsActions<Ready> {
 
     /**
      * Make a new checker.
