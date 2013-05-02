@@ -114,5 +114,10 @@ public class ModelViewMapperTest {
         public ModelView clone() {
             throw new UnsupportedOperationException();
         }
+
+        @Override
+        public boolean substitute(UUID curId, UUID nextId) {
+            throw new UnsupportedOperationException();
+        }
     }
 }

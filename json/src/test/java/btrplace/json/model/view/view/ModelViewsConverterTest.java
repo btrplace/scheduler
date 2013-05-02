@@ -26,6 +26,8 @@ import junit.framework.Assert;
 import net.minidev.json.JSONObject;
 import org.testng.annotations.Test;
 
+import java.util.UUID;
+
 /**
  * Unit tests for {@link btrplace.json.model.view.ModelViewsConverter}.
  *
@@ -48,6 +50,11 @@ public class ModelViewsConverterTest {
 
         @Override
         public ModelView clone() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean substitute(UUID curId, UUID nextId) {
             throw new UnsupportedOperationException();
         }
     }
