@@ -18,8 +18,6 @@
 
 package btrplace.model.view;
 
-import btrplace.model.ModelView;
-
 import java.util.*;
 
 /**
@@ -283,5 +281,11 @@ public class ShareableResource implements ModelView, Cloneable, Comparator<UUID>
             }
         }
         return buf.toString();
+    }
+
+    @Override
+    public boolean substitute(UUID oldUUID, UUID newUUID) {
+        set(newUUID, get(oldUUID));
+        return true;
     }
 }

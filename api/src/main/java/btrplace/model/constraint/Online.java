@@ -18,7 +18,6 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.SatConstraint;
 import btrplace.model.constraint.checker.OnlineChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 

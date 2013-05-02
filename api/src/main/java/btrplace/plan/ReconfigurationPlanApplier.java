@@ -1,6 +1,7 @@
 package btrplace.plan;
 
 import btrplace.model.Model;
+import btrplace.plan.event.EventCommittedListener;
 
 /**
  * An object to simulate the application of

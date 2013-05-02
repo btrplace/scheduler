@@ -19,7 +19,7 @@
 package btrplace.solver;
 
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 
 import java.util.Collection;

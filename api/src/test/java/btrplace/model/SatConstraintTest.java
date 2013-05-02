@@ -18,6 +18,7 @@
 
 package btrplace.model;
 
+import btrplace.model.constraint.SatConstraint;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -25,7 +26,7 @@ import java.util.HashSet;
 import java.util.UUID;
 
 /**
- * Basic tests for {@link SatConstraint}.
+ * Basic tests for {@link btrplace.model.constraint.SatConstraint}.
  *
  * @author Fabien Hermenier
  */

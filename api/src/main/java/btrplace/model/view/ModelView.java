@@ -16,7 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.model;
+package btrplace.model.view;
+
+import java.util.UUID;
 
 /**
  * A view provides some domain-specific information about the elements of a model.
@@ -39,4 +41,13 @@ public interface ModelView extends Cloneable {
      * @return a new view that is equals to the current one.
      */
     ModelView clone();
+
+    /**
+     * Notify the view a VM that already exist
+     * will be substituted by another VM during the reconfiguration process.
+     * @param curId the current VM identifier
+     * @param nextId the new VM identifier
+     * @return {@code true} iff the operation succeeded
+     */
+    boolean substitute(UUID curId, UUID nextId);
 }

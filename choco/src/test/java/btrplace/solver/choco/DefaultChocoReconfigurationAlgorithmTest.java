@@ -20,6 +20,7 @@ package btrplace.solver.choco;
 
 import btrplace.model.*;
 import btrplace.model.constraint.Fence;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.test.PremadeElements;

@@ -20,7 +20,7 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Ban;
 import btrplace.model.constraint.Fence;
 import btrplace.solver.choco.ChocoSatConstraint;

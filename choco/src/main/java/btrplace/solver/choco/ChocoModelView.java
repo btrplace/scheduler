@@ -23,7 +23,7 @@ import btrplace.plan.ReconfigurationPlan;
 import java.util.UUID;
 
 /**
- * Interface denoting the Choco implementation of a {@link btrplace.model.ModelView}.
+ * Interface denoting the Choco implementation of a {@link btrplace.model.view.ModelView}.
  *
  * @author Fabien Hermenier
  */

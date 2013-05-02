@@ -20,7 +20,7 @@ package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import junit.framework.Assert;
 import net.minidev.json.JSONObject;
 import org.testng.annotations.Test;

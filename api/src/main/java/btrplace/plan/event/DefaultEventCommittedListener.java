@@ -1,7 +1,5 @@
 package btrplace.plan.event;
 
-import btrplace.plan.EventCommittedListener;
-
 /**
  * Default implementation for {@link EventCommittedListener}.
  * Each of the committed action is redirected to {@link #committedAction(Action)}.

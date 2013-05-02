@@ -1,6 +1,6 @@
 package btrplace.model.constraint.checker;
 
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.event.*;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;

@@ -24,7 +24,7 @@ import btrplace.json.model.view.ModelViewsConverter;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.ModelView;
+import btrplace.model.view.ModelView;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 

@@ -265,7 +265,7 @@ public interface ReconfigurationProblem {
 
     /**
      * Get the view mapper that is used to associate
-     * {@link btrplace.model.ModelView} to {@link ChocoModelView}.
+     * {@link btrplace.model.view.ModelView} to {@link ChocoModelView}.
      *
      * @return the mapper
      */

@@ -1,7 +1,5 @@
 package btrplace.plan.event;
 
-import btrplace.plan.EventCommittedListener;
-
 import java.util.List;
 
 /**

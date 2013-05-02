@@ -1,6 +1,6 @@
 package btrplace.model.constraint.checker;
 
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.event.RunningVMPlacement;
 import btrplace.plan.event.*;
 

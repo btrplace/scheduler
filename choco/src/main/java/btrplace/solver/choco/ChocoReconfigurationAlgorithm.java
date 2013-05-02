@@ -58,7 +58,7 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm 
     boolean doOptimize();
 
     /**
-     * Get the mapper that is used to associate the {@link btrplace.model.ModelView}
+     * Get the mapper that is used to associate the {@link btrplace.model.view.ModelView}
      * to the {@link ChocoModelView}.
      *
      * @return the mapper
@@ -66,7 +66,7 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm 
     ModelViewMapper getViewMapper();
 
     /**
-     * Set the mapper to use to associate the {@link btrplace.model.ModelView}
+     * Set the mapper to use to associate the {@link btrplace.model.view.ModelView}
      * to the {@link ChocoModelView}.
      *
      * @param m the mapper to use
@@ -119,7 +119,7 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm 
     void setObjective(ReconfigurationObjective o);
 
     /**
-     * Get the mapper that convert {@link btrplace.model.SatConstraint} to {@link ChocoSatConstraint}.
+     * Get the mapper that convert {@link btrplace.model.constraint.SatConstraint} to {@link ChocoSatConstraint}.
      *
      * @return the mapper.
      */

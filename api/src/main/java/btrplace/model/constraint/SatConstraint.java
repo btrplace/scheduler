@@ -16,8 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.model;
+package btrplace.model.constraint;
 
+import btrplace.model.Model;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlanChecker;
@@ -31,7 +32,7 @@ import java.util.UUID;
  * that impose a restriction on some components of a model.
  * <p/>
  * The restriction provided by the constraint can be either discrete or continuous.
- * If the restriction is discrete, then the constraint imposes a restriction on a {@link Model}.
+ * If the restriction is discrete, then the constraint imposes a restriction on a {@link btrplace.model.Model}.
  * If the restriction is continuous, then the constraint imposes also a restriction on a whole {@link ReconfigurationPlan}.
  * This may be the action schedule but also all the intermediary models that result from the application of the reconfiguration plan.
  * <p/>

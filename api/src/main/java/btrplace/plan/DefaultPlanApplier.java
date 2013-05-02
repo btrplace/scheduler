@@ -2,6 +2,7 @@ package btrplace.plan;
 
 import btrplace.plan.event.Action;
 import btrplace.plan.event.Event;
+import btrplace.plan.event.EventCommittedListener;
 import btrplace.plan.event.NotificationDispatcher;
 
 import java.util.ArrayList;

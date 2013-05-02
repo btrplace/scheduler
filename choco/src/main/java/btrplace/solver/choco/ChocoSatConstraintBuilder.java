@@ -18,7 +18,7 @@
 
 package btrplace.solver.choco;
 
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 
 /**
  * Interface to specify a builder that create a {@link ChocoSatConstraint} from

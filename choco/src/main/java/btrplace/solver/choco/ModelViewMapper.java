@@ -18,7 +18,7 @@
 
 package btrplace.solver.choco;
 
-import btrplace.model.ModelView;
+import btrplace.model.view.ModelView;
 import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.view.CShareableResource;

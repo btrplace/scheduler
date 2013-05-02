@@ -20,7 +20,7 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Gather;
 import btrplace.solver.choco.*;
 import choco.cp.solver.CPSolver;

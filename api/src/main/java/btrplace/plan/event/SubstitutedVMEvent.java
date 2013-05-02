@@ -1,7 +1,7 @@
 package btrplace.plan.event;
 
 import btrplace.model.Model;
-import btrplace.model.ModelView;
+import btrplace.model.view.ModelView;
 import btrplace.model.view.ShareableResource;
 
 import java.util.UUID;
@@ -49,10 +49,7 @@ public class SubstitutedVMEvent implements VMEvent {
     @Override
     public boolean apply(Model m) {
         for (ModelView v : m.getViews()) {
-            if (v instanceof ShareableResource) {
-                ShareableResource rc = (ShareableResource) v;
-                rc.set(newUUID, rc.get(oldUUID));
-            }
+            v.substitute(oldUUID, newUUID);
         }
         return true;
     }

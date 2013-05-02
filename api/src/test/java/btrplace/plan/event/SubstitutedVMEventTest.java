@@ -1,11 +1,11 @@
 package btrplace.plan.event;
 
 import btrplace.model.*;
+import btrplace.model.view.ModelView;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -43,6 +43,6 @@ public class SubstitutedVMEventTest implements PremadeElements {
         Model mo = new DefaultModel(map);
         mo.attach(v);
         Assert.assertTrue(s.apply(mo));
-        verify(v).clone();
+        verify(v).substitute(vm1, vm2);
     }
 }

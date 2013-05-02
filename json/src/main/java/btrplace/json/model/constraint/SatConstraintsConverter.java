@@ -20,14 +20,14 @@ package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverter;
 import btrplace.json.JSONConverterException;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
 import java.util.*;
 
 /**
- * Extensible converter for {@link btrplace.model.SatConstraint}.
+ * Extensible converter for {@link btrplace.model.constraint.SatConstraint}.
  *
  * @author Fabien Hermenier
  */

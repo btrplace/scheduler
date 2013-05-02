@@ -18,6 +18,7 @@
 
 package btrplace.model;
 
+import btrplace.model.view.ModelView;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

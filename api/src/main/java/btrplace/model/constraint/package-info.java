@@ -17,6 +17,6 @@
  */
 
 /**
- * Concrete implementation of {@link btrplace.model.SatConstraint}.
+ * Concrete implementation of {@link btrplace.model.constraint.SatConstraint}.
  */
 package btrplace.model.constraint;

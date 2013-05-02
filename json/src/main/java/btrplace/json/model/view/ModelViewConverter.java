@@ -19,10 +19,10 @@
 package btrplace.json.model.view;
 
 import btrplace.json.JSONConverter;
-import btrplace.model.ModelView;
+import btrplace.model.view.ModelView;
 
 /**
- * Specify a JSON converter for a {@link btrplace.model.ModelView}.
+ * Specify a JSON converter for a {@link btrplace.model.view.ModelView}.
  *
  * @author Fabien Hermenier
  */

@@ -18,7 +18,7 @@
 
 package btrplace.solver.choco;
 
-import btrplace.model.ModelView;
+import btrplace.model.view.ModelView;
 import btrplace.solver.SolverException;
 
 /**
@@ -32,7 +32,7 @@ public interface ChocoModelViewBuilder {
     /**
      * Get the class of the {@link ModelView} that is handled by this builder.
      *
-     * @return a Class derived from {@link btrplace.model.ModelView}
+     * @return a Class derived from {@link btrplace.model.view.ModelView}
      */
     Class<? extends ModelView> getKey();
 

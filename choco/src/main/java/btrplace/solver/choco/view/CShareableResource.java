@@ -20,7 +20,7 @@ package btrplace.solver.choco.view;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.ModelView;
+import btrplace.model.view.ModelView;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.event.Action;
 import btrplace.plan.ReconfigurationPlan;

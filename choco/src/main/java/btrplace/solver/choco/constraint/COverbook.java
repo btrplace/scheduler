@@ -20,7 +20,7 @@ package btrplace.solver.choco.constraint;
 
 
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Overbook;
 import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
@@ -38,7 +38,7 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Choco implementation of {@link btrplace.model.SatConstraint}.
+ * Choco implementation of {@link btrplace.model.constraint.SatConstraint}.
  *
  * @author Fabien Hermenier
  */

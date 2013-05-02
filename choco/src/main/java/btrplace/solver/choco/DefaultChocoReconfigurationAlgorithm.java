@@ -19,7 +19,7 @@
 package btrplace.solver.choco;
 
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Killed;
 import btrplace.model.constraint.Ready;
 import btrplace.model.constraint.Running;

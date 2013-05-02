@@ -21,7 +21,6 @@ package btrplace.model.constraint;
 import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
 import btrplace.model.view.ShareableResource;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;

@@ -3,7 +3,7 @@ package btrplace.plan;
 import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.event.Action;
 import junit.framework.Assert;
 import org.mockito.Mockito;

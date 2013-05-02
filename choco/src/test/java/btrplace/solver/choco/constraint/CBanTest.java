@@ -22,6 +22,7 @@ import btrplace.model.*;
 import btrplace.model.constraint.Ban;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Running;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;

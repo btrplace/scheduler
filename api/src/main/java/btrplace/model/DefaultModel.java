@@ -18,6 +18,8 @@
 
 package btrplace.model;
 
+import btrplace.model.view.ModelView;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;

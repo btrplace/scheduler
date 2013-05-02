@@ -1,4 +1,4 @@
-package btrplace.plan;
+package btrplace.plan.event;
 
 import btrplace.plan.event.*;
 

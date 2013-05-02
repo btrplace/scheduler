@@ -19,7 +19,7 @@
 package btrplace.json.model;
 
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 
 import java.util.ArrayList;
 import java.util.Collection;

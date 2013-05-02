@@ -18,12 +18,14 @@
 
 package btrplace.model;
 
+import btrplace.model.view.ModelView;
+
 import java.util.Collection;
 
 /**
  * A model depicts a consistent snapshot of an infrastructure.
  * Basically, a model is composed by a {@link Mapping} to indicate the state
- * and the location of the elements, and a variety of {@link ModelView} to
+ * and the location of the elements, and a variety of {@link btrplace.model.view.ModelView} to
  * provide additional data about the elements.
  * <p/>
  * In addition, it is possible to declare attributes for specific elements.

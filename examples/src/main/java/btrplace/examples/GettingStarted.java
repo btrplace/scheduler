@@ -1,10 +1,7 @@
 package btrplace.examples;
 
 import btrplace.model.*;
-import btrplace.model.constraint.Fence;
-import btrplace.model.constraint.Offline;
-import btrplace.model.constraint.Preserve;
-import btrplace.model.constraint.Spread;
+import btrplace.model.constraint.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.DependencyBasedPlanApplier;
 import btrplace.plan.ReconfigurationPlan;

@@ -19,7 +19,7 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Online;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ActionModel;
