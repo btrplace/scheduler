@@ -20,6 +20,8 @@ package btrplace.model;
 
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlanChecker;
+import btrplace.plan.ReconfigurationPlanCheckerException;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -120,11 +122,14 @@ public abstract class SatConstraint {
      * @return {@code true} iff the plan satisfies the constraint
      */
     public Sat isSatisfied(ReconfigurationPlan p) {
-        Model m = p.getResult();
-        if (m == null) {
+        ReconfigurationPlanChecker chk = new ReconfigurationPlanChecker();
+        chk.addChecker(getChecker());
+        try {
+            chk.check(p);
+        } catch (ReconfigurationPlanCheckerException ex) {
             return Sat.UNSATISFIED;
         }
-        return isSatisfied(m);
+        return Sat.SATISFIED;
     }
 
     @Override

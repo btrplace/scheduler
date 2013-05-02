@@ -58,7 +58,7 @@ public class SequentialVMTransitionsTest implements PremadeElements {
     public void testEquals() {
         List<UUID> l = Arrays.asList(vm1, vm2, vm3);
         SequentialVMTransitions c = new SequentialVMTransitions(l);
-        List<UUID> l2 = new ArrayList<UUID>(l);
+        List<UUID> l2 = new ArrayList<>(l);
         SequentialVMTransitions c2 = new SequentialVMTransitions(l2);
         Assert.assertTrue(c.equals(c2));
         Assert.assertEquals(c.hashCode(), c2.hashCode());

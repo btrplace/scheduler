@@ -18,13 +18,9 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.model.constraint.checker.SplitChecker;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.RunningVMPlacement;
 
 import java.util.*;
 
@@ -98,7 +94,7 @@ public class Split extends SatConstraint {
         return null;
     }
 
-    @Override
+    /*@Override
     public Sat isSatisfied(ReconfigurationPlan plan) {
         if (plan.getSize() == 0) {
             return isSatisfied(plan.getOrigin());
@@ -133,7 +129,7 @@ public class Split extends SatConstraint {
             }
         }
         return Sat.SATISFIED;
-    }
+    }*/
 
     @Override
     public boolean equals(Object o) {

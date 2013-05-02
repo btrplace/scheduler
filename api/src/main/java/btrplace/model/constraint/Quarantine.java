@@ -18,14 +18,13 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.checker.QuarantineChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * A constraint to put some nodes into quarantine.
@@ -48,7 +47,7 @@ public class Quarantine extends SatConstraint {
         super(Collections.<UUID>emptySet(), nodes, true);
     }
 
-    @Override
+    /*@Override
     public Sat isSatisfied(ReconfigurationPlan plan) {
         if (plan.getSize() == 0) {
             return Sat.SATISFIED;
@@ -80,7 +79,7 @@ public class Quarantine extends SatConstraint {
             }
         }
         return Sat.SATISFIED;
-    }
+    }    */
 
     @Override
     public SatConstraintChecker getChecker() {

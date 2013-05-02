@@ -37,8 +37,8 @@ public class FenceTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1));
-        Set<UUID> nodes = new HashSet<UUID>(Arrays.asList(n1));
+        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1));
+        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1));
         Fence f = new Fence(vms, nodes);
         Assert.assertNotNull(f.getChecker());
         Assert.assertEquals(vms, f.getInvolvedVMs());
@@ -59,9 +59,9 @@ public class FenceTest implements PremadeElements {
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n2);
         map.addRunningVM(vm3, n2);
-        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
+        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
 
-        Set<UUID> nodes = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
 
         Fence f = new Fence(vms, nodes);
         Model m = new DefaultModel(map);
@@ -72,8 +72,8 @@ public class FenceTest implements PremadeElements {
 
     @Test
     public void testEquals() {
-        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2));
-        Set<UUID> nodes = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
         Fence f = new Fence(vms, nodes);
         Assert.assertTrue(f.equals(f));
         Assert.assertTrue(new Fence(vms, nodes).equals(f));

@@ -68,7 +68,7 @@ public class SplitTest implements PremadeElements {
         Assert.assertTrue(sp.equals(sp));
         Assert.assertTrue(new Split(args).equals(sp));
         Assert.assertEquals(new Split(args).hashCode(), sp.hashCode());
-        List<Set<UUID>> args2 = new ArrayList<Set<UUID>>(args);
+        List<Set<UUID>> args2 = new ArrayList<>(args);
         args2.add(Collections.singleton(vm3));
         Assert.assertFalse(new Split(args2).equals(sp));
     }
@@ -81,10 +81,10 @@ public class SplitTest implements PremadeElements {
         map.addOnlineNode(n3);
 
 
-        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(vm1, vm2));
-        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(vm3, vm4));
+        Set<UUID> s1 = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<UUID> s2 = new HashSet<>(Arrays.asList(vm3, vm4));
         Set<UUID> s3 = Collections.singleton(vm5);
-        Set<Set<UUID>> args = new HashSet<Set<UUID>>(Arrays.asList(s1, s2, s3));
+        Set<Set<UUID>> args = new HashSet<>(Arrays.asList(s1, s2, s3));
 
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n1);
@@ -107,10 +107,10 @@ public class SplitTest implements PremadeElements {
         map.addOnlineNode(n2);
         map.addOnlineNode(n3);
 
-        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(vm1, vm2));
-        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(vm3, vm4));
+        Set<UUID> s1 = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<UUID> s2 = new HashSet<>(Arrays.asList(vm3, vm4));
         Set<UUID> s3 = Collections.singleton(vm5);
-        Set<Set<UUID>> args = new HashSet<Set<UUID>>(Arrays.asList(s1, s2, s3));
+        Set<Set<UUID>> args = new HashSet<>(Arrays.asList(s1, s2, s3));
 
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n1);

@@ -37,7 +37,7 @@ public class ReadyTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> x = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> x = new HashSet<>(Arrays.asList(vm1, vm2));
         Ready s = new Ready(x);
         Assert.assertNotNull(s.getChecker());
         Assert.assertEquals(x, s.getInvolvedVMs());
@@ -48,20 +48,20 @@ public class ReadyTest implements PremadeElements {
 
     @Test
     public void testEquals() {
-        Set<UUID> x = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> x = new HashSet<>(Arrays.asList(vm1, vm2));
         Ready s = new Ready(x);
 
         Assert.assertTrue(s.equals(s));
         Assert.assertTrue(new Ready(x).equals(s));
         Assert.assertEquals(new Ready(x).hashCode(), s.hashCode());
-        x = new HashSet<UUID>(Arrays.asList(vm3));
+        x = new HashSet<>(Arrays.asList(vm3));
         Assert.assertFalse(new Ready(x).equals(s));
     }
 
     @Test
     public void testIsSatisfied() {
         Mapping c = new DefaultMapping();
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
         c.addOnlineNode(n1);
         c.addReadyVM(vm1);
         c.addReadyVM(vm2);

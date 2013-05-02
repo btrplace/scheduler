@@ -68,4 +68,24 @@ public class ReconfigurationPlanCheckerTest implements PremadeElements {
         order.verify(chk).endsWith(res);
     }
 
+    @Test
+    public void testWithNoActions() throws ReconfigurationPlanCheckerException {
+        Mapping m = new DefaultMapping();
+        m.addOnlineNode(n1);
+        m.addOnlineNode(n2);
+        m.addOfflineNode(n4);
+        m.addReadyVM(vm2);
+        m.addRunningVM(vm1, n1);
+        Model mo = new DefaultModel(m);
+        ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
+        SatConstraintChecker chk = mock(SatConstraintChecker.class);
+        ReconfigurationPlanChecker rc = new ReconfigurationPlanChecker();
+        Assert.assertTrue(rc.addChecker(chk));
+
+        InOrder order = inOrder(chk);
+        rc.check(p);
+        order.verify(chk).startsWith(mo);
+        order.verify(chk).endsWith(mo);
+
+    }
 }

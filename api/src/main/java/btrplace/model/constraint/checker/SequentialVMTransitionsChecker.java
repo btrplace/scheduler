@@ -2,6 +2,7 @@ package btrplace.model.constraint.checker;
 
 import btrplace.model.Model;
 import btrplace.model.constraint.SequentialVMTransitions;
+import btrplace.plan.RunningVMPlacement;
 import btrplace.plan.event.*;
 
 import java.util.*;
@@ -28,12 +29,29 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<Se
         order = new ArrayList<>(s.getInvolvedVMs());
     }
 
-    @Override
-    public boolean start(BootVM a) {
-        if (runnings.contains(a.getVM())) {
-            return wasNext(a.getVM());
+    private boolean wasNext(UUID vm) {
+        if (getVMs().contains(vm)) {
+            //Everything before vm is considered as terminated
+
+            while (!order.isEmpty() && !order.get(0).equals(vm)) {
+                order.remove(0);
+            }
+            if (order.isEmpty()) {
+                return false;
+            }
         }
         return true;
+    }
+
+    private void updateOrder(UUID vm) {
+        if (getVMs().contains(vm)) {
+            //Everything before vm is supposed to be terminated
+            while (!order.isEmpty()) {
+                if (order.remove(0).equals(vm)) {
+                    break;
+                }
+            }
+        }
     }
 
     @Override
@@ -50,25 +68,42 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<Se
         return true;
     }
 
-    private boolean wasNext(UUID vm) {
-        if (getVMs().contains(vm)) {
-            while (!order.isEmpty()) {
-                if (order.remove(0).equals(vm)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        return true;
+    @Override
+    public void end(BootVM a) {
+        updateOrder(a.getVM());
+    }
+
+    @Override
+    public void end(MigrateVM a) {
+    }
+
+    @Override
+    public void end(ShutdownVM a) {
+        updateOrder(a.getVM());
+    }
+
+    @Override
+    public void end(SuspendVM a) {
+        updateOrder(a.getVM());
+    }
+
+    @Override
+    public void end(ResumeVM a) {
+        updateOrder(a.getVM());
+    }
+
+    @Override
+    public void end(ForgeVM a) {
+        updateOrder(a.getVM());
+    }
+
+    @Override
+    public void end(KillVM a) {
+        updateOrder(a.getVM());
     }
 
     @Override
     public boolean start(ShutdownVM a) {
-        return wasNext(a.getVM());
-    }
-
-    @Override
-    public boolean start(ResumeVM a) {
         return wasNext(a.getVM());
     }
 
@@ -79,7 +114,22 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<Se
 
     @Override
     public boolean start(KillVM a) {
-        //TODO: only if was not ready
+        return runnings.contains(a.getVM()) && wasNext(a.getVM());
+    }
+
+    @Override
+    public boolean start(ForgeVM a) {
+        return super.start(a);    //To change body of overridden methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public boolean startRunningVMPlacement(RunningVMPlacement a) {
         return wasNext(a.getVM());
     }
+
+    @Override
+    public void endRunningVMPlacement(RunningVMPlacement a) {
+        updateOrder(a.getVM());
+    }
+
 }

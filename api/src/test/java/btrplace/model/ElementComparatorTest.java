@@ -34,7 +34,7 @@ public class ElementComparatorTest {
     @Test
     public void testSimpleResource() {
         ShareableResource rc = new ShareableResource("foo");
-        List<UUID> uuids = new ArrayList<UUID>(10);
+        List<UUID> uuids = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
             uuids.add(UUID.randomUUID());
         }
@@ -62,7 +62,7 @@ public class ElementComparatorTest {
      */
     @Test(dependsOnMethods = {"testSimpleResource"})
     public void testCombination() {
-        List<UUID> uuids = new ArrayList<UUID>(7);
+        List<UUID> uuids = new ArrayList<>(7);
         for (int i = 0; i < 7; i++) {
             uuids.add(UUID.randomUUID());
         }

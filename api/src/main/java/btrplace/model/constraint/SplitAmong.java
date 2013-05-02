@@ -18,13 +18,9 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.model.constraint.checker.SplitAmongChecker;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.RunningVMPlacement;
 
 import java.util.*;
 
@@ -115,6 +111,12 @@ public class SplitAmong extends SatConstraint {
         return pGrps;
     }
 
+    /**
+     * Get the group of nodes associated to a given node.
+     *
+     * @param u the node
+     * @return the associated group of nodes if exists, {@code null} otherwise
+     */
     public Set<UUID> getAssociatedPGroup(UUID u) {
         for (Set<UUID> pGrp : pGrps) {
             if (pGrp.contains(u)) {
@@ -124,6 +126,12 @@ public class SplitAmong extends SatConstraint {
         return null;
     }
 
+    /**
+     * Get the group of VMs associated to a given VM.
+     *
+     * @param u the VM
+     * @return the associated group of VMs if exists, {@code null} otherwise
+     */
     public Set<UUID> getAssociatedVGroup(UUID u) {
         for (Set<UUID> vGrp : vGrps) {
             if (vGrp.contains(u)) {
@@ -133,7 +141,7 @@ public class SplitAmong extends SatConstraint {
         return null;
     }
 
-    @Override
+    /*@Override
     public Sat isSatisfied(ReconfigurationPlan p) {
         Model o = p.getOrigin();
         if (!isSatisfied(o).equals(Sat.SATISFIED)) {
@@ -162,7 +170,7 @@ public class SplitAmong extends SatConstraint {
             }
         }
         return Sat.SATISFIED;
-    }
+    }    */
 
     @Override
     public boolean equals(Object o) {

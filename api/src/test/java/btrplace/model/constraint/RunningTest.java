@@ -34,7 +34,7 @@ public class RunningTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> x = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> x = new HashSet<>(Arrays.asList(vm1, vm2));
         Running s = new Running(x);
         Assert.assertNotNull(s.getChecker());
         Assert.assertEquals(x, s.getInvolvedVMs());
@@ -45,7 +45,7 @@ public class RunningTest implements PremadeElements {
 
     @Test
     public void testEquals() {
-        Set<UUID> x = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> x = new HashSet<>(Arrays.asList(vm1, vm2));
         Running s = new Running(x);
 
         Assert.assertTrue(s.equals(s));
@@ -58,7 +58,7 @@ public class RunningTest implements PremadeElements {
     @Test
     public void testIsSatisfied() {
         Mapping c = new DefaultMapping();
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
         c.addOnlineNode(n1);
         c.addRunningVM(vm1, n1);
         c.addRunningVM(vm2, n1);

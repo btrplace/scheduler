@@ -18,12 +18,9 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.checker.OverbookChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
 
 import java.util.Collections;
 import java.util.Set;
@@ -105,7 +102,7 @@ public class Overbook extends SatConstraint {
         return b.append(')').toString();
     }
 
-    @Override
+    /*@Override
     public Sat isSatisfied(ReconfigurationPlan plan) {
         Sat res = isSatisfied(plan.getOrigin());
         if (!res.equals(Sat.SATISFIED)) {
@@ -124,7 +121,7 @@ public class Overbook extends SatConstraint {
             }
         }
         return Sat.SATISFIED;
-    }
+    }  */
 
     @Override
     public boolean equals(Object o) {

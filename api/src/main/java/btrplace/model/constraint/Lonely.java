@@ -18,12 +18,9 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.checker.LonelyChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
 
 import java.util.Collections;
 import java.util.Set;
@@ -63,7 +60,7 @@ public class Lonely extends SatConstraint {
         super(vms, Collections.<UUID>emptySet(), continuous);
     }
 
-    @Override
+    /*@Override
     public Sat isSatisfied(ReconfigurationPlan p) {
         Model mo = p.getOrigin();
         if (!isSatisfied(mo).equals(Sat.SATISFIED)) {
@@ -79,7 +76,7 @@ public class Lonely extends SatConstraint {
             }
         }
         return Sat.SATISFIED;
-    }
+    }     */
 
     @Override
     public boolean equals(Object o) {

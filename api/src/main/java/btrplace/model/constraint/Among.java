@@ -18,12 +18,9 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.checker.AmongChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
 
 import java.util.*;
 
@@ -86,7 +83,7 @@ public class Among extends SatConstraint {
         return null;
     }
 
-    @Override
+    /*@Override
     public Sat isSatisfied(ReconfigurationPlan p) {
         Model mo = p.getOrigin();
         if (!isSatisfied(mo).equals(Sat.SATISFIED)) {
@@ -102,7 +99,7 @@ public class Among extends SatConstraint {
             }
         }
         return Sat.SATISFIED;
-    }
+    }         */
 
     @Override
     public Collection<UUID> getInvolvedNodes() {

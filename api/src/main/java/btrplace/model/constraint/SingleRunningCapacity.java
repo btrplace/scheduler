@@ -18,12 +18,9 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.model.constraint.checker.SingleRunningCapacityChecker;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
 
 import java.util.Collections;
 import java.util.Set;
@@ -78,7 +75,7 @@ public class SingleRunningCapacity extends SatConstraint {
         return this.amount;
     }
 
-    @Override
+    /*@Override
     public Sat isSatisfied(ReconfigurationPlan plan) {
         Model mo = plan.getOrigin();
         if (!isSatisfied(mo).equals(SatConstraint.Sat.SATISFIED)) {
@@ -95,7 +92,7 @@ public class SingleRunningCapacity extends SatConstraint {
             }
         }
         return Sat.SATISFIED;
-    }
+    }    */
 
     @Override
     public boolean equals(Object o) {

@@ -21,11 +21,10 @@ package btrplace.model.constraint;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.model.constraint.checker.SequentialVMTransitionsChecker;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.VMStateTransition;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * A constraint to force the actions that change the given VMs state
@@ -76,7 +75,7 @@ public class SequentialVMTransitions extends SatConstraint {
         return new StringBuilder("sequentialVMTransitions(")
                 .append("vms=").append(getInvolvedVMs())
                 .append(", continuous")
-                .append(")").toString();
+                .append(')').toString();
     }
 
     @Override
@@ -87,7 +86,7 @@ public class SequentialVMTransitions extends SatConstraint {
         return b;
     }
 
-    @Override
+    /*@Override
     public Sat isSatisfied(ReconfigurationPlan plan) {
         Set<UUID> pending = new HashSet<>(getInvolvedVMs()); //all the VMAction we expect
 
@@ -123,7 +122,7 @@ public class SequentialVMTransitions extends SatConstraint {
             }
         }
         return Sat.SATISFIED;
-    }
+    }   */
 
     @Override
     public SatConstraintChecker getChecker() {

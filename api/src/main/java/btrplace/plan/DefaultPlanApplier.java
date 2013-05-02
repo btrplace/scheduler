@@ -44,7 +44,6 @@ public abstract class DefaultPlanApplier implements ReconfigurationPlanApplier {
      * are propagated
      *
      * @param a the event to propagate
-     * @return {@code true} iff the action has been allowed by all the validators.
      */
     public void fireAction(Action a) {
 

@@ -42,7 +42,7 @@ public class SingleRunningCapacityTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
 
         SingleRunningCapacity c = new SingleRunningCapacity(s, 3);
         Assert.assertNotNull(c.getChecker());
@@ -62,7 +62,7 @@ public class SingleRunningCapacityTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsAndHashCode() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
         SingleRunningCapacity c = new SingleRunningCapacity(s, 3);
         SingleRunningCapacity c2 = new SingleRunningCapacity(s, 3);
         Assert.assertTrue(c.equals(c));

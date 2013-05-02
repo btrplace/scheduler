@@ -18,16 +18,11 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.model.constraint.checker.SpreadChecker;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.RunningVMPlacement;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -64,7 +59,7 @@ public class Spread extends SatConstraint {
         super(vms, Collections.<UUID>emptySet(), continuous);
     }
 
-    @Override
+    /*@Override
     public Sat isSatisfied(ReconfigurationPlan plan) {
         if (plan.getSize() == 0) {
             return isSatisfied(plan.getOrigin());
@@ -91,7 +86,7 @@ public class Spread extends SatConstraint {
             }
         }
         return Sat.SATISFIED;
-    }
+    }   */
 
     @Override
     public String toString() {

@@ -41,7 +41,7 @@ public class QuarantineTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
         Quarantine q = new Quarantine(s);
         Assert.assertNotNull(q.getChecker());
         Assert.assertTrue(q.getInvolvedVMs().isEmpty());
@@ -56,11 +56,11 @@ public class QuarantineTest implements PremadeElements {
 
     @Test
     public void testEqualsHashCode() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
         Quarantine q = new Quarantine(s);
         Assert.assertTrue(q.equals(q));
-        Assert.assertTrue(q.equals(new Quarantine(new HashSet<UUID>(s))));
-        Assert.assertEquals(q.hashCode(), new Quarantine(new HashSet<UUID>(s)).hashCode());
+        Assert.assertTrue(q.equals(new Quarantine(new HashSet<>(s))));
+        Assert.assertEquals(q.hashCode(), new Quarantine(new HashSet<>(s)).hashCode());
         Assert.assertFalse(q.equals(new Quarantine(new HashSet<UUID>())));
     }
 

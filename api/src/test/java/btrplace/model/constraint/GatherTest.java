@@ -41,7 +41,7 @@ public class GatherTest implements PremadeElements {
 
     @Test
     public void testInstantiate() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
         Gather g = new Gather(s);
         Assert.assertNotNull(g.getChecker());
         Assert.assertTrue(g.getInvolvedNodes().isEmpty());
@@ -58,11 +58,11 @@ public class GatherTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testEqualsHashCode() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
         Gather g = new Gather(s);
         Assert.assertTrue(g.equals(g));
         Assert.assertFalse(g.equals(new Object()));
-        Gather g2 = new Gather(new HashSet<UUID>(s));
+        Gather g2 = new Gather(new HashSet<>(s));
         Assert.assertTrue(g2.equals(g));
         Assert.assertEquals(g2.hashCode(), g.hashCode());
         s.remove(vm1);
@@ -71,7 +71,7 @@ public class GatherTest implements PremadeElements {
 
     @Test
     public void testDiscreteIsSatisfied() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
         Gather g = new Gather(s);
 
         Mapping map = new DefaultMapping();
@@ -91,7 +91,7 @@ public class GatherTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testDiscreteIsSatisfied"})
     public void testContinuousIsSatisfied() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
         Gather g = new Gather(s);
         g.setContinuous(true);
         Mapping map = new DefaultMapping();

@@ -37,7 +37,7 @@ public class OnlineTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
         Online o = new Online(s);
         Assert.assertNotNull(o.getChecker());
         Assert.assertEquals(o.getInvolvedNodes(), s);
@@ -51,7 +51,7 @@ public class OnlineTest implements PremadeElements {
         Mapping c = new DefaultMapping();
         c.addOnlineNode(n1);
         c.addOnlineNode(n2);
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
         Online o = new Online(s);
 
         Model i = new DefaultModel(c);
@@ -63,13 +63,13 @@ public class OnlineTest implements PremadeElements {
 
     @Test
     public void testEquals() {
-        Set<UUID> x = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> x = new HashSet<>(Arrays.asList(n1, n2));
         Online s = new Online(x);
 
         Assert.assertTrue(s.equals(s));
         Assert.assertTrue(new Online(x).equals(s));
         Assert.assertEquals(new Online(x).hashCode(), s.hashCode());
-        x = new HashSet<UUID>(Arrays.asList(n3));
+        x = new HashSet<>(Arrays.asList(n3));
         Assert.assertFalse(new Online(x).equals(s));
     }
 }

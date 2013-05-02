@@ -226,58 +226,61 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
      *          if a violation is detected
      */
     public void check(ReconfigurationPlan p) throws ReconfigurationPlanCheckerException {
-        if (checkers.isEmpty() || p.getActions().isEmpty()) {
+        if (checkers.isEmpty()) {
             return;
         }
-        PriorityQueue<Action> starts = new PriorityQueue<>(p.getActions().size(), startsCmp);
-        PriorityQueue<Action> ends = new PriorityQueue<>(p.getActions().size(), endsCmp);
-        starts.addAll(p.getActions());
-        ends.addAll(p.getActions());
 
-        //Starts the actions
-        int curMoment = starts.peek().getStart();
         SatConstraint c = checkModel(p.getOrigin(), true);
         if (c != null) {
             throw new ReconfigurationPlanCheckerException(c, p.getOrigin(), true);
         }
-        while (!starts.isEmpty() || !ends.isEmpty()) {
-            Action a = ends.peek();
-            while (a != null && a.getEnd() == curMoment) {
-                ends.remove();
-                startingEvent = false;
-                c = (SatConstraint) a.visit(this);
-                if (c != null) {
-                    throw new ReconfigurationPlanCheckerException(c, a);
-                }
-                for (Event e : a.getEvents(Action.Hook.post)) {
-                    c = (SatConstraint) e.visit(this);
+
+        if (!p.getActions().isEmpty()) {
+            PriorityQueue<Action> starts = new PriorityQueue<>(p.getActions().size(), startsCmp);
+            PriorityQueue<Action> ends = new PriorityQueue<>(p.getActions().size(), endsCmp);
+            starts.addAll(p.getActions());
+            ends.addAll(p.getActions());
+
+            //Starts the actions
+            int curMoment = starts.peek().getStart();
+            while (!starts.isEmpty() || !ends.isEmpty()) {
+                Action a = ends.peek();
+                while (a != null && a.getEnd() == curMoment) {
+                    ends.remove();
+                    startingEvent = false;
+                    c = (SatConstraint) a.visit(this);
                     if (c != null) {
                         throw new ReconfigurationPlanCheckerException(c, a);
                     }
-                }
-
-                a = ends.peek();
-            }
-
-            a = starts.peek();
-            while (a != null && a.getStart() == curMoment) {
-                starts.remove();
-                startingEvent = true;
-                for (Event e : a.getEvents(Action.Hook.pre)) {
-                    c = (SatConstraint) e.visit(this);
-                    if (c != null) {
-                        throw new ReconfigurationPlanCheckerException(c, a);
+                    for (Event e : a.getEvents(Action.Hook.post)) {
+                        c = (SatConstraint) e.visit(this);
+                        if (c != null) {
+                            throw new ReconfigurationPlanCheckerException(c, a);
+                        }
                     }
-                }
-                c = (SatConstraint) a.visit(this);
-                if (c != null) {
-                    throw new ReconfigurationPlanCheckerException(c, a);
+                    a = ends.peek();
                 }
                 a = starts.peek();
+
+                while (a != null && a.getStart() == curMoment) {
+                    starts.remove();
+                    startingEvent = true;
+                    for (Event e : a.getEvents(Action.Hook.pre)) {
+                        c = (SatConstraint) e.visit(this);
+                        if (c != null) {
+                            throw new ReconfigurationPlanCheckerException(c, a);
+                        }
+                    }
+                    c = (SatConstraint) a.visit(this);
+                    if (c != null) {
+                        throw new ReconfigurationPlanCheckerException(c, a);
+                    }
+                    a = starts.peek();
+                }
+                int nextEnd = ends.isEmpty() ? Integer.MAX_VALUE : ends.peek().getEnd();
+                int nextStart = starts.isEmpty() ? Integer.MAX_VALUE : starts.peek().getStart();
+                curMoment = Math.min(nextEnd, nextStart);
             }
-            int nextEnd = ends.isEmpty() ? Integer.MAX_VALUE : ends.peek().getEnd();
-            int nextStart = starts.isEmpty() ? Integer.MAX_VALUE : starts.peek().getStart();
-            curMoment = Math.min(nextEnd, nextStart);
         }
         Model mo = p.getResult();
         c = checkModel(mo, false);

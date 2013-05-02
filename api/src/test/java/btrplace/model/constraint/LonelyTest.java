@@ -41,7 +41,7 @@ public class LonelyTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
+        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         Lonely l = new Lonely(s);
         Assert.assertNotNull(l.getChecker());
         Assert.assertFalse(l.toString().contains("null"));
@@ -58,17 +58,17 @@ public class LonelyTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsHashCode() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
+        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         Lonely l = new Lonely(s);
         Assert.assertTrue(l.equals(l));
-        Assert.assertTrue(l.equals(new Lonely(new HashSet<UUID>(s))));
-        Assert.assertEquals(l.hashCode(), new Lonely(new HashSet<UUID>(s)).hashCode());
+        Assert.assertTrue(l.equals(new Lonely(new HashSet<>(s))));
+        Assert.assertEquals(l.hashCode(), new Lonely(new HashSet<>(s)).hashCode());
         Assert.assertFalse(l.equals(new Lonely(new HashSet<UUID>())));
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testContinuousIsSatisfied() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
 
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
@@ -110,7 +110,7 @@ public class LonelyTest implements PremadeElements {
 
         Model mo = new DefaultModel(map);
 
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
         Lonely l = new Lonely(s);
 
         Assert.assertEquals(l.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
