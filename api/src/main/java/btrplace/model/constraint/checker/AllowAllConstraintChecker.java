@@ -206,10 +206,21 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
 
     }
 
+    /**
+     * Allow all the {@link RunningVMPlacement} actions.
+     *
+     * @param a the action to allow
+     * @return {@code true}
+     */
     public boolean startRunningVMPlacement(RunningVMPlacement a) {
         return true;
     }
 
+    /**
+     * Notify the end of a {@link RunningVMPlacement} action.
+     *
+     * @param a the notified action
+     */
     public void endRunningVMPlacement(RunningVMPlacement a) {
 
     }
