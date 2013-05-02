@@ -26,7 +26,6 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.UUID;
 
 /**
  * Unit tests for {@link btrplace.json.model.constraint.LonelyConverter}.
@@ -39,8 +38,8 @@ public class LonelyConverterTest implements PremadeElements {
 
     @Test
     public void testViables() throws JSONConverterException {
-        Lonely d = new Lonely(new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3)), false);
-        Lonely c = new Lonely(new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3)), true);
+        Lonely d = new Lonely(new HashSet<>(Arrays.asList(vm1, vm2, vm3)), false);
+        Lonely c = new Lonely(new HashSet<>(Arrays.asList(vm1, vm2, vm3)), true);
         Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
         Assert.assertEquals(conv.fromJSON(conv.toJSON(c)), c);
     }

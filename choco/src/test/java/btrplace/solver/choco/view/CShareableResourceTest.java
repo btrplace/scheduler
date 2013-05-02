@@ -151,8 +151,6 @@ public class CShareableResourceTest implements PremadeElements {
 
     /**
      * The default overbooking ratio of 1 will make this problem having no solution.
-     *
-     * @throws Exception
      */
     @Test
     public void testDefaultOverbookRatio() throws ContradictionException, SolverException {

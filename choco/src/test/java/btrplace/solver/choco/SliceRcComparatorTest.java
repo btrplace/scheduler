@@ -35,7 +35,7 @@ public class SliceRcComparatorTest {
 
     private static List<Slice> makeSlices() {
 
-        List<Slice> l = new ArrayList<Slice>(10);
+        List<Slice> l = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
             UUID u = new UUID(0, i);
             l.add(new Slice(u, null, null, null, null));

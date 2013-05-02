@@ -43,7 +43,7 @@ public class Instance {
      * @param cs the list of constraints
      */
     public Instance(Model mo, List<SatConstraint> cs) {
-        cstrs = new ArrayList<SatConstraint>(cs);
+        cstrs = new ArrayList<>(cs);
         this.mo = mo;
     }
 

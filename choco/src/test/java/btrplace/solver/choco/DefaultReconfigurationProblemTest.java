@@ -102,8 +102,8 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
     @Test
     public void testSimplestInstantiation() throws SolverException {
         Model m = defaultModel();
-        Set<UUID> toRun = new HashSet<UUID>();
-        Set<UUID> toWait = new HashSet<UUID>();
+        Set<UUID> toRun = new HashSet<>();
+        Set<UUID> toWait = new HashSet<>();
         toWait.add(vm6);
         toWait.add(vm7);
         toRun.add(vm5);
@@ -148,7 +148,7 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
     public void testManageableVMs() throws SolverException {
         Model mo = defaultModel();
         Mapping map = mo.getMapping();
-        Set<UUID> runnings = new HashSet<UUID>(map.getRunningVMs());
+        Set<UUID> runnings = new HashSet<>(map.getRunningVMs());
         runnings.add(vm6);
         runnings.add(vm5);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
@@ -405,7 +405,7 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
     public void testVMCounting() throws SolverException, ContradictionException {
         Model m = defaultModel();
         Mapping map = m.getMapping().clone();
-        Set<UUID> s = new HashSet<UUID>(map.getAllVMs());
+        Set<UUID> s = new HashSet<>(map.getAllVMs());
         for (UUID vm : s) {
             map.addReadyVM(vm);
         }

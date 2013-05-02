@@ -18,7 +18,6 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Preserve;
@@ -85,10 +84,7 @@ public class CPreserve implements ChocoSatConstraint {
             for (UUID vm : cstr.getInvolvedVMs()) {
                 int x = rc.get(vm);
                 if (x < cstr.getAmount()) {
-                    Mapping map = m.getMapping();
                     //TODO: Very inefficient. Resources may be  available
-                    // but not allocated.
-                    //bad.addAll(map.getRunningVMs(map.getVMLocation(vm)));
                     bad.add(vm);
                 }
             }

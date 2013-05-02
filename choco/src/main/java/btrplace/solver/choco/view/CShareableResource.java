@@ -387,7 +387,7 @@ public class CShareableResource implements ChocoModelView {
     /**
      * Symmetry breaking for VMs that stay running, on the same node.
      *
-     * @return
+     * @return {@code true} iff the symmetry breaking does not lead to a problem without solutions
      */
     private boolean symmetryBreakingForStatingVMs() {
         for (UUID vm : rp.getFutureRunningVMs()) {

@@ -40,12 +40,12 @@ public class AmongConverterTest implements PremadeElements {
 
     @Test
     public void testViables() throws JSONConverterException {
-        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
-        Set<UUID> p1 = new HashSet<UUID>(Arrays.asList(n1, n2));
-        Set<UUID> p2 = new HashSet<UUID>(Arrays.asList(n4, n5));
-        Set<UUID> p3 = new HashSet<UUID>(Arrays.asList(n3));
+        Set<UUID> s1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<UUID> p1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<UUID> p2 = new HashSet<>(Arrays.asList(n4, n5));
+        Set<UUID> p3 = new HashSet<>(Arrays.asList(n3));
 
-        Set<Set<UUID>> pgrps = new HashSet<Set<UUID>>(Arrays.asList(p1, p2, p3));
+        Set<Set<UUID>> pgrps = new HashSet<>(Arrays.asList(p1, p2, p3));
 
         Among d = new Among(s1, pgrps, false);
         Among c = new Among(s1, pgrps, true);

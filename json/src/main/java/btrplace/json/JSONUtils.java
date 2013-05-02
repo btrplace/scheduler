@@ -48,7 +48,7 @@ public final class JSONUtils {
      * @return the set of UUID
      */
     public static Set<UUID> fromJSON(JSONArray a) {
-        Set<UUID> s = new HashSet<UUID>(a.size());
+        Set<UUID> s = new HashSet<>(a.size());
         for (Object o : a) {
             s.add(UUID.fromString((String) o));
         }
@@ -78,7 +78,7 @@ public final class JSONUtils {
      * @throws JSONConverterException if the key does not point to a set
      */
     public static Set<Set<UUID>> requiredSets(JSONObject o, String id) throws JSONConverterException {
-        Set<Set<UUID>> res = new HashSet<Set<UUID>>();
+        Set<Set<UUID>> res = new HashSet<>();
         Object x = o.get(id);
         if (!(x instanceof JSONArray)) {
             throw new JSONConverterException("Set of UUIDs sets expected at key '" + id + "'");

@@ -145,7 +145,7 @@ public class SatConstraintsConverter implements JSONConverter<SatConstraint> {
      * @throws JSONConverterException if an error occurred
      */
     public List<SatConstraint> fromJSON(JSONArray arr) throws JSONConverterException {
-        List<SatConstraint> cstrs = new ArrayList<SatConstraint>(arr.size());
+        List<SatConstraint> cstrs = new ArrayList<>(arr.size());
         for (Object o : arr) {
             cstrs.add(fromJSON((JSONObject) o));
         }

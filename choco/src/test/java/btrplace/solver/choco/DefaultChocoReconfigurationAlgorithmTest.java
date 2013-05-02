@@ -131,10 +131,10 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
         Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5).build();
 
         //A satisfied constraint
-        Fence c1 = new Fence(new HashSet<UUID>(Arrays.asList(vm1, vm2)), new HashSet<UUID>(Arrays.asList(n1, n2)));
+        Fence c1 = new Fence(new HashSet<>(Arrays.asList(vm1, vm2)), new HashSet<>(Arrays.asList(n1, n2)));
 
         //A constraint that is not satisfied. vm2 is misplaced
-        Fence c2 = new Fence(new HashSet<UUID>(Arrays.asList(vm1, vm2)), new HashSet<UUID>(Arrays.asList(n1, n3)));
+        Fence c2 = new Fence(new HashSet<>(Arrays.asList(vm1, vm2)), new HashSet<>(Arrays.asList(n1, n3)));
 
         ReconfigurationObjective o = new ReconfigurationObjective() {
 
@@ -145,7 +145,7 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
 
             @Override
             public Set<UUID> getMisPlacedVMs(Model m) {
-                return new HashSet<UUID>(Arrays.asList(vm2, vm3));
+                return new HashSet<>(Arrays.asList(vm2, vm3));
             }
         };
 

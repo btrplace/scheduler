@@ -29,28 +29,39 @@ public class ActionConverter implements JSONConverter<Action>, ActionVisitor {
         }
 
         Action a;
-        if (id.equals("bootVM")) {
-            a = bootVMFromJSON(in);
-        } else if (id.equals("shutdownVM")) {
-            a = shutdownVMFromJSON(in);
-        } else if (id.equals("shutdownNode")) {
-            a = shutdownNodeFromJSON(in);
-        } else if (id.equals("bootNode")) {
-            a = bootNodeFromJSON(in);
-        } else if (id.equals("forgeVM")) {
-            a = forgeVMFromJSON(in);
-        } else if (id.equals("killVM")) {
-            a = killVMFromJSON(in);
-        } else if (id.equals("migrateVM")) {
-            a = migrateVMFromJSON(in);
-        } else if (id.equals("resumeVM")) {
-            a = resumeVMFromJSON(in);
-        } else if (id.equals("suspendVM")) {
-            a = suspendVMFromJSON(in);
-        } else if (id.equals("allocate")) {
-            a = allocateFromJSON(in);
-        } else {
-            throw new JSONConverterException(("Unsupported type of action '" + id + "'"));
+        switch (id) {
+            case "bootVM":
+                a = bootVMFromJSON(in);
+                break;
+            case "shutdownVM":
+                a = shutdownVMFromJSON(in);
+                break;
+            case "shutdownNode":
+                a = shutdownNodeFromJSON(in);
+                break;
+            case "bootNode":
+                a = bootNodeFromJSON(in);
+                break;
+            case "forgeVM":
+                a = forgeVMFromJSON(in);
+                break;
+            case "killVM":
+                a = killVMFromJSON(in);
+                break;
+            case "migrateVM":
+                a = migrateVMFromJSON(in);
+                break;
+            case "resumeVM":
+                a = resumeVMFromJSON(in);
+                break;
+            case "suspendVM":
+                a = suspendVMFromJSON(in);
+                break;
+            case "allocate":
+                a = allocateFromJSON(in);
+                break;
+            default:
+                throw new JSONConverterException(("Unsupported type of action '" + id + "'"));
         }
 
         //Decorate with the events
@@ -74,12 +85,13 @@ public class ActionConverter implements JSONConverter<Action>, ActionVisitor {
         if (id == null) {
             throw new JSONConverterException("The action identifier is expected on the key 'id'");
         }
-        if (id.equals("allocate")) {
-            return allocateEventFromJSON(o);
-        } else if (id.equals("substitutedVM")) {
-            return substitutedVMEventFromJSON(o);
-        } else {
-            throw new JSONConverterException(("Unsupported type of action '" + id + "'"));
+        switch (id) {
+            case "allocate":
+                return allocateEventFromJSON(o);
+            case "substitutedVM":
+                return substitutedVMEventFromJSON(o);
+            default:
+                throw new JSONConverterException(("Unsupported type of action '" + id + "'"));
         }
     }
 
@@ -309,7 +321,7 @@ public class ActionConverter implements JSONConverter<Action>, ActionVisitor {
      * @throws JSONConverterException if an error occurred during the conversion
      */
     public Collection<Action> fromJSON(JSONArray actions) throws JSONConverterException {
-        List<Action> l = new ArrayList<Action>(actions.size());
+        List<Action> l = new ArrayList<>(actions.size());
         for (Object o : actions) {
             if (o instanceof JSONObject) {
                 l.add(fromJSON((JSONObject) o));

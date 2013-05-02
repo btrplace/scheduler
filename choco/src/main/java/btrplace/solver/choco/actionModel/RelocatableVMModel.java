@@ -185,8 +185,6 @@ public class RelocatableVMModel implements KeepRunningVMModel {
                     return false;
                 }
             }
-        } else {
-            int st = dSlice.getStart().getVal();
         }
         return true;
     }

@@ -26,7 +26,6 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.UUID;
 
 /**
  * Unit tests for {@link btrplace.json.model.constraint.BanConverter}.
@@ -39,8 +38,8 @@ public class BanConverterTest implements PremadeElements {
 
     @Test
     public void testViables() throws JSONConverterException {
-        Ban d = new Ban(new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3)),
-                new HashSet<UUID>(Arrays.asList(n1, n2, n3)));
+        Ban d = new Ban(new HashSet<>(Arrays.asList(vm1, vm2, vm3)),
+                new HashSet<>(Arrays.asList(n1, n2, n3)));
 
         Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
     }

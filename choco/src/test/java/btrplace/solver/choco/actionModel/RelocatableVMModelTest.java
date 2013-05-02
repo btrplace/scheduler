@@ -153,7 +153,7 @@ public class RelocatableVMModelTest implements PremadeElements {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         Model mo = new DefaultModel(map);
         mo.attach(rc);
-        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Online(map.getAllNodes()));
         cstrs.add(new Overbook(map.getAllNodes(), "cpu", 1));
         cstrs.add(pr);
@@ -372,7 +372,7 @@ public class RelocatableVMModelTest implements PremadeElements {
         cra.getDurationEvaluators().register(MigrateVM.class, new ConstantDuration(20));
 
         mo.attach(rc);
-        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Online(map.getAllNodes()));
         cstrs.add(pr);
         cra.doOptimize(true);

@@ -36,7 +36,7 @@ public class SliceUtilsTest {
 
     private List<Slice> makeSlices() {
         CPSolver csp = new CPSolver();
-        List<Slice> l = new ArrayList<Slice>();
+        List<Slice> l = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             l.add(new Slice(new UUID(0, i),
                     csp.createBooleanVar("st " + i),

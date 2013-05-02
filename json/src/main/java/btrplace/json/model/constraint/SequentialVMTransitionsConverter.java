@@ -48,7 +48,7 @@ public class SequentialVMTransitionsConverter extends SatConstraintConverter<Seq
     @Override
     public SequentialVMTransitions fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        List<UUID> s = new ArrayList<UUID>();
+        List<UUID> s = new ArrayList<>();
         for (Object ob : (JSONArray) o.get("vms")) {
             s.add(UUID.fromString((String) ob));
         }

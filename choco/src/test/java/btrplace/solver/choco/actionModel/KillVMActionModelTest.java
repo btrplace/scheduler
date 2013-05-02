@@ -62,7 +62,7 @@ public class KillVMActionModelTest implements PremadeElements {
         map.addSleepingVM(vm3, n1);
 
         Model mo = new DefaultModel(map);
-        Set<UUID> empty = new HashSet<UUID>();
+        Set<UUID> empty = new HashSet<>();
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(KillVM.class, new ConstantDuration(1));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables()

@@ -104,10 +104,10 @@ public class GettingStarted implements Example {
     }
 
     private static Set<SatConstraint> makeConstraints() {
-        Set<SatConstraint> cstrs = new HashSet<SatConstraint>();
+        Set<SatConstraint> cstrs = new HashSet<>();
 
         //VMs VM2 and VM3 must be running on distinct nodes
-        cstrs.add(new Spread(new HashSet<UUID>(Arrays.asList(vm2, vm3))));
+        cstrs.add(new Spread(new HashSet<>(Arrays.asList(vm2, vm3))));
 
         //VM VM1 must have at least 3 virtual CPU dedicated to it
         cstrs.add(new Preserve(Collections.singleton(vm1), "cpu", 3));

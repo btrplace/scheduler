@@ -94,8 +94,8 @@ public class Issues implements PremadeElements {
         // In case the number of VMs is inferior to the number of online nodes, some nodes have to shutdown
         // to satisfy the constraint. This could be express as:
         // The addition of the idle nodes and busy nodes should be equals the number of online nodes.
-        IntExp sumStates = (solver.sum(states));
-        IntExp sumIB = solver.plus(solver.sum(busy), idle);
+        IntExp sumStates = CPSolver.sum(states);
+        IntExp sumIB = solver.plus(CPSolver.sum(busy), idle);
         solver.post(solver.eq(sumStates, sumIB));
 
         ReconfigurationPlan plan = rp.solve(0, false);
@@ -189,7 +189,7 @@ public class Issues implements PremadeElements {
         IntDomainVar[] idles = new IntDomainVar[NUMBER_OF_NODE];
         int i = 0;
         int maxVMs = rp.getSourceModel().getMapping().getAllVMs().size();
-        List<SConstraint> elms = new ArrayList<SConstraint>();
+        List<SConstraint> elms = new ArrayList<>();
         for (UUID n : map.getAllNodes()) {
             vmsOnInvolvedNodes[i] = solver.createBoundIntVar("nVMs" + n, -1, maxVMs);
             IntDomainVar state = rp.getNodeAction(n).getState();
@@ -204,7 +204,7 @@ public class Issues implements PremadeElements {
             ChocoUtils.postIfOnlyIf(solver, idles[i], solver.eq(vmsOnInvolvedNodes[i], 0));
             i++;
         }
-        IntExp Sidle = solver.sum(idles);
+        IntExp Sidle = CPSolver.sum(idles);
         // idle should be less than Amount for MaxSN (0, in this case)
         solver.post(solver.eq(Sidle, 0));
         System.err.flush();

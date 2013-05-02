@@ -26,7 +26,6 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.UUID;
 
 /**
  * Unit tests for {@link btrplace.model.constraint.CumulatedResourceCapacity}.
@@ -39,8 +38,8 @@ public class CumulatedResourceCapacityConverterTest implements PremadeElements {
 
     @Test
     public void testViables() throws JSONConverterException {
-        CumulatedResourceCapacity d = new CumulatedResourceCapacity(new HashSet<UUID>(Arrays.asList(n1, n2, n3)), "cpu", 5, false);
-        CumulatedResourceCapacity c = new CumulatedResourceCapacity(new HashSet<UUID>(Arrays.asList(n1, n2, n3)), "mem", 5, true);
+        CumulatedResourceCapacity d = new CumulatedResourceCapacity(new HashSet<>(Arrays.asList(n1, n2, n3)), "cpu", 5, false);
+        CumulatedResourceCapacity c = new CumulatedResourceCapacity(new HashSet<>(Arrays.asList(n1, n2, n3)), "mem", 5, true);
         Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
         Assert.assertEquals(conv.fromJSON(conv.toJSON(c)), c);
     }
