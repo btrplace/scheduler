@@ -85,7 +85,7 @@ public class Split extends SatConstraint {
      * @param u the VM identifier
      * @return the group of VM if exists, {@code null} otherwise
      */
-    private Set<UUID> getAssociatedVGroup(UUID u) {
+    public Set<UUID> getAssociatedVGroup(UUID u) {
         for (Set<UUID> vGrp : sets) {
             if (vGrp.contains(u)) {
                 return vGrp;
@@ -93,43 +93,6 @@ public class Split extends SatConstraint {
         }
         return null;
     }
-
-    /*@Override
-    public Sat isSatisfied(ReconfigurationPlan plan) {
-        if (plan.getSize() == 0) {
-            return isSatisfied(plan.getOrigin());
-        }
-
-        //For each relocation action, we check if the
-        //destination node is not hosting a VM from another group
-        Model cur = plan.getOrigin().clone();
-        for (Action a : plan) {
-            if (!a.apply(cur)) {
-                return Sat.UNSATISFIED;
-            }
-
-            UUID destNode;
-            if (a instanceof RunningVMPlacement) {
-                RunningVMPlacement ra = (RunningVMPlacement) a;
-                destNode = ra.getDestinationNode();
-                UUID vm = ra.getVM();
-                Set<UUID> vmGrp = getAssociatedVGroup(vm);
-
-                if (vmGrp != null) {
-                    //The VM is involved in the constraint, the node must not
-                    //run any VM that belong to another group.
-                    for (UUID vmOn : cur.getMapping().getRunningVMs(destNode)) {
-                        Set<UUID> grp = getAssociatedVGroup(vmOn);
-                        if (grp != null && !vmGrp.equals(grp)) {
-                            return Sat.UNSATISFIED;
-                        }
-                    }
-
-                }
-            }
-        }
-        return Sat.SATISFIED;
-    }*/
 
     @Override
     public boolean equals(Object o) {

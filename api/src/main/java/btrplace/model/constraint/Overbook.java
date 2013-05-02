@@ -102,27 +102,6 @@ public class Overbook extends SatConstraint {
         return b.append(')').toString();
     }
 
-    /*@Override
-    public Sat isSatisfied(ReconfigurationPlan plan) {
-        Sat res = isSatisfied(plan.getOrigin());
-        if (!res.equals(Sat.SATISFIED)) {
-            return Sat.UNSATISFIED;
-        }
-        Model cur = plan.getOrigin().clone();
-        for (Action a : plan) {
-
-            if (!a.apply(cur)) {
-                return Sat.UNSATISFIED;
-            }
-            res = isSatisfied(cur);
-
-            if (!res.equals(Sat.SATISFIED)) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
-    }  */
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {

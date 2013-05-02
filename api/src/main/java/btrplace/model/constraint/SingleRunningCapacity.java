@@ -75,25 +75,6 @@ public class SingleRunningCapacity extends SatConstraint {
         return this.amount;
     }
 
-    /*@Override
-    public Sat isSatisfied(ReconfigurationPlan plan) {
-        Model mo = plan.getOrigin();
-        if (!isSatisfied(mo).equals(SatConstraint.Sat.SATISFIED)) {
-            return Sat.UNSATISFIED;
-        }
-        mo = plan.getOrigin().clone();
-
-        for (Action a : plan) {
-            if (!a.apply(mo)) {
-                return Sat.UNSATISFIED;
-            }
-            if (!isSatisfied(mo).equals(SatConstraint.Sat.SATISFIED)) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
-    }    */
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {

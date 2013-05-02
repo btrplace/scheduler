@@ -110,11 +110,7 @@ public class SequentialVMTransitionsTest implements PremadeElements {
 
         Model mo = new DefaultModel(map);
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
-        /*
-        0:1 {action=boot(vm=7f7dfa63-2d6a-42a5-8d68-38c6f3ca95f9, on=21396c2b-9697-4442-ab9e-ae85802f84dd)}
-        1:2 {action=suspend(vm=1cd64878-1d78-47f3-8a4b-009646aa09b9, from=21396c2b-9697-4442-ab9e-ae85802f84dd, to=21396c2b-9697-4442-ab9e-ae85802f84dd)}
-        2:3 {action=shutdown(vm=0cf16dbc-4694-4aa1-a7df-5c0599844b9c, on=21396c2b-9697-4442-ab9e-ae85802f84dd)}
-         */
+
         p.add(new BootVM(vm1, n1, 0, 1));
         p.add(new SuspendVM(vm3, n2, n2, 1, 2));
         p.add(new ShutdownVM(vm4, n1, 2, 3));

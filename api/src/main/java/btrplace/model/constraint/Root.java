@@ -47,23 +47,6 @@ public class Root extends SatConstraint {
         super(vms, Collections.<UUID>emptySet(), true);
     }
 
-    /*@Override
-    public Sat isSatisfied(ReconfigurationPlan plan) {
-        Model r = plan.getResult();
-        if (r == null) {
-            return Sat.UNSATISFIED;
-        }
-        Mapping dst = r.getMapping();
-        Mapping src = plan.getOrigin().getMapping();
-        for (UUID vm : getInvolvedVMs()) {
-            if (src.getRunningVMs().contains(vm) && dst.getRunningVMs().contains(vm)
-                    && !src.getVMLocation(vm).equals(dst.getVMLocation(vm))) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
-    }    */
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {

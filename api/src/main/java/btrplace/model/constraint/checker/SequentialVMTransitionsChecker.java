@@ -19,6 +19,8 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<Se
 
     private List<UUID> order;
 
+    private UUID pending;
+
     /**
      * Make a new checker.
      *
@@ -27,31 +29,6 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<Se
     public SequentialVMTransitionsChecker(SequentialVMTransitions s) {
         super(s);
         order = new ArrayList<>(s.getInvolvedVMs());
-    }
-
-    private boolean wasNext(UUID vm) {
-        if (getVMs().contains(vm)) {
-            //Everything before vm is considered as terminated
-
-            while (!order.isEmpty() && !order.get(0).equals(vm)) {
-                order.remove(0);
-            }
-            if (order.isEmpty()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private void updateOrder(UUID vm) {
-        if (getVMs().contains(vm)) {
-            //Everything before vm is supposed to be terminated
-            while (!order.isEmpty()) {
-                if (order.remove(0).equals(vm)) {
-                    break;
-                }
-            }
-        }
     }
 
     @Override
@@ -63,73 +40,106 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<Se
 
     @Override
     public boolean start(MigrateVM a) {
-        //If the VM belong to the order we remove it
-        order.remove(a.getVM());
+        return true;
+    }
+
+    public boolean makePending(UUID vm) {
+        if (getVMs().contains(vm)) {
+            if (pending == null) {
+                //Burn all the VMs in order that are before vm
+                while (!order.isEmpty() && !order.get(0).equals(vm)) {
+                    order.remove(0);
+                }
+                if (order.isEmpty()) {
+                    return false;
+                }
+                pending = vm;
+                return true;
+            }
+            return false;
+        }
         return true;
     }
 
     @Override
-    public void end(BootVM a) {
-        updateOrder(a.getVM());
-    }
-
-    @Override
-    public void end(MigrateVM a) {
-    }
-
-    @Override
-    public void end(ShutdownVM a) {
-        updateOrder(a.getVM());
-    }
-
-    @Override
-    public void end(SuspendVM a) {
-        updateOrder(a.getVM());
-    }
-
-    @Override
-    public void end(ResumeVM a) {
-        updateOrder(a.getVM());
-    }
-
-    @Override
-    public void end(ForgeVM a) {
-        updateOrder(a.getVM());
-    }
-
-    @Override
-    public void end(KillVM a) {
-        updateOrder(a.getVM());
+    public boolean start(BootVM a) {
+        return makePending(a.getVM());
     }
 
     @Override
     public boolean start(ShutdownVM a) {
-        return wasNext(a.getVM());
+        return makePending(a.getVM());
+    }
+
+    @Override
+    public boolean start(ResumeVM a) {
+        return makePending(a.getVM());
     }
 
     @Override
     public boolean start(SuspendVM a) {
-        return wasNext(a.getVM());
+        return makePending(a.getVM());
     }
 
     @Override
     public boolean start(KillVM a) {
-        return runnings.contains(a.getVM()) && wasNext(a.getVM());
+        if (runnings.contains(a.getVM())) {
+            return makePending(a.getVM());
+        }
+        return true;
     }
 
     @Override
     public boolean start(ForgeVM a) {
-        return super.start(a);    //To change body of overridden methods use File | Settings | File Templates.
+        return makePending(a.getVM());
     }
 
     @Override
     public boolean startRunningVMPlacement(RunningVMPlacement a) {
-        return wasNext(a.getVM());
+        return makePending(a.getVM());
     }
 
     @Override
-    public void endRunningVMPlacement(RunningVMPlacement a) {
-        updateOrder(a.getVM());
+    public void end(BootVM a) {
+        if (a.getVM().equals(pending)) {
+            pending = null;
+        }
     }
 
+    @Override
+    public void end(ShutdownVM a) {
+        if (a.getVM().equals(pending)) {
+            pending = null;
+        }
+    }
+
+    @Override
+    public void end(ResumeVM a) {
+        if (a.getVM().equals(pending)) {
+            pending = null;
+        }
+
+    }
+
+    @Override
+    public void end(SuspendVM a) {
+        if (a.getVM().equals(pending)) {
+            pending = null;
+        }
+
+    }
+
+    @Override
+    public void end(KillVM a) {
+        if (a.getVM().equals(pending)) {
+            pending = null;
+        }
+    }
+
+    @Override
+    public void end(ForgeVM a) {
+        if (a.getVM().equals(pending)) {
+            pending = null;
+        }
+    }
 }

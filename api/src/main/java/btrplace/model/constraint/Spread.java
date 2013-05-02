@@ -59,35 +59,6 @@ public class Spread extends SatConstraint {
         super(vms, Collections.<UUID>emptySet(), continuous);
     }
 
-    /*@Override
-    public Sat isSatisfied(ReconfigurationPlan plan) {
-        if (plan.getSize() == 0) {
-            return isSatisfied(plan.getOrigin());
-        }
-
-        //For each relocation action, we check if the
-        //destination node is not hosting a VM involved in the constraint
-        Model cur = plan.getOrigin().clone();
-        for (Action a : plan) {
-            if (!a.apply(cur)) {
-                return Sat.UNSATISFIED;
-            }
-
-            UUID destNode;
-            if (a instanceof RunningVMPlacement) {
-                destNode = ((RunningVMPlacement) a).getDestinationNode();
-                Set<UUID> on = new HashSet<>(cur.getMapping().getRunningVMs(destNode));
-                //If there is 2 VMs here that are involved in
-                //the constraint, it's a failure
-                on.retainAll(getInvolvedVMs());
-                if (on.size() > 1) {
-                    return Sat.UNSATISFIED;
-                }
-            }
-        }
-        return Sat.SATISFIED;
-    }   */
-
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder("spread(vms=").append(getInvolvedVMs());

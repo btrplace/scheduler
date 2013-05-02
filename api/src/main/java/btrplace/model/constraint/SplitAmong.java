@@ -141,37 +141,6 @@ public class SplitAmong extends SatConstraint {
         return null;
     }
 
-    /*@Override
-    public Sat isSatisfied(ReconfigurationPlan p) {
-        Model o = p.getOrigin();
-        if (!isSatisfied(o).equals(Sat.SATISFIED)) {
-            return Sat.UNSATISFIED;
-        }
-        o = p.getOrigin().clone();
-        for (Action a : p) {
-            if (!a.apply(o)) {
-                return Sat.UNSATISFIED;
-            }
-            if (a instanceof RunningVMPlacement) {
-                RunningVMPlacement ra = (RunningVMPlacement) a;
-                UUID vm = ra.getVM();
-                Set<UUID> myGroup = getAssociatedVGroup(vm);
-                if (myGroup != null) {
-                    //Does the VM go to a compatible group of nodes ?
-                    UUID destNode = ra.getDestinationNode();
-                    Set<UUID> myPGroup = getAssociatedPGroup(destNode);
-                    if (myPGroup == null) { //The node does not belong to a group. Violation
-                        return Sat.UNSATISFIED;
-                    } else if (!myGroup.containsAll(o.getMapping().getRunningVMs(myPGroup))) {
-                        //Some VMs that are not in myGroup are hosting on the nodes. Violation
-                        return Sat.UNSATISFIED;
-                    }
-                }
-            }
-        }
-        return Sat.SATISFIED;
-    }    */
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {

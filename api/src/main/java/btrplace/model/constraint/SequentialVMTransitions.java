@@ -86,44 +86,6 @@ public class SequentialVMTransitions extends SatConstraint {
         return b;
     }
 
-    /*@Override
-    public Sat isSatisfied(ReconfigurationPlan plan) {
-        Set<UUID> pending = new HashSet<>(getInvolvedVMs()); //all the VMAction we expect
-
-        Map<UUID, Action> actions = new HashMap<>(); //The action associated to the VM if it is an action
-        //to consider
-        for (Action a : plan) {
-            if (a instanceof VMStateTransition) {
-                VMStateTransition ste = (VMStateTransition) a;
-                UUID vm = ste.getVM();
-                if (ste.getCurrentState() != ste.getNextState() &&
-                        (ste.getNextState() == VMStateTransition.VMState.running
-                                || ste.getCurrentState() == VMStateTransition.VMState.running)) {
-                    //This action matters and the associated VM is in the constraint
-                    if (pending.contains(vm)) {
-                        actions.put(vm, a);
-                    }
-                }
-            }
-        }
-        //We browse the actions in the order of the associated VM, and ensure there is no overlap btw. the action
-        int prevEnd = -1;
-        for (UUID vm : getInvolvedVMs()) {
-            Action a = actions.get(vm);
-            if (a != null) {
-                //We do care about this action
-                int p = a.getStart();
-                if (p < prevEnd) {
-                    //There is an overlap
-                    return Sat.UNSATISFIED;
-                } else {
-                    prevEnd = a.getEnd();
-                }
-            }
-        }
-        return Sat.SATISFIED;
-    }   */
-
     @Override
     public SatConstraintChecker getChecker() {
         return new SequentialVMTransitionsChecker(this);
