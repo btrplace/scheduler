@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -66,9 +69,9 @@ public class BanTest implements PremadeElements {
 
         Ban b = new Ban(vms, nodes);
         Model m = new DefaultModel(map);
-        Assert.assertEquals(b.isSatisfied(m), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(b.isSatisfied(m), true);
         map.addRunningVM(vm3, n1);
-        Assert.assertEquals(b.isSatisfied(m), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(b.isSatisfied(m), false);
     }
 
     @Test

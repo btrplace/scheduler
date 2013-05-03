@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
@@ -85,16 +88,16 @@ public class OverbookTest implements PremadeElements {
         i.attach(rc);
 
         Overbook o = new Overbook(s, "cpu", 2);
-        Assert.assertEquals(o.isSatisfied(i), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(o.isSatisfied(i), true);
 
         rc.set(vm1, 4);
-        Assert.assertEquals(o.isSatisfied(i), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(o.isSatisfied(i), false);
 
         cfg.addRunningVM(vm1, n2);
-        Assert.assertEquals(o.isSatisfied(i), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(o.isSatisfied(i), false);
 
         Overbook o2 = new Overbook(s, "mem", 2);
-        Assert.assertEquals(o2.isSatisfied(i), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(o2.isSatisfied(i), false);
     }
 
     @Test
@@ -125,23 +128,23 @@ public class OverbookTest implements PremadeElements {
         Overbook o = new Overbook(s, "cpu", 2);
         o.setContinuous(true);
         ReconfigurationPlan p = new DefaultReconfigurationPlan(i);
-        Assert.assertEquals(o.isSatisfied(p), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(o.isSatisfied(p), true);
 
         p.add(new Allocate(vm1, n1, "cpu", 1, 2, 5));
-        Assert.assertEquals(o.isSatisfied(p), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(o.isSatisfied(p), true);
 
         p.add(new Allocate(vm2, n2, "cpu", 5, 2, 5));
-        Assert.assertEquals(o.isSatisfied(p), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(o.isSatisfied(p), false);
 
         p.add(new Allocate(vm3, n2, "cpu", 2, 0, 1));
-        Assert.assertEquals(o.isSatisfied(p), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(o.isSatisfied(p), true);
 
         p.add(new Allocate(vm4, n2, "cpu", 3, 4, 6));
-        Assert.assertEquals(o.isSatisfied(p), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(o.isSatisfied(p), false);
 
         p.add(new ShutdownVM(vm3, n2, 2, 3));
 
-        Assert.assertEquals(o.isSatisfied(p), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(o.isSatisfied(p), true);
     }
 
     @Test

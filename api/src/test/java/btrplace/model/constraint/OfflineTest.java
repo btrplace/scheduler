@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ShutdownNode;
@@ -60,9 +63,9 @@ public class OfflineTest implements PremadeElements {
 
         Model i = new DefaultModel(c);
 
-        Assert.assertEquals(o.isSatisfied(i), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(o.isSatisfied(i), true);
         c.addOnlineNode(n2);
-        Assert.assertEquals(o.isSatisfied(i), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(o.isSatisfied(i), false);
     }
 
     @Test
@@ -78,12 +81,12 @@ public class OfflineTest implements PremadeElements {
 
         Model mo = new DefaultModel(map);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
-        Assert.assertEquals(off.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(off.isSatisfied(plan), false);
         plan.add(new ShutdownNode(n2, 0, 1));
         plan.add(new ShutdownVM(vm1, n1, 0, 1));
-        Assert.assertEquals(off.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(off.isSatisfied(plan), false);
         plan.add(new ShutdownNode(n1, 1, 2));
-        Assert.assertEquals(off.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(off.isSatisfied(plan), true);
 
     }
 

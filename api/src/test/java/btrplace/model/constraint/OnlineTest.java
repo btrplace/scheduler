@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -56,9 +59,9 @@ public class OnlineTest implements PremadeElements {
 
         Model i = new DefaultModel(c);
 
-        Assert.assertEquals(o.isSatisfied(i), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(o.isSatisfied(i), true);
         c.addOfflineNode(n2);
-        Assert.assertEquals(o.isSatisfied(i), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(o.isSatisfied(i), false);
     }
 
     @Test

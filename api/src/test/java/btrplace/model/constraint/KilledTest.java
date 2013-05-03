@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -64,13 +67,13 @@ public class KilledTest implements PremadeElements {
         Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
         Killed d = new Killed(s);
         Model i = new DefaultModel(c);
-        Assert.assertEquals(d.isSatisfied(i), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(d.isSatisfied(i), true);
         c.addReadyVM(vm1);
-        Assert.assertEquals(d.isSatisfied(i), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(d.isSatisfied(i), false);
         c.addOnlineNode(n1);
         c.addRunningVM(vm1, n1);
-        Assert.assertEquals(d.isSatisfied(i), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(d.isSatisfied(i), false);
         c.addSleepingVM(vm1, n1);
-        Assert.assertEquals(d.isSatisfied(i), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(d.isSatisfied(i), false);
     }
 }

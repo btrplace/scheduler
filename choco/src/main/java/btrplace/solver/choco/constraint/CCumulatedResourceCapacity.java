@@ -20,9 +20,9 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.CumulatedResourceCapacity;
 import btrplace.model.constraint.CumulatedRunningCapacity;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.*;
@@ -61,7 +61,7 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
 
         if (cstr.isContinuous()) {
             //The constraint must be already satisfied
-            if (!cstr.isSatisfied(rp.getSourceModel()).equals(SatConstraint.Sat.SATISFIED)) {
+            if (!cstr.isSatisfied(rp.getSourceModel())) {
                 rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
                 return false;
             } else {

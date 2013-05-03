@@ -20,8 +20,8 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Among;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.SplitAmong;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoSatConstraint;
@@ -56,7 +56,7 @@ public class CSplitAmong implements ChocoSatConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
 
-        if (cstr.isContinuous() && cstr.isSatisfied(rp.getSourceModel()) != SatConstraint.Sat.SATISFIED) {
+        if (cstr.isContinuous() && !cstr.isSatisfied(rp.getSourceModel())) {
             rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
             return false;
         }

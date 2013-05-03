@@ -88,14 +88,14 @@ public class LonelyTest implements PremadeElements {
         Lonely l = new Lonely(s, true);
 
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
-        Assert.assertEquals(l.isSatisfied(p), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(l.isSatisfied(p), true);
         p.add(new MigrateVM(vm2, n1, n2, 2, 4));
 
-        Assert.assertEquals(l.isSatisfied(p), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(l.isSatisfied(p), false);
         p.add(new ShutdownVM(vm3, n2, 0, 1));
-        Assert.assertEquals(l.isSatisfied(p), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(l.isSatisfied(p), false);
         p.add(new MigrateVM(vm4, n2, n3, 1, 2));
-        Assert.assertEquals(l.isSatisfied(p), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(l.isSatisfied(p), true);
     }
 
     @Test
@@ -116,13 +116,13 @@ public class LonelyTest implements PremadeElements {
         Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
         Lonely l = new Lonely(s);
 
-        Assert.assertEquals(l.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(l.isSatisfied(mo), true);
 
         s.add(vm4);
-        Assert.assertEquals(l.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(l.isSatisfied(mo), true);
 
         map.addRunningVM(vm3, n1);
-        Assert.assertEquals(l.isSatisfied(mo), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(l.isSatisfied(mo), false);
 
     }
 }

@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootVM;
@@ -82,11 +85,11 @@ public class GatherTest implements PremadeElements {
         map.addRunningVM(vm1, n1);
         map.addReadyVM(vm2);
 
-        Assert.assertEquals(g.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(g.isSatisfied(mo), true);
         map.addRunningVM(vm2, n1);
-        Assert.assertEquals(g.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(g.isSatisfied(mo), true);
         map.addRunningVM(vm2, n2);
-        Assert.assertEquals(g.isSatisfied(mo), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(g.isSatisfied(mo), false);
     }
 
     @Test(dependsOnMethods = {"testDiscreteIsSatisfied"})
@@ -103,17 +106,17 @@ public class GatherTest implements PremadeElements {
         map.addReadyVM(vm2);
         map.addRunningVM(vm2, n2);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
-        Assert.assertEquals(g.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(g.isSatisfied(plan), false);
 
         map.addReadyVM(vm2);
-        Assert.assertEquals(g.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(g.isSatisfied(plan), true);
         plan.add(new BootVM(vm2, n1, 0, 1));
-        Assert.assertEquals(g.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(g.isSatisfied(plan), true);
 
         map.addRunningVM(vm2, n1);
         plan = new DefaultReconfigurationPlan(mo);
         plan.add(new MigrateVM(vm2, n1, n2, 0, 1));
         plan.add(new MigrateVM(vm1, n1, n2, 0, 1));
-        Assert.assertEquals(g.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(g.isSatisfied(plan), false);
     }
 }

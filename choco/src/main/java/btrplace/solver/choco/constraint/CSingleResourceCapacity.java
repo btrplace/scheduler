@@ -68,7 +68,7 @@ public class CSingleResourceCapacity implements ChocoSatConstraint {
 
             //Continuous in practice ?
             if (cstr.isContinuous()) {
-                if (cstr.isSatisfied(rp.getSourceModel()).equals(SatConstraint.Sat.SATISFIED)) {
+                if (cstr.isSatisfied(rp.getSourceModel())) {
                     try {
                         v.setSup(cstr.getAmount());
                     } catch (ContradictionException e) {

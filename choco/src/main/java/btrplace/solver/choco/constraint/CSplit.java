@@ -93,7 +93,7 @@ public class CSplit implements ChocoSatConstraint {
             }
         }
         if (cstr.isContinuous()) {
-            if (cstr.isSatisfied(rp.getSourceModel()) != SatConstraint.Sat.SATISFIED) {
+            if (!cstr.isSatisfied(rp.getSourceModel())) {
                 rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
                 return false;
             } else {

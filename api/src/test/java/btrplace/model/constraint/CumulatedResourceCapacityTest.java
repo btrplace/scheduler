@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
@@ -92,14 +95,14 @@ public class CumulatedResourceCapacityTest implements PremadeElements {
         mo.attach(rc);
         Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
         CumulatedResourceCapacity cc = new CumulatedResourceCapacity(nodes, "foo", 4);
-        Assert.assertEquals(cc.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
-        Assert.assertEquals(new CumulatedResourceCapacity(nodes, "bar", 100).isSatisfied(mo), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(cc.isSatisfied(mo), true);
+        Assert.assertEquals(new CumulatedResourceCapacity(nodes, "bar", 100).isSatisfied(mo), false);
 
         rc.set(vm1, 3);
-        Assert.assertEquals(cc.isSatisfied(mo), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(cc.isSatisfied(mo), false);
         map.addSleepingVM(vm2, n1);
         map.addSleepingVM(vm3, n1);
-        Assert.assertEquals(cc.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(cc.isSatisfied(mo), true);
     }
 
     @Test
@@ -122,14 +125,14 @@ public class CumulatedResourceCapacityTest implements PremadeElements {
         CumulatedResourceCapacity cc = new CumulatedResourceCapacity(nodes, "foo", 4);
 
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
-        Assert.assertEquals(cc.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(cc.isSatisfied(plan), true);
         plan.add(new MigrateVM(vm4, n3, n2, 1, 2));
-        Assert.assertEquals(cc.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(cc.isSatisfied(plan), false);
         plan.add(new MigrateVM(vm1, n1, n3, 0, 1));
-        Assert.assertEquals(cc.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(cc.isSatisfied(plan), true);
         plan.add(new Allocate(vm4, n2, "foo", 2, 5, 6));
-        Assert.assertEquals(cc.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(cc.isSatisfied(plan), false);
         plan.add(new Allocate(vm2, n1, "foo", 1, 4, 5));
-        Assert.assertEquals(cc.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(cc.isSatisfied(plan), true);
     }
 }

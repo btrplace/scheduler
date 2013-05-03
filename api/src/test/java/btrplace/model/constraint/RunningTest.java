@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -64,12 +67,12 @@ public class RunningTest implements PremadeElements {
         c.addRunningVM(vm2, n1);
         Running d = new Running(s);
         Model i = new DefaultModel(c);
-        Assert.assertEquals(d.isSatisfied(i), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(d.isSatisfied(i), true);
         c.addReadyVM(vm1);
-        Assert.assertEquals(d.isSatisfied(i), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(d.isSatisfied(i), false);
         c.addSleepingVM(vm1, n1);
-        Assert.assertEquals(d.isSatisfied(i), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(d.isSatisfied(i), false);
         c.removeVM(vm1);
-        Assert.assertEquals(d.isSatisfied(i), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(d.isSatisfied(i), false);
     }
 }

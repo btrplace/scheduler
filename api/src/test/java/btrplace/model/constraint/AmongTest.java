@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
@@ -100,11 +103,11 @@ public class AmongTest implements PremadeElements {
         map.addSleepingVM(vm3, n3);
 
         Model mo = new DefaultModel(map);
-        Assert.assertEquals(a.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(a.isSatisfied(mo), true);
         map.addRunningVM(vm3, n3);
-        Assert.assertEquals(a.isSatisfied(mo), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(a.isSatisfied(mo), false);
         map.addSleepingVM(vm3, n2);
-        Assert.assertEquals(a.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(a.isSatisfied(mo), true);
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
@@ -127,11 +130,11 @@ public class AmongTest implements PremadeElements {
         Model mo = new DefaultModel(map);
 
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
-        Assert.assertEquals(a.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(a.isSatisfied(plan), true);
 
         plan.add(new MigrateVM(vm3, n2, n3, 0, 1));
         plan.add(new MigrateVM(vm3, n3, n2, 1, 2));
         //At moment 1, the constraint will be violated
-        Assert.assertEquals(a.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(a.isSatisfied(plan), false);
     }
 }

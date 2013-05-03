@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
@@ -73,9 +76,9 @@ public class RootTest implements PremadeElements {
 
         Model i = new DefaultModel(c);
 
-        Assert.assertEquals(o.isSatisfied(i), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(o.isSatisfied(i), true);
         c.clear();
-        Assert.assertEquals(o.isSatisfied(i), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(o.isSatisfied(i), true);
     }
 
     @Test
@@ -87,9 +90,9 @@ public class RootTest implements PremadeElements {
         map.addRunningVM(vm1, n1);
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
         Root r = new Root(Collections.singleton(vm1));
-        Assert.assertEquals(r.isSatisfied(p), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(r.isSatisfied(p), true);
         p.add(new MigrateVM(vm1, n1, n2, 1, 2));
-        Assert.assertEquals(r.isSatisfied(p), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(r.isSatisfied(p), false);
     }
 
 }

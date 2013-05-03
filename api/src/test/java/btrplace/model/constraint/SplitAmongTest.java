@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
@@ -122,15 +125,15 @@ public class SplitAmongTest implements PremadeElements {
         Model mo = new DefaultModel(map);
 
         SplitAmong sp = new SplitAmong(vGrps, pGrps);
-        Assert.assertEquals(sp.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(sp.isSatisfied(mo), true);
 
         //Spread over multiple groups, not allowed
         map.addRunningVM(vm2, n3);
-        Assert.assertEquals(sp.isSatisfied(mo), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(sp.isSatisfied(mo), false);
         //pGroup co-location. Not allowed
         map.addRunningVM(vm1, n3);
         map.addRunningVM(vm3, n4);
-        Assert.assertEquals(sp.isSatisfied(mo), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(sp.isSatisfied(mo), false);
     }
 
     @Test
@@ -160,15 +163,15 @@ public class SplitAmongTest implements PremadeElements {
 
         SplitAmong sp = new SplitAmong(vGrps, pGrps);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
-        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(sp.isSatisfied(plan), true);
 
         plan.add(new MigrateVM(vm1, n1, n2, 3, 4));
-        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(sp.isSatisfied(plan), true);
 
         map.addRunningVM(vm5, n4);
-        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(sp.isSatisfied(plan), true);
         plan.add(new MigrateVM(vm2, n1, n3, 0, 2));
-        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(sp.isSatisfied(plan), false);
 
 
     }

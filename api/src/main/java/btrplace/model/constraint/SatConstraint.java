@@ -45,24 +45,6 @@ public abstract class SatConstraint {
     private boolean continuous;
 
     /**
-     * An enumeration to indicate the satisfaction of a constraint.
-     */
-    public enum Sat {
-        /**
-         * The constraint is satisfied.
-         */
-        SATISFIED,
-        /**
-         * The constraint is not satisfied .
-         */
-        UNSATISFIED,
-        /**
-         * It is not possible to state about the constraint satisfaction.
-         */
-        UNDEFINED
-    }
-
-    /**
      * The virtual machines involved in the constraint.
      */
     private Collection<UUID> vms;
@@ -110,8 +92,8 @@ public abstract class SatConstraint {
      * @param i the model to check
      * @return {@code true} iff the constraint is not violated
      */
-    public Sat isSatisfied(Model i) {
-        return getChecker().endsWith(i) ? Sat.SATISFIED : Sat.UNSATISFIED;
+    public boolean isSatisfied(Model i) {
+        return getChecker().endsWith(i);
     }
 
     /**
@@ -122,15 +104,15 @@ public abstract class SatConstraint {
      * @param p the plan to inspect
      * @return {@code true} iff the plan satisfies the constraint
      */
-    public Sat isSatisfied(ReconfigurationPlan p) {
+    public boolean isSatisfied(ReconfigurationPlan p) {
         ReconfigurationPlanChecker chk = new ReconfigurationPlanChecker();
         chk.addChecker(getChecker());
         try {
             chk.check(p);
         } catch (ReconfigurationPlanCheckerException ex) {
-            return Sat.UNSATISFIED;
+            return false;
         }
-        return Sat.SATISFIED;
+        return true;
     }
 
     @Override

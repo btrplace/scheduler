@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -65,9 +68,9 @@ public class FenceTest implements PremadeElements {
 
         Fence f = new Fence(vms, nodes);
         Model m = new DefaultModel(map);
-        Assert.assertEquals(SatConstraint.Sat.SATISFIED, f.isSatisfied(m));
+        Assert.assertEquals(true, f.isSatisfied(m));
         map.addRunningVM(vm3, n3);
-        Assert.assertEquals(SatConstraint.Sat.UNSATISFIED, f.isSatisfied(m));
+        Assert.assertEquals(false, f.isSatisfied(m));
     }
 
     @Test

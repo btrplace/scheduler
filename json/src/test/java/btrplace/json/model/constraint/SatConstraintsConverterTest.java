@@ -46,8 +46,8 @@ public class SatConstraintsConverterTest {
         }
 
         @Override
-        public Sat isSatisfied(Model i) {
-            return Sat.SATISFIED;
+        public boolean isSatisfied(Model i) {
+            return false;
         }
     }
 

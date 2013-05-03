@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.*;
@@ -83,19 +86,19 @@ public class SequentialVMTransitionsTest implements PremadeElements {
         plan.add(new SuspendVM(vm1, n1, n1, 2, 3));
         plan.add(new BootVM(vm2, n1, 3, 4));
         plan.add(new ResumeVM(vm3, n1, n1, 4, 5));
-        Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(c.isSatisfied(plan), true);
 
         //Overlap
         plan = new DefaultReconfigurationPlan(mo);
         plan.add(new BootVM(vm2, n1, 3, 4));
         plan.add(new ResumeVM(vm3, n1, n1, 3, 5));
-        Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(c.isSatisfied(plan), false);
 
         //Not the right precedence
         plan = new DefaultReconfigurationPlan(mo);
         plan.add(new BootVM(vm2, n1, 3, 4));
         plan.add(new ResumeVM(vm3, n1, n1, 0, 1));
-        Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(c.isSatisfied(plan), false);
     }
 
     @Test
@@ -118,6 +121,6 @@ public class SequentialVMTransitionsTest implements PremadeElements {
         List<UUID> seq = Arrays.asList(vm1, vm2, vm3, vm4);
 
         SequentialVMTransitions cstr = new SequentialVMTransitions(seq);
-        Assert.assertEquals(cstr.isSatisfied(p), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(cstr.isSatisfied(p), true);
     }
 }

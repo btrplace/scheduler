@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootVM;
@@ -85,9 +88,9 @@ public class CumulatedRunningCapacityTest implements PremadeElements {
         Model mo = new DefaultModel(m);
         CumulatedRunningCapacity c = new CumulatedRunningCapacity(m.getAllNodes(), 2);
         c.setContinuous(false);
-        Assert.assertEquals(c.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(c.isSatisfied(mo), true);
         m.addRunningVM(vm2, n2);
-        Assert.assertEquals(c.isSatisfied(mo), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(c.isSatisfied(mo), false);
     }
 
     @Test
@@ -105,11 +108,11 @@ public class CumulatedRunningCapacityTest implements PremadeElements {
         c.setContinuous(true);
         Model mo = new DefaultModel(m);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
-        Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(c.isSatisfied(plan), true);
         plan.add(new BootVM(vm4, n2, 2, 4));
-        Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(c.isSatisfied(plan), false);
         plan.add(new ShutdownVM(vm1, n1, 0, 1));
-        Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(c.isSatisfied(plan), true);
 
 
     }

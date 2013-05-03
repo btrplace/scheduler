@@ -64,7 +64,7 @@ public class CSingleRunningCapacity implements ChocoSatConstraint {
             s.post(s.leq(v, cstr.getAmount()));
 
             //Continuous in practice ?
-            if (cstr.isContinuous() && cstr.isSatisfied(rp.getSourceModel()) == SatConstraint.Sat.SATISFIED) {
+            if (cstr.isContinuous() && cstr.isSatisfied(rp.getSourceModel())) {
                 try {
                     v.setSup(cstr.getAmount());
                 } catch (ContradictionException e) {

@@ -40,8 +40,8 @@ public class SatConstraintTest {
         }
 
         @Override
-        public Sat isSatisfied(Model i) {
-            return Sat.UNDEFINED;
+        public boolean isSatisfied(Model i) {
+            throw new UnsupportedOperationException();
         }
     }
 

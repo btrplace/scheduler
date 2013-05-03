@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootVM;
@@ -77,11 +80,11 @@ public class QuarantineTest implements PremadeElements {
 
         Model mo = new DefaultModel(map);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
-        Assert.assertEquals(q.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(q.isSatisfied(plan), true);
         plan.add(new ShutdownVM(vm2, n2, 1, 2));
-        Assert.assertEquals(q.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(q.isSatisfied(plan), true);
 
         plan.add(new BootVM(vm3, n1, 0, 1));
-        Assert.assertEquals(q.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(q.isSatisfied(plan), false);
     }
 }

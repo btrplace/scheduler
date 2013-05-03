@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
@@ -93,11 +96,11 @@ public class SplitTest implements PremadeElements {
 
         Split sp = new Split(args);
         Model mo = new DefaultModel(map);
-        Assert.assertEquals(SatConstraint.Sat.SATISFIED, sp.isSatisfied(mo));
+        Assert.assertEquals(true, sp.isSatisfied(mo));
         map.addRunningVM(vm3, n3);
-        Assert.assertEquals(SatConstraint.Sat.SATISFIED, sp.isSatisfied(mo));
+        Assert.assertEquals(true, sp.isSatisfied(mo));
         map.addRunningVM(vm3, n1);
-        Assert.assertEquals(SatConstraint.Sat.UNSATISFIED, sp.isSatisfied(mo));
+        Assert.assertEquals(false, sp.isSatisfied(mo));
     }
 
     @Test
@@ -120,18 +123,18 @@ public class SplitTest implements PremadeElements {
         Split sp = new Split(args);
         Model mo = new DefaultModel(map);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
-        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(sp.isSatisfied(plan), true);
         map.addRunningVM(vm3, n1); //Violation
-        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(sp.isSatisfied(plan), false);
 
         plan.add(new MigrateVM(vm3, n1, n2, 0, 1));
-        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(sp.isSatisfied(plan), true);
         //Temporary overlap
         plan.add(new MigrateVM(vm3, n2, n1, 5, 6));
-        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(sp.isSatisfied(plan), false);
         //Liberate n1 from vm1 and vm2 before
         plan.add(new SuspendVM(vm1, n1, n1, 2, 3));
         plan.add(new ShutdownVM(vm2, n1, 2, 3));
-        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(sp.isSatisfied(plan), true);
     }
 }

@@ -76,10 +76,10 @@ public class PreserveTest implements PremadeElements {
         rc.set(vm1, 3);
         rc.set(vm2, 4);
         rc.set(vm3, 3);
-        Assert.assertEquals(SatConstraint.Sat.SATISFIED, p.isSatisfied(m));
+        Assert.assertEquals(true, p.isSatisfied(m));
 
         rc.unset(vm3); //Set to 0 by default
-        Assert.assertEquals(SatConstraint.Sat.UNSATISFIED, p.isSatisfied(m));
-        Assert.assertEquals(SatConstraint.Sat.UNSATISFIED, new Preserve(s, "mem", 3).isSatisfied(m));
+        Assert.assertEquals(false, p.isSatisfied(m));
+        Assert.assertEquals(false, new Preserve(s, "mem", 3).isSatisfied(m));
     }
 }
