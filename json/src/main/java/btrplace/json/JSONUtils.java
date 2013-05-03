@@ -115,7 +115,7 @@ public final class JSONUtils {
      */
     public static UUID requiredUUID(JSONObject o, String id) throws JSONConverterException {
         if (!o.containsKey(id)) {
-            throw new JSONConverterException("Key '" + id + "' expected to read a UUID");
+            throw new JSONConverterException("No value at key '" + id + "'");
         }
         try {
             return UUID.fromString(o.get(id).toString());
@@ -150,7 +150,10 @@ public final class JSONUtils {
      */
     public static long requiredLong(JSONObject o, String id) throws JSONConverterException {
         Object x = o.get(id);
-        if (!(x instanceof Number) || Math.floor(((Number) x).doubleValue()) != ((Number) x).intValue()) {
+        if (x == null) {
+            throw new JSONConverterException("No value at key '" + id + "'");
+        }
+        if (!(x instanceof Number) || Math.ceil(((Number) x).doubleValue()) != ((Number) x).longValue()) {
             throw new JSONConverterException("Natural number expected at key '" + id + "' but was '" + x.getClass() + "'.");
         }
         return ((Number) x).longValue();
@@ -166,10 +169,13 @@ public final class JSONUtils {
      */
     public static double requiredDouble(JSONObject o, String id) throws JSONConverterException {
         Object x = o.get(id);
-        if (!(x instanceof Double)) {
-            throw new JSONConverterException("Real number expected at key '" + id + "' but was '" + x.getClass() + "'.");
+        if (x == null) {
+            throw new JSONConverterException("No value at key '" + id + "'");
         }
-        return (Double) x;
+        if (!(x instanceof Number)) {
+            throw new JSONConverterException("Number expected at key '" + id + "' but was '" + x.getClass() + "'.");
+        }
+        return ((Number) x).doubleValue();
     }
 
     /**
@@ -182,6 +188,9 @@ public final class JSONUtils {
      */
     public static boolean requiredBoolean(JSONObject o, String id) throws JSONConverterException {
         Object x = o.get(id);
+        if (x == null) {
+            throw new JSONConverterException("No value at key '" + id + "'");
+        }
         if (!(x instanceof Boolean)) {
             throw new JSONConverterException("Boolean expected at key '" + id + "' but was '" + x.getClass() + "'.");
         }

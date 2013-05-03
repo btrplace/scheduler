@@ -28,6 +28,7 @@ public class ReconfigurationPlanCheckerExceptionTest {
         ex = new ReconfigurationPlanCheckerException(c, m, false);
         Assert.assertEquals(ex.isOrigin(), false);
         Assert.assertEquals(ex.getConstraint(), c);
+        Assert.assertFalse(ex.toString().contains("null"));
     }
 
     @Test
@@ -37,5 +38,6 @@ public class ReconfigurationPlanCheckerExceptionTest {
         ReconfigurationPlanCheckerException ex = new ReconfigurationPlanCheckerException(c, a);
         Assert.assertEquals(ex.getAction(), a);
         Assert.assertNull(ex.getModel());
+        Assert.assertFalse(ex.toString().contains("null"));
     }
 }
