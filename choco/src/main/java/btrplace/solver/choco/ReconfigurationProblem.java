@@ -21,7 +21,6 @@ package btrplace.solver.choco;
 import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.chocoUtil.AliasedCumulativesBuilder;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.slf4j.Logger;

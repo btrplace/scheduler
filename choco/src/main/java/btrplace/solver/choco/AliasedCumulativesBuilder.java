@@ -16,11 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.chocoUtil;
+package btrplace.solver.choco;
 
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.VMActionModel;
+import btrplace.solver.choco.chocoUtil.AliasedCumulatives;
+import btrplace.solver.choco.chocoUtil.LocalTaskScheduler;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.list.array.TIntArrayList;
