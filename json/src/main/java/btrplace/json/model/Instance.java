@@ -64,4 +64,25 @@ public class Instance {
     public Collection<SatConstraint> getConstraints() {
         return cstrs;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Instance instance = (Instance) o;
+
+        return (cstrs.equals(instance.cstrs) && mo.equals(instance.mo));
+    }
+
+    @Override
+    public int hashCode() {
+        int result = mo.hashCode();
+        result = 31 * result + cstrs.hashCode();
+        return result;
+    }
 }
