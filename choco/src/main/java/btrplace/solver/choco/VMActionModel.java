@@ -18,6 +18,8 @@
 
 package btrplace.solver.choco;
 
+import btrplace.solver.choco.actionModel.ActionModel;
+
 import java.util.UUID;
 
 /**

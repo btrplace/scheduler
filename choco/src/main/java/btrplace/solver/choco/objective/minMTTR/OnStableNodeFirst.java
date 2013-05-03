@@ -2,6 +2,7 @@ package btrplace.solver.choco.objective.minMTTR;
 
 import btrplace.model.Mapping;
 import btrplace.solver.choco.*;
+import btrplace.solver.choco.actionModel.ActionModel;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;

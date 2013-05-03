@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.actionModel;
 
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.choco.actionModel.ActionModelVisitor;

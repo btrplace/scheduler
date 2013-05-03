@@ -22,6 +22,7 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.*;
+import btrplace.solver.choco.actionModel.ActionModel;
 import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarVal;

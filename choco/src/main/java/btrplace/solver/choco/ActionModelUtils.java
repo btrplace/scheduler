@@ -18,13 +18,14 @@
 
 package btrplace.solver.choco;
 
+import btrplace.solver.choco.actionModel.ActionModel;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Utility class to extract members of a collection of {@link ActionModel}.
+ * Utility class to extract members of a collection of {@link btrplace.solver.choco.actionModel.ActionModel}.
  *
  * @author Fabien Hermenier
  */
@@ -34,7 +35,7 @@ public final class ActionModelUtils {
     }
 
     /**
-     * Extract all the d-slices of a list of {@link ActionModel}.
+     * Extract all the d-slices of a list of {@link btrplace.solver.choco.actionModel.ActionModel}.
      *
      * @param models the models to browse
      * @return a list of d-slices that may be empty
@@ -50,7 +51,7 @@ public final class ActionModelUtils {
     }
 
     /**
-     * Extract all the d-slices of a list of {@link ActionModel}.
+     * Extract all the d-slices of a list of {@link btrplace.solver.choco.actionModel.ActionModel}.
      *
      * @param l the models to browse
      * @return a list of d-slices that may be empty
@@ -60,7 +61,7 @@ public final class ActionModelUtils {
     }
 
     /**
-     * Extract all the c-slices of a list of {@link ActionModel}.
+     * Extract all the c-slices of a list of {@link btrplace.solver.choco.actionModel.ActionModel}.
      *
      * @param models the models to browse
      * @return a list of c-slices that may be empty
@@ -76,7 +77,7 @@ public final class ActionModelUtils {
     }
 
     /**
-     * Extract all the c-slices of a list of {@link ActionModel}.
+     * Extract all the c-slices of a list of {@link btrplace.solver.choco.actionModel.ActionModel}.
      *
      * @param l the models to browse
      * @return a list of c-slices that may be empty

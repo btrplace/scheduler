@@ -18,6 +18,7 @@
 
 package btrplace.solver.choco;
 
+import btrplace.solver.choco.actionModel.ActionModel;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.UUID;
