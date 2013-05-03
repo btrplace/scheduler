@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
@@ -82,7 +85,7 @@ public class LonelyTest implements PremadeElements {
 
         Model mo = new DefaultModel(map);
 
-        Lonely l = new Lonely(s);
+        Lonely l = new Lonely(s, true);
 
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(l.isSatisfied(p), SatConstraint.Sat.SATISFIED);

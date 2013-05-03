@@ -86,7 +86,7 @@ public class ModelConverter implements JSONConverter<Model> {
     @Override
     public Model fromJSON(JSONObject o) throws JSONConverterException {
         if (!o.containsKey("mapping")) {
-            return null;
+            throw new JSONConverterException("Missing required mapping as a value of the key 'mapping'");
         }
         Mapping cfg = cfgParser.fromJSON((JSONObject) o.get("mapping"));
         Model i = new DefaultModel(cfg);
