@@ -209,9 +209,9 @@ public class SliceSchedulerBuilder {
                     decOrStay = req <= use;
                 } else {
                     if (decOrStay && req > use) {
-                        return null;
+                        return false;
                     } else if (!decOrStay && req <= use) {
-                        return null;
+                        return false;
                     }
                 }
             }

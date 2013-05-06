@@ -59,9 +59,11 @@ public class PreserveChecker extends AllowAllConstraintChecker<Preserve> {
             return false;
         }
         for (UUID vmId : getVMs()) {
-            int v = r.get(vmId);
-            if (v < amount) {
-                return false;
+            if (mo.getMapping().getRunningVMs().contains(vmId)) {
+                int v = r.get(vmId);
+                if (v < amount) {
+                    return false;
+                }
             }
         }
         return true;

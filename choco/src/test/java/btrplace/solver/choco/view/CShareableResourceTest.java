@@ -22,10 +22,7 @@ import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.constraint.Online;
-import btrplace.model.constraint.Preserve;
-import btrplace.model.constraint.Running;
-import btrplace.model.constraint.SatConstraint;
+import btrplace.model.constraint.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
@@ -39,6 +36,7 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 
 /**
  * Unit tests for {@link CShareableResource}.
@@ -187,17 +185,30 @@ public class CShareableResourceTest implements PremadeElements {
         ShareableResource mem = new ShareableResource("mem");
         cpu.set(n1, 10);
         mem.set(n1, 10);
+        cpu.set(n2, 10);
+        mem.set(n2, 10);
+
         cpu.set(vm1, 5);
         mem.set(vm1, 4);
-
-        //vm1 requires more cpu resources, but fewer mem resources
-        Preserve pCPU = new Preserve(Collections.singleton(vm1), "cpu", 7);
-        Preserve pMem = new Preserve(Collections.singleton(vm1), "mem", 2);
 
         cpu.set(vm2, 3);
         mem.set(vm2, 8);
 
-        Mapping map = new MappingBuilder().on(n1).run(n1, vm1).ready(vm2).build();
+        cpu.set(vm3, 5);
+        cpu.set(vm3, 4);
+
+        cpu.set(vm4, 4);
+        cpu.set(vm4, 5);
+
+        //vm1 requires more cpu resources, but fewer mem resources
+        Preserve pCPU = new Preserve(new HashSet<>(Arrays.asList(vm1, vm3)), "cpu", 7);
+        Preserve pMem = new Preserve(new HashSet<>(Arrays.asList(vm1, vm3)), "mem", 2);
+
+
+        Mapping map = new MappingBuilder().on(n1, n2)
+                .run(n1, vm1)
+                .run(n2, vm3, vm4)
+                .ready(vm2).build();
         Model mo = new DefaultModel(map);
         mo.attach(cpu);
         mo.attach(mem);
@@ -205,7 +216,10 @@ public class CShareableResourceTest implements PremadeElements {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.setMaxEnd(5);
         cra.setVerbosity(2);
-        ReconfigurationPlan p = cra.solve(mo, Arrays.<SatConstraint>asList(pCPU, pMem, new Online(Collections.singleton(n1)), new Running(Collections.singleton(vm2))));
+        ReconfigurationPlan p = cra.solve(mo, Arrays.<SatConstraint>asList(pCPU, pMem,
+                new Online(Collections.singleton(n1)),
+                new Running(Collections.singleton(vm2)),
+                new Ready(Collections.singleton(vm3))));
         Assert.assertNotNull(p);
         System.out.println(p);
     }

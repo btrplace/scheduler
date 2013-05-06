@@ -30,10 +30,8 @@ import btrplace.plan.event.RunningVMPlacement;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
-import btrplace.solver.choco.actionModel.KeepRunningVMModel;
 import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.chocoUtil.ChocoUtils;
-import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.ContradictionException;
@@ -326,7 +324,7 @@ public class CShareableResource implements ChocoModelView {
             }
         }
 
-        return /*symmetryBreakingForStatingVMs() &&*/ linkVirtualToPhysicalUsage();
+        return linkVirtualToPhysicalUsage();
     }
 
     @Override
@@ -337,11 +335,11 @@ public class CShareableResource implements ChocoModelView {
             Slice dSlice = rp.getVMAction(vm).getDSlice();
             UUID destNode = rp.getNode(dSlice.getHoster().getVal());
 
+            if (!srcMapping.getRunningVMs().contains(vm)) {
+            }
             if (srcMapping.getRunningVMs().contains(vm) && destNode.equals(srcMapping.getVMLocation(vm))) {
                 //Was running and stay on the same node
-
                 //Check if the VM has been cloned
-
                 insertAllocateAction(p, vm, destNode, dSlice.getStart().getVal());
             } else {
                 //TODO: not constant time operation. Maybe a big failure
@@ -361,6 +359,7 @@ public class CShareableResource implements ChocoModelView {
     }
 
     private void insertAllocateEvent(Action a, UUID vm) {
+        System.err.println("Allocate event for " + vm + " on " + a);
         int prev = 0;
         UUID sVM = references.containsKey(vm) ? references.get(vm) : vm;
         if (rc.defined(sVM)) {
@@ -386,54 +385,6 @@ public class CShareableResource implements ChocoModelView {
             return p.add(a);
         }
         return false;
-    }
-
-    /**
-     * Symmetry breaking for VMs that stay running, on the same node.
-     *
-     * @return {@code true} iff the symmetry breaking does not lead to a problem without solutions
-     */
-    private boolean symmetryBreakingForStatingVMs() {
-        for (UUID vm : rp.getFutureRunningVMs()) {
-            VMActionModel a = rp.getVMAction(vm);
-            Slice dSlice = a.getDSlice();
-            Slice cSlice = a.getCSlice();
-            if (dSlice != null && cSlice != null) {
-                IntDomainVar stay = ((KeepRunningVMModel) a).isStaying();
-
-                if (getSourceResource().get(vm) <= getVMsAllocation(rp.getVM(vm)).getInf()) {
-                    //If the resource usage will be increasing
-                    //Then the duration of the dSlice can be set to 0
-                    //(the allocation will be performed at the end of the reconfiguration process)
-                    if (stay.isInstantiatedTo(1)) {
-                        try {
-                            dSlice.getDuration().setVal(0);
-                        } catch (ContradictionException ex) {
-                            rp.getLogger().info("Unable to set the dSlice duration of {} to 0", dSlice.getSubject());
-                            return false;
-                        }
-                    } else {
-
-                        solver.post(new FastImpliesEq(stay, dSlice.getDuration(), 0));
-                    }
-
-                } else {
-                    //Else, the resource usage is decreasing, so
-                    // we set the cSlice duration to 0 to directly reduce the resource allocation
-                    if (stay.isInstantiatedTo(1)) {
-                        try {
-                            cSlice.getDuration().setVal(0);
-                        } catch (ContradictionException ex) {
-                            rp.getLogger().info("Unable to set the cSlice duration of {} to 0", cSlice.getSubject());
-                            return false;
-                        }
-                    } else {
-                        rp.getSolver().post(new FastImpliesEq(stay, cSlice.getDuration(), 0));
-                    }
-                }
-            }
-        }
-        return true;
     }
 
     private boolean linkVirtualToPhysicalUsage() {

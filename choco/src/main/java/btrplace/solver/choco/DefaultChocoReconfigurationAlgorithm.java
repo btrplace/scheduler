@@ -251,6 +251,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     private void checkSatisfaction2(ReconfigurationPlan p, Collection<SatConstraint> cstrs) throws SolverException {
+        System.err.println(p);
         ReconfigurationPlanChecker chk = new ReconfigurationPlanChecker();
         for (SatConstraint c : cstrs) {
             chk.addChecker(c.getChecker());
