@@ -118,9 +118,7 @@ public class Among extends SatConstraint {
 
     @Override
     public int hashCode() {
-        int result = pGrps.hashCode() * 31 + (isContinuous() ? 1 : 0);
-        result = 31 * result + getInvolvedVMs().hashCode();
-        return result;
+        return Objects.hash(getInvolvedVMs(), getInvolvedNodes(), pGrps, isContinuous(), getInvolvedVMs());
     }
 
     @Override

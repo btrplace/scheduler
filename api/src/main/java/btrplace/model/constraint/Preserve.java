@@ -22,6 +22,7 @@ import btrplace.model.constraint.checker.PreserveChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -89,7 +90,7 @@ public class Preserve extends SatConstraint {
 
     @Override
     public int hashCode() {
-        return getInvolvedVMs().hashCode() + 31 * amount + 31 * rc.hashCode();
+        return Objects.hash(getInvolvedVMs(), rc, amount, isContinuous());
     }
 
     @Override

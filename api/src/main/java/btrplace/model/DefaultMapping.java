@@ -383,11 +383,9 @@ public class DefaultMapping implements Mapping, Cloneable {
 
     @Override
     public int hashCode() {
-        int result = getOfflineNodes().hashCode();
-        result = 31 * result + getReadyVMs().hashCode();
-        result = 31 * result + getOnlineNodes().hashCode();
+        int result = Objects.hash(getOfflineNodes(), getReadyVMs(), getOnlineNodes());
         for (UUID n : getOnlineNodes()) {
-            result += n.hashCode() * (getRunningVMs(n).hashCode() * 31 + getSleepingVMs(n).hashCode());
+            result += n.hashCode() * (Objects.hash(getRunningVMs(n), getSleepingVMs(n)));
         }
         return result;
     }

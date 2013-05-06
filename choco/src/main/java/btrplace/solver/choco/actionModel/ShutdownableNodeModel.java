@@ -136,10 +136,10 @@ public class ShutdownableNodeModel implements NodeActionModel {
 
         //The moment of shutdown action consume
         /* As */
-        start = rp.makeDuration("shutdownableNode(", e, ").start");
+        start = rp.makeUnboundedDuration("shutdownableNode(", e, ").start");
         //The moment of shutdown action end
         /* Ae */
-        end = rp.makeDuration("shutdownableNode(", e, ").end");
+        end = rp.makeUnboundedDuration("shutdownableNode(", e, ").end");
         s.post(s.leq(end, rp.getEnd()));
         s.post(s.leq(start, rp.getEnd()));
         /* Ae = As + D */
@@ -148,7 +148,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
         //The node is already online, so it can host VMs at the beginning of the RP
         hostingStart = rp.getStart();
         //The moment the node can no longer host VMs varies depending on its next state
-        hostingEnd = rp.makeDuration("shutdownableNode(", e, ").hostingEnd");
+        hostingEnd = rp.makeUnboundedDuration("shutdownableNode(", e, ").hostingEnd");
         s.post(s.leq(hostingEnd, rp.getEnd()));
 
         /*
@@ -161,7 +161,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
         //The node is already online, so it starts at the beginning of the RP
         powerStart = rp.getStart();
         //The moment the node is offline. It depends on the hosting end time and the duration of the shutdown action
-        powerEnd = rp.makeDuration("shutdownableNode(", e, ").powerEnd");
+        powerEnd = rp.makeUnboundedDuration("shutdownableNode(", e, ").powerEnd");
         s.post(s.eq(powerEnd, s.plus(hostingEnd, duration)));
     }
 

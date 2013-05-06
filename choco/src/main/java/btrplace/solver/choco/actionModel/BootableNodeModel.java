@@ -132,9 +132,9 @@ public class BootableNodeModel implements NodeActionModel {
         s.post(new TimesXYZ(isOnline, s.makeConstantIntVar(d), effectiveDuration));
 
         /* As */
-        start = rp.makeDuration("bootableNode(", nId, ").start");
+        start = rp.makeUnboundedDuration("bootableNode(", nId, ").start");
         /* Ae */
-        end = rp.makeDuration("bootableNode(", nId, ").end");
+        end = rp.makeUnboundedDuration("bootableNode(", nId, ").end");
         s.post(s.leq(start, rp.getEnd()));
         s.post(s.leq(end, rp.getEnd()));
         /* Ae = As + D */
@@ -143,7 +143,7 @@ public class BootableNodeModel implements NodeActionModel {
 
         /* Hs = Ae */
         hostingStart = end;
-        hostingEnd = rp.makeDuration("bootableNode(", nId, ").hostingEnd");
+        hostingEnd = rp.makeUnboundedDuration("bootableNode(", nId, ").hostingEnd");
         s.post(s.leq(hostingEnd, rp.getEnd()));
 
 

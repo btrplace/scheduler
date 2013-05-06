@@ -78,7 +78,7 @@ public class SliceBuilder {
         if (duration == null) {
             if (start.isInstantiated() && end.isInstantiated()) {
                 int d = end.getVal() - start.getVal();
-                duration = rp.makeDuration(lblPrefix + "_duration", d, d);
+                duration = rp.makeDuration(d, d, lblPrefix, "_duration");
             } else if (start.isInstantiated()) {
                 if (start.isInstantiatedTo(0)) {
                     duration = end;
@@ -91,7 +91,7 @@ public class SliceBuilder {
                     inf = 0;
                 }
                 int sup = end.getSup() - start.getInf();
-                duration = rp.makeDuration(lblPrefix + "_duration", inf, sup);
+                duration = rp.makeDuration(sup, inf, lblPrefix, "_duration");
                 rp.getSolver().post(rp.getSolver().eq(end, rp.getSolver().plus(start, duration)));
             }
         }

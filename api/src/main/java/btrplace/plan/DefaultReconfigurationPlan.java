@@ -21,10 +21,7 @@ package btrplace.plan;
 import btrplace.model.Model;
 import btrplace.plan.event.Action;
 
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Default implementation for {@link ReconfigurationPlan}.
@@ -126,9 +123,7 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
 
     @Override
     public int hashCode() {
-        int result = src.hashCode();
-        result = 31 * result + actions.hashCode();
-        return result;
+        return Objects.hash(src, actions);
     }
 
     @Override

@@ -11,7 +11,6 @@ public interface Example {
      * Run the example.
      *
      * @return {@code true} iff the example was executed successfully.
-     * @throws Exception if an error occurred
      */
-    boolean run() throws Exception;
+    boolean run();
 }

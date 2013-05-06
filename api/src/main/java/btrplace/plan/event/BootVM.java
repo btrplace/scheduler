@@ -21,6 +21,7 @@ package btrplace.plan.event;
 
 import btrplace.model.Model;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -98,10 +99,7 @@ public class BootVM extends Action implements VMStateTransition, RunningVMPlacem
 
     @Override
     public int hashCode() {
-        int res = getEnd();
-        res = getStart() + 31 * res;
-        res = vm.hashCode() + 31 * res;
-        return 31 * res + node.hashCode();
+        return Objects.hash(getStart(), getEnd(), vm, node);
     }
 
     @Override

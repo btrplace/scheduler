@@ -180,7 +180,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         try {
             bpBuilder.inject();
         } catch (ContradictionException ex) {
-            throw new SolverException(model, ex.getMessage());
+            throw new SolverException(model, ex.getMessage(), ex);
         }
 
         addContinuousResourceCapacities();
@@ -568,7 +568,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public IntDomainVar makeDuration(Object... n) {
+    public IntDomainVar makeUnboundedDuration(Object... n) {
         String str = "";
         if (useLabels) {
             StringBuilder b = new StringBuilder();
@@ -581,11 +581,17 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public IntDomainVar makeDuration(String n, int lb, int ub) throws SolverException {
+    public IntDomainVar makeDuration(int ub, int lb, Object... n) throws SolverException {
         if (lb < 0 || ub < lb) {
-            throw new SolverException(model, "Unable to create duration '" + n + "': invalid bounds");
+            throw new SolverException(model, "Unable to create duration variable '" + Arrays.toString(n) + "': invalid bounds");
         }
-        return solver.createBoundIntVar(useLabels ? n : "", lb, ub < end.getSup() ? ub : end.getSup());
+        StringBuilder b = new StringBuilder();
+        if (useLabels) {
+            for (Object o : n) {
+                b.append(o);
+            }
+        }
+        return solver.createBoundIntVar(b.toString(), lb, ub < end.getSup() ? ub : end.getSup());
     }
 
     @Override

@@ -22,6 +22,7 @@ import btrplace.model.constraint.checker.OverbookChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -119,10 +120,7 @@ public class Overbook extends SatConstraint {
 
     @Override
     public int hashCode() {
-        double result = rcId.hashCode();
-        result = 31 * result + ratio;
-        result = 31 * result + getInvolvedNodes().hashCode();
-        return Double.valueOf(result).hashCode();
+        return Objects.hash(getInvolvedNodes(), rcId, ratio, isContinuous());
     }
 
     @Override

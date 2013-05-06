@@ -22,6 +22,7 @@ package btrplace.plan.event;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -94,10 +95,7 @@ public class ShutdownVM extends Action implements VMStateTransition {
 
     @Override
     public int hashCode() {
-        int res = getEnd();
-        res = getStart() + 31 * res;
-        res = vm.hashCode() + 31 * res;
-        return 31 * res + node.hashCode();
+        return Objects.hash(getStart(), getEnd(), vm, node);
     }
 
     @Override

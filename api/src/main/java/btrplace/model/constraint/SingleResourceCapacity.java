@@ -22,6 +22,7 @@ import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.model.constraint.checker.SingleResourceCapacityChecker;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -104,10 +105,7 @@ public class SingleResourceCapacity extends SatConstraint {
 
     @Override
     public int hashCode() {
-        int res = amount;
-        res = 31 * res + rcId.hashCode();
-        res = 31 * res + getInvolvedNodes().hashCode() + (isContinuous() ? 1 : 0);
-        return res;
+        return Objects.hash(getInvolvedNodes(), rcId, amount, isContinuous());
     }
 
     @Override

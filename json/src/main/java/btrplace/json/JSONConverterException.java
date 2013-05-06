@@ -33,4 +33,15 @@ public class JSONConverterException extends Exception {
     public JSONConverterException(String msg) {
         super(msg);
     }
+
+    /**
+     * Make a new exception.
+     *
+     * @param msg the error message
+     * @param t   the root exception
+     */
+    public JSONConverterException(String msg, Throwable t) {
+        super(msg, t);
+    }
+
 }

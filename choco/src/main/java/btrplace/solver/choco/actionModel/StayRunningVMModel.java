@@ -56,7 +56,7 @@ public class StayRunningVMModel implements KeepRunningVMModel {
         IntDomainVar host = rp.makeCurrentHost("stayRunningVM(" + e + ").host", e);
         cSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").cSlice")
                 .setHoster(host)
-                .setEnd(rp.makeDuration("stayRunningVM(", e, ").cSlice_end"))
+                .setEnd(rp.makeUnboundedDuration("stayRunningVM(", e, ").cSlice_end"))
                 .build();
         dSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").dSlice")
                 .setHoster(host)

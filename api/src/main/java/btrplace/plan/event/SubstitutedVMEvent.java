@@ -2,7 +2,6 @@ package btrplace.plan.event;
 
 import btrplace.model.Model;
 import btrplace.model.view.ModelView;
-import btrplace.model.view.ShareableResource;
 
 import java.util.UUID;
 

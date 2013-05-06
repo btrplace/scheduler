@@ -67,4 +67,5 @@ public class Ban extends SatConstraint {
         return new BanChecker(this);
     }
 
+
 }

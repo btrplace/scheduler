@@ -120,7 +120,7 @@ public final class JSONUtils {
         try {
             return UUID.fromString(o.get(id).toString());
         } catch (Exception e) {
-            throw new JSONConverterException("Unable to read a UUID from string '" + id + "'");
+            throw new JSONConverterException("Unable to read a UUID from string '" + id + "'", e);
         }
     }
 

@@ -156,10 +156,7 @@ public class SplitAmong extends SatConstraint {
 
     @Override
     public int hashCode() {
-        int result = vGrps.hashCode() * 31;
-        result = 31 * result + pGrps.hashCode();
-        result = 31 * result + (isContinuous() ? 1 : 0);
-        return result;
+        return Objects.hash(vGrps, pGrps, isContinuous());
     }
 
     @Override

@@ -258,7 +258,7 @@ public class ShareableResource implements ModelView, Cloneable, Comparator<UUID>
 
     @Override
     public int hashCode() {
-        return rcId.hashCode() + 31 * values.hashCode();
+        return Objects.hash(rcId, values);
     }
 
     @Override

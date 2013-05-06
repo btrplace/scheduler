@@ -261,7 +261,6 @@ public class BinPacking extends AbstractLargeIntSConstraint {
         int[] rLoads = new int[nbBins];
         int[] cLoads = new int[nbBins];
 
-        long st = System.currentTimeMillis();
         for (int i = 0; i < bins.length; i++) {
             bins[i].updateInf(0, this, false);
             bins[i].updateSup(nbBins - 1, this, false);
@@ -280,7 +279,6 @@ public class BinPacking extends AbstractLargeIntSConstraint {
                 }
             }
         }
-        long ed = System.currentTimeMillis();
 
         int slb = 0;
         int slu = 0;

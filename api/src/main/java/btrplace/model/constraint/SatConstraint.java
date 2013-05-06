@@ -25,6 +25,7 @@ import btrplace.plan.ReconfigurationPlanChecker;
 import btrplace.plan.ReconfigurationPlanCheckerException;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -116,6 +117,11 @@ public abstract class SatConstraint {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(vms, nodes);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -126,11 +132,6 @@ public abstract class SatConstraint {
 
         SatConstraint that = (SatConstraint) o;
         return nodes.equals(that.nodes) && vms.equals(that.vms);
-    }
-
-    @Override
-    public int hashCode() {
-        return nodes.hashCode() + 31 * vms.hashCode();
     }
 
     /**

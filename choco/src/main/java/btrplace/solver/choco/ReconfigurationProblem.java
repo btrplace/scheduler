@@ -241,18 +241,18 @@ public interface ReconfigurationProblem {
      * @param n the variable label. The toString() representation of the objects will be used
      * @return the created variable.
      */
-    IntDomainVar makeDuration(Object... n);
+    IntDomainVar makeUnboundedDuration(Object... n);
 
     /**
      * Create a variable that indicate a moment.
      *
-     * @param n  the variable label
-     * @param lb the variable lower bound
      * @param ub the variable upper bound
+     * @param lb the variable lower bound
+     * @param n  the variable label. The toString() representation of the objects will be used
      * @return the created variable with a upper-bound necessarily lesser than {@code getEnd().getSup()}
      * @throws SolverException if the bounds are not valid
      */
-    IntDomainVar makeDuration(String n, int lb, int ub) throws SolverException;
+    IntDomainVar makeDuration(int ub, int lb, Object... n) throws SolverException;
 
     /**
      * Get the view associated to a given identifier.

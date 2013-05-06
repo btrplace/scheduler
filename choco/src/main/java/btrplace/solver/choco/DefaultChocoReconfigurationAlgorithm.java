@@ -253,7 +253,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         try {
             chk.check(p);
         } catch (ReconfigurationPlanCheckerException ex) {
-            throw new SolverException(p.getOrigin(), ex.getMessage());
+            throw new SolverException(p.getOrigin(), ex.getMessage(), ex);
         }
     }
 

@@ -22,6 +22,7 @@ import btrplace.model.constraint.checker.CumulatedRunningCapacityChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -93,7 +94,7 @@ public class CumulatedRunningCapacity extends SatConstraint {
 
     @Override
     public int hashCode() {
-        return 31 * qty + getInvolvedNodes().hashCode();
+        return Objects.hash(getInvolvedNodes(), qty, isContinuous());
     }
 
     @Override

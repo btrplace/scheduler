@@ -21,6 +21,7 @@ package btrplace.plan.event;
 import btrplace.model.Model;
 import btrplace.model.view.ShareableResource;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -109,10 +110,7 @@ public class AllocateEvent implements VMEvent {
 
     @Override
     public int hashCode() {
-        int res = qty;
-        res = res * 31 + rc.hashCode();
-        res = res * 31 + vm.hashCode();
-        return res;
+        return Objects.hash(qty, rc, vm);
     }
 
     @Override

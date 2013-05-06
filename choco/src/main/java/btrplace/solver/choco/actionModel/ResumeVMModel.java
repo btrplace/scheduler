@@ -71,11 +71,11 @@ public class ResumeVMModel implements VMActionModel {
 
         int d = rp.getDurationEvaluators().evaluate(ResumeVM.class, e);
 
-        start = rp.makeDuration("resumeVM(" + e + ").start", 0, rp.getEnd().getSup() - d);
+        start = rp.makeDuration(rp.getEnd().getSup() - d, 0, "resumeVM(", e, ").start");
         end = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel("resumeVM(", e, ").end"), start, d);
-        duration = rp.makeDuration("resumeVM(" + e + ").duration", d, d);
+        duration = rp.makeDuration(d, d, "resumeVM(", e, ").duration");
         dSlice = new SliceBuilder(rp, e, "resumeVM(" + e + ").dSlice").setStart(start)
-                .setDuration(rp.makeDuration("resumeVM(" + e + ").dSlice_duration", d, rp.getEnd().getSup()))
+                .setDuration(rp.makeDuration(rp.getEnd().getSup(), d, "resumeVM(", e, ").dSlice_duration"))
                 .build();
 
         CPSolver s = rp.getSolver();

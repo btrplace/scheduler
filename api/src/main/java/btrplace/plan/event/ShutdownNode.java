@@ -21,6 +21,7 @@ package btrplace.plan.event;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -75,9 +76,7 @@ public class ShutdownNode extends Action implements NodeEvent {
 
     @Override
     public int hashCode() {
-        int res = getEnd();
-        res = getStart() + 31 * res;
-        return 31 * res + node.hashCode();
+        return Objects.hash(getStart(), getEnd(), node);
     }
 
     @Override

@@ -1,11 +1,15 @@
 package btrplace.examples;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.model.constraint.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.DependencyBasedPlanApplier;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.TimeBasedPlanApplier;
+import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 
@@ -124,7 +128,7 @@ public class GettingStarted implements Example {
     }
 
     @Override
-    public boolean run() throws Exception {
+    public boolean run() {
         Mapping map = makeMapping();
 
         //Now, we declare views related to
@@ -141,12 +145,17 @@ public class GettingStarted implements Example {
 
         ChocoReconfigurationAlgorithm ra = new DefaultChocoReconfigurationAlgorithm();
         //ra.setVerbosity(3); // Set the debugging flag
-        ReconfigurationPlan plan = ra.solve(origin, cstrs);
-        System.out.println("Time-based plan:");
-        System.out.println(new TimeBasedPlanApplier().toString(plan));
-        System.out.println("\nDependency based plan:");
-        System.out.println(new DependencyBasedPlanApplier().toString(plan));
-        return (plan != null);
+        try {
+            ReconfigurationPlan plan = ra.solve(origin, cstrs);
+            System.out.println("Time-based plan:");
+            System.out.println(new TimeBasedPlanApplier().toString(plan));
+            System.out.println("\nDependency based plan:");
+            System.out.println(new DependencyBasedPlanApplier().toString(plan));
+            return (plan != null);
+        } catch (SolverException ex) {
+            System.err.println(ex.getMessage());
+            return false;
+        }
     }
 
     @Override
