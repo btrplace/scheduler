@@ -35,7 +35,7 @@ public abstract class ObjectiveAlterer {
     /**
      * The objective variable.
      */
-    protected Var obj;
+    private Var obj;
 
     /**
      * The reconfiguration problem to consider.
@@ -64,5 +64,14 @@ public abstract class ObjectiveAlterer {
     @Override
     public String toString() {
         return new StringBuilder("objectiveAlterer(").append(obj.getName()).append(')').toString();
+    }
+
+    /**
+     * Get the objective.
+     *
+     * @return the objective variable.
+     */
+    public Var getObjective() {
+        return obj;
     }
 }

@@ -45,7 +45,7 @@ public class ObjectiveAltererTest {
                 return currentValue * 2;
             }
         };
-        Assert.assertEquals(oa.obj, obj);
+        Assert.assertEquals(oa.getObjective(), obj);
         Assert.assertEquals(oa.tryNewValue(25), 50);
         Assert.assertEquals(oa.tryNewValue(50), 100);
     }

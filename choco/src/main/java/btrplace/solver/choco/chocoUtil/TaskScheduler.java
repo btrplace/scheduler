@@ -188,7 +188,6 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
 
     @Override
     public void awakeOnInst(int idx) throws ContradictionException {
-        //ChocoLogging.getBranchingLogger().info("awakeOnInst(" + vars[idx] + ")");
         if (idx < dHosters.length) {
             toInstantiate.add(-1);
             int nIdx = vars[idx].getVal();
@@ -259,7 +258,6 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
             for (int j = 0; j < dHostersVals.length; j++) { //for each placed dSlices
                 int r = dHostersVals[j]; //on which resource it is placed
                 int st = dStartsVals[j];
-                //ChocoLogging.getBranchingLogger().info("d= "+ d + ", j=" + dHosters[j].pretty() + " j.val=" + r + ", " + "consume=" + dStarts[j].pretty() + " val=" + st);
                 changes[d][r].put(st, changes[d][r].get(st) - dUsages[d][j]);
             }
         }
@@ -333,7 +331,6 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
         TIntObjectHashMap<int[]> map = new TIntObjectHashMap<>();
         for (int d = 0; d < changes.length; d++) {
             TIntIntHashMap ch = changes[d][nIdx];
-            //ChocoLogging.getBranchingLogger().info("rc " + nIdx + " changes for d=" + d + ": " + ch);
             for (int k : ch.keys()) {
                 int[] upd = map.get(k);
                 if (upd == null) {

@@ -149,7 +149,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         start = solver.makeConstantIntVar("RP.start", 0);
         end = solver.createBoundIntVar("RP.end", 0, DEFAULT_MAX_TIME);
 
-        this.views = new HashMap();
+        this.views = new HashMap<>();
 
         fillElements();
 
@@ -212,7 +212,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         int nbCstes = solver.getNbConstants();
         int nbCstrs = solver.getNbConstraints();
         getLogger().debug("{} constraints; Variables: {} int(s), {} bool(s), {} constant(s).", nbCstrs, nbIntVars, nbBoolVars, nbCstes);
-        //getLogger().debug(solver.pretty());
         if (objAlterer == null) {
             solver.launch();
         } else if (optimize) {

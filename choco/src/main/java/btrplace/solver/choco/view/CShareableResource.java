@@ -22,11 +22,11 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.view.ModelView;
 import btrplace.model.view.ShareableResource;
-import btrplace.plan.event.Action;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.event.RunningVMPlacement;
+import btrplace.plan.event.Action;
 import btrplace.plan.event.Allocate;
 import btrplace.plan.event.AllocateEvent;
+import btrplace.plan.event.RunningVMPlacement;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.*;
 import btrplace.solver.choco.actionModel.KeepRunningVMModel;
@@ -124,8 +124,6 @@ public class CShareableResource implements ChocoModelView {
 
         }
         //We create a BP with only the VMs requiring a not null amount of resources
-        //s.post(new LightBinPacking(s.getEnvironment(), virtRcUsage, notNullUsage.toArray(new IntDomainVar[notNullUsage.size()]), hosters.toArray(new IntDomainVar[hosters.size()])));
-        //s.post(new BinPacking(s.getEnvironment(), virtRcUsage, notNullUsage.toArray(new IntDomainVar[notNullUsage.size()]), hosters.toArray(new IntDomainVar[hosters.size()])));
         rp.getBinPackingBuilder().add(getResourceIdentifier(), virtRcUsage, notNullUsage.toArray(new IntDomainVar[notNullUsage.size()]), hosters.toArray(new IntDomainVar[hosters.size()]));
 
     }
@@ -488,8 +486,8 @@ public class CShareableResource implements ChocoModelView {
             //beware of truncation made by choco: 3 = 7 / 2 while here, 4 pCPU will be used
             //The hack consists in computing the number of free pCPU
                 /*
-                int maxRaw = ...;
-                int maxReal = maxRaw * factor;
+                 maxRaw = ...;
+                maxReal = maxRaw * factor;
                 freeReal = var(0,maxReal)
                 post(eq(freeReal, minus(maxReal,usageReal))
                 freeRaw = div(freeReal,factor);

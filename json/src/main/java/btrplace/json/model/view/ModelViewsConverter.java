@@ -41,8 +41,8 @@ public class ModelViewsConverter implements JSONConverter<ModelView> {
      * Make a new converter.
      */
     public ModelViewsConverter() {
-        java2json = new HashMap(20);
-        json2java = new HashMap(20);
+        java2json = new HashMap<>();
+        json2java = new HashMap<>();
 
         //The default converters
         register(new ShareableResourceConverter());

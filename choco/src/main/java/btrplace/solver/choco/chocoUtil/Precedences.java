@@ -115,15 +115,12 @@ public class Precedences extends AbstractLargeIntSConstraint {
 
     @Override
     public void propagate() throws ContradictionException {
-        //printOthers();
-        //printEndsByHost();
         assert checkHorizonConsistency();
         checkInvariant();
     }
 
     @Override
     public void awakeOnInst(int idx) throws ContradictionException {
-        //ChocoLogging.getBranchingLogger().finest("awakeOnInst(" + vars[idx].pretty() + ")");
         switch (idx) {
             case 0:
                 //The host variable has been instantiated, so its LB can be updated to the LB of the host.
@@ -177,12 +174,10 @@ public class Precedences extends AbstractLargeIntSConstraint {
     }
 
     private void recomputeHorizonForHost(int h) {
-        //ChocoLogging.getBranchingLogger().finest("recomputeHorizonForHost(" + h + ")");
         if (h < horizonUB.length) {
             int lb = 0, ub = 0;
             for (int id : endsByHost[h]) {
                 IntDomainVar end = othersEnd[id];
-                //ChocoLogging.getBranchingLogger().finest("\t check " + end.pretty());
                 lb = Math.max(end.getInf(), lb);
                 ub = Math.max(end.getSup(), ub);
             }
@@ -193,7 +188,6 @@ public class Precedences extends AbstractLargeIntSConstraint {
 
     @Override
     public void awakeOnInf(int idx) throws ContradictionException {
-        //ChocoLogging.getBranchingLogger().finest("awakeOnInf(" + vars[idx].pretty() + ")");
         if (idx >= 2) {
             int o = idx - 2;
             int h = othersHost[o];
@@ -207,7 +201,6 @@ public class Precedences extends AbstractLargeIntSConstraint {
 
     @Override
     public void awakeOnSup(int idx) throws ContradictionException {
-        //ChocoLogging.getBranchingLogger().finest("awakeOnSup(" + vars[idx].pretty() + ")");
         if (idx >= 2) {
             int o = idx - 2;
             int h = othersHost[o];

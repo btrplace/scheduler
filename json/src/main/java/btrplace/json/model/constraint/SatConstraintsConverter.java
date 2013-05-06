@@ -40,8 +40,8 @@ public class SatConstraintsConverter implements JSONConverter<SatConstraint> {
      * Make a new converter.
      */
     public SatConstraintsConverter() {
-        java2json = new HashMap(20);
-        json2java = new HashMap(20);
+        java2json = new HashMap<>();
+        json2java = new HashMap<>();
 
         //The default converters
         register(new AmongConverter());

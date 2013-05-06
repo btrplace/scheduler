@@ -442,8 +442,8 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
             int on = mo.getDSlice().getHoster().getVal();
             counts[on]--;
         }
-        for (int i = 0; i < counts.length; i++) {
-            Assert.assertEquals(counts[i], 0);
+        for (int count : counts) {
+            Assert.assertEquals(count, 0);
         }
     }
 

@@ -101,8 +101,6 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
 
     private IStateBitSet notEntailedDims;
 
-//    private IStateInt[] candidates;
-
     /**
      * constructor of the FastBinPacking global constraint
      *
@@ -257,11 +255,10 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
                     notEntailedDims.set(d);
                     break;
                 }
-                //notEntailedDims.set(d);
             }
         }
         assert checkLoadConsistency();
-        ChocoLogging.getBranchingLogger().info(Arrays.toString(name) + " " + Arrays.toString(cLoads) + " notEntailed: " + notEntailedDims);
+        ChocoLogging.getBranchingLogger().finest(Arrays.toString(name) + " " + Arrays.toString(cLoads) + " notEntailed: " + notEntailedDims);
         propagate();
     }
 

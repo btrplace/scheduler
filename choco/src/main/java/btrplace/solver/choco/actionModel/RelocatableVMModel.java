@@ -19,7 +19,6 @@
 package btrplace.solver.choco.actionModel;
 
 import btrplace.model.Model;
-import btrplace.plan.event.Action;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.*;
 import btrplace.solver.SolverException;
@@ -71,7 +70,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
     private IntDomainVar stay;
 
-    private int migrateDuration, reInstantiateDuration;
+    private int reInstantiateDuration;
 
     private UUID src;
 
@@ -112,7 +111,6 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
         stay = new BoolVarNot(s, rp.makeVarLabel("relocatable(", e, ").stay"), (BooleanVarImpl) move);
 
-        //s.post(new FastIFFEq(stay, duration, 0));
         s.post(s.leq(duration, cSlice.getDuration()));
         s.post(s.leq(duration, dSlice.getDuration()));
         s.post(s.eq(cSlice.getEnd(), s.plus(dSlice.getStart(), duration)));
@@ -139,7 +137,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
         Boolean cloneable = mo.getAttributes().getBoolean(vm, "clone");
         DurationEvaluators dev = rp.getDurationEvaluators();
         CPSolver s = rp.getSolver();
-        migrateDuration = dev.evaluate(MigrateVM.class, vm);
+        int migrateDuration = dev.evaluate(MigrateVM.class, vm);
         if (Boolean.TRUE.equals(cloneable) && mo.getAttributes().isSet(vm, "template")) {
             method = rp.getSolver().createBooleanVar(rp.makeVarLabel("relocation_method(", vm, ")"));
             int bootDuration = dev.evaluate(BootVM.class, vm);

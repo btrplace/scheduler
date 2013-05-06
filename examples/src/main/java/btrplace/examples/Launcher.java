@@ -15,8 +15,6 @@ public final class Launcher {
 
     /**
      * CLI. First value of the array should be the name of a class inheriting from {@link btrplace.examples.Example}.
-     *
-     * @param args
      */
     public static void main(String[] args) {
 

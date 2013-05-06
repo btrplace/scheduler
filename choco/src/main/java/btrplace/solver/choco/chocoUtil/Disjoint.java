@@ -150,9 +150,6 @@ public class Disjoint extends AbstractLargeIntSConstraint {
             for (; i < end; i++) {
                 if (vars[i].removeVal(val, this, false)) {
                     n++;
-                    /*if (vars[i].isInstantiated()) {
-                        setRequired(vars[i].getVal(), other, group);
-                    } */
                 }
             }
             assert n == candidates[other][val].get() : n + " variables in group '" + other + "' were updated but candidate=" + candidates[other][val].get();
@@ -164,18 +161,15 @@ public class Disjoint extends AbstractLargeIntSConstraint {
     @Override
     public void awakeOnInst(int idx) throws ContradictionException {
         int group = (idx < nbX) ? 0 : 1;
-        //ChocoLogging.getBranchingLogger().finest("awakeOnInst grp= " + group + " val=" + vars[idx].getVal());
         setRequired(vars[idx].getVal(), group, 1 - group);
         constAwake(false);
     }
 
     @Override
     public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
-        //ChocoLogging.getBranchingLogger().finest("awakeOnRemovals(" + idx + ")");
         int group = (idx < nbX) ? 0 : 1;
         while (deltaDomain.hasNext()) {
             int n = deltaDomain.next();
-            //ChocoLogging.getBranchingLogger().finest("Decrease candidates for value " + n +  " in group " + group);
             candidates[group][n].add(-1);
         }
         constAwake(false);
@@ -193,8 +187,6 @@ public class Disjoint extends AbstractLargeIntSConstraint {
                 setRequired(v, 1, 0);
             }
         }
-        //prettyCandidates(0);
-        //prettyCandidates(1);
     }
 
     @Override

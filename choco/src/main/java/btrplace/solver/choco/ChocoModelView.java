@@ -53,5 +53,12 @@ public interface ChocoModelView {
      */
     boolean insertActions(ReconfigurationProblem rp, ReconfigurationPlan p);
 
+    /**
+     * Notifiy a new VM will be a clone of an already known VM.
+     *
+     * @param vm    the old VM that will be substituted by the clone
+     * @param clone the clone identifier
+     * @return {@code true} iff the view validate the cloning process.
+     */
     boolean cloneVM(UUID vm, UUID clone);
 }

@@ -359,5 +359,12 @@ public interface ReconfigurationProblem {
      */
     UUIDPool getUUIDPool();
 
+    /**
+     * Create a clone of a given VM.
+     * The clone will take the place of the VM by the end of the reconfiguration process.
+     *
+     * @param vm the current VM to substitute
+     * @return the identifier of the new VM. {@code null} if the process failed
+     */
     UUID cloneVM(UUID vm);
 }

@@ -200,9 +200,6 @@ public class AliasedCumulativesFiltering {
                 }
 
             } else {
-                /*if (debug) {
-                    ChocoLogging.getBranchingLogger().finest(cEnds[j].pretty() + " < or non-associated (" + (revAssociations[j] >= 0 ? dStarts[revAssociations[j]].pretty() : "no rev") + "?)");
-                } */
                 for (int i = 0; i < nbDims; i++) {
                     profilesMin[i].put(t, profilesMin[i].get(t) - cUsages[i][j]);
                 }
@@ -382,9 +379,6 @@ public class AliasedCumulativesFiltering {
                 break;
             }
         }
-        /*if (debug) {
-            ChocoLogging.getBranchingLogger().finest("lastSup=" + lastSup);
-        } */
         if (lastSup != -1) {
             for (int x = 0; x < vIn.size(); x++) {
                 int i = vIn.get(x);

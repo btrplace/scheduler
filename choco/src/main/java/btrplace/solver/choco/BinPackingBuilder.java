@@ -73,8 +73,6 @@ public class BinPackingBuilder {
 
     /**
      * Build the constraint.
-     *
-     * @return the resulting constraint
      */
     public void inject() throws ContradictionException {
         CPSolver solver = rp.getSolver();

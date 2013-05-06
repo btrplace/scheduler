@@ -60,10 +60,9 @@ public class StayRunningVMModel implements KeepRunningVMModel {
                 .build();
         dSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").dSlice")
                 .setHoster(host)
-                .setStart(cSlice.getEnd()/*rp.makeDuration("stayRunningVM(" + e + ").dSlice_start")*/)
+                .setStart(cSlice.getEnd())
                 .build();
         CPSolver s = rp.getSolver();
-        //s.post(s.eq(cSlice.getEnd(), dSlice.getStart()));
 
         stay = s.makeConstantIntVar(1);
     }

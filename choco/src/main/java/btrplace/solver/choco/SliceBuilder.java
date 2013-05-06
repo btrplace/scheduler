@@ -109,7 +109,6 @@ public class SliceBuilder {
         if (start.isInstantiatedTo(0)) {
             s.post(s.eq(duration, end));
         } else {
-            //System.out.println(lblPrefix + " end:" + end.isInstantiated() + " " + end.getVal() + " consume:" + consume.isInstantiated() + " " + consume.getVal() + " duration:" + duration.isInstantiated()+ " " + duration.getVal());
             s.post(s.eq(end, s.plus(start, duration)));
         }
         return new Slice(e, start, end, duration, hoster);
