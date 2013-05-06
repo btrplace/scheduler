@@ -34,6 +34,9 @@ import org.testng.annotations.Test;
 
 import java.util.*;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 /**
  * Unit tests for {@link DefaultChocoReconfigurationAlgorithm}.
  *
@@ -162,4 +165,17 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
         SolvingStatistics st = cra.getSolvingStatistics();
         Assert.assertEquals(st.getNbManagedVMs(), 2); //vm2, vm3.
     }
+
+    @Test(expectedExceptions = {SolverException.class})
+    public void testWithUnknownVMs() throws SolverException {
+        Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5).build();
+        Model mo = new DefaultModel(map);
+        SatConstraint cstr = mock(SatConstraint.class);
+        when(cstr.getInvolvedVMs()).thenReturn(Arrays.asList(vm1, vm2, vm6));
+        when(cstr.getInvolvedNodes()).thenReturn(Arrays.asList(n1, vm2, vm7));
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.solve(mo, Collections.singleton(cstr));
+    }
+
+
 }

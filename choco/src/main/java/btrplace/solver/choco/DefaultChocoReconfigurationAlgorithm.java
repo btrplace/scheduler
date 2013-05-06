@@ -19,11 +19,7 @@
 package btrplace.solver.choco;
 
 import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
-import btrplace.model.constraint.Killed;
-import btrplace.model.constraint.Ready;
-import btrplace.model.constraint.Running;
-import btrplace.model.constraint.Sleeping;
+import btrplace.model.constraint.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlanChecker;
 import btrplace.plan.ReconfigurationPlanCheckerException;
@@ -127,6 +123,29 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         return useLabels;
     }
 
+    private void checkUnkownVMsInMapping(Model m, Collection<UUID> vms) throws SolverException {
+        if (!m.getMapping().getAllVMs().containsAll(vms)) {
+            Set<UUID> unknown = new HashSet<>(vms);
+            unknown.removeAll(m.getMapping().getAllVMs());
+            throw new SolverException(m, "Unknown VMs: " + unknown);
+        }
+    }
+
+    /**
+     * Check for the existence of nodes in a model
+     *
+     * @param mo the model to check
+     * @param ns the nodes to check
+     * @throws SolverException if at least one of the given nodes is not in the RP.
+     */
+    private void checkNodesExistence(Model mo, Collection<UUID> ns) throws SolverException {
+        for (UUID node : ns) {
+            if (!mo.getMapping().getAllNodes().contains(node)) {
+                throw new SolverException(mo, "Unknown node '" + node + "'");
+            }
+        }
+    }
+
     @Override
     public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs) throws SolverException {
         rp = null;
@@ -142,13 +161,24 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
         List<ChocoSatConstraint> cConstraints = new ArrayList<>();
         for (SatConstraint cstr : cstrs) {
+            checkNodesExistence(i, cstr.getInvolvedNodes());
+
+            //We cannot check for VMs that are going to the ready state
+            //as they are not forced to be a part of the initial model
+            //(when they will be forged)
+            if (!(cstrs instanceof Ready)) {
+                checkUnkownVMsInMapping(i, cstr.getInvolvedVMs());
+            }
+
             if (cstr instanceof Running) {
                 toRun.addAll(cstr.getInvolvedVMs());
             } else if (cstr instanceof Sleeping) {
                 toSleep.addAll(cstr.getInvolvedVMs());
             } else if (cstr instanceof Ready) {
+                checkUnkownVMsInMapping(i, cstr.getInvolvedVMs());
                 toForge.addAll(cstr.getInvolvedVMs());
             } else if (cstr instanceof Killed) {
+                checkUnkownVMsInMapping(i, cstr.getInvolvedVMs());
                 toKill.addAll(cstr.getInvolvedVMs());
             }
 
