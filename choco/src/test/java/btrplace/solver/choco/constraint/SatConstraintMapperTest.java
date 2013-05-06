@@ -23,8 +23,6 @@ import btrplace.model.constraint.Ban;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Spread;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoSatConstraint;
-import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;

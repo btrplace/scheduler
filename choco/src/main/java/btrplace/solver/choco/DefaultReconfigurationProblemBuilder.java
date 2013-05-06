@@ -21,6 +21,8 @@ package btrplace.solver.choco;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.solver.SolverException;
+import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
+import btrplace.solver.choco.view.ModelViewMapper;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -33,9 +35,9 @@ import java.util.UUID;
  * <ul>
  * <li>Variables are not labelled to save memory</li>
  * <li>All the VMs are manageable</li>
- * <li>The default {@link DurationEvaluators} is used</li>
+ * <li>The default {@link btrplace.solver.choco.durationEvaluator.DurationEvaluators} is used</li>
  * <li>The {@link UUIDPool} is {@link InMemoryUUIDPool}</li>
- * <li>The default {@link ModelViewMapper} is used</li>
+ * <li>The default {@link btrplace.solver.choco.view.ModelViewMapper} is used</li>
  * <li>The state of the VMs is unchanged</li>
  * </ul>
  *

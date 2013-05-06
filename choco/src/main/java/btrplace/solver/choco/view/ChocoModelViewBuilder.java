@@ -16,22 +16,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.view;
 
+import btrplace.model.view.ModelView;
 import btrplace.solver.SolverException;
+import btrplace.solver.choco.ReconfigurationProblem;
 
 /**
- * An objective for the reconfiguration algorithm.
+ * The builder that is used by {@link ChocoModelViewBuilder} to create
+ * the solver-side views.
  *
  * @author Fabien Hermenier
  */
-public interface ReconfigurationObjective extends MisplacedVMsEstimator {
+public interface ChocoModelViewBuilder {
 
     /**
-     * Inject the objective into a given problem
+     * Get the class of the {@link ModelView} that is handled by this builder.
      *
-     * @param rp the problem to inject the objective into
-     * @throws SolverException if an error occurs.
+     * @return a Class derived from {@link btrplace.model.view.ModelView}
      */
-    void inject(ReconfigurationProblem rp) throws SolverException;
+    Class<? extends ModelView> getKey();
+
+    /**
+     * Build the {@link ChocoModelView} associated to the {@link ModelView}
+     * identified as key.
+     *
+     * @param rp the problem to add
+     * @param v  the model constraint
+     * @throws SolverException if an error occurred while building the view
+     */
+    ChocoModelView build(ReconfigurationProblem rp, ModelView v) throws SolverException;
+
 }

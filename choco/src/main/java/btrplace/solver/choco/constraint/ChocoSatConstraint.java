@@ -16,22 +16,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.constraint;
 
-import java.util.UUID;
+import btrplace.solver.SolverException;
+import btrplace.solver.choco.MisplacedVMsEstimator;
+import btrplace.solver.choco.ReconfigurationProblem;
 
 /**
- * Interface to specify the duration evaluator for a possible action on an element.
+ * An interface to describe a constraint implementation for the solver.
  *
  * @author Fabien Hermenier
  */
-public interface DurationEvaluator {
+public interface ChocoSatConstraint extends MisplacedVMsEstimator {
 
     /**
-     * Evaluate the duration of the action on a given element.
+     * Inject the constraint into the problem.
      *
-     * @param e the element
-     * @return a positive integer
+     * @param rp the problem
+     * @return {@code true} if the injection succeeded, {@code false} if the problem is sure to not have a solution
+     * @throws SolverException if an error occurred while injecting.
      */
-    int evaluate(UUID e);
+    boolean inject(ReconfigurationProblem rp) throws SolverException;
 }

@@ -21,7 +21,6 @@ package btrplace.solver.choco.actionModel;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootNode;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.NodeActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import choco.cp.solver.CPSolver;
@@ -34,7 +33,7 @@ import java.util.UUID;
 /**
  * Model an action that allows a node to be booted if necessary.
  * The model must provide an estimation of the action duration through a
- * {@link btrplace.solver.choco.DurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.durationEvaluator.DurationEvaluator} accessible from
  * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code BootNode.class}
  * <p/>
  * The action is modeled as follow:

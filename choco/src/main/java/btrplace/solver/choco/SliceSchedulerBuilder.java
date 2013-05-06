@@ -18,6 +18,8 @@
 
 package btrplace.solver.choco;
 
+import btrplace.solver.choco.actionModel.ActionModelUtils;
+import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.chocoUtil.LocalTaskScheduler;
 import btrplace.solver.choco.chocoUtil.TaskScheduler;
 import choco.cp.solver.CPSolver;

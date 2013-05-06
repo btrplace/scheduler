@@ -16,11 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.durationEvaluator;
 
 import btrplace.plan.event.Action;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.durationEvaluator.ConstantDuration;
 
 import java.util.HashMap;
 import java.util.Map;

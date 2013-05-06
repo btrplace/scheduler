@@ -16,16 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.durationEvaluator;
 
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.durationEvaluator.ConstantDuration;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * Unit tests for {@link DurationEvaluator}.
+ * Unit tests for {@link btrplace.solver.choco.durationEvaluator.DurationEvaluator}.
  *
  * @author Fabien Hermenier
  */

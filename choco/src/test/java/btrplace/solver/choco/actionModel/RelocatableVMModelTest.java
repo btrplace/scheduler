@@ -18,7 +18,10 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Overbook;
 import btrplace.model.constraint.Preserve;
@@ -30,8 +33,12 @@ import btrplace.plan.event.ForgeVM;
 import btrplace.plan.event.MigrateVM;
 import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.*;
+import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
+import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
+import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import btrplace.solver.choco.objective.minMTTR.MinMTTR;
 import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;

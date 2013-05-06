@@ -24,7 +24,6 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
-import btrplace.solver.choco.VMActionModel;
 import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -33,7 +32,7 @@ import java.util.UUID;
 /**
  * Model an action where a running VM goes into the sleeping state through a {@link SuspendVM} action.
  * The model must provide an estimation of the action duration through a
- * {@link btrplace.solver.choco.DurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.durationEvaluator.DurationEvaluator} accessible from
  * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code SuspendVM.class}
  * <p/>
  * If the reconfiguration problem has a solution, a {@link SuspendVM} action is inserted into the resulting

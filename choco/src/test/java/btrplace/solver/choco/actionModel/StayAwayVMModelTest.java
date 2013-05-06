@@ -26,7 +26,6 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.VMActionModel;
 import btrplace.test.PremadeElements;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;

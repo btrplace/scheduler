@@ -16,31 +16,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.actionModel;
 
-import btrplace.model.constraint.SatConstraint;
+import btrplace.solver.choco.Slice;
+
+import java.util.UUID;
 
 /**
- * Interface to specify a builder that create a {@link ChocoSatConstraint} from
- * a specific {@link SatConstraint}.
+ * Interface to specify an action model that manipulate a VM.
  *
  * @author Fabien Hermenier
  */
-public interface ChocoSatConstraintBuilder {
+public interface VMActionModel extends ActionModel {
 
     /**
-     * Get the class of the SatConstraint associated to the builder.
+     * Get the VM manipulated by the action.
      *
-     * @return a Class derived from {@link SatConstraint}
+     * @return the VM identifier
      */
-    Class<? extends SatConstraint> getKey();
+    UUID getVM();
 
     /**
-     * Build the ChocoConstraint associated to the {@link SatConstraint}
-     * identified as key.
+     * Get the slice denoting the possible current placement of the subject on a node.
      *
-     * @param cstr the model constraint
-     * @return the associated ChocoConstraint or {@code null} if an error occurred
+     * @return a {@link btrplace.solver.choco.Slice} that may be {@code null}
      */
-    ChocoSatConstraint build(SatConstraint cstr);
+    Slice getCSlice();
+
+    /**
+     * Get the slice denoting the possible future placement off the subject
+     *
+     * @return a {@link Slice} that may be {@code null}
+     */
+    Slice getDSlice();
 }

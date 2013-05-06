@@ -16,8 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.objective;
 
+import btrplace.solver.choco.ReconfigurationProblem;
 import choco.kernel.solver.variables.Var;
 
 /**

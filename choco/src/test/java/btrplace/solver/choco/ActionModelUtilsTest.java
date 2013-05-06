@@ -19,7 +19,9 @@
 package btrplace.solver.choco;
 
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.solver.choco.actionModel.ActionModelUtils;
 import btrplace.solver.choco.actionModel.ActionModelVisitor;
+import btrplace.solver.choco.actionModel.VMActionModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
@@ -29,7 +31,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Unit tests for {@link ActionModelUtils}.
+ * Unit tests for {@link btrplace.solver.choco.actionModel.ActionModelUtils}.
  *
  * @author Fabien Hermenier
  */

@@ -1,6 +1,5 @@
 package btrplace.solver.choco.actionModel;
 
-import btrplace.solver.choco.VMActionModel;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**

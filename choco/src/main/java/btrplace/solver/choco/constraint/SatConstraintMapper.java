@@ -18,16 +18,13 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.*;
-import btrplace.solver.choco.ChocoSatConstraint;
-import btrplace.solver.choco.ChocoSatConstraintBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Mapper that allow to convert {@link SatConstraint} to {@link btrplace.solver.choco.ChocoSatConstraint}.
+ * Mapper that allow to convert {@link SatConstraint} to {@link ChocoSatConstraint}.
  *
  * @author Fabien Hermenier
  */
@@ -107,10 +104,10 @@ public class SatConstraintMapper {
     }
 
     /**
-     * Map the given {@link SatConstraint} to a {@link btrplace.solver.choco.ChocoSatConstraint} if possible.
+     * Map the given {@link SatConstraint} to a {@link ChocoSatConstraint} if possible.
      *
      * @param c the constraint to map
-     * @return the mapping result or {@code null} if no {@link btrplace.solver.choco.ChocoSatConstraint} was available
+     * @return the mapping result or {@code null} if no {@link ChocoSatConstraint} was available
      */
     public ChocoSatConstraint map(SatConstraint c) {
         ChocoSatConstraintBuilder b = builders.get(c.getClass());

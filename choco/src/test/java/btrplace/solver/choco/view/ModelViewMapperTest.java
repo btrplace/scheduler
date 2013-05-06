@@ -16,20 +16,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.view;
 
 import btrplace.model.view.ModelView;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.view.CShareableResource;
+import btrplace.solver.choco.ReconfigurationProblem;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.UUID;
 
 /**
- * Unit tests for {@link ModelViewMapper}.
+ * Unit tests for {@link btrplace.solver.choco.view.ModelViewMapper}.
  *
  * @author Fabien Hermenier
  */

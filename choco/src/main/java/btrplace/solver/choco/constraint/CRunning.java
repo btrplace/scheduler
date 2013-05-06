@@ -20,11 +20,9 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Running;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoSatConstraint;
-import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 
 import java.util.HashSet;

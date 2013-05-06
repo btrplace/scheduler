@@ -16,9 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.view;
 
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.solver.choco.ReconfigurationProblem;
 
 import java.util.UUID;
 

@@ -18,6 +18,7 @@
 
 package btrplace.solver.choco;
 
+import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.chocoUtil.AliasedCumulatives;
 import btrplace.solver.choco.chocoUtil.LocalTaskScheduler;
 import choco.cp.solver.CPSolver;

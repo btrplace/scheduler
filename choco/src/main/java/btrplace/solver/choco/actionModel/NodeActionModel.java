@@ -16,9 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.actionModel;
 
-import btrplace.solver.choco.actionModel.ActionModel;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.UUID;

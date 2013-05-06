@@ -20,7 +20,6 @@ package btrplace.solver.choco.durationEvaluator;
 
 import btrplace.model.Attributes;
 import btrplace.model.DefaultAttributes;
-import btrplace.solver.choco.DurationEvaluator;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;

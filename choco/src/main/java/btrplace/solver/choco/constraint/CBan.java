@@ -20,10 +20,8 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Ban;
-import btrplace.solver.choco.ChocoSatConstraint;
-import btrplace.solver.choco.ChocoSatConstraintBuilder;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import choco.kernel.solver.ContradictionException;

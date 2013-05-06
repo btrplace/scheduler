@@ -19,12 +19,10 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Preserve;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoSatConstraint;
-import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.view.CShareableResource;
 import choco.kernel.solver.ContradictionException;

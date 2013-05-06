@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.view;
 
 import btrplace.model.view.ModelView;
 import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.view.CShareableResource;
+import btrplace.solver.choco.ReconfigurationProblem;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -84,7 +84,7 @@ public class ModelViewMapper {
     }
 
     /**
-     * Map the given {@link ModelView} to a {@link btrplace.solver.choco.ChocoModelView} if possible.
+     * Map the given {@link ModelView} to a {@link ChocoModelView} if possible.
      *
      * @param rp the problem to customize
      * @param v  the view to map

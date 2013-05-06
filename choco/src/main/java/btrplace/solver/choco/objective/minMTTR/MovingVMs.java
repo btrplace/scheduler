@@ -21,7 +21,7 @@ package btrplace.solver.choco.objective.minMTTR;
 import btrplace.model.Mapping;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
-import btrplace.solver.choco.VMActionModel;
+import btrplace.solver.choco.actionModel.VMActionModel;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
