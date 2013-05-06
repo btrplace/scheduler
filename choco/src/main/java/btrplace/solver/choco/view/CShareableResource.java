@@ -128,9 +128,9 @@ public class CShareableResource implements ChocoModelView {
         }
         //We create a BP with only the VMs requiring a not null amount of resources
         rp.getBinPackingBuilder().add(rc.getResourceIdentifier(),
-                                      virtRcUsage,
-                                      notNullUsage.toArray(new IntDomainVar[notNullUsage.size()]),
-                                      hosters.toArray(new IntDomainVar[hosters.size()]));
+                virtRcUsage,
+                notNullUsage.toArray(new IntDomainVar[notNullUsage.size()]),
+                hosters.toArray(new IntDomainVar[hosters.size()]));
 
     }
 
@@ -326,7 +326,7 @@ public class CShareableResource implements ChocoModelView {
             }
         }
 
-        return symmetryBreakingForStatingVMs() && linkVirtualToPhysicalUsage();
+        return /*symmetryBreakingForStatingVMs() &&*/ linkVirtualToPhysicalUsage();
     }
 
     @Override
@@ -413,6 +413,7 @@ public class CShareableResource implements ChocoModelView {
                             return false;
                         }
                     } else {
+
                         solver.post(new FastImpliesEq(stay, dSlice.getDuration(), 0));
                     }
 

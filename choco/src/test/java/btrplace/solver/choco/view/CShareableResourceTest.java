@@ -22,18 +22,23 @@ import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.constraint.Online;
+import btrplace.model.constraint.Preserve;
+import btrplace.model.constraint.Running;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
-import btrplace.solver.choco.MappingBuilder;
-import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.*;
 import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.test.PremadeElements;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Unit tests for {@link CShareableResource}.
@@ -174,5 +179,34 @@ public class CShareableResourceTest implements PremadeElements {
         rcm.getVMsAllocation()[rp.getVM(vm2)].setInf(4);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNull(p);
+    }
+
+    @Test
+    public void testSymmetryBreaking() throws SolverException {
+        ShareableResource cpu = new ShareableResource("cpu");
+        ShareableResource mem = new ShareableResource("mem");
+        cpu.set(n1, 10);
+        mem.set(n1, 10);
+        cpu.set(vm1, 5);
+        mem.set(vm1, 4);
+
+        //vm1 requires more cpu resources, but fewer mem resources
+        Preserve pCPU = new Preserve(Collections.singleton(vm1), "cpu", 7);
+        Preserve pMem = new Preserve(Collections.singleton(vm1), "mem", 2);
+
+        cpu.set(vm2, 3);
+        mem.set(vm2, 8);
+
+        Mapping map = new MappingBuilder().on(n1).run(n1, vm1).ready(vm2).build();
+        Model mo = new DefaultModel(map);
+        mo.attach(cpu);
+        mo.attach(mem);
+
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.setMaxEnd(5);
+        cra.setVerbosity(2);
+        ReconfigurationPlan p = cra.solve(mo, Arrays.<SatConstraint>asList(pCPU, pMem, new Online(Collections.singleton(n1)), new Running(Collections.singleton(vm2))));
+        Assert.assertNotNull(p);
+        System.out.println(p);
     }
 }
