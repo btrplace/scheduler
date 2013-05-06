@@ -3,12 +3,18 @@ Release notes
 
 version ???????????
 ----------------------
-- Bug fix in the placement model
+- Multiple Bug fixes
+- Fix regressions in the placement subproblems that appeared in 0.28
 - Complete the forgeVM model. It is now required to declare
   a template for the VMs to forge using a "template" attribute
   in the model
-- Fix bugs reported in #5, #10
-- Support VM relocation through a re-instantiation.
+- Fix bugs reported in #5, #10, #13
+- Full support VM relocation through a re-instantiation. BtrPlace can
+  now infer if live-migration is preferable over re-instantiation.
+- Refactor completely the "satisfaction" process. Now everyting takes place
+  inside a SatConstraintChecker.
+- Move most of the interface and abstract classes to the package of their
+  implementation
 
 version 0.28 - 29 Mar 2013
 ----------------------
