@@ -186,7 +186,7 @@ public class BinPacking extends AbstractLargeIntSConstraint {
     public boolean isConsistent() {
         int[] l = new int[nbBins];
         int[] c = new int[nbBins];
-        for (int i = 0; i < bins.length; i++) { //Assignment variable
+        for (int i = 0; i < bins.length; i++) {
             if (bins[i].isInstantiated()) {
                 int v = bins[i].getVal();
                 l[v] += iSizes[i];

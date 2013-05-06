@@ -111,8 +111,9 @@ public class SliceSchedulerBuilder {
 
 
         associations = new int[dHosters.length];
+        //No associations task by default, then we create the associations.
         for (i = 0; i < associations.length; i++) {
-            associations[i] = LocalTaskScheduler.NO_ASSOCIATIONS; //No associations task
+            associations[i] = LocalTaskScheduler.NO_ASSOCIATIONS;
         }
         for (i = 0; i < linked.size(); i++) {
             int[] assoc = linked.get(i);

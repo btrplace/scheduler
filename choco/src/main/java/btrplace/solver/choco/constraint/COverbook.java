@@ -20,8 +20,8 @@ package btrplace.solver.choco.constraint;
 
 
 import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Overbook;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoSatConstraint;
@@ -82,7 +82,8 @@ public class COverbook implements ChocoSatConstraint {
     public Set<UUID> getMisPlacedVMs(Model m) {
         ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         Set<UUID> bads = new HashSet<>();
-        if (rc == null) { //Should not occur, if the right model is given
+        if (rc == null) {
+            //No resource given, all the VMs are considered as misplaced
             for (UUID n : cstr.getInvolvedNodes()) {
                 bads.addAll(m.getMapping().getRunningVMs(n));
             }

@@ -120,7 +120,8 @@ public class CSplitAmong implements ChocoSatConstraint {
                     UUID n = map.getVMLocation(vm);
                     int g = getPGroup(n);
                     if (g == -1) {
-                        bad.add(vm); //The VM is on an disallowed node
+                        //The VM is on a node that belong to none of the given groups
+                        bad.add(vm);
                     } else if (grp == -1) {
                         grp = g;
                         usedGrp[g] = vms;

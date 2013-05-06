@@ -87,7 +87,8 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
                     oldPos[i] = -1;
                 } else {
                     oldPos[i] = rp.getNode(n);
-                    outs[rp.getNode(n)].set(i);     //VM i was on node n
+                    //VM i was on node n
+                    outs[rp.getNode(n)].set(i);
                 }
             }
         }
@@ -133,8 +134,9 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
 
 
         //VMs going on nodes with no outgoing actions, so actions that can consume with no delay
-        for (int x = 0; x < outs.length; x++) {   //Node per node
-            if (outs[x].cardinality() == 0) { //no outgoing VMs, can be launched directly.
+        for (int x = 0; x < outs.length; x++) {
+            if (outs[x].cardinality() == 0) {
+                //no outgoing VMs, can be launched directly.
                 BitSet in = ins[x];
                 for (int i = in.nextSetBit(0); i >= 0; i = in.nextSetBit(i + 1)) {
                     if (starts[i] != null && !starts[i].isInstantiated()) {

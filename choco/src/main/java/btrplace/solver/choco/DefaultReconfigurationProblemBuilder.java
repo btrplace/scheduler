@@ -148,7 +148,9 @@ public class DefaultReconfigurationProblemBuilder {
      * @throws SolverException if an error occurred
      */
     public DefaultReconfigurationProblem build() throws SolverException {
-        if (runs == null) { //The others are supposed to be null too
+
+        if (runs == null) {
+            //The others are supposed to be null too as they are set using the same method
             Mapping map = model.getMapping();
             runs = map.getRunningVMs();
             waits = map.getReadyVMs();

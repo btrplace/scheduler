@@ -20,9 +20,9 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Ban;
 import btrplace.model.constraint.Fence;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.choco.ChocoSatConstraint;
 import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -63,7 +63,8 @@ public class CFence implements ChocoSatConstraint {
         }
         Collection<UUID> nodes = cstr.getInvolvedNodes();
         if (!runnings.isEmpty()) {
-            if (nodes.size() == 1) { //Only 1 possible destination node, so we directly instantiate the variable.
+            if (nodes.size() == 1) {
+                //Only 1 possible destination node, so we directly instantiate the variable.
                 for (UUID vm : runnings) {
                     Slice t = rp.getVMAction(vm).getDSlice();
                     UUID n = nodes.iterator().next();

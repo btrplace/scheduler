@@ -112,7 +112,8 @@ public class CShareableResource implements ChocoModelView {
             UUID vmId = rp.getVM(i);
             VMActionModel a = rp.getVMAction(vmId);
             Slice slice = a.getDSlice();
-            if (slice == null) { //The VMs will not be running, so its consumption is set to 0
+            if (slice == null) {
+                //The VMs will not be running, so its consumption is set to 0
                 vmAllocation[i] = s.makeConstantIntVar(rp.makeVarLabel("vmAllocation('", rc.getResourceIdentifier(), "', '", vmId, "'"), 0);
             } else {
                 //We don't know about the next VM usage for the moment, -1 is used by default to allow to detect an
@@ -497,7 +498,8 @@ public class CShareableResource implements ChocoModelView {
             //freePCpu = ((2 * 6) - 7) / 2 = 2
             //usedPCPU = 6 - 2 = 4 \o/
             int maxRaw = getSourceResource().get(rp.getNode(nIdx));
-            int maxReal = (int) (maxRaw * r); //Truncation, we ignore partial virtual resource so it's correct
+            //Truncation, we ignore partial virtual resource so it's correct
+            int maxReal = (int) (maxRaw * r);
             try {
                 virtRcUsage[nIdx].setSup(maxReal);
             } catch (ContradictionException ex) {
@@ -506,7 +508,8 @@ public class CShareableResource implements ChocoModelView {
             }
             IntDomainVar freeReal = solver.createBoundIntVar(rp.makeVarLabel("free_real('", rp.getNode(nIdx), "')"), 0, maxReal);
             solver.post(solver.eq(freeReal, CPSolver.minus(maxReal, virtRcUsage[nIdx])));
-            IntDomainVar freeRaw = ChocoUtils.div(solver, freeReal, (int) r); //TODO: check for the correctness of the truncation
+            //TODO: check for the correctness of the following truncation
+            IntDomainVar freeRaw = ChocoUtils.div(solver, freeReal, (int) r);
             solver.post(solver.eq(phyRcUsage[nIdx], CPSolver.minus(maxRaw, freeRaw)));
         }
         return true;

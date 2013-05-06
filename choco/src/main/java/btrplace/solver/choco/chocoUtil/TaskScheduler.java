@@ -254,9 +254,10 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
         }
 
 
-        for (int d = 0; d < nbDims; d++) { //Each dimension
-            for (int j = 0; j < dHostersVals.length; j++) { //for each placed dSlices
-                int r = dHostersVals[j]; //on which resource it is placed
+        for (int d = 0; d < nbDims; d++) {
+            for (int j = 0; j < dHostersVals.length; j++) {
+                //for each placed dSlices, we get the used resource
+                int r = dHostersVals[j];
                 int st = dStartsVals[j];
                 changes[d][r].put(st, changes[d][r].get(st) - dUsages[d][j]);
             }

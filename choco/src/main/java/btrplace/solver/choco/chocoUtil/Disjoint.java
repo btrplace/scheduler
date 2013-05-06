@@ -144,7 +144,8 @@ public class Disjoint extends AbstractLargeIntSConstraint {
         if (candidates[other][val].get() > 0) {
             //The value was possible for the other group, so we remove it from its variable
 
-            int n = 0; //The number of variables that were updated
+            //n is the number of variables that were updated
+            int n = 0;
             int i = (other == 0) ? 0 : nbX;
             int end = (other == 0) ? nbX : vars.length;
             for (; i < end; i++) {

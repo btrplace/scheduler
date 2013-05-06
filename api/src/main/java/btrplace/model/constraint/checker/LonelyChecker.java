@@ -3,8 +3,8 @@ package btrplace.model.constraint.checker;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.constraint.Lonely;
-import btrplace.plan.event.RunningVMPlacement;
 import btrplace.plan.event.BootNode;
+import btrplace.plan.event.RunningVMPlacement;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -36,8 +36,10 @@ public class LonelyChecker extends AllowAllConstraintChecker<Lonely> {
     private boolean checkDestination(UUID vm, UUID n) {
         if (getConstraint().isContinuous()) {
             if (getVMs().contains(vm)) {
-                if (!idleNodes.remove(n)) { //The node was not idle
-                    return privateNodes.add(n); //So it must be private
+                if (!idleNodes.remove(n)) {
+                    //The node was not idle
+                    //So it must be private
+                    return privateNodes.add(n);
                 }
                 //The node is now longer idle, just private
                 return privateNodes.add(n);

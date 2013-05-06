@@ -240,9 +240,10 @@ public class AliasedCumulatives extends AbstractLargeIntSConstraint {
         }
 
 
-        for (int i = 0; i < nbDims; i++) { //Each dimension
-            for (int j = 0; j < dHostersVals.length; j++) { //for each placed dSlices
-                int nIdx = dHostersVals[j]; //on which resource it is placed
+        for (int i = 0; i < nbDims; i++) {
+            for (int j = 0; j < dHostersVals.length; j++) {
+                //for each placed dSlices, we get the used resource and the moment the slice arrives on it
+                int nIdx = dHostersVals[j];
                 if (isIn(nIdx)) {
                     changes[i].put(dStartsVals[j], changes[i].get(dStartsVals[j]) - dUsages[i][j]);
                 }

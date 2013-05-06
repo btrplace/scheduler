@@ -3,8 +3,8 @@ package btrplace.model.constraint.checker;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.constraint.Quarantine;
-import btrplace.plan.event.RunningVMPlacement;
 import btrplace.plan.event.MigrateVM;
+import btrplace.plan.event.RunningVMPlacement;
 
 /**
  * Checker for the {@link btrplace.model.constraint.Quarantine} constraint
@@ -25,7 +25,8 @@ public class QuarantineChecker extends AllowAllConstraintChecker<Quarantine> {
 
     @Override
     public boolean start(MigrateVM a) {
-        if (getVMs().contains(a.getVM())) { //the VM can not move elsewhere
+        if (getVMs().contains(a.getVM())) {
+            //the VM can not move elsewhere
             return false;
         }
         return startRunningVMPlacement(a);

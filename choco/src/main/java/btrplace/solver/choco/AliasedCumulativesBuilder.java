@@ -18,9 +18,6 @@
 
 package btrplace.solver.choco;
 
-import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.Slice;
-import btrplace.solver.choco.VMActionModel;
 import btrplace.solver.choco.chocoUtil.AliasedCumulatives;
 import btrplace.solver.choco.chocoUtil.LocalTaskScheduler;
 import choco.cp.solver.CPSolver;
@@ -122,8 +119,9 @@ public class AliasedCumulativesBuilder {
 
 
         associations = new int[dHosters.length];
+        //No associations task by default, then we set the right associations
         for (i = 0; i < associations.length; i++) {
-            associations[i] = LocalTaskScheduler.NO_ASSOCIATIONS; //No associations task
+            associations[i] = LocalTaskScheduler.NO_ASSOCIATIONS;
         }
         for (i = 0; i < linked.size(); i++) {
             int[] assoc = linked.get(i);

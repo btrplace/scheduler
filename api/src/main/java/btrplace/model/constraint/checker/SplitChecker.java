@@ -29,7 +29,8 @@ public class SplitChecker extends AllowAllConstraintChecker<Split> {
     @Override
     public boolean endsWith(Model mo) {
         Mapping m = mo.getMapping();
-        List<Set<UUID>> used = new ArrayList<>(sets.size()); //The pgroups that are used
+        //The pgroups that are used:
+        List<Set<UUID>> used = new ArrayList<>(sets.size());
         for (Set<UUID> vgrp : sets) {
             Set<UUID> myGroup = new HashSet<>();
 

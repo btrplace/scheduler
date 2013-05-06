@@ -24,6 +24,7 @@ import btrplace.model.constraint.SatConstraint;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * An instance aggregates a model and a list of constraints.
@@ -81,8 +82,6 @@ public class Instance {
 
     @Override
     public int hashCode() {
-        int result = mo.hashCode();
-        result = 31 * result + cstrs.hashCode();
-        return result;
+        return Objects.hash(mo, cstrs);
     }
 }

@@ -56,7 +56,8 @@ public class CAmong implements ChocoSatConstraint {
     /**
      * Get the group variable that indicate on which group the VMs are running.
      *
-     * @return a variable that may be instantiated but {@code null} until {@link #inject(btrplace.solver.choco.ReconfigurationProblem)} has been called
+     * @return a variable that may be instantiated but {@code null} until
+     *         {@link #inject(btrplace.solver.choco.ReconfigurationProblem)} has been called
      */
     public IntDomainVar getGroupVariable() {
         return vmGrpId;
@@ -75,7 +76,8 @@ public class CAmong implements ChocoSatConstraint {
         Set<UUID> runnings = new HashSet<>();
         Mapping src = rp.getSourceModel().getMapping();
         for (UUID vm : cstr.getInvolvedVMs()) {
-            if (rp.getFutureRunningVMs().contains(vm)) { //The VM will be running
+            if (rp.getFutureRunningVMs().contains(vm)) {
+                //The VM will be running
                 runnings.add(vm);
                 IntDomainVar vAssign = rp.getVMAction(vm).getDSlice().getHoster();
                 //If one of the VM is already placed, no need for the constraint, the group will be known
@@ -93,7 +95,9 @@ public class CAmong implements ChocoSatConstraint {
                     }
                 }
             }
-            if (src.getRunningVMs().contains(vm) && cstr.isContinuous()) { //The VM is already running
+
+            if (src.getRunningVMs().contains(vm) && cstr.isContinuous()) {
+                //The VM is already running, so we get its current group
                 UUID curNode = src.getVMLocation(vm);
                 int g = getGroup(curNode);
                 if (curGrp == -1) {

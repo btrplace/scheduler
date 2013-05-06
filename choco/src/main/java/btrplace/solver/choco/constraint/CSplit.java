@@ -34,8 +34,6 @@ import java.util.*;
 
 /**
  * Choco implementation of the {@link btrplace.model.constraint.Split} constraint.
- * <p/>
- * TODO: continuous implementation
  *
  * @author Fabien Hermenier
  */
@@ -109,7 +107,7 @@ public class CSplit implements ChocoSatConstraint {
                     otherEnds[i] = new ArrayList<>();
                 }
 
-                //Fullfil the others stuff.
+                //Fulfill the others stuff.
                 for (int i = 0; i < vmGroups.size(); i++) {
                     List<UUID> grp = vmGroups.get(i);
                     for (UUID vm : grp) {
@@ -162,7 +160,8 @@ public class CSplit implements ChocoSatConstraint {
                     UUID n = map.getVMLocation(vm);
                     Set<UUID> allOnN = map.getRunningVMs(n);
                     for (UUID vmOnN : allOnN) {
-                        if (inOtherGroup(groups, grp, vmOnN)) { //The VM belong to another group
+                        if (inOtherGroup(groups, grp, vmOnN)) {
+                            //The VM belong to another group
                             bad.add(vm);
                             bad.add(vmOnN);
                         }

@@ -84,13 +84,15 @@ public class DefaultMapping implements Mapping, Cloneable {
             return false;
         }
 
-        if (vmState[RUNNING_STATE].contains(vm)) { //If was running
+        if (vmState[RUNNING_STATE].contains(vm)) {
+            //If was running, get it's old position
             UUID old = place.put(vm, nId);
             if (!old.equals(nId)) {
                 host[RUNNING_STATE].get(old).remove(vm);
                 host[RUNNING_STATE].get(nId).add(vm);
             }
-        } else if (vmState[SLEEPING_STATE].remove(vm)) { //If was sleeping
+        } else if (vmState[SLEEPING_STATE].remove(vm)) {
+            //If was sleeping, where ?
             vmState[RUNNING_STATE].add(vm);
             UUID old = place.put(vm, nId);
             host[SLEEPING_STATE].get(old).remove(vm);
@@ -99,7 +101,8 @@ public class DefaultMapping implements Mapping, Cloneable {
             place.put(vm, nId);
             vmState[RUNNING_STATE].add(vm);
             host[RUNNING_STATE].get(nId).add(vm);
-        } else { //New VM
+        } else {
+            //it's a new VM
             place.put(vm, nId);
             vmState[RUNNING_STATE].add(vm);
             host[RUNNING_STATE].get(nId).add(vm);
@@ -112,12 +115,14 @@ public class DefaultMapping implements Mapping, Cloneable {
         if (!nodeState[ONLINE_STATE].contains(nId)) {
             return false;
         }
-        if (vmState[RUNNING_STATE].remove(vm)) { //If was running
+        if (vmState[RUNNING_STATE].remove(vm)) {
+            //If was running, sync the state
             vmState[SLEEPING_STATE].add(vm);
             UUID old = place.put(vm, nId);
             host[RUNNING_STATE].get(old).remove(vm);
             host[SLEEPING_STATE].get(nId).add(vm);
-        } else if (vmState[SLEEPING_STATE].contains(vm)) { //If was sleeping
+        } else if (vmState[SLEEPING_STATE].contains(vm)) {
+            //If was sleeping, sync the state
             UUID old = place.put(vm, nId);
             vmState[SLEEPING_STATE].add(vm);
             if (!old.equals(nId)) {
@@ -128,7 +133,8 @@ public class DefaultMapping implements Mapping, Cloneable {
             place.put(vm, nId);
             vmState[SLEEPING_STATE].add(vm);
             host[SLEEPING_STATE].get(nId).add(vm);
-        } else { //New VM
+        } else {
+            //it's a new VM
             place.put(vm, nId);
             vmState[SLEEPING_STATE].add(vm);
             host[SLEEPING_STATE].get(nId).add(vm);
@@ -138,30 +144,34 @@ public class DefaultMapping implements Mapping, Cloneable {
 
     @Override
     public void addReadyVM(UUID vm) {
-        if (vmState[RUNNING_STATE].remove(vm)) { //If was running
+        if (vmState[RUNNING_STATE].remove(vm)) {
+            //If was running, sync the state
             vmState[READY_STATE].add(vm);
             UUID n = place.remove(vm);
             host[RUNNING_STATE].get(n).remove(vm);
-        } else if (vmState[SLEEPING_STATE].remove(vm)) { //If was sleeping
+        } else if (vmState[SLEEPING_STATE].remove(vm)) {
+            //If was sleeping, sync the state
             vmState[READY_STATE].add(vm);
             UUID n = place.remove(vm);
             host[SLEEPING_STATE].get(n).remove(vm);
         } else {
-            vmState[READY_STATE].add(vm); //else, new VM
+            //else, it's a new VM
+            vmState[READY_STATE].add(vm);
         }
     }
 
     @Override
     public boolean removeVM(UUID vm) {
         UUID n = this.place.remove(vm);
-        if (n != null) { //The VM exists and is placed
-            if (vmState[RUNNING_STATE].remove(vm)) { //Was running
+        if (n != null) {
+            //The VM exists and is already placed
+            if (vmState[RUNNING_STATE].remove(vm)) {
                 host[RUNNING_STATE].get(n).remove(vm);
-            } else if (vmState[SLEEPING_STATE].remove(vm)) { //Was sleeping
+            } else if (vmState[SLEEPING_STATE].remove(vm)) {
                 host[SLEEPING_STATE].get(n).remove(vm);
             }
             return true;
-        } else if (vmState[READY_STATE].remove(vm)) { //Was ready
+        } else if (vmState[READY_STATE].remove(vm)) {
             return true;
         }
         return false;
@@ -191,7 +201,7 @@ public class DefaultMapping implements Mapping, Cloneable {
     @Override
     public boolean addOfflineNode(UUID n) {
 
-        if (nodeState[ONLINE_STATE].contains(n)) {  //The node is online
+        if (nodeState[ONLINE_STATE].contains(n)) {
             if (!host[RUNNING_STATE].get(n).isEmpty() || !host[SLEEPING_STATE].get(n).isEmpty()) {
                 //It already host VMs, not possible
                 return false;

@@ -251,7 +251,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     /**
-     * A naïve heuristic to be sure every variables will be instantiated.
+     * A naive heuristic to be sure every variables will be instantiated.
      * In practice, instantiate each of the variables to its lower-bound
      */
     private void appendNaiveBranchHeuristic() {
@@ -363,10 +363,12 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private void fillElements() {
 
         Set<UUID> allVMs = new HashSet<>(model.getMapping().getAllVMs());
-        allVMs.addAll(ready); //The only VMs that may not appear in the mapping
+        //We have to integrate VMs in the ready state: the only VMs that may not appear in the mapping
+        allVMs.addAll(ready);
 
         vms = new UUID[allVMs.size()];
-        revVMs = new TObjectIntHashMap<>(allVMs.size(), 0.5f, -1); //0.5f is the default load factor
+        //0.5f is a default load factor in trove.
+        revVMs = new TObjectIntHashMap<>(allVMs.size(), 0.5f, -1);
 
         int i = 0;
         for (UUID vm : allVMs) {

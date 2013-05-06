@@ -125,7 +125,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
     @Override
     public boolean isConsistent() {
         int[][] l = new int[nbDims][nbBins];
-        for (int i = 0; i < bins.length; i++) { //Assignment variable
+        for (int i = 0; i < bins.length; i++) {
             if (bins[i].isInstantiated()) {
                 for (int d = 0; d < nbDims; d++) {
                     int v = bins[i].getVal();

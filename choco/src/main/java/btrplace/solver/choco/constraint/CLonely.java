@@ -20,8 +20,8 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Lonely;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoSatConstraint;
 import btrplace.solver.choco.ChocoSatConstraintBuilder;
@@ -127,7 +127,8 @@ public class CLonely implements ChocoSatConstraint {
                 hosters.add(map.getVMLocation(vm));
             }
         }
-        for (UUID n : hosters) { //Every used node that host a VMs that is not a part of the constraint
+        for (UUID n : hosters) {
+            //Every used node that host a VMs that is not a part of the constraint
             //is a bad node. All the hosted VMs are candidate for relocation. Not optimal, but safe
             for (UUID vm : map.getRunningVMs(n)) {
                 if (!vms.contains(vm)) {

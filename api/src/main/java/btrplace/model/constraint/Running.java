@@ -68,7 +68,7 @@ public class Running extends SatConstraint {
         return new StringBuilder("running(")
                 .append("vms=").append(getInvolvedVMs())
                 .append(", discrete")
-                .append(")").toString();
+                .append(')').toString();
     }
 
     @Override

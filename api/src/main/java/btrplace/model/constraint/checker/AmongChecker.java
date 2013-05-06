@@ -55,7 +55,8 @@ public class AmongChecker extends AllowAllConstraintChecker<Among> {
         if (getConstraint().isContinuous() && getVMs().contains(a.getVM())) {
             if (choosedGroup == null) {
                 choosedGroup = getConstraint().getAssociatedPGroup(a.getDestinationNode());
-                if (choosedGroup == null) { //disallowed group
+                if (choosedGroup == null) {
+                    //disallowed group
                     return false;
                 }
             } else {

@@ -32,7 +32,8 @@ public class SplitAmongChecker extends AllowAllConstraintChecker<SplitAmong> {
     @Override
     public boolean endsWith(Model i) {
         Mapping m = i.getMapping();
-        Set<Set<UUID>> pUsed = new HashSet<>(); //The pgroups that are used
+        //The pgroups that are used:
+        Set<Set<UUID>> pUsed = new HashSet<>();
         for (Set<UUID> vgrp : vGrps) {
             Set<UUID> choosedGroup = null;
 
@@ -41,12 +42,15 @@ public class SplitAmongChecker extends AllowAllConstraintChecker<SplitAmong> {
                 if (m.getRunningVMs().contains(vmId)) {
                     if (choosedGroup == null) {
                         choosedGroup = getConstraint().getAssociatedPGroup(m.getVMLocation(vmId));
-                        if (choosedGroup == null) { //THe VM is running but on an unknown group. It is an error
+                        if (choosedGroup == null) {
+                            //Te VM is running but on an unknown group. It is an error
                             return false;
-                        } else if (!pUsed.add(choosedGroup)) { //The pgroup has already been used for another set of VMs.
+                        } else if (!pUsed.add(choosedGroup)) {
+                            //The pgroup has already been used for another set of VMs.
                             return false;
                         }
-                    } else if (!choosedGroup.contains(m.getVMLocation(vmId))) { //The VM is not in the group with the other
+                    } else if (!choosedGroup.contains(m.getVMLocation(vmId))) {
+                        //The VM is not in the group with the other
                         return false;
                     }
                 }
