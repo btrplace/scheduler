@@ -1,7 +1,7 @@
 Release notes
 ======================
 
-version ???????????
+version 0.29 - 07 May 2013
 ----------------------
 - Multiple Bug fixes
 - Fix regressions in the placement subproblems that appeared in 0.28
