@@ -79,7 +79,12 @@ public class MinMTTR implements ReconfigurationObjective {
 
         s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
         s.setObjective(cost);
-
+        //We set a restart limit by default, this may be useful especially with very small infrastructure
+        //as the risk of cyclic dependencies increase and their is no solution for the moment to detect cycle
+        //in the scheduling part
+        //Restart limit = 2 * number of VMs in the DC.
+        s.setGeometricRestart(rp.getVMs().length * 2, 1.5d);
+        s.setRestart(true);
         injectPlacementHeuristic(rp, cost);
     }
 

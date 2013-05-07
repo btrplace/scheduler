@@ -257,7 +257,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
             }
         }
         assert checkLoadConsistency();
-        ChocoLogging.getBranchingLogger().finest(Arrays.toString(name) + " " + Arrays.toString(cLoads) + " notEntailed: " + notEntailedDims);
+        ChocoLogging.getBranchingLogger().finest("BinPacking: " + Arrays.toString(name) + " notEntailed dimensions: " + notEntailedDims);
         propagate();
     }
 
