@@ -28,10 +28,7 @@ import choco.cp.solver.CPSolver;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Builder to create a unique slices scheduler that aggregates
@@ -78,7 +75,6 @@ public class SliceSchedulerBuilder {
 
         non = new HashMap<>();
 
-        List<int[]> nonOverlapping = new ArrayList<>();
         int dIdx = 0, cIdx = 0;
 
         for (VMActionModel a : rp.getVMActions()) {
@@ -86,7 +82,6 @@ public class SliceSchedulerBuilder {
             Slice d = a.getDSlice();
 
             if (d != null && c != null) {
-                nonOverlapping.add(new int[]{dIdx, cIdx});
                 non.put(a.getVM(), new int[]{dIdx, cIdx});
             }
             if (d != null) {
@@ -127,8 +122,8 @@ public class SliceSchedulerBuilder {
         for (i = 0; i < associations.length; i++) {
             associations[i] = LocalTaskScheduler.NO_ASSOCIATIONS;
         }
-        for (i = 0; i < nonOverlapping.size(); i++) {
-            int[] assoc = nonOverlapping.get(i);
+        for (Map.Entry<UUID, int[]> e : non.entrySet()) {
+            int[] assoc = e.getValue();
             associations[assoc[0]] = assoc[1];
         }
     }
