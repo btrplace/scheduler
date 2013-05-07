@@ -19,8 +19,8 @@
 package btrplace.solver.choco;
 
 import btrplace.model.*;
-import btrplace.model.constraint.Fence;
-import btrplace.model.constraint.SatConstraint;
+import btrplace.model.constraint.*;
+import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.ActionModelUtils;
@@ -180,5 +180,53 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
         cra.solve(mo, Collections.singleton(cstr));
     }
 
+    /**
+     * Issue #14
+     *
+     * @throws SolverException
+     */
+    @Test
+    public void testNonHomogeneousIncrease() throws SolverException {
+        ShareableResource cpu = new ShareableResource("cpu");
+        ShareableResource mem = new ShareableResource("mem");
+        cpu.set(n1, 10);
+        mem.set(n1, 10);
+        cpu.set(n2, 10);
+        mem.set(n2, 10);
+
+        cpu.set(vm1, 5);
+        mem.set(vm1, 4);
+
+        cpu.set(vm2, 3);
+        mem.set(vm2, 8);
+
+        cpu.set(vm3, 5);
+        cpu.set(vm3, 4);
+
+        cpu.set(vm4, 4);
+        cpu.set(vm4, 5);
+
+        //vm1 requires more cpu resources, but fewer mem resources
+        Preserve pCPU = new Preserve(new HashSet<>(Arrays.asList(vm1, vm3)), "cpu", 7);
+        Preserve pMem = new Preserve(new HashSet<>(Arrays.asList(vm1, vm3)), "mem", 2);
+
+
+        Mapping map = new MappingBuilder().on(n1, n2)
+                .run(n1, vm1)
+                .run(n2, vm3, vm4)
+                .ready(vm2).build();
+        Model mo = new DefaultModel(map);
+        mo.attach(cpu);
+        mo.attach(mem);
+
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.setMaxEnd(5);
+        ReconfigurationPlan p = cra.solve(mo, Arrays.<SatConstraint>asList(pCPU, pMem,
+                new Online(Collections.singleton(n1)),
+                new Running(Collections.singleton(vm2)),
+                new Ready(Collections.singleton(vm3))));
+        Assert.assertNotNull(p);
+        System.out.println(p);
+    }
 
 }

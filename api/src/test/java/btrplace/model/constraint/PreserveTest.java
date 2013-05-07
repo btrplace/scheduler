@@ -78,8 +78,8 @@ public class PreserveTest implements PremadeElements {
         rc.set(vm3, 3);
         Assert.assertEquals(true, p.isSatisfied(m));
 
-        rc.unset(vm3); //Set to 0 by default
-        Assert.assertEquals(false, p.isSatisfied(m));
+        rc.unset(vm3); //Set to 3 by default
+        Assert.assertEquals(true, p.isSatisfied(m));
         Assert.assertEquals(false, new Preserve(s, "mem", 3).isSatisfied(m));
     }
 }

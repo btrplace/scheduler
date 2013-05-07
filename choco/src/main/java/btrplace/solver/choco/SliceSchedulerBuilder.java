@@ -235,7 +235,6 @@ public class SliceSchedulerBuilder {
 
                 Boolean ret = strictlyDecreasingOrUnchanged(vm);
                 if (Boolean.TRUE.equals(ret)) {
-                    //System.err.println("<= " + vm);
                     //Else, the resource usage is decreasing, so
                     // we set the cSlice duration to 0 to directly reduces the resource allocation
                     if (stay.isInstantiatedTo(1)) {
@@ -249,7 +248,6 @@ public class SliceSchedulerBuilder {
                         rp.getSolver().post(new FastImpliesEq(stay, cSlice.getDuration(), 0));
                     }
                 } else if (Boolean.FALSE.equals(ret)) {
-                    //System.err.println("Consider increasing or variable for " + vm);
                     //If the resource usage will be increasing
                     //Then the duration of the dSlice can be set to 0
                     //(the allocation will be performed at the end of the reconfiguration process)
@@ -263,8 +261,6 @@ public class SliceSchedulerBuilder {
                     } else {
                         rp.getSolver().post(new FastImpliesEq(stay, dSlice.getDuration(), 0));
                     }
-                } else {
-                    //System.out.println("No symmetry breaking for " + vm);
                 }
             }
         }

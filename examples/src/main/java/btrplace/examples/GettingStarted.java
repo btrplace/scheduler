@@ -4,7 +4,10 @@ import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.constraint.*;
+import btrplace.model.constraint.Offline;
+import btrplace.model.constraint.Preserve;
+import btrplace.model.constraint.SatConstraint;
+import btrplace.model.constraint.Spread;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.DependencyBasedPlanApplier;
 import btrplace.plan.ReconfigurationPlan;
@@ -115,14 +118,6 @@ public class GettingStarted implements Example {
 
         //node N4 must be offline
         cstrs.add(new Offline(Collections.singleton(n4)));
-
-        //Debug purpose, repeatable placement
-        cstrs.add(new Fence(Collections.singleton(vm3), Collections.singleton(n2)));
-        cstrs.add(new Fence(Collections.singleton(vm5), Collections.singleton(n2)));
-        cstrs.add(new Fence(Collections.singleton(vm6), Collections.singleton(n1)));
-        cstrs.add(new Fence(Collections.singleton(vm2), Collections.singleton(n1)));
-        cstrs.add(new Fence(Collections.singleton(vm1), Collections.singleton(n3)));
-        cstrs.add(new Fence(Collections.singleton(vm4), Collections.singleton(n3)));
 
         return cstrs;
     }

@@ -18,7 +18,10 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.model.constraint.Ban;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Running;
@@ -67,7 +70,6 @@ public class CBanTest implements PremadeElements {
 
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
-        cra.setVerbosity(0);
         cra.setTimeLimit(-1);
         ReconfigurationPlan p = cra.solve(mo, s);
         Assert.assertNotNull(p);

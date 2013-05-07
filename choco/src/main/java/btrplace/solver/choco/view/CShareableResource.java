@@ -359,7 +359,6 @@ public class CShareableResource implements ChocoModelView {
     }
 
     private void insertAllocateEvent(Action a, UUID vm) {
-        System.err.println("Allocate event for " + vm + " on " + a);
         int prev = 0;
         UUID sVM = references.containsKey(vm) ? references.get(vm) : vm;
         if (rc.defined(sVM)) {

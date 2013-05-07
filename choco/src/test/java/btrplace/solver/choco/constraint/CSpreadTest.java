@@ -21,9 +21,9 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Online;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Spread;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
@@ -117,10 +117,10 @@ public class CSpreadTest implements PremadeElements {
         cstr.add(s);
         cstr.add(new Online(m.getMapping().getAllNodes()));
         cstr.add(new Fence(Collections.singleton(vm1), Collections.singleton(n2)));
+        //cra.doOptimize(true);
         ReconfigurationPlan p = cra.solve(m, cstr);
         Assert.assertNotNull(p);
         Mapping res = p.getResult().getMapping();
-        Assert.assertEquals(1, p.getSize());
         Assert.assertNotSame(res.getVMLocation(vm1), res.getVMLocation(vm2));
     }
 }
