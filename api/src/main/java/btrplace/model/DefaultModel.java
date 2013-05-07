@@ -18,9 +18,12 @@
 
 package btrplace.model;
 
+import btrplace.model.view.ModelView;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Default implementation for {@link Model}.
@@ -42,7 +45,7 @@ public class DefaultModel implements Model, Cloneable {
      */
     public DefaultModel(Mapping m) {
         this.cfg = m;
-        this.resources = new HashMap<String, ModelView>();
+        this.resources = new HashMap<>();
         attrs = new DefaultAttributes();
     }
 
@@ -95,10 +98,7 @@ public class DefaultModel implements Model, Cloneable {
 
     @Override
     public int hashCode() {
-        int result = cfg.hashCode();
-        result = 31 * result + resources.hashCode();
-        result = 31 * result + attrs.hashCode();
-        return result;
+        return Objects.hash(cfg, resources, attrs);
     }
 
     @Override

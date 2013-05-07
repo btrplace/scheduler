@@ -21,7 +21,7 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Ready;
@@ -56,8 +56,8 @@ public class CFenceTest implements PremadeElements {
                 .run(n3, vm4)
                 .sleep(n4, vm5).build();
 
-        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2));
-        Set<UUID> ns = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<UUID> ns = new HashSet<>(Arrays.asList(n1, n2));
         CFence c = new CFence(new Fence(vms, ns));
         Model mo = new DefaultModel(m);
         Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
@@ -79,10 +79,10 @@ public class CFenceTest implements PremadeElements {
                 .run(n2, vm2)
                 .run(n3, vm3).build();
 
-        Set<UUID> on = new HashSet<UUID>(Arrays.asList(n1, n3));
+        Set<UUID> on = new HashSet<>(Arrays.asList(n1, n3));
         Fence f = new Fence(map.getAllVMs(), on);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(f);
         cstrs.add(new Online(map.getAllNodes()));
         Model mo = new DefaultModel(map);

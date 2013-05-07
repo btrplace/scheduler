@@ -24,7 +24,6 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
-import btrplace.solver.choco.VMActionModel;
 import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -32,6 +31,12 @@ import java.util.UUID;
 
 /**
  * Model an action where a running VM goes into the sleeping state through a {@link SuspendVM} action.
+ * The model must provide an estimation of the action duration through a
+ * {@link btrplace.solver.choco.durationEvaluator.DurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code SuspendVM.class}
+ * <p/>
+ * If the reconfiguration problem has a solution, a {@link SuspendVM} action is inserted into the resulting
+ * reconfiguration plan.
  *
  * @author Fabien Hermenier
  */
@@ -62,9 +67,9 @@ public class SuspendVMModel implements VMActionModel {
 
         int d = rp.getDurationEvaluators().evaluate(SuspendVM.class, e);
 
-        duration = rp.makeDuration("suspendVM(" + e + ").duration", d, d);
+        duration = rp.makeDuration(d, d, "suspendVM(", e, ").duration");
         this.cSlice = new SliceBuilder(rp, e, "suspendVM(" + e + ").cSlice").setHoster(rp.getCurrentVMLocation(rp.getVM(e)))
-                .setEnd(rp.makeDuration("suspendVM(" + e + ").cSlice_end", d, rp.getEnd().getSup()))
+                .setEnd(rp.makeDuration(rp.getEnd().getSup(), d, "suspendVM(", e, ").cSlice_end"))
                 .build();
         start = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel("suspendVM(" + e + ").start"), cSlice.getEnd(), -d);
         state = rp.getSolver().makeConstantIntVar(0);

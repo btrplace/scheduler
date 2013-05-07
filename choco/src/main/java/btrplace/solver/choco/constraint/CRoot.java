@@ -19,10 +19,12 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Root;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.*;
+import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.Slice;
+import btrplace.solver.choco.actionModel.VMActionModel;
 import choco.cp.solver.CPSolver;
 
 import java.util.Collections;

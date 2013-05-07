@@ -21,6 +21,8 @@ package btrplace.solver.choco;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.solver.SolverException;
+import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
+import btrplace.solver.choco.view.ModelViewMapper;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -29,7 +31,15 @@ import java.util.UUID;
 
 /**
  * Builder to help at the creation of a reconfiguration algorithm.
- * By default, variables are not labelled to save memory, all the VMs are manageable and they stay in their current state.
+ * By default:
+ * <ul>
+ * <li>Variables are not labelled to save memory</li>
+ * <li>All the VMs are manageable</li>
+ * <li>The default {@link btrplace.solver.choco.durationEvaluator.DurationEvaluators} is used</li>
+ * <li>The {@link UUIDPool} is {@link InMemoryUUIDPool}</li>
+ * <li>The default {@link btrplace.solver.choco.view.ModelViewMapper} is used</li>
+ * <li>The state of the VMs is unchanged</li>
+ * </ul>
  *
  * @author Fabien Hermenier
  */
@@ -47,6 +57,8 @@ public class DefaultReconfigurationProblemBuilder {
 
     private Set<UUID> manageable;
 
+    private UUIDPool uuidPool;
+
     /**
      * Make a new builder for a problem working on a given model.
      *
@@ -63,6 +75,17 @@ public class DefaultReconfigurationProblemBuilder {
      */
     public DefaultReconfigurationProblemBuilder labelVariables() {
         labelVars = true;
+        return this;
+    }
+
+    /**
+     * Set the pool of UUIDs to use.
+     *
+     * @param p the pool to use
+     * @return the current builder
+     */
+    public DefaultReconfigurationProblemBuilder setUUIDPool(UUIDPool p) {
+        this.uuidPool = p;
         return this;
     }
 
@@ -127,12 +150,14 @@ public class DefaultReconfigurationProblemBuilder {
      * @throws SolverException if an error occurred
      */
     public DefaultReconfigurationProblem build() throws SolverException {
-        if (runs == null) { //The others are supposed to be null to
+
+        if (runs == null) {
+            //The others are supposed to be null too as they are set using the same method
             Mapping map = model.getMapping();
             runs = map.getRunningVMs();
             waits = map.getReadyVMs();
             sleep = map.getSleepingVMs();
-            over = Collections.<UUID>emptySet();
+            over = Collections.emptySet();
         }
         if (dEval == null) {
             dEval = new DurationEvaluators();
@@ -141,10 +166,13 @@ public class DefaultReconfigurationProblemBuilder {
             viewMapper = new ModelViewMapper();
         }
         if (manageable == null) {
-            manageable = new HashSet<UUID>();
+            manageable = new HashSet<>();
             manageable.addAll(model.getMapping().getAllVMs());
         }
-        return new DefaultReconfigurationProblem(model, dEval, viewMapper, waits, runs, sleep, over, manageable, labelVars);
+        if (uuidPool == null) {
+            uuidPool = new InMemoryUUIDPool();
+        }
+        return new DefaultReconfigurationProblem(model, dEval, viewMapper, uuidPool, waits, runs, sleep, over, manageable, labelVars);
     }
 
 }

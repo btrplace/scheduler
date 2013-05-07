@@ -48,7 +48,7 @@ public final class JSONUtils {
      * @return the set of UUID
      */
     public static Set<UUID> fromJSON(JSONArray a) {
-        Set<UUID> s = new HashSet<UUID>(a.size());
+        Set<UUID> s = new HashSet<>(a.size());
         for (Object o : a) {
             s.add(UUID.fromString((String) o));
         }
@@ -78,7 +78,7 @@ public final class JSONUtils {
      * @throws JSONConverterException if the key does not point to a set
      */
     public static Set<Set<UUID>> requiredSets(JSONObject o, String id) throws JSONConverterException {
-        Set<Set<UUID>> res = new HashSet<Set<UUID>>();
+        Set<Set<UUID>> res = new HashSet<>();
         Object x = o.get(id);
         if (!(x instanceof JSONArray)) {
             throw new JSONConverterException("Set of UUIDs sets expected at key '" + id + "'");
@@ -115,12 +115,12 @@ public final class JSONUtils {
      */
     public static UUID requiredUUID(JSONObject o, String id) throws JSONConverterException {
         if (!o.containsKey(id)) {
-            throw new JSONConverterException("Key '" + id + "' expected to read a UUID");
+            throw new JSONConverterException("No value at key '" + id + "'");
         }
         try {
             return UUID.fromString(o.get(id).toString());
         } catch (Exception e) {
-            throw new JSONConverterException("Unable to read a UUID from string '" + id + "'");
+            throw new JSONConverterException("Unable to read a UUID from string '" + id + "'", e);
         }
     }
 
@@ -150,7 +150,10 @@ public final class JSONUtils {
      */
     public static long requiredLong(JSONObject o, String id) throws JSONConverterException {
         Object x = o.get(id);
-        if (!(x instanceof Number) || Math.floor(((Number) x).doubleValue()) != ((Number) x).intValue()) {
+        if (x == null) {
+            throw new JSONConverterException("No value at key '" + id + "'");
+        }
+        if (!(x instanceof Number) || Math.ceil(((Number) x).doubleValue()) != ((Number) x).longValue()) {
             throw new JSONConverterException("Natural number expected at key '" + id + "' but was '" + x.getClass() + "'.");
         }
         return ((Number) x).longValue();
@@ -166,10 +169,13 @@ public final class JSONUtils {
      */
     public static double requiredDouble(JSONObject o, String id) throws JSONConverterException {
         Object x = o.get(id);
-        if (!(x instanceof Double)) {
-            throw new JSONConverterException("Real number expected at key '" + id + "' but was '" + x.getClass() + "'.");
+        if (x == null) {
+            throw new JSONConverterException("No value at key '" + id + "'");
         }
-        return (Double) x;
+        if (!(x instanceof Number)) {
+            throw new JSONConverterException("Number expected at key '" + id + "' but was '" + x.getClass() + "'.");
+        }
+        return ((Number) x).doubleValue();
     }
 
     /**
@@ -182,6 +188,9 @@ public final class JSONUtils {
      */
     public static boolean requiredBoolean(JSONObject o, String id) throws JSONConverterException {
         Object x = o.get(id);
+        if (x == null) {
+            throw new JSONConverterException("No value at key '" + id + "'");
+        }
         if (!(x instanceof Boolean)) {
             throw new JSONConverterException("Boolean expected at key '" + id + "' but was '" + x.getClass() + "'.");
         }

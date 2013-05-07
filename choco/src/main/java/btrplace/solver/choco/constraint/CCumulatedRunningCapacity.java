@@ -20,11 +20,9 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
 import btrplace.model.constraint.CumulatedRunningCapacity;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoSatConstraint;
-import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -54,7 +52,7 @@ public class CCumulatedRunningCapacity implements ChocoSatConstraint {
         CPSolver s = rp.getSolver();
         if (cstr.isContinuous()) {
             //The constraint must be already satisfied
-            if (!cstr.isSatisfied(rp.getSourceModel()).equals(SatConstraint.Sat.SATISFIED)) {
+            if (!cstr.isSatisfied(rp.getSourceModel())) {
                 rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
                 return false;
             } else {
@@ -70,7 +68,7 @@ public class CCumulatedRunningCapacity implements ChocoSatConstraint {
                 rp.getAliasedCumulativesBuilder().add(cstr.getAmount(), cUse, dUse, alias);
             }
         }
-        List<IntDomainVar> vs = new ArrayList<IntDomainVar>();
+        List<IntDomainVar> vs = new ArrayList<>();
         for (UUID u : cstr.getInvolvedNodes()) {
             vs.add(rp.getNbRunningVMs()[rp.getNode(u)]);
         }
@@ -81,7 +79,7 @@ public class CCumulatedRunningCapacity implements ChocoSatConstraint {
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-        Set<UUID> bad = new HashSet<UUID>();
+        Set<UUID> bad = new HashSet<>();
         int remainder = cstr.getAmount();
         for (UUID n : cstr.getInvolvedNodes()) {
             remainder -= map.getRunningVMs(n).size();

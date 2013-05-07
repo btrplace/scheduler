@@ -21,7 +21,6 @@ package btrplace.solver.choco.actionModel;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootNode;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.NodeActionModel;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import choco.cp.solver.CPSolver;
@@ -32,7 +31,12 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import java.util.UUID;
 
 /**
- * Model an action that allows a node to be booted if necessary. The action is modeled as follow:
+ * Model an action that allows a node to be booted if necessary.
+ * The model must provide an estimation of the action duration through a
+ * {@link btrplace.solver.choco.durationEvaluator.DurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code BootNode.class}
+ * <p/>
+ * The action is modeled as follow:
  * <p/>
  * <ul>
  * <li>Definition of the node state. If the node is offline, then no VMs can run on it:
@@ -56,7 +60,7 @@ import java.util.UUID;
  * <li>{@link #getEnd()} = {@link #getStart()} + {@link #getDuration()}</li>
  * </ul>
  * </li>
- * <li>The node can start hosting VMs and the end of the action. If the node goes online, it can stop hosting VMs at
+ * <li>The node can consume hosting VMs and the end of the action. If the node goes online, it can stop hosting VMs at
  * the end of the reconfiguration. Otherwise, it is never capable of hosting VMs (the deadline equals 0)
  * <ul>
  * <li>{@link #getHostingStart()} = {@link #getEnd()}</li>
@@ -72,6 +76,9 @@ import java.util.UUID;
  * </ul>
  * </li>
  * </ul>
+ * <p/>
+ * If the reconfiguration problem has a solution, a {@link btrplace.plan.event.BootNode} action
+ * is inserted into the resulting reconfiguration plan iff the node has to be turned online.
  *
  * @author Fabien Hermenier
  */
@@ -108,8 +115,8 @@ public class BootableNodeModel implements NodeActionModel {
             - If the node is hosting running VMs, it is necessarily online
             - If the node is offline, it is sure it cannot host any running VMs
         */
-        isOnline = s.createBooleanVar(rp.makeVarLabel(new StringBuilder("bootableNode(").append(nId).append(").online").toString()));
-        IntDomainVar isOffline = s.createBooleanVar(rp.makeVarLabel(new StringBuilder("bootableNode(").append(nId).append(").offline").toString()));
+        isOnline = s.createBooleanVar(rp.makeVarLabel("bootableNode(", nId, ").online"));
+        IntDomainVar isOffline = s.createBooleanVar(rp.makeVarLabel("bootableNode(", nId, ").offline"));
         s.post(s.neq(isOffline, isOnline));
         s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNode(nId)], 0));
 
@@ -119,14 +126,14 @@ public class BootableNodeModel implements NodeActionModel {
         * D = St * d;
         */
         effectiveDuration = s.createEnumIntVar(
-                rp.makeVarLabel(new StringBuilder("bootableNode(").append(nId).append(").effectiveDuration").toString())
+                rp.makeVarLabel("bootableNode(", nId, ").effectiveDuration")
                 , new int[]{0, d});
         s.post(new TimesXYZ(isOnline, s.makeConstantIntVar(d), effectiveDuration));
 
         /* As */
-        start = rp.makeDuration(new StringBuilder("bootableNode(").append(nId).append(").start").toString());
+        start = rp.makeUnboundedDuration("bootableNode(", nId, ").start");
         /* Ae */
-        end = rp.makeDuration(new StringBuilder("bootableNode(").append(nId).append(").end").toString());
+        end = rp.makeUnboundedDuration("bootableNode(", nId, ").end");
         s.post(s.leq(start, rp.getEnd()));
         s.post(s.leq(end, rp.getEnd()));
         /* Ae = As + D */
@@ -135,7 +142,7 @@ public class BootableNodeModel implements NodeActionModel {
 
         /* Hs = Ae */
         hostingStart = end;
-        hostingEnd = rp.makeDuration(new StringBuilder("bootableNode(").append(nId).append(").hostingEnd").toString());
+        hostingEnd = rp.makeUnboundedDuration("bootableNode(", nId, ").hostingEnd");
         s.post(s.leq(hostingEnd, rp.getEnd()));
 
 

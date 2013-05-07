@@ -4,7 +4,7 @@ import btrplace.json.JSONConverter;
 import btrplace.json.JSONConverterException;
 import btrplace.json.model.ModelConverter;
 import btrplace.model.Model;
-import btrplace.plan.Action;
+import btrplace.plan.event.Action;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import net.minidev.json.JSONArray;

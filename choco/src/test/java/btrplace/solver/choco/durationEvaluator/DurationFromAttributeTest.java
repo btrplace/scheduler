@@ -20,37 +20,35 @@ package btrplace.solver.choco.durationEvaluator;
 
 import btrplace.model.Attributes;
 import btrplace.model.DefaultAttributes;
-import btrplace.solver.choco.DurationEvaluator;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.util.UUID;
 
 /**
  * Unit tests for {@link DurationFromAttribute}.
  *
  * @author Fabien Hermenier
  */
-public class DurationFromAttributeTest {
+public class DurationFromAttributeTest implements PremadeElements {
 
     @Test
     public void test() {
         Attributes attrs = new DefaultAttributes();
-        UUID e = UUID.randomUUID();
+
 
         DurationEvaluator parent = new ConstantDuration(15);
         DurationFromAttribute dev = new DurationFromAttribute(attrs, "boot", parent);
         Assert.assertEquals(parent, dev.getParent());
         Assert.assertEquals("boot", dev.getAttributeKey());
-        Assert.assertEquals(15, dev.evaluate(e));
+        Assert.assertEquals(15, dev.evaluate(vm1));
 
-        attrs.put(e, "boot", 7);
-        Assert.assertEquals(7, dev.evaluate(e));
+        attrs.put(vm1, "boot", 7);
+        Assert.assertEquals(7, dev.evaluate(vm1));
 
         parent = new ConstantDuration(2);
         dev.setParent(parent);
         attrs.clear();
-        Assert.assertEquals(2, dev.evaluate(e));
+        Assert.assertEquals(2, dev.evaluate(vm1));
         Assert.assertEquals(parent, dev.getParent());
         Assert.assertFalse(dev.toString().contains("null"));
 

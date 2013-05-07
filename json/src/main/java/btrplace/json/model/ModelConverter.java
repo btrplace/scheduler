@@ -24,7 +24,7 @@ import btrplace.json.model.view.ModelViewsConverter;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.ModelView;
+import btrplace.model.view.ModelView;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
@@ -86,7 +86,7 @@ public class ModelConverter implements JSONConverter<Model> {
     @Override
     public Model fromJSON(JSONObject o) throws JSONConverterException {
         if (!o.containsKey("mapping")) {
-            return null;
+            throw new JSONConverterException("Missing required mapping as a value of the key 'mapping'");
         }
         Mapping cfg = cfgParser.fromJSON((JSONObject) o.get("mapping"));
         Model i = new DefaultModel(cfg);

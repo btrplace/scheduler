@@ -26,7 +26,6 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.UUID;
 
 /**
  * Unit tests for {@link btrplace.json.model.constraint.OverbookConverter}.
@@ -39,7 +38,7 @@ public class OverbookConverterTest implements PremadeElements {
 
     @Test
     public void testViables() throws JSONConverterException {
-        Overbook d = new Overbook(new HashSet<UUID>(Arrays.asList(n1, n2, n3)), "foo", 1.4);
+        Overbook d = new Overbook(new HashSet<>(Arrays.asList(n1, n2, n3)), "foo", 1.4);
         Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
     }
 }

@@ -27,12 +27,17 @@ import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 /**
  * Unit tests for {@link Allocate}.
  *
  * @author Fabien Hermenier
  */
 public class AllocateTest implements PremadeElements {
+
+    static Allocate a = new Allocate(vm1, n1, "foo", 3, 1, 5);
 
     @Test
     public void testInstantiation() {
@@ -74,6 +79,13 @@ public class AllocateTest implements PremadeElements {
         Assert.assertNotSame(a, new Allocate(vm1, n1, "foo", 6, 3, 5));
         Assert.assertNotSame(a, new Allocate(vm1, n1, "foo", 5, 4, 5));
         Assert.assertNotSame(a, new Allocate(vm1, n1, "foo", 5, 3, 7));
+    }
+
+    @Test
+    public void testVisit() {
+        ActionVisitor visitor = mock(ActionVisitor.class);
+        a.visit(visitor);
+        verify(visitor).visit(a);
     }
 
 }

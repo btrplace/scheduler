@@ -21,6 +21,7 @@ package btrplace.plan;
 import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
+import btrplace.plan.event.Action;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -77,7 +78,7 @@ public class DefaultReconfigurationPlanTest implements PremadeElements {
         Assert.assertEquals(0, p.getDuration());
         Assert.assertTrue(p.getActions().isEmpty());
         Assert.assertFalse(p.toString().contains("null"));
-        Assert.assertEquals(p.getReconfigurationApplier(), TimeBasedPlanApplier.getInstance());
+        Assert.assertEquals(p.getReconfigurationApplier().getClass(), TimeBasedPlanApplier.class);
 
     }
 

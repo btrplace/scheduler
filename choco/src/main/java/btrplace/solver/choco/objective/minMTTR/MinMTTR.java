@@ -21,7 +21,11 @@ package btrplace.solver.choco.objective.minMTTR;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.*;
+import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.actionModel.ActionModel;
+import btrplace.solver.choco.actionModel.ActionModelUtils;
+import btrplace.solver.choco.actionModel.VMActionModel;
+import btrplace.solver.choco.objective.ReconfigurationObjective;
 import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarVal;
@@ -52,14 +56,14 @@ public class MinMTTR implements ReconfigurationObjective {
      * Make a new objective.
      */
     public MinMTTR() {
-        costConstraints = new ArrayList<SConstraint>();
+        costConstraints = new ArrayList<>();
     }
 
     @Override
     public void inject(ReconfigurationProblem rp) throws SolverException {
         this.rp = rp;
         costConstraints.clear();
-        List<IntDomainVar> mttrs = new ArrayList<IntDomainVar>();
+        List<IntDomainVar> mttrs = new ArrayList<>();
         for (ActionModel m : rp.getVMActions()) {
             mttrs.add(m.getEnd());
         }
@@ -75,7 +79,14 @@ public class MinMTTR implements ReconfigurationObjective {
 
         s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
         s.setObjective(cost);
-
+        //We set a restart limit by default, this may be useful especially with very small infrastructure
+        //as the risk of cyclic dependencies increase and their is no solution for the moment to detect cycle
+        //in the scheduling part
+        //Restart limit = 2 * number of VMs in the DC.
+        if (rp.getVMs().length > 0) {
+            s.setGeometricRestart(rp.getVMs().length * 2, 1.5d);
+            s.setRestart(true);
+        }
         injectPlacementHeuristic(rp, cost);
     }
 
@@ -84,7 +95,7 @@ public class MinMTTR implements ReconfigurationObjective {
         Model mo = rp.getSourceModel();
         Mapping map = mo.getMapping();
 
-        List<ActionModel> actions = new ArrayList<ActionModel>();
+        List<ActionModel> actions = new ArrayList<>();
         Collections.addAll(actions, rp.getVMActions());
         OnStableNodeFirst schedHeuristic = new OnStableNodeFirst("stableNodeFirst", rp, actions, this);
 
@@ -97,14 +108,14 @@ public class MinMTTR implements ReconfigurationObjective {
             }
         }
 
-        Set<UUID> onGoodNodes = new HashSet<UUID>(map.getRunningVMs());
+        Set<UUID> onGoodNodes = new HashSet<>(map.getRunningVMs());
         onGoodNodes.removeAll(onBadNodes);
 
-        List<VMActionModel> goodActions = new ArrayList<VMActionModel>();
+        List<VMActionModel> goodActions = new ArrayList<>();
         for (UUID vm : onGoodNodes) {
             goodActions.add(rp.getVMAction(vm));
         }
-        List<VMActionModel> badActions = new ArrayList<VMActionModel>();
+        List<VMActionModel> badActions = new ArrayList<>();
         for (UUID vm : onBadNodes) {
             badActions.add(rp.getVMAction(vm));
         }
@@ -112,7 +123,7 @@ public class MinMTTR implements ReconfigurationObjective {
         CPSolver s = rp.getSolver();
 
         //Get the VMs to move for exclusion issue
-        Set<UUID> vmsToExclude = new HashSet<UUID>(rp.getManageableVMs());
+        Set<UUID> vmsToExclude = new HashSet<>(rp.getManageableVMs());
         for (Iterator<UUID> ite = vmsToExclude.iterator(); ite.hasNext(); ) {
             UUID vm = ite.next();
             if (!(map.getRunningVMs().contains(vm) && rp.getFutureRunningVMs().contains(vm))) {
@@ -122,7 +133,6 @@ public class MinMTTR implements ReconfigurationObjective {
         Map<IntDomainVar, UUID> pla = VMPlacementUtils.makePlacementMap(rp);
 
         s.addGoal(new AssignVar(new MovingVMs("movingVMs", rp, map, vmsToExclude), new RandomVMPlacement("movingVMs", rp, pla, true)));
-
         HostingVariableSelector selectForBads = new HostingVariableSelector("selectForBads", rp, ActionModelUtils.getDSlices(badActions), schedHeuristic);
         s.addGoal(new AssignVar(selectForBads, new RandomVMPlacement("selectForBads", rp, pla, true)));
 
@@ -131,7 +141,7 @@ public class MinMTTR implements ReconfigurationObjective {
         s.addGoal(new AssignVar(selectForGoods, new RandomVMPlacement("selectForGoods", rp, pla, true)));
 
         //VMs to run
-        Set<UUID> vmsToRun = new HashSet<UUID>(map.getReadyVMs());
+        Set<UUID> vmsToRun = new HashSet<>(map.getReadyVMs());
         vmsToRun.removeAll(rp.getFutureReadyVMs());
 
         VMActionModel[] runActions = new VMActionModel[vmsToRun.size()];
@@ -140,11 +150,9 @@ public class MinMTTR implements ReconfigurationObjective {
             runActions[i++] = rp.getVMAction(vm);
         }
         HostingVariableSelector selectForRuns = new HostingVariableSelector("selectForRuns", rp, ActionModelUtils.getDSlices(runActions), schedHeuristic);
-
-
         s.addGoal(new AssignVar(selectForRuns, new RandomVMPlacement("selectForRuns", rp, pla, true)));
 
-        //s.addGoal(new AssignVar(new StartingNodes("startingNodes", rp, rp.getNodeActions()), new MinVal()));
+        s.addGoal(new AssignVar(new StartingNodes("startingNodes", rp, rp.getNodeActions()), new MinVal()));
         ///SCHEDULING PROBLEM
         s.addGoal(new AssignOrForbidIntVarVal(schedHeuristic, new MinVal()));
 
@@ -163,8 +171,8 @@ public class MinMTTR implements ReconfigurationObjective {
      * Post the constraints related to the objective.
      */
     public void postCostConstraints() {
-        rp.getLogger().debug("Post the cost-oriented constraints");
         if (!costActivated) {
+            rp.getLogger().debug("Post the cost-oriented constraints");
             costActivated = true;
             CPSolver s = rp.getSolver();
             for (SConstraint c : costConstraints) {

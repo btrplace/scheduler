@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -37,14 +40,15 @@ public class BanTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1));
-        Set<UUID> nodes = new HashSet<UUID>(Arrays.asList(n1));
+        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1));
+        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1));
         Ban b = new Ban(vms, nodes);
         Assert.assertEquals(vms, b.getInvolvedVMs());
         Assert.assertEquals(nodes, b.getInvolvedNodes());
         Assert.assertFalse(b.toString().contains("null"));
         Assert.assertFalse(b.isContinuous());
         Assert.assertFalse(b.setContinuous(true));
+        Assert.assertNotNull(b.getChecker());
         System.out.println(b);
     }
 
@@ -59,21 +63,21 @@ public class BanTest implements PremadeElements {
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n2);
         map.addRunningVM(vm3, n3);
-        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm2, vm3));
+        Set<UUID> vms = new HashSet<>(Arrays.asList(vm2, vm3));
 
-        Set<UUID> nodes = new HashSet<UUID>(Arrays.asList(n1));
+        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1));
 
         Ban b = new Ban(vms, nodes);
         Model m = new DefaultModel(map);
-        Assert.assertEquals(b.isSatisfied(m), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(b.isSatisfied(m), true);
         map.addRunningVM(vm3, n1);
-        Assert.assertEquals(b.isSatisfied(m), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(b.isSatisfied(m), false);
     }
 
     @Test
     public void testEquals() {
-        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2));
-        Set<UUID> nodes = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
 
         Ban b = new Ban(vms, nodes);
         Assert.assertTrue(b.equals(b));

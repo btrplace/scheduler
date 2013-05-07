@@ -19,7 +19,7 @@
 package btrplace.solver.choco.actionModel;
 
 /**
- * A visitor for each possible {@link btrplace.solver.choco.ActionModel}.
+ * A visitor for each possible {@link ActionModel}.
  *
  * @author Fabien Hermenier
  */

@@ -22,14 +22,15 @@ import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.Action;
 import btrplace.plan.event.KillVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
-import btrplace.solver.choco.DurationEvaluators;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
+import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
+import btrplace.test.PremadeElements;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -43,7 +44,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class KillVMActionModelTest {
+public class KillVMActionModelTest implements PremadeElements {
 
     /**
      * Test the action model with different action models.
@@ -55,18 +56,13 @@ public class KillVMActionModelTest {
     public void testBasics() throws ContradictionException, SolverException {
         Mapping map = new DefaultMapping();
 
-        UUID n1 = UUID.randomUUID();
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
-        UUID vm3 = UUID.randomUUID();
-
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);
         map.addReadyVM(vm2);
         map.addSleepingVM(vm3, n1);
 
         Model mo = new DefaultModel(map);
-        Set<UUID> empty = new HashSet<UUID>();
+        Set<UUID> empty = new HashSet<>();
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(KillVM.class, new ConstantDuration(1));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables()

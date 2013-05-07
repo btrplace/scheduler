@@ -20,6 +20,9 @@ package btrplace.solver.choco;
 
 import btrplace.solver.ReconfigurationAlgorithm;
 import btrplace.solver.choco.constraint.SatConstraintMapper;
+import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
+import btrplace.solver.choco.objective.ReconfigurationObjective;
+import btrplace.solver.choco.view.ModelViewMapper;
 
 /**
  * A reconfiguration algorithm based on the Choco constraint solver.
@@ -58,16 +61,16 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm 
     boolean doOptimize();
 
     /**
-     * Get the mapper that is used to associate the {@link btrplace.model.ModelView}
-     * to the {@link ChocoModelView}.
+     * Get the mapper that is used to associate the {@link btrplace.model.view.ModelView}
+     * to the {@link btrplace.solver.choco.view.ChocoModelView}.
      *
      * @return the mapper
      */
     ModelViewMapper getViewMapper();
 
     /**
-     * Set the mapper to use to associate the {@link btrplace.model.ModelView}
-     * to the {@link ChocoModelView}.
+     * Set the mapper to use to associate the {@link btrplace.model.view.ModelView}
+     * to the {@link btrplace.solver.choco.view.ChocoModelView}.
      *
      * @param m the mapper to use
      */
@@ -119,7 +122,7 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm 
     void setObjective(ReconfigurationObjective o);
 
     /**
-     * Get the mapper that convert {@link btrplace.model.SatConstraint} to {@link ChocoSatConstraint}.
+     * Get the mapper that convert {@link btrplace.model.constraint.SatConstraint} to {@link btrplace.solver.choco.constraint.ChocoSatConstraint}.
      *
      * @return the mapper.
      */

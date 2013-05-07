@@ -18,8 +18,6 @@
 
 package btrplace.model.view;
 
-import btrplace.model.ModelView;
-
 import java.util.*;
 
 /**
@@ -67,7 +65,7 @@ public class ShareableResource implements ModelView, Cloneable, Comparator<UUID>
      * @param noValue the value to use to denote an undefined value
      */
     public ShareableResource(String id, int noValue) {
-        values = new HashMap<UUID, Integer>();
+        values = new HashMap<>();
         this.rcId = id;
         this.viewId = new StringBuilder(VIEW_ID_BASE).append(rcId).toString();
         this.noValue = noValue;
@@ -95,7 +93,7 @@ public class ShareableResource implements ModelView, Cloneable, Comparator<UUID>
      * @return a list of values.
      */
     public List<Integer> get(List<UUID> ids) {
-        List<Integer> res = new ArrayList<Integer>(ids.size());
+        List<Integer> res = new ArrayList<>(ids.size());
         for (UUID u : ids) {
             res.add(get(u));
         }
@@ -260,7 +258,7 @@ public class ShareableResource implements ModelView, Cloneable, Comparator<UUID>
 
     @Override
     public int hashCode() {
-        return rcId.hashCode() + 31 * values.hashCode();
+        return Objects.hash(rcId, values);
     }
 
     @Override
@@ -283,5 +281,11 @@ public class ShareableResource implements ModelView, Cloneable, Comparator<UUID>
             }
         }
         return buf.toString();
+    }
+
+    @Override
+    public boolean substitute(UUID oldUUID, UUID newUUID) {
+        set(newUUID, get(oldUUID));
+        return true;
     }
 }

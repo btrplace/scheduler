@@ -18,13 +18,11 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.model.SatConstraint;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
+import btrplace.model.constraint.checker.SatConstraintChecker;
+import btrplace.model.constraint.checker.SingleRunningCapacityChecker;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -78,36 +76,6 @@ public class SingleRunningCapacity extends SatConstraint {
     }
 
     @Override
-    public Sat isSatisfied(Model i) {
-        Mapping map = i.getMapping();
-        for (UUID n : getInvolvedNodes()) {
-            if (map.getRunningVMs(n).size() > amount) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
-    public Sat isSatisfied(ReconfigurationPlan plan) {
-        Model mo = plan.getOrigin();
-        if (!isSatisfied(mo).equals(SatConstraint.Sat.SATISFIED)) {
-            return Sat.UNSATISFIED;
-        }
-        mo = plan.getOrigin().clone();
-
-        for (Action a : plan) {
-            if (!a.apply(mo)) {
-                return Sat.UNSATISFIED;
-            }
-            if (!isSatisfied(mo).equals(SatConstraint.Sat.SATISFIED)) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -123,7 +91,7 @@ public class SingleRunningCapacity extends SatConstraint {
 
     @Override
     public int hashCode() {
-        return 31 * amount + getInvolvedNodes().hashCode();
+        return Objects.hash(getInvolvedNodes(), amount, isContinuous());
     }
 
     @Override
@@ -138,4 +106,11 @@ public class SingleRunningCapacity extends SatConstraint {
         }
         return b.append(")").toString();
     }
+
+    @Override
+    public SatConstraintChecker getChecker() {
+        return new SingleRunningCapacityChecker(this);
+    }
+
+
 }

@@ -26,7 +26,6 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.UUID;
 
 /**
  * Unit tests for {@link btrplace.json.model.constraint.SpreadConverter}.
@@ -39,8 +38,8 @@ public class GatherConverterTest implements PremadeElements {
 
     @Test
     public void testViables() throws JSONConverterException {
-        Gather d = new Gather(new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3)), false);
-        Gather c = new Gather(new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3)), true);
+        Gather d = new Gather(new HashSet<>(Arrays.asList(vm1, vm2, vm3)), false);
+        Gather c = new Gather(new HashSet<>(Arrays.asList(vm1, vm2, vm3)), true);
         Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
         Assert.assertEquals(conv.fromJSON(conv.toJSON(c)), c);
     }

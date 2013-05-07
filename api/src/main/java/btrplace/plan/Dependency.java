@@ -1,5 +1,7 @@
 package btrplace.plan;
 
+import btrplace.plan.event.Action;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,7 +25,7 @@ public class Dependency {
      */
     public Dependency(Action action, Set<Action> dependencies) {
         a = action;
-        deps = new HashSet<Action>(dependencies);
+        deps = new HashSet<>(dependencies);
     }
 
     /**

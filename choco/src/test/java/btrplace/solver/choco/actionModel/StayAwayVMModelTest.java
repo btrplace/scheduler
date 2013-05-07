@@ -26,26 +26,21 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.VMActionModel;
+import btrplace.test.PremadeElements;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.util.UUID;
 
 /**
  * Unit tests for {@link StayAwayVMModel}.
  *
  * @author Fabien Hermenier
  */
-public class StayAwayVMModelTest {
+public class StayAwayVMModelTest implements PremadeElements {
 
     @Test
     public void testBasic() throws SolverException, ContradictionException {
         Mapping map = new DefaultMapping();
-        UUID n1 = UUID.randomUUID();
-        UUID vm1 = UUID.randomUUID();
-        UUID vm2 = UUID.randomUUID();
         map.addOnlineNode(n1);
         map.addSleepingVM(vm1, n1);
         map.addReadyVM(vm2);

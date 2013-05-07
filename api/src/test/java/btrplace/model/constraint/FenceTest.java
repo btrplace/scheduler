@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -37,9 +40,10 @@ public class FenceTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1));
-        Set<UUID> nodes = new HashSet<UUID>(Arrays.asList(n1));
+        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1));
+        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1));
         Fence f = new Fence(vms, nodes);
+        Assert.assertNotNull(f.getChecker());
         Assert.assertEquals(vms, f.getInvolvedVMs());
         Assert.assertEquals(nodes, f.getInvolvedNodes());
         Assert.assertFalse(f.toString().contains("null"));
@@ -58,21 +62,21 @@ public class FenceTest implements PremadeElements {
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n2);
         map.addRunningVM(vm3, n2);
-        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
+        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
 
-        Set<UUID> nodes = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
 
         Fence f = new Fence(vms, nodes);
         Model m = new DefaultModel(map);
-        Assert.assertEquals(SatConstraint.Sat.SATISFIED, f.isSatisfied(m));
+        Assert.assertEquals(true, f.isSatisfied(m));
         map.addRunningVM(vm3, n3);
-        Assert.assertEquals(SatConstraint.Sat.UNSATISFIED, f.isSatisfied(m));
+        Assert.assertEquals(false, f.isSatisfied(m));
     }
 
     @Test
     public void testEquals() {
-        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2));
-        Set<UUID> nodes = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
         Fence f = new Fence(vms, nodes);
         Assert.assertTrue(f.equals(f));
         Assert.assertTrue(new Fence(vms, nodes).equals(f));

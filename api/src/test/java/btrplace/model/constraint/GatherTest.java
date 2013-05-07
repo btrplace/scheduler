@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootVM;
@@ -41,8 +44,9 @@ public class GatherTest implements PremadeElements {
 
     @Test
     public void testInstantiate() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
         Gather g = new Gather(s);
+        Assert.assertNotNull(g.getChecker());
         Assert.assertTrue(g.getInvolvedNodes().isEmpty());
         Assert.assertEquals(g.getInvolvedVMs(), s);
         Assert.assertFalse(g.toString().contains("null"));
@@ -57,11 +61,11 @@ public class GatherTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testEqualsHashCode() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
         Gather g = new Gather(s);
         Assert.assertTrue(g.equals(g));
         Assert.assertFalse(g.equals(new Object()));
-        Gather g2 = new Gather(new HashSet<UUID>(s));
+        Gather g2 = new Gather(new HashSet<>(s));
         Assert.assertTrue(g2.equals(g));
         Assert.assertEquals(g2.hashCode(), g.hashCode());
         s.remove(vm1);
@@ -70,7 +74,7 @@ public class GatherTest implements PremadeElements {
 
     @Test
     public void testDiscreteIsSatisfied() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
         Gather g = new Gather(s);
 
         Mapping map = new DefaultMapping();
@@ -81,16 +85,16 @@ public class GatherTest implements PremadeElements {
         map.addRunningVM(vm1, n1);
         map.addReadyVM(vm2);
 
-        Assert.assertEquals(g.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(g.isSatisfied(mo), true);
         map.addRunningVM(vm2, n1);
-        Assert.assertEquals(g.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(g.isSatisfied(mo), true);
         map.addRunningVM(vm2, n2);
-        Assert.assertEquals(g.isSatisfied(mo), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(g.isSatisfied(mo), false);
     }
 
     @Test(dependsOnMethods = {"testDiscreteIsSatisfied"})
     public void testContinuousIsSatisfied() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
         Gather g = new Gather(s);
         g.setContinuous(true);
         Mapping map = new DefaultMapping();
@@ -102,17 +106,17 @@ public class GatherTest implements PremadeElements {
         map.addReadyVM(vm2);
         map.addRunningVM(vm2, n2);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
-        Assert.assertEquals(g.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(g.isSatisfied(plan), false);
 
         map.addReadyVM(vm2);
-        Assert.assertEquals(g.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(g.isSatisfied(plan), true);
         plan.add(new BootVM(vm2, n1, 0, 1));
-        Assert.assertEquals(g.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(g.isSatisfied(plan), true);
 
         map.addRunningVM(vm2, n1);
         plan = new DefaultReconfigurationPlan(mo);
         plan.add(new MigrateVM(vm2, n1, n2, 0, 1));
         plan.add(new MigrateVM(vm1, n1, n2, 0, 1));
-        Assert.assertEquals(g.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(g.isSatisfied(plan), false);
     }
 }

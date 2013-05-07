@@ -1,13 +1,14 @@
 package btrplace.plan;
 
 import btrplace.model.Model;
+import btrplace.plan.event.Action;
 
 import java.util.*;
 
 /**
  * Simulated execution of a {@link ReconfigurationPlan}.
  * The execution relies on the dependencies between the actions, retrieved using
- * {@link ReconfigurationPlan#getDirectDependencies(Action)}.
+ * {@link ReconfigurationPlan#getDirectDependencies(btrplace.plan.event.Action)}.
  * <p/>
  * The dependencies are updated each time an action is committed, which means the action
  * have been successfully executed.
@@ -23,7 +24,7 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
 
     private final Map<Action, Set<Dependency>> pre;
 
-    private final Map<Action, Dependency> deps;
+    private final Map<Action, Dependency> dependencies;
 
     private final Object lock;
 
@@ -37,8 +38,8 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
     public DefaultReconfigurationPlanMonitor(ReconfigurationPlan plan) {
         this.plan = plan;
 
-        pre = new HashMap<Action, Set<Dependency>>();
-        deps = new HashMap<Action, Dependency>();
+        pre = new HashMap<>();
+        dependencies = new HashMap<>();
         lock = new Object();
         reset();
     }
@@ -51,14 +52,14 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
             for (Action a : plan) {
                 Set<Action> dependencies = plan.getDirectDependencies(a);
                 if (dependencies.isEmpty()) {
-                    deps.put(a, new Dependency(a, Collections.<Action>emptySet()));
+                    this.dependencies.put(a, new Dependency(a, Collections.<Action>emptySet()));
                 } else {
                     Dependency dep = new Dependency(a, dependencies);
-                    deps.put(a, dep);
+                    this.dependencies.put(a, dep);
                     for (Action x : dep.getDependencies()) {
                         Set<Dependency> pres = pre.get(x);
                         if (pres == null) {
-                            pres = new HashSet<Dependency>();
+                            pres = new HashSet<>();
                             pre.put(x, pres);
                         }
                         pres.add(dep);
@@ -75,7 +76,7 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
 
     @Override
     public Set<Action> commit(Action a) {
-        Set<Action> s = new HashSet<Action>();
+        Set<Action> s = new HashSet<>();
         synchronized (lock) {
             boolean ret = a.apply(curModel);
             if (!ret) {
@@ -108,7 +109,7 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
     @Override
     public boolean isBlocked(Action a) {
         synchronized (lock) {
-            return !deps.get(a).getDependencies().isEmpty();
+            return !dependencies.get(a).getDependencies().isEmpty();
         }
     }
 

@@ -20,11 +20,9 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.SingleRunningCapacity;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoSatConstraint;
-import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.ContradictionException;
@@ -64,7 +62,7 @@ public class CSingleRunningCapacity implements ChocoSatConstraint {
             s.post(s.leq(v, cstr.getAmount()));
 
             //Continuous in practice ?
-            if (cstr.isContinuous() && cstr.isSatisfied(rp.getSourceModel()) == SatConstraint.Sat.SATISFIED) {
+            if (cstr.isContinuous() && cstr.isSatisfied(rp.getSourceModel())) {
                 try {
                     v.setSup(cstr.getAmount());
                 } catch (ContradictionException e) {
@@ -79,7 +77,7 @@ public class CSingleRunningCapacity implements ChocoSatConstraint {
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-        Set<UUID> bad = new HashSet<UUID>();
+        Set<UUID> bad = new HashSet<>();
         for (UUID n : cstr.getInvolvedNodes()) {
             if (map.getRunningVMs(n).size() > cstr.getAmount()) {
                 bad.addAll(map.getRunningVMs(n));

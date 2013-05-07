@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
@@ -43,6 +46,7 @@ public class SplitTest implements PremadeElements {
         Set<UUID> s2 = Collections.singleton(vm2);
         List<Set<UUID>> args = Arrays.asList(s1, s2);
         Split sp = new Split(args);
+        Assert.assertNotNull(sp.getChecker());
         Assert.assertEquals(args, sp.getSets());
         Assert.assertEquals(2, sp.getInvolvedVMs().size());
         Assert.assertTrue(sp.getInvolvedNodes().isEmpty());
@@ -67,7 +71,7 @@ public class SplitTest implements PremadeElements {
         Assert.assertTrue(sp.equals(sp));
         Assert.assertTrue(new Split(args).equals(sp));
         Assert.assertEquals(new Split(args).hashCode(), sp.hashCode());
-        List<Set<UUID>> args2 = new ArrayList<Set<UUID>>(args);
+        List<Set<UUID>> args2 = new ArrayList<>(args);
         args2.add(Collections.singleton(vm3));
         Assert.assertFalse(new Split(args2).equals(sp));
     }
@@ -80,10 +84,10 @@ public class SplitTest implements PremadeElements {
         map.addOnlineNode(n3);
 
 
-        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(vm1, vm2));
-        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(vm3, vm4));
+        Set<UUID> s1 = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<UUID> s2 = new HashSet<>(Arrays.asList(vm3, vm4));
         Set<UUID> s3 = Collections.singleton(vm5);
-        Set<Set<UUID>> args = new HashSet<Set<UUID>>(Arrays.asList(s1, s2, s3));
+        Set<Set<UUID>> args = new HashSet<>(Arrays.asList(s1, s2, s3));
 
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n1);
@@ -92,11 +96,11 @@ public class SplitTest implements PremadeElements {
 
         Split sp = new Split(args);
         Model mo = new DefaultModel(map);
-        Assert.assertEquals(SatConstraint.Sat.SATISFIED, sp.isSatisfied(mo));
+        Assert.assertEquals(true, sp.isSatisfied(mo));
         map.addRunningVM(vm3, n3);
-        Assert.assertEquals(SatConstraint.Sat.SATISFIED, sp.isSatisfied(mo));
+        Assert.assertEquals(true, sp.isSatisfied(mo));
         map.addRunningVM(vm3, n1);
-        Assert.assertEquals(SatConstraint.Sat.UNSATISFIED, sp.isSatisfied(mo));
+        Assert.assertEquals(false, sp.isSatisfied(mo));
     }
 
     @Test
@@ -106,10 +110,10 @@ public class SplitTest implements PremadeElements {
         map.addOnlineNode(n2);
         map.addOnlineNode(n3);
 
-        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(vm1, vm2));
-        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(vm3, vm4));
+        Set<UUID> s1 = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<UUID> s2 = new HashSet<>(Arrays.asList(vm3, vm4));
         Set<UUID> s3 = Collections.singleton(vm5);
-        Set<Set<UUID>> args = new HashSet<Set<UUID>>(Arrays.asList(s1, s2, s3));
+        Set<Set<UUID>> args = new HashSet<>(Arrays.asList(s1, s2, s3));
 
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n1);
@@ -119,18 +123,18 @@ public class SplitTest implements PremadeElements {
         Split sp = new Split(args);
         Model mo = new DefaultModel(map);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
-        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(sp.isSatisfied(plan), true);
         map.addRunningVM(vm3, n1); //Violation
-        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(sp.isSatisfied(plan), false);
 
         plan.add(new MigrateVM(vm3, n1, n2, 0, 1));
-        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(sp.isSatisfied(plan), true);
         //Temporary overlap
         plan.add(new MigrateVM(vm3, n2, n1, 5, 6));
-        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(sp.isSatisfied(plan), false);
         //Liberate n1 from vm1 and vm2 before
         plan.add(new SuspendVM(vm1, n1, n1, 2, 3));
         plan.add(new ShutdownVM(vm2, n1, 2, 3));
-        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(sp.isSatisfied(plan), true);
     }
 }

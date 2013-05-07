@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
@@ -42,9 +45,10 @@ public class SingleResourceCapacityTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
 
         SingleResourceCapacity c = new SingleResourceCapacity(s, "foo", 3);
+        Assert.assertNotNull(c.getChecker());
         Assert.assertEquals(s, c.getInvolvedNodes());
         Assert.assertEquals("foo", c.getResource());
         Assert.assertEquals(3, c.getAmount());
@@ -61,7 +65,7 @@ public class SingleResourceCapacityTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsAndHashCode() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
         SingleResourceCapacity c = new SingleResourceCapacity(s, "foo", 3);
         SingleResourceCapacity c2 = new SingleResourceCapacity(s, "foo", 3);
         Assert.assertTrue(c.equals(c));
@@ -91,13 +95,13 @@ public class SingleResourceCapacityTest implements PremadeElements {
         ShareableResource rc = new ShareableResource("foo", 2);
         mo.attach(rc);
         SingleResourceCapacity c = new SingleResourceCapacity(m.getAllNodes(), "foo", 3);
-        Assert.assertEquals(c.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(c.isSatisfied(mo), true);
         rc.set(vm3, 4);
-        Assert.assertEquals(c.isSatisfied(mo), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(c.isSatisfied(mo), false);
 
         rc.set(vm3, 1);
         m.addRunningVM(vm1, n2);
-        Assert.assertEquals(c.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(c.isSatisfied(mo), true);
     }
 
     @Test
@@ -117,12 +121,12 @@ public class SingleResourceCapacityTest implements PremadeElements {
         SingleResourceCapacity c = new SingleResourceCapacity(m.getAllNodes(), "foo", 3);
 
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
-        Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(c.isSatisfied(plan), true);
         plan.add(new BootVM(vm4, n1, 1, 2));
-        Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(c.isSatisfied(plan), false);
 
         plan.add(new ShutdownVM(vm1, n1, 0, 1));
-        Assert.assertEquals(c.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(c.isSatisfied(plan), true);
 
 
     }

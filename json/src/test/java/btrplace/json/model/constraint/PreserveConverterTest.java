@@ -26,7 +26,6 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.UUID;
 
 /**
  * Unit tests for {@link btrplace.model.constraint.Preserve}.
@@ -39,7 +38,7 @@ public class PreserveConverterTest implements PremadeElements {
 
     @Test
     public void testViables() throws JSONConverterException {
-        Preserve d = new Preserve(new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3)), "cpu", 5);
+        Preserve d = new Preserve(new HashSet<>(Arrays.asList(vm1, vm2, vm3)), "cpu", 5);
         Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
     }
 }

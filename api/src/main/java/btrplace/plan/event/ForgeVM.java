@@ -20,9 +20,8 @@ package btrplace.plan.event;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.plan.Action;
-import btrplace.plan.VMStateTransition;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -86,9 +85,7 @@ public class ForgeVM extends Action implements VMStateTransition {
 
     @Override
     public int hashCode() {
-        int res = getEnd();
-        res = getStart() + 31 * res;
-        return id.hashCode() + 31 * res;
+        return Objects.hash(getStart(), getEnd(), id);
     }
 
     @Override

@@ -18,15 +18,17 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.plan.Action;
+import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.event.MigrateVM;
+import btrplace.plan.event.*;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
-import btrplace.solver.choco.chocoUtil.FastIFFEq;
+import btrplace.solver.choco.chocoUtil.ChocoUtils;
+import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.integer.channeling.BooleanChanneling;
 import choco.cp.solver.constraints.reified.ReifiedFactory;
 import choco.cp.solver.variables.integer.BoolVarNot;
 import choco.cp.solver.variables.integer.BooleanVarImpl;
@@ -35,8 +37,22 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import java.util.UUID;
 
 /**
- * Model an action that allow a VM to be migrated if necessary.
- * TODO: Integrate re-instantiable experiments
+ * Model an action that allow a running VM to be relocate elsewhere if necessary.
+ * The relocation can be performed through a live-migration or a re-instantiation.
+ * The re-instantiation consists in forging a new VM having the same characteristics
+ * and launching it on the destination node. Once this new VM has been launched, the
+ * original VM is shutted down. Such a relocation method may be faster than a migration-based
+ * method while being less aggressive for the network. However, the VM must be able to
+ * be cloned from a template.
+ * <p/>
+ * If the relocation is performed with a live-migration, a {@link MigrateVM} action
+ * will be generated. If the relocation is performed through a re-instantiation, a {@link ForgeVM},
+ * a {@link BootVM}, and a {@link ShutdownVM} actions are generated.
+ * <p/>
+ * To relocate the VM using a re-instantiation, the VM must first have an attribute {@code clone}
+ * set to {@code true}. The re-instantiation duration is then estimated. If it is shorter than
+ * the migration duration, then re-instantiation will be preferred.
+ * <p/>
  *
  * @author Fabien Hermenier
  */
@@ -46,13 +62,22 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
     private ReconfigurationProblem rp;
 
-    private UUID vm;
+    private final UUID vm;
 
     private IntDomainVar state;
 
     private IntDomainVar duration;
 
     private IntDomainVar stay;
+
+    private int reInstantiateDuration;
+
+    private UUID src;
+
+    /**
+     * The choosed relocation method. 0 for migration, 1 for relocation.
+     */
+    private IntDomainVar method;
 
     /**
      * Make a new model.
@@ -65,24 +90,26 @@ public class RelocatableVMModel implements KeepRunningVMModel {
         this.vm = e;
         this.rp = rp;
 
-        int d = rp.getDurationEvaluators().evaluate(MigrateVM.class, e);
+        src = rp.getSourceModel().getMapping().getVMLocation(e);
+
+
+        prepareRelocationMethod();
 
         CPSolver s = rp.getSolver();
-        duration = s.createEnumIntVar(rp.makeVarLabel("relocatable(" + e + ").duration"), new int[]{0, d});
+
         cSlice = new SliceBuilder(rp, e, "relocatable(" + e + ").cSlice")
                 .setHoster(rp.getNode(rp.getSourceModel().getMapping().getVMLocation(e)))
-                .setEnd(rp.makeDuration("relocatable(" + e + ").cSlice_end"))
+                .setEnd(rp.makeUnboundedDuration("relocatable(" + e + ").cSlice_end"))
                 .build();
 
-        dSlice = new SliceBuilder(rp, e, "relocatable(" + e + ").dSlice")
-                .setStart(rp.makeDuration("relocatable(" + e + ").dSlice_start"))
+        dSlice = new SliceBuilder(rp, vm, "relocatable(" + vm + ").dSlice")
+                .setStart(rp.makeUnboundedDuration("relocatable(", vm, ").dSlice_start"))
                 .build();
-        IntDomainVar move = s.createBooleanVar(rp.makeVarLabel("relocatable(" + e + ").move"));
+
+        IntDomainVar move = s.createBooleanVar(rp.makeVarLabel("relocatable(", vm, ").move"));
         s.post(ReifiedFactory.builder(move, s.neq(cSlice.getHoster(), dSlice.getHoster()), s));
 
-        stay = new BoolVarNot(s, rp.makeVarLabel("relocatable(" + e + ").stay"), (BooleanVarImpl) move);
-
-        s.post(new FastIFFEq(stay, duration, 0));
+        stay = new BoolVarNot(s, rp.makeVarLabel("relocatable(", e, ").stay"), (BooleanVarImpl) move);
 
         s.post(s.leq(duration, cSlice.getDuration()));
         s.post(s.leq(duration, dSlice.getDuration()));
@@ -90,23 +117,72 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
         s.post(s.leq(cSlice.getDuration(), rp.getEnd()));
         s.post(s.leq(dSlice.getDuration(), rp.getEnd()));
+        s.post(s.leq(dSlice.getEnd(), rp.getEnd()));
 
+        //If we allow re-instantiate, then the dSlice duration will consume necessarily after the forgeDuration
+        s.post(new BooleanChanneling(stay, duration, 0));
+
+        if (!getRelocationMethod().isInstantiated()) {
+            //TODO: not very compliant with the ForgeActionModel but forge is useless for the moment
+            int forgeD = rp.getDurationEvaluators().evaluate(ForgeVM.class, vm);
+            s.post(s.geq(this.dSlice.getStart(), ChocoUtils.mult(s, method, forgeD)));
+
+            s.post(new BooleanChanneling(method, duration, reInstantiateDuration));
+        }
         state = s.makeConstantIntVar(1);
+    }
+
+    private void prepareRelocationMethod() throws SolverException {
+        Model mo = rp.getSourceModel();
+        Boolean cloneable = mo.getAttributes().getBoolean(vm, "clone");
+        DurationEvaluators dev = rp.getDurationEvaluators();
+        CPSolver s = rp.getSolver();
+        int migrateDuration = dev.evaluate(MigrateVM.class, vm);
+        if (Boolean.TRUE.equals(cloneable) && mo.getAttributes().isSet(vm, "template")) {
+            method = rp.getSolver().createBooleanVar(rp.makeVarLabel("relocation_method(", vm, ")"));
+            int bootDuration = dev.evaluate(BootVM.class, vm);
+            int shutdownDuration = dev.evaluate(ShutdownVM.class, vm);
+            reInstantiateDuration = bootDuration + shutdownDuration;
+            duration = s.createEnumIntVar(rp.makeVarLabel("relocatable(", vm, ").duration"),
+                    new int[]{0, Math.min(migrateDuration, reInstantiateDuration),
+                            Math.max(migrateDuration, reInstantiateDuration)});
+        } else {
+            method = rp.getSolver().createIntegerConstant(rp.makeVarLabel("relocation_method(", vm, ")"), 0);
+            duration = s.createEnumIntVar(rp.makeVarLabel("relocatable(", vm, ").duration"), new int[]{0, migrateDuration});
+        }
     }
 
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
-        UUID src = rp.getNode(cSlice.getHoster().getVal());
+        DurationEvaluators dev = rp.getDurationEvaluators();
         if (cSlice.getHoster().getVal() != dSlice.getHoster().getVal()) {
+            Action a;
             UUID dst = rp.getNode(dSlice.getHoster().getVal());
-            int st = getStart().getVal();
-            int ed = getEnd().getVal();
-            MigrateVM a = new MigrateVM(vm, src, dst, st, ed);
-            rp.insertNotifyAllocations(a, vm, Action.Hook.post);
-            plan.add(a);
-        } else {
-            int st = dSlice.getStart().getVal();
-            rp.insertAllocateAction(plan, vm, src, st, st);
+            if (method.isInstantiatedTo(0)) {
+                int st = getStart().getVal();
+                int ed = getEnd().getVal();
+                a = new MigrateVM(vm, src, dst, st, ed);
+                plan.add(a);
+            } else {
+                try {
+                    UUID newVM = rp.cloneVM(vm);
+                    if (newVM == null) {
+                        rp.getLogger().error("Unable to get a new UUID to plan the re-instantiate of VM {}", vm);
+                        return false;
+                    }
+                    ForgeVM fvm = new ForgeVM(newVM, dSlice.getStart().getVal() - dev.evaluate(ForgeVM.class, vm), dSlice.getStart().getVal());
+                    //forge the new VM from a template
+                    plan.add(fvm);
+                    //Boot the new VM
+                    int endForging = fvm.getEnd();
+                    BootVM boot = new BootVM(newVM, dst, endForging, endForging + dev.evaluate(BootVM.class, newVM));
+                    boot.addEvent(Action.Hook.pre, new SubstitutedVMEvent(vm, newVM));
+                    return plan.add(boot) && plan.add(new ShutdownVM(vm, src, boot.getEnd(), cSlice.getEnd().getVal()));
+                } catch (SolverException ex) {
+                    rp.getLogger().error(ex.getMessage());
+                    return false;
+                }
+            }
         }
         return true;
     }
@@ -154,5 +230,37 @@ public class RelocatableVMModel implements KeepRunningVMModel {
     @Override
     public IntDomainVar isStaying() {
         return stay;
+    }
+
+    /**
+     * Tells if the VM can be migrated or re-instantiated.
+     *
+     * @return a variable instantiated to {@code 0} for a migration based relocation or {@code 1}
+     *         for a re-instantiation based relocation
+     */
+    public IntDomainVar getRelocationMethod() {
+        return method;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+        b.append("relocate(method=");
+        b.append(prettyMethod(method));
+        b.append(" ,vm=").append(vm)
+                .append(" ,from=").append(src)
+                .append("(").append(rp.getNode(src)).append(")")
+                .append(" ,to=").append(dSlice.getHoster().getDomain().pretty())
+                .append(")");
+        return b.toString();
+    }
+
+    private static String prettyMethod(IntDomainVar method) {
+        if (method.isInstantiatedTo(0)) {
+            return "migration";
+        } else if (method.isInstantiatedTo(1)) {
+            return "re-instantiation";
+        }
+        return "(migration || re-instantiation)";
     }
 }

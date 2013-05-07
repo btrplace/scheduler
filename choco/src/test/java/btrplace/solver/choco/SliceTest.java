@@ -18,40 +18,38 @@
 
 package btrplace.solver.choco;
 
+import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.util.UUID;
 
 /**
  * Unit tests for {@link Slice}.
  *
  * @author Fabien Hermenier
  */
-public class SliceTest {
+public class SliceTest implements PremadeElements {
 
     /**
      * It's a container so we only tests the instantiation and the getters.
      */
     @Test
     public void testInstantiation() {
-        UUID e = UUID.randomUUID();
         CPSolver s = new CPSolver();
         IntDomainVar st = s.createIntegerConstant("start", 1);
         IntDomainVar ed = s.createIntegerConstant("end", 3);
         IntDomainVar duration = s.createIntegerConstant("duration", 2);
         IntDomainVar hoster = s.createIntegerConstant("hoster", 4);
-        Slice sl = new Slice(e, st, ed, duration, hoster);
-        Assert.assertEquals(e, sl.getSubject());
+        Slice sl = new Slice(vm1, st, ed, duration, hoster);
+        Assert.assertEquals(vm1, sl.getSubject());
         Assert.assertEquals(st, sl.getStart());
         Assert.assertEquals(ed, sl.getEnd());
         Assert.assertEquals(hoster, sl.getHoster());
         Assert.assertEquals(duration, sl.getDuration());
         Assert.assertFalse(sl.toString().contains("null"));
         duration = s.createBoundIntVar("duration", 3, 5);
-        sl = new Slice(e, st, ed, duration, hoster);
+        sl = new Slice(vm1, st, ed, duration, hoster);
         Assert.assertFalse(sl.toString().contains("null"));
     }
 }

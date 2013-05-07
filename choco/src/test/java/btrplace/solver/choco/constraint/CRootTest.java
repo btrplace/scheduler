@@ -21,7 +21,7 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Root;
 import btrplace.plan.ReconfigurationPlan;
@@ -54,7 +54,7 @@ public class CRootTest implements PremadeElements {
         cra.labelVariables(true);
         Root r1 = new Root(map.getAllVMs());
         Online n = new Online(map.getAllNodes());
-        List<SatConstraint> l = new ArrayList<SatConstraint>();
+        List<SatConstraint> l = new ArrayList<>();
         l.add(r1);
         l.add(n);
         ReconfigurationPlan p = cra.solve(mo, l);

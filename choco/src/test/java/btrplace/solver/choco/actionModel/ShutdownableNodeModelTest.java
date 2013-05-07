@@ -28,13 +28,12 @@ import btrplace.plan.event.ShutdownNode;
 import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
-import btrplace.solver.choco.DurationEvaluators;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
+import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -155,7 +154,7 @@ public class ShutdownableNodeModelTest implements PremadeElements {
     }
 
     /**
-     * The 2 nodes are set offline but n2 will start being offline after n1
+     * The 2 nodes are set offline but n2 will consume being offline after n1
      *
      * @throws SolverException
      * @throws ContradictionException

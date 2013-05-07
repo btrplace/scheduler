@@ -22,12 +22,17 @@ import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.Action;
 import btrplace.plan.event.ForgeVM;
+import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
-import btrplace.solver.choco.DurationEvaluators;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
+import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
+import btrplace.test.PremadeElements;
+import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -39,14 +44,13 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class ForgeVMModelTest {
+public class ForgeVMModelTest implements PremadeElements {
 
     @Test
     public void testBasics() throws SolverException {
         Mapping m = new DefaultMapping();
-        UUID vm1 = UUID.randomUUID();
         Model mo = new DefaultModel(m);
-
+        mo.getAttributes().put(vm1, "template", "small");
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(ForgeVM.class, new ConstantDuration(7));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
@@ -55,12 +59,58 @@ public class ForgeVMModelTest {
                 .build();
         ForgeVMModel ma = (ForgeVMModel) rp.getVMAction(vm1);
         Assert.assertEquals(vm1, ma.getVM());
+        Assert.assertEquals(ma.getTemplate(), "small");
         Assert.assertTrue(ma.getDuration().isInstantiatedTo(7));
         Assert.assertFalse(ma.getStart().isInstantiated());
         Assert.assertFalse(ma.getEnd().isInstantiated());
         Assert.assertTrue(ma.getState().isInstantiatedTo(0));
         Assert.assertNull(ma.getCSlice());
         Assert.assertNull(ma.getDSlice());
+    }
+
+    @Test(expectedExceptions = {SolverException.class})
+    public void testWithoutTemplate() throws SolverException {
+        Mapping m = new DefaultMapping();
+        Model mo = new DefaultModel(m);
+        DurationEvaluators dev = new DurationEvaluators();
+        dev.register(ForgeVM.class, new ConstantDuration(7));
+        new DefaultReconfigurationProblemBuilder(mo)
+                .setDurationEvaluatators(dev)
+                .setNextVMsStates(Collections.singleton(vm1), Collections.<UUID>emptySet(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .build();
+
+    }
+
+    @Test
+    public void testResolution() throws SolverException, ContradictionException {
+        Mapping m = new DefaultMapping();
+        m.addOnlineNode(n1);
+        Model mo = new DefaultModel(m);
+        mo.getAttributes().put(vm1, "template", "small");
+        DurationEvaluators dev = new DurationEvaluators();
+        dev.register(ForgeVM.class, new ConstantDuration(7));
+        dev.register(ShutdownNode.class, new ConstantDuration(20));
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setDurationEvaluatators(dev)
+                .setNextVMsStates(Collections.singleton(vm1), Collections.<UUID>emptySet(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .labelVariables()
+                .build();
+        //Force the node to get offline
+        ShutdownableNodeModel n = (ShutdownableNodeModel) rp.getNodeAction(n1);
+        n.getState().setVal(0);
+
+        ReconfigurationPlan p = rp.solve(0, false);
+        Assert.assertNotNull(p);
+        Assert.assertEquals(p.getDuration(), 20);
+        for (Action a : p) {
+            if (a instanceof ForgeVM) {
+                ForgeVM action = (ForgeVM) p.getActions().iterator().next();
+                Assert.assertTrue(p.getResult().getMapping().getReadyVMs().contains(vm1));
+                Assert.assertEquals(action.getVM(), vm1);
+                Assert.assertEquals(action.getEnd(), 7);
+                Assert.assertEquals(action.getStart(), 0);
+            }
+        }
 
     }
 

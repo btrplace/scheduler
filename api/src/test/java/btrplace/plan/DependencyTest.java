@@ -1,5 +1,6 @@
 package btrplace.plan;
 
+import btrplace.plan.event.Action;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -17,7 +18,7 @@ public class DependencyTest {
     @Test
     public void testInstantiation() {
         Action a = new MockAction(UUID.randomUUID(), 1, 4);
-        Set<Action> d = new HashSet<Action>();
+        Set<Action> d = new HashSet<>();
         d.add(new MockAction(UUID.randomUUID(), 2, 5));
         d.add(new MockAction(UUID.randomUUID(), 3, 7));
         Dependency dep = new Dependency(a, d);

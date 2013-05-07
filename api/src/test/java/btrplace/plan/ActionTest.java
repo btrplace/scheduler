@@ -21,14 +21,16 @@ package btrplace.plan;
 import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
+import btrplace.plan.event.Action;
 import btrplace.plan.event.ActionVisitor;
+import btrplace.plan.event.Event;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.UUID;
 
 /**
- * Unit tests for {@link Action}.
+ * Unit tests for {@link btrplace.plan.event.Action}.
  *
  * @author Fabien Hermenier
  */

@@ -27,12 +27,17 @@ import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 /**
  * Unit tests for {@link AllocateEvent}.
  *
  * @author Fabien Hermenier
  */
 public class AllocateEventTest implements PremadeElements {
+
+    static AllocateEvent a = new AllocateEvent(vm1, "foo", 3);
 
     @Test
     public void testBasics() {
@@ -70,5 +75,12 @@ public class AllocateEventTest implements PremadeElements {
         mo.attach(rc);
         Assert.assertTrue(na.apply(mo));
         Assert.assertEquals(3, rc.get(vm1));
+    }
+
+    @Test
+    public void testVisit() {
+        ActionVisitor visitor = mock(ActionVisitor.class);
+        a.visit(visitor);
+        verify(visitor).visit(a);
     }
 }

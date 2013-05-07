@@ -18,8 +18,6 @@
 
 package btrplace.solver.choco.durationEvaluator;
 
-import btrplace.solver.choco.DurationEvaluator;
-
 import java.util.UUID;
 
 /**

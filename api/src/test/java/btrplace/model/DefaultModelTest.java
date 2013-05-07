@@ -18,10 +18,14 @@
 
 package btrplace.model;
 
+import btrplace.model.view.ModelView;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.UUID;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link btrplace.model.DefaultModel}.
@@ -29,39 +33,6 @@ import java.util.UUID;
  * @author Fabien Hermenier
  */
 public class DefaultModelTest {
-
-    class MockView implements ModelView {
-
-        private String i;
-
-        public MockView(String id) {
-            i = id;
-        }
-
-        @Override
-        public String getIdentifier() {
-            return i;
-        }
-
-        @Override
-        public MockView clone() {
-            return new MockView(i);
-        }
-
-        @Override
-        public int hashCode() {
-            return i.hashCode();
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o == this) {
-                return true;
-            }
-            ModelView v = (ModelView) o;
-            return v.getIdentifier().equals(this.getIdentifier());
-        }
-    }
 
     @Test
     public void testInstantiate() {
@@ -75,8 +46,8 @@ public class DefaultModelTest {
     @Test
     public void testAttachView() {
         Model i = new DefaultModel(new DefaultMapping());
-        ModelView v = new MockView("mock");
-
+        ModelView v = mock(ModelView.class);
+        when(v.getIdentifier()).thenReturn("mock");
         Assert.assertTrue(i.attach(v));
         Assert.assertEquals(i.getViews().size(), 1);
         Assert.assertEquals(i.getView("mock"), v);
@@ -86,7 +57,8 @@ public class DefaultModelTest {
         Assert.assertEquals(i.getViews().size(), 1);
         Assert.assertEquals(i.getView("mock"), v);
 
-        ModelView v2 = new MockView("bar");
+        ModelView v2 = mock(ModelView.class);
+        when(v2.getIdentifier()).thenReturn("bar");
 
         Assert.assertTrue(i.attach(v2));
         Assert.assertEquals(i.getViews().size(), 2);
@@ -97,8 +69,10 @@ public class DefaultModelTest {
     @Test(dependsOnMethods = {"testAttachView", "testInstantiate"})
     public void testEqualsAndHashCode() {
         Model i = new DefaultModel(new DefaultMapping());
-        ModelView rc = new MockView("foo");
-        ModelView b = new MockView("bar");
+        ModelView rc = mock(ModelView.class);
+        when(rc.getIdentifier()).thenReturn("foo");
+        ModelView b = mock(ModelView.class);
+        when(b.getIdentifier()).thenReturn("bar");
         i.attach(rc);
         i.attach(b);
 
@@ -121,8 +95,12 @@ public class DefaultModelTest {
     @Test(dependsOnMethods = {"testInstantiate", "testEqualsAndHashCode", "testAttachView", "testDetachView", "testAttributes"})
     public void testClone() {
         Model i = new DefaultModel(new DefaultMapping());
-        ModelView v1 = new MockView("foo");
-        ModelView v2 = new MockView("bar");
+        ModelView v1 = mock(ModelView.class);
+        when(v1.getIdentifier()).thenReturn("foo");
+        when(v1.clone()).thenReturn(v1);
+        ModelView v2 = mock(ModelView.class);
+        when(v2.getIdentifier()).thenReturn("bar");
+        when(v2.clone()).thenReturn(v2);
         UUID u = UUID.randomUUID();
         i.getAttributes().put(u, "foo", false);
         i.attach(v1);
@@ -141,7 +119,8 @@ public class DefaultModelTest {
     @Test(dependsOnMethods = {"testAttachView", "testInstantiate"})
     public void testDetachView() {
         Model i = new DefaultModel(new DefaultMapping());
-        ModelView v = new MockView("cpu");
+        ModelView v = mock(ModelView.class);
+        when(v.getIdentifier()).thenReturn("cpu");
         i.attach(v);
         Assert.assertTrue(i.detach(v));
         Assert.assertTrue(i.getViews().isEmpty());
@@ -152,8 +131,14 @@ public class DefaultModelTest {
     @Test(dependsOnMethods = {"testAttachView", "testInstantiate"})
     public void testClearViews() {
         Model i = new DefaultModel(new DefaultMapping());
-        i.attach(new MockView("cpu"));
-        i.attach(new MockView("mem"));
+        ModelView v1 = mock(ModelView.class);
+        when(v1.getIdentifier()).thenReturn("cpu");
+
+        ModelView v2 = mock(ModelView.class);
+        when(v2.getIdentifier()).thenReturn("mem");
+
+        i.attach(v1);
+        i.attach(v2);
         i.clearViews();
         Assert.assertTrue(i.getViews().isEmpty());
     }

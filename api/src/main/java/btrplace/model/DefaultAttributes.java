@@ -33,13 +33,13 @@ public class DefaultAttributes implements Attributes, Cloneable {
      * Make a new empty list of attributes.
      */
     public DefaultAttributes() {
-        attrs = new HashMap<UUID, Map<String, Object>>();
+        attrs = new HashMap<>();
     }
 
     private boolean putObject(UUID e, String k, Object v) {
         Map<String, Object> m = attrs.get(e);
         if (m == null) {
-            m = new HashMap<String, Object>();
+            m = new HashMap<>();
             attrs.put(e, m);
         }
         return m.put(k, v) != null;
@@ -75,7 +75,7 @@ public class DefaultAttributes implements Attributes, Cloneable {
     public Attributes clone() {
         DefaultAttributes cpy = new DefaultAttributes();
         for (Map.Entry<UUID, Map<String, Object>> e : attrs.entrySet()) {
-            cpy.attrs.put(e.getKey(), new HashMap<String, Object>(e.getValue()));
+            cpy.attrs.put(e.getKey(), new HashMap<>(e.getValue()));
         }
         return cpy;
     }
@@ -87,7 +87,14 @@ public class DefaultAttributes implements Attributes, Cloneable {
             b.append(e.getKey());
             b.append(':');
             for (Map.Entry<String, Object> attr : e.getValue().entrySet()) {
-                b.append(" <").append(attr.getKey()).append(',').append(attr.getValue()).append('>');
+                b.append(" <").append(attr.getKey()).append(',');
+                Object val = attr.getValue();
+                if (val instanceof String) {
+                    b.append('"').append(val).append('"');
+                } else {
+                    b.append(val);
+                }
+                b.append('>');
             }
             b.append('\n');
         }
@@ -156,7 +163,8 @@ public class DefaultAttributes implements Attributes, Cloneable {
 
     @Override
     public String getString(UUID e, String k) {
-        return get(e, k).toString();
+        Object o = get(e, k);
+        return o == null ? null : o.toString();
     }
 
     @Override

@@ -18,13 +18,17 @@
 
 package btrplace.solver.choco;
 
+import btrplace.solver.choco.actionModel.ActionModelUtils;
+import btrplace.solver.choco.actionModel.KeepRunningVMModel;
+import btrplace.solver.choco.actionModel.VMActionModel;
+import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import btrplace.solver.choco.chocoUtil.LocalTaskScheduler;
 import btrplace.solver.choco.chocoUtil.TaskScheduler;
 import choco.cp.solver.CPSolver;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Builder to create a unique slices scheduler that aggregates
@@ -52,6 +56,8 @@ public class SliceSchedulerBuilder {
 
     private IntDomainVar[] dStarts;
 
+    private HashMap<UUID, int[]> non;
+
     /**
      * Make a new builder.
      *
@@ -59,15 +65,16 @@ public class SliceSchedulerBuilder {
      */
     public SliceSchedulerBuilder(ReconfigurationProblem rp) {
         this.rp = rp;
-        capacities = new ArrayList<IntDomainVar[]>();
-        cUsages = new ArrayList<int[]>();
-        dUsages = new ArrayList<IntDomainVar[]>();
+        capacities = new ArrayList<>();
+        cUsages = new ArrayList<>();
+        dUsages = new ArrayList<>();
 
-        List<Slice> dS = new ArrayList<Slice>();
-        List<Slice> cS = new ArrayList<Slice>();
+        List<Slice> dS = new ArrayList<>();
+        List<Slice> cS = new ArrayList<>();
 
 
-        List<int[]> linked = new ArrayList<int[]>();
+        non = new HashMap<>();
+
         int dIdx = 0, cIdx = 0;
 
         for (VMActionModel a : rp.getVMActions()) {
@@ -75,7 +82,7 @@ public class SliceSchedulerBuilder {
             Slice d = a.getDSlice();
 
             if (d != null && c != null) {
-                linked.add(new int[]{dIdx, cIdx});
+                non.put(a.getVM(), new int[]{dIdx, cIdx});
             }
             if (d != null) {
                 dS.add(dIdx, d);
@@ -111,11 +118,12 @@ public class SliceSchedulerBuilder {
 
 
         associations = new int[dHosters.length];
+        //No associations task by default, then we create the associations.
         for (i = 0; i < associations.length; i++) {
-            associations[i] = LocalTaskScheduler.NO_ASSOCIATIONS; //No associations task
+            associations[i] = LocalTaskScheduler.NO_ASSOCIATIONS;
         }
-        for (i = 0; i < linked.size(); i++) {
-            int[] assoc = linked.get(i);
+        for (Map.Entry<UUID, int[]> e : non.entrySet()) {
+            int[] assoc = e.getValue();
             associations[assoc[0]] = assoc[1];
         }
     }
@@ -168,6 +176,7 @@ public class SliceSchedulerBuilder {
             }
             i++;
         }
+        symmetryBreakingForStayingVMs();
         IntDomainVar[] earlyStarts = ActionModelUtils.getHostingStarts(rp.getNodeActions());
         IntDomainVar[] lastEnd = ActionModelUtils.getHostingEnds(rp.getNodeActions());
         return new TaskScheduler(s.getEnvironment(),
@@ -177,5 +186,79 @@ public class SliceSchedulerBuilder {
                 cHosters, cUses, cEnds,
                 dHosters, dUses, dStarts,
                 associations);
+    }
+
+    private Boolean strictlyDecreasingOrUnchanged(UUID vm) {
+        //If it has non-overlapping slices
+        int[] slicesIndexes = non.get(vm);
+        if (slicesIndexes != null) {
+            int dIdx = slicesIndexes[0];
+            int cIdx = slicesIndexes[1];
+
+            Boolean decOrStay = null;
+            //Get the resources usage
+            for (int d = 0; d < cUsages.size(); d++) {
+                int req = dUsages.get(d)[dIdx].getInf();
+                int use = cUsages.get(d)[cIdx];
+                if (decOrStay == null) {
+                    decOrStay = req <= use;
+                } else {
+                    if (decOrStay && req > use) {
+                        return false;
+                    } else if (!decOrStay && req <= use) {
+                        return false;
+                    }
+                }
+            }
+            return decOrStay;
+        }
+        return false;
+    }
+
+    /**
+     * Symmetry breaking for VMs that stay running, on the same node.
+     *
+     * @return {@code true} iff the symmetry breaking does not lead to a problem without solutions
+     */
+    private boolean symmetryBreakingForStayingVMs() {
+        for (UUID vm : rp.getFutureRunningVMs()) {
+            VMActionModel a = rp.getVMAction(vm);
+            Slice dSlice = a.getDSlice();
+            Slice cSlice = a.getCSlice();
+            if (dSlice != null && cSlice != null) {
+                IntDomainVar stay = ((KeepRunningVMModel) a).isStaying();
+
+                Boolean ret = strictlyDecreasingOrUnchanged(vm);
+                if (Boolean.TRUE.equals(ret)) {
+                    //Else, the resource usage is decreasing, so
+                    // we set the cSlice duration to 0 to directly reduces the resource allocation
+                    if (stay.isInstantiatedTo(1)) {
+                        try {
+                            cSlice.getDuration().setVal(0);
+                        } catch (ContradictionException ex) {
+                            rp.getLogger().info("Unable to set the cSlice duration of {} to 0", cSlice.getSubject());
+                            return false;
+                        }
+                    } else {
+                        rp.getSolver().post(new FastImpliesEq(stay, cSlice.getDuration(), 0));
+                    }
+                } else if (Boolean.FALSE.equals(ret)) {
+                    //If the resource usage will be increasing
+                    //Then the duration of the dSlice can be set to 0
+                    //(the allocation will be performed at the end of the reconfiguration process)
+                    if (stay.isInstantiatedTo(1)) {
+                        try {
+                            dSlice.getDuration().setVal(0);
+                        } catch (ContradictionException ex) {
+                            rp.getLogger().info("Unable to set the dSlice duration of {} to 0", dSlice.getSubject());
+                            return false;
+                        }
+                    } else {
+                        rp.getSolver().post(new FastImpliesEq(stay, dSlice.getDuration(), 0));
+                    }
+                }
+            }
+        }
+        return true;
     }
 }

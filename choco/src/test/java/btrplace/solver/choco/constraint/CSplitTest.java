@@ -21,7 +21,7 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Split;
 import btrplace.plan.ReconfigurationPlan;
@@ -42,16 +42,16 @@ import java.util.*;
  */
 public class CSplitTest implements PremadeElements {
 
-    private static Set<UUID> g1 = new HashSet<UUID>(Arrays.asList(vm1, vm2));
-    private static Set<UUID> g2 = new HashSet<UUID>(Arrays.asList(vm3, vm4, vm5));
-    private static Set<UUID> g3 = new HashSet<UUID>(Arrays.asList(vm6, vm7));
+    private static Set<UUID> g1 = new HashSet<>(Arrays.asList(vm1, vm2));
+    private static Set<UUID> g2 = new HashSet<>(Arrays.asList(vm3, vm4, vm5));
+    private static Set<UUID> g3 = new HashSet<>(Arrays.asList(vm6, vm7));
 
-    private static Set<Set<UUID>> grps = new HashSet<Set<UUID>>(Arrays.asList(g1, g2, g3));
+    private static Set<Set<UUID>> grps = new HashSet<>(Arrays.asList(g1, g2, g3));
 
     @Test
     public void testGetMisplaced() {
 
-        Set<Set<UUID>> grps = new HashSet<Set<UUID>>(Arrays.asList(g1, g2, g3));
+        Set<Set<UUID>> grps = new HashSet<>(Arrays.asList(g1, g2, g3));
 
         Mapping map = new MappingBuilder().on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm2)
@@ -110,7 +110,7 @@ public class CSplitTest implements PremadeElements {
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
-        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(s);
         //What is running on n1 goes to n3, so VMs vm3, vm4, vm5 which does not belong to vm1, vm2 must
         //go away before the other arrive.

@@ -18,13 +18,16 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
 import btrplace.plan.event.ShutdownVM;
 import btrplace.test.PremadeElements;
-import junit.framework.Assert;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
@@ -41,8 +44,9 @@ public class LonelyTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
+        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         Lonely l = new Lonely(s);
+        Assert.assertNotNull(l.getChecker());
         Assert.assertFalse(l.toString().contains("null"));
         Assert.assertEquals(l.getInvolvedVMs(), s);
         Assert.assertTrue(l.getInvolvedNodes().isEmpty());
@@ -57,17 +61,17 @@ public class LonelyTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsHashCode() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
+        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         Lonely l = new Lonely(s);
         Assert.assertTrue(l.equals(l));
-        Assert.assertTrue(l.equals(new Lonely(new HashSet<UUID>(s))));
-        Assert.assertEquals(l.hashCode(), new Lonely(new HashSet<UUID>(s)).hashCode());
+        Assert.assertTrue(l.equals(new Lonely(new HashSet<>(s))));
+        Assert.assertEquals(l.hashCode(), new Lonely(new HashSet<>(s)).hashCode());
         Assert.assertFalse(l.equals(new Lonely(new HashSet<UUID>())));
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testContinuousIsSatisfied() {
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
 
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
@@ -81,17 +85,17 @@ public class LonelyTest implements PremadeElements {
 
         Model mo = new DefaultModel(map);
 
-        Lonely l = new Lonely(s);
+        Lonely l = new Lonely(s, true);
 
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
-        Assert.assertEquals(l.isSatisfied(p), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(l.isSatisfied(p), true);
         p.add(new MigrateVM(vm2, n1, n2, 2, 4));
 
-        Assert.assertEquals(l.isSatisfied(p), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(l.isSatisfied(p), false);
         p.add(new ShutdownVM(vm3, n2, 0, 1));
-        Assert.assertEquals(l.isSatisfied(p), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(l.isSatisfied(p), false);
         p.add(new MigrateVM(vm4, n2, n3, 1, 2));
-        Assert.assertEquals(l.isSatisfied(p), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(l.isSatisfied(p), true);
     }
 
     @Test
@@ -109,16 +113,16 @@ public class LonelyTest implements PremadeElements {
 
         Model mo = new DefaultModel(map);
 
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
         Lonely l = new Lonely(s);
 
-        Assert.assertEquals(l.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(l.isSatisfied(mo), true);
 
         s.add(vm4);
-        Assert.assertEquals(l.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(l.isSatisfied(mo), true);
 
         map.addRunningVM(vm3, n1);
-        Assert.assertEquals(l.isSatisfied(mo), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(l.isSatisfied(mo), false);
 
     }
 }

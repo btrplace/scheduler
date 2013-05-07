@@ -51,10 +51,10 @@ public final class SliceUtils {
     }
 
     /**
-     * Extract and merge the variables indicating the slices start moment.
+     * Extract and merge the variables indicating the slices consume moment.
      *
      * @param slices the slices
-     * @return an array containing every start variable
+     * @return an array containing every consume variable
      */
     public static IntDomainVar[] extractStarts(List<Slice> slices) {
         IntDomainVar[] vs = new IntDomainVar[slices.size()];

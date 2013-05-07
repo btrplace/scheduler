@@ -19,10 +19,14 @@
 package btrplace.solver.choco;
 
 import btrplace.model.Model;
-import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.chocoUtil.AliasedCumulativesBuilder;
+import btrplace.solver.choco.actionModel.NodeActionModel;
+import btrplace.solver.choco.actionModel.VMActionModel;
+import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
+import btrplace.solver.choco.objective.ObjectiveAlterer;
+import btrplace.solver.choco.view.ChocoModelView;
+import btrplace.solver.choco.view.ModelViewMapper;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.slf4j.Logger;
@@ -210,10 +214,10 @@ public interface ReconfigurationProblem {
     /**
      * Create a variable that indicate the placement of an element on a node.
      *
-     * @param n the variable label
+     * @param n the variable label as a possible concatenation of objects
      * @return a variable
      */
-    IntDomainVar makeHostVariable(String n);
+    IntDomainVar makeHostVariable(Object... n);
 
     /**
      * Create a variable that indicate the current placement of a VM.
@@ -240,21 +244,21 @@ public interface ReconfigurationProblem {
     /**
      * Create a variable denoting a duration.
      *
-     * @param n the variable label
+     * @param n the variable label. The toString() representation of the objects will be used
      * @return the created variable.
      */
-    IntDomainVar makeDuration(String n);
+    IntDomainVar makeUnboundedDuration(Object... n);
 
     /**
      * Create a variable that indicate a moment.
      *
-     * @param n  the variable label
-     * @param lb the variable lower bound
      * @param ub the variable upper bound
+     * @param lb the variable lower bound
+     * @param n  the variable label. The toString() representation of the objects will be used
      * @return the created variable with a upper-bound necessarily lesser than {@code getEnd().getSup()}
      * @throws SolverException if the bounds are not valid
      */
-    IntDomainVar makeDuration(String n, int lb, int ub) throws SolverException;
+    IntDomainVar makeDuration(int ub, int lb, Object... n) throws SolverException;
 
     /**
      * Get the view associated to a given identifier.
@@ -266,7 +270,7 @@ public interface ReconfigurationProblem {
 
     /**
      * Get the view mapper that is used to associate
-     * {@link btrplace.model.ModelView} to {@link ChocoModelView}.
+     * {@link btrplace.model.view.ModelView} to {@link ChocoModelView}.
      *
      * @return the mapper
      */
@@ -293,7 +297,7 @@ public interface ReconfigurationProblem {
      * @param lbl the label to make
      * @return the label that will be used in practice
      */
-    String makeVarLabel(String lbl);
+    String makeVarLabel(Object... lbl);
 
     /**
      * Check if variables labelling is enabled.
@@ -310,29 +314,6 @@ public interface ReconfigurationProblem {
      * @return a set of VMs identifier
      */
     Set<UUID> getManageableVMs();
-
-    /**
-     * Insert {@link btrplace.plan.event.Allocate} actions if the amount of
-     * resources allocated to a VM has changed.
-     * The action schedule must be known in advance
-     *
-     * @param vm   the VM identifier
-     * @param node the identifier of the node that is currently hosting the VM
-     * @param st   the moment that action starts
-     * @param ed   the moment the action ends
-     */
-    void insertAllocateAction(ReconfigurationPlan plan, UUID vm, UUID node, int st, int ed);
-
-
-    /**
-     * Insert {@link btrplace.plan.event.AllocateEvent} notifications if the amount of
-     * resources allocated to a VM has changed.
-     *
-     * @param a  the action on which the notification have to be inserted
-     * @param vm the VM identifier
-     * @param k  the hook for the notifications
-     */
-    void insertNotifyAllocations(Action a, UUID vm, Action.Hook k);
 
     /**
      * Get the builder that handle the scheduling part of the problem.
@@ -376,4 +357,20 @@ public interface ReconfigurationProblem {
      * @param a the alterer to use
      */
     void setObjectiveAlterer(ObjectiveAlterer a);
+
+    /**
+     * Get the pool that is used to book UUIDs.
+     *
+     * @return the pool
+     */
+    UUIDPool getUUIDPool();
+
+    /**
+     * Create a clone of a given VM.
+     * The clone will take the place of the VM by the end of the reconfiguration process.
+     *
+     * @param vm the current VM to substitute
+     * @return the identifier of the new VM. {@code null} if the process failed
+     */
+    UUID cloneVM(UUID vm);
 }

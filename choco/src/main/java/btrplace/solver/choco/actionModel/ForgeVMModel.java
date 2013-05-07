@@ -24,15 +24,23 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
-import btrplace.solver.choco.VMActionModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.UUID;
 
 /**
- * Model an action that forge a VM to put it into the ready state.
+ * Model an action that forge a VM to put it into the ready state. *
+ * <p/>
+ * The VM must have an attribute (provided by {@link btrplace.model.Model#getAttributes()}
+ * {@code template} that indicate the template identifier to use to build the VM image.
+ * <p/>
+ * The model must provide an estimation of the action duration through a
+ * {@link btrplace.solver.choco.durationEvaluator.DurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code ForgeVM.class}
+ * <p/>
+ * If the reconfiguration problem has a solution, a {@link btrplace.plan.event.ForgeVM} action
+ * will inserted into the resulting reconfiguration plan.
  *
  * @author Fabien Hermenier
  */
@@ -44,9 +52,9 @@ public class ForgeVMModel implements VMActionModel {
 
     private IntDomainVar state;
 
-    private IntDomainVar end;
-
     private Slice dSlice;
+
+    private String template;
 
     /**
      * Make a new model.
@@ -56,26 +64,34 @@ public class ForgeVMModel implements VMActionModel {
      * @throws SolverException if an error occurred
      */
     public ForgeVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
-        /*
-         * We don't make any "real" dslice cause it may impacts the TaskScheduler
-         */
         int d = rp.getDurationEvaluators().evaluate(ForgeVM.class, e);
+        template = rp.getSourceModel().getAttributes().getString(e, "template");
+        if (template == null) {
+            throw new SolverException(rp.getSourceModel(), "Unable to forge the VM '" + e + "'. The required attribute 'template' is missing from the model");
+        }
         CPSolver s = rp.getSolver();
         duration = s.makeConstantIntVar(d);
         state = s.makeConstantIntVar(0);
         vm = e;
 
-        dSlice = new SliceBuilder(rp, e, rp.makeVarLabel("forge(" + e + ").dSlice"))
-                .setEnd(rp.getEnd())
-                .setStart(rp.makeDuration("forge(" + e + ").start"))
+        /*
+         * We don't make any "real" d-slice cause it may impacts the TaskScheduler
+         * so the hosting variable is set to -1 to be sure the VM is not hosted on a node
+         */
+        dSlice = new SliceBuilder(rp, e, rp.makeVarLabel("forge(", e, ").dSlice"))
+                .setDuration(duration)
+                .setStart(rp.makeUnboundedDuration("forge(", e, ").start"))
+                .setEnd(rp.makeUnboundedDuration("forge(", e, ").stop"))
+                .setHoster(-1)
                 .build();
         s.post(s.leq(d, dSlice.getDuration()));
-        end = new IntDomainVarAddCste(s, rp.makeVarLabel("forge(" + e + ").start"), dSlice.getStart(), -d);
+        s.post(s.leq(dSlice.getEnd(), rp.getEnd()));
     }
 
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
-        return true;
+        ForgeVM a = new ForgeVM(vm, getStart().getVal(), getEnd().getVal());
+        return plan.add(a);
     }
 
     @Override
@@ -90,7 +106,7 @@ public class ForgeVMModel implements VMActionModel {
 
     @Override
     public IntDomainVar getEnd() {
-        return end;
+        return dSlice.getEnd();
     }
 
     @Override
@@ -118,4 +134,12 @@ public class ForgeVMModel implements VMActionModel {
         v.visit(this);
     }
 
+    /**
+     * Get the template to use to build the VM.
+     *
+     * @return the template identifier
+     */
+    public String getTemplate() {
+        return template;
+    }
 }

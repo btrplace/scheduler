@@ -26,7 +26,6 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.UUID;
 
 /**
  * Unit tests for {@link btrplace.json.model.constraint.SleepingConverter}.
@@ -39,7 +38,7 @@ public class SleepingConverterTest implements PremadeElements {
 
     @Test
     public void testViables() throws JSONConverterException {
-        Sleeping d = new Sleeping(new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3)));
+        Sleeping d = new Sleeping(new HashSet<>(Arrays.asList(vm1, vm2, vm3)));
         Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
     }
 }

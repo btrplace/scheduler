@@ -25,7 +25,10 @@ import btrplace.model.Model;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.*;
+import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
+import btrplace.solver.choco.MappingBuilder;
+import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.test.PremadeElements;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -151,8 +154,6 @@ public class CShareableResourceTest implements PremadeElements {
 
     /**
      * The default overbooking ratio of 1 will make this problem having no solution.
-     *
-     * @throws Exception
      */
     @Test
     public void testDefaultOverbookRatio() throws ContradictionException, SolverException {

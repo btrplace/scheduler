@@ -19,7 +19,9 @@
 package btrplace.solver.choco;
 
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.solver.choco.actionModel.ActionModelUtils;
 import btrplace.solver.choco.actionModel.ActionModelVisitor;
+import btrplace.solver.choco.actionModel.VMActionModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
@@ -29,7 +31,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Unit tests for {@link ActionModelUtils}.
+ * Unit tests for {@link btrplace.solver.choco.actionModel.ActionModelUtils}.
  *
  * @author Fabien Hermenier
  */
@@ -119,13 +121,13 @@ public class ActionModelUtilsTest {
             c = s.createBoundIntVar("cost" + nb, nb, nb + 1);
             state = s.createBoundIntVar("state" + nb, nb, nb + 1);
             if (nb % 2 == 0) {
-                cSlice = new Slice(UUID.randomUUID(),
+                cSlice = new Slice(new UUID(10, nb),
                         s.createBoundIntVar("cS" + nb + "-st", nb, nb + 1),
                         s.createBoundIntVar("cS" + nb + "-ed", nb, nb + 1),
                         s.createBoundIntVar("cS" + nb + "-d", nb, nb + 1),
                         s.createBoundIntVar("cS" + nb + "-h", nb, nb + 1));
             } else {
-                dSlice = new Slice(UUID.randomUUID(),
+                dSlice = new Slice(new UUID(15, nb),
                         s.createBoundIntVar("dS" + nb + "-st", nb, nb + 1),
                         s.createBoundIntVar("dS" + nb + "-ed", nb, nb + 1),
                         s.createBoundIntVar("dS" + nb + "-d", nb, nb + 1),

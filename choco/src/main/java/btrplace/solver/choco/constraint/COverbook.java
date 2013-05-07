@@ -20,12 +20,10 @@ package btrplace.solver.choco.constraint;
 
 
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Overbook;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoSatConstraint;
-import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.view.CShareableResource;
 import choco.kernel.solver.ContradictionException;
@@ -38,7 +36,7 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Choco implementation of {@link btrplace.model.SatConstraint}.
+ * Choco implementation of {@link btrplace.model.constraint.SatConstraint}.
  *
  * @author Fabien Hermenier
  */
@@ -81,8 +79,9 @@ public class COverbook implements ChocoSatConstraint {
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
-        Set<UUID> bads = new HashSet<UUID>();
-        if (rc == null) { //Should not occur, if the right model is given
+        Set<UUID> bads = new HashSet<>();
+        if (rc == null) {
+            //No resource given, all the VMs are considered as misplaced
             for (UUID n : cstr.getInvolvedNodes()) {
                 bads.addAll(m.getMapping().getRunningVMs(n));
             }

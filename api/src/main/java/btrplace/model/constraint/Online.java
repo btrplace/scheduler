@@ -18,9 +18,8 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.checker.OnlineChecker;
+import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
 import java.util.Set;
@@ -28,10 +27,11 @@ import java.util.UUID;
 
 /**
  * A constraint to force a set of nodes at being online.
- *
+ * <p/>
  * The restriction provided by the constraint is discrete.
  * however, if some of the nodes are already offline, then
  * their state will be unchanged.
+ *
  * @author Fabien Hermenier
  */
 public class Online extends SatConstraint {
@@ -43,17 +43,6 @@ public class Online extends SatConstraint {
      */
     public Online(Set<UUID> nodes) {
         super(Collections.<UUID>emptySet(), nodes, false);
-    }
-
-    @Override
-    public Sat isSatisfied(Model i) {
-        Mapping c = i.getMapping();
-        for (UUID n : getInvolvedNodes()) {
-            if (!c.getOnlineNodes().contains(n)) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
     }
 
     @Override
@@ -86,4 +75,10 @@ public class Online extends SatConstraint {
     public boolean setContinuous(boolean b) {
         return !b;
     }
+
+    @Override
+    public SatConstraintChecker getChecker() {
+        return new OnlineChecker(this);
+    }
+
 }

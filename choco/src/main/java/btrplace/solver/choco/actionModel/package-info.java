@@ -17,6 +17,6 @@
  */
 
 /**
- * Concrete implementations of {@link btrplace.solver.choco.ActionModel}.
+ * Concrete implementations of {@link btrplace.solver.choco.actionModel.ActionModel}.
  */
 package btrplace.solver.choco.actionModel;

@@ -18,14 +18,11 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.model.SatConstraint;
-import btrplace.model.view.ShareableResource;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
+import btrplace.model.constraint.checker.SatConstraintChecker;
+import btrplace.model.constraint.checker.SingleResourceCapacityChecker;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -92,40 +89,6 @@ public class SingleResourceCapacity extends SatConstraint {
     }
 
     @Override
-    public Sat isSatisfied(Model i) {
-        ShareableResource rc = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + rcId);
-        if (rc == null) {
-            return Sat.UNSATISFIED;
-        }
-        Mapping map = i.getMapping();
-        for (UUID n : getInvolvedNodes()) {
-            if (rc.sum(map.getRunningVMs(n), true) > amount) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
-
-    }
-
-    @Override
-    public Sat isSatisfied(ReconfigurationPlan plan) {
-        Model mo = plan.getOrigin();
-        if (!isSatisfied(mo).equals(SatConstraint.Sat.SATISFIED)) {
-            return Sat.UNSATISFIED;
-        }
-        mo = plan.getOrigin().clone();
-        for (Action a : plan) {
-            if (!a.apply(mo)) {
-                return Sat.UNSATISFIED;
-            }
-            if (!isSatisfied(mo).equals(SatConstraint.Sat.SATISFIED)) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -142,10 +105,7 @@ public class SingleResourceCapacity extends SatConstraint {
 
     @Override
     public int hashCode() {
-        int res = amount;
-        res = 31 * res + rcId.hashCode();
-        res = 31 * res + getInvolvedNodes().hashCode() + (isContinuous() ? 1 : 0);
-        return res;
+        return Objects.hash(getInvolvedNodes(), rcId, amount, isContinuous());
     }
 
     @Override
@@ -163,4 +123,10 @@ public class SingleResourceCapacity extends SatConstraint {
 
         return b.append(')').toString();
     }
+
+    @Override
+    public SatConstraintChecker getChecker() {
+        return new SingleResourceCapacityChecker(this);
+    }
+
 }

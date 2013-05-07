@@ -21,7 +21,7 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Preserve;
 import btrplace.model.view.ShareableResource;
@@ -86,7 +86,7 @@ public class CPreserveTest implements PremadeElements {
         cra.labelVariables(true);
         Model mo = new DefaultModel(map);
         mo.attach(rc);
-        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Online(map.getAllNodes()));
         cstrs.add(pr);
         ReconfigurationPlan p = cra.solve(mo, cstrs);

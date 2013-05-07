@@ -21,9 +21,8 @@ package btrplace.plan.event;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.plan.Action;
-import btrplace.plan.VMStateTransition;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -42,7 +41,7 @@ public class ShutdownVM extends Action implements VMStateTransition {
      *
      * @param vm the virtual machine to stop
      * @param on the hosting node
-     * @param s  the moment the action start.
+     * @param s  the moment the action consume.
      * @param f  the moment the action finish
      */
     public ShutdownVM(UUID vm, UUID on, int s, int f) {
@@ -96,10 +95,7 @@ public class ShutdownVM extends Action implements VMStateTransition {
 
     @Override
     public int hashCode() {
-        int res = getEnd();
-        res = getStart() + 31 * res;
-        res = vm.hashCode() + 31 * res;
-        return 31 * res + node.hashCode();
+        return Objects.hash(getStart(), getEnd(), vm, node);
     }
 
     @Override

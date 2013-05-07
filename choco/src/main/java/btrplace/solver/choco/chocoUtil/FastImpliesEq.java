@@ -81,7 +81,6 @@ public class FastImpliesEq extends AbstractBinIntSConstraint {
 
     @Override
     public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
-        //ChocoLogging.getBranchingLogger().info(vars[idx].pretty() + " " + deltaDomain.toString());
         if (idx == 1 && !v1.canBeInstantiatedTo(constante)) {
             v0.instantiate(0, this, false);
             this.setEntailed();

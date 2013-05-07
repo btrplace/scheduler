@@ -1,6 +1,7 @@
 package btrplace.plan;
 
 import btrplace.model.Model;
+import btrplace.plan.event.Action;
 import btrplace.plan.event.ActionVisitor;
 
 import java.util.UUID;
@@ -29,7 +30,7 @@ public class MockAction extends Action {
 
     @Override
     public String pretty() {
-        return "pretty()";
+        return "pretty(" + u + ", start= " + getStart() + ", end=" + getEnd() + ")";
     }
 
     @Override

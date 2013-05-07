@@ -19,13 +19,11 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.SequentialVMTransitions;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ActionModel;
-import btrplace.solver.choco.ChocoSatConstraint;
-import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.actionModel.ActionModel;
 import btrplace.solver.choco.actionModel.RelocatableVMModel;
 import btrplace.solver.choco.actionModel.StayAwayVMModel;
 import btrplace.solver.choco.actionModel.StayRunningVMModel;
@@ -60,7 +58,7 @@ public class CSequentialVMTransitions implements ChocoSatConstraint {
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
         List<UUID> seq = cstr.getInvolvedVMs();
 
-        List<ActionModel> ams = new ArrayList<ActionModel>();
+        List<ActionModel> ams = new ArrayList<>();
         for (UUID vmId : seq) {
             ActionModel am = rp.getVMAction(vmId);
 

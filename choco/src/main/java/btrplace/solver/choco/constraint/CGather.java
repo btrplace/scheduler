@@ -20,9 +20,11 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Gather;
-import btrplace.solver.choco.*;
+import btrplace.model.constraint.SatConstraint;
+import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.Slice;
+import btrplace.solver.choco.actionModel.VMActionModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -49,7 +51,7 @@ public class CGather implements ChocoSatConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) {
-        List<Slice> dSlices = new ArrayList<Slice>();
+        List<Slice> dSlices = new ArrayList<>();
         for (UUID vm : cstr.getInvolvedVMs()) {
             VMActionModel a = rp.getVMAction(vm);
             Slice dSlice = a.getDSlice();
@@ -131,8 +133,8 @@ public class CGather implements ChocoSatConstraint {
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
-        if (!cstr.isSatisfied(m).equals(SatConstraint.Sat.SATISFIED)) {
-            return new HashSet<UUID>(cstr.getInvolvedVMs());
+        if (!cstr.isSatisfied(m)) {
+            return new HashSet<>(cstr.getInvolvedVMs());
         }
         return Collections.emptySet();
     }

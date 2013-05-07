@@ -30,6 +30,8 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import java.util.Arrays;
+
 /**
  * Lighter but faster version of {@link BinPacking} that does not provide the knapsack filtering
  *
@@ -99,8 +101,6 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
 
     private IStateBitSet notEntailedDims;
 
-    private IStateInt[] candidates;
-
     /**
      * constructor of the FastBinPacking global constraint
      *
@@ -118,7 +118,6 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
         this.nbDims = loads.length;
         this.bins = bins;
         this.iSizes = sizes;
-
         this.bTLoads = new IStateInt[nbDims][nbBins];
         this.bRLoads = new IStateInt[nbDims][nbBins];
     }
@@ -126,7 +125,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
     @Override
     public boolean isConsistent() {
         int[][] l = new int[nbDims][nbBins];
-        for (int i = 0; i < bins.length; i++) { //Assignment variable
+        for (int i = 0; i < bins.length; i++) {
             if (bins[i].isInstantiated()) {
                 for (int d = 0; d < nbDims; d++) {
                     int v = bins[i].getVal();
@@ -164,10 +163,11 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
             }
         }
         for (int b = 0; b < nbBins; b++) {
-            for (int d = 0; d < nbDims; d++) {
+            //for (int d = 0; d < nbDims; d++) {
+            for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
                 int loadPos = iSizes[0].length + d * nbBins + b;
                 if (tuple[loadPos] != l[d][b]) {
-                    ChocoLogging.getBranchingLogger().warning("Bad load of " + b + " = " + tuple[loadPos] + " expected =" + l[d][b]);
+                    ChocoLogging.getBranchingLogger().warning("Invalid load for bin " + b + " on dimension " + d + ". Was " + tuple[loadPos] + ", expected " + l[d][b]);
                     return false;
                 }
             }
@@ -199,7 +199,6 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
         int[][] cLoads = new int[nbDims][nbBins];
 
         int[] nbUnassigned = new int[nbDims];
-        candidates = new IStateInt[nbBins];
         int[] cs = new int[nbBins];
         for (int i = 0; i < bins.length; i++) {
             bins[i].updateInf(0, this, false);
@@ -237,7 +236,6 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
                 loads[d][b].updateSup(rLoads[d][b] + cLoads[d][b], this, false);
                 slb[d] += loads[d][b].getInf();
                 slu[d] += loads[d][b].getSup();
-                candidates[b] = env.makeInt(cs[b]);
             }
         }
 
@@ -252,15 +250,14 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
 
         for (int d = 0; d < nbDims; d++) {
             for (int b = 0; b < nbBins; b++) {
-                if (loads[d][b].getSup() - loads[d][b].getInf() < nbUnassigned[d]) {
-                    ChocoLogging.getBranchingLogger().info(sumISizes[d] + " >= ub(" + loads[d][b].pretty() + ")" + cLoads[d][b]);
+                if (!loads[d][b].isInstantiated() && loads[d][b].getSup() - loads[d][b].getInf() < nbUnassigned[d]) {
                     notEntailedDims.set(d);
                     break;
                 }
             }
         }
         assert checkLoadConsistency();
-        //ChocoLogging.getBranchingLogger().info(Arrays.toString(name) + " " + Arrays.toString(cLoads) + " notEntailed: " + notEntailedDims);
+        ChocoLogging.getBranchingLogger().finest("BinPacking: " + Arrays.toString(name) + " notEntailed dimensions: " + notEntailedDims);
         propagate();
     }
 
@@ -278,33 +275,28 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      */
     public void propagate() throws ContradictionException {
         recomputeLoadSums();
-        //d -= System.currentTimeMillis();
-        //boolean noFixPoint = true;
-        //while (noFixPoint) {
-
         for (int d = 0; d < nbDims; d++) {
+            //for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
             if (sumISizes[d] > sumLoadSup[d].get() || sumISizes[d] < sumLoadInf[d].get()) {
                 fail();
             }
         }
-        //  noFixPoint = false;
-            /*for (int b = availableBins.nextSetBit(0); b >= 0; b = availableBins.nextSetBit(b + 1)) {
-                for (int d = 0; d < nbDims; d++) {
-                    noFixPoint |= filterLoadInf(d, b, Math.max(bRLoads[d][b].get(), (int) sumISizes[d] - sumLoadSup[d].get() + loads[d][b].getSup()));
-                    noFixPoint |= filterLoadSup(d, b, Math.min(bTLoads[d][b].get(), (int) sumISizes[d] - sumLoadInf[d].get() + loads[d][b].getInf()));
+
+            /*for (int b = 0; b < nbBins; b++) {
+                for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
+                    filterLoadInf(d, b, Math.max(bRLoads[d][b].get(), (int) sumISizes[d] - sumLoadSup[d].get() + loads[d][b].getSup()));
+                    filterLoadSup(d, b, Math.min(bTLoads[d][b].get(), (int) sumISizes[d] - sumLoadInf[d].get() + loads[d][b].getInf()));
                 }
             } */
-        //}
         assert checkLoadConsistency();
-        //d += System.currentTimeMillis();
     }
 
     /**
      * recompute the sum of the min/max loads only if at least one variable bound has been updated outside the constraint
      */
-    private void recomputeLoadSums() {
+    private boolean recomputeLoadSums() {
         if (!loadsHaveChanged.get()) {
-            return;
+            return false;
         }
         loadsHaveChanged.set(false);
         for (int d = 0; d < nbDims; d++) {
@@ -318,6 +310,22 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
             this.sumLoadInf[d].set(sli);
             this.sumLoadSup[d].set(sls);
         }
+        return true;
+    }
+
+    @Override
+    public void awakeOnInst(int idx) throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void awakeOnBounds(int varIndex) throws ContradictionException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void awakeOnRem(int varIdx, int val) throws ContradictionException {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -326,6 +334,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
     @Override
     public void awakeOnInf(int varIdx) throws ContradictionException {
         loadsHaveChanged.set(true);
+        constAwake(false);
     }
 
     /**
@@ -334,6 +343,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
     @Override
     public void awakeOnSup(int varIdx) throws ContradictionException {
         loadsHaveChanged.set(true);
+        constAwake(false);
     }
 
 
@@ -383,6 +393,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      *          on the load[bin] variable
      */
     private void assignItem(int item, int bin) throws ContradictionException {
+        //for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
         for (int d = 0; d < nbDims; d++) {
             int r = bRLoads[d][bin].add(iSizes[d][item]);
             filterLoadInf(d, bin, r);
@@ -476,7 +487,6 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
                     while (it.hasNext()) {
                         int v = it.next();
                         for (int d = 0; d < nbDims; d++) {
-                            //     System.out.println(d + " " + v + " " + d + " " + i);
                             cs[d][v] += iSizes[d][i];
                         }
                     }
@@ -486,7 +496,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
             }
         }
 
-//        for (int d = 0; d < nbDims; d++) {
+        //for (int d = 0; d < nbDims; d++) {
         for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
             int sli = 0;
             int sls = 0;
