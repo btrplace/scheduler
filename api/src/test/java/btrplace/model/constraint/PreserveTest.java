@@ -21,7 +21,6 @@ package btrplace.model.constraint;
 import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
 import btrplace.model.view.ShareableResource;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
@@ -41,8 +40,9 @@ public class PreserveTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2));
         Preserve p = new Preserve(vms, "cpu", 3);
+        Assert.assertNotNull(p.getChecker());
         Assert.assertEquals(vms, p.getInvolvedVMs());
         Assert.assertTrue(p.getInvolvedNodes().isEmpty());
         Assert.assertEquals(3, p.getAmount());
@@ -55,7 +55,7 @@ public class PreserveTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsAndHashCode() {
-        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2));
         Preserve p = new Preserve(vms, "cpu", 3);
         Preserve p2 = new Preserve(vms, "cpu", 3);
         Assert.assertTrue(p.equals(p));
@@ -71,15 +71,15 @@ public class PreserveTest implements PremadeElements {
         ShareableResource rc = new ShareableResource("cpu");
         Model m = new DefaultModel(new DefaultMapping());
         m.attach(rc);
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
+        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         Preserve p = new Preserve(s, "cpu", 3);
         rc.set(vm1, 3);
         rc.set(vm2, 4);
         rc.set(vm3, 3);
-        Assert.assertEquals(SatConstraint.Sat.SATISFIED, p.isSatisfied(m));
+        Assert.assertEquals(true, p.isSatisfied(m));
 
-        rc.unset(vm3); //Set to 0 by default
-        Assert.assertEquals(SatConstraint.Sat.UNSATISFIED, p.isSatisfied(m));
-        Assert.assertEquals(SatConstraint.Sat.UNSATISFIED, new Preserve(s, "mem", 3).isSatisfied(m));
+        rc.unset(vm3); //Set to 3 by default
+        Assert.assertEquals(true, p.isSatisfied(m));
+        Assert.assertEquals(false, new Preserve(s, "mem", 3).isSatisfied(m));
     }
 }

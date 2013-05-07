@@ -21,7 +21,7 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Offline;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ShutdownNode;
@@ -45,7 +45,7 @@ public class COfflineTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Offline b = new Offline(Collections.singleton(UUID.randomUUID()));
+        Offline b = new Offline(Collections.singleton(n1));
         COffline c = new COffline(b);
         Assert.assertEquals(c.toString(), b.toString());
     }
@@ -74,15 +74,14 @@ public class COfflineTest implements PremadeElements {
     public void testGetMisplacedAndSatisfied() {
         Mapping map = new MappingBuilder().on(n1, n2).build();
 
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
         Offline off = new Offline(s);
         COffline coff = new COffline(off);
         Model mo = new DefaultModel(map);
 
         Assert.assertTrue(coff.getMisPlacedVMs(mo).isEmpty());
 
-        UUID vm = UUID.randomUUID();
-        map.addRunningVM(vm, n1);
+        map.addRunningVM(vm1, n1);
         Assert.assertEquals(coff.getMisPlacedVMs(mo), map.getAllVMs());
     }
 

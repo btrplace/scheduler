@@ -21,7 +21,7 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ShutdownVM;
@@ -50,7 +50,7 @@ public class CCumulatedRunningCapacityTest implements PremadeElements {
                 .run(n3, vm3, vm4)
                 .sleep(n2, vm5).build();
         Model mo = new DefaultModel(map);
-        List<SatConstraint> l = new ArrayList<SatConstraint>();
+        List<SatConstraint> l = new ArrayList<>();
         CumulatedRunningCapacity x = new CumulatedRunningCapacity(map.getAllNodes(), 4);
         x.setContinuous(false);
         l.add(x);
@@ -66,9 +66,9 @@ public class CCumulatedRunningCapacityTest implements PremadeElements {
         Mapping map = new MappingBuilder().on(n1, n2, n3)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3, vm4, vm5).build();
-        Set<UUID> on = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> on = new HashSet<>(Arrays.asList(n1, n2));
         Model mo = new DefaultModel(map);
-        List<SatConstraint> l = new ArrayList<SatConstraint>();
+        List<SatConstraint> l = new ArrayList<>();
         CumulatedRunningCapacity x = new CumulatedRunningCapacity(on, 4);
         x.setContinuous(false);
         l.add(x);
@@ -87,9 +87,9 @@ public class CCumulatedRunningCapacityTest implements PremadeElements {
         Mapping map = new MappingBuilder().on(n1, n2, n3)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3, vm4).ready(vm5).build();
-        Set<UUID> on = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> on = new HashSet<>(Arrays.asList(n1, n2));
         Model mo = new DefaultModel(map);
-        List<SatConstraint> l = new ArrayList<SatConstraint>();
+        List<SatConstraint> l = new ArrayList<>();
         l.add(new Running(Collections.singleton(vm5)));
         l.add(new Fence(Collections.singleton(vm5), Collections.singleton(n1)));
         CumulatedRunningCapacity x = new CumulatedRunningCapacity(on, 4);
@@ -116,9 +116,9 @@ public class CCumulatedRunningCapacityTest implements PremadeElements {
                 .run(n3, vm5).build();
 
         Model mo = new DefaultModel(map);
-        List<SatConstraint> l = new ArrayList<SatConstraint>();
+        List<SatConstraint> l = new ArrayList<>();
 
-        List<UUID> seq = new ArrayList<UUID>();
+        List<UUID> seq = new ArrayList<>();
         seq.add(vm1);
         seq.add(vm2);
         l.add(new SequentialVMTransitions(seq));
@@ -128,7 +128,7 @@ public class CCumulatedRunningCapacityTest implements PremadeElements {
         l.add(new Root(Collections.singleton(vm3)));
         l.add(new Root(Collections.singleton(vm4)));
 
-        Set<UUID> on = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> on = new HashSet<>(Arrays.asList(n1, n2));
         CumulatedRunningCapacity x = new CumulatedRunningCapacity(on, 3);
         x.setContinuous(true);
         l.add(x);

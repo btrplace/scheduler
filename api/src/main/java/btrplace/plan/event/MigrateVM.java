@@ -20,10 +20,8 @@ package btrplace.plan.event;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.plan.Action;
-import btrplace.plan.RunningVMPlacement;
-import btrplace.plan.VMEvent;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -44,7 +42,7 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
      * @param vm  the VM to migrate
      * @param src the node the VM is currently running on
      * @param dst the node where to place the VM
-     * @param st  the moment the action will start
+     * @param st  the moment the action will consume
      * @param ed  the moment the action will stop
      */
     public MigrateVM(UUID vm, UUID src, UUID dst, int st, int ed) {
@@ -120,11 +118,7 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
 
     @Override
     public int hashCode() {
-        int res = getEnd();
-        res = getStart() + 31 * res;
-        res = src.hashCode() + 31 * res;
-        res = 31 * res + dst.hashCode();
-        return 31 * res + src.hashCode();
+        return Objects.hash(getStart(), getEnd(), src, dst, vm);
     }
 
     @Override

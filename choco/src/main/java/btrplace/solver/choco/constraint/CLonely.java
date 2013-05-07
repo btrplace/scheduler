@@ -20,13 +20,11 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Lonely;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoSatConstraint;
-import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.VMActionModel;
+import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.chocoUtil.Disjoint;
 import btrplace.solver.choco.chocoUtil.Precedences;
 import choco.cp.solver.CPSolver;
@@ -56,10 +54,10 @@ public class CLonely implements ChocoSatConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
         //Remove non future-running VMs
-        List<IntDomainVar> myHosts = new ArrayList<IntDomainVar>();
-        List<IntDomainVar> otherHosts = new ArrayList<IntDomainVar>();
-        Collection<UUID> vms = new HashSet<UUID>();
-        Set<UUID> otherVMs = new HashSet<UUID>();
+        List<IntDomainVar> myHosts = new ArrayList<>();
+        List<IntDomainVar> otherHosts = new ArrayList<>();
+        Collection<UUID> vms = new HashSet<>();
+        Set<UUID> otherVMs = new HashSet<>();
         for (UUID vm : rp.getFutureRunningVMs()) {
             IntDomainVar host = rp.getVMAction(vm).getDSlice().getHoster();
             if (cstr.getInvolvedVMs().contains(vm)) {
@@ -80,8 +78,8 @@ public class CLonely implements ChocoSatConstraint {
             //Get the position of all the others c-slices and their associated end moment
             TIntArrayList otherPos = new TIntArrayList();
             TIntArrayList minePos = new TIntArrayList();
-            List<IntDomainVar> otherEnds = new ArrayList<IntDomainVar>();
-            List<IntDomainVar> mineEnds = new ArrayList<IntDomainVar>();
+            List<IntDomainVar> otherEnds = new ArrayList<>();
+            List<IntDomainVar> mineEnds = new ArrayList<>();
             Mapping map = rp.getSourceModel().getMapping();
             for (UUID vm : map.getRunningVMs()) {
                 if (!vms.contains(vm)) {
@@ -118,8 +116,8 @@ public class CLonely implements ChocoSatConstraint {
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
-        Set<UUID> bad = new HashSet<UUID>();
-        Set<UUID> hosters = new HashSet<UUID>();
+        Set<UUID> bad = new HashSet<>();
+        Set<UUID> hosters = new HashSet<>();
         Collection<UUID> vms = cstr.getInvolvedVMs();
         Mapping map = m.getMapping();
         for (UUID vm : vms) {
@@ -127,7 +125,8 @@ public class CLonely implements ChocoSatConstraint {
                 hosters.add(map.getVMLocation(vm));
             }
         }
-        for (UUID n : hosters) { //Every used node that host a VMs that is not a part of the constraint
+        for (UUID n : hosters) {
+            //Every used node that host a VMs that is not a part of the constraint
             //is a bad node. All the hosted VMs are candidate for relocation. Not optimal, but safe
             for (UUID vm : map.getRunningVMs(n)) {
                 if (!vms.contains(vm)) {

@@ -19,14 +19,13 @@
 package btrplace.plan;
 
 import btrplace.model.Model;
+import btrplace.plan.event.Action;
 
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Default implementation for {@link ReconfigurationPlan}.
+ * By default, the instance relies on a {@link TimeBasedPlanApplier} to check for the plan applicability.
  *
  * @author Fabien Hermenier
  */
@@ -38,9 +37,9 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
 
     private DependenciesExtractor depsExtractor;
 
-    private static Comparator<Action> startFirstComparator = new TimedBasedActionComparator(true);
+    private static Comparator<Action> startFirstComparator = new TimedBasedActionComparator(true, true);
 
-    private ReconfigurationPlanApplier applier = TimeBasedPlanApplier.getInstance();
+    private ReconfigurationPlanApplier applier = new TimeBasedPlanApplier();
 
     /**
      * Make a new plan that starts for a given model.
@@ -49,7 +48,7 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
      */
     public DefaultReconfigurationPlan(Model src) {
         this.src = src;
-        this.actions = new TreeSet<Action>(startFirstComparator);
+        this.actions = new TreeSet<>(startFirstComparator);
         this.depsExtractor = new DependenciesExtractor(src);
     }
 
@@ -124,9 +123,7 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
 
     @Override
     public int hashCode() {
-        int result = src.hashCode();
-        result = 31 * result + actions.hashCode();
-        return result;
+        return Objects.hash(src, actions);
     }
 
     @Override

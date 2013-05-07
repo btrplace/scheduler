@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
@@ -40,8 +43,9 @@ public class SpreadTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> x = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> x = new HashSet<>(Arrays.asList(vm1, vm2));
         Spread s = new Spread(x);
+        Assert.assertNotNull(s.getChecker());
         Assert.assertEquals(x, s.getInvolvedVMs());
         Assert.assertTrue(s.getInvolvedNodes().isEmpty());
         Assert.assertTrue(s.isContinuous());
@@ -56,13 +60,13 @@ public class SpreadTest implements PremadeElements {
 
     @Test
     public void testEquals() {
-        Set<UUID> x = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> x = new HashSet<>(Arrays.asList(vm1, vm2));
         Spread s = new Spread(x);
 
         Assert.assertTrue(s.equals(s));
         Assert.assertTrue(new Spread(x).equals(s));
         Assert.assertEquals(s.hashCode(), new Spread(x).hashCode());
-        x = new HashSet<UUID>(Arrays.asList(vm3));
+        x = new HashSet<>(Arrays.asList(vm3));
         Assert.assertFalse(new Spread(x).equals(s));
     }
 
@@ -87,9 +91,9 @@ public class SpreadTest implements PremadeElements {
         Spread s = new Spread(map.getAllVMs());
         s.setContinuous(false);
 
-        Assert.assertEquals(s.isSatisfied(mo), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(s.isSatisfied(mo), false);
         map.addRunningVM(vm1, n4);
-        Assert.assertEquals(s.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(s.isSatisfied(mo), true);
     }
 
     @Test
@@ -107,23 +111,24 @@ public class SpreadTest implements PremadeElements {
 
         Model mo = new DefaultModel(map);
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
-        Assert.assertEquals(s.isSatisfied(p), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(s.isSatisfied(p), true);
 
         MigrateVM m1 = new MigrateVM(vm1, n1, n2, 1, 2);
         p.add(m1);
-        Assert.assertEquals(s.isSatisfied(p), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(s.isSatisfied(p), false);
 
         //No overlapping at moment 1
         MigrateVM m2 = new MigrateVM(vm2, n2, n3, 0, 1);
         p.add(m2);
-        Assert.assertEquals(s.isSatisfied(p), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(s.isSatisfied(p), true);
 
 
         map.addRunningVM(vm3, n2);
         s = new Spread(map.getAllVMs());
         p = new DefaultReconfigurationPlan(mo);
-        Assert.assertEquals(s.isSatisfied(p), SatConstraint.Sat.UNSATISFIED);
+        System.out.println(p.getOrigin() + "\n" + p.getResult());
+        Assert.assertEquals(s.isSatisfied(p), false);
         p.add(new MigrateVM(vm3, n2, n3, 0, 5));
-        Assert.assertEquals(s.isSatisfied(p), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(s.isSatisfied(p), true);
     }
 }

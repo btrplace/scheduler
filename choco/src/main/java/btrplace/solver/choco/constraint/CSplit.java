@@ -20,10 +20,12 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Split;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.*;
+import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.Slice;
+import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.chocoUtil.Disjoint;
 import btrplace.solver.choco.chocoUtil.Precedences;
 import choco.cp.solver.CPSolver;
@@ -34,8 +36,6 @@ import java.util.*;
 
 /**
  * Choco implementation of the {@link btrplace.model.constraint.Split} constraint.
- * <p/>
- * TODO: continuous implementation
  *
  * @author Fabien Hermenier
  */
@@ -54,11 +54,11 @@ public class CSplit implements ChocoSatConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        List<List<IntDomainVar>> groups = new ArrayList<List<IntDomainVar>>();
-        List<List<UUID>> vmGroups = new ArrayList<List<UUID>>();
+        List<List<IntDomainVar>> groups = new ArrayList<>();
+        List<List<UUID>> vmGroups = new ArrayList<>();
         for (Set<UUID> grp : cstr.getSets()) {
-            List<IntDomainVar> l = new ArrayList<IntDomainVar>();
-            List<UUID> vl = new ArrayList<UUID>();
+            List<IntDomainVar> l = new ArrayList<>();
+            List<UUID> vl = new ArrayList<>();
             for (UUID vm : grp) {
                 if (rp.getFutureRunningVMs().contains(vm)) {
                     Slice s = rp.getVMAction(vm).getDSlice();
@@ -93,7 +93,7 @@ public class CSplit implements ChocoSatConstraint {
             }
         }
         if (cstr.isContinuous()) {
-            if (cstr.isSatisfied(rp.getSourceModel()) != SatConstraint.Sat.SATISFIED) {
+            if (!cstr.isSatisfied(rp.getSourceModel())) {
                 rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
                 return false;
             } else {
@@ -106,10 +106,10 @@ public class CSplit implements ChocoSatConstraint {
                 List<IntDomainVar>[] otherEnds = new List[vmGroups.size()];
                 for (int i = 0; i < vmGroups.size(); i++) {
                     otherPositions[i] = new TIntArrayList();
-                    otherEnds[i] = new ArrayList<IntDomainVar>();
+                    otherEnds[i] = new ArrayList<>();
                 }
 
-                //Fullfil the others stuff.
+                //Fulfill the others stuff.
                 for (int i = 0; i < vmGroups.size(); i++) {
                     List<UUID> grp = vmGroups.get(i);
                     for (UUID vm : grp) {
@@ -153,16 +153,17 @@ public class CSplit implements ChocoSatConstraint {
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-        List<Set<UUID>> groups = new ArrayList<Set<UUID>>(cstr.getSets());
+        List<Set<UUID>> groups = new ArrayList<>(cstr.getSets());
         //Bad contains the VMs on nodes that host VMs from different groups.
-        Set<UUID> bad = new HashSet<UUID>();
+        Set<UUID> bad = new HashSet<>();
         for (Set<UUID> grp : groups) {
             for (UUID vm : grp) {
                 if (map.getRunningVMs().contains(vm)) {
                     UUID n = map.getVMLocation(vm);
                     Set<UUID> allOnN = map.getRunningVMs(n);
                     for (UUID vmOnN : allOnN) {
-                        if (inOtherGroup(groups, grp, vmOnN)) { //The VM belong to another group
+                        if (inOtherGroup(groups, grp, vmOnN)) {
+                            //The VM belong to another group
                             bad.add(vm);
                             bad.add(vmOnN);
                         }

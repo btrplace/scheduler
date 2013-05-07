@@ -18,14 +18,11 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Preserve;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoSatConstraint;
-import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.view.CShareableResource;
 import choco.kernel.solver.ContradictionException;
@@ -77,7 +74,7 @@ public class CPreserve implements ChocoSatConstraint {
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
-        Set<UUID> bad = new HashSet<UUID>();
+        Set<UUID> bad = new HashSet<>();
         ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         if (rc == null) {
             bad.addAll(cstr.getInvolvedVMs());
@@ -85,10 +82,7 @@ public class CPreserve implements ChocoSatConstraint {
             for (UUID vm : cstr.getInvolvedVMs()) {
                 int x = rc.get(vm);
                 if (x < cstr.getAmount()) {
-                    Mapping map = m.getMapping();
                     //TODO: Very inefficient. Resources may be  available
-                    // but not allocated.
-                    //bad.addAll(map.getRunningVMs(map.getVMLocation(vm)));
                     bad.add(vm);
                 }
             }

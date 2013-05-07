@@ -26,7 +26,6 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.UUID;
 
 /**
  * Unit tests for {@link btrplace.model.constraint.SingleRunningCapacity}.
@@ -39,8 +38,8 @@ public class SingleRunningCapacityConverterTest implements PremadeElements {
 
     @Test
     public void testViables() throws JSONConverterException {
-        SingleRunningCapacity d = new SingleRunningCapacity(new HashSet<UUID>(Arrays.asList(n1, n2, n3)), 5, false);
-        SingleRunningCapacity c = new SingleRunningCapacity(new HashSet<UUID>(Arrays.asList(n1, n2, n3)), 5, true);
+        SingleRunningCapacity d = new SingleRunningCapacity(new HashSet<>(Arrays.asList(n1, n2, n3)), 5, false);
+        SingleRunningCapacity c = new SingleRunningCapacity(new HashSet<>(Arrays.asList(n1, n2, n3)), 5, true);
         Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
         Assert.assertEquals(conv.fromJSON(conv.toJSON(c)), c);
     }

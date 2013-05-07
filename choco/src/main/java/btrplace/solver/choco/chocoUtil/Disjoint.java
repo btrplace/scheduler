@@ -144,15 +144,13 @@ public class Disjoint extends AbstractLargeIntSConstraint {
         if (candidates[other][val].get() > 0) {
             //The value was possible for the other group, so we remove it from its variable
 
-            int n = 0; //The number of variables that were updated
+            //n is the number of variables that were updated
+            int n = 0;
             int i = (other == 0) ? 0 : nbX;
             int end = (other == 0) ? nbX : vars.length;
             for (; i < end; i++) {
                 if (vars[i].removeVal(val, this, false)) {
                     n++;
-                    /*if (vars[i].isInstantiated()) {
-                        setRequired(vars[i].getVal(), other, group);
-                    } */
                 }
             }
             assert n == candidates[other][val].get() : n + " variables in group '" + other + "' were updated but candidate=" + candidates[other][val].get();
@@ -164,18 +162,15 @@ public class Disjoint extends AbstractLargeIntSConstraint {
     @Override
     public void awakeOnInst(int idx) throws ContradictionException {
         int group = (idx < nbX) ? 0 : 1;
-        //ChocoLogging.getBranchingLogger().finest("awakeOnInst grp= " + group + " val=" + vars[idx].getVal());
         setRequired(vars[idx].getVal(), group, 1 - group);
         constAwake(false);
     }
 
     @Override
     public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
-        //ChocoLogging.getBranchingLogger().finest("awakeOnRemovals(" + idx + ")");
         int group = (idx < nbX) ? 0 : 1;
         while (deltaDomain.hasNext()) {
             int n = deltaDomain.next();
-            //ChocoLogging.getBranchingLogger().finest("Decrease candidates for value " + n +  " in group " + group);
             candidates[group][n].add(-1);
         }
         constAwake(false);
@@ -193,8 +188,6 @@ public class Disjoint extends AbstractLargeIntSConstraint {
                 setRequired(v, 1, 0);
             }
         }
-        //prettyCandidates(0);
-        //prettyCandidates(1);
     }
 
     @Override

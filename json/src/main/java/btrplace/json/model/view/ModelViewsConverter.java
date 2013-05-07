@@ -20,7 +20,7 @@ package btrplace.json.model.view;
 
 import btrplace.json.JSONConverter;
 import btrplace.json.JSONConverterException;
-import btrplace.model.ModelView;
+import btrplace.model.view.ModelView;
 import net.minidev.json.JSONObject;
 
 import java.util.HashMap;
@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Extensible converter for {@link btrplace.model.ModelView}.
+ * Extensible converter for {@link btrplace.model.view.ModelView}.
  *
  * @author Fabien Hermenier
  */
@@ -41,8 +41,8 @@ public class ModelViewsConverter implements JSONConverter<ModelView> {
      * Make a new converter.
      */
     public ModelViewsConverter() {
-        java2json = new HashMap(20);
-        json2java = new HashMap(20);
+        java2json = new HashMap<>();
+        json2java = new HashMap<>();
 
         //The default converters
         register(new ShareableResourceConverter());
@@ -64,7 +64,7 @@ public class ModelViewsConverter implements JSONConverter<ModelView> {
     /**
      * Get the Java view that are supported by the converter.
      *
-     * @return a set of classes derived from {@link btrplace.model.ModelView} that may be empty
+     * @return a set of classes derived from {@link btrplace.model.view.ModelView} that may be empty
      */
     public Set<Class<? extends ModelView>> getSupportedJavaViews() {
         return java2json.keySet();

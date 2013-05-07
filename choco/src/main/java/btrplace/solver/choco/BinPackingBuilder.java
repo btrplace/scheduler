@@ -42,6 +42,7 @@ public class BinPackingBuilder {
     private List<IntDomainVar[]> sizes;
 
     private List<String> names;
+
     /**
      * Make a new builder.
      *
@@ -49,10 +50,10 @@ public class BinPackingBuilder {
      */
     public BinPackingBuilder(ReconfigurationProblem rp) {
         this.rp = rp;
-        loads = new ArrayList<IntDomainVar[]>();
-        bins = new ArrayList<IntDomainVar[]>();
-        sizes = new ArrayList<IntDomainVar[]>();
-        names = new ArrayList<String>();
+        loads = new ArrayList<>();
+        bins = new ArrayList<>();
+        sizes = new ArrayList<>();
+        names = new ArrayList<>();
 
     }
 
@@ -63,7 +64,7 @@ public class BinPackingBuilder {
      * @param sizes the resource usage of each of the cSlices
      * @param bins  the resource usage of each of the dSlices
      */
-    public void add(String name,IntDomainVar[] loads, IntDomainVar[] sizes, IntDomainVar[] bins) {
+    public void add(String name, IntDomainVar[] loads, IntDomainVar[] sizes, IntDomainVar[] bins) {
         this.loads.add(loads);
         this.sizes.add(sizes);
         this.bins.add(bins);
@@ -72,14 +73,12 @@ public class BinPackingBuilder {
 
     /**
      * Build the constraint.
-     *
-     * @return the resulting constraint
      */
     public void inject() throws ContradictionException {
         CPSolver solver = rp.getSolver();
-        int [][] iSizes = new int[sizes.size()][sizes.get(0).length];
+        int[][] iSizes = new int[sizes.size()][sizes.get(0).length];
         for (int i = 0; i < sizes.size(); i++) {
-            IntDomainVar [] s = sizes.get(i);
+            IntDomainVar[] s = sizes.get(i);
             int x = 0;
             for (IntDomainVar ss : s) {
                 iSizes[i][x++] = ss.getInf();
@@ -89,21 +88,6 @@ public class BinPackingBuilder {
         }
         //TODO: Items must always be in the same order.
         solver.post(new LightBinPacking(names.toArray(new String[names.size()]), solver.getEnvironment(), loads.toArray(new IntDomainVar[loads.size()][]), iSizes, bins.get(0)));
-        /*for (int i = 0; i < loads.size(); i++) {
-            IntDomainVar[] l = loads.get(i);
-            IntDomainVar[] s = sizes.get(i);
-            IntDomainVar[] b = bins.get(i);
-
-            int[] iSizes = new int[s.length];
-            int x = 0;
-            //Instantiate the item sizes to their LB
-            for (IntDomainVar ss : s) {
-                iSizes[x++] = ss.getInf();
-                ss.setVal(ss.getInf());
-            }
-            solver.post(new LightBinPacking(names.get(i), solver.getEnvironment(), new IntDomainVar[][]{l}, new int[][]{iSizes}, b));
-        }         */
-
 
     }
 }

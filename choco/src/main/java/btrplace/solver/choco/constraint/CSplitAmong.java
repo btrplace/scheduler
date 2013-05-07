@@ -20,12 +20,10 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Among;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.SplitAmong;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoSatConstraint;
-import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.matching.AllDifferent;
@@ -56,7 +54,7 @@ public class CSplitAmong implements ChocoSatConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
 
-        if (cstr.isContinuous() && cstr.isSatisfied(rp.getSourceModel()) != SatConstraint.Sat.SATISFIED) {
+        if (cstr.isContinuous() && !cstr.isSatisfied(rp.getSourceModel())) {
             rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
             return false;
         }
@@ -112,7 +110,7 @@ public class CSplitAmong implements ChocoSatConstraint {
 
         Mapping map = m.getMapping();
 
-        Set<UUID> bad = new HashSet<UUID>();
+        Set<UUID> bad = new HashSet<>();
         for (Set<UUID> vms : cstr.getGroupsOfVMs()) {
             int grp = -1;
             for (UUID vm : vms) {
@@ -120,7 +118,8 @@ public class CSplitAmong implements ChocoSatConstraint {
                     UUID n = map.getVMLocation(vm);
                     int g = getPGroup(n);
                     if (g == -1) {
-                        bad.add(vm); //The VM is on an disallowed node
+                        //The VM is on a node that belong to none of the given groups
+                        bad.add(vm);
                     } else if (grp == -1) {
                         grp = g;
                         usedGrp[g] = vms;

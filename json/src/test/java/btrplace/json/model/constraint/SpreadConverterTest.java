@@ -26,7 +26,6 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.UUID;
 
 /**
  * Unit tests for {@link btrplace.json.model.constraint.SpreadConverter}.
@@ -39,8 +38,8 @@ public class SpreadConverterTest implements PremadeElements {
 
     @Test
     public void testViables() throws JSONConverterException {
-        Spread d = new Spread(new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3)), false);
-        Spread c = new Spread(new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3)), true);
+        Spread d = new Spread(new HashSet<>(Arrays.asList(vm1, vm2, vm3)), false);
+        Spread c = new Spread(new HashSet<>(Arrays.asList(vm1, vm2, vm3)), true);
         Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
         Assert.assertEquals(conv.fromJSON(conv.toJSON(c)), c);
     }

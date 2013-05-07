@@ -20,14 +20,14 @@ package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverter;
 import btrplace.json.JSONConverterException;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
 import java.util.*;
 
 /**
- * Extensible converter for {@link btrplace.model.SatConstraint}.
+ * Extensible converter for {@link btrplace.model.constraint.SatConstraint}.
  *
  * @author Fabien Hermenier
  */
@@ -40,8 +40,8 @@ public class SatConstraintsConverter implements JSONConverter<SatConstraint> {
      * Make a new converter.
      */
     public SatConstraintsConverter() {
-        java2json = new HashMap(20);
-        json2java = new HashMap(20);
+        java2json = new HashMap<>();
+        json2java = new HashMap<>();
 
         //The default converters
         register(new AmongConverter());
@@ -145,7 +145,7 @@ public class SatConstraintsConverter implements JSONConverter<SatConstraint> {
      * @throws JSONConverterException if an error occurred
      */
     public List<SatConstraint> fromJSON(JSONArray arr) throws JSONConverterException {
-        List<SatConstraint> cstrs = new ArrayList<SatConstraint>(arr.size());
+        List<SatConstraint> cstrs = new ArrayList<>(arr.size());
         for (Object o : arr) {
             cstrs.add(fromJSON((JSONObject) o));
         }

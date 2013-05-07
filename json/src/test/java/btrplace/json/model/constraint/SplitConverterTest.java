@@ -40,10 +40,10 @@ public class SplitConverterTest implements PremadeElements {
 
     @Test
     public void testViables() throws JSONConverterException {
-        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
-        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(vm4, vm5, vm6));
-        Set<UUID> s3 = new HashSet<UUID>(Arrays.asList(vm7, vm8));
-        Set<Set<UUID>> vgrps = new HashSet<Set<UUID>>(Arrays.asList(s1, s2, s3));
+        Set<UUID> s1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<UUID> s2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
+        Set<UUID> s3 = new HashSet<>(Arrays.asList(vm7, vm8));
+        Set<Set<UUID>> vgrps = new HashSet<>(Arrays.asList(s1, s2, s3));
         Split d = new Split(vgrps, false);
         Split c = new Split(vgrps, true);
         Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);

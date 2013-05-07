@@ -67,7 +67,7 @@ public class SliceBuilder {
      */
     public Slice build() throws SolverException {
         if (hoster == null) {
-            hoster = rp.makeHostVariable(lblPrefix + "_hoster");
+            hoster = rp.makeHostVariable(lblPrefix, "_hoster");
         }
         if (start == null) {
             start = rp.getStart();
@@ -78,12 +78,12 @@ public class SliceBuilder {
         if (duration == null) {
             if (start.isInstantiated() && end.isInstantiated()) {
                 int d = end.getVal() - start.getVal();
-                duration = rp.makeDuration(lblPrefix + "_duration", d, d);
+                duration = rp.makeDuration(d, d, lblPrefix, "_duration");
             } else if (start.isInstantiated()) {
                 if (start.isInstantiatedTo(0)) {
                     duration = end;
                 } else {
-                    duration = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel(lblPrefix + "_duration"), end, -start.getVal());
+                    duration = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel(lblPrefix, "_duration"), end, -start.getVal());
                 }
             } else {
                 int inf = end.getInf() - start.getSup();
@@ -91,7 +91,7 @@ public class SliceBuilder {
                     inf = 0;
                 }
                 int sup = end.getSup() - start.getInf();
-                duration = rp.makeDuration(lblPrefix + "_duration", inf, sup);
+                duration = rp.makeDuration(sup, inf, lblPrefix, "_duration");
                 rp.getSolver().post(rp.getSolver().eq(end, rp.getSolver().plus(start, duration)));
             }
         }
@@ -109,14 +109,13 @@ public class SliceBuilder {
         if (start.isInstantiatedTo(0)) {
             s.post(s.eq(duration, end));
         } else {
-            //System.out.println(lblPrefix + " end:" + end.isInstantiated() + " " + end.getVal() + " start:" + start.isInstantiated() + " " + start.getVal() + " duration:" + duration.isInstantiated()+ " " + duration.getVal());
             s.post(s.eq(end, s.plus(start, duration)));
         }
         return new Slice(e, start, end, duration, hoster);
     }
 
     /**
-     * Set the moment the slice start.
+     * Set the moment the slice consume.
      *
      * @param st the variable to use
      * @return the current builder
@@ -166,7 +165,7 @@ public class SliceBuilder {
      * @return the current builder
      */
     public SliceBuilder setHoster(int v) {
-        this.hoster = rp.getSolver().createIntegerConstant(rp.makeVarLabel(lblPrefix + "_hoster(" + e + ")"), v);
+        this.hoster = rp.getSolver().createIntegerConstant(rp.makeVarLabel(lblPrefix, "_hoster(", e, ")"), v);
         return this;
     }
 }

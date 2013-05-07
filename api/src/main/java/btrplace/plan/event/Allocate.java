@@ -19,9 +19,8 @@
 package btrplace.plan.event;
 
 import btrplace.model.Model;
-import btrplace.plan.Action;
-import btrplace.plan.VMEvent;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -119,13 +118,7 @@ public class Allocate extends Action implements VMEvent {
 
     @Override
     public int hashCode() {
-        int res = getEnd();
-        res = getStart() + 31 * res;
-        res = res * 31 + ev.getAmount();
-        res = res * 31 + ev.getResourceId().hashCode();
-        res = res * 31 + ev.getVM().hashCode();
-        res = res + 31 + node.hashCode();
-        return res;
+        return Objects.hash(getStart(), getEnd(), ev.getAmount(), ev.getResourceId(), ev.getVM(), node);
     }
 
     @Override

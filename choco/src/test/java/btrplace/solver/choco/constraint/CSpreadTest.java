@@ -21,9 +21,9 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Online;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Spread;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
@@ -52,7 +52,7 @@ public class CSpreadTest implements PremadeElements {
     @Test
     public void testDiscrete() throws SolverException {
         Model m = getModel();
-        List<SatConstraint> cstr = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstr = new ArrayList<>();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
         Spread s = new Spread(m.getMapping().getAllVMs());
@@ -71,12 +71,10 @@ public class CSpreadTest implements PremadeElements {
     @Test
     public void testContinuous() throws SolverException {
         Model m = getModel();
-        List<SatConstraint> cstr = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstr = new ArrayList<>();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
-        Spread s = new Spread(m.getMapping().getAllVMs());
-        s.setContinuous(true);
-        cstr.add(s);
+        cstr.add(new Spread(m.getMapping().getAllVMs(), true));
         cstr.add(new Online(m.getMapping().getAllNodes()));
         cstr.add(new Fence(Collections.singleton(vm1), Collections.singleton(n2)));
         ReconfigurationPlan p = cra.solve(m, cstr);
@@ -93,7 +91,7 @@ public class CSpreadTest implements PremadeElements {
         Mapping map = new MappingBuilder().on(n1, n2)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2).build();
-        Set<UUID> vms = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2));
         Spread s = new Spread(vms);
         CSpread cs = new CSpread(s);
         Model mo = new DefaultModel(map);
@@ -108,10 +106,10 @@ public class CSpreadTest implements PremadeElements {
      */
     @Test
     public void testSeparateWithContinuous() throws SolverException {
-        Model m = getModel();
-        Mapping map = m.getMapping();
-        map.addRunningVM(vm2, n1);
-        List<SatConstraint> cstr = new ArrayList<SatConstraint>();
+        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).build();
+        Model m = new DefaultModel(map);
+
+        List<SatConstraint> cstr = new ArrayList<>();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
         Spread s = new Spread(m.getMapping().getAllVMs());
@@ -121,8 +119,8 @@ public class CSpreadTest implements PremadeElements {
         cstr.add(new Fence(Collections.singleton(vm1), Collections.singleton(n2)));
         ReconfigurationPlan p = cra.solve(m, cstr);
         Assert.assertNotNull(p);
+        Assert.assertEquals(p.getSize(), 1);
         Mapping res = p.getResult().getMapping();
-        Assert.assertEquals(1, p.getSize());
         Assert.assertNotSame(res.getVMLocation(vm1), res.getVMLocation(vm2));
     }
 }

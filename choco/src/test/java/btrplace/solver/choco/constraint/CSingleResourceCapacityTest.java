@@ -21,7 +21,7 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
@@ -54,7 +54,7 @@ public class CSingleResourceCapacityTest implements PremadeElements {
         Model mo = new DefaultModel(map);
         mo.attach(rc);
 
-        Set<UUID> nodes = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
 
         SingleResourceCapacity s = new SingleResourceCapacity(nodes, "cpu", 4);
         CSingleResourceCapacity cs = new CSingleResourceCapacity(s);
@@ -75,7 +75,7 @@ public class CSingleResourceCapacityTest implements PremadeElements {
         Model mo = new DefaultModel(map);
         mo.attach(rc);
 
-        Set<UUID> nodes = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
 
         SingleResourceCapacity s = new SingleResourceCapacity(nodes, "cpu", 4);
 
@@ -98,7 +98,7 @@ public class CSingleResourceCapacityTest implements PremadeElements {
         Model mo = new DefaultModel(map);
         mo.attach(rc);
 
-        Set<UUID> nodes = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
 
         SingleResourceCapacity s = new SingleResourceCapacity(nodes, "cpu", 3);
 
@@ -119,9 +119,9 @@ public class CSingleResourceCapacityTest implements PremadeElements {
         Model mo = new DefaultModel(map);
         mo.attach(rc);
 
-        Set<UUID> nodes = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
 
-        List<SatConstraint> cstrs = new ArrayList<SatConstraint>();
+        List<SatConstraint> cstrs = new ArrayList<>();
 
         SingleResourceCapacity s = new SingleResourceCapacity(nodes, "cpu", 4);
         s.setContinuous(true);

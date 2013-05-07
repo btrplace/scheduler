@@ -160,7 +160,7 @@ public class BinPacking extends AbstractLargeIntSConstraint {
     private void sortIndices() throws ContradictionException {
         long sum = 0;
         //l denotes the ordering of the items, so bsToVars
-        List<Integer> l = new ArrayList<Integer>(iSizes.length);
+        List<Integer> l = new ArrayList<>(iSizes.length);
         for (int i = 0; i < iSizes.length; i++) {
             l.add(i);
             iSizes[i] = sizes[i].getInf();
@@ -186,7 +186,7 @@ public class BinPacking extends AbstractLargeIntSConstraint {
     public boolean isConsistent() {
         int[] l = new int[nbBins];
         int[] c = new int[nbBins];
-        for (int i = 0; i < bins.length; i++) { //Assignment variable
+        for (int i = 0; i < bins.length; i++) {
             if (bins[i].isInstantiated()) {
                 int v = bins[i].getVal();
                 l[v] += iSizes[i];
@@ -221,7 +221,6 @@ public class BinPacking extends AbstractLargeIntSConstraint {
         if (idx < bins.length) {
             return IntVarEvent.REMVAL_MASK;
         }
-        //return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
         return IntVarEvent.BOUNDS_MASK;
     }
 
@@ -262,7 +261,6 @@ public class BinPacking extends AbstractLargeIntSConstraint {
         int[] rLoads = new int[nbBins];
         int[] cLoads = new int[nbBins];
 
-        long st = System.currentTimeMillis();
         for (int i = 0; i < bins.length; i++) {
             bins[i].updateInf(0, this, false);
             bins[i].updateSup(nbBins - 1, this, false);
@@ -281,7 +279,6 @@ public class BinPacking extends AbstractLargeIntSConstraint {
                 }
             }
         }
-        long ed = System.currentTimeMillis();
 
         int slb = 0;
         int slu = 0;
@@ -506,11 +503,9 @@ public class BinPacking extends AbstractLargeIntSConstraint {
     private boolean propagateKnapsack(int bin) throws ContradictionException {
         boolean ret = false;
         //ibIdx= item in the bitset, its size is at iSize[bsToVars[i]].
-        //System.out.println("Start knapsack on " + bin);
         for (int ibIdx = candidates[bin].nextSetBit(0); ibIdx >= 0; ibIdx = candidates[bin].nextSetBit(ibIdx + 1)) {
             int iSize = iSizes[bsToVars[ibIdx]];
             if (iSize + bRLoads[bin].get() > loads[bin].getSup()) {
-                //System.out.println("\t" + ibIdx + " too big");
                 removeItem(ibIdx, bin);
                 bins[bsToVars[ibIdx]].removeVal(bin, this, false);
                 if (bins[bsToVars[ibIdx]].isInstantiated()) {
@@ -518,7 +513,6 @@ public class BinPacking extends AbstractLargeIntSConstraint {
                 }
                 ret = true;
             } else if (bTLoads[bin].get() - iSize < loads[bin].getInf()) {
-                //System.out.println("\t" + ibIdx + " need to be!");
                 assignItem(ibIdx, bin);
                 DisposableIntIterator domain = bins[bsToVars[ibIdx]].getDomain().getIterator();
                 try {
@@ -534,11 +528,9 @@ public class BinPacking extends AbstractLargeIntSConstraint {
                 bins[bsToVars[ibIdx]].instantiate(bin, this, false);
                 ret = true;
             } else {
-                //System.out.println("\tNothing to say");
                 break;
             }
         }
-        //System.out.println("Stop knapsack on " + bin);
         return ret;
     }
 
@@ -608,8 +600,8 @@ public class BinPacking extends AbstractLargeIntSConstraint {
             }
             ChocoLogging.getBranchingLogger().severe("Sum Load LB = " + this.sumLoadInf.get() + " (" + sumLoadInf + ")");
             ChocoLogging.getBranchingLogger().severe("Sum Load UB = " + this.sumLoadSup.get() + " (" + sumLoadSup + ")");
-            for (int i = 0; i < bins.length; i++) {
-                ChocoLogging.getBranchingLogger().severe(bins[i].pretty());
+            for (IntDomainVar bin : bins) {
+                ChocoLogging.getBranchingLogger().severe(bin.pretty());
             }
         }
         return check;

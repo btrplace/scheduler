@@ -1,6 +1,7 @@
 package btrplace.plan;
 
 import btrplace.model.Model;
+import btrplace.plan.event.Action;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,37 +9,31 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * An applier that rely on the estimated start moment and duration of the actions to execute a plan.
+ * An applier that rely on the estimated consume moment and duration of the actions to execute a plan.
  *
  * @author Fabien Hermenier
  */
-public final class TimeBasedPlanApplier implements ReconfigurationPlanApplier {
+public class TimeBasedPlanApplier extends DefaultPlanApplier {
 
     private static Comparator<Action> startFirstComparator = new TimedBasedActionComparator();
 
-    private static final TimeBasedPlanApplier instance = new TimeBasedPlanApplier();
-
-    private TimeBasedPlanApplier() {
-    }
-
     /**
-     * Get the unique instance of this applier.
-     *
-     * @return the singleton
+     * Make a new applier.
      */
-    public static TimeBasedPlanApplier getInstance() {
-        return instance;
+    public TimeBasedPlanApplier() {
+        super();
     }
 
     @Override
     public Model apply(ReconfigurationPlan p) {
         Model res = p.getOrigin().clone();
-        List<Action> actions = new ArrayList<Action>(p.getActions());
+        List<Action> actions = new ArrayList<>(p.getActions());
         Collections.sort(actions, startFirstComparator);
         for (Action a : actions) {
             if (!a.apply(res)) {
                 return null;
             }
+            fireAction(a);
         }
         return res;
     }

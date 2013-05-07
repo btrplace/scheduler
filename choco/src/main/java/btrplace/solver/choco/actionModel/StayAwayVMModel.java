@@ -21,7 +21,6 @@ package btrplace.solver.choco.actionModel;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
-import btrplace.solver.choco.VMActionModel;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.UUID;

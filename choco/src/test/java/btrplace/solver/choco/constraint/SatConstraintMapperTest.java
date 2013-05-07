@@ -19,13 +19,12 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
 import btrplace.model.constraint.Ban;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Spread;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoSatConstraint;
-import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -38,7 +37,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class SatConstraintMapperTest {
+public class SatConstraintMapperTest implements PremadeElements {
 
     @Test
     public void testInstantiate() {
@@ -76,7 +75,7 @@ public class SatConstraintMapperTest {
     @Test(dependsOnMethods = {"testInstantiate", "testUnregister", "testRegister"})
     public void testMap() {
         SatConstraintMapper map = new SatConstraintMapper();
-        Spread s = new Spread(Collections.singleton(UUID.randomUUID()));
+        Spread s = new Spread(Collections.singleton(vm1));
         ChocoSatConstraint c = map.map(s);
         Assert.assertTrue(c.getClass().equals(CSpread.class));
 
@@ -96,7 +95,7 @@ public class SatConstraintMapperTest {
         }
 
         @Override
-        public Sat isSatisfied(Model i) {
+        public boolean isSatisfied(Model i) {
             throw new UnsupportedOperationException();
         }
     }

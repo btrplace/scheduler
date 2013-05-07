@@ -18,14 +18,12 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ResumeVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
-import btrplace.solver.choco.VMActionModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -34,7 +32,12 @@ import java.util.UUID;
 
 /**
  * Model an action that resume a sleeping VM.
+ * The model must provide an estimation of the action duration through a
+ * {@link btrplace.solver.choco.durationEvaluator.DurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code ResumeVM.class}
  * <p/>
+ * If the reconfiguration problem has a solution, a {@link btrplace.plan.event.ResumeVM} action
+ * is inserted into the resulting reconfiguration plan.
  *
  * @author Fabien Hermenier
  */
@@ -67,11 +70,11 @@ public class ResumeVMModel implements VMActionModel {
 
         int d = rp.getDurationEvaluators().evaluate(ResumeVM.class, e);
 
-        start = rp.makeDuration("resumeVM(" + e + ").start", 0, rp.getEnd().getSup() - d);
-        end = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel("resumeVM(" + e + ").end"), start, d);
-        duration = rp.makeDuration("resumeVM(" + e + ").duration", d, d);
+        start = rp.makeDuration(rp.getEnd().getSup() - d, 0, "resumeVM(", e, ").start");
+        end = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel("resumeVM(", e, ").end"), start, d);
+        duration = rp.makeDuration(d, d, "resumeVM(", e, ").duration");
         dSlice = new SliceBuilder(rp, e, "resumeVM(" + e + ").dSlice").setStart(start)
-                .setDuration(rp.makeDuration("resumeVM(" + e + ").dSlice_duration", d, rp.getEnd().getSup()))
+                .setDuration(rp.makeDuration(rp.getEnd().getSup(), d, "resumeVM(", e, ").dSlice_duration"))
                 .build();
 
         CPSolver s = rp.getSolver();
@@ -86,7 +89,6 @@ public class ResumeVMModel implements VMActionModel {
         UUID src = rp.getSourceModel().getMapping().getVMLocation(vm);
         UUID dst = rp.getNode(dSlice.getHoster().getVal());
         ResumeVM a = new ResumeVM(vm, src, dst, st, ed);
-        rp.insertNotifyAllocations(a, vm, Action.Hook.pre);
         plan.add(a);
         return true;
     }

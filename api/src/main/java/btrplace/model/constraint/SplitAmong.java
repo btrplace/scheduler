@@ -18,12 +18,8 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.model.SatConstraint;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.RunningVMPlacement;
+import btrplace.model.constraint.checker.SatConstraintChecker;
+import btrplace.model.constraint.checker.SplitAmongChecker;
 
 import java.util.*;
 
@@ -80,7 +76,7 @@ public class SplitAmong extends SatConstraint {
 
     @Override
     public Collection<UUID> getInvolvedVMs() {
-        Set<UUID> s = new HashSet<UUID>();
+        Set<UUID> s = new HashSet<>();
         for (Set<UUID> x : vGrps) {
             s.addAll(x);
         }
@@ -89,7 +85,7 @@ public class SplitAmong extends SatConstraint {
 
     @Override
     public Collection<UUID> getInvolvedNodes() {
-        Set<UUID> s = new HashSet<UUID>();
+        Set<UUID> s = new HashSet<>();
         for (Set<UUID> x : pGrps) {
             s.addAll(x);
         }
@@ -114,7 +110,13 @@ public class SplitAmong extends SatConstraint {
         return pGrps;
     }
 
-    private Set<UUID> getAssociatedPGroup(UUID u) {
+    /**
+     * Get the group of nodes associated to a given node.
+     *
+     * @param u the node
+     * @return the associated group of nodes if exists, {@code null} otherwise
+     */
+    public Set<UUID> getAssociatedPGroup(UUID u) {
         for (Set<UUID> pGrp : pGrps) {
             if (pGrp.contains(u)) {
                 return pGrp;
@@ -123,70 +125,19 @@ public class SplitAmong extends SatConstraint {
         return null;
     }
 
-    private Set<UUID> getAssociatedVGroup(UUID u) {
+    /**
+     * Get the group of VMs associated to a given VM.
+     *
+     * @param u the VM
+     * @return the associated group of VMs if exists, {@code null} otherwise
+     */
+    public Set<UUID> getAssociatedVGroup(UUID u) {
         for (Set<UUID> vGrp : vGrps) {
             if (vGrp.contains(u)) {
                 return vGrp;
             }
         }
         return null;
-    }
-
-    @Override
-    public Sat isSatisfied(Model i) {
-        Mapping m = i.getMapping();
-        Set<Set<UUID>> pUsed = new HashSet<Set<UUID>>(); //The pgroups that are used
-        for (Set<UUID> vgrp : vGrps) {
-            Set<UUID> choosedGroup = null;
-
-            //Check every running VM in a single vgroup are running in the same pgroup
-            for (UUID vmId : vgrp) {
-                if (m.getRunningVMs().contains(vmId)) {
-                    if (choosedGroup == null) {
-                        choosedGroup = getAssociatedPGroup(m.getVMLocation(vmId));
-                        if (choosedGroup == null) { //THe VM is running but on an unknown group. It is an error
-                            return Sat.UNSATISFIED;
-                        } else if (!pUsed.add(choosedGroup)) { //The pgroup has already been used for another set of VMs.
-                            return Sat.UNSATISFIED;
-                        }
-                    } else if (!choosedGroup.contains(m.getVMLocation(vmId))) { //The VM is not in the group with the other
-                        return Sat.UNSATISFIED;
-                    }
-                }
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
-    public Sat isSatisfied(ReconfigurationPlan p) {
-        Model o = p.getOrigin();
-        if (!isSatisfied(o).equals(Sat.SATISFIED)) {
-            return Sat.UNSATISFIED;
-        }
-        o = p.getOrigin().clone();
-        for (Action a : p) {
-            if (!a.apply(o)) {
-                return Sat.UNSATISFIED;
-            }
-            if (a instanceof RunningVMPlacement) {
-                RunningVMPlacement ra = (RunningVMPlacement) a;
-                UUID vm = ra.getVM();
-                Set<UUID> myGroup = getAssociatedVGroup(vm);
-                if (myGroup != null) {
-                    //Does the VM go to a compatible group of nodes ?
-                    UUID destNode = ra.getDestinationNode();
-                    Set<UUID> myPGroup = getAssociatedPGroup(destNode);
-                    if (myPGroup == null) { //The node does not belong to a group. Violation
-                        return Sat.UNSATISFIED;
-                    } else if (!myGroup.containsAll(o.getMapping().getRunningVMs(myPGroup))) {
-                        //Some VMs that are not in myGroup are hosting on the nodes. Violation
-                        return Sat.UNSATISFIED;
-                    }
-                }
-            }
-        }
-        return Sat.SATISFIED;
     }
 
     @Override
@@ -205,10 +156,7 @@ public class SplitAmong extends SatConstraint {
 
     @Override
     public int hashCode() {
-        int result = vGrps.hashCode() * 31;
-        result = 31 * result + pGrps.hashCode();
-        result = 31 * result + (isContinuous() ? 1 : 0);
-        return result;
+        return Objects.hash(vGrps, pGrps, isContinuous());
     }
 
     @Override
@@ -237,4 +185,11 @@ public class SplitAmong extends SatConstraint {
 
         return b.append(')').toString();
     }
+
+
+    @Override
+    public SatConstraintChecker getChecker() {
+        return new SplitAmongChecker(this);
+    }
+
 }

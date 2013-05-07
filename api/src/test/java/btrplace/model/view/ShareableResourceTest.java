@@ -56,7 +56,7 @@ public class ShareableResourceTest implements PremadeElements {
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testGets() {
         ShareableResource rc = new ShareableResource("foo");
-        List<UUID> ids = new ArrayList<UUID>(10);
+        List<UUID> ids = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
             UUID id = UUID.randomUUID();
             ids.add(id);
@@ -71,7 +71,7 @@ public class ShareableResourceTest implements PremadeElements {
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testDefined() {
         ShareableResource rc = new ShareableResource("foo");
-        List<UUID> ids = new ArrayList<UUID>(10);
+        List<UUID> ids = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
             UUID id = UUID.randomUUID();
             ids.add(id);
@@ -115,7 +115,7 @@ public class ShareableResourceTest implements PremadeElements {
 
         rc.set(vm2, 7);
         Assert.assertEquals(7, rc.max(rc.getDefined(), false));
-        Set<UUID> x = new HashSet<UUID>();
+        Set<UUID> x = new HashSet<>();
         x.add(vm1);
         Assert.assertEquals(3, rc.max(x, false));
         rc.set(vm1, -15);
@@ -130,7 +130,7 @@ public class ShareableResourceTest implements PremadeElements {
 
         rc.set(vm2, 7);
         Assert.assertEquals(3, rc.min(rc.getDefined(), false));
-        Set<UUID> x = new HashSet<UUID>();
+        Set<UUID> x = new HashSet<>();
         x.add(vm2);
         Assert.assertEquals(7, rc.min(x, false));
         rc.set(vm2, 18);
@@ -145,7 +145,7 @@ public class ShareableResourceTest implements PremadeElements {
         rc.set(vm1, 3);
         rc.set(vm2, 7);
         Assert.assertEquals(10, rc.sum(rc.getDefined(), false));
-        Set<UUID> x = new HashSet<UUID>();
+        Set<UUID> x = new HashSet<>();
         x.add(vm2);
         Assert.assertEquals(7, rc.sum(x, false));
         rc.set(vm2, 18);
@@ -197,6 +197,15 @@ public class ShareableResourceTest implements PremadeElements {
 
         rc2.unset(vm2);
         Assert.assertNotEquals(rc1, rc2);
+    }
 
+    @Test
+    public void testSubstitution() {
+        ShareableResource rc = new ShareableResource("foo");
+        rc.set(vm1, 3);
+        Assert.assertTrue(rc.substitute(vm1, vm10));
+        Assert.assertEquals(rc.get(vm10), 3);
+        Assert.assertTrue(rc.substitute(vm3, vm7));
+        Assert.assertEquals(rc.get(vm7), 0);
     }
 }

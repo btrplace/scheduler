@@ -26,7 +26,6 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.UUID;
 
 /**
  * Unit tests for {@link btrplace.json.model.constraint.FenceConverter}.
@@ -39,8 +38,8 @@ public class FenceConverterTest implements PremadeElements {
 
     @Test
     public void testViables() throws JSONConverterException {
-        Fence d = new Fence(new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3)),
-                new HashSet<UUID>(Arrays.asList(n1, n2, n3)));
+        Fence d = new Fence(new HashSet<>(Arrays.asList(vm1, vm2, vm3)),
+                new HashSet<>(Arrays.asList(n1, n2, n3)));
 
         Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
     }

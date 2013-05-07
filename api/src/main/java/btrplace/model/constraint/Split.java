@@ -18,12 +18,8 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.model.SatConstraint;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.RunningVMPlacement;
+import btrplace.model.constraint.checker.SatConstraintChecker;
+import btrplace.model.constraint.checker.SplitChecker;
 
 import java.util.*;
 
@@ -66,7 +62,7 @@ public class Split extends SatConstraint {
 
     @Override
     public Collection<UUID> getInvolvedVMs() {
-        Set<UUID> s = new HashSet<UUID>();
+        Set<UUID> s = new HashSet<>();
         for (Set<UUID> set : sets) {
             s.addAll(set);
         }
@@ -88,75 +84,13 @@ public class Split extends SatConstraint {
      * @param u the VM identifier
      * @return the group of VM if exists, {@code null} otherwise
      */
-    private Set<UUID> getAssociatedVGroup(UUID u) {
+    public Set<UUID> getAssociatedVGroup(UUID u) {
         for (Set<UUID> vGrp : sets) {
             if (vGrp.contains(u)) {
                 return vGrp;
             }
         }
         return null;
-    }
-
-    @Override
-    public Sat isSatisfied(Model i) {
-        Mapping m = i.getMapping();
-        List<Set<UUID>> used = new ArrayList<Set<UUID>>(sets.size()); //The pgroups that are used
-        for (Set<UUID> vgrp : sets) {
-            Set<UUID> myGroup = new HashSet<UUID>();
-
-            //Get the servers used by this group of VMs
-            for (UUID vmId : vgrp) {
-                if (m.getRunningVMs().contains(vmId)) {
-                    UUID nId = m.getVMLocation(vmId);
-                    //Is this server inside another group ?
-                    for (Set<UUID> pGroup : used) {
-                        if (pGroup.contains(nId)) {
-                            return Sat.UNSATISFIED;
-                        }
-                    }
-                    myGroup.add(nId);
-                }
-            }
-            used.add(myGroup);
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
-    public Sat isSatisfied(ReconfigurationPlan plan) {
-        if (plan.getSize() == 0) {
-            return isSatisfied(plan.getOrigin());
-        }
-
-        //For each relocation action, we check if the
-        //destination node is not hosting a VM from another group
-        Model cur = plan.getOrigin().clone();
-        for (Action a : plan) {
-            if (!a.apply(cur)) {
-                return Sat.UNSATISFIED;
-            }
-
-            UUID destNode;
-            if (a instanceof RunningVMPlacement) {
-                RunningVMPlacement ra = (RunningVMPlacement) a;
-                destNode = ra.getDestinationNode();
-                UUID vm = ra.getVM();
-                Set<UUID> vmGrp = getAssociatedVGroup(vm);
-
-                if (vmGrp != null) {
-                    //The VM is involved in the constraint, the node must not
-                    //run any VM that belong to another group.
-                    for (UUID vmOn : cur.getMapping().getRunningVMs(destNode)) {
-                        Set<UUID> grp = getAssociatedVGroup(vmOn);
-                        if (grp != null && !vmGrp.equals(grp)) {
-                            return Sat.UNSATISFIED;
-                        }
-                    }
-
-                }
-            }
-        }
-        return Sat.SATISFIED;
     }
 
     @Override
@@ -194,4 +128,10 @@ public class Split extends SatConstraint {
         }
         return b.append(')').toString();
     }
+
+    @Override
+    public SatConstraintChecker getChecker() {
+        return new SplitChecker(this);
+    }
+
 }

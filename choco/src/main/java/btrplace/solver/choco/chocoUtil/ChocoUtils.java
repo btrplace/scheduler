@@ -228,7 +228,8 @@ public final class ChocoUtils {
     public static int[] getNextContiguousValues(IntDomainVar v, int from) {
         IntDomain dom = v.getDomain();
         int ub = dom.getSup();
-        int lb = dom.getNextValue(from - 1); //from - 1 to include the 'from' value if needed
+        int lb = dom.getNextValue(from - 1);
+        //from - 1 to include the 'from' value if needed
         int prev = lb;
         for (int val = dom.getNextValue(lb); val <= ub; val = dom.getNextValue(val)) {
             if (val == prev || val == prev + 1) {

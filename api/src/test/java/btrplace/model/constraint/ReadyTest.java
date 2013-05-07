@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -37,8 +40,9 @@ public class ReadyTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> x = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> x = new HashSet<>(Arrays.asList(vm1, vm2));
         Ready s = new Ready(x);
+        Assert.assertNotNull(s.getChecker());
         Assert.assertEquals(x, s.getInvolvedVMs());
         Assert.assertTrue(s.getInvolvedNodes().isEmpty());
         Assert.assertNotNull(s.toString());
@@ -47,31 +51,31 @@ public class ReadyTest implements PremadeElements {
 
     @Test
     public void testEquals() {
-        Set<UUID> x = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> x = new HashSet<>(Arrays.asList(vm1, vm2));
         Ready s = new Ready(x);
 
         Assert.assertTrue(s.equals(s));
         Assert.assertTrue(new Ready(x).equals(s));
         Assert.assertEquals(new Ready(x).hashCode(), s.hashCode());
-        x = new HashSet<UUID>(Arrays.asList(vm3));
+        x = new HashSet<>(Arrays.asList(vm3));
         Assert.assertFalse(new Ready(x).equals(s));
     }
 
     @Test
     public void testIsSatisfied() {
         Mapping c = new DefaultMapping();
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
         c.addOnlineNode(n1);
         c.addReadyVM(vm1);
         c.addReadyVM(vm2);
         Ready d = new Ready(s);
         Model i = new DefaultModel(c);
-        Assert.assertEquals(d.isSatisfied(i), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(d.isSatisfied(i), true);
         c.addRunningVM(vm1, n1);
-        Assert.assertEquals(d.isSatisfied(i), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(d.isSatisfied(i), false);
         c.addSleepingVM(vm1, n1);
-        Assert.assertEquals(d.isSatisfied(i), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(d.isSatisfied(i), false);
         c.removeVM(vm1);
-        Assert.assertEquals(d.isSatisfied(i), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(d.isSatisfied(i), false);
     }
 }

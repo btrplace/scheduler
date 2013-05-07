@@ -55,9 +55,9 @@ public class PrecedencesTest {
         IntDomainVar host = s.createEnumIntVar("host", 0, 2);
         IntDomainVar start = s.createBoundIntVar("start", 0, 5);
         /*
-           If host == 0, start = 3,4,5
-           If host == 1, start = 4,5
-           If host == 2, start = 5
+           If host == 0, consume = 3,4,5
+           If host == 1, consume = 4,5
+           If host == 2, consume = 5
            => 6 solutions
          */
         Precedences p = new Precedences(s.getEnvironment(), host, start, others, ends);

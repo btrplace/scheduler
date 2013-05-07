@@ -18,15 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.model.SatConstraint;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.RunningVMPlacement;
+import btrplace.model.constraint.checker.SatConstraintChecker;
+import btrplace.model.constraint.checker.SpreadChecker;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -64,47 +59,6 @@ public class Spread extends SatConstraint {
     }
 
     @Override
-    public Sat isSatisfied(Model i) {
-        Mapping c = i.getMapping();
-        Set<UUID> used = new HashSet<UUID>();
-        for (UUID vm : getInvolvedVMs()) {
-            if (c.getRunningVMs().contains(vm) && !used.add(c.getVMLocation(vm))) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
-    public Sat isSatisfied(ReconfigurationPlan plan) {
-        if (plan.getSize() == 0) {
-            return isSatisfied(plan.getOrigin());
-        }
-
-        //For each relocation action, we check if the
-        //destination node is not hosting a VM involved in the constraint
-        Model cur = plan.getOrigin().clone();
-        for (Action a : plan) {
-            if (!a.apply(cur)) {
-                return Sat.UNSATISFIED;
-            }
-
-            UUID destNode;
-            if (a instanceof RunningVMPlacement) {
-                destNode = ((RunningVMPlacement) a).getDestinationNode();
-                Set<UUID> on = new HashSet<UUID>(cur.getMapping().getRunningVMs(destNode));
-                //If there is 2 VMs here that are involved in
-                //the constraint, it's a failure
-                on.retainAll(getInvolvedVMs());
-                if (on.size() > 1) {
-                    return Sat.UNSATISFIED;
-                }
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
     public String toString() {
         StringBuilder b = new StringBuilder("spread(vms=").append(getInvolvedVMs());
         if (!isContinuous()) {
@@ -112,7 +66,7 @@ public class Spread extends SatConstraint {
         } else {
             b.append(", continuous");
         }
-        return b.append(")").toString();
+        return b.append(')').toString();
     }
 
     @Override
@@ -132,4 +86,11 @@ public class Spread extends SatConstraint {
     public int hashCode() {
         return getInvolvedVMs().hashCode();
     }
+
+    @Override
+    public SatConstraintChecker getChecker() {
+        return new SpreadChecker(this);
+    }
+
+
 }

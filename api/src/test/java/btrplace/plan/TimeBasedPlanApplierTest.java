@@ -56,7 +56,7 @@ public class TimeBasedPlanApplierTest implements PremadeElements {
     @Test
     public void testApply() {
         ReconfigurationPlan plan = makePlan();
-        Model res = DependencyBasedPlanApplier.getInstance().apply(plan);
+        Model res = new DependencyBasedPlanApplier().apply(plan);
         Mapping resMapping = res.getMapping();
         Assert.assertTrue(resMapping.getOfflineNodes().contains(n1));
         Assert.assertTrue(resMapping.getOnlineNodes().contains(n4));
@@ -70,6 +70,6 @@ public class TimeBasedPlanApplierTest implements PremadeElements {
     @Test
     public void testToString() {
         ReconfigurationPlan plan = makePlan();
-        Assert.assertFalse(DependencyBasedPlanApplier.getInstance().toString(plan).contains("null"));
+        Assert.assertFalse(new DependencyBasedPlanApplier().toString(plan).contains("null"));
     }
 }

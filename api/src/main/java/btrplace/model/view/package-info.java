@@ -17,6 +17,6 @@
  */
 
 /**
- * Concrete implementation of {@link btrplace.model.ModelView}.
+ * Concrete implementation of {@link btrplace.model.view.ModelView}.
  */
 package btrplace.model.view;

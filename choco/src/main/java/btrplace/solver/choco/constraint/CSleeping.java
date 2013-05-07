@@ -20,11 +20,9 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Sleeping;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoSatConstraint;
-import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 
 import java.util.HashSet;
@@ -58,7 +56,7 @@ public class CSleeping implements ChocoSatConstraint {
 
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
-        Set<UUID> bad = new HashSet<UUID>();
+        Set<UUID> bad = new HashSet<>();
         Mapping map = m.getMapping();
         for (UUID vm : cstr.getInvolvedVMs()) {
             if (!map.getSleepingVMs().contains(vm)) {

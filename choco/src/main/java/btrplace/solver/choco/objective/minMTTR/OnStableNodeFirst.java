@@ -1,7 +1,11 @@
 package btrplace.solver.choco.objective.minMTTR;
 
 import btrplace.model.Mapping;
-import btrplace.solver.choco.*;
+import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.Slice;
+import btrplace.solver.choco.actionModel.ActionModel;
+import btrplace.solver.choco.actionModel.ActionModelUtils;
+import btrplace.solver.choco.actionModel.VMActionModel;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -34,9 +38,6 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
 
     private BitSet[] ins;
 
-    private ReconfigurationProblem rp;
-
-    private String label;
 
     private MinMTTR obj;
 
@@ -53,8 +54,6 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
         super(rp.getSolver(), ActionModelUtils.getStarts(actions.toArray(new ActionModel[actions.size()])));
         firstFree = rp.getSolver().getEnvironment().makeInt(0);
         this.obj = obj;
-        this.rp = rp;
-        this.label = lbl;
         Mapping cfg = rp.getSourceModel().getMapping();
 
         VMActionModel[] vmActions = rp.getVMActions();
@@ -62,7 +61,7 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
         hoster = new IntDomainVar[vmActions.length];
         starts = new IntDomainVar[vmActions.length];
 
-        this.vms = new ArrayList<UUID>(rp.getFutureRunningVMs());
+        this.vms = new ArrayList<>(rp.getFutureRunningVMs());
 
         oldPos = new int[hoster.length];
         outs = new BitSet[rp.getNodes().length];
@@ -88,13 +87,12 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
                     oldPos[i] = -1;
                 } else {
                     oldPos[i] = rp.getNode(n);
-                    outs[rp.getNode(n)].set(i);     //VM i was on node n
+                    //VM i was on node n
+                    outs[rp.getNode(n)].set(i);
                 }
             }
         }
     }
-
-    private long d1, d2, d3, d4, d5;
 
     private BitSet stays, move;
 
@@ -111,11 +109,6 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
     @Override
     public IntDomainVar selectVar() {
 
-/*        for (NodeActionModel a : rp.getNodeActions()) {
-            if (a.getState().isInstantiatedTo(1) && rp.getSourceModel().getMapping().getOfflineNodes().contains(a.getNode())) {
-                System.out.println(a.getNode() + " " + a.getState().pretty() + " " + a.getEnd().pretty());
-            }
-        }*/
         for (BitSet in : ins) {
             in.clear();
         }
@@ -129,12 +122,10 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
                 if (hoster[i] != null && hoster[i].isInstantiated()) {
                     int newPos = hoster[i].getVal();
                     if (oldPos[i] != -1 && newPos != oldPos[i]) {
-                        //rp.getLogger().debug("{}: {} from {} to {} start={}", label, hoster[i], oldPos[i], newPos, starts[i]);
                         //The VM has move
                         ins[newPos].set(i);
                         move.set(i);
                     } else if (newPos == oldPos[i]) {
-                        //rp.getLogger().debug("{}: {} stays on {} start={}", label, hoster[i], oldPos[i], starts[i]);
                         stays.set(i);
                     }
                 }
@@ -142,14 +133,13 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
         }
 
 
-        //VMs going on nodes with no outgoing actions, so actions that can start with no delay
-        //rp.getLogger().debug("{}: focus on actions to nodes without outgoings", label);
-        for (int x = 0; x < outs.length; x++) {   //Node per node
-            if (outs[x].cardinality() == 0) { //no outgoing VMs, can be launched directly.
+        //VMs going on nodes with no outgoing actions, so actions that can consume with no delay
+        for (int x = 0; x < outs.length; x++) {
+            if (outs[x].cardinality() == 0) {
+                //no outgoing VMs, can be launched directly.
                 BitSet in = ins[x];
                 for (int i = in.nextSetBit(0); i >= 0; i = in.nextSetBit(i + 1)) {
                     if (starts[i] != null && !starts[i].isInstantiated()) {
-                        //rp.getLogger().debug("{}: focus on {}, placed on {} ({})", label, starts[i], rp.getNode(hoster[i].getVal()));
                         return starts[i];
                     }
                 }
@@ -157,18 +147,15 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
         }
 
         //VMs that are moving
-        //rp.getLogger().debug("{}: focus on VMs that are moved elsewhere", label);
         for (int i = move.nextSetBit(0); i >= 0; i = move.nextSetBit(i + 1)) {
             if (starts[i] != null && !starts[i].isInstantiated()) {
                 if (oldPos[i] != hoster[i].getVal()) {
-                    //rp.getLogger().debug("{}: focus on {}, placed on {} ({})", label, starts[i], rp.getNode(hoster[i].getVal()));
                     return starts[i];
                 }
             }
         }
 
         IntDomainVar earlyVar = null;
-        //rp.getLogger().debug("{}: focus on staying VMs", label);
         for (int i = stays.nextSetBit(0); i >= 0; i = stays.nextSetBit(i + 1)) {
             if (starts[i] != null && !starts[i].isInstantiated()) {
                 if (earlyVar == null) {
@@ -207,7 +194,6 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
                 }
             }
         }
-        //rp.getLogger().debug("{}: focus on {} (earlier start)", label, best);
         if (best == null) {
             //Plug the cost constraints
             obj.postCostConstraints();

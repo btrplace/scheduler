@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
@@ -37,8 +40,9 @@ public class RootTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> x = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> x = new HashSet<>(Arrays.asList(vm1, vm2));
         Root s = new Root(x);
+        Assert.assertNotNull(s.getChecker());
         Assert.assertEquals(x, s.getInvolvedVMs());
         Assert.assertTrue(s.getInvolvedNodes().isEmpty());
         Assert.assertNotNull(s.toString());
@@ -52,7 +56,7 @@ public class RootTest implements PremadeElements {
 
     @Test
     public void testEquals() {
-        Set<UUID> x = new HashSet<UUID>(Arrays.asList(vm1, vm2));
+        Set<UUID> x = new HashSet<>(Arrays.asList(vm1, vm2));
         Root s = new Root(x);
 
         Assert.assertTrue(s.equals(s));
@@ -67,14 +71,14 @@ public class RootTest implements PremadeElements {
         Mapping c = new DefaultMapping();
         c.addReadyVM(n1);
         c.addReadyVM(n2);
-        Set<UUID> s = new HashSet<UUID>(Arrays.asList(n1, n2));
+        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
         Root o = new Root(s);
 
         Model i = new DefaultModel(c);
 
-        Assert.assertEquals(o.isSatisfied(i), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(o.isSatisfied(i), true);
         c.clear();
-        Assert.assertEquals(o.isSatisfied(i), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(o.isSatisfied(i), true);
     }
 
     @Test
@@ -86,9 +90,9 @@ public class RootTest implements PremadeElements {
         map.addRunningVM(vm1, n1);
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
         Root r = new Root(Collections.singleton(vm1));
-        Assert.assertEquals(r.isSatisfied(p), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(r.isSatisfied(p), true);
         p.add(new MigrateVM(vm1, n1, n2, 1, 2));
-        Assert.assertEquals(r.isSatisfied(p), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(r.isSatisfied(p), false);
     }
 
 }

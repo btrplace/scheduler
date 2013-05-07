@@ -18,11 +18,8 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.model.SatConstraint;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
+import btrplace.model.constraint.checker.LonelyChecker;
+import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
 import java.util.Set;
@@ -63,43 +60,6 @@ public class Lonely extends SatConstraint {
     }
 
     @Override
-    public Sat isSatisfied(Model i) {
-        Mapping map = i.getMapping();
-        for (UUID vm : getInvolvedVMs()) {
-            if (map.getRunningVMs().contains(vm)) {
-                UUID host = map.getVMLocation(vm);
-                Set<UUID> on = map.getRunningVMs(host);
-                //Check for other VMs on the node. If they are not in the constraint
-                //it's a violation
-                for (UUID vm2 : on) {
-                    if (!vm2.equals(vm) && !getInvolvedVMs().contains(vm2)) {
-                        return Sat.UNSATISFIED;
-                    }
-                }
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
-    public Sat isSatisfied(ReconfigurationPlan p) {
-        Model mo = p.getOrigin();
-        if (!isSatisfied(mo).equals(Sat.SATISFIED)) {
-            return Sat.UNSATISFIED;
-        }
-        mo = p.getOrigin().clone();
-        for (Action a : p) {
-            if (!a.apply(mo)) {
-                return Sat.UNSATISFIED;
-            }
-            if (!isSatisfied(mo).equals(Sat.SATISFIED)) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -130,4 +90,10 @@ public class Lonely extends SatConstraint {
 
         return b.append(')').toString();
     }
+
+    @Override
+    public SatConstraintChecker getChecker() {
+        return new LonelyChecker(this);
+    }
+
 }

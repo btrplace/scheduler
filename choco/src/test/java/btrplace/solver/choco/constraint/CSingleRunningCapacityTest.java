@@ -21,11 +21,11 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Ready;
 import btrplace.model.constraint.Running;
 import btrplace.model.constraint.SingleRunningCapacity;
-import btrplace.plan.Action;
+import btrplace.plan.event.Action;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootVM;
 import btrplace.plan.event.ShutdownVM;
@@ -55,7 +55,7 @@ public class CSingleRunningCapacityTest implements PremadeElements {
 
         Mapping map = new MappingBuilder().on(n1).run(n1, vm1, vm2).ready(vm3).build();
         Model mo = new DefaultModel(map);
-        List<SatConstraint> l = new ArrayList<SatConstraint>();
+        List<SatConstraint> l = new ArrayList<>();
         l.add(new Running(Collections.singleton(vm1)));
         l.add(new Ready(Collections.singleton(vm2)));
         l.add(new Running(Collections.singleton(vm3)));
@@ -74,7 +74,7 @@ public class CSingleRunningCapacityTest implements PremadeElements {
     public void testContinuousResolution() throws SolverException {
         Mapping map = new MappingBuilder().on(n1).run(n1, vm1, vm2).ready(vm3).build();
         Model mo = new DefaultModel(map);
-        List<SatConstraint> l = new ArrayList<SatConstraint>();
+        List<SatConstraint> l = new ArrayList<>();
         l.add(new Running(Collections.singleton(vm1)));
         l.add(new Ready(Collections.singleton(vm2)));
         l.add(new Running(Collections.singleton(vm3)));

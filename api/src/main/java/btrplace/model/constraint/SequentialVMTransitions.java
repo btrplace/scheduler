@@ -18,13 +18,12 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Model;
-import btrplace.model.SatConstraint;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.VMStateTransition;
+import btrplace.model.constraint.checker.SatConstraintChecker;
+import btrplace.model.constraint.checker.SequentialVMTransitionsChecker;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * A constraint to force the actions that change the given VMs state
@@ -46,11 +45,6 @@ public class SequentialVMTransitions extends SatConstraint {
     public SequentialVMTransitions(List<UUID> seq) {
         super(seq, new ArrayList<UUID>(), true);
         order = seq;
-    }
-
-    @Override
-    public Sat isSatisfied(Model i) {
-        return Sat.UNDEFINED;
     }
 
     @Override
@@ -80,7 +74,7 @@ public class SequentialVMTransitions extends SatConstraint {
         return new StringBuilder("sequentialVMTransitions(")
                 .append("vms=").append(getInvolvedVMs())
                 .append(", continuous")
-                .append(")").toString();
+                .append(')').toString();
     }
 
     @Override
@@ -92,40 +86,8 @@ public class SequentialVMTransitions extends SatConstraint {
     }
 
     @Override
-    public Sat isSatisfied(ReconfigurationPlan plan) {
-        Set<UUID> pending = new HashSet<UUID>(getInvolvedVMs()); //all the VMAction we expect
-
-        Map<UUID, Action> actions = new HashMap<UUID, Action>(); //The action associated to the VM if it is an action
-        //to consider
-        for (Action a : plan) {
-            if (a instanceof VMStateTransition) {
-                VMStateTransition ste = (VMStateTransition) a;
-                UUID vm = ste.getVM();
-                if (ste.getCurrentState() != ste.getNextState() &&
-                        (ste.getNextState() == VMStateTransition.VMState.running
-                                || ste.getCurrentState() == VMStateTransition.VMState.running)) {
-                    //This action matters and the associated VM is in the constraint
-                    if (pending.contains(vm)) {
-                        actions.put(vm, a);
-                    }
-                }
-            }
-        }
-        //We browse the actions in the order of the associated VM, and ensure there is no overlap btw. the action
-        int prevEnd = -1;
-        for (UUID vm : getInvolvedVMs()) {
-            Action a = actions.get(vm);
-            if (a != null) {
-                //We do care about this action
-                int p = a.getStart();
-                if (p < prevEnd) {
-                    //There is an overlap
-                    return Sat.UNSATISFIED;
-                } else {
-                    prevEnd = a.getEnd();
-                }
-            }
-        }
-        return Sat.SATISFIED;
+    public SatConstraintChecker getChecker() {
+        return new SequentialVMTransitionsChecker(this);
     }
+
 }

@@ -21,10 +21,8 @@ package btrplace.plan.event;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.plan.Action;
-import btrplace.plan.RunningVMPlacement;
-import btrplace.plan.VMStateTransition;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -113,11 +111,7 @@ public class ResumeVM extends Action implements VMStateTransition, RunningVMPlac
 
     @Override
     public int hashCode() {
-        int res = getEnd();
-        res = getStart() + 31 * res;
-        res = src.hashCode() + 31 * res;
-        res = 31 * res + dst.hashCode();
-        return 31 * res + src.hashCode();
+        return Objects.hash(getStart(), getEnd(), src, dst, vm);
     }
 
 

@@ -18,14 +18,12 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.plan.Action;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
-import btrplace.solver.choco.VMActionModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -34,6 +32,12 @@ import java.util.UUID;
 
 /**
  * Model an action that boot a VM in the ready state.
+ * The model must provide an estimation of the action duration through a
+ * {@link btrplace.solver.choco.durationEvaluator.DurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code BootVM.class}
+ * <p/>
+ * If the reconfiguration problem has a solution, a {@link btrplace.plan.event.BootVM} action
+ * is inserted into the resulting reconfiguration plan.
  *
  * @author Fabien Hermenier
  */
@@ -65,11 +69,11 @@ public class BootVMModel implements VMActionModel {
 
         int d = rp.getDurationEvaluators().evaluate(BootVM.class, e);
         this.rp = rp;
-        start = rp.makeDuration(new StringBuilder("bootVM(").append(e).append(").start").toString(), 0, rp.getEnd().getSup() - d);
-        end = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel(new StringBuilder("bootVM(").append(e).append(").end").toString()), start, d);
-        duration = rp.makeDuration(new StringBuilder("bootVM.duration(").append(e).append(')').toString(), d, d);
+        start = rp.makeDuration(rp.getEnd().getSup() - d, 0, "bootVM(", e, ").start");
+        end = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel("bootVM(", e, ").end"), start, d);
+        duration = rp.makeDuration(d, d, "bootVM.duration(", e, ')');
         dSlice = new SliceBuilder(rp, e, new StringBuilder("bootVM(").append(e).append(").dSlice").toString()).setStart(start)
-                .setDuration(rp.makeDuration(new StringBuilder("bootVM(").append(e).append(").dSlice_duration").toString(), d, rp.getEnd().getSup()))
+                .setDuration(rp.makeDuration(rp.getEnd().getSup(), d, "bootVM(", e, ").dSlice_duration"))
                 .build();
         CPSolver s = rp.getSolver();
         s.post(s.leq(start, rp.getEnd()));
@@ -84,7 +88,6 @@ public class BootVMModel implements VMActionModel {
         UUID node = rp.getNode(dSlice.getHoster().getVal());
         BootVM a = new BootVM(vm, node, start.getVal(), end.getVal());
         plan.add(a);
-        rp.insertNotifyAllocations(a, vm, Action.Hook.pre);
         return true;
     }
 

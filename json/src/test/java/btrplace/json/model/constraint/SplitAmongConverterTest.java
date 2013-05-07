@@ -40,15 +40,15 @@ public class SplitAmongConverterTest implements PremadeElements {
 
     @Test
     public void testViables() throws JSONConverterException {
-        Set<UUID> s1 = new HashSet<UUID>(Arrays.asList(vm1, vm2, vm3));
-        Set<UUID> s2 = new HashSet<UUID>(Arrays.asList(vm4, vm5, vm6));
-        Set<UUID> s3 = new HashSet<UUID>(Arrays.asList(vm7, vm8));
-        Set<Set<UUID>> vgrps = new HashSet<Set<UUID>>(Arrays.asList(s1, s2, s3));
+        Set<UUID> s1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<UUID> s2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
+        Set<UUID> s3 = new HashSet<>(Arrays.asList(vm7, vm8));
+        Set<Set<UUID>> vgrps = new HashSet<>(Arrays.asList(s1, s2, s3));
 
-        Set<UUID> p1 = new HashSet<UUID>(Arrays.asList(n1, n2));
-        Set<UUID> p2 = new HashSet<UUID>(Arrays.asList(n4, n5));
-        Set<UUID> p3 = new HashSet<UUID>(Arrays.asList(n3));
-        Set<Set<UUID>> pgrps = new HashSet<Set<UUID>>(Arrays.asList(p1, p2, p3));
+        Set<UUID> p1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<UUID> p2 = new HashSet<>(Arrays.asList(n4, n5));
+        Set<UUID> p3 = new HashSet<>(Arrays.asList(n3));
+        Set<Set<UUID>> pgrps = new HashSet<>(Arrays.asList(p1, p2, p3));
 
         SplitAmong d = new SplitAmong(vgrps, pgrps, false);
         SplitAmong c = new SplitAmong(vgrps, pgrps, true);

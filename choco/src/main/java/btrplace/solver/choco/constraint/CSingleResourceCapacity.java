@@ -20,12 +20,10 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.SingleResourceCapacity;
 import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoSatConstraint;
-import btrplace.solver.choco.ChocoSatConstraintBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.view.CShareableResource;
 import choco.cp.solver.CPSolver;
@@ -68,7 +66,7 @@ public class CSingleResourceCapacity implements ChocoSatConstraint {
 
             //Continuous in practice ?
             if (cstr.isContinuous()) {
-                if (cstr.isSatisfied(rp.getSourceModel()).equals(SatConstraint.Sat.SATISFIED)) {
+                if (cstr.isSatisfied(rp.getSourceModel())) {
                     try {
                         v.setSup(cstr.getAmount());
                     } catch (ContradictionException e) {
@@ -89,7 +87,7 @@ public class CSingleResourceCapacity implements ChocoSatConstraint {
     @Override
     public Set<UUID> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-        Set<UUID> bad = new HashSet<UUID>();
+        Set<UUID> bad = new HashSet<>();
         ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         for (UUID n : cstr.getInvolvedNodes()) {
             int remainder = cstr.getAmount();

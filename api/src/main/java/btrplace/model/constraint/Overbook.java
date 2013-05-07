@@ -18,14 +18,11 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.model.SatConstraint;
-import btrplace.model.view.ShareableResource;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
+import btrplace.model.constraint.checker.OverbookChecker;
+import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -106,50 +103,6 @@ public class Overbook extends SatConstraint {
     }
 
     @Override
-    public Sat isSatisfied(Model i) {
-        Mapping cfg = i.getMapping();
-        ShareableResource rc = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + rcId);
-        if (rc == null) {
-            return Sat.UNSATISFIED;
-        }
-        for (UUID nId : getInvolvedNodes()) {
-            if (cfg.getOnlineNodes().contains(nId)) {
-                //Server capacity with the ratio
-                double capa = rc.get(nId) * ratio;
-                //Minus the VMs usage
-                for (UUID vmId : cfg.getRunningVMs(nId)) {
-                    capa -= rc.get(vmId);
-                    if (capa < 0) {
-                        return Sat.UNSATISFIED;
-                    }
-                }
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
-    public Sat isSatisfied(ReconfigurationPlan plan) {
-        Sat res = isSatisfied(plan.getOrigin());
-        if (!res.equals(Sat.SATISFIED)) {
-            return Sat.UNSATISFIED;
-        }
-        Model cur = plan.getOrigin().clone();
-        for (Action a : plan) {
-
-            if (!a.apply(cur)) {
-                return Sat.UNSATISFIED;
-            }
-            res = isSatisfied(cur);
-
-            if (!res.equals(Sat.SATISFIED)) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -167,11 +120,14 @@ public class Overbook extends SatConstraint {
 
     @Override
     public int hashCode() {
-        double result = rcId.hashCode();
-        result = 31 * result + ratio;
-        result = 31 * result + getInvolvedNodes().hashCode();
-        return Double.valueOf(result).hashCode();
+        return Objects.hash(getInvolvedNodes(), rcId, ratio, isContinuous());
     }
+
+    @Override
+    public SatConstraintChecker getChecker() {
+        return new OverbookChecker(this);
+    }
+
 }
 
 

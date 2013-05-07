@@ -20,11 +20,11 @@ package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverter;
 import btrplace.json.JSONConverterException;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 import net.minidev.json.JSONObject;
 
 /**
- * Specify a JSON converter for a {@link btrplace.model.SatConstraint}.
+ * Specify a JSON converter for a {@link btrplace.model.constraint.SatConstraint}.
  *
  * @author Fabien Hermenier
  */

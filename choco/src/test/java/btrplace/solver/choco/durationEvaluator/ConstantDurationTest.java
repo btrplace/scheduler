@@ -18,22 +18,21 @@
 
 package btrplace.solver.choco.durationEvaluator;
 
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.util.UUID;
 
 /**
  * Unit tests for {@link ConstantDuration}.
  *
  * @author Fabien Hermenier
  */
-public class ConstantDurationTest {
+public class ConstantDurationTest implements PremadeElements {
 
     @Test
     public void testInstantiate() {
         ConstantDuration cd = new ConstantDuration(5);
-        Assert.assertEquals(5, cd.evaluate(UUID.randomUUID()));
+        Assert.assertEquals(5, cd.evaluate(vm1));
         Assert.assertNotNull(cd.toString());
     }
 }

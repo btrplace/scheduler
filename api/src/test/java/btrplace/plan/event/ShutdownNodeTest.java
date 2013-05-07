@@ -26,12 +26,17 @@ import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 /**
  * Unit tests for {@link ShutdownNode}.
  *
  * @author Fabien Hermenier
  */
 public class ShutdownNodeTest implements PremadeElements {
+
+    static ShutdownNode a = new ShutdownNode(n1, 3, 5);
 
     @Test
     public void testInstantiate() {
@@ -70,4 +75,12 @@ public class ShutdownNodeTest implements PremadeElements {
         Assert.assertNotSame(a, new ShutdownNode(n1, 3, 4));
         Assert.assertNotSame(a, new ShutdownNode(n2, 4, 5));
     }
+
+    @Test
+    public void testVisit() {
+        ActionVisitor visitor = mock(ActionVisitor.class);
+        a.visit(visitor);
+        verify(visitor).visit(a);
+    }
+
 }

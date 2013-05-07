@@ -28,16 +28,16 @@ public class DependenciesExtractor implements ActionVisitor {
      * @param o the model at the source of the reconfiguration plan
      */
     public DependenciesExtractor(Model o) {
-        demandings = new HashMap<UUID, Set<Action>>();
-        freeings = new HashMap<UUID, Set<Action>>();
-        this.demandingUUID = new HashMap<Action, UUID>();
+        demandings = new HashMap<>();
+        freeings = new HashMap<>();
+        this.demandingUUID = new HashMap<>();
         origin = o;
     }
 
     private Set<Action> getFreeings(UUID u) {
         Set<Action> actions = freeings.get(u);
         if (actions == null) {
-            actions = new HashSet<Action>();
+            actions = new HashSet<>();
             freeings.put(u, actions);
         }
         return actions;
@@ -46,7 +46,7 @@ public class DependenciesExtractor implements ActionVisitor {
     private Set<Action> getDemandings(UUID u) {
         Set<Action> actions = demandings.get(u);
         if (actions == null) {
-            actions = new HashSet<Action>();
+            actions = new HashSet<>();
             demandings.put(u, actions);
         }
         return actions;
@@ -90,7 +90,10 @@ public class DependenciesExtractor implements ActionVisitor {
 
     @Override
     public Boolean visit(ForgeVM a) {
-        throw new UnsupportedOperationException();
+        /*TODO: true for the moment, but if we allow to chain
+         forge with boot, it will no longer be as there will
+        be a dependency on the VM (and not the node)*/
+        return true;
     }
 
     @Override
@@ -129,6 +132,11 @@ public class DependenciesExtractor implements ActionVisitor {
         return getFreeings(a.getSourceNode()).add(a);
     }
 
+    @Override
+    public Object visit(SubstitutedVMEvent a) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Get the dependencies for an action.
      *
@@ -141,7 +149,7 @@ public class DependenciesExtractor implements ActionVisitor {
             return Collections.emptySet();
         } else {
             Set<Action> allActions = getFreeings(n);
-            Set<Action> pre = new HashSet<Action>();
+            Set<Action> pre = new HashSet<>();
             for (Action action : allActions) {
                 if (action != a && a.getStart() >= action.getEnd()) {
                     pre.add(action);

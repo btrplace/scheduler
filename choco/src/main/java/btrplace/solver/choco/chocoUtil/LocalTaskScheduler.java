@@ -184,10 +184,10 @@ public class LocalTaskScheduler {
 
         for (int i = 0; i < nbDims; i++) {
             //What is necessarily used on the resource
-            profilesMin[i] = new TIntIntHashMap();//.clear();
+            profilesMin[i] = new TIntIntHashMap();
 
             //Maximum possible usage on the resource
-            profilesMax[i] = new TIntIntHashMap();//.clear();
+            profilesMax[i] = new TIntIntHashMap();
 
             profilesMax[i].put(0, capacities[i][me] - startupFree[i]);
             profilesMin[i].put(0, capacities[i][me] - startupFree[i]);
@@ -375,9 +375,6 @@ public class LocalTaskScheduler {
 
     private void updateDStartsInf() throws ContradictionException {
 
-        /*if (DEBUG == me || DEBUG == -2) {
-            System.err.println("here");
-        } */
         for (int idx = 0; idx < vIn.size(); idx++) {
             int i = vIn.get(idx);
             if (!dStarts[i].isInstantiated() && !associatedToCSliceOnCurrentNode(i)) {
@@ -400,12 +397,7 @@ public class LocalTaskScheduler {
                         break;
                     }
                 }
-                //if (lastT != -1) {
-                //if (DEBUG == me || DEBUG == -2) {
-                //     ChocoLogging.getBranchingLogger().info("(" + me + ") - set to max(" + Math.max(lastT, early.getInf()) + ")");
-                //}
                 dStarts[i].setInf(Math.max(lastT, early.getInf()));
-                //}
             }
         }
     }
@@ -417,7 +409,6 @@ public class LocalTaskScheduler {
         int lastSup = -1;
         for (int i = sortedMaxProfile.length - 1; i >= 0; i--) {
             int t = sortedMaxProfile[i];
-            //if (profileMaxCPU.get(t) <= capacityCPU && profileMaxMem.get(t) <= capacityMem) {
             if (!exceedCapacity(profilesMax, t, myCapacity)) {
                 lastSup = t;
             } else {
@@ -429,8 +420,7 @@ public class LocalTaskScheduler {
                 int i = vIn.get(x);
                 if (!dStarts[i].isInstantiated() && !associatedToCSliceOnCurrentNode(i)) {
                     int s = Math.max(dStarts[i].getInf(), lastSup);
-                    //ChocoLogging.getBranchingLogger().info("Update UB" + dStarts[i].getName() + " to max(" + s + "," + early.getSup() + ")");
-                    dStarts[i].setSup(s/*Math.max(s, early.getSup())*/);
+                    dStarts[i].setSup(s);
                 }
             }
         }

@@ -18,12 +18,11 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Model;
-import btrplace.model.SatConstraint;
-import btrplace.plan.Action;
-import btrplace.plan.ReconfigurationPlan;
+import btrplace.model.constraint.checker.CumulatedRunningCapacityChecker;
+import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -67,38 +66,6 @@ public class CumulatedRunningCapacity extends SatConstraint {
     }
 
     @Override
-    public Sat isSatisfied(Model i) {
-        int remainder = qty;
-        for (UUID id : getInvolvedNodes()) {
-            if (i.getMapping().getOnlineNodes().contains(id)) {
-                remainder -= i.getMapping().getRunningVMs(id).size();
-                if (remainder < 0) {
-                    return Sat.UNSATISFIED;
-                }
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
-    public Sat isSatisfied(ReconfigurationPlan p) {
-        Model mo = p.getOrigin();
-        if (!isSatisfied(mo).equals(Sat.SATISFIED)) {
-            return Sat.UNSATISFIED;
-        }
-        mo = p.getOrigin().clone();
-        for (Action a : p) {
-            if (!a.apply(mo)) {
-                return Sat.UNSATISFIED;
-            }
-            if (!isSatisfied(mo).equals(Sat.SATISFIED)) {
-                return Sat.UNSATISFIED;
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -127,7 +94,7 @@ public class CumulatedRunningCapacity extends SatConstraint {
 
     @Override
     public int hashCode() {
-        return 31 * qty + getInvolvedNodes().hashCode();
+        return Objects.hash(getInvolvedNodes(), qty, isContinuous());
     }
 
     @Override
@@ -145,4 +112,10 @@ public class CumulatedRunningCapacity extends SatConstraint {
 
         return b.toString();
     }
+
+    @Override
+    public SatConstraintChecker getChecker() {
+        return new CumulatedRunningCapacityChecker(this);
+    }
+
 }

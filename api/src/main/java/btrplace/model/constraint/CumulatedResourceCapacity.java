@@ -18,11 +18,11 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Model;
-import btrplace.model.SatConstraint;
-import btrplace.model.view.ShareableResource;
+import btrplace.model.constraint.checker.CumulatedResourceCapacityChecker;
+import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -89,27 +89,6 @@ public class CumulatedResourceCapacity extends SatConstraint {
     }
 
     @Override
-    public Sat isSatisfied(Model i) {
-        ShareableResource rc = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + rcId);
-        if (rc == null) {
-            return Sat.UNSATISFIED;
-        }
-
-        int remainder = qty;
-        for (UUID id : getInvolvedNodes()) {
-            if (i.getMapping().getOnlineNodes().contains(id)) {
-                for (UUID vmId : i.getMapping().getRunningVMs(id)) {
-                    remainder -= rc.get(vmId);
-                    if (remainder < 0) {
-                        return Sat.UNSATISFIED;
-                    }
-                }
-            }
-        }
-        return Sat.SATISFIED;
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -131,11 +110,7 @@ public class CumulatedResourceCapacity extends SatConstraint {
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + qty;
-        result = 31 * result + rcId.hashCode();
-        result = 31 * result + getInvolvedNodes().hashCode() + (isContinuous() ? 1 : 0);
-        return result;
+        return Objects.hash(getInvolvedNodes(), qty, rcId, isContinuous());
     }
 
     @Override
@@ -154,6 +129,11 @@ public class CumulatedResourceCapacity extends SatConstraint {
         b.append(')');
 
         return b.toString();
+    }
+
+    @Override
+    public SatConstraintChecker getChecker() {
+        return new CumulatedResourceCapacityChecker(this);
     }
 
 }

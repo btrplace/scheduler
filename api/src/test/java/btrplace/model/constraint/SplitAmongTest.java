@@ -18,7 +18,10 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
@@ -41,17 +44,18 @@ public class SplitAmongTest implements PremadeElements {
     @Test
     public void testInstantiation() {
 
-        Set<UUID> vs1 = new HashSet<UUID>(Arrays.asList(vm1, vm2));
-        Set<UUID> vs2 = new HashSet<UUID>(Arrays.asList(vm3, vm4));
+        Set<UUID> vs1 = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<UUID> vs2 = new HashSet<>(Arrays.asList(vm3, vm4));
 
-        Set<Set<UUID>> vGrps = new HashSet<Set<UUID>>(Arrays.asList(vs1, vs2));
+        Set<Set<UUID>> vGrps = new HashSet<>(Arrays.asList(vs1, vs2));
 
 
-        Set<UUID> ps1 = new HashSet<UUID>(Arrays.asList(n1, n2));
-        Set<UUID> ps2 = new HashSet<UUID>(Arrays.asList(n3, n4));
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(ps1, ps2));
+        Set<UUID> ps1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<UUID> ps2 = new HashSet<>(Arrays.asList(n3, n4));
+        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(ps1, ps2));
 
         SplitAmong sp = new SplitAmong(vGrps, pGrps);
+        Assert.assertNotNull(sp.getChecker());
         Assert.assertEquals(sp.getGroupsOfVMs(), vGrps);
         Assert.assertEquals(sp.getGroupsOfNodes(), pGrps);
         Assert.assertTrue(sp.getInvolvedVMs().containsAll(vs1));
@@ -74,14 +78,14 @@ public class SplitAmongTest implements PremadeElements {
     @Test
     public void testEqualsAndHashCode() {
 
-        Set<UUID> vs1 = new HashSet<UUID>(Arrays.asList(vm1, vm2));
-        Set<UUID> vs2 = new HashSet<UUID>(Arrays.asList(vm3, vm4));
-        Set<Set<UUID>> vGrps = new HashSet<Set<UUID>>(Arrays.asList(vs1, vs2));
+        Set<UUID> vs1 = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<UUID> vs2 = new HashSet<>(Arrays.asList(vm3, vm4));
+        Set<Set<UUID>> vGrps = new HashSet<>(Arrays.asList(vs1, vs2));
 
 
-        Set<UUID> ps1 = new HashSet<UUID>(Arrays.asList(n1, n2));
-        Set<UUID> ps2 = new HashSet<UUID>(Arrays.asList(n3, n4));
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(ps1, ps2));
+        Set<UUID> ps1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<UUID> ps2 = new HashSet<>(Arrays.asList(n3, n4));
+        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(ps1, ps2));
 
         SplitAmong sp = new SplitAmong(vGrps, pGrps);
         Assert.assertTrue(sp.equals(sp));
@@ -98,14 +102,14 @@ public class SplitAmongTest implements PremadeElements {
     @Test
     public void testDiscreteIsSatisfied() {
 
-        Set<UUID> vs1 = new HashSet<UUID>(Arrays.asList(vm1, vm2));
-        Set<UUID> vs2 = new HashSet<UUID>(Arrays.asList(vm3, vm4));
-        Set<Set<UUID>> vGrps = new HashSet<Set<UUID>>(Arrays.asList(vs1, vs2));
+        Set<UUID> vs1 = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<UUID> vs2 = new HashSet<>(Arrays.asList(vm3, vm4));
+        Set<Set<UUID>> vGrps = new HashSet<>(Arrays.asList(vs1, vs2));
 
 
-        Set<UUID> ps1 = new HashSet<UUID>(Arrays.asList(n1, n2));
-        Set<UUID> ps2 = new HashSet<UUID>(Arrays.asList(n3, n4));
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(ps1, ps2));
+        Set<UUID> ps1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<UUID> ps2 = new HashSet<>(Arrays.asList(n3, n4));
+        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(ps1, ps2));
 
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
@@ -121,28 +125,28 @@ public class SplitAmongTest implements PremadeElements {
         Model mo = new DefaultModel(map);
 
         SplitAmong sp = new SplitAmong(vGrps, pGrps);
-        Assert.assertEquals(sp.isSatisfied(mo), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(sp.isSatisfied(mo), true);
 
         //Spread over multiple groups, not allowed
         map.addRunningVM(vm2, n3);
-        Assert.assertEquals(sp.isSatisfied(mo), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(sp.isSatisfied(mo), false);
         //pGroup co-location. Not allowed
         map.addRunningVM(vm1, n3);
         map.addRunningVM(vm3, n4);
-        Assert.assertEquals(sp.isSatisfied(mo), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(sp.isSatisfied(mo), false);
     }
 
     @Test
     public void testContinuousIsSatisfied() {
 
-        Set<UUID> vs1 = new HashSet<UUID>(Arrays.asList(vm1, vm2));
-        Set<UUID> vs2 = new HashSet<UUID>(Arrays.asList(vm3, vm4));
-        Set<Set<UUID>> vGrps = new HashSet<Set<UUID>>(Arrays.asList(vs1, vs2));
+        Set<UUID> vs1 = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<UUID> vs2 = new HashSet<>(Arrays.asList(vm3, vm4));
+        Set<Set<UUID>> vGrps = new HashSet<>(Arrays.asList(vs1, vs2));
 
 
-        Set<UUID> ps1 = new HashSet<UUID>(Arrays.asList(n1, n2));
-        Set<UUID> ps2 = new HashSet<UUID>(Arrays.asList(n3, n4));
-        Set<Set<UUID>> pGrps = new HashSet<Set<UUID>>(Arrays.asList(ps1, ps2));
+        Set<UUID> ps1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<UUID> ps2 = new HashSet<>(Arrays.asList(n3, n4));
+        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(ps1, ps2));
 
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
@@ -159,15 +163,15 @@ public class SplitAmongTest implements PremadeElements {
 
         SplitAmong sp = new SplitAmong(vGrps, pGrps);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
-        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(sp.isSatisfied(plan), true);
 
         plan.add(new MigrateVM(vm1, n1, n2, 3, 4));
-        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(sp.isSatisfied(plan), true);
 
         map.addRunningVM(vm5, n4);
-        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
+        Assert.assertEquals(sp.isSatisfied(plan), true);
         plan.add(new MigrateVM(vm2, n1, n3, 0, 2));
-        Assert.assertEquals(sp.isSatisfied(plan), SatConstraint.Sat.UNSATISFIED);
+        Assert.assertEquals(sp.isSatisfied(plan), false);
 
 
     }

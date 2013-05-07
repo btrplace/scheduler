@@ -1,7 +1,7 @@
 package btrplace.json.plan;
 
 import btrplace.json.JSONConverterException;
-import btrplace.plan.Action;
+import btrplace.plan.event.Action;
 import btrplace.plan.event.*;
 import btrplace.test.PremadeElements;
 import net.minidev.json.JSONObject;

@@ -1,11 +1,18 @@
 package btrplace.examples;
 
-import btrplace.model.*;
-import btrplace.model.constraint.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
+import btrplace.model.constraint.Offline;
+import btrplace.model.constraint.Preserve;
+import btrplace.model.constraint.SatConstraint;
+import btrplace.model.constraint.Spread;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.DependencyBasedPlanApplier;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.TimeBasedPlanApplier;
+import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 
@@ -101,10 +108,10 @@ public class GettingStarted implements Example {
     }
 
     private static Set<SatConstraint> makeConstraints() {
-        Set<SatConstraint> cstrs = new HashSet<SatConstraint>();
+        Set<SatConstraint> cstrs = new HashSet<>();
 
         //VMs VM2 and VM3 must be running on distinct nodes
-        cstrs.add(new Spread(new HashSet<UUID>(Arrays.asList(vm2, vm3))));
+        cstrs.add(new Spread(new HashSet<>(Arrays.asList(vm2, vm3))));
 
         //VM VM1 must have at least 3 virtual CPU dedicated to it
         cstrs.add(new Preserve(Collections.singleton(vm1), "cpu", 3));
@@ -112,19 +119,11 @@ public class GettingStarted implements Example {
         //node N4 must be offline
         cstrs.add(new Offline(Collections.singleton(n4)));
 
-        //Debug purpose, repeatable placement
-        cstrs.add(new Fence(Collections.singleton(vm3), Collections.singleton(n2)));
-        cstrs.add(new Fence(Collections.singleton(vm5), Collections.singleton(n2)));
-        cstrs.add(new Fence(Collections.singleton(vm6), Collections.singleton(n1)));
-        cstrs.add(new Fence(Collections.singleton(vm2), Collections.singleton(n1)));
-        cstrs.add(new Fence(Collections.singleton(vm1), Collections.singleton(n3)));
-        cstrs.add(new Fence(Collections.singleton(vm4), Collections.singleton(n3)));
-
         return cstrs;
     }
 
     @Override
-    public boolean run() throws Exception {
+    public boolean run() {
         Mapping map = makeMapping();
 
         //Now, we declare views related to
@@ -140,13 +139,17 @@ public class GettingStarted implements Example {
         Set<SatConstraint> cstrs = makeConstraints();
 
         ChocoReconfigurationAlgorithm ra = new DefaultChocoReconfigurationAlgorithm();
-        //ra.setVerbosity(3); // Set the debugging flag
-        ReconfigurationPlan plan = ra.solve(origin, cstrs);
-        System.out.println("Time-based plan:");
-        System.out.println(TimeBasedPlanApplier.getInstance().toString(plan));
-        System.out.println("\nDependency based plan:");
-        System.out.println(DependencyBasedPlanApplier.getInstance().toString(plan));
-        return (plan != null);
+        try {
+            ReconfigurationPlan plan = ra.solve(origin, cstrs);
+            System.out.println("Time-based plan:");
+            System.out.println(new TimeBasedPlanApplier().toString(plan));
+            System.out.println("\nDependency based plan:");
+            System.out.println(new DependencyBasedPlanApplier().toString(plan));
+            return (plan != null);
+        } catch (SolverException ex) {
+            System.err.println(ex.getMessage());
+            return false;
+        }
     }
 
     @Override

@@ -17,6 +17,6 @@
  */
 
 /**
- * Concrete pre-made implementations of {@link btrplace.solver.choco.DurationEvaluator}.
+ * Concrete pre-made implementations of {@link btrplace.solver.choco.durationEvaluator.DurationEvaluator}.
  */
 package btrplace.solver.choco.durationEvaluator;

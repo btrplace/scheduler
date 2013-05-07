@@ -19,11 +19,12 @@
 package btrplace.json.model;
 
 import btrplace.model.Model;
-import btrplace.model.SatConstraint;
+import btrplace.model.constraint.SatConstraint;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * An instance aggregates a model and a list of constraints.
@@ -43,7 +44,7 @@ public class Instance {
      * @param cs the list of constraints
      */
     public Instance(Model mo, List<SatConstraint> cs) {
-        cstrs = new ArrayList<SatConstraint>(cs);
+        cstrs = new ArrayList<>(cs);
         this.mo = mo;
     }
 
@@ -63,5 +64,24 @@ public class Instance {
      */
     public Collection<SatConstraint> getConstraints() {
         return cstrs;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Instance instance = (Instance) o;
+
+        return (cstrs.equals(instance.cstrs) && mo.equals(instance.mo));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mo, cstrs);
     }
 }

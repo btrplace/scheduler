@@ -26,6 +26,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -37,13 +38,10 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class StayRunningVMModelTest {
+public class StayRunningVMModelTest implements PremadeElements {
 
     @Test
     public void testBasic() throws SolverException {
-
-        UUID vm1 = UUID.randomUUID();
-        UUID n1 = UUID.randomUUID();
 
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
