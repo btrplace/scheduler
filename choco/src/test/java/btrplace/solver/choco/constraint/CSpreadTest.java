@@ -106,9 +106,9 @@ public class CSpreadTest implements PremadeElements {
      */
     @Test
     public void testSeparateWithContinuous() throws SolverException {
-        Model m = getModel();
-        Mapping map = m.getMapping();
-        map.addRunningVM(vm2, n1);
+        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).build();
+        Model m = new DefaultModel(map);
+
         List<SatConstraint> cstr = new ArrayList<>();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
@@ -117,9 +117,9 @@ public class CSpreadTest implements PremadeElements {
         cstr.add(s);
         cstr.add(new Online(m.getMapping().getAllNodes()));
         cstr.add(new Fence(Collections.singleton(vm1), Collections.singleton(n2)));
-        //cra.doOptimize(true);
         ReconfigurationPlan p = cra.solve(m, cstr);
         Assert.assertNotNull(p);
+        Assert.assertEquals(p.getSize(), 1);
         Mapping res = p.getResult().getMapping();
         Assert.assertNotSame(res.getVMLocation(vm1), res.getVMLocation(vm2));
     }

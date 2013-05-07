@@ -83,31 +83,37 @@ public class CSpread implements ChocoSatConstraint {
                     for (int j = 0; j < i; j++) {
                         UUID vmJ = vms[j];
                         VMActionModel aJ = rp.getVMAction(vmJ);
-                        Slice d = aI.getDSlice();
-                        Slice c = aJ.getCSlice();
-                        if (d != null && c != null) {
+                        Slice dI = aI.getDSlice();
+                        Slice cJ = aJ.getCSlice();
+
+                        Slice dJ = aJ.getDSlice();
+                        Slice cI = aI.getCSlice();
+
+                        //If both are currently hosted on the same node, no need to worry about non-overlapping
+                        //between the c and the d-slices as it may create a non-solution
+                        boolean currentlyGathered = cI != null && cJ != null && cJ.getHoster().isInstantiatedTo(dJ.getHoster().getVal());
+
+                        if (!currentlyGathered && dI != null && cJ != null) {
                             //No need to place the constraints if the slices do not have a chance to overlap
-                            if (!(c.getHoster().isInstantiated() && !d.getHoster().canBeInstantiatedTo(c.getHoster().getVal()))
-                                    && !(d.getHoster().isInstantiated() && !c.getHoster().canBeInstantiatedTo(d.getHoster().getVal()))
+                            if (!(cJ.getHoster().isInstantiated() && !dI.getHoster().canBeInstantiatedTo(cJ.getHoster().getVal()))
+                                    && !(dI.getHoster().isInstantiated() && !cJ.getHoster().canBeInstantiatedTo(dI.getHoster().getVal()))
                                     ) {
                                 IntDomainVar eq = rp.getSolver().createBooleanVar("eq");
-                                s.post(ReifiedFactory.builder(eq, s.eq(d.getHoster(), c.getHoster()), s));
-                                ChocoUtils.postImplies(s, eq, s.leq(c.getEnd(), d.getStart()));
+                                s.post(ReifiedFactory.builder(eq, s.eq(dI.getHoster(), cJ.getHoster()), s));
+                                ChocoUtils.postImplies(s, eq, s.leq(cJ.getEnd(), dI.getStart()));
                             }
                         }
 
                         //The inverse relation
-                        d = aJ.getDSlice();
-                        c = aI.getCSlice();
 
-                        if (d != null && c != null) {
+                        if (!currentlyGathered && dJ != null && cI != null) {
                             //No need to place the constraints if the slices do not have a chance to overlap
-                            if (!(c.getHoster().isInstantiated() && !d.getHoster().canBeInstantiatedTo(c.getHoster().getVal()))
-                                    && !(d.getHoster().isInstantiated() && !c.getHoster().canBeInstantiatedTo(d.getHoster().getVal()))
+                            if (!(cI.getHoster().isInstantiated() && !dJ.getHoster().canBeInstantiatedTo(cI.getHoster().getVal()))
+                                    && !(dJ.getHoster().isInstantiated() && !cI.getHoster().canBeInstantiatedTo(dJ.getHoster().getVal()))
                                     ) {
                                 IntDomainVar eq = s.createBooleanVar("eq");
-                                s.post(ReifiedFactory.builder(eq, s.eq(d.getHoster(), c.getHoster()), s));
-                                ChocoUtils.postImplies(s, eq, s.leq(c.getEnd(), d.getStart()));
+                                s.post(ReifiedFactory.builder(eq, s.eq(dJ.getHoster(), cI.getHoster()), s));
+                                ChocoUtils.postImplies(s, eq, s.leq(cI.getEnd(), dJ.getStart()));
                             }
                         }
                     }
