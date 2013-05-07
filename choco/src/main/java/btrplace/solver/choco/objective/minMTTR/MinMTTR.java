@@ -83,8 +83,10 @@ public class MinMTTR implements ReconfigurationObjective {
         //as the risk of cyclic dependencies increase and their is no solution for the moment to detect cycle
         //in the scheduling part
         //Restart limit = 2 * number of VMs in the DC.
-        s.setGeometricRestart(rp.getVMs().length * 2, 1.5d);
-        s.setRestart(true);
+        if (rp.getVMs().length > 0) {
+            s.setGeometricRestart(rp.getVMs().length * 2, 1.5d);
+            s.setRestart(true);
+        }
         injectPlacementHeuristic(rp, cost);
     }
 
