@@ -8,13 +8,13 @@ version ???????????
 - Complete the forgeVM model. It is now required to declare
   a template for the VMs to forge using a "template" attribute
   in the model
-- Fix bugs reported in #5, #10, #13
+- Fix bugs reported in #5, #10, #13, #14
 - Full support VM relocation through a re-instantiation. BtrPlace can
   now infer if live-migration is preferable over re-instantiation.
 - Refactor completely the "satisfaction" process. Now everyting takes place
   inside a SatConstraintChecker.
 - Move most of the interface and abstract classes to the package of their
-  implementation
+  implementations
 
 version 0.28 - 29 Mar 2013
 ----------------------
@@ -151,10 +151,3 @@ inform nodes about additional operations to execute
 
 #### version 0.3 - 08 Feb 2013 ####
 - Synchronize with solver-api
-
-Coming next
-=======================
-
-- JSON serialization for the plan primitives
-- Search heuristic for MinMTTR
-- Partition detection
