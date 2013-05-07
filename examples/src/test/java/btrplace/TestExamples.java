@@ -12,7 +12,7 @@ import org.testng.annotations.Test;
  */
 public class TestExamples {
 
-    @Test
+    @Test(timeOut = 2000)
     public void testGettingStarted() throws Exception {
         Example ex = new GettingStarted();
         Assert.assertTrue("Example " + ex.toString() + " failed", ex.run());

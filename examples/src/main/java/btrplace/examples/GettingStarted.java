@@ -139,7 +139,7 @@ public class GettingStarted implements Example {
         Set<SatConstraint> cstrs = makeConstraints();
 
         ChocoReconfigurationAlgorithm ra = new DefaultChocoReconfigurationAlgorithm();
-        //ra.setVerbosity(3); // Set the debugging flag
+        ra.setVerbosity(3); // Set the debugging flag
         try {
             ReconfigurationPlan plan = ra.solve(origin, cstrs);
             System.out.println("Time-based plan:");
