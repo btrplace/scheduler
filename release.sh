@@ -57,7 +57,7 @@ perform)
     RELEASE_BRANCH="release/${VERSION}"
     # The current tree looks like:
     # * HEAD -> next dev version, it is a detached head due to jenkins git plugin
-    # * (tag ...) -> the tag made by maven release:prepare on the relased version == ${DEV_HEAD}~1
+    # * (tag ...) -> the tag made by maven release:prepare on the released version == ${DEV_HEAD}~1
     # * ($RELEASE_BRANCH) -> the pointer on the released branch that was set by the client with ./release.sh request
     
     # merge the version changes back into develop so that folks are working against the new release
