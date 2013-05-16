@@ -21,9 +21,9 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Root;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
@@ -50,7 +50,7 @@ public class CRootTest implements PremadeElements {
         Model mo = new DefaultModel(map);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.repair(false);
+        cra.doRepair(false);
         cra.labelVariables(true);
         Root r1 = new Root(map.getAllVMs());
         Online n = new Online(map.getAllNodes());

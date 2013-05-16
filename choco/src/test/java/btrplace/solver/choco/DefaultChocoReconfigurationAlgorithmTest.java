@@ -60,8 +60,8 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
         cra.doOptimize(false);
         Assert.assertEquals(cra.doOptimize(), false);
 
-        cra.repair(true);
-        Assert.assertEquals(cra.repair(), true);
+        cra.doRepair(true);
+        Assert.assertEquals(cra.doRepair(), true);
 
         cra.labelVariables(true);
         Assert.assertEquals(cra.areVariablesLabelled(), true);
@@ -159,7 +159,7 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
         Set<SatConstraint> cstrs = new HashSet<SatConstraint>(Arrays.asList(c1, c2));
         Model mo = new DefaultModel(map);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.repair(true);
+        cra.doRepair(true);
         cra.doOptimize(false);
         cra.setObjective(o);
 

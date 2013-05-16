@@ -109,12 +109,12 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     @Override
-    public void repair(boolean b) {
+    public void doRepair(boolean b) {
         repair = b;
     }
 
     @Override
-    public boolean repair() {
+    public boolean doRepair() {
         return repair;
     }
 
