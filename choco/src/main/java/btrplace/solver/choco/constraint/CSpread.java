@@ -91,7 +91,7 @@ public class CSpread implements ChocoSatConstraint {
 
                         //If both are currently hosted on the same node, no need to worry about non-overlapping
                         //between the c and the d-slices as it may create a non-solution
-                        boolean currentlyGathered = cI != null && cJ != null && cJ.getHoster().isInstantiatedTo(dJ.getHoster().getVal());
+                        boolean currentlyGathered = cI != null && cJ != null && cJ.getHoster().isInstantiatedTo(cI.getHoster().getVal());
 
                         if (!currentlyGathered && dI != null && cJ != null) {
                             //No need to place the constraints if the slices do not have a chance to overlap

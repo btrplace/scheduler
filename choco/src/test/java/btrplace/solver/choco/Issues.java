@@ -3,6 +3,10 @@ package btrplace.solver.choco;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.constraint.Fence;
+import btrplace.model.constraint.Offline;
+import btrplace.model.constraint.SatConstraint;
+import btrplace.model.constraint.Spread;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
@@ -19,9 +23,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Unit tests related to the opened issues
@@ -216,6 +218,34 @@ public class Issues implements PremadeElements {
         Assert.assertNotNull(plan);
         System.out.println(plan);
         System.out.println(plan.getResult());
+    }
 
+    /**
+     * Unit test derived from Issue 16.
+     *
+     * @throws SolverException
+     */
+    @Test
+    public void test16b() throws SolverException {
+        Mapping map = new MappingBuilder().on(n1, n2, n3, n4)
+                .run(n1, vm1, vm2)
+                .run(n2, vm3, vm4)
+                .run(n3, vm5, vm6)
+                .build();
+
+        Model model = new DefaultModel(map);
+
+        Set<SatConstraint> ctrsC = new HashSet<SatConstraint>();
+        Set<UUID> vms1 = new HashSet<UUID>(Arrays.asList(vm1, vm3, vm5));
+        Set<UUID> vms2 = new HashSet<UUID>(Arrays.asList(vm2, vm4, vm6));
+
+        ctrsC.add(new Spread(vms1));
+        ctrsC.add(new Spread(vms2));
+        ctrsC.add(new Fence(Collections.singleton(vm3), Collections.singleton(n1)));
+
+        Offline off = new Offline(Collections.singleton(n2));
+        ctrsC.add(off);
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ReconfigurationPlan dp = cra.solve(model, ctrsC);
     }
 }
