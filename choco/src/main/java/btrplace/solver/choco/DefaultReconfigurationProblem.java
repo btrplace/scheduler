@@ -37,6 +37,7 @@ import choco.cp.solver.search.integer.objective.IntObjectiveManager;
 import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.cp.solver.search.set.StaticSetVarOrder;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.IObjectiveManager;
@@ -222,6 +223,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             launchWithAlterer();
         }
 
+        ChocoLogging.flushLogs();
         return makeResultingPlan();
     }
 

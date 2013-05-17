@@ -260,7 +260,7 @@ public class SolvingStatistics {
             b.append("; optimize");
         }
         if (maxDuration > 0) {
-            b.append("; timeout:").append(maxDuration).append("s");
+            b.append("; timeout: ").append(maxDuration).append("s");
         }
         b.append("\nBuilding duration: ").append(coreRPBuildDuration).append("ms (core-RP) + ").append(speRPDuration).append("ms (specialization)");
         b.append("\nAfter ").append(time).append("ms of search");
@@ -285,9 +285,10 @@ public class SolvingStatistics {
                     .append(st.getNbNodes()).append(" node(s), ")
                     .append(st.getNbBacktracks()).append(" backtrack(s)");
             if (st.hasObjective()) {
-                b.append(", obj: ").append(st.getOptValue());
+                b.append(", objective: ").append(st.getOptValue());
             }
             b.append("\n");
+            i++;
         }
         return b.toString();
     }

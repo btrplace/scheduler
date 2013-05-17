@@ -50,6 +50,8 @@ public class MinMTTR implements ReconfigurationObjective {
 
     private List<SConstraint> costConstraints;
 
+    private boolean costActivated = false;
+
     private ReconfigurationProblem rp;
 
     /**
@@ -62,7 +64,7 @@ public class MinMTTR implements ReconfigurationObjective {
     @Override
     public void inject(ReconfigurationProblem rp) throws SolverException {
         this.rp = rp;
-        costConstraints.clear();
+        costActivated = false;
         List<IntDomainVar> mttrs = new ArrayList<>();
         for (ActionModel m : rp.getVMActions()) {
             mttrs.add(m.getEnd());
@@ -72,9 +74,10 @@ public class MinMTTR implements ReconfigurationObjective {
         }
         IntDomainVar[] costs = mttrs.toArray(new IntDomainVar[mttrs.size()]);
         CPSolver s = rp.getSolver();
-        IntDomainVar cost = s.createBoundIntVar(rp.makeVarLabel("globalCost"), 0, Choco.MAX_UPPER_BOUND);
+        IntDomainVar cost = s.createBoundIntVar(rp.makeVarLabel("globalCost" + rp.toString()), 0, Choco.MAX_UPPER_BOUND);
 
         SConstraint costConstraint = s.eq(cost, CPSolver.sum(costs));
+        costConstraints.clear();
         costConstraints.add(costConstraint);
 
         s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
@@ -164,8 +167,6 @@ public class MinMTTR implements ReconfigurationObjective {
     public Set<UUID> getMisPlacedVMs(Model m) {
         return Collections.emptySet();
     }
-
-    private boolean costActivated = false;
 
     /**
      * Post the constraints related to the objective.
