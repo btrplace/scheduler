@@ -74,7 +74,7 @@ public class MinMTTR implements ReconfigurationObjective {
         }
         IntDomainVar[] costs = mttrs.toArray(new IntDomainVar[mttrs.size()]);
         CPSolver s = rp.getSolver();
-        IntDomainVar cost = s.createBoundIntVar(rp.makeVarLabel("globalCost" + rp.toString()), 0, Choco.MAX_UPPER_BOUND);
+        IntDomainVar cost = s.createBoundIntVar(rp.makeVarLabel("globalCost"), 0, Choco.MAX_UPPER_BOUND);
 
         SConstraint costConstraint = s.eq(cost, CPSolver.sum(costs));
         costConstraints.clear();

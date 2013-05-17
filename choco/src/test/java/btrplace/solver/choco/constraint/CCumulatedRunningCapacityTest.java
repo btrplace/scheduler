@@ -21,7 +21,6 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ShutdownVM;
@@ -155,5 +154,23 @@ public class CCumulatedRunningCapacityTest implements PremadeElements {
         Assert.assertTrue(cc.getMisPlacedVMs(mo).isEmpty());
         map.addRunningVM(vm5, n3);
         Assert.assertEquals(cc.getMisPlacedVMs(mo), map.getAllVMs());
+    }
+
+    @Test
+    public void testUnfeasible() throws SolverException {
+
+        Mapping map = new MappingBuilder().on(n1, n2, n3)
+                .run(n1, vm1, vm2)
+                .run(n2, vm3)
+                .run(n3, vm4).build();
+
+        Model model = new DefaultModel(map);
+        Collection<SatConstraint> ctrs = new HashSet<>();
+        ctrs.add(new CumulatedRunningCapacity(map.getAllNodes(), 2));
+
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ReconfigurationPlan plan = cra.solve(model, ctrs);
+        Assert.assertNull(plan);
+
     }
 }

@@ -25,6 +25,7 @@ import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import choco.cp.solver.CPSolver;
+import choco.kernel.solver.constraints.integer.IntExp;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.*;
@@ -72,7 +73,14 @@ public class CCumulatedRunningCapacity implements ChocoSatConstraint {
         for (UUID u : cstr.getInvolvedNodes()) {
             vs.add(rp.getNbRunningVMs()[rp.getNode(u)]);
         }
-        s.post(s.leq(CPSolver.sum(vs.toArray(new IntDomainVar[vs.size()])), cstr.getAmount()));
+        //Try to get a lower bound
+        //basically, we count 1 per VM necessarily in the set of nodes
+        //if involved nodes == all the nodes, then sum == nb of running VMs
+        IntExp on = CPSolver.sum(vs.toArray(new IntDomainVar[vs.size()]));
+        if (cstr.getInvolvedNodes().equals(rp.getSourceModel().getMapping().getAllNodes())) {
+            s.post(s.eq(on, rp.getFutureRunningVMs().size()));
+        }
+        s.post(s.leq(on, cstr.getAmount()));
         return true;
     }
 
