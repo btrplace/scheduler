@@ -1,6 +1,11 @@
 Release notes
 ======================
 
+version ????????
+----------------------
+- Close #16
+- Minor API refactoring
+
 version 0.29 - 07 May 2013
 ----------------------
 - Multiple Bug fixes
