@@ -1,10 +1,7 @@
 package btrplace.json.model;
 
 import btrplace.json.JSONConverterException;
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Running;
 import btrplace.model.constraint.SatConstraint;

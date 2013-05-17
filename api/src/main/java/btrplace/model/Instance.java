@@ -16,9 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.json.model;
+package btrplace.model;
 
-import btrplace.model.Model;
 import btrplace.model.constraint.SatConstraint;
 
 import java.util.ArrayList;

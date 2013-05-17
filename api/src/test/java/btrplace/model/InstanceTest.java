@@ -1,9 +1,5 @@
-package btrplace.json.model;
+package btrplace.model;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Running;
 import btrplace.model.constraint.SatConstraint;
@@ -17,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Unit tests for {@link Instance}.
+ * Unit tests for {@link btrplace.model.Instance}.
  *
  * @author Fabien Hermenier
  */

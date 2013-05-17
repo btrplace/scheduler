@@ -21,12 +21,13 @@ package btrplace.json.model;
 import btrplace.json.JSONConverter;
 import btrplace.json.JSONConverterException;
 import btrplace.json.model.constraint.SatConstraintsConverter;
+import btrplace.model.Instance;
 import btrplace.model.Model;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
 /**
- * A JSON converter for {@link btrplace.json.model.Instance}.
+ * A JSON converter for {@link btrplace.model.Instance}.
  *
  * @author Fabien Hermenier
  */
