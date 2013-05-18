@@ -33,7 +33,7 @@ import net.minidev.json.JSONObject;
  *
  * @author Fabien Hermenier
  */
-public class ModelConverter implements JSONConverter<Model> {
+public class ModelConverter extends JSONConverter<Model> {
 
     private MappingConverter cfgParser;
 

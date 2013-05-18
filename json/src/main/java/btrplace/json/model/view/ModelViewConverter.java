@@ -26,19 +26,19 @@ import btrplace.model.view.ModelView;
  *
  * @author Fabien Hermenier
  */
-public interface ModelViewConverter<E extends ModelView> extends JSONConverter<E> {
+public abstract class ModelViewConverter<E extends ModelView> extends JSONConverter<E> {
 
     /**
      * Get the classname of the view that is supported by the converter.
      *
      * @return The view class
      */
-    Class<E> getSupportedConstraint();
+    public abstract Class<E> getSupportedConstraint();
 
     /**
      * Get the JSON identifier for the view.
      *
      * @return a non-empty string
      */
-    String getJSONId();
+    public abstract String getJSONId();
 }

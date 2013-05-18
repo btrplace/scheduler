@@ -19,7 +19,6 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.JSONUtils;
 import btrplace.model.constraint.SplitAmong;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -47,9 +46,9 @@ public class SplitAmongConverter extends SatConstraintConverter<SplitAmong> {
     @Override
     public SplitAmong fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new SplitAmong(JSONUtils.requiredSets(o, "vms"),
-                JSONUtils.requiredSets(o, "nodes"),
-                JSONUtils.requiredBoolean(o, "continuous"));
+        return new SplitAmong(requiredSets(o, "vms"),
+                requiredSets(o, "nodes"),
+                requiredBoolean(o, "continuous"));
     }
 
     @Override
@@ -59,12 +58,12 @@ public class SplitAmongConverter extends SatConstraintConverter<SplitAmong> {
 
         JSONArray vGroups = new JSONArray();
         for (Set<UUID> grp : o.getGroupsOfVMs()) {
-            vGroups.add(JSONUtils.toJSON(grp));
+            vGroups.add(toJSON(grp));
         }
 
         JSONArray pGroups = new JSONArray();
         for (Set<UUID> grp : o.getGroupsOfNodes()) {
-            pGroups.add(JSONUtils.toJSON(grp));
+            pGroups.add(toJSON(grp));
         }
 
         c.put("vms", vGroups);

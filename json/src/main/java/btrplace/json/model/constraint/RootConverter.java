@@ -19,7 +19,6 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.JSONUtils;
 import btrplace.model.constraint.Root;
 import net.minidev.json.JSONObject;
 
@@ -44,14 +43,14 @@ public class RootConverter extends SatConstraintConverter<Root> {
     @Override
     public Root fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Root(JSONUtils.requiredUUIDs(o, "vms"));
+        return new Root(requiredUUIDs(o, "vms"));
     }
 
     @Override
     public JSONObject toJSON(Root o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", JSONUtils.toJSON(o.getInvolvedVMs()));
+        c.put("vms", toJSON(o.getInvolvedVMs()));
         return c;
     }
 }

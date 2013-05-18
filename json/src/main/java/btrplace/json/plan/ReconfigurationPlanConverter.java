@@ -4,9 +4,9 @@ import btrplace.json.JSONConverter;
 import btrplace.json.JSONConverterException;
 import btrplace.json.model.ModelConverter;
 import btrplace.model.Model;
-import btrplace.plan.event.Action;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.Action;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
@@ -15,7 +15,7 @@ import net.minidev.json.JSONObject;
  *
  * @author Fabien Hermenier
  */
-public class ReconfigurationPlanConverter implements JSONConverter<ReconfigurationPlan> {
+public class ReconfigurationPlanConverter extends JSONConverter<ReconfigurationPlan> {
 
     @Override
     public ReconfigurationPlan fromJSON(JSONObject ob) throws JSONConverterException {

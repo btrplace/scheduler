@@ -20,7 +20,6 @@ package btrplace.json.model.constraint;
 
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.JSONUtils;
 import btrplace.model.constraint.Killed;
 import net.minidev.json.JSONObject;
 
@@ -45,14 +44,14 @@ public class KilledConverter extends SatConstraintConverter<Killed> {
     @Override
     public Killed fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Killed(JSONUtils.requiredUUIDs(o, "vms"));
+        return new Killed(requiredUUIDs(o, "vms"));
     }
 
     @Override
     public JSONObject toJSON(Killed o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", JSONUtils.toJSON(o.getInvolvedVMs()));
+        c.put("vms", toJSON(o.getInvolvedVMs()));
         return c;
     }
 }

@@ -28,7 +28,7 @@ import net.minidev.json.JSONObject;
  *
  * @author Fabien Hermenier
  */
-public abstract class SatConstraintConverter<E extends SatConstraint> implements JSONConverter<E> {
+public abstract class SatConstraintConverter<E extends SatConstraint> extends JSONConverter<E> {
 
     /**
      * Get the name of the constraint that is supported by the converter.

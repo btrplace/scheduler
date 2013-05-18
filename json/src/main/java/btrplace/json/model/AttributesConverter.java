@@ -33,7 +33,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class AttributesConverter implements JSONConverter<Attributes> {
+public class AttributesConverter extends JSONConverter<Attributes> {
 
     @Override
     public Attributes fromJSON(JSONObject o) {

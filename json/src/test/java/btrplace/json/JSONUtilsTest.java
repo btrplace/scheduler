@@ -48,7 +48,7 @@ public class JSONUtilsTest {
         JSONObject o = new JSONObject();
         UUID u = UUID.randomUUID();
         o.put("id", u);
-        Assert.assertEquals(JSONUtils.requiredUUID(o, "id"), u);
+        Assert.assertEquals(JSONConverter.requiredUUID(o, "id"), u);
     }
 
     @DataProvider(name = "getInvalidUUIDs")
@@ -63,31 +63,31 @@ public class JSONUtilsTest {
     public void testInValidRequiredUUID(String storeKey, String readKey, Object o) throws JSONConverterException {
         JSONObject obj = new JSONObject();
         obj.put(storeKey, o);
-        JSONUtils.requiredUUID(obj, readKey);
+        JSONConverter.requiredUUID(obj, readKey);
     }
 
     @Test
     public void testValidRequiredString() throws JSONConverterException {
         JSONObject o = new JSONObject();
         o.put("id", "bar");
-        Assert.assertEquals(JSONUtils.requiredString(o, "id"), "bar");
+        Assert.assertEquals(JSONConverter.requiredString(o, "id"), "bar");
     }
 
     @Test(expectedExceptions = {JSONConverterException.class})
     public void testInValidRequiredString() throws JSONConverterException {
         JSONObject o = new JSONObject();
         o.put("id", "bar");
-        JSONUtils.requiredString(o, "bar");
+        JSONConverter.requiredString(o, "bar");
     }
 
     @Test
     public void testValidRequiredDouble() throws JSONConverterException {
         JSONObject o = new JSONObject();
         o.put("id", 1.3d);
-        Assert.assertEquals(JSONUtils.requiredDouble(o, "id"), 1.3d);
+        Assert.assertEquals(JSONConverter.requiredDouble(o, "id"), 1.3d);
 
         o.put("id", 145);
-        Assert.assertEquals(JSONUtils.requiredDouble(o, "id"), 145d);
+        Assert.assertEquals(JSONConverter.requiredDouble(o, "id"), 145d);
     }
 
     @DataProvider(name = "getInvalidDoubles")
@@ -102,14 +102,14 @@ public class JSONUtilsTest {
     public void testInValidRequiredDoubles(String storeKey, String readKey, Object o) throws JSONConverterException {
         JSONObject obj = new JSONObject();
         obj.put(storeKey, o);
-        JSONUtils.requiredDouble(obj, readKey);
+        JSONConverter.requiredDouble(obj, readKey);
     }
 
     @Test
     public void testValidRequiredLong() throws JSONConverterException {
         JSONObject o = new JSONObject();
         o.put("id", 123553l);
-        Assert.assertEquals(JSONUtils.requiredLong(o, "id"), 123553l);
+        Assert.assertEquals(JSONConverter.requiredLong(o, "id"), 123553l);
     }
 
     @DataProvider(name = "getInvalidLongs")
@@ -126,6 +126,6 @@ public class JSONUtilsTest {
     public void testInValidRequiredLongs(String storeKey, String readKey, Object o) throws JSONConverterException {
         JSONObject obj = new JSONObject();
         obj.put(storeKey, o);
-        JSONUtils.requiredLong(obj, readKey);
+        JSONConverter.requiredLong(obj, readKey);
     }
 }

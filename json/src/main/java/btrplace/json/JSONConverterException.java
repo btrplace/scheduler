@@ -44,4 +44,8 @@ public class JSONConverterException extends Exception {
         super(msg, t);
     }
 
+    public JSONConverterException(Throwable t) {
+        super(t);
+    }
+
 }

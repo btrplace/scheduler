@@ -32,7 +32,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class ModelViewsConverter implements JSONConverter<ModelView> {
+public class ModelViewsConverter extends JSONConverter<ModelView> {
 
     private Map<Class<? extends ModelView>, ModelViewConverter<? extends ModelView>> java2json;
     private Map<String, ModelViewConverter<? extends ModelView>> json2java;

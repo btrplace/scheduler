@@ -32,7 +32,7 @@ import net.minidev.json.JSONObject;
  * @author Fabien Hermenier
  */
 
-public class InstanceConverter implements JSONConverter<Instance> {
+public class InstanceConverter extends JSONConverter<Instance> {
 
     @Override
     public Instance fromJSON(JSONObject in) throws JSONConverterException {
@@ -50,7 +50,7 @@ public class InstanceConverter implements JSONConverter<Instance> {
         SatConstraintsConverter cstrc = new SatConstraintsConverter();
         JSONObject ob = new JSONObject();
         ob.put("model", moc.toJSON(instance.getModel()));
-        ob.put("constraints", cstrc.toJSON(instance.getConstraints()));
+        ob.put("constraints", cstrc.constraintsToJSON(instance.getConstraints()));
         return ob;
     }
 }

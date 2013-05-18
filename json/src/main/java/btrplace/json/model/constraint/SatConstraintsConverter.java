@@ -31,7 +31,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class SatConstraintsConverter implements JSONConverter<SatConstraint> {
+public class SatConstraintsConverter extends JSONConverter<SatConstraint> {
 
     private Map<Class<? extends SatConstraint>, SatConstraintConverter<? extends SatConstraint>> java2json;
     private Map<String, SatConstraintConverter<? extends SatConstraint>> json2java;
@@ -129,7 +129,7 @@ public class SatConstraintsConverter implements JSONConverter<SatConstraint> {
      * @return the resulting array
      * @throws JSONConverterException if an error occurred
      */
-    public JSONArray toJSON(Collection<SatConstraint> cstrs) throws JSONConverterException {
+    public JSONArray constraintsToJSON(Collection<SatConstraint> cstrs) throws JSONConverterException {
         JSONArray arr = new JSONArray();
         for (SatConstraint cstr : cstrs) {
             arr.add(toJSON(cstr));

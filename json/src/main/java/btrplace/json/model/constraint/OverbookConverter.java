@@ -19,7 +19,6 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.JSONUtils;
 import btrplace.model.constraint.Overbook;
 import net.minidev.json.JSONObject;
 
@@ -43,17 +42,17 @@ public class OverbookConverter extends SatConstraintConverter<Overbook> {
     @Override
     public Overbook fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Overbook(JSONUtils.requiredUUIDs(o, "vms"),
-                JSONUtils.requiredString(o, "rcId"),
-                JSONUtils.requiredDouble(o, "ratio"),
-                JSONUtils.requiredBoolean(o, "continuous"));
+        return new Overbook(requiredUUIDs(o, "vms"),
+                requiredString(o, "rcId"),
+                requiredDouble(o, "ratio"),
+                requiredBoolean(o, "continuous"));
     }
 
     @Override
     public JSONObject toJSON(Overbook o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", JSONUtils.toJSON(o.getInvolvedNodes()));
+        c.put("vms", toJSON(o.getInvolvedNodes()));
         c.put("rcId", o.getResource());
         c.put("ratio", o.getRatio());
         c.put("continuous", o.isContinuous());

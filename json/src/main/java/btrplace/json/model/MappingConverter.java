@@ -20,7 +20,6 @@ package btrplace.json.model;
 
 import btrplace.json.JSONConverter;
 import btrplace.json.JSONConverterException;
-import btrplace.json.JSONUtils;
 import btrplace.model.DefaultMapping;
 import btrplace.model.Mapping;
 import net.minidev.json.JSONObject;
@@ -32,19 +31,19 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class MappingConverter implements JSONConverter<Mapping> {
+public class MappingConverter extends JSONConverter<Mapping> {
 
     @Override
     public JSONObject toJSON(Mapping c) {
         JSONObject o = new JSONObject();
-        o.put("offlineNodes", JSONUtils.toJSON(c.getOfflineNodes()));
-        o.put("readyVMs", JSONUtils.toJSON(c.getReadyVMs()));
+        o.put("offlineNodes", toJSON(c.getOfflineNodes()));
+        o.put("readyVMs", toJSON(c.getReadyVMs()));
 
         JSONObject ons = new JSONObject();
         for (UUID n : c.getOnlineNodes()) {
             JSONObject w = new JSONObject();
-            w.put("runningVMs", JSONUtils.toJSON(c.getRunningVMs(n)));
-            w.put("sleepingVMs", JSONUtils.toJSON(c.getSleepingVMs(n)));
+            w.put("runningVMs", toJSON(c.getRunningVMs(n)));
+            w.put("sleepingVMs", toJSON(c.getSleepingVMs(n)));
             ons.put(n.toString(), w);
         }
         o.put("onlineNodes", ons);
@@ -54,10 +53,10 @@ public class MappingConverter implements JSONConverter<Mapping> {
     @Override
     public Mapping fromJSON(JSONObject o) throws JSONConverterException {
         Mapping c = new DefaultMapping();
-        for (UUID u : JSONUtils.requiredUUIDs(o, "offlineNodes")) {
+        for (UUID u : requiredUUIDs(o, "offlineNodes")) {
             c.addOfflineNode(u);
         }
-        for (UUID u : JSONUtils.requiredUUIDs(o, "readyVMs")) {
+        for (UUID u : requiredUUIDs(o, "readyVMs")) {
             c.addReadyVM(u);
         }
         JSONObject ons = (JSONObject) o.get("onlineNodes");
@@ -65,10 +64,10 @@ public class MappingConverter implements JSONConverter<Mapping> {
             UUID u = UUID.fromString((String) k);
             JSONObject on = (JSONObject) ons.get(k);
             c.addOnlineNode(u);
-            for (UUID vmId : JSONUtils.requiredUUIDs(on, "runningVMs")) {
+            for (UUID vmId : requiredUUIDs(on, "runningVMs")) {
                 c.addRunningVM(vmId, u);
             }
-            for (UUID vmId : JSONUtils.requiredUUIDs(on, "sleepingVMs")) {
+            for (UUID vmId : requiredUUIDs(on, "sleepingVMs")) {
                 c.addSleepingVM(vmId, u);
             }
         }

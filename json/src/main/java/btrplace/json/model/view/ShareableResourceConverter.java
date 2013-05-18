@@ -29,7 +29,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class ShareableResourceConverter implements ModelViewConverter<ShareableResource> {
+public class ShareableResourceConverter extends ModelViewConverter<ShareableResource> {
 
     @Override
     public Class<ShareableResource> getSupportedConstraint() {

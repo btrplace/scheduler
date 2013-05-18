@@ -19,7 +19,6 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.JSONUtils;
 import btrplace.model.constraint.Split;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -47,7 +46,7 @@ public class SplitConverter extends SatConstraintConverter<Split> {
     @Override
     public Split fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Split(JSONUtils.requiredSets(o, "vms"), JSONUtils.requiredBoolean(o, "continuous"));
+        return new Split(requiredSets(o, "vms"), requiredBoolean(o, "continuous"));
     }
 
     @Override
@@ -57,7 +56,7 @@ public class SplitConverter extends SatConstraintConverter<Split> {
 
         JSONArray a = new JSONArray();
         for (Set<UUID> grp : o.getSets()) {
-            a.add(JSONUtils.toJSON(grp));
+            a.add(toJSON(grp));
         }
 
         c.put("vms", a);

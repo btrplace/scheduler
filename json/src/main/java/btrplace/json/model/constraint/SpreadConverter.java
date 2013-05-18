@@ -19,7 +19,6 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.JSONUtils;
 import btrplace.model.constraint.Spread;
 import net.minidev.json.JSONObject;
 
@@ -43,14 +42,14 @@ public class SpreadConverter extends SatConstraintConverter<Spread> {
     @Override
     public Spread fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Spread(JSONUtils.requiredUUIDs(o, "vms"), JSONUtils.requiredBoolean(o, "continuous"));
+        return new Spread(requiredUUIDs(o, "vms"), requiredBoolean(o, "continuous"));
     }
 
     @Override
     public JSONObject toJSON(Spread o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", JSONUtils.toJSON(o.getInvolvedVMs()));
+        c.put("vms", toJSON(o.getInvolvedVMs()));
         c.put("continuous", o.isContinuous());
         return c;
     }
