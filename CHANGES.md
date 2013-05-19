@@ -5,6 +5,8 @@ version ????????
 ----------------------
 - Close #16
 - Minor API refactoring
+- Simplify json package
+- New tutorial: 'BasicTuning'
 
 version 0.29 - 07 May 2013
 ----------------------
