@@ -45,7 +45,7 @@ public abstract class JSONConverter<E> {
      * @param a the json array
      * @return the set of UUID
      */
-    public static Set<UUID> UUIDsfromJSON(JSONArray a) {
+    public static Set<UUID> uuidsFromJSON(JSONArray a) {
         Set<UUID> s = new HashSet<>(a.size());
         for (Object o : a) {
             s.add(UUID.fromString((String) o));
@@ -83,7 +83,7 @@ public abstract class JSONConverter<E> {
             throw new JSONConverterException("Set of UUIDs sets expected at key '" + id + "'");
         }
         for (Object obj : (JSONArray) o.get(id)) {
-            res.add(UUIDsfromJSON((JSONArray) obj));
+            res.add(uuidsFromJSON((JSONArray) obj));
         }
         return res;
     }
@@ -102,7 +102,7 @@ public abstract class JSONConverter<E> {
         if (!(x instanceof JSONArray)) {
             throw new JSONConverterException("Set of UUIDs expected at key '" + id + "'");
         }
-        return UUIDsfromJSON((JSONArray) x);
+        return uuidsFromJSON((JSONArray) x);
     }
 
     /**

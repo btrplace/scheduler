@@ -335,8 +335,6 @@ public class CShareableResource implements ChocoModelView {
             Slice dSlice = rp.getVMAction(vm).getDSlice();
             UUID destNode = rp.getNode(dSlice.getHoster().getVal());
 
-            if (!srcMapping.getRunningVMs().contains(vm)) {
-            }
             if (srcMapping.getRunningVMs().contains(vm) && destNode.equals(srcMapping.getVMLocation(vm))) {
                 //Was running and stay on the same node
                 //Check if the VM has been cloned

@@ -27,6 +27,7 @@ import java.util.UUID;
  * {@link SliceBuilder} may be used to ease the creation of Slices.
  *
  * @author Fabien Hermenier
+ * @see {@link SliceUtils} to extract components of Slices.
  */
 public class Slice {
 

@@ -44,6 +44,11 @@ public class JSONConverterException extends Exception {
         super(msg, t);
     }
 
+    /**
+     * Rethrow an existing exception.
+     *
+     * @param t the exception to rethrow
+     */
     public JSONConverterException(Throwable t) {
         super(t);
     }

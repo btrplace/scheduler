@@ -321,7 +321,7 @@ public class ActionConverter extends JSONConverter<Action> implements ActionVisi
      * @return an array containing all the actions converted into JSON strings
      * @throws JSONConverterException if an error occurred during the conversion
      */
-    public JSONArray ActionsToJSON(Collection<Action> actions) throws JSONConverterException {
+    public JSONArray actionsToJSON(Collection<Action> actions) throws JSONConverterException {
         JSONArray arr = new JSONArray();
         for (Action a : actions) {
             arr.add(toJSON(a));

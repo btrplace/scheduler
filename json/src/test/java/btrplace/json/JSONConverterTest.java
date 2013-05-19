@@ -19,29 +19,18 @@
 package btrplace.json;
 
 import junit.framework.Assert;
-import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import net.minidev.json.parser.ParseException;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.util.UUID;
 
 /**
- * Unit tests for {@link JSONUtils}.
+ * Unit tests for {@link JSONConverter}.
  *
  * @author Fabien Hermenier
  */
-public class JSONUtilsTest {
-
-    @Test
-    public void testReadObject() throws ParseException, JSONConverterException {
-        String json = "{\"foo\":\"fooV\",\"bar\":[1,2,3,4,5],\"bool\":false}";
-        JSONObject o = JSONUtils.readObject(json);
-        Assert.assertTrue(o.get("foo") instanceof String);
-        Assert.assertTrue(o.get("bool") instanceof Boolean);
-        Assert.assertTrue(o.get("bar") instanceof JSONArray);
-    }
+public class JSONConverterTest {
 
     @Test
     public void testValidRequiredUUID() throws JSONConverterException {

@@ -22,9 +22,7 @@ import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Unit tests for {@link DefaultAttributes}.
@@ -172,5 +170,17 @@ public class DefaultAttributesTest implements PremadeElements {
         }
         attrs.clear();
         Assert.assertTrue(attrs.getElements().isEmpty());
+    }
+
+    @Test
+    public void testGetKeys() {
+        Attributes attrs = new DefaultAttributes();
+        UUID u = new UUID(0, 1);
+        attrs.put(u, "foo", 1);
+        attrs.put(u, "bar", 1);
+        Set<String> s = attrs.getKeys(u);
+        Assert.assertEquals(s.size(), 2);
+        Assert.assertTrue(s.containsAll(Arrays.asList("foo", "bar")));
+        Assert.assertEquals(attrs.getKeys(new UUID(0, 2)).size(), 0);
     }
 }
