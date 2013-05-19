@@ -20,8 +20,15 @@ package btrplace.model.constraint;
 
 import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.view.ShareableResource;
+import btrplace.plan.DefaultReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.Action;
+import btrplace.plan.event.Allocate;
+import btrplace.plan.event.AllocateEvent;
+import btrplace.plan.event.MigrateVM;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -68,18 +75,37 @@ public class PreserveTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testIsSatisfied() {
-        ShareableResource rc = new ShareableResource("cpu");
-        Model m = new DefaultModel(new DefaultMapping());
+        ShareableResource rc = new ShareableResource("cpu", 3);
+        Mapping map = new DefaultMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addRunningVM(vm1, n1);
+        map.addSleepingVM(vm2, n1);
+        map.addRunningVM(vm3, n1);
+        Model m = new DefaultModel(map);
         m.attach(rc);
         Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         Preserve p = new Preserve(s, "cpu", 3);
         rc.set(vm1, 3);
-        rc.set(vm2, 4);
+        rc.set(vm2, 1); //Not running so we don't care
         rc.set(vm3, 3);
         Assert.assertEquals(true, p.isSatisfied(m));
 
         rc.unset(vm3); //Set to 3 by default
         Assert.assertEquals(true, p.isSatisfied(m));
         Assert.assertEquals(false, new Preserve(s, "mem", 3).isSatisfied(m));
+
+        ReconfigurationPlan plan = new DefaultReconfigurationPlan(m);
+        rc.set(vm3, 1);
+        Assert.assertFalse(p.isSatisfied(plan));
+        plan.add(new Allocate(vm3, n1, "cpu", 7, 5, 7));
+        Assert.assertTrue(p.isSatisfied(plan));
+        rc.set(vm1, 1);
+        AllocateEvent e = new AllocateEvent(vm1, "cpu", 4);
+        Assert.assertFalse(p.isSatisfied(plan));
+        MigrateVM mig = new MigrateVM(vm1, n1, n2, 0, 3);
+        mig.addEvent(Action.Hook.post, e);
+        plan.add(mig);
+        Assert.assertTrue(p.isSatisfied(plan));
     }
 }
