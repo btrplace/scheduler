@@ -189,6 +189,31 @@ public class COverbookTest implements PremadeElements {
         Assert.assertNotNull(p);
     }
 
+    @Test
+    public void testWithFloat() throws SolverException {
+        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).build();
+
+        Model mo = new DefaultModel(map);
+        btrplace.model.view.ShareableResource rc = new ShareableResource("foo");
+        rc.set(n1, 32);
+        rc.set(vm1, 3);
+        rc.set(vm2, 2);
+        mo.attach(rc);
+
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.labelVariables(true);
+        cra.setVerbosity(1);
+        List<SatConstraint> cstrs = new ArrayList<>();
+        cstrs.add(new Online(map.getAllNodes()));
+        Overbook o = new Overbook(map.getAllNodes(), "foo", 1.5);
+        o.setContinuous(false);
+        cstrs.add(o);
+        cstrs.add(new Preserve(Collections.singleton(vm1), "foo", 5));
+        ReconfigurationPlan p = cra.solve(mo, cstrs);
+        Assert.assertNotNull(p);
+        System.out.println(p);
+    }
+
     /**
      * Test with a root VM that has increasing need and another one that prevent it
      * to get the resources immediately

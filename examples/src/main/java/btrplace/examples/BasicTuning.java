@@ -4,6 +4,7 @@ import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.constraint.Overbook;
 import btrplace.model.constraint.Preserve;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.view.ShareableResource;
@@ -48,23 +49,24 @@ public class BasicTuning implements Example {
         //On 10 nodes, the VMs ask now for more bandwidth
         constraints.addAll(getNewBWRequirements(model));
 
+        constraints.add(new Overbook(model.getMapping().getAllNodes(), "mem", 1.5));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
 
         //Customize the estimated duration of actions
         customizeMigrationDuration(cra);
 
         //We want the best possible solution, computed in up to 5 sec.
+        cra.setVerbosity(1);
         cra.doOptimize(true);
-        cra.setTimeLimit(3);
+        cra.setTimeLimit(5);
 
         //We solve without the repair mode
         cra.doRepair(false);
         solve(cra, model, constraints);
 
         //Re-solve using the repair mode to check for the improvement
-        cra.doRepair(true);
-        solve(cra, model, constraints);
-
+        /*cra.doRepair(true);
+        solve(cra, model, constraints);*/
         return true;
     }
 
