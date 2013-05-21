@@ -31,7 +31,7 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.actionModel.VMActionModel;
-import btrplace.solver.choco.chocoUtil.ChocoUtils;
+import btrplace.solver.choco.chocoUtil.MyElement;
 import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.ContradictionException;
@@ -76,6 +76,8 @@ public class CShareableResource implements ChocoModelView {
      */
     public static final double UNCHECKED_RATIO = Double.MAX_VALUE / 100;
 
+    private Map<Integer, Map<Double, int[]>> cache;
+
     /**
      * Make a new mapping.
      *
@@ -83,6 +85,7 @@ public class CShareableResource implements ChocoModelView {
      * @param rc the resource to consider
      */
     public CShareableResource(ReconfigurationProblem rp, ShareableResource rc) {
+        this.cache = new HashMap<>();
         this.rc = rc;
         this.rp = rp;
         this.references = new HashMap<>();
@@ -323,7 +326,6 @@ public class CShareableResource implements ChocoModelView {
                 }
             }
         }
-
         return linkVirtualToPhysicalUsage();
     }
 
@@ -415,7 +417,6 @@ public class CShareableResource implements ChocoModelView {
     }
 
     private boolean linkVirtualToPhysicalUsage(int nIdx) {
-
         double r = ratios[nIdx].getSup();
         if (r == UNCHECKED_RATIO) {
             //Default overbooking ratio is 1.
@@ -429,6 +430,7 @@ public class CShareableResource implements ChocoModelView {
             return false;
         }
 
+
         if (r == 1) {
             solver.post(solver.eq(phyRcUsage[nIdx], virtRcUsage[nIdx]));
             try {
@@ -438,35 +440,45 @@ public class CShareableResource implements ChocoModelView {
                 return false;
             }
         } else {
-            //beware of truncation made by choco: 3 = 7 / 2 while here, 4 pCPU will be used
-            //The hack consists in computing the number of free pCPU
-                /*
-                 maxRaw = ...;
-                maxReal = maxRaw * factor;
-                freeReal = var(0,maxReal)
-                post(eq(freeReal, minus(maxReal,usageReal))
-                freeRaw = div(freeReal,factor);
-                eq(usageRaw, minus(maxRaw,freeRaw)
-                 */
-            //example: 6 pCPU, 7 vCPU, factor= 2
-            //freePCpu = ((2 * 6) - 7) / 2 = 2
-            //usedPCPU = 6 - 2 = 4 \o/
-            int maxRaw = getSourceResource().get(rp.getNode(nIdx));
-            //Truncation, we ignore partial virtual resource so it's correct
-            int maxReal = (int) (maxRaw * r);
-            try {
-                virtRcUsage[nIdx].setSup(maxReal);
-            } catch (ContradictionException ex) {
-                rp.getLogger().error("Unable to restrict the virtual '{}' capacity of {} to {}: {}", getResourceIdentifier(), rp.getNode(nIdx), maxReal, ex.getMessage());
-                return false;
+            int maxPhy = getSourceResource().get(rp.getNode(nIdx));
+            int maxVirt = (int) (maxPhy * r);
+            if (maxVirt != 0) {
+                solver.post(new MyElement(virtRcUsage[nIdx], makeConv(maxVirt, r), phyRcUsage[nIdx], 0, MyElement.Sort.ascending));
+            } else {
+                try {
+                    phyRcUsage[nIdx].setVal(0);
+                } catch (ContradictionException ex) {
+                    rp.getLogger().error("Unable to restrict the physical '{}' capacity of {} to {}: {}", getResourceIdentifier(), rp.getNode(nIdx), maxPhy, ex.getMessage());
+                    return false;
+                }
             }
-            IntDomainVar freeReal = solver.createBoundIntVar(rp.makeVarLabel("free_real('", rp.getNode(nIdx), "')"), 0, maxReal);
-            solver.post(solver.eq(freeReal, CPSolver.minus(maxReal, virtRcUsage[nIdx])));
-            //TODO: check for the correctness of the following truncation
-            IntDomainVar freeRaw = ChocoUtils.div(solver, freeReal, (int) r);
-            solver.post(solver.eq(phyRcUsage[nIdx], CPSolver.minus(maxRaw, freeRaw)));
         }
         return true;
+    }
+
+    /**
+     * Make an array to convert virtual to physical resource usage.
+     *
+     * @param ub the maximum number of virtual resources
+     * @param r  the amount of virtual per physical resource
+     * @return the array of value.
+     */
+    private int[] makeConv(int ub, double r) {
+        if (cache.containsKey(ub)) {
+            int[] c = cache.get(ub).get(r);
+            if (c != null) {
+                return c;
+            }
+        } else {
+            cache.put(ub, new HashMap<Double, int[]>());
+        }
+
+        int[] idx = new int[ub + 1];
+        for (int i = 0; i < idx.length; i++) {
+            idx[i] = (int) (i / r + 0.5);
+        }
+        cache.get(ub).put(r, idx);
+        return idx;
     }
 
     @Override
@@ -475,5 +487,4 @@ public class CShareableResource implements ChocoModelView {
         this.clones.put(vm, clone);
         return true;
     }
-
 }

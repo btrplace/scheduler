@@ -18,11 +18,14 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.model.constraint.*;
 import btrplace.model.view.ShareableResource;
-import btrplace.plan.event.Action;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.Action;
 import btrplace.plan.event.Allocate;
 import btrplace.plan.event.BootVM;
 import btrplace.plan.event.ShutdownVM;
@@ -72,11 +75,10 @@ public class COverbookTest implements PremadeElements {
         c.add(new Online(m.getAllNodes()));
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
+        //cra.setVerbosity(1);
         cra.getSatConstraintMapper().register(new COverbook.Builder());
-        cra.setTimeLimit(-1);
         ReconfigurationPlan p = cra.solve(mo, c);
         Assert.assertNotNull(p);
-        //Assert.assertEquals(SatConstraint.Sat.SATISFIED, o.isSatisfied(p.getResult()));
     }
 
     /**
@@ -187,31 +189,6 @@ public class COverbookTest implements PremadeElements {
         ReconfigurationPlan p = cra.solve(mo, cstrs);
 
         Assert.assertNotNull(p);
-    }
-
-    @Test
-    public void testWithFloat() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).build();
-
-        Model mo = new DefaultModel(map);
-        btrplace.model.view.ShareableResource rc = new ShareableResource("foo");
-        rc.set(n1, 32);
-        rc.set(vm1, 3);
-        rc.set(vm2, 2);
-        mo.attach(rc);
-
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
-        cra.setVerbosity(1);
-        List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.add(new Online(map.getAllNodes()));
-        Overbook o = new Overbook(map.getAllNodes(), "foo", 1.5);
-        o.setContinuous(false);
-        cstrs.add(o);
-        cstrs.add(new Preserve(Collections.singleton(vm1), "foo", 5));
-        ReconfigurationPlan p = cra.solve(mo, cstrs);
-        Assert.assertNotNull(p);
-        System.out.println(p);
     }
 
     /**

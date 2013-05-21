@@ -64,7 +64,6 @@ public class COverbook implements ChocoSatConstraint {
 
         for (UUID u : cstr.getInvolvedNodes()) {
             RealVar v = rcm.getOverbookRatio(rp.getNode(u));
-            v.getSup();
             RealInterval ric = new RealIntervalConstant(v.getInf(), cstr.getRatio());
             try {
                 v.intersect(ric);
