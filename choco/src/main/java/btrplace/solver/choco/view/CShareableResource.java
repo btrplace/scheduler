@@ -31,7 +31,7 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.actionModel.VMActionModel;
-import btrplace.solver.choco.chocoUtil.MyElement;
+import btrplace.solver.choco.chocoUtil.RoundedUpDivision;
 import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.ContradictionException;
@@ -443,7 +443,7 @@ public class CShareableResource implements ChocoModelView {
             int maxPhy = getSourceResource().get(rp.getNode(nIdx));
             int maxVirt = (int) (maxPhy * r);
             if (maxVirt != 0) {
-                solver.post(new MyElement(virtRcUsage[nIdx], makeConv(maxVirt, r), phyRcUsage[nIdx], 0, MyElement.Sort.ascending));
+                solver.post(new RoundedUpDivision(phyRcUsage[nIdx], virtRcUsage[nIdx], r));
             } else {
                 try {
                     phyRcUsage[nIdx].setVal(0);
@@ -454,31 +454,6 @@ public class CShareableResource implements ChocoModelView {
             }
         }
         return true;
-    }
-
-    /**
-     * Make an array to convert virtual to physical resource usage.
-     *
-     * @param ub the maximum number of virtual resources
-     * @param r  the amount of virtual per physical resource
-     * @return the array of value.
-     */
-    private int[] makeConv(int ub, double r) {
-        if (cache.containsKey(ub)) {
-            int[] c = cache.get(ub).get(r);
-            if (c != null) {
-                return c;
-            }
-        } else {
-            cache.put(ub, new HashMap<Double, int[]>());
-        }
-
-        int[] idx = new int[ub + 1];
-        for (int i = 0; i < idx.length; i++) {
-            idx[i] = (int) (i / r + 0.5);
-        }
-        cache.get(ub).put(r, idx);
-        return idx;
     }
 
     @Override

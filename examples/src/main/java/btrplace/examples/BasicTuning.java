@@ -56,7 +56,6 @@ public class BasicTuning implements Example {
         customizeMigrationDuration(cra);
 
         //We want the best possible solution, computed in up to 5 sec.
-        cra.setVerbosity(1);
         cra.doOptimize(true);
         cra.setTimeLimit(5);
 
@@ -65,8 +64,8 @@ public class BasicTuning implements Example {
         solve(cra, model, constraints);
 
         //Re-solve using the repair mode to check for the improvement
-        /*cra.doRepair(true);
-        solve(cra, model, constraints);*/
+        cra.doRepair(true);
+        solve(cra, model, constraints);
         return true;
     }
 

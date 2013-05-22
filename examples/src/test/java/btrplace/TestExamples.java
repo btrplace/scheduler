@@ -23,7 +23,6 @@ public class TestExamples {
     public void testBasicTuning() throws Exception {
         Example ex = new BasicTuning();
         Assert.assertTrue("Example " + ex.toString() + " failed", ex.run());
-        Assert.fail();
     }
 
 }
