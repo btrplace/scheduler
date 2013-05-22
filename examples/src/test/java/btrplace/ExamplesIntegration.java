@@ -11,7 +11,7 @@ import org.testng.annotations.Test;
  *
  * @author Fabien Hermenier
  */
-public class TestExamples {
+public class ExamplesIntegration {
 
     @Test(timeOut = 2000)
     public void testGettingStarted() throws Exception {

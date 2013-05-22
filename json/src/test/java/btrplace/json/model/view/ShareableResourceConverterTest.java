@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.json.model.view.view;
+package btrplace.json.model.view;
 
 import btrplace.json.model.view.ShareableResourceConverter;
 import btrplace.model.view.ShareableResource;
