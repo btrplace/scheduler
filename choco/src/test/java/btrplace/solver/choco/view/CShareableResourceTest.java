@@ -22,18 +22,24 @@ import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.constraint.Online;
+import btrplace.model.constraint.Overbook;
+import btrplace.model.constraint.Preserve;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
-import btrplace.solver.choco.MappingBuilder;
-import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.*;
 import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.test.PremadeElements;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Unit tests for {@link CShareableResource}.
@@ -174,5 +180,29 @@ public class CShareableResourceTest implements PremadeElements {
         rcm.getVMsAllocation()[rp.getVM(vm2)].setInf(4);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNull(p);
+    }
+
+    @Test
+    public void testWithFloat() throws SolverException {
+        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).build();
+
+        Model mo = new DefaultModel(map);
+        btrplace.model.view.ShareableResource rc = new ShareableResource("foo");
+        rc.set(n1, 32);
+        rc.set(vm1, 3);
+        rc.set(vm2, 2);
+        mo.attach(rc);
+
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.labelVariables(true);
+        List<SatConstraint> cstrs = new ArrayList<>();
+        cstrs.add(new Online(map.getAllNodes()));
+        Overbook o = new Overbook(map.getAllNodes(), "foo", 1.5);
+        o.setContinuous(false);
+        cstrs.add(o);
+        cstrs.add(new Preserve(Collections.singleton(vm1), "foo", 5));
+        ReconfigurationPlan p = cra.solve(mo, cstrs);
+        Assert.assertNotNull(p);
+        System.out.println(p);
     }
 }

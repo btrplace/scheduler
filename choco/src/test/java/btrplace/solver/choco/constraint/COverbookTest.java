@@ -18,11 +18,14 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.*;
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.model.constraint.*;
 import btrplace.model.view.ShareableResource;
-import btrplace.plan.event.Action;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.Action;
 import btrplace.plan.event.Allocate;
 import btrplace.plan.event.BootVM;
 import btrplace.plan.event.ShutdownVM;
@@ -72,11 +75,10 @@ public class COverbookTest implements PremadeElements {
         c.add(new Online(m.getAllNodes()));
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
+        //cra.setVerbosity(1);
         cra.getSatConstraintMapper().register(new COverbook.Builder());
-        cra.setTimeLimit(-1);
         ReconfigurationPlan p = cra.solve(mo, c);
         Assert.assertNotNull(p);
-        //Assert.assertEquals(SatConstraint.Sat.SATISFIED, o.isSatisfied(p.getResult()));
     }
 
     /**

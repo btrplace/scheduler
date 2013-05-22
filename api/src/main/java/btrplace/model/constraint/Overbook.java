@@ -35,6 +35,8 @@ import java.util.UUID;
  * by the overbooking factor. The result is then truncated.
  * <p/>
  * The restriction provided by the constraint can be either discrete or continuous.
+ * If the restriction is discrete, then the constraint imposes the restriction
+ * only on the end of the reconfiguration process (the resulting model).
  * If the restriction is continuous, then the constraint imposes the restriction
  * in the source model, during the reconfiguration and at the end.
  *
