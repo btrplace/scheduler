@@ -24,8 +24,8 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
 
     private boolean startingEvent = true;
 
-    private static final TimedBasedActionComparator startsCmp = new TimedBasedActionComparator(true, true);
-    private static final TimedBasedActionComparator endsCmp = new TimedBasedActionComparator(false, true);
+    private static final TimedBasedActionComparator STARTS_CMP = new TimedBasedActionComparator(true, true);
+    private static final TimedBasedActionComparator ENDS_CMP = new TimedBasedActionComparator(false, true);
     private List<SatConstraintChecker> checkers;
 
     /**
@@ -236,8 +236,8 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
         }
 
         if (!p.getActions().isEmpty()) {
-            PriorityQueue<Action> starts = new PriorityQueue<>(p.getActions().size(), startsCmp);
-            PriorityQueue<Action> ends = new PriorityQueue<>(p.getActions().size(), endsCmp);
+            PriorityQueue<Action> starts = new PriorityQueue<>(p.getActions().size(), STARTS_CMP);
+            PriorityQueue<Action> ends = new PriorityQueue<>(p.getActions().size(), ENDS_CMP);
             starts.addAll(p.getActions());
             ends.addAll(p.getActions());
 

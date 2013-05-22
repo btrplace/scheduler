@@ -49,7 +49,6 @@ public class RandomVMPlacement implements ValSelector<IntDomainVar> {
 
     private TIntHashSet[] ranks;
 
-    private String dbgLbl;
 
     /**
      * Make a new heuristic.
@@ -61,7 +60,6 @@ public class RandomVMPlacement implements ValSelector<IntDomainVar> {
      */
     public RandomVMPlacement(String dbgLbl, ReconfigurationProblem rp, Map<IntDomainVar, UUID> pVarMapping, boolean stayFirst) {
         this(rp, pVarMapping, null, stayFirst);
-        this.dbgLbl = dbgLbl;
     }
 
     /**

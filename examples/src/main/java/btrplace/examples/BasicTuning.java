@@ -49,7 +49,10 @@ public class BasicTuning implements Example {
         //On 10 nodes, the VMs ask now for more bandwidth
         constraints.addAll(getNewBWRequirements(model));
 
+        //We allow memory over-commitment with a overbooking ratio of 50%
+        //i.e. 1MB physical RAM for 1.5MB virtual RAM
         constraints.add(new Overbook(model.getMapping().getAllNodes(), "mem", 1.5));
+
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
 
         //Customize the estimated duration of actions

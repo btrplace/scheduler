@@ -3,7 +3,8 @@ Release notes
 
 version ????????
 ----------------------
-- Close #16
+- Bugs fix
+- Close #16, #18
 - Minor API refactoring
 - Simplify json package
 - New tutorial: 'BasicTuning'

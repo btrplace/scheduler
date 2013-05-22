@@ -53,7 +53,7 @@ public class AliasedCumulativesFiltering {
 
     private int[] startupFree;
 
-    public boolean debug = true;
+    private static final boolean debug = true;
 
     private int[] associations;
 

@@ -64,10 +64,8 @@ public class SpreadChecker extends AllowAllConstraintChecker<Spread> {
     }
 
     private void unDenied(UUID vm, UUID n) {
-        if (getConstraint().isContinuous()) {
-            if (getVMs().contains(vm)) {
-                denied.remove(n);
-            }
+        if (getConstraint().isContinuous() && getVMs().contains(vm)) {
+            denied.remove(n);
         }
     }
 

@@ -76,8 +76,6 @@ public class CShareableResource implements ChocoModelView {
      */
     public static final double UNCHECKED_RATIO = Double.MAX_VALUE / 100;
 
-    private Map<Integer, Map<Double, int[]>> cache;
-
     /**
      * Make a new mapping.
      *
@@ -85,7 +83,6 @@ public class CShareableResource implements ChocoModelView {
      * @param rc the resource to consider
      */
     public CShareableResource(ReconfigurationProblem rp, ShareableResource rc) {
-        this.cache = new HashMap<>();
         this.rc = rc;
         this.rp = rp;
         this.references = new HashMap<>();

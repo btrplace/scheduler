@@ -41,12 +41,7 @@ public class CumulatedRunningCapacityChecker extends AllowAllConstraintChecker<C
     }
 
     private boolean arrive(UUID n) {
-        if (getConstraint().isContinuous() && getNodes().contains(n)) {
-            if (usage++ == qty) {
-                return false;
-            }
-        }
-        return true;
+        return !(getConstraint().isContinuous() && getNodes().contains(n) && usage++ == qty);
     }
 
     @Override
