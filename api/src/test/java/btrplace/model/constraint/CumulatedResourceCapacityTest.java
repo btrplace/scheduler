@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -25,8 +24,7 @@ import btrplace.model.Model;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.event.Allocate;
-import btrplace.plan.event.MigrateVM;
+import btrplace.plan.event.*;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -116,23 +114,29 @@ public class CumulatedResourceCapacityTest implements PremadeElements {
         map.addRunningVM(vm2, n1);
         map.addRunningVM(vm3, n2);
         map.addRunningVM(vm4, n3);
-
+        map.addReadyVM(vm5);
         Model mo = new DefaultModel(map);
         ShareableResource rc = new ShareableResource("foo", 1);
-        rc.set(vm2, 2);
         mo.attach(rc);
-        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
-        CumulatedResourceCapacity cc = new CumulatedResourceCapacity(nodes, "foo", 4);
 
+        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
+        CumulatedResourceCapacity cc = new CumulatedResourceCapacity(nodes, "foo", 4, true);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(cc.isSatisfied(plan), true);
-        plan.add(new MigrateVM(vm4, n3, n2, 1, 2));
-        Assert.assertEquals(cc.isSatisfied(plan), false);
-        plan.add(new MigrateVM(vm1, n1, n3, 0, 1));
+        //3/4
+        MigrateVM m = new MigrateVM(vm4, n3, n2, 0, 1);
+        m.addEvent(Action.Hook.post, new AllocateEvent(vm4, "foo", 2));
+        plan.add(m);
+        //5/4
+        plan.add(new ShutdownVM(vm3, n2, 1, 2));
+        //4/4
+        plan.add(new BootVM(vm5, n3, 2, 3));
+        //4/4
+        plan.add(new Allocate(vm2, n1, "foo", 2, 2, 3));
+        //5/4
+        plan.add(new MigrateVM(vm1, n1, n3, 3, 4));
+        System.out.println(plan);
         Assert.assertEquals(cc.isSatisfied(plan), true);
-        plan.add(new Allocate(vm4, n2, "foo", 2, 5, 6));
-        Assert.assertEquals(cc.isSatisfied(plan), false);
-        plan.add(new Allocate(vm2, n1, "foo", 1, 4, 5));
-        Assert.assertEquals(cc.isSatisfied(plan), true);
+
     }
 }
