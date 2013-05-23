@@ -23,10 +23,7 @@ import btrplace.model.Model;
 import btrplace.model.view.ModelView;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.event.Action;
-import btrplace.plan.event.Allocate;
-import btrplace.plan.event.AllocateEvent;
-import btrplace.plan.event.RunningVMPlacement;
+import btrplace.plan.event.*;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
@@ -345,7 +342,14 @@ public class CShareableResource implements ChocoModelView {
                     if (a instanceof RunningVMPlacement) {
                         RunningVMPlacement tmp = (RunningVMPlacement) a;
                         if (tmp.getVM().equals(dVM)) {
-                            insertAllocateEvent(a, dVM);
+                            if (a instanceof MigrateVM) {
+                                //For a migrated VM, we allocate once the migration over
+                                insertAllocateEvent(a, Action.Hook.post, dVM);
+                            } else {
+                                //Resume or Boot VM
+                                //As the VM was not running, we pre-allocate
+                                insertAllocateEvent(a, Action.Hook.pre, dVM);
+                            }
                             break;
                         }
                     }
@@ -355,7 +359,7 @@ public class CShareableResource implements ChocoModelView {
         return true;
     }
 
-    private void insertAllocateEvent(Action a, UUID vm) {
+    private void insertAllocateEvent(Action a, Action.Hook h, UUID vm) {
         int prev = 0;
         UUID sVM = references.containsKey(vm) ? references.get(vm) : vm;
         if (rc.defined(sVM)) {
@@ -368,7 +372,7 @@ public class CShareableResource implements ChocoModelView {
         }
         if (prev != now) {
             AllocateEvent ev = new AllocateEvent(vm, getResourceIdentifier(), now);
-            a.addEvent(Action.Hook.pre, ev);
+            a.addEvent(h, ev);
         }
     }
 

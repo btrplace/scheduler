@@ -37,6 +37,10 @@ public class ActionConverter extends JSONConverter<Action> implements ActionVisi
      */
     public static final String ACTION_ID_LABEL = "id";
 
+    public static final String VM_LOCATION_LABEL = "location";
+
+    public static final String VM_DESTINATION_LABEL = "destination";
+
     @Override
     public Action fromJSON(JSONObject in) throws JSONConverterException {
         String id = in.get(ACTION_ID_LABEL).toString();
@@ -133,13 +137,13 @@ public class ActionConverter extends JSONConverter<Action> implements ActionVisi
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "shutdownVM");
         o.put(VM_LABEL, a.getVM().toString());
-        o.put("location", a.getNode().toString());
+        o.put(VM_LOCATION_LABEL, a.getNode().toString());
         return o;
     }
 
     private ShutdownVM shutdownVMFromJSON(JSONObject in) throws JSONConverterException {
         return new ShutdownVM(requiredUUID(in, VM_LABEL),
-                requiredUUID(in, "location"),
+                requiredUUID(in, VM_LOCATION_LABEL),
                 (int) requiredLong(in, START_LABEL),
                 (int) requiredLong(in, END_LABEL));
     }
@@ -177,16 +181,16 @@ public class ActionConverter extends JSONConverter<Action> implements ActionVisi
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "migrateVM");
         o.put(VM_LABEL, a.getVM().toString());
-        o.put("destination", a.getDestinationNode().toString());
-        o.put("location", a.getSourceNode().toString());
+        o.put(VM_DESTINATION_LABEL, a.getDestinationNode().toString());
+        o.put(VM_LOCATION_LABEL, a.getSourceNode().toString());
         return o;
     }
 
 
     private MigrateVM migrateVMFromJSON(JSONObject in) throws JSONConverterException {
         return new MigrateVM(requiredUUID(in, VM_LABEL),
-                requiredUUID(in, "location"),
-                requiredUUID(in, "destination"),
+                requiredUUID(in, VM_LOCATION_LABEL),
+                requiredUUID(in, VM_DESTINATION_LABEL),
                 (int) requiredLong(in, START_LABEL),
                 (int) requiredLong(in, END_LABEL));
     }
@@ -196,15 +200,15 @@ public class ActionConverter extends JSONConverter<Action> implements ActionVisi
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "suspendVM");
         o.put(VM_LABEL, a.getVM().toString());
-        o.put("destination", a.getDestinationNode().toString());
-        o.put("location", a.getSourceNode().toString());
+        o.put(VM_DESTINATION_LABEL, a.getDestinationNode().toString());
+        o.put(VM_LOCATION_LABEL, a.getSourceNode().toString());
         return o;
     }
 
     private SuspendVM suspendVMFromJSON(JSONObject in) throws JSONConverterException {
         return new SuspendVM(requiredUUID(in, VM_LABEL),
-                requiredUUID(in, "location"),
-                requiredUUID(in, "destination"),
+                requiredUUID(in, VM_LOCATION_LABEL),
+                requiredUUID(in, VM_DESTINATION_LABEL),
                 (int) requiredLong(in, START_LABEL),
                 (int) requiredLong(in, END_LABEL));
     }
@@ -214,15 +218,15 @@ public class ActionConverter extends JSONConverter<Action> implements ActionVisi
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "resumeVM");
         o.put(VM_LABEL, a.getVM().toString());
-        o.put("destination", a.getDestinationNode().toString());
-        o.put("location", a.getSourceNode().toString());
+        o.put(VM_DESTINATION_LABEL, a.getDestinationNode().toString());
+        o.put(VM_LOCATION_LABEL, a.getSourceNode().toString());
         return o;
     }
 
     private ResumeVM resumeVMFromJSON(JSONObject in) throws JSONConverterException {
         return new ResumeVM(requiredUUID(in, VM_LABEL),
-                requiredUUID(in, "location"),
-                requiredUUID(in, "destination"),
+                requiredUUID(in, VM_LOCATION_LABEL),
+                requiredUUID(in, VM_DESTINATION_LABEL),
                 (int) requiredLong(in, START_LABEL),
                 (int) requiredLong(in, END_LABEL));
     }
@@ -232,13 +236,13 @@ public class ActionConverter extends JSONConverter<Action> implements ActionVisi
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "killVM");
         o.put(VM_LABEL, a.getVM().toString());
-        o.put("location", a.getNode().toString());
+        o.put(VM_LOCATION_LABEL, a.getNode().toString());
         return o;
     }
 
     private KillVM killVMFromJSON(JSONObject in) throws JSONConverterException {
         return new KillVM(requiredUUID(in, VM_LABEL),
-                requiredUUID(in, "location"),
+                requiredUUID(in, VM_LOCATION_LABEL),
                 (int) requiredLong(in, START_LABEL),
                 (int) requiredLong(in, END_LABEL));
 
@@ -266,13 +270,13 @@ public class ActionConverter extends JSONConverter<Action> implements ActionVisi
         o.put(VM_LABEL, a.getVM());
         o.put("rc", a.getResourceId());
         o.put("qty", a.getAmount());
-        o.put("location", a.getHost().toString());
+        o.put(VM_LOCATION_LABEL, a.getHost().toString());
         return o;
     }
 
     private Allocate allocateFromJSON(JSONObject in) throws JSONConverterException {
         return new Allocate(requiredUUID(in, VM_LABEL),
-                requiredUUID(in, "location"),
+                requiredUUID(in, VM_LOCATION_LABEL),
                 requiredString(in, "rc"),
                 (int) requiredLong(in, "qty"),
                 (int) requiredLong(in, START_LABEL),
