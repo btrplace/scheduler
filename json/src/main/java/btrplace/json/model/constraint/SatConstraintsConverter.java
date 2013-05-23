@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -23,7 +22,12 @@ import btrplace.json.JSONConverterException;
 import btrplace.model.constraint.SatConstraint;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.*;
 
 /**
@@ -150,5 +154,41 @@ public class SatConstraintsConverter extends JSONConverter<SatConstraint> {
             cstrs.add(fromJSON((JSONObject) o));
         }
         return cstrs;
+    }
+
+    /**
+     * Extract a list of constraints from a array of JSON-formatted constraints stored in a file.
+     *
+     * @param path the file path
+     * @return the resulting object
+     * @throws IOException            if an error occurred while reading the stream
+     * @throws JSONConverterException if the stream cannot be parsed
+     */
+    public List<SatConstraint> constraintsFromJSONFile(String path) throws IOException, JSONConverterException {
+        return constraintsFromJSON(new FileReader(path));
+    }
+
+    /**
+     * Extract a list of constraints from a array of JSON-formatted constraints provided by a stream.
+     * The stream is closed afterward
+     *
+     * @param r the stream to read.
+     * @return the resulting JSONObject
+     * @throws IOException            if an error occurred while reading the stream
+     * @throws JSONConverterException if the stream cannot be parsed
+     */
+    public List<SatConstraint> constraintsFromJSON(Reader r) throws IOException, JSONConverterException {
+        try {
+            JSONParser p = new JSONParser(JSONParser.MODE_RFC4627);
+            Object o = p.parse(r);
+            if (!(o instanceof JSONArray)) {
+                throw new JSONConverterException("Unable to parse an array of JSON formatted constraints");
+            }
+            return fromJSON((JSONArray) o);
+        } catch (ParseException ex) {
+            throw new JSONConverterException(ex);
+        } finally {
+            r.close();
+        }
     }
 }

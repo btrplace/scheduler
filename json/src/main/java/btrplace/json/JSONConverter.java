@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -221,8 +220,7 @@ public abstract class JSONConverter<E> {
     public abstract JSONObject toJSON(E e) throws JSONConverterException;
 
     /**
-     * Extract an object from a JSON message in a file..
-     * The stream is closed afterward
+     * Extract an object from a JSON object stored in a file.
      *
      * @param path the file path
      * @return the resulting object
@@ -234,7 +232,7 @@ public abstract class JSONConverter<E> {
     }
 
     /**
-     * Extract one JSON object from a stream.
+     * Extract an object from a JSON object available on a stream.
      * The stream is closed afterward
      *
      * @param r the stream to read
