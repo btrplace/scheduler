@@ -25,6 +25,7 @@ import btrplace.model.Model;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootVM;
+import btrplace.plan.event.MigrateVM;
 import btrplace.plan.event.ShutdownVM;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
@@ -72,11 +73,13 @@ public class QuarantineTest implements PremadeElements {
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
+        map.addOnlineNode(n3);
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n2);
         map.addReadyVM(vm3);
+        map.addRunningVM(vm4, n3);
 
-        Quarantine q = new Quarantine(map.getOnlineNodes());
+        Quarantine q = new Quarantine(new HashSet<>(Arrays.asList(n1, n2)));
 
         Model mo = new DefaultModel(map);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
@@ -86,5 +89,17 @@ public class QuarantineTest implements PremadeElements {
 
         plan.add(new BootVM(vm3, n1, 0, 1));
         Assert.assertEquals(q.isSatisfied(plan), false);
+
+        plan = new DefaultReconfigurationPlan(mo);
+        plan.add(new BootVM(vm3, n3, 0, 1));
+        Assert.assertEquals(q.isSatisfied(plan), true);
+        plan.add(new MigrateVM(vm4, n3, n2, 0, 1));
+        Assert.assertEquals(q.isSatisfied(plan), false);
+
+        plan = new DefaultReconfigurationPlan(mo);
+        plan.add(new MigrateVM(vm2, n2, n1, 0, 1));
+        Assert.assertEquals(q.isSatisfied(plan), false);
+
+
     }
 }

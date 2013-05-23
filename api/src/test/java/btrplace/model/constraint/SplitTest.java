@@ -83,7 +83,6 @@ public class SplitTest implements PremadeElements {
         map.addOnlineNode(n2);
         map.addOnlineNode(n3);
 
-
         Set<UUID> s1 = new HashSet<>(Arrays.asList(vm1, vm2));
         Set<UUID> s2 = new HashSet<>(Arrays.asList(vm3, vm4));
         Set<UUID> s3 = Collections.singleton(vm5);
@@ -96,11 +95,11 @@ public class SplitTest implements PremadeElements {
 
         Split sp = new Split(args);
         Model mo = new DefaultModel(map);
-        Assert.assertEquals(true, sp.isSatisfied(mo));
+        Assert.assertEquals(sp.isSatisfied(mo), true);
         map.addRunningVM(vm3, n3);
-        Assert.assertEquals(true, sp.isSatisfied(mo));
+        Assert.assertEquals(sp.isSatisfied(mo), true);
         map.addRunningVM(vm3, n1);
-        Assert.assertEquals(false, sp.isSatisfied(mo));
+        Assert.assertEquals(sp.isSatisfied(mo), false);
     }
 
     @Test
@@ -120,7 +119,7 @@ public class SplitTest implements PremadeElements {
         map.addRunningVM(vm3, n2);
         map.addRunningVM(vm4, n2);
 
-        Split sp = new Split(args);
+        Split sp = new Split(args, true);
         Model mo = new DefaultModel(map);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(sp.isSatisfied(plan), true);
@@ -128,13 +127,20 @@ public class SplitTest implements PremadeElements {
         Assert.assertEquals(sp.isSatisfied(plan), false);
 
         plan.add(new MigrateVM(vm3, n1, n2, 0, 1));
+        Assert.assertEquals(sp.isSatisfied(plan), false); //False cause there is the initial violation
+        sp.setContinuous(false);
         Assert.assertEquals(sp.isSatisfied(plan), true);
+
+        sp.setContinuous(true);
         //Temporary overlap
         plan.add(new MigrateVM(vm3, n2, n1, 5, 6));
+        plan.add(new MigrateVM(vm3, n1, n2, 6, 7));
         Assert.assertEquals(sp.isSatisfied(plan), false);
+
         //Liberate n1 from vm1 and vm2 before
         plan.add(new SuspendVM(vm1, n1, n1, 2, 3));
         plan.add(new ShutdownVM(vm2, n1, 2, 3));
+        sp.setContinuous(false);
         Assert.assertEquals(sp.isSatisfied(plan), true);
     }
 }

@@ -1,10 +1,15 @@
 package btrplace.model.constraint.checker;
 
+import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.constraint.Split;
+import btrplace.plan.event.RunningVMPlacement;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Checker for the {@link btrplace.model.constraint.Split} constraint
@@ -14,7 +19,19 @@ import java.util.*;
  */
 public class SplitChecker extends AllowAllConstraintChecker<Split> {
 
-    private Collection<Set<UUID>> sets;
+    /**
+     * The group of VMs.
+     */
+    private List<Set<UUID>> vGroups;
+
+    /**
+     * The group of nodes associated to each of vGroup.
+     */
+    private List<Set<UUID>> pGroups;
+
+    private Mapping curMapping;
+
+    private Model mockModel;
 
     /**
      * Make a new checker.
@@ -23,31 +40,51 @@ public class SplitChecker extends AllowAllConstraintChecker<Split> {
      */
     public SplitChecker(Split s) {
         super(s);
-        sets = s.getSets();
+        vGroups = new ArrayList<>(s.getSets());
+        for (Set<UUID> set : vGroups) {
+            track(set);
+        }
     }
 
     @Override
     public boolean endsWith(Model mo) {
-        Mapping m = mo.getMapping();
-        //The pgroups that are used:
-        List<Set<UUID>> used = new ArrayList<>(sets.size());
-        for (Set<UUID> vgrp : sets) {
-            Set<UUID> myGroup = new HashSet<>();
+        //Catch the booked nodes for each set
+        curMapping = mo.getMapping().clone();
+        mockModel = new DefaultModel(curMapping);
+        return checkModel();
+    }
 
-            //Get the servers used by this group of VMs
-            for (UUID vmId : vgrp) {
-                if (m.getRunningVMs().contains(vmId)) {
-                    UUID nId = m.getVMLocation(vmId);
-                    //Is this server inside another group ?
-                    for (Set<UUID> pGroup : used) {
-                        if (pGroup.contains(nId)) {
+    @Override
+    public boolean startRunningVMPlacement(RunningVMPlacement a) {
+        if (getConstraint().isContinuous() && getVMs().contains(a.getVM())) {
+            a.apply(mockModel);
+            return checkModel();
+        }
+        return true;
+    }
+
+    private boolean checkModel() {
+        for (Set<UUID> vGroup : vGroups) {
+            for (UUID vmId : vGroup) {
+                if (curMapping.getRunningVMs().contains(vmId)) {
+                    //Get the hosting server
+                    //Check if only hosts VMs in its group
+                    UUID nId = curMapping.getVMLocation(vmId);
+                    for (UUID vm : curMapping.getRunningVMs(nId)) {
+                        if (getVMs().contains(vm) && !vGroup.contains(vm)) {
                             return false;
                         }
                     }
-                    myGroup.add(nId);
                 }
             }
-            used.add(myGroup);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean startsWith(Model mo) {
+        if (getConstraint().isContinuous()) {
+            return endsWith(mo);
         }
         return true;
     }
