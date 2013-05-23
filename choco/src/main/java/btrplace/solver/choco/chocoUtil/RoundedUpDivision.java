@@ -13,7 +13,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * In practice, the constraint maintains:
  * <ul>
  * <li>{@code a = Math.ceil(b / q)}</li>
- * <li>{@code b = (a - 1 * q) % 1 == 0 ? [(a - 1)*q + 1; Math.floor(a * q)] : [Math.ceil((a -1)*q); Math.floor(a * q)]}</li>
+ * <li>{@code b = ((a - 1 )* q) % 1 == 0 ? [(a - 1)*q + 1; Math.floor(a * q)] : [Math.ceil((a -1)*q); Math.floor(a * q)]}</li>
  * </ul>
  *
  * @author Fabien Hermenier

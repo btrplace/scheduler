@@ -31,7 +31,7 @@ import java.util.*;
  * only on a given model.
  * <p/>
  * When the restriction is continuous, the constraint ensures a VM can not be set running
- * on a node that is hosting VMs from another group.
+ * on a node that is hosting VMs from another group, even temporary.
  *
  * @author Fabien Hermenier
  */
