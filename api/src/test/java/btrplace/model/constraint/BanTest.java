@@ -22,6 +22,9 @@ import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.plan.DefaultReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.MigrateVM;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -72,6 +75,12 @@ public class BanTest implements PremadeElements {
         Assert.assertEquals(b.isSatisfied(m), true);
         map.addRunningVM(vm3, n1);
         Assert.assertEquals(b.isSatisfied(m), false);
+
+        ReconfigurationPlan plan = new DefaultReconfigurationPlan(m);
+        plan.add(new MigrateVM(vm1, n1, n2, 0, 3));
+        plan.add(new MigrateVM(vm1, n2, n1, 3, 6));
+        plan.add(new MigrateVM(vm2, n2, n3, 3, 6));
+        Assert.assertEquals(b.isSatisfied(plan), false);
     }
 
     @Test
