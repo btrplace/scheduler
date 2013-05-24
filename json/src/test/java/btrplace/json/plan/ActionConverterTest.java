@@ -1,12 +1,29 @@
+/*
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ *
+ * This file is part of btrplace.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.json.plan;
 
 import btrplace.json.JSONConverterException;
-import btrplace.plan.event.Action;
 import btrplace.plan.event.*;
 import btrplace.test.PremadeElements;
-import net.minidev.json.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.io.IOException;
 
 /**
  * Unit tests for {@link ActionConverter}.
@@ -16,97 +33,96 @@ import org.testng.annotations.Test;
 public class ActionConverterTest implements PremadeElements {
 
     @Test
-    public void testMigrate() throws JSONConverterException {
+    public void testMigrate() throws JSONConverterException, IOException {
         MigrateVM a = new MigrateVM(vm1, n1, n2, 3, 5);
         ActionConverter ac = new ActionConverter();
-        JSONObject o = ac.toJSON(a);
+        String o = ac.toJSONString(a);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
 
     @Test
-    public void testBootVM() throws JSONConverterException {
+    public void testBootVM() throws JSONConverterException, IOException {
         BootVM a = new BootVM(vm1, n1, 3, 5);
         ActionConverter ac = new ActionConverter();
-        JSONObject o = ac.toJSON(a);
+        String o = ac.toJSONString(a);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
 
     @Test
-    public void testKillVM() throws JSONConverterException {
+    public void testKillVM() throws JSONConverterException, IOException {
         KillVM a = new KillVM(vm1, n1, 3, 5);
         ActionConverter ac = new ActionConverter();
-        JSONObject o = ac.toJSON(a);
+        String o = ac.toJSONString(a);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
 
     @Test
-    public void testAllocate() throws JSONConverterException {
+    public void testAllocate() throws JSONConverterException, IOException {
         Allocate a = new Allocate(vm1, n1, "foo", 4, 3, 5);
         ActionConverter ac = new ActionConverter();
-        JSONObject o = ac.toJSON(a);
+        String o = ac.toJSONString(a);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
 
 
     @Test
-    public void testSuspendVM() throws JSONConverterException {
+    public void testSuspendVM() throws JSONConverterException, IOException {
         SuspendVM a = new SuspendVM(vm1, n1, n2, 3, 5);
         ActionConverter ac = new ActionConverter();
-        JSONObject o = ac.toJSON(a);
+        String o = ac.toJSONString(a);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
 
     @Test
-    public void testResumeVM() throws JSONConverterException {
+    public void testResumeVM() throws JSONConverterException, IOException {
         ResumeVM a = new ResumeVM(vm1, n1, n2, 3, 5);
         ActionConverter ac = new ActionConverter();
-        JSONObject o = ac.toJSON(a);
+        String o = ac.toJSONString(a);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
 
 
     @Test
-    public void testForgeVM() throws JSONConverterException {
+    public void testForgeVM() throws JSONConverterException, IOException {
         ForgeVM a = new ForgeVM(vm1, 3, 5);
         ActionConverter ac = new ActionConverter();
-        JSONObject o = ac.toJSON(a);
+        String o = ac.toJSONString(a);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
 
 
     @Test
-    public void testShutdownVM() throws JSONConverterException {
+    public void testShutdownVM() throws JSONConverterException, IOException {
         ShutdownVM a = new ShutdownVM(vm1, n1, 3, 5);
         ActionConverter ac = new ActionConverter();
-        JSONObject o = ac.toJSON(a);
+        String o = ac.toJSONString(a);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
 
     @Test
-    public void testShutdownNode() throws JSONConverterException {
+    public void testShutdownNode() throws JSONConverterException, IOException {
         ShutdownNode a = new ShutdownNode(n1, 3, 5);
         ActionConverter ac = new ActionConverter();
-        JSONObject o = ac.toJSON(a);
+        String o = ac.toJSONString(a);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
 
     @Test
-    public void testBootNode() throws JSONConverterException {
+    public void testBootNode() throws JSONConverterException, IOException {
         BootNode a = new BootNode(n1, 3, 5);
         ActionConverter ac = new ActionConverter();
-        JSONObject o = ac.toJSON(a);
+        String o = ac.toJSONString(a);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
 
     @Test(dependsOnMethods = "testBootNode")
-    public void testEvents() throws JSONConverterException {
+    public void testEvents() throws JSONConverterException, IOException {
         BootNode a = new BootNode(n1, 3, 5);
         a.addEvent(Action.Hook.pre, new AllocateEvent(vm1, "foo", 3));
         a.addEvent(Action.Hook.post, new AllocateEvent(vm2, "bar", 5));
         a.addEvent(Action.Hook.post, new AllocateEvent(vm3, "baz", 2));
         ActionConverter ac = new ActionConverter();
-        JSONObject o = ac.toJSON(a);
-        System.out.println(a + "\n" + ac.fromJSON(o));
+        String o = ac.toJSONString(a);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
 
