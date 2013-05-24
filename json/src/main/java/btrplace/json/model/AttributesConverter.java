@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +17,7 @@
 
 package btrplace.json.model;
 
-import btrplace.json.JSONConverter;
+import btrplace.json.AbstractJSONObjectConverter;
 import btrplace.model.Attributes;
 import btrplace.model.DefaultAttributes;
 import net.minidev.json.JSONObject;
@@ -33,7 +32,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class AttributesConverter extends JSONConverter<Attributes> {
+public class AttributesConverter extends AbstractJSONObjectConverter<Attributes> {
 
     @Override
     public Attributes fromJSON(JSONObject o) {

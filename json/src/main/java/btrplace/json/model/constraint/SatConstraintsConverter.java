@@ -17,7 +17,8 @@
 
 package btrplace.json.model.constraint;
 
-import btrplace.json.JSONConverter;
+import btrplace.json.AbstractJSONObjectConverter;
+import btrplace.json.JSONArrayConverter;
 import btrplace.json.JSONConverterException;
 import btrplace.model.constraint.SatConstraint;
 import net.minidev.json.JSONArray;
@@ -25,9 +26,7 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -35,7 +34,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class SatConstraintsConverter extends JSONConverter<SatConstraint> {
+public class SatConstraintsConverter extends AbstractJSONObjectConverter<SatConstraint> implements JSONArrayConverter<SatConstraint> {
 
     private Map<Class<? extends SatConstraint>, SatConstraintConverter<? extends SatConstraint>> java2json;
     private Map<String, SatConstraintConverter<? extends SatConstraint>> json2java;
@@ -126,69 +125,70 @@ public class SatConstraintsConverter extends JSONConverter<SatConstraint> {
         return c.toJSON(o);
     }
 
-    /**
-     * Convert a collection of constraint to a JSON array.
-     *
-     * @param cstrs the constraint to convert
-     * @return the resulting array
-     * @throws JSONConverterException if an error occurred
-     */
-    public JSONArray constraintsToJSON(Collection<SatConstraint> cstrs) throws JSONConverterException {
+    @Override
+    public List<SatConstraint> listFromJSON(JSONArray in) throws JSONConverterException {
+        List<SatConstraint> l = new ArrayList<>(in.size());
+        for (Object o : in) {
+            if (!(o instanceof JSONObject)) {
+                throw new JSONConverterException("Expected an array of JSONObject but got an array of " + o.getClass().getName());
+            }
+            l.add(fromJSON((JSONObject) o));
+        }
+        return l;
+    }
+
+    @Override
+    public JSONArray toJSON(Collection<SatConstraint> e) throws JSONConverterException {
         JSONArray arr = new JSONArray();
-        for (SatConstraint cstr : cstrs) {
+        for (SatConstraint cstr : e) {
             arr.add(toJSON(cstr));
         }
         return arr;
     }
 
-    /**
-     * Convert a JSON array of constraint to a list of constraints.
-     *
-     * @param arr the array to browse
-     * @return the resulting list of constraints
-     * @throws JSONConverterException if an error occurred
-     */
-    public List<SatConstraint> fromJSON(JSONArray arr) throws JSONConverterException {
-        List<SatConstraint> cstrs = new ArrayList<>(arr.size());
-        for (Object o : arr) {
-            cstrs.add(fromJSON((JSONObject) o));
+    @Override
+    public List<SatConstraint> listFromJSON(File path) throws IOException, JSONConverterException {
+        try (BufferedReader in = new BufferedReader(new FileReader(path))) {
+            return listFromJSON(in);
         }
-        return cstrs;
+
     }
 
-    /**
-     * Extract a list of constraints from a array of JSON-formatted constraints stored in a file.
-     *
-     * @param path the file path
-     * @return the resulting object
-     * @throws IOException            if an error occurred while reading the stream
-     * @throws JSONConverterException if the stream cannot be parsed
-     */
-    public List<SatConstraint> constraintsFromJSONFile(String path) throws IOException, JSONConverterException {
-        return constraintsFromJSON(new FileReader(path));
+    @Override
+    public List<SatConstraint> listFromJSON(String buf) throws IOException, JSONConverterException {
+        try (StringReader in = new StringReader(buf)) {
+            return listFromJSON(in);
+        }
     }
 
-    /**
-     * Extract a list of constraints from a array of JSON-formatted constraints provided by a stream.
-     * The stream is closed afterward
-     *
-     * @param r the stream to read.
-     * @return the resulting JSONObject
-     * @throws IOException            if an error occurred while reading the stream
-     * @throws JSONConverterException if the stream cannot be parsed
-     */
-    public List<SatConstraint> constraintsFromJSON(Reader r) throws IOException, JSONConverterException {
+    @Override
+    public List<SatConstraint> listFromJSON(Reader r) throws IOException, JSONConverterException {
         try {
             JSONParser p = new JSONParser(JSONParser.MODE_RFC4627);
             Object o = p.parse(r);
             if (!(o instanceof JSONArray)) {
-                throw new JSONConverterException("Unable to parse an array of JSON formatted constraints");
+                throw new JSONConverterException("Unable to parse a JSONArray");
             }
-            return fromJSON((JSONArray) o);
+            return listFromJSON((JSONArray) o);
         } catch (ParseException ex) {
             throw new JSONConverterException(ex);
-        } finally {
-            r.close();
+        }
+    }
+
+    @Override
+    public String toJSONString(Collection<SatConstraint> o) throws JSONConverterException {
+        return toJSON(o).toJSONString();
+    }
+
+    @Override
+    public void toJSON(Collection<SatConstraint> e, Appendable w) throws JSONConverterException, IOException {
+        toJSON(e).writeJSONString(w);
+    }
+
+    @Override
+    public void toJSON(Collection<SatConstraint> e, File path) throws JSONConverterException, IOException {
+        try (FileWriter out = new FileWriter(path)) {
+            toJSON(e, out);
         }
     }
 }

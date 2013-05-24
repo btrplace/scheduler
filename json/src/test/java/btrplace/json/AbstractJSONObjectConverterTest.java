@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -26,18 +25,18 @@ import org.testng.annotations.Test;
 import java.util.UUID;
 
 /**
- * Unit tests for {@link JSONConverter}.
+ * Unit tests for {@link AbstractJSONObjectConverter}.
  *
  * @author Fabien Hermenier
  */
-public class JSONConverterTest {
+public class AbstractJSONObjectConverterTest {
 
     @Test
     public void testValidRequiredUUID() throws JSONConverterException {
         JSONObject o = new JSONObject();
         UUID u = UUID.randomUUID();
         o.put("id", u);
-        Assert.assertEquals(JSONConverter.requiredUUID(o, "id"), u);
+        Assert.assertEquals(AbstractJSONObjectConverter.requiredUUID(o, "id"), u);
     }
 
     @DataProvider(name = "getInvalidUUIDs")
@@ -52,31 +51,31 @@ public class JSONConverterTest {
     public void testInValidRequiredUUID(String storeKey, String readKey, Object o) throws JSONConverterException {
         JSONObject obj = new JSONObject();
         obj.put(storeKey, o);
-        JSONConverter.requiredUUID(obj, readKey);
+        AbstractJSONObjectConverter.requiredUUID(obj, readKey);
     }
 
     @Test
     public void testValidRequiredString() throws JSONConverterException {
         JSONObject o = new JSONObject();
         o.put("id", "bar");
-        Assert.assertEquals(JSONConverter.requiredString(o, "id"), "bar");
+        Assert.assertEquals(AbstractJSONObjectConverter.requiredString(o, "id"), "bar");
     }
 
     @Test(expectedExceptions = {JSONConverterException.class})
     public void testInValidRequiredString() throws JSONConverterException {
         JSONObject o = new JSONObject();
         o.put("id", "bar");
-        JSONConverter.requiredString(o, "bar");
+        AbstractJSONObjectConverter.requiredString(o, "bar");
     }
 
     @Test
     public void testValidRequiredDouble() throws JSONConverterException {
         JSONObject o = new JSONObject();
         o.put("id", 1.3d);
-        Assert.assertEquals(JSONConverter.requiredDouble(o, "id"), 1.3d);
+        Assert.assertEquals(AbstractJSONObjectConverter.requiredDouble(o, "id"), 1.3d);
 
         o.put("id", 145);
-        Assert.assertEquals(JSONConverter.requiredDouble(o, "id"), 145d);
+        Assert.assertEquals(AbstractJSONObjectConverter.requiredDouble(o, "id"), 145d);
     }
 
     @DataProvider(name = "getInvalidDoubles")
@@ -91,14 +90,14 @@ public class JSONConverterTest {
     public void testInValidRequiredDoubles(String storeKey, String readKey, Object o) throws JSONConverterException {
         JSONObject obj = new JSONObject();
         obj.put(storeKey, o);
-        JSONConverter.requiredDouble(obj, readKey);
+        AbstractJSONObjectConverter.requiredDouble(obj, readKey);
     }
 
     @Test
     public void testValidRequiredLong() throws JSONConverterException {
         JSONObject o = new JSONObject();
         o.put("id", 123553l);
-        Assert.assertEquals(JSONConverter.requiredLong(o, "id"), 123553l);
+        Assert.assertEquals(AbstractJSONObjectConverter.requiredLong(o, "id"), 123553l);
     }
 
     @DataProvider(name = "getInvalidLongs")
@@ -115,6 +114,6 @@ public class JSONConverterTest {
     public void testInValidRequiredLongs(String storeKey, String readKey, Object o) throws JSONConverterException {
         JSONObject obj = new JSONObject();
         obj.put(storeKey, o);
-        JSONConverter.requiredLong(obj, readKey);
+        AbstractJSONObjectConverter.requiredLong(obj, readKey);
     }
 }

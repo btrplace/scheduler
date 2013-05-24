@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +17,7 @@
 
 package btrplace.json.model;
 
-import btrplace.json.JSONConverter;
+import btrplace.json.AbstractJSONObjectConverter;
 import btrplace.json.JSONConverterException;
 import btrplace.model.DefaultMapping;
 import btrplace.model.Mapping;
@@ -31,19 +30,19 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class MappingConverter extends JSONConverter<Mapping> {
+public class MappingConverter extends AbstractJSONObjectConverter<Mapping> {
 
     @Override
     public JSONObject toJSON(Mapping c) {
         JSONObject o = new JSONObject();
-        o.put("offlineNodes", toJSON(c.getOfflineNodes()));
-        o.put("readyVMs", toJSON(c.getReadyVMs()));
+        o.put("offlineNodes", uuidsToJSON(c.getOfflineNodes()));
+        o.put("readyVMs", uuidsToJSON(c.getReadyVMs()));
 
         JSONObject ons = new JSONObject();
         for (UUID n : c.getOnlineNodes()) {
             JSONObject w = new JSONObject();
-            w.put("runningVMs", toJSON(c.getRunningVMs(n)));
-            w.put("sleepingVMs", toJSON(c.getSleepingVMs(n)));
+            w.put("runningVMs", uuidsToJSON(c.getRunningVMs(n)));
+            w.put("sleepingVMs", uuidsToJSON(c.getSleepingVMs(n)));
             ons.put(n.toString(), w);
         }
         o.put("onlineNodes", ons);

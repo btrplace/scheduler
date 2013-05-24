@@ -1,11 +1,32 @@
+/*
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ *
+ * This file is part of btrplace.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.json.plan;
 
-import btrplace.json.JSONConverter;
+import btrplace.json.AbstractJSONObjectConverter;
+import btrplace.json.JSONArrayConverter;
 import btrplace.json.JSONConverterException;
 import btrplace.plan.event.*;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -15,7 +36,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class ActionConverter extends JSONConverter<Action> implements ActionVisitor {
+public class ActionConverter extends AbstractJSONObjectConverter<Action> implements ActionVisitor, JSONArrayConverter<Action> {
 
     /**
      * Key that indicate the beginning an action.
@@ -319,40 +340,6 @@ public class ActionConverter extends JSONConverter<Action> implements ActionVisi
     }
 
     /**
-     * Convert a collection of actions to an array of JSON objects
-     *
-     * @param actions the actions to convert
-     * @return an array containing all the actions converted into JSON strings
-     * @throws JSONConverterException if an error occurred during the conversion
-     */
-    public JSONArray actionsToJSON(Collection<Action> actions) throws JSONConverterException {
-        JSONArray arr = new JSONArray();
-        for (Action a : actions) {
-            arr.add(toJSON(a));
-        }
-        return arr;
-    }
-
-    /**
-     * Convert a collection of serialized actions.
-     *
-     * @param actions the actions to convert
-     * @return a collection of actions
-     * @throws JSONConverterException if an error occurred during the conversion
-     */
-    public Collection<Action> fromJSON(JSONArray actions) throws JSONConverterException {
-        List<Action> l = new ArrayList<>(actions.size());
-        for (Object o : actions) {
-            if (o instanceof JSONObject) {
-                l.add(fromJSON((JSONObject) o));
-            } else {
-                throw new JSONConverterException("Unable to extract an action from:" + o.toString());
-            }
-        }
-        return l;
-    }
-
-    /**
      * Just create the JSONObject and set the consume and the end attribute.
      *
      * @param a the action to convert
@@ -376,5 +363,72 @@ public class ActionConverter extends JSONConverter<Action> implements ActionVisi
 
     private JSONObject toJSON(Event e) {
         return (JSONObject) e.visit(this);
+    }
+
+    @Override
+    public List<Action> listFromJSON(JSONArray in) throws JSONConverterException {
+        List<Action> l = new ArrayList<>(in.size());
+        for (Object o : in) {
+            if (!(o instanceof JSONObject)) {
+                throw new JSONConverterException("Expected an array of JSONObject but got an array of " + o.getClass().getName());
+            }
+            l.add(fromJSON((JSONObject) o));
+        }
+        return l;
+    }
+
+    @Override
+    public JSONArray toJSON(Collection<Action> e) throws JSONConverterException {
+        JSONArray arr = new JSONArray();
+        for (Action cstr : e) {
+            arr.add(toJSON(cstr));
+        }
+        return arr;
+    }
+
+    @Override
+    public List<Action> listFromJSON(File path) throws IOException, JSONConverterException {
+        try (BufferedReader in = new BufferedReader(new FileReader(path))) {
+            return listFromJSON(in);
+        }
+
+    }
+
+    @Override
+    public List<Action> listFromJSON(String buf) throws IOException, JSONConverterException {
+        try (StringReader in = new StringReader(buf)) {
+            return listFromJSON(in);
+        }
+    }
+
+    @Override
+    public List<Action> listFromJSON(Reader r) throws IOException, JSONConverterException {
+        try {
+            JSONParser p = new JSONParser(JSONParser.MODE_RFC4627);
+            Object o = p.parse(r);
+            if (!(o instanceof JSONArray)) {
+                throw new JSONConverterException("Unable to parse a JSONArray");
+            }
+            return listFromJSON((JSONArray) o);
+        } catch (ParseException ex) {
+            throw new JSONConverterException(ex);
+        }
+    }
+
+    @Override
+    public String toJSONString(Collection<Action> o) throws JSONConverterException {
+        return toJSON(o).toJSONString();
+    }
+
+    @Override
+    public void toJSON(Collection<Action> e, Appendable w) throws JSONConverterException, IOException {
+        toJSON(e).writeJSONString(w);
+    }
+
+    @Override
+    public void toJSON(Collection<Action> e, File path) throws JSONConverterException, IOException {
+        try (FileWriter out = new FileWriter(path)) {
+            toJSON(e, out);
+        }
     }
 }

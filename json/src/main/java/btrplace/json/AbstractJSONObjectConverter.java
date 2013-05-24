@@ -22,10 +22,7 @@ import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -36,7 +33,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public abstract class JSONConverter<E> {
+public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConverter<E> {
 
     /**
      * Convert an array of UUID in the json format to a set.
@@ -58,7 +55,7 @@ public abstract class JSONConverter<E> {
      * @param s the collection of UUIDs
      * @return the json formatted array of UUIDs
      */
-    public static JSONArray toJSON(Collection<UUID> s) {
+    public static JSONArray uuidsToJSON(Collection<UUID> s) {
         JSONArray a = new JSONArray();
         for (UUID u : s) {
             a.add(u.toString());
@@ -201,45 +198,22 @@ public abstract class JSONConverter<E> {
         return (Boolean) x;
     }
 
-    /**
-     * JSON to Java object conversion
-     *
-     * @param in the json object
-     * @return the conversion result
-     * @throws JSONConverterException if an error occurred while converting the object
-     */
-    public abstract E fromJSON(JSONObject in) throws JSONConverterException;
-
-    /**
-     * Java to JSON conversion
-     *
-     * @param e the Java object to convert
-     * @return the conversion result
-     * @throws JSONConverterException if an error occurred while converting the object
-     */
-    public abstract JSONObject toJSON(E e) throws JSONConverterException;
-
-    /**
-     * Extract an object from a JSON object stored in a file.
-     *
-     * @param path the file path
-     * @return the resulting object
-     * @throws IOException            if an error occurred while reading the stream
-     * @throws JSONConverterException if the stream cannot be parsed
-     */
-    public E fromJSONFile(String path) throws IOException, JSONConverterException {
-        return fromJSON(new FileReader(path));
+    @Override
+    public E fromJSON(File path) throws IOException, JSONConverterException {
+        try (FileReader in = new FileReader(path)) {
+            return fromJSON(in);
+        }
     }
 
-    /**
-     * Extract an object from a JSON object available on a stream.
-     * The stream is closed afterward
-     *
-     * @param r the stream to read
-     * @return the resulting JSONObject
-     * @throws IOException            if an error occurred while reading the stream
-     * @throws JSONConverterException if the stream cannot be parsed
-     */
+    @Override
+    public E fromJSON(String buf) throws IOException, JSONConverterException {
+        try (StringReader in = new StringReader(buf)) {
+            return fromJSON(in);
+        }
+
+    }
+
+    @Override
     public E fromJSON(Reader r) throws IOException, JSONConverterException {
         try {
             JSONParser p = new JSONParser(JSONParser.MODE_RFC4627);
@@ -250,43 +224,24 @@ public abstract class JSONConverter<E> {
             return fromJSON((JSONObject) o);
         } catch (ParseException ex) {
             throw new JSONConverterException(ex);
-        } finally {
-            r.close();
         }
     }
 
-    /**
-     * Write the object as a JSON message.
-     *
-     * @param o the object to write
-     * @return the JSON message
-     * @throws JSONConverterException if an error occurred while converting the object
-     */
+    @Override
     public String toJSONString(E o) throws JSONConverterException {
         return toJSON(o).toJSONString();
     }
 
-    /**
-     * Append the JSON conversion of an object.
-     *
-     * @param e the object to write
-     * @param w the stream where the JSON version of the object will be appended
-     * @throws JSONConverterException if an error occurred while converting the object
-     * @throws IOException            if an error occurred while writing the object
-     */
+    @Override
     public void toJSON(E e, Appendable w) throws JSONConverterException, IOException {
         toJSON(e).writeJSONString(w);
     }
 
-    /**
-     * Serialize the object into a file using the JSON format.
-     *
-     * @param e    the object to write
-     * @param path the path name
-     * @throws JSONConverterException if an error occurred while converting the object
-     * @throws IOException            if an error occurred while writing the object
-     */
-    public void toJSON(E e, String path) throws JSONConverterException, IOException {
-        toJSON(e, new FileWriter(path));
+    @Override
+    public void toJSON(E e, File path) throws JSONConverterException, IOException {
+        try (FileWriter out = new FileWriter(path)) {
+            toJSON(e, out);
+        }
     }
+
 }

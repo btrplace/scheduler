@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +17,7 @@
 
 package btrplace.json.model.view;
 
-import btrplace.json.JSONConverter;
+import btrplace.json.AbstractJSONObjectConverter;
 import btrplace.model.view.ModelView;
 
 /**
@@ -26,7 +25,7 @@ import btrplace.model.view.ModelView;
  *
  * @author Fabien Hermenier
  */
-public abstract class ModelViewConverter<E extends ModelView> extends JSONConverter<E> {
+public abstract class ModelViewConverter<E extends ModelView> extends AbstractJSONObjectConverter<E> {
 
     /**
      * Get the classname of the view that is supported by the converter.
