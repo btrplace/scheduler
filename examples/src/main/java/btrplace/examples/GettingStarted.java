@@ -4,10 +4,7 @@ import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.constraint.Offline;
-import btrplace.model.constraint.Preserve;
-import btrplace.model.constraint.SatConstraint;
-import btrplace.model.constraint.Spread;
+import btrplace.model.constraint.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.DependencyBasedPlanApplier;
 import btrplace.plan.ReconfigurationPlan;
@@ -52,15 +49,16 @@ public class GettingStarted implements Example {
         map.addOnlineNode(n3);
         map.addOnlineNode(n4);
 
-        //Running 6 VMs
+        //5 VMs are currently running on the nodes
         map.addRunningVM(vm3, n1);
-        map.addRunningVM(vm2, n1);
-
+        map.addRunningVM(vm2, n2);
         map.addRunningVM(vm1, n3);
-        map.addRunningVM(vm5, n3);
         map.addRunningVM(vm4, n3);
-
         map.addRunningVM(vm6, n4);
+
+        //VM5 is ready to be running on a node.
+        map.addReadyVM(vm5);
+
 
         return map;
     }
@@ -80,7 +78,6 @@ public class GettingStarted implements Example {
         rc.set(vm2, 3);
         rc.set(vm3, 4);
         rc.set(vm4, 3);
-        rc.set(vm5, 3);
         rc.set(vm6, 5);
 
         return rc;
@@ -101,7 +98,6 @@ public class GettingStarted implements Example {
         rc.set(vm2, 2);
         rc.set(vm3, 4);
         rc.set(vm4, 3);
-        rc.set(vm5, 2);
         rc.set(vm6, 4);
 
         return rc;
@@ -116,9 +112,16 @@ public class GettingStarted implements Example {
         //VM VM1 must have at least 3 virtual CPU dedicated to it
         cstrs.add(new Preserve(Collections.singleton(vm1), "cpu", 3));
 
-        //node N4 must be offline
+        //node N4 must be set offline
         cstrs.add(new Offline(Collections.singleton(n4)));
 
+            //VM5 must be running, It asks for 3 cpu and 2 mem resources
+            cstrs.add(new Running(Collections.singleton(vm5)));
+            cstrs.add(new Preserve(Collections.singleton(vm5), "cpu", 3));
+            cstrs.add(new Preserve(Collections.singleton(vm5), "mem", 2));
+
+        //VM4 must be turned off, i.e. set back to the ready state
+        cstrs.add(new Ready(Collections.singleton(vm4)));
         return cstrs;
     }
 
