@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,13 +18,12 @@
 package btrplace.json.model.view;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.model.view.ModelViewConverter;
-import btrplace.json.model.view.ModelViewsConverter;
 import btrplace.model.view.ModelView;
 import junit.framework.Assert;
 import net.minidev.json.JSONObject;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -94,11 +92,11 @@ public class ModelViewsConverterTest {
     }
 
     @Test(dependsOnMethods = {"testRegister"})
-    public void testWithExistingConverter() throws JSONConverterException {
+    public void testWithExistingConverter() throws JSONConverterException, IOException {
         ModelViewsConverter c = new ModelViewsConverter();
         Assert.assertNull(c.register(new MockModelViewConverter()));
         MockModelView m = new MockModelView("bar");
-        JSONObject o = c.toJSON(m);
+        String o = c.toJSONString(m);
         MockModelView m2 = (MockModelView) c.fromJSON(o);
         Assert.assertEquals(m.value, m2.value);
     }

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -23,8 +22,9 @@ import btrplace.model.DefaultMapping;
 import btrplace.model.Mapping;
 import btrplace.test.PremadeElements;
 import junit.framework.Assert;
-import net.minidev.json.JSONObject;
 import org.testng.annotations.Test;
+
+import java.io.IOException;
 
 /**
  * Unit tests for {@link btrplace.json.model.MappingConverter}.
@@ -34,7 +34,7 @@ import org.testng.annotations.Test;
 public class MappingConverterTest implements PremadeElements {
 
     @Test
-    public void testSimple() throws JSONConverterException {
+    public void testSimple() throws JSONConverterException, IOException {
         Mapping c = new DefaultMapping();
 
         c.addOnlineNode(n1);
@@ -45,7 +45,7 @@ public class MappingConverterTest implements PremadeElements {
         c.addOnlineNode(n3);
         c.addRunningVM(vm4, n3);
         MappingConverter json = new MappingConverter();
-        JSONObject ob = json.toJSON(c);
+        String ob = json.toJSONString(c);
         Mapping c2 = json.fromJSON(ob);
         Assert.assertEquals(c, c2);
     }

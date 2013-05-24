@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -55,7 +54,6 @@ public class AmongTest implements PremadeElements {
         Assert.assertEquals(a.getInvolvedNodes().size(), s1.size() + s2.size());
         Assert.assertTrue(a.getInvolvedNodes().containsAll(s1));
         Assert.assertTrue(a.getInvolvedNodes().containsAll(s2));
-        System.out.println(a);
         Assert.assertFalse(a.toString().contains("null"));
         Assert.assertFalse(a.isContinuous());
         Assert.assertTrue(a.setContinuous(true));

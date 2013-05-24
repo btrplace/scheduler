@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,12 +17,13 @@
 
 package btrplace.json.model.view;
 
-import btrplace.json.model.view.ShareableResourceConverter;
+import btrplace.json.JSONConverterException;
 import btrplace.model.view.ShareableResource;
 import btrplace.test.PremadeElements;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -52,21 +52,17 @@ public class ShareableResourceConverterTest implements PremadeElements {
     }
 
     @Test(dependsOnMethods = {"testSimple"})
-    public void testWithDifferentRcId() {
+    public void testWithDifferentRcId() throws JSONConverterException, IOException {
         ShareableResourceConverter s = new ShareableResourceConverter();
 
         ShareableResource rc = new ShareableResource("foo");
         rc.set(vm1, 3).set(vm2, 4).set(vm3, 5).set(vm4, 6);
-        ShareableResource rcBis = s.fromJSON(s.toJSON(rc));
+        ShareableResource rcBis = s.fromJSON(s.toJSONString(rc));
 
         ShareableResource rc2 = new ShareableResource("bar");
         rc2.set(vm1, 3).set(vm2, 4).set(vm3, 5).set(vm4, 6);
 
-        ShareableResource rc2Bis = s.fromJSON(s.toJSON(rc2));
-        System.out.println(s.toJSON(rc));
-        System.out.println(s.toJSON(rc2));
-        System.out.println(rcBis);
-        System.out.println(rc2Bis);
+        ShareableResource rc2Bis = s.fromJSON(s.toJSONString(rc2));
         Assert.assertFalse(rcBis.equals(rc2Bis));
 
     }

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -73,7 +72,7 @@ public class ActionTest {
         Assert.assertEquals(1, a1.getEvents(Action.Hook.pre).size());
         a1.addEvent(Action.Hook.post, n1);
         Assert.assertEquals(1, a1.getEvents(Action.Hook.post).size());
-        System.out.println(a1);
+        //System.out.println(a1);
     }
 
     @Test

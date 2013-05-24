@@ -29,9 +29,10 @@ import btrplace.plan.event.BootNode;
 import btrplace.plan.event.BootVM;
 import btrplace.plan.event.MigrateVM;
 import btrplace.test.PremadeElements;
-import net.minidev.json.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.io.IOException;
 
 /**
  * Unit tests for {@link ReconfigurationPlanConverter}.
@@ -41,7 +42,7 @@ import org.testng.annotations.Test;
 public class ReconfigurationPlanConverterTest implements PremadeElements {
 
     @Test
-    public void testConversion() throws JSONConverterException {
+    public void testConversion() throws JSONConverterException, IOException {
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         map.addOfflineNode(n2);
@@ -61,9 +62,7 @@ public class ReconfigurationPlanConverterTest implements PremadeElements {
         plan.add(new Allocate(vm1, n3, "foo", 5, 2, 5));
 
         ReconfigurationPlanConverter rcp = new ReconfigurationPlanConverter();
-        JSONObject o = rcp.toJSON(plan);
-
-        System.out.println(rcp.fromJSON(o));
+        String o = rcp.toJSONString(plan);
         Assert.assertEquals(rcp.fromJSON(o), plan);
 
     }

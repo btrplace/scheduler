@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,10 +17,10 @@
 
 package btrplace.json.model;
 
+import btrplace.json.JSONConverterException;
 import btrplace.model.Attributes;
 import btrplace.model.DefaultAttributes;
 import btrplace.test.PremadeElements;
-import net.minidev.json.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -35,7 +34,7 @@ import java.io.IOException;
 public class AttributesConverterTest implements PremadeElements {
 
     @Test
-    public void testSimple() throws IOException {
+    public void testSimple() throws IOException, JSONConverterException {
         Attributes attrs = new DefaultAttributes();
 
         attrs.put(n1, "foo", true);
@@ -45,7 +44,7 @@ public class AttributesConverterTest implements PremadeElements {
         attrs.put(n2, "ba", 1.34);
 
         AttributesConverter json = new AttributesConverter();
-        JSONObject o = json.toJSON(attrs);
+        String o = json.toJSONString(attrs);
         Attributes attrs2 = json.fromJSON(o);
         Assert.assertTrue(attrs.equals(attrs2));
     }

@@ -1,3 +1,20 @@
+/*
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ *
+ * This file is part of btrplace.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.json.model;
 
 import btrplace.json.JSONConverterException;
@@ -6,10 +23,10 @@ import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Running;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.test.PremadeElements;
-import net.minidev.json.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +39,7 @@ import java.util.List;
 public class InstanceConverterTest implements PremadeElements {
 
     @Test
-    public void testConversion() throws JSONConverterException {
+    public void testConversion() throws JSONConverterException, IOException {
         Mapping ma = new DefaultMapping();
         ma.addOnlineNode(n1);
         ma.addOfflineNode(n1);
@@ -34,7 +51,7 @@ public class InstanceConverterTest implements PremadeElements {
         Instance i = new Instance(mo, cstrs);
 
         InstanceConverter conv = new InstanceConverter();
-        JSONObject o = conv.toJSON(i);
+        String o = conv.toJSONString(i);
         Instance res = conv.fromJSON(o);
         Assert.assertEquals(i, res);
     }
