@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,6 +17,7 @@
 
 package btrplace.solver.choco.durationEvaluator;
 
+import btrplace.model.Model;
 import btrplace.plan.event.Action;
 import btrplace.solver.SolverException;
 
@@ -98,16 +98,17 @@ public class DurationEvaluators {
     /**
      * Evaluate the duration of given action on a given element.
      *
-     * @param a the action' class
-     * @param e the element
+     * @param mo the model to consider
+     * @param a  the action' class
+     * @param e  the element
      * @return a positive number if the evaluation succeeded. A negative number otherwise
      */
-    public int evaluate(Class<? extends Action> a, UUID e) throws SolverException {
+    public int evaluate(Model mo, Class<? extends Action> a, UUID e) throws SolverException {
         DurationEvaluator ev = durations.get(a);
         if (ev == null) {
             throw new SolverException(null, "Unable to estimate the action duration related to '" + e + "'");
         }
-        int d = ev.evaluate(e);
+        int d = ev.evaluate(mo, e);
         if (d < 0) {
             throw new SolverException(null, "Unable to estimate the action duration related to '" + e + "'");
         }

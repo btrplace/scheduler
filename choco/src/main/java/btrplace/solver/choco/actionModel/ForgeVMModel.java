@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -64,7 +63,7 @@ public class ForgeVMModel implements VMActionModel {
      * @throws SolverException if an error occurred
      */
     public ForgeVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
-        int d = rp.getDurationEvaluators().evaluate(ForgeVM.class, e);
+        int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), ForgeVM.class, e);
         template = rp.getSourceModel().getAttributes().getString(e, "template");
         if (template == null) {
             throw new SolverException(rp.getSourceModel(), "Unable to forge the VM '" + e + "'. The required attribute 'template' is missing from the model");

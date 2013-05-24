@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -65,7 +64,7 @@ public class ShutdownVMModel implements VMActionModel {
         this.rp = rp;
         this.vm = e;
 
-        int d = rp.getDurationEvaluators().evaluate(ShutdownVM.class, e);
+        int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), ShutdownVM.class, e);
         assert d > 0;
         duration = rp.makeDuration(d, d, "shutdownVM(", e, ").duration");
         this.cSlice = new SliceBuilder(rp, e, "shutdownVM(" + e + ").cSlice").setHoster(rp.getCurrentVMLocation(rp.getVM(e)))

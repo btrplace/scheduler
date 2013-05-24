@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,6 +18,7 @@
 package btrplace.solver.choco.durationEvaluator;
 
 import btrplace.model.Attributes;
+import btrplace.model.Model;
 
 import java.util.UUID;
 
@@ -31,8 +31,6 @@ import java.util.UUID;
  */
 public class DurationFromAttribute implements DurationEvaluator {
 
-    private Attributes attrs;
-
     private DurationEvaluator parent;
 
     private String key;
@@ -40,26 +38,25 @@ public class DurationFromAttribute implements DurationEvaluator {
     /**
      * Make a new evaluator.
      *
-     * @param a      the attributed to rely on
      * @param attrId the attribute identifier. The associated value must be an {@link Integer}.
      * @param dev    the evaluator to rely on if the attribute is not set or invalid
      */
-    public DurationFromAttribute(Attributes a, String attrId, DurationEvaluator dev) {
-        attrs = a;
+    public DurationFromAttribute(String attrId, DurationEvaluator dev) {
         parent = dev;
         key = attrId;
     }
 
     @Override
-    public int evaluate(UUID e) {
+    public int evaluate(Model mo, UUID e) {
+        Attributes attrs = mo.getAttributes();
         if (attrs.isSet(e, key)) {
             try {
                 return attrs.getLong(e, key).intValue();
             } catch (Exception ex) {
-                return parent.evaluate(e);
+                return parent.evaluate(mo, e);
             }
         }
-        return parent.evaluate(e);
+        return parent.evaluate(mo, e);
     }
 
     /**

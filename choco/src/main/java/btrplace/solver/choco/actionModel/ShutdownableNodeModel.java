@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -129,7 +128,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
         * D = {0, d}
         * D = St * d;
         */
-        int d = rp.getDurationEvaluators().evaluate(ShutdownNode.class, e);
+        int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), ShutdownNode.class, e);
         duration = s.createEnumIntVar(rp.makeVarLabel("shutdownableNode(", e, ").duration"), new int[]{0, d});
         s.post(new BooleanChanneling(isOnline, duration, 0));
 

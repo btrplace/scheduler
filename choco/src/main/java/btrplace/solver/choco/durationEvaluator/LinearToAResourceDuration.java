@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,6 +17,7 @@
 
 package btrplace.solver.choco.durationEvaluator;
 
+import btrplace.model.Model;
 import btrplace.model.view.ShareableResource;
 
 import java.util.UUID;
@@ -30,7 +30,7 @@ import java.util.UUID;
  */
 public class LinearToAResourceDuration implements DurationEvaluator {
 
-    private ShareableResource rc;
+    private String rc;
 
     private int a;
 
@@ -39,29 +39,33 @@ public class LinearToAResourceDuration implements DurationEvaluator {
     /**
      * Make a new evaluator.
      *
-     * @param rc the resource to consider
-     * @param a  the coefficient
+     * @param rcId the resource identifier
+     * @param a    the coefficient
      */
-    public LinearToAResourceDuration(ShareableResource rc, int a) {
-        this(rc, a, 0);
+    public LinearToAResourceDuration(String rcId, int a) {
+        this(rcId, a, 0);
     }
 
     /**
      * Make a new evaluator.
      *
-     * @param rc the resource to consider
-     * @param a  the coefficient
-     * @param b  the initial value
+     * @param rcId the resource to consider
+     * @param a    the coefficient
+     * @param b    the initial value
      */
-    public LinearToAResourceDuration(ShareableResource rc, int a, int b) {
-        this.rc = rc;
+    public LinearToAResourceDuration(String rcId, int a, int b) {
+        this.rc = rcId;
         this.a = a;
         this.b = b;
     }
 
     @Override
-    public int evaluate(UUID e) {
-        int x = rc.get(e);
+    public int evaluate(Model mo, UUID e) {
+        ShareableResource r = (ShareableResource) mo.getView(ShareableResource.VIEW_ID_BASE + rc);
+        if (r == null) {
+            return -1;
+        }
+        int x = r.get(e);
         return a * x + b;
     }
 }

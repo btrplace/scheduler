@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,6 +17,8 @@
 
 package btrplace.solver.choco.durationEvaluator;
 
+import btrplace.model.Model;
+
 import java.util.UUID;
 
 /**
@@ -30,8 +31,9 @@ public interface DurationEvaluator {
     /**
      * Evaluate the duration of the action on a given element.
      *
-     * @param e the element
+     * @param mo the model to consider
+     * @param e  the element
      * @return a positive integer
      */
-    int evaluate(UUID e);
+    int evaluate(Model mo, UUID e);
 }

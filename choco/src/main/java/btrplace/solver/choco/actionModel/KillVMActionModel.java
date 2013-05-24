@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -70,7 +69,7 @@ public class KillVMActionModel implements VMActionModel {
         node = map.getVMLocation(vm);
         state = rp.getSolver().makeConstantIntVar(0);
 
-        int d = rp.getDurationEvaluators().evaluate(KillVM.class, e);
+        int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), KillVM.class, e);
 
         if (map.getRunningVMs().contains(vm)) {
             cSlice = new SliceBuilder(rp, e, "killVM('" + e + "').cSlice")

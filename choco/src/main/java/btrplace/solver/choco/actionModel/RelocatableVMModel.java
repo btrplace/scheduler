@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -124,7 +123,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
         if (!getRelocationMethod().isInstantiated()) {
             //TODO: not very compliant with the ForgeActionModel but forge is useless for the moment
-            int forgeD = rp.getDurationEvaluators().evaluate(ForgeVM.class, vm);
+            int forgeD = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), ForgeVM.class, vm);
             s.post(s.geq(this.dSlice.getStart(), ChocoUtils.mult(s, method, forgeD)));
 
             s.post(new BooleanChanneling(method, duration, reInstantiateDuration));
@@ -137,11 +136,11 @@ public class RelocatableVMModel implements KeepRunningVMModel {
         Boolean cloneable = mo.getAttributes().getBoolean(vm, "clone");
         DurationEvaluators dev = rp.getDurationEvaluators();
         CPSolver s = rp.getSolver();
-        int migrateDuration = dev.evaluate(MigrateVM.class, vm);
+        int migrateDuration = dev.evaluate(rp.getSourceModel(), MigrateVM.class, vm);
         if (Boolean.TRUE.equals(cloneable) && mo.getAttributes().isSet(vm, "template")) {
             method = rp.getSolver().createBooleanVar(rp.makeVarLabel("relocation_method(", vm, ")"));
-            int bootDuration = dev.evaluate(BootVM.class, vm);
-            int shutdownDuration = dev.evaluate(ShutdownVM.class, vm);
+            int bootDuration = dev.evaluate(rp.getSourceModel(), BootVM.class, vm);
+            int shutdownDuration = dev.evaluate(rp.getSourceModel(), ShutdownVM.class, vm);
             reInstantiateDuration = bootDuration + shutdownDuration;
             duration = s.createEnumIntVar(rp.makeVarLabel("relocatable(", vm, ").duration"),
                     new int[]{0, Math.min(migrateDuration, reInstantiateDuration),
@@ -170,12 +169,12 @@ public class RelocatableVMModel implements KeepRunningVMModel {
                         rp.getLogger().error("Unable to get a new UUID to plan the re-instantiate of VM {}", vm);
                         return false;
                     }
-                    ForgeVM fvm = new ForgeVM(newVM, dSlice.getStart().getVal() - dev.evaluate(ForgeVM.class, vm), dSlice.getStart().getVal());
+                    ForgeVM fvm = new ForgeVM(newVM, dSlice.getStart().getVal() - dev.evaluate(rp.getSourceModel(), ForgeVM.class, vm), dSlice.getStart().getVal());
                     //forge the new VM from a template
                     plan.add(fvm);
                     //Boot the new VM
                     int endForging = fvm.getEnd();
-                    BootVM boot = new BootVM(newVM, dst, endForging, endForging + dev.evaluate(BootVM.class, newVM));
+                    BootVM boot = new BootVM(newVM, dst, endForging, endForging + dev.evaluate(rp.getSourceModel(), BootVM.class, newVM));
                     boot.addEvent(Action.Hook.pre, new SubstitutedVMEvent(vm, newVM));
                     return plan.add(boot) && plan.add(new ShutdownVM(vm, src, boot.getEnd(), cSlice.getEnd().getVal()));
                 } catch (SolverException ex) {

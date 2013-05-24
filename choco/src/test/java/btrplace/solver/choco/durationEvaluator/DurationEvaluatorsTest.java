@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,6 +17,8 @@
 
 package btrplace.solver.choco.durationEvaluator;
 
+import btrplace.model.DefaultMapping;
+import btrplace.model.DefaultModel;
 import btrplace.solver.SolverException;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
@@ -76,20 +77,20 @@ public class DurationEvaluatorsTest implements PremadeElements {
         DurationEvaluators d = new DurationEvaluators();
         DurationEvaluator ev = new ConstantDuration(7);
         d.register(btrplace.plan.event.MigrateVM.class, ev);
-        Assert.assertEquals(d.evaluate(btrplace.plan.event.MigrateVM.class, vm1), 7);
+        Assert.assertEquals(d.evaluate(new DefaultModel(new DefaultMapping()), btrplace.plan.event.MigrateVM.class, vm1), 7);
     }
 
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testUnregister"}, expectedExceptions = {SolverException.class})
     public void testEvaluateUnregisteredAction() throws SolverException {
         DurationEvaluators d = new DurationEvaluators();
         d.unregister(btrplace.plan.event.MigrateVM.class);
-        d.evaluate(btrplace.plan.event.MigrateVM.class, vm1);
+        d.evaluate(new DefaultModel(new DefaultMapping()), btrplace.plan.event.MigrateVM.class, vm1);
     }
 
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testRegister"}, expectedExceptions = {SolverException.class})
     public void testEvaluateWithError() throws SolverException {
         DurationEvaluators d = new DurationEvaluators();
         d.register(btrplace.plan.event.MigrateVM.class, new ConstantDuration(-5));
-        d.evaluate(btrplace.plan.event.MigrateVM.class, vm1);
+        d.evaluate(new DefaultModel(new DefaultMapping()), btrplace.plan.event.MigrateVM.class, vm1);
     }
 }
