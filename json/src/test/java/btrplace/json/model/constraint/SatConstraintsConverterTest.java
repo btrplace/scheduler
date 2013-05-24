@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -25,7 +24,10 @@ import junit.framework.Assert;
 import net.minidev.json.JSONObject;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -118,5 +120,29 @@ public class SatConstraintsConverterTest {
         SatConstraintsConverter c = new SatConstraintsConverter();
         Assert.assertNull(c.register(new MockSatConstraintConverter()));
         c.fromJSON(ob);
+    }
+
+    @Test
+    public void testWithMultipleViews() throws JSONConverterException, IOException {
+        SatConstraintsConverter c = new SatConstraintsConverter();
+        org.testng.Assert.assertNull(c.register(new MockSatConstraintConverter()));
+        List<SatConstraint> l = new ArrayList<>();
+        l.add(new MockSatConstraint("foo"));
+        l.add(new MockSatConstraint("bar"));
+        String o = c.toJSONString(l);
+        List<SatConstraint> l2 = c.listFromJSON(o);
+        org.testng.Assert.assertEquals(l2.size(), l.size());
+        int j = 0;
+        for (int i = 0; i < l2.size(); i++) {
+            MockSatConstraint v = (MockSatConstraint) l2.get(i);
+            if (v.str.equals("foo")) {
+                j++;
+            } else if (v.str.equals("bar")) {
+                j--;
+            } else {
+                org.testng.Assert.fail("Unexpected identifier: " + v.str);
+            }
+        }
+        org.testng.Assert.assertEquals(j, 0);
     }
 }

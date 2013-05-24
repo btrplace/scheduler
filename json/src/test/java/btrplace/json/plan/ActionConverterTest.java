@@ -24,6 +24,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Unit tests for {@link ActionConverter}.
@@ -126,4 +128,14 @@ public class ActionConverterTest implements PremadeElements {
         Assert.assertEquals(a, ac.fromJSON(o));
     }
 
+    @Test
+    public void testListSerialization() throws JSONConverterException, IOException {
+        ActionConverter ac = new ActionConverter();
+        List<Action> l = new ArrayList<>();
+        l.add(new BootVM(vm1, n1, 0, 5));
+        l.add(new ShutdownNode(n2, 0, 5));
+        String jo = ac.toJSONString(l);
+        List<Action> l2 = ac.listFromJSON(jo);
+        Assert.assertTrue(l2.containsAll(l) && l2.size() == l.size());
+    }
 }

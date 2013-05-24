@@ -52,7 +52,7 @@ public abstract class SatConstraintConverter<E extends SatConstraint> extends Ab
      */
     public void checkId(JSONObject o) throws JSONConverterException {
         Object id = o.get("id");
-        if (id != null && !id.toString().equals(getJSONId())) {
+        if (id == null || !id.toString().equals(getJSONId())) {
             throw new JSONConverterException("Incorrect converter for " + o.toJSONString() + ". Expecting a constraint id '" + id + "'");
         }
 

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -53,7 +52,7 @@ public class AliasedCumulativesFiltering {
 
     private int[] startupFree;
 
-    private static final boolean debug = true;
+    private static final boolean DEBUG = true;
 
     private int[] associations;
 
@@ -192,7 +191,7 @@ public class AliasedCumulativesFiltering {
             }
 
             if (associatedToDSliceOnCurrentNode(j) && increase(j, revAssociations[j])) {
-                if (debug) {
+                if (DEBUG) {
                     ChocoLogging.getBranchingLogger().finest(cEnds[j].pretty() + " increasing");
                 }
                 for (int i = 0; i < nbDims; i++) {
@@ -255,7 +254,7 @@ public class AliasedCumulativesFiltering {
             toAbsoluteFreeResources(profilesMax[i], sortedMaxProfile);
         }
 
-        if (debug) {
+        if (DEBUG) {
             ChocoLogging.getBranchingLogger().finest("--- startup=(" + Arrays.toString(startupFree) + ")"
                     + " capacities=(" + Arrays.toString(capacities) + ") ---");
             for (int x = 0; x < vIn.size(); x++) {
@@ -327,7 +326,7 @@ public class AliasedCumulativesFiltering {
             int t = sortedMinProfile[x];
             for (int i = 0; i < nbDims; i++) {
                 if (profilesMin[i].get(t) > capacities[i]) {
-                    if (debug) {
+                    if (DEBUG) {
                         ChocoLogging.getBranchingLogger().finest("Invalid min profile at " + t + " on dimension " + i
                                 + ": " + profilesMin[i].get(t) + " > " + capacities[i]);
                     }
@@ -407,7 +406,7 @@ public class AliasedCumulativesFiltering {
                     }
                 }
                 if (lastT != -1) {
-                    if (debug) {
+                    if (DEBUG) {
                         ChocoLogging.getBranchingLogger().finest(cEnds[i].pretty() + " cEndsSup =" + lastT);
                     }
                     cEnds[i].setSup(lastT);
