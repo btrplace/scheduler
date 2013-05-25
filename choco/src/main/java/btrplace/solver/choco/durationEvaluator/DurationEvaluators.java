@@ -18,7 +18,7 @@
 package btrplace.solver.choco.durationEvaluator;
 
 import btrplace.model.Model;
-import btrplace.plan.event.Action;
+import btrplace.plan.event.*;
 import btrplace.solver.SolverException;
 
 import java.util.HashMap;
@@ -27,6 +27,10 @@ import java.util.UUID;
 
 /**
  * Class to store the {@link DurationEvaluator} associated to each of the possible actions.
+ * <p/>
+ * By default, each action is associated to a {@link DurationFromAttribute} evaluator.
+ * See https://github.com/fhermeni/btrplace-solver/wiki/attributes to get the attribute identifiers.
+ * If the attribute is not set, a {@link ConstantDuration} is used and evaluate the duration to 1 second.
  *
  * @author Fabien Hermenier
  */
@@ -40,17 +44,17 @@ public class DurationEvaluators {
     public DurationEvaluators() {
         durations = new HashMap<>();
 
-
         //Default constructors
-        durations.put(btrplace.plan.event.MigrateVM.class, new ConstantDuration(1));
-        durations.put(btrplace.plan.event.BootVM.class, new ConstantDuration(1));
-        durations.put(btrplace.plan.event.ShutdownVM.class, new ConstantDuration(1));
-        durations.put(btrplace.plan.event.SuspendVM.class, new ConstantDuration(1));
-        durations.put(btrplace.plan.event.ResumeVM.class, new ConstantDuration(1));
-        durations.put(btrplace.plan.event.ForgeVM.class, new ConstantDuration(1));
-        durations.put(btrplace.plan.event.ShutdownNode.class, new ConstantDuration(1));
-        durations.put(btrplace.plan.event.BootNode.class, new ConstantDuration(1));
-        durations.put(btrplace.plan.event.KillVM.class, new ConstantDuration(1));
+        durations.put(MigrateVM.class, new DurationFromAttribute("migrate", new ConstantDuration(1)));
+        durations.put(BootVM.class, new DurationFromAttribute("boot", new ConstantDuration(1)));
+        durations.put(ShutdownVM.class, new DurationFromAttribute("shutdown", new ConstantDuration(1)));
+        durations.put(SuspendVM.class, new DurationFromAttribute("suspend", new ConstantDuration(1)));
+        durations.put(ResumeVM.class, new DurationFromAttribute("resume", new ConstantDuration(1)));
+        durations.put(ForgeVM.class, new DurationFromAttribute("forge", new ConstantDuration(1)));
+        durations.put(ShutdownNode.class, new DurationFromAttribute("shutdown", new ConstantDuration(1)));
+        durations.put(BootNode.class, new DurationFromAttribute("boot", new ConstantDuration(1)));
+        durations.put(KillVM.class, new DurationFromAttribute("kill", new ConstantDuration(1)));
+        durations.put(Allocate.class, new DurationFromAttribute("allocate", new ConstantDuration(1)));
     }
 
     /**
@@ -109,7 +113,7 @@ public class DurationEvaluators {
             throw new SolverException(null, "Unable to estimate the action duration related to '" + e + "'");
         }
         int d = ev.evaluate(mo, e);
-        if (d < 0) {
+        if (d <= 0) {
             throw new SolverException(null, "Unable to estimate the action duration related to '" + e + "'");
         }
         return d;

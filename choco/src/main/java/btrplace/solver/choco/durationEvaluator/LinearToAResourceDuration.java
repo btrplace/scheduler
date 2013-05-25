@@ -23,8 +23,10 @@ import btrplace.model.view.ShareableResource;
 import java.util.UUID;
 
 /**
- * Evaluate the duration of an action on an element
- * linearly from a given resource. The duration {@code d} is expressed as {@code d = a * rc.get(e) + b}.
+ * Evaluate the duration of an action on an element linearly from a given resource.
+ * <p/>
+ * The duration {@code d} is expressed as {@code d = coefficient * rc.get(e) + offset}.
+ * It is truncated to get an integer value
  *
  * @author Fabien Hermenier
  */
@@ -32,17 +34,18 @@ public class LinearToAResourceDuration implements DurationEvaluator {
 
     private String rc;
 
-    private int a;
+    private double a;
 
-    private int b;
+    private double b;
 
     /**
      * Make a new evaluator.
+     * The offset value is set to 0
      *
      * @param rcId the resource identifier
      * @param a    the coefficient
      */
-    public LinearToAResourceDuration(String rcId, int a) {
+    public LinearToAResourceDuration(String rcId, double a) {
         this(rcId, a, 0);
     }
 
@@ -51,9 +54,9 @@ public class LinearToAResourceDuration implements DurationEvaluator {
      *
      * @param rcId the resource to consider
      * @param a    the coefficient
-     * @param b    the initial value
+     * @param b    the offset
      */
-    public LinearToAResourceDuration(String rcId, int a, int b) {
+    public LinearToAResourceDuration(String rcId, double a, double b) {
         this.rc = rcId;
         this.a = a;
         this.b = b;
@@ -66,6 +69,60 @@ public class LinearToAResourceDuration implements DurationEvaluator {
             return -1;
         }
         int x = r.get(e);
-        return a * x + b;
+        return (int) (a * x + b);
+    }
+
+    /**
+     * Get the associated resource identifier.
+     *
+     * @return a resource identifier
+     */
+    public String getResourceId() {
+        return rc;
+    }
+
+    /**
+     * Set the resource to use;
+     *
+     * @param rc a resource identifier
+     */
+    public void setResourceId(String rc) {
+        this.rc = rc;
+    }
+
+    /**
+     * Get the coefficient.
+     *
+     * @return a number
+     */
+    public double getCoefficient() {
+        return a;
+    }
+
+    /**
+     * Set the coefficient.
+     *
+     * @param a the coefficient to use
+     */
+    public void setCoefficient(double a) {
+        this.a = a;
+    }
+
+    /**
+     * Get the offset.
+     *
+     * @return a number
+     */
+    public double getOffset() {
+        return b;
+    }
+
+    /**
+     * Set the offset.
+     *
+     * @param b the offset to use
+     */
+    public void setOffset(double b) {
+        this.b = b;
     }
 }
