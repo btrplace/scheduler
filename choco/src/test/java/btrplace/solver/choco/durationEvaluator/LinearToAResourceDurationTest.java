@@ -39,6 +39,9 @@ public class LinearToAResourceDurationTest implements PremadeElements {
         mo.attach(rc);
         rc.set(vm1, 3);
         LinearToAResourceDuration d = new LinearToAResourceDuration("foo", 3);
+        Assert.assertEquals(d.getCoefficient(), 3.0);
+        Assert.assertEquals(d.getOffset(), 0.0);
+        Assert.assertEquals(d.getResourceId(), "foo");
         Assert.assertEquals(d.evaluate(mo, vm1), 9);
         Assert.assertEquals(d.evaluate(mo, vm2), 0);
 
@@ -48,5 +51,12 @@ public class LinearToAResourceDurationTest implements PremadeElements {
 
         d = new LinearToAResourceDuration("bar", 3, 4);
         Assert.assertEquals(d.evaluate(mo, vm3), -1);
+
+        d.setCoefficient(5);
+        d.setOffset(12);
+        d.setResourceId("bar");
+        Assert.assertEquals(d.getCoefficient(), 5.0);
+        Assert.assertEquals(d.getOffset(), 12.0);
+        Assert.assertEquals(d.getResourceId(), "bar");
     }
 }

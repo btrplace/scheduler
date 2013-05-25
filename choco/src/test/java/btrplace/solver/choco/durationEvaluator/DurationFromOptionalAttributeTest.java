@@ -26,11 +26,11 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * Unit tests for {@link DurationFromAttribute}.
+ * Unit tests for {@link DurationFromOptionalAttribute}.
  *
  * @author Fabien Hermenier
  */
-public class DurationFromAttributeTest implements PremadeElements {
+public class DurationFromOptionalAttributeTest implements PremadeElements {
 
     @Test
     public void test() {
@@ -40,7 +40,7 @@ public class DurationFromAttributeTest implements PremadeElements {
         Attributes attrs = mo.getAttributes();
         DurationEvaluator parent = new ConstantDuration(15);
 
-        DurationFromAttribute dev = new DurationFromAttribute("boot", parent);
+        DurationFromOptionalAttribute dev = new DurationFromOptionalAttribute("boot", parent);
         Assert.assertEquals(parent, dev.getParent());
         Assert.assertEquals("boot", dev.getAttributeKey());
         Assert.assertEquals(15, dev.evaluate(mo, vm1));

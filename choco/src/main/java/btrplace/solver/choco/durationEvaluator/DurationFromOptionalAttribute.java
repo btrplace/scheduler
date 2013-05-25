@@ -29,7 +29,7 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class DurationFromAttribute implements DurationEvaluator {
+public class DurationFromOptionalAttribute implements DurationEvaluator {
 
     private DurationEvaluator parent;
 
@@ -41,7 +41,7 @@ public class DurationFromAttribute implements DurationEvaluator {
      * @param attrId the attribute identifier. The associated value must be an {@link Integer}.
      * @param dev    the evaluator to rely on if the attribute is not set or invalid
      */
-    public DurationFromAttribute(String attrId, DurationEvaluator dev) {
+    public DurationFromOptionalAttribute(String attrId, DurationEvaluator dev) {
         parent = dev;
         key = attrId;
     }
