@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -60,7 +59,7 @@ public class CCumulatedRunningCapacity implements ChocoSatConstraint {
                 int[] alias = new int[cstr.getInvolvedNodes().size()];
                 int i = 0;
                 for (UUID n : cstr.getInvolvedNodes()) {
-                    alias[i++] = rp.getNode(n);
+                    alias[i++] = rp.getNodeIdx(n);
                 }
                 int[] cUse = new int[rp.getSourceModel().getMapping().getRunningVMs().size()];
                 IntDomainVar[] dUse = new IntDomainVar[rp.getFutureRunningVMs().size()];
@@ -71,7 +70,7 @@ public class CCumulatedRunningCapacity implements ChocoSatConstraint {
         }
         List<IntDomainVar> vs = new ArrayList<>();
         for (UUID u : cstr.getInvolvedNodes()) {
-            vs.add(rp.getNbRunningVMs()[rp.getNode(u)]);
+            vs.add(rp.getNbRunningVMs()[rp.getNodeIdx(u)]);
         }
         //Try to get a lower bound
         //basically, we count 1 per VM necessarily in the set of nodes

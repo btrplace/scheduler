@@ -97,7 +97,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
         CPSolver s = rp.getSolver();
 
         cSlice = new SliceBuilder(rp, e, "relocatable(" + e + ").cSlice")
-                .setHoster(rp.getNode(rp.getSourceModel().getMapping().getVMLocation(e)))
+                .setHoster(rp.getNodeIdx(rp.getSourceModel().getMapping().getVMLocation(e)))
                 .setEnd(rp.makeUnboundedDuration("relocatable(" + e + ").cSlice_end"))
                 .build();
 
@@ -248,7 +248,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
         b.append(prettyMethod(method));
         b.append(" ,vm=").append(vm)
                 .append(" ,from=").append(src)
-                .append("(").append(rp.getNode(src)).append(")")
+                .append("(").append(rp.getNodeIdx(src)).append(")")
                 .append(" ,to=").append(dSlice.getHoster().getDomain().pretty())
                 .append(")");
         return b.toString();

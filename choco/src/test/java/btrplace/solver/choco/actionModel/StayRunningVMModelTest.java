@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -56,8 +55,8 @@ public class StayRunningVMModelTest implements PremadeElements {
         StayRunningVMModel m1 = (StayRunningVMModel) rp.getVMAction(vm1);
         Assert.assertNotNull(m1.getCSlice());
         Assert.assertNotNull(m1.getDSlice());
-        Assert.assertTrue(m1.getCSlice().getHoster().isInstantiatedTo(rp.getNode(n1)));
-        Assert.assertTrue(m1.getDSlice().getHoster().isInstantiatedTo(rp.getNode(n1)));
+        Assert.assertTrue(m1.getCSlice().getHoster().isInstantiatedTo(rp.getNodeIdx(n1)));
+        Assert.assertTrue(m1.getDSlice().getHoster().isInstantiatedTo(rp.getNodeIdx(n1)));
         Assert.assertTrue(m1.getDuration().isInstantiatedTo(0));
         Assert.assertTrue(m1.getStart().isInstantiatedTo(0));
         Assert.assertTrue(m1.getEnd().isInstantiatedTo(0));

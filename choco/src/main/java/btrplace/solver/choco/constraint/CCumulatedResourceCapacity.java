@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -70,7 +69,7 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
                 int[] alias = new int[cstr.getInvolvedNodes().size()];
                 int i = 0;
                 for (UUID n : cstr.getInvolvedNodes()) {
-                    alias[i++] = rp.getNode(n);
+                    alias[i++] = rp.getNodeIdx(n);
                 }
 
                 TIntArrayList cUse = new TIntArrayList();
@@ -84,7 +83,7 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
                         cUse.add(rcm.getSourceResource().get(vmId));
                     }
                     if (d != null) {
-                        dUse.add(rcm.getVMsAllocation()[rp.getVM(vmId)]);
+                        dUse.add(rcm.getVMsAllocation()[rp.getVMIdx(vmId)]);
                     }
                 }
                 rp.getAliasedCumulativesBuilder().add(cstr.getAmount(), cUse.toNativeArray(), dUse.toArray(new IntDomainVar[dUse.size()]), alias);
@@ -92,7 +91,7 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
         }
         List<IntDomainVar> vs = new ArrayList<>();
         for (UUID u : cstr.getInvolvedNodes()) {
-            vs.add(rcm.getVirtualUsage()[rp.getNode(u)]);
+            vs.add(rcm.getVirtualUsage()[rp.getNodeIdx(u)]);
         }
         CPSolver s = rp.getSolver();
         s.post(s.leq(CPSolver.sum(vs.toArray(new IntDomainVar[vs.size()])), cstr.getAmount()));

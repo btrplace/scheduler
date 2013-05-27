@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -87,7 +86,7 @@ public class KillVMActionModelTest implements PremadeElements {
 
         //The running VM has a CSlice
         Assert.assertNotNull(rp.getVMAction(vm1).getCSlice());
-        Assert.assertTrue(rp.getVMAction(vm1).getCSlice().getHoster().isInstantiatedTo(rp.getNode(n1)));
+        Assert.assertTrue(rp.getVMAction(vm1).getCSlice().getHoster().isInstantiatedTo(rp.getNodeIdx(n1)));
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
 

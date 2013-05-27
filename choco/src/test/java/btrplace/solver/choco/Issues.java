@@ -87,7 +87,7 @@ public class Issues implements PremadeElements {
             vmsOnInvolvedNodes[i] = solver.createBoundIntVar("nVMs", -1, maxVMs);
             IntDomainVar state = rp.getNodeAction(n).getState();
             // If the node is offline -> the temporary variable is -1, otherwise, it equals the number of VMs on that node
-            IntDomainVar[] c = new IntDomainVar[]{solver.makeConstantIntVar(-1), VMsOnAllNodes[rp.getNode(n)],
+            IntDomainVar[] c = new IntDomainVar[]{solver.makeConstantIntVar(-1), VMsOnAllNodes[rp.getNodeIdx(n)],
                     state, vmsOnInvolvedNodes[i]};
             solver.post(new ElementV(c, 0, solver.getEnvironment()));
 
@@ -142,7 +142,7 @@ public class Issues implements PremadeElements {
         int i = 0;
 
         for (UUID n : map.getAllNodes()) {
-            nodeVM[i++] = nodes_state[rp.getNode(n)];
+            nodeVM[i++] = nodes_state[rp.getNodeIdx(n)];
         }
         CPSolver solver = rp.getSolver();
         IntDomainVar idle = solver.createBoundIntVar("Nidles", 0, map.getAllNodes().size());
@@ -176,7 +176,7 @@ public class Issues implements PremadeElements {
         int i = 0;
 
         for (UUID n : map.getAllNodes()) {
-            nodeVM[i++] = nodes_state[rp.getNode(n)];
+            nodeVM[i++] = nodes_state[rp.getNodeIdx(n)];
             //rp.getNodeAction(n).getState().setVal(1);
         }
         CPSolver solver = rp.getSolver();
@@ -213,7 +213,7 @@ public class Issues implements PremadeElements {
             vmsOnInvolvedNodes[i] = solver.createBoundIntVar("nVMs" + n, -1, maxVMs);
             IntDomainVar state = rp.getNodeAction(n).getState();
             // If the node is offline -> the temporary variable is 1, otherwise, it equals the number of VMs on that node
-            IntDomainVar[] c = new IntDomainVar[]{solver.makeConstantIntVar(-1), VMsOnAllNodes[rp.getNode(n)],
+            IntDomainVar[] c = new IntDomainVar[]{solver.makeConstantIntVar(-1), VMsOnAllNodes[rp.getNodeIdx(n)],
                     state, vmsOnInvolvedNodes[i]};
             SConstraint elem = new ElementV(c, 0, solver.getEnvironment());
             elms.add(elem);

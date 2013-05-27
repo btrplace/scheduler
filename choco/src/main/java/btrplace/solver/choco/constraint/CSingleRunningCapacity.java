@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -58,7 +57,7 @@ public class CSingleRunningCapacity implements ChocoSatConstraint {
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
         CPSolver s = rp.getSolver();
         for (UUID u : cstr.getInvolvedNodes()) {
-            IntDomainVar v = rp.getNbRunningVMs()[rp.getNode(u)];
+            IntDomainVar v = rp.getNbRunningVMs()[rp.getNodeIdx(u)];
             s.post(s.leq(v, cstr.getAmount()));
 
             //Continuous in practice ?

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -98,4 +97,18 @@ public interface Model extends Cloneable {
      * @return a new model
      */
     Model clone();
+
+    /**
+     * Generate an identifier for a new VM.
+     *
+     * @return an integer
+     */
+    int newVM();
+
+    /**
+     * Generate an identifier for a new node.
+     *
+     * @return an integer
+     */
+    int newNode();
 }

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -68,19 +67,19 @@ public class CShareableResourceTest implements PremadeElements {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         CShareableResource rcm = new CShareableResource(rp, rc);
         Assert.assertEquals(rc.getIdentifier(), rcm.getIdentifier());
-        Assert.assertEquals(-1, rcm.getVMsAllocation()[rp.getVM(vm1)].getInf());
-        Assert.assertEquals(-1, rcm.getVMsAllocation()[rp.getVM(vm2)].getInf());
-        Assert.assertEquals(0, rcm.getVMsAllocation()[rp.getVM(vm3)].getSup()); //Will not be running so 0
-        IntDomainVar pn1 = rcm.getPhysicalUsage()[rp.getNode(n1)];
-        IntDomainVar pn2 = rcm.getPhysicalUsage()[rp.getNode(n2)];
+        Assert.assertEquals(-1, rcm.getVMsAllocation()[rp.getVMIdx(vm1)].getInf());
+        Assert.assertEquals(-1, rcm.getVMsAllocation()[rp.getVMIdx(vm2)].getInf());
+        Assert.assertEquals(0, rcm.getVMsAllocation()[rp.getVMIdx(vm3)].getSup()); //Will not be running so 0
+        IntDomainVar pn1 = rcm.getPhysicalUsage()[rp.getNodeIdx(n1)];
+        IntDomainVar pn2 = rcm.getPhysicalUsage()[rp.getNodeIdx(n2)];
         Assert.assertTrue(pn1.getInf() == 0 && pn1.getSup() == 4);
         Assert.assertTrue(pn2.getInf() == 0 && pn2.getSup() == 0);
 
-        pn1 = rcm.getPhysicalUsage(rp.getNode(n1));
+        pn1 = rcm.getPhysicalUsage(rp.getNodeIdx(n1));
         Assert.assertTrue(pn1.getInf() == 0 && pn1.getSup() == 4);
 
-        IntDomainVar vn1 = rcm.getVirtualUsage()[rp.getNode(n1)];
-        IntDomainVar vn2 = rcm.getVirtualUsage()[rp.getNode(n2)];
+        IntDomainVar vn1 = rcm.getVirtualUsage()[rp.getNodeIdx(n1)];
+        IntDomainVar vn2 = rcm.getVirtualUsage()[rp.getNodeIdx(n2)];
         Assert.assertEquals(vn1.getInf(), 0);
         Assert.assertEquals(vn2.getInf(), 0);
 
@@ -109,14 +108,14 @@ public class CShareableResourceTest implements PremadeElements {
         mo.attach(rc);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
-        VMActionModel avm1 = rp.getVMActions()[rp.getVM(vm1)];
-        VMActionModel avm2 = rp.getVMActions()[rp.getVM(vm2)];
+        VMActionModel avm1 = rp.getVMActions()[rp.getVMIdx(vm1)];
+        VMActionModel avm2 = rp.getVMActions()[rp.getVMIdx(vm2)];
         avm1.getDSlice().getHoster().setVal(0);
         avm2.getDSlice().getHoster().setVal(1);
         CShareableResource rcm = (CShareableResource) rp.getView(btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo");
         //Basic consumption for the VMs. If would be safe to use Preserve, but I don't want:D
-        rcm.getVMsAllocation()[rp.getVM(vm1)].setInf(2);
-        rcm.getVMsAllocation()[rp.getVM(vm2)].setInf(3);
+        rcm.getVMsAllocation()[rp.getVMIdx(vm1)].setInf(2);
+        rcm.getVMsAllocation()[rp.getVMIdx(vm2)].setInf(3);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         Assert.assertTrue(rcm.getVirtualUsage(0).isInstantiatedTo(2));
@@ -148,8 +147,8 @@ public class CShareableResourceTest implements PremadeElements {
         Assert.assertNotNull(p);
         //Check the amount of allocated resources on the RP
         CShareableResource rcm = (CShareableResource) rp.getView(rc.getIdentifier());
-        Assert.assertEquals(rcm.getVMsAllocation()[rp.getVM(vm1)].getVal(), 5);
-        Assert.assertEquals(rcm.getVMsAllocation()[rp.getVM(vm2)].getVal(), 7);
+        Assert.assertEquals(rcm.getVMsAllocation()[rp.getVMIdx(vm1)].getVal(), 5);
+        Assert.assertEquals(rcm.getVMsAllocation()[rp.getVMIdx(vm2)].getVal(), 7);
 
         //And on the resulting plan.
         Model res = p.getResult();
@@ -173,11 +172,11 @@ public class CShareableResourceTest implements PremadeElements {
         mo.attach(rc);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
-        VMActionModel avm1 = rp.getVMActions()[rp.getVM(vm1)];
+        VMActionModel avm1 = rp.getVMActions()[rp.getVMIdx(vm1)];
         avm1.getDSlice().getHoster().setVal(0);
         CShareableResource rcm = (CShareableResource) rp.getView(btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo");
         //Basic consumption for the VMs. If would be safe to use Preserve, but I don't want:D
-        rcm.getVMsAllocation()[rp.getVM(vm2)].setInf(4);
+        rcm.getVMsAllocation()[rp.getVMIdx(vm2)].setInf(4);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNull(p);
     }

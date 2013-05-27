@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -84,14 +83,14 @@ public class RelocatableVMModelTest implements PremadeElements {
         Assert.assertFalse(am.getStart().isInstantiated());
         Assert.assertFalse(am.getEnd().isInstantiated());
         Assert.assertNotNull(am.getCSlice());
-        Assert.assertTrue(am.getCSlice().getHoster().isInstantiatedTo(rp.getNode(n1)));
+        Assert.assertTrue(am.getCSlice().getHoster().isInstantiatedTo(rp.getNodeIdx(n1)));
         Assert.assertTrue(am.getState().isInstantiatedTo(1));
         Assert.assertNotNull(am.getDSlice());
         Assert.assertFalse(am.getDSlice().getHoster().isInstantiated());
 
         //No VMs on n1, discrete mode
         CPSolver s = rp.getSolver();
-        s.post(s.eq(rp.getNbRunningVMs()[rp.getNode(n1)], 0));
+        s.post(s.eq(rp.getNbRunningVMs()[rp.getNodeIdx(n1)], 0));
 
         ReconfigurationPlan p = rp.solve(0, false);
 
@@ -126,14 +125,14 @@ public class RelocatableVMModelTest implements PremadeElements {
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm1);
 
         //No VMs on n2
-        rp.getNbRunningVMs()[rp.getNode(n2)].setVal(0);
+        rp.getNbRunningVMs()[rp.getNodeIdx(n2)].setVal(0);
 
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         Assert.assertEquals(0, p.getSize());
 
         Assert.assertTrue(am.getDuration().isInstantiatedTo(0));
-        Assert.assertTrue(am.getDSlice().getHoster().isInstantiatedTo(rp.getNode(n1)));
+        Assert.assertTrue(am.getDSlice().getHoster().isInstantiatedTo(rp.getNodeIdx(n1)));
         Assert.assertTrue(am.getStart().isInstantiatedTo(0));
         Assert.assertTrue(am.getEnd().isInstantiatedTo(0));
 
@@ -224,7 +223,7 @@ public class RelocatableVMModelTest implements PremadeElements {
                 .setManageableVMs(map.getAllVMs())
                 .build();
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
-        am.getDSlice().getHoster().setVal(rp.getNode(n2));
+        am.getDSlice().getHoster().setVal(rp.getNodeIdx(n2));
         new MinMTTR().inject(rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
@@ -266,7 +265,7 @@ public class RelocatableVMModelTest implements PremadeElements {
                 .setManageableVMs(map.getAllVMs())
                 .build();
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
-        am.getDSlice().getHoster().setVal(rp.getNode(n2));
+        am.getDSlice().getHoster().setVal(rp.getNodeIdx(n2));
         new MinMTTR().inject(rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
@@ -303,7 +302,7 @@ public class RelocatableVMModelTest implements PremadeElements {
                 .build();
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
         am.getRelocationMethod().setVal(1);
-        am.getDSlice().getHoster().setVal(rp.getNode(n2));
+        am.getDSlice().getHoster().setVal(rp.getNodeIdx(n2));
         new MinMTTR().inject(rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
@@ -340,7 +339,7 @@ public class RelocatableVMModelTest implements PremadeElements {
                 .build();
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
         am.getRelocationMethod().setVal(0);
-        am.getDSlice().getHoster().setVal(rp.getNode(n2));
+        am.getDSlice().getHoster().setVal(rp.getNodeIdx(n2));
         new MinMTTR().inject(rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);

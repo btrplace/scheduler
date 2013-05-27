@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -255,7 +254,7 @@ public class CShareableResource implements ChocoModelView {
      */
     public boolean addAllocateAction(ReconfigurationPlan plan, UUID e, UUID node, int st, int ed) {
 
-        int use = vmAllocation[rp.getVM(e)].getInf();
+        int use = vmAllocation[rp.getVMIdx(e)].getInf();
         if (rc.get(e) != use) {
             //The allocation has changed
             Allocate a = new Allocate(e, node, rc.getIdentifier(), use, st, ed);
@@ -300,7 +299,7 @@ public class CShareableResource implements ChocoModelView {
     @Override
     public boolean beforeSolve(ReconfigurationProblem rp) {
         for (UUID vm : source.getMapping().getAllVMs()) {
-            int vmId = rp.getVM(vm);
+            int vmId = rp.getVMIdx(vm);
             IntDomainVar v = vmAllocation[vmId];
             if (v.getInf() < 0) {
                 int prevUsage = rc.get(vm);
@@ -366,7 +365,7 @@ public class CShareableResource implements ChocoModelView {
             prev = rc.get(sVM);
         }
         int now = 0;
-        IntDomainVar nowI = getVMsAllocation(rp.getVM(sVM));
+        IntDomainVar nowI = getVMsAllocation(rp.getVMIdx(sVM));
         if (nowI != null) {
             now = nowI.getInf();
         }
@@ -379,7 +378,7 @@ public class CShareableResource implements ChocoModelView {
     private boolean insertAllocateAction(ReconfigurationPlan p, UUID vm, UUID destNode, int st) {
         String rcId = getResourceIdentifier();
         int prev = rc.get(vm);
-        int now = getVMsAllocation()[rp.getVM(vm)].getVal();
+        int now = getVMsAllocation()[rp.getVMIdx(vm)].getVal();
         if (prev != now) {
             Allocate a = new Allocate(vm, destNode, rcId, now, st, st);
             return p.add(a);
@@ -407,7 +406,7 @@ public class CShareableResource implements ChocoModelView {
                 cUse.add(getSourceResource().get(vmId));
             }
             if (d != null) {
-                dUse.add(vmAllocation[rp.getVM(vmId)]);
+                dUse.add(vmAllocation[rp.getVMIdx(vmId)]);
             }
         }
 

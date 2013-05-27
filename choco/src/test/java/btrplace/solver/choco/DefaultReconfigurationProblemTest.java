@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -144,15 +143,15 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
         //Test the index values of the nodes and the VMs.
         for (int i = 0; i < rp.getVMs().length; i++) {
             UUID vm = rp.getVM(i);
-            Assert.assertEquals(i, rp.getVM(vm));
+            Assert.assertEquals(i, rp.getVMIdx(vm));
         }
-        Assert.assertEquals(-1, rp.getVM(vm10));
+        Assert.assertEquals(-1, rp.getVMIdx(vm10));
 
         for (int i = 0; i < rp.getNodes().length; i++) {
             UUID n = rp.getNode(i);
-            Assert.assertEquals(i, rp.getNode(n));
+            Assert.assertEquals(i, rp.getNodeIdx(n));
         }
-        Assert.assertEquals(-1, rp.getNode(n10));
+        Assert.assertEquals(-1, rp.getNodeIdx(n10));
     }
 
     @Test
@@ -439,11 +438,11 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
         //Check consistency between the counting and the hoster variables
         int[] counts = new int[map.getAllNodes().size()];
         for (UUID n : map.getOnlineNodes()) {
-            int nIdx = rp.getNode(n);
+            int nIdx = rp.getNodeIdx(n);
             counts[nIdx] = rp.getNbRunningVMs()[nIdx].getVal();
         }
         for (UUID vm : rp.getFutureRunningVMs()) {
-            VMActionModel mo = rp.getVMActions()[rp.getVM(vm)];
+            VMActionModel mo = rp.getVMActions()[rp.getVMIdx(vm)];
             int on = mo.getDSlice().getHoster().getVal();
             counts[on]--;
         }

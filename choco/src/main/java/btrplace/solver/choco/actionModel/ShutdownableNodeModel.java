@@ -122,7 +122,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
         */
         isOnline = s.createBooleanVar(rp.makeVarLabel("shutdownableNode(", e, ").online"));
         isOffline = new BoolVarNot(s, rp.makeVarLabel("shutdownableNode(", e, ").offline"), (BooleanVarImpl) isOnline);
-        s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNode(e)], 0));
+        s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNodeIdx(e)], 0));
 
         /*
         * D = {0, d}

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -67,7 +66,7 @@ public class CFence implements ChocoSatConstraint {
                     Slice t = rp.getVMAction(vm).getDSlice();
                     UUID n = nodes.iterator().next();
                     try {
-                        t.getHoster().setVal(rp.getNode(n));
+                        t.getHoster().setVal(rp.getNodeIdx(n));
                     } catch (ContradictionException e) {
                         rp.getLogger().error("Unable to force VM '{}' to be running on '{}': {}", vm, n, e.getMessage());
                         return false;

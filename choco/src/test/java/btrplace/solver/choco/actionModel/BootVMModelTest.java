@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -107,8 +106,8 @@ public class BootVMModelTest implements PremadeElements {
                 .labelVariables()
                 .setNextVMsStates(new HashSet<UUID>(), map.getAllVMs(), new HashSet<UUID>(), new HashSet<UUID>())
                 .build();
-        BootVMModel m1 = (BootVMModel) rp.getVMActions()[rp.getVM(vm1)];
-        BootVMModel m2 = (BootVMModel) rp.getVMActions()[rp.getVM(vm2)];
+        BootVMModel m1 = (BootVMModel) rp.getVMActions()[rp.getVMIdx(vm1)];
+        BootVMModel m2 = (BootVMModel) rp.getVMActions()[rp.getVMIdx(vm2)];
         rp.getNodeActions()[0].getState().setVal(1);
         rp.getNodeActions()[1].getState().setVal(1);
         CPSolver s = rp.getSolver();

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -83,11 +82,11 @@ public class CLonely implements ChocoSatConstraint {
             Mapping map = rp.getSourceModel().getMapping();
             for (UUID vm : map.getRunningVMs()) {
                 if (!vms.contains(vm)) {
-                    otherPos.add(rp.getNode(map.getVMLocation(vm)));
+                    otherPos.add(rp.getNodeIdx(map.getVMLocation(vm)));
                     VMActionModel a = rp.getVMAction(vm);
                     otherEnds.add(a.getCSlice().getEnd());
                 } else {
-                    minePos.add(rp.getNode(map.getVMLocation(vm)));
+                    minePos.add(rp.getNodeIdx(map.getVMLocation(vm)));
                     VMActionModel a = rp.getVMAction(vm);
                     mineEnds.add(a.getCSlice().getEnd());
                 }

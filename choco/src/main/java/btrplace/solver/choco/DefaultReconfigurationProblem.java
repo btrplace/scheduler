@@ -499,7 +499,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             return -1;
         }
         UUID nodeId = model.getMapping().getVMLocation(id);
-        return nodeId == null ? -1 : getNode(nodeId);
+        return nodeId == null ? -1 : getNodeIdx(nodeId);
     }
 
     private boolean checkConsistency(ReconfigurationPlan p) {
@@ -560,7 +560,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public IntDomainVar makeCurrentHost(String n, UUID vmId) throws SolverException {
-        int idx = getVM(vmId);
+        int idx = getVMIdx(vmId);
         if (idx < 0) {
             throw new SolverException(model, "Unknown VM '" + vmId + "'");
         }
@@ -569,7 +569,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public IntDomainVar makeCurrentNode(String n, UUID nId) throws SolverException {
-        int idx = getNode(nId);
+        int idx = getNodeIdx(nId);
         if (idx < 0) {
             throw new SolverException(model, "Unknown node '" + nId + "'");
         }
@@ -696,7 +696,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public int getVM(UUID vm) {
+    public int getVMIdx(UUID vm) {
         return revVMs.get(vm);
     }
 
@@ -706,7 +706,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public int getNode(UUID n) {
+    public int getNodeIdx(UUID n) {
         return revNodes.get(n);
     }
 
@@ -727,13 +727,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public VMActionModel getVMAction(UUID id) {
-        int idx = getVM(id);
+        int idx = getVMIdx(id);
         return idx < 0 ? null : vmActions[idx];
     }
 
     @Override
     public NodeActionModel getNodeAction(UUID id) {
-        int idx = getNode(id);
+        int idx = getNodeIdx(id);
         return idx < 0 ? null : nodeActions[idx];
     }
 

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -114,7 +113,7 @@ public class CSplit implements ChocoSatConstraint {
                     List<UUID> grp = vmGroups.get(i);
                     for (UUID vm : grp) {
                         if (map.getRunningVMs().contains(vm)) {
-                            int myPos = rp.getNode(map.getVMLocation(vm));
+                            int myPos = rp.getNodeIdx(map.getVMLocation(vm));
                             IntDomainVar myEnd = rp.getVMAction(vm).getCSlice().getEnd();
 
                             for (int j = 0; j < vmGroups.size(); j++) {

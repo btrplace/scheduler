@@ -67,7 +67,7 @@ public class SuspendVMModel implements VMActionModel {
         int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), SuspendVM.class, e);
 
         duration = rp.makeDuration(d, d, "suspendVM(", e, ").duration");
-        this.cSlice = new SliceBuilder(rp, e, "suspendVM(" + e + ").cSlice").setHoster(rp.getCurrentVMLocation(rp.getVM(e)))
+        this.cSlice = new SliceBuilder(rp, e, "suspendVM(" + e + ").cSlice").setHoster(rp.getCurrentVMLocation(rp.getVMIdx(e)))
                 .setEnd(rp.makeDuration(rp.getEnd().getSup(), d, "suspendVM(", e, ").cSlice_end"))
                 .build();
         start = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel("suspendVM(" + e + ").start"), cSlice.getEnd(), -d);

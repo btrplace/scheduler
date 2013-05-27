@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -123,7 +122,7 @@ public interface ReconfigurationProblem {
      * @param vm the virtual machine
      * @return its index or -1 in case of failure
      */
-    int getVM(UUID vm);
+    int getVMIdx(UUID vm);
 
     /**
      * Get the virtual machine with a specified index
@@ -139,7 +138,7 @@ public interface ReconfigurationProblem {
      * @param n the node
      * @return its index or -1 in case of failure
      */
-    int getNode(UUID n);
+    int getNodeIdx(UUID n);
 
     /**
      * Get the node with a specified index

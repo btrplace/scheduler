@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -38,6 +37,10 @@ public class DefaultModel implements Model, Cloneable {
 
     private Attributes attrs;
 
+    private int nextVM;
+
+    private int nextNode;
+
     /**
      * Make a new instance using a particular mapping.
      *
@@ -47,8 +50,13 @@ public class DefaultModel implements Model, Cloneable {
         this.cfg = m;
         this.resources = new HashMap<>();
         attrs = new DefaultAttributes();
+        nextVM = 0;
+        nextNode = 0;
     }
 
+    public DefaultModel() {
+        this(new DefaultMapping());
+    }
 
     @Override
     public ModelView getView(String id) {
@@ -144,5 +152,15 @@ public class DefaultModel implements Model, Cloneable {
             b.append(entry.getValue()).append("\n");
         }
         return b.toString();
+    }
+
+    @Override
+    public int newVM() {
+        return nextVM++;
+    }
+
+    @Override
+    public int newNode() {
+        return nextNode++;
     }
 }

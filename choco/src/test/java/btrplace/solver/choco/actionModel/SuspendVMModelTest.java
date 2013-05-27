@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -96,8 +95,8 @@ public class SuspendVMModelTest implements PremadeElements {
                 .labelVariables()
                 .setNextVMsStates(new HashSet<UUID>(), new HashSet<UUID>(), map.getAllVMs(), new HashSet<UUID>())
                 .build();
-        SuspendVMModel m1 = (SuspendVMModel) rp.getVMActions()[rp.getVM(vm1)];
-        SuspendVMModel m2 = (SuspendVMModel) rp.getVMActions()[rp.getVM(vm2)];
+        SuspendVMModel m1 = (SuspendVMModel) rp.getVMActions()[rp.getVMIdx(vm1)];
+        SuspendVMModel m2 = (SuspendVMModel) rp.getVMActions()[rp.getVMIdx(vm2)];
         rp.getNodeActions()[0].getState().setVal(1);
         CPSolver s = rp.getSolver();
         s.post(s.geq(m2.getStart(), m1.getEnd()));
