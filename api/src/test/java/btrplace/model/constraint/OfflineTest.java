@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -33,7 +32,8 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * Unit tests for {@link btrplace.model.constraint.Offline}.
@@ -44,7 +44,7 @@ public class OfflineTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
         Offline o = new Offline(s);
         Assert.assertNotNull(o.getChecker());
         Assert.assertEquals(o.getInvolvedNodes(), s);
@@ -58,7 +58,7 @@ public class OfflineTest implements PremadeElements {
         Mapping c = new DefaultMapping();
         c.addOfflineNode(n1);
         c.addOfflineNode(n2);
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
         Offline o = new Offline(s);
 
         Model i = new DefaultModel(c);
@@ -74,7 +74,7 @@ public class OfflineTest implements PremadeElements {
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
 
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
         Offline off = new Offline(s);
 
         map.addRunningVM(vm1, n1);
@@ -92,7 +92,7 @@ public class OfflineTest implements PremadeElements {
 
     @Test
     public void testEquals() {
-        Set<UUID> x = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> x = new HashSet<>(Arrays.asList(n1, n2));
         Offline s = new Offline(x);
 
         Assert.assertTrue(s.equals(s));

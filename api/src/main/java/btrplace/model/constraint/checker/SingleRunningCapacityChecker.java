@@ -22,7 +22,10 @@ import btrplace.model.Model;
 import btrplace.model.constraint.SingleRunningCapacity;
 import btrplace.plan.event.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Checker for the {@link btrplace.model.constraint.SingleRunningCapacity} constraint
@@ -32,11 +35,11 @@ import java.util.*;
  */
 public class SingleRunningCapacityChecker extends AllowAllConstraintChecker<SingleRunningCapacity> {
 
-    private Map<UUID, Integer> usage;
+    private Map<Integer, Integer> usage;
 
     private int amount;
 
-    private Set<UUID> srcRunnings;
+    private Set<Integer> srcRunnings;
 
     /**
      * Make a new checker.
@@ -48,14 +51,14 @@ public class SingleRunningCapacityChecker extends AllowAllConstraintChecker<Sing
         amount = s.getAmount();
     }
 
-    private boolean leave(UUID n) {
+    private boolean leave(int n) {
         if (getConstraint().isContinuous() && getNodes().contains(n)) {
             usage.put(n, usage.get(n) - 1);
         }
         return true;
     }
 
-    private boolean arrive(UUID n) {
+    private boolean arrive(int n) {
         if (getConstraint().isContinuous() && getNodes().contains(n)) {
             int u = usage.get(n);
             if (u == amount) {
@@ -112,7 +115,7 @@ public class SingleRunningCapacityChecker extends AllowAllConstraintChecker<Sing
         if (getConstraint().isContinuous()) {
             Mapping map = mo.getMapping();
             usage = new HashMap<>(getNodes().size());
-            for (UUID n : getNodes()) {
+            for (int n : getNodes()) {
                 int s = map.getRunningVMs(n).size();
                 if (s > amount) {
                     return false;
@@ -128,7 +131,7 @@ public class SingleRunningCapacityChecker extends AllowAllConstraintChecker<Sing
     @Override
     public boolean endsWith(Model mo) {
         Mapping map = mo.getMapping();
-        for (UUID n : getNodes()) {
+        for (int n : getNodes()) {
             if (map.getRunningVMs(n).size() > amount) {
                 return false;
             }

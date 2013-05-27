@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,7 +21,6 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * Migrate a running VM from one online node to another one.
@@ -31,9 +29,9 @@ import java.util.UUID;
  */
 public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
 
-    private UUID vm;
+    private int vm;
 
-    private UUID src, dst;
+    private int src, dst;
 
 
     /**
@@ -45,7 +43,7 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
      * @param st  the moment the action will consume
      * @param ed  the moment the action will stop
      */
-    public MigrateVM(UUID vm, UUID src, UUID dst, int st, int ed) {
+    public MigrateVM(int vm, int src, int dst, int st, int ed) {
         super(st, ed);
         this.vm = vm;
         this.src = src;
@@ -53,7 +51,7 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
     }
 
     @Override
-    public UUID getDestinationNode() {
+    public int getDestinationNode() {
         return dst;
     }
 
@@ -62,12 +60,12 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
      *
      * @return the node identifier
      */
-    public UUID getSourceNode() {
+    public int getSourceNode() {
         return src;
     }
 
     @Override
-    public UUID getVM() {
+    public int getVM() {
         return vm;
     }
 
@@ -84,8 +82,8 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
         if (c.getOnlineNodes().contains(src)
                 && c.getOnlineNodes().contains(dst)
                 && c.getRunningVMs().contains(vm)
-                && c.getVMLocation(vm).equals(src)
-                && !src.equals(dst)) {
+                && c.getVMLocation(vm) == src
+                && src != dst) {
             c.addRunningVM(vm, dst);
             return true;
         }
@@ -107,9 +105,9 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
             return true;
         } else if (o.getClass() == this.getClass()) {
             MigrateVM that = (MigrateVM) o;
-            return this.vm.equals(that.vm) &&
-                    this.src.equals(that.src) &&
-                    this.dst.equals(that.dst) &&
+            return this.vm == that.vm &&
+                    this.src == that.src &&
+                    this.dst == that.dst &&
                     this.getStart() == that.getStart() &&
                     this.getEnd() == that.getEnd();
         }

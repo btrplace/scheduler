@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,7 +28,8 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * Unit tests for {@link btrplace.model.constraint.Online}.
@@ -40,7 +40,7 @@ public class OnlineTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
         Online o = new Online(s);
         Assert.assertNotNull(o.getChecker());
         Assert.assertEquals(o.getInvolvedNodes(), s);
@@ -54,7 +54,7 @@ public class OnlineTest implements PremadeElements {
         Mapping c = new DefaultMapping();
         c.addOnlineNode(n1);
         c.addOnlineNode(n2);
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
         Online o = new Online(s);
 
         Model i = new DefaultModel(c);
@@ -66,7 +66,7 @@ public class OnlineTest implements PremadeElements {
 
     @Test
     public void testEquals() {
-        Set<UUID> x = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> x = new HashSet<>(Arrays.asList(n1, n2));
         Online s = new Online(x);
 
         Assert.assertTrue(s.equals(s));

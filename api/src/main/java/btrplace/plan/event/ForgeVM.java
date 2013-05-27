@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,7 +21,6 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * Prepare a VM for being deployed.
@@ -31,14 +29,14 @@ import java.util.UUID;
  */
 public class ForgeVM extends Action implements VMStateTransition {
 
-    private UUID id;
+    private int id;
 
     /**
      * Make a new action.
      *
      * @param vm the VM to force.
      */
-    public ForgeVM(UUID vm, int st, int ed) {
+    public ForgeVM(int vm, int st, int ed) {
         super(st, ed);
         this.id = vm;
     }
@@ -76,7 +74,7 @@ public class ForgeVM extends Action implements VMStateTransition {
             return true;
         } else if (o.getClass() == this.getClass()) {
             ForgeVM that = (ForgeVM) o;
-            return this.id.equals(that.id)
+            return this.id == that.id
                     && this.getStart() == that.getStart()
                     && this.getEnd() == that.getEnd();
         }
@@ -89,7 +87,7 @@ public class ForgeVM extends Action implements VMStateTransition {
     }
 
     @Override
-    public UUID getVM() {
+    public int getVM() {
         return id;
     }
 

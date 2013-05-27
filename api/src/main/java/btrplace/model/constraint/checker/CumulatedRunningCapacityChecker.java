@@ -24,7 +24,8 @@ import btrplace.plan.event.*;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * Checker for the {@link btrplace.model.constraint.CumulatedRunningCapacity} constraint
@@ -36,7 +37,7 @@ public class CumulatedRunningCapacityChecker extends AllowAllConstraintChecker<C
 
     private int usage;
 
-    private Set<UUID> srcRunnings;
+    private Set<Integer> srcRunnings;
 
     private int qty;
 
@@ -50,14 +51,14 @@ public class CumulatedRunningCapacityChecker extends AllowAllConstraintChecker<C
         qty = c.getAmount();
     }
 
-    private boolean leave(UUID n) {
+    private boolean leave(int n) {
         if (getConstraint().isContinuous() && getNodes().contains(n)) {
             usage--;
         }
         return true;
     }
 
-    private boolean arrive(UUID n) {
+    private boolean arrive(int n) {
         return !(getConstraint().isContinuous() && getNodes().contains(n) && usage++ == qty);
     }
 
@@ -104,7 +105,7 @@ public class CumulatedRunningCapacityChecker extends AllowAllConstraintChecker<C
         if (getConstraint().isContinuous()) {
             int nb = 0;
             Mapping map = mo.getMapping();
-            for (UUID n : getNodes()) {
+            for (int n : getNodes()) {
                 nb += map.getRunningVMs(n).size();
                 if (nb > qty) {
                     return false;
@@ -120,7 +121,7 @@ public class CumulatedRunningCapacityChecker extends AllowAllConstraintChecker<C
     public boolean endsWith(Model mo) {
         int nb = 0;
         Mapping map = mo.getMapping();
-        for (UUID n : getNodes()) {
+        for (int n : getNodes()) {
             nb += map.getRunningVMs(n).size();
             if (nb > qty) {
                 return false;

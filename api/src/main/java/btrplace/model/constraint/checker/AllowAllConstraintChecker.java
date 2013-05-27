@@ -37,16 +37,16 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
      * VMs involved in the constraint.
      * Updated after each {@link btrplace.plan.event.SubstitutedVMEvent} event.
      */
-    private Set<UUID> vms;
+    private Set<Integer> vms;
 
     /**
      * Nodes involved in the constraint.
      */
-    private Set<UUID> nodes;
+    private Set<Integer> nodes;
 
     private C cstr;
 
-    private List<Collection<UUID>> tracked;
+    private List<Collection<Integer>> tracked;
 
     /**
      * Make a new checker.
@@ -61,7 +61,7 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
     }
 
     /**
-     * Register a new set of VMs UUID to track.
+     * Register a new set of VMs int to track.
      * Each {@link SubstitutedVMEvent} event is catched
      * and all of the registered collections are updated
      * accordingly
@@ -69,7 +69,7 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
      * @param c the collection to register
      * @return {@code true} iff the collection has been added
      */
-    public boolean track(Collection<UUID> c) {
+    public boolean track(Collection<Integer> c) {
         return tracked.add(c);
     }
 
@@ -199,12 +199,12 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
 
     @Override
     public boolean consume(SubstitutedVMEvent e) {
-        for (Collection<UUID> c : tracked) {
+        for (Collection<Integer> c : tracked) {
             if (c.remove(e.getVM())) {
-                c.add(e.getNewUUID());
+                c.add(e.getNewint());
             }
         }
-        return !vms.remove(e.getVM()) || vms.add(e.getNewUUID());
+        return !vms.remove(e.getVM()) || vms.add(e.getNewint());
     }
 
     @Override
@@ -252,7 +252,7 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
      *
      * @return a set of VMs that may be empty
      */
-    public Set<UUID> getVMs() {
+    public Set<Integer> getVMs() {
         return vms;
     }
 
@@ -261,7 +261,7 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
      *
      * @return a set of nodes that may be empty
      */
-    public Set<UUID> getNodes() {
+    public Set<Integer> getNodes() {
         return nodes;
     }
 }

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -24,7 +23,8 @@ import btrplace.model.constraint.checker.SatConstraintChecker;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * Restrict to a given value, the cumulated amount of VMs running
@@ -49,7 +49,7 @@ public class CumulatedRunningCapacity extends SatConstraint {
      * @param servers the server involved in the constraint
      * @param amount  the total amount of resource consumed by all the VMs running on the given servers
      */
-    public CumulatedRunningCapacity(Set<UUID> servers, int amount) {
+    public CumulatedRunningCapacity(Set<Integer> servers, int amount) {
         this(servers, amount, false);
     }
 
@@ -60,8 +60,8 @@ public class CumulatedRunningCapacity extends SatConstraint {
      * @param amount     the total amount of resource consumed by all the VMs running on the given servers
      * @param continuous {@code true} for a continuous restriction
      */
-    public CumulatedRunningCapacity(Set<UUID> servers, int amount, boolean continuous) {
-        super(Collections.<UUID>emptySet(), servers, continuous);
+    public CumulatedRunningCapacity(Set<Integer> servers, int amount, boolean continuous) {
+        super(Collections.<Integer>emptySet(), servers, continuous);
         this.qty = amount;
     }
 

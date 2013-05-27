@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -24,7 +23,8 @@ import btrplace.model.constraint.checker.SatConstraintChecker;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * Restrict the cumulated amount of virtual resources consumed by
@@ -52,7 +52,7 @@ public class CumulatedResourceCapacity extends SatConstraint {
      * @param rc      the resource to consider
      * @param amount  the total amount of resource consumed by all the VMs running on the given servers
      */
-    public CumulatedResourceCapacity(Set<UUID> servers, String rc, int amount) {
+    public CumulatedResourceCapacity(Set<Integer> servers, String rc, int amount) {
         this(servers, rc, amount, false);
     }
 
@@ -64,8 +64,8 @@ public class CumulatedResourceCapacity extends SatConstraint {
      * @param amount     the total amount of resource consumed by all the VMs running on the given servers
      * @param continuous {@code true} for a continuous restriction.
      */
-    public CumulatedResourceCapacity(Set<UUID> servers, String rc, int amount, boolean continuous) {
-        super(Collections.<UUID>emptySet(), servers, continuous);
+    public CumulatedResourceCapacity(Set<Integer> servers, String rc, int amount, boolean continuous) {
+        super(Collections.<Integer>emptySet(), servers, continuous);
         this.qty = amount;
         this.rcId = rc;
     }

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -33,7 +32,8 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * Unit tests for {@link Lonely}.
@@ -44,7 +44,7 @@ public class LonelyTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<Integer> s = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         Lonely l = new Lonely(s);
         Assert.assertNotNull(l.getChecker());
         Assert.assertFalse(l.toString().contains("null"));
@@ -61,17 +61,17 @@ public class LonelyTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsHashCode() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<Integer> s = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         Lonely l = new Lonely(s);
         Assert.assertTrue(l.equals(l));
         Assert.assertTrue(l.equals(new Lonely(new HashSet<>(s))));
         Assert.assertEquals(l.hashCode(), new Lonely(new HashSet<>(s)).hashCode());
-        Assert.assertFalse(l.equals(new Lonely(new HashSet<UUID>())));
+        Assert.assertFalse(l.equals(new Lonely(new HashSet<Integer>())));
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testContinuousIsSatisfied() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<Integer> s = new HashSet<>(Arrays.asList(vm1, vm2));
 
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
@@ -113,7 +113,7 @@ public class LonelyTest implements PremadeElements {
 
         Model mo = new DefaultModel(map);
 
-        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<Integer> s = new HashSet<>(Arrays.asList(vm1, vm2));
         Lonely l = new Lonely(s);
 
         Assert.assertEquals(l.isSatisfied(mo), true);

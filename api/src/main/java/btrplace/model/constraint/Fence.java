@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,7 +21,8 @@ import btrplace.model.constraint.checker.FenceChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * A constraint to force the given VMs, when running,
@@ -40,7 +40,7 @@ public class Fence extends SatConstraint {
      * @param vms   the VMs identifiers
      * @param nodes the nodes identifiers
      */
-    public Fence(Set<UUID> vms, Set<UUID> nodes) {
+    public Fence(Set<Integer> vms, Set<Integer> nodes) {
         super(vms, nodes, false);
     }
 

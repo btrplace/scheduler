@@ -23,7 +23,8 @@ import btrplace.model.constraint.Ban;
 import btrplace.plan.event.RunningVMPlacement;
 
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * Checker for the {@link Ban} constraint
@@ -53,8 +54,8 @@ public class BanChecker extends AllowAllConstraintChecker<Ban> {
     @Override
     public boolean endsWith(Model mo) {
         Mapping c = mo.getMapping();
-        Set<UUID> runnings = c.getRunningVMs();
-        for (UUID vm : getVMs()) {
+        Set<Integer> runnings = c.getRunningVMs();
+        for (int vm : getVMs()) {
             if (runnings.contains(vm) && getNodes().contains(c.getVMLocation(vm))) {
                 return false;
             }

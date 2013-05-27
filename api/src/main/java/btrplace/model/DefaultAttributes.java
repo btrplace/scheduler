@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +17,10 @@
 
 package btrplace.model;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Default implementation for {@link Attributes}.
@@ -27,7 +29,7 @@ import java.util.*;
  */
 public class DefaultAttributes implements Attributes, Cloneable {
 
-    private Map<UUID, Map<String, Object>> attrs;
+    private Map<Integer, Map<String, Object>> attrs;
 
     /**
      * Make a new empty list of attributes.
@@ -36,7 +38,7 @@ public class DefaultAttributes implements Attributes, Cloneable {
         attrs = new HashMap<>();
     }
 
-    private boolean putObject(UUID e, String k, Object v) {
+    private boolean putObject(int e, String k, Object v) {
         Map<String, Object> m = attrs.get(e);
         if (m == null) {
             m = new HashMap<>();
@@ -46,7 +48,7 @@ public class DefaultAttributes implements Attributes, Cloneable {
     }
 
     @Override
-    public Object get(UUID e, String k) {
+    public Object get(int e, String k) {
         Map<String, Object> m = attrs.get(e);
         if (m == null) {
             return null;
@@ -56,13 +58,13 @@ public class DefaultAttributes implements Attributes, Cloneable {
 
 
     @Override
-    public boolean isSet(UUID e, String k) {
+    public boolean isSet(int e, String k) {
         Map<String, Object> m = attrs.get(e);
         return m != null && m.containsKey(k);
     }
 
     @Override
-    public boolean unset(UUID e, String k) {
+    public boolean unset(int e, String k) {
         Map<String, Object> m = attrs.get(e);
         if (m == null) {
             return false;
@@ -74,7 +76,7 @@ public class DefaultAttributes implements Attributes, Cloneable {
     @Override
     public Attributes clone() {
         DefaultAttributes cpy = new DefaultAttributes();
-        for (Map.Entry<UUID, Map<String, Object>> e : attrs.entrySet()) {
+        for (Map.Entry<Integer, Map<String, Object>> e : attrs.entrySet()) {
             cpy.attrs.put(e.getKey(), new HashMap<>(e.getValue()));
         }
         return cpy;
@@ -83,7 +85,7 @@ public class DefaultAttributes implements Attributes, Cloneable {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        for (Map.Entry<UUID, Map<String, Object>> e : attrs.entrySet()) {
+        for (Map.Entry<Integer, Map<String, Object>> e : attrs.entrySet()) {
             b.append(e.getKey());
             b.append(':');
             for (Map.Entry<String, Object> attr : e.getValue().entrySet()) {
@@ -122,7 +124,7 @@ public class DefaultAttributes implements Attributes, Cloneable {
     }
 
     @Override
-    public Set<UUID> getElements() {
+    public Set<Integer> getElements() {
         return attrs.keySet();
     }
 
@@ -132,48 +134,48 @@ public class DefaultAttributes implements Attributes, Cloneable {
     }
 
     @Override
-    public boolean put(UUID e, String k, boolean b) {
+    public boolean put(int e, String k, boolean b) {
         return putObject(e, k, b);
     }
 
     @Override
-    public boolean put(UUID e, String k, String s) {
+    public boolean put(int e, String k, String s) {
         return putObject(e, k, s);
     }
 
     @Override
-    public boolean put(UUID e, String k, long l) {
+    public boolean put(int e, String k, long l) {
         return putObject(e, k, l);
     }
 
     @Override
-    public boolean put(UUID e, String k, double d) {
+    public boolean put(int e, String k, double d) {
         return putObject(e, k, d);
     }
 
     @Override
-    public Boolean getBoolean(UUID e, String k) {
+    public Boolean getBoolean(int e, String k) {
         return (Boolean) get(e, k);
     }
 
     @Override
-    public Long getLong(UUID e, String k) {
+    public Long getLong(int e, String k) {
         return (Long) get(e, k);
     }
 
     @Override
-    public String getString(UUID e, String k) {
+    public String getString(int e, String k) {
         Object o = get(e, k);
         return o == null ? null : o.toString();
     }
 
     @Override
-    public Double getDouble(UUID e, String k) {
+    public Double getDouble(int e, String k) {
         return (Double) get(e, k);
     }
 
     @Override
-    public Set<String> getKeys(UUID u) {
+    public Set<String> getKeys(int u) {
         Map<String, Object> m = attrs.get(u);
         if (m == null) {
             return Collections.emptySet();
@@ -182,7 +184,7 @@ public class DefaultAttributes implements Attributes, Cloneable {
     }
 
     @Override
-    public boolean castAndPut(UUID u, String k, String v) {
+    public boolean castAndPut(int u, String k, String v) {
         String x = v.toLowerCase().trim();
         if (x.equals("true")) {
             return put(u, k, true);

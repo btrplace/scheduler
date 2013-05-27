@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,7 +21,7 @@ import btrplace.model.view.ModelView;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.UUID;
+import java.util.Random;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -33,6 +32,8 @@ import static org.mockito.Mockito.when;
  * @author Fabien Hermenier
  */
 public class DefaultModelTest {
+
+    private static Random rnd = new Random();
 
     @Test
     public void testInstantiate() {
@@ -76,7 +77,7 @@ public class DefaultModelTest {
         i.attach(rc);
         i.attach(b);
 
-        UUID u = UUID.randomUUID();
+        int u = rnd.nextInt();
         i.getAttributes().put(u, "foo", true);
         Model j = new DefaultModel(i.getMapping().clone());
         j.getAttributes().put(u, "foo", true);
@@ -88,7 +89,7 @@ public class DefaultModelTest {
         j.detach(rc);
         Assert.assertFalse(i.equals(j));
         j.attach(rc);
-        j.getMapping().addReadyVM(UUID.randomUUID());
+        j.getMapping().addReadyVM(rnd.nextInt());
         Assert.assertFalse(i.equals(j));
     }
 
@@ -101,7 +102,7 @@ public class DefaultModelTest {
         ModelView v2 = mock(ModelView.class);
         when(v2.getIdentifier()).thenReturn("bar");
         when(v2.clone()).thenReturn(v2);
-        UUID u = UUID.randomUUID();
+        int u = rnd.nextInt();
         i.getAttributes().put(u, "foo", false);
         i.attach(v1);
         i.attach(v2);
@@ -147,7 +148,7 @@ public class DefaultModelTest {
     public void testAttributes() {
         Model i = new DefaultModel(new DefaultMapping());
         Attributes attrs = new DefaultAttributes();
-        attrs.put(UUID.randomUUID(), "foo", true);
+        attrs.put(rnd.nextInt(), "foo", true);
         i.setAttributes(attrs);
         Assert.assertEquals(i.getAttributes(), attrs);
     }

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -23,7 +22,6 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * An action to resume a VirtualMachine on an online node.
@@ -33,9 +31,9 @@ import java.util.UUID;
  */
 public class ResumeVM extends Action implements VMStateTransition, RunningVMPlacement {
 
-    private UUID vm;
+    private int vm;
 
-    private UUID src, dst;
+    private int src, dst;
 
     /**
      * Make a new resume action.
@@ -46,7 +44,7 @@ public class ResumeVM extends Action implements VMStateTransition, RunningVMPlac
      * @param st   the moment the action starts.
      * @param end  the moment the action finish
      */
-    public ResumeVM(UUID vm, UUID from, UUID to, int st, int end) {
+    public ResumeVM(int vm, int from, int to, int st, int end) {
         super(st, end);
         this.vm = vm;
         this.src = from;
@@ -54,12 +52,12 @@ public class ResumeVM extends Action implements VMStateTransition, RunningVMPlac
     }
 
     @Override
-    public UUID getVM() {
+    public int getVM() {
         return vm;
     }
 
     @Override
-    public UUID getDestinationNode() {
+    public int getDestinationNode() {
         return dst;
     }
 
@@ -68,7 +66,7 @@ public class ResumeVM extends Action implements VMStateTransition, RunningVMPlac
      *
      * @return the node identifier
      */
-    public UUID getSourceNode() {
+    public int getSourceNode() {
         return src;
     }
 
@@ -88,7 +86,7 @@ public class ResumeVM extends Action implements VMStateTransition, RunningVMPlac
         return (map.getOnlineNodes().contains(src)
                 && map.getOnlineNodes().contains(dst)
                 && map.getSleepingVMs().contains(vm)
-                && map.getVMLocation(vm).equals(src)
+                && map.getVMLocation(vm) == src
                 && map.addRunningVM(vm, dst));
     }
 
@@ -100,9 +98,9 @@ public class ResumeVM extends Action implements VMStateTransition, RunningVMPlac
             return true;
         } else if (o.getClass() == this.getClass()) {
             ResumeVM that = (ResumeVM) o;
-            return this.vm.equals(that.vm) &&
-                    this.src.equals(that.src) &&
-                    this.dst.equals(that.dst) &&
+            return this.vm == that.vm &&
+                    this.src == that.src &&
+                    this.dst == that.dst &&
                     this.getStart() == that.getStart() &&
                     this.getEnd() == that.getEnd();
         }

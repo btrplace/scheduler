@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -43,12 +42,12 @@ public class SplitAmong extends SatConstraint {
     /**
      * Set of set of vms.
      */
-    private Set<Set<UUID>> vGrps;
+    private Set<Set<Integer>> vGrps;
 
     /**
      * Set of set of nodes.
      */
-    private Set<Set<UUID>> pGrps;
+    private Set<Set<Integer>> pGrps;
 
     /**
      * Make a new constraint having a discrete restriction.
@@ -56,7 +55,7 @@ public class SplitAmong extends SatConstraint {
      * @param vGrps the set of set of VMs. Sets of VMs must be disjoint
      * @param pGrps the set of set of nodes. Sets of nodes must be disjoint
      */
-    public SplitAmong(Set<Set<UUID>> vGrps, Set<Set<UUID>> pGrps) {
+    public SplitAmong(Set<Set<Integer>> vGrps, Set<Set<Integer>> pGrps) {
         this(vGrps, pGrps, false);
     }
 
@@ -68,25 +67,25 @@ public class SplitAmong extends SatConstraint {
      * @param pGrps      the set of set of nodes. Sets of nodes must be disjoint
      * @param continuous {@code true} for a continuous restriction
      */
-    public SplitAmong(Set<Set<UUID>> vGrps, Set<Set<UUID>> pGrps, boolean continuous) {
+    public SplitAmong(Set<Set<Integer>> vGrps, Set<Set<Integer>> pGrps, boolean continuous) {
         super(null, null, continuous);
         this.vGrps = vGrps;
         this.pGrps = pGrps;
     }
 
     @Override
-    public Collection<UUID> getInvolvedVMs() {
-        Set<UUID> s = new HashSet<>();
-        for (Set<UUID> x : vGrps) {
+    public Collection<Integer> getInvolvedVMs() {
+        Set<Integer> s = new HashSet<>();
+        for (Set<Integer> x : vGrps) {
             s.addAll(x);
         }
         return s;
     }
 
     @Override
-    public Collection<UUID> getInvolvedNodes() {
-        Set<UUID> s = new HashSet<>();
-        for (Set<UUID> x : pGrps) {
+    public Collection<Integer> getInvolvedNodes() {
+        Set<Integer> s = new HashSet<>();
+        for (Set<Integer> x : pGrps) {
             s.addAll(x);
         }
         return s;
@@ -97,7 +96,7 @@ public class SplitAmong extends SatConstraint {
      *
      * @return the groups
      */
-    public Set<Set<UUID>> getGroupsOfVMs() {
+    public Set<Set<Integer>> getGroupsOfVMs() {
         return vGrps;
     }
 
@@ -106,7 +105,7 @@ public class SplitAmong extends SatConstraint {
      *
      * @return the groups
      */
-    public Set<Set<UUID>> getGroupsOfNodes() {
+    public Set<Set<Integer>> getGroupsOfNodes() {
         return pGrps;
     }
 
@@ -116,8 +115,8 @@ public class SplitAmong extends SatConstraint {
      * @param u the node
      * @return the associated group of nodes if exists, {@code null} otherwise
      */
-    public Set<UUID> getAssociatedPGroup(UUID u) {
-        for (Set<UUID> pGrp : pGrps) {
+    public Set<Integer> getAssociatedPGroup(int u) {
+        for (Set<Integer> pGrp : pGrps) {
             if (pGrp.contains(u)) {
                 return pGrp;
             }
@@ -131,8 +130,8 @@ public class SplitAmong extends SatConstraint {
      * @param u the VM
      * @return the associated group of VMs if exists, {@code null} otherwise
      */
-    public Set<UUID> getAssociatedVGroup(UUID u) {
-        for (Set<UUID> vGrp : vGrps) {
+    public Set<Integer> getAssociatedVGroup(int u) {
+        for (Set<Integer> vGrp : vGrps) {
             if (vGrp.contains(u)) {
                 return vGrp;
             }
@@ -163,14 +162,14 @@ public class SplitAmong extends SatConstraint {
     public String toString() {
         StringBuilder b = new StringBuilder("splitAmong(");
         b.append("vms=[");
-        for (Iterator<Set<UUID>> ite = vGrps.iterator(); ite.hasNext(); ) {
+        for (Iterator<Set<Integer>> ite = vGrps.iterator(); ite.hasNext(); ) {
             b.append(ite.next());
             if (ite.hasNext()) {
                 b.append(", ");
             }
         }
         b.append("], nodes=[");
-        for (Iterator<Set<UUID>> ite = pGrps.iterator(); ite.hasNext(); ) {
+        for (Iterator<Set<Integer>> ite = pGrps.iterator(); ite.hasNext(); ) {
             b.append(ite.next());
             if (ite.hasNext()) {
                 b.append(", ");

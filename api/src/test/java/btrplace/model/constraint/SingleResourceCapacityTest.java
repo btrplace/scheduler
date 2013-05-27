@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -34,7 +33,8 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * Unit tests for {@link SingleResourceCapacity}.
@@ -45,7 +45,7 @@ public class SingleResourceCapacityTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
 
         SingleResourceCapacity c = new SingleResourceCapacity(s, "foo", 3);
         Assert.assertNotNull(c.getChecker());
@@ -65,7 +65,7 @@ public class SingleResourceCapacityTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsAndHashCode() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
         SingleResourceCapacity c = new SingleResourceCapacity(s, "foo", 3);
         SingleResourceCapacity c2 = new SingleResourceCapacity(s, "foo", 3);
         Assert.assertTrue(c.equals(c));
@@ -74,7 +74,7 @@ public class SingleResourceCapacityTest implements PremadeElements {
 
         Assert.assertFalse(c.equals(new SingleResourceCapacity(s, "bar", 3)));
         Assert.assertFalse(c.equals(new SingleResourceCapacity(s, "foo", 2)));
-        Assert.assertFalse(c.equals(new SingleResourceCapacity(new HashSet<UUID>(), "foo", 3)));
+        Assert.assertFalse(c.equals(new SingleResourceCapacity(new HashSet<Integer>(), "foo", 3)));
         c.setContinuous(true);
         c2.setContinuous(false);
         Assert.assertFalse(c.equals(c2));

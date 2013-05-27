@@ -24,7 +24,6 @@ import btrplace.plan.event.*;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Checker for the {@link btrplace.model.constraint.Spread} constraint
@@ -44,15 +43,15 @@ public class SpreadChecker extends AllowAllConstraintChecker<Spread> {
         denied = new HashSet<>();
     }
 
-    private Set<UUID> denied;
+    private Set<Integer> denied;
 
     @Override
     public boolean startsWith(Model mo) {
         if (getConstraint().isContinuous()) {
             Mapping map = mo.getMapping();
-            for (UUID vm : getVMs()) {
-                UUID n = map.getVMLocation(vm);
-                if (n != null) {
+            for (int vm : getVMs()) {
+                int n = map.getVMLocation(vm);
+                if (n >= 0) {
                     denied.add(n);
                 }
             }
@@ -76,7 +75,7 @@ public class SpreadChecker extends AllowAllConstraintChecker<Spread> {
         unDenied(a.getVM(), a.getSourceNode());
     }
 
-    private void unDenied(UUID vm, UUID n) {
+    private void unDenied(int vm, int n) {
         if (getConstraint().isContinuous() && getVMs().contains(vm)) {
             denied.remove(n);
         }
@@ -99,9 +98,9 @@ public class SpreadChecker extends AllowAllConstraintChecker<Spread> {
 
     @Override
     public boolean endsWith(Model mo) {
-        Set<UUID> forbidden = new HashSet<>();
+        Set<Integer> forbidden = new HashSet<>();
         Mapping map = mo.getMapping();
-        for (UUID vm : getVMs()) {
+        for (int vm : getVMs()) {
             if (map.getRunningVMs().contains(vm)) {
                 if (!forbidden.add(map.getVMLocation(vm))) {
                     return false;

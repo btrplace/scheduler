@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -24,7 +23,8 @@ import btrplace.model.constraint.checker.SatConstraintChecker;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * Ensure the allocation of a given minimum amount of resources for
@@ -49,8 +49,8 @@ public class Preserve extends SatConstraint {
      * @param rcId   the resource identifier
      * @param amount the minimum amount of resource to allocate
      */
-    public Preserve(Set<UUID> vms, String rcId, int amount) {
-        super(vms, Collections.<UUID>emptySet(), false);
+    public Preserve(Set<Integer> vms, String rcId, int amount) {
+        super(vms, Collections.<Integer>emptySet(), false);
         this.rc = rcId;
         this.amount = amount;
     }

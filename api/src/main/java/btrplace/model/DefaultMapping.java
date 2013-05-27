@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -40,22 +39,22 @@ public class DefaultMapping implements Mapping, Cloneable {
     /**
      * The node by states (online, offline)
      */
-    private Set<UUID>[] nodeState;
+    private Set<Integer>[] nodeState;
 
     /**
      * The VMs by state (running, sleeping, ready).
      */
-    private Set<UUID>[] vmState;
+    private Set<Integer>[] vmState;
 
     /**
      * The current location of the VMs.
      */
-    private Map<UUID, UUID> place;
+    private Map<Integer, Integer> place;
 
     /**
      * The VMs hosted by each node, by state (running or sleeping)
      */
-    private Map<UUID, Set<UUID>>[] host;
+    private Map<Integer, Set<Integer>>[] host;
 
     /**
      * Create a new mapping.
@@ -79,22 +78,22 @@ public class DefaultMapping implements Mapping, Cloneable {
     }
 
     @Override
-    public boolean addRunningVM(UUID vm, UUID nId) {
+    public boolean addRunningVM(int vm, int nId) {
         if (!nodeState[ONLINE_STATE].contains(nId)) {
             return false;
         }
 
         if (vmState[RUNNING_STATE].contains(vm)) {
             //If was running, get it's old position
-            UUID old = place.put(vm, nId);
-            if (!old.equals(nId)) {
+            int old = place.put(vm, nId);
+            if (old != nId) {
                 host[RUNNING_STATE].get(old).remove(vm);
                 host[RUNNING_STATE].get(nId).add(vm);
             }
         } else if (vmState[SLEEPING_STATE].remove(vm)) {
             //If was sleeping, where ?
             vmState[RUNNING_STATE].add(vm);
-            UUID old = place.put(vm, nId);
+            int old = place.put(vm, nId);
             host[SLEEPING_STATE].get(old).remove(vm);
             host[RUNNING_STATE].get(nId).add(vm);
         } else if (vmState[READY_STATE].remove(vm)) {
@@ -111,21 +110,21 @@ public class DefaultMapping implements Mapping, Cloneable {
     }
 
     @Override
-    public boolean addSleepingVM(UUID vm, UUID nId) {
+    public boolean addSleepingVM(int vm, int nId) {
         if (!nodeState[ONLINE_STATE].contains(nId)) {
             return false;
         }
         if (vmState[RUNNING_STATE].remove(vm)) {
             //If was running, sync the state
             vmState[SLEEPING_STATE].add(vm);
-            UUID old = place.put(vm, nId);
+            int old = place.put(vm, nId);
             host[RUNNING_STATE].get(old).remove(vm);
             host[SLEEPING_STATE].get(nId).add(vm);
         } else if (vmState[SLEEPING_STATE].contains(vm)) {
             //If was sleeping, sync the state
-            UUID old = place.put(vm, nId);
+            int old = place.put(vm, nId);
             vmState[SLEEPING_STATE].add(vm);
-            if (!old.equals(nId)) {
+            if (old != nId) {
                 host[SLEEPING_STATE].get(old).remove(vm);
                 host[SLEEPING_STATE].get(nId).add(vm);
             }
@@ -143,16 +142,16 @@ public class DefaultMapping implements Mapping, Cloneable {
     }
 
     @Override
-    public void addReadyVM(UUID vm) {
+    public void addReadyVM(int vm) {
         if (vmState[RUNNING_STATE].remove(vm)) {
             //If was running, sync the state
             vmState[READY_STATE].add(vm);
-            UUID n = place.remove(vm);
+            int n = place.remove(vm);
             host[RUNNING_STATE].get(n).remove(vm);
         } else if (vmState[SLEEPING_STATE].remove(vm)) {
             //If was sleeping, sync the state
             vmState[READY_STATE].add(vm);
-            UUID n = place.remove(vm);
+            int n = place.remove(vm);
             host[SLEEPING_STATE].get(n).remove(vm);
         } else {
             //else, it's a new VM
@@ -161,9 +160,9 @@ public class DefaultMapping implements Mapping, Cloneable {
     }
 
     @Override
-    public boolean removeVM(UUID vm) {
-        UUID n = this.place.remove(vm);
-        if (n != null) {
+    public boolean removeVM(int vm) {
+        if (place.containsKey(vm)) {
+            int n = this.place.remove(vm);
             //The VM exists and is already placed
             if (vmState[RUNNING_STATE].remove(vm)) {
                 host[RUNNING_STATE].get(n).remove(vm);
@@ -178,7 +177,7 @@ public class DefaultMapping implements Mapping, Cloneable {
     }
 
     @Override
-    public boolean removeNode(UUID n) {
+    public boolean removeNode(int n) {
         if (nodeState[ONLINE_STATE].contains(n)) {
             if (!host[RUNNING_STATE].get(n).isEmpty() || !host[SLEEPING_STATE].get(n).isEmpty()) {
                 return false;
@@ -191,15 +190,15 @@ public class DefaultMapping implements Mapping, Cloneable {
     }
 
     @Override
-    public void addOnlineNode(UUID n) {
+    public void addOnlineNode(int n) {
         nodeState[OFFLINE_STATE].remove(n);
         nodeState[ONLINE_STATE].add(n);
-        host[RUNNING_STATE].put(n, new HashSet<UUID>());
-        host[SLEEPING_STATE].put(n, new HashSet<UUID>());
+        host[RUNNING_STATE].put(n, new HashSet<Integer>());
+        host[SLEEPING_STATE].put(n, new HashSet<Integer>());
     }
 
     @Override
-    public boolean addOfflineNode(UUID n) {
+    public boolean addOfflineNode(int n) {
 
         if (nodeState[ONLINE_STATE].contains(n)) {
             if (!host[RUNNING_STATE].get(n).isEmpty() || !host[SLEEPING_STATE].get(n).isEmpty()) {
@@ -214,28 +213,28 @@ public class DefaultMapping implements Mapping, Cloneable {
     }
 
     @Override
-    public Set<UUID> getOnlineNodes() {
+    public Set<Integer> getOnlineNodes() {
         return nodeState[ONLINE_STATE];
     }
 
     @Override
-    public Set<UUID> getOfflineNodes() {
+    public Set<Integer> getOfflineNodes() {
         return nodeState[OFFLINE_STATE];
     }
 
     @Override
-    public Set<UUID> getRunningVMs() {
+    public Set<Integer> getRunningVMs() {
         return vmState[RUNNING_STATE];
     }
 
     @Override
-    public Set<UUID> getSleepingVMs() {
+    public Set<Integer> getSleepingVMs() {
         return vmState[SLEEPING_STATE];
     }
 
     @Override
-    public Set<UUID> getSleepingVMs(UUID n) {
-        Set<UUID> in = host[SLEEPING_STATE].get(n);
+    public Set<Integer> getSleepingVMs(int n) {
+        Set<Integer> in = host[SLEEPING_STATE].get(n);
         if (in == null) {
             return new HashSet<>();
         }
@@ -243,8 +242,8 @@ public class DefaultMapping implements Mapping, Cloneable {
     }
 
     @Override
-    public Set<UUID> getRunningVMs(UUID n) {
-        Set<UUID> in = host[RUNNING_STATE].get(n);
+    public Set<Integer> getRunningVMs(int n) {
+        Set<Integer> in = host[RUNNING_STATE].get(n);
         if (in == null) {
             return new HashSet<>();
         }
@@ -252,13 +251,13 @@ public class DefaultMapping implements Mapping, Cloneable {
     }
 
     @Override
-    public Set<UUID> getReadyVMs() {
+    public Set<Integer> getReadyVMs() {
         return vmState[READY_STATE];
     }
 
     @Override
-    public Set<UUID> getAllVMs() {
-        Set<UUID> vms = new HashSet<>(
+    public Set<Integer> getAllVMs() {
+        Set<Integer> vms = new HashSet<>(
                 vmState[READY_STATE].size() +
                         vmState[SLEEPING_STATE].size() +
                         vmState[RUNNING_STATE].size());
@@ -269,8 +268,8 @@ public class DefaultMapping implements Mapping, Cloneable {
     }
 
     @Override
-    public Set<UUID> getAllNodes() {
-        Set<UUID> ns = new HashSet<>(
+    public Set<Integer> getAllNodes() {
+        Set<Integer> ns = new HashSet<>(
                 nodeState[OFFLINE_STATE].size() +
                         nodeState[ONLINE_STATE].size());
         ns.addAll(nodeState[OFFLINE_STATE]);
@@ -279,14 +278,17 @@ public class DefaultMapping implements Mapping, Cloneable {
     }
 
     @Override
-    public UUID getVMLocation(UUID vm) {
+    public int getVMLocation(int vm) {
+        if (!place.containsKey(vm)) {
+            return -1;
+        }
         return place.get(vm);
     }
 
     @Override
-    public Set<UUID> getRunningVMs(Collection<UUID> ns) {
-        Set<UUID> vms = new HashSet<>();
-        for (UUID n : ns) {
+    public Set<Integer> getRunningVMs(Collection<Integer> ns) {
+        Set<Integer> vms = new HashSet<>();
+        for (int n : ns) {
             vms.addAll(getRunningVMs(n));
         }
         return vms;
@@ -295,57 +297,57 @@ public class DefaultMapping implements Mapping, Cloneable {
     @Override
     public Mapping clone() {
         Mapping c2 = new DefaultMapping();
-        for (UUID n : getOnlineNodes()) {
+        for (int n : getOnlineNodes()) {
             c2.addOnlineNode(n);
-            for (UUID v : getRunningVMs(n)) {
+            for (int v : getRunningVMs(n)) {
                 c2.addRunningVM(v, n);
             }
-            for (UUID v : getSleepingVMs(n)) {
+            for (int v : getSleepingVMs(n)) {
                 c2.addSleepingVM(v, n);
             }
         }
-        for (UUID v : getReadyVMs()) {
+        for (int v : getReadyVMs()) {
             c2.addReadyVM(v);
         }
-        for (UUID n : getOfflineNodes()) {
+        for (int n : getOfflineNodes()) {
             c2.addOfflineNode(n);
         }
         return c2;
     }
 
     @Override
-    public boolean containsNode(UUID n) {
+    public boolean containsNode(int n) {
         return nodeState[OFFLINE_STATE].contains(n) || nodeState[ONLINE_STATE].contains(n);
     }
 
     @Override
-    public boolean containsVM(UUID vm) {
+    public boolean containsVM(int vm) {
         return vmState[READY_STATE].contains(vm) || vmState[RUNNING_STATE].contains(vm) || vmState[SLEEPING_STATE].contains(vm);
     }
 
     @Override
     public void clear() {
-        for (Set<UUID> st : nodeState) {
+        for (Set<Integer> st : nodeState) {
             st.clear();
         }
-        for (Set<UUID> st : vmState) {
+        for (Set<Integer> st : vmState) {
             st.clear();
         }
         place.clear();
-        for (Map<UUID, Set<UUID>> h : host) {
+        for (Map<Integer, Set<Integer>> h : host) {
             h.clear();
         }
     }
 
     @Override
-    public void clearNode(UUID u) {
+    public void clearNode(int u) {
         //Get the VMs on the node
-        for (Map<UUID, Set<UUID>> h : host) {
-            Set<UUID> s = h.get(u);
+        for (Map<Integer, Set<Integer>> h : host) {
+            Set<Integer> s = h.get(u);
             if (s != null) {
-                for (UUID vm : s) {
+                for (int vm : s) {
                     place.remove(vm);
-                    for (Set<UUID> st : vmState) {
+                    for (Set<Integer> st : vmState) {
                         st.remove(vm);
                     }
                 }
@@ -356,11 +358,11 @@ public class DefaultMapping implements Mapping, Cloneable {
 
     @Override
     public void clearAllVMs() {
-        for (Set<UUID> st : vmState) {
+        for (Set<Integer> st : vmState) {
             st.clear();
         }
         place.clear();
-        for (Map<UUID, Set<UUID>> h : host) {
+        for (Map<Integer, Set<Integer>> h : host) {
             h.clear();
         }
     }
@@ -382,7 +384,7 @@ public class DefaultMapping implements Mapping, Cloneable {
             return false;
         }
 
-        for (UUID n : getOnlineNodes()) {
+        for (int n : getOnlineNodes()) {
             if (!getRunningVMs(n).equals(that.getRunningVMs(n))
                     || !getSleepingVMs(n).equals(that.getSleepingVMs(n))) {
                 return false;
@@ -394,8 +396,8 @@ public class DefaultMapping implements Mapping, Cloneable {
     @Override
     public int hashCode() {
         int result = Objects.hash(getOfflineNodes(), getReadyVMs(), getOnlineNodes());
-        for (UUID n : getOnlineNodes()) {
-            result += n.hashCode() * (Objects.hash(getRunningVMs(n), getSleepingVMs(n)));
+        for (int n : getOnlineNodes()) {
+            result += n * (Objects.hash(getRunningVMs(n), getSleepingVMs(n)));
         }
         return result;
     }
@@ -404,28 +406,28 @@ public class DefaultMapping implements Mapping, Cloneable {
     public String toString() {
         StringBuilder buf = new StringBuilder();
 
-        for (UUID n : nodeState[ONLINE_STATE]) {
+        for (int n : nodeState[ONLINE_STATE]) {
             buf.append(n);
             buf.append(':');
             if (this.getRunningVMs(n).isEmpty() && this.getSleepingVMs(n).isEmpty()) {
                 buf.append(" - ");
             }
-            for (UUID vm : this.getRunningVMs(n)) {
+            for (int vm : this.getRunningVMs(n)) {
                 buf.append(' ').append(vm);
             }
-            for (UUID vm : this.getSleepingVMs(n)) {
+            for (int vm : this.getSleepingVMs(n)) {
                 buf.append(" (").append(vm).append(')');
             }
             buf.append('\n');
         }
 
-        for (UUID n : nodeState[OFFLINE_STATE]) {
+        for (int n : nodeState[OFFLINE_STATE]) {
             buf.append('(').append(n).append(")\n");
         }
 
         buf.append("READY");
 
-        for (UUID vm : this.getReadyVMs()) {
+        for (int vm : this.getReadyVMs()) {
             buf.append(' ').append(vm);
         }
 

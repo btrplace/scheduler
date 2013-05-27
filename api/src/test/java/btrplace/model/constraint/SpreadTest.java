@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,7 +31,8 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * Unit tests for {@link btrplace.model.constraint.Spread}.
@@ -43,7 +43,7 @@ public class SpreadTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> x = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<Integer> x = new HashSet<>(Arrays.asList(vm1, vm2));
         Spread s = new Spread(x);
         Assert.assertNotNull(s.getChecker());
         Assert.assertEquals(x, s.getInvolvedVMs());
@@ -60,7 +60,7 @@ public class SpreadTest implements PremadeElements {
 
     @Test
     public void testEquals() {
-        Set<UUID> x = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<Integer> x = new HashSet<>(Arrays.asList(vm1, vm2));
         Spread s = new Spread(x);
 
         Assert.assertTrue(s.equals(s));

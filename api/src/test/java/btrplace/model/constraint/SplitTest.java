@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -42,9 +41,9 @@ public class SplitTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s1 = Collections.singleton(vm1);
-        Set<UUID> s2 = Collections.singleton(vm2);
-        List<Set<UUID>> args = Arrays.asList(s1, s2);
+        Set<Integer> s1 = Collections.singleton(vm1);
+        Set<Integer> s2 = Collections.singleton(vm2);
+        List<Set<Integer>> args = Arrays.asList(s1, s2);
         Split sp = new Split(args);
         Assert.assertNotNull(sp.getChecker());
         Assert.assertEquals(args, sp.getSets());
@@ -64,14 +63,14 @@ public class SplitTest implements PremadeElements {
 
     @Test
     public void testEquals() {
-        Set<UUID> s1 = Collections.singleton(vm1);
-        Set<UUID> s2 = Collections.singleton(vm2);
-        List<Set<UUID>> args = Arrays.asList(s1, s2);
+        Set<Integer> s1 = Collections.singleton(vm1);
+        Set<Integer> s2 = Collections.singleton(vm2);
+        List<Set<Integer>> args = Arrays.asList(s1, s2);
         Split sp = new Split(args);
         Assert.assertTrue(sp.equals(sp));
         Assert.assertTrue(new Split(args).equals(sp));
         Assert.assertEquals(new Split(args).hashCode(), sp.hashCode());
-        List<Set<UUID>> args2 = new ArrayList<>(args);
+        List<Set<Integer>> args2 = new ArrayList<>(args);
         args2.add(Collections.singleton(vm3));
         Assert.assertFalse(new Split(args2).equals(sp));
     }
@@ -83,10 +82,10 @@ public class SplitTest implements PremadeElements {
         map.addOnlineNode(n2);
         map.addOnlineNode(n3);
 
-        Set<UUID> s1 = new HashSet<>(Arrays.asList(vm1, vm2));
-        Set<UUID> s2 = new HashSet<>(Arrays.asList(vm3, vm4));
-        Set<UUID> s3 = Collections.singleton(vm5);
-        Set<Set<UUID>> args = new HashSet<>(Arrays.asList(s1, s2, s3));
+        Set<Integer> s1 = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<Integer> s2 = new HashSet<>(Arrays.asList(vm3, vm4));
+        Set<Integer> s3 = Collections.singleton(vm5);
+        Set<Set<Integer>> args = new HashSet<>(Arrays.asList(s1, s2, s3));
 
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n1);
@@ -109,10 +108,10 @@ public class SplitTest implements PremadeElements {
         map.addOnlineNode(n2);
         map.addOnlineNode(n3);
 
-        Set<UUID> s1 = new HashSet<>(Arrays.asList(vm1, vm2));
-        Set<UUID> s2 = new HashSet<>(Arrays.asList(vm3, vm4));
-        Set<UUID> s3 = Collections.singleton(vm5);
-        Set<Set<UUID>> args = new HashSet<>(Arrays.asList(s1, s2, s3));
+        Set<Integer> s1 = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<Integer> s2 = new HashSet<>(Arrays.asList(vm3, vm4));
+        Set<Integer> s3 = Collections.singleton(vm5);
+        Set<Set<Integer>> args = new HashSet<>(Arrays.asList(s1, s2, s3));
 
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n1);

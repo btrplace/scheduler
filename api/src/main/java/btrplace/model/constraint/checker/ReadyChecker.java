@@ -23,7 +23,7 @@ import btrplace.model.constraint.Ready;
 import btrplace.plan.event.ForgeVM;
 import btrplace.plan.event.ShutdownVM;
 
-import java.util.UUID;
+;
 
 /**
  * Checker for the {@link btrplace.model.constraint.Ready} constraint
@@ -55,7 +55,7 @@ public class ReadyChecker extends DenyMyVMsActions<Ready> {
     @Override
     public boolean endsWith(Model mo) {
         Mapping c = mo.getMapping();
-        for (UUID vm : getVMs()) {
+        for (int vm : getVMs()) {
             if (!c.getReadyVMs().contains(vm)) {
                 return false;
             }

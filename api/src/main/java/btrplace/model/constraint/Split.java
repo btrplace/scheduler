@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -37,14 +36,14 @@ import java.util.*;
  */
 public class Split extends SatConstraint {
 
-    private Collection<Set<UUID>> sets;
+    private Collection<Set<Integer>> sets;
 
     /**
      * Make a new constraint having a discrete restriction.
      *
      * @param s the disjoint sets of VMs that must be split
      */
-    public Split(Collection<Set<UUID>> s) {
+    public Split(Collection<Set<Integer>> s) {
         this(s, false);
     }
 
@@ -54,16 +53,16 @@ public class Split extends SatConstraint {
      * @param s          the disjoint sets of VMs that must be split
      * @param continuous {@code true} for a continuous restriction
      */
-    public Split(Collection<Set<UUID>> s, boolean continuous) {
-        super(null, Collections.<UUID>emptySet(), continuous);
+    public Split(Collection<Set<Integer>> s, boolean continuous) {
+        super(null, Collections.<Integer>emptySet(), continuous);
         this.sets = s;
     }
 
 
     @Override
-    public Collection<UUID> getInvolvedVMs() {
-        Set<UUID> s = new HashSet<>();
-        for (Set<UUID> set : sets) {
+    public Collection<Integer> getInvolvedVMs() {
+        Set<Integer> s = new HashSet<>();
+        for (Set<Integer> set : sets) {
             s.addAll(set);
         }
         return s;
@@ -74,7 +73,7 @@ public class Split extends SatConstraint {
      *
      * @return the groups
      */
-    public Collection<Set<UUID>> getSets() {
+    public Collection<Set<Integer>> getSets() {
         return this.sets;
     }
 
@@ -84,8 +83,8 @@ public class Split extends SatConstraint {
      * @param u the VM identifier
      * @return the group of VM if exists, {@code null} otherwise
      */
-    public Set<UUID> getAssociatedVGroup(UUID u) {
-        for (Set<UUID> vGrp : sets) {
+    public Set<Integer> getAssociatedVGroup(int u) {
+        for (Set<Integer> vGrp : sets) {
             if (vGrp.contains(u)) {
                 return vGrp;
             }
@@ -114,7 +113,7 @@ public class Split extends SatConstraint {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder("split(vms=[");
-        for (Iterator<Set<UUID>> ite = sets.iterator(); ite.hasNext(); ) {
+        for (Iterator<Set<Integer>> ite = sets.iterator(); ite.hasNext(); ) {
             b.append(ite.next());
             if (ite.hasNext()) {
                 b.append(", ");

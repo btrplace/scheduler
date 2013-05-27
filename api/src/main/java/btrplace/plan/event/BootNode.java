@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,7 +21,6 @@ package btrplace.plan.event;
 import btrplace.model.Model;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * An action to consume an offline node. Once the execution is finished, the node is online.
@@ -31,7 +29,7 @@ import java.util.UUID;
  */
 public class BootNode extends Action implements NodeEvent {
 
-    private UUID node;
+    private int node;
 
     /**
      * Create a new startup action on an offline node.
@@ -40,7 +38,7 @@ public class BootNode extends Action implements NodeEvent {
      * @param s the moment the action starts
      * @param f the moment the action is finished
      */
-    public BootNode(UUID n, int s, int f) {
+    public BootNode(int n, int s, int f) {
         super(s, f);
         this.node = n;
     }
@@ -59,7 +57,7 @@ public class BootNode extends Action implements NodeEvent {
             return true;
         } else if (obj.getClass() == this.getClass()) {
             BootNode that = (BootNode) obj;
-            return this.node.equals(that.node) &&
+            return this.node == that.node &&
                     this.getStart() == that.getStart() &&
                     this.getEnd() == that.getEnd();
         }
@@ -67,7 +65,7 @@ public class BootNode extends Action implements NodeEvent {
     }
 
     @Override
-    public UUID getNode() {
+    public int getNode() {
         return node;
     }
 

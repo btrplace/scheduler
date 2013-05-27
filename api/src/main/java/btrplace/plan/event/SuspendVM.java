@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -23,7 +22,6 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * An action that suspend a running virtual machine to disk.
@@ -32,9 +30,9 @@ import java.util.UUID;
  */
 public class SuspendVM extends Action implements VMStateTransition {
 
-    private UUID vm;
+    private int vm;
 
-    private UUID src, dst;
+    private int src, dst;
 
     /**
      * Make a new suspend action.
@@ -45,7 +43,7 @@ public class SuspendVM extends Action implements VMStateTransition {
      * @param s    the moment the action starts.
      * @param f    the moment the action finish
      */
-    public SuspendVM(UUID vmId, UUID from, UUID to, int s, int f) {
+    public SuspendVM(int vmId, int from, int to, int s, int f) {
         super(s, f);
         this.vm = vmId;
         this.src = from;
@@ -74,7 +72,7 @@ public class SuspendVM extends Action implements VMStateTransition {
         return (map.getOnlineNodes().contains(src) &&
                 map.getOnlineNodes().contains(dst) &&
                 map.getRunningVMs().contains(vm) &&
-                map.getVMLocation(vm).equals(src) &&
+                map.getVMLocation(vm) == src &&
                 map.addSleepingVM(vm, dst)
         );
     }
@@ -87,9 +85,9 @@ public class SuspendVM extends Action implements VMStateTransition {
             return true;
         } else if (o.getClass() == this.getClass()) {
             SuspendVM that = (SuspendVM) o;
-            return this.vm.equals(that.vm) &&
-                    this.src.equals(that.src) &&
-                    this.dst.equals(that.dst) &&
+            return this.vm == that.vm &&
+                    this.src == that.src &&
+                    this.dst == that.dst &&
                     this.getStart() == that.getStart() &&
                     this.getEnd() == that.getEnd();
         }
@@ -106,7 +104,7 @@ public class SuspendVM extends Action implements VMStateTransition {
      *
      * @return the node identifier
      */
-    public UUID getDestinationNode() {
+    public int getDestinationNode() {
         return dst;
     }
 
@@ -115,12 +113,12 @@ public class SuspendVM extends Action implements VMStateTransition {
      *
      * @return the node identifier
      */
-    public UUID getSourceNode() {
+    public int getSourceNode() {
         return src;
     }
 
     @Override
-    public UUID getVM() {
+    public int getVM() {
         return vm;
     }
 

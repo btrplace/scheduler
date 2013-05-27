@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,7 +18,6 @@
 package btrplace.model;
 
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Allow to specify attributes related to managed elements.
@@ -37,7 +35,7 @@ public interface Attributes extends Cloneable {
      * @param b the value to set
      * @return {@code true} if a previous value was overridden
      */
-    boolean put(UUID e, String k, boolean b);
+    boolean put(int e, String k, boolean b);
 
     /**
      * Put a String value.
@@ -47,7 +45,7 @@ public interface Attributes extends Cloneable {
      * @param s the value to set
      * @return {@code true} if a previous value was overridden
      */
-    boolean put(UUID e, String k, String s);
+    boolean put(int e, String k, String s);
 
     /**
      * Put a long value.
@@ -57,7 +55,7 @@ public interface Attributes extends Cloneable {
      * @param l the value to set
      * @return {@code true} if a previous value was overridden
      */
-    boolean put(UUID e, String k, long l);
+    boolean put(int e, String k, long l);
 
     /**
      * Put a double value.
@@ -67,7 +65,7 @@ public interface Attributes extends Cloneable {
      * @param d the value to set
      * @return {@code true} if a previous value was overridden
      */
-    boolean put(UUID e, String k, double d);
+    boolean put(int e, String k, double d);
 
     /**
      * Get an attribute value as a simple Object.
@@ -76,7 +74,7 @@ public interface Attributes extends Cloneable {
      * @param k the attribute value
      * @return the value if it has been stated. {@code null} otherwise
      */
-    Object get(UUID e, String k);
+    Object get(int e, String k);
 
     /**
      * Get an attribute value as a boolean.
@@ -85,7 +83,7 @@ public interface Attributes extends Cloneable {
      * @param k the attribute value
      * @return the value if it has been stated. {@code null} otherwise
      */
-    Boolean getBoolean(UUID e, String k);
+    Boolean getBoolean(int e, String k);
 
     /**
      * Get an attribute value as a long.
@@ -94,7 +92,7 @@ public interface Attributes extends Cloneable {
      * @param k the attribute value
      * @return the value if it has been stated. {@code null} otherwise
      */
-    Long getLong(UUID e, String k);
+    Long getLong(int e, String k);
 
     /**
      * Get an attribute value as a string.
@@ -103,7 +101,7 @@ public interface Attributes extends Cloneable {
      * @param k the attribute value
      * @return the value if it has been stated. {@code null} otherwise
      */
-    String getString(UUID e, String k);
+    String getString(int e, String k);
 
     /**
      * Get an attribute value as a double.
@@ -112,7 +110,7 @@ public interface Attributes extends Cloneable {
      * @param k the attribute value
      * @return the value if it has been stated. {@code null} otherwise
      */
-    Double getDouble(UUID e, String k);
+    Double getDouble(int e, String k);
 
     /**
      * Check if an attribute is set for a given element.
@@ -121,7 +119,7 @@ public interface Attributes extends Cloneable {
      * @param k the attribute identifier
      * @return {@code true} iff the attribute is set
      */
-    boolean isSet(UUID e, String k);
+    boolean isSet(int e, String k);
 
     /**
      * Unset an attribute for a given element.
@@ -130,7 +128,7 @@ public interface Attributes extends Cloneable {
      * @param k the attribute identifier
      * @return {@code true} iff a value was removed
      */
-    boolean unset(UUID e, String k);
+    boolean unset(int e, String k);
 
     /**
      * Clone the attributes.
@@ -144,7 +142,7 @@ public interface Attributes extends Cloneable {
      *
      * @return a set that may be empty
      */
-    Set<UUID> getElements();
+    Set<Integer> getElements();
 
     /**
      * Get all the attributes keys that are registered for an element.
@@ -152,7 +150,7 @@ public interface Attributes extends Cloneable {
      * @param u the element identifier
      * @return a set that may be empty
      */
-    Set<String> getKeys(UUID u);
+    Set<String> getKeys(int u);
 
     /**
      * Put a value but try to cast into to a supported primitive if possible.
@@ -165,10 +163,10 @@ public interface Attributes extends Cloneable {
      * @param v the value to set
      * @return {@code true} if a previous value was overridden
      */
-    boolean castAndPut(UUID u, String k, String v);
+    boolean castAndPut(int u, String k, String v);
 
-        /**
-         * Remove all the attributes.
-         */
+    /**
+     * Remove all the attributes.
+     */
     void clear();
 }

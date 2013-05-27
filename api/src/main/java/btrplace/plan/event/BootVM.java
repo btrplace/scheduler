@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,7 +21,6 @@ package btrplace.plan.event;
 import btrplace.model.Model;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * An action that demand to run a virtual machine on an online node.
@@ -32,9 +30,9 @@ import java.util.UUID;
  */
 public class BootVM extends Action implements VMStateTransition, RunningVMPlacement {
 
-    private UUID vm;
+    private int vm;
 
-    private UUID node;
+    private int node;
 
     /**
      * Make a new time-bounded run.
@@ -44,7 +42,7 @@ public class BootVM extends Action implements VMStateTransition, RunningVMPlacem
      * @param st   the moment the action starts.
      * @param end  the moment the action finish
      */
-    public BootVM(UUID vmId, UUID to, int st, int end) {
+    public BootVM(int vmId, int to, int st, int end) {
         super(st, end);
         this.vm = vmId;
         this.node = to;
@@ -59,12 +57,12 @@ public class BootVM extends Action implements VMStateTransition, RunningVMPlacem
     }
 
     @Override
-    public UUID getDestinationNode() {
+    public int getDestinationNode() {
         return node;
     }
 
     @Override
-    public UUID getVM() {
+    public int getVM() {
         return vm;
     }
 
@@ -89,8 +87,8 @@ public class BootVM extends Action implements VMStateTransition, RunningVMPlacem
             return true;
         } else if (o.getClass() == this.getClass()) {
             BootVM that = (BootVM) o;
-            return this.vm.equals(that.vm) &&
-                    this.node.equals(that.node) &&
+            return this.vm == that.vm &&
+                    this.node == that.node &&
                     this.getStart() == that.getStart() &&
                     this.getEnd() == that.getEnd();
         }

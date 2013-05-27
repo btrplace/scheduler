@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -41,7 +40,7 @@ public class Among extends SatConstraint {
     /**
      * Set of set of nodes.
      */
-    private Set<Set<UUID>> pGrps;
+    private Set<Set<Integer>> pGrps;
 
 
     /**
@@ -50,7 +49,7 @@ public class Among extends SatConstraint {
      * @param vms       the group of VMs
      * @param phyGroups the candidate group of nodes.
      */
-    public Among(Set<UUID> vms, Set<Set<UUID>> phyGroups) {
+    public Among(Set<Integer> vms, Set<Set<Integer>> phyGroups) {
         this(vms, phyGroups, false);
 
     }
@@ -62,7 +61,7 @@ public class Among extends SatConstraint {
      * @param phyGroups  the candidate group of nodes.
      * @param continuous {@code true} for a continuous restriction
      */
-    public Among(Set<UUID> vms, Set<Set<UUID>> phyGroups, boolean continuous) {
+    public Among(Set<Integer> vms, Set<Set<Integer>> phyGroups, boolean continuous) {
         super(vms, null, continuous);
         this.pGrps = phyGroups;
     }
@@ -73,8 +72,8 @@ public class Among extends SatConstraint {
      * @param u the node identifier
      * @return the group of nodes if exists, {@code null} otherwise
      */
-    public Set<UUID> getAssociatedPGroup(UUID u) {
-        for (Set<UUID> pGrp : pGrps) {
+    public Set<Integer> getAssociatedPGroup(int u) {
+        for (Set<Integer> pGrp : pGrps) {
             if (pGrp.contains(u)) {
                 return pGrp;
             }
@@ -83,9 +82,9 @@ public class Among extends SatConstraint {
     }
 
     @Override
-    public Collection<UUID> getInvolvedNodes() {
-        Set<UUID> s = new HashSet<>();
-        for (Set<UUID> x : pGrps) {
+    public Collection<Integer> getInvolvedNodes() {
+        Set<Integer> s = new HashSet<>();
+        for (Set<Integer> x : pGrps) {
             s.addAll(x);
         }
         return s;
@@ -96,7 +95,7 @@ public class Among extends SatConstraint {
      *
      * @return the groups
      */
-    public Set<Set<UUID>> getGroupsOfNodes() {
+    public Set<Set<Integer>> getGroupsOfNodes() {
         return pGrps;
     }
 
@@ -126,7 +125,7 @@ public class Among extends SatConstraint {
         StringBuilder b = new StringBuilder("among(");
         b.append("vms=").append(getInvolvedVMs());
         b.append(", nodes=[");
-        for (Iterator<Set<UUID>> ite = pGrps.iterator(); ite.hasNext(); ) {
+        for (Iterator<Set<Integer>> ite = pGrps.iterator(); ite.hasNext(); ) {
             b.append(ite.next());
             if (ite.hasNext()) {
                 b.append(", ");

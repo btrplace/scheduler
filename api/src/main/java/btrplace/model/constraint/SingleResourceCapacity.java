@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -24,7 +23,8 @@ import btrplace.model.constraint.checker.SingleResourceCapacityChecker;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * Restrict the amount of virtual resources consumed by
@@ -52,7 +52,7 @@ public class SingleResourceCapacity extends SatConstraint {
      * @param rcId   the resource identifier
      * @param amount the maximum amount of resource to share among the hosted VMs
      */
-    public SingleResourceCapacity(Set<UUID> nodes, String rcId, int amount) {
+    public SingleResourceCapacity(Set<Integer> nodes, String rcId, int amount) {
         this(nodes, rcId, amount, false);
     }
 
@@ -64,8 +64,8 @@ public class SingleResourceCapacity extends SatConstraint {
      * @param amount     the maximum amount of resource to share among the hosted VMs
      * @param continuous {@code true} for a continuous restriction
      */
-    public SingleResourceCapacity(Set<UUID> nodes, String rcId, int amount, boolean continuous) {
-        super(Collections.<UUID>emptySet(), nodes, continuous);
+    public SingleResourceCapacity(Set<Integer> nodes, String rcId, int amount, boolean continuous) {
+        super(Collections.<Integer>emptySet(), nodes, continuous);
         this.rcId = rcId;
         this.amount = amount;
     }

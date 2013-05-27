@@ -31,7 +31,8 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * Unit tests for {@link Among}.
@@ -43,10 +44,10 @@ public class AmongTest implements PremadeElements {
     @Test
     public void testInstantiation() {
 
-        Set<UUID> s1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> s2 = new HashSet<>(Arrays.asList(n3));
-        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<Integer> s1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s2 = new HashSet<>(Arrays.asList(n3));
+        Set<Set<Integer>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         Among a = new Among(vms, pGrps);
         Assert.assertNotNull(a.getChecker());
         Assert.assertEquals(a.getInvolvedVMs(), vms);
@@ -66,18 +67,18 @@ public class AmongTest implements PremadeElements {
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsHashCode() {
 
-        Set<UUID> s1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> s2 = new HashSet<>(Arrays.asList(n3));
-        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<Integer> s1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s2 = new HashSet<>(Arrays.asList(n3));
+        Set<Set<Integer>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
 
         Among a = new Among(vms, pGrps);
         Assert.assertTrue(a.equals(a));
         Assert.assertTrue(a.equals(new Among(new HashSet<>(vms), pGrps)));
         Assert.assertEquals(a.hashCode(), new Among(new HashSet<>(vms), pGrps).hashCode());
-        Assert.assertFalse(a.equals(new Among(new HashSet<UUID>(), pGrps)));
-        Assert.assertFalse(a.equals(new Among(new HashSet<>(vms), new HashSet<Set<UUID>>())));
-        Among a2 = new Among(new HashSet<>(vms), new HashSet<Set<UUID>>());
+        Assert.assertFalse(a.equals(new Among(new HashSet<Integer>(), pGrps)));
+        Assert.assertFalse(a.equals(new Among(new HashSet<>(vms), new HashSet<Set<Integer>>())));
+        Among a2 = new Among(new HashSet<>(vms), new HashSet<Set<Integer>>());
         a2.setContinuous(true);
         Assert.assertFalse(a.equals(a2));
     }
@@ -85,10 +86,10 @@ public class AmongTest implements PremadeElements {
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testDiscreteIsSatisfied() {
 
-        Set<UUID> s1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> s2 = new HashSet<>(Arrays.asList(n3));
-        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<Integer> s1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s2 = new HashSet<>(Arrays.asList(n3));
+        Set<Set<Integer>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
 
         Among a = new Among(vms, pGrps);
 
@@ -111,10 +112,10 @@ public class AmongTest implements PremadeElements {
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testContinuousIsSatisfied() {
 
-        Set<UUID> s1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> s2 = new HashSet<>(Arrays.asList(n3));
-        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<Integer> s1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s2 = new HashSet<>(Arrays.asList(n3));
+        Set<Set<Integer>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
 
         Among a = new Among(vms, pGrps, true);
 

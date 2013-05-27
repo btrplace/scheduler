@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -24,7 +23,8 @@ import btrplace.model.constraint.checker.SatConstraintChecker;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * A constraint to specify and overbooking factor between
@@ -55,7 +55,7 @@ public class Overbook extends SatConstraint {
      * @param rcId  the resource identifier
      * @param r     the overbooking ratio
      */
-    public Overbook(Set<UUID> nodes, String rcId, double r) {
+    public Overbook(Set<Integer> nodes, String rcId, double r) {
         this(nodes, rcId, r, true);
     }
 
@@ -67,8 +67,8 @@ public class Overbook extends SatConstraint {
      * @param r          the overbooking ratio
      * @param continuous {@code true} for a continuous restriction
      */
-    public Overbook(Set<UUID> nodes, String rcId, double r, boolean continuous) {
-        super(Collections.<UUID>emptySet(), nodes, continuous);
+    public Overbook(Set<Integer> nodes, String rcId, double r, boolean continuous) {
+        super(Collections.<Integer>emptySet(), nodes, continuous);
         this.rcId = rcId;
         this.ratio = r;
     }

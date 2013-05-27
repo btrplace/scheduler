@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -33,7 +32,8 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * Unit tests for {@link CumulatedRunningCapacity}.
@@ -44,7 +44,7 @@ public class CumulatedRunningCapacityTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
         CumulatedRunningCapacity c = new CumulatedRunningCapacity(s, 3);
         Assert.assertNotNull(c.getChecker());
         Assert.assertEquals(s, c.getInvolvedNodes());
@@ -64,7 +64,7 @@ public class CumulatedRunningCapacityTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsAndHashCode() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
         CumulatedRunningCapacity c = new CumulatedRunningCapacity(s, 3);
         CumulatedRunningCapacity c2 = new CumulatedRunningCapacity(s, 3);
         Assert.assertTrue(c.equals(c));
@@ -72,7 +72,7 @@ public class CumulatedRunningCapacityTest implements PremadeElements {
         Assert.assertEquals(c.hashCode(), c2.hashCode());
 
         Assert.assertFalse(c.equals(new CumulatedRunningCapacity(s, 2)));
-        Assert.assertFalse(c.equals(new CumulatedRunningCapacity(new HashSet<UUID>(), 3)));
+        Assert.assertFalse(c.equals(new CumulatedRunningCapacity(new HashSet<Integer>(), 3)));
     }
 
     @Test

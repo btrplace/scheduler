@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -23,7 +22,8 @@ import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * A constraint to force all the given VMs, when running,
@@ -45,7 +45,7 @@ public class Lonely extends SatConstraint {
      *
      * @param vms the set of VMs to consider
      */
-    public Lonely(Set<UUID> vms) {
+    public Lonely(Set<Integer> vms) {
         this(vms, false);
     }
 
@@ -55,8 +55,8 @@ public class Lonely extends SatConstraint {
      * @param vms        the set of VMs to consider
      * @param continuous {@code true} for a continuous restriction
      */
-    public Lonely(Set<UUID> vms, boolean continuous) {
-        super(vms, Collections.<UUID>emptySet(), continuous);
+    public Lonely(Set<Integer> vms, boolean continuous) {
+        super(vms, Collections.<Integer>emptySet(), continuous);
     }
 
     @Override

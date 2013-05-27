@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,7 +20,6 @@ package btrplace.plan.event;
 import btrplace.model.Model;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * An action to destroy a VM that can be in any state.
@@ -30,9 +28,9 @@ import java.util.UUID;
  */
 public class KillVM extends Action implements VMStateTransition {
 
-    private UUID id;
+    private int id;
 
-    private UUID host;
+    private int host;
 
     /**
      * Make a new action.
@@ -42,7 +40,7 @@ public class KillVM extends Action implements VMStateTransition {
      * @param st   the moment the action starts
      * @param ed   the moment the action ends
      */
-    public KillVM(UUID vm, UUID host, int st, int ed) {
+    public KillVM(int vm, int host, int st, int ed) {
         super(st, ed);
         id = vm;
         this.host = host;
@@ -53,12 +51,12 @@ public class KillVM extends Action implements VMStateTransition {
      *
      * @return the node identifier if the VM is hosted somewhere. Otherwise, {@code null}
      */
-    public UUID getNode() {
+    public int getNode() {
         return host;
     }
 
     @Override
-    public UUID getVM() {
+    public int getVM() {
         return id;
     }
 
@@ -75,8 +73,8 @@ public class KillVM extends Action implements VMStateTransition {
             return true;
         } else if (o.getClass() == this.getClass()) {
             KillVM that = (KillVM) o;
-            return this.id.equals(that.id) &&
-                    ((host == null && that.host == null) || (host != null && host.equals(that.host))) &&
+            return this.id == that.id &&
+                    ((host < 0 && that.host < 0) || (host >= 0 && host == that.host)) &&
                     this.getStart() == that.getStart() &&
                     this.getEnd() == that.getEnd();
         }

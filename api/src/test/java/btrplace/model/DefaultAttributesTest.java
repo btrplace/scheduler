@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -30,6 +29,8 @@ import java.util.*;
  * @author Fabien Hermenier
  */
 public class DefaultAttributesTest implements PremadeElements {
+
+    private static Random rnd = new Random();
 
     @Test
     public void testInstantiation() {
@@ -126,9 +127,9 @@ public class DefaultAttributesTest implements PremadeElements {
     @Test(dependsOnMethods = {"testPutAndGetLong", "testInstantiation", "testUnset"})
     public void testClone() {
         Attributes attrs = new DefaultAttributes();
-        List<UUID> l = new ArrayList<>();
+        List<Integer> l = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            UUID u = UUID.randomUUID();
+            int u = rnd.nextInt();
             attrs.put(u, Integer.toString(i), i);
             l.add(u);
         }
@@ -144,9 +145,9 @@ public class DefaultAttributesTest implements PremadeElements {
     @Test(dependsOnMethods = {"testPutAndGetLong", "testInstantiation", "testUnset", "testClone"})
     public void testEqualsHashCode() {
         Attributes attrs = new DefaultAttributes();
-        List<UUID> l = new ArrayList<>();
+        List<Integer> l = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            UUID u = UUID.randomUUID();
+            int u = rnd.nextInt();
             attrs.put(u, Integer.toString(i), i);
             l.add(u);
         }
@@ -165,7 +166,7 @@ public class DefaultAttributesTest implements PremadeElements {
     public void testClear() {
         Attributes attrs = new DefaultAttributes();
         for (int i = 0; i < 5; i++) {
-            UUID u = UUID.randomUUID();
+            int u = rnd.nextInt();
             attrs.put(u, Integer.toString(i), i);
         }
         attrs.clear();
@@ -175,12 +176,12 @@ public class DefaultAttributesTest implements PremadeElements {
     @Test
     public void testGetKeys() {
         Attributes attrs = new DefaultAttributes();
-        UUID u = new UUID(0, 1);
+        int u = 1;
         attrs.put(u, "foo", 1);
         attrs.put(u, "bar", 1);
         Set<String> s = attrs.getKeys(u);
         Assert.assertEquals(s.size(), 2);
         Assert.assertTrue(s.containsAll(Arrays.asList("foo", "bar")));
-        Assert.assertEquals(attrs.getKeys(new UUID(0, 2)).size(), 0);
+        Assert.assertEquals(attrs.getKeys(2).size(), 0);
     }
 }

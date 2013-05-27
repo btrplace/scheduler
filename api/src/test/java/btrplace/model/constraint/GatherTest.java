@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -33,7 +32,8 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * Unit tests for {@link Gather}.
@@ -44,7 +44,7 @@ public class GatherTest implements PremadeElements {
 
     @Test
     public void testInstantiate() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<Integer> s = new HashSet<>(Arrays.asList(vm1, vm2));
         Gather g = new Gather(s);
         Assert.assertNotNull(g.getChecker());
         Assert.assertTrue(g.getInvolvedNodes().isEmpty());
@@ -61,7 +61,7 @@ public class GatherTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testEqualsHashCode() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<Integer> s = new HashSet<>(Arrays.asList(vm1, vm2));
         Gather g = new Gather(s);
         Assert.assertTrue(g.equals(g));
         Assert.assertFalse(g.equals(new Object()));
@@ -74,7 +74,7 @@ public class GatherTest implements PremadeElements {
 
     @Test
     public void testDiscreteIsSatisfied() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<Integer> s = new HashSet<>(Arrays.asList(vm1, vm2));
         Gather g = new Gather(s);
 
         Mapping map = new DefaultMapping();
@@ -94,7 +94,7 @@ public class GatherTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testDiscreteIsSatisfied"})
     public void testContinuousIsSatisfied() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<Integer> s = new HashSet<>(Arrays.asList(vm1, vm2));
         Gather g = new Gather(s);
         g.setContinuous(true);
         Mapping map = new DefaultMapping();

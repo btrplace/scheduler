@@ -26,7 +26,7 @@ import btrplace.plan.event.Event;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.UUID;
+import java.util.Random;
 
 /**
  * Unit tests for {@link btrplace.plan.event.Action}.
@@ -34,6 +34,8 @@ import java.util.UUID;
  * @author Fabien Hermenier
  */
 public class ActionTest {
+
+    private static Random rnd = new Random();
 
     public static class MockEvent implements Event {
 
@@ -57,7 +59,7 @@ public class ActionTest {
 
     @Test
     public void testBasics() {
-        Action a1 = new MockAction(UUID.randomUUID(), 1, 3);
+        Action a1 = new MockAction(rnd.nextInt(), 1, 3);
         Assert.assertEquals(1, a1.getStart());
         Assert.assertEquals(3, a1.getEnd());
         Assert.assertTrue(a1.getEvents(Action.Hook.pre).isEmpty());
@@ -66,7 +68,7 @@ public class ActionTest {
 
     @Test
     public void testEvents() {
-        Action a1 = new MockAction(UUID.randomUUID(), 1, 3);
+        Action a1 = new MockAction(rnd.nextInt(), 1, 3);
         MockEvent n1 = new MockEvent();
         a1.addEvent(Action.Hook.pre, n1);
         Assert.assertEquals(1, a1.getEvents(Action.Hook.pre).size());
@@ -77,7 +79,7 @@ public class ActionTest {
 
     @Test
     public void testApply() {
-        MockAction a1 = new MockAction(UUID.randomUUID(), 1, 3);
+        MockAction a1 = new MockAction(rnd.nextInt(), 1, 3);
         MockEvent n1 = new MockEvent();
         a1.addEvent(Action.Hook.pre, n1);
         a1.addEvent(Action.Hook.post, n1);

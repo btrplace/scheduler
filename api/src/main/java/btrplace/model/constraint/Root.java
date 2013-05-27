@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -23,7 +22,8 @@ import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * A constraint to avoid relocation. Any running VMs given in parameters
@@ -42,8 +42,8 @@ public class Root extends SatConstraint {
      *
      * @param vms the set of VMs to disallow to move
      */
-    public Root(Set<UUID> vms) {
-        super(vms, Collections.<UUID>emptySet(), true);
+    public Root(Set<Integer> vms) {
+        super(vms, Collections.<Integer>emptySet(), true);
     }
 
     @Override

@@ -22,7 +22,7 @@ import btrplace.model.Model;
 import btrplace.model.constraint.Overbook;
 import btrplace.model.view.ShareableResource;
 
-import java.util.UUID;
+;
 
 /**
  * Checker for the {@link btrplace.model.constraint.Overbook} constraint
@@ -54,12 +54,12 @@ public class OverbookChecker extends AllowAllConstraintChecker<Overbook> {
         if (rc == null) {
             return false;
         }
-        for (UUID nId : getNodes()) {
+        for (int nId : getNodes()) {
             if (cfg.getOnlineNodes().contains(nId)) {
                 //Server capacity with the ratio
                 double capa = rc.get(nId) * ratio;
                 //Minus the VMs usage
-                for (UUID vmId : cfg.getRunningVMs(nId)) {
+                for (int vmId : cfg.getRunningVMs(nId)) {
                     capa -= rc.get(vmId);
                     if (capa < 0) {
                         return false;

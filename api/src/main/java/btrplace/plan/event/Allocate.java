@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,7 +20,6 @@ package btrplace.plan.event;
 import btrplace.model.Model;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * An action to indicate the amount of resource of a given type
@@ -31,7 +29,7 @@ import java.util.UUID;
  */
 public class Allocate extends Action implements VMEvent {
 
-    private UUID node;
+    private int node;
 
     private AllocateEvent ev;
 
@@ -45,7 +43,7 @@ public class Allocate extends Action implements VMEvent {
      * @param st     the moment the action starts
      * @param ed     the moment the action ends
      */
-    public Allocate(UUID vm, UUID host, String rcId, int amount, int st, int ed) {
+    public Allocate(int vm, int host, String rcId, int amount, int st, int ed) {
         super(st, ed);
         ev = new AllocateEvent(vm, rcId, amount);
         this.node = host;
@@ -56,12 +54,12 @@ public class Allocate extends Action implements VMEvent {
      *
      * @return the node identifier
      */
-    public UUID getHost() {
+    public int getHost() {
         return node;
     }
 
     @Override
-    public UUID getVM() {
+    public int getVM() {
         return ev.getVM();
     }
 
@@ -106,8 +104,8 @@ public class Allocate extends Action implements VMEvent {
             return true;
         } else if (o.getClass() == this.getClass()) {
             Allocate that = (Allocate) o;
-            return this.getVM().equals(that.getVM())
-                    && this.node.equals(that.node)
+            return this.getVM() == that.getVM()
+                    && this.node == that.node
                     && this.getResourceId().equals(that.getResourceId())
                     && this.getStart() == that.getStart()
                     && this.getEnd() == that.getEnd()

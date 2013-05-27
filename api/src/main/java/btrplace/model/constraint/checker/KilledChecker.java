@@ -22,7 +22,7 @@ import btrplace.model.Model;
 import btrplace.model.constraint.Killed;
 import btrplace.plan.event.KillVM;
 
-import java.util.UUID;
+;
 
 /**
  * Checker for the {@link btrplace.model.constraint.Killed} constraint
@@ -49,7 +49,7 @@ public class KilledChecker extends DenyMyVMsActions<Killed> {
     @Override
     public boolean endsWith(Model mo) {
         Mapping c = mo.getMapping();
-        for (UUID vm : getVMs()) {
+        for (int vm : getVMs()) {
             if (c.getAllVMs().contains(vm)) {
                 return false;
             }

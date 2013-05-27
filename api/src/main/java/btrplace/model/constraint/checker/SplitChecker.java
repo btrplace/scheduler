@@ -26,7 +26,8 @@ import btrplace.plan.event.RunningVMPlacement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * Checker for the {@link btrplace.model.constraint.Split} constraint
@@ -39,7 +40,7 @@ public class SplitChecker extends AllowAllConstraintChecker<Split> {
     /**
      * The group of VMs.
      */
-    private List<Set<UUID>> vGroups;
+    private List<Set<Integer>> vGroups;
 
     private Mapping curMapping;
 
@@ -53,7 +54,7 @@ public class SplitChecker extends AllowAllConstraintChecker<Split> {
     public SplitChecker(Split s) {
         super(s);
         vGroups = new ArrayList<>(s.getSets());
-        for (Set<UUID> set : vGroups) {
+        for (Set<Integer> set : vGroups) {
             track(set);
         }
     }
@@ -76,13 +77,13 @@ public class SplitChecker extends AllowAllConstraintChecker<Split> {
     }
 
     private boolean checkModel() {
-        for (Set<UUID> vGroup : vGroups) {
-            for (UUID vmId : vGroup) {
+        for (Set<Integer> vGroup : vGroups) {
+            for (int vmId : vGroup) {
                 if (curMapping.getRunningVMs().contains(vmId)) {
                     //Get the hosting server
                     //Check if only hosts VMs in its group
-                    UUID nId = curMapping.getVMLocation(vmId);
-                    for (UUID vm : curMapping.getRunningVMs(nId)) {
+                    int nId = curMapping.getVMLocation(vmId);
+                    for (int vm : curMapping.getRunningVMs(nId)) {
                         if (getVMs().contains(vm) && !vGroup.contains(vm)) {
                             return false;
                         }

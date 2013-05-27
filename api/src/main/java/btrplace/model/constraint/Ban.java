@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,7 +21,8 @@ import btrplace.model.constraint.checker.BanChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * A constraint to disallow the given VMs, when running,
@@ -41,7 +41,7 @@ public class Ban extends SatConstraint {
      * @param vms   the VMs identifiers
      * @param nodes the nodes identifiers
      */
-    public Ban(Set<UUID> vms, Set<UUID> nodes) {
+    public Ban(Set<Integer> vms, Set<Integer> nodes) {
         super(vms, nodes, false);
     }
 

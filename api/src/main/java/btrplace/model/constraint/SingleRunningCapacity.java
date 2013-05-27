@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -24,7 +23,8 @@ import btrplace.model.constraint.checker.SingleRunningCapacityChecker;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * Restrict the hosting capacity of each of the given server to a given
@@ -49,7 +49,7 @@ public class SingleRunningCapacity extends SatConstraint {
      * @param nodes the involved servers.
      * @param qty   the maximum amount of resource to share among the hosted VMs
      */
-    public SingleRunningCapacity(Set<UUID> nodes, int qty) {
+    public SingleRunningCapacity(Set<Integer> nodes, int qty) {
         this(nodes, qty, false);
     }
 
@@ -60,8 +60,8 @@ public class SingleRunningCapacity extends SatConstraint {
      * @param qty        the maximum amount of resource to share among the hosted VMs
      * @param continuous {@code true} for a continuous restriction
      */
-    public SingleRunningCapacity(Set<UUID> nodes, int qty, boolean continuous) {
-        super(Collections.<UUID>emptySet(), nodes, continuous);
+    public SingleRunningCapacity(Set<Integer> nodes, int qty, boolean continuous) {
+        super(Collections.<Integer>emptySet(), nodes, continuous);
         this.amount = qty;
     }
 

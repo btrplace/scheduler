@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,11 +19,10 @@ package btrplace.model;
 
 import java.util.Collection;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * A mapping denotes the current state and placement of virtual machines and nodes.
- * These elements are identified through their UUID
+ * These elements are identified through their int
  *
  * @author Fabien Hermenier
  */
@@ -38,7 +36,7 @@ public interface Mapping extends Cloneable {
      * @param node the node that will host the virtual machine. Must be considered as online.
      * @return {@code true} if the vm is assigned on the node.
      */
-    boolean addRunningVM(UUID vm, UUID node);
+    boolean addRunningVM(int vm, int node);
 
     /**
      * Set a virtual machine sleeping on a node.
@@ -48,7 +46,7 @@ public interface Mapping extends Cloneable {
      * @param node the node that will host the virtual machine. Must be considered as online.
      * @return {@code false} if the hosting node is offline or unknown
      */
-    boolean addSleepingVM(UUID vm, UUID node);
+    boolean addSleepingVM(int vm, int node);
 
     /**
      * Set a virtual machine ready for being running.
@@ -56,7 +54,7 @@ public interface Mapping extends Cloneable {
      *
      * @param vm the virtual machine
      */
-    void addReadyVM(UUID vm);
+    void addReadyVM(int vm);
 
     /**
      * Remove a virtual machine.
@@ -64,7 +62,7 @@ public interface Mapping extends Cloneable {
      * @param vm the virtual machine to remove
      * @return {@code true} if the VM was in the mapping and has been removed
      */
-    boolean removeVM(UUID vm);
+    boolean removeVM(int vm);
 
     /**
      * Remove a node. The node must not host any virtual machines
@@ -72,21 +70,21 @@ public interface Mapping extends Cloneable {
      * @param n the node to remove
      * @return {@code true} if the node was in the mapping and is removed. {@code false} otherwise
      */
-    boolean removeNode(UUID n);
+    boolean removeNode(int n);
 
     /**
      * Get the list of nodes that are online.
      *
      * @return a list, may be empty
      */
-    Set<UUID> getOnlineNodes();
+    Set<Integer> getOnlineNodes();
 
     /**
      * Set a node online. If the node is already in the mapping but in an another state, it is updated.
      *
      * @param node the node to add
      */
-    void addOnlineNode(UUID node);
+    void addOnlineNode(int node);
 
     /**
      * Set a node offline. If the node is already in the mapping but in an another state, it is updated.
@@ -95,29 +93,29 @@ public interface Mapping extends Cloneable {
      * @param node the node
      * @return true if the node is offline. False otherwise
      */
-    boolean addOfflineNode(UUID node);
+    boolean addOfflineNode(int node);
 
     /**
      * Get the nodes that are offline.
      *
      * @return a list of nodes, may be empty
      */
-    Set<UUID> getOfflineNodes();
+    Set<Integer> getOfflineNodes();
 
 
     /**
      * Get the virtual machines that are running.
      *
-     * @return a set of UUIDs, may be empty
+     * @return a set of ints, may be empty
      */
-    Set<UUID> getRunningVMs();
+    Set<Integer> getRunningVMs();
 
     /**
      * Get the virtual machines that are sleeping.
      *
      * @return a set of virtual machines, may be empty
      */
-    Set<UUID> getSleepingVMs();
+    Set<Integer> getSleepingVMs();
 
     /**
      * Get the virtual machines that are sleeping on a node.
@@ -125,7 +123,7 @@ public interface Mapping extends Cloneable {
      * @param n the node
      * @return a set of virtual machines, may be empty
      */
-    Set<UUID> getSleepingVMs(UUID n);
+    Set<Integer> getSleepingVMs(int n);
 
     /**
      * Get the virtual machines that are running on a node.
@@ -133,37 +131,37 @@ public interface Mapping extends Cloneable {
      * @param n the node
      * @return a set of virtual machines, may be empty
      */
-    Set<UUID> getRunningVMs(UUID n);
+    Set<Integer> getRunningVMs(int n);
 
     /**
      * Get the virtual machines that are ready.
      *
      * @return a list, may be empty
      */
-    Set<UUID> getReadyVMs();
+    Set<Integer> getReadyVMs();
 
     /**
      * Get all the virtual machines involved in the mapping.
      *
      * @return a set, may be empty
      */
-    Set<UUID> getAllVMs();
+    Set<Integer> getAllVMs();
 
     /**
      * Get all the nodes involved in the mapping.
      *
      * @return a set, may be empty
      */
-    Set<UUID> getAllNodes();
+    Set<Integer> getAllNodes();
 
     /**
      * Get the location of a  running or a sleeping virtual machine.
      *
      * @param vm the virtual machine
-     * @return the node hosting the virtual machine or {@code null} is the virtual machine
+     * @return the node hosting the virtual machine or {@code -1} is the virtual machine
      *         is not in the sleeping state nor the running state
      */
-    UUID getVMLocation(UUID vm);
+    int getVMLocation(int vm);
 
     /**
      * Get all the virtual machines running on a collection of nodes.
@@ -171,7 +169,7 @@ public interface Mapping extends Cloneable {
      * @param ns the set of nodes
      * @return a set of virtual machines, may be empty
      */
-    Set<UUID> getRunningVMs(Collection<UUID> ns);
+    Set<Integer> getRunningVMs(Collection<Integer> ns);
 
     /**
      * Copy a mapping.
@@ -186,7 +184,7 @@ public interface Mapping extends Cloneable {
      * @param vm the virtual machine identifier
      * @return {@code true} if the virtual machine is in.
      */
-    boolean containsVM(UUID vm);
+    boolean containsVM(int vm);
 
     /**
      * Check if a node is in the mapping.
@@ -194,7 +192,7 @@ public interface Mapping extends Cloneable {
      * @param node the node identifier
      * @return {@code true} if the node is in.
      */
-    boolean containsNode(UUID node);
+    boolean containsNode(int node);
 
     /**
      * Remove all the nodes and the VMs in the mapping.
@@ -206,7 +204,7 @@ public interface Mapping extends Cloneable {
      *
      * @param u the node identifier
      */
-    void clearNode(UUID u);
+    void clearNode(int u);
 
     /**
      * Remove all the VMs in the mapping

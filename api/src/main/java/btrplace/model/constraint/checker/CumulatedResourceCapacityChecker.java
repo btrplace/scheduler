@@ -23,7 +23,7 @@ import btrplace.model.constraint.CumulatedResourceCapacity;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.event.*;
 
-import java.util.UUID;
+;
 
 /**
  * Checker for the {@link btrplace.model.constraint.CumulatedResourceCapacity} constraint
@@ -46,14 +46,14 @@ public class CumulatedResourceCapacityChecker extends AllowAllConstraintChecker<
         super(s);
     }
 
-    private boolean leave(int amount, UUID n) {
+    private boolean leave(int amount, int n) {
         if (getConstraint().isContinuous() && getNodes().contains(n)) {
             free += amount;
         }
         return true;
     }
 
-    private boolean arrive(int amount, UUID n) {
+    private boolean arrive(int amount, int n) {
         if (getConstraint().isContinuous() && getNodes().contains(n)) {
             free -= amount;
             if (free < 0) {
@@ -107,7 +107,7 @@ public class CumulatedResourceCapacityChecker extends AllowAllConstraintChecker<
             rc = (ShareableResource) mo.getView(ShareableResource.VIEW_ID_BASE + getConstraint().getResource());
             free = getConstraint().getAmount();
             Mapping map = mo.getMapping();
-            for (UUID n : getNodes()) {
+            for (int n : getNodes()) {
                 free -= rc.sum(map.getRunningVMs(n), true);
                 if (free < 0) {
                     return false;
@@ -136,7 +136,7 @@ public class CumulatedResourceCapacityChecker extends AllowAllConstraintChecker<
         }
 
         int remainder = getConstraint().getAmount();
-        for (UUID id : getNodes()) {
+        for (int id : getNodes()) {
             if (i.getMapping().getOnlineNodes().contains(id)) {
                 remainder -= rc.sum(i.getMapping().getRunningVMs(id), true);
                 if (remainder < 0) {

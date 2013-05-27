@@ -23,7 +23,8 @@ import btrplace.model.constraint.Among;
 import btrplace.plan.event.RunningVMPlacement;
 
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * Checker for the {@link Among} constraint
@@ -36,7 +37,7 @@ public class AmongChecker extends AllowAllConstraintChecker<Among> {
     /**
      * Current group (for the continuous restriction). {@code null} if no group has been selected.
      */
-    private Set<UUID> choosedGroup = null;
+    private Set<Integer> choosedGroup = null;
 
     /**
      * Make a new checker.
@@ -51,9 +52,9 @@ public class AmongChecker extends AllowAllConstraintChecker<Among> {
     public boolean startsWith(Model mo) {
         if (getConstraint().isContinuous()) {
             Mapping map = mo.getMapping();
-            for (UUID vm : getVMs()) {
+            for (int vm : getVMs()) {
                 if (map.getRunningVMs().contains(vm)) {
-                    Set<UUID> nodes = getConstraint().getAssociatedPGroup((map.getVMLocation(vm)));
+                    Set<Integer> nodes = getConstraint().getAssociatedPGroup((map.getVMLocation(vm)));
                     if (nodes == null) {
                         return false;
                     } else if (choosedGroup == null) {
@@ -89,10 +90,10 @@ public class AmongChecker extends AllowAllConstraintChecker<Among> {
     @Override
     public boolean endsWith(Model i) {
         Mapping map = i.getMapping();
-        Set<UUID> grp = null;
-        for (UUID vm : getVMs()) {
+        Set<Integer> grp = null;
+        for (int vm : getVMs()) {
             if (map.getRunningVMs().contains(vm)) {
-                Set<UUID> nodes = getConstraint().getAssociatedPGroup((map.getVMLocation(vm)));
+                Set<Integer> nodes = getConstraint().getAssociatedPGroup((map.getVMLocation(vm)));
                 if (nodes == null) {
                     return false;
                 } else if (grp == null) {

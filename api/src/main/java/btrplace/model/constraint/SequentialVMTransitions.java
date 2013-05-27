@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -23,7 +22,8 @@ import btrplace.model.constraint.checker.SequentialVMTransitionsChecker;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+
+;
 
 /**
  * A constraint to force the actions that change the given VMs state
@@ -35,20 +35,20 @@ import java.util.UUID;
  */
 public class SequentialVMTransitions extends SatConstraint {
 
-    private List<UUID> order;
+    private List<Integer> order;
 
     /**
      * Make a new constraint.
      *
      * @param seq the order to ensure
      */
-    public SequentialVMTransitions(List<UUID> seq) {
-        super(seq, new ArrayList<UUID>(), true);
+    public SequentialVMTransitions(List<Integer> seq) {
+        super(seq, new ArrayList<Integer>(), true);
         order = seq;
     }
 
     @Override
-    public List<UUID> getInvolvedVMs() {
+    public List<Integer> getInvolvedVMs() {
         return order;
     }
 

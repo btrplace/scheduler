@@ -22,7 +22,7 @@ import btrplace.model.Model;
 import btrplace.model.constraint.Offline;
 import btrplace.plan.event.BootNode;
 
-import java.util.UUID;
+;
 
 /**
  * Checker for the {@link btrplace.model.constraint.Offline} constraint
@@ -49,7 +49,7 @@ public class OfflineChecker extends AllowAllConstraintChecker<Offline> {
     @Override
     public boolean endsWith(Model mo) {
         Mapping c = mo.getMapping();
-        for (UUID n : getNodes()) {
+        for (int n : getNodes()) {
             if (!c.getOfflineNodes().contains(n)) {
                 return false;
             }

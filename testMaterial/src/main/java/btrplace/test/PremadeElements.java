@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +17,6 @@
 
 package btrplace.test;
 
-import java.util.UUID;
 
 /**
  * Pre-made VMs and servers for tests.
@@ -27,28 +25,28 @@ import java.util.UUID;
  */
 public interface PremadeElements {
 
-    UUID vm1 = new UUID(0, 1);
-    UUID vm2 = new UUID(0, 2);
-    UUID vm3 = new UUID(0, 3);
-    UUID vm4 = new UUID(0, 4);
-    UUID vm5 = new UUID(0, 5);
-    UUID vm6 = new UUID(0, 6);
-    UUID vm7 = new UUID(0, 7);
-    UUID vm8 = new UUID(0, 8);
-    UUID vm9 = new UUID(0, 9);
-    UUID vm10 = new UUID(0, 10);
+    int vm1 = 1;
+    int vm2 = 2;
+    int vm3 = 3;
+    int vm4 = 4;
+    int vm5 = 5;
+    int vm6 = 6;
+    int vm7 = 7;
+    int vm8 = 8;
+    int vm9 = 9;
+    int vm10 = 10;
 
 
-    UUID n1 = new UUID(1, 1);
-    UUID n2 = new UUID(1, 2);
-    UUID n3 = new UUID(1, 3);
-    UUID n4 = new UUID(1, 4);
-    UUID n5 = new UUID(1, 5);
-    UUID n6 = new UUID(1, 6);
-    UUID n7 = new UUID(1, 7);
-    UUID n8 = new UUID(1, 8);
-    UUID n9 = new UUID(1, 9);
-    UUID n10 = new UUID(1, 10);
+    int n1 = 11;
+    int n2 = 12;
+    int n3 = 13;
+    int n4 = 14;
+    int n5 = 15;
+    int n6 = 16;
+    int n7 = 17;
+    int n8 = 18;
+    int n9 = 19;
+    int n10 = 20;
 
 
 }

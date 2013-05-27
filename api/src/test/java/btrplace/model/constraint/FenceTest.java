@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,7 +28,8 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * Unit tests for {@link Fence}.
@@ -40,8 +40,8 @@ public class FenceTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1));
-        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1));
+        Set<Integer> vms = new HashSet<>(Arrays.asList(vm1));
+        Set<Integer> nodes = new HashSet<>(Arrays.asList(n1));
         Fence f = new Fence(vms, nodes);
         Assert.assertNotNull(f.getChecker());
         Assert.assertEquals(vms, f.getInvolvedVMs());
@@ -62,9 +62,9 @@ public class FenceTest implements PremadeElements {
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n2);
         map.addRunningVM(vm3, n2);
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
 
-        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> nodes = new HashSet<>(Arrays.asList(n1, n2));
 
         Fence f = new Fence(vms, nodes);
         Model m = new DefaultModel(map);
@@ -75,8 +75,8 @@ public class FenceTest implements PremadeElements {
 
     @Test
     public void testEquals() {
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2));
-        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<Integer> nodes = new HashSet<>(Arrays.asList(n1, n2));
         Fence f = new Fence(vms, nodes);
         Assert.assertTrue(f.equals(f));
         Assert.assertTrue(new Fence(vms, nodes).equals(f));

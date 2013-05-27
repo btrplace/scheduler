@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -26,7 +25,8 @@ import btrplace.plan.ReconfigurationPlanCheckerException;
 
 import java.util.Collection;
 import java.util.Objects;
-import java.util.UUID;
+
+;
 
 /**
  * Abstract class to characterize a satisfaction-oriented constraint
@@ -48,12 +48,12 @@ public abstract class SatConstraint {
     /**
      * The virtual machines involved in the constraint.
      */
-    private Collection<UUID> vms;
+    private Collection<Integer> vms;
 
     /**
      * The nodes involved in the constraint.
      */
-    private Collection<UUID> nodes;
+    private Collection<Integer> nodes;
 
     /**
      * Make a new constraint.
@@ -62,7 +62,7 @@ public abstract class SatConstraint {
      * @param nodes the involved nodes
      * @param c     {@code true} to indicate a continuous restriction
      */
-    public SatConstraint(Collection<UUID> vms, Collection<UUID> nodes, boolean c) {
+    public SatConstraint(Collection<Integer> vms, Collection<Integer> nodes, boolean c) {
         this.vms = vms;
         this.nodes = nodes;
         this.continuous = c;
@@ -73,7 +73,7 @@ public abstract class SatConstraint {
      *
      * @return a set of VM identifiers that may be empty
      */
-    public Collection<UUID> getInvolvedVMs() {
+    public Collection<Integer> getInvolvedVMs() {
         return this.vms;
     }
 
@@ -82,7 +82,7 @@ public abstract class SatConstraint {
      *
      * @return a set of nodes identifiers that may be empty
      */
-    public Collection<UUID> getInvolvedNodes() {
+    public Collection<Integer> getInvolvedNodes() {
         return this.nodes;
     }
 

@@ -1,3 +1,20 @@
+/*
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ *
+ * This file is part of btrplace.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.plan;
 
 import btrplace.plan.event.Action;
@@ -5,8 +22,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Simple unit tests for {@link Dependency}.
@@ -15,12 +32,14 @@ import java.util.UUID;
  */
 public class DependencyTest {
 
+    private static Random rnd = new Random();
+
     @Test
     public void testInstantiation() {
-        Action a = new MockAction(UUID.randomUUID(), 1, 4);
+        Action a = new MockAction(rnd.nextInt(), 1, 4);
         Set<Action> d = new HashSet<>();
-        d.add(new MockAction(UUID.randomUUID(), 2, 5));
-        d.add(new MockAction(UUID.randomUUID(), 3, 7));
+        d.add(new MockAction(rnd.nextInt(), 2, 5));
+        d.add(new MockAction(rnd.nextInt(), 3, 7));
         Dependency dep = new Dependency(a, d);
         Assert.assertEquals(dep.getAction(), a);
         Assert.assertEquals(dep.getDependencies(), d);

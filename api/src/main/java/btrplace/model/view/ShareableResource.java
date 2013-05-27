@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -31,7 +30,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class ShareableResource implements ModelView, Cloneable, Comparator<UUID> {
+public class ShareableResource implements ModelView, Cloneable, Comparator<Integer> {
 
     /**
      * The base of the view identifier. Once instantiated, it is completed
@@ -39,7 +38,7 @@ public class ShareableResource implements ModelView, Cloneable, Comparator<UUID>
      */
     public static final String VIEW_ID_BASE = "ShareableResource.";
 
-    private Map<UUID, Integer> values;
+    private Map<Integer, Integer> values;
 
     private int noValue;
 
@@ -78,7 +77,7 @@ public class ShareableResource implements ModelView, Cloneable, Comparator<UUID>
      * @param n the element
      * @return the resource if it was defined.
      */
-    public int get(UUID n) {
+    public int get(int n) {
         if (values.containsKey(n)) {
             return values.get(n);
         }
@@ -92,9 +91,9 @@ public class ShareableResource implements ModelView, Cloneable, Comparator<UUID>
      * @param ids the element identifiers
      * @return a list of values.
      */
-    public List<Integer> get(List<UUID> ids) {
+    public List<Integer> get(List<Integer> ids) {
         List<Integer> res = new ArrayList<>(ids.size());
-        for (UUID u : ids) {
+        for (int u : ids) {
             res.add(get(u));
         }
         return res;
@@ -105,7 +104,7 @@ public class ShareableResource implements ModelView, Cloneable, Comparator<UUID>
      *
      * @return a set that may be empty.
      */
-    public Set<UUID> getDefined() {
+    public Set<Integer> getDefined() {
         return values.keySet();
     }
 
@@ -118,7 +117,7 @@ public class ShareableResource implements ModelView, Cloneable, Comparator<UUID>
      * @param val the value to set
      * @return the current resource
      */
-    public ShareableResource set(UUID n, int val) {
+    public ShareableResource set(int n, int val) {
         values.put(n, val);
         return this;
     }
@@ -129,7 +128,7 @@ public class ShareableResource implements ModelView, Cloneable, Comparator<UUID>
      * @param n the element identifier
      * @return {@code true} iff a value was previously defined for {@code n}.
      */
-    public boolean unset(UUID n) {
+    public boolean unset(int n) {
         return values.remove(n) != null;
     }
 
@@ -139,12 +138,12 @@ public class ShareableResource implements ModelView, Cloneable, Comparator<UUID>
      * @param n the element to check
      * @return {@code true} iff the resource is defined for {@code n}.
      */
-    public boolean defined(UUID n) {
+    public boolean defined(int n) {
         return values.containsKey(n);
     }
 
     @Override
-    public int compare(UUID o1, UUID o2) {
+    public int compare(Integer o1, Integer o2) {
         return get(o1) - get(o2);
     }
 
@@ -174,9 +173,9 @@ public class ShareableResource implements ModelView, Cloneable, Comparator<UUID>
      * @param undef {@code true} to include the undefined elements using the default value
      * @return the value
      */
-    public int max(Collection<UUID> ids, boolean undef) {
+    public int max(Collection<Integer> ids, boolean undef) {
         int m = Integer.MIN_VALUE;
-        for (UUID u : ids) {
+        for (int u : ids) {
             if (defined(u) || undef) {
                 int x = defined(u) ? values.get(u) : noValue;
                 if (x > m) {
@@ -194,9 +193,9 @@ public class ShareableResource implements ModelView, Cloneable, Comparator<UUID>
      * @param undef {@code true} to include the undefined elements using the default value
      * @return the value
      */
-    public int min(Collection<UUID> ids, boolean undef) {
+    public int min(Collection<Integer> ids, boolean undef) {
         int m = Integer.MAX_VALUE;
-        for (UUID u : ids) {
+        for (int u : ids) {
             if (defined(u) || undef) {
                 int x = defined(u) ? values.get(u) : noValue;
                 if (x < m) {
@@ -214,9 +213,9 @@ public class ShareableResource implements ModelView, Cloneable, Comparator<UUID>
      * @param undef {@code true} to include the undefined elements using the default value
      * @return the value
      */
-    public int sum(Collection<UUID> ids, boolean undef) {
+    public int sum(Collection<Integer> ids, boolean undef) {
         int s = 0;
-        for (UUID u : ids) {
+        for (int u : ids) {
             if (defined(u) || undef) {
                 s += defined(u) ? values.get(u) : noValue;
             }
@@ -248,7 +247,7 @@ public class ShareableResource implements ModelView, Cloneable, Comparator<UUID>
             return false;
         }
 
-        for (UUID k : values.keySet()) {
+        for (int k : values.keySet()) {
             if (!values.get(k).equals(that.get(k))) {
                 return false;
             }
@@ -264,7 +263,7 @@ public class ShareableResource implements ModelView, Cloneable, Comparator<UUID>
     @Override
     public ShareableResource clone() {
         ShareableResource rc = new ShareableResource(rcId, noValue);
-        for (Map.Entry<UUID, Integer> e : values.entrySet()) {
+        for (Map.Entry<Integer, Integer> e : values.entrySet()) {
             rc.values.put(e.getKey(), e.getValue());
         }
         return rc;
@@ -273,8 +272,8 @@ public class ShareableResource implements ModelView, Cloneable, Comparator<UUID>
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder("rc:").append(rcId).append(":");
-        for (Iterator<Map.Entry<UUID, Integer>> ite = values.entrySet().iterator(); ite.hasNext(); ) {
-            Map.Entry<UUID, Integer> e = ite.next();
+        for (Iterator<Map.Entry<Integer, Integer>> ite = values.entrySet().iterator(); ite.hasNext(); ) {
+            Map.Entry<Integer, Integer> e = ite.next();
             buf.append('<').append(e.getKey().toString()).append(',').append(e.getValue()).append('>');
             if (ite.hasNext()) {
                 buf.append(',');
@@ -284,8 +283,8 @@ public class ShareableResource implements ModelView, Cloneable, Comparator<UUID>
     }
 
     @Override
-    public boolean substitute(UUID oldUUID, UUID newUUID) {
-        set(newUUID, get(oldUUID));
+    public boolean substitute(int oldint, int newint) {
+        set(newint, get(oldint));
         return true;
     }
 }

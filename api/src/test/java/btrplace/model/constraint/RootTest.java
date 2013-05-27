@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -29,7 +28,10 @@ import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Unit tests for {@link btrplace.model.constraint.Root}.
@@ -40,7 +42,7 @@ public class RootTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> x = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<Integer> x = new HashSet<>(Arrays.asList(vm1, vm2));
         Root s = new Root(x);
         Assert.assertNotNull(s.getChecker());
         Assert.assertEquals(x, s.getInvolvedVMs());
@@ -56,7 +58,7 @@ public class RootTest implements PremadeElements {
 
     @Test
     public void testEquals() {
-        Set<UUID> x = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<Integer> x = new HashSet<>(Arrays.asList(vm1, vm2));
         Root s = new Root(x);
 
         Assert.assertTrue(s.equals(s));
@@ -71,7 +73,7 @@ public class RootTest implements PremadeElements {
         Mapping c = new DefaultMapping();
         c.addReadyVM(n1);
         c.addReadyVM(n2);
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
         Root o = new Root(s);
 
         Model i = new DefaultModel(c);

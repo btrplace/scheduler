@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -34,7 +33,8 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * Unit tests for {@link Overbook}.
@@ -45,7 +45,7 @@ public class OverbookTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
         Overbook o = new Overbook(s, "foo", 1.5);
         Assert.assertNotNull(o.getChecker());
         Assert.assertEquals(s, o.getInvolvedNodes());
@@ -64,7 +64,7 @@ public class OverbookTest implements PremadeElements {
 
     @Test
     public void testDiscreteIsSatisfied() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
 
         Mapping cfg = new DefaultMapping();
         cfg.addOnlineNode(n1);
@@ -102,7 +102,7 @@ public class OverbookTest implements PremadeElements {
 
     @Test
     public void testContinuousIsSatisfied() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
 
         Mapping cfg = new DefaultMapping();
         cfg.addOnlineNode(n1);
@@ -149,7 +149,7 @@ public class OverbookTest implements PremadeElements {
 
     @Test
     public void testEquals() {
-        Set<UUID> x = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> x = new HashSet<>(Arrays.asList(n1, n2));
         Overbook s = new Overbook(x, "foo", 3);
 
         Assert.assertTrue(s.equals(s));

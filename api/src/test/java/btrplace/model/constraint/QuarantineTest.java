@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -34,7 +33,8 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * Unit tests for {@link Quarantine}.
@@ -45,7 +45,7 @@ public class QuarantineTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
         Quarantine q = new Quarantine(s);
         Assert.assertNotNull(q.getChecker());
         Assert.assertTrue(q.getInvolvedVMs().isEmpty());
@@ -60,12 +60,12 @@ public class QuarantineTest implements PremadeElements {
 
     @Test
     public void testEqualsHashCode() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
         Quarantine q = new Quarantine(s);
         Assert.assertTrue(q.equals(q));
         Assert.assertTrue(q.equals(new Quarantine(new HashSet<>(s))));
         Assert.assertEquals(q.hashCode(), new Quarantine(new HashSet<>(s)).hashCode());
-        Assert.assertFalse(q.equals(new Quarantine(new HashSet<UUID>())));
+        Assert.assertFalse(q.equals(new Quarantine(new HashSet<Integer>())));
     }
 
     @Test

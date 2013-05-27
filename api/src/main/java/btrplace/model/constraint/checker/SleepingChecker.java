@@ -22,7 +22,7 @@ import btrplace.model.Model;
 import btrplace.model.constraint.Sleeping;
 import btrplace.plan.event.SuspendVM;
 
-import java.util.UUID;
+;
 
 /**
  * Checker for the {@link btrplace.model.constraint.Sleeping} constraint
@@ -49,7 +49,7 @@ public class SleepingChecker extends DenyMyVMsActions<Sleeping> {
     @Override
     public boolean endsWith(Model mo) {
         Mapping c = mo.getMapping();
-        for (UUID vm : getVMs()) {
+        for (int vm : getVMs()) {
             if (!c.getSleepingVMs().contains(vm)) {
                 return false;
             }

@@ -25,7 +25,6 @@ import btrplace.plan.event.RunningVMPlacement;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Checker for the {@link btrplace.model.constraint.Lonely} constraint
@@ -35,9 +34,9 @@ import java.util.UUID;
  */
 public class LonelyChecker extends AllowAllConstraintChecker<Lonely> {
 
-    private Set<UUID> idleNodes;
+    private Set<Integer> idleNodes;
 
-    private Set<UUID> privateNodes;
+    private Set<Integer> privateNodes;
 
     /**
      * Make a new checker.
@@ -50,7 +49,7 @@ public class LonelyChecker extends AllowAllConstraintChecker<Lonely> {
         privateNodes = new HashSet<>();
     }
 
-    private boolean checkDestination(UUID vm, UUID n) {
+    private boolean checkDestination(int vm, int n) {
         if (getConstraint().isContinuous()) {
             if (getVMs().contains(vm)) {
                 if (!idleNodes.remove(n)) {
@@ -77,14 +76,14 @@ public class LonelyChecker extends AllowAllConstraintChecker<Lonely> {
 
     private boolean discreteCheck(Model mo) {
         Mapping map = mo.getMapping();
-        for (UUID vm : getVMs()) {
+        for (int vm : getVMs()) {
             if (map.getRunningVMs().contains(vm)) {
-                UUID host = map.getVMLocation(vm);
-                Set<UUID> on = map.getRunningVMs(host);
+                int host = map.getVMLocation(vm);
+                Set<Integer> on = map.getRunningVMs(host);
                 //Check for other VMs on the node. If they are not in the constraint
                 //it's a violation
-                for (UUID vm2 : on) {
-                    if (!vm2.equals(vm) && !getVMs().contains(vm2)) {
+                for (int vm2 : on) {
+                    if (vm2 != vm && !getVMs().contains(vm2)) {
                         return false;
                     }
                 }
@@ -109,12 +108,12 @@ public class LonelyChecker extends AllowAllConstraintChecker<Lonely> {
             boolean ret = discreteCheck(mo);
             if (ret) {
                 Mapping map = mo.getMapping();
-                for (UUID vm : getVMs()) {
+                for (int vm : getVMs()) {
                     if (map.getRunningVMs().contains(vm)) {
                         privateNodes.add(map.getVMLocation(vm));
                     }
                 }
-                for (UUID n : map.getOnlineNodes()) {
+                for (int n : map.getOnlineNodes()) {
                     if (map.getRunningVMs(n).isEmpty()) {
                         idleNodes.add(n);
                     }

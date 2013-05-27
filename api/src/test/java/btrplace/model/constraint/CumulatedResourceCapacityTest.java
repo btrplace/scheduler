@@ -32,7 +32,8 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * Unit tests for {@link CumulatedResourceCapacity}.
@@ -43,7 +44,7 @@ public class CumulatedResourceCapacityTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
         CumulatedResourceCapacity c = new CumulatedResourceCapacity(s, "foo", 3);
         Assert.assertNotNull(c.getChecker());
         Assert.assertEquals(s, c.getInvolvedNodes());
@@ -63,7 +64,7 @@ public class CumulatedResourceCapacityTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsAndHashCode() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
         CumulatedResourceCapacity c = new CumulatedResourceCapacity(s, "foo", 3);
         CumulatedResourceCapacity c2 = new CumulatedResourceCapacity(s, "foo", 3);
         Assert.assertTrue(c.equals(c));
@@ -72,7 +73,7 @@ public class CumulatedResourceCapacityTest implements PremadeElements {
 
         Assert.assertFalse(c.equals(new CumulatedResourceCapacity(s, "bar", 3)));
         Assert.assertFalse(c.equals(new CumulatedResourceCapacity(s, "foo", 2)));
-        Assert.assertFalse(c.equals(new CumulatedResourceCapacity(new HashSet<UUID>(), "foo", 3)));
+        Assert.assertFalse(c.equals(new CumulatedResourceCapacity(new HashSet<Integer>(), "foo", 3)));
     }
 
     @Test
@@ -91,7 +92,7 @@ public class CumulatedResourceCapacityTest implements PremadeElements {
         ShareableResource rc = new ShareableResource("foo", 1);
         rc.set(vm2, 2);
         mo.attach(rc);
-        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> nodes = new HashSet<>(Arrays.asList(n1, n2));
         CumulatedResourceCapacity cc = new CumulatedResourceCapacity(nodes, "foo", 4);
         Assert.assertEquals(cc.isSatisfied(mo), true);
         Assert.assertEquals(new CumulatedResourceCapacity(nodes, "bar", 100).isSatisfied(mo), false);
@@ -119,7 +120,7 @@ public class CumulatedResourceCapacityTest implements PremadeElements {
         ShareableResource rc = new ShareableResource("foo", 1);
         mo.attach(rc);
 
-        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> nodes = new HashSet<>(Arrays.asList(n1, n2));
         CumulatedResourceCapacity cc = new CumulatedResourceCapacity(nodes, "foo", 4, true);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(cc.isSatisfied(plan), true);

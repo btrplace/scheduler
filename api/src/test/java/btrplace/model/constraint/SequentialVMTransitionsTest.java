@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,7 +31,8 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
+
+;
 
 /**
  * Unit tests for {@link SequentialVMTransitions}.
@@ -44,7 +44,7 @@ public class SequentialVMTransitionsTest implements PremadeElements {
     @Test
     public void testInstantiation() {
 
-        List<UUID> l = Arrays.asList(vm1, vm2, vm3);
+        List<Integer> l = Arrays.asList(vm1, vm2, vm3);
         SequentialVMTransitions c = new SequentialVMTransitions(l);
         Assert.assertNotNull(c.getChecker());
         Assert.assertEquals(l, c.getInvolvedVMs());
@@ -59,9 +59,9 @@ public class SequentialVMTransitionsTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEquals() {
-        List<UUID> l = Arrays.asList(vm1, vm2, vm3);
+        List<Integer> l = Arrays.asList(vm1, vm2, vm3);
         SequentialVMTransitions c = new SequentialVMTransitions(l);
-        List<UUID> l2 = new ArrayList<>(l);
+        List<Integer> l2 = new ArrayList<>(l);
         SequentialVMTransitions c2 = new SequentialVMTransitions(l2);
         Assert.assertTrue(c.equals(c2));
         Assert.assertEquals(c.hashCode(), c2.hashCode());
@@ -78,7 +78,7 @@ public class SequentialVMTransitionsTest implements PremadeElements {
         map.addReadyVM(vm2);
         map.addSleepingVM(vm3, n1);
         map.addRunningVM(vm4, n1);
-        List<UUID> l = Arrays.asList(vm1, vm2, vm3, vm4);
+        List<Integer> l = Arrays.asList(vm1, vm2, vm3, vm4);
         SequentialVMTransitions c = new SequentialVMTransitions(l);
         Model mo = new DefaultModel(map);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
@@ -118,7 +118,7 @@ public class SequentialVMTransitionsTest implements PremadeElements {
         p.add(new SuspendVM(vm3, n2, n2, 1, 2));
         p.add(new ShutdownVM(vm4, n1, 2, 3));
 
-        List<UUID> seq = Arrays.asList(vm1, vm2, vm3, vm4);
+        List<Integer> seq = Arrays.asList(vm1, vm2, vm3, vm4);
 
         SequentialVMTransitions cstr = new SequentialVMTransitions(seq);
         Assert.assertEquals(cstr.isSatisfied(p), true);

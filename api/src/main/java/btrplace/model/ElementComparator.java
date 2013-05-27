@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -23,14 +22,13 @@ import btrplace.model.view.ShareableResource;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * A comparator to compare element depending on multiple resources.
  *
  * @author Fabien Hermenier
  */
-public class ElementComparator implements Comparator<UUID> {
+public class ElementComparator implements Comparator<Integer> {
 
     /**
      * The resources to use to make the comparison.
@@ -80,7 +78,7 @@ public class ElementComparator implements Comparator<UUID> {
     }
 
     @Override
-    public int compare(UUID o1, UUID o2) {
+    public int compare(Integer o1, Integer o2) {
         for (int i = 0; i < rcs.size(); i++) {
             ShareableResource rc = rcs.get(i);
             int ret = rc.compare(o1, o2);

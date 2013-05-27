@@ -22,7 +22,7 @@ import btrplace.model.Model;
 import btrplace.model.constraint.Online;
 import btrplace.plan.event.ShutdownNode;
 
-import java.util.UUID;
+;
 
 /**
  * Checker for the {@link btrplace.model.constraint.Online} constraint
@@ -49,7 +49,7 @@ public class OnlineChecker extends AllowAllConstraintChecker<Online> {
     @Override
     public boolean endsWith(Model mo) {
         Mapping c = mo.getMapping();
-        for (UUID n : getNodes()) {
+        for (int n : getNodes()) {
             if (!c.getOnlineNodes().contains(n)) {
                 return false;
             }

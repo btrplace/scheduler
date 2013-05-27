@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -31,6 +30,8 @@ import java.util.*;
  */
 public class ShareableResourceTest implements PremadeElements {
 
+    private static Random rnd = new Random();
+
     @Test
     public void testInstantiation() {
         ShareableResource rc = new ShareableResource("foo");
@@ -56,9 +57,9 @@ public class ShareableResourceTest implements PremadeElements {
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testGets() {
         ShareableResource rc = new ShareableResource("foo");
-        List<UUID> ids = new ArrayList<>(10);
+        List<Integer> ids = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
-            UUID id = UUID.randomUUID();
+            int id = rnd.nextInt();
             ids.add(id);
             rc.set(id, i);
         }
@@ -71,9 +72,9 @@ public class ShareableResourceTest implements PremadeElements {
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testDefined() {
         ShareableResource rc = new ShareableResource("foo");
-        List<UUID> ids = new ArrayList<>(10);
+        List<Integer> ids = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
-            UUID id = UUID.randomUUID();
+            int id = rnd.nextInt();
             ids.add(id);
             rc.set(id, i);
         }
@@ -115,7 +116,7 @@ public class ShareableResourceTest implements PremadeElements {
 
         rc.set(vm2, 7);
         Assert.assertEquals(7, rc.max(rc.getDefined(), false));
-        Set<UUID> x = new HashSet<>();
+        Set<Integer> x = new HashSet<>();
         x.add(vm1);
         Assert.assertEquals(3, rc.max(x, false));
         rc.set(vm1, -15);
@@ -130,7 +131,7 @@ public class ShareableResourceTest implements PremadeElements {
 
         rc.set(vm2, 7);
         Assert.assertEquals(3, rc.min(rc.getDefined(), false));
-        Set<UUID> x = new HashSet<>();
+        Set<Integer> x = new HashSet<>();
         x.add(vm2);
         Assert.assertEquals(7, rc.min(x, false));
         rc.set(vm2, 18);
@@ -145,7 +146,7 @@ public class ShareableResourceTest implements PremadeElements {
         rc.set(vm1, 3);
         rc.set(vm2, 7);
         Assert.assertEquals(10, rc.sum(rc.getDefined(), false));
-        Set<UUID> x = new HashSet<>();
+        Set<Integer> x = new HashSet<>();
         x.add(vm2);
         Assert.assertEquals(7, rc.sum(x, false));
         rc.set(vm2, 18);

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -23,8 +22,9 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Unit tests for {@link DefaultMapping}.
@@ -33,6 +33,7 @@ import java.util.UUID;
  */
 public class DefaultMappingTest implements PremadeElements {
 
+    private static Random rnd = new Random();
 
     /**
      * Create an empty mapping and check all the getters.
@@ -48,21 +49,21 @@ public class DefaultMappingTest implements PremadeElements {
 
         Assert.assertTrue(c.getAllVMs().isEmpty());
         Assert.assertTrue(c.getRunningVMs().isEmpty());
-        Assert.assertTrue(c.getRunningVMs(UUID.randomUUID()).isEmpty());
+        Assert.assertTrue(c.getRunningVMs(rnd.nextInt()).isEmpty());
 
         Assert.assertTrue(c.getSleepingVMs().isEmpty());
-        Assert.assertTrue(c.getSleepingVMs(UUID.randomUUID()).isEmpty());
+        Assert.assertTrue(c.getSleepingVMs(rnd.nextInt()).isEmpty());
 
         Assert.assertTrue(c.getReadyVMs().isEmpty());
 
-        Assert.assertNull(c.getVMLocation(UUID.randomUUID()));
+        Assert.assertEquals(c.getVMLocation(rnd.nextInt()), -1);
 
         Assert.assertNotNull(c.toString());
 
-        Assert.assertFalse(c.removeVM(UUID.randomUUID()));
-        Assert.assertFalse(c.removeNode(UUID.randomUUID()));
-        Assert.assertFalse(c.containsNode(UUID.randomUUID()));
-        Assert.assertFalse(c.containsVM(UUID.randomUUID()));
+        Assert.assertFalse(c.removeVM(rnd.nextInt()));
+        Assert.assertFalse(c.removeNode(rnd.nextInt()));
+        Assert.assertFalse(c.containsNode(rnd.nextInt()));
+        Assert.assertFalse(c.containsVM(rnd.nextInt()));
     }
 
     /**
@@ -127,7 +128,7 @@ public class DefaultMappingTest implements PremadeElements {
 
         //Remove a node running VM. Must fail
         c.addOnlineNode(n1);
-        c.addRunningVM(UUID.randomUUID(), n1);
+        c.addRunningVM(rnd.nextInt(), n1);
         Assert.assertFalse(c.removeNode(n1));
         Assert.assertEquals(c.getAllNodes().size(), 1);
         Assert.assertTrue(c.getAllNodes().contains(n1));
@@ -136,7 +137,7 @@ public class DefaultMappingTest implements PremadeElements {
 
         //Remove a node with a sleeping VM on it. Must fail
         c.addOnlineNode(n2);
-        c.addSleepingVM(UUID.randomUUID(), n2);
+        c.addSleepingVM(rnd.nextInt(), n2);
         Assert.assertFalse(c.removeNode(n2));
         Assert.assertEquals(c.getAllNodes().size(), 2);
         Assert.assertTrue(c.getAllNodes().contains(n2));
@@ -160,10 +161,10 @@ public class DefaultMappingTest implements PremadeElements {
         Assert.assertTrue(c.getSleepingVMs().isEmpty() && c.getReadyVMs().isEmpty());
         Assert.assertEquals(c.getVMLocation(vm1), n1);
 
-        Assert.assertFalse(c.addRunningVM(UUID.randomUUID(), n2));
+        Assert.assertFalse(c.addRunningVM(rnd.nextInt(), n2));
         Assert.assertEquals(1, c.getAllVMs().size());
 
-        Assert.assertFalse(c.addRunningVM(vm1, UUID.randomUUID()));
+        Assert.assertFalse(c.addRunningVM(vm1, rnd.nextInt()));
         Assert.assertEquals(1, c.getAllVMs().size());
 
         Assert.assertTrue(c.removeVM(vm1));
@@ -175,10 +176,10 @@ public class DefaultMappingTest implements PremadeElements {
         c.addRunningVM(vm3, n4);
         c.addRunningVM(vm1, n3);
 
-        Set<UUID> nodes = new HashSet<>();
+        Set<Integer> nodes = new HashSet<>();
         nodes.add(n1);
         nodes.add(n3);
-        Set<UUID> on = c.getRunningVMs(nodes);
+        Set<Integer> on = c.getRunningVMs(nodes);
         Assert.assertTrue(on.size() == 2 && on.contains(vm1) && on.contains(vm2));
     }
 
@@ -198,10 +199,10 @@ public class DefaultMappingTest implements PremadeElements {
         Assert.assertTrue(c.getRunningVMs().isEmpty() && c.getReadyVMs().isEmpty());
         Assert.assertEquals(c.getVMLocation(vm1), n1);
 
-        Assert.assertFalse(c.addSleepingVM(UUID.randomUUID(), n2));
+        Assert.assertFalse(c.addSleepingVM(rnd.nextInt(), n2));
         Assert.assertEquals(1, c.getAllVMs().size());
 
-        Assert.assertFalse(c.addSleepingVM(vm1, UUID.randomUUID()));
+        Assert.assertFalse(c.addSleepingVM(vm1, rnd.nextInt()));
         Assert.assertEquals(1, c.getAllVMs().size());
 
         Assert.assertTrue(c.removeVM(vm1));
@@ -219,7 +220,7 @@ public class DefaultMappingTest implements PremadeElements {
         Assert.assertTrue(c.getAllVMs().size() == 1 && c.getAllVMs().contains(vm1));
         Assert.assertTrue(c.getReadyVMs().size() == 1 && c.getReadyVMs().contains(vm1));
         Assert.assertTrue(c.getRunningVMs().isEmpty() && c.getSleepingVMs().isEmpty());
-        Assert.assertEquals(c.getVMLocation(vm1), null);
+        Assert.assertEquals(c.getVMLocation(vm1), -1);
 
         Assert.assertTrue(c.removeVM(vm1));
         Assert.assertTrue(c.getAllVMs().isEmpty());
@@ -290,7 +291,7 @@ public class DefaultMappingTest implements PremadeElements {
         c.addRunningVM(vm1, n2);
         c.addReadyVM(vm1);
         Assert.assertEquals(1, c.getAllVMs().size());
-        Assert.assertTrue(c.getRunningVMs(n2).isEmpty() && c.getVMLocation(vm1) == null && c.getReadyVMs().contains(vm1));
+        Assert.assertTrue(c.getRunningVMs(n2).isEmpty() && c.getVMLocation(vm1) < 0 && c.getReadyVMs().contains(vm1));
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testSleeping"})
@@ -529,7 +530,7 @@ public class DefaultMappingTest implements PremadeElements {
 
         m.addOfflineNode(n3);
         Assert.assertTrue(m.getRunningVMs(n3).isEmpty());
-        Set<UUID> ns = new HashSet<>();
+        Set<Integer> ns = new HashSet<>();
         ns.add(n3);
         Assert.assertTrue(m.getRunningVMs(ns).isEmpty());
     }

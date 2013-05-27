@@ -21,7 +21,10 @@ import btrplace.model.Model;
 import btrplace.model.constraint.SequentialVMTransitions;
 import btrplace.plan.event.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Checker for the {@link btrplace.model.constraint.SequentialVMTransitions} constraint
@@ -31,11 +34,11 @@ import java.util.*;
  */
 public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<SequentialVMTransitions> {
 
-    private Set<UUID> runnings;
+    private Set<Integer> runnings;
 
-    private List<UUID> order;
+    private List<Integer> order;
 
-    private UUID pending;
+    private int pending;
 
     /**
      * Make a new checker.
@@ -45,6 +48,7 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<Se
     public SequentialVMTransitionsChecker(SequentialVMTransitions s) {
         super(s);
         order = new ArrayList<>(s.getInvolvedVMs());
+        pending = -1;
     }
 
     @Override
@@ -59,9 +63,9 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<Se
         return true;
     }
 
-    private boolean makePending(UUID vm) {
+    private boolean makePending(int vm) {
         if (getVMs().contains(vm)) {
-            if (pending == null) {
+            if (pending == -1) {
                 //Burn all the VMs in order that are before vm
                 while (!order.isEmpty() && !order.get(0).equals(vm)) {
                     order.remove(0);
@@ -117,45 +121,45 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<Se
 
     @Override
     public void end(BootVM a) {
-        if (a.getVM().equals(pending)) {
-            pending = null;
+        if (a.getVM() == pending) {
+            pending = -1;
         }
     }
 
     @Override
     public void end(ShutdownVM a) {
-        if (a.getVM().equals(pending)) {
-            pending = null;
+        if (a.getVM() == pending) {
+            pending = -1;
         }
     }
 
     @Override
     public void end(ResumeVM a) {
-        if (a.getVM().equals(pending)) {
-            pending = null;
+        if (a.getVM() == pending) {
+            pending = -1;
         }
 
     }
 
     @Override
     public void end(SuspendVM a) {
-        if (a.getVM().equals(pending)) {
-            pending = null;
+        if (a.getVM() == pending) {
+            pending = -1;
         }
 
     }
 
     @Override
     public void end(KillVM a) {
-        if (a.getVM().equals(pending)) {
-            pending = null;
+        if (a.getVM() == pending) {
+            pending = -1;
         }
     }
 
     @Override
     public void end(ForgeVM a) {
-        if (a.getVM().equals(pending)) {
-            pending = null;
+        if (a.getVM() == pending) {
+            pending = -1;
         }
     }
 }

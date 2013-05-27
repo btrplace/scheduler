@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -36,7 +35,8 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
+;
 
 /**
  * Unit tests for {@link Preserve}.
@@ -47,7 +47,7 @@ public class PreserveTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2));
         Preserve p = new Preserve(vms, "cpu", 3);
         Assert.assertNotNull(p.getChecker());
         Assert.assertEquals(vms, p.getInvolvedVMs());
@@ -62,7 +62,7 @@ public class PreserveTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsAndHashCode() {
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2));
         Preserve p = new Preserve(vms, "cpu", 3);
         Preserve p2 = new Preserve(vms, "cpu", 3);
         Assert.assertTrue(p.equals(p));
@@ -70,7 +70,7 @@ public class PreserveTest implements PremadeElements {
         Assert.assertEquals(p2.hashCode(), p.hashCode());
         Assert.assertFalse(new Preserve(vms, "mem", 3).equals(p));
         Assert.assertFalse(new Preserve(vms, "cpu", 2).equals(p));
-        Assert.assertFalse(new Preserve(new HashSet<UUID>(), "cpu", 3).equals(p));
+        Assert.assertFalse(new Preserve(new HashSet<Integer>(), "cpu", 3).equals(p));
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
@@ -84,7 +84,7 @@ public class PreserveTest implements PremadeElements {
         map.addRunningVM(vm3, n1);
         Model m = new DefaultModel(map);
         m.attach(rc);
-        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<Integer> s = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         Preserve p = new Preserve(s, "cpu", 3);
         rc.set(vm1, 3);
         rc.set(vm2, 1); //Not running so we don't care

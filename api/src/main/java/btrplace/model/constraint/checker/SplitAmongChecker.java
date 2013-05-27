@@ -23,7 +23,10 @@ import btrplace.model.Model;
 import btrplace.model.constraint.SplitAmong;
 import btrplace.plan.event.RunningVMPlacement;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Checker for the {@link btrplace.model.constraint.SplitAmong} constraint
@@ -33,7 +36,7 @@ import java.util.*;
  */
 public class SplitAmongChecker extends AllowAllConstraintChecker<SplitAmong> {
 
-    private List<Set<UUID>> vGrps;
+    private List<Set<Integer>> vGrps;
 
     private Model mockModel;
 
@@ -45,19 +48,19 @@ public class SplitAmongChecker extends AllowAllConstraintChecker<SplitAmong> {
     public SplitAmongChecker(SplitAmong s) {
         super(s);
         vGrps = new ArrayList<>();
-        for (Set<UUID> vGroup : s.getGroupsOfVMs()) {
-            Set<UUID> x = new HashSet<>(vGroup);
+        for (Set<Integer> vGroup : s.getGroupsOfVMs()) {
+            Set<Integer> x = new HashSet<>(vGroup);
             track(x);
             vGrps.add(x);
         }
     }
 
     private boolean checkMapping(Mapping m) {
-        Set<Set<UUID>> pUsed = new HashSet<>();
-        for (Set<UUID> vgrp : vGrps) {
-            Set<UUID> choosedGroup = null;
+        Set<Set<Integer>> pUsed = new HashSet<>();
+        for (Set<Integer> vgrp : vGrps) {
+            Set<Integer> choosedGroup = null;
             //Check every running VM in a single vgroup are running in the same pgroup
-            for (UUID vmId : vgrp) {
+            for (int vmId : vgrp) {
                 if (m.getRunningVMs().contains(vmId)) {
                     if (choosedGroup == null) {
                         choosedGroup = getConstraint().getAssociatedPGroup(m.getVMLocation(vmId));

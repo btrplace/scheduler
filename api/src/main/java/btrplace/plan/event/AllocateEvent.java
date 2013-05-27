@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,7 +21,6 @@ import btrplace.model.Model;
 import btrplace.model.view.ShareableResource;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * A event to inform a node that a VM
@@ -34,7 +32,7 @@ public class AllocateEvent implements VMEvent {
 
     private int qty;
 
-    private UUID vm;
+    private int vm;
 
     private String rc;
 
@@ -45,14 +43,14 @@ public class AllocateEvent implements VMEvent {
      * @param rcId   the resource identifier
      * @param amount the amount of resources to allocate
      */
-    public AllocateEvent(UUID vmId, String rcId, int amount) {
+    public AllocateEvent(int vmId, String rcId, int amount) {
         this.vm = vmId;
         this.rc = rcId;
         this.qty = amount;
     }
 
     @Override
-    public UUID getVM() {
+    public int getVM() {
         return vm;
     }
 
@@ -101,7 +99,7 @@ public class AllocateEvent implements VMEvent {
             return true;
         } else if (o.getClass() == this.getClass()) {
             AllocateEvent that = (AllocateEvent) o;
-            return this.vm.equals(that.vm)
+            return this.vm == that.vm
                     && this.rc.equals(that.rc)
                     && this.qty == that.qty;
         }

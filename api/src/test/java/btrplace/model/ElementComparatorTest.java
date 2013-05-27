@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,7 +21,10 @@ import btrplace.model.view.ShareableResource;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Unit tests for {@link btrplace.model.ElementComparator}.
@@ -31,15 +33,17 @@ import java.util.*;
  */
 public class ElementComparatorTest {
 
+    private static Random rnd = new Random();
+
     @Test
     public void testSimpleResource() {
         ShareableResource rc = new ShareableResource("foo");
-        List<UUID> uuids = new ArrayList<>(10);
+        List<Integer> uuids = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
-            uuids.add(UUID.randomUUID());
+            uuids.add(rnd.nextInt());
         }
         Random rnd = new Random();
-        for (UUID id : uuids) {
+        for (int id : uuids) {
             rc.set(id, rnd.nextInt(5));
         }
 
@@ -62,9 +66,9 @@ public class ElementComparatorTest {
      */
     @Test(dependsOnMethods = {"testSimpleResource"})
     public void testCombination() {
-        List<UUID> uuids = new ArrayList<>(7);
+        List<Integer> uuids = new ArrayList<>(7);
         for (int i = 0; i < 7; i++) {
-            uuids.add(UUID.randomUUID());
+            uuids.add(rnd.nextInt());
         }
         ShareableResource rc = new ShareableResource("foo");
 
@@ -88,7 +92,7 @@ public class ElementComparatorTest {
         Collections.sort(uuids, c1);
 
         for (int i = 0; i < uuids.size() - 1; i++) {
-            UUID id = uuids.get(i);
+            int id = uuids.get(i);
             Assert.assertTrue(rc.get(id) <= rc.get(uuids.get(i + 1)));
             if (rc.get(id) == rc.get(uuids.get(i + 1))) {
                 Assert.assertTrue(rc2.get(id) >= rc2.get(uuids.get(i + 1)));
@@ -100,7 +104,7 @@ public class ElementComparatorTest {
         Collections.sort(uuids, c1);
 
         for (int i = 0; i < uuids.size() - 1; i++) {
-            UUID id = uuids.get(i);
+            int id = uuids.get(i);
             Assert.assertTrue(rc.get(id) <= rc.get(uuids.get(i + 1)));
             if (rc.get(id) == rc.get(uuids.get(i + 1))) {
                 Assert.assertTrue(rc2.get(id) <= rc2.get(uuids.get(i + 1)));
