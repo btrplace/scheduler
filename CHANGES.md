@@ -3,9 +3,11 @@ Release notes
 
 version ????????
 ----------------------
+
 - Bugs fix
 - Close #16, #18
-- Minor API refactoring
+- Switch the type system from a UUID-based to a int-based.
+  Positive ints for VMs, negative for nodes
 - Simplify json package
 - New tutorial: 'BasicTuning'
 

@@ -50,8 +50,18 @@ public class DefaultModel implements Model, Cloneable {
         this.cfg = m;
         this.resources = new HashMap<>();
         attrs = new DefaultAttributes();
-        nextVM = 0;
-        nextNode = 0;
+        nextVM = 1;
+        nextNode = -1;
+        for (int vm : cfg.getAllVMs()) {
+            if (vm > nextVM) {
+                nextVM = vm + 1;
+            }
+        }
+        for (int node : cfg.getAllNodes()) {
+            if (node < nextNode) {
+                nextNode = node - 1;
+            }
+        }
     }
 
     public DefaultModel() {
@@ -156,11 +166,17 @@ public class DefaultModel implements Model, Cloneable {
 
     @Override
     public int newVM() {
+        if (nextVM < 0) {
+            return 0;
+        }
         return nextVM++;
     }
 
     @Override
     public int newNode() {
-        return nextNode++;
+        if (nextNode >= 0) {
+            return 0;
+        }
+        return nextNode--;
     }
 }

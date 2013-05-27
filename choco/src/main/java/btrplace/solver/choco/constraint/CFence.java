@@ -68,7 +68,7 @@ public class CFence implements ChocoSatConstraint {
                     try {
                         t.getHoster().setVal(rp.getNodeIdx(n));
                     } catch (ContradictionException e) {
-                        rp.getLogger().error("Unable to force VM '{}' to be running on '{}': {}", vm, n, e.getMessage());
+                        rp.getLogger().error("Unable to force VM '{}' to be running on node '{}': {}", vm, n, e.getMessage());
                         return false;
                     }
                 }

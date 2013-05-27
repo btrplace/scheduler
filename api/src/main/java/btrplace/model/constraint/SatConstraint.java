@@ -26,8 +26,6 @@ import btrplace.plan.ReconfigurationPlanCheckerException;
 import java.util.Collection;
 import java.util.Objects;
 
-;
-
 /**
  * Abstract class to characterize a satisfaction-oriented constraint
  * that impose a restriction on some components of a model.

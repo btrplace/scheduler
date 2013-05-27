@@ -33,8 +33,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-;
-
 /**
  * Unit tests for {@link Gather}.
  *

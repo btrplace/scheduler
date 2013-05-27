@@ -39,7 +39,7 @@ public class GatherChecker extends AllowAllConstraintChecker<Gather> {
      */
     public GatherChecker(Gather g) {
         super(g);
-        usedInContinuous = -1;
+        usedInContinuous = Model.UNKNOWN;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class GatherChecker extends AllowAllConstraintChecker<Gather> {
             Mapping map = mo.getMapping();
             for (int vm : getVMs()) {
                 if (map.getRunningVMs().contains(vm)) {
-                    if (usedInContinuous < 0) {
+                    if (usedInContinuous == Model.UNKNOWN) {
                         usedInContinuous = map.getVMLocation(vm);
                     } else if (usedInContinuous != map.getVMLocation(vm)) {
                         return false;
@@ -62,9 +62,9 @@ public class GatherChecker extends AllowAllConstraintChecker<Gather> {
     @Override
     public boolean startRunningVMPlacement(RunningVMPlacement a) {
         if (getConstraint().isContinuous() && getVMs().contains(a.getVM())) {
-            if (usedInContinuous >= 0 && a.getDestinationNode() != usedInContinuous) {
+            if (usedInContinuous != Model.UNKNOWN && a.getDestinationNode() != usedInContinuous) {
                 return false;
-            } else if (usedInContinuous < 0) {
+            } else if (usedInContinuous == Model.UNKNOWN) {
                 usedInContinuous = a.getDestinationNode();
             }
         }
@@ -73,11 +73,11 @@ public class GatherChecker extends AllowAllConstraintChecker<Gather> {
 
     @Override
     public boolean endsWith(Model mo) {
-        int used = -1;
+        int used = Model.UNKNOWN;
         Mapping map = mo.getMapping();
         for (int vm : getVMs()) {
             if (map.getRunningVMs().contains(vm)) {
-                if (used == -1) {
+                if (used == Model.UNKNOWN) {
                     used = map.getVMLocation(vm);
                 } else if (used != map.getVMLocation(vm)) {
                     return false;

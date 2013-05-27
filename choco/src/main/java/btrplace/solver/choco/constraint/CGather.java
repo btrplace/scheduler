@@ -103,7 +103,7 @@ public class CGather implements ChocoSatConstraint {
                 IntDomainVar i1 = s1.getHoster();
                 IntDomainVar i2 = s2.getHoster();
                 if (i1.isInstantiated() && i2.isInstantiated() && i1.getVal() != i2.getVal()) {
-                    rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with '" + s2.getSubject() + "'");
+                    rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with VM '" + s2.getSubject() + "'");
                     return false;
                 } else {
                     try {
@@ -115,7 +115,7 @@ public class CGather implements ChocoSatConstraint {
                             s.post(s.eq(i1, i2));
                         }
                     } catch (ContradictionException ex) {
-                        rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with '" + s2.getSubject() + "'");
+                        rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with VM '" + s2.getSubject() + "'");
                         return false;
                     }
                 }

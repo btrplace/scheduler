@@ -20,7 +20,7 @@ package btrplace.model;
 import java.util.*;
 
 /**
- * Common tools to manipulate a mapping.
+ * Common tools to manipulate a {@link Mapping}.
  *
  * @author Fabien Hermenier
  */
@@ -31,12 +31,12 @@ public final class MappingUtils {
      */
     public static enum State {
         /**
-         * Specify running virtual machines.
+         * Specify running VMs.
          */
         Runnings,
 
         /**
-         * Specify sleeping virtual machines.
+         * Specify sleeping VMs.
          */
         Sleepings
     }

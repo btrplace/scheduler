@@ -21,8 +21,9 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
- * A mapping denotes the current state and placement of virtual machines and nodes.
- * These elements are identified through their int
+ * A mapping denotes the current state and placement of VMs and nodes.
+ * These elements are identified integer values obtained by {@link btrplace.model.Model#newNode()}
+ * and {@link btrplace.model.Model#newVM()}.
  *
  * @author Fabien Hermenier
  */
@@ -32,8 +33,8 @@ public interface Mapping extends Cloneable {
      * Set a virtual machine running on a node. The node must already be online.
      * If the virtual machine is already in a other location or state in the mapping, it is updated
      *
-     * @param vm   the VM identifier
-     * @param node the node that will host the virtual machine. Must be considered as online.
+     * @param vm   the VM identifier, {@code >0}
+     * @param node the node that will host the VM, {@code < 0}. The node must already be considered as online.
      * @return {@code true} if the vm is assigned on the node.
      */
     boolean addRunningVM(int vm, int node);
@@ -42,24 +43,24 @@ public interface Mapping extends Cloneable {
      * Set a virtual machine sleeping on a node.
      * If the virtual machine is already in a other location or state in the mapping, it is updated
      *
-     * @param vm   the virtual machine
-     * @param node the node that will host the virtual machine. Must be considered as online.
+     * @param vm   the VM identifier, {@code >0}
+     * @param node the node that will host the VM, {@code < 0}. The node must already be considered as online.
      * @return {@code false} if the hosting node is offline or unknown
      */
     boolean addSleepingVM(int vm, int node);
 
     /**
-     * Set a virtual machine ready for being running.
+     * Set a VM ready for being running.
      * If the virtual machine is already in a other location or state in the mapping, it is updated
      *
-     * @param vm the virtual machine
+     * @param vm the VM identifier, {@code > 0}
      */
     void addReadyVM(int vm);
 
     /**
-     * Remove a virtual machine.
+     * Remove a VM.
      *
-     * @param vm the virtual machine to remove
+     * @param vm the VM to remove. {@code > 0}
      * @return {@code true} if the VM was in the mapping and has been removed
      */
     boolean removeVM(int vm);
@@ -67,7 +68,7 @@ public interface Mapping extends Cloneable {
     /**
      * Remove a node. The node must not host any virtual machines
      *
-     * @param n the node to remove
+     * @param n the node identifier. {@code < 0}
      * @return {@code true} if the node was in the mapping and is removed. {@code false} otherwise
      */
     boolean removeNode(int n);
@@ -75,14 +76,14 @@ public interface Mapping extends Cloneable {
     /**
      * Get the list of nodes that are online.
      *
-     * @return a list, may be empty
+     * @return a list of nodes identifier, may be empty
      */
     Set<Integer> getOnlineNodes();
 
     /**
      * Set a node online. If the node is already in the mapping but in an another state, it is updated.
      *
-     * @param node the node to add
+     * @param node the node identifier. {@code < 0}
      */
     void addOnlineNode(int node);
 
@@ -90,7 +91,7 @@ public interface Mapping extends Cloneable {
      * Set a node offline. If the node is already in the mapping but in an another state, it is updated.
      * The node must not host any virtual machines
      *
-     * @param node the node
+     * @param node the node identifier. {@code < 0}
      * @return true if the node is offline. False otherwise
      */
     boolean addOfflineNode(int node);
@@ -98,7 +99,7 @@ public interface Mapping extends Cloneable {
     /**
      * Get the nodes that are offline.
      *
-     * @return a list of nodes, may be empty
+     * @return a set of node identifiers, may be empty
      */
     Set<Integer> getOfflineNodes();
 
@@ -106,68 +107,68 @@ public interface Mapping extends Cloneable {
     /**
      * Get the virtual machines that are running.
      *
-     * @return a set of ints, may be empty
+     * @return a set of VM identifiers, may be empty
      */
     Set<Integer> getRunningVMs();
 
     /**
      * Get the virtual machines that are sleeping.
      *
-     * @return a set of virtual machines, may be empty
+     * @return a set of VM identifiers, may be empty
      */
     Set<Integer> getSleepingVMs();
 
     /**
      * Get the virtual machines that are sleeping on a node.
      *
-     * @param n the node
-     * @return a set of virtual machines, may be empty
+     * @param n the node identifier. {@code < 0}
+     * @return a set of VM identifier, may be empty
      */
     Set<Integer> getSleepingVMs(int n);
 
     /**
-     * Get the virtual machines that are running on a node.
+     * Get the VMs that are running on a node.
      *
-     * @param n the node
-     * @return a set of virtual machines, may be empty
+     * @param n the node identifier. {@code < 0}
+     * @return a set of VM identifier, may be empty
      */
     Set<Integer> getRunningVMs(int n);
 
     /**
-     * Get the virtual machines that are ready.
+     * Get the VMs that are ready.
      *
-     * @return a list, may be empty
+     * @return a set of VM identifier, may be empty
      */
     Set<Integer> getReadyVMs();
 
     /**
-     * Get all the virtual machines involved in the mapping.
+     * Get all the VMs involved in the mapping.
      *
-     * @return a set, may be empty
+     * @return a set of VM identifier, may be empty
      */
     Set<Integer> getAllVMs();
 
     /**
      * Get all the nodes involved in the mapping.
      *
-     * @return a set, may be empty
+     * @return a set of nodes, may be empty
      */
     Set<Integer> getAllNodes();
 
     /**
-     * Get the location of a  running or a sleeping virtual machine.
+     * Get the location of a  running or a sleeping VM.
      *
-     * @param vm the virtual machine
-     * @return the node hosting the virtual machine or {@code -1} is the virtual machine
+     * @param vm the VM identifier. {@code > 0}
+     * @return the identifier of the node hosting the virtual machine ({@code < 0}) or {@code 0} is the VM
      *         is not in the sleeping state nor the running state
      */
     int getVMLocation(int vm);
 
     /**
-     * Get all the virtual machines running on a collection of nodes.
+     * Get all the VMs running on a collection of nodes.
      *
-     * @param ns the set of nodes
-     * @return a set of virtual machines, may be empty
+     * @param ns a set of node identifier
+     * @return a set of VM identifier, may be empty
      */
     Set<Integer> getRunningVMs(Collection<Integer> ns);
 
@@ -179,17 +180,17 @@ public interface Mapping extends Cloneable {
     Mapping clone();
 
     /**
-     * Check if a virtual machine is in the mapping.
+     * Check if a VM is in the mapping.
      *
-     * @param vm the virtual machine identifier
-     * @return {@code true} if the virtual machine is in.
+     * @param vm the VM identifier. {@code > 0}
+     * @return {@code true} if the VM is in.
      */
     boolean containsVM(int vm);
 
     /**
      * Check if a node is in the mapping.
      *
-     * @param node the node identifier
+     * @param node the node identifier. {@code < 0}
      * @return {@code true} if the node is in.
      */
     boolean containsNode(int node);
@@ -202,7 +203,7 @@ public interface Mapping extends Cloneable {
     /**
      * Remove all the VMs remove on a given node
      *
-     * @param u the node identifier
+     * @param u the node identifier. {@code < 0}
      */
     void clearNode(int u);
 

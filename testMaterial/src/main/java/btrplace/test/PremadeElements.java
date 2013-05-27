@@ -37,16 +37,16 @@ public interface PremadeElements {
     int vm10 = 10;
 
 
-    int n1 = 11;
-    int n2 = 12;
-    int n3 = 13;
-    int n4 = 14;
-    int n5 = 15;
-    int n6 = 16;
-    int n7 = 17;
-    int n8 = 18;
-    int n9 = 19;
-    int n10 = 20;
+    int n1 = -1;
+    int n2 = -2;
+    int n3 = -3;
+    int n4 = -4;
+    int n5 = -5;
+    int n6 = -6;
+    int n7 = -7;
+    int n8 = -8;
+    int n9 = -9;
+    int n10 = -10;
 
 
 }

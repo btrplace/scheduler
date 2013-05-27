@@ -24,7 +24,7 @@ import java.util.Collection;
 /**
  * A model depicts a consistent snapshot of an infrastructure.
  * Basically, a model is composed by a {@link Mapping} to indicate the state
- * and the location of the elements, and a variety of {@link btrplace.model.view.ModelView} to
+ * and the location of the elements, and a variety of {@link ModelView} to
  * provide additional data about the elements.
  * <p/>
  * In addition, it is possible to declare attributes for specific elements.
@@ -101,14 +101,19 @@ public interface Model extends Cloneable {
     /**
      * Generate an identifier for a new VM.
      *
-     * @return an integer
+     * @return a value {@code > 1}, or {@code 0} if all the identifiers for VMs have been used.
      */
     int newVM();
 
     /**
      * Generate an identifier for a new node.
      *
-     * @return an integer
+     * @return a negative value, or {@code 0} if all the identifiers have been used
      */
     int newNode();
+
+    /**
+     * Indicate an element has not been found.
+     */
+    static int UNKNOWN = 0;
 }
