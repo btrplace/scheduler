@@ -17,7 +17,6 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -51,12 +50,12 @@ public class ResumeVMModelTest implements PremadeElements {
      */
     @Test
     public void testBasics() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addSleepingVM(vm1, n1);
 
-        Model mo = new DefaultModel(map);
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(ResumeVM.class, new ConstantDuration(10));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
@@ -93,13 +92,13 @@ public class ResumeVMModelTest implements PremadeElements {
      */
     @Test
     public void testResumeSequence() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addSleepingVM(vm1, n1);
         map.addSleepingVM(vm2, n2);
 
-        Model mo = new DefaultModel(map);
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(ResumeVM.class, new ConstantDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)

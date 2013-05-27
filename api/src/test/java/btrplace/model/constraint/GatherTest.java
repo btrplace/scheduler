@@ -17,7 +17,6 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -75,8 +74,9 @@ public class GatherTest implements PremadeElements {
         Set<Integer> s = new HashSet<>(Arrays.asList(vm1, vm2));
         Gather g = new Gather(s);
 
-        Mapping map = new DefaultMapping();
-        Model mo = new DefaultModel(map);
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+
 
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
@@ -95,8 +95,8 @@ public class GatherTest implements PremadeElements {
         Set<Integer> s = new HashSet<>(Arrays.asList(vm1, vm2));
         Gather g = new Gather(s);
         g.setContinuous(true);
-        Mapping map = new DefaultMapping();
-        Model mo = new DefaultModel(map);
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
 
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);

@@ -17,7 +17,6 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -28,8 +27,6 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-;
 
 /**
  * Unit tests for {@link Fence}.
@@ -54,8 +51,8 @@ public class FenceTest implements PremadeElements {
 
     @Test
     public void testIsSatisfied() {
-
-        Mapping map = new DefaultMapping();
+        Model m = new DefaultModel();
+        Mapping map = m.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addOnlineNode(n3);
@@ -67,7 +64,6 @@ public class FenceTest implements PremadeElements {
         Set<Integer> nodes = new HashSet<>(Arrays.asList(n1, n2));
 
         Fence f = new Fence(vms, nodes);
-        Model m = new DefaultModel(map);
         Assert.assertEquals(true, f.isSatisfied(m));
         map.addRunningVM(vm3, n3);
         Assert.assertEquals(false, f.isSatisfied(m));

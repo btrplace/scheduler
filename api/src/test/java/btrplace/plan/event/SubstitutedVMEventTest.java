@@ -17,7 +17,6 @@
 
 package btrplace.plan.event;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -54,13 +53,13 @@ public class SubstitutedVMEventTest implements PremadeElements {
 
     @Test
     public void testApply() {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addReadyVM(vm1);
         map.addReadyVM(vm3);
         ModelView v = mock(ModelView.class);
-        Model mo = new DefaultModel(map);
         mo.attach(v);
         Assert.assertTrue(s.apply(mo));
         verify(v).substitute(vm1, vm2);

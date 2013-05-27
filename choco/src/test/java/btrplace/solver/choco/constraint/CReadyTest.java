@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,7 +21,7 @@ import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.constraint.Ready;
-import btrplace.solver.choco.MappingBuilder;
+import btrplace.solver.choco.MappingFiller;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -36,8 +35,8 @@ public class CReadyTest implements PremadeElements {
 
     @Test
     public void testGetMisplaced() {
-        Mapping m = new MappingBuilder().ready(vm1).on(n1).run(n1, vm2, vm3).build();
-        Model mo = new DefaultModel(m);
+        Model mo = new DefaultModel();
+        Mapping m = new MappingFiller(mo.getMapping()).ready(vm1).on(n1).run(n1, vm2, vm3).get();
         CReady k = new CReady(new Ready(m.getAllVMs()));
         Assert.assertEquals(2, k.getMisPlacedVMs(mo).size());
         Assert.assertFalse(k.getMisPlacedVMs(mo).contains(vm1));

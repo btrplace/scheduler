@@ -17,7 +17,10 @@
 
 package btrplace.examples;
 
-import btrplace.model.*;
+import btrplace.model.Attributes;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.model.constraint.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
@@ -40,30 +43,18 @@ import java.util.*;
  */
 public class ModelCustomization implements Example {
 
-    private int n1 = new int
-    (1,1);
-    private int n2 = new int
-    (1,2);
-    private int vm1 = new int
-    (2,1);
-    private int vm2 = new int
-    (2,2);
-    private int vm3 = new int
-    (2,3);
-    private int vm4 = new int
-    (2,4);
-    private int vm5 = new int
-    (2,5);
-    private int vm6 = new int
-    (2,6);
-    private int vm7 = new int
-    (2,7);
-    private int vm8 = new int
-    (2,8);
-    private int vm9 = new int
-    (2,9);
-    private int vm10 = new int
-    (2,10);
+    private int n1 = -1;
+    private int n2 = -2;
+    private int vm1 = 1;
+    private int vm2 = 2;
+    private int vm3 = 3;
+    private int vm4 = 4;
+    private int vm5 = 5;
+    private int vm6 = 6;
+    private int vm7 = 7;
+    private int vm8 = 8;
+    private int vm9 = 9;
+    private int vm10 = 10;
 
     private Set<Integer> g1 = new HashSet<>(Arrays.asList(vm1, vm2, vm4));
     private Set<Integer> g2 = new HashSet<>(Arrays.asList(vm5, vm6, vm8));
@@ -89,7 +80,8 @@ public class ModelCustomization implements Example {
 
     private Model makeModel() {
 
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
 
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
@@ -111,7 +103,6 @@ public class ModelCustomization implements Example {
         map.addRunningVM(vm9, n2);
         map.addReadyVM(vm10);
 
-        Model mo = new DefaultModel(map);
         mo.attach(rcMem);
         return mo;
     }
@@ -129,10 +120,9 @@ public class ModelCustomization implements Example {
         //Set some attributes
         Attributes attrs = mo.getAttributes();
         for (int vm : mo.getMapping().getAllVMs()) {
-            long i = vm.getLeastSignificantBits();
-            attrs.put(vm, "template", i % 2 == 0 ? "small" : "large");
+            attrs.put(vm, "template", vm % 2 == 0 ? "small" : "large");
             attrs.put(vm, "clone", true);
-            attrs.put(vm, "forge", i % 2 == 0 ? 2 : 6);
+            attrs.put(vm, "forge", vm % 2 == 0 ? 2 : 6);
         }
         List<SatConstraint> cstrs = new ArrayList<>();
 

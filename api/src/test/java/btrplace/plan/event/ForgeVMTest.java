@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +17,6 @@
 
 package btrplace.plan.event;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -52,8 +50,8 @@ public class ForgeVMTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testApply() {
-        Mapping map = new DefaultMapping();
-        Model m = new DefaultModel(map);
+        Model m = new DefaultModel();
+        Mapping map = m.getMapping();
         ForgeVM a = new ForgeVM(vm1, 3, 5);
         Assert.assertTrue(a.apply(m));
         Assert.assertTrue(map.getReadyVMs().contains(vm1));

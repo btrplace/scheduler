@@ -17,7 +17,6 @@
 
 package btrplace.solver.choco.durationEvaluator;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
@@ -33,7 +32,7 @@ public class ConstantDurationTest implements PremadeElements {
     @Test
     public void testInstantiate() {
         ConstantDuration cd = new ConstantDuration(5);
-        Assert.assertEquals(5, cd.evaluate(new DefaultModel(new DefaultMapping()), vm1));
+        Assert.assertEquals(5, cd.evaluate(new DefaultModel(), vm1));
         Assert.assertNotNull(cd.toString());
     }
 }

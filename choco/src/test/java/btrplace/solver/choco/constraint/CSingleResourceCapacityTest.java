@@ -26,7 +26,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.MappingBuilder;
+import btrplace.solver.choco.MappingFiller;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -42,14 +42,14 @@ public class CSingleResourceCapacityTest implements PremadeElements {
 
     @Test
     public void testGetMisplaced() {
-        Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).build();
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).get();
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
         rc.set(vm1, 3);
         rc.set(vm2, 3);
         rc.set(vm3, 1);
 
-        Model mo = new DefaultModel(map);
         mo.attach(rc);
 
         Set<Integer> nodes = new HashSet<>(Arrays.asList(n1, n2));
@@ -63,14 +63,14 @@ public class CSingleResourceCapacityTest implements PremadeElements {
 
     @Test
     public void testDiscreteSolvable() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).build();
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
 
         ShareableResource rc = new ShareableResource("cpu", 5);
         rc.set(vm1, 3);
         rc.set(vm2, 1);
         rc.set(vm3, 1);
 
-        Model mo = new DefaultModel(map);
         mo.attach(rc);
 
         Set<Integer> nodes = new HashSet<>(Arrays.asList(n1, n2));
@@ -86,14 +86,14 @@ public class CSingleResourceCapacityTest implements PremadeElements {
 
     @Test
     public void testDiscreteUnsolvable() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).build();
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
         rc.set(vm1, 3);
         rc.set(vm2, 3);
         rc.set(vm3, 1);
 
-        Model mo = new DefaultModel(map);
         mo.attach(rc);
 
         Set<Integer> nodes = new HashSet<>(Arrays.asList(n1, n2));
@@ -107,14 +107,14 @@ public class CSingleResourceCapacityTest implements PremadeElements {
 
     @Test
     public void testContinuousSolvable() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1).run(n2, vm2, vm3).ready(vm4).build();
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1).run(n2, vm2, vm3).ready(vm4).get();
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
         rc.set(vm1, 3);
         rc.set(vm2, 1);
         rc.set(vm3, 1);
         rc.set(vm4, 3);
 
-        Model mo = new DefaultModel(map);
         mo.attach(rc);
 
         Set<Integer> nodes = new HashSet<>(Arrays.asList(n1, n2));

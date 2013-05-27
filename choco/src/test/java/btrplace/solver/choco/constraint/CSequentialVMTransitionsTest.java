@@ -25,7 +25,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.MappingBuilder;
+import btrplace.solver.choco.MappingFiller;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -44,9 +44,9 @@ public class CSequentialVMTransitionsTest implements PremadeElements {
 
     @Test
     public void testWithOnlyTransitions() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2).ready(vm1).run(n1, vm2, vm4).sleep(n2, vm3).build();
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).ready(vm1).run(n1, vm2, vm4).sleep(n2, vm3).get();
         List<SatConstraint> cstrs = new ArrayList<>();
-        Model mo = new DefaultModel(map);
         cstrs.add(new Running(Collections.singleton(vm1)));
         cstrs.add(new Sleeping(Collections.singleton(vm2)));
         cstrs.add(new Running(Collections.singleton(vm3)));
@@ -61,9 +61,9 @@ public class CSequentialVMTransitionsTest implements PremadeElements {
 
     @Test
     public void testWithVMsWithNoTransitions() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2).ready(vm1).run(n1, vm2, vm4).run(n2, vm3).build();
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).ready(vm1).run(n1, vm2, vm4).run(n2, vm3).get();
         List<SatConstraint> cstrs = new ArrayList<>();
-        Model mo = new DefaultModel(map);
         cstrs.add(new Running(Collections.singleton(vm1)));
         cstrs.add(new Running(Collections.singleton(vm2)));
         cstrs.add(new Running(Collections.singleton(vm3)));

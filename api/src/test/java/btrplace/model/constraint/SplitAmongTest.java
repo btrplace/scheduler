@@ -17,7 +17,6 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -31,8 +30,6 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-;
 
 /**
  * Unit tests for {@link SplitAmong}.
@@ -111,7 +108,8 @@ public class SplitAmongTest implements PremadeElements {
         Set<Integer> ps2 = new HashSet<>(Arrays.asList(n3, n4));
         Set<Set<Integer>> pGrps = new HashSet<>(Arrays.asList(ps1, ps2));
 
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addOnlineNode(n3);
@@ -121,8 +119,6 @@ public class SplitAmongTest implements PremadeElements {
         map.addRunningVM(vm2, n1);
         map.addRunningVM(vm3, n3);
         map.addRunningVM(vm4, n4);
-
-        Model mo = new DefaultModel(map);
 
         SplitAmong sp = new SplitAmong(vGrps, pGrps);
         Assert.assertEquals(sp.isSatisfied(mo), true);
@@ -148,7 +144,8 @@ public class SplitAmongTest implements PremadeElements {
         Set<Integer> ps2 = new HashSet<>(Arrays.asList(n3, n4));
         Set<Set<Integer>> pGrps = new HashSet<>(Arrays.asList(ps1, ps2));
 
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addOnlineNode(n3);
@@ -158,8 +155,6 @@ public class SplitAmongTest implements PremadeElements {
         map.addRunningVM(vm2, n1);
         map.addRunningVM(vm3, n3);
         map.addRunningVM(vm4, n4);
-
-        Model mo = new DefaultModel(map);
 
         SplitAmong sp = new SplitAmong(vGrps, pGrps, true);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);

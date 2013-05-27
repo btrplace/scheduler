@@ -22,19 +22,23 @@ import btrplace.model.Mapping;
 
 
 /**
- * Unsafe but quick tool to create mappings.
+ * Unsafe but quick tool to fill mappings.
  *
  * @author Fabien Hermenier
  */
-public class MappingBuilder {
+public class MappingFiller {
 
     private Mapping map;
 
-    public MappingBuilder() {
-        map = new DefaultMapping();
+    public MappingFiller() {
+        this(new DefaultMapping());
     }
 
-    public MappingBuilder run(int n, int... vms) {
+    public MappingFiller(Mapping m) {
+        map = m;
+    }
+
+    public MappingFiller run(int n, int... vms) {
         for (int vm : vms) {
             if (!map.addRunningVM(vm, n)) {
                 System.err.println("Unable to set '" + vm + "' running. Is '" + n + "' online ?");
@@ -43,7 +47,7 @@ public class MappingBuilder {
         return this;
     }
 
-    public MappingBuilder sleep(int n, int... vms) {
+    public MappingFiller sleep(int n, int... vms) {
         for (int vm : vms) {
             if (!map.addSleepingVM(vm, n)) {
                 System.err.println("Unable to set '" + vm + "' running. Is '" + n + "' online ?");
@@ -52,21 +56,21 @@ public class MappingBuilder {
         return this;
     }
 
-    public MappingBuilder ready(int... vms) {
+    public MappingFiller ready(int... vms) {
         for (int vm : vms) {
             map.addReadyVM(vm);
         }
         return this;
     }
 
-    public MappingBuilder on(int... nodes) {
+    public MappingFiller on(int... nodes) {
         for (int n : nodes) {
             map.addOnlineNode(n);
         }
         return this;
     }
 
-    public MappingBuilder off(int... nodes) {
+    public MappingFiller off(int... nodes) {
         for (int n : nodes) {
             if (!map.addOfflineNode(n)) {
                 System.err.println("Unable to set '" + n + "' offline. Is it hosting VMs ?");
@@ -75,7 +79,7 @@ public class MappingBuilder {
         return this;
     }
 
-    public Mapping build() {
+    public Mapping get() {
         return map;
     }
 }

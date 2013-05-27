@@ -27,7 +27,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.MappingBuilder;
+import btrplace.solver.choco.MappingFiller;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -43,8 +43,8 @@ public class CQuarantineTest implements PremadeElements {
 
     @Test
     public void testWithSatisfiedModel() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).build();
-        Model mo = new DefaultModel(map);
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).get();
         Set<Integer> ns = new HashSet<>(Arrays.asList(n1, n2));
         Quarantine q = new Quarantine(ns);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
@@ -59,8 +59,8 @@ public class CQuarantineTest implements PremadeElements {
      */
     @Test
     public void testWithNoSolution1() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).build();
-        Model mo = new DefaultModel(map);
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).get();
         Set<Integer> ns = new HashSet<>(Arrays.asList(n1, n2));
         Quarantine q = new Quarantine(ns);
         List<SatConstraint> cstrs = new ArrayList<>();
@@ -78,8 +78,8 @@ public class CQuarantineTest implements PremadeElements {
      */
     @Test
     public void testWithNoSolution2() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).build();
-        Model mo = new DefaultModel(map);
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).get();
         Set<Integer> ns = new HashSet<>(Arrays.asList(n1, n2));
         Quarantine q = new Quarantine(ns);
         List<SatConstraint> cstrs = new ArrayList<>();

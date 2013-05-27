@@ -17,7 +17,6 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -31,8 +30,6 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-;
 
 /**
  * Unit tests for {@link SequentialVMTransitions}.
@@ -71,7 +68,8 @@ public class SequentialVMTransitionsTest implements PremadeElements {
 
     @Test
     public void testContinuousIsSatisfied() {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm1, n1);
@@ -80,7 +78,6 @@ public class SequentialVMTransitionsTest implements PremadeElements {
         map.addRunningVM(vm4, n1);
         List<Integer> l = Arrays.asList(vm1, vm2, vm3, vm4);
         SequentialVMTransitions c = new SequentialVMTransitions(l);
-        Model mo = new DefaultModel(map);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         plan.add(new MigrateVM(vm4, n1, n2, 0, 1));
         plan.add(new SuspendVM(vm1, n1, n1, 2, 3));
@@ -103,15 +100,14 @@ public class SequentialVMTransitionsTest implements PremadeElements {
 
     @Test
     public void testContinuousSatisfied2() {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addReadyVM(vm1);
         map.addRunningVM(vm2, n1);
         map.addRunningVM(vm3, n2);
         map.addRunningVM(vm4, n1);
-
-        Model mo = new DefaultModel(map);
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
 
         p.add(new BootVM(vm1, n1, 0, 1));

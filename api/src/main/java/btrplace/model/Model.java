@@ -101,19 +101,14 @@ public interface Model extends Cloneable {
     /**
      * Generate an identifier for a new VM.
      *
-     * @return a value {@code > 1}, or {@code 0} if all the identifiers for VMs have been used.
+     * @return a value {@code >=0} if succeeds. {@code < 0} if all the identifiers for VMs have been used.
      */
     int newVM();
 
     /**
      * Generate an identifier for a new node.
      *
-     * @return a negative value, or {@code 0} if all the identifiers have been used
+     * @return a value {@code >=0} if succeeds. {@code < 0} if all the identifiers for nodes have been used.
      */
     int newNode();
-
-    /**
-     * Indicate an element has not been found.
-     */
-    static int UNKNOWN = 0;
 }

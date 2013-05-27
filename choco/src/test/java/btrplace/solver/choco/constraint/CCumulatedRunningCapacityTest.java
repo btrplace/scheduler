@@ -26,7 +26,7 @@ import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.MappingBuilder;
+import btrplace.solver.choco.MappingFiller;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
@@ -43,11 +43,11 @@ public class CCumulatedRunningCapacityTest implements PremadeElements {
 
     @Test
     public void testWithSatisfiedConstraint() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm2)
                 .run(n3, vm3, vm4)
-                .sleep(n2, vm5).build();
-        Model mo = new DefaultModel(map);
+                .sleep(n2, vm5).get();
         List<SatConstraint> l = new ArrayList<>();
         CumulatedRunningCapacity x = new CumulatedRunningCapacity(map.getAllNodes(), 4);
         x.setContinuous(false);
@@ -61,11 +61,11 @@ public class CCumulatedRunningCapacityTest implements PremadeElements {
 
     @Test
     public void testDiscreteSatisfaction() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm2)
-                .run(n2, vm3, vm4, vm5).build();
+                .run(n2, vm3, vm4, vm5).get();
         Set<Integer> on = new HashSet<>(Arrays.asList(n1, n2));
-        Model mo = new DefaultModel(map);
         List<SatConstraint> l = new ArrayList<>();
         CumulatedRunningCapacity x = new CumulatedRunningCapacity(on, 4);
         x.setContinuous(false);
@@ -82,11 +82,11 @@ public class CCumulatedRunningCapacityTest implements PremadeElements {
 
     @Test
     public void testFeasibleContinuousResolution() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm2)
-                .run(n2, vm3, vm4).ready(vm5).build();
+                .run(n2, vm3, vm4).ready(vm5).get();
         Set<Integer> on = new HashSet<>(Arrays.asList(n1, n2));
-        Model mo = new DefaultModel(map);
         List<SatConstraint> l = new ArrayList<>();
         l.add(new Running(Collections.singleton(vm5)));
         l.add(new Fence(Collections.singleton(vm5), Collections.singleton(n1)));
@@ -107,13 +107,12 @@ public class CCumulatedRunningCapacityTest implements PremadeElements {
 
     @Test
     public void testUnFeasibleContinuousResolution() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .ready(vm1)
                 .run(n1, vm2)
                 .run(n2, vm3, vm4)
-                .run(n3, vm5).build();
-
-        Model mo = new DefaultModel(map);
+                .run(n3, vm5).get();
         List<SatConstraint> l = new ArrayList<>();
 
         List<Integer> seq = new ArrayList<>();
@@ -141,11 +140,10 @@ public class CCumulatedRunningCapacityTest implements PremadeElements {
 
     @Test
     public void testGetMisplaced() {
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm2, vm3)
-                .run(n2, vm4).ready(vm5).build();
-
-        Model mo = new DefaultModel(map);
+                .run(n2, vm4).ready(vm5).get();
 
         CumulatedRunningCapacity c = new CumulatedRunningCapacity(map.getAllNodes(), 4);
         CCumulatedRunningCapacity cc = new CCumulatedRunningCapacity(c);
@@ -158,12 +156,11 @@ public class CCumulatedRunningCapacityTest implements PremadeElements {
     @Test
     public void testUnfeasible() throws SolverException {
 
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
+        Model model = new DefaultModel();
+        Mapping map = new MappingFiller(model.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3)
-                .run(n3, vm4).build();
-
-        Model model = new DefaultModel(map);
+                .run(n3, vm4).get();
         Collection<SatConstraint> ctrs = new HashSet<>();
         ctrs.add(new CumulatedRunningCapacity(map.getAllNodes(), 2));
 

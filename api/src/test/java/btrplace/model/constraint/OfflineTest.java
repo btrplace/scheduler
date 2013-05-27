@@ -17,7 +17,6 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -32,8 +31,6 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-;
 
 /**
  * Unit tests for {@link btrplace.model.constraint.Offline}.
@@ -55,13 +52,13 @@ public class OfflineTest implements PremadeElements {
 
     @Test
     public void testIsSatisfied() {
-        Mapping c = new DefaultMapping();
+        Model i = new DefaultModel();
+        Mapping c = i.getMapping();
         c.addOfflineNode(n1);
         c.addOfflineNode(n2);
         Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
         Offline o = new Offline(s);
 
-        Model i = new DefaultModel(c);
 
         Assert.assertEquals(o.isSatisfied(i), true);
         c.addOnlineNode(n2);
@@ -70,7 +67,8 @@ public class OfflineTest implements PremadeElements {
 
     @Test
     public void testContinuousIsSatisfied() {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
 
@@ -79,7 +77,6 @@ public class OfflineTest implements PremadeElements {
 
         map.addRunningVM(vm1, n1);
 
-        Model mo = new DefaultModel(map);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(off.isSatisfied(plan), false);
         plan.add(new ShutdownNode(n2, 0, 1));

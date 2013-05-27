@@ -17,7 +17,6 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -35,8 +34,6 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-;
 
 /**
  * Unit tests for {@link Preserve}.
@@ -76,13 +73,13 @@ public class PreserveTest implements PremadeElements {
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testIsSatisfied() {
         ShareableResource rc = new ShareableResource("cpu", 3);
-        Mapping map = new DefaultMapping();
+        Model m = new DefaultModel();
+        Mapping map = m.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm1, n1);
         map.addSleepingVM(vm2, n1);
         map.addRunningVM(vm3, n1);
-        Model m = new DefaultModel(map);
         m.attach(rc);
         Set<Integer> s = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         Preserve p = new Preserve(s, "cpu", 3);

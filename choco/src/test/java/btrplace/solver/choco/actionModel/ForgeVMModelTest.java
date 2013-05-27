@@ -17,7 +17,6 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -47,8 +46,8 @@ public class ForgeVMModelTest implements PremadeElements {
 
     @Test
     public void testBasics() throws SolverException {
-        Mapping m = new DefaultMapping();
-        Model mo = new DefaultModel(m);
+        Model mo = new DefaultModel();
+        Mapping m = mo.getMapping();
         mo.getAttributes().put(vm1, "template", "small");
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(ForgeVM.class, new ConstantDuration(7));
@@ -69,8 +68,8 @@ public class ForgeVMModelTest implements PremadeElements {
 
     @Test(expectedExceptions = {SolverException.class})
     public void testWithoutTemplate() throws SolverException {
-        Mapping m = new DefaultMapping();
-        Model mo = new DefaultModel(m);
+        Model mo = new DefaultModel();
+        Mapping m = mo.getMapping();
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(ForgeVM.class, new ConstantDuration(7));
         new DefaultReconfigurationProblemBuilder(mo)
@@ -82,9 +81,9 @@ public class ForgeVMModelTest implements PremadeElements {
 
     @Test
     public void testResolution() throws SolverException, ContradictionException {
-        Mapping m = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping m = mo.getMapping();
         m.addOnlineNode(n1);
-        Model mo = new DefaultModel(m);
         mo.getAttributes().put(vm1, "template", "small");
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(ForgeVM.class, new ConstantDuration(7));

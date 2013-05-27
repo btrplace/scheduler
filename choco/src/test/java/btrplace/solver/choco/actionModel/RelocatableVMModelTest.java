@@ -17,7 +17,6 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -59,14 +58,14 @@ public class RelocatableVMModelTest implements PremadeElements {
 
     @Test
     public void testForcedToMove() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm1, n1);
 
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(MigrateVM.class, new ConstantDuration(5));
-        Model mo = new DefaultModel(map);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<Integer>emptySet(), map.getAllVMs(), Collections.<Integer>emptySet(), Collections.<Integer>emptySet())
                 .setDurationEvaluatators(dev)
@@ -108,14 +107,14 @@ public class RelocatableVMModelTest implements PremadeElements {
 
     @Test
     public void testForcedToStay() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm1, n1);
 
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(MigrateVM.class, new ConstantDuration(5));
-        Model mo = new DefaultModel(map);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<Integer>emptySet(), map.getAllVMs(), Collections.<Integer>emptySet(), Collections.<Integer>emptySet())
                 .setDurationEvaluatators(dev)
@@ -143,7 +142,8 @@ public class RelocatableVMModelTest implements PremadeElements {
 
     @Test
     public void testRelocateDueToPreserve() throws SolverException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
 
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
@@ -158,7 +158,6 @@ public class RelocatableVMModelTest implements PremadeElements {
 
         Preserve pr = new Preserve(map.getAllVMs(), "cpu", 5);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        Model mo = new DefaultModel(map);
         mo.attach(rc);
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Online(map.getAllNodes()));
@@ -176,13 +175,13 @@ public class RelocatableVMModelTest implements PremadeElements {
      */
     @Test
     public void testNotWorthyReInstantiation() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm1, n1);
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(MigrateVM.class, new ConstantDuration(2));
-        Model mo = new DefaultModel(map);
 
         mo.getAttributes().put(vm1, "template", "small");
         mo.getAttributes().put(vm1, "clone", true);
@@ -203,7 +202,8 @@ public class RelocatableVMModelTest implements PremadeElements {
      */
     @Test
     public void testWorthyReInstantiation() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
@@ -212,7 +212,6 @@ public class RelocatableVMModelTest implements PremadeElements {
         dev.register(ForgeVM.class, new ConstantDuration(3));
         dev.register(BootVM.class, new ConstantDuration(2));
         dev.register(ShutdownVM.class, new ConstantDuration(1));
-        Model mo = new DefaultModel(map);
 
         mo.getAttributes().put(vm10, "template", "small");
         mo.getAttributes().put(vm10, "clone", true);
@@ -245,7 +244,8 @@ public class RelocatableVMModelTest implements PremadeElements {
      */
     @Test
     public void testWorthlessReInstantiation() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
@@ -254,7 +254,6 @@ public class RelocatableVMModelTest implements PremadeElements {
         dev.register(ForgeVM.class, new ConstantDuration(3));
         dev.register(BootVM.class, new ConstantDuration(2));
         dev.register(ShutdownVM.class, new ConstantDuration(1));
-        Model mo = new DefaultModel(map);
 
         mo.getAttributes().put(vm10, "template", "small");
         mo.getAttributes().put(vm10, "clone", true);
@@ -281,7 +280,8 @@ public class RelocatableVMModelTest implements PremadeElements {
 
     @Test
     public void testForcedReInstantiation() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
@@ -290,7 +290,6 @@ public class RelocatableVMModelTest implements PremadeElements {
         dev.register(ForgeVM.class, new ConstantDuration(3));
         dev.register(BootVM.class, new ConstantDuration(2));
         dev.register(ShutdownVM.class, new ConstantDuration(1));
-        Model mo = new DefaultModel(map);
 
         mo.getAttributes().put(vm10, "template", "small");
         mo.getAttributes().put(vm10, "clone", true);
@@ -318,7 +317,8 @@ public class RelocatableVMModelTest implements PremadeElements {
 
     @Test
     public void testForcedMigration() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
@@ -327,7 +327,6 @@ public class RelocatableVMModelTest implements PremadeElements {
         dev.register(ForgeVM.class, new ConstantDuration(3));
         dev.register(BootVM.class, new ConstantDuration(2));
         dev.register(ShutdownVM.class, new ConstantDuration(1));
-        Model mo = new DefaultModel(map);
 
         mo.getAttributes().put(vm10, "template", "small");
         mo.getAttributes().put(vm10, "clone", true);
@@ -355,7 +354,8 @@ public class RelocatableVMModelTest implements PremadeElements {
 
     @Test
     public void testReinstantiationWithPreserve() throws SolverException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
 
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
@@ -367,8 +367,6 @@ public class RelocatableVMModelTest implements PremadeElements {
         rc.set(vm5, 3);
         rc.set(vm6, 3);
         rc.set(vm7, 5);
-
-        Model mo = new DefaultModel(map);
 
         for (int vm : map.getAllVMs()) {
             mo.getAttributes().put(vm, "template", "small");

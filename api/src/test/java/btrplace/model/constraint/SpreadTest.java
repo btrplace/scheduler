@@ -17,7 +17,6 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -31,8 +30,6 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-;
 
 /**
  * Unit tests for {@link btrplace.model.constraint.Spread}.
@@ -76,7 +73,8 @@ public class SpreadTest implements PremadeElements {
     @Test
     public void testDiscreteIsSatisfied() {
 
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addOnlineNode(n3);
@@ -85,7 +83,6 @@ public class SpreadTest implements PremadeElements {
         map.addRunningVM(vm2, n2);
         map.addRunningVM(vm3, n1);
 
-        Model mo = new DefaultModel(map);
 
         //Discrete satisfaction.
         Spread s = new Spread(map.getAllVMs());
@@ -99,7 +96,8 @@ public class SpreadTest implements PremadeElements {
     @Test
     public void testContinuousIsSatisfied() {
 
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addOnlineNode(n3);
@@ -109,7 +107,6 @@ public class SpreadTest implements PremadeElements {
 
         Spread s = new Spread(map.getAllVMs());
 
-        Model mo = new DefaultModel(map);
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(s.isSatisfied(p), true);
 

@@ -17,7 +17,6 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -62,13 +61,13 @@ public class RunningTest implements PremadeElements {
 
     @Test
     public void testIsSatisfied() {
-        Mapping c = new DefaultMapping();
+        Model i = new DefaultModel();
+        Mapping c = i.getMapping();
         Set<Integer> s = new HashSet<>(Arrays.asList(vm1, vm2));
         c.addOnlineNode(n1);
         c.addRunningVM(vm1, n1);
         c.addRunningVM(vm2, n1);
         Running d = new Running(s);
-        Model i = new DefaultModel(c);
         Assert.assertEquals(d.isSatisfied(i), true);
         c.addReadyVM(vm1);
         Assert.assertEquals(d.isSatisfied(i), false);

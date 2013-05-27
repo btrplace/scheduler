@@ -28,7 +28,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.MappingBuilder;
+import btrplace.solver.choco.MappingFiller;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -47,7 +47,8 @@ public class CPreserveTest implements PremadeElements {
 
     @Test
     public void testGetMisplaced() {
-        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).build();
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 7);
         rc.set(vm1, 3);
         rc.set(vm2, 3);
@@ -55,7 +56,6 @@ public class CPreserveTest implements PremadeElements {
 
         Preserve p = new Preserve(map.getAllVMs(), "cpu", 5);
 
-        Model mo = new DefaultModel(map);
         mo.attach(rc);
         //Assert.assertEquals(SatConstraint.Sat.UNSATISFIED, p.isSatisfied(mo));
 
@@ -73,8 +73,9 @@ public class CPreserveTest implements PremadeElements {
      */
     @Test
     public void testPreserveWithoutOverbook() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).build();
-        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 10);
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
+        ShareableResource rc = new ShareableResource("cpu", 10);
         rc.set(n1, 7);
         rc.set(vm1, 3);
         rc.set(vm2, 3);
@@ -83,7 +84,6 @@ public class CPreserveTest implements PremadeElements {
         Preserve pr = new Preserve(map.getAllVMs(), "cpu", 5);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
-        Model mo = new DefaultModel(map);
         mo.attach(rc);
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Online(map.getAllNodes()));

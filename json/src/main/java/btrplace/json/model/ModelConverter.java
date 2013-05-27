@@ -22,6 +22,7 @@ import btrplace.json.JSONConverterException;
 import btrplace.json.model.view.ModelViewsConverter;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
+import btrplace.model.MappingUtils;
 import btrplace.model.Model;
 import btrplace.model.view.ModelView;
 import net.minidev.json.JSONArray;
@@ -88,7 +89,8 @@ public class ModelConverter extends AbstractJSONObjectConverter<Model> {
             throw new JSONConverterException("Missing required mapping as a value of the key 'mapping'");
         }
         Mapping cfg = cfgParser.fromJSON((JSONObject) o.get("mapping"));
-        Model i = new DefaultModel(cfg);
+        Model i = new DefaultModel();
+        MappingUtils.fill(cfg, i.getMapping());
         if (o.containsKey("attributes")) {
             i.setAttributes(attrsParser.fromJSON((JSONObject) o.get("attributes")));
         }

@@ -17,7 +17,6 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -32,8 +31,6 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-;
 
 /**
  * Unit tests for {@link CumulatedResourceCapacity}.
@@ -78,7 +75,8 @@ public class CumulatedResourceCapacityTest implements PremadeElements {
 
     @Test
     public void testDiscreteIsSatisfied() {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addOnlineNode(n3);
@@ -88,7 +86,6 @@ public class CumulatedResourceCapacityTest implements PremadeElements {
         map.addRunningVM(vm3, n2);
         map.addRunningVM(vm4, n3);
 
-        Model mo = new DefaultModel(map);
         ShareableResource rc = new ShareableResource("foo", 1);
         rc.set(vm2, 2);
         mo.attach(rc);
@@ -106,7 +103,8 @@ public class CumulatedResourceCapacityTest implements PremadeElements {
 
     @Test
     public void testContinuousIsSatisfied() {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addOnlineNode(n3);
@@ -116,7 +114,6 @@ public class CumulatedResourceCapacityTest implements PremadeElements {
         map.addRunningVM(vm3, n2);
         map.addRunningVM(vm4, n3);
         map.addReadyVM(vm5);
-        Model mo = new DefaultModel(map);
         ShareableResource rc = new ShareableResource("foo", 1);
         mo.attach(rc);
 

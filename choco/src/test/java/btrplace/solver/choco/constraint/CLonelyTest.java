@@ -27,7 +27,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.MappingBuilder;
+import btrplace.solver.choco.MappingFiller;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -46,14 +46,14 @@ public class CLonelyTest implements PremadeElements {
 
     @Test
     public void testFeasibleDiscrete() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm2)
-                .run(n2, vm3, vm4, vm5).build();
+                .run(n2, vm3, vm4, vm5).get();
 
         Set<Integer> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
-        Model mo = new DefaultModel(map);
         Lonely l = new Lonely(mine);
         l.setContinuous(false);
         ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(l));
@@ -70,13 +70,13 @@ public class CLonelyTest implements PremadeElements {
      */
     @Test
     public void testFeasibleContinuous() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm2, vm3)
-                .run(n2, vm4, vm5).build();
+                .run(n2, vm4, vm5).get();
         Set<Integer> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
-        Model mo = new DefaultModel(map);
         Lonely l = new Lonely(mine);
         l.setContinuous(true);
         Set<SatConstraint> cstrs = new HashSet<>();
@@ -89,12 +89,12 @@ public class CLonelyTest implements PremadeElements {
     @Test
     public void testGetMisplaced() {
 
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm2, vm3)
-                .run(n2, vm4, vm5).build();
+                .run(n2, vm4, vm5).get();
         Set<Integer> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
 
-        Model mo = new DefaultModel(map);
 
         CLonely c = new CLonely(new Lonely(mine));
         Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());

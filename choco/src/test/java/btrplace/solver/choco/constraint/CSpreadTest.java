@@ -28,7 +28,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.MappingBuilder;
+import btrplace.solver.choco.MappingFiller;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -43,9 +43,10 @@ import java.util.*;
 public class CSpreadTest implements PremadeElements {
 
     private static Model getModel() {
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
-                .run(n1, vm1).run(n2, vm2).build();
-        return new DefaultModel(map);
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+                .run(n1, vm1).run(n2, vm2).get();
+        return mo;
     }
 
     @Test
@@ -87,13 +88,14 @@ public class CSpreadTest implements PremadeElements {
     @Test
     public void testGetMisplaced() {
 
-        Mapping map = new MappingBuilder().on(n1, n2)
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2)
                 .run(n1, vm1, vm3)
-                .run(n2, vm2).build();
+                .run(n2, vm2).get();
         Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2));
         Spread s = new Spread(vms);
         CSpread cs = new CSpread(s);
-        Model mo = new DefaultModel(map);
+
         Assert.assertTrue(cs.getMisPlacedVMs(mo).isEmpty());
         vms.add(vm3);
         Assert.assertEquals(map.getRunningVMs(n1), cs.getMisPlacedVMs(mo));
@@ -105,8 +107,8 @@ public class CSpreadTest implements PremadeElements {
      */
     @Test
     public void testSeparateWithContinuous() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1, vm2).build();
-        Model m = new DefaultModel(map);
+        Model m = new DefaultModel();
+        Mapping map = new MappingFiller(m.getMapping()).on(n1, n2).run(n1, vm1, vm2).get();
 
         List<SatConstraint> cstr = new ArrayList<>();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();

@@ -74,7 +74,26 @@ public class DefaultMapping implements Mapping, Cloneable {
         host = new Map[2];
         host[RUNNING_STATE] = new HashMap<>();
         host[SLEEPING_STATE] = new HashMap<>();
+    }
 
+    public DefaultMapping(Mapping m) {
+        this();
+        for (int off : m.getOfflineNodes()) {
+            addOfflineNode(off);
+        }
+        for (int r : m.getReadyVMs()) {
+            addReadyVM(r);
+        }
+        for (int on : m.getOnlineNodes()) {
+            addOnlineNode(on);
+            for (int r : m.getRunningVMs(on)) {
+                addRunningVM(r, on);
+            }
+            for (int s : m.getSleepingVMs(on)) {
+                addSleepingVM(s, on);
+            }
+
+        }
     }
 
     @Override

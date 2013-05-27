@@ -17,7 +17,6 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -70,13 +69,13 @@ public class RootTest implements PremadeElements {
 
     @Test
     public void testIsSatisfied() {
-        Mapping c = new DefaultMapping();
+        Model i = new DefaultModel();
+        Mapping c = i.getMapping();
         c.addReadyVM(n1);
         c.addReadyVM(n2);
         Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
         Root o = new Root(s);
 
-        Model i = new DefaultModel(c);
 
         Assert.assertEquals(o.isSatisfied(i), true);
         c.clear();
@@ -85,8 +84,8 @@ public class RootTest implements PremadeElements {
 
     @Test
     public void testContinuousIsSatisfied() {
-        Mapping map = new DefaultMapping();
-        Model mo = new DefaultModel(map);
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm1, n1);

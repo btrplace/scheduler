@@ -27,7 +27,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.MappingBuilder;
+import btrplace.solver.choco.MappingFiller;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -52,17 +52,18 @@ public class CSplitTest implements PremadeElements {
 
         Set<Set<Integer>> grps = new HashSet<>(Arrays.asList(g1, g2, g3));
 
-        Mapping map = new MappingBuilder().on(n1, n2, n3, n4, n5)
+        Model mo = new DefaultModel();
+
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3)
                 .run(n3, vm4, vm5)
                 .run(n4, vm6)
-                .run(n5, vm7, vm8).build();
+                .run(n5, vm7, vm8).get();
 
         Split s = new Split(grps);
         CSplit cs = new CSplit(s);
 
-        Model mo = new DefaultModel(map);
         Assert.assertTrue(cs.getMisPlacedVMs(mo).isEmpty());
 
         map.addRunningVM(vm5, n1);
@@ -79,14 +80,14 @@ public class CSplitTest implements PremadeElements {
     @Test
     public void testSimpleDiscrete() throws SolverException {
 
-        Mapping map = new MappingBuilder().on(n1, n2, n3, n4, n5)
+        Model mo = new DefaultModel();
+
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm2, vm3/* violation*/)
                 .run(n3, vm4, vm5, vm6/*violation*/)
-                .run(n5, vm7, vm8).build();
+                .run(n5, vm7, vm8).get();
 
         Split s = new Split(grps);
-
-        Model mo = new DefaultModel(map);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>singleton(s));
@@ -98,14 +99,15 @@ public class CSplitTest implements PremadeElements {
     @Test
     public void testContinuous() throws SolverException {
 
-        Mapping map = new MappingBuilder().on(n1, n2, n3, n4, n5)
+        Model mo = new DefaultModel();
+
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm2)
                 .run(n3, vm3, vm4, vm5)
-                .run(n5, vm6, vm7, vm8).build();
+                .run(n5, vm6, vm7, vm8).get();
 
         Split s = new Split(grps);
         s.setContinuous(true);
-        Model mo = new DefaultModel(map);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);

@@ -27,7 +27,7 @@ import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.MappingBuilder;
+import btrplace.solver.choco.MappingFiller;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
@@ -54,9 +54,9 @@ public class COfflineTest implements PremadeElements {
      */
     @Test
     public void simpleTest() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2).build();
+        Model model = new DefaultModel();
+        Mapping map = new MappingFiller(model.getMapping()).on(n1, n2).get();
 
-        Model model = new DefaultModel(map);
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.getDurationEvaluators().register(ShutdownNode.class, new ConstantDuration(10));
         cra.setTimeLimit(-1);
@@ -71,12 +71,12 @@ public class COfflineTest implements PremadeElements {
 
     @Test
     public void testGetMisplacedAndSatisfied() {
-        Mapping map = new MappingBuilder().on(n1, n2).build();
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).get();
 
         Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
         Offline off = new Offline(s);
         COffline coff = new COffline(off);
-        Model mo = new DefaultModel(map);
 
         Assert.assertTrue(coff.getMisPlacedVMs(mo).isEmpty());
 
@@ -86,8 +86,8 @@ public class COfflineTest implements PremadeElements {
 
     @Test
     public void testSolvableProblem() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2).run(n1, vm1).build();
-        Model mo = new DefaultModel(map);
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1).get();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Offline(Collections.singleton(n1))));
         Assert.assertNotNull(plan);
@@ -97,8 +97,8 @@ public class COfflineTest implements PremadeElements {
 
     @Test
     public void testUnsolvableProblem() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1).run(n1, vm1).build();
-        Model mo = new DefaultModel(map);
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1).get();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Offline(Collections.singleton(n1))));
         Assert.assertNull(plan);

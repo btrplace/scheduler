@@ -248,4 +248,23 @@ public final class MappingUtils {
         }
         return res;
     }
+
+    public static void fill(Mapping src, Mapping dst) {
+        for (int off : src.getOfflineNodes()) {
+            dst.addOfflineNode(off);
+        }
+        for (int r : src.getReadyVMs()) {
+            dst.addReadyVM(r);
+        }
+        for (int on : src.getOnlineNodes()) {
+            dst.addOnlineNode(on);
+            for (int r : src.getRunningVMs(on)) {
+                dst.addRunningVM(r, on);
+            }
+            for (int s : src.getSleepingVMs(on)) {
+                dst.addSleepingVM(s, on);
+            }
+
+        }
+    }
 }

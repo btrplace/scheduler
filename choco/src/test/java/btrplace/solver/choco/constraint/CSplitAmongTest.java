@@ -27,7 +27,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.MappingBuilder;
+import btrplace.solver.choco.MappingFiller;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -43,12 +43,13 @@ public class CSplitAmongTest implements PremadeElements {
 
     @Test
     public void testGetMisplaced() {
-        Mapping map = new MappingBuilder().on(n1, n2, n3, n4, n5)
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2)
                 .run(n3, vm4, vm6)
                 .run(n4, vm5)
-                .run(n5, vm7).build();
+                .run(n5, vm7).get();
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
@@ -65,8 +66,6 @@ public class CSplitAmongTest implements PremadeElements {
 
         SplitAmong s = new SplitAmong(vgs, pgs);
         CSplitAmong cs = new CSplitAmong(s);
-
-        Model mo = new DefaultModel(map);
 
         Assert.assertTrue(cs.getMisPlacedVMs(mo).isEmpty());
 
@@ -89,12 +88,13 @@ public class CSplitAmongTest implements PremadeElements {
 
     @Test
     public void testDiscrete() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3, n4, n5)
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2)
                 .run(n3, vm4, vm6)
                 .run(n4, vm5)
-                .run(n5, vm7).build();
+                .run(n5, vm7).get();
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
@@ -115,7 +115,6 @@ public class CSplitAmongTest implements PremadeElements {
         //vg1 and vg2 overlap on n2. The two groups are mis-placed
         map.addRunningVM(vm6, n2);
 
-        Model mo = new DefaultModel(map);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>singleton(s));
         Assert.assertNotNull(p);
@@ -124,12 +123,13 @@ public class CSplitAmongTest implements PremadeElements {
 
     @Test
     public void testContinuousWithAllDiffViolated() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3, n4, n5)
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2)
                 .run(n3, vm4, vm6)
                 .run(n4, vm5)
-                .run(n5, vm7).build();
+                .run(n5, vm7).get();
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
@@ -150,19 +150,19 @@ public class CSplitAmongTest implements PremadeElements {
         //vg1 and vg2 overlap on n2.
         map.addRunningVM(vm6, n2);
 
-        Model mo = new DefaultModel(map);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         Assert.assertNull(cra.solve(mo, Collections.<SatConstraint>singleton(s)));
     }
 
     @Test
     public void testContinuousWithGroupChange() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3, n4, n5)
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2)
                 .run(n3, vm4, vm6)
                 .run(n4, vm5)
-                .run(n5, vm7).build();
+                .run(n5, vm7).get();
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
@@ -184,8 +184,6 @@ public class CSplitAmongTest implements PremadeElements {
         //the among part of the constraint will be violated
         Fence f = new Fence(vg1, pg2);
 
-        Model mo = new DefaultModel(map);
-
         cstrs.add(s);
         cstrs.add(f);
 
@@ -195,12 +193,13 @@ public class CSplitAmongTest implements PremadeElements {
 
     @Test
     public void testDiscreteWithGroupChange() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3, n4, n5)
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2)
                 .run(n3, vm4, vm6)
                 .run(n4, vm5)
-                .run(n5, vm7).build();
+                .run(n5, vm7).get();
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
@@ -221,8 +220,6 @@ public class CSplitAmongTest implements PremadeElements {
         //Move group of VMs 1 to the group of nodes 2. This is allowed
         //group of VMs 2 will move to another group of node so at the end, the constraint should be satisfied
         Fence f = new Fence(vg1, pg2);
-
-        Model mo = new DefaultModel(map);
 
         cstrs.add(s);
         cstrs.add(f);

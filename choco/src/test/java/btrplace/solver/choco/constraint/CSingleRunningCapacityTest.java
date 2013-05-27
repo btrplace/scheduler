@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,18 +20,18 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Ready;
 import btrplace.model.constraint.Running;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.SingleRunningCapacity;
-import btrplace.plan.event.Action;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.Action;
 import btrplace.plan.event.BootVM;
 import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.MappingBuilder;
+import btrplace.solver.choco.MappingFiller;
 import btrplace.solver.choco.durationEvaluator.ConstantDuration;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
@@ -52,9 +51,9 @@ public class CSingleRunningCapacityTest implements PremadeElements {
 
     @Test
     public void testDiscreteResolution() throws SolverException {
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1, vm2).ready(vm3).get();
 
-        Mapping map = new MappingBuilder().on(n1).run(n1, vm1, vm2).ready(vm3).build();
-        Model mo = new DefaultModel(map);
         List<SatConstraint> l = new ArrayList<>();
         l.add(new Running(Collections.singleton(vm1)));
         l.add(new Ready(Collections.singleton(vm2)));
@@ -72,8 +71,8 @@ public class CSingleRunningCapacityTest implements PremadeElements {
 
     @Test
     public void testContinuousResolution() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1).run(n1, vm1, vm2).ready(vm3).build();
-        Model mo = new DefaultModel(map);
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1, vm2).ready(vm3).get();
         List<SatConstraint> l = new ArrayList<>();
         l.add(new Running(Collections.singleton(vm1)));
         l.add(new Ready(Collections.singleton(vm2)));
@@ -98,8 +97,8 @@ public class CSingleRunningCapacityTest implements PremadeElements {
 
     @Test
     public void testGetMisplaced() {
-        Mapping m = new MappingBuilder().on(n1, n2).run(n1, vm1).ready(vm2, vm4).run(n2, vm3).build();
-        Model mo = new DefaultModel(m);
+        Model mo = new DefaultModel();
+        Mapping m = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1).ready(vm2, vm4).run(n2, vm3).get();
 
         SingleRunningCapacity c = new SingleRunningCapacity(m.getAllNodes(), 1);
         CSingleRunningCapacity cc = new CSingleRunningCapacity(c);

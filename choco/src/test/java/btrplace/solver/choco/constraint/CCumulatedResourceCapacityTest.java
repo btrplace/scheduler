@@ -29,7 +29,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.MappingBuilder;
+import btrplace.solver.choco.MappingFiller;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -45,19 +45,19 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
 
     @Test
     public void testWithSatisfiedConstraint() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm2)
                 .run(n3, vm3, vm4)
-                .sleep(n2, vm5).build();
+                .sleep(n2, vm5).get();
 
-        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
+        ShareableResource rc = new ShareableResource("cpu", 5);
         rc.set(vm1, 2);
         rc.set(vm2, 3);
         rc.set(vm3, 3);
         rc.set(vm4, 1);
         rc.set(vm5, 5);
 
-        Model mo = new DefaultModel(map);
         mo.attach(rc);
         List<SatConstraint> l = new ArrayList<>();
         CumulatedResourceCapacity x = new CumulatedResourceCapacity(map.getAllNodes(), "cpu", 10);
@@ -71,10 +71,10 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
 
     @Test
     public void testDiscreteSatisfaction() throws SolverException {
-
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm2)
-                .run(n2, vm3, vm4, vm5).build();
+                .run(n2, vm3, vm4, vm5).get();
 
         Set<Integer> on = new HashSet<>(Arrays.asList(n1, n2));
 
@@ -85,7 +85,6 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
         rc.set(vm4, 1);
         rc.set(vm5, 1);
 
-        Model mo = new DefaultModel(map);
         mo.attach(rc);
         List<SatConstraint> l = new ArrayList<>();
         CumulatedResourceCapacity x = new CumulatedResourceCapacity(on, "cpu", 9);
@@ -100,12 +99,12 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
     @Test
     public void testFeasibleContinuousResolution() throws SolverException {
 
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3, vm4)
-                .ready(vm5).build();
+                .ready(vm5).get();
         Set<Integer> on = new HashSet<>(Arrays.asList(n1, n2));
-        Model mo = new DefaultModel(map);
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
         rc.set(vm1, 2);
@@ -131,16 +130,16 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
 
     @Test
     public void testGetMisplaced() {
-        Mapping m = new MappingBuilder().on(n1, n2, n3)
-                .run(n1, vm1, vm2, vm3).run(n2, vm4).ready(vm5).build();
+        Model mo = new DefaultModel();
+        Mapping m = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+                .run(n1, vm1, vm2, vm3).run(n2, vm4).ready(vm5).get();
 
-        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
+        ShareableResource rc = new ShareableResource("cpu", 5);
         rc.set(vm1, 2);
         rc.set(vm2, 3);
         rc.set(vm3, 3);
         rc.set(vm4, 1);
         rc.set(vm5, 5);
-        Model mo = new DefaultModel(m);
         mo.attach(rc);
         CumulatedResourceCapacity c = new CumulatedResourceCapacity(m.getAllNodes(), "cpu", 10);
         CCumulatedResourceCapacity cc = new CCumulatedResourceCapacity(c);

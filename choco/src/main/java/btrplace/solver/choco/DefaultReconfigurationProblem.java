@@ -108,8 +108,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private ModelViewMapper viewMapper;
 
-    private ElementPool uuidPool;
-
     /**
      * Make a new RP where the next state for every VM is indicated.
      * If the state for a VM is omitted, it is considered as unchanged
@@ -128,7 +126,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     public DefaultReconfigurationProblem(Model m,
                                          DurationEvaluators dEval,
                                          ModelViewMapper vMapper,
-                                         ElementPool uuidPool,
                                          Set<Integer> ready,
                                          Set<Integer> running,
                                          Set<Integer> sleeping,
@@ -142,7 +139,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         this.killed = new HashSet<>(killed);
         this.manageable = new HashSet<>(runningsToConsider);
         this.useLabels = label;
-        this.uuidPool = uuidPool;
         model = m;
         durEval = dEval;
         this.viewMapper = vMapper;
@@ -379,7 +375,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         for (int vm : allVMs) {
             vms[i] = vm;
             revVMs.put(vm, i++);
-            uuidPool.book(vm);
         }
 
         nodes = new int[model.getMapping().getAllNodes().size()];
@@ -388,7 +383,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         for (int nId : model.getMapping().getAllNodes()) {
             nodes[i] = nId;
             revNodes.put(nId, i++);
-            uuidPool.book(nId);
         }
     }
 
@@ -743,20 +737,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public ElementPool getElementsPool() {
-        return uuidPool;
-    }
-
-    @Override
     public int cloneVM(int vm) {
-        int newVM = uuidPool.request();
-        if (newVM < 0) {
+        int newVM = model.newVM();
+        if (newVM == -1) {
             return newVM;
         }
         for (ChocoModelView v : views.values()) {
-            if (!v.cloneVM(vm, newVM)) {
-                uuidPool.release(newVM);
-            }
+            v.cloneVM(vm, newVM);
         }
         return newVM;
     }

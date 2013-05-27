@@ -19,7 +19,10 @@ package btrplace.json.model;
 
 import btrplace.json.JSONConverterException;
 import btrplace.json.model.view.ModelViewsConverter;
-import btrplace.model.*;
+import btrplace.model.Attributes;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.model.view.ShareableResource;
 import btrplace.test.PremadeElements;
 import junit.framework.Assert;
@@ -46,10 +49,10 @@ public class ModelConverterTest implements PremadeElements {
     @Test
     public void testConversion() throws JSONConverterException, IOException {
         ModelConverter conv = new ModelConverter();
-        Mapping m = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping m = mo.getMapping();
         m.addOnlineNode(n1);
         m.addReadyVM(vm1);
-        Model mo = new DefaultModel(m);
         Attributes attrs = mo.getAttributes();
         attrs.put(vm1, "boot", 5);
         attrs.put(n1, "type", "xen");

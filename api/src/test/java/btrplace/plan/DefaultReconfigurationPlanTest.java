@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +17,6 @@
 
 package btrplace.plan;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.plan.event.Action;
@@ -39,7 +37,7 @@ public class DefaultReconfigurationPlanTest implements PremadeElements {
 
     @Test
     public void testApplierGetAndSet() {
-        Model m = new DefaultModel(new DefaultMapping());
+        Model m = new DefaultModel();
         ReconfigurationPlan p = new DefaultReconfigurationPlan(m);
         ReconfigurationPlanApplier ap = mock(ReconfigurationPlanApplier.class);
         p.setReconfigurationApplier(ap);
@@ -48,19 +46,19 @@ public class DefaultReconfigurationPlanTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testApplierGetAndSet"})
     public void testApply() {
-        Model m = new DefaultModel(new DefaultMapping());
+        Model m = new DefaultModel();
         ReconfigurationPlan p = new DefaultReconfigurationPlan(m);
         ReconfigurationPlanApplier ap = mock(ReconfigurationPlanApplier.class);
         p.setReconfigurationApplier(ap);
 
-        Model mo = new DefaultModel(new DefaultMapping());
+        Model mo = new DefaultModel();
         when(ap.apply(p)).thenReturn(mo);
         Assert.assertTrue(p.getResult() == mo);
     }
 
     @Test(dependsOnMethods = {"testApplierGetAndSet"})
     public void testToString() {
-        Model m = new DefaultModel(new DefaultMapping());
+        Model m = new DefaultModel();
         ReconfigurationPlan p = new DefaultReconfigurationPlan(m);
         ReconfigurationPlanApplier ap = mock(ReconfigurationPlanApplier.class);
         p.setReconfigurationApplier(ap);
@@ -71,7 +69,7 @@ public class DefaultReconfigurationPlanTest implements PremadeElements {
 
     @Test
     public void testInstantiate() {
-        Model m = new DefaultModel(new DefaultMapping());
+        Model m = new DefaultModel();
         DefaultReconfigurationPlan p = new DefaultReconfigurationPlan(m);
         Assert.assertEquals(m, p.getOrigin());
         Assert.assertEquals(m, p.getResult());
@@ -84,7 +82,7 @@ public class DefaultReconfigurationPlanTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testAddDurationAndSize() {
-        Model m = new DefaultModel(new DefaultMapping());
+        Model m = new DefaultModel();
         DefaultReconfigurationPlan p = new DefaultReconfigurationPlan(m);
         Action a1 = new MockAction(vm1, 1, 3);
         Action a2 = new MockAction(vm2, 2, 4);

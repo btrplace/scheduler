@@ -17,7 +17,6 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -33,8 +32,6 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-;
 
 /**
  * Unit tests for {@link Overbook}.
@@ -66,7 +63,8 @@ public class OverbookTest implements PremadeElements {
     public void testDiscreteIsSatisfied() {
         Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
 
-        Mapping cfg = new DefaultMapping();
+        Model i = new DefaultModel();
+        Mapping cfg = i.getMapping();
         cfg.addOnlineNode(n1);
         cfg.addOnlineNode(n2);
 
@@ -83,8 +81,6 @@ public class OverbookTest implements PremadeElements {
         cfg.addRunningVM(vm3, n2);
         cfg.addRunningVM(vm4, n2);
 
-
-        Model i = new DefaultModel(cfg);
         i.attach(rc);
 
         Overbook o = new Overbook(s, "cpu", 2);
@@ -104,7 +100,8 @@ public class OverbookTest implements PremadeElements {
     public void testContinuousIsSatisfied() {
         Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
 
-        Mapping cfg = new DefaultMapping();
+        Model i = new DefaultModel();
+        Mapping cfg = i.getMapping();
         cfg.addOnlineNode(n1);
         cfg.addOnlineNode(n2);
 
@@ -121,8 +118,6 @@ public class OverbookTest implements PremadeElements {
         cfg.addRunningVM(vm3, n2);
         cfg.addRunningVM(vm4, n2);
 
-
-        Model i = new DefaultModel(cfg);
         i.attach(rc);
 
         Overbook o = new Overbook(s, "cpu", 2);

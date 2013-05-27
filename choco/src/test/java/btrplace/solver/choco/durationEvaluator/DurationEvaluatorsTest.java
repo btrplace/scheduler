@@ -17,7 +17,6 @@
 
 package btrplace.solver.choco.durationEvaluator;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.plan.event.*;
@@ -38,7 +37,7 @@ public class DurationEvaluatorsTest implements PremadeElements {
         DurationEvaluators d = new DurationEvaluators();
 
         //Juste check an evaluator is registered for every possible action.
-        Model mo = new DefaultModel(new DefaultMapping());
+        Model mo = new DefaultModel();
         mo.getAttributes().put(vm1, "boot", 2);
         mo.getAttributes().put(vm1, "shutdown", 3);
         mo.getAttributes().put(vm1, "migrate", 4);
@@ -92,20 +91,20 @@ public class DurationEvaluatorsTest implements PremadeElements {
         DurationEvaluators d = new DurationEvaluators();
         DurationEvaluator ev = new ConstantDuration(7);
         d.register(btrplace.plan.event.MigrateVM.class, ev);
-        Assert.assertEquals(d.evaluate(new DefaultModel(new DefaultMapping()), btrplace.plan.event.MigrateVM.class, vm1), 7);
+        Assert.assertEquals(d.evaluate(new DefaultModel(), btrplace.plan.event.MigrateVM.class, vm1), 7);
     }
 
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testUnregister"}, expectedExceptions = {SolverException.class})
     public void testEvaluateUnregisteredAction() throws SolverException {
         DurationEvaluators d = new DurationEvaluators();
         d.unregister(btrplace.plan.event.MigrateVM.class);
-        d.evaluate(new DefaultModel(new DefaultMapping()), btrplace.plan.event.MigrateVM.class, vm1);
+        d.evaluate(new DefaultModel(), btrplace.plan.event.MigrateVM.class, vm1);
     }
 
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testRegister"}, expectedExceptions = {SolverException.class})
     public void testEvaluateWithError() throws SolverException {
         DurationEvaluators d = new DurationEvaluators();
         d.register(btrplace.plan.event.MigrateVM.class, new ConstantDuration(-5));
-        d.evaluate(new DefaultModel(new DefaultMapping()), btrplace.plan.event.MigrateVM.class, vm1);
+        d.evaluate(new DefaultModel(), btrplace.plan.event.MigrateVM.class, vm1);
     }
 }

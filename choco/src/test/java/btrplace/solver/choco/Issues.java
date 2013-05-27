@@ -57,13 +57,12 @@ public class Issues implements PremadeElements {
     @Test
     public void testIssue5a() throws SolverException, ContradictionException {
 
+        Model model = new DefaultModel();
         ShareableResource resources = new ShareableResource("vcpu", 1);
         resources.set(n1, 2);
         resources.set(n2, 2);
 
-        Mapping map = new MappingBuilder().on(n1, n2).off(n3).run(n1, vm1, vm2).build();
-
-        Model model = new DefaultModel(map);
+        Mapping map = new MappingFiller(model.getMapping()).on(n1, n2).off(n3).run(n1, vm1, vm2).get();
         model.attach(resources);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
@@ -126,11 +125,10 @@ public class Issues implements PremadeElements {
      */
     @Test
     public void testIssue5b() throws SolverException {
+        Model model = new DefaultModel();
+        Mapping map = new MappingFiller(model.getMapping()).on(n1, n2, n3)
+                .run(n2, vm1, vm2, vm3, vm4).get();
 
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
-                .run(n2, vm1, vm2, vm3, vm4).build();
-
-        Model model = new DefaultModel(map);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
                 .labelVariables()
@@ -161,10 +159,10 @@ public class Issues implements PremadeElements {
     @Test
     public void testIssue5c() throws SolverException, ContradictionException {
 
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
-                .run(n2, vm1, vm2, vm3, vm4).build();
+        Model model = new DefaultModel();
 
-        Model model = new DefaultModel(map);
+        Mapping map = new MappingFiller(model.getMapping()).on(n1, n2, n3)
+                .run(n2, vm1, vm2, vm3, vm4).get();
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
                 .labelVariables()
@@ -193,8 +191,8 @@ public class Issues implements PremadeElements {
         //ShareableResource resources = new ShareableResource("vcpu", 1);
         //resources.set(n1, 2);
         //resources.set(n2, 2);
-        Mapping map = new MappingBuilder().on(n1, n2).off(n3).run(n1, vm1, vm2).build();
-        Model model = new DefaultModel(map);
+        Model model = new DefaultModel();
+        Mapping map = new MappingFiller(model.getMapping()).on(n1, n2).off(n3).run(n1, vm1, vm2).get();
         //model.attach(resources);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model).labelVariables().build();
         CPSolver solver = rp.getSolver();
@@ -244,13 +242,12 @@ public class Issues implements PremadeElements {
      */
     @Test
     public void test16b() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3, n4)
+        Model model = new DefaultModel();
+        Mapping map = new MappingFiller(model.getMapping()).on(n1, n2, n3, n4)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3, vm4)
                 .run(n3, vm5, vm6)
-                .build();
-
-        Model model = new DefaultModel(map);
+                .get();
 
         Set<SatConstraint> ctrsC = new HashSet<SatConstraint>();
         Set<Integer> vms1 = new HashSet<Integer>(Arrays.asList(vm1, vm3, vm5));

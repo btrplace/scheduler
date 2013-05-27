@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +17,6 @@
 
 package btrplace.plan.event;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -66,10 +64,10 @@ public class AllocateEventTest implements PremadeElements {
     @Test
     public void testApply() {
         AllocateEvent na = new AllocateEvent(vm1, "foo", 3);
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);
-        Model mo = new DefaultModel(map);
         Assert.assertFalse(na.apply(mo));
         ShareableResource rc = new ShareableResource("foo");
         mo.attach(rc);

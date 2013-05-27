@@ -17,7 +17,6 @@
 
 package btrplace.solver.choco.durationEvaluator;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.model.view.ShareableResource;
@@ -35,7 +34,7 @@ public class LinearToAResourceDurationTest implements PremadeElements {
     @Test
     public void testSimple() {
         ShareableResource rc = new ShareableResource("foo", 0);
-        Model mo = new DefaultModel(new DefaultMapping());
+        Model mo = new DefaultModel();
         mo.attach(rc);
         rc.set(vm1, 3);
         LinearToAResourceDuration d = new LinearToAResourceDuration("foo", 3);

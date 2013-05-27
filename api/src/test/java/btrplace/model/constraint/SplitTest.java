@@ -77,7 +77,8 @@ public class SplitTest implements PremadeElements {
 
     @Test
     public void testDiscreteIsSatisfied() {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addOnlineNode(n3);
@@ -93,7 +94,6 @@ public class SplitTest implements PremadeElements {
         map.addRunningVM(vm4, n2);
 
         Split sp = new Split(args);
-        Model mo = new DefaultModel(map);
         Assert.assertEquals(sp.isSatisfied(mo), true);
         map.addRunningVM(vm3, n3);
         Assert.assertEquals(sp.isSatisfied(mo), true);
@@ -103,6 +103,7 @@ public class SplitTest implements PremadeElements {
 
     @Test
     public void testContinuousIsSatisfied() {
+        Model mo = new DefaultModel();
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
@@ -119,7 +120,6 @@ public class SplitTest implements PremadeElements {
         map.addRunningVM(vm4, n2);
 
         Split sp = new Split(args, true);
-        Model mo = new DefaultModel(map);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(sp.isSatisfied(plan), true);
         map.addRunningVM(vm3, n1); //Violation

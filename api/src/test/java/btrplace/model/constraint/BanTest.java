@@ -17,7 +17,6 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -56,7 +55,8 @@ public class BanTest implements PremadeElements {
     @Test
     public void testIsSatisfied() {
 
-        Mapping map = new DefaultMapping();
+        Model m = new DefaultModel();
+        Mapping map = m.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addOnlineNode(n3);
@@ -69,7 +69,6 @@ public class BanTest implements PremadeElements {
         Set<Integer> nodes = new HashSet<>(Arrays.asList(n1));
 
         Ban b = new Ban(vms, nodes);
-        Model m = new DefaultModel(map);
         Assert.assertEquals(b.isSatisfied(m), true);
         map.addRunningVM(vm3, n1);
         Assert.assertEquals(b.isSatisfied(m), false);

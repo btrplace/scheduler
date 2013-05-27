@@ -17,7 +17,6 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -49,9 +48,10 @@ public class ShutdownableNodeModelTest implements PremadeElements {
 
     @Test
     public void testBasics() throws SolverException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
-        Model mo = new DefaultModel(map);
+
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .labelVariables()
                 .build();
@@ -62,10 +62,11 @@ public class ShutdownableNodeModelTest implements PremadeElements {
 
     @Test
     public void testForcedOnline() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOfflineNode(n2);
-        Model mo = new DefaultModel(map);
+
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(ShutdownNode.class, new ConstantDuration(5));
         dev.register(BootNode.class, new ConstantDuration(10));
@@ -96,9 +97,10 @@ public class ShutdownableNodeModelTest implements PremadeElements {
 
     @Test
     public void testForcedOffline() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
-        Model mo = new DefaultModel(map);
+
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(ShutdownNode.class, new ConstantDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
@@ -123,10 +125,10 @@ public class ShutdownableNodeModelTest implements PremadeElements {
 
     @Test
     public void testScheduledShutdown() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);
-        Model mo = new DefaultModel(map);
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(ShutdownVM.class, new ConstantDuration(2));
         dev.register(ShutdownNode.class, new ConstantDuration(5));
@@ -160,10 +162,11 @@ public class ShutdownableNodeModelTest implements PremadeElements {
      */
     @Test
     public void testCascadedShutdown() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
-        Model mo = new DefaultModel(map);
+
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(ShutdownVM.class, new ConstantDuration(2));
         dev.register(ShutdownNode.class, new ConstantDuration(5));
@@ -190,10 +193,10 @@ public class ShutdownableNodeModelTest implements PremadeElements {
 
     @Test
     public void testShutdownBeforeVMsLeave() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);
-        Model mo = new DefaultModel(map);
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(ShutdownVM.class, new ConstantDuration(2));
         dev.register(ShutdownNode.class, new ConstantDuration(5));
@@ -213,10 +216,10 @@ public class ShutdownableNodeModelTest implements PremadeElements {
 
     @Test
     public void testSwitchState() throws ContradictionException, SolverException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOfflineNode(n2);
-        Model mo = new DefaultModel(map);
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(BootNode.class, new ConstantDuration(2));
         dev.register(ShutdownNode.class, new ConstantDuration(5));
@@ -245,11 +248,11 @@ public class ShutdownableNodeModelTest implements PremadeElements {
      */
     @Test
     public void testNodeHostingEnd() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model model = new DefaultModel();
+        Mapping map = model.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addOfflineNode(n3);
-        Model model = new DefaultModel(map);
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(ShutdownNode.class, new ConstantDuration(5));
         dev.register(BootNode.class, new ConstantDuration(10));
@@ -294,10 +297,11 @@ public class ShutdownableNodeModelTest implements PremadeElements {
 
     @Test
     public void testActionDurationSimple() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model model = new DefaultModel();
+        Mapping map = model.getMapping();
         map.addOnlineNode(n1);
         map.addOfflineNode(n4);
-        Model model = new DefaultModel(map);
+
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(ShutdownNode.class, new ConstantDuration(5));
         dev.register(BootNode.class, new ConstantDuration(3));
@@ -328,10 +332,10 @@ public class ShutdownableNodeModelTest implements PremadeElements {
 
     @Test
     public void testShutdownable() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model model = new DefaultModel();
+        Mapping map = model.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n4);
-        Model model = new DefaultModel(map);
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(ShutdownNode.class, new ConstantDuration(5));
         dev.register(BootNode.class, new ConstantDuration(3));

@@ -33,8 +33,8 @@ public interface Mapping extends Cloneable {
      * Set a virtual machine running on a node. The node must already be online.
      * If the virtual machine is already in a other location or state in the mapping, it is updated
      *
-     * @param vm   the VM identifier, {@code >0}
-     * @param node the node that will host the VM, {@code < 0}. The node must already be considered as online.
+     * @param vm   the VM identifier, {@code >= 0}
+     * @param node the node that will host the VM,  {@code >= 0}. The node must already be considered as online.
      * @return {@code true} if the vm is assigned on the node.
      */
     boolean addRunningVM(int vm, int node);
@@ -43,8 +43,8 @@ public interface Mapping extends Cloneable {
      * Set a virtual machine sleeping on a node.
      * If the virtual machine is already in a other location or state in the mapping, it is updated
      *
-     * @param vm   the VM identifier, {@code >0}
-     * @param node the node that will host the VM, {@code < 0}. The node must already be considered as online.
+     * @param vm   the VM identifier, {@code >= 0}
+     * @param node the node that will host the VM,  {@code >= 0}. The node must already be considered as online.
      * @return {@code false} if the hosting node is offline or unknown
      */
     boolean addSleepingVM(int vm, int node);
@@ -53,14 +53,14 @@ public interface Mapping extends Cloneable {
      * Set a VM ready for being running.
      * If the virtual machine is already in a other location or state in the mapping, it is updated
      *
-     * @param vm the VM identifier, {@code > 0}
+     * @param vm the VM identifier, {@code >= 0}
      */
     void addReadyVM(int vm);
 
     /**
      * Remove a VM.
      *
-     * @param vm the VM to remove. {@code > 0}
+     * @param vm the VM to remove.  {@code >= 0}
      * @return {@code true} if the VM was in the mapping and has been removed
      */
     boolean removeVM(int vm);
@@ -68,7 +68,7 @@ public interface Mapping extends Cloneable {
     /**
      * Remove a node. The node must not host any virtual machines
      *
-     * @param n the node identifier. {@code < 0}
+     * @param n the node identifier.  {@code >= 0}
      * @return {@code true} if the node was in the mapping and is removed. {@code false} otherwise
      */
     boolean removeNode(int n);
@@ -83,7 +83,7 @@ public interface Mapping extends Cloneable {
     /**
      * Set a node online. If the node is already in the mapping but in an another state, it is updated.
      *
-     * @param node the node identifier. {@code < 0}
+     * @param node the node identifier.  {@code >= 0}
      */
     void addOnlineNode(int node);
 
@@ -91,7 +91,7 @@ public interface Mapping extends Cloneable {
      * Set a node offline. If the node is already in the mapping but in an another state, it is updated.
      * The node must not host any virtual machines
      *
-     * @param node the node identifier. {@code < 0}
+     * @param node the node identifier.  {@code >= 0}
      * @return true if the node is offline. False otherwise
      */
     boolean addOfflineNode(int node);
@@ -121,7 +121,7 @@ public interface Mapping extends Cloneable {
     /**
      * Get the virtual machines that are sleeping on a node.
      *
-     * @param n the node identifier. {@code < 0}
+     * @param n the node identifier.  {@code >= 0}
      * @return a set of VM identifier, may be empty
      */
     Set<Integer> getSleepingVMs(int n);
@@ -129,7 +129,7 @@ public interface Mapping extends Cloneable {
     /**
      * Get the VMs that are running on a node.
      *
-     * @param n the node identifier. {@code < 0}
+     * @param n the node identifier.  {@code >= 0}
      * @return a set of VM identifier, may be empty
      */
     Set<Integer> getRunningVMs(int n);
@@ -158,8 +158,8 @@ public interface Mapping extends Cloneable {
     /**
      * Get the location of a  running or a sleeping VM.
      *
-     * @param vm the VM identifier. {@code > 0}
-     * @return the identifier of the node hosting the virtual machine ({@code < 0}) or {@code 0} is the VM
+     * @param vm the VM identifier.  {@code >= 0}
+     * @return the identifier of the node hosting the virtual machine ({@code >= 0}). {@code < 0} is the VM
      *         is not in the sleeping state nor the running state
      */
     int getVMLocation(int vm);
@@ -182,7 +182,7 @@ public interface Mapping extends Cloneable {
     /**
      * Check if a VM is in the mapping.
      *
-     * @param vm the VM identifier. {@code > 0}
+     * @param vm the VM identifier.  {@code >= 0}
      * @return {@code true} if the VM is in.
      */
     boolean containsVM(int vm);
@@ -190,7 +190,7 @@ public interface Mapping extends Cloneable {
     /**
      * Check if a node is in the mapping.
      *
-     * @param node the node identifier. {@code < 0}
+     * @param node the node identifier.  {@code >= 0}
      * @return {@code true} if the node is in.
      */
     boolean containsNode(int node);
@@ -203,7 +203,7 @@ public interface Mapping extends Cloneable {
     /**
      * Remove all the VMs remove on a given node
      *
-     * @param u the node identifier. {@code < 0}
+     * @param u the node identifier.  {@code >= 0}
      */
     void clearNode(int u);
 

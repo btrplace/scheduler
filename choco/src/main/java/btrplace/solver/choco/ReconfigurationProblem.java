@@ -36,6 +36,8 @@ import java.util.Set;
 
 /**
  * Interface for the Reconfiguration Problem.
+ * <p/>
+ * VM and node identifiers are translated to a position in an array.
  *
  * @author Fabien Hermenier
  */
@@ -45,21 +47,21 @@ public interface ReconfigurationProblem {
      * Get the current location of a running or a sleeping VM.
      *
      * @param vmIdx the index of the virtual machine
-     * @return the node index if exists or -1 if the VM is not already placed
+     * @return the node index if exists, -1 if the VM is unknown
      */
     int getCurrentVMLocation(int vmIdx);
 
     /**
      * Get all the nodes in the model. Indexed by their identifier.
      *
-     * @return an array of node.
+     * @return an array of node identifiers.
      */
     int[] getNodes();
 
     /**
-     * Get all the virtual machines in the model. Indexed by their identifier.
+     * Get all the VMs in the model. Indexed by their identifier.
      *
-     * @return an array of virtual machines.
+     * @return an array of VM identifiers
      */
     int[] getVMs();
 
@@ -358,17 +360,10 @@ public interface ReconfigurationProblem {
     void setObjectiveAlterer(ObjectiveAlterer a);
 
     /**
-     * Get the pool that is used to book ints.
-     *
-     * @return the pool
-     */
-    ElementPool getElementsPool();
-
-    /**
      * Create a clone of a given VM.
      * The clone will take the place of the VM by the end of the reconfiguration process.
      *
-     * @param vm the current VM to substitute
+     * @param vm the identifier of the  VM to substitute
      * @return the identifier of the new VM. {@code null} if the process failed
      */
     int cloneVM(int vm);

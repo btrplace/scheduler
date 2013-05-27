@@ -17,7 +17,6 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -33,8 +32,6 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-;
 
 /**
  * Unit tests for {@link SingleRunningCapacity}.
@@ -78,7 +75,8 @@ public class SingleRunningCapacityTest implements PremadeElements {
 
     @Test
     public void testDiscreteIsSatisfied() {
-        Mapping m = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping m = mo.getMapping();
         m.addOnlineNode(n1);
         m.addOnlineNode(n2);
         m.addRunningVM(vm1, n1);
@@ -86,7 +84,6 @@ public class SingleRunningCapacityTest implements PremadeElements {
 
         m.addRunningVM(vm3, n2);
         m.addReadyVM(vm4);
-        Model mo = new DefaultModel(m);
 
         SingleRunningCapacity c = new SingleRunningCapacity(m.getAllNodes(), 1);
 
@@ -98,7 +95,8 @@ public class SingleRunningCapacityTest implements PremadeElements {
 
     @Test
     public void testContinuousIsSatisfied() {
-        Mapping m = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping m = mo.getMapping();
         m.addOnlineNode(n1);
         m.addOnlineNode(n2);
         m.addRunningVM(vm1, n1);
@@ -106,7 +104,6 @@ public class SingleRunningCapacityTest implements PremadeElements {
 
         m.addRunningVM(vm3, n2);
         m.addReadyVM(vm4);
-        Model mo = new DefaultModel(m);
 
         SingleRunningCapacity c = new SingleRunningCapacity(m.getAllNodes(), 1);
         c.setContinuous(true);

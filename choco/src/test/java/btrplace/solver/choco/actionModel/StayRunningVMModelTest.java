@@ -17,7 +17,6 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -42,11 +41,11 @@ public class StayRunningVMModelTest implements PremadeElements {
     @Test
     public void testBasic() throws SolverException {
 
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);
 
-        Model mo = new DefaultModel(map);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setManageableVMs(Collections.<Integer>emptySet())
                 .labelVariables()

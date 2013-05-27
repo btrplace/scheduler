@@ -17,7 +17,6 @@
 
 package btrplace.plan;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.plan.event.Action;
@@ -83,7 +82,7 @@ public class ActionTest {
         MockEvent n1 = new MockEvent();
         a1.addEvent(Action.Hook.pre, n1);
         a1.addEvent(Action.Hook.post, n1);
-        Model mo = new DefaultModel(new DefaultMapping());
+        Model mo = new DefaultModel();
         a1.apply(mo);
         Assert.assertEquals(n1.count, 2);
         Assert.assertEquals(a1.count, 1);

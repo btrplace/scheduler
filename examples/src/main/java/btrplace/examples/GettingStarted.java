@@ -17,7 +17,6 @@
 
 package btrplace.examples;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -44,34 +43,24 @@ import java.util.Set;
  */
 public class GettingStarted implements Example {
 
-    private static int vm1 = new int
-    (0,1);
-    private static int vm2 = new int
-    (0,2);
-    private static int vm3 = new int
-    (0,3);
-    private static int vm4 = new int
-    (0,4);
-    private static int vm5 = new int
-    (0,5);
-    private static int vm6 = new int
-    (0,6);
+    private static int vm1 = 1;
+    private static int vm2 = 2;
+    private static int vm3 = 3;
+    private static int vm4 = 4;
+    private static int vm5 = 5;
+    private static int vm6 = 6;
 
-    private static int n1 = new int
-    (1,1);
-    private static int n2 = new int
-    (1,2);
-    private static int n3 = new int
-    (1,3);
-    private static int n4 = new int
-    (1,4);
+    private static int n1 = -1;
+    private static int n2 = -2;
+    private static int n3 = -3;
+    private static int n4 = -4;
 
     /**
      * Make the element mapping that depicts
      * the element state and the VM positions.
      */
-    public static Mapping makeMapping() {
-        Mapping map = new DefaultMapping();
+    public static Mapping makeMapping(Model o) {
+        Mapping map = o.getMapping();
 
         //4 online nodes
         map.addOnlineNode(n1);
@@ -157,7 +146,8 @@ public class GettingStarted implements Example {
 
     @Override
     public boolean run() {
-        Mapping map = makeMapping();
+        Model origin = new DefaultModel();
+        Mapping map = makeMapping(origin);
 
         //Now, we declare views related to
         //the memory and the cpu resources
@@ -165,7 +155,6 @@ public class GettingStarted implements Example {
         ShareableResource rcMem = makeMemResourceView();
 
         //We create a model that aggregates the mapping and the views
-        Model origin = new DefaultModel(map);
         origin.attach(rcCPU);
         origin.attach(rcMem);
 

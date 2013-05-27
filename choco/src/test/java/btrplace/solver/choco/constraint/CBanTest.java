@@ -17,7 +17,6 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -28,7 +27,7 @@ import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.MappingBuilder;
+import btrplace.solver.choco.MappingFiller;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -49,7 +48,8 @@ public class CBanTest implements PremadeElements {
     public void testBasic() throws SolverException {
         int[] nodes = new int[5];
         int[] vms = new int[5];
-        Mapping m = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping m = mo.getMapping();
         Set<Integer> sVMs = new HashSet<>();
         Set<Integer> sNodes = new HashSet<>();
         for (int i = 0; i < vms.length; i++) {
@@ -62,8 +62,6 @@ public class CBanTest implements PremadeElements {
                 sNodes.add(nodes[i]);
             }
         }
-
-        Model mo = new DefaultModel(m);
         Ban b = new Ban(sVMs, sNodes);
         Collection<SatConstraint> s = new HashSet<>();
         s.add(b);
@@ -85,17 +83,17 @@ public class CBanTest implements PremadeElements {
      */
     @Test
     public void testGetMisPlaced() {
-        Mapping m = new MappingBuilder().on(n1, n2, n3, n4, n5)
+        Model mo = new DefaultModel();
+        Mapping m = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3)
                 .run(n3, vm4)
-                .sleep(n4, vm5).build();
+                .sleep(n4, vm5).get();
 
         Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2));
         Set<Integer> ns = new HashSet<>(Arrays.asList(n3, n4));
 
         CBan c = new CBan(new Ban(vms, ns));
-        Model mo = new DefaultModel(m);
         org.testng.Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
         ns.add(vm4);
         org.testng.Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());

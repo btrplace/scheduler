@@ -17,7 +17,6 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -28,8 +27,6 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-;
 
 /**
  * Unit tests for {@link btrplace.model.constraint.Online}.
@@ -51,13 +48,12 @@ public class OnlineTest implements PremadeElements {
 
     @Test
     public void testIsSatisfied() {
-        Mapping c = new DefaultMapping();
+        Model i = new DefaultModel();
+        Mapping c = i.getMapping();
         c.addOnlineNode(n1);
         c.addOnlineNode(n2);
         Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
         Online o = new Online(s);
-
-        Model i = new DefaultModel(c);
 
         Assert.assertEquals(o.isSatisfied(i), true);
         c.addOfflineNode(n2);

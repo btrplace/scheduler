@@ -28,7 +28,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.MappingBuilder;
+import btrplace.solver.choco.MappingFiller;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -45,10 +45,12 @@ public class CAmongTest implements PremadeElements {
     @Test
     public void testWithOnGroup() throws SolverException {
 
-        Mapping map = new MappingBuilder()
+        Model mo = new DefaultModel();
+
+        Mapping map = new MappingFiller(mo.getMapping())
                 .on(n1, n2, n3, n4)
                 .run(n1, vm1).run(n2, vm2).run(n3, vm3)
-                .ready(vm4, vm5).build();
+                .ready(vm4, vm5).get();
 
         Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
 
@@ -64,7 +66,6 @@ public class CAmongTest implements PremadeElements {
         cstrs.add(new Running(map.getAllVMs()));
         cstrs.add(a);
 
-        Model mo = new DefaultModel(map);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
         //System.out.println(p);
@@ -74,10 +75,11 @@ public class CAmongTest implements PremadeElements {
     @Test
     public void testWithGroupChange() throws SolverException {
 
-        Mapping map = new MappingBuilder()
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping())
                 .on(n1, n2, n3, n4)
                 .run(n1, vm1).run(n2, vm2, vm3)
-                .ready(vm4, vm5).build();
+                .ready(vm4, vm5).get();
 
         Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
 
@@ -92,7 +94,6 @@ public class CAmongTest implements PremadeElements {
         cstrs.add(new Fence(Collections.singleton(vm2), s2));
         cstrs.add(a);
 
-        Model mo = new DefaultModel(map);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
         //System.out.println(p);
@@ -107,10 +108,11 @@ public class CAmongTest implements PremadeElements {
     @Test
     public void testWithNoSolution() throws SolverException {
 
-        Mapping map = new MappingBuilder()
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping())
                 .on(n1, n2, n3, n4)
                 .run(n1, vm1).run(n2, vm2, vm3)
-                .ready(vm4, vm5).build();
+                .ready(vm4, vm5).get();
 
         Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
 
@@ -128,7 +130,6 @@ public class CAmongTest implements PremadeElements {
         cstrs.add(new Fence(Collections.singleton(vm1), Collections.singleton(n1)));
         cstrs.add(a);
 
-        Model mo = new DefaultModel(map);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNull(p);
     }
@@ -136,17 +137,18 @@ public class CAmongTest implements PremadeElements {
     @Test
     public void testGetMisplaced() {
 
-        Mapping map = new MappingBuilder()
+        Model mo = new DefaultModel();
+
+        Mapping map = new MappingFiller(mo.getMapping())
                 .on(n1, n2, n3, n4)
                 .run(n1, vm1).run(n2, vm2, vm3)
-                .ready(vm4, vm5).build();
+                .ready(vm4, vm5).get();
 
         Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
         Set<Integer> s1 = new HashSet<>(Arrays.asList(n1, n2));
         Set<Integer> s2 = new HashSet<>(Arrays.asList(n3, n4));
         Set<Set<Integer>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
 
-        Model mo = new DefaultModel(map);
         Among a = new Among(vms, pGrps);
         CAmong ca = new CAmong(a);
         Assert.assertEquals(ca.getMisPlacedVMs(mo), Collections.emptySet());
@@ -157,17 +159,17 @@ public class CAmongTest implements PremadeElements {
 
     @Test
     public void testContinuousWithAlreadySatisfied() throws SolverException {
-        Mapping map = new MappingBuilder()
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping())
                 .on(n1, n2, n3, n4)
                 .run(n1, vm1).run(n2, vm2, vm3)
-                .ready(vm4, vm5).build();
+                .ready(vm4, vm5).get();
 
         Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
         Set<Integer> s1 = new HashSet<>(Arrays.asList(n1, n2));
         Set<Integer> s2 = new HashSet<>(Arrays.asList(n3, n4));
         Set<Set<Integer>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
 
-        Model mo = new DefaultModel(map);
         Among a = new Among(vms, pGrps);
         a.setContinuous(true);
 
@@ -184,10 +186,11 @@ public class CAmongTest implements PremadeElements {
 
     @Test
     public void testContinuousWithNotAlreadySatisfied() throws SolverException {
-        Mapping map = new MappingBuilder()
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping())
                 .on(n1, n2, n3, n4)
                 .run(n1, vm1).run(n2, vm2).run(n3, vm3)
-                .ready(vm4, vm5).build();
+                .ready(vm4, vm5).get();
 
         Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
 
@@ -195,7 +198,6 @@ public class CAmongTest implements PremadeElements {
         Set<Integer> s2 = new HashSet<>(Arrays.asList(n3, n4));
         Set<Set<Integer>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
 
-        Model mo = new DefaultModel(map);
         Among a = new Among(vms, pGrps);
         a.setContinuous(true);
 

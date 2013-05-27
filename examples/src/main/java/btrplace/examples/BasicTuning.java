@@ -17,7 +17,6 @@
 
 package btrplace.examples;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -125,7 +124,8 @@ public class BasicTuning implements Example {
      * Each VM consumes 2GB
      */
     private Model makeModel() {
-        Mapping mapping = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping mapping = mo.getMapping();
 
 
         //Memory usage/consumption in GB
@@ -156,7 +156,6 @@ public class BasicTuning implements Example {
             rcMem.set(vm, i % 5 + 1);
         }
 
-        Model mo = new DefaultModel(mapping);
         mo.attach(rcBW);
         mo.attach(rcMem);
         return mo;

@@ -17,7 +17,6 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -31,8 +30,6 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-;
 
 /**
  * Unit tests for {@link Among}.
@@ -93,7 +90,8 @@ public class AmongTest implements PremadeElements {
 
         Among a = new Among(vms, pGrps);
 
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addOnlineNode(n3);
@@ -101,7 +99,6 @@ public class AmongTest implements PremadeElements {
         map.addRunningVM(vm2, n2);
         map.addSleepingVM(vm3, n3);
 
-        Model mo = new DefaultModel(map);
         Assert.assertEquals(a.isSatisfied(mo), true);
         map.addRunningVM(vm3, n3);
         Assert.assertEquals(a.isSatisfied(mo), false);
@@ -119,14 +116,14 @@ public class AmongTest implements PremadeElements {
 
         Among a = new Among(vms, pGrps, true);
 
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addOnlineNode(n3);
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n2);
         map.addRunningVM(vm3, n2);
-        Model mo = new DefaultModel(map);
 
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(a.isSatisfied(plan), true);

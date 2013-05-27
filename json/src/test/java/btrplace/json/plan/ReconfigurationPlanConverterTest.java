@@ -18,7 +18,6 @@
 package btrplace.json.plan;
 
 import btrplace.json.JSONConverterException;
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -43,7 +42,8 @@ public class ReconfigurationPlanConverterTest implements PremadeElements {
 
     @Test
     public void testConversion() throws JSONConverterException, IOException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOfflineNode(n2);
         map.addOnlineNode(n3);
@@ -53,7 +53,6 @@ public class ReconfigurationPlanConverterTest implements PremadeElements {
         map.addSleepingVM(vm4, n3);
         map.addRunningVM(vm5, n3);
 
-        Model mo = new DefaultModel(map);
 
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         plan.add(new MigrateVM(vm2, n1, n3, 0, 1));

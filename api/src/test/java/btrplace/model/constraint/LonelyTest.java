@@ -17,7 +17,6 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -71,7 +70,9 @@ public class LonelyTest implements PremadeElements {
     public void testContinuousIsSatisfied() {
         Set<Integer> s = new HashSet<>(Arrays.asList(vm1, vm2));
 
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addOnlineNode(n3);
@@ -80,8 +81,6 @@ public class LonelyTest implements PremadeElements {
         map.addRunningVM(vm2, n1);
         map.addRunningVM(vm3, n2);
         map.addRunningVM(vm4, n2);
-
-        Model mo = new DefaultModel(map);
 
         Lonely l = new Lonely(s, true);
 
@@ -99,8 +98,9 @@ public class LonelyTest implements PremadeElements {
     @Test
     public void testDiscreteIsSatisfied() {
 
+        Model mo = new DefaultModel();
 
-        Mapping map = new DefaultMapping();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addOnlineNode(n3);
@@ -109,7 +109,6 @@ public class LonelyTest implements PremadeElements {
         map.addRunningVM(vm2, n2);
         map.addSleepingVM(vm4, n2);
 
-        Model mo = new DefaultModel(map);
 
         Set<Integer> s = new HashSet<>(Arrays.asList(vm1, vm2));
         Lonely l = new Lonely(s);

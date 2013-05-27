@@ -17,7 +17,6 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -32,8 +31,6 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-;
 
 /**
  * Unit tests for {@link CumulatedRunningCapacity}.
@@ -77,7 +74,8 @@ public class CumulatedRunningCapacityTest implements PremadeElements {
 
     @Test
     public void testDiscreteIsSatisfied() {
-        Mapping m = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping m = mo.getMapping();
         m.addOnlineNode(n1);
         m.addOnlineNode(n2);
         m.addRunningVM(vm1, n1);
@@ -85,7 +83,6 @@ public class CumulatedRunningCapacityTest implements PremadeElements {
         m.addRunningVM(vm3, n2);
         m.addReadyVM(vm4);
 
-        Model mo = new DefaultModel(m);
         CumulatedRunningCapacity c = new CumulatedRunningCapacity(m.getAllNodes(), 2);
         c.setContinuous(false);
         Assert.assertEquals(c.isSatisfied(mo), true);
@@ -95,7 +92,8 @@ public class CumulatedRunningCapacityTest implements PremadeElements {
 
     @Test
     public void testContinuousIsSatisfied() {
-        Mapping m = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping m = mo.getMapping();
         m.addOnlineNode(n1);
         m.addOnlineNode(n2);
         m.addRunningVM(vm1, n1);
@@ -106,7 +104,7 @@ public class CumulatedRunningCapacityTest implements PremadeElements {
 
         CumulatedRunningCapacity c = new CumulatedRunningCapacity(m.getAllNodes(), 2);
         c.setContinuous(true);
-        Model mo = new DefaultModel(m);
+
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(c.isSatisfied(plan), true);
         plan.add(new BootVM(vm4, n2, 2, 4));

@@ -18,7 +18,6 @@
 package btrplace.solver.choco.durationEvaluator;
 
 import btrplace.model.Attributes;
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.test.PremadeElements;
@@ -36,7 +35,7 @@ public class DurationFromOptionalAttributeTest implements PremadeElements {
     public void test() {
 
 
-        Model mo = new DefaultModel(new DefaultMapping());
+        Model mo = new DefaultModel();
         Attributes attrs = mo.getAttributes();
         DurationEvaluator parent = new ConstantDuration(15);
 

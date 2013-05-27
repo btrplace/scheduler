@@ -35,7 +35,6 @@ import java.util.Set;
  * <li>Variables are not labelled to save memory</li>
  * <li>All the VMs are manageable</li>
  * <li>The default {@link btrplace.solver.choco.durationEvaluator.DurationEvaluators} is used</li>
- * <li>The {@link ElementPool} is {@link InMemoryElementsPool}</li>
  * <li>The default {@link btrplace.solver.choco.view.ModelViewMapper} is used</li>
  * <li>The state of the VMs is unchanged</li>
  * </ul>
@@ -56,8 +55,6 @@ public class DefaultReconfigurationProblemBuilder {
 
     private Set<Integer> manageable;
 
-    private ElementPool uuidPool;
-
     /**
      * Make a new builder for a problem working on a given model.
      *
@@ -74,17 +71,6 @@ public class DefaultReconfigurationProblemBuilder {
      */
     public DefaultReconfigurationProblemBuilder labelVariables() {
         labelVars = true;
-        return this;
-    }
-
-    /**
-     * Set the pool of ints to use.
-     *
-     * @param p the pool to use
-     * @return the current builder
-     */
-    public DefaultReconfigurationProblemBuilder setintPool(ElementPool p) {
-        this.uuidPool = p;
         return this;
     }
 
@@ -168,10 +154,7 @@ public class DefaultReconfigurationProblemBuilder {
             manageable = new HashSet<>();
             manageable.addAll(model.getMapping().getAllVMs());
         }
-        if (uuidPool == null) {
-            uuidPool = new InMemoryElementsPool();
-        }
-        return new DefaultReconfigurationProblem(model, dEval, viewMapper, uuidPool, waits, runs, sleep, over, manageable, labelVars);
+        return new DefaultReconfigurationProblem(model, dEval, viewMapper, waits, runs, sleep, over, manageable, labelVars);
     }
 
 }

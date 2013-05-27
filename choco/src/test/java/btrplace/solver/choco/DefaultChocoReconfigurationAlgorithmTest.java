@@ -17,7 +17,10 @@
 
 package btrplace.solver.choco;
 
-import btrplace.model.*;
+import btrplace.model.DefaultModel;
+import btrplace.model.Mapping;
+import btrplace.model.MappingUtils;
+import btrplace.model.Model;
 import btrplace.model.constraint.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
@@ -87,7 +90,8 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
 
     @Test
     public void testGetStatistics() throws SolverException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         for (int i = 0; i < 10; i++) {
             int n = 200 + i;
@@ -95,7 +99,6 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
             map.addOnlineNode(n);
             map.addRunningVM(vm, n);
         }
-        Model mo = new DefaultModel(map);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.doOptimize(true);
         cra.setTimeLimit(0);
@@ -133,8 +136,8 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
 
     @Test
     public void testSolvableRepair() throws SolverException {
-
-        Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5).build();
+        Model mo = new DefaultModel();
+        new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5).get();
 
         //A satisfied constraint
         Fence c1 = new Fence(new HashSet<>(Arrays.asList(vm1, vm2)), new HashSet<>(Arrays.asList(n1, n2)));
@@ -156,7 +159,8 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
         };
 
         Set<SatConstraint> cstrs = new HashSet<SatConstraint>(Arrays.asList(c1, c2));
-        Model mo = new DefaultModel(map);
+        mo = new DefaultModel();
+        new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5).get();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.doRepair(true);
         cra.doOptimize(false);
@@ -170,8 +174,8 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
 
     @Test(expectedExceptions = {SolverException.class})
     public void testWithUnknownVMs() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5).build();
-        Model mo = new DefaultModel(map);
+        Model mo = new DefaultModel();
+        new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5);
         SatConstraint cstr = mock(SatConstraint.class);
         when(cstr.getInvolvedVMs()).thenReturn(Arrays.asList(vm1, vm2, vm6));
         when(cstr.getInvolvedNodes()).thenReturn(Arrays.asList(n1, vm2, vm7));
@@ -210,11 +214,12 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
         Preserve pMem = new Preserve(new HashSet<>(Arrays.asList(vm1, vm3)), "mem", 2);
 
 
-        Mapping map = new MappingBuilder().on(n1, n2)
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2)
                 .run(n1, vm1)
                 .run(n2, vm3, vm4)
-                .ready(vm2).build();
-        Model mo = new DefaultModel(map);
+                .ready(vm2).get();
+
         mo.attach(cpu);
         mo.attach(mem);
 
@@ -225,7 +230,7 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
                 new Running(Collections.singleton(vm2)),
                 new Ready(Collections.singleton(vm3))));
         Assert.assertNotNull(p);
-        System.out.println(p);
+        //System.out.println(p);
     }
 
 }

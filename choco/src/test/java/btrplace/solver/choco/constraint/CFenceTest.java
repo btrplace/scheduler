@@ -29,7 +29,7 @@ import btrplace.plan.event.MigrateVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.MappingBuilder;
+import btrplace.solver.choco.MappingFiller;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -48,17 +48,17 @@ public class CFenceTest implements PremadeElements {
      */
     @Test
     public void testGetMisPlaced() {
-        Mapping m = new MappingBuilder().on(n1, n2, n3, n4)
+        Model mo = new DefaultModel();
+        Mapping m = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4)
                 .off(n5)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3)
                 .run(n3, vm4)
-                .sleep(n4, vm5).build();
+                .sleep(n4, vm5).get();
 
         Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2));
         Set<Integer> ns = new HashSet<>(Arrays.asList(n1, n2));
         CFence c = new CFence(new Fence(vms, ns));
-        Model mo = new DefaultModel(m);
         Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
         ns.add(vm5);
         Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
@@ -72,11 +72,11 @@ public class CFenceTest implements PremadeElements {
 
     @Test
     public void testBasic() throws SolverException {
-
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
+        Model mo = new DefaultModel();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm4)
                 .run(n2, vm2)
-                .run(n3, vm3).build();
+                .run(n3, vm3).get();
 
         Set<Integer> on = new HashSet<>(Arrays.asList(n1, n3));
         Fence f = new Fence(map.getAllVMs(), on);
@@ -84,7 +84,6 @@ public class CFenceTest implements PremadeElements {
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(f);
         cstrs.add(new Online(map.getAllNodes()));
-        Model mo = new DefaultModel(map);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
         Assert.assertTrue(p.getSize() > 0);

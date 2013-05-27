@@ -17,7 +17,6 @@
 
 package btrplace.plan.event;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -51,8 +50,8 @@ public class KillVMTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testApply() {
-        Mapping map = new DefaultMapping();
-        Model m = new DefaultModel(map);
+        Model m = new DefaultModel();
+        Mapping map = m.getMapping();
         KillVM a = new KillVM(vm1, n1, 3, 5);
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);

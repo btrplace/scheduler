@@ -17,7 +17,6 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -49,10 +48,10 @@ public class BootableNodeModelTest implements PremadeElements {
 
     @Test
     public void testBasic() throws SolverException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOfflineNode(n1);
 
-        Model mo = new DefaultModel(map);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         BootableNodeModel na = (BootableNodeModel) rp.getNodeAction(n1);
         Assert.assertEquals(na.getNode(), n1);
@@ -60,10 +59,10 @@ public class BootableNodeModelTest implements PremadeElements {
 
     @Test
     public void testForcingBoot() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOfflineNode(n1);
 
-        Model mo = new DefaultModel(map);
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(BootNode.class, new ConstantDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
@@ -88,10 +87,10 @@ public class BootableNodeModelTest implements PremadeElements {
 
     @Test
     public void testForcingOffline() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOfflineNode(n1);
 
-        Model mo = new DefaultModel(map);
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(BootNode.class, new ConstantDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
@@ -116,11 +115,11 @@ public class BootableNodeModelTest implements PremadeElements {
 
     @Test
     public void testRequiredOnline() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOfflineNode(n1);
         map.addReadyVM(vm1);
 
-        Model mo = new DefaultModel(map);
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(BootNode.class, new ConstantDuration(5));
         dev.register(BootVM.class, new ConstantDuration(2));
@@ -140,11 +139,11 @@ public class BootableNodeModelTest implements PremadeElements {
 
     @Test
     public void testBootCascade() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOfflineNode(n1);
         map.addOfflineNode(n2);
 
-        Model mo = new DefaultModel(map);
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(BootNode.class, new ConstantDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
@@ -162,9 +161,9 @@ public class BootableNodeModelTest implements PremadeElements {
 
     @Test
     public void testDelayedBooting() throws ContradictionException, SolverException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOfflineNode(n2);
-        Model mo = new DefaultModel(map);
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(BootNode.class, new ConstantDuration(2));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
@@ -186,10 +185,10 @@ public class BootableNodeModelTest implements PremadeElements {
      */
     @Test
     public void testActionDurationSimple() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model model = new DefaultModel();
+        Mapping map = model.getMapping();
         map.addOnlineNode(n1);
         map.addOfflineNode(n4);
-        Model model = new DefaultModel(map);
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(ShutdownNode.class, new ConstantDuration(5));
         dev.register(BootNode.class, new ConstantDuration(3));

@@ -19,6 +19,7 @@ package btrplace.model.constraint.checker;
 
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
+import btrplace.model.MappingUtils;
 import btrplace.model.Model;
 import btrplace.model.constraint.Split;
 import btrplace.plan.event.RunningVMPlacement;
@@ -26,8 +27,6 @@ import btrplace.plan.event.RunningVMPlacement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-;
 
 /**
  * Checker for the {@link btrplace.model.constraint.Split} constraint
@@ -62,8 +61,8 @@ public class SplitChecker extends AllowAllConstraintChecker<Split> {
     @Override
     public boolean endsWith(Model mo) {
         //Catch the booked nodes for each set
-        curMapping = mo.getMapping().clone();
-        mockModel = new DefaultModel(curMapping);
+        mockModel = new DefaultModel();
+        MappingUtils.fill(mo.getMapping(), mockModel.getMapping());
         return checkModel();
     }
 

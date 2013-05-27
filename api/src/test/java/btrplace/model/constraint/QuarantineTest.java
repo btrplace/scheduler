@@ -17,7 +17,6 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -33,8 +32,6 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-;
 
 /**
  * Unit tests for {@link Quarantine}.
@@ -54,7 +51,7 @@ public class QuarantineTest implements PremadeElements {
         Assert.assertFalse(q.setContinuous(false));
         Assert.assertTrue(q.setContinuous(true));
         Assert.assertFalse(q.toString().contains("null"));
-//        Assert.assertEquals(q.isSatisfied(new DefaultModel(new DefaultMapping())), SatConstraint.Sat.UNDEFINED);
+//        Assert.assertEquals(q.isSatisfied(new DefaultModel()), SatConstraint.Sat.UNDEFINED);
         System.out.println(q);
     }
 
@@ -70,7 +67,8 @@ public class QuarantineTest implements PremadeElements {
 
     @Test
     public void testContinuousIsSatisfied() {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addOnlineNode(n3);
@@ -81,7 +79,6 @@ public class QuarantineTest implements PremadeElements {
 
         Quarantine q = new Quarantine(new HashSet<>(Arrays.asList(n1, n2)));
 
-        Model mo = new DefaultModel(map);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(q.isSatisfied(plan), true);
         plan.add(new ShutdownVM(vm2, n2, 1, 2));

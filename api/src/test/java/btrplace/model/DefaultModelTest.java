@@ -37,16 +37,14 @@ public class DefaultModelTest {
 
     @Test
     public void testInstantiate() {
-        Mapping c = new DefaultMapping();
-        Model i = new DefaultModel(c);
-        Assert.assertEquals(i.getMapping(), c);
+        Model i = new DefaultModel();
         Assert.assertTrue(i.getViews().isEmpty());
         Assert.assertNotNull(i.getAttributes());
     }
 
     @Test
     public void testAttachView() {
-        Model i = new DefaultModel(new DefaultMapping());
+        Model i = new DefaultModel();
         ModelView v = mock(ModelView.class);
         when(v.getIdentifier()).thenReturn("mock");
         Assert.assertTrue(i.attach(v));
@@ -69,7 +67,7 @@ public class DefaultModelTest {
 
     @Test(dependsOnMethods = {"testAttachView", "testInstantiate"})
     public void testEqualsAndHashCode() {
-        Model i = new DefaultModel(new DefaultMapping());
+        Model i = new DefaultModel();
         ModelView rc = mock(ModelView.class);
         when(rc.getIdentifier()).thenReturn("foo");
         ModelView b = mock(ModelView.class);
@@ -79,7 +77,7 @@ public class DefaultModelTest {
 
         int u = rnd.nextInt();
         i.getAttributes().put(u, "foo", true);
-        Model j = new DefaultModel(i.getMapping().clone());
+        Model j = i.clone();
         j.getAttributes().put(u, "foo", true);
         j.attach(rc);
         j.attach(b);
@@ -95,7 +93,7 @@ public class DefaultModelTest {
 
     @Test(dependsOnMethods = {"testInstantiate", "testEqualsAndHashCode", "testAttachView", "testDetachView", "testAttributes"})
     public void testClone() {
-        Model i = new DefaultModel(new DefaultMapping());
+        Model i = new DefaultModel();
         ModelView v1 = mock(ModelView.class);
         when(v1.getIdentifier()).thenReturn("foo");
         when(v1.clone()).thenReturn(v1);
@@ -119,7 +117,7 @@ public class DefaultModelTest {
 
     @Test(dependsOnMethods = {"testAttachView", "testInstantiate"})
     public void testDetachView() {
-        Model i = new DefaultModel(new DefaultMapping());
+        Model i = new DefaultModel();
         ModelView v = mock(ModelView.class);
         when(v.getIdentifier()).thenReturn("cpu");
         i.attach(v);
@@ -131,7 +129,7 @@ public class DefaultModelTest {
 
     @Test(dependsOnMethods = {"testAttachView", "testInstantiate"})
     public void testClearViews() {
-        Model i = new DefaultModel(new DefaultMapping());
+        Model i = new DefaultModel();
         ModelView v1 = mock(ModelView.class);
         when(v1.getIdentifier()).thenReturn("cpu");
 
@@ -146,7 +144,7 @@ public class DefaultModelTest {
 
     @Test
     public void testAttributes() {
-        Model i = new DefaultModel(new DefaultMapping());
+        Model i = new DefaultModel();
         Attributes attrs = new DefaultAttributes();
         attrs.put(rnd.nextInt(), "foo", true);
         i.setAttributes(attrs);

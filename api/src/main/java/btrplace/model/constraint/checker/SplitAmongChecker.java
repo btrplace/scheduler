@@ -19,6 +19,7 @@ package btrplace.model.constraint.checker;
 
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
+import btrplace.model.MappingUtils;
 import btrplace.model.Model;
 import btrplace.model.constraint.SplitAmong;
 import btrplace.plan.event.RunningVMPlacement;
@@ -84,8 +85,8 @@ public class SplitAmongChecker extends AllowAllConstraintChecker<SplitAmong> {
     @Override
     public boolean startsWith(Model mo) {
         if (getConstraint().isContinuous()) {
-            Mapping curMapping = mo.getMapping().clone();
-            mockModel = new DefaultModel(curMapping);
+            mockModel = new DefaultModel();
+            MappingUtils.fill(mo.getMapping(), mockModel.getMapping());
             return endsWith(mockModel);
         }
         return true;

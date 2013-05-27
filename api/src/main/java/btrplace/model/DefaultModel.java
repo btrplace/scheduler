@@ -42,30 +42,14 @@ public class DefaultModel implements Model, Cloneable {
     private int nextNode;
 
     /**
-     * Make a new instance using a particular mapping.
-     *
-     * @param m the mapping to use
+     * Make a new instance.
      */
-    public DefaultModel(Mapping m) {
-        this.cfg = m;
+    public DefaultModel() {
         this.resources = new HashMap<>();
         attrs = new DefaultAttributes();
-        nextVM = 1;
-        nextNode = -1;
-        for (int vm : cfg.getAllVMs()) {
-            if (vm > nextVM) {
-                nextVM = vm + 1;
-            }
-        }
-        for (int node : cfg.getAllNodes()) {
-            if (node < nextNode) {
-                nextNode = node - 1;
-            }
-        }
-    }
-
-    public DefaultModel() {
-        this(new DefaultMapping());
+        cfg = new DefaultMapping();
+        nextVM = 0;
+        nextNode = 0;
     }
 
     @Override
@@ -141,7 +125,8 @@ public class DefaultModel implements Model, Cloneable {
 
     @Override
     public Model clone() {
-        Model m = new DefaultModel(cfg.clone());
+        DefaultModel m = new DefaultModel();
+        m.cfg = cfg.clone();
         for (ModelView rc : resources.values()) {
             m.attach(rc.clone());
         }
@@ -167,16 +152,16 @@ public class DefaultModel implements Model, Cloneable {
     @Override
     public int newVM() {
         if (nextVM < 0) {
-            return 0;
+            return -1;
         }
         return nextVM++;
     }
 
     @Override
     public int newNode() {
-        if (nextNode >= 0) {
-            return 0;
+        if (nextNode < 0) {
+            return -1;
         }
-        return nextNode--;
+        return nextNode++;
     }
 }

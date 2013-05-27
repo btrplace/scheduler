@@ -17,7 +17,6 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -28,8 +27,6 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-;
 
 /**
  * Unit tests for {@link Killed}.
@@ -63,10 +60,10 @@ public class KilledTest implements PremadeElements {
 
     @Test
     public void testIsSatisfied() {
-        Mapping c = new DefaultMapping();
+        Model i = new DefaultModel();
+        Mapping c = i.getMapping();
         Set<Integer> s = new HashSet<>(Arrays.asList(vm1, vm2));
         Killed d = new Killed(s);
-        Model i = new DefaultModel(c);
         Assert.assertEquals(d.isSatisfied(i), true);
         c.addReadyVM(vm1);
         Assert.assertEquals(d.isSatisfied(i), false);
