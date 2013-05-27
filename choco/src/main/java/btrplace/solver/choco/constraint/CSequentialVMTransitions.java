@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -56,10 +55,10 @@ public class CSequentialVMTransitions implements ChocoSatConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        List<UUID> seq = cstr.getInvolvedVMs();
+        List<Integer> seq = cstr.getInvolvedVMs();
 
         List<ActionModel> ams = new ArrayList<>();
-        for (UUID vmId : seq) {
+        for (int vmId : seq) {
             ActionModel am = rp.getVMAction(vmId);
 
             //Avoid VMs with no action model or ActionModel that do not denotes a state transition
@@ -83,7 +82,7 @@ public class CSequentialVMTransitions implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
+    public Set<Integer> getMisPlacedVMs(Model m) {
         return Collections.emptySet();
     }
 

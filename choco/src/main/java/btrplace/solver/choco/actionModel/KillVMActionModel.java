@@ -26,7 +26,6 @@ import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.UUID;
 
 /**
  * An action to model a VM that is killed.
@@ -44,9 +43,9 @@ import java.util.UUID;
  */
 public class KillVMActionModel implements VMActionModel {
 
-    private UUID vm;
+    private int vm;
 
-    private UUID node;
+    private int node;
 
     private IntDomainVar state;
 
@@ -63,7 +62,7 @@ public class KillVMActionModel implements VMActionModel {
      * @param e  the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public KillVMActionModel(ReconfigurationProblem rp, UUID e) throws SolverException {
+    public KillVMActionModel(ReconfigurationProblem rp, int e) throws SolverException {
         vm = e;
         Mapping map = rp.getSourceModel().getMapping();
         node = map.getVMLocation(vm);
@@ -112,7 +111,7 @@ public class KillVMActionModel implements VMActionModel {
     }
 
     @Override
-    public UUID getVM() {
+    public int getVM() {
         return vm;
     }
 

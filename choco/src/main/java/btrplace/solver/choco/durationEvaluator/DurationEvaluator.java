@@ -19,7 +19,6 @@ package btrplace.solver.choco.durationEvaluator;
 
 import btrplace.model.Model;
 
-import java.util.UUID;
 
 /**
  * Interface to specify the duration evaluator for a possible action on an element.
@@ -35,5 +34,5 @@ public interface DurationEvaluator {
      * @param e  the element
      * @return a positive integer
      */
-    int evaluate(Model mo, UUID e);
+    int evaluate(Model mo, int e);
 }

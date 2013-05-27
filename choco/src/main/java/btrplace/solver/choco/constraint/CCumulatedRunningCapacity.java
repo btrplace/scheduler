@@ -58,7 +58,7 @@ public class CCumulatedRunningCapacity implements ChocoSatConstraint {
             } else {
                 int[] alias = new int[cstr.getInvolvedNodes().size()];
                 int i = 0;
-                for (UUID n : cstr.getInvolvedNodes()) {
+                for (int n : cstr.getInvolvedNodes()) {
                     alias[i++] = rp.getNodeIdx(n);
                 }
                 int[] cUse = new int[rp.getSourceModel().getMapping().getRunningVMs().size()];
@@ -69,7 +69,7 @@ public class CCumulatedRunningCapacity implements ChocoSatConstraint {
             }
         }
         List<IntDomainVar> vs = new ArrayList<>();
-        for (UUID u : cstr.getInvolvedNodes()) {
+        for (int u : cstr.getInvolvedNodes()) {
             vs.add(rp.getNbRunningVMs()[rp.getNodeIdx(u)]);
         }
         //Try to get a lower bound
@@ -84,14 +84,14 @@ public class CCumulatedRunningCapacity implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
+    public Set<Integer> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-        Set<UUID> bad = new HashSet<>();
+        Set<Integer> bad = new HashSet<>();
         int remainder = cstr.getAmount();
-        for (UUID n : cstr.getInvolvedNodes()) {
+        for (int n : cstr.getInvolvedNodes()) {
             remainder -= map.getRunningVMs(n).size();
             if (remainder < 0) {
-                for (UUID n2 : cstr.getInvolvedNodes()) {
+                for (int n2 : cstr.getInvolvedNodes()) {
                     bad.addAll(map.getRunningVMs(n2));
                 }
                 return bad;

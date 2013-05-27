@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,7 +20,6 @@ package btrplace.solver.choco;
 import btrplace.model.DefaultMapping;
 import btrplace.model.Mapping;
 
-import java.util.UUID;
 
 /**
  * Unsafe but quick tool to create mappings.
@@ -36,8 +34,8 @@ public class MappingBuilder {
         map = new DefaultMapping();
     }
 
-    public MappingBuilder run(UUID n, UUID... vms) {
-        for (UUID vm : vms) {
+    public MappingBuilder run(int n, int... vms) {
+        for (int vm : vms) {
             if (!map.addRunningVM(vm, n)) {
                 System.err.println("Unable to set '" + vm + "' running. Is '" + n + "' online ?");
             }
@@ -45,8 +43,8 @@ public class MappingBuilder {
         return this;
     }
 
-    public MappingBuilder sleep(UUID n, UUID... vms) {
-        for (UUID vm : vms) {
+    public MappingBuilder sleep(int n, int... vms) {
+        for (int vm : vms) {
             if (!map.addSleepingVM(vm, n)) {
                 System.err.println("Unable to set '" + vm + "' running. Is '" + n + "' online ?");
             }
@@ -54,22 +52,22 @@ public class MappingBuilder {
         return this;
     }
 
-    public MappingBuilder ready(UUID... vms) {
-        for (UUID vm : vms) {
+    public MappingBuilder ready(int... vms) {
+        for (int vm : vms) {
             map.addReadyVM(vm);
         }
         return this;
     }
 
-    public MappingBuilder on(UUID... nodes) {
-        for (UUID n : nodes) {
+    public MappingBuilder on(int... nodes) {
+        for (int n : nodes) {
             map.addOnlineNode(n);
         }
         return this;
     }
 
-    public MappingBuilder off(UUID... nodes) {
-        for (UUID n : nodes) {
+    public MappingBuilder off(int... nodes) {
+        for (int n : nodes) {
             if (!map.addOfflineNode(n)) {
                 System.err.println("Unable to set '" + n + "' offline. Is it hosting VMs ?");
             }

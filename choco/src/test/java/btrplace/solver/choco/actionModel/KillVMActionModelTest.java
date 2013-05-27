@@ -36,7 +36,7 @@ import org.testng.annotations.Test;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Unit tests for {@link KillVMActionModel}.
@@ -61,7 +61,7 @@ public class KillVMActionModelTest implements PremadeElements {
         map.addSleepingVM(vm3, n1);
 
         Model mo = new DefaultModel(map);
-        Set<UUID> empty = new HashSet<>();
+        Set<Integer> empty = new HashSet<>();
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(KillVM.class, new ConstantDuration(1));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables()
@@ -70,7 +70,7 @@ public class KillVMActionModelTest implements PremadeElements {
 
         rp.getNodeAction(n1).getState().setVal(1);
         //Common stuff
-        for (UUID vm : map.getAllVMs()) {
+        for (int vm : map.getAllVMs()) {
             KillVMActionModel m = (KillVMActionModel) rp.getVMAction(vm);
             Assert.assertEquals(vm, m.getVM());
             Assert.assertTrue(m.getState().isInstantiatedTo(0));
@@ -94,10 +94,10 @@ public class KillVMActionModelTest implements PremadeElements {
             KillVM vma = (KillVM) a;
             Assert.assertEquals(1, a.getEnd());
             Assert.assertEquals(0, a.getStart());
-            if (vma.getVM().equals(vm1) || vma.getVM().equals(vm3)) {
+            if (vma.getVM() == vm1 || vma.getVM() == vm3) {
                 Assert.assertEquals(n1, vma.getNode());
-            } else if (vma.getVM().equals(vm2)) {
-                Assert.assertNull(vma.getNode());
+            } else if (vma.getVM() == vm2) {
+                Assert.assertEquals(vma.getNode(), -1);
             } else {
                 Assert.fail();
             }

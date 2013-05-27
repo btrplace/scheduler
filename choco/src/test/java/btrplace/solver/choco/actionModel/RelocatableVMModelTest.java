@@ -48,7 +48,7 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
+
 
 /**
  * Unit tests for {@link RelocatableVMModel}.
@@ -68,7 +68,7 @@ public class RelocatableVMModelTest implements PremadeElements {
         dev.register(MigrateVM.class, new ConstantDuration(5));
         Model mo = new DefaultModel(map);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<UUID>emptySet(), map.getAllVMs(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setNextVMsStates(Collections.<Integer>emptySet(), map.getAllVMs(), Collections.<Integer>emptySet(), Collections.<Integer>emptySet())
                 .setDurationEvaluatators(dev)
                 .labelVariables()
                 .build();
@@ -117,7 +117,7 @@ public class RelocatableVMModelTest implements PremadeElements {
         dev.register(MigrateVM.class, new ConstantDuration(5));
         Model mo = new DefaultModel(map);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<UUID>emptySet(), map.getAllVMs(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setNextVMsStates(Collections.<Integer>emptySet(), map.getAllVMs(), Collections.<Integer>emptySet(), Collections.<Integer>emptySet())
                 .setDurationEvaluatators(dev)
                 .build();
         rp.getNodeActions()[0].getState().setVal(1);
@@ -187,7 +187,7 @@ public class RelocatableVMModelTest implements PremadeElements {
         mo.getAttributes().put(vm1, "template", "small");
         mo.getAttributes().put(vm1, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<UUID>emptySet(), map.getAllVMs(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setNextVMsStates(Collections.<Integer>emptySet(), map.getAllVMs(), Collections.<Integer>emptySet(), Collections.<Integer>emptySet())
                 .setDurationEvaluatators(dev)
                 .labelVariables()
                 .build();
@@ -206,7 +206,7 @@ public class RelocatableVMModelTest implements PremadeElements {
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
-        map.addRunningVM(vm10, n1); //Not using vm1 because UUIDPool starts at 0 so their will be multiple (0,1) VMs.
+        map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(MigrateVM.class, new ConstantDuration(20));
         dev.register(ForgeVM.class, new ConstantDuration(3));
@@ -217,7 +217,7 @@ public class RelocatableVMModelTest implements PremadeElements {
         mo.getAttributes().put(vm10, "template", "small");
         mo.getAttributes().put(vm10, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<UUID>emptySet(), map.getAllVMs(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setNextVMsStates(Collections.<Integer>emptySet(), map.getAllVMs(), Collections.<Integer>emptySet(), Collections.<Integer>emptySet())
                 .setDurationEvaluatators(dev)
                 .labelVariables()
                 .setManageableVMs(map.getAllVMs())
@@ -248,7 +248,7 @@ public class RelocatableVMModelTest implements PremadeElements {
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
-        map.addRunningVM(vm10, n1); //Not using vm1 because UUIDPool starts at 0 so their will be multiple (0,1) VMs.
+        map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(MigrateVM.class, new ConstantDuration(2));
         dev.register(ForgeVM.class, new ConstantDuration(3));
@@ -259,7 +259,7 @@ public class RelocatableVMModelTest implements PremadeElements {
         mo.getAttributes().put(vm10, "template", "small");
         mo.getAttributes().put(vm10, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<UUID>emptySet(), map.getAllVMs(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setNextVMsStates(Collections.<Integer>emptySet(), map.getAllVMs(), Collections.<Integer>emptySet(), Collections.<Integer>emptySet())
                 .setDurationEvaluatators(dev)
                 .labelVariables()
                 .setManageableVMs(map.getAllVMs())
@@ -284,7 +284,7 @@ public class RelocatableVMModelTest implements PremadeElements {
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
-        map.addRunningVM(vm10, n1); //Not using vm1 because UUIDPool starts at 0 so their will be multiple (0,1) VMs.
+        map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(MigrateVM.class, new ConstantDuration(20));
         dev.register(ForgeVM.class, new ConstantDuration(3));
@@ -295,7 +295,7 @@ public class RelocatableVMModelTest implements PremadeElements {
         mo.getAttributes().put(vm10, "template", "small");
         mo.getAttributes().put(vm10, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<UUID>emptySet(), map.getAllVMs(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setNextVMsStates(Collections.<Integer>emptySet(), map.getAllVMs(), Collections.<Integer>emptySet(), Collections.<Integer>emptySet())
                 .setDurationEvaluatators(dev)
                 .labelVariables()
                 .setManageableVMs(map.getAllVMs())
@@ -321,7 +321,7 @@ public class RelocatableVMModelTest implements PremadeElements {
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
-        map.addRunningVM(vm10, n1); //Not using vm1 because UUIDPool starts at 0 so their will be multiple (0,1) VMs.
+        map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(MigrateVM.class, new ConstantDuration(20));
         dev.register(ForgeVM.class, new ConstantDuration(3));
@@ -332,7 +332,7 @@ public class RelocatableVMModelTest implements PremadeElements {
         mo.getAttributes().put(vm10, "template", "small");
         mo.getAttributes().put(vm10, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<UUID>emptySet(), map.getAllVMs(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setNextVMsStates(Collections.<Integer>emptySet(), map.getAllVMs(), Collections.<Integer>emptySet(), Collections.<Integer>emptySet())
                 .setDurationEvaluatators(dev)
                 .labelVariables()
                 .setManageableVMs(map.getAllVMs())
@@ -370,7 +370,7 @@ public class RelocatableVMModelTest implements PremadeElements {
 
         Model mo = new DefaultModel(map);
 
-        for (UUID vm : map.getAllVMs()) {
+        for (int vm : map.getAllVMs()) {
             mo.getAttributes().put(vm, "template", "small");
             mo.getAttributes().put(vm, "clone", true);
         }

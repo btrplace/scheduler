@@ -51,7 +51,7 @@ public class CGather implements ChocoSatConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) {
         List<Slice> dSlices = new ArrayList<>();
-        for (UUID vm : cstr.getInvolvedVMs()) {
+        for (int vm : cstr.getInvolvedVMs()) {
             VMActionModel a = rp.getVMAction(vm);
             Slice dSlice = a.getDSlice();
             if (dSlice != null) {
@@ -61,19 +61,19 @@ public class CGather implements ChocoSatConstraint {
         if (cstr.isContinuous()) {
             //Check for the already running VMs
             Mapping map = rp.getSourceModel().getMapping();
-            UUID loc = null;
-            for (UUID vm : cstr.getInvolvedVMs()) {
+            int loc = -1;
+            for (int vm : cstr.getInvolvedVMs()) {
                 if (map.getRunningVMs().contains(vm)) {
-                    UUID node = map.getVMLocation(vm);
-                    if (loc == null) {
+                    int node = map.getVMLocation(vm);
+                    if (loc == -1) {
                         loc = node;
-                    } else if (!loc.equals(node)) {
+                    } else if (loc != node) {
                         rp.getLogger().error("Some VMs in '{}' are already running but not co-located", cstr.getInvolvedVMs());
                         return false;
                     }
                 }
             }
-            if (loc != null) {
+            if (loc >= 0) {
                 return placeDSlices(rp, dSlices, rp.getNodeIdx(loc));
             } else {
                 return forceDiscreteCollocation(rp, dSlices);
@@ -131,7 +131,7 @@ public class CGather implements ChocoSatConstraint {
 
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
+    public Set<Integer> getMisPlacedVMs(Model m) {
         if (!cstr.isSatisfied(m)) {
             return new HashSet<>(cstr.getInvolvedVMs());
         }

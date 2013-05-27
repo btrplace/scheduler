@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,8 +20,8 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Fence;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Split;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
@@ -42,16 +41,16 @@ import java.util.*;
  */
 public class CSplitTest implements PremadeElements {
 
-    private static Set<UUID> g1 = new HashSet<>(Arrays.asList(vm1, vm2));
-    private static Set<UUID> g2 = new HashSet<>(Arrays.asList(vm3, vm4, vm5));
-    private static Set<UUID> g3 = new HashSet<>(Arrays.asList(vm6, vm7));
+    private static Set<Integer> g1 = new HashSet<>(Arrays.asList(vm1, vm2));
+    private static Set<Integer> g2 = new HashSet<>(Arrays.asList(vm3, vm4, vm5));
+    private static Set<Integer> g3 = new HashSet<>(Arrays.asList(vm6, vm7));
 
-    private static Set<Set<UUID>> grps = new HashSet<>(Arrays.asList(g1, g2, g3));
+    private static Set<Set<Integer>> grps = new HashSet<>(Arrays.asList(g1, g2, g3));
 
     @Test
     public void testGetMisplaced() {
 
-        Set<Set<UUID>> grps = new HashSet<>(Arrays.asList(g1, g2, g3));
+        Set<Set<Integer>> grps = new HashSet<>(Arrays.asList(g1, g2, g3));
 
         Mapping map = new MappingBuilder().on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm2)
@@ -67,7 +66,7 @@ public class CSplitTest implements PremadeElements {
         Assert.assertTrue(cs.getMisPlacedVMs(mo).isEmpty());
 
         map.addRunningVM(vm5, n1);
-        Set<UUID> bad = cs.getMisPlacedVMs(mo);
+        Set<Integer> bad = cs.getMisPlacedVMs(mo);
         Assert.assertEquals(bad.size(), 3);
 
         Assert.assertTrue(bad.contains(vm1) && bad.contains(vm2) && bad.contains(vm5));

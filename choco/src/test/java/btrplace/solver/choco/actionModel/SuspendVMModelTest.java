@@ -37,7 +37,7 @@ import org.testng.annotations.Test;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.UUID;
+
 
 /**
  * Unit tests for {@link SuspendVMModel}.
@@ -58,7 +58,7 @@ public class SuspendVMModelTest implements PremadeElements {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
-                .setNextVMsStates(new HashSet<UUID>(), new HashSet<UUID>(), map.getAllVMs(), new HashSet<UUID>())
+                .setNextVMsStates(new HashSet<Integer>(), new HashSet<Integer>(), map.getAllVMs(), new HashSet<Integer>())
                 .build();
         rp.getNodeActions()[0].getState().setVal(1);
         SuspendVMModel m = (SuspendVMModel) rp.getVMActions()[0];
@@ -93,7 +93,7 @@ public class SuspendVMModelTest implements PremadeElements {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
-                .setNextVMsStates(new HashSet<UUID>(), new HashSet<UUID>(), map.getAllVMs(), new HashSet<UUID>())
+                .setNextVMsStates(new HashSet<Integer>(), new HashSet<Integer>(), map.getAllVMs(), new HashSet<Integer>())
                 .build();
         SuspendVMModel m1 = (SuspendVMModel) rp.getVMActions()[rp.getVMIdx(vm1)];
         SuspendVMModel m2 = (SuspendVMModel) rp.getVMActions()[rp.getVMIdx(vm2)];

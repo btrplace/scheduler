@@ -30,7 +30,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
-import java.util.UUID;
+
 
 /**
  * A heuristic that first focus on scheduling the VMs
@@ -47,7 +47,7 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
 
     private IntDomainVar[] starts;
 
-    private List<UUID> vms;
+    private List<Integer> vms;
 
     private int[] oldPos;
 
@@ -98,9 +98,9 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
                 if (s != rp.getEnd()) {
                     starts[i] = s;
                 }
-                UUID vm = action.getVM();
-                UUID n = cfg.getVMLocation(vm);
-                if (n == null) {
+                int vm = action.getVM();
+                int n = cfg.getVMLocation(vm);
+                if (n < 0) {
                     oldPos[i] = -1;
                 } else {
                     oldPos[i] = rp.getNodeIdx(n);
@@ -196,8 +196,8 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
         for (int i = firstFree.get(); i < starts.length; i++) {
             IntDomainVar v = starts[i];
             if (i < vms.size() - 1) {
-                UUID vm = vms.get(i);
-                if (vm != null && v != null) {
+                int vm = vms.get(i);
+                if (vm >= 0 && v != null) {
                     if (!v.isInstantiated()) {
                         if (best == null || best.getInf() < v.getInf()) {
                             best = v;

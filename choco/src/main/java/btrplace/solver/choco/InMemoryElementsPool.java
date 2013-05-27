@@ -20,62 +20,52 @@ package btrplace.solver.choco;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
-import java.util.UUID;
+
 
 /**
- * A in-memory implementation of {@link UUIDPool}.
- * UUIDs are generated in the ascending order.
+ * A in-memory implementation of {@link ElementPool}.
+ * ints are generated in the ascending order.
  *
  * @author Fabien Hermenier
  */
-public class InMemoryUUIDPool implements UUIDPool {
+public class InMemoryElementsPool implements ElementPool {
 
-    private final Stack<UUID> available;
+    private final Stack<Integer> available;
 
-    private long nextHi;
-
-    private long nextLow;
+    private int next;
 
     private long free;
 
-    private final Set<UUID> used = new HashSet<>();
+    private final Set<Integer> used = new HashSet<>();
 
     public static final long DEFAULT_SIZE = Long.MAX_VALUE;
 
     /**
      * Make a new pool with a default size of {@link #DEFAULT_SIZE}
      */
-    public InMemoryUUIDPool() {
+    public InMemoryElementsPool() {
         this(DEFAULT_SIZE);
     }
 
     /**
      * Make a new pool of element.
      */
-    public InMemoryUUIDPool(long s) {
+    public InMemoryElementsPool(long s) {
         free = s;
-        nextHi = 0;
-        nextLow = 0;
+        next = 0;
         available = new Stack<>();
     }
 
     @Override
-    public UUID request() {
+    public int request() {
         synchronized (used) {
             if (free <= 0) {
-                return null;
+                return -1;
             }
-            UUID r;
+            int r;
             if (available.isEmpty()) {
-                nextLow = (nextLow + 1) % Long.MAX_VALUE;
-                if (nextLow == 0) {
-                    nextHi++;
-                    if (nextHi < 0) {
-                        return null;
-                    }
-                }
-                free--;
-                r = new UUID(nextHi, nextLow);
+                next++;
+                return next;
             } else {
                 free--;
                 r = available.pop();
@@ -86,7 +76,7 @@ public class InMemoryUUIDPool implements UUIDPool {
     }
 
     @Override
-    public boolean release(UUID u) {
+    public boolean release(int u) {
         synchronized (used) {
             if (used.contains(u)) {
                 free++;
@@ -98,12 +88,12 @@ public class InMemoryUUIDPool implements UUIDPool {
     }
 
     @Override
-    public boolean inUse(UUID u) {
+    public boolean inUse(int u) {
         return used.contains(u);
     }
 
     @Override
-    public boolean book(UUID u) {
+    public boolean book(int u) {
         return used.add(u);
     }
 }

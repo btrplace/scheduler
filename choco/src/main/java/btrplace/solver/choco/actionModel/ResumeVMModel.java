@@ -27,7 +27,6 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.UUID;
 
 /**
  * Model an action that resume a sleeping VM.
@@ -42,7 +41,7 @@ import java.util.UUID;
  */
 public class ResumeVMModel implements VMActionModel {
 
-    private UUID vm;
+    private int vm;
 
     private ReconfigurationProblem rp;
 
@@ -63,7 +62,7 @@ public class ResumeVMModel implements VMActionModel {
      * @param e  the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public ResumeVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
+    public ResumeVMModel(ReconfigurationProblem rp, int e) throws SolverException {
         this.rp = rp;
         this.vm = e;
 
@@ -85,15 +84,15 @@ public class ResumeVMModel implements VMActionModel {
     public boolean insertActions(ReconfigurationPlan plan) {
         int ed = end.getVal();
         int st = start.getVal();
-        UUID src = rp.getSourceModel().getMapping().getVMLocation(vm);
-        UUID dst = rp.getNode(dSlice.getHoster().getVal());
+        int src = rp.getSourceModel().getMapping().getVMLocation(vm);
+        int dst = rp.getNode(dSlice.getHoster().getVal());
         ResumeVM a = new ResumeVM(vm, src, dst, st, ed);
         plan.add(a);
         return true;
     }
 
     @Override
-    public UUID getVM() {
+    public int getVM() {
         return vm;
     }
 

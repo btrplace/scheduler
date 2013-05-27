@@ -20,7 +20,6 @@ package btrplace.solver.choco.durationEvaluator;
 import btrplace.model.Model;
 import btrplace.model.view.ShareableResource;
 
-import java.util.UUID;
 
 /**
  * Evaluate the duration of an action on an element linearly from a given resource.
@@ -63,7 +62,7 @@ public class LinearToAResourceDuration implements DurationEvaluator {
     }
 
     @Override
-    public int evaluate(Model mo, UUID e) {
+    public int evaluate(Model mo, int e) {
         ShareableResource r = (ShareableResource) mo.getView(ShareableResource.VIEW_ID_BASE + rc);
         if (r == null) {
             return -1;

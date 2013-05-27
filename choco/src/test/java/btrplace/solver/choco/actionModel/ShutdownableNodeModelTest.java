@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -39,7 +38,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Collections;
-import java.util.UUID;
+
 
 /**
  * Unit tests for {@link ShutdownableNodeModel}.
@@ -134,7 +133,7 @@ public class ShutdownableNodeModelTest implements PremadeElements {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
-                .setNextVMsStates(Collections.singleton(vm1), Collections.<UUID>emptySet(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setNextVMsStates(Collections.singleton(vm1), Collections.<Integer>emptySet(), Collections.<Integer>emptySet(), Collections.<Integer>emptySet())
                 .build();
         ShutdownableNodeModel ma = (ShutdownableNodeModel) rp.getNodeAction(n1);
         ma.getState().setVal(0);
@@ -199,7 +198,7 @@ public class ShutdownableNodeModelTest implements PremadeElements {
         dev.register(ShutdownVM.class, new ConstantDuration(2));
         dev.register(ShutdownNode.class, new ConstantDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.singleton(vm1), Collections.<UUID>emptySet(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setNextVMsStates(Collections.singleton(vm1), Collections.<Integer>emptySet(), Collections.<Integer>emptySet(), Collections.<Integer>emptySet())
                 .setDurationEvaluatators(dev)
                 .labelVariables()
                 .build();

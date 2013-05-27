@@ -27,7 +27,6 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.UUID;
 
 /**
  * Model an action that boot a VM in the ready state.
@@ -50,7 +49,7 @@ public class BootVMModel implements VMActionModel {
 
     private IntDomainVar duration;
 
-    private UUID vm;
+    private int vm;
 
     private ReconfigurationProblem rp;
 
@@ -63,7 +62,7 @@ public class BootVMModel implements VMActionModel {
      * @param e  the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public BootVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
+    public BootVMModel(ReconfigurationProblem rp, int e) throws SolverException {
         vm = e;
 
         int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), BootVM.class, e);
@@ -84,7 +83,7 @@ public class BootVMModel implements VMActionModel {
 
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
-        UUID node = rp.getNode(dSlice.getHoster().getVal());
+        int node = rp.getNode(dSlice.getHoster().getVal());
         BootVM a = new BootVM(vm, node, start.getVal(), end.getVal());
         plan.add(a);
         return true;
@@ -121,7 +120,7 @@ public class BootVMModel implements VMActionModel {
     }
 
     @Override
-    public UUID getVM() {
+    public int getVM() {
         return vm;
     }
 

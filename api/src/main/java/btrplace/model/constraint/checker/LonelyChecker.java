@@ -57,7 +57,7 @@ public class LonelyChecker extends AllowAllConstraintChecker<Lonely> {
                     //So it must be private
                     return privateNodes.add(n);
                 }
-                //The node is now longer idle, just private
+                //The node is no longer idle, just private
                 return privateNodes.add(n);
             } else {
                 //Not tracked, so just don't go on a private node

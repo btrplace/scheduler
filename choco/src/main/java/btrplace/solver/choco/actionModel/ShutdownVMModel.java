@@ -26,7 +26,6 @@ import btrplace.solver.choco.SliceBuilder;
 import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.UUID;
 
 /**
  * Model an action that stop a running VM.
@@ -43,7 +42,7 @@ public class ShutdownVMModel implements VMActionModel {
 
     private ReconfigurationProblem rp;
 
-    private UUID vm;
+    private int vm;
 
     private IntDomainVar duration;
 
@@ -60,7 +59,7 @@ public class ShutdownVMModel implements VMActionModel {
      * @param e  the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public ShutdownVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
+    public ShutdownVMModel(ReconfigurationProblem rp, int e) throws SolverException {
         this.rp = rp;
         this.vm = e;
 
@@ -84,7 +83,7 @@ public class ShutdownVMModel implements VMActionModel {
     }
 
     @Override
-    public UUID getVM() {
+    public int getVM() {
         return vm;
     }
 

@@ -23,7 +23,7 @@ import btrplace.solver.SolverException;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
+
 
 /**
  * Class to store the {@link DurationEvaluator} associated to each of the possible actions.
@@ -107,7 +107,7 @@ public class DurationEvaluators {
      * @param e  the element
      * @return a positive number if the evaluation succeeded. A negative number otherwise
      */
-    public int evaluate(Model mo, Class<? extends Action> a, UUID e) throws SolverException {
+    public int evaluate(Model mo, Class<? extends Action> a, int e) throws SolverException {
         DurationEvaluator ev = durations.get(a);
         if (ev == null) {
             throw new SolverException(null, "Unable to estimate the action duration related to '" + e + "'");

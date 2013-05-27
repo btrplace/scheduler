@@ -31,7 +31,10 @@ import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntArrayList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Choco implementation of the {@link btrplace.model.constraint.Split} constraint.
@@ -54,11 +57,11 @@ public class CSplit implements ChocoSatConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
         List<List<IntDomainVar>> groups = new ArrayList<>();
-        List<List<UUID>> vmGroups = new ArrayList<>();
-        for (Set<UUID> grp : cstr.getSets()) {
+        List<List<Integer>> vmGroups = new ArrayList<>();
+        for (Set<Integer> grp : cstr.getSets()) {
             List<IntDomainVar> l = new ArrayList<>();
-            List<UUID> vl = new ArrayList<>();
-            for (UUID vm : grp) {
+            List<Integer> vl = new ArrayList<>();
+            for (int vm : grp) {
                 if (rp.getFutureRunningVMs().contains(vm)) {
                     Slice s = rp.getVMAction(vm).getDSlice();
                     l.add(s.getHoster());
@@ -110,8 +113,8 @@ public class CSplit implements ChocoSatConstraint {
 
                 //Fulfill the others stuff.
                 for (int i = 0; i < vmGroups.size(); i++) {
-                    List<UUID> grp = vmGroups.get(i);
-                    for (UUID vm : grp) {
+                    List<Integer> grp = vmGroups.get(i);
+                    for (int vm : grp) {
                         if (map.getRunningVMs().contains(vm)) {
                             int myPos = rp.getNodeIdx(map.getVMLocation(vm));
                             IntDomainVar myEnd = rp.getVMAction(vm).getCSlice().getEnd();
@@ -134,8 +137,8 @@ public class CSplit implements ChocoSatConstraint {
 
                 //Now, we just have to put way too many precedences constraint, one per VM.
                 for (int i = 0; i < vmGroups.size(); i++) {
-                    List<UUID> grp = vmGroups.get(i);
-                    for (UUID vm : grp) {
+                    List<Integer> grp = vmGroups.get(i);
+                    for (int vm : grp) {
                         if (rp.getFutureRunningVMs().contains(vm)) {
                             VMActionModel a = rp.getVMAction(vm);
                             IntDomainVar myPos = a.getDSlice().getHoster();
@@ -150,17 +153,17 @@ public class CSplit implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
+    public Set<Integer> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-        List<Set<UUID>> groups = new ArrayList<>(cstr.getSets());
+        List<Set<Integer>> groups = new ArrayList<>(cstr.getSets());
         //Bad contains the VMs on nodes that host VMs from different groups.
-        Set<UUID> bad = new HashSet<>();
-        for (Set<UUID> grp : groups) {
-            for (UUID vm : grp) {
+        Set<Integer> bad = new HashSet<>();
+        for (Set<Integer> grp : groups) {
+            for (int vm : grp) {
                 if (map.getRunningVMs().contains(vm)) {
-                    UUID n = map.getVMLocation(vm);
-                    Set<UUID> allOnN = map.getRunningVMs(n);
-                    for (UUID vmOnN : allOnN) {
+                    int n = map.getVMLocation(vm);
+                    Set<Integer> allOnN = map.getRunningVMs(n);
+                    for (int vmOnN : allOnN) {
                         if (inOtherGroup(groups, grp, vmOnN)) {
                             //The VM belong to another group
                             bad.add(vm);
@@ -173,8 +176,8 @@ public class CSplit implements ChocoSatConstraint {
         return bad;
     }
 
-    private boolean inOtherGroup(List<Set<UUID>> groups, Set<UUID> grp, UUID vmOnN) {
-        for (Set<UUID> s : groups) {
+    private boolean inOtherGroup(List<Set<Integer>> groups, Set<Integer> grp, int vmOnN) {
+        for (Set<Integer> s : groups) {
             if (s.contains(vmOnN) && !grp.contains(vmOnN)) {
                 return true;
             }

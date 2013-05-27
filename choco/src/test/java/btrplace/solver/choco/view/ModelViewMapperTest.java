@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -26,7 +25,6 @@ import btrplace.solver.choco.ReconfigurationProblem;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.UUID;
 
 /**
  * Unit tests for {@link btrplace.solver.choco.view.ModelViewMapper}.
@@ -86,7 +84,7 @@ public class ModelViewMapperTest {
         }
 
         @Override
-        public boolean cloneVM(UUID vm, UUID clone) {
+        public boolean cloneVM(int vm, int clone) {
             throw new UnsupportedOperationException();
         }
     }
@@ -116,7 +114,7 @@ public class ModelViewMapperTest {
         }
 
         @Override
-        public boolean substitute(UUID curId, UUID nextId) {
+        public boolean substitute(int curId, int nextId) {
             throw new UnsupportedOperationException();
         }
     }

@@ -27,7 +27,6 @@ import choco.cp.solver.constraints.integer.ElementV;
 import choco.cp.solver.constraints.integer.TimesXYZ;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.UUID;
 
 /**
  * Model an action that allows a node to be booted if necessary.
@@ -95,7 +94,7 @@ public class BootableNodeModel implements NodeActionModel {
 
     private IntDomainVar effectiveDuration;
 
-    private UUID node;
+    private int node;
 
     /**
      * Make a new model.
@@ -104,7 +103,7 @@ public class BootableNodeModel implements NodeActionModel {
      * @param nId the node managed by the action
      * @throws SolverException if an error occurred
      */
-    public BootableNodeModel(ReconfigurationProblem rp, UUID nId) throws SolverException {
+    public BootableNodeModel(ReconfigurationProblem rp, int nId) throws SolverException {
         node = nId;
 
         int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), BootNode.class, nId);
@@ -176,7 +175,7 @@ public class BootableNodeModel implements NodeActionModel {
     }
 
     @Override
-    public UUID getNode() {
+    public int getNode() {
         return node;
     }
 

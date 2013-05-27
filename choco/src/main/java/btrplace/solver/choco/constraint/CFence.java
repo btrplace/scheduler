@@ -29,7 +29,7 @@ import choco.kernel.solver.ContradictionException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Choco implementation of {@link btrplace.model.constraint.Fence}.
@@ -52,19 +52,19 @@ public class CFence implements ChocoSatConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) {
 
-        Set<UUID> runnings = new HashSet<>();
-        for (UUID vm : cstr.getInvolvedVMs()) {
+        Set<Integer> runnings = new HashSet<>();
+        for (int vm : cstr.getInvolvedVMs()) {
             if (rp.getFutureRunningVMs().contains(vm)) {
                 runnings.add(vm);
             }
         }
-        Collection<UUID> nodes = cstr.getInvolvedNodes();
+        Collection<Integer> nodes = cstr.getInvolvedNodes();
         if (!runnings.isEmpty()) {
             if (nodes.size() == 1) {
                 //Only 1 possible destination node, so we directly instantiate the variable.
-                for (UUID vm : runnings) {
+                for (int vm : runnings) {
                     Slice t = rp.getVMAction(vm).getDSlice();
-                    UUID n = nodes.iterator().next();
+                    int n = nodes.iterator().next();
                     try {
                         t.getHoster().setVal(rp.getNodeIdx(n));
                     } catch (ContradictionException e) {
@@ -74,8 +74,8 @@ public class CFence implements ChocoSatConstraint {
                 }
             } else {
                 //Transformation to a ban constraint that disallow all the other nodes
-                Set<UUID> otherNodes = new HashSet<>(rp.getNodes().length - nodes.size());
-                for (UUID n : rp.getNodes()) {
+                Set<Integer> otherNodes = new HashSet<>(rp.getNodes().length - nodes.size());
+                for (int n : rp.getNodes()) {
                     if (!nodes.contains(n)) {
                         otherNodes.add(n);
                     }
@@ -88,10 +88,10 @@ public class CFence implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
+    public Set<Integer> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-        Set<UUID> bad = new HashSet<>();
-        for (UUID vm : cstr.getInvolvedVMs()) {
+        Set<Integer> bad = new HashSet<>();
+        for (int vm : cstr.getInvolvedVMs()) {
             if (map.getRunningVMs().contains(vm) && !cstr.getInvolvedNodes().contains(map.getVMLocation(vm))) {
                 bad.add(vm);
             }

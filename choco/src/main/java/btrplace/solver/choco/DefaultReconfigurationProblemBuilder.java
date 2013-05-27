@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -27,7 +26,7 @@ import btrplace.solver.choco.view.ModelViewMapper;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Builder to help at the creation of a reconfiguration algorithm.
@@ -36,7 +35,7 @@ import java.util.UUID;
  * <li>Variables are not labelled to save memory</li>
  * <li>All the VMs are manageable</li>
  * <li>The default {@link btrplace.solver.choco.durationEvaluator.DurationEvaluators} is used</li>
- * <li>The {@link UUIDPool} is {@link InMemoryUUIDPool}</li>
+ * <li>The {@link ElementPool} is {@link InMemoryElementsPool}</li>
  * <li>The default {@link btrplace.solver.choco.view.ModelViewMapper} is used</li>
  * <li>The state of the VMs is unchanged</li>
  * </ul>
@@ -53,11 +52,11 @@ public class DefaultReconfigurationProblemBuilder {
 
     private ModelViewMapper viewMapper;
 
-    private Set<UUID> runs, waits, over, sleep;
+    private Set<Integer> runs, waits, over, sleep;
 
-    private Set<UUID> manageable;
+    private Set<Integer> manageable;
 
-    private UUIDPool uuidPool;
+    private ElementPool uuidPool;
 
     /**
      * Make a new builder for a problem working on a given model.
@@ -79,12 +78,12 @@ public class DefaultReconfigurationProblemBuilder {
     }
 
     /**
-     * Set the pool of UUIDs to use.
+     * Set the pool of ints to use.
      *
      * @param p the pool to use
      * @return the current builder
      */
-    public DefaultReconfigurationProblemBuilder setUUIDPool(UUIDPool p) {
+    public DefaultReconfigurationProblemBuilder setintPool(ElementPool p) {
         this.uuidPool = p;
         return this;
     }
@@ -121,10 +120,10 @@ public class DefaultReconfigurationProblemBuilder {
      * @param killed    the VMs to kill
      * @return the current builder
      */
-    public DefaultReconfigurationProblemBuilder setNextVMsStates(Set<UUID> ready,
-                                                                 Set<UUID> runnings,
-                                                                 Set<UUID> sleepings,
-                                                                 Set<UUID> killed) {
+    public DefaultReconfigurationProblemBuilder setNextVMsStates(Set<Integer> ready,
+                                                                 Set<Integer> runnings,
+                                                                 Set<Integer> sleepings,
+                                                                 Set<Integer> killed) {
         runs = runnings;
         waits = ready;
         sleep = sleepings;
@@ -138,7 +137,7 @@ public class DefaultReconfigurationProblemBuilder {
      * @param vms the set of VMs
      * @return the current builder
      */
-    public DefaultReconfigurationProblemBuilder setManageableVMs(Set<UUID> vms) {
+    public DefaultReconfigurationProblemBuilder setManageableVMs(Set<Integer> vms) {
         manageable = vms;
         return this;
     }
@@ -170,7 +169,7 @@ public class DefaultReconfigurationProblemBuilder {
             manageable.addAll(model.getMapping().getAllVMs());
         }
         if (uuidPool == null) {
-            uuidPool = new InMemoryUUIDPool();
+            uuidPool = new InMemoryElementsPool();
         }
         return new DefaultReconfigurationProblem(model, dEval, viewMapper, uuidPool, waits, runs, sleep, over, manageable, labelVars);
     }

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -103,37 +102,37 @@ public class MinMTTR implements ReconfigurationObjective {
         OnStableNodeFirst schedHeuristic = new OnStableNodeFirst("stableNodeFirst", rp, actions, this);
 
         //Get the VMs to move
-        Set<UUID> onBadNodes = rp.getManageableVMs();
+        Set<Integer> onBadNodes = rp.getManageableVMs();
 
-        for (UUID vm : map.getSleepingVMs()) {
+        for (int vm : map.getSleepingVMs()) {
             if (rp.getFutureRunningVMs().contains(vm)) {
                 onBadNodes.add(vm);
             }
         }
 
-        Set<UUID> onGoodNodes = new HashSet<>(map.getRunningVMs());
+        Set<Integer> onGoodNodes = new HashSet<>(map.getRunningVMs());
         onGoodNodes.removeAll(onBadNodes);
 
         List<VMActionModel> goodActions = new ArrayList<>();
-        for (UUID vm : onGoodNodes) {
+        for (int vm : onGoodNodes) {
             goodActions.add(rp.getVMAction(vm));
         }
         List<VMActionModel> badActions = new ArrayList<>();
-        for (UUID vm : onBadNodes) {
+        for (int vm : onBadNodes) {
             badActions.add(rp.getVMAction(vm));
         }
 
         CPSolver s = rp.getSolver();
 
         //Get the VMs to move for exclusion issue
-        Set<UUID> vmsToExclude = new HashSet<>(rp.getManageableVMs());
-        for (Iterator<UUID> ite = vmsToExclude.iterator(); ite.hasNext(); ) {
-            UUID vm = ite.next();
+        Set<Integer> vmsToExclude = new HashSet<>(rp.getManageableVMs());
+        for (Iterator<Integer> ite = vmsToExclude.iterator(); ite.hasNext(); ) {
+            int vm = ite.next();
             if (!(map.getRunningVMs().contains(vm) && rp.getFutureRunningVMs().contains(vm))) {
                 ite.remove();
             }
         }
-        Map<IntDomainVar, UUID> pla = VMPlacementUtils.makePlacementMap(rp);
+        Map<IntDomainVar, Integer> pla = VMPlacementUtils.makePlacementMap(rp);
 
         s.addGoal(new AssignVar(new MovingVMs("movingVMs", rp, map, vmsToExclude), new RandomVMPlacement("movingVMs", rp, pla, true)));
         HostingVariableSelector selectForBads = new HostingVariableSelector("selectForBads", rp, ActionModelUtils.getDSlices(badActions), schedHeuristic);
@@ -144,12 +143,12 @@ public class MinMTTR implements ReconfigurationObjective {
         s.addGoal(new AssignVar(selectForGoods, new RandomVMPlacement("selectForGoods", rp, pla, true)));
 
         //VMs to run
-        Set<UUID> vmsToRun = new HashSet<>(map.getReadyVMs());
+        Set<Integer> vmsToRun = new HashSet<>(map.getReadyVMs());
         vmsToRun.removeAll(rp.getFutureReadyVMs());
 
         VMActionModel[] runActions = new VMActionModel[vmsToRun.size()];
         int i = 0;
-        for (UUID vm : vmsToRun) {
+        for (int vm : vmsToRun) {
             runActions[i++] = rp.getVMAction(vm);
         }
         HostingVariableSelector selectForRuns = new HostingVariableSelector("selectForRuns", rp, ActionModelUtils.getDSlices(runActions), schedHeuristic);
@@ -164,7 +163,7 @@ public class MinMTTR implements ReconfigurationObjective {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
+    public Set<Integer> getMisPlacedVMs(Model m) {
         return Collections.emptySet();
     }
 

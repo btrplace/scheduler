@@ -40,21 +40,33 @@ import java.util.*;
  */
 public class ModelCustomization implements Example {
 
-    private UUID n1 = new UUID(1, 1);
-    private UUID n2 = new UUID(1, 2);
-    private UUID vm1 = new UUID(2, 1);
-    private UUID vm2 = new UUID(2, 2);
-    private UUID vm3 = new UUID(2, 3);
-    private UUID vm4 = new UUID(2, 4);
-    private UUID vm5 = new UUID(2, 5);
-    private UUID vm6 = new UUID(2, 6);
-    private UUID vm7 = new UUID(2, 7);
-    private UUID vm8 = new UUID(2, 8);
-    private UUID vm9 = new UUID(2, 9);
-    private UUID vm10 = new UUID(2, 10);
+    private int n1 = new int
+    (1,1);
+    private int n2 = new int
+    (1,2);
+    private int vm1 = new int
+    (2,1);
+    private int vm2 = new int
+    (2,2);
+    private int vm3 = new int
+    (2,3);
+    private int vm4 = new int
+    (2,4);
+    private int vm5 = new int
+    (2,5);
+    private int vm6 = new int
+    (2,6);
+    private int vm7 = new int
+    (2,7);
+    private int vm8 = new int
+    (2,8);
+    private int vm9 = new int
+    (2,9);
+    private int vm10 = new int
+    (2,10);
 
-    private Set<UUID> g1 = new HashSet<>(Arrays.asList(vm1, vm2, vm4));
-    private Set<UUID> g2 = new HashSet<>(Arrays.asList(vm5, vm6, vm8));
+    private Set<Integer> g1 = new HashSet<>(Arrays.asList(vm1, vm2, vm4));
+    private Set<Integer> g2 = new HashSet<>(Arrays.asList(vm5, vm6, vm8));
 
     /**
      * We customize the estimate duration of the VM migration action
@@ -69,7 +81,7 @@ public class ModelCustomization implements Example {
         }
 
         @Override
-        public int evaluate(Model mo, UUID e) {
+        public int evaluate(Model mo, int e) {
             return rc.get(e) * 2 + 3;
         }
 
@@ -116,7 +128,7 @@ public class ModelCustomization implements Example {
 
         //Set some attributes
         Attributes attrs = mo.getAttributes();
-        for (UUID vm : mo.getMapping().getAllVMs()) {
+        for (int vm : mo.getMapping().getAllVMs()) {
             long i = vm.getLeastSignificantBits();
             attrs.put(vm, "template", i % 2 == 0 ? "small" : "large");
             attrs.put(vm, "clone", true);

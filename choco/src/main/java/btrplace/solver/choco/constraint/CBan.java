@@ -28,7 +28,7 @@ import choco.kernel.solver.ContradictionException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Choco implementation of the constraint {@link Ban}.
@@ -50,15 +50,15 @@ public class CBan implements ChocoSatConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) {
-        Collection<UUID> nodes = ban.getInvolvedNodes();
-        Collection<UUID> vms = ban.getInvolvedVMs();
+        Collection<Integer> nodes = ban.getInvolvedNodes();
+        Collection<Integer> vms = ban.getInvolvedVMs();
         int[] nodesIdx = new int[nodes.size()];
         int i = 0;
-        for (UUID n : ban.getInvolvedNodes()) {
+        for (int n : ban.getInvolvedNodes()) {
             nodesIdx[i++] = rp.getNodeIdx(n);
         }
 
-        for (UUID vm : vms) {
+        for (int vm : vms) {
             if (rp.getFutureRunningVMs().contains(vm)) {
                 Slice t = rp.getVMAction(vm).getDSlice();
                 if (t != null) {
@@ -77,11 +77,11 @@ public class CBan implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
+    public Set<Integer> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
 
-        Set<UUID> bad = new HashSet<>();
-        for (UUID vm : ban.getInvolvedVMs()) {
+        Set<Integer> bad = new HashSet<>();
+        for (int vm : ban.getInvolvedVMs()) {
             if (map.getRunningVMs().contains(vm) && ban.getInvolvedNodes().contains(map.getVMLocation(vm))) {
                 bad.add(vm);
             }

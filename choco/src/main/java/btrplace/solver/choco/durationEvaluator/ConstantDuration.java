@@ -19,7 +19,6 @@ package btrplace.solver.choco.durationEvaluator;
 
 import btrplace.model.Model;
 
-import java.util.UUID;
 
 /**
  * Evaluate an action duration to a constant.
@@ -40,7 +39,7 @@ public class ConstantDuration implements DurationEvaluator {
     }
 
     @Override
-    public int evaluate(Model mo, UUID e) {
+    public int evaluate(Model mo, int e) {
         return duration;
     }
 

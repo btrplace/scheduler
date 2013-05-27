@@ -1,3 +1,20 @@
+/*
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ *
+ * This file is part of btrplace.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.examples;
 
 import btrplace.model.DefaultMapping;
@@ -27,7 +44,7 @@ import java.util.*;
  */
 public class BasicTuning implements Example {
 
-    private List<UUID> nodes;
+    private List<Integer> nodes;
 
     private ShareableResource rcBW;
 
@@ -81,7 +98,7 @@ public class BasicTuning implements Example {
 
         DurationEvaluator ev = new DurationEvaluator() {
             @Override
-            public int evaluate(UUID e) {
+            public int evaluate(Model mo, int e) {
                 return rcMem.get(e) + 3;
             }
         };
@@ -120,7 +137,7 @@ public class BasicTuning implements Example {
 
         nodes = new ArrayList<>(100);
         for (int i = 0; i < 100; i++) {
-            UUID n = new UUID(1, i);
+            int n = 10000 + i;
             nodes.add(n);
             mapping.addOnlineNode(n);
 
@@ -130,7 +147,7 @@ public class BasicTuning implements Example {
         }
 
         for (int i = 0; i < 600; i++) {
-            UUID vm = new UUID(0, i);
+            int vm = i;
             //Basic balancing through a round-robin: 6 VMs per node
             mapping.addRunningVM(vm, nodes.get(i % nodes.size()));
 
@@ -151,11 +168,11 @@ public class BasicTuning implements Example {
     public Set<SatConstraint> getNewBWRequirements(Model mo) {
         Set<SatConstraint> constraints = new HashSet<>();
         for (int i = 0; i < 5; i++) {
-            UUID n = nodes.get(i);
-            Set<UUID> vmsOnN = mo.getMapping().getRunningVMs(n);
-            Iterator<UUID> ite = vmsOnN.iterator();
+            int n = nodes.get(i);
+            Set<Integer> vmsOnN = mo.getMapping().getRunningVMs(n);
+            Iterator<Integer> ite = vmsOnN.iterator();
             for (int j = 0; ite.hasNext() && j < 4; j++) {
-                UUID v = ite.next();
+                int v = ite.next();
                 constraints.add(new Preserve(Collections.singleton(v), "bandwidth", 4));
             }
         }

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -78,7 +77,7 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
             }
 
             @Override
-            public Set<UUID> getMisPlacedVMs(Model m) {
+            public Set<Integer> getMisPlacedVMs(Model m) {
                 return Collections.emptySet();
             }
         };
@@ -91,8 +90,8 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
         Mapping map = new DefaultMapping();
         map.addOnlineNode(n1);
         for (int i = 0; i < 10; i++) {
-            UUID n = new UUID(2, i);
-            UUID vm = new UUID(3, i);
+            int n = 200 + i;
+            int vm = 300 + i;
             map.addOnlineNode(n);
             map.addRunningVM(vm, n);
         }
@@ -113,7 +112,7 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
             }
 
             @Override
-            public Set<UUID> getMisPlacedVMs(Model m) {
+            public Set<Integer> getMisPlacedVMs(Model m) {
                 return Collections.emptySet();
             }
         });
@@ -151,7 +150,7 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
             }
 
             @Override
-            public Set<UUID> getMisPlacedVMs(Model m) {
+            public Set<Integer> getMisPlacedVMs(Model m) {
                 return new HashSet<>(Arrays.asList(vm2, vm3));
             }
         };

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -55,7 +54,7 @@ public class CSpread implements ChocoSatConstraint {
     public boolean inject(ReconfigurationProblem rp) {
 
         List<IntDomainVar> onlyRunnings = new ArrayList<>();
-        for (UUID vmId : cstr.getInvolvedVMs()) {
+        for (int vmId : cstr.getInvolvedVMs()) {
             if (rp.getFutureRunningVMs().contains(vmId)) {
                 VMActionModel a = rp.getVMAction(vmId);
                 Slice d = a.getDSlice();
@@ -70,18 +69,18 @@ public class CSpread implements ChocoSatConstraint {
             s.post(new BoundAllDiff(onlyRunnings.toArray(new IntDomainVar[onlyRunnings.size()]), true));
 
             if (cstr.isContinuous()) {
-                UUID[] vms = new UUID[onlyRunnings.size()];
+                int[] vms = new int[onlyRunnings.size()];
                 int x = 0;
-                for (UUID vm : cstr.getInvolvedVMs()) {
+                for (int vm : cstr.getInvolvedVMs()) {
                     if (rp.getFutureRunningVMs().contains(vm)) {
                         vms[x++] = vm;
                     }
                 }
                 for (int i = 0; i < vms.length; i++) {
-                    UUID vm = vms[i];
+                    int vm = vms[i];
                     VMActionModel aI = rp.getVMAction(vm);
                     for (int j = 0; j < i; j++) {
-                        UUID vmJ = vms[j];
+                        int vmJ = vms[j];
                         VMActionModel aJ = rp.getVMAction(vmJ);
                         Slice dI = aI.getDSlice();
                         Slice cJ = aJ.getCSlice();
@@ -124,21 +123,21 @@ public class CSpread implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
-        Map<UUID, Set<UUID>> spots = new HashMap<>();
-        Set<UUID> bad = new HashSet<>();
+    public Set<Integer> getMisPlacedVMs(Model m) {
+        Map<Integer, Set<Integer>> spots = new HashMap<>();
+        Set<Integer> bad = new HashSet<>();
         Mapping map = m.getMapping();
-        for (UUID vm : cstr.getInvolvedVMs()) {
-            UUID h = map.getVMLocation(vm);
+        for (int vm : cstr.getInvolvedVMs()) {
+            int h = map.getVMLocation(vm);
             if (map.getRunningVMs().contains(vm)) {
                 if (!spots.containsKey(h)) {
-                    spots.put(h, new HashSet<UUID>());
+                    spots.put(h, new HashSet<Integer>());
                 }
                 spots.get(h).add(vm);
             }
 
         }
-        for (Map.Entry<UUID, Set<UUID>> e : spots.entrySet()) {
+        for (Map.Entry<Integer, Set<Integer>> e : spots.entrySet()) {
             if (e.getValue().size() > 1) {
                 bad.addAll(e.getValue());
             }

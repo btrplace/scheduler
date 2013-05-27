@@ -20,7 +20,6 @@ package btrplace.solver.choco.durationEvaluator;
 import btrplace.model.Attributes;
 import btrplace.model.Model;
 
-import java.util.UUID;
 
 /**
  * A duration evaluator that try to get a duration from an attribute
@@ -47,7 +46,7 @@ public class DurationFromOptionalAttribute implements DurationEvaluator {
     }
 
     @Override
-    public int evaluate(Model mo, UUID e) {
+    public int evaluate(Model mo, int e) {
         Attributes attrs = mo.getAttributes();
         if (attrs.isSet(e, key)) {
             try {

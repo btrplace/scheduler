@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -67,13 +66,13 @@ public class CAmong implements ChocoSatConstraint {
         int nextGrp = -1;
         int curGrp = -1;
 
-        List<Set<UUID>> groups = new ArrayList<>();
+        List<Set<Integer>> groups = new ArrayList<>();
         groups.addAll(cstr.getGroupsOfNodes());
 
         //Browse every VM, check if one is already placed and isolate future runnings
-        Set<UUID> runnings = new HashSet<>();
+        Set<Integer> runnings = new HashSet<>();
         Mapping src = rp.getSourceModel().getMapping();
-        for (UUID vm : cstr.getInvolvedVMs()) {
+        for (int vm : cstr.getInvolvedVMs()) {
             if (rp.getFutureRunningVMs().contains(vm)) {
                 //The VM will be running
                 runnings.add(vm);
@@ -96,7 +95,7 @@ public class CAmong implements ChocoSatConstraint {
 
             if (src.getRunningVMs().contains(vm) && cstr.isContinuous()) {
                 //The VM is already running, so we get its current group
-                UUID curNode = src.getVMLocation(vm);
+                int curNode = src.getVMLocation(vm);
                 int g = getGroup(curNode);
                 if (curGrp == -1) {
                     curGrp = g;
@@ -121,9 +120,9 @@ public class CAmong implements ChocoSatConstraint {
                     vmGrpId = rp.getSolver().createEnumIntVar(rp.makeVarLabel("among#pGrp"), 0, groups.size() - 1);
                     //grp: A table to indicate the group each node belong to, -1 for no group
                     int[] grps = new int[rp.getNodes().length];
-                    Set<UUID> possibleNodes = new HashSet<>();
+                    Set<Integer> possibleNodes = new HashSet<>();
                     for (int i = 0; i < grps.length; i++) {
-                        UUID n = rp.getNodes()[i];
+                        int n = rp.getNodes()[i];
                         int idx = getGroup(n);
                         if (idx >= 0) {
                             grps[i] = idx;
@@ -133,7 +132,7 @@ public class CAmong implements ChocoSatConstraint {
                     //In any case, the VMs cannot go to nodes that are in no groups
                     new CFence(new Fence(runnings, new HashSet<>(possibleNodes))).inject(rp);
                     //We link the VM placement variable with the group variable
-                    for (UUID vm : runnings) {
+                    for (int vm : runnings) {
                         IntDomainVar assign = rp.getVMAction(vm).getDSlice().getHoster();
                         SConstraint c = new MyElement(assign, grps, vmGrpId, 0, MyElement.Sort.detect);
                         rp.getSolver().post(c);
@@ -154,9 +153,9 @@ public class CAmong implements ChocoSatConstraint {
      * @param n the node
      * @return the group identifier, {@code -1} if the node does not belong to a group
      */
-    public int getGroup(UUID n) {
+    public int getGroup(int n) {
         int i = 0;
-        for (Set<UUID> pGrp : cstr.getGroupsOfNodes()) {
+        for (Set<Integer> pGrp : cstr.getGroupsOfNodes()) {
             if (pGrp.contains(n)) {
                 return i;
             }
@@ -166,7 +165,7 @@ public class CAmong implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
+    public Set<Integer> getMisPlacedVMs(Model m) {
         if (!cstr.isSatisfied(m)) {
             return new HashSet<>(cstr.getInvolvedVMs());
         }

@@ -49,17 +49,17 @@ public class COverbookTest implements PremadeElements {
 
     @Test
     public void testBasic() throws SolverException {
-        UUID[] nodes = new UUID[3];
-        UUID[] vms = new UUID[9];
+        int[] nodes = new int[3];
+        int[] vms = new int[9];
         Mapping m = new DefaultMapping();
         btrplace.model.view.ShareableResource rcCPU = new ShareableResource("cpu");
         for (int i = 0; i < vms.length; i++) {
             if (i < nodes.length) {
-                nodes[i] = new UUID(0, i);
+                nodes[i] = i;
                 rcCPU.set(nodes[i], 2);
                 m.addOnlineNode(nodes[i]);
             }
-            vms[i] = new UUID(1, i);
+            vms[i] = 100 + i;
             rcCPU.set(vms[i], 1);
 
             m.addReadyVM(vms[i]);
@@ -87,17 +87,17 @@ public class COverbookTest implements PremadeElements {
      */
     @Test
     public void testMultipleOverbook() throws SolverException {
-        UUID[] nodes = new UUID[3];
-        UUID[] vms = new UUID[11];
+        int[] nodes = new int[3];
+        int[] vms = new int[11];
         Mapping m = new DefaultMapping();
         btrplace.model.view.ShareableResource rcCPU = new ShareableResource("cpu");
         for (int i = 0; i < vms.length; i++) {
             if (i < nodes.length) {
-                nodes[i] = new UUID(0, i);
+                nodes[i] = i;
                 rcCPU.set(nodes[i], 2);
                 m.addOnlineNode(nodes[i]);
             }
-            vms[i] = new UUID(1, i);
+            vms[i] = 100 + i;
             rcCPU.set(vms[i], 1);
 
             m.addReadyVM(vms[i]);
@@ -122,17 +122,17 @@ public class COverbookTest implements PremadeElements {
 
     @Test
     public void testNoSolution() throws SolverException {
-        UUID[] nodes = new UUID[10];
-        UUID[] vms = new UUID[31];
+        int[] nodes = new int[10];
+        int[] vms = new int[31];
         Mapping m = new DefaultMapping();
         btrplace.model.view.ShareableResource rcMem = new ShareableResource("mem");
         for (int i = 0; i < vms.length; i++) {
             if (i < nodes.length) {
-                nodes[i] = new UUID(0, i);
+                nodes[i] = i;
                 rcMem.set(nodes[i], 3);
                 m.addOnlineNode(nodes[i]);
             }
-            vms[i] = new UUID(1, i);
+            vms[i] = 100 + i;
             rcMem.set(vms[i], 1);
             m.addReadyVM(vms[i]);
         }

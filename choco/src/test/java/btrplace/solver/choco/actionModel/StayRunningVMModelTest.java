@@ -30,7 +30,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Collections;
-import java.util.UUID;
+
 
 /**
  * Unit tests for {@link StayRunningVMModel}.
@@ -48,7 +48,7 @@ public class StayRunningVMModelTest implements PremadeElements {
 
         Model mo = new DefaultModel(map);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setManageableVMs(Collections.<UUID>emptySet())
+                .setManageableVMs(Collections.<Integer>emptySet())
                 .labelVariables()
                 .build();
         Assert.assertEquals(rp.getVMAction(vm1).getClass(), StayRunningVMModel.class);

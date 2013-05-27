@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -37,7 +36,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Collections;
-import java.util.UUID;
+
 
 /**
  * Unit tests for {@link ForgeVMModel}.
@@ -55,7 +54,7 @@ public class ForgeVMModelTest implements PremadeElements {
         dev.register(ForgeVM.class, new ConstantDuration(7));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
-                .setNextVMsStates(Collections.singleton(vm1), Collections.<UUID>emptySet(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setNextVMsStates(Collections.singleton(vm1), Collections.<Integer>emptySet(), Collections.<Integer>emptySet(), Collections.<Integer>emptySet())
                 .build();
         ForgeVMModel ma = (ForgeVMModel) rp.getVMAction(vm1);
         Assert.assertEquals(vm1, ma.getVM());
@@ -76,7 +75,7 @@ public class ForgeVMModelTest implements PremadeElements {
         dev.register(ForgeVM.class, new ConstantDuration(7));
         new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
-                .setNextVMsStates(Collections.singleton(vm1), Collections.<UUID>emptySet(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setNextVMsStates(Collections.singleton(vm1), Collections.<Integer>emptySet(), Collections.<Integer>emptySet(), Collections.<Integer>emptySet())
                 .build();
 
     }
@@ -92,7 +91,7 @@ public class ForgeVMModelTest implements PremadeElements {
         dev.register(ShutdownNode.class, new ConstantDuration(20));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
-                .setNextVMsStates(Collections.singleton(vm1), Collections.<UUID>emptySet(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setNextVMsStates(Collections.singleton(vm1), Collections.<Integer>emptySet(), Collections.<Integer>emptySet(), Collections.<Integer>emptySet())
                 .labelVariables()
                 .build();
         //Force the node to get offline

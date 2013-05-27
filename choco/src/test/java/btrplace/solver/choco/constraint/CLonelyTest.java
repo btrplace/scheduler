@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,9 +20,9 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Lonely;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
@@ -33,7 +32,10 @@ import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Unit tests for {@link CLonely}.
@@ -48,7 +50,7 @@ public class CLonelyTest implements PremadeElements {
                 .run(n1, vm1, vm2)
                 .run(n2, vm3, vm4, vm5).build();
 
-        Set<UUID> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<Integer> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
         Model mo = new DefaultModel(map);
@@ -71,7 +73,7 @@ public class CLonelyTest implements PremadeElements {
         Mapping map = new MappingBuilder().on(n1, n2, n3)
                 .run(n1, vm1, vm2, vm3)
                 .run(n2, vm4, vm5).build();
-        Set<UUID> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<Integer> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
         Model mo = new DefaultModel(map);
@@ -90,7 +92,7 @@ public class CLonelyTest implements PremadeElements {
         Mapping map = new MappingBuilder().on(n1, n2, n3)
                 .run(n1, vm1, vm2, vm3)
                 .run(n2, vm4, vm5).build();
-        Set<UUID> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<Integer> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
 
         Model mo = new DefaultModel(map);
 

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,10 +20,10 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Among;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Running;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
@@ -51,10 +50,10 @@ public class CAmongTest implements PremadeElements {
                 .run(n1, vm1).run(n2, vm2).run(n3, vm3)
                 .ready(vm4, vm5).build();
 
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
 
-        Set<Set<UUID>> pGrps = new HashSet<>();
-        Set<UUID> s = new HashSet<>();
+        Set<Set<Integer>> pGrps = new HashSet<>();
+        Set<Integer> s = new HashSet<>();
         s.add(n1);
         s.add(n2);
         pGrps.add(s);
@@ -80,11 +79,11 @@ public class CAmongTest implements PremadeElements {
                 .run(n1, vm1).run(n2, vm2, vm3)
                 .ready(vm4, vm5).build();
 
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
+        Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
 
-        Set<UUID> s1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> s2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Set<Integer> s1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s2 = new HashSet<>(Arrays.asList(n3, n4));
+        Set<Set<Integer>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
         Among a = new Among(vms, pGrps);
         a.setContinuous(false);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
@@ -113,12 +112,12 @@ public class CAmongTest implements PremadeElements {
                 .run(n1, vm1).run(n2, vm2, vm3)
                 .ready(vm4, vm5).build();
 
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
+        Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
 
 
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> s2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(s, s2));
+        Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s2 = new HashSet<>(Arrays.asList(n3, n4));
+        Set<Set<Integer>> pGrps = new HashSet<>(Arrays.asList(s, s2));
 
         Among a = new Among(vms, pGrps);
         a.setContinuous(false);
@@ -142,10 +141,10 @@ public class CAmongTest implements PremadeElements {
                 .run(n1, vm1).run(n2, vm2, vm3)
                 .ready(vm4, vm5).build();
 
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
-        Set<UUID> s1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> s2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
+        Set<Integer> s1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s2 = new HashSet<>(Arrays.asList(n3, n4));
+        Set<Set<Integer>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
 
         Model mo = new DefaultModel(map);
         Among a = new Among(vms, pGrps);
@@ -163,10 +162,10 @@ public class CAmongTest implements PremadeElements {
                 .run(n1, vm1).run(n2, vm2, vm3)
                 .ready(vm4, vm5).build();
 
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
-        Set<UUID> s1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> s2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
+        Set<Integer> s1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s2 = new HashSet<>(Arrays.asList(n3, n4));
+        Set<Set<Integer>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
 
         Model mo = new DefaultModel(map);
         Among a = new Among(vms, pGrps);
@@ -190,11 +189,11 @@ public class CAmongTest implements PremadeElements {
                 .run(n1, vm1).run(n2, vm2).run(n3, vm3)
                 .ready(vm4, vm5).build();
 
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
+        Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
 
-        Set<UUID> s1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> s2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Set<Integer> s1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> s2 = new HashSet<>(Arrays.asList(n3, n4));
+        Set<Set<Integer>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
 
         Model mo = new DefaultModel(map);
         Among a = new Among(vms, pGrps);

@@ -29,7 +29,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Choco implementation of {@link btrplace.model.constraint.SingleRunningCapacity}.
@@ -56,7 +56,7 @@ public class CSingleRunningCapacity implements ChocoSatConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
         CPSolver s = rp.getSolver();
-        for (UUID u : cstr.getInvolvedNodes()) {
+        for (int u : cstr.getInvolvedNodes()) {
             IntDomainVar v = rp.getNbRunningVMs()[rp.getNodeIdx(u)];
             s.post(s.leq(v, cstr.getAmount()));
 
@@ -74,10 +74,10 @@ public class CSingleRunningCapacity implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
+    public Set<Integer> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-        Set<UUID> bad = new HashSet<>();
-        for (UUID n : cstr.getInvolvedNodes()) {
+        Set<Integer> bad = new HashSet<>();
+        for (int n : cstr.getInvolvedNodes()) {
             if (map.getRunningVMs(n).size() > cstr.getAmount()) {
                 bad.addAll(map.getRunningVMs(n));
             }

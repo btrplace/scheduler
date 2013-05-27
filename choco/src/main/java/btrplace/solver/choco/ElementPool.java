@@ -17,43 +17,42 @@
 
 package btrplace.solver.choco;
 
-import java.util.UUID;
 
 /**
- * Allow to retrieve and release UUIDs that
+ * Allow to retrieve and release ints that
  * are the basic element identifiers in btrplace.
  *
  * @author Fabien Hermenier
  */
-public interface UUIDPool {
+public interface ElementPool {
 
     /**
-     * Get a new UUID.
+     * Get a new int.
      *
-     * @return the UUID if possible, {@code null} if the pool is empty
+     * @return the int if possible, {@code null} if the pool is empty
      */
-    UUID request();
+    int request();
 
     /**
-     * Book a given UUID.
+     * Book a given int.
      *
-     * @param u the UUID to book
-     * @return {@code true} iff the UUID has been booked.
+     * @param u the int to book
+     * @return {@code true} iff the int has been booked.
      */
-    boolean book(UUID u);
+    boolean book(int u);
 
     /**
-     * Release a UUID that will be available again.
+     * Release a int that will be available again.
      *
      * @return {@code true}
      */
-    boolean release(UUID u);
+    boolean release(int u);
 
     /**
-     * Check whether a UUID is used or not.
+     * Check whether a int is used or not.
      *
-     * @param u the UUID to check
-     * @return {@code true} iff the UUID is in used
+     * @param u the int to check
+     * @return {@code true} iff the int is in used
      */
-    boolean inUse(UUID u);
+    boolean inUse(int u);
 }

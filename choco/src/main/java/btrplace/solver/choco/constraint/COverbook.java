@@ -32,7 +32,7 @@ import choco.kernel.solver.variables.real.RealVar;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Choco implementation of {@link btrplace.model.constraint.SatConstraint}.
@@ -61,7 +61,7 @@ public class COverbook implements ChocoSatConstraint {
             throw new SolverException(rp.getSourceModel(), "Unable to get the resource mapping '" + cstr.getResource() + "'");
         }
 
-        for (UUID u : cstr.getInvolvedNodes()) {
+        for (int u : cstr.getInvolvedNodes()) {
             RealVar v = rcm.getOverbookRatio(rp.getNodeIdx(u));
             RealInterval ric = new RealIntervalConstant(v.getInf(), cstr.getRatio());
             try {
@@ -75,20 +75,20 @@ public class COverbook implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
+    public Set<Integer> getMisPlacedVMs(Model m) {
         ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
-        Set<UUID> bads = new HashSet<>();
+        Set<Integer> bads = new HashSet<>();
         if (rc == null) {
             //No resource given, all the VMs are considered as misplaced
-            for (UUID n : cstr.getInvolvedNodes()) {
+            for (int n : cstr.getInvolvedNodes()) {
                 bads.addAll(m.getMapping().getRunningVMs(n));
             }
         } else {
             //Check if the node is saturated
-            for (UUID n : cstr.getInvolvedNodes()) {
+            for (int n : cstr.getInvolvedNodes()) {
                 int overCapa = (int) (cstr.getRatio() * rc.get(n));
                 //Minus the VMs usage
-                for (UUID vmId : m.getMapping().getRunningVMs(n)) {
+                for (int vmId : m.getMapping().getRunningVMs(n)) {
                     overCapa -= rc.get(vmId);
                     if (overCapa < 0) {
                         bads.addAll(m.getMapping().getRunningVMs());

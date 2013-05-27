@@ -1,3 +1,20 @@
+/*
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ *
+ * This file is part of btrplace.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.examples;
 
 import btrplace.model.DefaultMapping;
@@ -13,7 +30,10 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Simple tutorial about the usage of Btrplace.
@@ -24,17 +44,27 @@ import java.util.*;
  */
 public class GettingStarted implements Example {
 
-    private static UUID vm1 = new UUID(0, 1);
-    private static UUID vm2 = new UUID(0, 2);
-    private static UUID vm3 = new UUID(0, 3);
-    private static UUID vm4 = new UUID(0, 4);
-    private static UUID vm5 = new UUID(0, 5);
-    private static UUID vm6 = new UUID(0, 6);
+    private static int vm1 = new int
+    (0,1);
+    private static int vm2 = new int
+    (0,2);
+    private static int vm3 = new int
+    (0,3);
+    private static int vm4 = new int
+    (0,4);
+    private static int vm5 = new int
+    (0,5);
+    private static int vm6 = new int
+    (0,6);
 
-    private static UUID n1 = new UUID(1, 1);
-    private static UUID n2 = new UUID(1, 2);
-    private static UUID n3 = new UUID(1, 3);
-    private static UUID n4 = new UUID(1, 4);
+    private static int n1 = new int
+    (1,1);
+    private static int n2 = new int
+    (1,2);
+    private static int n3 = new int
+    (1,3);
+    private static int n4 = new int
+    (1,4);
 
     /**
      * Make the element mapping that depicts
@@ -115,10 +145,10 @@ public class GettingStarted implements Example {
         //node N4 must be set offline
         cstrs.add(new Offline(Collections.singleton(n4)));
 
-            //VM5 must be running, It asks for 3 cpu and 2 mem resources
-            cstrs.add(new Running(Collections.singleton(vm5)));
-            cstrs.add(new Preserve(Collections.singleton(vm5), "cpu", 3));
-            cstrs.add(new Preserve(Collections.singleton(vm5), "mem", 2));
+        //VM5 must be running, It asks for 3 cpu and 2 mem resources
+        cstrs.add(new Running(Collections.singleton(vm5)));
+        cstrs.add(new Preserve(Collections.singleton(vm5), "cpu", 3));
+        cstrs.add(new Preserve(Collections.singleton(vm5), "mem", 2));
 
         //VM4 must be turned off, i.e. set back to the ready state
         cstrs.add(new Ready(Collections.singleton(vm4)));

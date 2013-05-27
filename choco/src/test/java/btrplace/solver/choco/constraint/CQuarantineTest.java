@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,9 +20,9 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Quarantine;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
@@ -46,7 +45,7 @@ public class CQuarantineTest implements PremadeElements {
     public void testWithSatisfiedModel() throws SolverException {
         Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).build();
         Model mo = new DefaultModel(map);
-        Set<UUID> ns = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> ns = new HashSet<>(Arrays.asList(n1, n2));
         Quarantine q = new Quarantine(ns);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>singleton(q));
@@ -62,7 +61,7 @@ public class CQuarantineTest implements PremadeElements {
     public void testWithNoSolution1() throws SolverException {
         Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).build();
         Model mo = new DefaultModel(map);
-        Set<UUID> ns = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> ns = new HashSet<>(Arrays.asList(n1, n2));
         Quarantine q = new Quarantine(ns);
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(q);
@@ -81,7 +80,7 @@ public class CQuarantineTest implements PremadeElements {
     public void testWithNoSolution2() throws SolverException {
         Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).build();
         Model mo = new DefaultModel(map);
-        Set<UUID> ns = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> ns = new HashSet<>(Arrays.asList(n1, n2));
         Quarantine q = new Quarantine(ns);
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(q);

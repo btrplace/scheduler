@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -27,7 +26,7 @@ import btrplace.solver.choco.ReconfigurationProblem;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Naive implementation of {@link btrplace.model.constraint.Sleeping}.
@@ -55,10 +54,10 @@ public class CSleeping implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
-        Set<UUID> bad = new HashSet<>();
+    public Set<Integer> getMisPlacedVMs(Model m) {
+        Set<Integer> bad = new HashSet<>();
         Mapping map = m.getMapping();
-        for (UUID vm : cstr.getInvolvedVMs()) {
+        for (int vm : cstr.getInvolvedVMs()) {
             if (!map.getSleepingVMs().contains(vm)) {
                 bad.add(vm);
             }

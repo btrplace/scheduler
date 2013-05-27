@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -34,7 +33,10 @@ import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Unit tests for {@link CBan}.
@@ -45,14 +47,14 @@ public class CBanTest implements PremadeElements {
 
     @Test
     public void testBasic() throws SolverException {
-        UUID[] nodes = new UUID[5];
-        UUID[] vms = new UUID[5];
+        int[] nodes = new int[5];
+        int[] vms = new int[5];
         Mapping m = new DefaultMapping();
-        Set<UUID> sVMs = new HashSet<>();
-        Set<UUID> sNodes = new HashSet<>();
+        Set<Integer> sVMs = new HashSet<>();
+        Set<Integer> sNodes = new HashSet<>();
         for (int i = 0; i < vms.length; i++) {
-            nodes[i] = new UUID(1, i);
-            vms[i] = new UUID(0, i);
+            nodes[i] = 100 + i;
+            vms[i] = i;
             m.addOnlineNode(nodes[i]);
             m.addRunningVM(vms[i], nodes[i]);
             if (i % 2 == 0) {
@@ -89,8 +91,8 @@ public class CBanTest implements PremadeElements {
                 .run(n3, vm4)
                 .sleep(n4, vm5).build();
 
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2));
-        Set<UUID> ns = new HashSet<>(Arrays.asList(n3, n4));
+        Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<Integer> ns = new HashSet<>(Arrays.asList(n3, n4));
 
         CBan c = new CBan(new Ban(vms, ns));
         Model mo = new DefaultModel(m);
@@ -100,7 +102,7 @@ public class CBanTest implements PremadeElements {
         vms.add(vm5);
         org.testng.Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
         ns.add(n1);
-        Set<UUID> bad = c.getMisPlacedVMs(mo);
+        Set<Integer> bad = c.getMisPlacedVMs(mo);
         org.testng.Assert.assertEquals(2, bad.size());
         org.testng.Assert.assertTrue(bad.contains(vm1) && bad.contains(vm2));
     }

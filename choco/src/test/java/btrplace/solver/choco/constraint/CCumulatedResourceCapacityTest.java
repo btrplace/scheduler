@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,10 +20,10 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.CumulatedResourceCapacity;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Running;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
@@ -77,7 +76,7 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
                 .run(n1, vm1, vm2)
                 .run(n2, vm3, vm4, vm5).build();
 
-        Set<UUID> on = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> on = new HashSet<>(Arrays.asList(n1, n2));
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
         rc.set(vm1, 2);
@@ -105,7 +104,7 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
                 .run(n1, vm1, vm2)
                 .run(n2, vm3, vm4)
                 .ready(vm5).build();
-        Set<UUID> on = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> on = new HashSet<>(Arrays.asList(n1, n2));
         Model mo = new DefaultModel(map);
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);

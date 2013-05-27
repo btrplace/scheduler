@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,7 +20,6 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
@@ -54,7 +52,7 @@ public class CSingleResourceCapacityTest implements PremadeElements {
         Model mo = new DefaultModel(map);
         mo.attach(rc);
 
-        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> nodes = new HashSet<>(Arrays.asList(n1, n2));
 
         SingleResourceCapacity s = new SingleResourceCapacity(nodes, "cpu", 4);
         CSingleResourceCapacity cs = new CSingleResourceCapacity(s);
@@ -75,7 +73,7 @@ public class CSingleResourceCapacityTest implements PremadeElements {
         Model mo = new DefaultModel(map);
         mo.attach(rc);
 
-        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> nodes = new HashSet<>(Arrays.asList(n1, n2));
 
         SingleResourceCapacity s = new SingleResourceCapacity(nodes, "cpu", 4);
 
@@ -98,7 +96,7 @@ public class CSingleResourceCapacityTest implements PremadeElements {
         Model mo = new DefaultModel(map);
         mo.attach(rc);
 
-        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> nodes = new HashSet<>(Arrays.asList(n1, n2));
 
         SingleResourceCapacity s = new SingleResourceCapacity(nodes, "cpu", 3);
 
@@ -119,7 +117,7 @@ public class CSingleResourceCapacityTest implements PremadeElements {
         Model mo = new DefaultModel(map);
         mo.attach(rc);
 
-        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> nodes = new HashSet<>(Arrays.asList(n1, n2));
 
         List<SatConstraint> cstrs = new ArrayList<>();
 

@@ -37,7 +37,7 @@ import org.testng.annotations.Test;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.UUID;
+
 
 /**
  * Basic unit tests for {@link BootVMModel}.
@@ -63,7 +63,7 @@ public class BootVMModelTest implements PremadeElements {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
-                .setNextVMsStates(new HashSet<UUID>(), map.getAllVMs(), new HashSet<UUID>(), new HashSet<UUID>())
+                .setNextVMsStates(new HashSet<Integer>(), map.getAllVMs(), new HashSet<Integer>(), new HashSet<Integer>())
                 .build();
         rp.getNodeActions()[0].getState().setVal(1);
         rp.getNodeActions()[1].getState().setVal(1);
@@ -79,7 +79,7 @@ public class BootVMModelTest implements PremadeElements {
         ReconfigurationPlan p = rp.solve(0, false);
         BootVM a = (BootVM) p.getActions().iterator().next();
 
-        UUID dest = rp.getNode(m.getDSlice().getHoster().getVal());
+        int dest = rp.getNode(m.getDSlice().getHoster().getVal());
         Assert.assertEquals(vm1, a.getVM());
         Assert.assertEquals(dest, a.getDestinationNode());
         Assert.assertEquals(5, a.getEnd() - a.getStart());
@@ -104,7 +104,7 @@ public class BootVMModelTest implements PremadeElements {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
-                .setNextVMsStates(new HashSet<UUID>(), map.getAllVMs(), new HashSet<UUID>(), new HashSet<UUID>())
+                .setNextVMsStates(new HashSet<Integer>(), map.getAllVMs(), new HashSet<Integer>(), new HashSet<Integer>())
                 .build();
         BootVMModel m1 = (BootVMModel) rp.getVMActions()[rp.getVMIdx(vm1)];
         BootVMModel m2 = (BootVMModel) rp.getVMActions()[rp.getVMIdx(vm2)];

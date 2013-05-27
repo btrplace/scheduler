@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -91,7 +90,7 @@ public class CSpreadTest implements PremadeElements {
         Mapping map = new MappingBuilder().on(n1, n2)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2).build();
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2));
         Spread s = new Spread(vms);
         CSpread cs = new CSpread(s);
         Model mo = new DefaultModel(map);

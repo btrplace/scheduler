@@ -31,7 +31,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Choco implementation of {@link btrplace.model.constraint.SingleResourceCapacity}.
@@ -59,7 +59,7 @@ public class CSingleResourceCapacity implements ChocoSatConstraint {
         }
         int amount = cstr.getAmount();
         CPSolver s = rp.getSolver();
-        for (UUID n : cstr.getInvolvedNodes()) {
+        for (int n : cstr.getInvolvedNodes()) {
             IntDomainVar v = rcm.getVirtualUsage()[rp.getNodeIdx(n)];
             s.post(s.leq(v, amount));
 
@@ -84,13 +84,13 @@ public class CSingleResourceCapacity implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
+    public Set<Integer> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-        Set<UUID> bad = new HashSet<>();
+        Set<Integer> bad = new HashSet<>();
         ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
-        for (UUID n : cstr.getInvolvedNodes()) {
+        for (int n : cstr.getInvolvedNodes()) {
             int remainder = cstr.getAmount();
-            for (UUID v : map.getRunningVMs(n)) {
+            for (int v : map.getRunningVMs(n)) {
                 remainder -= rc.get(v);
                 if (remainder < 0) {
                     bad.addAll(map.getRunningVMs(n));

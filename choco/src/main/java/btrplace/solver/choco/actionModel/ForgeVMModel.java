@@ -26,7 +26,6 @@ import btrplace.solver.choco.SliceBuilder;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.UUID;
 
 /**
  * Model an action that forge a VM to put it into the ready state. *
@@ -45,7 +44,7 @@ import java.util.UUID;
  */
 public class ForgeVMModel implements VMActionModel {
 
-    private UUID vm;
+    private int vm;
 
     private IntDomainVar duration;
 
@@ -62,7 +61,7 @@ public class ForgeVMModel implements VMActionModel {
      * @param e  the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public ForgeVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
+    public ForgeVMModel(ReconfigurationProblem rp, int e) throws SolverException {
         int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), ForgeVM.class, e);
         template = rp.getSourceModel().getAttributes().getString(e, "template");
         if (template == null) {
@@ -94,7 +93,7 @@ public class ForgeVMModel implements VMActionModel {
     }
 
     @Override
-    public UUID getVM() {
+    public int getVM() {
         return vm;
     }
 

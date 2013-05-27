@@ -29,7 +29,6 @@ import choco.cp.solver.variables.integer.BoolVarNot;
 import choco.cp.solver.variables.integer.BooleanVarImpl;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.UUID;
 
 /**
  * Model an action that allow a node to boot if necessary.
@@ -85,7 +84,7 @@ import java.util.UUID;
  */
 public class ShutdownableNodeModel implements NodeActionModel {
 
-    private UUID node;
+    private int node;
 
     private IntDomainVar isOnline, isOffline;
 
@@ -110,7 +109,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
      * @param e  the node managed by the action
      * @throws SolverException if an error occurred
      */
-    public ShutdownableNodeModel(ReconfigurationProblem rp, UUID e) throws SolverException {
+    public ShutdownableNodeModel(ReconfigurationProblem rp, int e) throws SolverException {
         this.node = e;
 
 
@@ -173,7 +172,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
     }
 
     @Override
-    public UUID getNode() {
+    public int getNode() {
         return node;
     }
 

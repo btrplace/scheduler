@@ -37,7 +37,7 @@ import org.testng.annotations.Test;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.UUID;
+
 
 /**
  * Unit tests for {@link ShutdownVMModel}.
@@ -58,7 +58,7 @@ public class ShutdownVMModelTest implements PremadeElements {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
-                .setNextVMsStates(map.getAllVMs(), new HashSet<UUID>(), new HashSet<UUID>(), new HashSet<UUID>())
+                .setNextVMsStates(map.getAllVMs(), new HashSet<Integer>(), new HashSet<Integer>(), new HashSet<Integer>())
                 .build();
         rp.getNodeActions()[0].getState().setVal(1);
         ShutdownVMModel m = (ShutdownVMModel) rp.getVMActions()[0];
@@ -93,7 +93,7 @@ public class ShutdownVMModelTest implements PremadeElements {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
-                .setNextVMsStates(map.getAllVMs(), new HashSet<UUID>(), new HashSet<UUID>(), new HashSet<UUID>())
+                .setNextVMsStates(map.getAllVMs(), new HashSet<Integer>(), new HashSet<Integer>(), new HashSet<Integer>())
                 .build();
         ShutdownVMModel m1 = (ShutdownVMModel) rp.getVMActions()[rp.getVMIdx(vm1)];
         ShutdownVMModel m2 = (ShutdownVMModel) rp.getVMActions()[rp.getVMIdx(vm2)];

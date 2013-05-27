@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,7 +20,6 @@ package btrplace.solver.choco.view;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.choco.ReconfigurationProblem;
 
-import java.util.UUID;
 
 /**
  * Interface denoting the Choco implementation of a {@link btrplace.model.view.ModelView}.
@@ -61,5 +59,5 @@ public interface ChocoModelView {
      * @param clone the clone identifier
      * @return {@code true} iff the view validate the cloning process.
      */
-    boolean cloneVM(UUID vm, UUID clone);
+    boolean cloneVM(int vm, int clone);
 }

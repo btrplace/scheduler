@@ -32,7 +32,10 @@ import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntArrayList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Choco implementation of {@link btrplace.model.constraint.CumulatedResourceCapacity}.
@@ -68,14 +71,14 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
             } else {
                 int[] alias = new int[cstr.getInvolvedNodes().size()];
                 int i = 0;
-                for (UUID n : cstr.getInvolvedNodes()) {
+                for (int n : cstr.getInvolvedNodes()) {
                     alias[i++] = rp.getNodeIdx(n);
                 }
 
                 TIntArrayList cUse = new TIntArrayList();
                 List<IntDomainVar> dUse = new ArrayList<>();
 
-                for (UUID vmId : rp.getVMs()) {
+                for (int vmId : rp.getVMs()) {
                     VMActionModel a = rp.getVMAction(vmId);
                     Slice c = a.getCSlice();
                     Slice d = a.getDSlice();
@@ -90,7 +93,7 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
             }
         }
         List<IntDomainVar> vs = new ArrayList<>();
-        for (UUID u : cstr.getInvolvedNodes()) {
+        for (int u : cstr.getInvolvedNodes()) {
             vs.add(rcm.getVirtualUsage()[rp.getNodeIdx(u)]);
         }
         CPSolver s = rp.getSolver();
@@ -99,19 +102,19 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
+    public Set<Integer> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
         ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         if (rc == null) {
             return map.getRunningVMs(cstr.getInvolvedNodes());
         }
-        Set<UUID> bad = new HashSet<>();
+        Set<Integer> bad = new HashSet<>();
         int remainder = cstr.getAmount();
-        for (UUID n : cstr.getInvolvedNodes()) {
-            for (UUID v : map.getRunningVMs(n)) {
+        for (int n : cstr.getInvolvedNodes()) {
+            for (int v : map.getRunningVMs(n)) {
                 remainder -= rc.get(v);
                 if (remainder < 0) {
-                    for (UUID n2 : cstr.getInvolvedNodes()) {
+                    for (int n2 : cstr.getInvolvedNodes()) {
                         bad.addAll(map.getRunningVMs(n2));
                     }
                     return bad;

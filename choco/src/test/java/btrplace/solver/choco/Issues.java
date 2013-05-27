@@ -83,7 +83,7 @@ public class Issues implements PremadeElements {
         rp.getEnd().setSup(10);
         int i = 0;
         int maxVMs = rp.getSourceModel().getMapping().getAllVMs().size();
-        for (UUID n : map.getAllNodes()) {
+        for (int n : map.getAllNodes()) {
             vmsOnInvolvedNodes[i] = solver.createBoundIntVar("nVMs", -1, maxVMs);
             IntDomainVar state = rp.getNodeAction(n).getState();
             // If the node is offline -> the temporary variable is -1, otherwise, it equals the number of VMs on that node
@@ -106,7 +106,7 @@ public class Issues implements PremadeElements {
         // Extract all the state of the involved nodes (all nodes in this case)
         IntDomainVar[] states = new IntDomainVar[NUMBER_OF_NODE];
         int j = 0;
-        for (UUID n : map.getAllNodes()) {
+        for (int n : map.getAllNodes()) {
             states[j++] = rp.getNodeAction(n).getState();
         }
 
@@ -141,7 +141,7 @@ public class Issues implements PremadeElements {
 
         int i = 0;
 
-        for (UUID n : map.getAllNodes()) {
+        for (int n : map.getAllNodes()) {
             nodeVM[i++] = nodes_state[rp.getNodeIdx(n)];
         }
         CPSolver solver = rp.getSolver();
@@ -175,7 +175,7 @@ public class Issues implements PremadeElements {
 
         int i = 0;
 
-        for (UUID n : map.getAllNodes()) {
+        for (int n : map.getAllNodes()) {
             nodeVM[i++] = nodes_state[rp.getNodeIdx(n)];
             //rp.getNodeAction(n).getState().setVal(1);
         }
@@ -209,7 +209,7 @@ public class Issues implements PremadeElements {
         int i = 0;
         int maxVMs = rp.getSourceModel().getMapping().getAllVMs().size();
         List<SConstraint> elms = new ArrayList<>();
-        for (UUID n : map.getAllNodes()) {
+        for (int n : map.getAllNodes()) {
             vmsOnInvolvedNodes[i] = solver.createBoundIntVar("nVMs" + n, -1, maxVMs);
             IntDomainVar state = rp.getNodeAction(n).getState();
             // If the node is offline -> the temporary variable is 1, otherwise, it equals the number of VMs on that node
@@ -253,8 +253,8 @@ public class Issues implements PremadeElements {
         Model model = new DefaultModel(map);
 
         Set<SatConstraint> ctrsC = new HashSet<SatConstraint>();
-        Set<UUID> vms1 = new HashSet<UUID>(Arrays.asList(vm1, vm3, vm5));
-        Set<UUID> vms2 = new HashSet<UUID>(Arrays.asList(vm2, vm4, vm6));
+        Set<Integer> vms1 = new HashSet<Integer>(Arrays.asList(vm1, vm3, vm5));
+        Set<Integer> vms2 = new HashSet<Integer>(Arrays.asList(vm2, vm4, vm6));
 
         ctrsC.add(new Spread(vms1));
         ctrsC.add(new Spread(vms2));

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,9 +20,9 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Preserve;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
@@ -37,7 +36,7 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Unit tests for {@link CPreserve}.
@@ -61,7 +60,7 @@ public class CPreserveTest implements PremadeElements {
         //Assert.assertEquals(SatConstraint.Sat.UNSATISFIED, p.isSatisfied(mo));
 
         CPreserve cp = new CPreserve(p);
-        Set<UUID> bads = cp.getMisPlacedVMs(mo);
+        Set<Integer> bads = cp.getMisPlacedVMs(mo);
         Assert.assertEquals(map.getRunningVMs(n1), bads);
     }
 

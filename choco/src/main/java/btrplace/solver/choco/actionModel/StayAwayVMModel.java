@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -23,7 +22,6 @@ import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.UUID;
 
 /**
  * A fake action model that indicates the VM is ready or sleeping and does
@@ -33,7 +31,7 @@ import java.util.UUID;
  */
 public class StayAwayVMModel implements VMActionModel {
 
-    private UUID vm;
+    private int vm;
 
     private IntDomainVar zero;
 
@@ -43,7 +41,7 @@ public class StayAwayVMModel implements VMActionModel {
      * @param rp the RP to use as a basis.
      * @param e  the VM managed by the action
      */
-    public StayAwayVMModel(ReconfigurationProblem rp, UUID e) {
+    public StayAwayVMModel(ReconfigurationProblem rp, int e) {
         vm = e;
         zero = rp.getSolver().makeConstantIntVar(0);
     }
@@ -54,7 +52,7 @@ public class StayAwayVMModel implements VMActionModel {
     }
 
     @Override
-    public UUID getVM() {
+    public int getVM() {
         return vm;
     }
 

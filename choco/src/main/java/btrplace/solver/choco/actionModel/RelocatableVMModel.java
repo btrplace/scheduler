@@ -33,7 +33,6 @@ import choco.cp.solver.variables.integer.BoolVarNot;
 import choco.cp.solver.variables.integer.BooleanVarImpl;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.UUID;
 
 /**
  * Model an action that allow a running VM to be relocate elsewhere if necessary.
@@ -61,7 +60,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
     private ReconfigurationProblem rp;
 
-    private final UUID vm;
+    private final int vm;
 
     private IntDomainVar state;
 
@@ -71,7 +70,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
     private int reInstantiateDuration;
 
-    private UUID src;
+    private int src;
 
     /**
      * The choosed relocation method. 0 for migration, 1 for relocation.
@@ -85,7 +84,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
      * @param e  the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public RelocatableVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
+    public RelocatableVMModel(ReconfigurationProblem rp, int e) throws SolverException {
         this.vm = e;
         this.rp = rp;
 
@@ -156,7 +155,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
         DurationEvaluators dev = rp.getDurationEvaluators();
         if (cSlice.getHoster().getVal() != dSlice.getHoster().getVal()) {
             Action a;
-            UUID dst = rp.getNode(dSlice.getHoster().getVal());
+            int dst = rp.getNode(dSlice.getHoster().getVal());
             if (method.isInstantiatedTo(0)) {
                 int st = getStart().getVal();
                 int ed = getEnd().getVal();
@@ -164,9 +163,9 @@ public class RelocatableVMModel implements KeepRunningVMModel {
                 plan.add(a);
             } else {
                 try {
-                    UUID newVM = rp.cloneVM(vm);
-                    if (newVM == null) {
-                        rp.getLogger().error("Unable to get a new UUID to plan the re-instantiate of VM {}", vm);
+                    int newVM = rp.cloneVM(vm);
+                    if (newVM < 0) {
+                        rp.getLogger().error("Unable to get a new int to plan the re-instantiate of VM {}", vm);
                         return false;
                     }
                     ForgeVM fvm = new ForgeVM(newVM, dSlice.getStart().getVal() - dev.evaluate(rp.getSourceModel(), ForgeVM.class, vm), dSlice.getStart().getVal());
@@ -187,7 +186,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
     }
 
     @Override
-    public UUID getVM() {
+    public int getVM() {
         return vm;
     }
 

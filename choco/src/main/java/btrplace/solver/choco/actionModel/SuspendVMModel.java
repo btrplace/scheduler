@@ -26,7 +26,6 @@ import btrplace.solver.choco.SliceBuilder;
 import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.UUID;
 
 /**
  * Model an action where a running VM goes into the sleeping state through a {@link SuspendVM} action.
@@ -47,7 +46,7 @@ public class SuspendVMModel implements VMActionModel {
 
     private IntDomainVar duration;
 
-    private UUID vm;
+    private int vm;
 
     private ReconfigurationProblem rp;
 
@@ -60,7 +59,7 @@ public class SuspendVMModel implements VMActionModel {
      * @param e  the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public SuspendVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
+    public SuspendVMModel(ReconfigurationProblem rp, int e) throws SolverException {
         this.rp = rp;
         this.vm = e;
 
@@ -76,7 +75,7 @@ public class SuspendVMModel implements VMActionModel {
 
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
-        UUID node = rp.getNode(cSlice.getHoster().getVal());
+        int node = rp.getNode(cSlice.getHoster().getVal());
         plan.add(new SuspendVM(vm, node, node, start.getVal(), getEnd().getVal()));
         return true;
     }
@@ -112,7 +111,7 @@ public class SuspendVMModel implements VMActionModel {
     }
 
     @Override
-    public UUID getVM() {
+    public int getVM() {
         return vm;
     }
 

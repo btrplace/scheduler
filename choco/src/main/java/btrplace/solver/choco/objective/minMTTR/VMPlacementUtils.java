@@ -23,7 +23,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
+
 
 /**
  * Tools to ease the management of the VM placement.
@@ -42,9 +42,9 @@ public final class VMPlacementUtils {
      * @param rp the problem
      * @return the resulting map.
      */
-    public static Map<IntDomainVar, UUID> makePlacementMap(ReconfigurationProblem rp) {
-        Map<IntDomainVar, UUID> m = new HashMap<>();
-        for (UUID vm : rp.getFutureRunningVMs()) {
+    public static Map<IntDomainVar, Integer> makePlacementMap(ReconfigurationProblem rp) {
+        Map<IntDomainVar, Integer> m = new HashMap<>();
+        for (int vm : rp.getFutureRunningVMs()) {
             IntDomainVar v = rp.getVMAction(vm).getDSlice().getHoster();
             m.put(v, vm);
         }
@@ -58,7 +58,7 @@ public final class VMPlacementUtils {
      * @param vm the VM
      * @return {@code true} iff the VM can stay
      */
-    public static boolean canStay(ReconfigurationProblem rp, UUID vm) {
+    public static boolean canStay(ReconfigurationProblem rp, int vm) {
         Mapping m = rp.getSourceModel().getMapping();
         if (m.getRunningVMs().contains(vm)) {
             int curPos = rp.getNodeIdx(m.getVMLocation(vm));

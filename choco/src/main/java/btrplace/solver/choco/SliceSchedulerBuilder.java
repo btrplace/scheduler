@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -28,7 +27,10 @@ import choco.cp.solver.CPSolver;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Builder to create a unique slices scheduler that aggregates
@@ -56,7 +58,7 @@ public class SliceSchedulerBuilder {
 
     private IntDomainVar[] dStarts;
 
-    private HashMap<UUID, int[]> non;
+    private HashMap<Integer, int[]> non;
 
     /**
      * Make a new builder.
@@ -122,7 +124,7 @@ public class SliceSchedulerBuilder {
         for (i = 0; i < associations.length; i++) {
             associations[i] = LocalTaskScheduler.NO_ASSOCIATIONS;
         }
-        for (Map.Entry<UUID, int[]> e : non.entrySet()) {
+        for (Map.Entry<Integer, int[]> e : non.entrySet()) {
             int[] assoc = e.getValue();
             associations[assoc[0]] = assoc[1];
         }
@@ -188,7 +190,7 @@ public class SliceSchedulerBuilder {
                 associations);
     }
 
-    private Boolean strictlyDecreasingOrUnchanged(UUID vm) {
+    private Boolean strictlyDecreasingOrUnchanged(int vm) {
         //If it has non-overlapping slices
         int[] slicesIndexes = non.get(vm);
         if (slicesIndexes != null) {
@@ -221,7 +223,7 @@ public class SliceSchedulerBuilder {
      * @return {@code true} iff the symmetry breaking does not lead to a problem without solutions
      */
     private boolean symmetryBreakingForStayingVMs() {
-        for (UUID vm : rp.getFutureRunningVMs()) {
+        for (int vm : rp.getFutureRunningVMs()) {
             VMActionModel a = rp.getVMAction(vm);
             Slice dSlice = a.getDSlice();
             Slice cSlice = a.getCSlice();

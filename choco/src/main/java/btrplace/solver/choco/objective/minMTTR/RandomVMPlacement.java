@@ -27,7 +27,7 @@ import gnu.trove.list.array.TIntArrayList;
 
 import java.util.Map;
 import java.util.Random;
-import java.util.UUID;
+
 
 /**
  * A heuristic to place a VM on a server picked up randomly.
@@ -44,7 +44,7 @@ public class RandomVMPlacement implements ValSelector<IntDomainVar> {
 
     private Random rnd;
 
-    private Map<IntDomainVar, UUID> vmPlacement;
+    private Map<IntDomainVar, Integer> vmPlacement;
 
     private TIntHashSet[] ranks;
 
@@ -57,7 +57,7 @@ public class RandomVMPlacement implements ValSelector<IntDomainVar> {
      * @param pVarMapping a map to indicate the VM associated to each of the placement variable
      * @param stayFirst   {@code true} to force an already VM to stay on its current node if possible
      */
-    public RandomVMPlacement(String dbgLbl, ReconfigurationProblem rp, Map<IntDomainVar, UUID> pVarMapping, boolean stayFirst) {
+    public RandomVMPlacement(String dbgLbl, ReconfigurationProblem rp, Map<IntDomainVar, Integer> pVarMapping, boolean stayFirst) {
         this(rp, pVarMapping, null, stayFirst);
     }
 
@@ -69,7 +69,7 @@ public class RandomVMPlacement implements ValSelector<IntDomainVar> {
      * @param ranks       a list of favorites servers. Servers in rank i will be favored wrt. servers in rank i + 1
      * @param stayFirst   {@code true} to force an already VM to stay on its current node if possible
      */
-    public RandomVMPlacement(ReconfigurationProblem rp, Map<IntDomainVar, UUID> pVarMapping, TIntHashSet[] ranks, boolean stayFirst) {
+    public RandomVMPlacement(ReconfigurationProblem rp, Map<IntDomainVar, Integer> pVarMapping, TIntHashSet[] ranks, boolean stayFirst) {
         stay = stayFirst;
         this.rp = rp;
         rnd = new Random();
@@ -134,7 +134,7 @@ public class RandomVMPlacement implements ValSelector<IntDomainVar> {
     @Override
     public int getBestVal(IntDomainVar x) {
         if (stay) {
-            UUID vm = vmPlacement.get(x);
+            int vm = vmPlacement.get(x);
             if (VMPlacementUtils.canStay(rp, vm)) {
                 return rp.getNodeIdx(rp.getSourceModel().getMapping().getVMLocation(vm));
             }

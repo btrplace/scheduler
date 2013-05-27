@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,8 +20,8 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Fence;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.SplitAmong;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
@@ -54,15 +53,15 @@ public class CSplitAmongTest implements PremadeElements {
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
 
-        Set<UUID> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        Set<UUID> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
-        Set<UUID> vg3 = new HashSet<>(Arrays.asList(vm7));
+        Set<Integer> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<Integer> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
+        Set<Integer> vg3 = new HashSet<>(Arrays.asList(vm7));
 
-        Set<UUID> pg1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<UUID> pg3 = new HashSet<>(Arrays.asList(n5));
-        Set<Set<UUID>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
-        Set<Set<UUID>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
+        Set<Integer> pg1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> pg2 = new HashSet<>(Arrays.asList(n3, n4));
+        Set<Integer> pg3 = new HashSet<>(Arrays.asList(n5));
+        Set<Set<Integer>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
+        Set<Set<Integer>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
         SplitAmong s = new SplitAmong(vgs, pgs);
         CSplitAmong cs = new CSplitAmong(s);
@@ -100,15 +99,15 @@ public class CSplitAmongTest implements PremadeElements {
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
 
-        Set<UUID> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        Set<UUID> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
-        Set<UUID> vg3 = new HashSet<>(Arrays.asList(vm7));
+        Set<Integer> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<Integer> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
+        Set<Integer> vg3 = new HashSet<>(Arrays.asList(vm7));
 
-        Set<UUID> pg1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<UUID> pg3 = new HashSet<>(Arrays.asList(n5));
-        Set<Set<UUID>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
-        Set<Set<UUID>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
+        Set<Integer> pg1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> pg2 = new HashSet<>(Arrays.asList(n3, n4));
+        Set<Integer> pg3 = new HashSet<>(Arrays.asList(n5));
+        Set<Set<Integer>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
+        Set<Set<Integer>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
         SplitAmong s = new SplitAmong(vgs, pgs);
         s.setContinuous(false);
@@ -135,15 +134,15 @@ public class CSplitAmongTest implements PremadeElements {
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
 
-        Set<UUID> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        Set<UUID> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
-        Set<UUID> vg3 = new HashSet<>(Arrays.asList(vm7));
+        Set<Integer> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<Integer> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
+        Set<Integer> vg3 = new HashSet<>(Arrays.asList(vm7));
 
-        Set<UUID> pg1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<UUID> pg3 = new HashSet<>(Arrays.asList(n5));
-        Set<Set<UUID>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
-        Set<Set<UUID>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
+        Set<Integer> pg1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> pg2 = new HashSet<>(Arrays.asList(n3, n4));
+        Set<Integer> pg3 = new HashSet<>(Arrays.asList(n5));
+        Set<Set<Integer>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
+        Set<Set<Integer>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
         SplitAmong s = new SplitAmong(vgs, pgs);
         s.setContinuous(true);
@@ -168,14 +167,14 @@ public class CSplitAmongTest implements PremadeElements {
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
 
-        Set<UUID> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        Set<UUID> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
+        Set<Integer> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<Integer> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
 
-        Set<UUID> pg1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<UUID> pg3 = new HashSet<>(Arrays.asList(n5));
-        Set<Set<UUID>> vgs = new HashSet<>(Arrays.asList(vg1, vg2));
-        Set<Set<UUID>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
+        Set<Integer> pg1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> pg2 = new HashSet<>(Arrays.asList(n3, n4));
+        Set<Integer> pg3 = new HashSet<>(Arrays.asList(n5));
+        Set<Set<Integer>> vgs = new HashSet<>(Arrays.asList(vg1, vg2));
+        Set<Set<Integer>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
         List<SatConstraint> cstrs = new ArrayList<>();
         SplitAmong s = new SplitAmong(vgs, pgs);
@@ -206,14 +205,14 @@ public class CSplitAmongTest implements PremadeElements {
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
 
-        Set<UUID> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        Set<UUID> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
+        Set<Integer> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<Integer> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
 
-        Set<UUID> pg1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<UUID> pg3 = new HashSet<>(Arrays.asList(n5));
-        Set<Set<UUID>> vgs = new HashSet<>(Arrays.asList(vg1, vg2));
-        Set<Set<UUID>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
+        Set<Integer> pg1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> pg2 = new HashSet<>(Arrays.asList(n3, n4));
+        Set<Integer> pg3 = new HashSet<>(Arrays.asList(n5));
+        Set<Set<Integer>> vgs = new HashSet<>(Arrays.asList(vg1, vg2));
+        Set<Set<Integer>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
         List<SatConstraint> cstrs = new ArrayList<>();
         SplitAmong s = new SplitAmong(vgs, pgs);

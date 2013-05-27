@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -39,7 +38,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Collections;
-import java.util.UUID;
+
 
 /**
  * Unit tests for {@link BootableNodeModel}.
@@ -126,7 +125,7 @@ public class BootableNodeModelTest implements PremadeElements {
         dev.register(BootNode.class, new ConstantDuration(5));
         dev.register(BootVM.class, new ConstantDuration(2));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<UUID>emptySet(), Collections.singleton(vm1), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setNextVMsStates(Collections.<Integer>emptySet(), Collections.singleton(vm1), Collections.<Integer>emptySet(), Collections.<Integer>emptySet())
                 .labelVariables()
                 .setDurationEvaluatators(dev)
                 .build();

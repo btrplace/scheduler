@@ -55,9 +55,9 @@ public class CLonely implements ChocoSatConstraint {
         //Remove non future-running VMs
         List<IntDomainVar> myHosts = new ArrayList<>();
         List<IntDomainVar> otherHosts = new ArrayList<>();
-        Collection<UUID> vms = new HashSet<>();
-        Set<UUID> otherVMs = new HashSet<>();
-        for (UUID vm : rp.getFutureRunningVMs()) {
+        Collection<Integer> vms = new HashSet<>();
+        Set<Integer> otherVMs = new HashSet<>();
+        for (int vm : rp.getFutureRunningVMs()) {
             IntDomainVar host = rp.getVMAction(vm).getDSlice().getHoster();
             if (cstr.getInvolvedVMs().contains(vm)) {
                 myHosts.add(host);
@@ -80,7 +80,7 @@ public class CLonely implements ChocoSatConstraint {
             List<IntDomainVar> otherEnds = new ArrayList<>();
             List<IntDomainVar> mineEnds = new ArrayList<>();
             Mapping map = rp.getSourceModel().getMapping();
-            for (UUID vm : map.getRunningVMs()) {
+            for (int vm : map.getRunningVMs()) {
                 if (!vms.contains(vm)) {
                     otherPos.add(rp.getNodeIdx(map.getVMLocation(vm)));
                     VMActionModel a = rp.getVMAction(vm);
@@ -91,7 +91,7 @@ public class CLonely implements ChocoSatConstraint {
                     mineEnds.add(a.getCSlice().getEnd());
                 }
             }
-            for (UUID vm : vms) {
+            for (int vm : vms) {
                 VMActionModel a = rp.getVMAction(vm);
                 Precedences prec = new Precedences(s.getEnvironment(), a.getDSlice().getHoster(),
                         a.getDSlice().getStart(),
@@ -101,7 +101,7 @@ public class CLonely implements ChocoSatConstraint {
             }
 
             //TODO: The following reveals a model problem. Too many constraints!!
-            for (UUID vm : otherVMs) {
+            for (int vm : otherVMs) {
                 VMActionModel a = rp.getVMAction(vm);
                 Precedences prec = new Precedences(s.getEnvironment(), a.getDSlice().getHoster(),
                         a.getDSlice().getStart(),
@@ -114,20 +114,20 @@ public class CLonely implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
-        Set<UUID> bad = new HashSet<>();
-        Set<UUID> hosters = new HashSet<>();
-        Collection<UUID> vms = cstr.getInvolvedVMs();
+    public Set<Integer> getMisPlacedVMs(Model m) {
+        Set<Integer> bad = new HashSet<>();
+        Set<Integer> hosters = new HashSet<>();
+        Collection<Integer> vms = cstr.getInvolvedVMs();
         Mapping map = m.getMapping();
-        for (UUID vm : vms) {
+        for (int vm : vms) {
             if (map.getRunningVMs().contains(vm)) {
                 hosters.add(map.getVMLocation(vm));
             }
         }
-        for (UUID n : hosters) {
+        for (int n : hosters) {
             //Every used node that host a VMs that is not a part of the constraint
             //is a bad node. All the hosted VMs are candidate for relocation. Not optimal, but safe
-            for (UUID vm : map.getRunningVMs(n)) {
+            for (int vm : map.getRunningVMs(n)) {
                 if (!vms.contains(vm)) {
                     bad.addAll(map.getRunningVMs(n));
                     break;

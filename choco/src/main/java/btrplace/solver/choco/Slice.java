@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,7 +19,6 @@ package btrplace.solver.choco;
 
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.UUID;
 
 /**
  * Model a period where an element is hosted on a node.
@@ -39,7 +37,7 @@ public class Slice {
 
     private IntDomainVar duration;
 
-    private UUID subject;
+    private int subject;
 
     /**
      * Make a new slice.
@@ -50,7 +48,7 @@ public class Slice {
      * @param dur the slice duration
      * @param h   the slice host
      */
-    public Slice(UUID s, IntDomainVar st, IntDomainVar ed, IntDomainVar dur, IntDomainVar h) {
+    public Slice(int s, IntDomainVar st, IntDomainVar ed, IntDomainVar dur, IntDomainVar h) {
 
         this.start = st;
         this.end = ed;
@@ -116,7 +114,7 @@ public class Slice {
      *
      * @return the subject identifier
      */
-    public UUID getSubject() {
+    public int getSubject() {
         return subject;
     }
 }

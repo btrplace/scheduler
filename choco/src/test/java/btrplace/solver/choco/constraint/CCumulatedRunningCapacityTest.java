@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -65,7 +64,7 @@ public class CCumulatedRunningCapacityTest implements PremadeElements {
         Mapping map = new MappingBuilder().on(n1, n2, n3)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3, vm4, vm5).build();
-        Set<UUID> on = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> on = new HashSet<>(Arrays.asList(n1, n2));
         Model mo = new DefaultModel(map);
         List<SatConstraint> l = new ArrayList<>();
         CumulatedRunningCapacity x = new CumulatedRunningCapacity(on, 4);
@@ -86,7 +85,7 @@ public class CCumulatedRunningCapacityTest implements PremadeElements {
         Mapping map = new MappingBuilder().on(n1, n2, n3)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3, vm4).ready(vm5).build();
-        Set<UUID> on = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> on = new HashSet<>(Arrays.asList(n1, n2));
         Model mo = new DefaultModel(map);
         List<SatConstraint> l = new ArrayList<>();
         l.add(new Running(Collections.singleton(vm5)));
@@ -117,7 +116,7 @@ public class CCumulatedRunningCapacityTest implements PremadeElements {
         Model mo = new DefaultModel(map);
         List<SatConstraint> l = new ArrayList<>();
 
-        List<UUID> seq = new ArrayList<>();
+        List<Integer> seq = new ArrayList<>();
         seq.add(vm1);
         seq.add(vm2);
         l.add(new SequentialVMTransitions(seq));
@@ -127,7 +126,7 @@ public class CCumulatedRunningCapacityTest implements PremadeElements {
         l.add(new Root(Collections.singleton(vm3)));
         l.add(new Root(Collections.singleton(vm4)));
 
-        Set<UUID> on = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> on = new HashSet<>(Arrays.asList(n1, n2));
         CumulatedRunningCapacity x = new CumulatedRunningCapacity(on, 3);
         x.setContinuous(true);
         l.add(x);

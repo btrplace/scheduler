@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -27,7 +26,10 @@ import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Choco implementation of {@link btrplace.model.constraint.Quarantine}.
@@ -52,10 +54,10 @@ public class CQuarantine implements ChocoSatConstraint {
         // It is just a composition of a root constraint on the VMs on the given nodes (the zone)
         // plus a ban on the other VMs to prevent them for being hosted in the zone
         Mapping map = rp.getSourceModel().getMapping();
-        Set<UUID> toRoot = new HashSet<>();
-        Set<UUID> toBan = new HashSet<>();
-        Collection<UUID> zone = cstr.getInvolvedNodes();
-        for (UUID vm : rp.getFutureRunningVMs()) {
+        Set<Integer> toRoot = new HashSet<>();
+        Set<Integer> toBan = new HashSet<>();
+        Collection<Integer> zone = cstr.getInvolvedNodes();
+        for (int vm : rp.getFutureRunningVMs()) {
             if (zone.contains(map.getVMLocation(vm))) {
                 toRoot.add(vm);
             } else {
@@ -72,7 +74,7 @@ public class CQuarantine implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
+    public Set<Integer> getMisPlacedVMs(Model m) {
         return Collections.emptySet();
     }
 

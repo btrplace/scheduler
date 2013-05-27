@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -25,7 +24,7 @@ import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+
 
 /**
  * Unit tests for {@link SliceUtils}.
@@ -38,7 +37,7 @@ public class SliceUtilsTest {
         CPSolver csp = new CPSolver();
         List<Slice> l = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            l.add(new Slice(new UUID(0, i),
+            l.add(new Slice(i,
                     csp.createBooleanVar("st " + i),
                     csp.createBooleanVar("ed " + i),
                     csp.createBooleanVar("du " + i),

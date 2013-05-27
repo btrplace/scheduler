@@ -29,7 +29,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Choco implementation of {@link btrplace.model.constraint.Preserve}.
@@ -56,7 +56,7 @@ public class CPreserve implements ChocoSatConstraint {
             throw new SolverException(rp.getSourceModel(), "Unable to get the resource mapper associated to '" +
                     cstr.getResource() + "'");
         }
-        for (UUID vm : cstr.getInvolvedVMs()) {
+        for (int vm : cstr.getInvolvedVMs()) {
             if (rp.getFutureRunningVMs().contains(vm)) {
                 int idx = rp.getVMIdx(vm);
                 IntDomainVar v = map.getVMsAllocation()[idx];
@@ -72,13 +72,13 @@ public class CPreserve implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
-        Set<UUID> bad = new HashSet<>();
+    public Set<Integer> getMisPlacedVMs(Model m) {
+        Set<Integer> bad = new HashSet<>();
         ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         if (rc == null) {
             bad.addAll(cstr.getInvolvedVMs());
         } else {
-            for (UUID vm : cstr.getInvolvedVMs()) {
+            for (int vm : cstr.getInvolvedVMs()) {
                 int x = rc.get(vm);
                 if (x < cstr.getAmount()) {
                     //TODO: Very inefficient. Resources may be  available

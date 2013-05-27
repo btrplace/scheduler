@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -31,7 +30,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Choco implementation of the {@link btrplace.model.constraint.SplitAmong} constraint.
@@ -59,15 +58,15 @@ public class CSplitAmong implements ChocoSatConstraint {
             return false;
         }
 
-        Set<Set<UUID>> vGrps = cstr.getGroupsOfVMs();
-        Set<Set<UUID>> pGrps = cstr.getGroupsOfNodes();
+        Set<Set<Integer>> vGrps = cstr.getGroupsOfVMs();
+        Set<Set<Integer>> pGrps = cstr.getGroupsOfNodes();
         CPSolver s = rp.getSolver();
 
         IntDomainVar[] grpVars = new IntDomainVar[vGrps.size()];
         //VM is assigned on a node <-> group variable associated to the VM
         //is assigned to the group of nodes it belong too.
         int i = 0;
-        for (Set<UUID> vms : vGrps) {
+        for (Set<Integer> vms : vGrps) {
 
             Among a = new Among(vms, pGrps);
             //If the constraint is continuous, there is no way a group of VMs already binded to a group of
@@ -92,9 +91,9 @@ public class CSplitAmong implements ChocoSatConstraint {
      * @param n the node
      * @return the group identifier, {@code -1} if the node does not belong to a group
      */
-    public int getPGroup(UUID n) {
+    public int getPGroup(int n) {
         int i = 0;
-        for (Set<UUID> pGrp : cstr.getGroupsOfNodes()) {
+        for (Set<Integer> pGrp : cstr.getGroupsOfNodes()) {
             if (pGrp.contains(n)) {
                 break;
             }
@@ -104,18 +103,18 @@ public class CSplitAmong implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
+    public Set<Integer> getMisPlacedVMs(Model m) {
         //contains the set of VMs hosted on a group id.
-        Set<UUID>[] usedGrp = new Set[cstr.getGroupsOfNodes().size()];
+        Set<Integer>[] usedGrp = new Set[cstr.getGroupsOfNodes().size()];
 
         Mapping map = m.getMapping();
 
-        Set<UUID> bad = new HashSet<>();
-        for (Set<UUID> vms : cstr.getGroupsOfVMs()) {
+        Set<Integer> bad = new HashSet<>();
+        for (Set<Integer> vms : cstr.getGroupsOfVMs()) {
             int grp = -1;
-            for (UUID vm : vms) {
+            for (int vm : vms) {
                 if (map.getRunningVMs().contains(vm)) {
-                    UUID n = map.getVMLocation(vm);
+                    int n = map.getVMLocation(vm);
                     int g = getPGroup(n);
                     if (g == -1) {
                         //The VM is on a node that belong to none of the given groups

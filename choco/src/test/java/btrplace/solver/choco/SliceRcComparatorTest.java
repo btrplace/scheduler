@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,7 +21,10 @@ import btrplace.model.view.ShareableResource;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Unit tests for {@link SliceRcComparator}.
@@ -37,7 +39,7 @@ public class SliceRcComparatorTest {
 
         List<Slice> l = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
-            UUID u = new UUID(0, i);
+            int u = i;
             l.add(new Slice(u, null, null, null, null));
         }
         return l;
@@ -53,8 +55,8 @@ public class SliceRcComparatorTest {
         SliceRcComparator cmp = new SliceRcComparator(rc, true);
         Collections.sort(l, cmp);
         for (int i = 0; i < l.size() - 1; i++) {
-            UUID u1 = l.get(i).getSubject();
-            UUID u2 = l.get(i + 1).getSubject();
+            int u1 = l.get(i).getSubject();
+            int u2 = l.get(i + 1).getSubject();
             Assert.assertTrue(rc.get(u1) <= rc.get(u2));
         }
     }
@@ -69,8 +71,8 @@ public class SliceRcComparatorTest {
         SliceRcComparator cmp = new SliceRcComparator(rc, false);
         Collections.sort(l, cmp);
         for (int i = 0; i < l.size() - 1; i++) {
-            UUID u1 = l.get(i).getSubject();
-            UUID u2 = l.get(i + 1).getSubject();
+            int u1 = l.get(i).getSubject();
+            int u2 = l.get(i + 1).getSubject();
             Assert.assertTrue(rc.get(u1) >= rc.get(u2));
         }
     }

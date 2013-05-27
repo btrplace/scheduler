@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,10 +20,10 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Ready;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
 import btrplace.solver.SolverException;
@@ -56,8 +55,8 @@ public class CFenceTest implements PremadeElements {
                 .run(n3, vm4)
                 .sleep(n4, vm5).build();
 
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2));
-        Set<UUID> ns = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<Integer> ns = new HashSet<>(Arrays.asList(n1, n2));
         CFence c = new CFence(new Fence(vms, ns));
         Model mo = new DefaultModel(m);
         Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
@@ -66,7 +65,7 @@ public class CFenceTest implements PremadeElements {
         vms.add(vm3);
         Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
         vms.add(vm4);
-        Set<UUID> bad = c.getMisPlacedVMs(mo);
+        Set<Integer> bad = c.getMisPlacedVMs(mo);
         Assert.assertEquals(1, bad.size());
         Assert.assertTrue(bad.contains(vm4));
     }
@@ -79,7 +78,7 @@ public class CFenceTest implements PremadeElements {
                 .run(n2, vm2)
                 .run(n3, vm3).build();
 
-        Set<UUID> on = new HashSet<>(Arrays.asList(n1, n3));
+        Set<Integer> on = new HashSet<>(Arrays.asList(n1, n3));
         Fence f = new Fence(map.getAllVMs(), on);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<SatConstraint> cstrs = new ArrayList<>();

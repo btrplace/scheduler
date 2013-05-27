@@ -37,7 +37,7 @@ import org.testng.annotations.Test;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.UUID;
+
 
 /**
  * Basic unit tests for {@link btrplace.solver.choco.actionModel.ResumeVMModel}.
@@ -62,7 +62,7 @@ public class ResumeVMModelTest implements PremadeElements {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
-                .setNextVMsStates(new HashSet<UUID>(), map.getAllVMs(), new HashSet<UUID>(), new HashSet<UUID>())
+                .setNextVMsStates(new HashSet<Integer>(), map.getAllVMs(), new HashSet<Integer>(), new HashSet<Integer>())
                 .build();
         rp.getNodeActions()[0].getState().setVal(1);
         rp.getNodeActions()[1].getState().setVal(1);
@@ -79,7 +79,7 @@ public class ResumeVMModelTest implements PremadeElements {
         Assert.assertNotNull(p);
         ResumeVM a = (ResumeVM) p.getActions().iterator().next();
 
-        UUID dest = rp.getNode(m.getDSlice().getHoster().getVal());
+        int dest = rp.getNode(m.getDSlice().getHoster().getVal());
         Assert.assertEquals(vm1, a.getVM());
         Assert.assertEquals(dest, a.getDestinationNode());
         Assert.assertEquals(n1, a.getSourceNode());
@@ -105,7 +105,7 @@ public class ResumeVMModelTest implements PremadeElements {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
-                .setNextVMsStates(new HashSet<UUID>(), map.getAllVMs(), new HashSet<UUID>(), new HashSet<UUID>())
+                .setNextVMsStates(new HashSet<Integer>(), map.getAllVMs(), new HashSet<Integer>(), new HashSet<Integer>())
                 .build();
         ResumeVMModel m1 = (ResumeVMModel) rp.getVMActions()[rp.getVMIdx(vm1)];
         ResumeVMModel m2 = (ResumeVMModel) rp.getVMActions()[rp.getVMIdx(vm2)];
