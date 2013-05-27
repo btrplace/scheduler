@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -380,6 +379,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         for (UUID vm : allVMs) {
             vms[i] = vm;
             revVMs.put(vm, i++);
+            uuidPool.book(vm);
         }
 
         nodes = new UUID[model.getMapping().getAllNodes().size()];
@@ -388,6 +388,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         for (UUID nId : model.getMapping().getAllNodes()) {
             nodes[i] = nId;
             revNodes.put(nId, i++);
+            uuidPool.book(nId);
         }
     }
 

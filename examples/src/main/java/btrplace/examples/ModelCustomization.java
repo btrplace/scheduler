@@ -21,13 +21,13 @@ import btrplace.model.*;
 import btrplace.model.constraint.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.event.ForgeVM;
 import btrplace.plan.event.MigrateVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluator;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
+import btrplace.solver.choco.durationEvaluator.LinearToAResourceDuration;
 
 import java.util.*;
 
@@ -69,35 +69,10 @@ public class ModelCustomization implements Example {
         }
 
         @Override
-        public int evaluate(UUID e) {
+        public int evaluate(Model mo, UUID e) {
             return rc.get(e) * 2 + 3;
         }
 
-    }
-
-    /**
-     * We customize the estimate duration of a ForgeVM action
-     * to be equals to 2 or 5 seconds, depending on the VM template
-     */
-    class MyForgeEvaluator implements DurationEvaluator {
-        Attributes attrs;
-
-        MyForgeEvaluator(Attributes a) {
-            attrs = a;
-        }
-
-        @Override
-        public int evaluate(UUID e) {
-            String tpl = attrs.isSet(e, "template") ? attrs.getString(e, "template") : "default";
-            switch (tpl) {
-                case "small":
-                    return 2;
-                case "large":
-                    return 6;
-                default:
-                    return 60;
-            }
-        }
     }
 
     private Model makeModel() {
@@ -134,13 +109,10 @@ public class ModelCustomization implements Example {
 
         Model mo = makeModel();
 
-        //Set the duration evaluators
+        //Change the duration evaluator for MigrateVM action
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         DurationEvaluators dev = cra.getDurationEvaluators();
-        dev.register(MigrateVM.class,
-                new MyMigrationEvaluator((ShareableResource) mo.getView(ShareableResource.VIEW_ID_BASE + "mem")));
-        dev.register(ForgeVM.class, new MyForgeEvaluator(mo.getAttributes()));
-
+        dev.register(MigrateVM.class, new LinearToAResourceDuration("mem", 2, 3));
 
         //Set some attributes
         Attributes attrs = mo.getAttributes();
@@ -148,6 +120,7 @@ public class ModelCustomization implements Example {
             long i = vm.getLeastSignificantBits();
             attrs.put(vm, "template", i % 2 == 0 ? "small" : "large");
             attrs.put(vm, "clone", true);
+            attrs.put(vm, "forge", i % 2 == 0 ? 2 : 6);
         }
         List<SatConstraint> cstrs = new ArrayList<>();
 

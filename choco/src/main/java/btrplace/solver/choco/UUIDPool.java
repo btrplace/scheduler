@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -34,6 +33,14 @@ public interface UUIDPool {
      * @return the UUID if possible, {@code null} if the pool is empty
      */
     UUID request();
+
+    /**
+     * Book a given UUID.
+     *
+     * @param u the UUID to book
+     * @return {@code true} iff the UUID has been booked.
+     */
+    boolean book(UUID u);
 
     /**
      * Release a UUID that will be available again.
