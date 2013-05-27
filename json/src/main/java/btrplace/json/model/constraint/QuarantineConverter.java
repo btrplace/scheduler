@@ -42,14 +42,14 @@ public class QuarantineConverter extends SatConstraintConverter<Quarantine> {
     @Override
     public Quarantine fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Quarantine(requiredUUIDs(o, "nodes"));
+        return new Quarantine(requiredElements(o, "nodes"));
     }
 
     @Override
     public JSONObject toJSON(Quarantine o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("nodes", uuidsToJSON(o.getInvolvedNodes()));
+        c.put("nodes", elementsToJSON(o.getInvolvedNodes()));
         return c;
     }
 }

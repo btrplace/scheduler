@@ -24,7 +24,7 @@ import junit.framework.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.util.UUID;
+
 
 /**
  * Unit tests for {@link btrplace.json.model.view.ShareableResourceConverter}.
@@ -46,7 +46,7 @@ public class ShareableResourceConverterTest implements PremadeElements {
         Assert.assertEquals(rc.getIdentifier(), rc2.getIdentifier());
         Assert.assertEquals(rc.getResourceIdentifier(), rc2.getResourceIdentifier());
         Assert.assertEquals(rc.getDefined(), rc2.getDefined());
-        for (UUID u : rc.getDefined()) {
+        for (int u : rc.getDefined()) {
             Assert.assertEquals(rc.get(u), rc2.get(u));
         }
     }

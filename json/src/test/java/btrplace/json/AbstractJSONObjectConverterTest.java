@@ -22,7 +22,8 @@ import net.minidev.json.JSONObject;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.UUID;
+import java.util.Random;
+
 
 /**
  * Unit tests for {@link AbstractJSONObjectConverter}.
@@ -31,27 +32,29 @@ import java.util.UUID;
  */
 public class AbstractJSONObjectConverterTest {
 
+    private static Random rnd = new Random();
+
     @Test
-    public void testValidRequiredUUID() throws JSONConverterException {
+    public void testValidRequiredint() throws JSONConverterException {
         JSONObject o = new JSONObject();
-        UUID u = UUID.randomUUID();
+        int u = rnd.nextInt();
         o.put("id", u);
-        Assert.assertEquals(AbstractJSONObjectConverter.requiredUUID(o, "id"), u);
+        Assert.assertEquals(AbstractJSONObjectConverter.requiredInt(o, "id"), u);
     }
 
-    @DataProvider(name = "getInvalidUUIDs")
-    public Object[][] getInvalidUUIDs() {
+    @DataProvider(name = "getInvalidints")
+    public Object[][] getInvalidints() {
         return new Object[][]{
                 {"id", "id", "toto"}, //bad type
-                {"id", "foo", UUID.randomUUID()} //bad write key
+                {"id", "foo", rnd.nextInt()} //bad write key
         };
     }
 
-    @Test(expectedExceptions = {JSONConverterException.class}, dataProvider = "getInvalidUUIDs")
-    public void testInValidRequiredUUID(String storeKey, String readKey, Object o) throws JSONConverterException {
+    @Test(expectedExceptions = {JSONConverterException.class}, dataProvider = "getInvalidints")
+    public void testInValidRequiredint(String storeKey, String readKey, Object o) throws JSONConverterException {
         JSONObject obj = new JSONObject();
         obj.put(storeKey, o);
-        AbstractJSONObjectConverter.requiredUUID(obj, readKey);
+        AbstractJSONObjectConverter.requiredInt(obj, readKey);
     }
 
     @Test

@@ -42,14 +42,14 @@ public class RootConverter extends SatConstraintConverter<Root> {
     @Override
     public Root fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Root(requiredUUIDs(o, "vms"));
+        return new Root(requiredElements(o, "vms"));
     }
 
     @Override
     public JSONObject toJSON(Root o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", uuidsToJSON(o.getInvolvedVMs()));
+        c.put("vms", elementsToJSON(o.getInvolvedVMs()));
         return c;
     }
 }

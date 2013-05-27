@@ -26,7 +26,7 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+
 
 /**
  * Unit tests for {@link btrplace.json.model.view.ModelViewsConverter}.
@@ -54,7 +54,7 @@ public class ModelViewsConverterTest {
         }
 
         @Override
-        public boolean substitute(UUID curId, UUID nextId) {
+        public boolean substitute(int curId, int nextId) {
             throw new UnsupportedOperationException();
         }
     }

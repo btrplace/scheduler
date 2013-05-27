@@ -26,7 +26,6 @@ import java.io.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Basic abstract solver-API/JSON objects converter.
@@ -36,35 +35,35 @@ import java.util.UUID;
 public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConverter<E> {
 
     /**
-     * Convert an array of UUID in the json format to a set.
+     * Convert an array of int in the json format to a set.
      *
      * @param a the json array
-     * @return the set of UUID
+     * @return the set of int
      */
-    public static Set<UUID> uuidsFromJSON(JSONArray a) {
-        Set<UUID> s = new HashSet<>(a.size());
+    public static Set<Integer> elementsFromJSON(JSONArray a) {
+        Set<Integer> s = new HashSet<>(a.size());
         for (Object o : a) {
-            s.add(UUID.fromString((String) o));
+            s.add((int) o);
         }
         return s;
     }
 
     /**
-     * Convert an array of UUIDs in the java format to a json array.
+     * Convert an array of ints in the java format to a json array.
      *
-     * @param s the collection of UUIDs
-     * @return the json formatted array of UUIDs
+     * @param s the collection of ints
+     * @return the json formatted array of ints
      */
-    public static JSONArray uuidsToJSON(Collection<UUID> s) {
+    public static JSONArray elementsToJSON(Collection<Integer> s) {
         JSONArray a = new JSONArray();
-        for (UUID u : s) {
-            a.add(u.toString());
+        for (int u : s) {
+            a.add(u);
         }
         return a;
     }
 
     /**
-     * Read an expected set of set of UUIDs.
+     * Read an expected set of set of ints.
      *
      * @param o  the object to parse
      * @param id the id in the map that should point to the set
@@ -72,52 +71,52 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
      * @throws btrplace.json.JSONConverterException
      *          if the key does not point to a set
      */
-    public static Set<Set<UUID>> requiredSets(JSONObject o, String id) throws JSONConverterException {
-        Set<Set<UUID>> res = new HashSet<>();
+    public static Set<Set<Integer>> requiredSets(JSONObject o, String id) throws JSONConverterException {
+        Set<Set<Integer>> res = new HashSet<>();
         Object x = o.get(id);
         if (!(x instanceof JSONArray)) {
-            throw new JSONConverterException("Set of UUIDs sets expected at key '" + id + "'");
+            throw new JSONConverterException("Set of ints sets expected at key '" + id + "'");
         }
         for (Object obj : (JSONArray) o.get(id)) {
-            res.add(uuidsFromJSON((JSONArray) obj));
+            res.add(elementsFromJSON((JSONArray) obj));
         }
         return res;
     }
 
     /**
-     * Read an expected set of UUIDs.
+     * Read an expected set of ints.
      *
      * @param o  the object to parse
      * @param id the id in the map that should point to the set
      * @return the set
      * @throws btrplace.json.JSONConverterException
-     *          if the key does not point to a set of UUIDs
+     *          if the key does not point to a set of ints
      */
-    public static Set<UUID> requiredUUIDs(JSONObject o, String id) throws JSONConverterException {
+    public static Set<Integer> requiredElements(JSONObject o, String id) throws JSONConverterException {
         Object x = o.get(id);
         if (!(x instanceof JSONArray)) {
-            throw new JSONConverterException("Set of UUIDs expected at key '" + id + "'");
+            throw new JSONConverterException("Set of ints expected at key '" + id + "'");
         }
-        return uuidsFromJSON((JSONArray) x);
+        return elementsFromJSON((JSONArray) x);
     }
 
     /**
-     * Read an expected UUID.
+     * Read an expected int.
      *
      * @param o  the object to parse
-     * @param id the id in the map that should point to the UUID.
-     * @return the UUID
+     * @param id the id in the map that should point to the int.
+     * @return the int
      * @throws btrplace.json.JSONConverterException
-     *          if the key does not point to a UUID
+     *          if the key does not point to a int
      */
-    public static UUID requiredUUID(JSONObject o, String id) throws JSONConverterException {
+    public static int requiredInt(JSONObject o, String id) throws JSONConverterException {
         if (!o.containsKey(id)) {
             throw new JSONConverterException("No value at key '" + id + "'");
         }
         try {
-            return UUID.fromString(o.get(id).toString());
+            return (int) o.get(id);
         } catch (Exception e) {
-            throw new JSONConverterException("Unable to read a UUID from string '" + id + "'", e);
+            throw new JSONConverterException("Unable to read a int from string '" + id + "'", e);
         }
     }
 

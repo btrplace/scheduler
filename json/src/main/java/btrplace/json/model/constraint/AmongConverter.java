@@ -23,7 +23,7 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * JSON converter for the {@link Among} constraint.
@@ -45,7 +45,7 @@ public class AmongConverter extends SatConstraintConverter<Among> {
     @Override
     public Among fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Among(requiredUUIDs(o, "vms"),
+        return new Among(requiredElements(o, "vms"),
                 requiredSets(o, "nodes"),
                 (Boolean) o.get("continuous"));
     }
@@ -54,10 +54,10 @@ public class AmongConverter extends SatConstraintConverter<Among> {
     public JSONObject toJSON(Among o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", uuidsToJSON(o.getInvolvedVMs()));
+        c.put("vms", elementsToJSON(o.getInvolvedVMs()));
         JSONArray a = new JSONArray();
-        for (Set<UUID> grp : o.getGroupsOfNodes()) {
-            a.add(uuidsToJSON(grp));
+        for (Set<Integer> grp : o.getGroupsOfNodes()) {
+            a.add(elementsToJSON(grp));
         }
         c.put("nodes", a);
         c.put("continuous", o.isContinuous());

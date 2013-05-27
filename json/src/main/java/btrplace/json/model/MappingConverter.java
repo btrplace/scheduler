@@ -23,7 +23,6 @@ import btrplace.model.DefaultMapping;
 import btrplace.model.Mapping;
 import net.minidev.json.JSONObject;
 
-import java.util.UUID;
 
 /**
  * Class to serialize and un-serialize {@link Mapping}.
@@ -35,15 +34,15 @@ public class MappingConverter extends AbstractJSONObjectConverter<Mapping> {
     @Override
     public JSONObject toJSON(Mapping c) {
         JSONObject o = new JSONObject();
-        o.put("offlineNodes", uuidsToJSON(c.getOfflineNodes()));
-        o.put("readyVMs", uuidsToJSON(c.getReadyVMs()));
+        o.put("offlineNodes", elementsToJSON(c.getOfflineNodes()));
+        o.put("readyVMs", elementsToJSON(c.getReadyVMs()));
 
         JSONObject ons = new JSONObject();
-        for (UUID n : c.getOnlineNodes()) {
+        for (int n : c.getOnlineNodes()) {
             JSONObject w = new JSONObject();
-            w.put("runningVMs", uuidsToJSON(c.getRunningVMs(n)));
-            w.put("sleepingVMs", uuidsToJSON(c.getSleepingVMs(n)));
-            ons.put(n.toString(), w);
+            w.put("runningVMs", elementsToJSON(c.getRunningVMs(n)));
+            w.put("sleepingVMs", elementsToJSON(c.getSleepingVMs(n)));
+            ons.put(Integer.toString(n), w);
         }
         o.put("onlineNodes", ons);
         return o;
@@ -52,21 +51,21 @@ public class MappingConverter extends AbstractJSONObjectConverter<Mapping> {
     @Override
     public Mapping fromJSON(JSONObject o) throws JSONConverterException {
         Mapping c = new DefaultMapping();
-        for (UUID u : requiredUUIDs(o, "offlineNodes")) {
+        for (int u : requiredElements(o, "offlineNodes")) {
             c.addOfflineNode(u);
         }
-        for (UUID u : requiredUUIDs(o, "readyVMs")) {
+        for (int u : requiredElements(o, "readyVMs")) {
             c.addReadyVM(u);
         }
         JSONObject ons = (JSONObject) o.get("onlineNodes");
         for (Object k : ons.keySet()) {
-            UUID u = UUID.fromString((String) k);
+            int u = Integer.parseInt((String) k);
             JSONObject on = (JSONObject) ons.get(k);
             c.addOnlineNode(u);
-            for (UUID vmId : requiredUUIDs(on, "runningVMs")) {
+            for (int vmId : requiredElements(on, "runningVMs")) {
                 c.addRunningVM(vmId, u);
             }
-            for (UUID vmId : requiredUUIDs(on, "sleepingVMs")) {
+            for (int vmId : requiredElements(on, "sleepingVMs")) {
                 c.addSleepingVM(vmId, u);
             }
         }

@@ -24,7 +24,7 @@ import net.minidev.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+
 
 /**
  * JSON converter for the {@link btrplace.model.constraint.SequentialVMTransitions} constraint.
@@ -46,9 +46,9 @@ public class SequentialVMTransitionsConverter extends SatConstraintConverter<Seq
     @Override
     public SequentialVMTransitions fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        List<UUID> s = new ArrayList<>();
+        List<Integer> s = new ArrayList<>();
         for (Object ob : (JSONArray) o.get("vms")) {
-            s.add(UUID.fromString((String) ob));
+            s.add((Integer) ob);
         }
         return new SequentialVMTransitions(s);
     }
@@ -57,7 +57,7 @@ public class SequentialVMTransitionsConverter extends SatConstraintConverter<Seq
     public JSONObject toJSON(SequentialVMTransitions o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", uuidsToJSON(o.getInvolvedVMs()));
+        c.put("vms", elementsToJSON(o.getInvolvedVMs()));
         return c;
     }
 }

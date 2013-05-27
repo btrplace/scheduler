@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -27,7 +26,7 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Unit tests for {@link btrplace.json.model.constraint.SplitAmongConverter}.
@@ -40,15 +39,15 @@ public class SplitAmongConverterTest implements PremadeElements {
 
     @Test
     public void testViables() throws JSONConverterException {
-        Set<UUID> s1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        Set<UUID> s2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
-        Set<UUID> s3 = new HashSet<>(Arrays.asList(vm7, vm8));
-        Set<Set<UUID>> vgrps = new HashSet<>(Arrays.asList(s1, s2, s3));
+        Set<Integer> s1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<Integer> s2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
+        Set<Integer> s3 = new HashSet<>(Arrays.asList(vm7, vm8));
+        Set<Set<Integer>> vgrps = new HashSet<>(Arrays.asList(s1, s2, s3));
 
-        Set<UUID> p1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> p2 = new HashSet<>(Arrays.asList(n4, n5));
-        Set<UUID> p3 = new HashSet<>(Arrays.asList(n3));
-        Set<Set<UUID>> pgrps = new HashSet<>(Arrays.asList(p1, p2, p3));
+        Set<Integer> p1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Integer> p2 = new HashSet<>(Arrays.asList(n4, n5));
+        Set<Integer> p3 = new HashSet<>(Arrays.asList(n3));
+        Set<Set<Integer>> pgrps = new HashSet<>(Arrays.asList(p1, p2, p3));
 
         SplitAmong d = new SplitAmong(vgrps, pgrps, false);
         SplitAmong c = new SplitAmong(vgrps, pgrps, true);

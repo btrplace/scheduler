@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,7 +21,7 @@ import btrplace.model.view.ShareableResource;
 import net.minidev.json.JSONObject;
 
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Serialize/Un-serialize an {@link btrplace.model.view.ShareableResource}.
@@ -46,10 +45,10 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
         JSONObject o = new JSONObject();
         o.put("id", getJSONId());
         o.put("rcId", rc.getResourceIdentifier());
-        Set<UUID> elems = rc.getDefined();
+        Set<Integer> elems = rc.getDefined();
         JSONObject values = new JSONObject();
-        for (UUID u : elems) {
-            values.put(u.toString(), rc.get(u));
+        for (int u : elems) {
+            values.put(Integer.toString(u), rc.get(u));
         }
         o.put("values", values);
         return o;
@@ -70,7 +69,7 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
         ShareableResource rc = new ShareableResource(rcId);
         JSONObject values = (JSONObject) o.get("values");
         for (String k : values.keySet()) {
-            UUID u = UUID.fromString(k);
+            int u = Integer.parseInt(k);
             int v = Integer.parseInt(values.get(k).toString());
             rc.set(u, v);
         }

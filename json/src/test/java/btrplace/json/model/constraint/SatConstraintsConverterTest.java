@@ -28,7 +28,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
+import java.util.Random;
+
 
 /**
  * Unit tests for {@link btrplace.json.model.constraint.SatConstraintsConverter}.
@@ -37,12 +38,14 @@ import java.util.UUID;
  */
 public class SatConstraintsConverterTest {
 
+    private static Random rnd = new Random();
+
     public static class MockSatConstraint extends SatConstraint {
 
         String str;
 
         public MockSatConstraint(String s) {
-            super(Collections.<UUID>emptySet(), Collections.<UUID>emptySet(), true);
+            super(Collections.<Integer>emptySet(), Collections.<Integer>emptySet(), true);
             str = s;
 
         }

@@ -41,14 +41,14 @@ public class SpreadConverter extends SatConstraintConverter<Spread> {
     @Override
     public Spread fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Spread(requiredUUIDs(o, "vms"), requiredBoolean(o, "continuous"));
+        return new Spread(requiredElements(o, "vms"), requiredBoolean(o, "continuous"));
     }
 
     @Override
     public JSONObject toJSON(Spread o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", uuidsToJSON(o.getInvolvedVMs()));
+        c.put("vms", elementsToJSON(o.getInvolvedVMs()));
         c.put("continuous", o.isContinuous());
         return c;
     }

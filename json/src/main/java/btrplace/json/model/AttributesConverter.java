@@ -22,11 +22,10 @@ import btrplace.model.Attributes;
 import btrplace.model.DefaultAttributes;
 import net.minidev.json.JSONObject;
 
-import java.util.UUID;
 
 /**
  * Serialize/un-serialize attributes.
- * In practice, the JSON representation is a hashmap where UUID are the keys.
+ * In practice, the JSON representation is a hashmap where int are the keys.
  * For each of these keys, a hashmap contains the key/values pair associated
  * to the element. A value is either a boolean ("true" or "false"), a number (integer or real), or a string.
  *
@@ -38,7 +37,7 @@ public class AttributesConverter extends AbstractJSONObjectConverter<Attributes>
     public Attributes fromJSON(JSONObject o) {
         Attributes attrs = new DefaultAttributes();
         for (Object el : o.keySet()) {
-            UUID u = UUID.fromString(el.toString());
+            int u = Integer.parseInt(el.toString());
             JSONObject entries = (JSONObject) o.get(el);
             for (Object entry : entries.keySet()) {
                 Object value = entries.get(entry);
@@ -64,12 +63,12 @@ public class AttributesConverter extends AbstractJSONObjectConverter<Attributes>
     @Override
     public JSONObject toJSON(Attributes attributes) {
         JSONObject res = new JSONObject();
-        for (UUID e : attributes.getElements()) {
+        for (int e : attributes.getElements()) {
             JSONObject el = new JSONObject();
             for (String k : attributes.getKeys(e)) {
                 el.put(k, attributes.get(e, k));
             }
-            res.put(e.toString(), el);
+            res.put(Integer.toString(e), el);
         }
         return res;
     }

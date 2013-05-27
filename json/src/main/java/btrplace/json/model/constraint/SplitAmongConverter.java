@@ -23,7 +23,7 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * JSON converter for the {@link SplitAmong} constraint.
@@ -56,13 +56,13 @@ public class SplitAmongConverter extends SatConstraintConverter<SplitAmong> {
         c.put("id", getJSONId());
 
         JSONArray vGroups = new JSONArray();
-        for (Set<UUID> grp : o.getGroupsOfVMs()) {
-            vGroups.add(uuidsToJSON(grp));
+        for (Set<Integer> grp : o.getGroupsOfVMs()) {
+            vGroups.add(elementsToJSON(grp));
         }
 
         JSONArray pGroups = new JSONArray();
-        for (Set<UUID> grp : o.getGroupsOfNodes()) {
-            pGroups.add(uuidsToJSON(grp));
+        for (Set<Integer> grp : o.getGroupsOfNodes()) {
+            pGroups.add(elementsToJSON(grp));
         }
 
         c.put("vms", vGroups);

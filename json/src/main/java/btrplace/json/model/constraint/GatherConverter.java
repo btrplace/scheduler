@@ -42,14 +42,14 @@ public class GatherConverter extends SatConstraintConverter<Gather> {
     @Override
     public Gather fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Gather(requiredUUIDs(o, "vms"));
+        return new Gather(requiredElements(o, "vms"));
     }
 
     @Override
     public JSONObject toJSON(Gather o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", uuidsToJSON(o.getInvolvedVMs()));
+        c.put("vms", elementsToJSON(o.getInvolvedVMs()));
         c.put("continuous", o.isContinuous());
         return c;
     }

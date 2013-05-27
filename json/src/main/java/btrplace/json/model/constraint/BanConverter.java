@@ -41,16 +41,16 @@ public class BanConverter extends SatConstraintConverter<Ban> {
     @Override
     public Ban fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Ban(requiredUUIDs(o, "vms"),
-                requiredUUIDs(o, "nodes"));
+        return new Ban(requiredElements(o, "vms"),
+                requiredElements(o, "nodes"));
     }
 
     @Override
     public JSONObject toJSON(Ban o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", uuidsToJSON(o.getInvolvedVMs()));
-        c.put("nodes", uuidsToJSON(o.getInvolvedNodes()));
+        c.put("vms", elementsToJSON(o.getInvolvedVMs()));
+        c.put("nodes", elementsToJSON(o.getInvolvedNodes()));
         return c;
     }
 }

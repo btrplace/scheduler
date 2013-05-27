@@ -23,7 +23,7 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * JSON converter for the {@link btrplace.model.constraint.Split} constraint.
@@ -54,8 +54,8 @@ public class SplitConverter extends SatConstraintConverter<Split> {
         c.put("id", getJSONId());
 
         JSONArray a = new JSONArray();
-        for (Set<UUID> grp : o.getSets()) {
-            a.add(uuidsToJSON(grp));
+        for (Set<Integer> grp : o.getSets()) {
+            a.add(elementsToJSON(grp));
         }
 
         c.put("vms", a);
