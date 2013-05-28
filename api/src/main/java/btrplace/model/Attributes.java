@@ -30,105 +30,116 @@ public interface Attributes extends Cloneable {
     /**
      * Put a boolean value.
      *
+     * @param t the element type
      * @param e the element identifier
      * @param k the attribute identifier
      * @param b the value to set
      * @return {@code true} if a previous value was overridden
      */
-    boolean put(int e, String k, boolean b);
+    boolean put(ElementType t, int e, String k, boolean b);
 
     /**
      * Put a String value.
      *
+     * @param t the element type
      * @param e the element identifier
      * @param k the attribute identifier
      * @param s the value to set
      * @return {@code true} if a previous value was overridden
      */
-    boolean put(int e, String k, String s);
+    boolean put(ElementType t, int e, String k, String s);
 
     /**
      * Put a long value.
      *
+     * @param t the element type
      * @param e the element identifier
      * @param k the attribute identifier
      * @param l the value to set
      * @return {@code true} if a previous value was overridden
      */
-    boolean put(int e, String k, long l);
+    boolean put(ElementType t, int e, String k, long l);
 
     /**
      * Put a double value.
      *
+     * @param t the element type
      * @param e the element identifier
      * @param k the attribute identifier
      * @param d the value to set
      * @return {@code true} if a previous value was overridden
      */
-    boolean put(int e, String k, double d);
+    boolean put(ElementType t, int e, String k, double d);
 
     /**
      * Get an attribute value as a simple Object.
      *
+     * @param t the element type
      * @param e the element identifier
      * @param k the attribute value
      * @return the value if it has been stated. {@code null} otherwise
      */
-    Object get(int e, String k);
+    Object get(ElementType t, int e, String k);
 
     /**
      * Get an attribute value as a boolean.
      *
+     * @param t the element type
      * @param e the element identifier
      * @param k the attribute value
      * @return the value if it has been stated. {@code null} otherwise
      */
-    Boolean getBoolean(int e, String k);
+    Boolean getBoolean(ElementType t, int e, String k);
 
     /**
      * Get an attribute value as a long.
      *
+     * @param t the element type
      * @param e the element identifier
      * @param k the attribute value
      * @return the value if it has been stated. {@code null} otherwise
      */
-    Long getLong(int e, String k);
+    Long getLong(ElementType t, int e, String k);
 
     /**
      * Get an attribute value as a string.
      *
+     * @param t the element type
      * @param e the element identifier
      * @param k the attribute value
      * @return the value if it has been stated. {@code null} otherwise
      */
-    String getString(int e, String k);
+    String getString(ElementType t, int e, String k);
 
     /**
      * Get an attribute value as a double.
      *
+     * @param t the element type
      * @param e the element identifier
      * @param k the attribute value
      * @return the value if it has been stated. {@code null} otherwise
      */
-    Double getDouble(int e, String k);
+    Double getDouble(ElementType t, int e, String k);
 
     /**
      * Check if an attribute is set for a given element.
      *
+     * @param t the element type
      * @param e the element
      * @param k the attribute identifier
      * @return {@code true} iff the attribute is set
      */
-    boolean isSet(int e, String k);
+    boolean isSet(ElementType t, int e, String k);
 
     /**
      * Unset an attribute for a given element.
      *
+     * @param t the element type
      * @param e the element identifier
      * @param k the attribute identifier
      * @return {@code true} iff a value was removed
      */
-    boolean unset(int e, String k);
+    boolean unset(ElementType t, int e, String k);
 
     /**
      * Clone the attributes.
