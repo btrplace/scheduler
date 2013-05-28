@@ -43,6 +43,7 @@ public class ConstantDuration implements DurationEvaluator {
         return duration;
     }
 
+
     @Override
     public String toString() {
         return new StringBuilder("d=").append(duration).toString();

@@ -51,12 +51,12 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
                 .run(n3, vm3, vm4)
                 .sleep(n2, vm5).get();
 
-        ShareableResource rc = new ShareableResource("cpu", 5);
-        rc.set(vm1, 2);
-        rc.set(vm2, 3);
-        rc.set(vm3, 3);
-        rc.set(vm4, 1);
-        rc.set(vm5, 5);
+        ShareableResource rc = new ShareableResource("cpu", 5, 5);
+        rc.setVMConsumption(vm1, 2);
+        rc.setVMConsumption(vm2, 3);
+        rc.setVMConsumption(vm3, 3);
+        rc.setVMConsumption(vm4, 1);
+        rc.setVMConsumption(vm5, 5);
 
         mo.attach(rc);
         List<SatConstraint> l = new ArrayList<>();
@@ -78,12 +78,12 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
 
         Set<Integer> on = new HashSet<>(Arrays.asList(n1, n2));
 
-        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
-        rc.set(vm1, 2);
-        rc.set(vm2, 3);
-        rc.set(vm3, 3);
-        rc.set(vm4, 1);
-        rc.set(vm5, 1);
+        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5, 5);
+        rc.setVMConsumption(vm1, 2);
+        rc.setVMConsumption(vm2, 3);
+        rc.setVMConsumption(vm3, 3);
+        rc.setVMConsumption(vm4, 1);
+        rc.setVMConsumption(vm5, 1);
 
         mo.attach(rc);
         List<SatConstraint> l = new ArrayList<>();
@@ -106,12 +106,12 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
                 .ready(vm5).get();
         Set<Integer> on = new HashSet<>(Arrays.asList(n1, n2));
 
-        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
-        rc.set(vm1, 2);
-        rc.set(vm2, 3);
-        rc.set(vm3, 3);
-        rc.set(vm4, 1);
-        rc.set(vm5, 5);
+        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5, 5);
+        rc.setVMConsumption(vm1, 2);
+        rc.setVMConsumption(vm2, 3);
+        rc.setVMConsumption(vm3, 3);
+        rc.setVMConsumption(vm4, 1);
+        rc.setVMConsumption(vm5, 5);
         mo.attach(rc);
 
         List<SatConstraint> l = new ArrayList<>();
@@ -134,12 +134,12 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
         Mapping m = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm2, vm3).run(n2, vm4).ready(vm5).get();
 
-        ShareableResource rc = new ShareableResource("cpu", 5);
-        rc.set(vm1, 2);
-        rc.set(vm2, 3);
-        rc.set(vm3, 3);
-        rc.set(vm4, 1);
-        rc.set(vm5, 5);
+        ShareableResource rc = new ShareableResource("cpu", 5, 5);
+        rc.setVMConsumption(vm1, 2);
+        rc.setVMConsumption(vm2, 3);
+        rc.setVMConsumption(vm3, 3);
+        rc.setVMConsumption(vm4, 1);
+        rc.setVMConsumption(vm5, 5);
         mo.attach(rc);
         CumulatedResourceCapacity c = new CumulatedResourceCapacity(m.getAllNodes(), "cpu", 10);
         CCumulatedResourceCapacity cc = new CCumulatedResourceCapacity(c);

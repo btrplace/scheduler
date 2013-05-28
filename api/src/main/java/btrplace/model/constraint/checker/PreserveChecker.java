@@ -23,7 +23,6 @@ import btrplace.model.view.ShareableResource;
 import btrplace.plan.event.Allocate;
 import btrplace.plan.event.AllocateEvent;
 
-;
 
 /**
  * Checker for the {@link btrplace.model.constraint.Preserve} constraint
@@ -77,7 +76,7 @@ public class PreserveChecker extends AllowAllConstraintChecker<Preserve> {
         }
         for (int vmId : getVMs()) {
             if (mo.getMapping().getRunningVMs().contains(vmId)) {
-                int v = r.get(vmId);
+                int v = r.getVMConsumption(vmId);
                 if (v < amount) {
                     return false;
                 }

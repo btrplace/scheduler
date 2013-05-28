@@ -58,9 +58,9 @@ public class Issues implements PremadeElements {
     public void testIssue5a() throws SolverException, ContradictionException {
 
         Model model = new DefaultModel();
-        ShareableResource resources = new ShareableResource("vcpu", 1);
-        resources.set(n1, 2);
-        resources.set(n2, 2);
+        ShareableResource resources = new ShareableResource("vcpu", 1, 1);
+        resources.setNodeCapacity(n1, 2);
+        resources.setNodeCapacity(n2, 2);
 
         Mapping map = new MappingFiller(model.getMapping()).on(n1, n2).off(n3).run(n1, vm1, vm2).get();
         model.attach(resources);

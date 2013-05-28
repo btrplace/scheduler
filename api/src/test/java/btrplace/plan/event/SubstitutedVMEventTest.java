@@ -62,6 +62,6 @@ public class SubstitutedVMEventTest implements PremadeElements {
         ModelView v = mock(ModelView.class);
         mo.attach(v);
         Assert.assertTrue(s.apply(mo));
-        verify(v).substitute(vm1, vm2);
+        verify(v).substituteVM(vm1, vm2);
     }
 }

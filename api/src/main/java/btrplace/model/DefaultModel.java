@@ -126,7 +126,7 @@ public class DefaultModel implements Model, Cloneable {
     @Override
     public Model clone() {
         DefaultModel m = new DefaultModel();
-        m.cfg = cfg.clone();
+        MappingUtils.fill(cfg, m.cfg);
         for (ModelView rc : resources.values()) {
             m.attach(rc.clone());
         }

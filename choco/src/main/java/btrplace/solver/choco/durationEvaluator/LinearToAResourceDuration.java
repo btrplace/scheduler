@@ -37,6 +37,8 @@ public class LinearToAResourceDuration implements DurationEvaluator {
 
     private double b;
 
+    private boolean onVM;
+
     /**
      * Make a new evaluator.
      * The offset value is set to 0
@@ -44,8 +46,8 @@ public class LinearToAResourceDuration implements DurationEvaluator {
      * @param rcId the resource identifier
      * @param a    the coefficient
      */
-    public LinearToAResourceDuration(String rcId, double a) {
-        this(rcId, a, 0);
+    public LinearToAResourceDuration(String rcId, boolean onVM, double a) {
+        this(rcId, onVM, a, 0);
     }
 
     /**
@@ -55,10 +57,11 @@ public class LinearToAResourceDuration implements DurationEvaluator {
      * @param a    the coefficient
      * @param b    the offset
      */
-    public LinearToAResourceDuration(String rcId, double a, double b) {
+    public LinearToAResourceDuration(String rcId, boolean onVM, double a, double b) {
         this.rc = rcId;
         this.a = a;
         this.b = b;
+        this.onVM = onVM;
     }
 
     @Override
@@ -67,7 +70,12 @@ public class LinearToAResourceDuration implements DurationEvaluator {
         if (r == null) {
             return -1;
         }
-        int x = r.get(e);
+        int x;
+        if (onVM) {
+            x = r.getVMConsumption(e);
+        } else {
+            x = r.getNodeCapacity(e);
+        }
         return (int) (a * x + b);
     }
 

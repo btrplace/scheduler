@@ -89,14 +89,14 @@ public class SingleResourceCapacityTest implements PremadeElements {
         m.addRunningVM(vm3, n2);
         m.addReadyVM(vm4);
 
-        ShareableResource rc = new ShareableResource("foo", 2);
+        ShareableResource rc = new ShareableResource("foo", 2, 2);
         mo.attach(rc);
         SingleResourceCapacity c = new SingleResourceCapacity(m.getAllNodes(), "foo", 3);
         Assert.assertEquals(c.isSatisfied(mo), true);
-        rc.set(vm3, 4);
+        rc.setVMConsumption(vm3, 4);
         Assert.assertEquals(c.isSatisfied(mo), false);
 
-        rc.set(vm3, 1);
+        rc.setVMConsumption(vm3, 1);
         m.addRunningVM(vm1, n2);
         Assert.assertEquals(c.isSatisfied(mo), true);
     }
@@ -113,7 +113,7 @@ public class SingleResourceCapacityTest implements PremadeElements {
         m.addRunningVM(vm3, n2);
         m.addReadyVM(vm4);
 
-        ShareableResource rc = new ShareableResource("foo", 2);
+        ShareableResource rc = new ShareableResource("foo", 2, 2);
         mo.attach(rc);
         SingleResourceCapacity c = new SingleResourceCapacity(m.getAllNodes(), "foo", 3);
 

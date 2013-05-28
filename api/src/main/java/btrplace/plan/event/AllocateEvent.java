@@ -78,7 +78,7 @@ public class AllocateEvent implements VMEvent {
         if (r == null) {
             return false;
         }
-        r.set(vm, qty);
+        r.setVMConsumption(vm, qty);
         return true;
     }
 

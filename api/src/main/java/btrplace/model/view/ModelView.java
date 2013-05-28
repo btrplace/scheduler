@@ -49,5 +49,5 @@ public interface ModelView extends Cloneable {
      * @param nextId the new VM identifier
      * @return {@code true} iff the operation succeeded
      */
-    boolean substitute(int curId, int nextId);
+    boolean substituteVM(int curId, int nextId);
 }

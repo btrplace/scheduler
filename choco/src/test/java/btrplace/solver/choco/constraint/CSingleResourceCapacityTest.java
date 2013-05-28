@@ -45,10 +45,10 @@ public class CSingleResourceCapacityTest implements PremadeElements {
         Model mo = new DefaultModel();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).get();
 
-        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
-        rc.set(vm1, 3);
-        rc.set(vm2, 3);
-        rc.set(vm3, 1);
+        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5, 5);
+        rc.setVMConsumption(vm1, 3);
+        rc.setVMConsumption(vm2, 3);
+        rc.setVMConsumption(vm3, 1);
 
         mo.attach(rc);
 
@@ -66,10 +66,10 @@ public class CSingleResourceCapacityTest implements PremadeElements {
         Model mo = new DefaultModel();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
 
-        ShareableResource rc = new ShareableResource("cpu", 5);
-        rc.set(vm1, 3);
-        rc.set(vm2, 1);
-        rc.set(vm3, 1);
+        ShareableResource rc = new ShareableResource("cpu", 5, 5);
+        rc.setVMConsumption(vm1, 3);
+        rc.setVMConsumption(vm2, 1);
+        rc.setVMConsumption(vm3, 1);
 
         mo.attach(rc);
 
@@ -89,10 +89,10 @@ public class CSingleResourceCapacityTest implements PremadeElements {
         Model mo = new DefaultModel();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
 
-        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
-        rc.set(vm1, 3);
-        rc.set(vm2, 3);
-        rc.set(vm3, 1);
+        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5, 5);
+        rc.setVMConsumption(vm1, 3);
+        rc.setVMConsumption(vm2, 3);
+        rc.setVMConsumption(vm3, 1);
 
         mo.attach(rc);
 
@@ -109,11 +109,11 @@ public class CSingleResourceCapacityTest implements PremadeElements {
     public void testContinuousSolvable() throws SolverException {
         Model mo = new DefaultModel();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1).run(n2, vm2, vm3).ready(vm4).get();
-        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
-        rc.set(vm1, 3);
-        rc.set(vm2, 1);
-        rc.set(vm3, 1);
-        rc.set(vm4, 3);
+        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5, 5);
+        rc.setVMConsumption(vm1, 3);
+        rc.setVMConsumption(vm2, 1);
+        rc.setVMConsumption(vm3, 1);
+        rc.setVMConsumption(vm4, 3);
 
         mo.attach(rc);
 

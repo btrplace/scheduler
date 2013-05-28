@@ -150,11 +150,11 @@ public class RelocatableVMModelTest implements PremadeElements {
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n1);
         map.addRunningVM(vm3, n2);
-        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 10);
-        rc.set(n1, 7);
-        rc.set(vm1, 3);
-        rc.set(vm2, 3);
-        rc.set(vm3, 5);
+        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 10, 10);
+        rc.setNodeCapacity(n1, 7);
+        rc.setVMConsumption(vm1, 3);
+        rc.setVMConsumption(vm2, 3);
+        rc.setVMConsumption(vm3, 5);
 
         Preserve pr = new Preserve(map.getAllVMs(), "cpu", 5);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
@@ -362,11 +362,11 @@ public class RelocatableVMModelTest implements PremadeElements {
         map.addRunningVM(vm5, n1);
         map.addRunningVM(vm6, n1);
         map.addRunningVM(vm7, n2);
-        ShareableResource rc = new ShareableResource("cpu", 10);
-        rc.set(n1, 7);
-        rc.set(vm5, 3);
-        rc.set(vm6, 3);
-        rc.set(vm7, 5);
+        ShareableResource rc = new ShareableResource("cpu", 10, 10);
+        rc.setNodeCapacity(n1, 7);
+        rc.setVMConsumption(vm5, 3);
+        rc.setVMConsumption(vm6, 3);
+        rc.setVMConsumption(vm7, 5);
 
         for (int vm : map.getAllVMs()) {
             mo.getAttributes().put(vm, "template", "small");

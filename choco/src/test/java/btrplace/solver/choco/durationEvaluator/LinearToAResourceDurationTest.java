@@ -33,22 +33,22 @@ public class LinearToAResourceDurationTest implements PremadeElements {
 
     @Test
     public void testSimple() {
-        ShareableResource rc = new ShareableResource("foo", 0);
+        ShareableResource rc = new ShareableResource("foo", 0, 0);
         Model mo = new DefaultModel();
         mo.attach(rc);
-        rc.set(vm1, 3);
-        LinearToAResourceDuration d = new LinearToAResourceDuration("foo", 3);
+        rc.setVMConsumption(vm1, 3);
+        LinearToAResourceDuration d = new LinearToAResourceDuration("foo", true, 3);
         Assert.assertEquals(d.getCoefficient(), 3.0);
         Assert.assertEquals(d.getOffset(), 0.0);
         Assert.assertEquals(d.getResourceId(), "foo");
         Assert.assertEquals(d.evaluate(mo, vm1), 9);
         Assert.assertEquals(d.evaluate(mo, vm2), 0);
 
-        d = new LinearToAResourceDuration("foo", 3, 4);
+        d = new LinearToAResourceDuration("foo", true, 3, 4);
         Assert.assertEquals(d.evaluate(mo, vm1), 13);
         Assert.assertEquals(d.evaluate(mo, vm3), 4);
 
-        d = new LinearToAResourceDuration("bar", 3, 4);
+        d = new LinearToAResourceDuration("bar", true, 3, 4);
         Assert.assertEquals(d.evaluate(mo, vm3), -1);
 
         d.setCoefficient(5);

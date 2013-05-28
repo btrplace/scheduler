@@ -18,7 +18,6 @@
 package btrplace.model.constraint.checker;
 
 import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
 import btrplace.model.MappingUtils;
 import btrplace.model.Model;
 import btrplace.model.constraint.Split;
@@ -40,8 +39,6 @@ public class SplitChecker extends AllowAllConstraintChecker<Split> {
      * The group of VMs.
      */
     private List<Set<Integer>> vGroups;
-
-    private Mapping curMapping;
 
     private Model mockModel;
 
@@ -78,11 +75,11 @@ public class SplitChecker extends AllowAllConstraintChecker<Split> {
     private boolean checkModel() {
         for (Set<Integer> vGroup : vGroups) {
             for (int vmId : vGroup) {
-                if (curMapping.getRunningVMs().contains(vmId)) {
+                if (mockModel.getMapping().getRunningVMs().contains(vmId)) {
                     //Get the hosting server
                     //Check if only hosts VMs in its group
-                    int nId = curMapping.getVMLocation(vmId);
-                    for (int vm : curMapping.getRunningVMs(nId)) {
+                    int nId = mockModel.getMapping().getVMLocation(vmId);
+                    for (int vm : mockModel.getMapping().getRunningVMs(nId)) {
                         if (getVMs().contains(vm) && !vGroup.contains(vm)) {
                             return false;
                         }

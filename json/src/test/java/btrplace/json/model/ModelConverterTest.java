@@ -58,8 +58,8 @@ public class ModelConverterTest implements PremadeElements {
         attrs.put(n1, "type", "xen");
 
         ShareableResource rc = new ShareableResource("cpu");
-        rc.set(vm1, 5);
-        rc.set(n1, 10);
+        rc.setVMConsumption(vm1, 5);
+        rc.setNodeCapacity(n1, 10);
         mo.attach(rc);
 
         String jo = conv.toJSONString(mo);

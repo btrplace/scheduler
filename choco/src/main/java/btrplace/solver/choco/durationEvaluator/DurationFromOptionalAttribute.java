@@ -34,15 +34,18 @@ public class DurationFromOptionalAttribute implements DurationEvaluator {
 
     private String key;
 
+    private boolean onVM;
+
     /**
      * Make a new evaluator.
      *
      * @param attrId the attribute identifier. The associated value must be an {@link Integer}.
      * @param dev    the evaluator to rely on if the attribute is not set or invalid
      */
-    public DurationFromOptionalAttribute(String attrId, DurationEvaluator dev) {
+    public DurationFromOptionalAttribute(String attrId, boolean isVM, DurationEvaluator dev) {
         parent = dev;
         key = attrId;
+        onVM = isVM;
     }
 
     @Override

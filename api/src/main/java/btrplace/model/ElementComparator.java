@@ -40,14 +40,17 @@ public class ElementComparator implements Comparator<Integer> {
      */
     private List<Integer> ascs;
 
+    private boolean compareVM;
+
     /**
      * Make a new comparator.
      * Comparison will be in ascending order
      *
-     * @param rc the resource to consider.
+     * @param compareVM {@code true} to compare VMs. {@code false} for nodes
+     * @param rc        the resource to consider.
      */
-    public ElementComparator(ShareableResource rc) {
-        this(rc, true);
+    public ElementComparator(boolean compareVM, ShareableResource rc) {
+        this(compareVM, rc, true);
     }
 
     /**
@@ -56,9 +59,10 @@ public class ElementComparator implements Comparator<Integer> {
      * @param rc  the resource to consider
      * @param asc {@code true} for an ascending comparison
      */
-    public ElementComparator(ShareableResource rc, boolean asc) {
+    public ElementComparator(boolean compareVM, ShareableResource rc, boolean asc) {
         this.rcs = new ArrayList<>();
         this.ascs = new ArrayList<>();
+        this.compareVM = compareVM;
 
         rcs.add(rc);
         ascs.add(asc ? 1 : -1);
@@ -81,7 +85,12 @@ public class ElementComparator implements Comparator<Integer> {
     public int compare(Integer o1, Integer o2) {
         for (int i = 0; i < rcs.size(); i++) {
             ShareableResource rc = rcs.get(i);
-            int ret = rc.compare(o1, o2);
+            int ret;
+            if (compareVM) {
+                ret = rc.getVMConsumption(o1) - rc.getVMConsumption(o2);
+            } else {
+                ret = rc.getNodeCapacity(o1) - rc.getNodeCapacity(o2);
+            }
             if (ret != 0) {
                 return ascs.get(i) * ret;
             }

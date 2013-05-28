@@ -79,7 +79,7 @@ public class CPreserve implements ChocoSatConstraint {
             bad.addAll(cstr.getInvolvedVMs());
         } else {
             for (int vm : cstr.getInvolvedVMs()) {
-                int x = rc.get(vm);
+                int x = rc.getVMConsumption(vm);
                 if (x < cstr.getAmount()) {
                     //TODO: Very inefficient. Resources may be  available
                     bad.add(vm);

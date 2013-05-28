@@ -72,7 +72,7 @@ public class AllocateEventTest implements PremadeElements {
         ShareableResource rc = new ShareableResource("foo");
         mo.attach(rc);
         Assert.assertTrue(na.apply(mo));
-        Assert.assertEquals(3, rc.get(vm1));
+        Assert.assertEquals(3, rc.getVMConsumption(vm1));
     }
 
     @Test

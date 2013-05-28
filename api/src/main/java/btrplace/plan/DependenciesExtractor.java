@@ -79,7 +79,7 @@ public class DependenciesExtractor implements ActionVisitor {
         if (rc == null) {
             return false;
         }
-        int oldAmount = rc.get(a.getVM());
+        int oldAmount = rc.getVMConsumption(a.getVM());
         if (newAmount > oldAmount) {
             demandingint.put(a, a.getHost());
             return getDemandings(a.getHost()).add(a);

@@ -69,12 +69,12 @@ public class OverbookTest implements PremadeElements {
         cfg.addOnlineNode(n2);
 
         ShareableResource rc = new ShareableResource("cpu");
-        rc.set(n1, 1);
-        rc.set(n2, 4);
+        rc.setNodeCapacity(n1, 1);
+        rc.setNodeCapacity(n2, 4);
 
-        rc.set(vm1, 2);
-        rc.set(vm2, 2);
-        rc.set(vm3, 4);
+        rc.setVMConsumption(vm1, 2);
+        rc.setVMConsumption(vm2, 2);
+        rc.setVMConsumption(vm3, 4);
 
         cfg.addRunningVM(vm1, n1);
         cfg.addRunningVM(vm2, n2);
@@ -86,7 +86,7 @@ public class OverbookTest implements PremadeElements {
         Overbook o = new Overbook(s, "cpu", 2);
         Assert.assertEquals(o.isSatisfied(i), true);
 
-        rc.set(vm1, 4);
+        rc.setVMConsumption(vm1, 4);
         Assert.assertEquals(o.isSatisfied(i), false);
 
         cfg.addRunningVM(vm1, n2);
@@ -106,12 +106,12 @@ public class OverbookTest implements PremadeElements {
         cfg.addOnlineNode(n2);
 
         ShareableResource rc = new ShareableResource("cpu");
-        rc.set(n1, 1);
-        rc.set(n2, 4);
+        rc.setNodeCapacity(n1, 1);
+        rc.setNodeCapacity(n2, 4);
 
-        rc.set(vm1, 2);
-        rc.set(vm2, 2);
-        rc.set(vm3, 4);
+        rc.setVMConsumption(vm1, 2);
+        rc.setVMConsumption(vm2, 2);
+        rc.setVMConsumption(vm3, 4);
 
         cfg.addRunningVM(vm1, n1);
         cfg.addRunningVM(vm2, n2);

@@ -114,7 +114,7 @@ public class ModelViewMapperTest {
         }
 
         @Override
-        public boolean substitute(int curId, int nextId) {
+        public boolean substituteVM(int curId, int nextId) {
             throw new UnsupportedOperationException();
         }
     }

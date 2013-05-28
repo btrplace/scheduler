@@ -86,15 +86,15 @@ public class CumulatedResourceCapacityTest implements PremadeElements {
         map.addRunningVM(vm3, n2);
         map.addRunningVM(vm4, n3);
 
-        ShareableResource rc = new ShareableResource("foo", 1);
-        rc.set(vm2, 2);
+        ShareableResource rc = new ShareableResource("foo", 1, 1);
+        rc.setVMConsumption(vm2, 2);
         mo.attach(rc);
         Set<Integer> nodes = new HashSet<>(Arrays.asList(n1, n2));
         CumulatedResourceCapacity cc = new CumulatedResourceCapacity(nodes, "foo", 4);
         Assert.assertEquals(cc.isSatisfied(mo), true);
         Assert.assertEquals(new CumulatedResourceCapacity(nodes, "bar", 100).isSatisfied(mo), false);
 
-        rc.set(vm1, 3);
+        rc.setVMConsumption(vm1, 3);
         Assert.assertEquals(cc.isSatisfied(mo), false);
         map.addSleepingVM(vm2, n1);
         map.addSleepingVM(vm3, n1);
@@ -114,7 +114,7 @@ public class CumulatedResourceCapacityTest implements PremadeElements {
         map.addRunningVM(vm3, n2);
         map.addRunningVM(vm4, n3);
         map.addReadyVM(vm5);
-        ShareableResource rc = new ShareableResource("foo", 1);
+        ShareableResource rc = new ShareableResource("foo", 1, 1);
         mo.attach(rc);
 
         Set<Integer> nodes = new HashSet<>(Arrays.asList(n1, n2));

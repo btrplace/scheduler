@@ -140,7 +140,7 @@ public class DefaultReconfigurationPlanMonitorTest implements PremadeElements {
         ShutdownNode sN1 = new ShutdownNode(n1, 5, 7);
 
         ShareableResource rc = new ShareableResource("cpu");
-        rc.set(vm3, 3);
+        rc.setVMConsumption(vm3, 3);
 
         mo.attach(rc);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);

@@ -56,11 +56,11 @@ public class COverbookTest implements PremadeElements {
         for (int i = 0; i < vms.length; i++) {
             if (i < nodes.length) {
                 nodes[i] = i;
-                rcCPU.set(nodes[i], 2);
+                rcCPU.setNodeCapacity(nodes[i], 2);
                 m.addOnlineNode(nodes[i]);
             }
             vms[i] = 100 + i;
-            rcCPU.set(vms[i], 1);
+            rcCPU.setVMConsumption(vms[i], 1);
 
             m.addReadyVM(vms[i]);
         }
@@ -94,11 +94,11 @@ public class COverbookTest implements PremadeElements {
         for (int i = 0; i < vms.length; i++) {
             if (i < nodes.length) {
                 nodes[i] = i;
-                rcCPU.set(nodes[i], 2);
+                rcCPU.setNodeCapacity(nodes[i], 2);
                 m.addOnlineNode(nodes[i]);
             }
             vms[i] = 100 + i;
-            rcCPU.set(vms[i], 1);
+            rcCPU.setVMConsumption(vms[i], 1);
 
             m.addReadyVM(vms[i]);
         }
@@ -129,11 +129,11 @@ public class COverbookTest implements PremadeElements {
         for (int i = 0; i < vms.length; i++) {
             if (i < nodes.length) {
                 nodes[i] = i;
-                rcMem.set(nodes[i], 3);
+                rcMem.setNodeCapacity(nodes[i], 3);
                 m.addOnlineNode(nodes[i]);
             }
             vms[i] = 100 + i;
-            rcMem.set(vms[i], 1);
+            rcMem.setVMConsumption(vms[i], 1);
             m.addReadyVM(vms[i]);
         }
         mo.attach(rcMem);
@@ -142,7 +142,7 @@ public class COverbookTest implements PremadeElements {
         c.add(new Running(m.getAllVMs()));
         c.add(new Preserve(m.getAllVMs(), "mem", 1));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.getDurationEvaluators().register(BootVM.class, new LinearToAResourceDuration("mem", 2, 3));
+        cra.getDurationEvaluators().register(BootVM.class, new LinearToAResourceDuration("mem", true, 2, 3));
         Assert.assertNull(cra.solve(mo, c));
     }
 
@@ -153,7 +153,7 @@ public class COverbookTest implements PremadeElements {
                 .run(n1, vm1)
                 .run(n2, vm2, vm3)
                 .run(n3, vm4, vm5, vm6).get();
-        ShareableResource rcCPU = new ShareableResource("cpu", 1);
+        ShareableResource rcCPU = new ShareableResource("cpu", 1, 1);
         mo.attach(rcCPU);
         Overbook o1 = new Overbook(Collections.singleton(n1), "cpu", 1);
         Overbook o2 = new Overbook(Collections.singleton(n2), "cpu", 2);
@@ -172,7 +172,7 @@ public class COverbookTest implements PremadeElements {
         Model mo = new DefaultModel();
         Mapping m = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1).ready(vm3).get();
 
-        ShareableResource rcCPU = new ShareableResource("cpu", 2);
+        ShareableResource rcCPU = new ShareableResource("cpu", 2, 2);
 
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Running(Collections.singleton(vm3)));
@@ -199,9 +199,9 @@ public class COverbookTest implements PremadeElements {
         Mapping map = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1, vm2).get();
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("foo");
-        rc.set(n1, 5);
-        rc.set(vm1, 3);
-        rc.set(vm2, 2);
+        rc.setNodeCapacity(n1, 5);
+        rc.setVMConsumption(vm1, 3);
+        rc.setVMConsumption(vm2, 2);
         mo.attach(rc);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();

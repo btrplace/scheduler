@@ -124,9 +124,9 @@ public class DependenciesExtractorTest implements PremadeElements {
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n1);
 
-        ShareableResource rc = new ShareableResource("cpu", 0);
-        rc.set(vm1, 3);
-        rc.set(vm2, 5);
+        ShareableResource rc = new ShareableResource("cpu", 0, 0);
+        rc.setVMConsumption(vm1, 3);
+        rc.setVMConsumption(vm2, 5);
 
         mo.attach(rc);
 

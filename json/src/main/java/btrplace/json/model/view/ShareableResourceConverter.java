@@ -25,6 +25,8 @@ import java.util.Set;
 
 /**
  * Serialize/Un-serialize an {@link btrplace.model.view.ShareableResource}.
+ * <p/>
+ * TODO: Missing default values
  *
  * @author Fabien Hermenier
  */
@@ -45,18 +47,27 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
         JSONObject o = new JSONObject();
         o.put("id", getJSONId());
         o.put("rcId", rc.getResourceIdentifier());
-        Set<Integer> elems = rc.getDefined();
+
+        Set<Integer> elems = rc.getDefinedVMs();
         JSONObject values = new JSONObject();
         for (int u : elems) {
-            values.put(Integer.toString(u), rc.get(u));
+            values.put(Integer.toString(u), rc.getVMConsumption(u));
         }
-        o.put("values", values);
+        o.put("vms", values);
+
+        elems = rc.getDefinedNodes();
+        values = new JSONObject();
+        for (int u : elems) {
+            values.put(Integer.toString(u), rc.getNodeCapacity(u));
+        }
+        o.put("nodes", values);
+
         return o;
     }
 
     @Override
     public ShareableResource fromJSON(JSONObject o) {
-        if (!o.containsKey("id") || !o.containsKey("values") || !o.containsKey("rcId")) {
+        if (!o.containsKey("id") || !o.containsKey("vms") || !o.containsKey("nodes") || !o.containsKey("rcId")) {
             return null;
         }
         String id = o.get("id").toString();
@@ -67,12 +78,19 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
         String rcId = o.get("rcId").toString();
 
         ShareableResource rc = new ShareableResource(rcId);
-        JSONObject values = (JSONObject) o.get("values");
+        JSONObject values = (JSONObject) o.get("vms");
         for (String k : values.keySet()) {
             int u = Integer.parseInt(k);
             int v = Integer.parseInt(values.get(k).toString());
-            rc.set(u, v);
+            rc.setVMConsumption(u, v);
         }
+        values = (JSONObject) o.get("nodes");
+        for (String k : values.keySet()) {
+            int u = Integer.parseInt(k);
+            int v = Integer.parseInt(values.get(k).toString());
+            rc.setNodeCapacity(u, v);
+        }
+
         return rc;
     }
 }

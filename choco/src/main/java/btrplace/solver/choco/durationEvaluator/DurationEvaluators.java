@@ -45,16 +45,16 @@ public class DurationEvaluators {
         durations = new HashMap<>();
 
         //Default constructors
-        durations.put(MigrateVM.class, new DurationFromOptionalAttribute("migrate", new ConstantDuration(1)));
-        durations.put(BootVM.class, new DurationFromOptionalAttribute("boot", new ConstantDuration(1)));
-        durations.put(ShutdownVM.class, new DurationFromOptionalAttribute("shutdown", new ConstantDuration(1)));
-        durations.put(SuspendVM.class, new DurationFromOptionalAttribute("suspend", new ConstantDuration(1)));
-        durations.put(ResumeVM.class, new DurationFromOptionalAttribute("resume", new ConstantDuration(1)));
-        durations.put(ForgeVM.class, new DurationFromOptionalAttribute("forge", new ConstantDuration(1)));
-        durations.put(ShutdownNode.class, new DurationFromOptionalAttribute("shutdown", new ConstantDuration(1)));
-        durations.put(BootNode.class, new DurationFromOptionalAttribute("boot", new ConstantDuration(1)));
-        durations.put(KillVM.class, new DurationFromOptionalAttribute("kill", new ConstantDuration(1)));
-        durations.put(Allocate.class, new DurationFromOptionalAttribute("allocate", new ConstantDuration(1)));
+        durations.put(MigrateVM.class, new DurationFromOptionalAttribute("migrate", true, new ConstantDuration(1)));
+        durations.put(BootVM.class, new DurationFromOptionalAttribute("boot", true, new ConstantDuration(1)));
+        durations.put(ShutdownVM.class, new DurationFromOptionalAttribute("shutdown", true, new ConstantDuration(1)));
+        durations.put(SuspendVM.class, new DurationFromOptionalAttribute("suspend", true, new ConstantDuration(1)));
+        durations.put(ResumeVM.class, new DurationFromOptionalAttribute("resume", true, new ConstantDuration(1)));
+        durations.put(ForgeVM.class, new DurationFromOptionalAttribute("forge", true, new ConstantDuration(1)));
+        durations.put(ShutdownNode.class, new DurationFromOptionalAttribute("shutdown", false, new ConstantDuration(1)));
+        durations.put(BootNode.class, new DurationFromOptionalAttribute("boot", false, new ConstantDuration(1)));
+        durations.put(KillVM.class, new DurationFromOptionalAttribute("kill", true, new ConstantDuration(1)));
+        durations.put(Allocate.class, new DurationFromOptionalAttribute("allocate", true, new ConstantDuration(1)));
     }
 
     /**
@@ -104,7 +104,7 @@ public class DurationEvaluators {
      *
      * @param mo the model to consider
      * @param a  the action' class
-     * @param e  the element
+     * @param e  the element identifier
      * @return a positive number if the evaluation succeeded. A negative number otherwise
      */
     public int evaluate(Model mo, Class<? extends Action> a, int e) throws SolverException {

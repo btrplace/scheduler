@@ -39,7 +39,7 @@ public class DurationFromOptionalAttributeTest implements PremadeElements {
         Attributes attrs = mo.getAttributes();
         DurationEvaluator parent = new ConstantDuration(15);
 
-        DurationFromOptionalAttribute dev = new DurationFromOptionalAttribute("boot", parent);
+        DurationFromOptionalAttribute dev = new DurationFromOptionalAttribute("boot", true, parent);
         Assert.assertEquals(parent, dev.getParent());
         Assert.assertEquals("boot", dev.getAttributeKey());
         Assert.assertEquals(15, dev.evaluate(mo, vm1));

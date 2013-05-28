@@ -73,7 +73,7 @@ public class ModelCustomization implements Example {
 
         @Override
         public int evaluate(Model mo, int e) {
-            return rc.get(e) * 2 + 3;
+            return rc.getVMConsumption(e) * 2 + 3;
         }
 
     }
@@ -86,11 +86,11 @@ public class ModelCustomization implements Example {
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
 
-        ShareableResource rcMem = new ShareableResource("mem", 32); //32GB by default
+        ShareableResource rcMem = new ShareableResource("mem", 32, 1); //32GB by default for the nodes
 
-        rcMem.set(vm1, 1).set(vm2, 2).set(vm3, 3)
-                .set(vm4, 1).set(vm5, 2).set(vm6, 3)
-                .set(vm7, 1).set(vm8, 2).set(vm9, 3).set(vm10, 1);
+        rcMem.setVMConsumption(vm1, 1).setVMConsumption(vm2, 2).setVMConsumption(vm3, 3)
+                .setVMConsumption(vm4, 1).setVMConsumption(vm5, 2).setVMConsumption(vm6, 3)
+                .setVMConsumption(vm7, 1).setVMConsumption(vm8, 2).setVMConsumption(vm9, 3).setVMConsumption(vm10, 1);
 
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n1);
@@ -115,7 +115,7 @@ public class ModelCustomization implements Example {
         //Change the duration evaluator for MigrateVM action
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         DurationEvaluators dev = cra.getDurationEvaluators();
-        dev.register(MigrateVM.class, new LinearToAResourceDuration("mem", 2, 3));
+        dev.register(MigrateVM.class, new LinearToAResourceDuration("mem", true, 2, 3));
 
         //Set some attributes
         Attributes attrs = mo.getAttributes();

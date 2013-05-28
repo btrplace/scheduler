@@ -72,6 +72,8 @@ public class DefaultModelTest {
         when(rc.getIdentifier()).thenReturn("foo");
         ModelView b = mock(ModelView.class);
         when(b.getIdentifier()).thenReturn("bar");
+        when(b.clone()).thenReturn(b);
+        when(rc.clone()).thenReturn(rc);
         i.attach(rc);
         i.attach(b);
 

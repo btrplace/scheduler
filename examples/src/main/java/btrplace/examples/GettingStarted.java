@@ -88,16 +88,16 @@ public class GettingStarted implements Example {
      */
     private static ShareableResource makeCPUResourceView() {
         ShareableResource rc = new ShareableResource("cpu");
-        rc.set(n1, 8);
-        rc.set(n2, 8);
-        rc.set(n3, 8);
-        rc.set(n4, 8);
+        rc.setNodeCapacity(n1, 8);
+        rc.setNodeCapacity(n2, 8);
+        rc.setNodeCapacity(n3, 8);
+        rc.setNodeCapacity(n4, 8);
 
-        rc.set(vm1, 2);
-        rc.set(vm2, 3);
-        rc.set(vm3, 4);
-        rc.set(vm4, 3);
-        rc.set(vm6, 5);
+        rc.setVMConsumption(vm1, 2);
+        rc.setVMConsumption(vm2, 3);
+        rc.setVMConsumption(vm3, 4);
+        rc.setVMConsumption(vm4, 3);
+        rc.setVMConsumption(vm6, 5);
 
         return rc;
     }
@@ -108,16 +108,16 @@ public class GettingStarted implements Example {
      */
     private static ShareableResource makeMemResourceView() {
         ShareableResource rc = new ShareableResource("mem");
-        rc.set(n1, 7);
-        rc.set(n2, 7);
-        rc.set(n3, 7);
-        rc.set(n4, 7);
+        rc.setNodeCapacity(n1, 7);
+        rc.setNodeCapacity(n2, 7);
+        rc.setNodeCapacity(n3, 7);
+        rc.setNodeCapacity(n4, 7);
 
-        rc.set(vm1, 2);
-        rc.set(vm2, 2);
-        rc.set(vm3, 4);
-        rc.set(vm4, 3);
-        rc.set(vm6, 4);
+        rc.setVMConsumption(vm1, 2);
+        rc.setVMConsumption(vm2, 2);
+        rc.setVMConsumption(vm3, 4);
+        rc.setVMConsumption(vm4, 3);
+        rc.setVMConsumption(vm6, 4);
 
         return rc;
     }

@@ -72,7 +72,7 @@ public class PreserveTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testIsSatisfied() {
-        ShareableResource rc = new ShareableResource("cpu", 3);
+        ShareableResource rc = new ShareableResource("cpu", 3, 3);
         Model m = new DefaultModel();
         Mapping map = m.getMapping();
         map.addOnlineNode(n1);
@@ -83,21 +83,21 @@ public class PreserveTest implements PremadeElements {
         m.attach(rc);
         Set<Integer> s = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         Preserve p = new Preserve(s, "cpu", 3);
-        rc.set(vm1, 3);
-        rc.set(vm2, 1); //Not running so we don't care
-        rc.set(vm3, 3);
+        rc.setVMConsumption(vm1, 3);
+        rc.setVMConsumption(vm2, 1); //Not running so we don't care
+        rc.setVMConsumption(vm3, 3);
         Assert.assertEquals(true, p.isSatisfied(m));
 
-        rc.unset(vm3); //Set to 3 by default
+        rc.unsetVM(vm3); //Set to 3 by default
         Assert.assertEquals(true, p.isSatisfied(m));
         Assert.assertEquals(false, new Preserve(s, "mem", 3).isSatisfied(m));
 
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(m);
-        rc.set(vm3, 1);
+        rc.setVMConsumption(vm3, 1);
         Assert.assertFalse(p.isSatisfied(plan));
         plan.add(new Allocate(vm3, n1, "cpu", 7, 5, 7));
         Assert.assertTrue(p.isSatisfied(plan));
-        rc.set(vm1, 1);
+        rc.setVMConsumption(vm1, 1);
         AllocateEvent e = new AllocateEvent(vm1, "cpu", 4);
         Assert.assertFalse(p.isSatisfied(plan));
         MigrateVM mig = new MigrateVM(vm1, n1, n2, 0, 3);

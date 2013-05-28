@@ -86,7 +86,7 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
         }
 
         @Override
-        public boolean substitute(int curId, int nextId) {
+        public boolean substituteVM(int curId, int nextId) {
             throw new UnsupportedOperationException();
         }
     }
@@ -358,13 +358,13 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
     @Test
     public void testGetResourceMapping() throws SolverException {
         Model m = defaultModel();
-        ShareableResource rc = new ShareableResource("cpu", 0);
+        ShareableResource rc = new ShareableResource("cpu", 0, 0);
         for (int n : m.getMapping().getAllNodes()) {
-            rc.set(n, 4);
+            rc.setNodeCapacity(n, 4);
         }
 
         for (int vm : m.getMapping().getReadyVMs()) {
-            rc.set(vm, 2);
+            rc.setVMConsumption(vm, 2);
         }
         m.attach(rc);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(m).build();
@@ -471,8 +471,8 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
         map.addSleepingVM(vm3, n1);
         map.addReadyVM(vm5);
         ShareableResource rc = new ShareableResource("foo");
-        rc.set(vm1, 5);
-        rc.set(vm2, 7);
+        rc.setVMConsumption(vm1, 5);
+        rc.setVMConsumption(vm2, 7);
 
         mo.getAttributes().put(vm4, "template", "small");
         mo.attach(rc);

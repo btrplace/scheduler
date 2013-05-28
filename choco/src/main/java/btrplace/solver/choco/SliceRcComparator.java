@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -33,21 +32,32 @@ public class SliceRcComparator implements Comparator<Slice> {
 
     private int ratio;
 
+    private boolean vm;
+
     /**
      * Make a new comparator.
      *
      * @param r   the resource used to perform the comparison
+     * @param vm  {@code true} to compare VM, {@code false} to compare nodes
      * @param asc {@code true} for an ascending comparison
      */
-    public SliceRcComparator(ShareableResource r, boolean asc) {
+    public SliceRcComparator(ShareableResource r, boolean vm, boolean asc) {
         this.rc = r;
         ratio = asc ? 1 : -1;
+        this.vm = vm;
     }
 
     @Override
     public int compare(Slice s1, Slice s2) {
-        int x = rc.get(s1.getSubject());
-        int y = rc.get(s2.getSubject());
+        int x, y;
+        if (vm) {
+            x = rc.getVMConsumption(s1.getSubject());
+            y = rc.getVMConsumption(s2.getSubject());
+        } else {
+            x = rc.getNodeCapacity(s1.getSubject());
+            y = rc.getNodeCapacity(s2.getSubject());
+
+        }
         return ratio * (x - y);
     }
 }

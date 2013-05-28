@@ -56,7 +56,7 @@ public class TimeBasedPlanApplierTest implements PremadeElements {
         ShutdownNode sN1 = new ShutdownNode(n1, 5, 7);
 
         ShareableResource rc = new ShareableResource("cpu");
-        rc.set(vm3, 3);
+        rc.setVMConsumption(vm3, 3);
 
         mo.attach(rc);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
@@ -77,7 +77,7 @@ public class TimeBasedPlanApplierTest implements PremadeElements {
         Assert.assertTrue(resMapping.getOfflineNodes().contains(n1));
         Assert.assertTrue(resMapping.getOnlineNodes().contains(n4));
         ShareableResource rc = (ShareableResource) res.getView(ShareableResource.VIEW_ID_BASE + "cpu");
-        Assert.assertEquals(rc.get(vm3), 7);
+        Assert.assertEquals(rc.getVMConsumption(vm3), 7);
         Assert.assertEquals(resMapping.getVMLocation(vm1), n4);
         Assert.assertEquals(resMapping.getVMLocation(vm2), n2);
         Assert.assertEquals(resMapping.getVMLocation(vm4), n3);

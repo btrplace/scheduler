@@ -63,7 +63,7 @@ public class SubstitutedVMEvent implements VMEvent {
     @Override
     public boolean apply(Model m) {
         for (ModelView v : m.getViews()) {
-            v.substitute(oldint, newint);
+            v.substituteVM(oldint, newint);
         }
         return true;
     }

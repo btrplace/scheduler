@@ -23,8 +23,6 @@ import btrplace.model.constraint.CumulatedResourceCapacity;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.event.*;
 
-;
-
 /**
  * Checker for the {@link btrplace.model.constraint.CumulatedResourceCapacity} constraint
  *
@@ -65,13 +63,13 @@ public class CumulatedResourceCapacityChecker extends AllowAllConstraintChecker<
 
     @Override
     public boolean start(BootVM a) {
-        return arrive(rc.get(a.getVM()), a.getDestinationNode());
+        return arrive(rc.getVMConsumption(a.getVM()), a.getDestinationNode());
     }
 
     @Override
     public boolean start(KillVM a) {
         if (getConstraint().isContinuous()/* && srcRunnings.remove(a.getVM())*/) {
-            return leave(rc.get(a.getVM()), a.getNode());
+            return leave(rc.getVMConsumption(a.getVM()), a.getNode());
         }
         return true;
     }
@@ -80,7 +78,7 @@ public class CumulatedResourceCapacityChecker extends AllowAllConstraintChecker<
     public boolean start(MigrateVM a) {
         if (getConstraint().isContinuous()) {
             if (!(getNodes().contains(a.getSourceNode()) && getNodes().contains(a.getDestinationNode()))) {
-                return leave(rc.get(a.getVM()), a.getSourceNode()) && arrive(rc.get(a.getVM()), a.getDestinationNode());
+                return leave(rc.getVMConsumption(a.getVM()), a.getSourceNode()) && arrive(rc.getVMConsumption(a.getVM()), a.getDestinationNode());
             }
         }
         return true;
@@ -88,17 +86,17 @@ public class CumulatedResourceCapacityChecker extends AllowAllConstraintChecker<
 
     @Override
     public boolean start(ResumeVM a) {
-        return arrive(rc.get(a.getVM()), a.getDestinationNode());
+        return arrive(rc.getVMConsumption(a.getVM()), a.getDestinationNode());
     }
 
     @Override
     public boolean start(ShutdownVM a) {
-        return leave(rc.get(a.getVM()), a.getNode());
+        return leave(rc.getVMConsumption(a.getVM()), a.getNode());
     }
 
     @Override
     public boolean start(SuspendVM a) {
-        return leave(rc.get(a.getVM()), a.getSourceNode());
+        return leave(rc.getVMConsumption(a.getVM()), a.getSourceNode());
     }
 
     @Override
@@ -108,7 +106,7 @@ public class CumulatedResourceCapacityChecker extends AllowAllConstraintChecker<
             free = getConstraint().getAmount();
             Mapping map = mo.getMapping();
             for (int n : getNodes()) {
-                free -= rc.sum(map.getRunningVMs(n), true);
+                free -= rc.sum(map.getRunningVMs(n), true, true);
                 if (free < 0) {
                     return false;
                 }
@@ -119,7 +117,7 @@ public class CumulatedResourceCapacityChecker extends AllowAllConstraintChecker<
 
     @Override
     public boolean start(Allocate e) {
-        return arrive(rc.get(e.getVM()), e.getHost());
+        return arrive(rc.getVMConsumption(e.getVM()), e.getHost());
     }
 
     @Override
@@ -138,7 +136,7 @@ public class CumulatedResourceCapacityChecker extends AllowAllConstraintChecker<
         int remainder = getConstraint().getAmount();
         for (int id : getNodes()) {
             if (i.getMapping().getOnlineNodes().contains(id)) {
-                remainder -= rc.sum(i.getMapping().getRunningVMs(id), true);
+                remainder -= rc.sum(i.getMapping().getRunningVMs(id), true, true);
                 if (remainder < 0) {
                     return false;
                 }

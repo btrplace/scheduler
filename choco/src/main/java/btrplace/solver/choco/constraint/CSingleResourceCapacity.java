@@ -91,7 +91,7 @@ public class CSingleResourceCapacity implements ChocoSatConstraint {
         for (int n : cstr.getInvolvedNodes()) {
             int remainder = cstr.getAmount();
             for (int v : map.getRunningVMs(n)) {
-                remainder -= rc.get(v);
+                remainder -= rc.getVMConsumption(v);
                 if (remainder < 0) {
                     bad.addAll(map.getRunningVMs(n));
                     break;
