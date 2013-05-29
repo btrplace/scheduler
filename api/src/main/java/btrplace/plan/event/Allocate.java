@@ -24,7 +24,7 @@ import btrplace.model.VM;
 import java.util.Objects;
 
 /**
- * An action to indicate the amount of resource of a given type
+ * An action to indicate the amount of resources of a given type
  * to allocate to a VM.
  *
  * @author Fabien Hermenier
@@ -38,8 +38,8 @@ public class Allocate extends Action implements VMEvent {
     /**
      * Make a new constraint.
      *
-     * @param vm     the VM identifier
-     * @param host   the identifier of the node hosting the VM
+     * @param vm     the VM
+     * @param host   the node hosting the VM
      * @param rcId   the resource identifier
      * @param amount the minimum amount of resource to allocate
      * @param st     the moment the action starts
@@ -54,7 +54,7 @@ public class Allocate extends Action implements VMEvent {
     /**
      * Get the node that is currently hosting the VM.
      *
-     * @return the node identifier
+     * @return the node
      */
     public Node getHost() {
         return node;

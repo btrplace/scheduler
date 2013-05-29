@@ -100,7 +100,6 @@ public abstract class SatConstraint {
     /**
      * Check if a plan satisfies the constraint.
      * This method is only considered when the constraint provides a continuous restriction.
-     * By default, the method checks that the result model satisfies the constraint
      *
      * @param p the plan to inspect
      * @return {@code true} iff the plan satisfies the constraint
@@ -135,8 +134,7 @@ public abstract class SatConstraint {
     }
 
     /**
-     * Indicates if the restriction provided by the constraint has to be
-     * continuous if it is possible.
+     * Indicates if the restriction provided by the constraint is continuous.
      *
      * @param b {@code true} to ask for a continuous satisfaction, {@code false} for a discrete satisfaction.
      * @return {@code true} iff the parameter has been considered
@@ -147,7 +145,7 @@ public abstract class SatConstraint {
     }
 
     /**
-     * Check if the restriction provided by the constraint be continuous.
+     * Check if the restriction provided by the constraint is continuous.
      *
      * @return {@code true} for a continuous restriction
      */

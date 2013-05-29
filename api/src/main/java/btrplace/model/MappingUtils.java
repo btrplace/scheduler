@@ -32,10 +32,12 @@ public final class MappingUtils {
     public static enum State {
         /**
          * Specify running VMs.
-         */Runnings,
+         */
+        Runnings,
         /**
          * Specify sleeping VMs.
-         */Sleepings
+         */
+        Sleepings
     }
 
     /**
@@ -246,6 +248,13 @@ public final class MappingUtils {
         return res;
     }
 
+    /**
+     * Fill a destination mapping with all the elements
+     * in a source mapping
+     *
+     * @param src the mapping to copy
+     * @param dst the destination mapping
+     */
     public static void fill(Mapping src, Mapping dst) {
         for (Node off : src.getOfflineNodes()) {
             dst.addOfflineNode(off);

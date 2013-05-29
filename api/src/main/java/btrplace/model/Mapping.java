@@ -22,14 +22,16 @@ import java.util.Set;
 
 /**
  * A mapping denotes the current state and placement of VMs and nodes.
+ * Elements in a mapping must be created for {@link Model#newVM()}
+ * and {@link Model#newNode()}
  *
  * @author Fabien Hermenier
  */
 public interface Mapping extends Cloneable {
 
     /**
-     * Set a virtual machine running on a node. The node must already be online.
-     * If the virtual machine is already in a other location or state in the mapping, its state is updated
+     * Set a VM running on a node. The node must already be online.
+     * If the VM is already in a other location or state in the mapping, its state is updated
      *
      * @param vm   the VM
      * @param node the node that will host the VM. The node must already be considered as online.
@@ -51,7 +53,7 @@ public interface Mapping extends Cloneable {
      * Set a VM ready for being running.
      * If the VM is already in a other location or state in the mapping, its state is updated
      *
-     * @param vm the VM identifier, {@code >= 0}
+     * @param vm the VM
      */
     void addReadyVM(VM vm);
 
@@ -72,7 +74,7 @@ public interface Mapping extends Cloneable {
     boolean remove(Node n);
 
     /**
-     * Get the nodes that are online.
+     * Get the online nodes.
      *
      * @return a set of nodes, may be empty
      */
@@ -87,7 +89,7 @@ public interface Mapping extends Cloneable {
 
     /**
      * Set a node offline. If the node is already in the mapping but in an another state, it is updated.
-     * The node must not host any virtual machines
+     * The node must not host any VMs
      *
      * @param node the node
      * @return {@code true} if the node is offline. {@code false} otherwise
@@ -95,7 +97,7 @@ public interface Mapping extends Cloneable {
     boolean addOfflineNode(Node node);
 
     /**
-     * Get the nodes that are offline.
+     * Get the offline nodes..
      *
      * @return a set of nodes, may be empty
      */
@@ -126,7 +128,7 @@ public interface Mapping extends Cloneable {
     /**
      * Get the VMs that are running on a node.
      *
-     * @param n the node.  {@code >= 0}
+     * @param n the node.
      * @return a set of VMs, may be empty
      */
     Set<VM> getRunningVMs(Node n);
@@ -172,7 +174,7 @@ public interface Mapping extends Cloneable {
     /**
      * Copy a mapping.
      *
-     * @return the created copy
+     * @return the resulting copy
      */
     Mapping clone();
 

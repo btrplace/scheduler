@@ -21,14 +21,14 @@ import java.util.Set;
 
 /**
  * Allow to specify attributes related to managed elements.
- * Attributes are key/value pair, where values are Java primitives (integer, double, String, boolean)
+ * Attributes are key/value pairs, where values are Java primitives (integer, double, String, boolean)
  *
  * @author Fabien Hermenier
  */
 public interface Attributes extends Cloneable {
 
     /**
-     * Put a boolean value for a VM.
+     * Put a boolean value.
      *
      * @param e the element
      * @param k the attribute identifier
@@ -38,7 +38,7 @@ public interface Attributes extends Cloneable {
     boolean put(Element e, String k, boolean b);
 
     /**
-     * Put a String value for a VM.
+     * Put a String value.
      *
      * @param e the element
      * @param k the attribute identifier
@@ -145,7 +145,7 @@ public interface Attributes extends Cloneable {
     Set<Element> getDefined();
 
     /**
-     * Get all the attributes keys that are registered for a VM.
+     * Get all the attributes keys that are registered.
      *
      * @param e the element
      * @return a set that may be empty

@@ -35,7 +35,7 @@ import java.util.Set;
 public class Fence extends SatConstraint {
 
     /**
-     * Make a new constraint.
+     * Make a new discrete constraint.
      *
      * @param vms   the VMs identifiers
      * @param nodes the nodes identifiers

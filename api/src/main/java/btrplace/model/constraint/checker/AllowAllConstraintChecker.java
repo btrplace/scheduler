@@ -37,7 +37,7 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
 
     /**
      * VMs involved in the constraint.
-     * Updated after each {@link btrplace.plan.event.SubstitutedVMEvent} event.
+     * Updated after each {@link SubstitutedVMEvent} event.
      */
     private Set<VM> vms;
 

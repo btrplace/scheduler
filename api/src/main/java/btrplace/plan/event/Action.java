@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -25,7 +24,8 @@ import java.util.*;
 /**
  * An action is an event that has to be scheduled for reliability purpose.
  * <p/>
- * An action may embed several other events that may be attached to a particular
+ * An action may embed several other events. Events are attach to the actions
+ * using {@link Hook}.
  * hook.
  *
  * @author Fabien Hermenier
@@ -33,7 +33,7 @@ import java.util.*;
 public abstract class Action implements Event {
 
     /**
-     * Possible moment where events can be considered.
+     * Possible moments where an event can be considered.
      */
     public static enum Hook {
         /**
@@ -66,9 +66,9 @@ public abstract class Action implements Event {
 
     /**
      * Apply the action on a model.
-     * In practice, the events with the {@link Hook#pre} are executed in first,
+     * In practice, the events attached to {@link Hook#pre} are executed in first,
      * then {@link #applyAction(btrplace.model.Model)} is called. Finally,
-     * the events with the {@link Hook#post} are executed.
+     * the events attached to {@link Hook#post} are executed.
      *
      * @param i the instance to alter with the action
      * @return {@code true} if the action and all the events were applied successfully
@@ -78,7 +78,7 @@ public abstract class Action implements Event {
     }
 
     /**
-     * Apply all the events linked to a given hook
+     * Apply the events attached to a given hook.
      *
      * @param k the hook
      * @param i the model to modify with the application of the events
@@ -121,7 +121,7 @@ public abstract class Action implements Event {
 
 
     /**
-     * Add an event on the action.
+     * Add an event to the action.
      * The moment the event will be executed depends on its hook.
      *
      * @param k the hook
@@ -138,7 +138,7 @@ public abstract class Action implements Event {
     }
 
     /**
-     * Get the events having a specific hook.
+     * Get the events attached to a specific hook.
      *
      * @param k the hook
      * @return a list of events that may be empty

@@ -1,3 +1,20 @@
+/*
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ *
+ * This file is part of btrplace.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.plan;
 
 import btrplace.model.Model;
@@ -7,7 +24,7 @@ import java.util.Set;
 
 /**
  * This allows to monitor the execution of a reconfiguration plan while
- * considering the dependencies between the actions that is established
+ * considering the dependencies between the actions that are established
  * in a {@link ReconfigurationPlan}.
  * <p/>
  * With regards to the actions that have already been executed, it
@@ -25,7 +42,7 @@ public interface ReconfigurationPlanMonitor {
     Model getCurrentModel();
 
     /**
-     * Commit an action that must not be blocked.
+     * Commit an action that was applyable.
      * If it is theoretically possible to execute the action on the current model,
      * the model is updated accordingly.
      *

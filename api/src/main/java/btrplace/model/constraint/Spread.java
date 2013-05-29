@@ -26,8 +26,8 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * A constraint to indicate that the given VMs, if running,
- * must be hosted on distinct nodes.
+ * A constraint to force that the given VMs, if running,
+ * to be hosted on distinct nodes.
  * <p/>
  * If the restriction is continuous, the constraint ensure no VMs are relocated to a node hosting a VM
  * involved in the same Spread constraint.

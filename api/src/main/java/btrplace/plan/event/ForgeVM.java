@@ -35,7 +35,7 @@ public class ForgeVM extends Action implements VMStateTransition {
     /**
      * Make a new action.
      *
-     * @param vm the VM to force.
+     * @param vm the VM to forge.
      */
     public ForgeVM(VM vm, int st, int ed) {
         super(st, ed);
@@ -43,8 +43,8 @@ public class ForgeVM extends Action implements VMStateTransition {
     }
 
     /**
-     * Put the VM in the ready state if it does not already belong
-     * to the mapping.
+     * Put the VM in the ready state iff
+     * it does not already belong to the mapping.
      *
      * @param m the model to modify
      * @return {@code true} iff successful
@@ -61,11 +61,11 @@ public class ForgeVM extends Action implements VMStateTransition {
     }
 
     /**
-     * Test if this action is equals to another object.
+     * Test if the action is equals to another object.
      *
      * @param o the object to compare with
-     * @return true if ref is an instance of Force and if both
-     *         instance involve the same virtual machine
+     * @return true if {@code o} is an instance of {@link ForgeVM} and if both
+     *         instances involve the same VM
      */
     @Override
     public boolean equals(Object o) {

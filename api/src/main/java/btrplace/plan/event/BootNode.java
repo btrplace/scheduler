@@ -24,7 +24,8 @@ import btrplace.model.Node;
 import java.util.Objects;
 
 /**
- * An action to consume an offline node. Once the execution is finished, the node is online.
+ * An action to boot an offline node.
+ * Once the execution is finished, the node is online.
  *
  * @author Fabien Hermenier
  */
@@ -33,9 +34,9 @@ public class BootNode extends Action implements NodeEvent {
     private Node node;
 
     /**
-     * Create a new startup action on an offline node.
+     * Create a new action on an offline node.
      *
-     * @param n The node to consume
+     * @param n The node to boot
      * @param s the moment the action starts
      * @param f the moment the action is finished
      */
@@ -48,7 +49,8 @@ public class BootNode extends Action implements NodeEvent {
      * Test the equality with another object.
      *
      * @param obj The object to compare with
-     * @return true if o is an instance of Startup and if both actions act on the same node
+     * @return {@code true} if {@code obj} is an instance of {@link BootNode}
+     *         and if both actions act on the same node
      */
     @Override
     public boolean equals(Object obj) {

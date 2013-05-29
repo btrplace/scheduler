@@ -25,7 +25,7 @@ import btrplace.model.constraint.checker.SplitChecker;
 import java.util.*;
 
 /**
- * A constraint to force several set of VMs to not share any node when they are
+ * A constraint to force several sets of VMs to not share any node when they are
  * running.
  * <p/>
  * When the restriction is discrete, the constraint ensures there is no co-location on

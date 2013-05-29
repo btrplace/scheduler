@@ -52,7 +52,7 @@ public class ShareableResource implements ModelView, Cloneable {
 
     /**
      * Make a new resource that use {@link #DEFAULT_NO_VALUE}
-     * for VMs and nodes.
+     * for both VMs and nodes.
      *
      * @param id the resource identifier
      */
@@ -77,10 +77,10 @@ public class ShareableResource implements ModelView, Cloneable {
     }
 
     /**
-     * Get the VM consumption for that resource.
+     * Get the VM consumption.
      *
      * @param vm the VM
-     * @return the capacity if it was defined or the default value.
+     * @return its consumption if it was defined otherwise the default value.
      */
     public int getConsumption(VM vm) {
         if (vmsConsumption.containsKey(vm)) {
@@ -90,10 +90,10 @@ public class ShareableResource implements ModelView, Cloneable {
     }
 
     /**
-     * Get the node capacity for that resource.
+     * Get the node capacity.
      *
-     * @param n the node identifier
-     * @return the capacity if it was defined or the default value.
+     * @param n the node
+     * @return its capacity if it was defined otherwise the default value.
      */
     public int getCapacity(Node n) {
         if (nodesCapacity.containsKey(n)) {
@@ -107,7 +107,7 @@ public class ShareableResource implements ModelView, Cloneable {
      * Get the capacity for a list of nodes.
      *
      * @param ids the node identifiers
-     * @return the capacity for each node. The order is maintained
+     * @return the capacity of each node. The order is maintained
      */
     public List<Integer> getCapacities(List<Node> ids) {
         List<Integer> res = new ArrayList<>(ids.size());
@@ -121,7 +121,7 @@ public class ShareableResource implements ModelView, Cloneable {
      * Get the consumption for a list of VMs.
      *
      * @param ids the VM identifiers
-     * @return the consumption for each VM. The order is maintained
+     * @return the consumption of each VM. The order is maintained
      */
     public List<Integer> getConsumptions(List<VM> ids) {
         List<Integer> res = new ArrayList<>(ids.size());
@@ -134,7 +134,7 @@ public class ShareableResource implements ModelView, Cloneable {
     /**
      * Get the VMs with defined consumptions.
      *
-     * @return a set of VM identifiers. May be empty
+     * @return a set that may be empty
      */
     public Set<VM> getDefinedVMs() {
         return vmsConsumption.keySet();
@@ -143,16 +143,16 @@ public class ShareableResource implements ModelView, Cloneable {
     /**
      * Get the nodes with defined capacities
      *
-     * @return a set of node identifiers. May be empty
+     * @return a set that may be empty
      */
     public Set<Node> getDefinedNodes() {
         return nodesCapacity.keySet();
     }
 
     /**
-     * Define the resource consumption of a VM.
+     * Set the resource consumption of a VM.
      *
-     * @param vm  the VM identifier
+     * @param vm  the VM
      * @param val the value to set
      * @return the current resource
      */
@@ -162,9 +162,9 @@ public class ShareableResource implements ModelView, Cloneable {
     }
 
     /**
-     * Define the resource consumption of a node.
+     * Set the resource consumption of a node.
      *
-     * @param n   the node identifier
+     * @param n   the node
      * @param val the value to set
      * @return the current resource
      */
@@ -174,9 +174,9 @@ public class ShareableResource implements ModelView, Cloneable {
     }
 
     /**
-     * Un-define a resource for a VM.
+     * Unset a VM consumption.
      *
-     * @param vm the VM identifier
+     * @param vm the VM
      * @return {@code true} iff a value was previously defined for {@code n}.
      */
     public boolean unset(VM vm) {
@@ -184,9 +184,9 @@ public class ShareableResource implements ModelView, Cloneable {
     }
 
     /**
-     * Un-define a resource for a node.
+     * Unset a node capacity.
      *
-     * @param n the node identifier
+     * @param n the node
      * @return {@code true} iff a value was previously defined for {@code n}.
      */
     public boolean unset(Node n) {
@@ -197,8 +197,8 @@ public class ShareableResource implements ModelView, Cloneable {
     /**
      * Check if the resource consumption is defined for a VM.
      *
-     * @param vm the VM identifier
-     * @return {@code true} iff the resource is defined for {@code n}.
+     * @param vm the VM
+     * @return {@code true} iff the consumption is defined.
      */
     public boolean consumptionDefined(VM vm) {
         return vmsConsumption.containsKey(vm);
@@ -208,7 +208,7 @@ public class ShareableResource implements ModelView, Cloneable {
      * Check if the resource capacity is defined for a node.
      *
      * @param n the node identifier
-     * @return {@code true} iff the resource is defined for {@code n}.
+     * @return {@code true} iff the capacity is defined}.
      */
     public boolean capacityDefined(Node n) {
         return nodesCapacity.containsKey(n);
@@ -217,7 +217,7 @@ public class ShareableResource implements ModelView, Cloneable {
     /**
      * Get the view identifier.
      *
-     * @return "ShareableResource.rcId" where rcId is the resource identifier provided to the constructor
+     * @return {@code "ShareableResource.rcId"} where rcId equals {@link #getResourceIdentifier()}
      */
     @Override
     public String getIdentifier() {
@@ -322,15 +322,15 @@ public class ShareableResource implements ModelView, Cloneable {
     }
 
     @Override
-    public boolean substituteVM(VM oldint, VM newint) {
-        setConsumption(newint, getConsumption(oldint));
+    public boolean substituteVM(VM oldRef, VM newRef) {
+        setConsumption(newRef, getConsumption(oldRef));
         return true;
     }
 
     /**
      * Get the cumulated VMs consumption.
      *
-     * @param ids   the identifiers.
+     * @param ids   the VMs.
      * @param undef {@code true} to include the undefined elements using the default value
      * @return the value
      */
@@ -347,7 +347,7 @@ public class ShareableResource implements ModelView, Cloneable {
     /**
      * Get the cumulated nodes capacity.
      *
-     * @param ids   the identifiers.
+     * @param ids   the nodes.
      * @param undef {@code true} to include the undefined elements using the default value
      * @return the value
      */

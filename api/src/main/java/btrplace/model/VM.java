@@ -19,10 +19,10 @@ package btrplace.model;
 
 /**
  * Model a virtual machine.
- * VM should not be instantiated directly. Use {@link btrplace.model.Model#newVM()} instead.
+ * VM should not be instantiated directly. Use {@link Model#newVM()} instead.
  *
  * @author Fabien Hermenier
- * @see {@link Model#newVM()} ()}
+ * @see {@link Model#newVM()}
  */
 public class VM implements Element {
 
@@ -44,7 +44,7 @@ public class VM implements Element {
 
     @Override
     public String toString() {
-        return "VM#" + id;
+        return "vm#" + id;
     }
 
     @Override

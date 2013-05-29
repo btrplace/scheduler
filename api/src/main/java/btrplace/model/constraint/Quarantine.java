@@ -27,7 +27,7 @@ import java.util.Set;
 
 /**
  * A constraint to put some nodes into quarantine.
- * running VMs in the quarantine zone can not leave their node
+ * Running VMs in the quarantine zone can not leave their node
  * while no VMs outside the quarantine zone can be hosted on
  * the nodes in quarantine.
  * <p/>

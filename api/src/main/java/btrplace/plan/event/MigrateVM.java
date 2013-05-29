@@ -35,9 +35,8 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
 
     private Node src, dst;
 
-
     /**
-     * Make a new migrate action.
+     * Make a new action.
      *
      * @param vm  the VM to migrate
      * @param src the node the VM is currently running on
@@ -76,7 +75,7 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
      * in the given model.
      *
      * @param i the model to alter with the action
-     * @return {@code true} iff the vm if running on the destination node
+     * @return {@code true} iff the VM is running on the destination node
      */
     @Override
     public boolean applyAction(Model i) {
@@ -92,13 +91,6 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
         return false;
     }
 
-    /**
-     * Test if this action is equals to another object.
-     *
-     * @param o the object to compare with
-     * @return true if ref is an instance of Instantiate and if both
-     *         instance involve the same virtual machine
-     */
     @Override
     public boolean equals(Object o) {
         if (o == null) {

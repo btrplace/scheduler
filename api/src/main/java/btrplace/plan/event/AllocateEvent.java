@@ -24,8 +24,8 @@ import btrplace.model.view.ShareableResource;
 import java.util.Objects;
 
 /**
- * A event to inform a node that a VM
- * it is hosting may have a new resource allocation.
+ * A event to notify a VM
+ * requires a new resource allocation.
  *
  * @author Fabien Hermenier
  */

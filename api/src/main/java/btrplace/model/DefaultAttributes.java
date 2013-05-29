@@ -220,11 +220,15 @@ public class DefaultAttributes implements Attributes, Cloneable {
 
     @Override
     public Set<String> getKeys(Element e) {
-        Map<String, Object> m = vmAttrs.get(e);
-        if (m == null) {
+        Map<String, Object> m;
+        if (e instanceof Node) {
+            m = nodeAttrs.get(e);
+        } else if (e instanceof VM) {
+            m = vmAttrs.get(e);
+        } else {
             return Collections.emptySet();
         }
-        return m.keySet();
+        return m == null ? Collections.<String>emptySet() : m.keySet();
     }
 
     @Override

@@ -67,7 +67,7 @@ public interface Model extends Cloneable {
     boolean detach(ModelView v);
 
     /**
-     * Detach all the view from this model.
+     * Detach all the views from this model.
      */
     void clearViews();
 

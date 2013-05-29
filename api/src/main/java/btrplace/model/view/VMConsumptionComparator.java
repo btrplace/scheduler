@@ -24,7 +24,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * A comparator to compare element depending on multiple resources.
+ * A comparator to compare VMs consumption wrt. multiple resources.
  *
  * @author Fabien Hermenier
  */

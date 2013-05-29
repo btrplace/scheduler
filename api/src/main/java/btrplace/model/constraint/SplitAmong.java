@@ -25,7 +25,7 @@ import btrplace.model.constraint.checker.SplitAmongChecker;
 import java.util.*;
 
 /**
- * A constraint to force sets of VMs inside to be hosted on distinct set of servers.
+ * A constraint to force sets of running VMs to be hosted on distinct set of nodes.
  * VMs inside a same set may still be collocated.
  * <p/>
  * The set of VMs must be disjoint so must be the set of servers.

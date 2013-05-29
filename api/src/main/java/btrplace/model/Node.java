@@ -19,10 +19,10 @@ package btrplace.model;
 
 /**
  * Model a node.
- * A node should not be instantiated directly. Use {@link btrplace.model.Model#newNode()} instead.
+ * A node should not be instantiated directly. Use {@link Model#newNode()} instead.
  *
  * @author Fabien Hermenier
- * @see {@link btrplace.model.Model#newNode()}
+ * @see {@link Model#newNode()}
  */
 public class Node implements Element {
 
@@ -44,7 +44,7 @@ public class Node implements Element {
 
     @Override
     public String toString() {
-        return "Node#" + id;
+        return "node#" + id;
     }
 
     @Override

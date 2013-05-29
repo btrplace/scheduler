@@ -27,7 +27,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Restrict the hosting capacity of each of the given server to a given
+ * Restrict the hosting capacity of each of the given node to a given
  * amount of VMs.
  * <p/>
  * The restriction provided by the constraint can be either discrete or continuous.

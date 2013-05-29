@@ -25,8 +25,8 @@ import btrplace.model.VM;
 import java.util.Objects;
 
 /**
- * An action that demand to run a virtual machine on an online node.
- * The virtual machine is originally in the state 'ready'.
+ * An action that starts a VM on an online node.
+ * The VM is originally in the 'ready' state.
  *
  * @author Fabien Hermenier
  */
@@ -37,9 +37,9 @@ public class BootVM extends Action implements VMStateTransition, RunningVMPlacem
     private Node node;
 
     /**
-     * Make a new time-bounded run.
+     * Make a new action.
      *
-     * @param vmId the virtual machine to run
+     * @param vmId the VM to run
      * @param to   the destination node
      * @param st   the moment the action starts.
      * @param end  the moment the action finish
@@ -78,8 +78,8 @@ public class BootVM extends Action implements VMStateTransition, RunningVMPlacem
      * Test if this action is equals to another object.
      *
      * @param o the object to compare with
-     * @return true if ref is an instanceof Run and if both
-     *         instance involve the same virtual machine and the same nodes
+     * @return true if {@code o} is an instanceof {@link BootVM} and if both
+     *         instance involve the same VM and the same node
      */
     @Override
     public boolean equals(Object o) {

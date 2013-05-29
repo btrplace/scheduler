@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * A constraint to avoid relocation. Any running VMs given in parameters
+ * A constraint to avoid VM relocation. Any running VMs given in parameters
  * will be disallowed to be moved to another host. Other VMs are ignored.
  * <p/>
  * The restriction provided by the constraint is only continuous. The running

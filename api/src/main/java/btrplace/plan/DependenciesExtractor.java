@@ -26,7 +26,7 @@ import java.util.*;
 
 /**
  * Detect dependencies between actions.
- * Actions are inserted using the {@code #visit(...)} methods.
+ * Actions are inserted using {@code #visit(...)} methods.
  *
  * @author Fabien Hermenier
  */

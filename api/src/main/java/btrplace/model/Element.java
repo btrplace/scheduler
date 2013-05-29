@@ -18,7 +18,7 @@
 package btrplace.model;
 
 /**
- * Specify an element managed by BtrPlace.
+ * An element managed by BtrPlace.
  *
  * @author Fabien Hermenier
  */
@@ -26,6 +26,7 @@ public interface Element {
 
     /**
      * The element identifier.
+     * Unique among every elements having the same type
      *
      * @return an integer
      */

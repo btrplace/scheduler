@@ -51,7 +51,7 @@ public class KillVM extends Action implements VMStateTransition {
     /**
      * Get the VM location.
      *
-     * @return the node identifier if the VM is hosted somewhere. Otherwise, {@code null}
+     * @return the node if the VM is hosted somewhere.{@code null} otherwise
      */
     public Node getNode() {
         return host;
