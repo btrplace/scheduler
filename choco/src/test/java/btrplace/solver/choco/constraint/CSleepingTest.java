@@ -17,9 +17,7 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.Sleeping;
 import btrplace.solver.choco.MappingFiller;
 import btrplace.test.PremadeElements;
@@ -36,6 +34,10 @@ public class CSleepingTest implements PremadeElements {
     @Test
     public void testGetMisplaced() {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        Node n1 = mo.newNode();
         Mapping m = new MappingFiller(mo.getMapping()).on(n1).ready(vm1).run(n1, vm2).sleep(n1, vm3).get();
         CSleeping k = new CSleeping(new Sleeping(m.getAllVMs()));
         Assert.assertEquals(2, k.getMisPlacedVMs(mo).size());

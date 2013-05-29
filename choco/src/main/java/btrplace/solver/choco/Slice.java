@@ -17,6 +17,7 @@
 
 package btrplace.solver.choco;
 
+import btrplace.model.VM;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 
@@ -37,18 +38,18 @@ public class Slice {
 
     private IntDomainVar duration;
 
-    private int subject;
+    private VM subject;
 
     /**
      * Make a new slice.
      *
-     * @param s   the element associated to the slice
+     * @param s   the VM associated to the slice
      * @param st  the moment the slice starts
      * @param ed  the moment the slice ends
      * @param dur the slice duration
      * @param h   the slice host
      */
-    public Slice(int s, IntDomainVar st, IntDomainVar ed, IntDomainVar dur, IntDomainVar h) {
+    public Slice(VM s, IntDomainVar st, IntDomainVar ed, IntDomainVar dur, IntDomainVar h) {
 
         this.start = st;
         this.end = ed;
@@ -110,11 +111,11 @@ public class Slice {
     }
 
     /**
-     * Get the subject of the slice.
+     * Get the VM associated to the slice.
      *
-     * @return the subject identifier
+     * @return the VM identifier
      */
-    public int getSubject() {
+    public VM getSubject() {
         return subject;
     }
 }

@@ -17,9 +17,7 @@
 
 package btrplace.solver.choco;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Offline;
 import btrplace.model.constraint.SatConstraint;
@@ -58,6 +56,11 @@ public class Issues implements PremadeElements {
     public void testIssue5a() throws SolverException, ContradictionException {
 
         Model model = new DefaultModel();
+        Node n1 = model.newNode();
+        Node n2 = model.newNode();
+        Node n3 = model.newNode();
+        VM vm1 = model.newVM();
+        VM vm2 = model.newVM();
         ShareableResource resources = new ShareableResource("vcpu", 1, 1);
         resources.setCapacity(n1, 2);
         resources.setCapacity(n2, 2);
@@ -82,11 +85,11 @@ public class Issues implements PremadeElements {
         rp.getEnd().setSup(10);
         int i = 0;
         int maxVMs = rp.getSourceModel().getMapping().getAllVMs().size();
-        for (int n : map.getAllNodes()) {
+        for (Node n : map.getAllNodes()) {
             vmsOnInvolvedNodes[i] = solver.createBoundIntVar("nVMs", -1, maxVMs);
             IntDomainVar state = rp.getNodeAction(n).getState();
             // If the node is offline -> the temporary variable is -1, otherwise, it equals the number of VMs on that node
-            IntDomainVar[] c = new IntDomainVar[]{solver.makeConstantIntVar(-1), VMsOnAllNodes[rp.getNodeIdx(n)],
+            IntDomainVar[] c = new IntDomainVar[]{solver.makeConstantIntVar(-1), VMsOnAllNodes[rp.getNode(n)],
                     state, vmsOnInvolvedNodes[i]};
             solver.post(new ElementV(c, 0, solver.getEnvironment()));
 
@@ -105,7 +108,7 @@ public class Issues implements PremadeElements {
         // Extract all the state of the involved nodes (all nodes in this case)
         IntDomainVar[] states = new IntDomainVar[NUMBER_OF_NODE];
         int j = 0;
-        for (int n : map.getAllNodes()) {
+        for (Node n : map.getAllNodes()) {
             states[j++] = rp.getNodeAction(n).getState();
         }
 
@@ -126,6 +129,14 @@ public class Issues implements PremadeElements {
     @Test
     public void testIssue5b() throws SolverException {
         Model model = new DefaultModel();
+        Node n1 = model.newNode();
+        Node n2 = model.newNode();
+        Node n3 = model.newNode();
+        VM vm1 = model.newVM();
+        VM vm2 = model.newVM();
+        VM vm3 = model.newVM();
+        VM vm4 = model.newVM();
+
         Mapping map = new MappingFiller(model.getMapping()).on(n1, n2, n3)
                 .run(n2, vm1, vm2, vm3, vm4).get();
 
@@ -139,8 +150,8 @@ public class Issues implements PremadeElements {
 
         int i = 0;
 
-        for (int n : map.getAllNodes()) {
-            nodeVM[i++] = nodes_state[rp.getNodeIdx(n)];
+        for (Node n : map.getAllNodes()) {
+            nodeVM[i++] = nodes_state[rp.getNode(n)];
         }
         CPSolver solver = rp.getSolver();
         IntDomainVar idle = solver.createBoundIntVar("Nidles", 0, map.getAllNodes().size());
@@ -160,6 +171,14 @@ public class Issues implements PremadeElements {
     public void testIssue5c() throws SolverException, ContradictionException {
 
         Model model = new DefaultModel();
+        Node n1 = model.newNode();
+        Node n2 = model.newNode();
+        Node n3 = model.newNode();
+        VM vm1 = model.newVM();
+        VM vm2 = model.newVM();
+        VM vm3 = model.newVM();
+        VM vm4 = model.newVM();
+
 
         Mapping map = new MappingFiller(model.getMapping()).on(n1, n2, n3)
                 .run(n2, vm1, vm2, vm3, vm4).get();
@@ -173,8 +192,8 @@ public class Issues implements PremadeElements {
 
         int i = 0;
 
-        for (int n : map.getAllNodes()) {
-            nodeVM[i++] = nodes_state[rp.getNodeIdx(n)];
+        for (Node n : map.getAllNodes()) {
+            nodeVM[i++] = nodes_state[rp.getNode(n)];
             //rp.getNodeAction(n).getState().setVal(1);
         }
         CPSolver solver = rp.getSolver();
@@ -188,10 +207,13 @@ public class Issues implements PremadeElements {
 
     @Test
     public void testIssue10() throws SolverException, ContradictionException {
-        //ShareableResource resources = new ShareableResource("vcpu", 1);
-        //resources.set(n1, 2);
-        //resources.set(n2, 2);
         Model model = new DefaultModel();
+        Node n1 = model.newNode();
+        Node n2 = model.newNode();
+        Node n3 = model.newNode();
+        VM vm1 = model.newVM();
+        VM vm2 = model.newVM();
+
         Mapping map = new MappingFiller(model.getMapping()).on(n1, n2).off(n3).run(n1, vm1, vm2).get();
         //model.attach(resources);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model).labelVariables().build();
@@ -207,11 +229,11 @@ public class Issues implements PremadeElements {
         int i = 0;
         int maxVMs = rp.getSourceModel().getMapping().getAllVMs().size();
         List<SConstraint> elms = new ArrayList<>();
-        for (int n : map.getAllNodes()) {
+        for (Node n : map.getAllNodes()) {
             vmsOnInvolvedNodes[i] = solver.createBoundIntVar("nVMs" + n, -1, maxVMs);
             IntDomainVar state = rp.getNodeAction(n).getState();
             // If the node is offline -> the temporary variable is 1, otherwise, it equals the number of VMs on that node
-            IntDomainVar[] c = new IntDomainVar[]{solver.makeConstantIntVar(-1), VMsOnAllNodes[rp.getNodeIdx(n)],
+            IntDomainVar[] c = new IntDomainVar[]{solver.makeConstantIntVar(-1), VMsOnAllNodes[rp.getNode(n)],
                     state, vmsOnInvolvedNodes[i]};
             SConstraint elem = new ElementV(c, 0, solver.getEnvironment());
             elms.add(elem);
@@ -243,6 +265,18 @@ public class Issues implements PremadeElements {
     @Test
     public void test16b() throws SolverException {
         Model model = new DefaultModel();
+        Node n1 = model.newNode();
+        Node n2 = model.newNode();
+        Node n3 = model.newNode();
+        Node n4 = model.newNode();
+        VM vm1 = model.newVM();
+        VM vm2 = model.newVM();
+        VM vm3 = model.newVM();
+        VM vm4 = model.newVM();
+        VM vm5 = model.newVM();
+        VM vm6 = model.newVM();
+
+
         Mapping map = new MappingFiller(model.getMapping()).on(n1, n2, n3, n4)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3, vm4)
@@ -250,8 +284,8 @@ public class Issues implements PremadeElements {
                 .get();
 
         Set<SatConstraint> ctrsC = new HashSet<SatConstraint>();
-        Set<Integer> vms1 = new HashSet<Integer>(Arrays.asList(vm1, vm3, vm5));
-        Set<Integer> vms2 = new HashSet<Integer>(Arrays.asList(vm2, vm4, vm6));
+        Set<VM> vms1 = new HashSet<VM>(Arrays.asList(vm1, vm3, vm5));
+        Set<VM> vms2 = new HashSet<VM>(Arrays.asList(vm2, vm4, vm6));
 
         ctrsC.add(new Spread(vms1));
         ctrsC.add(new Spread(vms2));

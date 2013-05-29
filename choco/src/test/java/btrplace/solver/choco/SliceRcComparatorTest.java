@@ -17,6 +17,9 @@
 
 package btrplace.solver.choco;
 
+import btrplace.model.DefaultModel;
+import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.model.view.ShareableResource;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -36,11 +39,10 @@ public class SliceRcComparatorTest {
     private static Random rnd = new Random();
 
     private static List<Slice> makeSlices() {
-
+        Model mo = new DefaultModel();
         List<Slice> l = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
-            int u = i;
-            l.add(new Slice(u, null, null, null, null));
+            l.add(new Slice(mo.newVM(), null, null, null, null));
         }
         return l;
     }
@@ -52,11 +54,11 @@ public class SliceRcComparatorTest {
         for (Slice s : l) {
             rc.setConsumption(s.getSubject(), rnd.nextInt(10));
         }
-        SliceRcComparator cmp = new SliceRcComparator(rc, true, true);
+        SliceRcComparator cmp = new SliceRcComparator(rc, true);
         Collections.sort(l, cmp);
         for (int i = 0; i < l.size() - 1; i++) {
-            int u1 = l.get(i).getSubject();
-            int u2 = l.get(i + 1).getSubject();
+            VM u1 = l.get(i).getSubject();
+            VM u2 = l.get(i + 1).getSubject();
             Assert.assertTrue(rc.getConsumption(u1) <= rc.getConsumption(u2));
         }
     }
@@ -66,14 +68,14 @@ public class SliceRcComparatorTest {
         List<Slice> l = makeSlices();
         ShareableResource rc = new ShareableResource("cpu");
         for (Slice s : l) {
-            rc.setCapacity(s.getSubject(), rnd.nextInt(10));
+            rc.setConsumption(s.getSubject(), rnd.nextInt(10));
         }
-        SliceRcComparator cmp = new SliceRcComparator(rc, false, false);
+        SliceRcComparator cmp = new SliceRcComparator(rc, false);
         Collections.sort(l, cmp);
         for (int i = 0; i < l.size() - 1; i++) {
-            int u1 = l.get(i).getSubject();
-            int u2 = l.get(i + 1).getSubject();
-            Assert.assertTrue(rc.getCapacity(u1) >= rc.getCapacity(u2));
+            VM u1 = l.get(i).getSubject();
+            VM u2 = l.get(i + 1).getSubject();
+            Assert.assertTrue(rc.getConsumption(u1) >= rc.getConsumption(u2));
         }
     }
 }

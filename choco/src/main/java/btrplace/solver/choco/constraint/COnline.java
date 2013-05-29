@@ -18,6 +18,8 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
@@ -49,7 +51,7 @@ public class COnline implements ChocoSatConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        for (int nId : cstr.getInvolvedNodes()) {
+        for (Node nId : cstr.getInvolvedNodes()) {
             ActionModel m = rp.getNodeAction(nId);
             try {
                 m.getState().setVal(1);
@@ -62,7 +64,7 @@ public class COnline implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<Integer> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         return Collections.emptySet();
     }
 

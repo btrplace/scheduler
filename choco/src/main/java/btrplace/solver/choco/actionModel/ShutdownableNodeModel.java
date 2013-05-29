@@ -17,6 +17,7 @@
 
 package btrplace.solver.choco.actionModel;
 
+import btrplace.model.Node;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.SolverException;
@@ -33,7 +34,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 /**
  * Model an action that allow a node to boot if necessary.
  * The model must provide an estimation of the action duration through a
- * {@link btrplace.solver.choco.durationEvaluator.DurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.durationEvaluator.ActionDurationEvaluator} accessible from
  * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code ShutdownNode.class}
  * <p/>
  * The action is modeled as follow:
@@ -84,7 +85,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public class ShutdownableNodeModel implements NodeActionModel {
 
-    private int node;
+    private Node node;
 
     private IntDomainVar isOnline, isOffline;
 
@@ -109,7 +110,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
      * @param e  the node managed by the action
      * @throws SolverException if an error occurred
      */
-    public ShutdownableNodeModel(ReconfigurationProblem rp, int e) throws SolverException {
+    public ShutdownableNodeModel(ReconfigurationProblem rp, Node e) throws SolverException {
         this.node = e;
 
 
@@ -121,7 +122,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
         */
         isOnline = s.createBooleanVar(rp.makeVarLabel("shutdownableNode(", e, ").online"));
         isOffline = new BoolVarNot(s, rp.makeVarLabel("shutdownableNode(", e, ").offline"), (BooleanVarImpl) isOnline);
-        s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNodeIdx(e)], 0));
+        s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNode(e)], 0));
 
         /*
         * D = {0, d}
@@ -172,7 +173,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
     }
 
     @Override
-    public int getNode() {
+    public Node getNode() {
         return node;
     }
 

@@ -17,6 +17,8 @@
 
 package btrplace.solver.choco.actionModel;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ResumeVM;
 import btrplace.solver.SolverException;
@@ -31,7 +33,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 /**
  * Model an action that resume a sleeping VM.
  * The model must provide an estimation of the action duration through a
- * {@link btrplace.solver.choco.durationEvaluator.DurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.durationEvaluator.ActionDurationEvaluator} accessible from
  * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code ResumeVM.class}
  * <p/>
  * If the reconfiguration problem has a solution, a {@link btrplace.plan.event.ResumeVM} action
@@ -41,7 +43,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public class ResumeVMModel implements VMActionModel {
 
-    private int vm;
+    private VM vm;
 
     private ReconfigurationProblem rp;
 
@@ -62,7 +64,7 @@ public class ResumeVMModel implements VMActionModel {
      * @param e  the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public ResumeVMModel(ReconfigurationProblem rp, int e) throws SolverException {
+    public ResumeVMModel(ReconfigurationProblem rp, VM e) throws SolverException {
         this.rp = rp;
         this.vm = e;
 
@@ -84,15 +86,15 @@ public class ResumeVMModel implements VMActionModel {
     public boolean insertActions(ReconfigurationPlan plan) {
         int ed = end.getVal();
         int st = start.getVal();
-        int src = rp.getSourceModel().getMapping().getVMLocation(vm);
-        int dst = rp.getNode(dSlice.getHoster().getVal());
+        Node src = rp.getSourceModel().getMapping().getVMLocation(vm);
+        Node dst = rp.getNode(dSlice.getHoster().getVal());
         ResumeVM a = new ResumeVM(vm, src, dst, st, ed);
         plan.add(a);
         return true;
     }
 
     @Override
-    public int getVM() {
+    public VM getVM() {
         return vm;
     }
 

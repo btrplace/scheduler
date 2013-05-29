@@ -27,7 +27,7 @@ import btrplace.plan.event.MigrateVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.durationEvaluator.DurationEvaluator;
+import btrplace.solver.choco.durationEvaluator.ActionDurationEvaluator;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 
 import java.util.*;
@@ -93,9 +93,9 @@ public class BasicTuning implements Example {
     private void customizeMigrationDuration(ChocoReconfigurationAlgorithm cra) {
         DurationEvaluators devs = cra.getDurationEvaluators();
 
-        DurationEvaluator ev = new DurationEvaluator() {
+        ActionDurationEvaluator ev = new ActionDurationEvaluator() {
             @Override
-            public int evaluate(Model mo, int e) {
+            public int evaluate(Model mo, VM e) {
                 return rcMem.getConsumption(e) + 3;
             }
         };

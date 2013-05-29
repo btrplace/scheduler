@@ -19,13 +19,14 @@ package btrplace.solver.choco.durationEvaluator;
 
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.model.view.ShareableResource;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * Unit tests for {@link LinearToAResourceDuration}.
+ * Unit tests for {@link LinearToAResourceActionDuration}.
  *
  * @author Fabien Hermenier
  */
@@ -35,20 +36,24 @@ public class LinearToAResourceDurationTest implements PremadeElements {
     public void testSimple() {
         ShareableResource rc = new ShareableResource("foo", 0, 0);
         Model mo = new DefaultModel();
+
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
         mo.attach(rc);
         rc.setConsumption(vm1, 3);
-        LinearToAResourceDuration d = new LinearToAResourceDuration("foo", true, 3);
+        LinearToAResourceActionDuration<VM> d = new LinearToAResourceActionDuration<>("foo", 3);
         Assert.assertEquals(d.getCoefficient(), 3.0);
         Assert.assertEquals(d.getOffset(), 0.0);
         Assert.assertEquals(d.getResourceId(), "foo");
         Assert.assertEquals(d.evaluate(mo, vm1), 9);
         Assert.assertEquals(d.evaluate(mo, vm2), 0);
 
-        d = new LinearToAResourceDuration("foo", true, 3, 4);
+        d = new LinearToAResourceActionDuration<>("foo", 3, 4);
         Assert.assertEquals(d.evaluate(mo, vm1), 13);
         Assert.assertEquals(d.evaluate(mo, vm3), 4);
 
-        d = new LinearToAResourceDuration("bar", true, 3, 4);
+        d = new LinearToAResourceActionDuration<>("bar", 3, 4);
         Assert.assertEquals(d.evaluate(mo, vm3), -1);
 
         d.setCoefficient(5);

@@ -19,6 +19,8 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.Ban;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -50,15 +52,15 @@ public class CBan implements ChocoSatConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) {
-        Collection<Integer> nodes = ban.getInvolvedNodes();
-        Collection<Integer> vms = ban.getInvolvedVMs();
+        Collection<Node> nodes = ban.getInvolvedNodes();
+        Collection<VM> vms = ban.getInvolvedVMs();
         int[] nodesIdx = new int[nodes.size()];
         int i = 0;
-        for (int n : ban.getInvolvedNodes()) {
-            nodesIdx[i++] = rp.getNodeIdx(n);
+        for (Node n : ban.getInvolvedNodes()) {
+            nodesIdx[i++] = rp.getNode(n);
         }
 
-        for (int vm : vms) {
+        for (VM vm : vms) {
             if (rp.getFutureRunningVMs().contains(vm)) {
                 Slice t = rp.getVMAction(vm).getDSlice();
                 if (t != null) {
@@ -77,11 +79,11 @@ public class CBan implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<Integer> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
 
-        Set<Integer> bad = new HashSet<>();
-        for (int vm : ban.getInvolvedVMs()) {
+        Set<VM> bad = new HashSet<>();
+        for (VM vm : ban.getInvolvedVMs()) {
             if (map.getRunningVMs().contains(vm) && ban.getInvolvedNodes().contains(map.getVMLocation(vm))) {
                 bad.add(vm);
             }

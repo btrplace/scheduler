@@ -17,9 +17,7 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
@@ -40,6 +38,10 @@ public class StayAwayVMModelTest implements PremadeElements {
     public void testBasic() throws SolverException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
+        final VM vm1 = mo.newVM();
+        final VM vm2 = mo.newVM();
+        Node n1 = mo.newNode();
+
         map.addOnlineNode(n1);
         map.addSleepingVM(vm1, n1);
         map.addReadyVM(vm2);

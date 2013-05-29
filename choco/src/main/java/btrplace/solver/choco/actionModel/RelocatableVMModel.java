@@ -18,6 +18,8 @@
 package btrplace.solver.choco.actionModel;
 
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.*;
 import btrplace.solver.SolverException;
@@ -60,7 +62,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
     private ReconfigurationProblem rp;
 
-    private final int vm;
+    private final VM vm;
 
     private IntDomainVar state;
 
@@ -70,7 +72,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
     private int reInstantiateDuration;
 
-    private int src;
+    private Node src;
 
     /**
      * The choosed relocation method. 0 for migration, 1 for relocation.
@@ -84,7 +86,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
      * @param e  the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public RelocatableVMModel(ReconfigurationProblem rp, int e) throws SolverException {
+    public RelocatableVMModel(ReconfigurationProblem rp, VM e) throws SolverException {
         this.vm = e;
         this.rp = rp;
 
@@ -96,7 +98,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
         CPSolver s = rp.getSolver();
 
         cSlice = new SliceBuilder(rp, e, "relocatable(" + e + ").cSlice")
-                .setHoster(rp.getNodeIdx(rp.getSourceModel().getMapping().getVMLocation(e)))
+                .setHoster(rp.getNode(rp.getSourceModel().getMapping().getVMLocation(e)))
                 .setEnd(rp.makeUnboundedDuration("relocatable(" + e + ").cSlice_end"))
                 .build();
 
@@ -155,7 +157,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
         DurationEvaluators dev = rp.getDurationEvaluators();
         if (cSlice.getHoster().getVal() != dSlice.getHoster().getVal()) {
             Action a;
-            int dst = rp.getNode(dSlice.getHoster().getVal());
+            Node dst = rp.getNode(dSlice.getHoster().getVal());
             if (method.isInstantiatedTo(0)) {
                 int st = getStart().getVal();
                 int ed = getEnd().getVal();
@@ -163,8 +165,8 @@ public class RelocatableVMModel implements KeepRunningVMModel {
                 plan.add(a);
             } else {
                 try {
-                    int newVM = rp.cloneVM(vm);
-                    if (newVM < 0) {
+                    VM newVM = rp.cloneVM(vm);
+                    if (newVM == null) {
                         rp.getLogger().error("Unable to get a new int to plan the re-instantiate of VM {}", vm);
                         return false;
                     }
@@ -186,7 +188,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
     }
 
     @Override
-    public int getVM() {
+    public VM getVM() {
         return vm;
     }
 
@@ -247,7 +249,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
         b.append(prettyMethod(method));
         b.append(" ,vm=").append(vm)
                 .append(" ,from=").append(src)
-                .append("(").append(rp.getNodeIdx(src)).append(")")
+                .append("(").append(rp.getNode(src)).append(")")
                 .append(" ,to=").append(dSlice.getHoster().getDomain().pretty())
                 .append(")");
         return b.toString();

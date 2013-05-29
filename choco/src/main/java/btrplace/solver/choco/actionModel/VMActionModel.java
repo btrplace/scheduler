@@ -17,6 +17,7 @@
 
 package btrplace.solver.choco.actionModel;
 
+import btrplace.model.VM;
 import btrplace.solver.choco.Slice;
 
 
@@ -32,7 +33,7 @@ public interface VMActionModel extends ActionModel {
      *
      * @return the VM identifier
      */
-    int getVM();
+    VM getVM();
 
     /**
      * Get the slice denoting the possible current placement of the subject on a node.

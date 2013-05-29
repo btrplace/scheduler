@@ -17,6 +17,8 @@
 
 package btrplace.solver.choco.actionModel;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootVM;
 import btrplace.solver.SolverException;
@@ -31,7 +33,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 /**
  * Model an action that boot a VM in the ready state.
  * The model must provide an estimation of the action duration through a
- * {@link btrplace.solver.choco.durationEvaluator.DurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.durationEvaluator.ActionDurationEvaluator} accessible from
  * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code BootVM.class}
  * <p/>
  * If the reconfiguration problem has a solution, a {@link btrplace.plan.event.BootVM} action
@@ -49,7 +51,7 @@ public class BootVMModel implements VMActionModel {
 
     private IntDomainVar duration;
 
-    private int vm;
+    private VM vm;
 
     private ReconfigurationProblem rp;
 
@@ -62,7 +64,7 @@ public class BootVMModel implements VMActionModel {
      * @param e  the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public BootVMModel(ReconfigurationProblem rp, int e) throws SolverException {
+    public BootVMModel(ReconfigurationProblem rp, VM e) throws SolverException {
         vm = e;
 
         int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), BootVM.class, e);
@@ -83,7 +85,7 @@ public class BootVMModel implements VMActionModel {
 
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
-        int node = rp.getNode(dSlice.getHoster().getVal());
+        Node node = rp.getNode(dSlice.getHoster().getVal());
         BootVM a = new BootVM(vm, node, start.getVal(), end.getVal());
         plan.add(a);
         return true;
@@ -120,7 +122,7 @@ public class BootVMModel implements VMActionModel {
     }
 
     @Override
-    public int getVM() {
+    public VM getVM() {
         return vm;
     }
 

@@ -17,9 +17,7 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
@@ -45,6 +43,13 @@ public class CSequentialVMTransitionsTest implements PremadeElements {
     @Test
     public void testWithOnlyTransitions() throws SolverException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).ready(vm1).run(n1, vm2, vm4).sleep(n2, vm3).get();
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Running(Collections.singleton(vm1)));
@@ -53,7 +58,7 @@ public class CSequentialVMTransitionsTest implements PremadeElements {
         cstrs.add(new Ready(Collections.singleton(vm4)));
         cstrs.add(new Online(map.getAllNodes()));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        List<Integer> seq = Arrays.asList(vm1, vm2, vm3, vm4);
+        List<VM> seq = Arrays.asList(vm1, vm2, vm3, vm4);
         cstrs.add(new SequentialVMTransitions(seq));
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
         Assert.assertNotNull(plan);
@@ -62,6 +67,12 @@ public class CSequentialVMTransitionsTest implements PremadeElements {
     @Test
     public void testWithVMsWithNoTransitions() throws SolverException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).ready(vm1).run(n1, vm2, vm4).run(n2, vm3).get();
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Running(Collections.singleton(vm1)));
@@ -69,7 +80,7 @@ public class CSequentialVMTransitionsTest implements PremadeElements {
         cstrs.add(new Running(Collections.singleton(vm3)));
         cstrs.add(new Ready(Collections.singleton(vm4)));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        List<Integer> seq = Arrays.asList(vm1, vm2, vm3, vm4);
+        List<VM> seq = Arrays.asList(vm1, vm2, vm3, vm4);
         cstrs.add(new SequentialVMTransitions(seq));
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
         Assert.assertNotNull(plan);

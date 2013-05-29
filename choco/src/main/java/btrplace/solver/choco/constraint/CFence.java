@@ -19,6 +19,8 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.Ban;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.SatConstraint;
@@ -52,21 +54,21 @@ public class CFence implements ChocoSatConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) {
 
-        Set<Integer> runnings = new HashSet<>();
-        for (int vm : cstr.getInvolvedVMs()) {
+        Set<VM> runnings = new HashSet<>();
+        for (VM vm : cstr.getInvolvedVMs()) {
             if (rp.getFutureRunningVMs().contains(vm)) {
                 runnings.add(vm);
             }
         }
-        Collection<Integer> nodes = cstr.getInvolvedNodes();
+        Collection<Node> nodes = cstr.getInvolvedNodes();
         if (!runnings.isEmpty()) {
             if (nodes.size() == 1) {
                 //Only 1 possible destination node, so we directly instantiate the variable.
-                for (int vm : runnings) {
+                for (VM vm : runnings) {
                     Slice t = rp.getVMAction(vm).getDSlice();
-                    int n = nodes.iterator().next();
+                    Node n = nodes.iterator().next();
                     try {
-                        t.getHoster().setVal(rp.getNodeIdx(n));
+                        t.getHoster().setVal(rp.getNode(n));
                     } catch (ContradictionException e) {
                         rp.getLogger().error("Unable to force VM '{}' to be running on node '{}': {}", vm, n, e.getMessage());
                         return false;
@@ -74,8 +76,8 @@ public class CFence implements ChocoSatConstraint {
                 }
             } else {
                 //Transformation to a ban constraint that disallow all the other nodes
-                Set<Integer> otherNodes = new HashSet<>(rp.getNodes().length - nodes.size());
-                for (int n : rp.getNodes()) {
+                Set<Node> otherNodes = new HashSet<>(rp.getNodes().length - nodes.size());
+                for (Node n : rp.getNodes()) {
                     if (!nodes.contains(n)) {
                         otherNodes.add(n);
                     }
@@ -88,10 +90,10 @@ public class CFence implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<Integer> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-        Set<Integer> bad = new HashSet<>();
-        for (int vm : cstr.getInvolvedVMs()) {
+        Set<VM> bad = new HashSet<>();
+        for (VM vm : cstr.getInvolvedVMs()) {
             if (map.getRunningVMs().contains(vm) && !cstr.getInvolvedNodes().contains(map.getVMLocation(vm))) {
                 bad.add(vm);
             }

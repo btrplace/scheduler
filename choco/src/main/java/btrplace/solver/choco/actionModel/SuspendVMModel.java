@@ -17,6 +17,8 @@
 
 package btrplace.solver.choco.actionModel;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.SuspendVM;
 import btrplace.solver.SolverException;
@@ -30,7 +32,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 /**
  * Model an action where a running VM goes into the sleeping state through a {@link SuspendVM} action.
  * The model must provide an estimation of the action duration through a
- * {@link btrplace.solver.choco.durationEvaluator.DurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.durationEvaluator.ActionDurationEvaluator} accessible from
  * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code SuspendVM.class}
  * <p/>
  * If the reconfiguration problem has a solution, a {@link SuspendVM} action is inserted into the resulting
@@ -46,7 +48,7 @@ public class SuspendVMModel implements VMActionModel {
 
     private IntDomainVar duration;
 
-    private int vm;
+    private VM vm;
 
     private ReconfigurationProblem rp;
 
@@ -59,14 +61,14 @@ public class SuspendVMModel implements VMActionModel {
      * @param e  the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public SuspendVMModel(ReconfigurationProblem rp, int e) throws SolverException {
+    public SuspendVMModel(ReconfigurationProblem rp, VM e) throws SolverException {
         this.rp = rp;
         this.vm = e;
 
         int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), SuspendVM.class, e);
 
         duration = rp.makeDuration(d, d, "suspendVM(", e, ").duration");
-        this.cSlice = new SliceBuilder(rp, e, "suspendVM(" + e + ").cSlice").setHoster(rp.getCurrentVMLocation(rp.getVMIdx(e)))
+        this.cSlice = new SliceBuilder(rp, e, "suspendVM(" + e + ").cSlice").setHoster(rp.getCurrentVMLocation(rp.getVM(e)))
                 .setEnd(rp.makeDuration(rp.getEnd().getSup(), d, "suspendVM(", e, ").cSlice_end"))
                 .build();
         start = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel("suspendVM(" + e + ").start"), cSlice.getEnd(), -d);
@@ -75,7 +77,7 @@ public class SuspendVMModel implements VMActionModel {
 
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
-        int node = rp.getNode(cSlice.getHoster().getVal());
+        Node node = rp.getNode(cSlice.getHoster().getVal());
         plan.add(new SuspendVM(vm, node, node, start.getVal(), getEnd().getVal()));
         return true;
     }
@@ -111,7 +113,7 @@ public class SuspendVMModel implements VMActionModel {
     }
 
     @Override
-    public int getVM() {
+    public VM getVM() {
         return vm;
     }
 

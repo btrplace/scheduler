@@ -32,32 +32,22 @@ public class SliceRcComparator implements Comparator<Slice> {
 
     private int ratio;
 
-    private boolean vm;
-
     /**
      * Make a new comparator.
      *
      * @param r   the resource used to perform the comparison
-     * @param vm  {@code true} to compare VM, {@code false} to compare nodes
      * @param asc {@code true} for an ascending comparison
      */
-    public SliceRcComparator(ShareableResource r, boolean vm, boolean asc) {
+    public SliceRcComparator(ShareableResource r, boolean asc) {
         this.rc = r;
         ratio = asc ? 1 : -1;
-        this.vm = vm;
     }
 
     @Override
     public int compare(Slice s1, Slice s2) {
         int x, y;
-        if (vm) {
-            x = rc.getConsumption(s1.getSubject());
-            y = rc.getConsumption(s2.getSubject());
-        } else {
-            x = rc.getCapacity(s1.getSubject());
-            y = rc.getCapacity(s2.getSubject());
-
-        }
+        x = rc.getConsumption(s1.getSubject());
+        y = rc.getConsumption(s2.getSubject());
         return ratio * (x - y);
     }
 }

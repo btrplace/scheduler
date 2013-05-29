@@ -17,6 +17,7 @@
 
 package btrplace.solver.choco.durationEvaluator;
 
+import btrplace.model.Element;
 import btrplace.model.Model;
 
 
@@ -25,7 +26,7 @@ import btrplace.model.Model;
  *
  * @author Fabien Hermenier
  */
-public class ConstantDuration implements DurationEvaluator {
+public class ConstantActionDuration<E extends Element> implements ActionDurationEvaluator<E> {
 
     private int duration;
 
@@ -34,12 +35,12 @@ public class ConstantDuration implements DurationEvaluator {
      *
      * @param d the estimated duration to accomplish the action. Must be strictly positive
      */
-    public ConstantDuration(int d) {
+    public ConstantActionDuration(int d) {
         this.duration = d;
     }
 
     @Override
-    public int evaluate(Model mo, int e) {
+    public int evaluate(Model mo, E e) {
         return duration;
     }
 

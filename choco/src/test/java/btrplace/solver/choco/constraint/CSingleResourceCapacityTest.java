@@ -17,9 +17,7 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
@@ -43,6 +41,12 @@ public class CSingleResourceCapacityTest implements PremadeElements {
     @Test
     public void testGetMisplaced() {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).get();
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5, 5);
@@ -52,7 +56,7 @@ public class CSingleResourceCapacityTest implements PremadeElements {
 
         mo.attach(rc);
 
-        Set<Integer> nodes = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Node> nodes = new HashSet<>(Arrays.asList(n1, n2));
 
         SingleResourceCapacity s = new SingleResourceCapacity(nodes, "cpu", 4);
         CSingleResourceCapacity cs = new CSingleResourceCapacity(s);
@@ -64,6 +68,11 @@ public class CSingleResourceCapacityTest implements PremadeElements {
     @Test
     public void testDiscreteSolvable() throws SolverException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
 
         ShareableResource rc = new ShareableResource("cpu", 5, 5);
@@ -73,7 +82,7 @@ public class CSingleResourceCapacityTest implements PremadeElements {
 
         mo.attach(rc);
 
-        Set<Integer> nodes = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Node> nodes = new HashSet<>(Arrays.asList(n1, n2));
 
         SingleResourceCapacity s = new SingleResourceCapacity(nodes, "cpu", 4);
 
@@ -87,6 +96,12 @@ public class CSingleResourceCapacityTest implements PremadeElements {
     @Test
     public void testDiscreteUnsolvable() throws SolverException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5, 5);
@@ -96,7 +111,7 @@ public class CSingleResourceCapacityTest implements PremadeElements {
 
         mo.attach(rc);
 
-        Set<Integer> nodes = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Node> nodes = new HashSet<>(Arrays.asList(n1, n2));
 
         SingleResourceCapacity s = new SingleResourceCapacity(nodes, "cpu", 3);
 
@@ -108,8 +123,15 @@ public class CSingleResourceCapacityTest implements PremadeElements {
     @Test
     public void testContinuousSolvable() throws SolverException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1).run(n2, vm2, vm3).ready(vm4).get();
-        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5, 5);
+        ShareableResource rc = new ShareableResource("cpu", 5, 5);
         rc.setConsumption(vm1, 3);
         rc.setConsumption(vm2, 1);
         rc.setConsumption(vm3, 1);
@@ -117,7 +139,7 @@ public class CSingleResourceCapacityTest implements PremadeElements {
 
         mo.attach(rc);
 
-        Set<Integer> nodes = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Node> nodes = new HashSet<>(Arrays.asList(n1, n2));
 
         List<SatConstraint> cstrs = new ArrayList<>();
 

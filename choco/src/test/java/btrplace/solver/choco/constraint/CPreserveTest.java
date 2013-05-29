@@ -17,9 +17,7 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Preserve;
 import btrplace.model.constraint.SatConstraint;
@@ -48,8 +46,14 @@ public class CPreserveTest implements PremadeElements {
     @Test
     public void testGetMisplaced() {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
-        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 7, 7);
+        ShareableResource rc = new ShareableResource("cpu", 7, 7);
         rc.setConsumption(vm1, 3);
         rc.setConsumption(vm2, 3);
         rc.setConsumption(vm3, 5);
@@ -60,7 +64,7 @@ public class CPreserveTest implements PremadeElements {
         //Assert.assertEquals(SatConstraint.Sat.UNSATISFIED, p.isSatisfied(mo));
 
         CPreserve cp = new CPreserve(p);
-        Set<Integer> bads = cp.getMisPlacedVMs(mo);
+        Set<VM> bads = cp.getMisPlacedVMs(mo);
         Assert.assertEquals(map.getRunningVMs(n1), bads);
     }
 
@@ -74,6 +78,11 @@ public class CPreserveTest implements PremadeElements {
     @Test
     public void testPreserveWithoutOverbook() throws SolverException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
         ShareableResource rc = new ShareableResource("cpu", 10, 10);
         rc.setCapacity(n1, 7);

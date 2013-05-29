@@ -18,6 +18,7 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.SequentialVMTransitions;
 import btrplace.solver.SolverException;
@@ -55,10 +56,10 @@ public class CSequentialVMTransitions implements ChocoSatConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        List<Integer> seq = cstr.getInvolvedVMs();
+        List<VM> seq = cstr.getInvolvedVMs();
 
         List<ActionModel> ams = new ArrayList<>();
-        for (int vmId : seq) {
+        for (VM vmId : seq) {
             ActionModel am = rp.getVMAction(vmId);
 
             //Avoid VMs with no action model or ActionModel that do not denotes a state transition
@@ -82,7 +83,7 @@ public class CSequentialVMTransitions implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<Integer> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         return Collections.emptySet();
     }
 

@@ -17,9 +17,7 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.SplitAmong;
@@ -44,6 +42,20 @@ public class CSplitAmongTest implements PremadeElements {
     @Test
     public void testGetMisplaced() {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        VM vm7 = mo.newVM();
+        VM vm8 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+        Node n5 = mo.newNode();
+
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2)
@@ -54,15 +66,15 @@ public class CSplitAmongTest implements PremadeElements {
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
 
-        Set<Integer> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        Set<Integer> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
-        Set<Integer> vg3 = new HashSet<>(Arrays.asList(vm7));
+        Set<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
+        Set<VM> vg3 = new HashSet<>(Arrays.asList(vm7));
 
-        Set<Integer> pg1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<Integer> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Integer> pg3 = new HashSet<>(Arrays.asList(n5));
-        Set<Set<Integer>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
-        Set<Set<Integer>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
+        Set<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
+        Set<Node> pg3 = new HashSet<>(Arrays.asList(n5));
+        Set<Set<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
+        Set<Set<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
         SplitAmong s = new SplitAmong(vgs, pgs);
         CSplitAmong cs = new CSplitAmong(s);
@@ -89,6 +101,20 @@ public class CSplitAmongTest implements PremadeElements {
     @Test
     public void testDiscrete() throws SolverException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        VM vm7 = mo.newVM();
+        VM vm8 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+        Node n5 = mo.newNode();
+
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2)
@@ -99,15 +125,15 @@ public class CSplitAmongTest implements PremadeElements {
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
 
-        Set<Integer> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        Set<Integer> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
-        Set<Integer> vg3 = new HashSet<>(Arrays.asList(vm7));
+        Set<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
+        Set<VM> vg3 = new HashSet<>(Arrays.asList(vm7));
 
-        Set<Integer> pg1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<Integer> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Integer> pg3 = new HashSet<>(Arrays.asList(n5));
-        Set<Set<Integer>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
-        Set<Set<Integer>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
+        Set<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
+        Set<Node> pg3 = new HashSet<>(Arrays.asList(n5));
+        Set<Set<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
+        Set<Set<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
         SplitAmong s = new SplitAmong(vgs, pgs);
         s.setContinuous(false);
@@ -124,6 +150,20 @@ public class CSplitAmongTest implements PremadeElements {
     @Test
     public void testContinuousWithAllDiffViolated() throws SolverException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        VM vm7 = mo.newVM();
+        VM vm8 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+        Node n5 = mo.newNode();
+
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2)
@@ -134,15 +174,15 @@ public class CSplitAmongTest implements PremadeElements {
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
 
-        Set<Integer> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        Set<Integer> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
-        Set<Integer> vg3 = new HashSet<>(Arrays.asList(vm7));
+        Set<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
+        Set<VM> vg3 = new HashSet<>(Arrays.asList(vm7));
 
-        Set<Integer> pg1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<Integer> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Integer> pg3 = new HashSet<>(Arrays.asList(n5));
-        Set<Set<Integer>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
-        Set<Set<Integer>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
+        Set<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
+        Set<Node> pg3 = new HashSet<>(Arrays.asList(n5));
+        Set<Set<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
+        Set<Set<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
         SplitAmong s = new SplitAmong(vgs, pgs);
         s.setContinuous(true);
@@ -157,6 +197,20 @@ public class CSplitAmongTest implements PremadeElements {
     @Test
     public void testContinuousWithGroupChange() throws SolverException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        VM vm7 = mo.newVM();
+        VM vm8 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+        Node n5 = mo.newNode();
+
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2)
@@ -167,14 +221,14 @@ public class CSplitAmongTest implements PremadeElements {
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
 
-        Set<Integer> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        Set<Integer> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
+        Set<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
 
-        Set<Integer> pg1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<Integer> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Integer> pg3 = new HashSet<>(Arrays.asList(n5));
-        Set<Set<Integer>> vgs = new HashSet<>(Arrays.asList(vg1, vg2));
-        Set<Set<Integer>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
+        Set<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
+        Set<Node> pg3 = new HashSet<>(Arrays.asList(n5));
+        Set<Set<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2));
+        Set<Set<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
         List<SatConstraint> cstrs = new ArrayList<>();
         SplitAmong s = new SplitAmong(vgs, pgs);
@@ -194,6 +248,20 @@ public class CSplitAmongTest implements PremadeElements {
     @Test
     public void testDiscreteWithGroupChange() throws SolverException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        VM vm7 = mo.newVM();
+        VM vm8 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+        Node n5 = mo.newNode();
+
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2)
@@ -204,14 +272,14 @@ public class CSplitAmongTest implements PremadeElements {
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
 
-        Set<Integer> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        Set<Integer> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
+        Set<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
 
-        Set<Integer> pg1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<Integer> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Integer> pg3 = new HashSet<>(Arrays.asList(n5));
-        Set<Set<Integer>> vgs = new HashSet<>(Arrays.asList(vg1, vg2));
-        Set<Set<Integer>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
+        Set<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
+        Set<Node> pg3 = new HashSet<>(Arrays.asList(n5));
+        Set<Set<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2));
+        Set<Set<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
         List<SatConstraint> cstrs = new ArrayList<>();
         SplitAmong s = new SplitAmong(vgs, pgs);

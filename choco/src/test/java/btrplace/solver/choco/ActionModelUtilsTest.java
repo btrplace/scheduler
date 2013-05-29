@@ -17,6 +17,9 @@
 
 package btrplace.solver.choco;
 
+import btrplace.model.DefaultModel;
+import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.choco.actionModel.ActionModelUtils;
 import btrplace.solver.choco.actionModel.ActionModelVisitor;
@@ -113,6 +116,7 @@ public class ActionModelUtilsTest {
         private Slice cSlice, dSlice;
 
         public MockActionModel(CPSolver s, int nb) {
+            Model mo = new DefaultModel();
             st = s.createBoundIntVar("start" + nb, nb, nb + 1);
             ed = s.createBoundIntVar("end" + nb, nb, nb + 1);
             d = s.createBoundIntVar("duration" + nb, nb, nb + 1);
@@ -120,13 +124,13 @@ public class ActionModelUtilsTest {
             c = s.createBoundIntVar("cost" + nb, nb, nb + 1);
             state = s.createBoundIntVar("state" + nb, nb, nb + 1);
             if (nb % 2 == 0) {
-                cSlice = new Slice(100 + nb,
+                cSlice = new Slice(mo.newVM(),
                         s.createBoundIntVar("cS" + nb + "-st", nb, nb + 1),
                         s.createBoundIntVar("cS" + nb + "-ed", nb, nb + 1),
                         s.createBoundIntVar("cS" + nb + "-d", nb, nb + 1),
                         s.createBoundIntVar("cS" + nb + "-h", nb, nb + 1));
             } else {
-                dSlice = new Slice(500 + nb,
+                dSlice = new Slice(mo.newVM(),
                         s.createBoundIntVar("dS" + nb + "-st", nb, nb + 1),
                         s.createBoundIntVar("dS" + nb + "-ed", nb, nb + 1),
                         s.createBoundIntVar("dS" + nb + "-d", nb, nb + 1),
@@ -140,8 +144,8 @@ public class ActionModelUtilsTest {
         }
 
         @Override
-        public int getVM() {
-            return -1;
+        public VM getVM() {
+            return null;
         }
 
         @Override

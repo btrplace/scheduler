@@ -17,10 +17,7 @@
 
 package btrplace.examples;
 
-import btrplace.model.Attributes;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
@@ -28,9 +25,9 @@ import btrplace.plan.event.MigrateVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.durationEvaluator.DurationEvaluator;
+import btrplace.solver.choco.durationEvaluator.ActionDurationEvaluator;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import btrplace.solver.choco.durationEvaluator.LinearToAResourceDuration;
+import btrplace.solver.choco.durationEvaluator.LinearToAResourceActionDuration;
 
 import java.util.*;
 
@@ -63,16 +60,16 @@ public class ModelCustomization implements Example {
      * We customize the estimate duration of the VM migration action
      * to be equals to 2 second per GB of memory plus 3 seconds
      */
-    class MyMigrationEvaluator implements DurationEvaluator {
+    class MyMigrationEvaluatorAction implements ActionDurationEvaluator {
 
         ShareableResource rc;
 
-        MyMigrationEvaluator(ShareableResource rcMem) {
+        MyMigrationEvaluatorAction(ShareableResource rcMem) {
             rc = rcMem;
         }
 
         @Override
-        public int evaluate(Model mo, int e) {
+        public int evaluate(Model mo, VM e) {
             return rc.getConsumption(e) * 2 + 3;
         }
 
@@ -115,7 +112,7 @@ public class ModelCustomization implements Example {
         //Change the duration evaluator for MigrateVM action
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         DurationEvaluators dev = cra.getDurationEvaluators();
-        dev.register(MigrateVM.class, new LinearToAResourceDuration("mem", true, 2, 3));
+        dev.register(MigrateVM.class, new LinearToAResourceActionDuration("mem", true, 2, 3));
 
         //Set some attributes
         Attributes attrs = mo.getAttributes();

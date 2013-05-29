@@ -19,6 +19,8 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.Gather;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -51,7 +53,7 @@ public class CGather implements ChocoSatConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) {
         List<Slice> dSlices = new ArrayList<>();
-        for (int vm : cstr.getInvolvedVMs()) {
+        for (VM vm : cstr.getInvolvedVMs()) {
             VMActionModel a = rp.getVMAction(vm);
             Slice dSlice = a.getDSlice();
             if (dSlice != null) {
@@ -61,11 +63,11 @@ public class CGather implements ChocoSatConstraint {
         if (cstr.isContinuous()) {
             //Check for the already running VMs
             Mapping map = rp.getSourceModel().getMapping();
-            int loc = -1;
-            for (int vm : cstr.getInvolvedVMs()) {
+            Node loc = null;
+            for (VM vm : cstr.getInvolvedVMs()) {
                 if (map.getRunningVMs().contains(vm)) {
-                    int node = map.getVMLocation(vm);
-                    if (loc == -1) {
+                    Node node = map.getVMLocation(vm);
+                    if (loc == null) {
                         loc = node;
                     } else if (loc != node) {
                         rp.getLogger().error("Some VMs in '{}' are already running but not co-located", cstr.getInvolvedVMs());
@@ -73,8 +75,8 @@ public class CGather implements ChocoSatConstraint {
                     }
                 }
             }
-            if (loc >= 0) {
-                return placeDSlices(rp, dSlices, rp.getNodeIdx(loc));
+            if (loc != null) {
+                return placeDSlices(rp, dSlices, rp.getNode(loc));
             } else {
                 return forceDiscreteCollocation(rp, dSlices);
             }
@@ -131,7 +133,7 @@ public class CGather implements ChocoSatConstraint {
 
 
     @Override
-    public Set<Integer> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         if (!cstr.isSatisfied(m)) {
             return new HashSet<>(cstr.getInvolvedVMs());
         }

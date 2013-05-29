@@ -19,6 +19,8 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Split;
 import btrplace.solver.SolverException;
@@ -57,11 +59,11 @@ public class CSplit implements ChocoSatConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
         List<List<IntDomainVar>> groups = new ArrayList<>();
-        List<List<Integer>> vmGroups = new ArrayList<>();
-        for (Set<Integer> grp : cstr.getSets()) {
+        List<List<VM>> vmGroups = new ArrayList<>();
+        for (Set<VM> grp : cstr.getSets()) {
             List<IntDomainVar> l = new ArrayList<>();
-            List<Integer> vl = new ArrayList<>();
-            for (int vm : grp) {
+            List<VM> vl = new ArrayList<>();
+            for (VM vm : grp) {
                 if (rp.getFutureRunningVMs().contains(vm)) {
                     Slice s = rp.getVMAction(vm).getDSlice();
                     l.add(s.getHoster());
@@ -113,10 +115,10 @@ public class CSplit implements ChocoSatConstraint {
 
                 //Fulfill the others stuff.
                 for (int i = 0; i < vmGroups.size(); i++) {
-                    List<Integer> grp = vmGroups.get(i);
-                    for (int vm : grp) {
+                    List<VM> grp = vmGroups.get(i);
+                    for (VM vm : grp) {
                         if (map.getRunningVMs().contains(vm)) {
-                            int myPos = rp.getNodeIdx(map.getVMLocation(vm));
+                            int myPos = rp.getNode(map.getVMLocation(vm));
                             IntDomainVar myEnd = rp.getVMAction(vm).getCSlice().getEnd();
 
                             for (int j = 0; j < vmGroups.size(); j++) {
@@ -137,8 +139,8 @@ public class CSplit implements ChocoSatConstraint {
 
                 //Now, we just have to put way too many precedences constraint, one per VM.
                 for (int i = 0; i < vmGroups.size(); i++) {
-                    List<Integer> grp = vmGroups.get(i);
-                    for (int vm : grp) {
+                    List<VM> grp = vmGroups.get(i);
+                    for (VM vm : grp) {
                         if (rp.getFutureRunningVMs().contains(vm)) {
                             VMActionModel a = rp.getVMAction(vm);
                             IntDomainVar myPos = a.getDSlice().getHoster();
@@ -153,17 +155,17 @@ public class CSplit implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<Integer> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-        List<Set<Integer>> groups = new ArrayList<>(cstr.getSets());
+        List<Set<VM>> groups = new ArrayList<>(cstr.getSets());
         //Bad contains the VMs on nodes that host VMs from different groups.
-        Set<Integer> bad = new HashSet<>();
-        for (Set<Integer> grp : groups) {
-            for (int vm : grp) {
+        Set<VM> bad = new HashSet<>();
+        for (Set<VM> grp : groups) {
+            for (VM vm : grp) {
                 if (map.getRunningVMs().contains(vm)) {
-                    int n = map.getVMLocation(vm);
-                    Set<Integer> allOnN = map.getRunningVMs(n);
-                    for (int vmOnN : allOnN) {
+                    Node n = map.getVMLocation(vm);
+                    Set<VM> allOnN = map.getRunningVMs(n);
+                    for (VM vmOnN : allOnN) {
                         if (inOtherGroup(groups, grp, vmOnN)) {
                             //The VM belong to another group
                             bad.add(vm);
@@ -176,8 +178,8 @@ public class CSplit implements ChocoSatConstraint {
         return bad;
     }
 
-    private boolean inOtherGroup(List<Set<Integer>> groups, Set<Integer> grp, int vmOnN) {
-        for (Set<Integer> s : groups) {
+    private boolean inOtherGroup(List<Set<VM>> groups, Set<VM> grp, VM vmOnN) {
+        for (Set<VM> s : groups) {
             if (s.contains(vmOnN) && !grp.contains(vmOnN)) {
                 return true;
             }

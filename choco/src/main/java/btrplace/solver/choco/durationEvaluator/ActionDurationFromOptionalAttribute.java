@@ -18,8 +18,8 @@
 package btrplace.solver.choco.durationEvaluator;
 
 import btrplace.model.Attributes;
+import btrplace.model.Element;
 import btrplace.model.Model;
-
 
 /**
  * A duration evaluator that try to get a duration from an attribute
@@ -28,13 +28,11 @@ import btrplace.model.Model;
  *
  * @author Fabien Hermenier
  */
-public class DurationFromOptionalAttribute implements DurationEvaluator {
+public class ActionDurationFromOptionalAttribute<E extends Element> implements ActionDurationEvaluator<E> {
 
-    private DurationEvaluator parent;
+    private ActionDurationEvaluator<E> parent;
 
     private String key;
-
-    private boolean onVM;
 
     /**
      * Make a new evaluator.
@@ -42,18 +40,17 @@ public class DurationFromOptionalAttribute implements DurationEvaluator {
      * @param attrId the attribute identifier. The associated value must be an {@link Integer}.
      * @param dev    the evaluator to rely on if the attribute is not set or invalid
      */
-    public DurationFromOptionalAttribute(String attrId, boolean isVM, DurationEvaluator dev) {
+    public ActionDurationFromOptionalAttribute(String attrId, ActionDurationEvaluator<E> dev) {
         parent = dev;
         key = attrId;
-        onVM = isVM;
     }
 
     @Override
-    public int evaluate(Model mo, int e) {
+    public int evaluate(Model mo, E e) {
         Attributes attrs = mo.getAttributes();
         if (attrs.isSet(e, key)) {
             try {
-                return attrs.getLong(e, key).intValue();
+                return attrs.getInteger(e, key);
             } catch (Exception ex) {
                 return parent.evaluate(mo, e);
             }
@@ -67,7 +64,7 @@ public class DurationFromOptionalAttribute implements DurationEvaluator {
      *
      * @return an evaluator.
      */
-    public DurationEvaluator getParent() {
+    public ActionDurationEvaluator getParent() {
         return parent;
     }
 
@@ -76,7 +73,7 @@ public class DurationFromOptionalAttribute implements DurationEvaluator {
      *
      * @param dev the evaluator to use
      */
-    public void setParent(DurationEvaluator dev) {
+    public void setParent(ActionDurationEvaluator<E> dev) {
         parent = dev;
     }
 

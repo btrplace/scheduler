@@ -17,9 +17,7 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Lonely;
 import btrplace.model.constraint.SatConstraint;
@@ -47,11 +45,19 @@ public class CLonelyTest implements PremadeElements {
     @Test
     public void testFeasibleDiscrete() throws SolverException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3, vm4, vm5).get();
 
-        Set<Integer> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<VM> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
         Lonely l = new Lonely(mine);
@@ -71,10 +77,18 @@ public class CLonelyTest implements PremadeElements {
     @Test
     public void testFeasibleContinuous() throws SolverException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm2, vm3)
                 .run(n2, vm4, vm5).get();
-        Set<Integer> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<VM> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
         Lonely l = new Lonely(mine);
@@ -90,10 +104,19 @@ public class CLonelyTest implements PremadeElements {
     public void testGetMisplaced() {
 
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm2, vm3)
                 .run(n2, vm4, vm5).get();
-        Set<Integer> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<VM> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
 
 
         CLonely c = new CLonely(new Lonely(mine));

@@ -19,6 +19,8 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.CumulatedResourceCapacity;
 import btrplace.model.constraint.CumulatedRunningCapacity;
 import btrplace.model.constraint.SatConstraint;
@@ -71,14 +73,14 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
             } else {
                 int[] alias = new int[cstr.getInvolvedNodes().size()];
                 int i = 0;
-                for (int n : cstr.getInvolvedNodes()) {
-                    alias[i++] = rp.getNodeIdx(n);
+                for (Node n : cstr.getInvolvedNodes()) {
+                    alias[i++] = rp.getNode(n);
                 }
 
                 TIntArrayList cUse = new TIntArrayList();
                 List<IntDomainVar> dUse = new ArrayList<>();
 
-                for (int vmId : rp.getVMs()) {
+                for (VM vmId : rp.getVMs()) {
                     VMActionModel a = rp.getVMAction(vmId);
                     Slice c = a.getCSlice();
                     Slice d = a.getDSlice();
@@ -86,15 +88,15 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
                         cUse.add(rcm.getSourceResource().getConsumption(vmId));
                     }
                     if (d != null) {
-                        dUse.add(rcm.getVMsAllocation()[rp.getVMIdx(vmId)]);
+                        dUse.add(rcm.getVMsAllocation()[rp.getVM(vmId)]);
                     }
                 }
                 rp.getAliasedCumulativesBuilder().add(cstr.getAmount(), cUse.toNativeArray(), dUse.toArray(new IntDomainVar[dUse.size()]), alias);
             }
         }
         List<IntDomainVar> vs = new ArrayList<>();
-        for (int u : cstr.getInvolvedNodes()) {
-            vs.add(rcm.getVirtualUsage()[rp.getNodeIdx(u)]);
+        for (Node u : cstr.getInvolvedNodes()) {
+            vs.add(rcm.getVirtualUsage()[rp.getNode(u)]);
         }
         CPSolver s = rp.getSolver();
         s.post(s.leq(CPSolver.sum(vs.toArray(new IntDomainVar[vs.size()])), cstr.getAmount()));
@@ -102,19 +104,19 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<Integer> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
         ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         if (rc == null) {
             return map.getRunningVMs(cstr.getInvolvedNodes());
         }
-        Set<Integer> bad = new HashSet<>();
+        Set<VM> bad = new HashSet<>();
         int remainder = cstr.getAmount();
-        for (int n : cstr.getInvolvedNodes()) {
-            for (int v : map.getRunningVMs(n)) {
+        for (Node n : cstr.getInvolvedNodes()) {
+            for (VM v : map.getRunningVMs(n)) {
                 remainder -= rc.getConsumption(v);
                 if (remainder < 0) {
-                    for (int n2 : cstr.getInvolvedNodes()) {
+                    for (Node n2 : cstr.getInvolvedNodes()) {
                         bad.addAll(map.getRunningVMs(n2));
                     }
                     return bad;

@@ -17,9 +17,7 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
@@ -43,19 +41,22 @@ public class StayRunningVMModelTest implements PremadeElements {
 
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
+        final VM vm1 = mo.newVM();
+        Node n1 = mo.newNode();
+
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setManageableVMs(Collections.<Integer>emptySet())
+                .setManageableVMs(Collections.<VM>emptySet())
                 .labelVariables()
                 .build();
         Assert.assertEquals(rp.getVMAction(vm1).getClass(), StayRunningVMModel.class);
         StayRunningVMModel m1 = (StayRunningVMModel) rp.getVMAction(vm1);
         Assert.assertNotNull(m1.getCSlice());
         Assert.assertNotNull(m1.getDSlice());
-        Assert.assertTrue(m1.getCSlice().getHoster().isInstantiatedTo(rp.getNodeIdx(n1)));
-        Assert.assertTrue(m1.getDSlice().getHoster().isInstantiatedTo(rp.getNodeIdx(n1)));
+        Assert.assertTrue(m1.getCSlice().getHoster().isInstantiatedTo(rp.getNode(n1)));
+        Assert.assertTrue(m1.getDSlice().getHoster().isInstantiatedTo(rp.getNode(n1)));
         Assert.assertTrue(m1.getDuration().isInstantiatedTo(0));
         Assert.assertTrue(m1.getStart().isInstantiatedTo(0));
         Assert.assertTrue(m1.getEnd().isInstantiatedTo(0));

@@ -19,6 +19,8 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.SingleRunningCapacity;
 import btrplace.solver.SolverException;
@@ -56,8 +58,8 @@ public class CSingleRunningCapacity implements ChocoSatConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
         CPSolver s = rp.getSolver();
-        for (int u : cstr.getInvolvedNodes()) {
-            IntDomainVar v = rp.getNbRunningVMs()[rp.getNodeIdx(u)];
+        for (Node u : cstr.getInvolvedNodes()) {
+            IntDomainVar v = rp.getNbRunningVMs()[rp.getNode(u)];
             s.post(s.leq(v, cstr.getAmount()));
 
             //Continuous in practice ?
@@ -74,10 +76,10 @@ public class CSingleRunningCapacity implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<Integer> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-        Set<Integer> bad = new HashSet<>();
-        for (int n : cstr.getInvolvedNodes()) {
+        Set<VM> bad = new HashSet<>();
+        for (Node n : cstr.getInvolvedNodes()) {
             if (map.getRunningVMs(n).size() > cstr.getAmount()) {
                 bad.addAll(map.getRunningVMs(n));
             }

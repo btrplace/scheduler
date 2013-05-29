@@ -18,6 +18,8 @@
 package btrplace.solver.choco.objective.minMTTR;
 
 import btrplace.model.Mapping;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.actionModel.VMActionModel;
@@ -56,7 +58,7 @@ public class MovingVMs extends AbstractIntVarSelector {
      * @param m   the initial configuration
      * @param vms the VMs to consider
      */
-    public MovingVMs(String label, ReconfigurationProblem s, Mapping m, Set<Integer> vms) {
+    public MovingVMs(String label, ReconfigurationProblem s, Mapping m, Set<VM> vms) {
         super(s.getSolver());
         this.label = label;
         map = m;
@@ -64,7 +66,7 @@ public class MovingVMs extends AbstractIntVarSelector {
         this.rp = s;
         this.actions = new LinkedList<>();
         //Get all the involved slices
-        for (int vm : vms) {
+        for (VM vm : vms) {
             if (rp.getFutureRunningVMs().contains(vm)) {
                 actions.add(rp.getVMAction(vm));
             }
@@ -75,12 +77,12 @@ public class MovingVMs extends AbstractIntVarSelector {
     public IntDomainVar selectVar() {
         for (VMActionModel a : actions) {
             if (!a.getDSlice().getHoster().isInstantiated()) {
-                int vm = a.getVM();
-                int nId = map.getVMLocation(vm);
-                if (nId >= 0) {
+                VM vm = a.getVM();
+                Node nId = map.getVMLocation(vm);
+                if (nId != null) {
                     //VM was running
                     Slice slice = a.getDSlice();
-                    if (!slice.getHoster().canBeInstantiatedTo(rp.getNodeIdx(nId))) {
+                    if (!slice.getHoster().canBeInstantiatedTo(rp.getNode(nId))) {
                         return slice.getHoster();
                     }
                 }

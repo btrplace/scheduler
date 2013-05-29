@@ -17,9 +17,7 @@
 
 package btrplace.solver.choco.view;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Overbook;
 import btrplace.model.constraint.Preserve;
@@ -55,6 +53,13 @@ public class CShareableResourceTest implements PremadeElements {
     public void testSimple() throws SolverException {
         Model mo = new DefaultModel();
         Mapping ma = mo.getMapping();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
         ma.addOnlineNode(n1);
         ma.addOfflineNode(n2);
         ma.addRunningVM(vm1, n1);
@@ -66,19 +71,19 @@ public class CShareableResourceTest implements PremadeElements {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         CShareableResource rcm = new CShareableResource(rp, rc);
         Assert.assertEquals(rc.getIdentifier(), rcm.getIdentifier());
-        Assert.assertEquals(-1, rcm.getVMsAllocation()[rp.getVMIdx(vm1)].getInf());
-        Assert.assertEquals(-1, rcm.getVMsAllocation()[rp.getVMIdx(vm2)].getInf());
-        Assert.assertEquals(0, rcm.getVMsAllocation()[rp.getVMIdx(vm3)].getSup()); //Will not be running so 0
-        IntDomainVar pn1 = rcm.getPhysicalUsage()[rp.getNodeIdx(n1)];
-        IntDomainVar pn2 = rcm.getPhysicalUsage()[rp.getNodeIdx(n2)];
+        Assert.assertEquals(-1, rcm.getVMsAllocation()[rp.getVM(vm1)].getInf());
+        Assert.assertEquals(-1, rcm.getVMsAllocation()[rp.getVM(vm2)].getInf());
+        Assert.assertEquals(0, rcm.getVMsAllocation()[rp.getVM(vm3)].getSup()); //Will not be running so 0
+        IntDomainVar pn1 = rcm.getPhysicalUsage()[rp.getNode(n1)];
+        IntDomainVar pn2 = rcm.getPhysicalUsage()[rp.getNode(n2)];
         Assert.assertTrue(pn1.getInf() == 0 && pn1.getSup() == 4);
         Assert.assertTrue(pn2.getInf() == 0 && pn2.getSup() == 0);
 
-        pn1 = rcm.getPhysicalUsage(rp.getNodeIdx(n1));
+        pn1 = rcm.getPhysicalUsage(rp.getNode(n1));
         Assert.assertTrue(pn1.getInf() == 0 && pn1.getSup() == 4);
 
-        IntDomainVar vn1 = rcm.getVirtualUsage()[rp.getNodeIdx(n1)];
-        IntDomainVar vn2 = rcm.getVirtualUsage()[rp.getNodeIdx(n2)];
+        IntDomainVar vn1 = rcm.getVirtualUsage()[rp.getNode(n1)];
+        IntDomainVar vn2 = rcm.getVirtualUsage()[rp.getNode(n2)];
         Assert.assertEquals(vn1.getInf(), 0);
         Assert.assertEquals(vn2.getInf(), 0);
 
@@ -94,6 +99,13 @@ public class CShareableResourceTest implements PremadeElements {
         Model mo = new DefaultModel();
         Mapping ma = mo.getMapping();
 
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
         ma.addOnlineNode(n1);
         ma.addOnlineNode(n2);
         ma.addRunningVM(vm1, n1);
@@ -107,14 +119,14 @@ public class CShareableResourceTest implements PremadeElements {
         mo.attach(rc);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
-        VMActionModel avm1 = rp.getVMActions()[rp.getVMIdx(vm1)];
-        VMActionModel avm2 = rp.getVMActions()[rp.getVMIdx(vm2)];
+        VMActionModel avm1 = rp.getVMActions()[rp.getVM(vm1)];
+        VMActionModel avm2 = rp.getVMActions()[rp.getVM(vm2)];
         avm1.getDSlice().getHoster().setVal(0);
         avm2.getDSlice().getHoster().setVal(1);
         CShareableResource rcm = (CShareableResource) rp.getView(btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo");
         //Basic consumption for the VMs. If would be safe to use Preserve, but I don't want:D
-        rcm.getVMsAllocation()[rp.getVMIdx(vm1)].setInf(2);
-        rcm.getVMsAllocation()[rp.getVMIdx(vm2)].setInf(3);
+        rcm.getVMsAllocation()[rp.getVM(vm1)].setInf(2);
+        rcm.getVMsAllocation()[rp.getVM(vm2)].setInf(3);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         Assert.assertTrue(rcm.getVirtualUsage(0).isInstantiatedTo(2));
@@ -125,6 +137,10 @@ public class CShareableResourceTest implements PremadeElements {
     public void testMaintainResourceUsage() throws SolverException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+
+        Node n1 = mo.newNode();
 
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);
@@ -146,8 +162,8 @@ public class CShareableResourceTest implements PremadeElements {
         Assert.assertNotNull(p);
         //Check the amount of allocated resources on the RP
         CShareableResource rcm = (CShareableResource) rp.getView(rc.getIdentifier());
-        Assert.assertEquals(rcm.getVMsAllocation()[rp.getVMIdx(vm1)].getVal(), 5);
-        Assert.assertEquals(rcm.getVMsAllocation()[rp.getVMIdx(vm2)].getVal(), 7);
+        Assert.assertEquals(rcm.getVMsAllocation()[rp.getVM(vm1)].getVal(), 5);
+        Assert.assertEquals(rcm.getVMsAllocation()[rp.getVM(vm2)].getVal(), 7);
 
         //And on the resulting plan.
         Model res = p.getResult();
@@ -162,6 +178,10 @@ public class CShareableResourceTest implements PremadeElements {
     @Test
     public void testDefaultOverbookRatio() throws ContradictionException, SolverException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        Node n1 = mo.newNode();
+
         Mapping ma = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1, vm2).get();
 
         ShareableResource rc = new ShareableResource("foo", 0, 0);
@@ -172,11 +192,11 @@ public class CShareableResourceTest implements PremadeElements {
         mo.attach(rc);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
-        VMActionModel avm1 = rp.getVMActions()[rp.getVMIdx(vm1)];
+        VMActionModel avm1 = rp.getVMActions()[rp.getVM(vm1)];
         avm1.getDSlice().getHoster().setVal(0);
         CShareableResource rcm = (CShareableResource) rp.getView(btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo");
         //Basic consumption for the VMs. If would be safe to use Preserve, but I don't want:D
-        rcm.getVMsAllocation()[rp.getVMIdx(vm2)].setInf(4);
+        rcm.getVMsAllocation()[rp.getVM(vm2)].setInf(4);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNull(p);
     }
@@ -184,6 +204,11 @@ public class CShareableResourceTest implements PremadeElements {
     @Test
     public void testWithFloat() throws SolverException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1, vm2).get();
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("foo");

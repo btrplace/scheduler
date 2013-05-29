@@ -19,6 +19,8 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.SingleResourceCapacity;
 import btrplace.model.view.ShareableResource;
@@ -59,8 +61,8 @@ public class CSingleResourceCapacity implements ChocoSatConstraint {
         }
         int amount = cstr.getAmount();
         CPSolver s = rp.getSolver();
-        for (int n : cstr.getInvolvedNodes()) {
-            IntDomainVar v = rcm.getVirtualUsage()[rp.getNodeIdx(n)];
+        for (Node n : cstr.getInvolvedNodes()) {
+            IntDomainVar v = rcm.getVirtualUsage()[rp.getNode(n)];
             s.post(s.leq(v, amount));
 
             //Continuous in practice ?
@@ -84,13 +86,13 @@ public class CSingleResourceCapacity implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<Integer> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-        Set<Integer> bad = new HashSet<>();
+        Set<VM> bad = new HashSet<>();
         ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
-        for (int n : cstr.getInvolvedNodes()) {
+        for (Node n : cstr.getInvolvedNodes()) {
             int remainder = cstr.getAmount();
-            for (int v : map.getRunningVMs(n)) {
+            for (VM v : map.getRunningVMs(n)) {
                 remainder -= rc.getConsumption(v);
                 if (remainder < 0) {
                     bad.addAll(map.getRunningVMs(n));

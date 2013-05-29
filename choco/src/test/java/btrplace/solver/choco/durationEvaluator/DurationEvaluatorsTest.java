@@ -19,6 +19,8 @@ package btrplace.solver.choco.durationEvaluator;
 
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.plan.event.*;
 import btrplace.solver.SolverException;
 import btrplace.test.PremadeElements;
@@ -26,18 +28,21 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * Unit tests for {@link btrplace.solver.choco.durationEvaluator.DurationEvaluator}.
+ * Unit tests for {@link ActionDurationEvaluator}.
  *
  * @author Fabien Hermenier
  */
 public class DurationEvaluatorsTest implements PremadeElements {
+
+    static Model mo = new DefaultModel();
+    static VM vm1 = mo.newVM();
+    static Node n1 = mo.newNode();
 
     @Test
     public void testInstantiateAndIsRegistered() throws SolverException {
         DurationEvaluators d = new DurationEvaluators();
 
         //Juste check an evaluator is registered for every possible action.
-        Model mo = new DefaultModel();
         mo.getAttributes().put(vm1, "boot", 2);
         mo.getAttributes().put(vm1, "shutdown", 3);
         mo.getAttributes().put(vm1, "migrate", 4);
@@ -73,15 +78,15 @@ public class DurationEvaluatorsTest implements PremadeElements {
     public void testRegister() {
         DurationEvaluators d = new DurationEvaluators();
         d.unregister(btrplace.plan.event.MigrateVM.class);
-        Assert.assertTrue(d.register(btrplace.plan.event.MigrateVM.class, new ConstantDuration(7)));
-        Assert.assertFalse(d.register(btrplace.plan.event.MigrateVM.class, new ConstantDuration(3)));
+        Assert.assertTrue(d.register(btrplace.plan.event.MigrateVM.class, new ConstantActionDuration(7)));
+        Assert.assertFalse(d.register(btrplace.plan.event.MigrateVM.class, new ConstantActionDuration(3)));
     }
 
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testUnregister", "testRegister"})
     public void testGetEvaluator() {
         DurationEvaluators d = new DurationEvaluators();
         d.unregister(btrplace.plan.event.MigrateVM.class);
-        DurationEvaluator ev = new ConstantDuration(7);
+        ActionDurationEvaluator ev = new ConstantActionDuration(7);
         d.register(btrplace.plan.event.MigrateVM.class, ev);
         Assert.assertEquals(d.getEvaluator(btrplace.plan.event.MigrateVM.class), ev);
     }
@@ -89,22 +94,23 @@ public class DurationEvaluatorsTest implements PremadeElements {
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testUnregister", "testRegister"})
     public void testEvaluate() throws SolverException {
         DurationEvaluators d = new DurationEvaluators();
-        DurationEvaluator ev = new ConstantDuration(7);
+        ActionDurationEvaluator ev = new ConstantActionDuration(7);
         d.register(btrplace.plan.event.MigrateVM.class, ev);
-        Assert.assertEquals(d.evaluate(new DefaultModel(), btrplace.plan.event.MigrateVM.class, vm1), 7);
+
+        Assert.assertEquals(d.evaluate(mo, btrplace.plan.event.MigrateVM.class, vm1), 7);
     }
 
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testUnregister"}, expectedExceptions = {SolverException.class})
     public void testEvaluateUnregisteredAction() throws SolverException {
         DurationEvaluators d = new DurationEvaluators();
         d.unregister(btrplace.plan.event.MigrateVM.class);
-        d.evaluate(new DefaultModel(), btrplace.plan.event.MigrateVM.class, vm1);
+        d.evaluate(mo, btrplace.plan.event.MigrateVM.class, vm1);
     }
 
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testRegister"}, expectedExceptions = {SolverException.class})
     public void testEvaluateWithError() throws SolverException {
         DurationEvaluators d = new DurationEvaluators();
-        d.register(btrplace.plan.event.MigrateVM.class, new ConstantDuration(-5));
-        d.evaluate(new DefaultModel(), btrplace.plan.event.MigrateVM.class, vm1);
+        d.register(btrplace.plan.event.MigrateVM.class, new ConstantActionDuration(-5));
+        d.evaluate(mo, btrplace.plan.event.MigrateVM.class, vm1);
     }
 }

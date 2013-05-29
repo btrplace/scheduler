@@ -17,6 +17,7 @@
 
 package btrplace.solver.choco.actionModel;
 
+import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
@@ -30,7 +31,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 /**
  * Model an action that stop a running VM.
  * The model must provide an estimation of the action duration through a
- * {@link btrplace.solver.choco.durationEvaluator.DurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.durationEvaluator.ActionDurationEvaluator} accessible from
  * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code ShutdownVM.class}
  * <p/>
  * If the reconfiguration problem has a solution, a {@link btrplace.plan.event.ShutdownVM} action is inserted
@@ -42,7 +43,7 @@ public class ShutdownVMModel implements VMActionModel {
 
     private ReconfigurationProblem rp;
 
-    private int vm;
+    private VM vm;
 
     private IntDomainVar duration;
 
@@ -59,14 +60,14 @@ public class ShutdownVMModel implements VMActionModel {
      * @param e  the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public ShutdownVMModel(ReconfigurationProblem rp, int e) throws SolverException {
+    public ShutdownVMModel(ReconfigurationProblem rp, VM e) throws SolverException {
         this.rp = rp;
         this.vm = e;
 
         int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), ShutdownVM.class, e);
         assert d > 0;
         duration = rp.makeDuration(d, d, "shutdownVM(", e, ").duration");
-        this.cSlice = new SliceBuilder(rp, e, "shutdownVM(" + e + ").cSlice").setHoster(rp.getCurrentVMLocation(rp.getVMIdx(e)))
+        this.cSlice = new SliceBuilder(rp, e, "shutdownVM(" + e + ").cSlice").setHoster(rp.getCurrentVMLocation(rp.getVM(e)))
                 .setEnd(rp.makeDuration(rp.getEnd().getSup(), d, "shutdownVM(", e, ").cSlice_end"))
                 .build();
         start = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel("shutdownVM(", e, ").start"), cSlice.getEnd(), -d);
@@ -83,7 +84,7 @@ public class ShutdownVMModel implements VMActionModel {
     }
 
     @Override
-    public int getVM() {
+    public VM getVM() {
         return vm;
     }
 

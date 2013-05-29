@@ -18,6 +18,7 @@
 package btrplace.solver.choco.objective.minMTTR;
 
 import btrplace.model.Mapping;
+import btrplace.model.VM;
 import btrplace.solver.choco.ReconfigurationProblem;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -42,9 +43,9 @@ public final class VMPlacementUtils {
      * @param rp the problem
      * @return the resulting map.
      */
-    public static Map<IntDomainVar, Integer> makePlacementMap(ReconfigurationProblem rp) {
-        Map<IntDomainVar, Integer> m = new HashMap<>();
-        for (int vm : rp.getFutureRunningVMs()) {
+    public static Map<IntDomainVar, VM> makePlacementMap(ReconfigurationProblem rp) {
+        Map<IntDomainVar, VM> m = new HashMap<>();
+        for (VM vm : rp.getFutureRunningVMs()) {
             IntDomainVar v = rp.getVMAction(vm).getDSlice().getHoster();
             m.put(v, vm);
         }
@@ -58,10 +59,10 @@ public final class VMPlacementUtils {
      * @param vm the VM
      * @return {@code true} iff the VM can stay
      */
-    public static boolean canStay(ReconfigurationProblem rp, int vm) {
+    public static boolean canStay(ReconfigurationProblem rp, VM vm) {
         Mapping m = rp.getSourceModel().getMapping();
         if (m.getRunningVMs().contains(vm)) {
-            int curPos = rp.getNodeIdx(m.getVMLocation(vm));
+            int curPos = rp.getNode(m.getVMLocation(vm));
             return rp.getVMAction(vm).getDSlice().getHoster().canBeInstantiatedTo(curPos);
         }
         return false;

@@ -17,9 +17,7 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.Killed;
 import btrplace.solver.choco.MappingFiller;
 import btrplace.test.PremadeElements;
@@ -38,6 +36,10 @@ public class CKilledTest implements PremadeElements {
     @Test
     public void testGetMisplaced() {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
         Mapping m = new MappingFiller(mo.getMapping()).ready(vm1).on(n1).run(n1, vm2).get();
 
         CKilled k = new CKilled(new Killed(Collections.singleton(vm5)));

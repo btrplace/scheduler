@@ -18,6 +18,7 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.model.constraint.Root;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
@@ -51,7 +52,7 @@ public class CRoot implements ChocoSatConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
         CPSolver s = rp.getSolver();
-        for (int vm : cstr.getInvolvedVMs()) {
+        for (VM vm : cstr.getInvolvedVMs()) {
             VMActionModel m = rp.getVMAction(vm);
             Slice cSlice = m.getCSlice();
             Slice dSlice = m.getDSlice();
@@ -63,7 +64,7 @@ public class CRoot implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<Integer> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         return Collections.emptySet();
     }
 

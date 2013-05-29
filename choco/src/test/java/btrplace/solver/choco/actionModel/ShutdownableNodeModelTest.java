@@ -17,9 +17,7 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootNode;
 import btrplace.plan.event.ShutdownNode;
@@ -27,7 +25,7 @@ import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.durationEvaluator.ConstantDuration;
+import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
@@ -50,6 +48,7 @@ public class ShutdownableNodeModelTest implements PremadeElements {
     public void testBasics() throws SolverException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
+        Node n1 = mo.newNode();
         map.addOnlineNode(n1);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
@@ -64,12 +63,15 @@ public class ShutdownableNodeModelTest implements PremadeElements {
     public void testForcedOnline() throws SolverException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
         map.addOnlineNode(n1);
         map.addOfflineNode(n2);
 
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(ShutdownNode.class, new ConstantDuration(5));
-        dev.register(BootNode.class, new ConstantDuration(10));
+        dev.register(ShutdownNode.class, new ConstantActionDuration(5));
+        dev.register(BootNode.class, new ConstantActionDuration(10));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
@@ -99,10 +101,12 @@ public class ShutdownableNodeModelTest implements PremadeElements {
     public void testForcedOffline() throws SolverException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
+        Node n1 = mo.newNode();
+
         map.addOnlineNode(n1);
 
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(ShutdownNode.class, new ConstantDuration(5));
+        dev.register(ShutdownNode.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
@@ -127,15 +131,18 @@ public class ShutdownableNodeModelTest implements PremadeElements {
     public void testScheduledShutdown() throws SolverException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
+        final VM vm1 = mo.newVM();
+        Node n1 = mo.newNode();
+
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(ShutdownVM.class, new ConstantDuration(2));
-        dev.register(ShutdownNode.class, new ConstantDuration(5));
+        dev.register(ShutdownVM.class, new ConstantActionDuration(2));
+        dev.register(ShutdownNode.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
-                .setNextVMsStates(Collections.singleton(vm1), Collections.<Integer>emptySet(), Collections.<Integer>emptySet(), Collections.<Integer>emptySet())
+                .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .build();
         ShutdownableNodeModel ma = (ShutdownableNodeModel) rp.getNodeAction(n1);
         ma.getState().setVal(0);
@@ -164,12 +171,15 @@ public class ShutdownableNodeModelTest implements PremadeElements {
     public void testCascadedShutdown() throws SolverException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
 
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(ShutdownVM.class, new ConstantDuration(2));
-        dev.register(ShutdownNode.class, new ConstantDuration(5));
+        dev.register(ShutdownVM.class, new ConstantActionDuration(2));
+        dev.register(ShutdownNode.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
@@ -195,13 +205,16 @@ public class ShutdownableNodeModelTest implements PremadeElements {
     public void testShutdownBeforeVMsLeave() throws SolverException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
+        final VM vm1 = mo.newVM();
+        Node n1 = mo.newNode();
+
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(ShutdownVM.class, new ConstantDuration(2));
-        dev.register(ShutdownNode.class, new ConstantDuration(5));
+        dev.register(ShutdownVM.class, new ConstantActionDuration(2));
+        dev.register(ShutdownNode.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.singleton(vm1), Collections.<Integer>emptySet(), Collections.<Integer>emptySet(), Collections.<Integer>emptySet())
+                .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .setDurationEvaluatators(dev)
                 .labelVariables()
                 .build();
@@ -218,11 +231,14 @@ public class ShutdownableNodeModelTest implements PremadeElements {
     public void testSwitchState() throws ContradictionException, SolverException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
         map.addOnlineNode(n1);
         map.addOfflineNode(n2);
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(BootNode.class, new ConstantDuration(2));
-        dev.register(ShutdownNode.class, new ConstantDuration(5));
+        dev.register(BootNode.class, new ConstantActionDuration(2));
+        dev.register(ShutdownNode.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
@@ -250,12 +266,16 @@ public class ShutdownableNodeModelTest implements PremadeElements {
     public void testNodeHostingEnd() throws SolverException, ContradictionException {
         Model model = new DefaultModel();
         Mapping map = model.getMapping();
+        Node n1 = model.newNode();
+        Node n2 = model.newNode();
+        Node n3 = model.newNode();
+
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addOfflineNode(n3);
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(ShutdownNode.class, new ConstantDuration(5));
-        dev.register(BootNode.class, new ConstantDuration(10));
+        dev.register(ShutdownNode.class, new ConstantActionDuration(5));
+        dev.register(BootNode.class, new ConstantActionDuration(10));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
@@ -299,12 +319,16 @@ public class ShutdownableNodeModelTest implements PremadeElements {
     public void testActionDurationSimple() throws SolverException, ContradictionException {
         Model model = new DefaultModel();
         Mapping map = model.getMapping();
+
+        Node n1 = model.newNode();
+        Node n4 = model.newNode();
+
         map.addOnlineNode(n1);
         map.addOfflineNode(n4);
 
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(ShutdownNode.class, new ConstantDuration(5));
-        dev.register(BootNode.class, new ConstantDuration(3));
+        dev.register(ShutdownNode.class, new ConstantActionDuration(5));
+        dev.register(BootNode.class, new ConstantActionDuration(3));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
@@ -334,11 +358,15 @@ public class ShutdownableNodeModelTest implements PremadeElements {
     public void testShutdownable() throws SolverException, ContradictionException {
         Model model = new DefaultModel();
         Mapping map = model.getMapping();
+
+        Node n1 = model.newNode();
+        Node n4 = model.newNode();
+
         map.addOnlineNode(n1);
         map.addOnlineNode(n4);
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(ShutdownNode.class, new ConstantDuration(5));
-        dev.register(BootNode.class, new ConstantDuration(3));
+        dev.register(ShutdownNode.class, new ConstantActionDuration(5));
+        dev.register(BootNode.class, new ConstantActionDuration(3));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
                 .setDurationEvaluatators(dev)
                 .labelVariables()

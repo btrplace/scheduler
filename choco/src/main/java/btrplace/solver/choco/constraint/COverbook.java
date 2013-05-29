@@ -19,6 +19,8 @@ package btrplace.solver.choco.constraint;
 
 
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.Overbook;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.view.ShareableResource;
@@ -61,8 +63,8 @@ public class COverbook implements ChocoSatConstraint {
             throw new SolverException(rp.getSourceModel(), "Unable to get the resource mapping '" + cstr.getResource() + "'");
         }
 
-        for (int u : cstr.getInvolvedNodes()) {
-            RealVar v = rcm.getOverbookRatio(rp.getNodeIdx(u));
+        for (Node u : cstr.getInvolvedNodes()) {
+            RealVar v = rcm.getOverbookRatio(rp.getNode(u));
             RealInterval ric = new RealIntervalConstant(v.getInf(), cstr.getRatio());
             try {
                 v.intersect(ric);
@@ -75,20 +77,20 @@ public class COverbook implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<Integer> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
-        Set<Integer> bads = new HashSet<>();
+        Set<VM> bads = new HashSet<>();
         if (rc == null) {
             //No resource given, all the VMs are considered as misplaced
-            for (int n : cstr.getInvolvedNodes()) {
+            for (Node n : cstr.getInvolvedNodes()) {
                 bads.addAll(m.getMapping().getRunningVMs(n));
             }
         } else {
             //Check if the node is saturated
-            for (int n : cstr.getInvolvedNodes()) {
+            for (Node n : cstr.getInvolvedNodes()) {
                 int overCapa = (int) (cstr.getRatio() * rc.getCapacity(n));
                 //Minus the VMs usage
-                for (int vmId : m.getMapping().getRunningVMs(n)) {
+                for (VM vmId : m.getMapping().getRunningVMs(n)) {
                     overCapa -= rc.getConsumption(vmId);
                     if (overCapa < 0) {
                         bads.addAll(m.getMapping().getRunningVMs());

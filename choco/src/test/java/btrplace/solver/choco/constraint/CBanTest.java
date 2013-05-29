@@ -17,9 +17,7 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.Ban;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Running;
@@ -46,15 +44,15 @@ public class CBanTest implements PremadeElements {
 
     @Test
     public void testBasic() throws SolverException {
-        int[] nodes = new int[5];
-        int[] vms = new int[5];
+        Node[] nodes = new Node[5];
+        VM[] vms = new VM[5];
         Model mo = new DefaultModel();
         Mapping m = mo.getMapping();
-        Set<Integer> sVMs = new HashSet<>();
-        Set<Integer> sNodes = new HashSet<>();
+        Set<VM> sVMs = new HashSet<>();
+        Set<Node> sNodes = new HashSet<>();
         for (int i = 0; i < vms.length; i++) {
-            nodes[i] = 100 + i;
-            vms[i] = i;
+            nodes[i] = mo.newNode();
+            vms[i] = mo.newVM();
             m.addOnlineNode(nodes[i]);
             m.addRunningVM(vms[i], nodes[i]);
             if (i % 2 == 0) {
@@ -84,23 +82,33 @@ public class CBanTest implements PremadeElements {
     @Test
     public void testGetMisPlaced() {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+        Node n5 = mo.newNode();
         Mapping m = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3)
                 .run(n3, vm4)
                 .sleep(n4, vm5).get();
 
-        Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2));
-        Set<Integer> ns = new HashSet<>(Arrays.asList(n3, n4));
+        Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<Node> ns = new HashSet<>(Arrays.asList(n3, n4));
 
         CBan c = new CBan(new Ban(vms, ns));
         org.testng.Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
-        ns.add(vm4);
+        ns.add(mo.newNode());
         org.testng.Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
-        vms.add(vm5);
+        vms.add(mo.newVM());
         org.testng.Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
         ns.add(n1);
-        Set<Integer> bad = c.getMisPlacedVMs(mo);
+        Set<VM> bad = c.getMisPlacedVMs(mo);
         org.testng.Assert.assertEquals(2, bad.size());
         org.testng.Assert.assertTrue(bad.contains(vm1) && bad.contains(vm2));
     }

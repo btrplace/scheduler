@@ -20,6 +20,7 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
@@ -45,7 +46,10 @@ public class COnlineTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
+        Model mo = new DefaultModel();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Set<Node> s = new HashSet<>(Arrays.asList(n1, n2));
         Online on = new Online(s);
         COnline con = new COnline(on);
         Assert.assertEquals(con.toString(), on.toString());
@@ -54,6 +58,7 @@ public class COnlineTest implements PremadeElements {
     @Test
     public void testSolvableProblem() throws SolverException {
         Model mo = new DefaultModel();
+        Node n1 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).off(n1).get();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Online(Collections.singleton(n1))));

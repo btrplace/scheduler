@@ -19,6 +19,7 @@ package btrplace.solver.choco;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import btrplace.solver.choco.view.ModelViewMapper;
@@ -51,9 +52,9 @@ public class DefaultReconfigurationProblemBuilder {
 
     private ModelViewMapper viewMapper;
 
-    private Set<Integer> runs, waits, over, sleep;
+    private Set<VM> runs, waits, over, sleep;
 
-    private Set<Integer> manageable;
+    private Set<VM> manageable;
 
     /**
      * Make a new builder for a problem working on a given model.
@@ -106,10 +107,10 @@ public class DefaultReconfigurationProblemBuilder {
      * @param killed    the VMs to kill
      * @return the current builder
      */
-    public DefaultReconfigurationProblemBuilder setNextVMsStates(Set<Integer> ready,
-                                                                 Set<Integer> runnings,
-                                                                 Set<Integer> sleepings,
-                                                                 Set<Integer> killed) {
+    public DefaultReconfigurationProblemBuilder setNextVMsStates(Set<VM> ready,
+                                                                 Set<VM> runnings,
+                                                                 Set<VM> sleepings,
+                                                                 Set<VM> killed) {
         runs = runnings;
         waits = ready;
         sleep = sleepings;
@@ -123,7 +124,7 @@ public class DefaultReconfigurationProblemBuilder {
      * @param vms the set of VMs
      * @return the current builder
      */
-    public DefaultReconfigurationProblemBuilder setManageableVMs(Set<Integer> vms) {
+    public DefaultReconfigurationProblemBuilder setManageableVMs(Set<VM> vms) {
         manageable = vms;
         return this;
     }

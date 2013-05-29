@@ -17,6 +17,7 @@
 
 package btrplace.solver.choco.view;
 
+import btrplace.model.VM;
 import btrplace.model.view.ModelView;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
@@ -84,7 +85,7 @@ public class ModelViewMapperTest {
         }
 
         @Override
-        public boolean cloneVM(int vm, int clone) {
+        public boolean cloneVM(VM vm, VM clone) {
             throw new UnsupportedOperationException();
         }
     }

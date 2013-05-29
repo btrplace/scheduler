@@ -17,9 +17,7 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Ready;
@@ -49,6 +47,16 @@ public class CFenceTest implements PremadeElements {
     @Test
     public void testGetMisPlaced() {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+        Node n5 = mo.newNode();
         Mapping m = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4)
                 .off(n5)
                 .run(n1, vm1, vm2)
@@ -56,16 +64,16 @@ public class CFenceTest implements PremadeElements {
                 .run(n3, vm4)
                 .sleep(n4, vm5).get();
 
-        Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2));
-        Set<Integer> ns = new HashSet<>(Arrays.asList(n1, n2));
+        Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<Node> ns = new HashSet<>(Arrays.asList(n1, n2));
         CFence c = new CFence(new Fence(vms, ns));
         Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
-        ns.add(vm5);
+        ns.add(mo.newNode());
         Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
         vms.add(vm3);
         Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
         vms.add(vm4);
-        Set<Integer> bad = c.getMisPlacedVMs(mo);
+        Set<VM> bad = c.getMisPlacedVMs(mo);
         Assert.assertEquals(1, bad.size());
         Assert.assertTrue(bad.contains(vm4));
     }
@@ -73,12 +81,19 @@ public class CFenceTest implements PremadeElements {
     @Test
     public void testBasic() throws SolverException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm4)
                 .run(n2, vm2)
                 .run(n3, vm3).get();
 
-        Set<Integer> on = new HashSet<>(Arrays.asList(n1, n3));
+        Set<Node> on = new HashSet<>(Arrays.asList(n1, n3));
         Fence f = new Fence(map.getAllVMs(), on);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<SatConstraint> cstrs = new ArrayList<>();

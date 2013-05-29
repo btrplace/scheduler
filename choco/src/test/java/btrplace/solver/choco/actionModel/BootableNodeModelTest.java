@@ -17,9 +17,7 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootNode;
 import btrplace.plan.event.BootVM;
@@ -27,7 +25,7 @@ import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.durationEvaluator.ConstantDuration;
+import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
@@ -50,6 +48,8 @@ public class BootableNodeModelTest implements PremadeElements {
     public void testBasic() throws SolverException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
+        Node n1 = mo.newNode();
+
         map.addOfflineNode(n1);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
@@ -61,10 +61,12 @@ public class BootableNodeModelTest implements PremadeElements {
     public void testForcingBoot() throws SolverException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
+        Node n1 = mo.newNode();
+
         map.addOfflineNode(n1);
 
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(BootNode.class, new ConstantDuration(5));
+        dev.register(BootNode.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .labelVariables()
                 .setDurationEvaluatators(dev)
@@ -89,10 +91,11 @@ public class BootableNodeModelTest implements PremadeElements {
     public void testForcingOffline() throws SolverException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
+        Node n1 = mo.newNode();
         map.addOfflineNode(n1);
 
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(BootNode.class, new ConstantDuration(5));
+        dev.register(BootNode.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .labelVariables()
                 .setDurationEvaluatators(dev)
@@ -117,14 +120,17 @@ public class BootableNodeModelTest implements PremadeElements {
     public void testRequiredOnline() throws SolverException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
+        VM vm1 = mo.newVM();
+        Node n1 = mo.newNode();
+
         map.addOfflineNode(n1);
         map.addReadyVM(vm1);
 
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(BootNode.class, new ConstantDuration(5));
-        dev.register(BootVM.class, new ConstantDuration(2));
+        dev.register(BootNode.class, new ConstantActionDuration(5));
+        dev.register(BootVM.class, new ConstantActionDuration(2));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<Integer>emptySet(), Collections.singleton(vm1), Collections.<Integer>emptySet(), Collections.<Integer>emptySet())
+                .setNextVMsStates(Collections.<VM>emptySet(), Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .labelVariables()
                 .setDurationEvaluatators(dev)
                 .build();
@@ -141,11 +147,14 @@ public class BootableNodeModelTest implements PremadeElements {
     public void testBootCascade() throws SolverException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
         map.addOfflineNode(n1);
         map.addOfflineNode(n2);
 
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(BootNode.class, new ConstantDuration(5));
+        dev.register(BootNode.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .labelVariables()
                 .setDurationEvaluatators(dev)
@@ -163,9 +172,11 @@ public class BootableNodeModelTest implements PremadeElements {
     public void testDelayedBooting() throws ContradictionException, SolverException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
+        Node n2 = mo.newNode();
+
         map.addOfflineNode(n2);
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(BootNode.class, new ConstantDuration(2));
+        dev.register(BootNode.class, new ConstantActionDuration(2));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
@@ -187,11 +198,14 @@ public class BootableNodeModelTest implements PremadeElements {
     public void testActionDurationSimple() throws SolverException, ContradictionException {
         Model model = new DefaultModel();
         Mapping map = model.getMapping();
+        Node n1 = model.newNode();
+        Node n4 = model.newNode();
+
         map.addOnlineNode(n1);
         map.addOfflineNode(n4);
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(ShutdownNode.class, new ConstantDuration(5));
-        dev.register(BootNode.class, new ConstantDuration(3));
+        dev.register(ShutdownNode.class, new ConstantActionDuration(5));
+        dev.register(BootNode.class, new ConstantActionDuration(3));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
                 .setDurationEvaluatators(dev)
                 .labelVariables()

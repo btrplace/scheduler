@@ -17,9 +17,7 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
@@ -31,7 +29,7 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.MappingFiller;
-import btrplace.solver.choco.durationEvaluator.LinearToAResourceDuration;
+import btrplace.solver.choco.durationEvaluator.LinearToAResourceActionDuration;
 import btrplace.test.PremadeElements;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
@@ -48,18 +46,18 @@ public class COverbookTest implements PremadeElements {
 
     @Test
     public void testBasic() throws SolverException {
-        int[] nodes = new int[3];
-        int[] vms = new int[9];
+        Node[] nodes = new Node[3];
+        VM[] vms = new VM[9];
         Model mo = new DefaultModel();
         Mapping m = mo.getMapping();
         btrplace.model.view.ShareableResource rcCPU = new ShareableResource("cpu");
         for (int i = 0; i < vms.length; i++) {
             if (i < nodes.length) {
-                nodes[i] = i;
+                nodes[i] = mo.newNode();
                 rcCPU.setCapacity(nodes[i], 2);
                 m.addOnlineNode(nodes[i]);
             }
-            vms[i] = 100 + i;
+            vms[i] = mo.newVM();
             rcCPU.setConsumption(vms[i], 1);
 
             m.addReadyVM(vms[i]);
@@ -86,18 +84,18 @@ public class COverbookTest implements PremadeElements {
      */
     @Test
     public void testMultipleOverbook() throws SolverException {
-        int[] nodes = new int[3];
-        int[] vms = new int[11];
+        Node[] nodes = new Node[3];
+        VM[] vms = new VM[11];
         Model mo = new DefaultModel();
         Mapping m = mo.getMapping();
         ShareableResource rcCPU = new ShareableResource("cpu");
         for (int i = 0; i < vms.length; i++) {
             if (i < nodes.length) {
-                nodes[i] = i;
+                nodes[i] = mo.newNode();
                 rcCPU.setCapacity(nodes[i], 2);
                 m.addOnlineNode(nodes[i]);
             }
-            vms[i] = 100 + i;
+            vms[i] = mo.newVM();
             rcCPU.setConsumption(vms[i], 1);
 
             m.addReadyVM(vms[i]);
@@ -121,18 +119,18 @@ public class COverbookTest implements PremadeElements {
 
     @Test
     public void testNoSolution() throws SolverException {
-        int[] nodes = new int[10];
-        int[] vms = new int[31];
+        Node[] nodes = new Node[10];
+        VM[] vms = new VM[31];
         Model mo = new DefaultModel();
         Mapping m = mo.getMapping();
         ShareableResource rcMem = new ShareableResource("mem");
         for (int i = 0; i < vms.length; i++) {
             if (i < nodes.length) {
-                nodes[i] = i;
+                nodes[i] = mo.newNode();
                 rcMem.setCapacity(nodes[i], 3);
                 m.addOnlineNode(nodes[i]);
             }
-            vms[i] = 100 + i;
+            vms[i] = mo.newVM();
             rcMem.setConsumption(vms[i], 1);
             m.addReadyVM(vms[i]);
         }
@@ -142,13 +140,22 @@ public class COverbookTest implements PremadeElements {
         c.add(new Running(m.getAllVMs()));
         c.add(new Preserve(m.getAllVMs(), "mem", 1));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.getDurationEvaluators().register(BootVM.class, new LinearToAResourceDuration("mem", true, 2, 3));
+        cra.getDurationEvaluators().register(BootVM.class, new LinearToAResourceActionDuration<VM>("mem", 2, 3));
         Assert.assertNull(cra.solve(mo, c));
     }
 
     @Test
     public void testGetMisplaced() throws SolverException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
         Mapping m = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1)
                 .run(n2, vm2, vm3)
@@ -170,6 +177,9 @@ public class COverbookTest implements PremadeElements {
     @Test
     public void testWithScheduling1() throws SolverException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm3 = mo.newVM();
+        Node n1 = mo.newNode();
         Mapping m = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1).ready(vm3).get();
 
         ShareableResource rcCPU = new ShareableResource("cpu", 2, 2);
@@ -196,6 +206,9 @@ public class COverbookTest implements PremadeElements {
     @Test
     public void testWithIncrease() throws SolverException, ContradictionException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        Node n1 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1, vm2).get();
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("foo");

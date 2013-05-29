@@ -18,12 +18,14 @@
 package btrplace.solver.choco.durationEvaluator;
 
 import btrplace.model.DefaultModel;
+import btrplace.model.Model;
+import btrplace.model.Node;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * Unit tests for {@link ConstantDuration}.
+ * Unit tests for {@link ConstantActionDuration}.
  *
  * @author Fabien Hermenier
  */
@@ -31,8 +33,9 @@ public class ConstantDurationTest implements PremadeElements {
 
     @Test
     public void testInstantiate() {
-        ConstantDuration cd = new ConstantDuration(5);
-        Assert.assertEquals(5, cd.evaluate(new DefaultModel(), vm1));
+        Model mo = new DefaultModel();
+        ConstantActionDuration<Node> cd = new ConstantActionDuration<>(5);
+        Assert.assertEquals(5, cd.evaluate(mo, mo.newNode()));
         Assert.assertNotNull(cd.toString());
     }
 }

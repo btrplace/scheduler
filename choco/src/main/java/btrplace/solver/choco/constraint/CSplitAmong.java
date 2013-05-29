@@ -19,6 +19,8 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.Among;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.SplitAmong;
@@ -58,15 +60,15 @@ public class CSplitAmong implements ChocoSatConstraint {
             return false;
         }
 
-        Set<Set<Integer>> vGrps = cstr.getGroupsOfVMs();
-        Set<Set<Integer>> pGrps = cstr.getGroupsOfNodes();
+        Set<Set<VM>> vGrps = cstr.getGroupsOfVMs();
+        Set<Set<Node>> pGrps = cstr.getGroupsOfNodes();
         CPSolver s = rp.getSolver();
 
         IntDomainVar[] grpVars = new IntDomainVar[vGrps.size()];
         //VM is assigned on a node <-> group variable associated to the VM
         //is assigned to the group of nodes it belong too.
         int i = 0;
-        for (Set<Integer> vms : vGrps) {
+        for (Set<VM> vms : vGrps) {
 
             Among a = new Among(vms, pGrps);
             //If the constraint is continuous, there is no way a group of VMs already binded to a group of
@@ -91,9 +93,9 @@ public class CSplitAmong implements ChocoSatConstraint {
      * @param n the node
      * @return the group identifier, {@code -1} if the node does not belong to a group
      */
-    public int getPGroup(int n) {
+    public int getPGroup(Node n) {
         int i = 0;
-        for (Set<Integer> pGrp : cstr.getGroupsOfNodes()) {
+        for (Set<Node> pGrp : cstr.getGroupsOfNodes()) {
             if (pGrp.contains(n)) {
                 break;
             }
@@ -103,18 +105,18 @@ public class CSplitAmong implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<Integer> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         //contains the set of VMs hosted on a group id.
-        Set<Integer>[] usedGrp = new Set[cstr.getGroupsOfNodes().size()];
+        Set<VM>[] usedGrp = new Set[cstr.getGroupsOfNodes().size()];
 
         Mapping map = m.getMapping();
 
-        Set<Integer> bad = new HashSet<>();
-        for (Set<Integer> vms : cstr.getGroupsOfVMs()) {
+        Set<VM> bad = new HashSet<>();
+        for (Set<VM> vms : cstr.getGroupsOfVMs()) {
             int grp = -1;
-            for (int vm : vms) {
+            for (VM vm : vms) {
                 if (map.getRunningVMs().contains(vm)) {
-                    int n = map.getVMLocation(vm);
+                    Node n = map.getVMLocation(vm);
                     int g = getPGroup(n);
                     if (g == -1) {
                         //The VM is on a node that belong to none of the given groups

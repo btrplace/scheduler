@@ -30,105 +30,105 @@ public interface Attributes extends Cloneable {
     /**
      * Put a boolean value for a VM.
      *
-     * @param vm the VM
-     * @param k  the attribute identifier
-     * @param b  the value to set
+     * @param e the element
+     * @param k the attribute identifier
+     * @param b the value to set
      * @return {@code true} if a previous value was overridden
      */
-    boolean put(VM vm, String k, boolean b);
+    boolean put(Element e, String k, boolean b);
 
     /**
      * Put a String value for a VM.
      *
-     * @param vm the VM
-     * @param k  the attribute identifier
-     * @param s  the value to set
+     * @param e the element
+     * @param k the attribute identifier
+     * @param s the value to set
      * @return {@code true} if a previous value was overridden
      */
-    boolean put(VM vm, String k, String s);
+    boolean put(Element e, String k, String s);
 
     /**
      * Put a double value.
      *
-     * @param vm the VM
-     * @param k  the attribute identifier
-     * @param d  the value to set
+     * @param e the element
+     * @param k the attribute identifier
+     * @param d the value to set
      * @return {@code true} if a previous value was overridden
      */
-    boolean put(VM vm, String k, double d);
+    boolean put(Element e, String k, double d);
 
     /**
      * Put an integer value.
      *
-     * @param vm the VM
-     * @param k  the attribute identifier
-     * @param d  the value to set
+     * @param e the element
+     * @param k the attribute identifier
+     * @param d the value to set
      * @return {@code true} if a previous value was overridden
      */
-    boolean put(VM vm, String k, int d);
+    boolean put(Element e, String k, int d);
 
     /**
      * Get an attribute value as a simple Object.
      *
-     * @param vm the VM
-     * @param k  the attribute value
+     * @param e the element
+     * @param k the attribute value
      * @return the value if it has been stated. {@code null} otherwise
      */
-    Object get(VM vm, String k);
+    Object get(Element e, String k);
 
     /**
      * Get an attribute value as a boolean.
      *
-     * @param vm the VM
-     * @param k  the attribute value
+     * @param e the element
+     * @param k the attribute value
      * @return the value if it has been stated. {@code null} otherwise
      */
-    Boolean getBoolean(VM vm, String k);
+    Boolean getBoolean(Element e, String k);
 
     /**
      * Get an attribute value as a string.
      *
-     * @param vm the VM
-     * @param k  the attribute value
+     * @param e the element
+     * @param k the attribute value
      * @return the value if it has been stated. {@code null} otherwise
      */
-    String getString(VM vm, String k);
+    String getString(Element e, String k);
 
     /**
      * Get an attribute value as a double.
      *
-     * @param vm the VM
-     * @param k  the attribute value
+     * @param e the element
+     * @param k the attribute value
      * @return the value if it has been stated. {@code null} otherwise
      */
-    Double getDouble(VM vm, String k);
+    Double getDouble(Element e, String k);
 
     /**
      * Get an attribute value as an integer.
      *
-     * @param vm the VM
-     * @param k  the attribute value
+     * @param e the element
+     * @param k the attribute value
      * @return the value if it has been stated. {@code null} otherwise
      */
-    Integer getInteger(VM vm, String k);
+    Integer getInteger(Element e, String k);
 
     /**
      * Check if an attribute is set for a given element.
      *
-     * @param vm the VM
-     * @param k  the attribute identifier
+     * @param e the element
+     * @param k the attribute identifier
      * @return {@code true} iff the attribute is set
      */
-    boolean isSet(VM vm, String k);
+    boolean isSet(Element e, String k);
 
     /**
      * Unset an attribute for a given element.
      *
-     * @param vm the VM
-     * @param k  the attribute identifier
+     * @param e the element
+     * @param k the attribute identifier
      * @return {@code true} iff a value was removed
      */
-    boolean unset(VM vm, String k);
+    boolean unset(Element e, String k);
 
     /**
      * Clone the attributes.
@@ -138,19 +138,19 @@ public interface Attributes extends Cloneable {
     Attributes clone();
 
     /**
-     * Get the VMs having attributes defined.
+     * Get the elements having attributes defined.
      *
      * @return a set that may be empty
      */
-    Set<VM> getSpecifiedVMs();
+    Set<Element> getDefined();
 
     /**
      * Get all the attributes keys that are registered for a VM.
      *
-     * @param vm the VM
+     * @param e the element
      * @return a set that may be empty
      */
-    Set<String> getKeys(VM vm);
+    Set<String> getKeys(Element e);
 
     /**
      * Put a value but try to cast into to a supported primitive if possible.
@@ -158,144 +158,12 @@ public interface Attributes extends Cloneable {
      * finally to a double value. If none of the cast succeeded, the value is let
      * as a string.
      *
-     * @param vm the VM
-     * @param k  the attribute identifier
-     * @param v  the value to set
-     * @return {@code true} if a previous value was overridden
-     */
-    boolean castAndPut(VM vm, String k, String v);
-
-    /**
-     * Put a boolean value for a VM.
-     *
-     * @param n the node
-     * @param k the attribute identifier
-     * @param b the value to set
-     * @return {@code true} if a previous value was overridden
-     */
-    boolean put(Node n, String k, boolean b);
-
-    /**
-     * Put a String value for a VM.
-     *
-     * @param n the node
-     * @param k the attribute identifier
-     * @param s the value to set
-     * @return {@code true} if a previous value was overridden
-     */
-    boolean put(Node n, String k, String s);
-
-    /**
-     * Put a double value for a Node.
-     *
-     * @param n the node
-     * @param k the attribute identifier
-     * @param d the value to set
-     * @return {@code true} if a previous value was overridden
-     */
-    boolean put(Node n, String k, double d);
-
-    /**
-     * Put an integer value for a Node.
-     *
-     * @param n the node
-     * @param k the attribute identifier
-     * @param d the value to set
-     * @return {@code true} if a previous value was overridden
-     */
-    boolean put(Node n, String k, int d);
-
-    /**
-     * Get an attribute value as a simple Object.
-     *
-     * @param n the node
-     * @param k the attribute value
-     * @return the value if it has been stated. {@code null} otherwise
-     */
-    Object get(Node n, String k);
-
-    /**
-     * Get an attribute value as a boolean.
-     *
-     * @param n the node
-     * @param k the attribute value
-     * @return the value if it has been stated. {@code null} otherwise
-     */
-    Boolean getBoolean(Node n, String k);
-
-    /**
-     * Get an attribute value as a string.
-     *
-     * @param n the node
-     * @param k the attribute value
-     * @return the value if it has been stated. {@code null} otherwise
-     */
-    String getString(Node n, String k);
-
-    /**
-     * Get an attribute value as a double.
-     *
-     * @param n the node
-     * @param k the attribute value
-     * @return the value if it has been stated. {@code null} otherwise
-     */
-    Double getDouble(Node n, String k);
-
-    /**
-     * Get an attribute value as an integer.
-     *
-     * @param n the node
-     * @param k the attribute value
-     * @return the value if it has been stated. {@code null} otherwise
-     */
-    Integer getInteger(Node n, String k);
-
-
-    /**
-     * Check if an attribute is set for a given element.
-     *
-     * @param n the node
-     * @param k the attribute identifier
-     * @return {@code true} iff the attribute is set
-     */
-    boolean isSet(Node n, String k);
-
-    /**
-     * Unset an attribute for a node.
-     *
-     * @param n the node
-     * @param k the attribute identifier
-     * @return {@code true} iff a value was removed
-     */
-    boolean unset(Node n, String k);
-
-    /**
-     * Get the nodes having attributes defined.
-     *
-     * @return a set that may be empty
-     */
-    Set<Node> getSpecifiedNodes();
-
-    /**
-     * Get all the attributes keys that are registered for a node.
-     *
-     * @param n the node
-     * @return a set that may be empty
-     */
-    Set<String> getKeys(Node n);
-
-    /**
-     * Put a value but try to cast into to a supported primitive if possible.
-     * First, it tries to cast {@code v} first to a boolean, then to a integer value,
-     * finally to a double value. If none of the cast succeeded, the value is let
-     * as a string.
-     *
-     * @param n the node
+     * @param e the element
      * @param k the attribute identifier
      * @param v the value to set
      * @return {@code true} if a previous value was overridden
      */
-    boolean castAndPut(Node n, String k, String v);
+    boolean castAndPut(Element e, String k, String v);
 
     /**
      * Remove all the attributes.

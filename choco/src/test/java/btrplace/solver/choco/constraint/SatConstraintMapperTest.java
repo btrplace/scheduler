@@ -17,7 +17,9 @@
 
 package btrplace.solver.choco.constraint;
 
+import btrplace.model.DefaultModel;
 import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.model.constraint.Ban;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Spread;
@@ -73,8 +75,9 @@ public class SatConstraintMapperTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiate", "testUnregister", "testRegister"})
     public void testMap() {
+        Model mo = new DefaultModel();
         SatConstraintMapper map = new SatConstraintMapper();
-        Spread s = new Spread(Collections.singleton(vm1));
+        Spread s = new Spread(Collections.singleton(mo.newVM()));
         ChocoSatConstraint c = map.map(s);
         Assert.assertTrue(c.getClass().equals(CSpread.class));
 
@@ -120,7 +123,7 @@ public class SatConstraintMapperTest implements PremadeElements {
         }
 
         @Override
-        public Set<Integer> getMisPlacedVMs(Model m) {
+        public Set<VM> getMisPlacedVMs(Model m) {
             throw new UnsupportedOperationException();
         }
     }

@@ -19,6 +19,7 @@ package btrplace.solver.choco.objective.minMTTR;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.actionModel.ActionModel;
@@ -102,37 +103,37 @@ public class MinMTTR implements ReconfigurationObjective {
         OnStableNodeFirst schedHeuristic = new OnStableNodeFirst("stableNodeFirst", rp, actions, this);
 
         //Get the VMs to move
-        Set<Integer> onBadNodes = rp.getManageableVMs();
+        Set<VM> onBadNodes = rp.getManageableVMs();
 
-        for (int vm : map.getSleepingVMs()) {
+        for (VM vm : map.getSleepingVMs()) {
             if (rp.getFutureRunningVMs().contains(vm)) {
                 onBadNodes.add(vm);
             }
         }
 
-        Set<Integer> onGoodNodes = new HashSet<>(map.getRunningVMs());
+        Set<VM> onGoodNodes = new HashSet<>(map.getRunningVMs());
         onGoodNodes.removeAll(onBadNodes);
 
         List<VMActionModel> goodActions = new ArrayList<>();
-        for (int vm : onGoodNodes) {
+        for (VM vm : onGoodNodes) {
             goodActions.add(rp.getVMAction(vm));
         }
         List<VMActionModel> badActions = new ArrayList<>();
-        for (int vm : onBadNodes) {
+        for (VM vm : onBadNodes) {
             badActions.add(rp.getVMAction(vm));
         }
 
         CPSolver s = rp.getSolver();
 
         //Get the VMs to move for exclusion issue
-        Set<Integer> vmsToExclude = new HashSet<>(rp.getManageableVMs());
-        for (Iterator<Integer> ite = vmsToExclude.iterator(); ite.hasNext(); ) {
-            int vm = ite.next();
+        Set<VM> vmsToExclude = new HashSet<>(rp.getManageableVMs());
+        for (Iterator<VM> ite = vmsToExclude.iterator(); ite.hasNext(); ) {
+            VM vm = ite.next();
             if (!(map.getRunningVMs().contains(vm) && rp.getFutureRunningVMs().contains(vm))) {
                 ite.remove();
             }
         }
-        Map<IntDomainVar, Integer> pla = VMPlacementUtils.makePlacementMap(rp);
+        Map<IntDomainVar, VM> pla = VMPlacementUtils.makePlacementMap(rp);
 
         s.addGoal(new AssignVar(new MovingVMs("movingVMs", rp, map, vmsToExclude), new RandomVMPlacement("movingVMs", rp, pla, true)));
         HostingVariableSelector selectForBads = new HostingVariableSelector("selectForBads", rp, ActionModelUtils.getDSlices(badActions), schedHeuristic);
@@ -143,12 +144,12 @@ public class MinMTTR implements ReconfigurationObjective {
         s.addGoal(new AssignVar(selectForGoods, new RandomVMPlacement("selectForGoods", rp, pla, true)));
 
         //VMs to run
-        Set<Integer> vmsToRun = new HashSet<>(map.getReadyVMs());
+        Set<VM> vmsToRun = new HashSet<>(map.getReadyVMs());
         vmsToRun.removeAll(rp.getFutureReadyVMs());
 
         VMActionModel[] runActions = new VMActionModel[vmsToRun.size()];
         int i = 0;
-        for (int vm : vmsToRun) {
+        for (VM vm : vmsToRun) {
             runActions[i++] = rp.getVMAction(vm);
         }
         HostingVariableSelector selectForRuns = new HostingVariableSelector("selectForRuns", rp, ActionModelUtils.getDSlices(runActions), schedHeuristic);
@@ -163,7 +164,7 @@ public class MinMTTR implements ReconfigurationObjective {
     }
 
     @Override
-    public Set<Integer> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         return Collections.emptySet();
     }
 

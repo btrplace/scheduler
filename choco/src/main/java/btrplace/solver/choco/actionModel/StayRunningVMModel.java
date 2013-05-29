@@ -17,6 +17,7 @@
 
 package btrplace.solver.choco.actionModel;
 
+import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -37,7 +38,7 @@ public class StayRunningVMModel implements KeepRunningVMModel {
 
     private ReconfigurationProblem rp;
 
-    private int vm;
+    private VM vm;
 
     private IntDomainVar stay;
 
@@ -48,7 +49,7 @@ public class StayRunningVMModel implements KeepRunningVMModel {
      * @param e  the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public StayRunningVMModel(ReconfigurationProblem rp, int e) throws SolverException {
+    public StayRunningVMModel(ReconfigurationProblem rp, VM e) throws SolverException {
         this.vm = e;
         this.rp = rp;
         IntDomainVar host = rp.makeCurrentHost("stayRunningVM(" + e + ").host", e);
@@ -101,7 +102,7 @@ public class StayRunningVMModel implements KeepRunningVMModel {
     }
 
     @Override
-    public int getVM() {
+    public VM getVM() {
         return vm;
     }
 

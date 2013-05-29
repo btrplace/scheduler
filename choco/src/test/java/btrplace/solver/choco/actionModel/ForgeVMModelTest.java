@@ -17,9 +17,7 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
 import btrplace.plan.event.ForgeVM;
@@ -27,7 +25,7 @@ import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.durationEvaluator.ConstantDuration;
+import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import btrplace.test.PremadeElements;
 import choco.kernel.solver.ContradictionException;
@@ -48,12 +46,14 @@ public class ForgeVMModelTest implements PremadeElements {
     public void testBasics() throws SolverException {
         Model mo = new DefaultModel();
         Mapping m = mo.getMapping();
+        final VM vm1 = mo.newVM();
+
         mo.getAttributes().put(vm1, "template", "small");
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(ForgeVM.class, new ConstantDuration(7));
+        dev.register(ForgeVM.class, new ConstantActionDuration(7));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
-                .setNextVMsStates(Collections.singleton(vm1), Collections.<Integer>emptySet(), Collections.<Integer>emptySet(), Collections.<Integer>emptySet())
+                .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .build();
         ForgeVMModel ma = (ForgeVMModel) rp.getVMAction(vm1);
         Assert.assertEquals(vm1, ma.getVM());
@@ -70,11 +70,13 @@ public class ForgeVMModelTest implements PremadeElements {
     public void testWithoutTemplate() throws SolverException {
         Model mo = new DefaultModel();
         Mapping m = mo.getMapping();
+        final VM vm1 = mo.newVM();
+
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(ForgeVM.class, new ConstantDuration(7));
+        dev.register(ForgeVM.class, new ConstantActionDuration(7));
         new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
-                .setNextVMsStates(Collections.singleton(vm1), Collections.<Integer>emptySet(), Collections.<Integer>emptySet(), Collections.<Integer>emptySet())
+                .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .build();
 
     }
@@ -83,14 +85,17 @@ public class ForgeVMModelTest implements PremadeElements {
     public void testResolution() throws SolverException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping m = mo.getMapping();
+        final VM vm1 = mo.newVM();
+        Node n1 = mo.newNode();
+
         m.addOnlineNode(n1);
         mo.getAttributes().put(vm1, "template", "small");
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(ForgeVM.class, new ConstantDuration(7));
-        dev.register(ShutdownNode.class, new ConstantDuration(20));
+        dev.register(ForgeVM.class, new ConstantActionDuration(7));
+        dev.register(ShutdownNode.class, new ConstantActionDuration(20));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
-                .setNextVMsStates(Collections.singleton(vm1), Collections.<Integer>emptySet(), Collections.<Integer>emptySet(), Collections.<Integer>emptySet())
+                .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .labelVariables()
                 .build();
         //Force the node to get offline

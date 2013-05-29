@@ -17,22 +17,23 @@
 
 package btrplace.solver.choco.durationEvaluator;
 
+import btrplace.model.Element;
 import btrplace.model.Model;
 
 
 /**
- * Interface to specify the duration evaluator for a possible action on an element.
+ * Interface to specify the duration evaluator for a possible action on an elemnt.
  *
  * @author Fabien Hermenier
  */
-public interface DurationEvaluator {
+public interface ActionDurationEvaluator<E extends Element> {
 
     /**
      * Evaluate the duration of the action on a given element.
      *
      * @param mo the model to consider
-     * @param e  the element
+     * @param e  the VM
      * @return a positive integer
      */
-    int evaluate(Model mo, int e);
+    int evaluate(Model mo, E e);
 }

@@ -17,16 +17,14 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
 import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.durationEvaluator.ConstantDuration;
+import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
@@ -49,15 +47,18 @@ public class ShutdownVMModelTest implements PremadeElements {
     public void testBasic() throws ContradictionException, SolverException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
+        final VM vm1 = mo.newVM();
+        Node n1 = mo.newNode();
+
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);
 
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(ShutdownVM.class, new ConstantDuration(5));
+        dev.register(ShutdownVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
-                .setNextVMsStates(map.getAllVMs(), new HashSet<Integer>(), new HashSet<Integer>(), new HashSet<Integer>())
+                .setNextVMsStates(map.getAllVMs(), new HashSet<VM>(), new HashSet<VM>(), new HashSet<VM>())
                 .build();
         rp.getNodeActions()[0].getState().setVal(1);
         ShutdownVMModel m = (ShutdownVMModel) rp.getVMActions()[0];
@@ -83,19 +84,23 @@ public class ShutdownVMModelTest implements PremadeElements {
     public void testShutdownSequence() throws SolverException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
+        final VM vm1 = mo.newVM();
+        final VM vm2 = mo.newVM();
+        Node n1 = mo.newNode();
+
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n1);
 
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(ShutdownVM.class, new ConstantDuration(5));
+        dev.register(ShutdownVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
-                .setNextVMsStates(map.getAllVMs(), new HashSet<Integer>(), new HashSet<Integer>(), new HashSet<Integer>())
+                .setNextVMsStates(map.getAllVMs(), new HashSet<VM>(), new HashSet<VM>(), new HashSet<VM>())
                 .build();
-        ShutdownVMModel m1 = (ShutdownVMModel) rp.getVMActions()[rp.getVMIdx(vm1)];
-        ShutdownVMModel m2 = (ShutdownVMModel) rp.getVMActions()[rp.getVMIdx(vm2)];
+        ShutdownVMModel m1 = (ShutdownVMModel) rp.getVMActions()[rp.getVM(vm1)];
+        ShutdownVMModel m2 = (ShutdownVMModel) rp.getVMActions()[rp.getVM(vm2)];
         rp.getNodeActions()[0].getState().setVal(1);
         CPSolver s = rp.getSolver();
         s.post(s.geq(m2.getStart(), m1.getEnd()));

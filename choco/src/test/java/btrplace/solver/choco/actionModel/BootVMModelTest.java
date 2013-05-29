@@ -17,16 +17,14 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
 import btrplace.plan.event.BootVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.durationEvaluator.ConstantDuration;
+import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
@@ -52,17 +50,20 @@ public class BootVMModelTest implements PremadeElements {
     public void testBasics() throws SolverException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
+        final VM vm1 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
 
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addReadyVM(vm1);
 
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(BootVM.class, new ConstantDuration(5));
+        dev.register(BootVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
-                .setNextVMsStates(new HashSet<Integer>(), map.getAllVMs(), new HashSet<Integer>(), new HashSet<Integer>())
+                .setNextVMsStates(new HashSet<VM>(), map.getAllVMs(), new HashSet<VM>(), new HashSet<VM>())
                 .build();
         rp.getNodeActions()[0].getState().setVal(1);
         rp.getNodeActions()[1].getState().setVal(1);
@@ -78,7 +79,7 @@ public class BootVMModelTest implements PremadeElements {
         ReconfigurationPlan p = rp.solve(0, false);
         BootVM a = (BootVM) p.getActions().iterator().next();
 
-        int dest = rp.getNode(m.getDSlice().getHoster().getVal());
+        Node dest = rp.getNode(m.getDSlice().getHoster().getVal());
         Assert.assertEquals(vm1, a.getVM());
         Assert.assertEquals(dest, a.getDestinationNode());
         Assert.assertEquals(5, a.getEnd() - a.getStart());
@@ -93,20 +94,25 @@ public class BootVMModelTest implements PremadeElements {
     public void testBootSequence() throws SolverException, ContradictionException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
+        final VM vm1 = mo.newVM();
+        final VM vm2 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addReadyVM(vm1);
         map.addReadyVM(vm2);
 
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(BootVM.class, new ConstantDuration(5));
+        dev.register(BootVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
-                .setNextVMsStates(new HashSet<Integer>(), map.getAllVMs(), new HashSet<Integer>(), new HashSet<Integer>())
+                .setNextVMsStates(new HashSet<VM>(), map.getAllVMs(), new HashSet<VM>(), new HashSet<VM>())
                 .build();
-        BootVMModel m1 = (BootVMModel) rp.getVMActions()[rp.getVMIdx(vm1)];
-        BootVMModel m2 = (BootVMModel) rp.getVMActions()[rp.getVMIdx(vm2)];
+        BootVMModel m1 = (BootVMModel) rp.getVMActions()[rp.getVM(vm1)];
+        BootVMModel m2 = (BootVMModel) rp.getVMActions()[rp.getVM(vm2)];
         rp.getNodeActions()[0].getState().setVal(1);
         rp.getNodeActions()[1].getState().setVal(1);
         CPSolver s = rp.getSolver();

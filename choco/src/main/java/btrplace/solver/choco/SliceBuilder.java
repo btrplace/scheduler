@@ -17,6 +17,7 @@
 
 package btrplace.solver.choco;
 
+import btrplace.model.VM;
 import btrplace.solver.SolverException;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.IntDomainVarAddCste;
@@ -40,7 +41,7 @@ public class SliceBuilder {
 
     private IntDomainVar hoster = null;
 
-    private int e;
+    private VM e;
 
     private String lblPrefix;
 
@@ -48,10 +49,10 @@ public class SliceBuilder {
      * Make a new Builder.
      *
      * @param rp     the problem to customize
-     * @param e      the element associated to the slice
+     * @param e      the VM associated to the slice
      * @param prefix the label prefix for the variables
      */
-    public SliceBuilder(ReconfigurationProblem rp, int e, String prefix) {
+    public SliceBuilder(ReconfigurationProblem rp, VM e, String prefix) {
         this.rp = rp;
         this.e = e;
         lblPrefix = prefix;

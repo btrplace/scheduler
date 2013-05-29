@@ -18,6 +18,8 @@
 package btrplace.solver.choco.objective.minMTTR;
 
 import btrplace.model.Mapping;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.actionModel.ActionModel;
@@ -47,7 +49,7 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
 
     private IntDomainVar[] starts;
 
-    private List<Integer> vms;
+    private List<VM> vms;
 
     private int[] oldPos;
 
@@ -98,14 +100,14 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
                 if (s != rp.getEnd()) {
                     starts[i] = s;
                 }
-                int vm = action.getVM();
-                int n = cfg.getVMLocation(vm);
-                if (n < 0) {
+                VM vm = action.getVM();
+                Node n = cfg.getVMLocation(vm);
+                if (n == null) {
                     oldPos[i] = -1;
                 } else {
-                    oldPos[i] = rp.getNodeIdx(n);
+                    oldPos[i] = rp.getNode(n);
                     //VM i was on node n
-                    outs[rp.getNodeIdx(n)].set(i);
+                    outs[rp.getNode(n)].set(i);
                 }
             }
         }
@@ -196,8 +198,8 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
         for (int i = firstFree.get(); i < starts.length; i++) {
             IntDomainVar v = starts[i];
             if (i < vms.size() - 1) {
-                int vm = vms.get(i);
-                if (vm >= 0 && v != null) {
+                VM vm = vms.get(i);
+                if (vm != null && v != null) {
                     if (!v.isInstantiated()) {
                         if (best == null || best.getInf() < v.getInf()) {
                             best = v;

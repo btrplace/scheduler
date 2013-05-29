@@ -18,6 +18,7 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.model.constraint.Preserve;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.view.ShareableResource;
@@ -56,9 +57,9 @@ public class CPreserve implements ChocoSatConstraint {
             throw new SolverException(rp.getSourceModel(), "Unable to get the resource mapper associated to '" +
                     cstr.getResource() + "'");
         }
-        for (int vm : cstr.getInvolvedVMs()) {
+        for (VM vm : cstr.getInvolvedVMs()) {
             if (rp.getFutureRunningVMs().contains(vm)) {
-                int idx = rp.getVMIdx(vm);
+                int idx = rp.getVM(vm);
                 IntDomainVar v = map.getVMsAllocation()[idx];
                 try {
                     v.setInf(cstr.getAmount());
@@ -72,13 +73,13 @@ public class CPreserve implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<Integer> getMisPlacedVMs(Model m) {
-        Set<Integer> bad = new HashSet<>();
+    public Set<VM> getMisPlacedVMs(Model m) {
+        Set<VM> bad = new HashSet<>();
         ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         if (rc == null) {
             bad.addAll(cstr.getInvolvedVMs());
         } else {
-            for (int vm : cstr.getInvolvedVMs()) {
+            for (VM vm : cstr.getInvolvedVMs()) {
                 int x = rc.getConsumption(vm);
                 if (x < cstr.getAmount()) {
                     //TODO: Very inefficient. Resources may be  available

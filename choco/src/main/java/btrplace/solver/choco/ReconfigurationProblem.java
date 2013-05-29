@@ -18,6 +18,8 @@
 package btrplace.solver.choco;
 
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.NodeActionModel;
@@ -56,14 +58,14 @@ public interface ReconfigurationProblem {
      *
      * @return an array of node identifiers.
      */
-    int[] getNodes();
+    Node[] getNodes();
 
     /**
      * Get all the VMs in the model. Indexed by their identifier.
      *
      * @return an array of VM identifiers
      */
-    int[] getVMs();
+    VM[] getVMs();
 
     /**
      * Get the initial Model.
@@ -78,7 +80,7 @@ public interface ReconfigurationProblem {
      *
      * @return a set, may be empty
      */
-    Set<Integer> getFutureRunningVMs();
+    Set<VM> getFutureRunningVMs();
 
     /**
      * Get the virtual machines that will be in the ready state at the
@@ -86,7 +88,7 @@ public interface ReconfigurationProblem {
      *
      * @return a set, may be empty
      */
-    Set<Integer> getFutureReadyVMs();
+    Set<VM> getFutureReadyVMs();
 
     /**
      * Get the virtual machines that will be in the sleeping state at the
@@ -94,7 +96,7 @@ public interface ReconfigurationProblem {
      *
      * @return a set, may be empty
      */
-    Set<Integer> getFutureSleepingVMs();
+    Set<VM> getFutureSleepingVMs();
 
     /**
      * Get the virtual machines that will be killed at the
@@ -102,7 +104,7 @@ public interface ReconfigurationProblem {
      *
      * @return a set, may be empty
      */
-    Set<Integer> getFutureKilledVMs();
+    Set<VM> getFutureKilledVMs();
 
     /**
      * Get the starting moment of the reconfiguration.
@@ -124,7 +126,7 @@ public interface ReconfigurationProblem {
      * @param vm the virtual machine
      * @return its index or -1 in case of failure
      */
-    int getVMIdx(int vm);
+    int getVM(VM vm);
 
     /**
      * Get the virtual machine with a specified index
@@ -132,7 +134,7 @@ public interface ReconfigurationProblem {
      * @param idx the index of the virtual machine
      * @return the virtual machine or null in case of failure
      */
-    int getVM(int idx);
+    VM getVM(int idx);
 
     /**
      * Get the index of a node
@@ -140,7 +142,7 @@ public interface ReconfigurationProblem {
      * @param n the node
      * @return its index or -1 in case of failure
      */
-    int getNodeIdx(int n);
+    int getNode(Node n);
 
     /**
      * Get the node with a specified index
@@ -148,7 +150,7 @@ public interface ReconfigurationProblem {
      * @param idx the index of the node
      * @return the node or null in case of failure
      */
-    int getNode(int idx);
+    Node getNode(int idx);
 
     /**
      * Get all the actions related to virtual machines.
@@ -163,7 +165,7 @@ public interface ReconfigurationProblem {
      * @param id the VM identifier
      * @return the associated action if exists, {@code null} otherwise
      */
-    VMActionModel getVMAction(int id);
+    VMActionModel getVMAction(VM id);
 
     /**
      * Get all the actions associated to a list of virtual machines.
@@ -171,7 +173,7 @@ public interface ReconfigurationProblem {
      * @param id the virtual machines
      * @return a list of actions. The order is the same than the order of the VMs.
      */
-    VMActionModel[] getVMActions(Set<Integer> id);
+    VMActionModel[] getVMActions(Set<VM> id);
 
 
     /**
@@ -187,7 +189,7 @@ public interface ReconfigurationProblem {
      * @param id the node identifier
      * @return the associated action if exists, {@code null} otherwise
      */
-    NodeActionModel getNodeAction(int id);
+    NodeActionModel getNodeAction(Node id);
 
     /**
      * Get the evaluator to estimate the duration of the actions.
@@ -229,7 +231,7 @@ public interface ReconfigurationProblem {
      * @return the created variable
      * @throws SolverException if an error occurred while creating the variable
      */
-    IntDomainVar makeCurrentHost(String n, int vmId) throws SolverException;
+    IntDomainVar makeCurrentHost(String n, VM vmId) throws SolverException;
 
     /**
      * Create a variable that indicate a given node.
@@ -240,7 +242,7 @@ public interface ReconfigurationProblem {
      * @return the created variable
      * @throws SolverException if an error occurred while creating the variable
      */
-    IntDomainVar makeCurrentNode(String n, int nId) throws SolverException;
+    IntDomainVar makeCurrentNode(String n, Node nId) throws SolverException;
 
     /**
      * Create a variable denoting a duration.
@@ -314,7 +316,7 @@ public interface ReconfigurationProblem {
      *
      * @return a set of VMs identifier
      */
-    Set<Integer> getManageableVMs();
+    Set<VM> getManageableVMs();
 
     /**
      * Get the builder that handle the scheduling part of the problem.
@@ -366,5 +368,5 @@ public interface ReconfigurationProblem {
      * @param vm the identifier of the  VM to substitute
      * @return the identifier of the new VM. {@code null} if the process failed
      */
-    int cloneVM(int vm);
+    VM cloneVM(VM vm);
 }

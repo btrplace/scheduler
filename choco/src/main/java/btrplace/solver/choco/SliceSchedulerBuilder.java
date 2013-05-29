@@ -17,6 +17,7 @@
 
 package btrplace.solver.choco;
 
+import btrplace.model.VM;
 import btrplace.solver.choco.actionModel.ActionModelUtils;
 import btrplace.solver.choco.actionModel.KeepRunningVMModel;
 import btrplace.solver.choco.actionModel.VMActionModel;
@@ -58,7 +59,10 @@ public class SliceSchedulerBuilder {
 
     private IntDomainVar[] dStarts;
 
-    private HashMap<Integer, int[]> non;
+    /**
+     * Ids of non-overlapping slices.
+     */
+    private HashMap<VM, int[]> non;
 
     /**
      * Make a new builder.
@@ -124,7 +128,7 @@ public class SliceSchedulerBuilder {
         for (i = 0; i < associations.length; i++) {
             associations[i] = LocalTaskScheduler.NO_ASSOCIATIONS;
         }
-        for (Map.Entry<Integer, int[]> e : non.entrySet()) {
+        for (Map.Entry<VM, int[]> e : non.entrySet()) {
             int[] assoc = e.getValue();
             associations[assoc[0]] = assoc[1];
         }
@@ -190,7 +194,7 @@ public class SliceSchedulerBuilder {
                 associations);
     }
 
-    private Boolean strictlyDecreasingOrUnchanged(int vm) {
+    private Boolean strictlyDecreasingOrUnchanged(VM vm) {
         //If it has non-overlapping slices
         int[] slicesIndexes = non.get(vm);
         if (slicesIndexes != null) {
@@ -223,7 +227,7 @@ public class SliceSchedulerBuilder {
      * @return {@code true} iff the symmetry breaking does not lead to a problem without solutions
      */
     private boolean symmetryBreakingForStayingVMs() {
-        for (int vm : rp.getFutureRunningVMs()) {
+        for (VM vm : rp.getFutureRunningVMs()) {
             VMActionModel a = rp.getVMAction(vm);
             Slice dSlice = a.getDSlice();
             Slice cSlice = a.getCSlice();

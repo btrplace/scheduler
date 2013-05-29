@@ -17,7 +17,10 @@
 
 package btrplace.solver.choco.durationEvaluator;
 
+import btrplace.model.Element;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.view.ShareableResource;
 
 
@@ -29,15 +32,13 @@ import btrplace.model.view.ShareableResource;
  *
  * @author Fabien Hermenier
  */
-public class LinearToAResourceDuration implements DurationEvaluator {
+public class LinearToAResourceActionDuration<E extends Element> implements ActionDurationEvaluator<E> {
 
     private String rc;
 
     private double a;
 
     private double b;
-
-    private boolean onVM;
 
     /**
      * Make a new evaluator.
@@ -46,8 +47,8 @@ public class LinearToAResourceDuration implements DurationEvaluator {
      * @param rcId the resource identifier
      * @param a    the coefficient
      */
-    public LinearToAResourceDuration(String rcId, boolean onVM, double a) {
-        this(rcId, onVM, a, 0);
+    public LinearToAResourceActionDuration(String rcId, double a) {
+        this(rcId, a, 0);
     }
 
     /**
@@ -57,24 +58,25 @@ public class LinearToAResourceDuration implements DurationEvaluator {
      * @param a    the coefficient
      * @param b    the offset
      */
-    public LinearToAResourceDuration(String rcId, boolean onVM, double a, double b) {
+    public LinearToAResourceActionDuration(String rcId, double a, double b) {
         this.rc = rcId;
         this.a = a;
         this.b = b;
-        this.onVM = onVM;
     }
 
     @Override
-    public int evaluate(Model mo, int e) {
+    public int evaluate(Model mo, E e) {
         ShareableResource r = (ShareableResource) mo.getView(ShareableResource.VIEW_ID_BASE + rc);
         if (r == null) {
             return -1;
         }
         int x;
-        if (onVM) {
-            x = r.getConsumption(e);
+        if (e instanceof VM) {
+            x = r.getConsumption((VM) e);
+        } else if (e instanceof Node) {
+            x = r.getCapacity((Node) e);
         } else {
-            x = r.getCapacity(e);
+            return -1;
         }
         return (int) (a * x + b);
     }

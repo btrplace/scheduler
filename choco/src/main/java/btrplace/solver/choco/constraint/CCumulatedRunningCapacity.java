@@ -19,6 +19,8 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.CumulatedRunningCapacity;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
@@ -58,8 +60,8 @@ public class CCumulatedRunningCapacity implements ChocoSatConstraint {
             } else {
                 int[] alias = new int[cstr.getInvolvedNodes().size()];
                 int i = 0;
-                for (int n : cstr.getInvolvedNodes()) {
-                    alias[i++] = rp.getNodeIdx(n);
+                for (Node n : cstr.getInvolvedNodes()) {
+                    alias[i++] = rp.getNode(n);
                 }
                 int[] cUse = new int[rp.getSourceModel().getMapping().getRunningVMs().size()];
                 IntDomainVar[] dUse = new IntDomainVar[rp.getFutureRunningVMs().size()];
@@ -69,8 +71,8 @@ public class CCumulatedRunningCapacity implements ChocoSatConstraint {
             }
         }
         List<IntDomainVar> vs = new ArrayList<>();
-        for (int u : cstr.getInvolvedNodes()) {
-            vs.add(rp.getNbRunningVMs()[rp.getNodeIdx(u)]);
+        for (Node u : cstr.getInvolvedNodes()) {
+            vs.add(rp.getNbRunningVMs()[rp.getNode(u)]);
         }
         //Try to get a lower bound
         //basically, we count 1 per VM necessarily in the set of nodes
@@ -84,14 +86,14 @@ public class CCumulatedRunningCapacity implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<Integer> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-        Set<Integer> bad = new HashSet<>();
+        Set<VM> bad = new HashSet<>();
         int remainder = cstr.getAmount();
-        for (int n : cstr.getInvolvedNodes()) {
+        for (Node n : cstr.getInvolvedNodes()) {
             remainder -= map.getRunningVMs(n).size();
             if (remainder < 0) {
-                for (int n2 : cstr.getInvolvedNodes()) {
+                for (Node n2 : cstr.getInvolvedNodes()) {
                     bad.addAll(map.getRunningVMs(n2));
                 }
                 return bad;

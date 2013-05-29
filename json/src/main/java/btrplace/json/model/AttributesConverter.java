@@ -18,10 +18,7 @@
 package btrplace.json.model;
 
 import btrplace.json.AbstractJSONObjectConverter;
-import btrplace.model.Attributes;
-import btrplace.model.DefaultAttributes;
-import btrplace.model.Node;
-import btrplace.model.VM;
+import btrplace.model.*;
 import net.minidev.json.JSONObject;
 
 
@@ -86,19 +83,16 @@ public class AttributesConverter extends AbstractJSONObjectConverter<Attributes>
         JSONObject res = new JSONObject();
         JSONObject vms = new JSONObject();
         JSONObject nodes = new JSONObject();
-        for (VM e : attributes.getSpecifiedVMs()) {
+        for (Element e : attributes.getDefined()) {
             JSONObject el = new JSONObject();
             for (String k : attributes.getKeys(e)) {
                 el.put(k, attributes.get(e, k));
             }
-            vms.put(e.toString(), el);
-        }
-        for (Node e : attributes.getSpecifiedNodes()) {
-            JSONObject el = new JSONObject();
-            for (String k : attributes.getKeys(e)) {
-                el.put(k, attributes.get(e, k));
+            if (e instanceof VM) {
+                vms.put(e.toString(), el);
+            } else {
+                nodes.put(e.toString(), el);
             }
-            nodes.put(e.toString(), el);
         }
         res.put("vms", vms);
         res.put("nodes", nodes);

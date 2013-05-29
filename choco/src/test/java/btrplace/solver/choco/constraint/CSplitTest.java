@@ -17,9 +17,7 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Split;
@@ -41,18 +39,23 @@ import java.util.*;
  */
 public class CSplitTest implements PremadeElements {
 
-    private static Set<Integer> g1 = new HashSet<>(Arrays.asList(vm1, vm2));
-    private static Set<Integer> g2 = new HashSet<>(Arrays.asList(vm3, vm4, vm5));
-    private static Set<Integer> g3 = new HashSet<>(Arrays.asList(vm6, vm7));
-
-    private static Set<Set<Integer>> grps = new HashSet<>(Arrays.asList(g1, g2, g3));
-
     @Test
     public void testGetMisplaced() {
 
-        Set<Set<Integer>> grps = new HashSet<>(Arrays.asList(g1, g2, g3));
-
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        VM vm7 = mo.newVM();
+        VM vm8 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+        Node n5 = mo.newNode();
 
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm2)
@@ -61,13 +64,17 @@ public class CSplitTest implements PremadeElements {
                 .run(n4, vm6)
                 .run(n5, vm7, vm8).get();
 
+        Set<VM> g1 = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<VM> g2 = new HashSet<>(Arrays.asList(vm3, vm4, vm5));
+        Set<VM> g3 = new HashSet<>(Arrays.asList(vm6, vm7));
+        Set<Set<VM>> grps = new HashSet<>(Arrays.asList(g1, g2, g3));
         Split s = new Split(grps);
         CSplit cs = new CSplit(s);
 
         Assert.assertTrue(cs.getMisPlacedVMs(mo).isEmpty());
 
         map.addRunningVM(vm5, n1);
-        Set<Integer> bad = cs.getMisPlacedVMs(mo);
+        Set<VM> bad = cs.getMisPlacedVMs(mo);
         Assert.assertEquals(bad.size(), 3);
 
         Assert.assertTrue(bad.contains(vm1) && bad.contains(vm2) && bad.contains(vm5));
@@ -81,12 +88,30 @@ public class CSplitTest implements PremadeElements {
     public void testSimpleDiscrete() throws SolverException {
 
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        VM vm7 = mo.newVM();
+        VM vm8 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+        Node n5 = mo.newNode();
 
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm2, vm3/* violation*/)
                 .run(n3, vm4, vm5, vm6/*violation*/)
                 .run(n5, vm7, vm8).get();
 
+        Set<VM> g1 = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<VM> g2 = new HashSet<>(Arrays.asList(vm3, vm4, vm5));
+        Set<VM> g3 = new HashSet<>(Arrays.asList(vm6, vm7));
+
+        Set<Set<VM>> grps = new HashSet<>(Arrays.asList(g1, g2, g3));
         Split s = new Split(grps);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
@@ -100,13 +125,30 @@ public class CSplitTest implements PremadeElements {
     public void testContinuous() throws SolverException {
 
         Model mo = new DefaultModel();
-
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        VM vm7 = mo.newVM();
+        VM vm8 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+        Node n5 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm2)
                 .run(n3, vm3, vm4, vm5)
                 .run(n5, vm6, vm7, vm8).get();
 
+        Set<VM> g1 = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<VM> g2 = new HashSet<>(Arrays.asList(vm3, vm4, vm5));
+        Set<VM> g3 = new HashSet<>(Arrays.asList(vm6, vm7));
+        Set<Set<VM>> grps = new HashSet<>(Arrays.asList(g1, g2, g3));
         Split s = new Split(grps);
+
         s.setContinuous(true);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();

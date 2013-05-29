@@ -19,6 +19,8 @@ package btrplace.solver.choco.view;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.view.ModelView;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
@@ -67,8 +69,8 @@ public class CShareableResource implements ChocoModelView {
 
     private Model source;
 
-    private Map<Integer, Integer> references;
-    private Map<Integer, Integer> clones;
+    private Map<VM, VM> references;
+    private Map<VM, VM> clones;
 
     /**
      * The default value of ratio is not logical to detect an unchanged value
@@ -88,13 +90,13 @@ public class CShareableResource implements ChocoModelView {
         this.clones = new HashMap<>();
         solver = rp.getSolver();
         this.source = rp.getSourceModel();
-        int[] nodes = rp.getNodes();
+        Node[] nodes = rp.getNodes();
         phyRcUsage = new IntDomainVar[nodes.length];
         virtRcUsage = new IntDomainVar[nodes.length];
         this.ratios = new RealVar[nodes.length];
         id = ShareableResource.VIEW_ID_BASE + rc.getResourceIdentifier();
         for (int i = 0; i < nodes.length; i++) {
-            int nId = rp.getNode(i);
+            Node nId = rp.getNode(i);
             phyRcUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("phyRcUsage('", rc.getResourceIdentifier(), "', '", nId, "')"), 0, rc.getCapacity(nodes[i]));
             virtRcUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("virtRcUsage('", rc.getResourceIdentifier(), "', '", nId, "')"), 0, Choco.MAX_UPPER_BOUND);
             ratios[i] = rp.getSolver().createRealVal(rp.makeVarLabel("overbook('", rc.getResourceIdentifier(), "', '", nId, "')"), 1, UNCHECKED_RATIO);
@@ -108,7 +110,7 @@ public class CShareableResource implements ChocoModelView {
 
         vmAllocation = new IntDomainVar[rp.getVMs().length];
         for (int i = 0; i < vmAllocation.length; i++) {
-            int vmId = rp.getVM(i);
+            VM vmId = rp.getVM(i);
             VMActionModel a = rp.getVMAction(vmId);
             Slice slice = a.getDSlice();
             if (slice == null) {
@@ -255,9 +257,9 @@ public class CShareableResource implements ChocoModelView {
      * @param ed   the moment the action ends
      * @return {@code true} if the action has been added to the plan,{@code false} otherwise
      */
-    public boolean addAllocateAction(ReconfigurationPlan plan, int e, int node, int st, int ed) {
+    public boolean addAllocateAction(ReconfigurationPlan plan, VM e, Node node, int st, int ed) {
 
-        int use = vmAllocation[rp.getVMIdx(e)].getInf();
+        int use = vmAllocation[rp.getVM(e)].getInf();
         if (rc.getConsumption(e) != use) {
             //The allocation has changed
             Allocate a = new Allocate(e, node, rc.getIdentifier(), use, st, ed);
@@ -301,8 +303,8 @@ public class CShareableResource implements ChocoModelView {
      */
     @Override
     public boolean beforeSolve(ReconfigurationProblem rp) {
-        for (int vm : source.getMapping().getAllVMs()) {
-            int vmId = rp.getVMIdx(vm);
+        for (VM vm : source.getMapping().getAllVMs()) {
+            int vmId = rp.getVM(vm);
             IntDomainVar v = vmAllocation[vmId];
             if (v.getInf() < 0) {
                 int prevUsage = rc.getConsumption(vm);
@@ -329,9 +331,9 @@ public class CShareableResource implements ChocoModelView {
     public boolean insertActions(ReconfigurationProblem rp, ReconfigurationPlan p) {
         Mapping srcMapping = rp.getSourceModel().getMapping();
 
-        for (int vm : rp.getFutureRunningVMs()) {
+        for (VM vm : rp.getFutureRunningVMs()) {
             Slice dSlice = rp.getVMAction(vm).getDSlice();
-            int destNode = rp.getNode(dSlice.getHoster().getVal());
+            Node destNode = rp.getNode(dSlice.getHoster().getVal());
 
             if (srcMapping.getRunningVMs().contains(vm) && destNode == srcMapping.getVMLocation(vm)) {
                 //Was running and stay on the same node
@@ -339,7 +341,7 @@ public class CShareableResource implements ChocoModelView {
                 insertAllocateAction(p, vm, destNode, dSlice.getStart().getVal());
             } else {
                 //TODO: not constant time operation. Maybe a big failure
-                int dVM = clones.containsKey(vm) ? clones.get(vm) : vm;
+                VM dVM = clones.containsKey(vm) ? clones.get(vm) : vm;
                 for (Action a : p) {
                     if (a instanceof RunningVMPlacement) {
                         RunningVMPlacement tmp = (RunningVMPlacement) a;
@@ -361,14 +363,14 @@ public class CShareableResource implements ChocoModelView {
         return true;
     }
 
-    private void insertAllocateEvent(Action a, Action.Hook h, int vm) {
+    private void insertAllocateEvent(Action a, Action.Hook h, VM vm) {
         int prev = 0;
-        int sVM = references.containsKey(vm) ? references.get(vm) : vm;
+        VM sVM = references.containsKey(vm) ? references.get(vm) : vm;
         if (rc.consumptionDefined(sVM)) {
             prev = rc.getConsumption(sVM);
         }
         int now = 0;
-        IntDomainVar nowI = getVMsAllocation(rp.getVMIdx(sVM));
+        IntDomainVar nowI = getVMsAllocation(rp.getVM(sVM));
         if (nowI != null) {
             now = nowI.getInf();
         }
@@ -378,10 +380,10 @@ public class CShareableResource implements ChocoModelView {
         }
     }
 
-    private boolean insertAllocateAction(ReconfigurationPlan p, int vm, int destNode, int st) {
+    private boolean insertAllocateAction(ReconfigurationPlan p, VM vm, Node destNode, int st) {
         String rcId = getResourceIdentifier();
         int prev = rc.getConsumption(vm);
-        int now = getVMsAllocation()[rp.getVMIdx(vm)].getVal();
+        int now = getVMsAllocation()[rp.getVM(vm)].getVal();
         if (prev != now) {
             Allocate a = new Allocate(vm, destNode, rcId, now, st, st);
             return p.add(a);
@@ -401,7 +403,7 @@ public class CShareableResource implements ChocoModelView {
         TIntArrayList cUse = new TIntArrayList();
         List<IntDomainVar> dUse = new ArrayList<>();
 
-        for (int vmId : rp.getVMs()) {
+        for (VM vmId : rp.getVMs()) {
             VMActionModel a = rp.getVMAction(vmId);
             Slice c = a.getCSlice();
             Slice d = a.getDSlice();
@@ -409,7 +411,7 @@ public class CShareableResource implements ChocoModelView {
                 cUse.add(getSourceResource().getConsumption(vmId));
             }
             if (d != null) {
-                dUse.add(vmAllocation[rp.getVMIdx(vmId)]);
+                dUse.add(vmAllocation[rp.getVM(vmId)]);
             }
         }
 
@@ -460,7 +462,7 @@ public class CShareableResource implements ChocoModelView {
     }
 
     @Override
-    public boolean cloneVM(int vm, int clone) {
+    public boolean cloneVM(VM vm, VM clone) {
         this.references.put(clone, vm);
         this.clones.put(vm, clone);
         return true;

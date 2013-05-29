@@ -17,6 +17,7 @@
 
 package btrplace.solver.choco.actionModel;
 
+import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ForgeVM;
 import btrplace.solver.SolverException;
@@ -34,7 +35,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * {@code template} that indicate the template identifier to use to build the VM image.
  * <p/>
  * The model must provide an estimation of the action duration through a
- * {@link btrplace.solver.choco.durationEvaluator.DurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.durationEvaluator.ActionDurationEvaluator} accessible from
  * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code ForgeVM.class}
  * <p/>
  * If the reconfiguration problem has a solution, a {@link btrplace.plan.event.ForgeVM} action
@@ -44,7 +45,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public class ForgeVMModel implements VMActionModel {
 
-    private int vm;
+    private VM vm;
 
     private IntDomainVar duration;
 
@@ -61,7 +62,7 @@ public class ForgeVMModel implements VMActionModel {
      * @param e  the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public ForgeVMModel(ReconfigurationProblem rp, int e) throws SolverException {
+    public ForgeVMModel(ReconfigurationProblem rp, VM e) throws SolverException {
         int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), ForgeVM.class, e);
         template = rp.getSourceModel().getAttributes().getString(e, "template");
         if (template == null) {
@@ -93,7 +94,7 @@ public class ForgeVMModel implements VMActionModel {
     }
 
     @Override
-    public int getVM() {
+    public VM getVM() {
         return vm;
     }
 

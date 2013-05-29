@@ -17,10 +17,7 @@
 
 package btrplace.solver.choco;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.MappingUtils;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
@@ -80,7 +77,7 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
             }
 
             @Override
-            public Set<Integer> getMisPlacedVMs(Model m) {
+            public Set<VM> getMisPlacedVMs(Model m) {
                 return Collections.emptySet();
             }
         };
@@ -92,12 +89,12 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
     public void testGetStatistics() throws SolverException {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
+        Node n1 = mo.newNode();
         map.addOnlineNode(n1);
         for (int i = 0; i < 10; i++) {
-            int n = 200 + i;
-            int vm = 300 + i;
+            Node n = mo.newNode();
             map.addOnlineNode(n);
-            map.addRunningVM(vm, n);
+            map.addRunningVM(mo.newVM(), n);
         }
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.doOptimize(true);
@@ -115,7 +112,7 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
             }
 
             @Override
-            public Set<Integer> getMisPlacedVMs(Model m) {
+            public Set<VM> getMisPlacedVMs(Model m) {
                 return Collections.emptySet();
             }
         });
@@ -137,6 +134,16 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
     @Test
     public void testSolvableRepair() throws SolverException {
         Model mo = new DefaultModel();
+        final VM vm1 = mo.newVM();
+        final VM vm2 = mo.newVM();
+        final VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+
         new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5).get();
 
         //A satisfied constraint
@@ -153,7 +160,7 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
             }
 
             @Override
-            public Set<Integer> getMisPlacedVMs(Model m) {
+            public Set<VM> getMisPlacedVMs(Model m) {
                 return new HashSet<>(Arrays.asList(vm2, vm3));
             }
         };
@@ -175,10 +182,21 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
     @Test(expectedExceptions = {SolverException.class})
     public void testWithUnknownVMs() throws SolverException {
         Model mo = new DefaultModel();
+        final VM vm1 = mo.newVM();
+        final VM vm2 = mo.newVM();
+        final VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        VM vm7 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
         new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5);
         SatConstraint cstr = mock(SatConstraint.class);
         when(cstr.getInvolvedVMs()).thenReturn(Arrays.asList(vm1, vm2, vm6));
-        when(cstr.getInvolvedNodes()).thenReturn(Arrays.asList(n1, vm2, vm7));
+        when(cstr.getInvolvedNodes()).thenReturn(Arrays.asList(n1, n4));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.solve(mo, Collections.singleton(cstr));
     }
@@ -192,6 +210,15 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
     public void testNonHomogeneousIncrease() throws SolverException {
         ShareableResource cpu = new ShareableResource("cpu");
         ShareableResource mem = new ShareableResource("mem");
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
+
         cpu.setCapacity(n1, 10);
         mem.setCapacity(n1, 10);
         cpu.setCapacity(n2, 10);
@@ -214,7 +241,6 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
         Preserve pMem = new Preserve(new HashSet<>(Arrays.asList(vm1, vm3)), "mem", 2);
 
 
-        Model mo = new DefaultModel();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2)
                 .run(n1, vm1)
                 .run(n2, vm3, vm4)

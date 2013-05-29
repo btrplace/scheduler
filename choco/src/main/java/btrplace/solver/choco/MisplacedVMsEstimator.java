@@ -18,6 +18,7 @@
 package btrplace.solver.choco;
 
 import btrplace.model.Model;
+import btrplace.model.VM;
 
 import java.util.Set;
 
@@ -44,5 +45,5 @@ public interface MisplacedVMsEstimator {
      * @param m the model to use to inspect the VMs.
      * @return a set of VMs identifier that may be empty (when no VMs are misplaced)
      */
-    Set<Integer> getMisPlacedVMs(Model m);
+    Set<VM> getMisPlacedVMs(Model m);
 }

@@ -17,9 +17,7 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Gather;
 import btrplace.model.constraint.Running;
@@ -48,6 +46,10 @@ public class CGatherTest implements PremadeElements {
     @Test
     public void testDiscreteWithoutRunningVM() throws SolverException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).ready(vm1).on(n1, n2).run(n2, vm2).get();
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(false);
@@ -65,6 +67,11 @@ public class CGatherTest implements PremadeElements {
     @Test
     public void testDiscreteWithRunningVMs() throws SolverException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
         Mapping map = new MappingFiller(mo.getMapping()).ready(vm1).on(n1, n2).run(n2, vm2).get();
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(false);
@@ -77,14 +84,17 @@ public class CGatherTest implements PremadeElements {
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
         Assert.assertNotNull(plan);
         Model res = plan.getResult();
-//        Assert.assertEquals(g.isSatisfied(res), SatConstraint.Sat.SATISFIED);
-//        Assert.assertEquals(g.isSatisfied(plan), SatConstraint.Sat.SATISFIED);
         Assert.assertEquals(res.getMapping().getVMLocation(vm1), res.getMapping().getVMLocation(vm2));
     }
 
     @Test
     public void testGetMisplaced() {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
         Mapping map = new MappingFiller(mo.getMapping()).ready(vm1).on(n1, n2).run(n2, vm2).get();
         Gather g = new Gather(map.getAllVMs());
         CGather c = new CGather(g);
@@ -99,6 +109,10 @@ public class CGatherTest implements PremadeElements {
     @Test
     public void testContinuousWithPartialRunning() throws SolverException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).ready(vm1).on(n1, n2).run(n2, vm2).get();
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(true);
@@ -118,6 +132,10 @@ public class CGatherTest implements PremadeElements {
     @Test
     public void testContinuousWithRelocationOfVMs() throws SolverException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n2, vm1, vm2).get();
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(true);
@@ -133,6 +151,10 @@ public class CGatherTest implements PremadeElements {
     @Test
     public void testContinuousWithNoRunningVMs() throws SolverException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).ready(vm1, vm2).get();
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(true);

@@ -17,6 +17,7 @@
 
 package btrplace.solver.choco.actionModel;
 
+import btrplace.model.Node;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 
@@ -32,7 +33,7 @@ public interface NodeActionModel extends ActionModel {
      *
      * @return the node identifier
      */
-    int getNode();
+    Node getNode();
 
     /**
      * Get the moment the node is being capable of hosting VMs.

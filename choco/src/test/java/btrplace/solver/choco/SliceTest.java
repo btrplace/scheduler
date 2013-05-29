@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,6 +17,9 @@
 
 package btrplace.solver.choco;
 
+import btrplace.model.DefaultModel;
+import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -36,6 +38,8 @@ public class SliceTest implements PremadeElements {
      */
     @Test
     public void testInstantiation() {
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
         CPSolver s = new CPSolver();
         IntDomainVar st = s.createIntegerConstant("start", 1);
         IntDomainVar ed = s.createIntegerConstant("end", 3);

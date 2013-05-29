@@ -17,6 +17,7 @@
 
 package btrplace.solver.choco.actionModel;
 
+import btrplace.model.Node;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootNode;
 import btrplace.solver.SolverException;
@@ -31,7 +32,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 /**
  * Model an action that allows a node to be booted if necessary.
  * The model must provide an estimation of the action duration through a
- * {@link btrplace.solver.choco.durationEvaluator.DurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.durationEvaluator.ActionDurationEvaluator} accessible from
  * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code BootNode.class}
  * <p/>
  * The action is modeled as follow:
@@ -94,7 +95,7 @@ public class BootableNodeModel implements NodeActionModel {
 
     private IntDomainVar effectiveDuration;
 
-    private int node;
+    private Node node;
 
     /**
      * Make a new model.
@@ -103,7 +104,7 @@ public class BootableNodeModel implements NodeActionModel {
      * @param nId the node managed by the action
      * @throws SolverException if an error occurred
      */
-    public BootableNodeModel(ReconfigurationProblem rp, int nId) throws SolverException {
+    public BootableNodeModel(ReconfigurationProblem rp, Node nId) throws SolverException {
         node = nId;
 
         int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), BootNode.class, nId);
@@ -116,7 +117,7 @@ public class BootableNodeModel implements NodeActionModel {
         isOnline = s.createBooleanVar(rp.makeVarLabel("bootableNode(", nId, ").online"));
         IntDomainVar isOffline = s.createBooleanVar(rp.makeVarLabel("bootableNode(", nId, ").offline"));
         s.post(s.neq(isOffline, isOnline));
-        s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNodeIdx(nId)], 0));
+        s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNode(nId)], 0));
 
 
         /*
@@ -175,7 +176,7 @@ public class BootableNodeModel implements NodeActionModel {
     }
 
     @Override
-    public int getNode() {
+    public Node getNode() {
         return node;
     }
 

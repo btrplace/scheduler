@@ -19,6 +19,8 @@ package btrplace.solver.choco;
 
 import btrplace.model.DefaultMapping;
 import btrplace.model.Mapping;
+import btrplace.model.Node;
+import btrplace.model.VM;
 
 
 /**
@@ -38,8 +40,8 @@ public class MappingFiller {
         map = m;
     }
 
-    public MappingFiller run(int n, int... vms) {
-        for (int vm : vms) {
+    public MappingFiller run(Node n, VM... vms) {
+        for (VM vm : vms) {
             if (!map.addRunningVM(vm, n)) {
                 System.err.println("Unable to set '" + vm + "' running. Is '" + n + "' online ?");
             }
@@ -47,8 +49,8 @@ public class MappingFiller {
         return this;
     }
 
-    public MappingFiller sleep(int n, int... vms) {
-        for (int vm : vms) {
+    public MappingFiller sleep(Node n, VM... vms) {
+        for (VM vm : vms) {
             if (!map.addSleepingVM(vm, n)) {
                 System.err.println("Unable to set '" + vm + "' running. Is '" + n + "' online ?");
             }
@@ -56,22 +58,22 @@ public class MappingFiller {
         return this;
     }
 
-    public MappingFiller ready(int... vms) {
-        for (int vm : vms) {
+    public MappingFiller ready(VM... vms) {
+        for (VM vm : vms) {
             map.addReadyVM(vm);
         }
         return this;
     }
 
-    public MappingFiller on(int... nodes) {
-        for (int n : nodes) {
+    public MappingFiller on(Node... nodes) {
+        for (Node n : nodes) {
             map.addOnlineNode(n);
         }
         return this;
     }
 
-    public MappingFiller off(int... nodes) {
-        for (int n : nodes) {
+    public MappingFiller off(Node... nodes) {
+        for (Node n : nodes) {
             if (!map.addOfflineNode(n)) {
                 System.err.println("Unable to set '" + n + "' offline. Is it hosting VMs ?");
             }

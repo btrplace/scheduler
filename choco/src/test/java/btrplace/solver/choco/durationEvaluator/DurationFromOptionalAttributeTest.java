@@ -20,12 +20,13 @@ package btrplace.solver.choco.durationEvaluator;
 import btrplace.model.Attributes;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * Unit tests for {@link DurationFromOptionalAttribute}.
+ * Unit tests for {@link ActionDurationFromOptionalAttribute}.
  *
  * @author Fabien Hermenier
  */
@@ -37,9 +38,9 @@ public class DurationFromOptionalAttributeTest implements PremadeElements {
 
         Model mo = new DefaultModel();
         Attributes attrs = mo.getAttributes();
-        DurationEvaluator parent = new ConstantDuration(15);
-
-        DurationFromOptionalAttribute dev = new DurationFromOptionalAttribute("boot", true, parent);
+        ActionDurationEvaluator<VM> parent = new ConstantActionDuration<>(15);
+        VM vm1 = mo.newVM();
+        ActionDurationFromOptionalAttribute<VM> dev = new ActionDurationFromOptionalAttribute<>("boot", parent);
         Assert.assertEquals(parent, dev.getParent());
         Assert.assertEquals("boot", dev.getAttributeKey());
         Assert.assertEquals(15, dev.evaluate(mo, vm1));
@@ -47,7 +48,7 @@ public class DurationFromOptionalAttributeTest implements PremadeElements {
         attrs.put(vm1, "boot", 7);
         Assert.assertEquals(7, dev.evaluate(mo, vm1));
 
-        parent = new ConstantDuration(2);
+        parent = new ConstantActionDuration<>(2);
         dev.setParent(parent);
         attrs.clear();
         Assert.assertEquals(2, dev.evaluate(mo, vm1));

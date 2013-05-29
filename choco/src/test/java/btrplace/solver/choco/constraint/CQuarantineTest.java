@@ -17,9 +17,7 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Quarantine;
 import btrplace.model.constraint.SatConstraint;
@@ -44,8 +42,15 @@ public class CQuarantineTest implements PremadeElements {
     @Test
     public void testWithSatisfiedModel() throws SolverException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).get();
-        Set<Integer> ns = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Node> ns = new HashSet<>(Arrays.asList(n1, n2));
         Quarantine q = new Quarantine(ns);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>singleton(q));
@@ -60,8 +65,16 @@ public class CQuarantineTest implements PremadeElements {
     @Test
     public void testWithNoSolution1() throws SolverException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).get();
-        Set<Integer> ns = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Node> ns = new HashSet<>(Arrays.asList(n1, n2));
         Quarantine q = new Quarantine(ns);
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(q);
@@ -79,8 +92,16 @@ public class CQuarantineTest implements PremadeElements {
     @Test
     public void testWithNoSolution2() throws SolverException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).get();
-        Set<Integer> ns = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Node> ns = new HashSet<>(Arrays.asList(n1, n2));
         Quarantine q = new Quarantine(ns);
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(q);

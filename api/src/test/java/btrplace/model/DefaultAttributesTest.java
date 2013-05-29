@@ -21,7 +21,10 @@ import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Unit tests for {@link DefaultAttributes}.
@@ -29,8 +32,6 @@ import java.util.*;
  * @author Fabien Hermenier
  */
 public class DefaultAttributesTest implements PremadeElements {
-
-    private static Random rnd = new Random();
 
     private static Model mo = new DefaultModel();
     private static List<VM> vms = Util.newVMs(mo, 10);
@@ -40,7 +41,7 @@ public class DefaultAttributesTest implements PremadeElements {
     public void testInstantiation() {
         Attributes attrs = new DefaultAttributes();
         Assert.assertFalse(attrs.toString().contains("null"));
-        Assert.assertTrue(attrs.getSpecifiedVMs().isEmpty());
+        Assert.assertTrue(attrs.getDefined().isEmpty());
     }
 
 
@@ -135,7 +136,7 @@ public class DefaultAttributesTest implements PremadeElements {
         Assert.assertEquals((int) attrs.getInteger(l.get(1), "1"), 1);
     }
 
-    @Test(dependsOnMethods = {"testPutAndGetLong", "testInstantiation", "testUnset", "testClone"})
+    @Test(dependsOnMethods = {"testInstantiation", "testUnset", "testClone"})
     public void testEqualsHashCode() {
         Attributes attrs = new DefaultAttributes();
         for (int i = 0; i < 5; i++) {
@@ -153,7 +154,7 @@ public class DefaultAttributesTest implements PremadeElements {
         Assert.assertNotSame(attrs.hashCode(), attrs2.hashCode());
     }
 
-    @Test(dependsOnMethods = {"testInstantiation", "testPutAndGetLong"})
+    @Test(dependsOnMethods = {"testInstantiation"})
     public void testClear() {
         Attributes attrs = new DefaultAttributes();
         for (int i = 0; i < 5; i++) {
@@ -161,8 +162,7 @@ public class DefaultAttributesTest implements PremadeElements {
             attrs.put(vms.get(i), Integer.toString(i), i);
         }
         attrs.clear();
-        Assert.assertTrue(attrs.getSpecifiedVMs().isEmpty());
-        Assert.assertTrue(attrs.getSpecifiedNodes().isEmpty());
+        Assert.assertTrue(attrs.getDefined().isEmpty());
     }
 
     @Test

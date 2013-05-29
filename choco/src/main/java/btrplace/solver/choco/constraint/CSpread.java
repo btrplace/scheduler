@@ -19,6 +19,8 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Spread;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -54,7 +56,7 @@ public class CSpread implements ChocoSatConstraint {
     public boolean inject(ReconfigurationProblem rp) {
 
         List<IntDomainVar> onlyRunnings = new ArrayList<>();
-        for (int vmId : cstr.getInvolvedVMs()) {
+        for (VM vmId : cstr.getInvolvedVMs()) {
             if (rp.getFutureRunningVMs().contains(vmId)) {
                 VMActionModel a = rp.getVMAction(vmId);
                 Slice d = a.getDSlice();
@@ -69,18 +71,18 @@ public class CSpread implements ChocoSatConstraint {
             s.post(new BoundAllDiff(onlyRunnings.toArray(new IntDomainVar[onlyRunnings.size()]), true));
 
             if (cstr.isContinuous()) {
-                int[] vms = new int[onlyRunnings.size()];
+                VM[] vms = new VM[onlyRunnings.size()];
                 int x = 0;
-                for (int vm : cstr.getInvolvedVMs()) {
+                for (VM vm : cstr.getInvolvedVMs()) {
                     if (rp.getFutureRunningVMs().contains(vm)) {
                         vms[x++] = vm;
                     }
                 }
                 for (int i = 0; i < vms.length; i++) {
-                    int vm = vms[i];
+                    VM vm = vms[i];
                     VMActionModel aI = rp.getVMAction(vm);
                     for (int j = 0; j < i; j++) {
-                        int vmJ = vms[j];
+                        VM vmJ = vms[j];
                         VMActionModel aJ = rp.getVMAction(vmJ);
                         Slice dI = aI.getDSlice();
                         Slice cJ = aJ.getCSlice();
@@ -123,21 +125,21 @@ public class CSpread implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<Integer> getMisPlacedVMs(Model m) {
-        Map<Integer, Set<Integer>> spots = new HashMap<>();
-        Set<Integer> bad = new HashSet<>();
+    public Set<VM> getMisPlacedVMs(Model m) {
+        Map<Node, Set<VM>> spots = new HashMap<>();
+        Set<VM> bad = new HashSet<>();
         Mapping map = m.getMapping();
-        for (int vm : cstr.getInvolvedVMs()) {
-            int h = map.getVMLocation(vm);
+        for (VM vm : cstr.getInvolvedVMs()) {
+            Node h = map.getVMLocation(vm);
             if (map.getRunningVMs().contains(vm)) {
                 if (!spots.containsKey(h)) {
-                    spots.put(h, new HashSet<Integer>());
+                    spots.put(h, new HashSet<VM>());
                 }
                 spots.get(h).add(vm);
             }
 
         }
-        for (Map.Entry<Integer, Set<Integer>> e : spots.entrySet()) {
+        for (Map.Entry<Node, Set<VM>> e : spots.entrySet()) {
             if (e.getValue().size() > 1) {
                 bad.addAll(e.getValue());
             }

@@ -19,6 +19,8 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.Ban;
 import btrplace.model.constraint.Quarantine;
 import btrplace.model.constraint.Root;
@@ -54,10 +56,10 @@ public class CQuarantine implements ChocoSatConstraint {
         // It is just a composition of a root constraint on the VMs on the given nodes (the zone)
         // plus a ban on the other VMs to prevent them for being hosted in the zone
         Mapping map = rp.getSourceModel().getMapping();
-        Set<Integer> toRoot = new HashSet<>();
-        Set<Integer> toBan = new HashSet<>();
-        Collection<Integer> zone = cstr.getInvolvedNodes();
-        for (int vm : rp.getFutureRunningVMs()) {
+        Set<VM> toRoot = new HashSet<>();
+        Set<VM> toBan = new HashSet<>();
+        Collection<Node> zone = cstr.getInvolvedNodes();
+        for (VM vm : rp.getFutureRunningVMs()) {
             if (zone.contains(map.getVMLocation(vm))) {
                 toRoot.add(vm);
             } else {
@@ -74,7 +76,7 @@ public class CQuarantine implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<Integer> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         return Collections.emptySet();
     }
 

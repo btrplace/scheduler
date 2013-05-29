@@ -17,6 +17,7 @@
 
 package btrplace.solver.choco.view;
 
+import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.choco.ReconfigurationProblem;
 
@@ -59,5 +60,5 @@ public interface ChocoModelView {
      * @param clone the clone identifier
      * @return {@code true} iff the view validate the cloning process.
      */
-    boolean cloneVM(int vm, int clone);
+    boolean cloneVM(VM vm, VM clone);
 }

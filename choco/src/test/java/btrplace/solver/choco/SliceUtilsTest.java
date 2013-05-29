@@ -17,6 +17,8 @@
 
 package btrplace.solver.choco;
 
+import btrplace.model.DefaultModel;
+import btrplace.model.Model;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
@@ -34,10 +36,11 @@ import java.util.List;
 public class SliceUtilsTest {
 
     private List<Slice> makeSlices() {
+        Model mo = new DefaultModel();
         CPSolver csp = new CPSolver();
         List<Slice> l = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            l.add(new Slice(i,
+            l.add(new Slice(mo.newVM(),
                     csp.createBooleanVar("st " + i),
                     csp.createBooleanVar("ed " + i),
                     csp.createBooleanVar("du " + i),
