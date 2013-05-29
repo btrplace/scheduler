@@ -163,21 +163,34 @@ public class DefaultModel implements Model, Cloneable {
 
     @Override
     public Node newNode() {
-        if (nextNode + 1 == 0) {
+        if (usedNodeIds.size() == Integer.MAX_VALUE) {
+            //No more ids left
             return null;
         }
+
+        //Find the first free id.
         Node n = new Node(nextNode++);
-        usedNodeIds.add(n);
+        while (!usedNodeIds.add(n)) {
+            n = new Node(nextNode++);
+
+        }
         return n;
     }
 
     @Override
     public VM newVM(int id) {
-        VM v = new VM(id);
-        if (usedVMIds.contains(v)) {
+        if (usedVMIds.size() == Integer.MAX_VALUE) {
+            //No more ids left
             return null;
         }
-        return v;
+
+        //Find the first free id.
+        VM vm = new VM(nextVM++);
+        while (!usedVMIds.add(vm)) {
+            vm = new VM(nextVM++);
+
+        }
+        return vm;
     }
 
     @Override
