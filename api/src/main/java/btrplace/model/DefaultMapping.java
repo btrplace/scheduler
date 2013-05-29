@@ -92,7 +92,6 @@ public class DefaultMapping implements Mapping, Cloneable {
             for (VM s : m.getSleepingVMs(on)) {
                 addSleepingVM(s, on);
             }
-
         }
     }
 

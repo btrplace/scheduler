@@ -50,7 +50,7 @@ public class AmongTest implements PremadeElements {
         Set<VM> vg = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1), vms.get(2)));
         Among a = new Among(vg, pGrps);
         Assert.assertNotNull(a.getChecker());
-        Assert.assertEquals(a.getInvolvedVMs(), vms);
+        Assert.assertEquals(a.getInvolvedVMs(), vg);
         Assert.assertEquals(a.getGroupsOfNodes(), pGrps);
         Assert.assertEquals(a.getInvolvedNodes().size(), s1.size() + s2.size());
         Assert.assertTrue(a.getInvolvedNodes().containsAll(s1));
@@ -79,11 +79,11 @@ public class AmongTest implements PremadeElements {
 
         Among a = new Among(vg, pGrps);
         Assert.assertTrue(a.equals(a));
-        Assert.assertTrue(a.equals(new Among(new HashSet<>(vms), pGrps)));
-        Assert.assertEquals(a.hashCode(), new Among(new HashSet<>(vms), pGrps).hashCode());
+        Assert.assertTrue(a.equals(new Among(new HashSet<>(vg), pGrps)));
+        Assert.assertEquals(a.hashCode(), new Among(new HashSet<>(vg), pGrps).hashCode());
         Assert.assertFalse(a.equals(new Among(new HashSet<VM>(), pGrps)));
-        Assert.assertFalse(a.equals(new Among(new HashSet<>(vms), new HashSet<Set<Node>>())));
-        Among a2 = new Among(new HashSet<>(vms), new HashSet<Set<Node>>());
+        Assert.assertFalse(a.equals(new Among(new HashSet<>(vg), new HashSet<Set<Node>>())));
+        Among a2 = new Among(new HashSet<>(vg), new HashSet<Set<Node>>());
         a2.setContinuous(true);
         Assert.assertFalse(a.equals(a2));
     }

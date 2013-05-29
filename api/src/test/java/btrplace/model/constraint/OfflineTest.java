@@ -54,14 +54,15 @@ public class OfflineTest implements PremadeElements {
     public void testIsSatisfied() {
         Model i = new DefaultModel();
         Mapping c = i.getMapping();
-        c.addOfflineNode(i.newNode());
-        Node n = i.newNode();
-        c.addOfflineNode(n);
-        Set<Node> s = new HashSet<>(Arrays.asList(i.newNode(), i.newNode()));
+        Node n1 = i.newNode();
+        Node n2 = i.newNode();
+        c.addOfflineNode(n1);
+        c.addOfflineNode(n2);
+        Set<Node> s = new HashSet<>(Arrays.asList(n1, n2));
         Offline o = new Offline(s);
 
         Assert.assertEquals(o.isSatisfied(i), true);
-        c.addOnlineNode(n);
+        c.addOnlineNode(n2);
         Assert.assertEquals(o.isSatisfied(i), false);
     }
 

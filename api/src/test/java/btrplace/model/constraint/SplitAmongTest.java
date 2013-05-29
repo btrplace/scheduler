@@ -40,8 +40,8 @@ public class SplitAmongTest implements PremadeElements {
     @Test
     public void testInstantiation() {
         Model mo = new DefaultModel();
-        List<Node> ns = Util.newNodes(mo, 3);
-        List<VM> vms = Util.newVMs(mo, 3);
+        List<Node> ns = Util.newNodes(mo, 5);
+        List<VM> vms = Util.newVMs(mo, 5);
 
         Set<VM> vs1 = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
         Set<VM> vs2 = new HashSet<>(Arrays.asList(vms.get(2), vms.get(3)));
@@ -77,8 +77,8 @@ public class SplitAmongTest implements PremadeElements {
     @Test
     public void testEqualsAndHashCode() {
         Model mo = new DefaultModel();
-        List<Node> ns = Util.newNodes(mo, 4);
-        List<VM> vms = Util.newVMs(mo, 3);
+        List<Node> ns = Util.newNodes(mo, 5);
+        List<VM> vms = Util.newVMs(mo, 5);
 
         Set<VM> vs1 = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
         Set<VM> vs2 = new HashSet<>(Arrays.asList(vms.get(2), vms.get(3)));
@@ -105,8 +105,8 @@ public class SplitAmongTest implements PremadeElements {
     public void testDiscreteIsSatisfied() {
 
         Model mo = new DefaultModel();
-        List<Node> ns = Util.newNodes(mo, 3);
-        List<VM> vms = Util.newVMs(mo, 3);
+        List<Node> ns = Util.newNodes(mo, 5);
+        List<VM> vms = Util.newVMs(mo, 5);
 
         Set<VM> vs1 = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
         Set<VM> vs2 = new HashSet<>(Arrays.asList(vms.get(2), vms.get(3)));
@@ -143,8 +143,8 @@ public class SplitAmongTest implements PremadeElements {
     @Test
     public void testContinuousIsSatisfied() {
         Model mo = new DefaultModel();
-        List<Node> ns = Util.newNodes(mo, 3);
-        List<VM> vms = Util.newVMs(mo, 3);
+        List<Node> ns = Util.newNodes(mo, 5);
+        List<VM> vms = Util.newVMs(mo, 5);
 
 
         Set<VM> vs1 = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));

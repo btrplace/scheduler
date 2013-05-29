@@ -75,7 +75,7 @@ public class SpreadTest implements PremadeElements {
     public void testDiscreteIsSatisfied() {
 
         Model mo = new DefaultModel();
-        List<Node> ns = Util.newNodes(mo, 3);
+        List<Node> ns = Util.newNodes(mo, 4);
         List<VM> vms = Util.newVMs(mo, 3);
         Mapping map = mo.getMapping();
         map.addOnlineNode(ns.get(0));

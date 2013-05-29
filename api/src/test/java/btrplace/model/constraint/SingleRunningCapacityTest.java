@@ -78,7 +78,7 @@ public class SingleRunningCapacityTest implements PremadeElements {
     public void testDiscreteIsSatisfied() {
         Model mo = new DefaultModel();
         List<Node> ns = Util.newNodes(mo, 3);
-        List<VM> vms = Util.newVMs(mo, 3);
+        List<VM> vms = Util.newVMs(mo, 5);
         Mapping m = mo.getMapping();
         m.addOnlineNode(ns.get(0));
         m.addOnlineNode(ns.get(1));
@@ -100,7 +100,7 @@ public class SingleRunningCapacityTest implements PremadeElements {
     public void testContinuousIsSatisfied() {
         Model mo = new DefaultModel();
         List<Node> ns = Util.newNodes(mo, 3);
-        List<VM> vms = Util.newVMs(mo, 3);
+        List<VM> vms = Util.newVMs(mo, 5);
         Mapping m = mo.getMapping();
         m.addOnlineNode(ns.get(0));
         m.addOnlineNode(ns.get(1));

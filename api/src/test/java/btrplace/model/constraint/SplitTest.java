@@ -84,7 +84,7 @@ public class SplitTest implements PremadeElements {
     public void testDiscreteIsSatisfied() {
         Model mo = new DefaultModel();
         List<Node> ns = Util.newNodes(mo, 3);
-        List<VM> vms = Util.newVMs(mo, 3);
+        List<VM> vms = Util.newVMs(mo, 5);
 
         Mapping map = mo.getMapping();
         map.addOnlineNode(ns.get(0));
@@ -114,7 +114,7 @@ public class SplitTest implements PremadeElements {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         List<Node> ns = Util.newNodes(mo, 3);
-        List<VM> vms = Util.newVMs(mo, 3);
+        List<VM> vms = Util.newVMs(mo, 5);
 
         map.addOnlineNode(ns.get(0));
         map.addOnlineNode(ns.get(1));

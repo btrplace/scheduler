@@ -24,6 +24,7 @@ import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.Mockito.mock;
@@ -60,8 +61,8 @@ public class DenyMyVMsActionsTest implements PremadeElements {
         List<VM> vms = Util.newVMs(mo, 10);
         List<Node> ns = Util.newNodes(mo, 10);
 
-        when(cstr.getInvolvedNodes()).thenReturn(ns);
-        when(cstr.getInvolvedVMs()).thenReturn(vms);
+        when(cstr.getInvolvedNodes()).thenReturn(Arrays.asList(ns.get(0), ns.get(1), ns.get(2)));
+        when(cstr.getInvolvedVMs()).thenReturn(Arrays.asList(vms.get(0), vms.get(1), vms.get(2)));
 
         DenyMyVMsActions c = new DenyMyVMsActions(cstr) {
         };
@@ -75,7 +76,7 @@ public class DenyMyVMsActionsTest implements PremadeElements {
 
 
         Assert.assertFalse(c.start(new SuspendVM(vms.get(0), ns.get(0), ns.get(1), 0, 3)));
-        Assert.assertTrue(c.start(new SuspendVM(vms.get(0), ns.get(0), ns.get(1), 0, 3)));
+        Assert.assertTrue(c.start(new SuspendVM(vms.get(9), ns.get(0), ns.get(1), 0, 3)));
 
         Assert.assertFalse(c.start(new ShutdownVM(vms.get(0), ns.get(0), 0, 3)));
         Assert.assertTrue(c.start(new ShutdownVM(vms.get(5), ns.get(0), 0, 3)));
@@ -90,9 +91,9 @@ public class DenyMyVMsActionsTest implements PremadeElements {
         Assert.assertTrue(c.start(new Allocate(vms.get(5), ns.get(0), "cpu", 3, 4, 5)));
 
         Assert.assertFalse(c.consume(new SubstitutedVMEvent(vms.get(0), vms.get(2))));
-        Assert.assertTrue(c.consume(new SubstitutedVMEvent(vms.get(0), vms.get(2))));
+        Assert.assertTrue(c.consume(new SubstitutedVMEvent(vms.get(9), vms.get(2))));
 
         Assert.assertFalse(c.consume(new AllocateEvent(vms.get(2), "cpu", 3)));
-        Assert.assertTrue(c.consume(new AllocateEvent(vms.get(0), "cpu", 3)));
+        Assert.assertTrue(c.consume(new AllocateEvent(vms.get(9), "cpu", 3)));
     }
 }

@@ -42,7 +42,6 @@ public class DependencyBasedPlanApplierTest implements PremadeElements {
 
     private static ReconfigurationPlan makePlan() {
 
-
         Mapping map = mo.getMapping();
         map.addOnlineNode(ns.get(0));
         map.addOnlineNode(ns.get(1));

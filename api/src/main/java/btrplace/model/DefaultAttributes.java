@@ -236,7 +236,7 @@ public class DefaultAttributes implements Attributes, Cloneable {
             return put(e, k, false);
         }
         try {
-            return put(e, k, Long.parseLong(x));
+            return put(e, k, Integer.parseInt(x));
         } catch (NumberFormatException ex) {
         }
 

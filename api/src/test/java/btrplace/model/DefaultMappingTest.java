@@ -221,7 +221,7 @@ public class DefaultMappingTest implements PremadeElements {
         Assert.assertTrue(c.getAllVMs().size() == 1 && c.getAllVMs().contains(vms.get(0)));
         Assert.assertTrue(c.getReadyVMs().size() == 1 && c.getReadyVMs().contains(vms.get(0)));
         Assert.assertTrue(c.getRunningVMs().isEmpty() && c.getSleepingVMs().isEmpty());
-        Assert.assertEquals(c.getVMLocation(vms.get(0)), -1);
+        Assert.assertNull(c.getVMLocation(vms.get(0)));
 
         Assert.assertTrue(c.remove(vms.get(0)));
         Assert.assertTrue(c.getAllVMs().isEmpty());
@@ -411,11 +411,11 @@ public class DefaultMappingTest implements PremadeElements {
 
         Assert.assertEquals(c1, c2);
 
-        c1.addReadyVM(vms.get(0));
+        c1.addReadyVM(vms.get(5));
         Assert.assertFalse(c1.equals(c2));
         Assert.assertFalse(c2.equals(c1));
 
-        c1.remove(vms.get(0));
+        c1.remove(vms.get(5));
         Assert.assertEquals(c1, c2);
 
     }

@@ -92,7 +92,7 @@ public class DefaultAttributesTest implements PremadeElements {
         Assert.assertEquals(attrs.get(vms.get(0), "foo").getClass(), Boolean.class);
 
         attrs.castAndPut(vms.get(0), "foo", "135");
-        Assert.assertEquals(attrs.get(vms.get(0), "foo").getClass(), Long.class);
+        Assert.assertEquals(attrs.get(vms.get(0), "foo").getClass(), Integer.class);
 
         attrs.castAndPut(vms.get(0), "foo", "13.56");
         Assert.assertEquals(attrs.get(vms.get(0), "foo").getClass(), Double.class);

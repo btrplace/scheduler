@@ -22,7 +22,6 @@ import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.plan.event.BootNode;
 import btrplace.plan.event.BootVM;
 import btrplace.plan.event.MigrateVM;
-import btrplace.test.PremadeElements;
 import org.mockito.InOrder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -37,7 +36,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Fabien Hermenier
  */
-public class ReconfigurationPlanCheckerTest implements PremadeElements {
+public class ReconfigurationPlanCheckerTest {
 
     @Test
     public void tesAddandRemove() {
@@ -57,14 +56,14 @@ public class ReconfigurationPlanCheckerTest implements PremadeElements {
         Mapping m = mo.getMapping();
         m.addOnlineNode(ns.get(0));
         m.addOnlineNode(ns.get(1));
-        m.addOfflineNode(ns.get(2));
+        m.addOfflineNode(ns.get(3));
         m.addReadyVM(vms.get(1));
         m.addRunningVM(vms.get(0), ns.get(0));
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
         SatConstraintChecker chk = mock(SatConstraintChecker.class);
-        MigrateVM m1 = new MigrateVM(vms.get(0), ns.get(1), ns.get(2), 0, 3);
-        BootVM b1 = new BootVM(vms.get(1), ns.get(1), 1, 5);
-        BootNode bn = new BootNode(ns.get(2), 3, 6);
+        MigrateVM m1 = new MigrateVM(vms.get(0), ns.get(0), ns.get(1), 0, 3);
+        BootVM b1 = new BootVM(vms.get(1), ns.get(0), 1, 5);
+        BootNode bn = new BootNode(ns.get(3), 3, 6);
         p.add(m1);
         p.add(b1);
         p.add(bn);

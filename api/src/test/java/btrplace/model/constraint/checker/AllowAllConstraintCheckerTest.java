@@ -107,7 +107,7 @@ public class AllowAllConstraintCheckerTest implements PremadeElements {
         ShutdownNode sn = new ShutdownNode(ns.get(0), 0, 3);
         Assert.assertTrue(c.start(sn));
 
-        SubstitutedVMEvent ss = new SubstitutedVMEvent(vms.get(0), vms.get(2));
+        SubstitutedVMEvent ss = new SubstitutedVMEvent(vms.get(9), vms.get(2));
         Assert.assertTrue(c.consume(ss));
 
         Allocate a = new Allocate(vms.get(0), ns.get(0), "cpu", 3, 4, 5);
@@ -130,14 +130,15 @@ public class AllowAllConstraintCheckerTest implements PremadeElements {
         };
 
         //VM1 (one of the involved vms) has to be removed to be substituted by vms.get(0)0
-        c.consume(new SubstitutedVMEvent(vms.get(0), vms.get(0)));
-        Assert.assertTrue(c.getVMs().contains(vms.get(0)));
+        c.consume(new SubstitutedVMEvent(vms.get(0), vms.get(9)));
+        Assert.assertTrue(c.getVMs().contains(vms.get(9)));
         Assert.assertFalse(c.getVMs().contains(vms.get(0)));
 
         //VM5 is not involved, no removal
-        c.consume(new SubstitutedVMEvent(vms.get(4), vms.get(6)));
-        Assert.assertFalse(c.getVMs().contains(vms.get(4)));
-        Assert.assertFalse(c.getVMs().contains(vms.get(6)));
+        VM v = mo.newVM();
+        c.consume(new SubstitutedVMEvent(vms.get(0), v));
+        Assert.assertFalse(c.getVMs().contains(vms.get(0)));
+        Assert.assertFalse(c.getVMs().contains(v));
     }
 
     @Test(dependsOnMethods = "testInstantiation")
@@ -148,18 +149,17 @@ public class AllowAllConstraintCheckerTest implements PremadeElements {
 
         Model mo = new DefaultModel();
         List<VM> vms = Util.newVMs(mo, 10);
-        List<Node> ns = Util.newNodes(mo, 10);
 
         Set<VM> vs = new HashSet<>(Arrays.asList(vms.get(4), vms.get(6), vms.get(9)));
         c.track(vs);
         //VM1 (one of the involved vms) has to be removed to be substituted by vms.get(0)0
-        c.consume(new SubstitutedVMEvent(vms.get(6), vms.get(0)));
-        Assert.assertTrue(vms.contains(vms.get(0)));
-        Assert.assertFalse(vms.contains(vms.get(6)));
+        c.consume(new SubstitutedVMEvent(vms.get(6), vms.get(9)));
+        Assert.assertTrue(vs.contains(vms.get(9)));
+        Assert.assertFalse(vs.contains(vms.get(6)));
 
         //VM5 is not involved, no removal
         c.consume(new SubstitutedVMEvent(vms.get(6), vms.get(0)));
-        Assert.assertFalse(vms.contains(vms.get(6)));
-        Assert.assertFalse(vms.contains(vms.get(0)));
+        Assert.assertFalse(vs.contains(vms.get(6)));
+        Assert.assertFalse(vs.contains(vms.get(0)));
     }
 }
