@@ -175,13 +175,13 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
             VM vm = rp.getVM(i);
             Assert.assertEquals(i, rp.getVM(vm));
         }
-        Assert.assertEquals(-1, rp.getVM(vm10));
+        Assert.assertEquals(rp.getVM(mo.newVM()), -1);
 
         for (int i = 0; i < rp.getNodes().length; i++) {
             Node n = rp.getNode(i);
             Assert.assertEquals(i, rp.getNode(n));
         }
-        Assert.assertEquals(-1, rp.getNode(n10));
+        Assert.assertEquals(rp.getNode(mo.newNode()), -1);
     }
 
     @Test
@@ -252,13 +252,12 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
         map.addOnlineNode(n2);
         map.addOfflineNode(n3);
 
-        map.addRunningVM(vm1, n1);
+        //map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n1);
         map.addRunningVM(vm3, n2);
         map.addSleepingVM(vm4, n2);
         map.addReadyVM(vm5);
         map.addReadyVM(vm6);
-        Mapping m = mo.getMapping();
         mo.getAttributes().put(vm1, "template", "small");
         ReconfigurationProblem rp =
                 new DefaultReconfigurationProblemBuilder(mo)
@@ -267,7 +266,7 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
                                 new HashSet<VM>(),
                                 new HashSet<VM>()).build();
 
-        ActionModel a = rp.getVMActions()[0];
+        ActionModel a = rp.getVMActions()[rp.getVM(vm1)];
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(ForgeVMModel.class, a.getClass());
     }
@@ -590,8 +589,8 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
                         new HashSet<VM>(),
                         new HashSet<VM>()).build();
 
-        ActionModel a = rp.getNodeActions()[0];
-        Assert.assertEquals(a, rp.getNodeAction(n1));
+        ActionModel a = rp.getNodeActions()[rp.getNode(n3)];
+        Assert.assertEquals(a, rp.getNodeAction(n3));
         Assert.assertEquals(BootableNodeModel.class, a.getClass());
     }
 

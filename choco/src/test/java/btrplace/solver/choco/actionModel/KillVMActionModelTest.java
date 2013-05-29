@@ -94,15 +94,17 @@ public class KillVMActionModelTest {
         Assert.assertNotNull(p);
 
         for (Action a : p) {
-            KillVM vma = (KillVM) a;
-            Assert.assertEquals(1, a.getEnd());
-            Assert.assertEquals(0, a.getStart());
-            if (vma.getVM() == vm1 || vma.getVM() == vm3) {
-                Assert.assertEquals(-1, vma.getNode());
-            } else if (vma.getVM() == vm2) {
-                Assert.assertEquals(vma.getNode(), -1);
-            } else {
-                Assert.fail();
+            if (a instanceof KillVM) {
+                KillVM vma = (KillVM) a;
+                Assert.assertEquals(1, a.getEnd());
+                Assert.assertEquals(0, a.getStart());
+                if (vma.getVM().equals(vm1) || vma.getVM().equals(vm3)) {
+                    Assert.assertEquals(vma.getNode(), n1);
+                } else if (vma.getVM().equals(vm2)) {
+                    Assert.assertNull(vma.getNode());
+                } else {
+                    Assert.fail();
+                }
             }
         }
     }
