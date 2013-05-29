@@ -19,10 +19,7 @@ package btrplace.model;
 
 import btrplace.model.view.ModelView;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Default implementation for {@link Model}.
@@ -41,10 +38,15 @@ public class DefaultModel implements Model, Cloneable {
 
     private int nextNode;
 
+    private Set<VM> usedVMIds;
+    private Set<Node> usedNodeIds;
+
     /**
      * Make a new instance.
      */
     public DefaultModel() {
+        usedNodeIds = new HashSet<>();
+        usedVMIds = new HashSet<>();
         this.resources = new HashMap<>();
         attrs = new DefaultAttributes();
         cfg = new DefaultMapping();
@@ -154,7 +156,9 @@ public class DefaultModel implements Model, Cloneable {
         if (nextVM + 1 == 0) {
             return null;
         }
-        return new VM(nextVM++);
+        VM v = new VM(nextVM++);
+        usedVMIds.add(v);
+        return v;
     }
 
     @Override
@@ -162,6 +166,36 @@ public class DefaultModel implements Model, Cloneable {
         if (nextNode + 1 == 0) {
             return null;
         }
-        return new Node(nextNode++);
+        Node n = new Node(nextNode++);
+        usedNodeIds.add(n);
+        return n;
+    }
+
+    @Override
+    public VM newVM(int id) {
+        VM v = new VM(id);
+        if (usedVMIds.contains(v)) {
+            return null;
+        }
+        return v;
+    }
+
+    @Override
+    public Node newNode(int id) {
+        Node n = new Node(id);
+        if (usedNodeIds.contains(n)) {
+            return null;
+        }
+        return n;
+    }
+
+    @Override
+    public Set<Node> getNodes() {
+        return usedNodeIds;
+    }
+
+    @Override
+    public Set<VM> getVMs() {
+        return usedVMIds;
     }
 }

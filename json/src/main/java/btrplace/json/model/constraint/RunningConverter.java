@@ -42,14 +42,14 @@ public class RunningConverter extends SatConstraintConverter<Running> {
     @Override
     public Running fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Running(requiredElements(o, "vms"));
+        return new Running(requiredVMs(o, "vms"));
     }
 
     @Override
     public JSONObject toJSON(Running o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", elementsToJSON(o.getInvolvedVMs()));
+        c.put("vms", vmsToJSON(o.getInvolvedVMs()));
         return c;
     }
 }

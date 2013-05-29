@@ -42,8 +42,8 @@ public class CumulatedRunningCapacityConverter extends SatConstraintConverter<Cu
     @Override
     public CumulatedRunningCapacity fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new CumulatedRunningCapacity(requiredElements(o, "nodes"),
-                (int) requiredLong(o, "amount"),
+        return new CumulatedRunningCapacity(requiredNodes(o, "nodes"),
+                requiredInt(o, "amount"),
                 requiredBoolean(o, "continuous"));
     }
 
@@ -51,7 +51,7 @@ public class CumulatedRunningCapacityConverter extends SatConstraintConverter<Cu
     public JSONObject toJSON(CumulatedRunningCapacity o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("nodes", elementsToJSON(o.getInvolvedNodes()));
+        c.put("nodes", nodesToJSON(o.getInvolvedNodes()));
         c.put("amount", (long) o.getAmount());
         c.put("continuous", o.isContinuous());
         return c;

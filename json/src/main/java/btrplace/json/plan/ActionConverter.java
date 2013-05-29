@@ -147,10 +147,10 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     }
 
     private BootVM bootVMFromJSON(JSONObject in) throws JSONConverterException {
-        return new BootVM(requiredInt(in, VM_LABEL),
-                requiredInt(in, "destination"),
-                (int) requiredLong(in, START_LABEL),
-                (int) requiredLong(in, END_LABEL));
+        return new BootVM(requiredVM(in, VM_LABEL),
+                requiredNode(in, "destination"),
+                requiredInt(in, START_LABEL),
+                requiredInt(in, END_LABEL));
     }
 
     @Override
@@ -163,10 +163,10 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     }
 
     private ShutdownVM shutdownVMFromJSON(JSONObject in) throws JSONConverterException {
-        return new ShutdownVM(requiredInt(in, VM_LABEL),
-                requiredInt(in, VM_LOCATION_LABEL),
-                (int) requiredLong(in, START_LABEL),
-                (int) requiredLong(in, END_LABEL));
+        return new ShutdownVM(requiredVM(in, VM_LABEL),
+                requiredNode(in, VM_LOCATION_LABEL),
+                requiredInt(in, START_LABEL),
+                requiredInt(in, END_LABEL));
     }
 
     @Override
@@ -178,9 +178,9 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     }
 
     private ShutdownNode shutdownNodeFromJSON(JSONObject in) throws JSONConverterException {
-        return new ShutdownNode(requiredInt(in, "node"),
-                (int) requiredLong(in, START_LABEL),
-                (int) requiredLong(in, END_LABEL));
+        return new ShutdownNode(requiredNode(in, "node"),
+                requiredInt(in, START_LABEL),
+                requiredInt(in, END_LABEL));
     }
 
     @Override
@@ -192,9 +192,9 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     }
 
     private BootNode bootNodeFromJSON(JSONObject in) throws JSONConverterException {
-        return new BootNode(requiredInt(in, "node"),
-                (int) requiredLong(in, START_LABEL),
-                (int) requiredLong(in, END_LABEL));
+        return new BootNode(requiredNode(in, "node"),
+                requiredInt(in, START_LABEL),
+                requiredInt(in, END_LABEL));
     }
 
     @Override
@@ -209,11 +209,11 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
 
 
     private MigrateVM migrateVMFromJSON(JSONObject in) throws JSONConverterException {
-        return new MigrateVM(requiredInt(in, VM_LABEL),
-                requiredInt(in, VM_LOCATION_LABEL),
-                requiredInt(in, VM_DESTINATION_LABEL),
-                (int) requiredLong(in, START_LABEL),
-                (int) requiredLong(in, END_LABEL));
+        return new MigrateVM(requiredVM(in, VM_LABEL),
+                requiredNode(in, VM_LOCATION_LABEL),
+                requiredNode(in, VM_DESTINATION_LABEL),
+                requiredInt(in, START_LABEL),
+                requiredInt(in, END_LABEL));
     }
 
     @Override
@@ -227,11 +227,11 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     }
 
     private SuspendVM suspendVMFromJSON(JSONObject in) throws JSONConverterException {
-        return new SuspendVM(requiredInt(in, VM_LABEL),
-                requiredInt(in, VM_LOCATION_LABEL),
-                requiredInt(in, VM_DESTINATION_LABEL),
-                (int) requiredLong(in, START_LABEL),
-                (int) requiredLong(in, END_LABEL));
+        return new SuspendVM(requiredVM(in, VM_LABEL),
+                requiredNode(in, VM_LOCATION_LABEL),
+                requiredNode(in, VM_DESTINATION_LABEL),
+                requiredInt(in, START_LABEL),
+                requiredInt(in, END_LABEL));
     }
 
     @Override
@@ -245,11 +245,11 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     }
 
     private ResumeVM resumeVMFromJSON(JSONObject in) throws JSONConverterException {
-        return new ResumeVM(requiredInt(in, VM_LABEL),
-                requiredInt(in, VM_LOCATION_LABEL),
-                requiredInt(in, VM_DESTINATION_LABEL),
-                (int) requiredLong(in, START_LABEL),
-                (int) requiredLong(in, END_LABEL));
+        return new ResumeVM(requiredVM(in, VM_LABEL),
+                requiredNode(in, VM_LOCATION_LABEL),
+                requiredNode(in, VM_DESTINATION_LABEL),
+                requiredInt(in, START_LABEL),
+                requiredInt(in, END_LABEL));
     }
 
     @Override
@@ -262,10 +262,10 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     }
 
     private KillVM killVMFromJSON(JSONObject in) throws JSONConverterException {
-        return new KillVM(requiredInt(in, VM_LABEL),
-                requiredInt(in, VM_LOCATION_LABEL),
-                (int) requiredLong(in, START_LABEL),
-                (int) requiredLong(in, END_LABEL));
+        return new KillVM(requiredVM(in, VM_LABEL),
+                requiredNode(in, VM_LOCATION_LABEL),
+                requiredInt(in, START_LABEL),
+                requiredInt(in, END_LABEL));
 
     }
 
@@ -279,9 +279,9 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     }
 
     private ForgeVM forgeVMFromJSON(JSONObject in) throws JSONConverterException {
-        return new ForgeVM(requiredInt(in, VM_LABEL),
-                (int) requiredLong(in, START_LABEL),
-                (int) requiredLong(in, END_LABEL));
+        return new ForgeVM(requiredVM(in, VM_LABEL),
+                requiredInt(in, START_LABEL),
+                requiredInt(in, END_LABEL));
     }
 
     @Override
@@ -296,12 +296,12 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     }
 
     private Allocate allocateFromJSON(JSONObject in) throws JSONConverterException {
-        return new Allocate(requiredInt(in, VM_LABEL),
-                requiredInt(in, VM_LOCATION_LABEL),
+        return new Allocate(requiredVM(in, VM_LABEL),
+                requiredNode(in, VM_LOCATION_LABEL),
                 requiredString(in, "rc"),
-                (int) requiredLong(in, "qty"),
-                (int) requiredLong(in, START_LABEL),
-                (int) requiredLong(in, END_LABEL));
+                requiredInt(in, "qty"),
+                requiredInt(in, START_LABEL),
+                requiredInt(in, END_LABEL));
     }
 
     @Override
@@ -315,9 +315,9 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     }
 
     private AllocateEvent allocateEventFromJSON(JSONObject o) throws JSONConverterException {
-        return new AllocateEvent(requiredInt(o, VM_LABEL),
+        return new AllocateEvent(requiredVM(o, VM_LABEL),
                 requiredString(o, "rc"),
-                (int) requiredLong(o, "qty"));
+                requiredInt(o, "qty"));
     }
 
     @Override
@@ -330,8 +330,8 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     }
 
     private SubstitutedVMEvent substitutedVMEventFromJSON(JSONObject o) throws JSONConverterException {
-        return new SubstitutedVMEvent(requiredInt(o, VM_LABEL),
-                requiredInt(o, "newint"));
+        return new SubstitutedVMEvent(requiredVM(o, VM_LABEL),
+                requiredVM(o, "newint"));
     }
 
     @Override

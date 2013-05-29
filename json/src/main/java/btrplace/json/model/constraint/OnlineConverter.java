@@ -43,14 +43,14 @@ public class OnlineConverter extends SatConstraintConverter<Online> {
     @Override
     public Online fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Online(requiredElements(o, "nodes"));
+        return new Online(requiredNodes(o, "nodes"));
     }
 
     @Override
     public JSONObject toJSON(Online o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("nodes", elementsToJSON(o.getInvolvedNodes()));
+        c.put("nodes", nodesToJSON(o.getInvolvedNodes()));
         return c;
     }
 }

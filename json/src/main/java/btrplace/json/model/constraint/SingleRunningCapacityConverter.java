@@ -42,8 +42,8 @@ public class SingleRunningCapacityConverter extends SatConstraintConverter<Singl
     @Override
     public SingleRunningCapacity fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new SingleRunningCapacity(requiredElements(o, "nodes"),
-                (int) requiredLong(o, "amount"),
+        return new SingleRunningCapacity(requiredNodes(o, "nodes"),
+                requiredInt(o, "amount"),
                 requiredBoolean(o, "continuous"));
     }
 
@@ -51,7 +51,7 @@ public class SingleRunningCapacityConverter extends SatConstraintConverter<Singl
     public JSONObject toJSON(SingleRunningCapacity o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("nodes", elementsToJSON(o.getInvolvedNodes()));
+        c.put("nodes", nodesToJSON(o.getInvolvedNodes()));
         c.put("amount", (long) o.getAmount());
         c.put("continuous", o.isContinuous());
         return c;

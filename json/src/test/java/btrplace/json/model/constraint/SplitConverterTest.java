@@ -18,11 +18,15 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
+import btrplace.model.DefaultModel;
+import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.model.constraint.Split;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,14 +42,16 @@ public class SplitConverterTest implements PremadeElements {
     private static SplitConverter conv = new SplitConverter();
 
     @Test
-    public void testViables() throws JSONConverterException {
-        Set<Integer> s1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        Set<Integer> s2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
-        Set<Integer> s3 = new HashSet<>(Arrays.asList(vm7, vm8));
-        Set<Set<Integer>> vgrps = new HashSet<>(Arrays.asList(s1, s2, s3));
+    public void testViables() throws JSONConverterException, IOException {
+        Model mo = new DefaultModel();
+
+        Set<VM> s1 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
+        Set<VM> s2 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
+        Set<VM> s3 = new HashSet<>(Arrays.asList(mo.newVM()));
+        Set<Set<VM>> vgrps = new HashSet<>(Arrays.asList(s1, s2, s3));
         Split d = new Split(vgrps, false);
         Split c = new Split(vgrps, true);
-        Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
-        Assert.assertEquals(conv.fromJSON(conv.toJSON(c)), c);
+        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+        Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
     }
 }

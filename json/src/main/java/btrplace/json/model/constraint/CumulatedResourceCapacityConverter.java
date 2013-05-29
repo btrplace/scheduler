@@ -41,9 +41,9 @@ public class CumulatedResourceCapacityConverter extends SatConstraintConverter<C
     @Override
     public CumulatedResourceCapacity fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new CumulatedResourceCapacity(requiredElements(o, "nodes"),
+        return new CumulatedResourceCapacity(requiredNodes(o, "nodes"),
                 requiredString(o, "rcId"),
-                (int) requiredLong(o, "amount"),
+                requiredInt(o, "amount"),
                 requiredBoolean(o, "continuous"));
     }
 
@@ -51,7 +51,7 @@ public class CumulatedResourceCapacityConverter extends SatConstraintConverter<C
     public JSONObject toJSON(CumulatedResourceCapacity o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("nodes", elementsToJSON(o.getInvolvedNodes()));
+        c.put("nodes", nodesToJSON(o.getInvolvedNodes()));
         c.put("rcId", o.getResource());
         c.put("amount", (long) o.getAmount());
         c.put("continuous", o.isContinuous());

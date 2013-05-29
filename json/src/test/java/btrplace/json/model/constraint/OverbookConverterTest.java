@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,11 +18,14 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
+import btrplace.model.DefaultModel;
+import btrplace.model.Model;
 import btrplace.model.constraint.Overbook;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -37,8 +39,9 @@ public class OverbookConverterTest implements PremadeElements {
     private static OverbookConverter conv = new OverbookConverter();
 
     @Test
-    public void testViables() throws JSONConverterException {
-        Overbook d = new Overbook(new HashSet<>(Arrays.asList(n1, n2, n3)), "foo", 1.4);
-        Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
+    public void testViables() throws JSONConverterException, IOException {
+        Model mo = new DefaultModel();
+        Overbook d = new Overbook(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), "foo", 1.4);
+        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
     }
 }

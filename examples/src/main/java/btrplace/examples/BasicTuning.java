@@ -17,9 +17,7 @@
 
 package btrplace.examples;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.Overbook;
 import btrplace.model.constraint.Preserve;
 import btrplace.model.constraint.SatConstraint;
@@ -43,7 +41,7 @@ import java.util.*;
  */
 public class BasicTuning implements Example {
 
-    private List<Integer> nodes;
+    private List<Node> nodes;
 
     private ShareableResource rcBW;
 
@@ -137,7 +135,7 @@ public class BasicTuning implements Example {
 
         nodes = new ArrayList<>(100);
         for (int i = 0; i < 100; i++) {
-            int n = 10000 + i;
+            Node n = mo.newNode();
             nodes.add(n);
             mapping.addOnlineNode(n);
 
@@ -147,7 +145,7 @@ public class BasicTuning implements Example {
         }
 
         for (int i = 0; i < 600; i++) {
-            int vm = i;
+            VM vm = mo.newVM();
             //Basic balancing through a round-robin: 6 VMs per node
             mapping.addRunningVM(vm, nodes.get(i % nodes.size()));
 
@@ -167,11 +165,11 @@ public class BasicTuning implements Example {
     public Set<SatConstraint> getNewBWRequirements(Model mo) {
         Set<SatConstraint> constraints = new HashSet<>();
         for (int i = 0; i < 5; i++) {
-            int n = nodes.get(i);
-            Set<Integer> vmsOnN = mo.getMapping().getRunningVMs(n);
-            Iterator<Integer> ite = vmsOnN.iterator();
+            Node n = nodes.get(i);
+            Set<VM> vmsOnN = mo.getMapping().getRunningVMs(n);
+            Iterator<VM> ite = vmsOnN.iterator();
             for (int j = 0; ite.hasNext() && j < 4; j++) {
-                int v = ite.next();
+                VM v = ite.next();
                 constraints.add(new Preserve(Collections.singleton(v), "bandwidth", 4));
             }
         }

@@ -18,10 +18,12 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
+import btrplace.model.Node;
 import btrplace.model.constraint.Among;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -45,8 +47,18 @@ public class AmongConverter extends SatConstraintConverter<Among> {
     @Override
     public Among fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Among(requiredElements(o, "vms"),
-                requiredSets(o, "nodes"),
+
+        Set<Set<Node>> nodes = new HashSet<>();
+        Object x = o.get("nodes");
+        if (!(x instanceof JSONArray)) {
+            throw new JSONConverterException("Set of ints sets expected at key 'nodes'");
+        }
+        for (Object obj : (JSONArray) x) {
+            nodes.add(nodesFromJSON((JSONArray) obj));
+        }
+
+        return new Among(requiredVMs(o, "vms"),
+                nodes,
                 (Boolean) o.get("continuous"));
     }
 
@@ -54,10 +66,10 @@ public class AmongConverter extends SatConstraintConverter<Among> {
     public JSONObject toJSON(Among o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", elementsToJSON(o.getInvolvedVMs()));
+        c.put("vms", vmsToJSON(o.getInvolvedVMs()));
         JSONArray a = new JSONArray();
-        for (Set<Integer> grp : o.getGroupsOfNodes()) {
-            a.add(elementsToJSON(grp));
+        for (Set<Node> grp : o.getGroupsOfNodes()) {
+            a.add(nodesToJSON(grp));
         }
         c.put("nodes", a);
         c.put("continuous", o.isContinuous());

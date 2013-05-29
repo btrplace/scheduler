@@ -18,10 +18,12 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
+import btrplace.model.VM;
 import btrplace.model.constraint.Split;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -45,7 +47,16 @@ public class SplitConverter extends SatConstraintConverter<Split> {
     @Override
     public Split fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Split(requiredSets(o, "vms"), requiredBoolean(o, "continuous"));
+        Set<Set<VM>> vms = new HashSet<>();
+        Object x = o.get("vms");
+        if (!(x instanceof JSONArray)) {
+            throw new JSONConverterException("Set of ints sets expected at key 'vms'");
+        }
+        for (Object obj : (JSONArray) x) {
+            vms.add(vmsFromJSON((JSONArray) obj));
+        }
+
+        return new Split(vms, requiredBoolean(o, "continuous"));
     }
 
     @Override
@@ -54,8 +65,8 @@ public class SplitConverter extends SatConstraintConverter<Split> {
         c.put("id", getJSONId());
 
         JSONArray a = new JSONArray();
-        for (Set<Integer> grp : o.getSets()) {
-            a.add(elementsToJSON(grp));
+        for (Set<VM> grp : o.getSets()) {
+            a.add(vmsToJSON(grp));
         }
 
         c.put("vms", a);

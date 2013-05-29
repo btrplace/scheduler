@@ -41,16 +41,16 @@ public class PreserveConverter extends SatConstraintConverter<Preserve> {
     @Override
     public Preserve fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Preserve(requiredElements(o, "vms"),
+        return new Preserve(requiredVMs(o, "vms"),
                 requiredString(o, "rcId"),
-                (int) requiredLong(o, "amount"));
+                requiredInt(o, "amount"));
     }
 
     @Override
     public JSONObject toJSON(Preserve o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", elementsToJSON(o.getInvolvedVMs()));
+        c.put("vms", vmsToJSON(o.getInvolvedVMs()));
         c.put("rcId", o.getResource());
         c.put("amount", (long) o.getAmount());
         return c;

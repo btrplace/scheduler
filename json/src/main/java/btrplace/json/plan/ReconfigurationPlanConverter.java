@@ -34,6 +34,7 @@ import net.minidev.json.JSONObject;
  */
 public class ReconfigurationPlanConverter extends AbstractJSONObjectConverter<ReconfigurationPlan> {
 
+
     @Override
     public ReconfigurationPlan fromJSON(JSONObject ob) throws JSONConverterException {
 
@@ -57,7 +58,7 @@ public class ReconfigurationPlanConverter extends AbstractJSONObjectConverter<Re
 
     @Override
     public JSONObject toJSON(ReconfigurationPlan plan) throws JSONConverterException {
-
+        setModel(plan.getOrigin());
         JSONObject ob = new JSONObject();
         ModelConverter c = new ModelConverter();
         ActionConverter ac = new ActionConverter();

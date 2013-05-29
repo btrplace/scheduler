@@ -18,6 +18,10 @@
 package btrplace.json.plan;
 
 import btrplace.json.JSONConverterException;
+import btrplace.model.DefaultModel;
+import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.plan.event.*;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
@@ -33,6 +37,13 @@ import java.util.List;
  * @author Fabien Hermenier
  */
 public class ActionConverterTest implements PremadeElements {
+
+    private static Model mo = new DefaultModel();
+    private static VM vm1 = mo.newVM();
+    private static VM vm2 = mo.newVM();
+    private static VM vm3 = mo.newVM();
+    private static Node n1 = mo.newNode();
+    private static Node n2 = mo.newNode();
 
     @Test
     public void testMigrate() throws JSONConverterException, IOException {

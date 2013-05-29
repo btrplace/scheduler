@@ -18,8 +18,7 @@
 package btrplace.json.model;
 
 import btrplace.json.JSONConverterException;
-import btrplace.model.DefaultMapping;
-import btrplace.model.Mapping;
+import btrplace.model.*;
 import btrplace.test.PremadeElements;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
@@ -35,8 +34,15 @@ public class MappingConverterTest implements PremadeElements {
 
     @Test
     public void testSimple() throws JSONConverterException, IOException {
-        Mapping c = new DefaultMapping();
-
+        Model mo = new DefaultModel();
+        Mapping c = mo.getMapping();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
         c.addOnlineNode(n1);
         c.addOfflineNode(n2);
         c.addRunningVM(vm1, n1);

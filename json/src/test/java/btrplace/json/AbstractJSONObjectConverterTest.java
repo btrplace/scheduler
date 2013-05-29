@@ -35,15 +35,15 @@ public class AbstractJSONObjectConverterTest {
     private static Random rnd = new Random();
 
     @Test
-    public void testValidRequiredint() throws JSONConverterException {
+    public void testValidRequiredInt() throws JSONConverterException {
         JSONObject o = new JSONObject();
         int u = rnd.nextInt();
         o.put("id", u);
         Assert.assertEquals(AbstractJSONObjectConverter.requiredInt(o, "id"), u);
     }
 
-    @DataProvider(name = "getInvalidints")
-    public Object[][] getInvalidints() {
+    @DataProvider(name = "getInvalidInts")
+    public Object[][] getInvalidInts() {
         return new Object[][]{
                 {"id", "id", "toto"}, //bad type
                 {"id", "foo", rnd.nextInt()} //bad write key
@@ -51,7 +51,7 @@ public class AbstractJSONObjectConverterTest {
     }
 
     @Test(expectedExceptions = {JSONConverterException.class}, dataProvider = "getInvalidints")
-    public void testInValidRequiredint(String storeKey, String readKey, Object o) throws JSONConverterException {
+    public void testInValidRequiredInt(String storeKey, String readKey, Object o) throws JSONConverterException {
         JSONObject obj = new JSONObject();
         obj.put(storeKey, o);
         AbstractJSONObjectConverter.requiredInt(obj, readKey);
@@ -94,29 +94,5 @@ public class AbstractJSONObjectConverterTest {
         JSONObject obj = new JSONObject();
         obj.put(storeKey, o);
         AbstractJSONObjectConverter.requiredDouble(obj, readKey);
-    }
-
-    @Test
-    public void testValidRequiredLong() throws JSONConverterException {
-        JSONObject o = new JSONObject();
-        o.put("id", 123553l);
-        Assert.assertEquals(AbstractJSONObjectConverter.requiredLong(o, "id"), 123553l);
-    }
-
-    @DataProvider(name = "getInvalidLongs")
-    public Object[][] getInvalidLongs() {
-        return new Object[][]{
-                {"id", "id", "toto"}, //bad type
-                {"id", "id", 1234.5}, //bad type
-                {"id", "id", false}, //bad type
-                {"id", "foo", 1234l}, //bad key
-        };
-    }
-
-    @Test(expectedExceptions = {JSONConverterException.class}, dataProvider = "getInvalidLongs")
-    public void testInValidRequiredLongs(String storeKey, String readKey, Object o) throws JSONConverterException {
-        JSONObject obj = new JSONObject();
-        obj.put(storeKey, o);
-        AbstractJSONObjectConverter.requiredLong(obj, readKey);
     }
 }

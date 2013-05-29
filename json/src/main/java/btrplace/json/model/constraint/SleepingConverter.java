@@ -42,14 +42,14 @@ public class SleepingConverter extends SatConstraintConverter<Sleeping> {
     @Override
     public Sleeping fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Sleeping(requiredElements(o, "vms"));
+        return new Sleeping(requiredVMs(o, "vms"));
     }
 
     @Override
     public JSONObject toJSON(Sleeping o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", elementsToJSON(o.getInvolvedVMs()));
+        c.put("vms", vmsToJSON(o.getInvolvedVMs()));
         return c;
     }
 }

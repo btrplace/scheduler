@@ -19,6 +19,8 @@ package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.SatConstraint;
 import junit.framework.Assert;
 import net.minidev.json.JSONObject;
@@ -28,7 +30,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 
 /**
@@ -38,14 +39,12 @@ import java.util.Random;
  */
 public class SatConstraintsConverterTest {
 
-    private static Random rnd = new Random();
-
     public static class MockSatConstraint extends SatConstraint {
 
         String str;
 
         public MockSatConstraint(String s) {
-            super(Collections.<Integer>emptySet(), Collections.<Integer>emptySet(), true);
+            super(Collections.<VM>emptySet(), Collections.<Node>emptySet(), true);
             str = s;
 
         }

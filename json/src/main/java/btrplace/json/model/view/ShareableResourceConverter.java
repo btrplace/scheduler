@@ -17,6 +17,8 @@
 
 package btrplace.json.model.view;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.view.ShareableResource;
 import net.minidev.json.JSONObject;
 
@@ -48,17 +50,17 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
         o.put("id", getJSONId());
         o.put("rcId", rc.getResourceIdentifier());
 
-        Set<Integer> elems = rc.getDefinedVMs();
+        Set<VM> elems = rc.getDefinedVMs();
         JSONObject values = new JSONObject();
-        for (int u : elems) {
-            values.put(Integer.toString(u), rc.getConsumption(u));
+        for (VM u : elems) {
+            values.put(u.toString(), rc.getConsumption(u));
         }
         o.put("vms", values);
 
-        elems = rc.getDefinedNodes();
+        Set<Node> nodes = rc.getDefinedNodes();
         values = new JSONObject();
-        for (int u : elems) {
-            values.put(Integer.toString(u), rc.getCapacity(u));
+        for (Node u : nodes) {
+            values.put(u.toString(), rc.getCapacity(u));
         }
         o.put("nodes", values);
 
@@ -80,13 +82,13 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
         ShareableResource rc = new ShareableResource(rcId);
         JSONObject values = (JSONObject) o.get("vms");
         for (String k : values.keySet()) {
-            int u = Integer.parseInt(k);
+            VM u = getOrMakeVM(Integer.parseInt(k));
             int v = Integer.parseInt(values.get(k).toString());
             rc.setConsumption(u, v);
         }
         values = (JSONObject) o.get("nodes");
         for (String k : values.keySet()) {
-            int u = Integer.parseInt(k);
+            Node u = getOrMakeNode(Integer.parseInt(k));
             int v = Integer.parseInt(values.get(k).toString());
             rc.setCapacity(u, v);
         }

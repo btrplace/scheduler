@@ -20,6 +20,8 @@ package btrplace.json.model;
 import btrplace.json.JSONConverterException;
 import btrplace.model.Attributes;
 import btrplace.model.DefaultAttributes;
+import btrplace.model.DefaultModel;
+import btrplace.model.Model;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -35,13 +37,14 @@ public class AttributesConverterTest implements PremadeElements {
 
     @Test
     public void testSimple() throws IOException, JSONConverterException {
+        Model mo = new DefaultModel();
         Attributes attrs = new DefaultAttributes();
 
-        attrs.put(n1, "foo", true);
-        attrs.put(n2, "foo", false);
-        attrs.put(n1, "bar", 5);
-        attrs.put(n2, "baz", "zab");
-        attrs.put(n2, "ba", 1.34);
+        attrs.put(mo.newVM(), "foo", true);
+        attrs.put(mo.newNode(), "foo", false);
+        attrs.put(mo.newVM(), "bar", 5);
+        attrs.put(mo.newVM(), "baz", "zab");
+        attrs.put(mo.newNode(), "ba", 1.34);
 
         AttributesConverter json = new AttributesConverter();
         String o = json.toJSONString(attrs);

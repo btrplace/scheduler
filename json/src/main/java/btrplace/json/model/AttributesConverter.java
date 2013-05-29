@@ -20,13 +20,15 @@ package btrplace.json.model;
 import btrplace.json.AbstractJSONObjectConverter;
 import btrplace.model.Attributes;
 import btrplace.model.DefaultAttributes;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import net.minidev.json.JSONObject;
 
 
 /**
  * Serialize/un-serialize attributes.
- * In practice, the JSON representation is a hashmap where int are the keys.
- * For each of these keys, a hashmap contains the key/values pair associated
+ * In practice, the JSON representation is a map where int are the keys.
+ * For each of these keys, a map contains the key/values pair associated
  * to the element. A value is either a boolean ("true" or "false"), a number (integer or real), or a string.
  *
  * @author Fabien Hermenier
@@ -36,25 +38,44 @@ public class AttributesConverter extends AbstractJSONObjectConverter<Attributes>
     @Override
     public Attributes fromJSON(JSONObject o) {
         Attributes attrs = new DefaultAttributes();
-        for (Object el : o.keySet()) {
-            int u = Integer.parseInt(el.toString());
+        JSONObject vms = (JSONObject) o.get("vms");
+        JSONObject nodes = (JSONObject) o.get("nodes");
+
+        for (String el : vms.keySet()) {
+            VM vm = getOrMakeVM(Integer.parseInt(el));
             JSONObject entries = (JSONObject) o.get(el);
-            for (Object entry : entries.keySet()) {
-                Object value = entries.get(entry);
+            for (String key : entries.keySet()) {
+                Object value = entries.get(key);
                 if (value.getClass().equals(Boolean.class)) {
-                    attrs.put(u, entry.toString(), (Boolean) value);
-                } else if (value.getClass().equals(Long.class)) {
-                    attrs.put(u, entry.toString(), (Long) value);
+                    attrs.put(vm, key, (Boolean) value);
                 } else if (value.getClass().equals(String.class)) {
-                    attrs.put(u, entry.toString(), (String) value);
+                    attrs.put(vm, key, (String) value);
                 } else if (value.getClass().equals(Double.class)) {
-                    attrs.put(u, entry.toString(), (Double) value);
+                    attrs.put(vm, key, (Double) value);
                 } else if (value.getClass().equals(Integer.class)) {
-                    attrs.put(u, entry.toString(), (Integer) value);
+                    attrs.put(vm, key, (Integer) value);
                 } else {
                     throw new ClassCastException(value.toString() + " is not a basic type (" + value.getClass() + ")");
                 }
+            }
+        }
 
+        for (String el : vms.keySet()) {
+            Node n = getOrMakeNode(Integer.parseInt(el));
+            JSONObject entries = (JSONObject) o.get(el);
+            for (String key : entries.keySet()) {
+                Object value = entries.get(key);
+                if (value.getClass().equals(Boolean.class)) {
+                    attrs.put(n, key, (Boolean) value);
+                } else if (value.getClass().equals(String.class)) {
+                    attrs.put(n, key, (String) value);
+                } else if (value.getClass().equals(Double.class)) {
+                    attrs.put(n, key, (Double) value);
+                } else if (value.getClass().equals(Integer.class)) {
+                    attrs.put(n, key, (Integer) value);
+                } else {
+                    throw new ClassCastException(value.toString() + " is not a basic type (" + value.getClass() + ")");
+                }
             }
         }
         return attrs;
@@ -63,13 +84,24 @@ public class AttributesConverter extends AbstractJSONObjectConverter<Attributes>
     @Override
     public JSONObject toJSON(Attributes attributes) {
         JSONObject res = new JSONObject();
-        for (int e : attributes.getSpecifiedVMs()) {
+        JSONObject vms = new JSONObject();
+        JSONObject nodes = new JSONObject();
+        for (VM e : attributes.getSpecifiedVMs()) {
             JSONObject el = new JSONObject();
             for (String k : attributes.getKeys(e)) {
                 el.put(k, attributes.get(e, k));
             }
-            res.put(Integer.toString(e), el);
+            vms.put(e.toString(), el);
         }
+        for (Node e : attributes.getSpecifiedNodes()) {
+            JSONObject el = new JSONObject();
+            for (String k : attributes.getKeys(e)) {
+                el.put(k, attributes.get(e, k));
+            }
+            nodes.put(e.toString(), el);
+        }
+        res.put("vms", vms);
+        res.put("nodes", nodes);
         return res;
     }
 }

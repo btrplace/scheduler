@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,11 +18,14 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
+import btrplace.model.DefaultModel;
+import btrplace.model.Model;
 import btrplace.model.constraint.Ready;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -37,8 +39,9 @@ public class ReadyConverterTest implements PremadeElements {
     private static ReadyConverter conv = new ReadyConverter();
 
     @Test
-    public void testViables() throws JSONConverterException {
-        Ready d = new Ready(new HashSet<>(Arrays.asList(vm1, vm2, vm3)));
-        Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
+    public void testViables() throws JSONConverterException, IOException {
+        Model mo = new DefaultModel();
+        Ready d = new Ready(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())));
+        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
     }
 }

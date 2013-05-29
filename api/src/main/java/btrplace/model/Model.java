@@ -20,6 +20,7 @@ package btrplace.model;
 import btrplace.model.view.ModelView;
 
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * A model depicts a consistent snapshot of an infrastructure.
@@ -106,9 +107,39 @@ public interface Model extends Cloneable {
     VM newVM();
 
     /**
+     * Generate a new VM for this model.
+     *
+     * @param id the identifier to use for that VM
+     * @return a VM or {@code null} if the identifier is already used
+     */
+    VM newVM(int id);
+
+    /**
      * Generate a new Node for this model.
      *
      * @return {@code null} if no identifiers are available for the Node.
      */
     Node newNode();
+
+    /**
+     * Generate a new node for this model.
+     *
+     * @param id the identifier to use for that node
+     * @return a Node or {@code null} if the identifier is already used
+     */
+    Node newNode(int id);
+
+    /**
+     * Get all the registered nodes.
+     *
+     * @return a set of nodes, may be empty
+     */
+    Set<Node> getNodes();
+
+    /**
+     * Get all the registered VMs.
+     *
+     * @return a set of VMs, may be empty
+     */
+    Set<VM> getVMs();
 }

@@ -43,14 +43,14 @@ public class KilledConverter extends SatConstraintConverter<Killed> {
     @Override
     public Killed fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Killed(requiredElements(o, "vms"));
+        return new Killed(requiredVMs(o, "vms"));
     }
 
     @Override
     public JSONObject toJSON(Killed o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", elementsToJSON(o.getInvolvedVMs()));
+        c.put("vms", vmsToJSON(o.getInvolvedVMs()));
         return c;
     }
 }

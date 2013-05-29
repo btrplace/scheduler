@@ -18,10 +18,13 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.SplitAmong;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -45,9 +48,26 @@ public class SplitAmongConverter extends SatConstraintConverter<SplitAmong> {
     @Override
     public SplitAmong fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new SplitAmong(requiredSets(o, "vms"),
-                requiredSets(o, "nodes"),
-                requiredBoolean(o, "continuous"));
+
+        Set<Set<Node>> nodes = new HashSet<>();
+        Object x = o.get("nodes");
+        if (!(x instanceof JSONArray)) {
+            throw new JSONConverterException("Set of ints sets expected at key 'nodes'");
+        }
+        for (Object obj : (JSONArray) x) {
+            nodes.add(nodesFromJSON((JSONArray) obj));
+        }
+
+        Set<Set<VM>> vms = new HashSet<>();
+        x = o.get("vms");
+        if (!(x instanceof JSONArray)) {
+            throw new JSONConverterException("Set of ints sets expected at key 'vms'");
+        }
+        for (Object obj : (JSONArray) x) {
+            vms.add(vmsFromJSON((JSONArray) obj));
+        }
+
+        return new SplitAmong(vms, nodes, requiredBoolean(o, "continuous"));
     }
 
     @Override
@@ -56,13 +76,13 @@ public class SplitAmongConverter extends SatConstraintConverter<SplitAmong> {
         c.put("id", getJSONId());
 
         JSONArray vGroups = new JSONArray();
-        for (Set<Integer> grp : o.getGroupsOfVMs()) {
-            vGroups.add(elementsToJSON(grp));
+        for (Set<VM> grp : o.getGroupsOfVMs()) {
+            vGroups.add(vmsToJSON(grp));
         }
 
         JSONArray pGroups = new JSONArray();
-        for (Set<Integer> grp : o.getGroupsOfNodes()) {
-            pGroups.add(elementsToJSON(grp));
+        for (Set<Node> grp : o.getGroupsOfNodes()) {
+            pGroups.add(nodesToJSON(grp));
         }
 
         c.put("vms", vGroups);

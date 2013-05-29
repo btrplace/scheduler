@@ -18,9 +18,7 @@
 package btrplace.json.plan;
 
 import btrplace.json.JSONConverterException;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Allocate;
@@ -43,6 +41,15 @@ public class ReconfigurationPlanConverterTest implements PremadeElements {
     @Test
     public void testConversion() throws JSONConverterException, IOException {
         Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+
         Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOfflineNode(n2);
@@ -61,8 +68,7 @@ public class ReconfigurationPlanConverterTest implements PremadeElements {
         plan.add(new Allocate(vm1, n3, "foo", 5, 2, 5));
 
         ReconfigurationPlanConverter rcp = new ReconfigurationPlanConverter();
-        String o = rcp.toJSONString(plan);
-        Assert.assertEquals(rcp.fromJSON(o), plan);
+        Assert.assertEquals(rcp.fromJSON(rcp.toJSONString(plan)), plan);
 
     }
 }

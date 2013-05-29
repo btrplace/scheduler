@@ -43,14 +43,14 @@ public class OfflineConverter extends SatConstraintConverter<Offline> {
     @Override
     public Offline fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Offline(requiredElements(o, "nodes"));
+        return new Offline(requiredNodes(o, "nodes"));
     }
 
     @Override
     public JSONObject toJSON(Offline o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("nodes", elementsToJSON(o.getInvolvedNodes()));
+        c.put("nodes", nodesToJSON(o.getInvolvedNodes()));
         return c;
     }
 }

@@ -18,11 +18,16 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
+import btrplace.model.DefaultModel;
+import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.Among;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,17 +43,18 @@ public class AmongConverterTest implements PremadeElements {
     private static AmongConverter conv = new AmongConverter();
 
     @Test
-    public void testViables() throws JSONConverterException {
-        Set<Integer> s1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        Set<Integer> p1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<Integer> p2 = new HashSet<>(Arrays.asList(n4, n5));
-        Set<Integer> p3 = new HashSet<>(Arrays.asList(n3));
+    public void testViables() throws JSONConverterException, IOException {
+        Model mo = new DefaultModel();
+        Set<VM> s1 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
+        Set<Node> p1 = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
+        Set<Node> p2 = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
+        Set<Node> p3 = new HashSet<>(Arrays.asList(mo.newNode()));
 
-        Set<Set<Integer>> pgrps = new HashSet<>(Arrays.asList(p1, p2, p3));
+        Set<Set<Node>> pgrps = new HashSet<>(Arrays.asList(p1, p2, p3));
 
         Among d = new Among(s1, pgrps, false);
         Among c = new Among(s1, pgrps, true);
-        Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
-        Assert.assertEquals(conv.fromJSON(conv.toJSON(c)), c);
+        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+        Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
     }
 }

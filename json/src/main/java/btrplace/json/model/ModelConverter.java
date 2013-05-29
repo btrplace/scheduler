@@ -70,8 +70,10 @@ public class ModelConverter extends AbstractJSONObjectConverter<Model> {
 
     @Override
     public JSONObject toJSON(Model i) throws JSONConverterException {
-        JSONArray rcs = new JSONArray();
+        cfgParser.setModel(i);
+        attrsParser.setModel(i);
 
+        JSONArray rcs = new JSONArray();
         for (ModelView v : i.getViews()) {
             rcs.add(viewsConverter.toJSON(v));
         }

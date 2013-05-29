@@ -18,6 +18,7 @@
 package btrplace.json.model.view;
 
 import btrplace.json.JSONConverterException;
+import btrplace.model.VM;
 import btrplace.model.view.ModelView;
 import net.minidev.json.JSONObject;
 import org.testng.Assert;

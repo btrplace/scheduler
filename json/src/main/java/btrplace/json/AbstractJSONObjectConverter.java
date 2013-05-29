@@ -17,6 +17,10 @@
 
 package btrplace.json;
 
+import btrplace.model.Element;
+import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -34,57 +38,73 @@ import java.util.Set;
  */
 public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConverter<E> {
 
+    private Model mo;
+
+    public AbstractJSONObjectConverter(Model mo) {
+        this.mo = mo;
+    }
+
+    public AbstractJSONObjectConverter() {
+
+    }
+
+    public void setModel(Model m) {
+        mo = m;
+    }
+
     /**
-     * Convert an array of int in the json format to a set.
+     * Convert an array of int in the json format to a set of VMs.
      *
      * @param a the json array
-     * @return the set of int
+     * @return the set of VMs
      */
-    public static Set<Integer> elementsFromJSON(JSONArray a) {
-        Set<Integer> s = new HashSet<>(a.size());
+    public Set<VM> vmsFromJSON(JSONArray a) {
+        Set<VM> s = new HashSet<>(a.size());
         for (Object o : a) {
-            s.add((int) o);
+            s.add(getOrMakeVM((int) o));
         }
         return s;
     }
 
     /**
-     * Convert an array of ints in the java format to a json array.
+     * Convert an array of int in the json format to a set of nodes.
      *
-     * @param s the collection of ints
-     * @return the json formatted array of ints
+     * @param a the json array
+     * @return the set of nodes
      */
-    public static JSONArray elementsToJSON(Collection<Integer> s) {
+    public Set<Node> nodesFromJSON(JSONArray a) {
+        Set<Node> s = new HashSet<>(a.size());
+        for (Object o : a) {
+            s.add(getOrMakeNode((int) o));
+        }
+        return s;
+    }
+
+
+    /**
+     * Convert an array of elements to an array of element identifiers (integers).
+     *
+     * @param s the collection of elements
+     * @return a json formatted array of integers
+     */
+    public JSONArray vmsToJSON(Collection<VM> s) {
         JSONArray a = new JSONArray();
-        for (int u : s) {
-            a.add(u);
+        for (Element e : s) {
+            a.add(e.id());
+        }
+        return a;
+    }
+
+    public JSONArray nodesToJSON(Collection<Node> s) {
+        JSONArray a = new JSONArray();
+        for (Element e : s) {
+            a.add(e.id());
         }
         return a;
     }
 
     /**
-     * Read an expected set of set of ints.
-     *
-     * @param o  the object to parse
-     * @param id the id in the map that should point to the set
-     * @return the set
-     * @throws btrplace.json.JSONConverterException
-     *          if the key does not point to a set
-     */
-    public static Set<Set<Integer>> requiredSets(JSONObject o, String id) throws JSONConverterException {
-        Set<Set<Integer>> res = new HashSet<>();
-        Object x = o.get(id);
-        if (!(x instanceof JSONArray)) {
-            throw new JSONConverterException("Set of ints sets expected at key '" + id + "'");
-        }
-        for (Object obj : (JSONArray) o.get(id)) {
-            res.add(elementsFromJSON((JSONArray) obj));
-        }
-        return res;
-    }
-
-    /**
-     * Read an expected set of ints.
+     * Read an expected set of VMs.
      *
      * @param o  the object to parse
      * @param id the id in the map that should point to the set
@@ -92,12 +112,38 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
      * @throws btrplace.json.JSONConverterException
      *          if the key does not point to a set of ints
      */
-    public static Set<Integer> requiredElements(JSONObject o, String id) throws JSONConverterException {
+    public Set<VM> requiredVMs(JSONObject o, String id) throws JSONConverterException {
         Object x = o.get(id);
         if (!(x instanceof JSONArray)) {
             throw new JSONConverterException("Set of ints expected at key '" + id + "'");
         }
-        return elementsFromJSON((JSONArray) x);
+        Set<VM> s = new HashSet<>(((JSONArray) x).size());
+        for (Object i : (JSONArray) x) {
+            s.add(getOrMakeVM((Integer) i));
+        }
+        return s;
+    }
+
+    /**
+     * Read an expected set of nodes.
+     *
+     * @param o  the object to parse
+     * @param id the id in the map that should point to the set of nodes identifier (integers)
+     * @return the set of nodes
+     * @throws btrplace.json.JSONConverterException
+     *          if the key does not point to an array of ints
+     */
+    public Set<Node> requiredNodes(JSONObject o, String id) throws JSONConverterException {
+        Object x = o.get(id);
+        if (!(x instanceof JSONArray)) {
+            throw new JSONConverterException("Set of ints expected at key '" + id + "'");
+        }
+        Set<Node> s = new HashSet<>(((JSONArray) x).size());
+        for (Object i : (JSONArray) x) {
+            s.add(getOrMakeNode((Integer) i));
+        }
+        return s;
+
     }
 
     /**
@@ -120,6 +166,28 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         }
     }
 
+    public VM requiredVM(JSONObject o, String id) throws JSONConverterException {
+        if (!o.containsKey(id)) {
+            throw new JSONConverterException("No value at key '" + id + "'");
+        }
+        try {
+            return getOrMakeVM((Integer) o.get(id));
+        } catch (Exception e) {
+            throw new JSONConverterException("Unable to read a VM identifier from string at key '" + id + "'", e);
+        }
+    }
+
+    public Node requiredNode(JSONObject o, String id) throws JSONConverterException {
+        if (!o.containsKey(id)) {
+            throw new JSONConverterException("No value at key '" + id + "'");
+        }
+        try {
+            return getOrMakeNode((Integer) o.get(id));
+        } catch (Exception e) {
+            throw new JSONConverterException("Unable to read a Node identifier from string at key '" + id + "'", e);
+        }
+    }
+
     /**
      * Read an expected string.
      *
@@ -135,26 +203,6 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
             throw new JSONConverterException("String expected at key '" + id + "'");
         }
         return x.toString();
-    }
-
-    /**
-     * Read an expected long.
-     *
-     * @param o  the object to parse
-     * @param id the id in the map that should point to the long
-     * @return the long
-     * @throws btrplace.json.JSONConverterException
-     *          if the key does not point to a long
-     */
-    public static long requiredLong(JSONObject o, String id) throws JSONConverterException {
-        Object x = o.get(id);
-        if (x == null) {
-            throw new JSONConverterException("No value at key '" + id + "'");
-        }
-        if (!(x instanceof Number) || Math.ceil(((Number) x).doubleValue()) != ((Number) x).longValue()) {
-            throw new JSONConverterException("Natural number expected at key '" + id + "' but was '" + x.getClass() + "'.");
-        }
-        return ((Number) x).longValue();
     }
 
     /**
@@ -226,6 +274,24 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         }
     }
 
+    public VM getOrMakeVM(int vmID) {
+        for (VM v : mo.getVMs()) {
+            if (v.id() == vmID) {
+                return v;
+            }
+        }
+        return mo.newVM(vmID);
+    }
+
+    public Node getOrMakeNode(int nodeID) {
+        for (Node n : mo.getNodes()) {
+            if (n.id() == nodeID) {
+                return n;
+            }
+        }
+        return mo.newNode(nodeID);
+    }
+
     @Override
     public String toJSONString(E o) throws JSONConverterException {
         return toJSON(o).toJSONString();
@@ -242,5 +308,4 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
             toJSON(e, out);
         }
     }
-
 }

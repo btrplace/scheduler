@@ -18,6 +18,7 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
+import btrplace.model.VM;
 import btrplace.model.constraint.SequentialVMTransitions;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -46,9 +47,9 @@ public class SequentialVMTransitionsConverter extends SatConstraintConverter<Seq
     @Override
     public SequentialVMTransitions fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        List<Integer> s = new ArrayList<>();
+        List<VM> s = new ArrayList<>();
         for (Object ob : (JSONArray) o.get("vms")) {
-            s.add((Integer) ob);
+            s.add(getOrMakeVM((Integer) ob));
         }
         return new SequentialVMTransitions(s);
     }
@@ -57,7 +58,7 @@ public class SequentialVMTransitionsConverter extends SatConstraintConverter<Seq
     public JSONObject toJSON(SequentialVMTransitions o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", elementsToJSON(o.getInvolvedVMs()));
+        c.put("vms", vmsToJSON(o.getInvolvedVMs()));
         return c;
     }
 }

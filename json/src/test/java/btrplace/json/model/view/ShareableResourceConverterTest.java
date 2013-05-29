@@ -18,6 +18,10 @@
 package btrplace.json.model.view;
 
 import btrplace.json.JSONConverterException;
+import btrplace.model.DefaultModel;
+import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.view.ShareableResource;
 import btrplace.test.PremadeElements;
 import junit.framework.Assert;
@@ -35,32 +39,41 @@ public class ShareableResourceConverterTest implements PremadeElements {
 
     @Test
     public void testSimple() {
+        Model mo = new DefaultModel();
         ShareableResource rc = new ShareableResource("foo");
-        rc.setConsumption(vm1, 3);
-        rc.setConsumption(vm2, 4);
-        rc.setConsumption(vm3, 5);
-        rc.setConsumption(vm4, 6);
+        rc.setConsumption(mo.newVM(), 3);
+        rc.setConsumption(mo.newVM(), 4);
+        rc.setCapacity(mo.newNode(), 5);
+        rc.setCapacity(mo.newNode(), 6);
         ShareableResourceConverter s = new ShareableResourceConverter();
         ShareableResource rc2 = s.fromJSON(s.toJSON(rc));
 
         Assert.assertEquals(rc.getIdentifier(), rc2.getIdentifier());
         Assert.assertEquals(rc.getResourceIdentifier(), rc2.getResourceIdentifier());
         Assert.assertEquals(rc.getDefinedVMs(), rc2.getDefinedVMs());
-        for (int u : rc.getDefinedVMs()) {
+        Assert.assertEquals(rc.getDefinedNodes(), rc2.getDefinedNodes());
+        for (VM u : rc.getDefinedVMs()) {
             Assert.assertEquals(rc.getConsumption(u), rc2.getConsumption(u));
         }
+        for (Node u : rc.getDefinedNodes()) {
+            Assert.assertEquals(rc.getCapacity(u), rc2.getCapacity(u));
+        }
+
     }
 
     @Test(dependsOnMethods = {"testSimple"})
     public void testWithDifferentRcId() throws JSONConverterException, IOException {
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        Node n1 = mo.newNode();
         ShareableResourceConverter s = new ShareableResourceConverter();
-
         ShareableResource rc = new ShareableResource("foo");
-        rc.setConsumption(vm1, 3).setConsumption(vm2, 4).setConsumption(vm3, 5).setConsumption(vm4, 6);
+        rc.setConsumption(vm1, 3).setConsumption(vm2, 4).setCapacity(n1, 5);
         ShareableResource rcBis = s.fromJSON(s.toJSONString(rc));
 
         ShareableResource rc2 = new ShareableResource("bar");
-        rc2.setConsumption(vm1, 3).setConsumption(vm2, 4).setConsumption(vm3, 5).setConsumption(vm4, 6);
+        rc2.setConsumption(vm1, 3).setConsumption(vm2, 4).setCapacity(n1, 5);
 
         ShareableResource rc2Bis = s.fromJSON(s.toJSONString(rc2));
         Assert.assertFalse(rcBis.equals(rc2Bis));

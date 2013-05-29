@@ -42,14 +42,14 @@ public class LonelyConverter extends SatConstraintConverter<Lonely> {
     @Override
     public Lonely fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Lonely(requiredElements(o, "vms"));
+        return new Lonely(requiredVMs(o, "vms"));
     }
 
     @Override
     public JSONObject toJSON(Lonely o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", elementsToJSON(o.getInvolvedVMs()));
+        c.put("vms", vmsToJSON(o.getInvolvedVMs()));
         c.put("continuous", o.isContinuous());
         return c;
     }

@@ -42,14 +42,14 @@ public class ReadyConverter extends SatConstraintConverter<Ready> {
     @Override
     public Ready fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Ready(requiredElements(o, "vms"));
+        return new Ready(requiredVMs(o, "vms"));
     }
 
     @Override
     public JSONObject toJSON(Ready o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", elementsToJSON(o.getInvolvedVMs()));
+        c.put("vms", vmsToJSON(o.getInvolvedVMs()));
         return c;
     }
 }

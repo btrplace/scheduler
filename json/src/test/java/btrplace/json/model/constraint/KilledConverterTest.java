@@ -18,11 +18,14 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
+import btrplace.model.DefaultModel;
+import btrplace.model.Model;
 import btrplace.model.constraint.Killed;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -36,10 +39,9 @@ public class KilledConverterTest implements PremadeElements {
     private static KilledConverter conv = new KilledConverter();
 
     @Test
-    public void testViables() throws JSONConverterException {
-        Killed d = new Killed(new HashSet<>(Arrays.asList(vm1, vm2, vm3)));
-        /*JSONObject jo = conv.toJSON(d);
-        System.out.println(jo);*/
-        Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
+    public void testViables() throws JSONConverterException, IOException {
+        Model mo = new DefaultModel();
+        Killed d = new Killed(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())));
+        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
     }
 }

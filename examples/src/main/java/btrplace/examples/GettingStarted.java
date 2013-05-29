@@ -17,9 +17,7 @@
 
 package btrplace.examples;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.DependencyBasedPlanApplier;
@@ -29,10 +27,7 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Simple tutorial about the usage of Btrplace.
@@ -43,7 +38,9 @@ import java.util.Set;
  */
 public class GettingStarted implements Example {
 
-    private static int vm1 = 1;
+    private List<VM> vms;
+    private List<Node> nodes;
+    /*private static int vm1 = 1;
     private static int vm2 = 2;
     private static int vm3 = 3;
     private static int vm4 = 4;
@@ -53,30 +50,42 @@ public class GettingStarted implements Example {
     private static int n1 = -1;
     private static int n2 = -2;
     private static int n3 = -3;
-    private static int n4 = -4;
+    private static int n4 = -4;       */
+
+    public GettingStarted() {
+        vms = new ArrayList<>();
+        nodes = new ArrayList<>();
+    }
 
     /**
      * Make the element mapping that depicts
      * the element state and the VM positions.
      */
-    public static Mapping makeMapping(Model o) {
+    public Mapping makeMapping(Model o) {
         Mapping map = o.getMapping();
 
         //4 online nodes
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOnlineNode(n4);
+        for (int i = 0; i < 4; i++) {
+            nodes.add(o.newNode());
+        }
+        map.addOnlineNode(nodes.get(0));
+        map.addOnlineNode(nodes.get(1));
+        map.addOnlineNode(nodes.get(2));
+        map.addOnlineNode(nodes.get(3));
 
         //5 VMs are currently running on the nodes
-        map.addRunningVM(vm3, n1);
-        map.addRunningVM(vm2, n2);
-        map.addRunningVM(vm1, n3);
-        map.addRunningVM(vm4, n3);
-        map.addRunningVM(vm6, n4);
+        for (int i = 0; i < 6; i++) {
+            vms.add(o.newVM());
+        }
+
+        map.addRunningVM(vms.get(2), nodes.get(0));
+        map.addRunningVM(vms.get(1), nodes.get(1));
+        map.addRunningVM(vms.get(0), nodes.get(2));
+        map.addRunningVM(vms.get(3), nodes.get(2));
+        map.addRunningVM(vms.get(5), nodes.get(3));
 
         //VM5 is ready to be running on a node.
-        map.addReadyVM(vm5);
+        map.addReadyVM(vms.get(4));
 
 
         return map;
@@ -86,18 +95,18 @@ public class GettingStarted implements Example {
      * Declare the physical number of CPUs available on the nodes
      * and the number of virtual CPUs that are currently used by the VMs.
      */
-    private static ShareableResource makeCPUResourceView() {
+    private ShareableResource makeCPUResourceView() {
         ShareableResource rc = new ShareableResource("cpu");
-        rc.setCapacity(n1, 8);
-        rc.setCapacity(n2, 8);
-        rc.setCapacity(n3, 8);
-        rc.setCapacity(n4, 8);
+        rc.setCapacity(nodes.get(0), 8);
+        rc.setCapacity(nodes.get(1), 8);
+        rc.setCapacity(nodes.get(2), 8);
+        rc.setCapacity(nodes.get(3), 8);
 
-        rc.setConsumption(vm1, 2);
-        rc.setConsumption(vm2, 3);
-        rc.setConsumption(vm3, 4);
-        rc.setConsumption(vm4, 3);
-        rc.setConsumption(vm6, 5);
+        rc.setConsumption(vms.get(0), 2);
+        rc.setConsumption(vms.get(1), 3);
+        rc.setConsumption(vms.get(2), 4);
+        rc.setConsumption(vms.get(3), 3);
+        rc.setConsumption(vms.get(5), 5);
 
         return rc;
     }
@@ -106,41 +115,41 @@ public class GettingStarted implements Example {
      * Declare the physical number of CPUs available on the nodes
      * and the number of virtual CPUs that are currently used by the VMs.
      */
-    private static ShareableResource makeMemResourceView() {
+    private ShareableResource makeMemResourceView() {
         ShareableResource rc = new ShareableResource("mem");
-        rc.setCapacity(n1, 7);
-        rc.setCapacity(n2, 7);
-        rc.setCapacity(n3, 7);
-        rc.setCapacity(n4, 7);
+        rc.setCapacity(nodes.get(0), 7);
+        rc.setCapacity(nodes.get(1), 7);
+        rc.setCapacity(nodes.get(2), 7);
+        rc.setCapacity(nodes.get(3), 7);
 
-        rc.setConsumption(vm1, 2);
-        rc.setConsumption(vm2, 2);
-        rc.setConsumption(vm3, 4);
-        rc.setConsumption(vm4, 3);
-        rc.setConsumption(vm6, 4);
+        rc.setConsumption(vms.get(0), 2);
+        rc.setConsumption(vms.get(1), 2);
+        rc.setConsumption(vms.get(2), 4);
+        rc.setConsumption(vms.get(3), 3);
+        rc.setConsumption(vms.get(5), 4);
 
         return rc;
     }
 
-    private static Set<SatConstraint> makeConstraints() {
+    private Set<SatConstraint> makeConstraints() {
         Set<SatConstraint> cstrs = new HashSet<>();
 
         //VMs VM2 and VM3 must be running on distinct nodes
-        cstrs.add(new Spread(new HashSet<>(Arrays.asList(vm2, vm3))));
+        cstrs.add(new Spread(new HashSet<>(Arrays.asList(vms.get(1), vms.get(2)))));
 
         //VM VM1 must have at least 3 virtual CPU dedicated to it
-        cstrs.add(new Preserve(Collections.singleton(vm1), "cpu", 3));
+        cstrs.add(new Preserve(Collections.singleton(vms.get(0)), "cpu", 3));
 
         //node N4 must be set offline
-        cstrs.add(new Offline(Collections.singleton(n4)));
+        cstrs.add(new Offline(Collections.singleton(nodes.get(3))));
 
         //VM5 must be running, It asks for 3 cpu and 2 mem resources
-        cstrs.add(new Running(Collections.singleton(vm5)));
-        cstrs.add(new Preserve(Collections.singleton(vm5), "cpu", 3));
-        cstrs.add(new Preserve(Collections.singleton(vm5), "mem", 2));
+        cstrs.add(new Running(Collections.singleton(vms.get(4))));
+        cstrs.add(new Preserve(Collections.singleton(vms.get(4)), "cpu", 3));
+        cstrs.add(new Preserve(Collections.singleton(vms.get(4)), "mem", 2));
 
         //VM4 must be turned off, i.e. set back to the ready state
-        cstrs.add(new Ready(Collections.singleton(vm4)));
+        cstrs.add(new Ready(Collections.singleton(vms.get(3))));
         return cstrs;
     }
 

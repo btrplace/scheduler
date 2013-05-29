@@ -18,10 +18,7 @@
 package btrplace.json.model;
 
 import btrplace.json.JSONConverterException;
-import btrplace.model.DefaultModel;
-import btrplace.model.Instance;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Running;
 import btrplace.model.constraint.SatConstraint;
@@ -45,6 +42,8 @@ public class InstanceConverterTest implements PremadeElements {
     public void testConversion() throws JSONConverterException, IOException {
         Model mo = new DefaultModel();
         Mapping ma = mo.getMapping();
+        Node n1 = mo.newNode();
+        VM vm1 = mo.newVM();
         ma.addOnlineNode(n1);
         ma.addOfflineNode(n1);
         ma.addReadyVM(vm1);
