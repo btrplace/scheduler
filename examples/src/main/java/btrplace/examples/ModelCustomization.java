@@ -40,27 +40,11 @@ import java.util.*;
  */
 public class ModelCustomization implements Example {
 
-    private int n1 = -1;
-    private int n2 = -2;
-    private int vm1 = 1;
-    private int vm2 = 2;
-    private int vm3 = 3;
-    private int vm4 = 4;
-    private int vm5 = 5;
-    private int vm6 = 6;
-    private int vm7 = 7;
-    private int vm8 = 8;
-    private int vm9 = 9;
-    private int vm10 = 10;
-
-    private Set<Integer> g1 = new HashSet<>(Arrays.asList(vm1, vm2, vm4));
-    private Set<Integer> g2 = new HashSet<>(Arrays.asList(vm5, vm6, vm8));
-
     /**
      * We customize the estimate duration of the VM migration action
      * to be equals to 2 second per GB of memory plus 3 seconds
      */
-    class MyMigrationEvaluatorAction implements ActionDurationEvaluator {
+    class MyMigrationEvaluatorAction implements ActionDurationEvaluator<VM> {
 
         ShareableResource rc;
 
@@ -75,51 +59,54 @@ public class ModelCustomization implements Example {
 
     }
 
-    private Model makeModel() {
-
-        Model mo = new DefaultModel();
-        Mapping map = mo.getMapping();
-
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-
-        ShareableResource rcMem = new ShareableResource("mem", 32, 1); //32GB by default for the nodes
-
-        rcMem.setConsumption(vm1, 1).setConsumption(vm2, 2).setConsumption(vm3, 3)
-                .setConsumption(vm4, 1).setConsumption(vm5, 2).setConsumption(vm6, 3)
-                .setConsumption(vm7, 1).setConsumption(vm8, 2).setConsumption(vm9, 3).setConsumption(vm10, 1);
-
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n1);
-        map.addRunningVM(vm4, n1);
-        map.addRunningVM(vm5, n1);
-        map.addRunningVM(vm6, n1);
-        map.addRunningVM(vm7, n2);
-        map.addRunningVM(vm8, n2);
-        map.addRunningVM(vm9, n2);
-        map.addReadyVM(vm10);
-
-        mo.attach(rcMem);
-        return mo;
-    }
-
     @Override
     public boolean run() {
 
-        Model mo = makeModel();
+
+        Model mo = new DefaultModel();
+        List<VM> vms = new ArrayList<>();
+        List<Node> ns = new ArrayList<>();
+
+        for (int i = 0; i < 10; i++) {
+            vms.add(mo.newVM());
+        }
+        ns.add(mo.newNode());
+        ns.add(mo.newNode());
+        Mapping map = mo.getMapping();
+
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+
+        ShareableResource rcMem = new ShareableResource("mem", 32, 1); //32GB by default for the nodes
+
+        rcMem.setConsumption(vms.get(0), 1).setConsumption(vms.get(1), 2).setConsumption(vms.get(2), 3)
+                .setConsumption(vms.get(3), 1).setConsumption(vms.get(4), 2).setConsumption(vms.get(5), 3)
+                .setConsumption(vms.get(6), 1).setConsumption(vms.get(7), 2).setConsumption(vms.get(8), 3).setConsumption(vms.get(9), 1);
+
+        map.addRunningVM(vms.get(0), ns.get(0));
+        map.addRunningVM(vms.get(1), ns.get(0));
+        map.addRunningVM(vms.get(2), ns.get(0));
+        map.addRunningVM(vms.get(3), ns.get(0));
+        map.addRunningVM(vms.get(4), ns.get(0));
+        map.addRunningVM(vms.get(5), ns.get(0));
+        map.addRunningVM(vms.get(6), ns.get(1));
+        map.addRunningVM(vms.get(7), ns.get(1));
+        map.addRunningVM(vms.get(8), ns.get(1));
+        map.addReadyVM(vms.get(9));
+
+        mo.attach(rcMem);
 
         //Change the duration evaluator for MigrateVM action
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         DurationEvaluators dev = cra.getDurationEvaluators();
-        dev.register(MigrateVM.class, new LinearToAResourceActionDuration("mem", true, 2, 3));
+        dev.register(MigrateVM.class, new LinearToAResourceActionDuration<VM>("mem", 2, 3));
 
         //Set some attributes
         Attributes attrs = mo.getAttributes();
-        for (int vm : mo.getMapping().getAllVMs()) {
-            attrs.put(vm, "template", vm % 2 == 0 ? "small" : "large");
+        for (VM vm : mo.getMapping().getAllVMs()) {
+            attrs.put(vm, "template", vm.id() % 2 == 0 ? "small" : "large");
             attrs.put(vm, "clone", true);
-            attrs.put(vm, "forge", vm % 2 == 0 ? 2 : 6);
+            attrs.put(vm, "forge", vm.id() % 2 == 0 ? 2 : 6);
         }
         List<SatConstraint> cstrs = new ArrayList<>();
 
@@ -127,13 +114,16 @@ public class ModelCustomization implements Example {
         cstrs.add(new SingleRunningCapacity(mo.getMapping().getAllNodes(), 5));
 
         //vm1 and vm10 on the same node
-        cstrs.add(new Gather(new HashSet<>(Arrays.asList(vm1, vm10))));
+        cstrs.add(new Gather(new HashSet<>(Arrays.asList(vms.get(0), vms.get(9)))));
 
         //(vm1, vm2, vm4) and (vm5, vm6, vm8) must not share node
+        Set<VM> g1 = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1), vms.get(3)));
+        Set<VM> g2 = new HashSet<>(Arrays.asList(vms.get(4), vms.get(5), vms.get(7)));
+
         cstrs.add(new Split(new HashSet<>(Arrays.asList(g1, g2))));
 
         //vm10 must be running
-        cstrs.add(new Running(Collections.singleton(vm10)));
+        cstrs.add(new Running(Collections.singleton(vms.get(9))));
 
         try {
             cra.doOptimize(true);

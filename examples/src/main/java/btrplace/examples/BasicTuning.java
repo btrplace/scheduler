@@ -93,7 +93,7 @@ public class BasicTuning implements Example {
     private void customizeMigrationDuration(ChocoReconfigurationAlgorithm cra) {
         DurationEvaluators devs = cra.getDurationEvaluators();
 
-        ActionDurationEvaluator ev = new ActionDurationEvaluator() {
+        ActionDurationEvaluator ev = new ActionDurationEvaluator<VM>() {
             @Override
             public int evaluate(Model mo, VM e) {
                 return rcMem.getConsumption(e) + 3;
