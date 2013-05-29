@@ -51,11 +51,11 @@ public class SliceRcComparator implements Comparator<Slice> {
     public int compare(Slice s1, Slice s2) {
         int x, y;
         if (vm) {
-            x = rc.getVMConsumption(s1.getSubject());
-            y = rc.getVMConsumption(s2.getSubject());
+            x = rc.getConsumption(s1.getSubject());
+            y = rc.getConsumption(s2.getSubject());
         } else {
-            x = rc.getNodeCapacity(s1.getSubject());
-            y = rc.getNodeCapacity(s2.getSubject());
+            x = rc.getCapacity(s1.getSubject());
+            y = rc.getCapacity(s2.getSubject());
 
         }
         return ratio * (x - y);

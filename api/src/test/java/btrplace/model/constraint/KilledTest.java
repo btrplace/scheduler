@@ -17,15 +17,14 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -37,7 +36,9 @@ public class KilledTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<Integer> x = new HashSet<>(Arrays.asList(vm1, vm2));
+        Model mo = new DefaultModel();
+
+        Set<VM> x = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
         Killed s = new Killed(x);
         Assert.assertNotNull(s.getChecker());
         Assert.assertEquals(x, s.getInvolvedVMs());
@@ -48,29 +49,35 @@ public class KilledTest implements PremadeElements {
 
     @Test
     public void testEquals() {
-        Set<Integer> x = new HashSet<>(Arrays.asList(vm1, vm2));
+        Model mo = new DefaultModel();
+        List<VM> vms = Util.newVMs(mo, 3);
+
+        Set<VM> x = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
         Killed s = new Killed(x);
 
         Assert.assertTrue(s.equals(s));
         Assert.assertTrue(new Killed(x).equals(s));
         Assert.assertEquals(new Killed(x).hashCode(), s.hashCode());
-        x = new HashSet<>(Arrays.asList(vm3));
+        x = new HashSet<>(Arrays.asList(vms.get(2)));
         Assert.assertFalse(new Killed(x).equals(s));
     }
 
     @Test
     public void testIsSatisfied() {
         Model i = new DefaultModel();
+        List<VM> vms = Util.newVMs(i, 3);
+        List<Node> ns = Util.newNodes(i, 3);
+
         Mapping c = i.getMapping();
-        Set<Integer> s = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<VM> s = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
         Killed d = new Killed(s);
         Assert.assertEquals(d.isSatisfied(i), true);
-        c.addReadyVM(vm1);
+        c.addReadyVM(vms.get(0));
         Assert.assertEquals(d.isSatisfied(i), false);
-        c.addOnlineNode(n1);
-        c.addRunningVM(vm1, n1);
+        c.addOnlineNode(ns.get(0));
+        c.addRunningVM(vms.get(0), ns.get(0));
         Assert.assertEquals(d.isSatisfied(i), false);
-        c.addSleepingVM(vm1, n1);
+        c.addSleepingVM(vms.get(0), ns.get(0));
         Assert.assertEquals(d.isSatisfied(i), false);
     }
 }

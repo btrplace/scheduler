@@ -17,9 +17,7 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootVM;
@@ -31,6 +29,7 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -42,7 +41,8 @@ public class QuarantineTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
+        Model mo = new DefaultModel();
+        Set<Node> s = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
         Quarantine q = new Quarantine(s);
         Assert.assertNotNull(q.getChecker());
         Assert.assertTrue(q.getInvolvedVMs().isEmpty());
@@ -57,44 +57,47 @@ public class QuarantineTest implements PremadeElements {
 
     @Test
     public void testEqualsHashCode() {
-        Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
+        Model mo = new DefaultModel();
+        Set<Node> s = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
         Quarantine q = new Quarantine(s);
         Assert.assertTrue(q.equals(q));
         Assert.assertTrue(q.equals(new Quarantine(new HashSet<>(s))));
         Assert.assertEquals(q.hashCode(), new Quarantine(new HashSet<>(s)).hashCode());
-        Assert.assertFalse(q.equals(new Quarantine(new HashSet<Integer>())));
+        Assert.assertFalse(q.equals(new Quarantine(new HashSet<Node>())));
     }
 
     @Test
     public void testContinuousIsSatisfied() {
         Model mo = new DefaultModel();
+        List<VM> vms = Util.newVMs(mo, 5);
+        List<Node> ns = Util.newNodes(mo, 5);
         Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
-        map.addReadyVM(vm3);
-        map.addRunningVM(vm4, n3);
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addOnlineNode(ns.get(2));
+        map.addRunningVM(vms.get(0), ns.get(0));
+        map.addRunningVM(vms.get(1), ns.get(1));
+        map.addReadyVM(vms.get(2));
+        map.addRunningVM(vms.get(3), ns.get(2));
 
-        Quarantine q = new Quarantine(new HashSet<>(Arrays.asList(n1, n2)));
+        Quarantine q = new Quarantine(new HashSet<>(Arrays.asList(ns.get(0), ns.get(1))));
 
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(q.isSatisfied(plan), true);
-        plan.add(new ShutdownVM(vm2, n2, 1, 2));
+        plan.add(new ShutdownVM(vms.get(1), ns.get(1), 1, 2));
         Assert.assertEquals(q.isSatisfied(plan), true);
 
-        plan.add(new BootVM(vm3, n1, 0, 1));
+        plan.add(new BootVM(vms.get(2), ns.get(0), 0, 1));
         Assert.assertEquals(q.isSatisfied(plan), false);
 
         plan = new DefaultReconfigurationPlan(mo);
-        plan.add(new BootVM(vm3, n3, 0, 1));
+        plan.add(new BootVM(vms.get(2), ns.get(2), 0, 1));
         Assert.assertEquals(q.isSatisfied(plan), true);
-        plan.add(new MigrateVM(vm4, n3, n2, 0, 1));
+        plan.add(new MigrateVM(vms.get(3), ns.get(2), ns.get(1), 0, 1));
         Assert.assertEquals(q.isSatisfied(plan), false);
 
         plan = new DefaultReconfigurationPlan(mo);
-        plan.add(new MigrateVM(vm2, n2, n1, 0, 1));
+        plan.add(new MigrateVM(vms.get(1), ns.get(1), ns.get(0), 0, 1));
         Assert.assertEquals(q.isSatisfied(plan), false);
 
 

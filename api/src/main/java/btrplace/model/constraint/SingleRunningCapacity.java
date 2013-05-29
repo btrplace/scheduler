@@ -17,14 +17,14 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.model.constraint.checker.SingleRunningCapacityChecker;
 
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
-
-;
 
 /**
  * Restrict the hosting capacity of each of the given server to a given
@@ -49,7 +49,7 @@ public class SingleRunningCapacity extends SatConstraint {
      * @param nodes the involved servers.
      * @param qty   the maximum amount of resource to share among the hosted VMs
      */
-    public SingleRunningCapacity(Set<Integer> nodes, int qty) {
+    public SingleRunningCapacity(Set<Node> nodes, int qty) {
         this(nodes, qty, false);
     }
 
@@ -60,8 +60,8 @@ public class SingleRunningCapacity extends SatConstraint {
      * @param qty        the maximum amount of resource to share among the hosted VMs
      * @param continuous {@code true} for a continuous restriction
      */
-    public SingleRunningCapacity(Set<Integer> nodes, int qty, boolean continuous) {
-        super(Collections.<Integer>emptySet(), nodes, continuous);
+    public SingleRunningCapacity(Set<Node> nodes, int qty, boolean continuous) {
+        super(Collections.<VM>emptySet(), nodes, continuous);
         this.amount = qty;
     }
 

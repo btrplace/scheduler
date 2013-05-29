@@ -19,6 +19,8 @@ package btrplace.plan.event;
 
 
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 
 import java.util.Objects;
 
@@ -30,9 +32,9 @@ import java.util.Objects;
  */
 public class BootVM extends Action implements VMStateTransition, RunningVMPlacement {
 
-    private int vm;
+    private VM vm;
 
-    private int node;
+    private Node node;
 
     /**
      * Make a new time-bounded run.
@@ -42,7 +44,7 @@ public class BootVM extends Action implements VMStateTransition, RunningVMPlacem
      * @param st   the moment the action starts.
      * @param end  the moment the action finish
      */
-    public BootVM(int vmId, int to, int st, int end) {
+    public BootVM(VM vmId, Node to, int st, int end) {
         super(st, end);
         this.vm = vmId;
         this.node = to;
@@ -57,12 +59,12 @@ public class BootVM extends Action implements VMStateTransition, RunningVMPlacem
     }
 
     @Override
-    public int getDestinationNode() {
+    public Node getDestinationNode() {
         return node;
     }
 
     @Override
-    public int getVM() {
+    public VM getVM() {
         return vm;
     }
 
@@ -87,8 +89,8 @@ public class BootVM extends Action implements VMStateTransition, RunningVMPlacem
             return true;
         } else if (o.getClass() == this.getClass()) {
             BootVM that = (BootVM) o;
-            return this.vm == that.vm &&
-                    this.node == that.node &&
+            return this.vm.equals(that.vm) &&
+                    this.node.equals(that.node) &&
                     this.getStart() == that.getStart() &&
                     this.getEnd() == that.getEnd();
         }

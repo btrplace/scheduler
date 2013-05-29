@@ -17,9 +17,7 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
@@ -29,6 +27,7 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -40,16 +39,19 @@ public class SplitAmongTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 3);
+        List<VM> vms = Util.newVMs(mo, 3);
 
-        Set<Integer> vs1 = new HashSet<>(Arrays.asList(vm1, vm2));
-        Set<Integer> vs2 = new HashSet<>(Arrays.asList(vm3, vm4));
+        Set<VM> vs1 = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
+        Set<VM> vs2 = new HashSet<>(Arrays.asList(vms.get(2), vms.get(3)));
 
-        Set<Set<Integer>> vGrps = new HashSet<>(Arrays.asList(vs1, vs2));
+        Set<Set<VM>> vGrps = new HashSet<>(Arrays.asList(vs1, vs2));
 
 
-        Set<Integer> ps1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<Integer> ps2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Set<Integer>> pGrps = new HashSet<>(Arrays.asList(ps1, ps2));
+        Set<Node> ps1 = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
+        Set<Node> ps2 = new HashSet<>(Arrays.asList(ns.get(2), ns.get(3)));
+        Set<Set<Node>> pGrps = new HashSet<>(Arrays.asList(ps1, ps2));
 
         SplitAmong sp = new SplitAmong(vGrps, pGrps);
         Assert.assertNotNull(sp.getChecker());
@@ -74,22 +76,25 @@ public class SplitAmongTest implements PremadeElements {
 
     @Test
     public void testEqualsAndHashCode() {
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 4);
+        List<VM> vms = Util.newVMs(mo, 3);
 
-        Set<Integer> vs1 = new HashSet<>(Arrays.asList(vm1, vm2));
-        Set<Integer> vs2 = new HashSet<>(Arrays.asList(vm3, vm4));
-        Set<Set<Integer>> vGrps = new HashSet<>(Arrays.asList(vs1, vs2));
+        Set<VM> vs1 = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
+        Set<VM> vs2 = new HashSet<>(Arrays.asList(vms.get(2), vms.get(3)));
+        Set<Set<VM>> vGrps = new HashSet<>(Arrays.asList(vs1, vs2));
 
 
-        Set<Integer> ps1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<Integer> ps2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Set<Integer>> pGrps = new HashSet<>(Arrays.asList(ps1, ps2));
+        Set<Node> ps1 = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
+        Set<Node> ps2 = new HashSet<>(Arrays.asList(ns.get(2), ns.get(3)));
+        Set<Set<Node>> pGrps = new HashSet<>(Arrays.asList(ps1, ps2));
 
         SplitAmong sp = new SplitAmong(vGrps, pGrps);
         Assert.assertTrue(sp.equals(sp));
         Assert.assertTrue(sp.equals(new SplitAmong(vGrps, pGrps)));
         Assert.assertEquals(sp.hashCode(), new SplitAmong(vGrps, pGrps).hashCode());
-        Assert.assertFalse(sp.equals(new SplitAmong(new HashSet<Set<Integer>>(), pGrps)));
-        Assert.assertFalse(sp.equals(new SplitAmong(vGrps, new HashSet<Set<Integer>>())));
+        Assert.assertFalse(sp.equals(new SplitAmong(new HashSet<Set<VM>>(), pGrps)));
+        Assert.assertFalse(sp.equals(new SplitAmong(vGrps, new HashSet<Set<Node>>())));
 
         SplitAmong sp2 = new SplitAmong(vGrps, pGrps);
         sp2.setContinuous(true);
@@ -99,73 +104,79 @@ public class SplitAmongTest implements PremadeElements {
     @Test
     public void testDiscreteIsSatisfied() {
 
-        Set<Integer> vs1 = new HashSet<>(Arrays.asList(vm1, vm2));
-        Set<Integer> vs2 = new HashSet<>(Arrays.asList(vm3, vm4));
-        Set<Set<Integer>> vGrps = new HashSet<>(Arrays.asList(vs1, vs2));
-
-
-        Set<Integer> ps1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<Integer> ps2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Set<Integer>> pGrps = new HashSet<>(Arrays.asList(ps1, ps2));
-
         Model mo = new DefaultModel();
-        Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOnlineNode(n4);
+        List<Node> ns = Util.newNodes(mo, 3);
+        List<VM> vms = Util.newVMs(mo, 3);
 
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n3);
-        map.addRunningVM(vm4, n4);
+        Set<VM> vs1 = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
+        Set<VM> vs2 = new HashSet<>(Arrays.asList(vms.get(2), vms.get(3)));
+        Set<Set<VM>> vGrps = new HashSet<>(Arrays.asList(vs1, vs2));
+
+
+        Set<Node> ps1 = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
+        Set<Node> ps2 = new HashSet<>(Arrays.asList(ns.get(2), ns.get(3)));
+        Set<Set<Node>> pGrps = new HashSet<>(Arrays.asList(ps1, ps2));
+
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addOnlineNode(ns.get(2));
+        map.addOnlineNode(ns.get(3));
+
+        map.addRunningVM(vms.get(0), ns.get(0));
+        map.addRunningVM(vms.get(1), ns.get(0));
+        map.addRunningVM(vms.get(2), ns.get(2));
+        map.addRunningVM(vms.get(3), ns.get(3));
 
         SplitAmong sp = new SplitAmong(vGrps, pGrps);
         Assert.assertEquals(sp.isSatisfied(mo), true);
 
         //Spread over multiple groups, not allowed
-        map.addRunningVM(vm2, n3);
+        map.addRunningVM(vms.get(1), ns.get(2));
         Assert.assertEquals(sp.isSatisfied(mo), false);
         //pGroup co-location. Not allowed
-        map.addRunningVM(vm1, n3);
-        map.addRunningVM(vm3, n4);
+        map.addRunningVM(vms.get(0), ns.get(2));
+        map.addRunningVM(vms.get(2), ns.get(3));
         Assert.assertEquals(sp.isSatisfied(mo), false);
     }
 
     @Test
     public void testContinuousIsSatisfied() {
-
-        Set<Integer> vs1 = new HashSet<>(Arrays.asList(vm1, vm2));
-        Set<Integer> vs2 = new HashSet<>(Arrays.asList(vm3, vm4));
-        Set<Set<Integer>> vGrps = new HashSet<>(Arrays.asList(vs1, vs2));
-
-
-        Set<Integer> ps1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<Integer> ps2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Set<Integer>> pGrps = new HashSet<>(Arrays.asList(ps1, ps2));
-
         Model mo = new DefaultModel();
-        Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOnlineNode(n4);
+        List<Node> ns = Util.newNodes(mo, 3);
+        List<VM> vms = Util.newVMs(mo, 3);
 
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n3);
-        map.addRunningVM(vm4, n4);
+
+        Set<VM> vs1 = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
+        Set<VM> vs2 = new HashSet<>(Arrays.asList(vms.get(2), vms.get(3)));
+        Set<Set<VM>> vGrps = new HashSet<>(Arrays.asList(vs1, vs2));
+
+
+        Set<Node> ps1 = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
+        Set<Node> ps2 = new HashSet<>(Arrays.asList(ns.get(2), ns.get(3)));
+        Set<Set<Node>> pGrps = new HashSet<>(Arrays.asList(ps1, ps2));
+
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addOnlineNode(ns.get(2));
+        map.addOnlineNode(ns.get(3));
+
+        map.addRunningVM(vms.get(0), ns.get(0));
+        map.addRunningVM(vms.get(1), ns.get(0));
+        map.addRunningVM(vms.get(2), ns.get(2));
+        map.addRunningVM(vms.get(3), ns.get(3));
 
         SplitAmong sp = new SplitAmong(vGrps, pGrps, true);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(sp.isSatisfied(plan), true);
 
-        plan.add(new MigrateVM(vm1, n1, n2, 3, 4));
+        plan.add(new MigrateVM(vms.get(0), ns.get(0), ns.get(1), 3, 4));
         Assert.assertEquals(sp.isSatisfied(plan), true);
 
-        map.addRunningVM(vm5, n4);
+        map.addRunningVM(vms.get(4), ns.get(3));
         Assert.assertEquals(sp.isSatisfied(plan), true);
-        plan.add(new MigrateVM(vm2, n1, n3, 0, 2));
+        plan.add(new MigrateVM(vms.get(1), ns.get(0), ns.get(2), 0, 2));
         Assert.assertEquals(sp.isSatisfied(plan), false);
 
 

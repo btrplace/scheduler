@@ -20,6 +20,8 @@ package btrplace.plan.event;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 
 import java.util.Objects;
 
@@ -30,9 +32,9 @@ import java.util.Objects;
  */
 public class ShutdownVM extends Action implements VMStateTransition {
 
-    private int vm;
+    private VM vm;
 
-    private int node;
+    private Node node;
 
     /**
      * Make a new action.
@@ -42,7 +44,7 @@ public class ShutdownVM extends Action implements VMStateTransition {
      * @param s  the moment the action consume.
      * @param f  the moment the action finish
      */
-    public ShutdownVM(int vm, int on, int s, int f) {
+    public ShutdownVM(VM vm, Node on, int s, int f) {
         super(s, f);
         this.vm = vm;
         this.node = on;
@@ -83,8 +85,8 @@ public class ShutdownVM extends Action implements VMStateTransition {
             return true;
         } else if (o.getClass() == this.getClass()) {
             ShutdownVM that = (ShutdownVM) o;
-            return this.vm == that.vm &&
-                    this.node == that.node &&
+            return this.vm.equals(that.vm) &&
+                    this.node.equals(that.node) &&
                     this.getStart() == that.getStart() &&
                     this.getEnd() == that.getEnd();
         }
@@ -97,7 +99,7 @@ public class ShutdownVM extends Action implements VMStateTransition {
     }
 
     @Override
-    public int getVM() {
+    public VM getVM() {
         return vm;
     }
 
@@ -106,7 +108,7 @@ public class ShutdownVM extends Action implements VMStateTransition {
      *
      * @return the node identifier
      */
-    public int getNode() {
+    public Node getNode() {
         return node;
     }
 

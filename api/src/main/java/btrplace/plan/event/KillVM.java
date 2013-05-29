@@ -18,6 +18,8 @@
 package btrplace.plan.event;
 
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 
 import java.util.Objects;
 
@@ -28,9 +30,9 @@ import java.util.Objects;
  */
 public class KillVM extends Action implements VMStateTransition {
 
-    private int id;
+    private VM id;
 
-    private int host;
+    private Node host;
 
     /**
      * Make a new action.
@@ -40,7 +42,7 @@ public class KillVM extends Action implements VMStateTransition {
      * @param st   the moment the action starts
      * @param ed   the moment the action ends
      */
-    public KillVM(int vm, int host, int st, int ed) {
+    public KillVM(VM vm, Node host, int st, int ed) {
         super(st, ed);
         id = vm;
         this.host = host;
@@ -51,18 +53,18 @@ public class KillVM extends Action implements VMStateTransition {
      *
      * @return the node identifier if the VM is hosted somewhere. Otherwise, {@code null}
      */
-    public int getNode() {
+    public Node getNode() {
         return host;
     }
 
     @Override
-    public int getVM() {
+    public VM getVM() {
         return id;
     }
 
     @Override
     public boolean applyAction(Model i) {
-        return i.getMapping().removeVM(id);
+        return i.getMapping().remove(id);
     }
 
     @Override
@@ -74,7 +76,7 @@ public class KillVM extends Action implements VMStateTransition {
         } else if (o.getClass() == this.getClass()) {
             KillVM that = (KillVM) o;
             return this.id == that.id &&
-                    ((host < 0 && that.host < 0) || (host >= 0 && host == that.host)) &&
+                    ((host == null && that.host == null) || (host != null && host.equals(that.host))) &&
                     this.getStart() == that.getStart() &&
                     this.getEnd() == that.getEnd();
         }

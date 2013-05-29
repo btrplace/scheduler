@@ -150,18 +150,18 @@ public class DefaultModel implements Model, Cloneable {
     }
 
     @Override
-    public int newVM() {
-        if (nextVM < 0) {
-            return -1;
+    public VM newVM() {
+        if (nextVM + 1 == 0) {
+            return null;
         }
-        return nextVM++;
+        return new VM(nextVM++);
     }
 
     @Override
-    public int newNode() {
-        if (nextNode < 0) {
-            return -1;
+    public Node newNode() {
+        if (nextNode + 1 == 0) {
+            return null;
         }
-        return nextNode++;
+        return new Node(nextNode++);
     }
 }

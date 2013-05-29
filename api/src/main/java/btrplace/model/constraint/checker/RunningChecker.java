@@ -19,11 +19,10 @@ package btrplace.model.constraint.checker;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.model.constraint.Running;
 import btrplace.plan.event.AllocateEvent;
 import btrplace.plan.event.RunningVMPlacement;
-
-;
 
 /**
  * Checker for the {@link btrplace.model.constraint.Running} constraint
@@ -55,7 +54,7 @@ public class RunningChecker extends DenyMyVMsActions<Running> {
     @Override
     public boolean endsWith(Model mo) {
         Mapping c = mo.getMapping();
-        for (int vm : getVMs()) {
+        for (VM vm : getVMs()) {
             if (!c.getRunningVMs().contains(vm)) {
                 return false;
             }

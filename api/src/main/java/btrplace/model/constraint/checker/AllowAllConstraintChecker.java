@@ -18,6 +18,8 @@
 package btrplace.model.constraint.checker;
 
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.event.*;
 
@@ -37,16 +39,16 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
      * VMs involved in the constraint.
      * Updated after each {@link btrplace.plan.event.SubstitutedVMEvent} event.
      */
-    private Set<Integer> vms;
+    private Set<VM> vms;
 
     /**
      * Nodes involved in the constraint.
      */
-    private Set<Integer> nodes;
+    private Set<Node> nodes;
 
     private C cstr;
 
-    private List<Collection<Integer>> tracked;
+    private List<Collection<VM>> tracked;
 
     /**
      * Make a new checker.
@@ -69,7 +71,7 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
      * @param c the collection to register
      * @return {@code true} iff the collection has been added
      */
-    public boolean track(Collection<Integer> c) {
+    public boolean track(Collection<VM> c) {
         return tracked.add(c);
     }
 
@@ -199,12 +201,12 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
 
     @Override
     public boolean consume(SubstitutedVMEvent e) {
-        for (Collection<Integer> c : tracked) {
+        for (Collection<VM> c : tracked) {
             if (c.remove(e.getVM())) {
-                c.add(e.getNewint());
+                c.add(e.getNewVM());
             }
         }
-        return !vms.remove(e.getVM()) || vms.add(e.getNewint());
+        return !vms.remove(e.getVM()) || vms.add(e.getNewVM());
     }
 
     @Override
@@ -252,7 +254,7 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
      *
      * @return a set of VMs that may be empty
      */
-    public Set<Integer> getVMs() {
+    public Set<VM> getVMs() {
         return vms;
     }
 
@@ -261,7 +263,7 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
      *
      * @return a set of nodes that may be empty
      */
-    public Set<Integer> getNodes() {
+    public Set<Node> getNodes() {
         return nodes;
     }
 }

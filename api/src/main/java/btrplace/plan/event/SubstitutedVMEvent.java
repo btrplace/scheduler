@@ -18,6 +18,7 @@
 package btrplace.plan.event;
 
 import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.model.view.ModelView;
 
 /**
@@ -28,17 +29,17 @@ import btrplace.model.view.ModelView;
  */
 public class SubstitutedVMEvent implements VMEvent {
 
-    private int oldint, newint;
+    private VM oldint, newint;
 
     /**
      * Instantiate a new event.
      *
-     * @param vm     the old VM int
-     * @param newint the new VM int
+     * @param vm    the old VM int
+     * @param newVM the new VM int
      */
-    public SubstitutedVMEvent(int vm, int newint) {
+    public SubstitutedVMEvent(VM vm, VM newVM) {
         oldint = vm;
-        this.newint = newint;
+        this.newint = newVM;
     }
 
     /**
@@ -47,7 +48,7 @@ public class SubstitutedVMEvent implements VMEvent {
      * @return a int
      */
     @Override
-    public int getVM() {
+    public VM getVM() {
         return oldint;
     }
 
@@ -56,7 +57,7 @@ public class SubstitutedVMEvent implements VMEvent {
      *
      * @return a int.
      */
-    public int getNewint() {
+    public VM getNewVM() {
         return newint;
     }
 

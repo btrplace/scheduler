@@ -18,6 +18,8 @@
 package btrplace.model.constraint;
 
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlanChecker;
@@ -46,12 +48,12 @@ public abstract class SatConstraint {
     /**
      * The virtual machines involved in the constraint.
      */
-    private Collection<Integer> vms;
+    private Collection<VM> vms;
 
     /**
      * The nodes involved in the constraint.
      */
-    private Collection<Integer> nodes;
+    private Collection<Node> nodes;
 
     /**
      * Make a new constraint.
@@ -60,7 +62,7 @@ public abstract class SatConstraint {
      * @param nodes the involved nodes
      * @param c     {@code true} to indicate a continuous restriction
      */
-    public SatConstraint(Collection<Integer> vms, Collection<Integer> nodes, boolean c) {
+    public SatConstraint(Collection<VM> vms, Collection<Node> nodes, boolean c) {
         this.vms = vms;
         this.nodes = nodes;
         this.continuous = c;
@@ -71,7 +73,7 @@ public abstract class SatConstraint {
      *
      * @return a set of VM identifiers that may be empty
      */
-    public Collection<Integer> getInvolvedVMs() {
+    public Collection<VM> getInvolvedVMs() {
         return this.vms;
     }
 
@@ -80,7 +82,7 @@ public abstract class SatConstraint {
      *
      * @return a set of nodes identifiers that may be empty
      */
-    public Collection<Integer> getInvolvedNodes() {
+    public Collection<Node> getInvolvedNodes() {
         return this.nodes;
     }
 

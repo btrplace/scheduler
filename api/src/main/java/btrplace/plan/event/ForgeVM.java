@@ -19,6 +19,7 @@ package btrplace.plan.event;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.VM;
 
 import java.util.Objects;
 
@@ -29,14 +30,14 @@ import java.util.Objects;
  */
 public class ForgeVM extends Action implements VMStateTransition {
 
-    private int id;
+    private VM id;
 
     /**
      * Make a new action.
      *
      * @param vm the VM to force.
      */
-    public ForgeVM(int vm, int st, int ed) {
+    public ForgeVM(VM vm, int st, int ed) {
         super(st, ed);
         this.id = vm;
     }
@@ -74,7 +75,7 @@ public class ForgeVM extends Action implements VMStateTransition {
             return true;
         } else if (o.getClass() == this.getClass()) {
             ForgeVM that = (ForgeVM) o;
-            return this.id == that.id
+            return this.id.equals(that.id)
                     && this.getStart() == that.getStart()
                     && this.getEnd() == that.getEnd();
         }
@@ -87,7 +88,7 @@ public class ForgeVM extends Action implements VMStateTransition {
     }
 
     @Override
-    public int getVM() {
+    public VM getVM() {
         return id;
     }
 

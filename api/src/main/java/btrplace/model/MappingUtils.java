@@ -32,13 +32,10 @@ public final class MappingUtils {
     public static enum State {
         /**
          * Specify running VMs.
-         */
-        Runnings,
-
+         */Runnings,
         /**
          * Specify sleeping VMs.
-         */
-        Sleepings
+         */Sleepings
     }
 
     /**
@@ -54,16 +51,16 @@ public final class MappingUtils {
      * @param wrt the hosting type to consider
      * @return subset of node that may be empty
      */
-    public static Set<Integer> usedNodes(Mapping cfg, EnumSet<State> wrt) {
-        Set<Integer> ns = new HashSet<>();
+    public static Set<Node> usedNodes(Mapping cfg, EnumSet<State> wrt) {
+        Set<Node> ns = new HashSet<>();
 
         if (wrt.contains(State.Runnings)) {
-            for (int vm : cfg.getRunningVMs()) {
+            for (VM vm : cfg.getRunningVMs()) {
                 ns.add(cfg.getVMLocation(vm));
             }
         }
         if (wrt.contains(State.Sleepings)) {
-            for (int vm : cfg.getSleepingVMs()) {
+            for (VM vm : cfg.getSleepingVMs()) {
                 ns.add(cfg.getVMLocation(vm));
             }
         }
@@ -78,9 +75,9 @@ public final class MappingUtils {
      * @param wrt the hosting type to consider
      * @return a subset of node that may be empty
      */
-    public static Set<Integer> unusedNodes(Mapping cfg, State wrt) {
-        Set<Integer> ns = new HashSet<>();
-        for (int n : cfg.getOnlineNodes()) {
+    public static Set<Node> unusedNodes(Mapping cfg, State wrt) {
+        Set<Node> ns = new HashSet<>();
+        for (Node n : cfg.getOnlineNodes()) {
             if (wrt == State.Runnings && cfg.getRunningVMs(n).isEmpty()) {
                 ns.add(n);
             }
@@ -99,15 +96,15 @@ public final class MappingUtils {
      * @param nodes the subset of nodes
      * @return the sub mapping is the operation succeed, {@code null} otherwise
      */
-    public static Mapping subMapping(Mapping cfg, Set<Integer> nodes) {
+    public static Mapping subMapping(Mapping cfg, Set<Node> nodes) {
         Mapping d = new DefaultMapping();
-        for (int n : nodes) {
+        for (Node n : nodes) {
             if (cfg.getOnlineNodes().contains(n)) {
                 d.addOnlineNode(n);
-                for (int vm : cfg.getRunningVMs(n)) {
+                for (VM vm : cfg.getRunningVMs(n)) {
                     d.addRunningVM(vm, n);
                 }
-                for (int vm : cfg.getSleepingVMs(n)) {
+                for (VM vm : cfg.getSleepingVMs(n)) {
                     d.addSleepingVM(vm, n);
                 }
             } else if (cfg.getOfflineNodes().contains(n)) {
@@ -127,11 +124,11 @@ public final class MappingUtils {
      * @param vms   the subset of VMs
      * @return the sub mapping is the operation succeed, {@code null} otherwise
      */
-    public static Mapping subMapping(Mapping cfg, Set<Integer> nodes, Set<Integer> vms) {
+    public static Mapping subMapping(Mapping cfg, Set<Node> nodes, Set<VM> vms) {
         Mapping d = new DefaultMapping();
 
         //Copy the nodes, unknown nodes lead to an error
-        for (int n : nodes) {
+        for (Node n : nodes) {
             if (cfg.getOnlineNodes().contains(n)) {
                 d.addOnlineNode(n);
             } else if (cfg.getOfflineNodes().contains(n)) {
@@ -142,7 +139,7 @@ public final class MappingUtils {
         }
         //Copy the VMs, unknown VMs lead to an error
         //If the VMs in on a node in cfg, this node must already be online in d
-        for (int vm : vms) {
+        for (VM vm : vms) {
             if (cfg.getReadyVMs().contains(vm)) {
                 d.addReadyVM(vm);
             } else if (cfg.getRunningVMs().contains(vm) && d.getOnlineNodes().contains(cfg.getVMLocation(vm))) {
@@ -173,11 +170,11 @@ public final class MappingUtils {
      * @return {@code true} iff all the mapping are disjoint
      */
     public static boolean areDisjoint(Mapping... cfgs) {
-        Set<Integer> nodes = new HashSet<>();
-        Set<Integer> vms = new HashSet<>();
+        Set<Node> nodes = new HashSet<>();
+        Set<VM> vms = new HashSet<>();
         for (Mapping cfg : cfgs) {
-            Set<Integer> curNodes = cfg.getAllNodes();
-            Set<Integer> curVMs = cfg.getAllVMs();
+            Set<Node> curNodes = cfg.getAllNodes();
+            Set<VM> curVMs = cfg.getAllVMs();
             if (!Collections.disjoint(nodes, curNodes)
                     || !Collections.disjoint(vms, curVMs)) {
                 return false;
@@ -209,7 +206,7 @@ public final class MappingUtils {
     public static Mapping merge(Mapping... cfgs) {
         Mapping res = new DefaultMapping();
         for (Mapping c : cfgs) {
-            for (int n : c.getOfflineNodes()) {
+            for (Node n : c.getOfflineNodes()) {
                 if (res.getAllNodes().contains(n)) {
                     return null;
                 }
@@ -217,21 +214,21 @@ public final class MappingUtils {
                     return null;
                 }
             }
-            for (int n : c.getOnlineNodes()) {
-                if (res.containsNode(n)) {
+            for (Node n : c.getOnlineNodes()) {
+                if (res.contains(n)) {
                     return null;
                 }
                 res.addOnlineNode(n);
-                for (int vm : c.getRunningVMs(n)) {
-                    if (res.containsVM(vm)) {
+                for (VM vm : c.getRunningVMs(n)) {
+                    if (res.contains(vm)) {
                         return null;
                     }
                     if (!res.addRunningVM(vm, n)) {
                         return null;
                     }
                 }
-                for (int vm : c.getSleepingVMs(n)) {
-                    if (res.containsVM(vm)) {
+                for (VM vm : c.getSleepingVMs(n)) {
+                    if (res.contains(vm)) {
                         return null;
                     }
                     if (!res.addSleepingVM(vm, n)) {
@@ -239,8 +236,8 @@ public final class MappingUtils {
                     }
                 }
             }
-            for (int vm : c.getReadyVMs()) {
-                if (res.containsVM(vm)) {
+            for (VM vm : c.getReadyVMs()) {
+                if (res.contains(vm)) {
                     return null;
                 }
                 res.addReadyVM(vm);
@@ -250,18 +247,18 @@ public final class MappingUtils {
     }
 
     public static void fill(Mapping src, Mapping dst) {
-        for (int off : src.getOfflineNodes()) {
+        for (Node off : src.getOfflineNodes()) {
             dst.addOfflineNode(off);
         }
-        for (int r : src.getReadyVMs()) {
+        for (VM r : src.getReadyVMs()) {
             dst.addReadyVM(r);
         }
-        for (int on : src.getOnlineNodes()) {
+        for (Node on : src.getOnlineNodes()) {
             dst.addOnlineNode(on);
-            for (int r : src.getRunningVMs(on)) {
+            for (VM r : src.getRunningVMs(on)) {
                 dst.addRunningVM(r, on);
             }
-            for (int s : src.getSleepingVMs(on)) {
+            for (VM s : src.getSleepingVMs(on)) {
                 dst.addSleepingVM(s, on);
             }
 

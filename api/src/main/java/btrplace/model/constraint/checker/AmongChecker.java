@@ -19,12 +19,12 @@ package btrplace.model.constraint.checker;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.Among;
 import btrplace.plan.event.RunningVMPlacement;
 
 import java.util.Set;
-
-;
 
 /**
  * Checker for the {@link Among} constraint
@@ -37,7 +37,7 @@ public class AmongChecker extends AllowAllConstraintChecker<Among> {
     /**
      * Current group (for the continuous restriction). {@code null} if no group has been selected.
      */
-    private Set<Integer> choosedGroup = null;
+    private Set<Node> choosedGroup = null;
 
     /**
      * Make a new checker.
@@ -52,9 +52,9 @@ public class AmongChecker extends AllowAllConstraintChecker<Among> {
     public boolean startsWith(Model mo) {
         if (getConstraint().isContinuous()) {
             Mapping map = mo.getMapping();
-            for (int vm : getVMs()) {
+            for (VM vm : getVMs()) {
                 if (map.getRunningVMs().contains(vm)) {
-                    Set<Integer> nodes = getConstraint().getAssociatedPGroup((map.getVMLocation(vm)));
+                    Set<Node> nodes = getConstraint().getAssociatedPGroup((map.getVMLocation(vm)));
                     if (nodes == null) {
                         return false;
                     } else if (choosedGroup == null) {
@@ -90,10 +90,10 @@ public class AmongChecker extends AllowAllConstraintChecker<Among> {
     @Override
     public boolean endsWith(Model i) {
         Mapping map = i.getMapping();
-        Set<Integer> grp = null;
-        for (int vm : getVMs()) {
+        Set<Node> grp = null;
+        for (VM vm : getVMs()) {
             if (map.getRunningVMs().contains(vm)) {
-                Set<Integer> nodes = getConstraint().getAssociatedPGroup((map.getVMLocation(vm)));
+                Set<Node> nodes = getConstraint().getAssociatedPGroup((map.getVMLocation(vm)));
                 if (nodes == null) {
                     return false;
                 } else if (grp == null) {

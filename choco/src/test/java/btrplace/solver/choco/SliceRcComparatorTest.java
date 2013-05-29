@@ -50,14 +50,14 @@ public class SliceRcComparatorTest {
         List<Slice> l = makeSlices();
         ShareableResource rc = new ShareableResource("cpu");
         for (Slice s : l) {
-            rc.setVMConsumption(s.getSubject(), rnd.nextInt(10));
+            rc.setConsumption(s.getSubject(), rnd.nextInt(10));
         }
         SliceRcComparator cmp = new SliceRcComparator(rc, true, true);
         Collections.sort(l, cmp);
         for (int i = 0; i < l.size() - 1; i++) {
             int u1 = l.get(i).getSubject();
             int u2 = l.get(i + 1).getSubject();
-            Assert.assertTrue(rc.getVMConsumption(u1) <= rc.getVMConsumption(u2));
+            Assert.assertTrue(rc.getConsumption(u1) <= rc.getConsumption(u2));
         }
     }
 
@@ -66,14 +66,14 @@ public class SliceRcComparatorTest {
         List<Slice> l = makeSlices();
         ShareableResource rc = new ShareableResource("cpu");
         for (Slice s : l) {
-            rc.setNodeCapacity(s.getSubject(), rnd.nextInt(10));
+            rc.setCapacity(s.getSubject(), rnd.nextInt(10));
         }
         SliceRcComparator cmp = new SliceRcComparator(rc, false, false);
         Collections.sort(l, cmp);
         for (int i = 0; i < l.size() - 1; i++) {
             int u1 = l.get(i).getSubject();
             int u2 = l.get(i + 1).getSubject();
-            Assert.assertTrue(rc.getNodeCapacity(u1) >= rc.getNodeCapacity(u2));
+            Assert.assertTrue(rc.getCapacity(u1) >= rc.getCapacity(u2));
         }
     }
 }

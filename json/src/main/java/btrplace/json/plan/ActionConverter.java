@@ -325,7 +325,7 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
         JSONObject o = new JSONObject();
         o.put(ACTION_ID_LABEL, "substitutedVM");
         o.put(VM_LABEL, a.getVM());
-        o.put("newint", a.getNewint());
+        o.put("newint", a.getNewVM());
         return o;
     }
 

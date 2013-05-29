@@ -17,13 +17,13 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.QuarantineChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
 import java.util.Set;
-
-;
 
 /**
  * A constraint to put some nodes into quarantine.
@@ -42,8 +42,8 @@ public class Quarantine extends SatConstraint {
      *
      * @param nodes the set of nodes to put into quarantine
      */
-    public Quarantine(Set<Integer> nodes) {
-        super(Collections.<Integer>emptySet(), nodes, true);
+    public Quarantine(Set<Node> nodes) {
+        super(Collections.<VM>emptySet(), nodes, true);
     }
 
     @Override

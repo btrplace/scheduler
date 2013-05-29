@@ -18,6 +18,7 @@
 package btrplace.model.constraint.checker;
 
 import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.model.constraint.SequentialVMTransitions;
 import btrplace.plan.event.*;
 
@@ -34,11 +35,11 @@ import java.util.Set;
  */
 public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<SequentialVMTransitions> {
 
-    private Set<Integer> runnings;
+    private Set<VM> runnings;
 
-    private List<Integer> order;
+    private List<VM> order;
 
-    private int pending;
+    private VM pending;
 
     /**
      * Make a new checker.
@@ -48,7 +49,7 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<Se
     public SequentialVMTransitionsChecker(SequentialVMTransitions s) {
         super(s);
         order = new ArrayList<>(s.getInvolvedVMs());
-        pending = -1;
+        pending = null;
     }
 
     @Override
@@ -63,9 +64,9 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<Se
         return true;
     }
 
-    private boolean makePending(int vm) {
+    private boolean makePending(VM vm) {
         if (getVMs().contains(vm)) {
-            if (pending == -1) {
+            if (pending == null) {
                 //Burn all the VMs in order that are before vm
                 while (!order.isEmpty() && !order.get(0).equals(vm)) {
                     order.remove(0);
@@ -122,21 +123,21 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<Se
     @Override
     public void end(BootVM a) {
         if (a.getVM() == pending) {
-            pending = -1;
+            pending = null;
         }
     }
 
     @Override
     public void end(ShutdownVM a) {
         if (a.getVM() == pending) {
-            pending = -1;
+            pending = null;
         }
     }
 
     @Override
     public void end(ResumeVM a) {
         if (a.getVM() == pending) {
-            pending = -1;
+            pending = null;
         }
 
     }
@@ -144,7 +145,7 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<Se
     @Override
     public void end(SuspendVM a) {
         if (a.getVM() == pending) {
-            pending = -1;
+            pending = null;
         }
 
     }
@@ -152,14 +153,14 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<Se
     @Override
     public void end(KillVM a) {
         if (a.getVM() == pending) {
-            pending = -1;
+            pending = null;
         }
     }
 
     @Override
     public void end(ForgeVM a) {
         if (a.getVM() == pending) {
-            pending = -1;
+            pending = null;
         }
     }
 }

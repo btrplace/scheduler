@@ -17,13 +17,13 @@
 
 package btrplace.plan.event;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.view.ModelView;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -35,12 +35,15 @@ import static org.mockito.Mockito.verify;
  */
 public class SubstitutedVMEventTest implements PremadeElements {
 
-    static SubstitutedVMEvent s = new SubstitutedVMEvent(vm1, vm2);
+    static Model mo = new DefaultModel();
+    static List<Node> ns = Util.newNodes(mo, 10);
+    static List<VM> vms = Util.newVMs(mo, 10);
+    static SubstitutedVMEvent s = new SubstitutedVMEvent(vms.get(0), vms.get(1));
 
     @Test
     public void testInstantiation() {
-        Assert.assertEquals(s.getVM(), vm1);
-        Assert.assertEquals(s.getNewint(), vm2);
+        Assert.assertEquals(s.getVM(), vms.get(0));
+        Assert.assertEquals(s.getNewVM(), vms.get(1));
         Assert.assertFalse(s.toString().contains("null"));
     }
 
@@ -55,13 +58,13 @@ public class SubstitutedVMEventTest implements PremadeElements {
     public void testApply() {
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addReadyVM(vm1);
-        map.addReadyVM(vm3);
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addReadyVM(vms.get(0));
+        map.addReadyVM(vms.get(2));
         ModelView v = mock(ModelView.class);
         mo.attach(v);
         Assert.assertTrue(s.apply(mo));
-        verify(v).substituteVM(vm1, vm2);
+        verify(v).substituteVM(vms.get(0), vms.get(1));
     }
 }

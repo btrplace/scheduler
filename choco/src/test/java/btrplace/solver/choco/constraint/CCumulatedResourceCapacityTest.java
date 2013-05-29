@@ -52,11 +52,11 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
                 .sleep(n2, vm5).get();
 
         ShareableResource rc = new ShareableResource("cpu", 5, 5);
-        rc.setVMConsumption(vm1, 2);
-        rc.setVMConsumption(vm2, 3);
-        rc.setVMConsumption(vm3, 3);
-        rc.setVMConsumption(vm4, 1);
-        rc.setVMConsumption(vm5, 5);
+        rc.setConsumption(vm1, 2);
+        rc.setConsumption(vm2, 3);
+        rc.setConsumption(vm3, 3);
+        rc.setConsumption(vm4, 1);
+        rc.setConsumption(vm5, 5);
 
         mo.attach(rc);
         List<SatConstraint> l = new ArrayList<>();
@@ -79,11 +79,11 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
         Set<Integer> on = new HashSet<>(Arrays.asList(n1, n2));
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5, 5);
-        rc.setVMConsumption(vm1, 2);
-        rc.setVMConsumption(vm2, 3);
-        rc.setVMConsumption(vm3, 3);
-        rc.setVMConsumption(vm4, 1);
-        rc.setVMConsumption(vm5, 1);
+        rc.setConsumption(vm1, 2);
+        rc.setConsumption(vm2, 3);
+        rc.setConsumption(vm3, 3);
+        rc.setConsumption(vm4, 1);
+        rc.setConsumption(vm5, 1);
 
         mo.attach(rc);
         List<SatConstraint> l = new ArrayList<>();
@@ -107,11 +107,11 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
         Set<Integer> on = new HashSet<>(Arrays.asList(n1, n2));
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5, 5);
-        rc.setVMConsumption(vm1, 2);
-        rc.setVMConsumption(vm2, 3);
-        rc.setVMConsumption(vm3, 3);
-        rc.setVMConsumption(vm4, 1);
-        rc.setVMConsumption(vm5, 5);
+        rc.setConsumption(vm1, 2);
+        rc.setConsumption(vm2, 3);
+        rc.setConsumption(vm3, 3);
+        rc.setConsumption(vm4, 1);
+        rc.setConsumption(vm5, 5);
         mo.attach(rc);
 
         List<SatConstraint> l = new ArrayList<>();
@@ -135,11 +135,11 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
                 .run(n1, vm1, vm2, vm3).run(n2, vm4).ready(vm5).get();
 
         ShareableResource rc = new ShareableResource("cpu", 5, 5);
-        rc.setVMConsumption(vm1, 2);
-        rc.setVMConsumption(vm2, 3);
-        rc.setVMConsumption(vm3, 3);
-        rc.setVMConsumption(vm4, 1);
-        rc.setVMConsumption(vm5, 5);
+        rc.setConsumption(vm1, 2);
+        rc.setConsumption(vm2, 3);
+        rc.setConsumption(vm3, 3);
+        rc.setConsumption(vm4, 1);
+        rc.setConsumption(vm5, 5);
         mo.attach(rc);
         CumulatedResourceCapacity c = new CumulatedResourceCapacity(m.getAllNodes(), "cpu", 10);
         CCumulatedResourceCapacity cc = new CCumulatedResourceCapacity(c);

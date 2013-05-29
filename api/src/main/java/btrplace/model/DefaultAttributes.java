@@ -17,10 +17,7 @@
 
 package btrplace.model;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Default implementation for {@link Attributes}.
@@ -29,83 +26,133 @@ import java.util.Set;
  */
 public class DefaultAttributes implements Attributes, Cloneable {
 
-    private Map<Integer, Map<String, Object>> attrs;
+    private Map<VM, Map<String, Object>> vmAttrs;
+    private Map<Node, Map<String, Object>> nodeAttrs;
 
     /**
      * Make a new empty list of attributes.
      */
     public DefaultAttributes() {
-        attrs = new HashMap<>();
+        vmAttrs = new HashMap<>();
+        nodeAttrs = new HashMap<>();
     }
 
-    private boolean putObject(int e, String k, Object v) {
-        Map<String, Object> m = attrs.get(e);
+    private boolean putObject(VM e, String k, Object v) {
+        Map<String, Object> m = vmAttrs.get(e);
         if (m == null) {
             m = new HashMap<>();
-            attrs.put(e, m);
+            vmAttrs.put(e, m);
+        }
+        return m.put(k, v) != null;
+    }
+
+    private boolean putObject(Node e, String k, Object v) {
+        Map<String, Object> m = nodeAttrs.get(e);
+        if (m == null) {
+            m = new HashMap<>();
+            nodeAttrs.put(e, m);
         }
         return m.put(k, v) != null;
     }
 
     @Override
-    public Object get(int e, String k) {
-        Map<String, Object> m = attrs.get(e);
+    public Object get(VM e, String k) {
+        Map<String, Object> m = vmAttrs.get(e);
         if (m == null) {
             return null;
         }
         return m.get(k);
     }
 
+    @Override
+    public Object get(Node e, String k) {
+        Map<String, Object> m = nodeAttrs.get(e);
+        if (m == null) {
+            return null;
+        }
+        return m.get(k);
+    }
 
     @Override
-    public boolean isSet(int e, String k) {
-        Map<String, Object> m = attrs.get(e);
+    public boolean isSet(VM e, String k) {
+        Map<String, Object> m = vmAttrs.get(e);
         return m != null && m.containsKey(k);
     }
 
     @Override
-    public boolean unset(int e, String k) {
-        Map<String, Object> m = attrs.get(e);
+    public boolean isSet(Node e, String k) {
+        Map<String, Object> m = nodeAttrs.get(e);
+        return m != null && m.containsKey(k);
+    }
+
+    @Override
+    public boolean unset(VM e, String k) {
+        Map<String, Object> m = vmAttrs.get(e);
         if (m == null) {
             return false;
         }
         return m.remove(k) != null;
+    }
 
+    @Override
+    public boolean unset(Node e, String k) {
+        Map<String, Object> m = nodeAttrs.get(e);
+        if (m == null) {
+            return false;
+        }
+        return m.remove(k) != null;
     }
 
     @Override
     public Attributes clone() {
         DefaultAttributes cpy = new DefaultAttributes();
-        for (Map.Entry<Integer, Map<String, Object>> e : attrs.entrySet()) {
-            cpy.attrs.put(e.getKey(), new HashMap<>(e.getValue()));
+        for (Map.Entry<VM, Map<String, Object>> e : vmAttrs.entrySet()) {
+            cpy.vmAttrs.put(e.getKey(), new HashMap<>(e.getValue()));
         }
+
+        for (Map.Entry<Node, Map<String, Object>> e : nodeAttrs.entrySet()) {
+            cpy.nodeAttrs.put(e.getKey(), new HashMap<>(e.getValue()));
+        }
+
         return cpy;
     }
 
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        for (Map.Entry<Integer, Map<String, Object>> e : attrs.entrySet()) {
+        for (Map.Entry<VM, Map<String, Object>> e : vmAttrs.entrySet()) {
             b.append(e.getKey());
             b.append(':');
-            for (Map.Entry<String, Object> attr : e.getValue().entrySet()) {
-                b.append(" <").append(attr.getKey()).append(',');
-                Object val = attr.getValue();
-                if (val instanceof String) {
-                    b.append('"').append(val).append('"');
-                } else {
-                    b.append(val);
-                }
-                b.append('>');
-            }
+            b.append(stringify(e.getValue()));
             b.append('\n');
+        }
+        for (Map.Entry<Node, Map<String, Object>> e : nodeAttrs.entrySet()) {
+            b.append(e.getKey());
+            b.append(':');
+            b.append(stringify(e.getValue()));
+            b.append('\n');
+        }
+        return b.toString();
+    }
+
+    private String stringify(Map<String, Object> map) {
+        StringBuilder b = new StringBuilder();
+        for (Map.Entry<String, Object> attr : map.entrySet()) {
+            b.append(" <").append(attr.getKey()).append(',');
+            Object val = attr.getValue();
+            if (val instanceof String) {
+                b.append('"').append(val).append('"');
+            } else {
+                b.append(val);
+            }
+            b.append('>');
         }
         return b.toString();
     }
 
     @Override
     public int hashCode() {
-        return attrs.hashCode();
+        return Objects.hash(vmAttrs, nodeAttrs);
     }
 
     @Override
@@ -120,63 +167,111 @@ public class DefaultAttributes implements Attributes, Cloneable {
             return false;
         }
         DefaultAttributes that = (DefaultAttributes) o;
-        return attrs.equals(that.attrs);
+        return vmAttrs.equals(that.vmAttrs) && nodeAttrs.equals(that.nodeAttrs);
     }
 
     @Override
-    public Set<Integer> getElements() {
-        return attrs.keySet();
+    public Set<VM> getSpecifiedVMs() {
+        return vmAttrs.keySet();
+    }
+
+    @Override
+    public Set<Node> getSpecifiedNodes() {
+        return nodeAttrs.keySet();
     }
 
     @Override
     public void clear() {
-        this.attrs.clear();
+        this.vmAttrs.clear();
+        this.nodeAttrs.clear();
     }
 
     @Override
-    public boolean put(int e, String k, boolean b) {
+    public boolean put(VM e, String k, boolean b) {
         return putObject(e, k, b);
     }
 
     @Override
-    public boolean put(int e, String k, String s) {
+    public boolean put(Node e, String k, boolean b) {
+        return putObject(e, k, b);
+    }
+
+    @Override
+    public boolean put(VM e, String k, int n) {
+        return putObject(e, k, n);
+    }
+
+    @Override
+    public boolean put(Node e, String k, int n) {
+        return putObject(e, k, n);
+    }
+
+    @Override
+    public boolean put(VM e, String k, String s) {
         return putObject(e, k, s);
     }
 
     @Override
-    public boolean put(int e, String k, long l) {
-        return putObject(e, k, l);
+    public boolean put(Node e, String k, String s) {
+        return putObject(e, k, s);
     }
 
     @Override
-    public boolean put(int e, String k, double d) {
+    public boolean put(VM e, String k, double d) {
         return putObject(e, k, d);
     }
 
     @Override
-    public Boolean getBoolean(int e, String k) {
+    public boolean put(Node e, String k, double d) {
+        return putObject(e, k, d);
+    }
+
+    @Override
+    public Boolean getBoolean(VM e, String k) {
         return (Boolean) get(e, k);
     }
 
     @Override
-    public Long getLong(int e, String k) {
-        return (Long) get(e, k);
+    public Boolean getBoolean(Node e, String k) {
+        return (Boolean) get(e, k);
     }
 
     @Override
-    public String getString(int e, String k) {
+    public String getString(VM e, String k) {
         Object o = get(e, k);
         return o == null ? null : o.toString();
     }
 
     @Override
-    public Double getDouble(int e, String k) {
+    public String getString(Node e, String k) {
+        Object o = get(e, k);
+        return o == null ? null : o.toString();
+    }
+
+    @Override
+    public Double getDouble(VM e, String k) {
         return (Double) get(e, k);
     }
 
     @Override
-    public Set<String> getKeys(int u) {
-        Map<String, Object> m = attrs.get(u);
+    public Double getDouble(Node e, String k) {
+        return (Double) get(e, k);
+    }
+
+    @Override
+    public Integer getInteger(VM e, String k) {
+        return (Integer) get(e, k);
+    }
+
+    @Override
+    public Integer getInteger(Node e, String k) {
+        return (Integer) get(e, k);
+    }
+
+
+    @Override
+    public Set<String> getKeys(VM e) {
+        Map<String, Object> m = vmAttrs.get(e);
         if (m == null) {
             return Collections.emptySet();
         }
@@ -184,7 +279,38 @@ public class DefaultAttributes implements Attributes, Cloneable {
     }
 
     @Override
-    public boolean castAndPut(int u, String k, String v) {
+    public Set<String> getKeys(Node e) {
+        Map<String, Object> m = nodeAttrs.get(e);
+        if (m == null) {
+            return Collections.emptySet();
+        }
+        return m.keySet();
+    }
+
+
+    @Override
+    public boolean castAndPut(VM u, String k, String v) {
+        String x = v.toLowerCase().trim();
+        if (x.equals("true")) {
+            return put(u, k, true);
+        } else if (x.equals("false")) {
+            return put(u, k, false);
+        }
+        try {
+            return put(u, k, Long.parseLong(x));
+        } catch (NumberFormatException ex) {
+        }
+
+        try {
+            return put(u, k, Double.parseDouble(x));
+        } catch (NumberFormatException ex) {
+        }
+
+        return put(u, k, v);
+    }
+
+    @Override
+    public boolean castAndPut(Node u, String k, String v) {
         String x = v.toLowerCase().trim();
         if (x.equals("true")) {
             return put(u, k, true);

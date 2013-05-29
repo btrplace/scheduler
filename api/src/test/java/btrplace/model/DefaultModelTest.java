@@ -21,8 +21,6 @@ import btrplace.model.view.ModelView;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Random;
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -33,7 +31,6 @@ import static org.mockito.Mockito.when;
  */
 public class DefaultModelTest {
 
-    private static Random rnd = new Random();
 
     @Test
     public void testInstantiate() {
@@ -77,10 +74,10 @@ public class DefaultModelTest {
         i.attach(rc);
         i.attach(b);
 
-        int u = rnd.nextInt();
-        i.getAttributes().put(u, "foo", true);
+        VM vm = i.newVM();
+        i.getAttributes().put(vm, "foo", true);
         Model j = i.clone();
-        j.getAttributes().put(u, "foo", true);
+        j.getAttributes().put(vm, "foo", true);
         j.attach(rc);
         j.attach(b);
         Assert.assertTrue(i.equals(i));
@@ -89,7 +86,7 @@ public class DefaultModelTest {
         j.detach(rc);
         Assert.assertFalse(i.equals(j));
         j.attach(rc);
-        j.getMapping().addReadyVM(rnd.nextInt());
+        j.getMapping().addReadyVM(j.newVM());
         Assert.assertFalse(i.equals(j));
     }
 
@@ -102,7 +99,7 @@ public class DefaultModelTest {
         ModelView v2 = mock(ModelView.class);
         when(v2.getIdentifier()).thenReturn("bar");
         when(v2.clone()).thenReturn(v2);
-        int u = rnd.nextInt();
+        VM u = i.newVM();
         i.getAttributes().put(u, "foo", false);
         i.attach(v1);
         i.attach(v2);
@@ -148,7 +145,7 @@ public class DefaultModelTest {
     public void testAttributes() {
         Model i = new DefaultModel();
         Attributes attrs = new DefaultAttributes();
-        attrs.put(rnd.nextInt(), "foo", true);
+        attrs.put(i.newVM(), "foo", true);
         i.setAttributes(attrs);
         Assert.assertEquals(i.getAttributes(), attrs);
     }

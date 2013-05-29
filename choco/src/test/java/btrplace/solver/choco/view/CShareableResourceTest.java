@@ -61,8 +61,8 @@ public class CShareableResourceTest implements PremadeElements {
         ma.addRunningVM(vm2, n1);
         ma.addReadyVM(vm3);
         ShareableResource rc = new ShareableResource("foo", 0, 0);
-        rc.setVMConsumption(vm2, 3);
-        rc.setNodeCapacity(n1, 4);
+        rc.setConsumption(vm2, 3);
+        rc.setCapacity(n1, 4);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         CShareableResource rcm = new CShareableResource(rp, rc);
         Assert.assertEquals(rc.getIdentifier(), rcm.getIdentifier());
@@ -100,10 +100,10 @@ public class CShareableResourceTest implements PremadeElements {
         ma.addRunningVM(vm2, n1);
 
         ShareableResource rc = new ShareableResource("foo", 0, 0);
-        rc.setVMConsumption(vm1, 2);
-        rc.setVMConsumption(vm2, 3);
-        rc.setNodeCapacity(n1, 5);
-        rc.setNodeCapacity(n2, 3);
+        rc.setConsumption(vm1, 2);
+        rc.setConsumption(vm2, 3);
+        rc.setCapacity(n1, 5);
+        rc.setCapacity(n2, 3);
         mo.attach(rc);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
@@ -130,9 +130,9 @@ public class CShareableResourceTest implements PremadeElements {
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n1);
         ShareableResource rc = new ShareableResource("foo");
-        rc.setVMConsumption(vm1, 5);
-        rc.setVMConsumption(vm2, 7);
-        rc.setNodeCapacity(n1, 25);
+        rc.setConsumption(vm1, 5);
+        rc.setConsumption(vm2, 7);
+        rc.setCapacity(n1, 25);
 
         mo.attach(rc);
 
@@ -152,8 +152,8 @@ public class CShareableResourceTest implements PremadeElements {
         //And on the resulting plan.
         Model res = p.getResult();
         ShareableResource resRc = (ShareableResource) res.getView(rc.getIdentifier());
-        Assert.assertEquals(resRc.getVMConsumption(vm1), 5);
-        Assert.assertEquals(resRc.getVMConsumption(vm2), 7);
+        Assert.assertEquals(resRc.getConsumption(vm1), 5);
+        Assert.assertEquals(resRc.getConsumption(vm2), 7);
     }
 
     /**
@@ -165,9 +165,9 @@ public class CShareableResourceTest implements PremadeElements {
         Mapping ma = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1, vm2).get();
 
         ShareableResource rc = new ShareableResource("foo", 0, 0);
-        rc.setVMConsumption(vm1, 2);
-        rc.setVMConsumption(vm2, 3);
-        rc.setNodeCapacity(n1, 5);
+        rc.setConsumption(vm1, 2);
+        rc.setConsumption(vm2, 3);
+        rc.setCapacity(n1, 5);
 
         mo.attach(rc);
 
@@ -187,9 +187,9 @@ public class CShareableResourceTest implements PremadeElements {
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1, vm2).get();
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("foo");
-        rc.setNodeCapacity(n1, 32);
-        rc.setVMConsumption(vm1, 3);
-        rc.setVMConsumption(vm2, 2);
+        rc.setCapacity(n1, 32);
+        rc.setConsumption(vm1, 3);
+        rc.setConsumption(vm2, 2);
         mo.attach(rc);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();

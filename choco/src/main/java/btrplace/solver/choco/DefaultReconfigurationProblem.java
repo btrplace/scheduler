@@ -438,7 +438,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             if (killed.contains(vmId)) {
                 if (vmActions[i] != null) {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
-                } else if (map.containsVM(vmId)) {
+                } else if (map.contains(vmId)) {
                     vmActions[i] = new KillVMActionModel(this, vmId);
                     manageable.add(vmId);
                 } else {

@@ -17,9 +17,7 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
@@ -31,6 +29,7 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -42,7 +41,8 @@ public class SingleResourceCapacityTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
+        Model mo = new DefaultModel();
+        Set<Node> s = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
 
         SingleResourceCapacity c = new SingleResourceCapacity(s, "foo", 3);
         Assert.assertNotNull(c.getChecker());
@@ -62,7 +62,8 @@ public class SingleResourceCapacityTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsAndHashCode() {
-        Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
+        Model mo = new DefaultModel();
+        Set<Node> s = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
         SingleResourceCapacity c = new SingleResourceCapacity(s, "foo", 3);
         SingleResourceCapacity c2 = new SingleResourceCapacity(s, "foo", 3);
         Assert.assertTrue(c.equals(c));
@@ -71,7 +72,7 @@ public class SingleResourceCapacityTest implements PremadeElements {
 
         Assert.assertFalse(c.equals(new SingleResourceCapacity(s, "bar", 3)));
         Assert.assertFalse(c.equals(new SingleResourceCapacity(s, "foo", 2)));
-        Assert.assertFalse(c.equals(new SingleResourceCapacity(new HashSet<Integer>(), "foo", 3)));
+        Assert.assertFalse(c.equals(new SingleResourceCapacity(new HashSet<Node>(), "foo", 3)));
         c.setContinuous(true);
         c2.setContinuous(false);
         Assert.assertFalse(c.equals(c2));
@@ -80,38 +81,42 @@ public class SingleResourceCapacityTest implements PremadeElements {
     @Test
     public void testDiscreteIsSatisfied() {
         Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 10);
+        List<VM> vms = Util.newVMs(mo, 10);
         Mapping m = mo.getMapping();
-        m.addOnlineNode(n1);
-        m.addOnlineNode(n2);
-        m.addRunningVM(vm1, n1);
-        m.addReadyVM(vm2);
+        m.addOnlineNode(ns.get(0));
+        m.addOnlineNode(ns.get(1));
+        m.addRunningVM(vms.get(0), ns.get(0));
+        m.addReadyVM(vms.get(1));
 
-        m.addRunningVM(vm3, n2);
-        m.addReadyVM(vm4);
+        m.addRunningVM(vms.get(2), ns.get(1));
+        m.addReadyVM(vms.get(3));
 
         ShareableResource rc = new ShareableResource("foo", 2, 2);
         mo.attach(rc);
         SingleResourceCapacity c = new SingleResourceCapacity(m.getAllNodes(), "foo", 3);
         Assert.assertEquals(c.isSatisfied(mo), true);
-        rc.setVMConsumption(vm3, 4);
+        rc.setConsumption(vms.get(2), 4);
         Assert.assertEquals(c.isSatisfied(mo), false);
 
-        rc.setVMConsumption(vm3, 1);
-        m.addRunningVM(vm1, n2);
+        rc.setConsumption(vms.get(2), 1);
+        m.addRunningVM(vms.get(0), ns.get(1));
         Assert.assertEquals(c.isSatisfied(mo), true);
     }
 
     @Test
     public void testContinuousIsSatisfied() {
         Model mo = new DefaultModel();
+        List<VM> vms = Util.newVMs(mo, 10);
+        List<Node> ns = Util.newNodes(mo, 10);
         Mapping m = mo.getMapping();
-        m.addOnlineNode(n1);
-        m.addOnlineNode(n2);
-        m.addRunningVM(vm1, n1);
-        m.addReadyVM(vm2);
+        m.addOnlineNode(ns.get(0));
+        m.addOnlineNode(ns.get(1));
+        m.addRunningVM(vms.get(0), ns.get(0));
+        m.addReadyVM(vms.get(1));
 
-        m.addRunningVM(vm3, n2);
-        m.addReadyVM(vm4);
+        m.addRunningVM(vms.get(2), ns.get(1));
+        m.addReadyVM(vms.get(3));
 
         ShareableResource rc = new ShareableResource("foo", 2, 2);
         mo.attach(rc);
@@ -119,10 +124,10 @@ public class SingleResourceCapacityTest implements PremadeElements {
 
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(c.isSatisfied(plan), true);
-        plan.add(new BootVM(vm4, n1, 1, 2));
+        plan.add(new BootVM(vms.get(3), ns.get(0), 1, 2));
         Assert.assertEquals(c.isSatisfied(plan), false);
 
-        plan.add(new ShutdownVM(vm1, n1, 0, 1));
+        plan.add(new ShutdownVM(vms.get(0), ns.get(0), 0, 1));
         Assert.assertEquals(c.isSatisfied(plan), true);
 
 

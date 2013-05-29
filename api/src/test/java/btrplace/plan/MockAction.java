@@ -18,10 +18,9 @@
 package btrplace.plan;
 
 import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.plan.event.Action;
 import btrplace.plan.event.ActionVisitor;
-
-;
 
 /**
  * A fake action for test purposes.
@@ -32,9 +31,9 @@ public class MockAction extends Action {
 
     public int count = 0;
 
-    public int u;
+    public VM u;
 
-    public MockAction(int u, int st, int ed) {
+    public MockAction(VM u, int st, int ed) {
         super(st, ed);
         this.u = u;
     }

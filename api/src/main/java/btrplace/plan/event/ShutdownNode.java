@@ -19,6 +19,7 @@ package btrplace.plan.event;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
 
 import java.util.Objects;
 
@@ -30,7 +31,7 @@ import java.util.Objects;
  */
 public class ShutdownNode extends Action implements NodeEvent {
 
-    private int node;
+    private Node node;
 
     /**
      * Create a new shutdown action on an online node.
@@ -39,13 +40,13 @@ public class ShutdownNode extends Action implements NodeEvent {
      * @param s the moment the action starts
      * @param f the moment the action is finished
      */
-    public ShutdownNode(int n, int s, int f) {
+    public ShutdownNode(Node n, int s, int f) {
         super(s, f);
         this.node = n;
     }
 
     @Override
-    public int getNode() {
+    public Node getNode() {
         return node;
     }
 
@@ -64,7 +65,7 @@ public class ShutdownNode extends Action implements NodeEvent {
             return true;
         } else if (o.getClass() == this.getClass()) {
             ShutdownNode that = (ShutdownNode) o;
-            return this.node == that.node &&
+            return this.node.equals(that.node) &&
                     this.getStart() == that.getStart() &&
                     this.getEnd() == that.getEnd();
 

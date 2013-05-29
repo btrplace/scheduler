@@ -99,16 +99,16 @@ public interface Model extends Cloneable {
     Model clone();
 
     /**
-     * Generate an identifier for a new VM.
+     * Generate a new VM for this model.
      *
-     * @return a value {@code >=0} if succeeds. {@code < 0} if all the identifiers for VMs have been used.
+     * @return {@code null} if no identifiers are available for the VM.
      */
-    int newVM();
+    VM newVM();
 
     /**
-     * Generate an identifier for a new node.
+     * Generate a new Node for this model.
      *
-     * @return a value {@code >=0} if succeeds. {@code < 0} if all the identifiers for nodes have been used.
+     * @return {@code null} if no identifiers are available for the Node.
      */
-    int newNode();
+    Node newNode();
 }

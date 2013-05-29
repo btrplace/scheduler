@@ -36,10 +36,10 @@ public class ShareableResourceConverterTest implements PremadeElements {
     @Test
     public void testSimple() {
         ShareableResource rc = new ShareableResource("foo");
-        rc.setVMConsumption(vm1, 3);
-        rc.setVMConsumption(vm2, 4);
-        rc.setVMConsumption(vm3, 5);
-        rc.setVMConsumption(vm4, 6);
+        rc.setConsumption(vm1, 3);
+        rc.setConsumption(vm2, 4);
+        rc.setConsumption(vm3, 5);
+        rc.setConsumption(vm4, 6);
         ShareableResourceConverter s = new ShareableResourceConverter();
         ShareableResource rc2 = s.fromJSON(s.toJSON(rc));
 
@@ -47,7 +47,7 @@ public class ShareableResourceConverterTest implements PremadeElements {
         Assert.assertEquals(rc.getResourceIdentifier(), rc2.getResourceIdentifier());
         Assert.assertEquals(rc.getDefinedVMs(), rc2.getDefinedVMs());
         for (int u : rc.getDefinedVMs()) {
-            Assert.assertEquals(rc.getVMConsumption(u), rc2.getVMConsumption(u));
+            Assert.assertEquals(rc.getConsumption(u), rc2.getConsumption(u));
         }
     }
 
@@ -56,11 +56,11 @@ public class ShareableResourceConverterTest implements PremadeElements {
         ShareableResourceConverter s = new ShareableResourceConverter();
 
         ShareableResource rc = new ShareableResource("foo");
-        rc.setVMConsumption(vm1, 3).setVMConsumption(vm2, 4).setVMConsumption(vm3, 5).setVMConsumption(vm4, 6);
+        rc.setConsumption(vm1, 3).setConsumption(vm2, 4).setConsumption(vm3, 5).setConsumption(vm4, 6);
         ShareableResource rcBis = s.fromJSON(s.toJSONString(rc));
 
         ShareableResource rc2 = new ShareableResource("bar");
-        rc2.setVMConsumption(vm1, 3).setVMConsumption(vm2, 4).setVMConsumption(vm3, 5).setVMConsumption(vm4, 6);
+        rc2.setConsumption(vm1, 3).setConsumption(vm2, 4).setConsumption(vm3, 5).setConsumption(vm4, 6);
 
         ShareableResource rc2Bis = s.fromJSON(s.toJSONString(rc2));
         Assert.assertFalse(rcBis.equals(rc2Bis));

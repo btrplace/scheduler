@@ -15,44 +15,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.model.constraint.checker;
-
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.model.VM;
-import btrplace.model.constraint.Sleeping;
-import btrplace.plan.event.SuspendVM;
+package btrplace.model;
 
 /**
- * Checker for the {@link btrplace.model.constraint.Sleeping} constraint
+ * Model a node.
+ * A node should not be instantiated directly. Use {@link btrplace.model.Model#newNode()} instead.
  *
  * @author Fabien Hermenier
- * @see btrplace.model.constraint.Sleeping
+ * @see {@link btrplace.model.Model#newNode()}
  */
-public class SleepingChecker extends DenyMyVMsActions<Sleeping> {
+public class Node implements Element {
+
+    private int id;
 
     /**
-     * Make a new checker.
+     * Make a new node.
      *
-     * @param s the associated constraint
+     * @param id the node identifier.
      */
-    public SleepingChecker(Sleeping s) {
-        super(s);
+    Node(int id) {
+        this.id = id;
     }
 
     @Override
-    public boolean start(SuspendVM a) {
-        return true;
+    public int id() {
+        return id;
     }
 
     @Override
-    public boolean endsWith(Model mo) {
-        Mapping c = mo.getMapping();
-        for (VM vm : getVMs()) {
-            if (!c.getSleepingVMs().contains(vm)) {
-                return false;
-            }
-        }
-        return true;
+    public String toString() {
+        return "Node#" + id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Node)) return false;
+
+        Node node = (Node) o;
+
+        return id == node.id();
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 }

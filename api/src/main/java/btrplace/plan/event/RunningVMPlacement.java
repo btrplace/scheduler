@@ -17,7 +17,7 @@
 
 package btrplace.plan.event;
 
-;
+import btrplace.model.Node;
 
 /**
  * An interface to indicate an event that
@@ -32,5 +32,5 @@ public interface RunningVMPlacement extends VMEvent {
      *
      * @return the node identifier
      */
-    int getDestinationNode();
+    Node getDestinationNode();
 }

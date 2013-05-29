@@ -18,6 +18,8 @@
 package btrplace.plan.event;
 
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 
 import java.util.Objects;
 
@@ -29,7 +31,7 @@ import java.util.Objects;
  */
 public class Allocate extends Action implements VMEvent {
 
-    private int node;
+    private Node node;
 
     private AllocateEvent ev;
 
@@ -43,7 +45,7 @@ public class Allocate extends Action implements VMEvent {
      * @param st     the moment the action starts
      * @param ed     the moment the action ends
      */
-    public Allocate(int vm, int host, String rcId, int amount, int st, int ed) {
+    public Allocate(VM vm, Node host, String rcId, int amount, int st, int ed) {
         super(st, ed);
         ev = new AllocateEvent(vm, rcId, amount);
         this.node = host;
@@ -54,12 +56,12 @@ public class Allocate extends Action implements VMEvent {
      *
      * @return the node identifier
      */
-    public int getHost() {
+    public Node getHost() {
         return node;
     }
 
     @Override
-    public int getVM() {
+    public VM getVM() {
         return ev.getVM();
     }
 
@@ -104,8 +106,8 @@ public class Allocate extends Action implements VMEvent {
             return true;
         } else if (o.getClass() == this.getClass()) {
             Allocate that = (Allocate) o;
-            return this.getVM() == that.getVM()
-                    && this.node == that.node
+            return this.getVM().equals(that.getVM())
+                    && this.node.equals(that.node)
                     && this.getResourceId().equals(that.getResourceId())
                     && this.getStart() == that.getStart()
                     && this.getEnd() == that.getEnd()

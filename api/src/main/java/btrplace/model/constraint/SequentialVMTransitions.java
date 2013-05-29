@@ -17,13 +17,13 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.model.constraint.checker.SequentialVMTransitionsChecker;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
-;
 
 /**
  * A constraint to force the actions that change the given VMs state
@@ -35,20 +35,20 @@ import java.util.List;
  */
 public class SequentialVMTransitions extends SatConstraint {
 
-    private List<Integer> order;
+    private List<VM> order;
 
     /**
      * Make a new constraint.
      *
      * @param seq the order to ensure
      */
-    public SequentialVMTransitions(List<Integer> seq) {
-        super(seq, new ArrayList<Integer>(), true);
+    public SequentialVMTransitions(List<VM> seq) {
+        super(seq, Collections.<Node>emptySet(), true);
         order = seq;
     }
 
     @Override
-    public List<Integer> getInvolvedVMs() {
+    public List<VM> getInvolvedVMs() {
         return order;
     }
 

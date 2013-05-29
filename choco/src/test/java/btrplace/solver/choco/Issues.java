@@ -59,8 +59,8 @@ public class Issues implements PremadeElements {
 
         Model model = new DefaultModel();
         ShareableResource resources = new ShareableResource("vcpu", 1, 1);
-        resources.setNodeCapacity(n1, 2);
-        resources.setNodeCapacity(n2, 2);
+        resources.setCapacity(n1, 2);
+        resources.setCapacity(n2, 2);
 
         Mapping map = new MappingFiller(model.getMapping()).on(n1, n2).off(n3).run(n1, vm1, vm2).get();
         model.attach(resources);

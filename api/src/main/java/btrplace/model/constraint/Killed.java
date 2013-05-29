@@ -17,13 +17,13 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.KilledChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
 import java.util.Set;
-
-;
 
 /**
  * A constraint to force a set of VMs to be killed.
@@ -39,8 +39,8 @@ public class Killed extends SatConstraint {
      *
      * @param vms the VMs to remove
      */
-    public Killed(Set<Integer> vms) {
-        super(vms, Collections.<Integer>emptySet(), false);
+    public Killed(Set<VM> vms) {
+        super(vms, Collections.<Node>emptySet(), false);
     }
 
     @Override

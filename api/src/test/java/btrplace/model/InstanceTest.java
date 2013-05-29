@@ -49,20 +49,23 @@ public class InstanceTest implements PremadeElements {
     @Test
     public void testEqualsAndHashcode() {
         Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 10);
+        List<VM> vms = Util.newVMs(mo, 10);
+
         Mapping ma = mo.getMapping();
-        ma.addOnlineNode(n1);
-        ma.addOfflineNode(n1);
-        ma.addReadyVM(vm1);
+        ma.addOnlineNode(ns.get(0));
+        ma.addOfflineNode(ns.get(0));
+        ma.addReadyVM(vms.get(0));
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Online(ma.getAllNodes()));
-        cstrs.add(new Running(Collections.singleton(vm1)));
+        cstrs.add(new Running(Collections.singleton(vms.get(0))));
         Instance i = new Instance(mo, cstrs);
         Instance i2 = new Instance(mo.clone(), new ArrayList<>(cstrs));
 
         Assert.assertEquals(i, i2);
         Assert.assertEquals(i.hashCode(), i2.hashCode());
 
-        i2.getModel().getMapping().addReadyVM(vm3);
+        i2.getModel().getMapping().addReadyVM(vms.get(2));
         Assert.assertNotEquals(i, i2);
 
     }

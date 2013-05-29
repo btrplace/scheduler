@@ -19,6 +19,8 @@ package btrplace.model.constraint.checker;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.Lonely;
 import btrplace.plan.event.BootNode;
 import btrplace.plan.event.RunningVMPlacement;
@@ -34,9 +36,9 @@ import java.util.Set;
  */
 public class LonelyChecker extends AllowAllConstraintChecker<Lonely> {
 
-    private Set<Integer> idleNodes;
+    private Set<Node> idleNodes;
 
-    private Set<Integer> privateNodes;
+    private Set<Node> privateNodes;
 
     /**
      * Make a new checker.
@@ -49,7 +51,7 @@ public class LonelyChecker extends AllowAllConstraintChecker<Lonely> {
         privateNodes = new HashSet<>();
     }
 
-    private boolean checkDestination(int vm, int n) {
+    private boolean checkDestination(VM vm, Node n) {
         if (getConstraint().isContinuous()) {
             if (getVMs().contains(vm)) {
                 if (!idleNodes.remove(n)) {
@@ -76,14 +78,14 @@ public class LonelyChecker extends AllowAllConstraintChecker<Lonely> {
 
     private boolean discreteCheck(Model mo) {
         Mapping map = mo.getMapping();
-        for (int vm : getVMs()) {
+        for (VM vm : getVMs()) {
             if (map.getRunningVMs().contains(vm)) {
-                int host = map.getVMLocation(vm);
-                Set<Integer> on = map.getRunningVMs(host);
+                Node host = map.getVMLocation(vm);
+                Set<VM> on = map.getRunningVMs(host);
                 //Check for other VMs on the node. If they are not in the constraint
                 //it's a violation
-                for (int vm2 : on) {
-                    if (vm2 != vm && !getVMs().contains(vm2)) {
+                for (VM vm2 : on) {
+                    if (!vm2.equals(vm) && !getVMs().contains(vm2)) {
                         return false;
                     }
                 }
@@ -108,12 +110,12 @@ public class LonelyChecker extends AllowAllConstraintChecker<Lonely> {
             boolean ret = discreteCheck(mo);
             if (ret) {
                 Mapping map = mo.getMapping();
-                for (int vm : getVMs()) {
+                for (VM vm : getVMs()) {
                     if (map.getRunningVMs().contains(vm)) {
                         privateNodes.add(map.getVMLocation(vm));
                     }
                 }
-                for (int n : map.getOnlineNodes()) {
+                for (Node n : map.getOnlineNodes()) {
                     if (map.getRunningVMs(n).isEmpty()) {
                         idleNodes.add(n);
                     }

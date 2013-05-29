@@ -17,12 +17,12 @@
 
 package btrplace.plan.event;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -34,12 +34,16 @@ import static org.mockito.Mockito.verify;
  */
 public class BootNodeTest implements PremadeElements {
 
-    static BootNode a = new BootNode(n1, 3, 5);
+
+    static Model mo = new DefaultModel();
+    static List<Node> ns = Util.newNodes(mo, 10);
+    static List<VM> vms = Util.newVMs(mo, 10);
+    static BootNode a = new BootNode(ns.get(0), 3, 5);
 
     @Test
     public void testInstantiate() {
-        BootNode a = new BootNode(n1, 3, 5);
-        Assert.assertEquals(n1, a.getNode());
+        BootNode a = new BootNode(ns.get(0), 3, 5);
+        Assert.assertEquals(ns.get(0), a.getNode());
         Assert.assertEquals(3, a.getStart());
         Assert.assertEquals(5, a.getEnd());
         Assert.assertFalse(a.toString().contains("null"));
@@ -49,25 +53,25 @@ public class BootNodeTest implements PremadeElements {
     public void testApply() {
         Model m = new DefaultModel();
         Mapping map = m.getMapping();
-        map.addOfflineNode(n1);
-        BootNode b = new BootNode(n1, 3, 5);
+        map.addOfflineNode(ns.get(0));
+        BootNode b = new BootNode(ns.get(0), 3, 5);
         Assert.assertTrue(b.apply(m));
-        Assert.assertTrue(map.getOnlineNodes().contains(n1));
+        Assert.assertTrue(map.getOnlineNodes().contains(ns.get(0)));
 
         Assert.assertFalse(b.apply(m));
     }
 
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testEquals() {
-        BootNode a = new BootNode(n1, 3, 5);
-        BootNode b = new BootNode(n1, 3, 5);
+        BootNode a = new BootNode(ns.get(0), 3, 5);
+        BootNode b = new BootNode(ns.get(0), 3, 5);
         Assert.assertFalse(a.equals(new Object()));
         Assert.assertTrue(a.equals(a));
         Assert.assertEquals(a, b);
         Assert.assertEquals(a.hashCode(), b.hashCode());
-        Assert.assertNotSame(a, new BootNode(n1, 4, 5));
-        Assert.assertNotSame(a, new BootNode(n1, 3, 4));
-        Assert.assertNotSame(a, new BootNode(n2, 3, 5));
+        Assert.assertNotSame(a, new BootNode(ns.get(0), 4, 5));
+        Assert.assertNotSame(a, new BootNode(ns.get(0), 3, 4));
+        Assert.assertNotSame(a, new BootNode(ns.get(1), 3, 5));
     }
 
     @Test

@@ -19,10 +19,9 @@ package btrplace.model.constraint.checker;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.model.constraint.Killed;
 import btrplace.plan.event.KillVM;
-
-;
 
 /**
  * Checker for the {@link btrplace.model.constraint.Killed} constraint
@@ -49,7 +48,7 @@ public class KilledChecker extends DenyMyVMsActions<Killed> {
     @Override
     public boolean endsWith(Model mo) {
         Mapping c = mo.getMapping();
-        for (int vm : getVMs()) {
+        for (VM vm : getVMs()) {
             if (c.getAllVMs().contains(vm)) {
                 return false;
             }

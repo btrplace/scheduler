@@ -17,7 +17,7 @@
 
 package btrplace.plan.event;
 
-;
+import btrplace.model.Node;
 
 /**
  * A event to apply on a node.
@@ -31,5 +31,5 @@ public interface NodeEvent extends Event {
      *
      * @return the node identifier
      */
-    int getNode();
+    Node getNode();
 }

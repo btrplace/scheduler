@@ -18,12 +18,17 @@
 package btrplace.model;
 
 /**
- * Enumeration to type the elements managed by BtrPlace.
+ * Specify an element managed by BtrPlace.
+ *
  * @author Fabien Hermenier
  */
-public enum ElementType {
+public interface Element {
 
-    /** A virtual machine. */vm,
+    /**
+     * The element identifier.
+     *
+     * @return an integer
+     */
+    int id();
 
-    /** A node. */ node
 }

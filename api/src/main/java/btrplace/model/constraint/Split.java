@@ -17,6 +17,8 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.model.constraint.checker.SplitChecker;
 
@@ -36,14 +38,14 @@ import java.util.*;
  */
 public class Split extends SatConstraint {
 
-    private Collection<Set<Integer>> sets;
+    private Collection<Set<VM>> sets;
 
     /**
      * Make a new constraint having a discrete restriction.
      *
      * @param s the disjoint sets of VMs that must be split
      */
-    public Split(Collection<Set<Integer>> s) {
+    public Split(Collection<Set<VM>> s) {
         this(s, false);
     }
 
@@ -53,16 +55,16 @@ public class Split extends SatConstraint {
      * @param s          the disjoint sets of VMs that must be split
      * @param continuous {@code true} for a continuous restriction
      */
-    public Split(Collection<Set<Integer>> s, boolean continuous) {
-        super(null, Collections.<Integer>emptySet(), continuous);
+    public Split(Collection<Set<VM>> s, boolean continuous) {
+        super(null, Collections.<Node>emptySet(), continuous);
         this.sets = s;
     }
 
 
     @Override
-    public Collection<Integer> getInvolvedVMs() {
-        Set<Integer> s = new HashSet<>();
-        for (Set<Integer> set : sets) {
+    public Collection<VM> getInvolvedVMs() {
+        Set<VM> s = new HashSet<>();
+        for (Set<VM> set : sets) {
             s.addAll(set);
         }
         return s;
@@ -73,7 +75,7 @@ public class Split extends SatConstraint {
      *
      * @return the groups
      */
-    public Collection<Set<Integer>> getSets() {
+    public Collection<Set<VM>> getSets() {
         return this.sets;
     }
 
@@ -83,8 +85,8 @@ public class Split extends SatConstraint {
      * @param u the VM identifier
      * @return the group of VM if exists, {@code null} otherwise
      */
-    public Set<Integer> getAssociatedVGroup(int u) {
-        for (Set<Integer> vGrp : sets) {
+    public Set<VM> getAssociatedVGroup(VM u) {
+        for (Set<VM> vGrp : sets) {
             if (vGrp.contains(u)) {
                 return vGrp;
             }
@@ -113,7 +115,7 @@ public class Split extends SatConstraint {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder("split(vms=[");
-        for (Iterator<Set<Integer>> ite = sets.iterator(); ite.hasNext(); ) {
+        for (Iterator<Set<VM>> ite = sets.iterator(); ite.hasNext(); ) {
             b.append(ite.next());
             if (ite.hasNext()) {
                 b.append(", ");

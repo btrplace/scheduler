@@ -46,9 +46,9 @@ public class CSingleResourceCapacityTest implements PremadeElements {
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).get();
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5, 5);
-        rc.setVMConsumption(vm1, 3);
-        rc.setVMConsumption(vm2, 3);
-        rc.setVMConsumption(vm3, 1);
+        rc.setConsumption(vm1, 3);
+        rc.setConsumption(vm2, 3);
+        rc.setConsumption(vm3, 1);
 
         mo.attach(rc);
 
@@ -67,9 +67,9 @@ public class CSingleResourceCapacityTest implements PremadeElements {
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
 
         ShareableResource rc = new ShareableResource("cpu", 5, 5);
-        rc.setVMConsumption(vm1, 3);
-        rc.setVMConsumption(vm2, 1);
-        rc.setVMConsumption(vm3, 1);
+        rc.setConsumption(vm1, 3);
+        rc.setConsumption(vm2, 1);
+        rc.setConsumption(vm3, 1);
 
         mo.attach(rc);
 
@@ -90,9 +90,9 @@ public class CSingleResourceCapacityTest implements PremadeElements {
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5, 5);
-        rc.setVMConsumption(vm1, 3);
-        rc.setVMConsumption(vm2, 3);
-        rc.setVMConsumption(vm3, 1);
+        rc.setConsumption(vm1, 3);
+        rc.setConsumption(vm2, 3);
+        rc.setConsumption(vm3, 1);
 
         mo.attach(rc);
 
@@ -110,10 +110,10 @@ public class CSingleResourceCapacityTest implements PremadeElements {
         Model mo = new DefaultModel();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1).run(n2, vm2, vm3).ready(vm4).get();
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5, 5);
-        rc.setVMConsumption(vm1, 3);
-        rc.setVMConsumption(vm2, 1);
-        rc.setVMConsumption(vm3, 1);
-        rc.setVMConsumption(vm4, 3);
+        rc.setConsumption(vm1, 3);
+        rc.setConsumption(vm2, 1);
+        rc.setConsumption(vm3, 1);
+        rc.setConsumption(vm4, 3);
 
         mo.attach(rc);
 

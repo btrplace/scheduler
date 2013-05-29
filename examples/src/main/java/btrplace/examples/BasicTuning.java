@@ -98,7 +98,7 @@ public class BasicTuning implements Example {
         DurationEvaluator ev = new DurationEvaluator() {
             @Override
             public int evaluate(Model mo, int e) {
-                return rcMem.getVMConsumption(e) + 3;
+                return rcMem.getConsumption(e) + 3;
             }
         };
         //Associate the evaluator to an action.
@@ -142,8 +142,8 @@ public class BasicTuning implements Example {
             mapping.addOnlineNode(n);
 
             //Each node provides a 10GB bandwidth and 32 GB RAM to its VMs
-            rcBW.setNodeCapacity(n, 10);
-            rcMem.setNodeCapacity(n, 32);
+            rcBW.setCapacity(n, 10);
+            rcMem.setCapacity(n, 32);
         }
 
         for (int i = 0; i < 600; i++) {
@@ -152,8 +152,8 @@ public class BasicTuning implements Example {
             mapping.addRunningVM(vm, nodes.get(i % nodes.size()));
 
             //Each VM uses currently a 1GB bandwidth and 1,2 or 3 GB RAM
-            rcBW.setVMConsumption(vm, 1);
-            rcMem.setVMConsumption(vm, i % 5 + 1);
+            rcBW.setConsumption(vm, 1);
+            rcMem.setConsumption(vm, i % 5 + 1);
         }
 
         mo.attach(rcBW);

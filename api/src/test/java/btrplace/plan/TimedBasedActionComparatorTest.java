@@ -17,6 +17,9 @@
 
 package btrplace.plan;
 
+import btrplace.model.DefaultModel;
+import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.plan.event.Action;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -35,10 +38,13 @@ public class TimedBasedActionComparatorTest {
 
     private static Random rnd = new Random();
 
+    private static Model mo = new DefaultModel();
+    VM vm = mo.newVM();
+
     @Test
     public void testPrecedence() {
-        Action a = new MockAction(rnd.nextInt(), 0, 4);
-        Action b = new MockAction(rnd.nextInt(), 4, 10);
+        Action a = new MockAction(vm, 0, 4);
+        Action b = new MockAction(vm, 4, 10);
         Assert.assertTrue(startCmp.compare(a, b) < 0);
         Assert.assertTrue(startCmp.compare(b, a) > 0);
 
@@ -49,8 +55,8 @@ public class TimedBasedActionComparatorTest {
 
     @Test
     public void testEquality() {
-        Action a = new MockAction(rnd.nextInt(), 0, 4);
-        Action b = new MockAction(rnd.nextInt(), 0, 4);
+        Action a = new MockAction(vm, 0, 4);
+        Action b = new MockAction(vm, 0, 4);
         Assert.assertEquals(startCmp.compare(a, b), 0);
 
         Assert.assertEquals(stopCmp.compare(a, b), 0);
@@ -58,8 +64,8 @@ public class TimedBasedActionComparatorTest {
 
     @Test
     public void testEqualityWithSimultaneousDisallowed() {
-        Action a = new MockAction(rnd.nextInt(), 0, 4);
-        Action b = new MockAction(rnd.nextInt(), 0, 4);
+        Action a = new MockAction(vm, 0, 4);
+        Action b = new MockAction(vm, 0, 4);
         Assert.assertNotEquals(new TimedBasedActionComparator(true, true).compare(a, b), 0);
         Assert.assertNotEquals(new TimedBasedActionComparator(false, true).compare(a, b), 0);
 
@@ -67,16 +73,16 @@ public class TimedBasedActionComparatorTest {
 
     @Test
     public void testOverlap1() {
-        Action a = new MockAction(rnd.nextInt(), 0, 4);
-        Action b = new MockAction(rnd.nextInt(), 2, 4);
+        Action a = new MockAction(vm, 0, 4);
+        Action b = new MockAction(vm, 2, 4);
         Assert.assertTrue(startCmp.compare(a, b) < 0);
         Assert.assertTrue(stopCmp.compare(a, b) < 0);
     }
 
     @Test
     public void testOverlap2() {
-        Action a = new MockAction(rnd.nextInt(), 0, 4);
-        Action b = new MockAction(rnd.nextInt(), 0, 3);
+        Action a = new MockAction(vm, 0, 4);
+        Action b = new MockAction(vm, 0, 3);
         Assert.assertTrue(startCmp.compare(a, b) > 0);
         Assert.assertTrue(stopCmp.compare(a, b) > 0);
     }

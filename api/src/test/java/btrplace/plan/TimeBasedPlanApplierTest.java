@@ -17,9 +17,7 @@
 
 package btrplace.plan;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.event.Allocate;
 import btrplace.plan.event.BootNode;
@@ -29,6 +27,8 @@ import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.List;
+
 /**
  * Unit tests {@link TimeBasedPlanApplier}.
  *
@@ -36,27 +36,31 @@ import org.testng.annotations.Test;
  */
 public class TimeBasedPlanApplierTest implements PremadeElements {
 
-    private static ReconfigurationPlan makePlan() {
-        Model mo = new DefaultModel();
-        Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOfflineNode(n4);
+    static Model mo = new DefaultModel();
+    static List<VM> vms = Util.newVMs(mo, 10);
+    static List<Node> ns = Util.newNodes(mo, 10);
 
-        map.addRunningVM(vm1, n3);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addRunningVM(vm4, n2);
-        BootNode bN4 = new BootNode(n4, 3, 5);
-        MigrateVM mVM1 = new MigrateVM(vm1, n3, n4, 6, 7);
-        Allocate aVM3 = new Allocate(vm3, n2, "cpu", 7, 8, 9);
-        MigrateVM mVM2 = new MigrateVM(vm2, n1, n2, 1, 3);
-        MigrateVM mVM4 = new MigrateVM(vm4, n2, n3, 1, 7);
-        ShutdownNode sN1 = new ShutdownNode(n1, 5, 7);
+
+    private static ReconfigurationPlan makePlan() {
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addOnlineNode(ns.get(2));
+        map.addOfflineNode(ns.get(3));
+
+        map.addRunningVM(vms.get(0), ns.get(2));
+        map.addRunningVM(vms.get(1), ns.get(0));
+        map.addRunningVM(vms.get(2), ns.get(1));
+        map.addRunningVM(vms.get(3), ns.get(1));
+        BootNode bN4 = new BootNode(ns.get(3), 3, 5);
+        MigrateVM mVM1 = new MigrateVM(vms.get(0), ns.get(2), ns.get(3), 6, 7);
+        Allocate aVM3 = new Allocate(vms.get(2), ns.get(1), "cpu", 7, 8, 9);
+        MigrateVM mVM2 = new MigrateVM(vms.get(1), ns.get(0), ns.get(1), 1, 3);
+        MigrateVM mVM4 = new MigrateVM(vms.get(3), ns.get(1), ns.get(2), 1, 7);
+        ShutdownNode sN1 = new ShutdownNode(ns.get(0), 5, 7);
 
         ShareableResource rc = new ShareableResource("cpu");
-        rc.setVMConsumption(vm3, 3);
+        rc.setConsumption(vms.get(2), 3);
 
         mo.attach(rc);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
@@ -72,15 +76,16 @@ public class TimeBasedPlanApplierTest implements PremadeElements {
     @Test
     public void testApply() {
         ReconfigurationPlan plan = makePlan();
+        Model mo = plan.getOrigin();
         Model res = new DependencyBasedPlanApplier().apply(plan);
         Mapping resMapping = res.getMapping();
-        Assert.assertTrue(resMapping.getOfflineNodes().contains(n1));
-        Assert.assertTrue(resMapping.getOnlineNodes().contains(n4));
+        Assert.assertTrue(resMapping.getOfflineNodes().contains(ns.get(0)));
+        Assert.assertTrue(resMapping.getOnlineNodes().contains(ns.get(3)));
         ShareableResource rc = (ShareableResource) res.getView(ShareableResource.VIEW_ID_BASE + "cpu");
-        Assert.assertEquals(rc.getVMConsumption(vm3), 7);
-        Assert.assertEquals(resMapping.getVMLocation(vm1), n4);
-        Assert.assertEquals(resMapping.getVMLocation(vm2), n2);
-        Assert.assertEquals(resMapping.getVMLocation(vm4), n3);
+        Assert.assertEquals(rc.getConsumption(vms.get(2)), 7);
+        Assert.assertEquals(resMapping.getVMLocation(vms.get(0)), ns.get(3));
+        Assert.assertEquals(resMapping.getVMLocation(vms.get(1)), ns.get(1));
+        Assert.assertEquals(resMapping.getVMLocation(vms.get(3)), ns.get(2));
     }
 
     @Test

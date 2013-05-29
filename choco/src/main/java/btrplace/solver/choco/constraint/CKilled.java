@@ -58,7 +58,7 @@ public class CKilled implements ChocoSatConstraint {
         Set<Integer> bad = new HashSet<>();
         Mapping map = m.getMapping();
         for (int vm : cstr.getInvolvedVMs()) {
-            if (map.containsVM(vm)) {
+            if (map.contains(vm)) {
                 bad.add(vm);
             }
         }

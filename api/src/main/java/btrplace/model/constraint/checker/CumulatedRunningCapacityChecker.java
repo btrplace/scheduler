@@ -19,13 +19,13 @@ package btrplace.model.constraint.checker;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.CumulatedRunningCapacity;
 import btrplace.plan.event.*;
 
 import java.util.HashSet;
 import java.util.Set;
-
-;
 
 /**
  * Checker for the {@link btrplace.model.constraint.CumulatedRunningCapacity} constraint
@@ -37,7 +37,7 @@ public class CumulatedRunningCapacityChecker extends AllowAllConstraintChecker<C
 
     private int usage;
 
-    private Set<Integer> srcRunnings;
+    private Set<VM> srcRunnings;
 
     private int qty;
 
@@ -51,14 +51,14 @@ public class CumulatedRunningCapacityChecker extends AllowAllConstraintChecker<C
         qty = c.getAmount();
     }
 
-    private boolean leave(int n) {
+    private boolean leave(Node n) {
         if (getConstraint().isContinuous() && getNodes().contains(n)) {
             usage--;
         }
         return true;
     }
 
-    private boolean arrive(int n) {
+    private boolean arrive(Node n) {
         return !(getConstraint().isContinuous() && getNodes().contains(n) && usage++ == qty);
     }
 
@@ -105,7 +105,7 @@ public class CumulatedRunningCapacityChecker extends AllowAllConstraintChecker<C
         if (getConstraint().isContinuous()) {
             int nb = 0;
             Mapping map = mo.getMapping();
-            for (int n : getNodes()) {
+            for (Node n : getNodes()) {
                 nb += map.getRunningVMs(n).size();
                 if (nb > qty) {
                     return false;
@@ -121,7 +121,7 @@ public class CumulatedRunningCapacityChecker extends AllowAllConstraintChecker<C
     public boolean endsWith(Model mo) {
         int nb = 0;
         Mapping map = mo.getMapping();
-        for (int n : getNodes()) {
+        for (Node n : getNodes()) {
             nb += map.getRunningVMs(n).size();
             if (nb > qty) {
                 return false;

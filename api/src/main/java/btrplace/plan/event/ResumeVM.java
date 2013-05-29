@@ -20,6 +20,8 @@ package btrplace.plan.event;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 
 import java.util.Objects;
 
@@ -31,9 +33,9 @@ import java.util.Objects;
  */
 public class ResumeVM extends Action implements VMStateTransition, RunningVMPlacement {
 
-    private int vm;
+    private VM vm;
 
-    private int src, dst;
+    private Node src, dst;
 
     /**
      * Make a new resume action.
@@ -44,7 +46,7 @@ public class ResumeVM extends Action implements VMStateTransition, RunningVMPlac
      * @param st   the moment the action starts.
      * @param end  the moment the action finish
      */
-    public ResumeVM(int vm, int from, int to, int st, int end) {
+    public ResumeVM(VM vm, Node from, Node to, int st, int end) {
         super(st, end);
         this.vm = vm;
         this.src = from;
@@ -52,12 +54,12 @@ public class ResumeVM extends Action implements VMStateTransition, RunningVMPlac
     }
 
     @Override
-    public int getVM() {
+    public VM getVM() {
         return vm;
     }
 
     @Override
-    public int getDestinationNode() {
+    public Node getDestinationNode() {
         return dst;
     }
 
@@ -66,7 +68,7 @@ public class ResumeVM extends Action implements VMStateTransition, RunningVMPlac
      *
      * @return the node identifier
      */
-    public int getSourceNode() {
+    public Node getSourceNode() {
         return src;
     }
 
@@ -98,9 +100,9 @@ public class ResumeVM extends Action implements VMStateTransition, RunningVMPlac
             return true;
         } else if (o.getClass() == this.getClass()) {
             ResumeVM that = (ResumeVM) o;
-            return this.vm == that.vm &&
-                    this.src == that.src &&
-                    this.dst == that.dst &&
+            return this.vm.equals(that.vm) &&
+                    this.src.equals(that.src) &&
+                    this.dst.equals(that.dst) &&
                     this.getStart() == that.getStart() &&
                     this.getEnd() == that.getEnd();
         }

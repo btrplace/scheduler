@@ -83,7 +83,7 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
                     Slice c = a.getCSlice();
                     Slice d = a.getDSlice();
                     if (c != null) {
-                        cUse.add(rcm.getSourceResource().getVMConsumption(vmId));
+                        cUse.add(rcm.getSourceResource().getConsumption(vmId));
                     }
                     if (d != null) {
                         dUse.add(rcm.getVMsAllocation()[rp.getVMIdx(vmId)]);
@@ -112,7 +112,7 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
         int remainder = cstr.getAmount();
         for (int n : cstr.getInvolvedNodes()) {
             for (int v : map.getRunningVMs(n)) {
-                remainder -= rc.getVMConsumption(v);
+                remainder -= rc.getConsumption(v);
                 if (remainder < 0) {
                     for (int n2 : cstr.getInvolvedNodes()) {
                         bad.addAll(map.getRunningVMs(n2));

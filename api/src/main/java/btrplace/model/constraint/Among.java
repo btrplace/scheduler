@@ -17,6 +17,8 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.AmongChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
@@ -40,7 +42,7 @@ public class Among extends SatConstraint {
     /**
      * Set of set of nodes.
      */
-    private Set<Set<Integer>> pGrps;
+    private Set<Set<Node>> pGrps;
 
 
     /**
@@ -49,7 +51,7 @@ public class Among extends SatConstraint {
      * @param vms       the group of VMs
      * @param phyGroups the candidate group of nodes.
      */
-    public Among(Set<Integer> vms, Set<Set<Integer>> phyGroups) {
+    public Among(Set<VM> vms, Set<Set<Node>> phyGroups) {
         this(vms, phyGroups, false);
 
     }
@@ -61,7 +63,7 @@ public class Among extends SatConstraint {
      * @param phyGroups  the candidate group of nodes.
      * @param continuous {@code true} for a continuous restriction
      */
-    public Among(Set<Integer> vms, Set<Set<Integer>> phyGroups, boolean continuous) {
+    public Among(Set<VM> vms, Set<Set<Node>> phyGroups, boolean continuous) {
         super(vms, null, continuous);
         this.pGrps = phyGroups;
     }
@@ -72,8 +74,8 @@ public class Among extends SatConstraint {
      * @param u the node identifier
      * @return the group of nodes if exists, {@code null} otherwise
      */
-    public Set<Integer> getAssociatedPGroup(int u) {
-        for (Set<Integer> pGrp : pGrps) {
+    public Set<Node> getAssociatedPGroup(Node u) {
+        for (Set<Node> pGrp : pGrps) {
             if (pGrp.contains(u)) {
                 return pGrp;
             }
@@ -82,9 +84,9 @@ public class Among extends SatConstraint {
     }
 
     @Override
-    public Collection<Integer> getInvolvedNodes() {
-        Set<Integer> s = new HashSet<>();
-        for (Set<Integer> x : pGrps) {
+    public Collection<Node> getInvolvedNodes() {
+        Set<Node> s = new HashSet<>();
+        for (Set<Node> x : pGrps) {
             s.addAll(x);
         }
         return s;
@@ -95,7 +97,7 @@ public class Among extends SatConstraint {
      *
      * @return the groups
      */
-    public Set<Set<Integer>> getGroupsOfNodes() {
+    public Set<Set<Node>> getGroupsOfNodes() {
         return pGrps;
     }
 
@@ -125,7 +127,7 @@ public class Among extends SatConstraint {
         StringBuilder b = new StringBuilder("among(");
         b.append("vms=").append(getInvolvedVMs());
         b.append(", nodes=[");
-        for (Iterator<Set<Integer>> ite = pGrps.iterator(); ite.hasNext(); ) {
+        for (Iterator<Set<Node>> ite = pGrps.iterator(); ite.hasNext(); ) {
             b.append(ite.next());
             if (ite.hasNext()) {
                 b.append(", ");

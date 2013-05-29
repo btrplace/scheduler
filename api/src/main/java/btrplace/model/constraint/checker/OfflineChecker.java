@@ -19,10 +19,9 @@ package btrplace.model.constraint.checker;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
 import btrplace.model.constraint.Offline;
 import btrplace.plan.event.BootNode;
-
-;
 
 /**
  * Checker for the {@link btrplace.model.constraint.Offline} constraint
@@ -49,7 +48,7 @@ public class OfflineChecker extends AllowAllConstraintChecker<Offline> {
     @Override
     public boolean endsWith(Model mo) {
         Mapping c = mo.getMapping();
-        for (int n : getNodes()) {
+        for (Node n : getNodes()) {
             if (!c.getOfflineNodes().contains(n)) {
                 return false;
             }

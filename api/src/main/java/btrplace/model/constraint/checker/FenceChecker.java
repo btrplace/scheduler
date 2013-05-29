@@ -19,12 +19,11 @@ package btrplace.model.constraint.checker;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.model.constraint.Fence;
 import btrplace.plan.event.RunningVMPlacement;
 
 import java.util.Set;
-
-;
 
 /**
  * Checker for the {@link btrplace.model.constraint.Fence} constraint
@@ -54,8 +53,8 @@ public class FenceChecker extends AllowAllConstraintChecker<Fence> {
     @Override
     public boolean endsWith(Model mo) {
         Mapping c = mo.getMapping();
-        Set<Integer> runnings = c.getRunningVMs();
-        for (int vm : getVMs()) {
+        Set<VM> runnings = c.getRunningVMs();
+        for (VM vm : getVMs()) {
             if (runnings.contains(vm) && !getNodes().contains(c.getVMLocation(vm))) {
                 return false;
             }

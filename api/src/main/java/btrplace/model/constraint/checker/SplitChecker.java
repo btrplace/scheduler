@@ -17,9 +17,7 @@
 
 package btrplace.model.constraint.checker;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.MappingUtils;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.Split;
 import btrplace.plan.event.RunningVMPlacement;
 
@@ -38,7 +36,7 @@ public class SplitChecker extends AllowAllConstraintChecker<Split> {
     /**
      * The group of VMs.
      */
-    private List<Set<Integer>> vGroups;
+    private List<Set<VM>> vGroups;
 
     private Model mockModel;
 
@@ -50,7 +48,7 @@ public class SplitChecker extends AllowAllConstraintChecker<Split> {
     public SplitChecker(Split s) {
         super(s);
         vGroups = new ArrayList<>(s.getSets());
-        for (Set<Integer> set : vGroups) {
+        for (Set<VM> set : vGroups) {
             track(set);
         }
     }
@@ -73,13 +71,13 @@ public class SplitChecker extends AllowAllConstraintChecker<Split> {
     }
 
     private boolean checkModel() {
-        for (Set<Integer> vGroup : vGroups) {
-            for (int vmId : vGroup) {
+        for (Set<VM> vGroup : vGroups) {
+            for (VM vmId : vGroup) {
                 if (mockModel.getMapping().getRunningVMs().contains(vmId)) {
                     //Get the hosting server
                     //Check if only hosts VMs in its group
-                    int nId = mockModel.getMapping().getVMLocation(vmId);
-                    for (int vm : mockModel.getMapping().getRunningVMs(nId)) {
+                    Node nId = mockModel.getMapping().getVMLocation(vmId);
+                    for (VM vm : mockModel.getMapping().getRunningVMs(nId)) {
                         if (getVMs().contains(vm) && !vGroup.contains(vm)) {
                             return false;
                         }

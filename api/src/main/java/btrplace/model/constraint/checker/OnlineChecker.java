@@ -19,10 +19,9 @@ package btrplace.model.constraint.checker;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
 import btrplace.model.constraint.Online;
 import btrplace.plan.event.ShutdownNode;
-
-;
 
 /**
  * Checker for the {@link btrplace.model.constraint.Online} constraint
@@ -49,7 +48,7 @@ public class OnlineChecker extends AllowAllConstraintChecker<Online> {
     @Override
     public boolean endsWith(Model mo) {
         Mapping c = mo.getMapping();
-        for (int n : getNodes()) {
+        for (Node n : getNodes()) {
             if (!c.getOnlineNodes().contains(n)) {
                 return false;
             }

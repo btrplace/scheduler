@@ -17,7 +17,7 @@
 
 package btrplace.plan.event;
 
-;
+import btrplace.model.VM;
 
 /**
  * A event to apply on a VM.
@@ -31,5 +31,5 @@ public interface VMEvent extends Event {
      *
      * @return the VM identifier
      */
-    int getVM();
+    VM getVM();
 }

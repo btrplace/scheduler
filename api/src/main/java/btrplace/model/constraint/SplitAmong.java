@@ -17,6 +17,8 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.model.constraint.checker.SplitAmongChecker;
 
@@ -42,12 +44,12 @@ public class SplitAmong extends SatConstraint {
     /**
      * Set of set of vms.
      */
-    private Set<Set<Integer>> vGrps;
+    private Set<Set<VM>> vGrps;
 
     /**
      * Set of set of nodes.
      */
-    private Set<Set<Integer>> pGrps;
+    private Set<Set<Node>> pGrps;
 
     /**
      * Make a new constraint having a discrete restriction.
@@ -55,7 +57,7 @@ public class SplitAmong extends SatConstraint {
      * @param vGrps the set of set of VMs. Sets of VMs must be disjoint
      * @param pGrps the set of set of nodes. Sets of nodes must be disjoint
      */
-    public SplitAmong(Set<Set<Integer>> vGrps, Set<Set<Integer>> pGrps) {
+    public SplitAmong(Set<Set<VM>> vGrps, Set<Set<Node>> pGrps) {
         this(vGrps, pGrps, false);
     }
 
@@ -67,25 +69,25 @@ public class SplitAmong extends SatConstraint {
      * @param pGrps      the set of set of nodes. Sets of nodes must be disjoint
      * @param continuous {@code true} for a continuous restriction
      */
-    public SplitAmong(Set<Set<Integer>> vGrps, Set<Set<Integer>> pGrps, boolean continuous) {
+    public SplitAmong(Set<Set<VM>> vGrps, Set<Set<Node>> pGrps, boolean continuous) {
         super(null, null, continuous);
         this.vGrps = vGrps;
         this.pGrps = pGrps;
     }
 
     @Override
-    public Collection<Integer> getInvolvedVMs() {
-        Set<Integer> s = new HashSet<>();
-        for (Set<Integer> x : vGrps) {
+    public Collection<VM> getInvolvedVMs() {
+        Set<VM> s = new HashSet<>();
+        for (Set<VM> x : vGrps) {
             s.addAll(x);
         }
         return s;
     }
 
     @Override
-    public Collection<Integer> getInvolvedNodes() {
-        Set<Integer> s = new HashSet<>();
-        for (Set<Integer> x : pGrps) {
+    public Collection<Node> getInvolvedNodes() {
+        Set<Node> s = new HashSet<>();
+        for (Set<Node> x : pGrps) {
             s.addAll(x);
         }
         return s;
@@ -96,7 +98,7 @@ public class SplitAmong extends SatConstraint {
      *
      * @return the groups
      */
-    public Set<Set<Integer>> getGroupsOfVMs() {
+    public Set<Set<VM>> getGroupsOfVMs() {
         return vGrps;
     }
 
@@ -105,7 +107,7 @@ public class SplitAmong extends SatConstraint {
      *
      * @return the groups
      */
-    public Set<Set<Integer>> getGroupsOfNodes() {
+    public Set<Set<Node>> getGroupsOfNodes() {
         return pGrps;
     }
 
@@ -115,8 +117,8 @@ public class SplitAmong extends SatConstraint {
      * @param u the node
      * @return the associated group of nodes if exists, {@code null} otherwise
      */
-    public Set<Integer> getAssociatedPGroup(int u) {
-        for (Set<Integer> pGrp : pGrps) {
+    public Set<Node> getAssociatedPGroup(Node u) {
+        for (Set<Node> pGrp : pGrps) {
             if (pGrp.contains(u)) {
                 return pGrp;
             }
@@ -130,8 +132,8 @@ public class SplitAmong extends SatConstraint {
      * @param u the VM
      * @return the associated group of VMs if exists, {@code null} otherwise
      */
-    public Set<Integer> getAssociatedVGroup(int u) {
-        for (Set<Integer> vGrp : vGrps) {
+    public Set<VM> getAssociatedVGroup(VM u) {
+        for (Set<VM> vGrp : vGrps) {
             if (vGrp.contains(u)) {
                 return vGrp;
             }
@@ -162,14 +164,14 @@ public class SplitAmong extends SatConstraint {
     public String toString() {
         StringBuilder b = new StringBuilder("splitAmong(");
         b.append("vms=[");
-        for (Iterator<Set<Integer>> ite = vGrps.iterator(); ite.hasNext(); ) {
+        for (Iterator<Set<VM>> ite = vGrps.iterator(); ite.hasNext(); ) {
             b.append(ite.next());
             if (ite.hasNext()) {
                 b.append(", ");
             }
         }
         b.append("], nodes=[");
-        for (Iterator<Set<Integer>> ite = pGrps.iterator(); ite.hasNext(); ) {
+        for (Iterator<Set<Node>> ite = pGrps.iterator(); ite.hasNext(); ) {
             b.append(ite.next());
             if (ite.hasNext()) {
                 b.append(", ");

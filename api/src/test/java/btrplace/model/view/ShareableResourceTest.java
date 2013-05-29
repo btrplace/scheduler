@@ -17,6 +17,7 @@
 
 package btrplace.model.view;
 
+import btrplace.model.*;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -31,6 +32,10 @@ import java.util.*;
 public class ShareableResourceTest implements PremadeElements {
 
     private static Random rnd = new Random();
+
+    private static Model mo = new DefaultModel();
+    private static List<VM> vms = Util.newVMs(mo, 10);
+    private static List<Node> nodes = Util.newNodes(mo, 10);
 
     @Test
     public void testInstantiation() {
@@ -47,24 +52,25 @@ public class ShareableResourceTest implements PremadeElements {
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testDefinition() {
         ShareableResource rc = new ShareableResource("foo");
-        Assert.assertFalse(rc.consumptionDefined(vm1));
-        Assert.assertEquals(rc.getVMConsumption(vm1), rc.getDefaultConsumption());
+        Assert.assertFalse(rc.consumptionDefined(vms.get(0)));
+        Assert.assertEquals(rc.getConsumption(vms.get(0)), rc.getDefaultConsumption());
 
-        rc.setVMConsumption(vm1, 3);
-        Assert.assertTrue(rc.consumptionDefined(vm1));
-        Assert.assertEquals(rc.getVMConsumption(vm1), 3);
+        rc.setConsumption(vms.get(0), 3);
+        Assert.assertTrue(rc.consumptionDefined(vms.get(0)));
+        Assert.assertEquals(rc.getConsumption(vms.get(0)), 3);
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testGets() {
+        Model mo = new DefaultModel();
         ShareableResource rc = new ShareableResource("foo");
-        List<Integer> ids = new ArrayList<>(10);
+        List<Node> ids = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
-            int id = rnd.nextInt();
+            Node id = mo.newNode();
             ids.add(id);
-            rc.setNodeCapacity(id, i);
+            rc.setCapacity(id, i);
         }
-        List<Integer> values = rc.getNodesCapacity(ids);
+        List<Integer> values = rc.getCapacities(ids);
         for (int i = 0; i < 10; i++) {
             Assert.assertEquals(values.get(i), (Integer) i);
         }
@@ -73,79 +79,54 @@ public class ShareableResourceTest implements PremadeElements {
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testDefined() {
         ShareableResource rc = new ShareableResource("foo");
-        List<Integer> ids = new ArrayList<>(10);
-        for (int i = 0; i < 10; i++) {
-            int id = rnd.nextInt();
-            ids.add(id);
-            rc.setVMConsumption(id, i);
-        }
-        Assert.assertTrue(rc.getDefinedVMs().containsAll(ids) && rc.getDefinedVMs().size() == ids.size());
+        Model mo = new DefaultModel();
+        VM v = mo.newVM();
+        Node n = mo.newNode();
+        rc.setConsumption(v, v.id());
+        rc.setCapacity(n, n.id());
+        Assert.assertTrue(rc.capacityDefined(n));
+        Assert.assertTrue(rc.consumptionDefined(v));
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testUnset() {
         ShareableResource rc = new ShareableResource("foo");
-        rc.setVMConsumption(vm1, 3);
-        Assert.assertTrue(rc.unsetVM(vm1));
-        Assert.assertFalse(rc.consumptionDefined(vm1));
+        rc.setConsumption(vms.get(0), 3);
+        Assert.assertTrue(rc.unset(vms.get(0)));
+        Assert.assertFalse(rc.consumptionDefined(vms.get(0)));
 
-        //Next, id is not defined so not 'unsetable'
-        Assert.assertFalse(rc.unsetVM(vm1));
+        Assert.assertFalse(rc.unset(vms.get(0)));
 
-    }
+        rc.setCapacity(nodes.get(0), 3);
+        Assert.assertTrue(rc.unset(nodes.get(0)));
+        Assert.assertFalse(rc.capacityDefined(nodes.get(0)));
 
-    @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
-    public void testMax() {
-        ShareableResource rc = new ShareableResource("foo");
-        rc.setVMConsumption(vm1, 3);
+        Assert.assertFalse(rc.unset(nodes.get(0)));
 
-        rc.setVMConsumption(vm2, 7);
-        Assert.assertEquals(7, rc.max(rc.getDefinedVMs(), true, false));
-        Set<Integer> x = new HashSet<>();
-        x.add(vm1);
-        Assert.assertEquals(3, rc.max(x, true, false));
-        rc.setVMConsumption(vm1, -15);
-        x.add(vm3);
-        Assert.assertEquals(-15, rc.max(x, true, false)); //If the default value would have been counted, it would have return 0
-    }
-
-    @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
-    public void testMin() {
-        ShareableResource rc = new ShareableResource("foo");
-        rc.setVMConsumption(vm1, 3);
-
-        rc.setVMConsumption(vm2, 7);
-        Assert.assertEquals(3, rc.min(rc.getDefinedVMs(), true, false));
-        Set<Integer> x = new HashSet<>();
-        x.add(vm2);
-        Assert.assertEquals(7, rc.min(x, true, false));
-        rc.setVMConsumption(vm2, 18);
-        x.add(vm3);
-        Assert.assertEquals(18, rc.min(x, true, false)); //If the default value would have been counted, it would have return 0
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testSum() {
         ShareableResource rc = new ShareableResource("foo", -5, -5); //-5 as default no code value to detect its presence in sum (would be an error)
 
-        rc.setVMConsumption(vm1, 3);
-        rc.setVMConsumption(vm2, 7);
-        Assert.assertEquals(10, rc.sum(rc.getDefinedVMs(), true, false));
-        Set<Integer> x = new HashSet<>();
-        x.add(vm2);
-        Assert.assertEquals(7, rc.sum(x, true, false));
-        rc.setVMConsumption(vm2, 18);
+        rc.setConsumption(vms.get(0), 3);
+        rc.setConsumption(vms.get(1), 7);
+        Assert.assertEquals(10, rc.sumConsumptions(rc.getDefinedVMs(), false));
+        Set<VM> x = new HashSet<>();
+        x.add(vms.get(1));
+        Assert.assertEquals(7, rc.sumConsumptions(x, false));
+        rc.setConsumption(vms.get(1), 18);
         x.clear();
-        x.add(vm3);
-        Assert.assertEquals(0, rc.sum(x, true, false));
+        x.add(vms.get(2));
+        Assert.assertEquals(0, rc.sumConsumptions(x, false));
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testToString() {
         ShareableResource rc = new ShareableResource("foo");
-        rc.setVMConsumption(vm1, 1);
-        rc.setVMConsumption(vm2, 2);
-        rc.setVMConsumption(vm3, 3);
+        rc.setConsumption(vms.get(0), 1);
+        rc.setConsumption(vms.get(1), 2);
+        rc.setConsumption(vms.get(2), 3);
         //Simple test to be resilient
         Assert.assertNotNull(rc.toString());
     }
@@ -169,29 +150,29 @@ public class ShareableResourceTest implements PremadeElements {
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition", "testEqualsAndHashCode"})
     public void testClone() {
         ShareableResource rc1 = new ShareableResource("foo", -1, -1);
-        rc1.setVMConsumption(vm1, 3);
-        rc1.setVMConsumption(vm2, 5);
+        rc1.setConsumption(vms.get(0), 3);
+        rc1.setConsumption(vms.get(1), 5);
         ShareableResource rc2 = rc1.clone();
         Assert.assertEquals(rc1, rc2);
         Assert.assertEquals(rc1.hashCode(), rc2.hashCode());
 
-        rc1.setVMConsumption(vm1, -5);
+        rc1.setConsumption(vms.get(0), -5);
         Assert.assertNotEquals(rc1, rc2);
 
-        rc1.setVMConsumption(vm1, 3);
+        rc1.setConsumption(vms.get(0), 3);
         Assert.assertEquals(rc1, rc2);
 
-        rc2.unsetVM(vm2);
+        rc2.unset(vms.get(1));
         Assert.assertNotEquals(rc1, rc2);
     }
 
     @Test
     public void testSubstitution() {
         ShareableResource rc = new ShareableResource("foo");
-        rc.setVMConsumption(vm1, 3);
-        Assert.assertTrue(rc.substituteVM(vm1, vm10));
-        Assert.assertEquals(rc.getVMConsumption(vm10), 3);
-        Assert.assertTrue(rc.substituteVM(vm3, vm7));
-        Assert.assertEquals(rc.getVMConsumption(vm7), 0);
+        rc.setConsumption(vms.get(0), 3);
+        Assert.assertTrue(rc.substituteVM(vms.get(0), vms.get(0)));
+        Assert.assertEquals(rc.getConsumption(vms.get(0)), 3);
+        Assert.assertTrue(rc.substituteVM(vms.get(2), vms.get(6)));
+        Assert.assertEquals(rc.getConsumption(vms.get(6)), 0);
     }
 }

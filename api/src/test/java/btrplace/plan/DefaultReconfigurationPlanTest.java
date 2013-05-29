@@ -17,12 +17,13 @@
 
 package btrplace.plan;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.plan.event.Action;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -83,11 +84,13 @@ public class DefaultReconfigurationPlanTest implements PremadeElements {
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testAddDurationAndSize() {
         Model m = new DefaultModel();
+        List<VM> vms = Util.newVMs(m, 10);
+        List<Node> ns = Util.newNodes(m, 10);
         DefaultReconfigurationPlan p = new DefaultReconfigurationPlan(m);
-        Action a1 = new MockAction(vm1, 1, 3);
-        Action a2 = new MockAction(vm2, 2, 4);
-        Action a3 = new MockAction(vm3, 2, 4);
-        Action a4 = new MockAction(vm4, 1, 3);
+        Action a1 = new MockAction(vms.get(0), 1, 3);
+        Action a2 = new MockAction(vms.get(1), 2, 4);
+        Action a3 = new MockAction(vms.get(2), 2, 4);
+        Action a4 = new MockAction(vms.get(3), 1, 3);
         Assert.assertTrue(p.add(a1));
         Assert.assertEquals(3, p.getDuration());
         Assert.assertTrue(p.add(a4));

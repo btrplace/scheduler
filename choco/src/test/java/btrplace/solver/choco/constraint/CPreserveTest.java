@@ -50,9 +50,9 @@ public class CPreserveTest implements PremadeElements {
         Model mo = new DefaultModel();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
         btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 7, 7);
-        rc.setVMConsumption(vm1, 3);
-        rc.setVMConsumption(vm2, 3);
-        rc.setVMConsumption(vm3, 5);
+        rc.setConsumption(vm1, 3);
+        rc.setConsumption(vm2, 3);
+        rc.setConsumption(vm3, 5);
 
         Preserve p = new Preserve(map.getAllVMs(), "cpu", 5);
 
@@ -76,10 +76,10 @@ public class CPreserveTest implements PremadeElements {
         Model mo = new DefaultModel();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1, vm2).run(n2, vm3).get();
         ShareableResource rc = new ShareableResource("cpu", 10, 10);
-        rc.setNodeCapacity(n1, 7);
-        rc.setVMConsumption(vm1, 3);
-        rc.setVMConsumption(vm2, 3);
-        rc.setVMConsumption(vm3, 5);
+        rc.setCapacity(n1, 7);
+        rc.setConsumption(vm1, 3);
+        rc.setConsumption(vm2, 3);
+        rc.setConsumption(vm3, 5);
 
         Preserve pr = new Preserve(map.getAllVMs(), "cpu", 5);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();

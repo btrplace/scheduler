@@ -17,20 +17,17 @@
 
 package btrplace.model.constraint.checker;
 
+import btrplace.model.*;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.event.*;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-;
 
 /**
  * Unit tests for {@link DenyMyVMsActions}.
@@ -40,56 +37,62 @@ import static org.mockito.Mockito.when;
 public class DenyMyVMsActionsTest implements PremadeElements {
 
     static SatConstraint cstr = mock(SatConstraint.class);
-    static Set<Integer> ns = new HashSet<>(Arrays.asList(n1, n2, n3));
-    static Set<Integer> vs = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
 
     @Test
     public void testInstantiation() {
+        Model mo = new DefaultModel();
+        List<VM> vms = Util.newVMs(mo, 10);
+        List<Node> ns = Util.newNodes(mo, 10);
+
         when(cstr.getInvolvedNodes()).thenReturn(ns);
-        when(cstr.getInvolvedVMs()).thenReturn(vs);
+        when(cstr.getInvolvedVMs()).thenReturn(vms);
 
         DenyMyVMsActions c = new DenyMyVMsActions(cstr) {
         };
         Assert.assertEquals(c.getConstraint(), cstr);
-        Assert.assertEquals(c.getVMs(), vs);
+        Assert.assertEquals(c.getVMs(), vms);
         Assert.assertEquals(c.getNodes(), ns);
     }
 
     @Test
     public void testDeny() {
+        Model mo = new DefaultModel();
+        List<VM> vms = Util.newVMs(mo, 10);
+        List<Node> ns = Util.newNodes(mo, 10);
+
         when(cstr.getInvolvedNodes()).thenReturn(ns);
-        when(cstr.getInvolvedVMs()).thenReturn(vs);
+        when(cstr.getInvolvedVMs()).thenReturn(vms);
 
         DenyMyVMsActions c = new DenyMyVMsActions(cstr) {
         };
 
-        Assert.assertFalse(c.start(new BootVM(vm1, n1, 0, 3)));
-        Assert.assertTrue(c.start(new BootVM(vm9, n1, 0, 3)));
-        Assert.assertFalse(c.start(new ResumeVM(vm1, n1, n2, 0, 3)));
-        Assert.assertTrue(c.start(new ResumeVM(vm7, n1, n2, 0, 3)));
-        Assert.assertFalse(c.start(new MigrateVM(vm1, n1, n2, 0, 3)));
-        Assert.assertTrue(c.start(new MigrateVM(vm5, n1, n2, 0, 3)));
+        Assert.assertFalse(c.start(new BootVM(vms.get(0), ns.get(0), 0, 3)));
+        Assert.assertTrue(c.start(new BootVM(vms.get(8), ns.get(0), 0, 3)));
+        Assert.assertFalse(c.start(new ResumeVM(vms.get(0), ns.get(0), ns.get(1), 0, 3)));
+        Assert.assertTrue(c.start(new ResumeVM(vms.get(6), ns.get(0), ns.get(1), 0, 3)));
+        Assert.assertFalse(c.start(new MigrateVM(vms.get(0), ns.get(0), ns.get(1), 0, 3)));
+        Assert.assertTrue(c.start(new MigrateVM(vms.get(4), ns.get(0), ns.get(1), 0, 3)));
 
 
-        Assert.assertFalse(c.start(new SuspendVM(vm1, n1, n2, 0, 3)));
-        Assert.assertTrue(c.start(new SuspendVM(vm10, n1, n2, 0, 3)));
+        Assert.assertFalse(c.start(new SuspendVM(vms.get(0), ns.get(0), ns.get(1), 0, 3)));
+        Assert.assertTrue(c.start(new SuspendVM(vms.get(0), ns.get(0), ns.get(1), 0, 3)));
 
-        Assert.assertFalse(c.start(new ShutdownVM(vm1, n1, 0, 3)));
-        Assert.assertTrue(c.start(new ShutdownVM(vm6, n1, 0, 3)));
+        Assert.assertFalse(c.start(new ShutdownVM(vms.get(0), ns.get(0), 0, 3)));
+        Assert.assertTrue(c.start(new ShutdownVM(vms.get(5), ns.get(0), 0, 3)));
 
-        Assert.assertFalse(c.start(new KillVM(vm1, n1, 0, 3)));
-        Assert.assertTrue(c.start(new KillVM(vm7, n1, 0, 3)));
+        Assert.assertFalse(c.start(new KillVM(vms.get(0), ns.get(0), 0, 3)));
+        Assert.assertTrue(c.start(new KillVM(vms.get(6), ns.get(0), 0, 3)));
 
-        Assert.assertFalse(c.start(new ForgeVM(vm1, 0, 3)));
-        Assert.assertTrue(c.start(new ForgeVM(vm7, 0, 3)));
+        Assert.assertFalse(c.start(new ForgeVM(vms.get(0), 0, 3)));
+        Assert.assertTrue(c.start(new ForgeVM(vms.get(6), 0, 3)));
 
-        Assert.assertFalse(c.start(new Allocate(vm1, n1, "cpu", 3, 4, 5)));
-        Assert.assertTrue(c.start(new Allocate(vm6, n1, "cpu", 3, 4, 5)));
+        Assert.assertFalse(c.start(new Allocate(vms.get(0), ns.get(0), "cpu", 3, 4, 5)));
+        Assert.assertTrue(c.start(new Allocate(vms.get(5), ns.get(0), "cpu", 3, 4, 5)));
 
-        Assert.assertFalse(c.consume(new SubstitutedVMEvent(vm1, vm3)));
-        Assert.assertTrue(c.consume(new SubstitutedVMEvent(vm10, vm3)));
+        Assert.assertFalse(c.consume(new SubstitutedVMEvent(vms.get(0), vms.get(2))));
+        Assert.assertTrue(c.consume(new SubstitutedVMEvent(vms.get(0), vms.get(2))));
 
-        Assert.assertFalse(c.consume(new AllocateEvent(vm3, "cpu", 3)));
-        Assert.assertTrue(c.consume(new AllocateEvent(vm10, "cpu", 3)));
+        Assert.assertFalse(c.consume(new AllocateEvent(vms.get(2), "cpu", 3)));
+        Assert.assertTrue(c.consume(new AllocateEvent(vms.get(0), "cpu", 3)));
     }
 }

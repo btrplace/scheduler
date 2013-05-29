@@ -18,6 +18,7 @@
 package btrplace.plan.event;
 
 import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.model.view.ShareableResource;
 
 import java.util.Objects;
@@ -32,7 +33,7 @@ public class AllocateEvent implements VMEvent {
 
     private int qty;
 
-    private int vm;
+    private VM vm;
 
     private String rc;
 
@@ -43,14 +44,14 @@ public class AllocateEvent implements VMEvent {
      * @param rcId   the resource identifier
      * @param amount the amount of resources to allocate
      */
-    public AllocateEvent(int vmId, String rcId, int amount) {
+    public AllocateEvent(VM vmId, String rcId, int amount) {
         this.vm = vmId;
         this.rc = rcId;
         this.qty = amount;
     }
 
     @Override
-    public int getVM() {
+    public VM getVM() {
         return vm;
     }
 
@@ -78,7 +79,7 @@ public class AllocateEvent implements VMEvent {
         if (r == null) {
             return false;
         }
-        r.setVMConsumption(vm, qty);
+        r.setConsumption(vm, qty);
         return true;
     }
 

@@ -18,6 +18,7 @@
 package btrplace.plan;
 
 import btrplace.model.Model;
+import btrplace.model.Node;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.event.*;
 
@@ -31,11 +32,11 @@ import java.util.*;
  */
 public class DependenciesExtractor implements ActionVisitor {
 
-    private Map<Action, Integer> demandingint;
+    private Map<Action, Node> demandingNodes;
 
-    private Map<Integer, Set<Action>> freeings;
+    private Map<Node, Set<Action>> freeings;
 
-    private Map<Integer, Set<Action>> demandings;
+    private Map<Node, Set<Action>> demandings;
 
     private Model origin;
 
@@ -47,11 +48,11 @@ public class DependenciesExtractor implements ActionVisitor {
     public DependenciesExtractor(Model o) {
         demandings = new HashMap<>();
         freeings = new HashMap<>();
-        this.demandingint = new HashMap<>();
+        this.demandingNodes = new HashMap<>();
         origin = o;
     }
 
-    private Set<Action> getFreeings(int u) {
+    private Set<Action> getFreeings(Node u) {
         Set<Action> actions = freeings.get(u);
         if (actions == null) {
             actions = new HashSet<>();
@@ -60,7 +61,7 @@ public class DependenciesExtractor implements ActionVisitor {
         return actions;
     }
 
-    private Set<Action> getDemandings(int u) {
+    private Set<Action> getDemandings(Node u) {
         Set<Action> actions = demandings.get(u);
         if (actions == null) {
             actions = new HashSet<>();
@@ -79,9 +80,9 @@ public class DependenciesExtractor implements ActionVisitor {
         if (rc == null) {
             return false;
         }
-        int oldAmount = rc.getVMConsumption(a.getVM());
+        int oldAmount = rc.getConsumption(a.getVM());
         if (newAmount > oldAmount) {
-            demandingint.put(a, a.getHost());
+            demandingNodes.put(a, a.getHost());
             return getDemandings(a.getHost()).add(a);
         } else {
             return getFreeings(a.getHost()).add(a);
@@ -101,7 +102,7 @@ public class DependenciesExtractor implements ActionVisitor {
     @Override
     public Boolean visit(BootVM a) {
         boolean ret = getDemandings(a.getDestinationNode()).add(a);
-        demandingint.put(a, a.getDestinationNode());
+        demandingNodes.put(a, a.getDestinationNode());
         return ret;
     }
 
@@ -121,21 +122,21 @@ public class DependenciesExtractor implements ActionVisitor {
     @Override
     public Boolean visit(MigrateVM a) {
         boolean ret = getFreeings(a.getSourceNode()).add(a) && getDemandings(a.getDestinationNode()).add(a);
-        demandingint.put(a, a.getDestinationNode());
+        demandingNodes.put(a, a.getDestinationNode());
         return ret;
     }
 
     @Override
     public Boolean visit(ResumeVM a) {
         boolean ret = getDemandings(a.getDestinationNode()).add(a);
-        demandingint.put(a, a.getDestinationNode());
+        demandingNodes.put(a, a.getDestinationNode());
         return ret;
     }
 
     @Override
     public Boolean visit(ShutdownNode a) {
         boolean ret = getDemandings(a.getNode()).add(a);
-        demandingint.put(a, a.getNode());
+        demandingNodes.put(a, a.getNode());
         return ret;
     }
 
@@ -161,10 +162,10 @@ public class DependenciesExtractor implements ActionVisitor {
      * @return its dependencies, may be empty
      */
     public Set<Action> getDependencies(Action a) {
-        if (!demandingint.containsKey(a)) {
+        if (!demandingNodes.containsKey(a)) {
             return Collections.emptySet();
         } else {
-            int n = demandingint.get(a);
+            Node n = demandingNodes.get(a);
             Set<Action> allActions = getFreeings(n);
             Set<Action> pre = new HashSet<>();
             for (Action action : allActions) {

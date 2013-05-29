@@ -19,6 +19,7 @@ package btrplace.model.constraint.checker;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
 import btrplace.model.constraint.SingleResourceCapacity;
 import btrplace.model.view.ShareableResource;
 
@@ -46,8 +47,8 @@ public class SingleResourceCapacityChecker extends AllowAllConstraintChecker<Sin
             return false;
         }
         Mapping map = i.getMapping();
-        for (int n : getNodes()) {
-            if (rc.sum(map.getRunningVMs(n), true, true) > getConstraint().getAmount()) {
+        for (Node n : getNodes()) {
+            if (rc.sumConsumptions(map.getRunningVMs(n), true) > getConstraint().getAmount()) {
                 return false;
             }
         }

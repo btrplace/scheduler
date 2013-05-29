@@ -192,22 +192,22 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
     public void testNonHomogeneousIncrease() throws SolverException {
         ShareableResource cpu = new ShareableResource("cpu");
         ShareableResource mem = new ShareableResource("mem");
-        cpu.setNodeCapacity(n1, 10);
-        mem.setNodeCapacity(n1, 10);
-        cpu.setNodeCapacity(n2, 10);
-        mem.setNodeCapacity(n2, 10);
+        cpu.setCapacity(n1, 10);
+        mem.setCapacity(n1, 10);
+        cpu.setCapacity(n2, 10);
+        mem.setCapacity(n2, 10);
 
-        cpu.setVMConsumption(vm1, 5);
-        mem.setVMConsumption(vm1, 4);
+        cpu.setConsumption(vm1, 5);
+        mem.setConsumption(vm1, 4);
 
-        cpu.setVMConsumption(vm2, 3);
-        mem.setVMConsumption(vm2, 8);
+        cpu.setConsumption(vm2, 3);
+        mem.setConsumption(vm2, 8);
 
-        cpu.setVMConsumption(vm3, 5);
-        cpu.setVMConsumption(vm3, 4);
+        cpu.setConsumption(vm3, 5);
+        cpu.setConsumption(vm3, 4);
 
-        cpu.setVMConsumption(vm4, 4);
-        cpu.setVMConsumption(vm4, 5);
+        cpu.setConsumption(vm4, 4);
+        cpu.setConsumption(vm4, 5);
 
         //vm1 requires more cpu resources, but fewer mem resources
         Preserve pCPU = new Preserve(new HashSet<>(Arrays.asList(vm1, vm3)), "cpu", 7);

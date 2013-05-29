@@ -17,12 +17,12 @@
 
 package btrplace.plan.event;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -34,12 +34,15 @@ import static org.mockito.Mockito.verify;
  */
 public class ForgeVMTest implements PremadeElements {
 
-    static ForgeVM a = new ForgeVM(vm1, 3, 5);
+    static Model mo = new DefaultModel();
+    static List<Node> ns = Util.newNodes(mo, 10);
+    static List<VM> vms = Util.newVMs(mo, 10);
+    static ForgeVM a = new ForgeVM(vms.get(0), 3, 5);
 
     @Test
     public void testInstantiate() {
-        ForgeVM a = new ForgeVM(vm1, 3, 5);
-        Assert.assertEquals(vm1, a.getVM());
+        ForgeVM a = new ForgeVM(vms.get(0), 3, 5);
+        Assert.assertEquals(vms.get(0), a.getVM());
         Assert.assertEquals(3, a.getStart());
         Assert.assertEquals(5, a.getEnd());
         Assert.assertFalse(a.toString().contains("null"));
@@ -52,33 +55,33 @@ public class ForgeVMTest implements PremadeElements {
     public void testApply() {
         Model m = new DefaultModel();
         Mapping map = m.getMapping();
-        ForgeVM a = new ForgeVM(vm1, 3, 5);
+        ForgeVM a = new ForgeVM(vms.get(0), 3, 5);
         Assert.assertTrue(a.apply(m));
-        Assert.assertTrue(map.getReadyVMs().contains(vm1));
+        Assert.assertTrue(map.getReadyVMs().contains(vms.get(0)));
         Assert.assertFalse(a.apply(m));
 
-        map.addOnlineNode(n1);
-        map.addRunningVM(vm1, n1);
+        map.addOnlineNode(ns.get(0));
+        map.addRunningVM(vms.get(0), ns.get(0));
         Assert.assertFalse(a.apply(m));
-        Assert.assertTrue(map.getRunningVMs().contains(vm1));
+        Assert.assertTrue(map.getRunningVMs().contains(vms.get(0)));
 
-        map.addSleepingVM(vm1, n1);
+        map.addSleepingVM(vms.get(0), ns.get(0));
         Assert.assertFalse(a.apply(m));
-        Assert.assertTrue(map.getSleepingVMs().contains(vm1));
+        Assert.assertTrue(map.getSleepingVMs().contains(vms.get(0)));
 
     }
 
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testEquals() {
-        ForgeVM a = new ForgeVM(vm1, 3, 5);
-        ForgeVM b = new ForgeVM(vm1, 3, 5);
+        ForgeVM a = new ForgeVM(vms.get(0), 3, 5);
+        ForgeVM b = new ForgeVM(vms.get(0), 3, 5);
         Assert.assertFalse(a.equals(new Object()));
         Assert.assertTrue(a.equals(a));
         Assert.assertEquals(a, b);
         Assert.assertEquals(a.hashCode(), b.hashCode());
-        Assert.assertNotSame(a, new ForgeVM(vm1, 4, 5));
-        Assert.assertNotSame(a, new ForgeVM(vm1, 3, 4));
-        Assert.assertNotSame(a, new ForgeVM(vm2, 3, 5));
+        Assert.assertNotSame(a, new ForgeVM(vms.get(0), 4, 5));
+        Assert.assertNotSame(a, new ForgeVM(vms.get(0), 3, 4));
+        Assert.assertNotSame(a, new ForgeVM(vms.get(1), 3, 5));
     }
 
     @Test

@@ -19,6 +19,8 @@ package btrplace.model.constraint.checker;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.Gather;
 import btrplace.plan.event.RunningVMPlacement;
 
@@ -30,7 +32,7 @@ import btrplace.plan.event.RunningVMPlacement;
  */
 public class GatherChecker extends AllowAllConstraintChecker<Gather> {
 
-    private int usedInContinuous;
+    private Node usedInContinuous;
 
     /**
      * Make a new checker.
@@ -39,16 +41,16 @@ public class GatherChecker extends AllowAllConstraintChecker<Gather> {
      */
     public GatherChecker(Gather g) {
         super(g);
-        usedInContinuous = -1;
+        usedInContinuous = null;
     }
 
     @Override
     public boolean startsWith(Model mo) {
         if (getConstraint().isContinuous()) {
             Mapping map = mo.getMapping();
-            for (int vm : getVMs()) {
+            for (VM vm : getVMs()) {
                 if (map.getRunningVMs().contains(vm)) {
-                    if (usedInContinuous == -1) {
+                    if (usedInContinuous == null) {
                         usedInContinuous = map.getVMLocation(vm);
                     } else if (usedInContinuous != map.getVMLocation(vm)) {
                         return false;
@@ -62,9 +64,9 @@ public class GatherChecker extends AllowAllConstraintChecker<Gather> {
     @Override
     public boolean startRunningVMPlacement(RunningVMPlacement a) {
         if (getConstraint().isContinuous() && getVMs().contains(a.getVM())) {
-            if (usedInContinuous != -1 && a.getDestinationNode() != usedInContinuous) {
+            if (usedInContinuous != null && a.getDestinationNode() != usedInContinuous) {
                 return false;
-            } else if (usedInContinuous == -1) {
+            } else if (usedInContinuous == null) {
                 usedInContinuous = a.getDestinationNode();
             }
         }
@@ -73,11 +75,11 @@ public class GatherChecker extends AllowAllConstraintChecker<Gather> {
 
     @Override
     public boolean endsWith(Model mo) {
-        int used = -1;
+        Node used = null;
         Mapping map = mo.getMapping();
-        for (int vm : getVMs()) {
+        for (VM vm : getVMs()) {
             if (map.getRunningVMs().contains(vm)) {
-                if (used == -1) {
+                if (used == null) {
                     used = map.getVMLocation(vm);
                 } else if (used != map.getVMLocation(vm)) {
                     return false;

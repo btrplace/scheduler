@@ -17,14 +17,14 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.OverbookChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
-
-;
 
 /**
  * A constraint to specify and overbooking factor between
@@ -55,7 +55,7 @@ public class Overbook extends SatConstraint {
      * @param rcId  the resource identifier
      * @param r     the overbooking ratio
      */
-    public Overbook(Set<Integer> nodes, String rcId, double r) {
+    public Overbook(Set<Node> nodes, String rcId, double r) {
         this(nodes, rcId, r, true);
     }
 
@@ -67,8 +67,8 @@ public class Overbook extends SatConstraint {
      * @param r          the overbooking ratio
      * @param continuous {@code true} for a continuous restriction
      */
-    public Overbook(Set<Integer> nodes, String rcId, double r, boolean continuous) {
-        super(Collections.<Integer>emptySet(), nodes, continuous);
+    public Overbook(Set<Node> nodes, String rcId, double r, boolean continuous) {
+        super(Collections.<VM>emptySet(), nodes, continuous);
         this.rcId = rcId;
         this.ratio = r;
     }

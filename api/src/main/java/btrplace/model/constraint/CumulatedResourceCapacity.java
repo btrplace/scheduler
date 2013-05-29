@@ -17,14 +17,14 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.CumulatedResourceCapacityChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
-
-;
 
 /**
  * Restrict the cumulated amount of virtual resources consumed by
@@ -52,7 +52,7 @@ public class CumulatedResourceCapacity extends SatConstraint {
      * @param rc      the resource to consider
      * @param amount  the total amount of resource consumed by all the VMs running on the given servers
      */
-    public CumulatedResourceCapacity(Set<Integer> servers, String rc, int amount) {
+    public CumulatedResourceCapacity(Set<Node> servers, String rc, int amount) {
         this(servers, rc, amount, false);
     }
 
@@ -64,8 +64,8 @@ public class CumulatedResourceCapacity extends SatConstraint {
      * @param amount     the total amount of resource consumed by all the VMs running on the given servers
      * @param continuous {@code true} for a continuous restriction.
      */
-    public CumulatedResourceCapacity(Set<Integer> servers, String rc, int amount, boolean continuous) {
-        super(Collections.<Integer>emptySet(), servers, continuous);
+    public CumulatedResourceCapacity(Set<Node> servers, String rc, int amount, boolean continuous) {
+        super(Collections.<VM>emptySet(), servers, continuous);
         this.qty = amount;
         this.rcId = rc;
     }

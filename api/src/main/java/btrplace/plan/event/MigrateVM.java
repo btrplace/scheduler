@@ -19,6 +19,8 @@ package btrplace.plan.event;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 
 import java.util.Objects;
 
@@ -29,9 +31,9 @@ import java.util.Objects;
  */
 public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
 
-    private int vm;
+    private VM vm;
 
-    private int src, dst;
+    private Node src, dst;
 
 
     /**
@@ -43,7 +45,7 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
      * @param st  the moment the action will consume
      * @param ed  the moment the action will stop
      */
-    public MigrateVM(int vm, int src, int dst, int st, int ed) {
+    public MigrateVM(VM vm, Node src, Node dst, int st, int ed) {
         super(st, ed);
         this.vm = vm;
         this.src = src;
@@ -51,7 +53,7 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
     }
 
     @Override
-    public int getDestinationNode() {
+    public Node getDestinationNode() {
         return dst;
     }
 
@@ -60,12 +62,12 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
      *
      * @return the node identifier
      */
-    public int getSourceNode() {
+    public Node getSourceNode() {
         return src;
     }
 
     @Override
-    public int getVM() {
+    public VM getVM() {
         return vm;
     }
 
@@ -105,9 +107,9 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
             return true;
         } else if (o.getClass() == this.getClass()) {
             MigrateVM that = (MigrateVM) o;
-            return this.vm == that.vm &&
-                    this.src == that.src &&
-                    this.dst == that.dst &&
+            return this.vm.equals(that.vm) &&
+                    this.src.equals(that.src) &&
+                    this.dst.equals(that.dst) &&
                     this.getStart() == that.getStart() &&
                     this.getEnd() == that.getEnd();
         }

@@ -51,14 +51,14 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
         Set<Integer> elems = rc.getDefinedVMs();
         JSONObject values = new JSONObject();
         for (int u : elems) {
-            values.put(Integer.toString(u), rc.getVMConsumption(u));
+            values.put(Integer.toString(u), rc.getConsumption(u));
         }
         o.put("vms", values);
 
         elems = rc.getDefinedNodes();
         values = new JSONObject();
         for (int u : elems) {
-            values.put(Integer.toString(u), rc.getNodeCapacity(u));
+            values.put(Integer.toString(u), rc.getCapacity(u));
         }
         o.put("nodes", values);
 
@@ -82,13 +82,13 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
         for (String k : values.keySet()) {
             int u = Integer.parseInt(k);
             int v = Integer.parseInt(values.get(k).toString());
-            rc.setVMConsumption(u, v);
+            rc.setConsumption(u, v);
         }
         values = (JSONObject) o.get("nodes");
         for (String k : values.keySet()) {
             int u = Integer.parseInt(k);
             int v = Integer.parseInt(values.get(k).toString());
-            rc.setNodeCapacity(u, v);
+            rc.setCapacity(u, v);
         }
 
         return rc;

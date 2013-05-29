@@ -56,11 +56,11 @@ public class COverbookTest implements PremadeElements {
         for (int i = 0; i < vms.length; i++) {
             if (i < nodes.length) {
                 nodes[i] = i;
-                rcCPU.setNodeCapacity(nodes[i], 2);
+                rcCPU.setCapacity(nodes[i], 2);
                 m.addOnlineNode(nodes[i]);
             }
             vms[i] = 100 + i;
-            rcCPU.setVMConsumption(vms[i], 1);
+            rcCPU.setConsumption(vms[i], 1);
 
             m.addReadyVM(vms[i]);
         }
@@ -94,11 +94,11 @@ public class COverbookTest implements PremadeElements {
         for (int i = 0; i < vms.length; i++) {
             if (i < nodes.length) {
                 nodes[i] = i;
-                rcCPU.setNodeCapacity(nodes[i], 2);
+                rcCPU.setCapacity(nodes[i], 2);
                 m.addOnlineNode(nodes[i]);
             }
             vms[i] = 100 + i;
-            rcCPU.setVMConsumption(vms[i], 1);
+            rcCPU.setConsumption(vms[i], 1);
 
             m.addReadyVM(vms[i]);
         }
@@ -129,11 +129,11 @@ public class COverbookTest implements PremadeElements {
         for (int i = 0; i < vms.length; i++) {
             if (i < nodes.length) {
                 nodes[i] = i;
-                rcMem.setNodeCapacity(nodes[i], 3);
+                rcMem.setCapacity(nodes[i], 3);
                 m.addOnlineNode(nodes[i]);
             }
             vms[i] = 100 + i;
-            rcMem.setVMConsumption(vms[i], 1);
+            rcMem.setConsumption(vms[i], 1);
             m.addReadyVM(vms[i]);
         }
         mo.attach(rcMem);
@@ -199,9 +199,9 @@ public class COverbookTest implements PremadeElements {
         Mapping map = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1, vm2).get();
 
         btrplace.model.view.ShareableResource rc = new ShareableResource("foo");
-        rc.setNodeCapacity(n1, 5);
-        rc.setVMConsumption(vm1, 3);
-        rc.setVMConsumption(vm2, 2);
+        rc.setCapacity(n1, 5);
+        rc.setConsumption(vm1, 3);
+        rc.setConsumption(vm2, 2);
         mo.attach(rc);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();

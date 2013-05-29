@@ -17,13 +17,13 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.GatherChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
 import java.util.Set;
-
-;
 
 /**
  * A constraint to force a set of VMs, if running, to be
@@ -44,7 +44,7 @@ public class Gather extends SatConstraint {
      *
      * @param vms the VMs to group
      */
-    public Gather(Set<Integer> vms) {
+    public Gather(Set<VM> vms) {
         this(vms, false);
     }
 
@@ -54,8 +54,8 @@ public class Gather extends SatConstraint {
      * @param vms        the VMs to group
      * @param continuous {@code true} for a continuous restriction
      */
-    public Gather(Set<Integer> vms, boolean continuous) {
-        super(vms, Collections.<Integer>emptySet(), continuous);
+    public Gather(Set<VM> vms, boolean continuous) {
+        super(vms, Collections.<Node>emptySet(), continuous);
     }
 
     @Override

@@ -17,12 +17,12 @@
 
 package btrplace.plan.event;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -34,14 +34,17 @@ import static org.mockito.Mockito.verify;
  */
 public class SuspendVMTest implements PremadeElements {
 
-    static SuspendVM a = new SuspendVM(vm1, n1, n2, 3, 5);
+    static Model mo = new DefaultModel();
+    static List<Node> ns = Util.newNodes(mo, 10);
+    static List<VM> vms = Util.newVMs(mo, 10);
+    static SuspendVM a = new SuspendVM(vms.get(0), ns.get(0), ns.get(1), 3, 5);
 
     @Test
     public void testInstantiate() {
 
-        Assert.assertEquals(vm1, a.getVM());
-        Assert.assertEquals(n1, a.getSourceNode());
-        Assert.assertEquals(n2, a.getDestinationNode());
+        Assert.assertEquals(vms.get(0), a.getVM());
+        Assert.assertEquals(ns.get(0), a.getSourceNode());
+        Assert.assertEquals(ns.get(1), a.getDestinationNode());
         Assert.assertEquals(3, a.getStart());
         Assert.assertEquals(5, a.getEnd());
         Assert.assertFalse(a.toString().contains("null"));
@@ -54,47 +57,47 @@ public class SuspendVMTest implements PremadeElements {
         Model m = new DefaultModel();
         Mapping map = m.getMapping();
 
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addRunningVM(vm1, n1);
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addRunningVM(vms.get(0), ns.get(0));
 
-        SuspendVM a = new SuspendVM(vm1, n1, n2, 3, 5);
+        SuspendVM a = new SuspendVM(vms.get(0), ns.get(0), ns.get(1), 3, 5);
         Assert.assertTrue(a.apply(m));
-        Assert.assertEquals(map.getVMLocation(vm1), n2);
-        Assert.assertTrue(map.getSleepingVMs().contains(vm1));
+        Assert.assertEquals(map.getVMLocation(vms.get(0)), ns.get(1));
+        Assert.assertTrue(map.getSleepingVMs().contains(vms.get(0)));
 
         Assert.assertFalse(a.apply(m));
-        Assert.assertEquals(map.getVMLocation(vm1), n2);
+        Assert.assertEquals(map.getVMLocation(vms.get(0)), ns.get(1));
 
-        map.addRunningVM(vm1, n2);
-        Assert.assertTrue(new SuspendVM(vm1, n2, n2, 3, 5).apply(m));
+        map.addRunningVM(vms.get(0), ns.get(1));
+        Assert.assertTrue(new SuspendVM(vms.get(0), ns.get(1), ns.get(1), 3, 5).apply(m));
 
-        Assert.assertFalse(new SuspendVM(vm1, n2, n1, 3, 5).apply(m));
+        Assert.assertFalse(new SuspendVM(vms.get(0), ns.get(1), ns.get(0), 3, 5).apply(m));
 
-        map.addReadyVM(vm1);
-        Assert.assertFalse(new SuspendVM(vm1, n2, n1, 3, 5).apply(m));
+        map.addReadyVM(vms.get(0));
+        Assert.assertFalse(new SuspendVM(vms.get(0), ns.get(1), ns.get(0), 3, 5).apply(m));
 
-        map.addOfflineNode(n1);
-        Assert.assertFalse(new SuspendVM(vm1, n2, n1, 3, 5).apply(m));
+        map.addOfflineNode(ns.get(0));
+        Assert.assertFalse(new SuspendVM(vms.get(0), ns.get(1), ns.get(0), 3, 5).apply(m));
 
-        map.removeNode(n1);
-        Assert.assertFalse(new SuspendVM(vm1, n2, n1, 3, 5).apply(m));
+        map.remove(ns.get(0));
+        Assert.assertFalse(new SuspendVM(vms.get(0), ns.get(1), ns.get(0), 3, 5).apply(m));
     }
 
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testEquals() {
-        SuspendVM a = new SuspendVM(vm1, n1, n2, 3, 5);
-        SuspendVM b = new SuspendVM(vm1, n1, n2, 3, 5);
+        SuspendVM a = new SuspendVM(vms.get(0), ns.get(0), ns.get(1), 3, 5);
+        SuspendVM b = new SuspendVM(vms.get(0), ns.get(0), ns.get(1), 3, 5);
         Assert.assertFalse(a.equals(new Object()));
         Assert.assertTrue(a.equals(a));
         Assert.assertEquals(a, b);
         Assert.assertEquals(a.hashCode(), b.hashCode());
 
-        Assert.assertNotSame(a, new SuspendVM(vm1, n1, n2, 4, 5));
-        Assert.assertNotSame(a, new SuspendVM(vm1, n1, n2, 3, 4));
-        Assert.assertNotSame(a, new SuspendVM(vm2, n1, n2, 3, 5));
-        Assert.assertNotSame(a, new SuspendVM(vm1, n3, n2, 3, 5));
-        Assert.assertNotSame(a, new SuspendVM(vm1, n1, n3, 3, 5));
+        Assert.assertNotSame(a, new SuspendVM(vms.get(0), ns.get(0), ns.get(1), 4, 5));
+        Assert.assertNotSame(a, new SuspendVM(vms.get(0), ns.get(0), ns.get(1), 3, 4));
+        Assert.assertNotSame(a, new SuspendVM(vms.get(1), ns.get(0), ns.get(1), 3, 5));
+        Assert.assertNotSame(a, new SuspendVM(vms.get(0), ns.get(2), ns.get(1), 3, 5));
+        Assert.assertNotSame(a, new SuspendVM(vms.get(0), ns.get(0), ns.get(2), 3, 5));
     }
 
     @Test

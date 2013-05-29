@@ -19,11 +19,10 @@ package btrplace.model.constraint.checker;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.model.constraint.Ready;
 import btrplace.plan.event.ForgeVM;
 import btrplace.plan.event.ShutdownVM;
-
-;
 
 /**
  * Checker for the {@link btrplace.model.constraint.Ready} constraint
@@ -55,7 +54,7 @@ public class ReadyChecker extends DenyMyVMsActions<Ready> {
     @Override
     public boolean endsWith(Model mo) {
         Mapping c = mo.getMapping();
-        for (int vm : getVMs()) {
+        for (VM vm : getVMs()) {
             if (!c.getReadyVMs().contains(vm)) {
                 return false;
             }

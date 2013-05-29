@@ -19,6 +19,8 @@ package btrplace.model.constraint.checker;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.Overbook;
 import btrplace.model.view.ShareableResource;
 
@@ -52,13 +54,13 @@ public class OverbookChecker extends AllowAllConstraintChecker<Overbook> {
         if (rc == null) {
             return false;
         }
-        for (int nId : getNodes()) {
+        for (Node nId : getNodes()) {
             if (cfg.getOnlineNodes().contains(nId)) {
                 //Server capacity with the ratio
-                double capa = rc.getNodeCapacity(nId) * ratio;
+                double capa = rc.getCapacity(nId) * ratio;
                 //Minus the VMs usage
-                for (int vmId : cfg.getRunningVMs(nId)) {
-                    capa -= rc.getVMConsumption(vmId);
+                for (VM vmId : cfg.getRunningVMs(nId)) {
+                    capa -= rc.getConsumption(vmId);
                     if (capa < 0) {
                         return false;
                     }

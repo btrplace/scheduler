@@ -72,9 +72,9 @@ public class LinearToAResourceDuration implements DurationEvaluator {
         }
         int x;
         if (onVM) {
-            x = r.getVMConsumption(e);
+            x = r.getConsumption(e);
         } else {
-            x = r.getNodeCapacity(e);
+            x = r.getCapacity(e);
         }
         return (int) (a * x + b);
     }

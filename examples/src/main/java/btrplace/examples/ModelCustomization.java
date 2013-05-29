@@ -73,7 +73,7 @@ public class ModelCustomization implements Example {
 
         @Override
         public int evaluate(Model mo, int e) {
-            return rc.getVMConsumption(e) * 2 + 3;
+            return rc.getConsumption(e) * 2 + 3;
         }
 
     }
@@ -88,9 +88,9 @@ public class ModelCustomization implements Example {
 
         ShareableResource rcMem = new ShareableResource("mem", 32, 1); //32GB by default for the nodes
 
-        rcMem.setVMConsumption(vm1, 1).setVMConsumption(vm2, 2).setVMConsumption(vm3, 3)
-                .setVMConsumption(vm4, 1).setVMConsumption(vm5, 2).setVMConsumption(vm6, 3)
-                .setVMConsumption(vm7, 1).setVMConsumption(vm8, 2).setVMConsumption(vm9, 3).setVMConsumption(vm10, 1);
+        rcMem.setConsumption(vm1, 1).setConsumption(vm2, 2).setConsumption(vm3, 3)
+                .setConsumption(vm4, 1).setConsumption(vm5, 2).setConsumption(vm6, 3)
+                .setConsumption(vm7, 1).setConsumption(vm8, 2).setConsumption(vm9, 3).setConsumption(vm10, 1);
 
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n1);

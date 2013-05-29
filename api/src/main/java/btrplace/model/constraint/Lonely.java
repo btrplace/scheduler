@@ -17,13 +17,13 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.LonelyChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
 import java.util.Set;
-
-;
 
 /**
  * A constraint to force all the given VMs, when running,
@@ -45,7 +45,7 @@ public class Lonely extends SatConstraint {
      *
      * @param vms the set of VMs to consider
      */
-    public Lonely(Set<Integer> vms) {
+    public Lonely(Set<VM> vms) {
         this(vms, false);
     }
 
@@ -55,8 +55,8 @@ public class Lonely extends SatConstraint {
      * @param vms        the set of VMs to consider
      * @param continuous {@code true} for a continuous restriction
      */
-    public Lonely(Set<Integer> vms, boolean continuous) {
-        super(vms, Collections.<Integer>emptySet(), continuous);
+    public Lonely(Set<VM> vms, boolean continuous) {
+        super(vms, Collections.<Node>emptySet(), continuous);
     }
 
     @Override

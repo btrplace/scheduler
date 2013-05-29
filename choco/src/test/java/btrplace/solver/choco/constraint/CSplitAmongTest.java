@@ -70,7 +70,7 @@ public class CSplitAmongTest implements PremadeElements {
         Assert.assertTrue(cs.getMisPlacedVMs(mo).isEmpty());
 
 
-        map.removeVM(vm7);
+        map.remove(vm7);
         map.addRunningVM(vm6, n5);
         //vg2 is on 2 group of nodes, the whole group is mis-placed
 

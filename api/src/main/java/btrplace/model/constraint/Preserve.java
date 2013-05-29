@@ -17,14 +17,14 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.PreserveChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
-
-;
 
 /**
  * Ensure the allocation of a given minimum amount of resources for
@@ -49,8 +49,8 @@ public class Preserve extends SatConstraint {
      * @param rcId   the resource identifier
      * @param amount the minimum amount of resource to allocate
      */
-    public Preserve(Set<Integer> vms, String rcId, int amount) {
-        super(vms, Collections.<Integer>emptySet(), false);
+    public Preserve(Set<VM> vms, String rcId, int amount) {
+        super(vms, Collections.<Node>emptySet(), false);
         this.rc = rcId;
         this.amount = amount;
     }

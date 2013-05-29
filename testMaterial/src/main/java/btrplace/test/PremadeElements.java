@@ -47,6 +47,4 @@ public interface PremadeElements {
     int n8 = -8;
     int n9 = -9;
     int n10 = -10;
-
-
 }

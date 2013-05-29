@@ -1,12 +1,34 @@
+/*
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ *
+ * This file is part of btrplace.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.plan;
 
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.Util;
+import btrplace.model.VM;
 import btrplace.plan.event.*;
 import btrplace.test.PremadeElements;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 
@@ -16,6 +38,9 @@ import static org.mockito.Mockito.*;
  * @author Fabien Hermenier
  */
 public class DefaultPlanApplierTest implements PremadeElements {
+
+    static List<VM> vms = Util.newVMs(10);
+    static List<Node> ns = Util.newNodes(10);
 
     @Test
     public void testEventCommittedListeners() {
@@ -31,39 +56,39 @@ public class DefaultPlanApplierTest implements PremadeElements {
         EventCommittedListener ev = mock(EventCommittedListener.class);
         app.addEventCommittedListener(ev);
 
-        BootVM b = new BootVM(vm1, n1, 0, 5);
+        BootVM b = new BootVM(vms.get(0), ns.get(0), 0, 5);
         app.fireAction(b);
         verify(ev, times(1)).committed(b);
 
-        ShutdownVM svm = new ShutdownVM(vm1, n1, 0, 5);
+        ShutdownVM svm = new ShutdownVM(vms.get(0), ns.get(0), 0, 5);
         app.fireAction(svm);
         verify(ev, times(1)).committed(svm);
 
-        BootNode bn = new BootNode(n1, 0, 5);
+        BootNode bn = new BootNode(ns.get(0), 0, 5);
         app.fireAction(bn);
         verify(ev, times(1)).committed(bn);
 
-        ShutdownNode sn = new ShutdownNode(n1, 0, 5);
+        ShutdownNode sn = new ShutdownNode(ns.get(0), 0, 5);
         app.fireAction(sn);
         verify(ev, times(1)).committed(sn);
 
-        SuspendVM susVM = new SuspendVM(vm1, n1, n2, 0, 5);
+        SuspendVM susVM = new SuspendVM(vms.get(0), ns.get(0), ns.get(1), 0, 5);
         app.fireAction(susVM);
         verify(ev, times(1)).committed(susVM);
 
-        ResumeVM resVM = new ResumeVM(vm1, n1, n2, 0, 5);
+        ResumeVM resVM = new ResumeVM(vms.get(0), ns.get(0), ns.get(1), 0, 5);
         app.fireAction(resVM);
         verify(ev, times(1)).committed(resVM);
 
-        MigrateVM miVM = new MigrateVM(vm1, n1, n2, 0, 5);
+        MigrateVM miVM = new MigrateVM(vms.get(0), ns.get(0), ns.get(1), 0, 5);
         app.fireAction(miVM);
         verify(ev, times(1)).committed(miVM);
 
-        KillVM kvm = new KillVM(vm1, n1, 0, 5);
+        KillVM kvm = new KillVM(vms.get(0), ns.get(0), 0, 5);
         app.fireAction(kvm);
         verify(ev, times(1)).committed(kvm);
 
-        ForgeVM fvm = new ForgeVM(vm1, 0, 5);
+        ForgeVM fvm = new ForgeVM(vms.get(0), 0, 5);
         app.fireAction(fvm);
         verify(ev, times(1)).committed(fvm);
     }
@@ -74,10 +99,10 @@ public class DefaultPlanApplierTest implements PremadeElements {
         EventCommittedListener ev = mock(EventCommittedListener.class);
         app.addEventCommittedListener(ev);
 
-        BootVM b = new BootVM(vm1, n1, 0, 5);
-        AllocateEvent pre = new AllocateEvent(vm1, "cpu", 7);
+        BootVM b = new BootVM(vms.get(0), ns.get(0), 0, 5);
+        AllocateEvent pre = new AllocateEvent(vms.get(0), "cpu", 7);
         b.addEvent(Action.Hook.pre, pre);
-        SubstitutedVMEvent post = new SubstitutedVMEvent(vm1, vm4);
+        SubstitutedVMEvent post = new SubstitutedVMEvent(vms.get(0), vms.get(3));
         b.addEvent(Action.Hook.post, post);
 
         InOrder order = inOrder(ev);

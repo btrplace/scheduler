@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.model;
+package btrplace.model.view;
 
-import btrplace.model.view.ShareableResource;
+import btrplace.model.VM;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -28,7 +28,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class ElementComparator implements Comparator<Integer> {
+public class VMConsumptionComparator implements Comparator<VM> {
 
     /**
      * The resources to use to make the comparison.
@@ -40,17 +40,14 @@ public class ElementComparator implements Comparator<Integer> {
      */
     private List<Integer> ascs;
 
-    private boolean compareVM;
-
     /**
      * Make a new comparator.
      * Comparison will be in ascending order
      *
-     * @param compareVM {@code true} to compare VMs. {@code false} for nodes
-     * @param rc        the resource to consider.
+     * @param rc the resource to consider.
      */
-    public ElementComparator(boolean compareVM, ShareableResource rc) {
-        this(compareVM, rc, true);
+    public VMConsumptionComparator(ShareableResource rc) {
+        this(rc, true);
     }
 
     /**
@@ -59,10 +56,9 @@ public class ElementComparator implements Comparator<Integer> {
      * @param rc  the resource to consider
      * @param asc {@code true} for an ascending comparison
      */
-    public ElementComparator(boolean compareVM, ShareableResource rc, boolean asc) {
+    public VMConsumptionComparator(ShareableResource rc, boolean asc) {
         this.rcs = new ArrayList<>();
         this.ascs = new ArrayList<>();
-        this.compareVM = compareVM;
 
         rcs.add(rc);
         ascs.add(asc ? 1 : -1);
@@ -75,22 +71,17 @@ public class ElementComparator implements Comparator<Integer> {
      * @param asc {@code true} for an ascending comparison
      * @return the current comparator
      */
-    public ElementComparator append(ShareableResource r, boolean asc) {
+    public VMConsumptionComparator append(ShareableResource r, boolean asc) {
         rcs.add(r);
         ascs.add(asc ? 1 : -1);
         return this;
     }
 
     @Override
-    public int compare(Integer o1, Integer o2) {
+    public int compare(VM v1, VM v2) {
         for (int i = 0; i < rcs.size(); i++) {
             ShareableResource rc = rcs.get(i);
-            int ret;
-            if (compareVM) {
-                ret = rc.getVMConsumption(o1) - rc.getVMConsumption(o2);
-            } else {
-                ret = rc.getNodeCapacity(o1) - rc.getNodeCapacity(o2);
-            }
+            int ret = rc.getConsumption(v1) - rc.getConsumption(v2);
             if (ret != 0) {
                 return ascs.get(i) * ret;
             }

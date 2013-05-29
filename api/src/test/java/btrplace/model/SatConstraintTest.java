@@ -22,7 +22,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.HashSet;
-import java.util.Random;
 
 /**
  * Basic tests for {@link btrplace.model.constraint.SatConstraint}.
@@ -31,13 +30,11 @@ import java.util.Random;
  */
 public class SatConstraintTest {
 
-    private static Random rnd = new Random();
-
     static class MockSatConstraints extends SatConstraint {
 
         public MockSatConstraints() {
-            super(new HashSet<Integer>(), new HashSet<Integer>(), false);
-            getInvolvedVMs().add(rnd.nextInt());
+            super(new HashSet<VM>(), new HashSet<Node>(), false);
+            getInvolvedVMs().add(new VM(5));
         }
 
         @Override

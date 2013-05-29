@@ -17,9 +17,7 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
@@ -29,6 +27,7 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -41,11 +40,15 @@ public class AmongTest implements PremadeElements {
     @Test
     public void testInstantiation() {
 
-        Set<Integer> s1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<Integer> s2 = new HashSet<>(Arrays.asList(n3));
-        Set<Set<Integer>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
-        Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        Among a = new Among(vms, pGrps);
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 10);
+        List<VM> vms = Util.newVMs(mo, 10);
+
+        Set<Node> s1 = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
+        Set<Node> s2 = new HashSet<>(Arrays.asList(ns.get(2)));
+        Set<Set<Node>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Set<VM> vg = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1), vms.get(2)));
+        Among a = new Among(vg, pGrps);
         Assert.assertNotNull(a.getChecker());
         Assert.assertEquals(a.getInvolvedVMs(), vms);
         Assert.assertEquals(a.getGroupsOfNodes(), pGrps);
@@ -57,25 +60,30 @@ public class AmongTest implements PremadeElements {
         Assert.assertTrue(a.setContinuous(true));
         Assert.assertTrue(a.setContinuous(false));
 
-        a = new Among(vms, pGrps, true);
+        a = new Among(vg, pGrps, true);
         Assert.assertTrue(a.isContinuous());
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsHashCode() {
 
-        Set<Integer> s1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<Integer> s2 = new HashSet<>(Arrays.asList(n3));
-        Set<Set<Integer>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
-        Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 10);
+        List<VM> vms = Util.newVMs(mo, 10);
 
-        Among a = new Among(vms, pGrps);
+
+        Set<Node> s1 = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
+        Set<Node> s2 = new HashSet<>(Arrays.asList(ns.get(2)));
+        Set<Set<Node>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Set<VM> vg = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1), vms.get(2)));
+
+        Among a = new Among(vg, pGrps);
         Assert.assertTrue(a.equals(a));
         Assert.assertTrue(a.equals(new Among(new HashSet<>(vms), pGrps)));
         Assert.assertEquals(a.hashCode(), new Among(new HashSet<>(vms), pGrps).hashCode());
-        Assert.assertFalse(a.equals(new Among(new HashSet<Integer>(), pGrps)));
-        Assert.assertFalse(a.equals(new Among(new HashSet<>(vms), new HashSet<Set<Integer>>())));
-        Among a2 = new Among(new HashSet<>(vms), new HashSet<Set<Integer>>());
+        Assert.assertFalse(a.equals(new Among(new HashSet<VM>(), pGrps)));
+        Assert.assertFalse(a.equals(new Among(new HashSet<>(vms), new HashSet<Set<Node>>())));
+        Among a2 = new Among(new HashSet<>(vms), new HashSet<Set<Node>>());
         a2.setContinuous(true);
         Assert.assertFalse(a.equals(a2));
     }
@@ -83,53 +91,61 @@ public class AmongTest implements PremadeElements {
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testDiscreteIsSatisfied() {
 
-        Set<Integer> s1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<Integer> s2 = new HashSet<>(Arrays.asList(n3));
-        Set<Set<Integer>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
-        Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-
-        Among a = new Among(vms, pGrps);
-
         Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 10);
+        List<VM> vms = Util.newVMs(mo, 10);
+
+        Set<Node> s1 = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
+        Set<Node> s2 = new HashSet<>(Arrays.asList(ns.get(2)));
+        Set<Set<Node>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Set<VM> vs = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1), vms.get(2)));
+
+        Among a = new Among(vs, pGrps);
+
         Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
-        map.addSleepingVM(vm3, n3);
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addOnlineNode(ns.get(2));
+        map.addRunningVM(vms.get(0), ns.get(0));
+        map.addRunningVM(vms.get(1), ns.get(1));
+        map.addSleepingVM(vms.get(2), ns.get(2));
 
         Assert.assertEquals(a.isSatisfied(mo), true);
-        map.addRunningVM(vm3, n3);
+        map.addRunningVM(vms.get(2), ns.get(2));
         Assert.assertEquals(a.isSatisfied(mo), false);
-        map.addSleepingVM(vm3, n2);
+        map.addSleepingVM(vms.get(2), ns.get(1));
         Assert.assertEquals(a.isSatisfied(mo), true);
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testContinuousIsSatisfied() {
 
-        Set<Integer> s1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<Integer> s2 = new HashSet<>(Arrays.asList(n3));
-        Set<Set<Integer>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
-        Set<Integer> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-
-        Among a = new Among(vms, pGrps, true);
-
         Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 10);
+        List<VM> vms = Util.newVMs(mo, 10);
+
+
+        Set<Node> s1 = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
+        Set<Node> s2 = new HashSet<>(Arrays.asList(ns.get(2)));
+        Set<Set<Node>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Set<VM> vs = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1), vms.get(2)));
+
+        Among a = new Among(vs, pGrps, true);
+
+
         Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
-        map.addRunningVM(vm3, n2);
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addOnlineNode(ns.get(2));
+        map.addRunningVM(vms.get(0), ns.get(0));
+        map.addRunningVM(vms.get(1), ns.get(1));
+        map.addRunningVM(vms.get(2), ns.get(1));
 
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(a.isSatisfied(plan), true);
 
-        plan.add(new MigrateVM(vm3, n2, n3, 0, 1));
-        plan.add(new MigrateVM(vm3, n3, n2, 1, 2));
+        plan.add(new MigrateVM(vms.get(2), ns.get(1), ns.get(2), 0, 1));
+        plan.add(new MigrateVM(vms.get(2), ns.get(2), ns.get(1), 1, 2));
         //At moment 1, the constraint will be violated
         Assert.assertEquals(a.isSatisfied(plan), false);
     }

@@ -19,6 +19,8 @@ package btrplace.model.constraint.checker;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.Spread;
 import btrplace.plan.event.*;
 
@@ -43,15 +45,15 @@ public class SpreadChecker extends AllowAllConstraintChecker<Spread> {
         denied = new HashSet<>();
     }
 
-    private Set<Integer> denied;
+    private Set<Node> denied;
 
     @Override
     public boolean startsWith(Model mo) {
         if (getConstraint().isContinuous()) {
             Mapping map = mo.getMapping();
-            for (int vm : getVMs()) {
-                int n = map.getVMLocation(vm);
-                if (n >= 0) {
+            for (VM vm : getVMs()) {
+                Node n = map.getVMLocation(vm);
+                if (n != null) {
                     denied.add(n);
                 }
             }
@@ -75,7 +77,7 @@ public class SpreadChecker extends AllowAllConstraintChecker<Spread> {
         unDenied(a.getVM(), a.getSourceNode());
     }
 
-    private void unDenied(int vm, int n) {
+    private void unDenied(VM vm, Node n) {
         if (getConstraint().isContinuous() && getVMs().contains(vm)) {
             denied.remove(n);
         }
@@ -98,9 +100,9 @@ public class SpreadChecker extends AllowAllConstraintChecker<Spread> {
 
     @Override
     public boolean endsWith(Model mo) {
-        Set<Integer> forbidden = new HashSet<>();
+        Set<Node> forbidden = new HashSet<>();
         Mapping map = mo.getMapping();
-        for (int vm : getVMs()) {
+        for (VM vm : getVMs()) {
             if (map.getRunningVMs().contains(vm)) {
                 if (!forbidden.add(map.getVMLocation(vm))) {
                     return false;

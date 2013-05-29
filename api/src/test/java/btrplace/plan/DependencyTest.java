@@ -17,12 +17,14 @@
 
 package btrplace.plan;
 
+import btrplace.model.DefaultModel;
+import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.plan.event.Action;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 
 /**
@@ -32,14 +34,15 @@ import java.util.Set;
  */
 public class DependencyTest {
 
-    private static Random rnd = new Random();
+    private static Model mo = new DefaultModel();
+    VM vm = mo.newVM();
 
     @Test
     public void testInstantiation() {
-        Action a = new MockAction(rnd.nextInt(), 1, 4);
+        Action a = new MockAction(vm, 1, 4);
         Set<Action> d = new HashSet<>();
-        d.add(new MockAction(rnd.nextInt(), 2, 5));
-        d.add(new MockAction(rnd.nextInt(), 3, 7));
+        d.add(new MockAction(vm, 2, 5));
+        d.add(new MockAction(vm, 3, 7));
         Dependency dep = new Dependency(a, d);
         Assert.assertEquals(dep.getAction(), a);
         Assert.assertEquals(dep.getDependencies(), d);

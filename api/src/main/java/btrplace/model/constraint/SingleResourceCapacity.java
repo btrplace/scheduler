@@ -17,14 +17,14 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.model.constraint.checker.SingleResourceCapacityChecker;
 
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
-
-;
 
 /**
  * Restrict the amount of virtual resources consumed by
@@ -52,7 +52,7 @@ public class SingleResourceCapacity extends SatConstraint {
      * @param rcId   the resource identifier
      * @param amount the maximum amount of resource to share among the hosted VMs
      */
-    public SingleResourceCapacity(Set<Integer> nodes, String rcId, int amount) {
+    public SingleResourceCapacity(Set<Node> nodes, String rcId, int amount) {
         this(nodes, rcId, amount, false);
     }
 
@@ -64,8 +64,8 @@ public class SingleResourceCapacity extends SatConstraint {
      * @param amount     the maximum amount of resource to share among the hosted VMs
      * @param continuous {@code true} for a continuous restriction
      */
-    public SingleResourceCapacity(Set<Integer> nodes, String rcId, int amount, boolean continuous) {
-        super(Collections.<Integer>emptySet(), nodes, continuous);
+    public SingleResourceCapacity(Set<Node> nodes, String rcId, int amount, boolean continuous) {
+        super(Collections.<VM>emptySet(), nodes, continuous);
         this.rcId = rcId;
         this.amount = amount;
     }

@@ -63,7 +63,7 @@ public class AttributesConverter extends AbstractJSONObjectConverter<Attributes>
     @Override
     public JSONObject toJSON(Attributes attributes) {
         JSONObject res = new JSONObject();
-        for (int e : attributes.getElements()) {
+        for (int e : attributes.getSpecifiedVMs()) {
             JSONObject el = new JSONObject();
             for (String k : attributes.getKeys(e)) {
                 el.put(k, attributes.get(e, k));

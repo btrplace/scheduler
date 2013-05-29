@@ -17,7 +17,7 @@
 
 package btrplace.model.view;
 
-;
+import btrplace.model.VM;
 
 /**
  * A view provides some domain-specific information about the elements of a model.
@@ -49,5 +49,5 @@ public interface ModelView extends Cloneable {
      * @param nextId the new VM identifier
      * @return {@code true} iff the operation succeeded
      */
-    boolean substituteVM(int curId, int nextId);
+    boolean substituteVM(VM curId, VM nextId);
 }

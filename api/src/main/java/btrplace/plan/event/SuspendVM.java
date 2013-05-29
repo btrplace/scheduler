@@ -20,6 +20,8 @@ package btrplace.plan.event;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 
 import java.util.Objects;
 
@@ -30,9 +32,9 @@ import java.util.Objects;
  */
 public class SuspendVM extends Action implements VMStateTransition {
 
-    private int vm;
+    private VM vm;
 
-    private int src, dst;
+    private Node src, dst;
 
     /**
      * Make a new suspend action.
@@ -43,7 +45,7 @@ public class SuspendVM extends Action implements VMStateTransition {
      * @param s    the moment the action starts.
      * @param f    the moment the action finish
      */
-    public SuspendVM(int vmId, int from, int to, int s, int f) {
+    public SuspendVM(VM vmId, Node from, Node to, int s, int f) {
         super(s, f);
         this.vm = vmId;
         this.src = from;
@@ -85,9 +87,9 @@ public class SuspendVM extends Action implements VMStateTransition {
             return true;
         } else if (o.getClass() == this.getClass()) {
             SuspendVM that = (SuspendVM) o;
-            return this.vm == that.vm &&
-                    this.src == that.src &&
-                    this.dst == that.dst &&
+            return this.vm.equals(that.vm) &&
+                    this.src.equals(that.src) &&
+                    this.dst.equals(that.dst) &&
                     this.getStart() == that.getStart() &&
                     this.getEnd() == that.getEnd();
         }
@@ -104,7 +106,7 @@ public class SuspendVM extends Action implements VMStateTransition {
      *
      * @return the node identifier
      */
-    public int getDestinationNode() {
+    public Node getDestinationNode() {
         return dst;
     }
 
@@ -113,12 +115,12 @@ public class SuspendVM extends Action implements VMStateTransition {
      *
      * @return the node identifier
      */
-    public int getSourceNode() {
+    public Node getSourceNode() {
         return src;
     }
 
     @Override
-    public int getVM() {
+    public VM getVM() {
         return vm;
     }
 

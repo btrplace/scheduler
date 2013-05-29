@@ -54,7 +54,7 @@ public class ModelViewsConverterTest {
         }
 
         @Override
-        public boolean substituteVM(int curId, int nextId) {
+        public boolean substituteVM(VM curId, VM nextId) {
             throw new UnsupportedOperationException();
         }
     }

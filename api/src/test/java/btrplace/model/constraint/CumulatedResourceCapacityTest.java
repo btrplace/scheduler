@@ -17,9 +17,7 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
@@ -30,6 +28,7 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -41,7 +40,9 @@ public class CumulatedResourceCapacityTest implements PremadeElements {
 
     @Test
     public void testInstantiation() {
-        Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 10);
+        Set<Node> s = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
         CumulatedResourceCapacity c = new CumulatedResourceCapacity(s, "foo", 3);
         Assert.assertNotNull(c.getChecker());
         Assert.assertEquals(s, c.getInvolvedNodes());
@@ -61,7 +62,9 @@ public class CumulatedResourceCapacityTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsAndHashCode() {
-        Set<Integer> s = new HashSet<>(Arrays.asList(n1, n2));
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 10);
+        Set<Node> s = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
         CumulatedResourceCapacity c = new CumulatedResourceCapacity(s, "foo", 3);
         CumulatedResourceCapacity c2 = new CumulatedResourceCapacity(s, "foo", 3);
         Assert.assertTrue(c.equals(c));
@@ -70,69 +73,73 @@ public class CumulatedResourceCapacityTest implements PremadeElements {
 
         Assert.assertFalse(c.equals(new CumulatedResourceCapacity(s, "bar", 3)));
         Assert.assertFalse(c.equals(new CumulatedResourceCapacity(s, "foo", 2)));
-        Assert.assertFalse(c.equals(new CumulatedResourceCapacity(new HashSet<Integer>(), "foo", 3)));
+        Assert.assertFalse(c.equals(new CumulatedResourceCapacity(new HashSet<Node>(), "foo", 3)));
     }
 
     @Test
     public void testDiscreteIsSatisfied() {
         Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 10);
+        List<VM> vms = Util.newVMs(mo, 10);
         Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addOnlineNode(ns.get(2));
 
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addRunningVM(vm4, n3);
+        map.addRunningVM(vms.get(0), ns.get(0));
+        map.addRunningVM(vms.get(1), ns.get(0));
+        map.addRunningVM(vms.get(2), ns.get(1));
+        map.addRunningVM(vms.get(3), ns.get(2));
 
         ShareableResource rc = new ShareableResource("foo", 1, 1);
-        rc.setVMConsumption(vm2, 2);
+        rc.setConsumption(vms.get(1), 2);
         mo.attach(rc);
-        Set<Integer> nodes = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Node> nodes = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
         CumulatedResourceCapacity cc = new CumulatedResourceCapacity(nodes, "foo", 4);
         Assert.assertEquals(cc.isSatisfied(mo), true);
         Assert.assertEquals(new CumulatedResourceCapacity(nodes, "bar", 100).isSatisfied(mo), false);
 
-        rc.setVMConsumption(vm1, 3);
+        rc.setConsumption(vms.get(0), 3);
         Assert.assertEquals(cc.isSatisfied(mo), false);
-        map.addSleepingVM(vm2, n1);
-        map.addSleepingVM(vm3, n1);
+        map.addSleepingVM(vms.get(1), ns.get(0));
+        map.addSleepingVM(vms.get(2), ns.get(0));
         Assert.assertEquals(cc.isSatisfied(mo), true);
     }
 
     @Test
     public void testContinuousIsSatisfied() {
         Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 10);
+        List<VM> vms = Util.newVMs(mo, 10);
         Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addOnlineNode(ns.get(2));
 
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addRunningVM(vm4, n3);
-        map.addReadyVM(vm5);
+        map.addRunningVM(vms.get(0), ns.get(0));
+        map.addRunningVM(vms.get(1), ns.get(0));
+        map.addRunningVM(vms.get(2), ns.get(1));
+        map.addRunningVM(vms.get(3), ns.get(2));
+        map.addReadyVM(vms.get(4));
         ShareableResource rc = new ShareableResource("foo", 1, 1);
         mo.attach(rc);
 
-        Set<Integer> nodes = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Node> nodes = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
         CumulatedResourceCapacity cc = new CumulatedResourceCapacity(nodes, "foo", 4, true);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(cc.isSatisfied(plan), true);
         //3/4
-        MigrateVM m = new MigrateVM(vm4, n3, n2, 0, 1);
-        m.addEvent(Action.Hook.post, new AllocateEvent(vm4, "foo", 2));
+        MigrateVM m = new MigrateVM(vms.get(3), ns.get(2), ns.get(1), 0, 1);
+        m.addEvent(Action.Hook.post, new AllocateEvent(vms.get(3), "foo", 2));
         plan.add(m);
         //5/4
-        plan.add(new ShutdownVM(vm3, n2, 1, 2));
+        plan.add(new ShutdownVM(vms.get(2), ns.get(1), 1, 2));
         //4/4
-        plan.add(new BootVM(vm5, n3, 2, 3));
+        plan.add(new BootVM(vms.get(4), ns.get(2), 2, 3));
         //4/4
-        plan.add(new Allocate(vm2, n1, "foo", 2, 2, 3));
+        plan.add(new Allocate(vms.get(1), ns.get(0), "foo", 2, 2, 3));
         //5/4
-        plan.add(new MigrateVM(vm1, n1, n3, 3, 4));
+        plan.add(new MigrateVM(vms.get(0), ns.get(0), ns.get(2), 3, 4));
         System.out.println(plan);
         Assert.assertEquals(cc.isSatisfied(plan), true);
 

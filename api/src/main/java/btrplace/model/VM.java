@@ -15,44 +15,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.model.constraint.checker;
-
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.model.VM;
-import btrplace.model.constraint.Sleeping;
-import btrplace.plan.event.SuspendVM;
+package btrplace.model;
 
 /**
- * Checker for the {@link btrplace.model.constraint.Sleeping} constraint
+ * Model a virtual machine.
+ * VM should not be instantiated directly. Use {@link btrplace.model.Model#newVM()} instead.
  *
  * @author Fabien Hermenier
- * @see btrplace.model.constraint.Sleeping
+ * @see {@link Model#newVM()} ()}
  */
-public class SleepingChecker extends DenyMyVMsActions<Sleeping> {
+public class VM implements Element {
+
+    private int id;
 
     /**
-     * Make a new checker.
+     * Make a new VM.
      *
-     * @param s the associated constraint
+     * @param id the VM identifier.
      */
-    public SleepingChecker(Sleeping s) {
-        super(s);
+    VM(int id) {
+        this.id = id;
     }
 
     @Override
-    public boolean start(SuspendVM a) {
-        return true;
+    public int id() {
+        return this.id;
     }
 
     @Override
-    public boolean endsWith(Model mo) {
-        Mapping c = mo.getMapping();
-        for (VM vm : getVMs()) {
-            if (!c.getSleepingVMs().contains(vm)) {
-                return false;
-            }
-        }
-        return true;
+    public String toString() {
+        return "VM#" + id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof VM)) return false;
+
+        VM vm = (VM) o;
+
+        return id == vm.id();
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 }

@@ -19,6 +19,7 @@ package btrplace.plan.event;
 
 
 import btrplace.model.Model;
+import btrplace.model.Node;
 
 import java.util.Objects;
 
@@ -29,7 +30,7 @@ import java.util.Objects;
  */
 public class BootNode extends Action implements NodeEvent {
 
-    private int node;
+    private Node node;
 
     /**
      * Create a new startup action on an offline node.
@@ -38,7 +39,7 @@ public class BootNode extends Action implements NodeEvent {
      * @param s the moment the action starts
      * @param f the moment the action is finished
      */
-    public BootNode(int n, int s, int f) {
+    public BootNode(Node n, int s, int f) {
         super(s, f);
         this.node = n;
     }
@@ -57,7 +58,7 @@ public class BootNode extends Action implements NodeEvent {
             return true;
         } else if (obj.getClass() == this.getClass()) {
             BootNode that = (BootNode) obj;
-            return this.node == that.node &&
+            return this.node.equals(that.node) &&
                     this.getStart() == that.getStart() &&
                     this.getEnd() == that.getEnd();
         }
@@ -65,7 +66,7 @@ public class BootNode extends Action implements NodeEvent {
     }
 
     @Override
-    public int getNode() {
+    public Node getNode() {
         return node;
     }
 

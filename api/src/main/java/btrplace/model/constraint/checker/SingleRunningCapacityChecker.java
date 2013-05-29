@@ -19,6 +19,8 @@ package btrplace.model.constraint.checker;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.SingleRunningCapacity;
 import btrplace.plan.event.*;
 
@@ -35,11 +37,11 @@ import java.util.Set;
  */
 public class SingleRunningCapacityChecker extends AllowAllConstraintChecker<SingleRunningCapacity> {
 
-    private Map<Integer, Integer> usage;
+    private Map<Node, Integer> usage;
 
     private int amount;
 
-    private Set<Integer> srcRunnings;
+    private Set<VM> srcRunnings;
 
     /**
      * Make a new checker.
@@ -51,14 +53,14 @@ public class SingleRunningCapacityChecker extends AllowAllConstraintChecker<Sing
         amount = s.getAmount();
     }
 
-    private boolean leave(int n) {
+    private boolean leave(Node n) {
         if (getConstraint().isContinuous() && getNodes().contains(n)) {
             usage.put(n, usage.get(n) - 1);
         }
         return true;
     }
 
-    private boolean arrive(int n) {
+    private boolean arrive(Node n) {
         if (getConstraint().isContinuous() && getNodes().contains(n)) {
             int u = usage.get(n);
             if (u == amount) {
@@ -115,7 +117,7 @@ public class SingleRunningCapacityChecker extends AllowAllConstraintChecker<Sing
         if (getConstraint().isContinuous()) {
             Mapping map = mo.getMapping();
             usage = new HashMap<>(getNodes().size());
-            for (int n : getNodes()) {
+            for (Node n : getNodes()) {
                 int s = map.getRunningVMs(n).size();
                 if (s > amount) {
                     return false;
@@ -131,7 +133,7 @@ public class SingleRunningCapacityChecker extends AllowAllConstraintChecker<Sing
     @Override
     public boolean endsWith(Model mo) {
         Mapping map = mo.getMapping();
-        for (int n : getNodes()) {
+        for (Node n : getNodes()) {
             if (map.getRunningVMs(n).size() > amount) {
                 return false;
             }

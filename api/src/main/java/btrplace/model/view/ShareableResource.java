@@ -17,16 +17,16 @@
 
 package btrplace.model.view;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
+
 import java.util.*;
 
 /**
  * An interface to denote a resource that nodes share among the VMs they host
  * <p/>
  * The interface allows to specify the physical resource capacity of the nodes
- * and the amount of virtual resources to allocate to the VMs.
- * By default, one unit of virtual resource corresponds to one unit of physical resource.
- * It is however possible to create a overbooking factor using
- * {@link btrplace.model.constraint.Overbook} constraints.
+ * and the amount of virtual resources allocated to the VMs.
  *
  * @author Fabien Hermenier
  */
@@ -38,8 +38,8 @@ public class ShareableResource implements ModelView, Cloneable {
      */
     public static final String VIEW_ID_BASE = "ShareableResource.";
 
-    private Map<Integer, Integer> vmsConsumption;
-    private Map<Integer, Integer> nodesCapacity;
+    private Map<VM, Integer> vmsConsumption;
+    private Map<Node, Integer> nodesCapacity;
 
     private int vmsNoValue;
     private int nodesNoValue;
@@ -51,7 +51,8 @@ public class ShareableResource implements ModelView, Cloneable {
     public static final int DEFAULT_NO_VALUE = 0;
 
     /**
-     * Make a new resource that use {@link #DEFAULT_NO_VALUE} as value to denote an undefined value.
+     * Make a new resource that use {@link #DEFAULT_NO_VALUE}
+     * for VMs and nodes.
      *
      * @param id the resource identifier
      */
@@ -78,18 +79,14 @@ public class ShareableResource implements ModelView, Cloneable {
     /**
      * Get the VM consumption for that resource.
      *
-     * @param vm the VM identifier
+     * @param vm the VM
      * @return the capacity if it was defined or the default value.
      */
-    public int getVMConsumption(int vm) {
-        return get(vmsConsumption, vm, vmsNoValue);
-    }
-
-    private int get(Map<Integer, Integer> m, int id, int def) {
-        if (m.containsKey(id)) {
-            return m.get(id);
+    public int getConsumption(VM vm) {
+        if (vmsConsumption.containsKey(vm)) {
+            return vmsConsumption.get(vm);
         }
-        return def;
+        return vmsNoValue;
     }
 
     /**
@@ -98,8 +95,12 @@ public class ShareableResource implements ModelView, Cloneable {
      * @param n the node identifier
      * @return the capacity if it was defined or the default value.
      */
-    public int getNodeCapacity(int n) {
-        return get(nodesCapacity, n, nodesNoValue);
+    public int getCapacity(Node n) {
+        if (nodesCapacity.containsKey(n)) {
+            return nodesCapacity.get(n);
+        }
+        return nodesNoValue;
+
     }
 
     /**
@@ -108,18 +109,10 @@ public class ShareableResource implements ModelView, Cloneable {
      * @param ids the node identifiers
      * @return the capacity for each node. The order is maintained
      */
-    public List<Integer> getNodesCapacity(List<Integer> ids) {
-        return get(false, ids);
-    }
-
-    private List<Integer> get(boolean vm, List<Integer> ids) {
+    public List<Integer> getCapacities(List<Node> ids) {
         List<Integer> res = new ArrayList<>(ids.size());
-        for (int n : ids) {
-            if (vm) {
-                res.add(get(vmsConsumption, n, vmsNoValue));
-            } else {
-                res.add(get(nodesCapacity, n, nodesNoValue));
-            }
+        for (Node n : ids) {
+            res.add(getCapacity(n));
         }
         return res;
     }
@@ -130,17 +123,20 @@ public class ShareableResource implements ModelView, Cloneable {
      * @param ids the VM identifiers
      * @return the consumption for each VM. The order is maintained
      */
-    public List<Integer> getVMsConsumption(List<Integer> ids) {
-        return get(true, ids);
+    public List<Integer> getConsumptions(List<VM> ids) {
+        List<Integer> res = new ArrayList<>(ids.size());
+        for (VM vm : ids) {
+            res.add(getConsumption(vm));
+        }
+        return res;
     }
-
 
     /**
      * Get the VMs with defined consumptions.
      *
      * @return a set of VM identifiers. May be empty
      */
-    public Set<Integer> getDefinedVMs() {
+    public Set<VM> getDefinedVMs() {
         return vmsConsumption.keySet();
     }
 
@@ -149,7 +145,7 @@ public class ShareableResource implements ModelView, Cloneable {
      *
      * @return a set of node identifiers. May be empty
      */
-    public Set<Integer> getDefinedNodes() {
+    public Set<Node> getDefinedNodes() {
         return nodesCapacity.keySet();
     }
 
@@ -160,7 +156,7 @@ public class ShareableResource implements ModelView, Cloneable {
      * @param val the value to set
      * @return the current resource
      */
-    public ShareableResource setVMConsumption(int vm, int val) {
+    public ShareableResource setConsumption(VM vm, int val) {
         vmsConsumption.put(vm, val);
         return this;
     }
@@ -172,7 +168,7 @@ public class ShareableResource implements ModelView, Cloneable {
      * @param val the value to set
      * @return the current resource
      */
-    public ShareableResource setNodeCapacity(int n, int val) {
+    public ShareableResource setCapacity(Node n, int val) {
         nodesCapacity.put(n, val);
         return this;
     }
@@ -180,11 +176,11 @@ public class ShareableResource implements ModelView, Cloneable {
     /**
      * Un-define a resource for a VM.
      *
-     * @param n the VM identifier
+     * @param vm the VM identifier
      * @return {@code true} iff a value was previously defined for {@code n}.
      */
-    public boolean unsetVM(int n) {
-        return vmsConsumption.remove(n) != null;
+    public boolean unset(VM vm) {
+        return vmsConsumption.remove(vm) != null;
     }
 
     /**
@@ -193,7 +189,7 @@ public class ShareableResource implements ModelView, Cloneable {
      * @param n the node identifier
      * @return {@code true} iff a value was previously defined for {@code n}.
      */
-    public boolean unsetNode(int n) {
+    public boolean unset(Node n) {
         return nodesCapacity.remove(n) != null;
     }
 
@@ -201,11 +197,11 @@ public class ShareableResource implements ModelView, Cloneable {
     /**
      * Check if the resource consumption is defined for a VM.
      *
-     * @param n the VM identifier
+     * @param vm the VM identifier
      * @return {@code true} iff the resource is defined for {@code n}.
      */
-    public boolean consumptionDefined(int n) {
-        return vmsConsumption.containsKey(n);
+    public boolean consumptionDefined(VM vm) {
+        return vmsConsumption.containsKey(vm);
     }
 
     /**
@@ -214,10 +210,9 @@ public class ShareableResource implements ModelView, Cloneable {
      * @param n the node identifier
      * @return {@code true} iff the resource is defined for {@code n}.
      */
-    public boolean capacityDefined(int n) {
+    public boolean capacityDefined(Node n) {
         return nodesCapacity.containsKey(n);
     }
-
 
     /**
      * Get the view identifier.
@@ -236,83 +231,6 @@ public class ShareableResource implements ModelView, Cloneable {
      */
     public String getResourceIdentifier() {
         return rcId;
-    }
-
-    /**
-     * Get the maximum value for a set of VMs or nodes.
-     *
-     * @param ids   the identifiers
-     * @param isVM  {@code true} to consider the VMs consumption. {@code false} for the nodes capacity
-     * @param undef {@code true} to include the undefined elements using the default value
-     * @return the value
-     */
-    public int max(Collection<Integer> ids, boolean isVM, boolean undef) {
-        int m = Integer.MIN_VALUE;
-        for (int u : ids) {
-            if (!isVM && (capacityDefined(u) || undef)) {
-                int x = capacityDefined(u) ? nodesCapacity.get(u) : nodesNoValue;
-                if (x > m) {
-                    m = x;
-                }
-            }
-            if (isVM && (consumptionDefined(u) || undef)) {
-                int x = consumptionDefined(u) ? vmsConsumption.get(u) : vmsNoValue;
-                if (x > m) {
-                    m = x;
-                }
-            }
-        }
-        return m;
-    }
-
-    /**
-     * Get the minimal value for a set of VMs or nodes.
-     *
-     * @param ids   the identifiers
-     * @param isVM  {@code true} to consider the VMs consumption. {@code false} for the nodes capacity
-     * @param undef {@code true} to include the undefined elements using the default value
-     * @return the value
-     */
-    public int min(Collection<Integer> ids, boolean isVM, boolean undef) {
-        int m = Integer.MAX_VALUE;
-        for (int u : ids) {
-            if (!isVM && (capacityDefined(u) || undef)) {
-                int x = capacityDefined(u) ? nodesCapacity.get(u) : nodesNoValue;
-                if (x < m) {
-                    m = x;
-                }
-            }
-            if (isVM && (consumptionDefined(u) || undef)) {
-                int x = consumptionDefined(u) ? vmsConsumption.get(u) : vmsNoValue;
-                if (x < m) {
-                    m = x;
-                }
-            }
-
-        }
-        return m;
-    }
-
-    /**
-     * Sum VM consumptions or node capacities.
-     *
-     * @param ids   the identifiers.
-     * @param isVM  {@code true} to sum VMs consumption. {@code false} to sum nodes capacity
-     * @param undef {@code true} to include the undefined elements using the default value
-     * @return the value
-     */
-    public int sum(Collection<Integer> ids, boolean isVM, boolean undef) {
-        int s = 0;
-        for (int u : ids) {
-            if (isVM && (consumptionDefined(u) || undef)) {
-                s += consumptionDefined(u) ? vmsConsumption.get(u) : vmsNoValue;
-            }
-            if (!isVM && (capacityDefined(u) || undef)) {
-                s += capacityDefined(u) ? nodesCapacity.get(u) : nodesNoValue;
-            }
-
-        }
-        return s;
     }
 
     /**
@@ -352,14 +270,14 @@ public class ShareableResource implements ModelView, Cloneable {
             return false;
         }
 
-        for (int k : vmsConsumption.keySet()) {
-            if (!vmsConsumption.get(k).equals(that.getVMConsumption(k))) {
+        for (VM k : vmsConsumption.keySet()) {
+            if (!vmsConsumption.get(k).equals(that.getConsumption(k))) {
                 return false;
             }
         }
 
-        for (int k : nodesCapacity.keySet()) {
-            if (!nodesCapacity.get(k).equals(that.getNodeCapacity(k))) {
+        for (Node k : nodesCapacity.keySet()) {
+            if (!nodesCapacity.get(k).equals(that.getCapacity(k))) {
                 return false;
             }
         }
@@ -374,10 +292,10 @@ public class ShareableResource implements ModelView, Cloneable {
     @Override
     public ShareableResource clone() {
         ShareableResource rc = new ShareableResource(rcId, nodesNoValue, vmsNoValue);
-        for (Map.Entry<Integer, Integer> e : vmsConsumption.entrySet()) {
+        for (Map.Entry<VM, Integer> e : vmsConsumption.entrySet()) {
             rc.vmsConsumption.put(e.getKey(), e.getValue());
         }
-        for (Map.Entry<Integer, Integer> e : nodesCapacity.entrySet()) {
+        for (Map.Entry<Node, Integer> e : nodesCapacity.entrySet()) {
             rc.nodesCapacity.put(e.getKey(), e.getValue());
         }
         return rc;
@@ -386,15 +304,15 @@ public class ShareableResource implements ModelView, Cloneable {
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder("rc:").append(rcId).append(':');
-        for (Iterator<Map.Entry<Integer, Integer>> ite = nodesCapacity.entrySet().iterator(); ite.hasNext(); ) {
-            Map.Entry<Integer, Integer> e = ite.next();
+        for (Iterator<Map.Entry<Node, Integer>> ite = nodesCapacity.entrySet().iterator(); ite.hasNext(); ) {
+            Map.Entry<Node, Integer> e = ite.next();
             buf.append("<node ").append(e.getKey().toString()).append(',').append(e.getValue()).append('>');
             if (ite.hasNext()) {
                 buf.append(',');
             }
         }
-        for (Iterator<Map.Entry<Integer, Integer>> ite = vmsConsumption.entrySet().iterator(); ite.hasNext(); ) {
-            Map.Entry<Integer, Integer> e = ite.next();
+        for (Iterator<Map.Entry<VM, Integer>> ite = vmsConsumption.entrySet().iterator(); ite.hasNext(); ) {
+            Map.Entry<VM, Integer> e = ite.next();
             buf.append("<VM ").append(e.getKey().toString()).append(',').append(e.getValue()).append('>');
             if (ite.hasNext()) {
                 buf.append(',');
@@ -404,8 +322,42 @@ public class ShareableResource implements ModelView, Cloneable {
     }
 
     @Override
-    public boolean substituteVM(int oldint, int newint) {
-        setVMConsumption(newint, getVMConsumption(oldint));
+    public boolean substituteVM(VM oldint, VM newint) {
+        setConsumption(newint, getConsumption(oldint));
         return true;
+    }
+
+    /**
+     * Get the cumulated VMs consumption.
+     *
+     * @param ids   the identifiers.
+     * @param undef {@code true} to include the undefined elements using the default value
+     * @return the value
+     */
+    public int sumConsumptions(Collection<VM> ids, boolean undef) {
+        int s = 0;
+        for (VM u : ids) {
+            if (consumptionDefined(u) || undef) {
+                s += consumptionDefined(u) ? vmsConsumption.get(u) : vmsNoValue;
+            }
+        }
+        return s;
+    }
+
+    /**
+     * Get the cumulated nodes capacity.
+     *
+     * @param ids   the identifiers.
+     * @param undef {@code true} to include the undefined elements using the default value
+     * @return the value
+     */
+    public int sumCapacities(Collection<Node> ids, boolean undef) {
+        int s = 0;
+        for (Node u : ids) {
+            if (capacityDefined(u) || undef) {
+                s += capacityDefined(u) ? nodesCapacity.get(u) : vmsNoValue;
+            }
+        }
+        return s;
     }
 }
