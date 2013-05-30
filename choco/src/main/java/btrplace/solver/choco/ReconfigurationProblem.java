@@ -48,7 +48,7 @@ public interface ReconfigurationProblem {
     /**
      * Get the current location of a running or a sleeping VM.
      *
-     * @param vmIdx the index of the virtual machine
+     * @param vmIdx the index of the VM
      * @return the node index if exists, -1 if the VM is unknown
      */
     int getCurrentVMLocation(int vmIdx);
@@ -75,7 +75,7 @@ public interface ReconfigurationProblem {
     Model getSourceModel();
 
     /**
-     * Get the virtual machines that will be in the running state at the
+     * Get the VMs that will be in the running state at the
      * end of the reconfiguration process.
      *
      * @return a set, may be empty
@@ -83,7 +83,7 @@ public interface ReconfigurationProblem {
     Set<VM> getFutureRunningVMs();
 
     /**
-     * Get the virtual machines that will be in the ready state at the
+     * Get the VMs that will be in the ready state at the
      * end of the reconfiguration process.
      *
      * @return a set, may be empty
@@ -91,7 +91,7 @@ public interface ReconfigurationProblem {
     Set<VM> getFutureReadyVMs();
 
     /**
-     * Get the virtual machines that will be in the sleeping state at the
+     * Get the VMs that will be in the sleeping state at the
      * end of the reconfiguration process.
      *
      * @return a set, may be empty
@@ -99,7 +99,7 @@ public interface ReconfigurationProblem {
     Set<VM> getFutureSleepingVMs();
 
     /**
-     * Get the virtual machines that will be killed at the
+     * Get the VMs that will be killed at the
      * end of the reconfiguration process.
      *
      * @return a set, may be empty
@@ -121,23 +121,23 @@ public interface ReconfigurationProblem {
     IntDomainVar getEnd();
 
     /**
-     * Get the index of a virtual machine
+     * Get the index of a VM
      *
-     * @param vm the virtual machine
+     * @param vm the VM
      * @return its index or -1 in case of failure
      */
     int getVM(VM vm);
 
     /**
-     * Get the virtual machine with a specified index
+     * Get the VM with a specified index.
      *
-     * @param idx the index of the virtual machine
-     * @return the virtual machine or null in case of failure
+     * @param idx the index of the VM
+     * @return the VM or null in case of failure
      */
     VM getVM(int idx);
 
     /**
-     * Get the index of a node
+     * Get the index of a node.
      *
      * @param n the node
      * @return its index or -1 in case of failure
@@ -145,7 +145,7 @@ public interface ReconfigurationProblem {
     int getNode(Node n);
 
     /**
-     * Get the node with a specified index
+     * Get the node with a specified index.
      *
      * @param idx the index of the node
      * @return the node or null in case of failure
@@ -153,7 +153,7 @@ public interface ReconfigurationProblem {
     Node getNode(int idx);
 
     /**
-     * Get all the actions related to virtual machines.
+     * Get all the actions related to VMs.
      *
      * @return a list of actions.
      */
@@ -168,9 +168,9 @@ public interface ReconfigurationProblem {
     VMActionModel getVMAction(VM id);
 
     /**
-     * Get all the actions associated to a list of virtual machines.
+     * Get all the actions associated to a list of VMs.
      *
-     * @param id the virtual machines
+     * @param id the VMs
      * @return a list of actions. The order is the same than the order of the VMs.
      */
     VMActionModel[] getVMActions(Set<VM> id);

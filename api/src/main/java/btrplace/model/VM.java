@@ -49,8 +49,12 @@ public class VM implements Element {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof VM)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof VM)) {
+            return false;
+        }
 
         VM vm = (VM) o;
 

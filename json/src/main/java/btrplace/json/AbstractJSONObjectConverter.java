@@ -40,24 +40,44 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
 
     private Model mo;
 
+    /**
+     * New converters without any model as
+     * a backend to get VMs and nodes identifiers.
+     */
     public AbstractJSONObjectConverter() {
         this(null);
     }
 
+    /**
+     * New converter that rely on a given model
+     * to access VMs and nodes identifiers.
+     *
+     * @param m the model to use
+     */
     public AbstractJSONObjectConverter(Model m) {
         this.mo = m;
     }
 
+    /**
+     * Set the model to use to generate VMs and nodes from identifiers.
+     *
+     * @param m the model to use
+     */
     public void setModel(Model m) {
         mo = m;
     }
 
+    /**
+     * Get the model used to generate VM and nodes from identifiers
+     *
+     * @return a model, may be {@code null} if no identifiers have to be generated
+     */
     public Model getModel() {
         return mo;
     }
 
     /**
-     * Convert an array of int in the json format to a set of VMs.
+     * Convert an array of VM identifiers to a set of VMs.
      *
      * @param a the json array
      * @return the set of VMs
@@ -71,7 +91,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     }
 
     /**
-     * Convert an array of int in the json format to a set of nodes.
+     * Convert an array of VM identifiers to a set of VMs.
      *
      * @param a the json array
      * @return the set of nodes
@@ -86,9 +106,9 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
 
 
     /**
-     * Convert an array of elements to an array of element identifiers (integers).
+     * Convert a collection of VMs to an array of VM identifiers.
      *
-     * @param s the collection of elements
+     * @param s the VMs
      * @return a json formatted array of integers
      */
     public JSONArray vmsToJSON(Collection<VM> s) {
@@ -99,6 +119,12 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         return a;
     }
 
+    /**
+     * Convert a collecion nodes to an array of nodes identifiers.
+     *
+     * @param s the VMs
+     * @return a json formatted array of integers
+     */
     public JSONArray nodesToJSON(Collection<Node> s) {
         JSONArray a = new JSONArray();
         for (Element e : s) {
@@ -111,10 +137,9 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
      * Read an expected set of VMs.
      *
      * @param o  the object to parse
-     * @param id the id in the map that should point to the set
-     * @return the set
-     * @throws btrplace.json.JSONConverterException
-     *          if the key does not point to a set of ints
+     * @param id the key in the map that points to the set
+     * @return the parsed set
+     * @throws JSONConverterException if the key does not point to a set of VM identifiers
      */
     public Set<VM> requiredVMs(JSONObject o, String id) throws JSONConverterException {
         Object x = o.get(id);
@@ -133,10 +158,9 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
      * Read an expected set of nodes.
      *
      * @param o  the object to parse
-     * @param id the id in the map that should point to the set of nodes identifier (integers)
-     * @return the set of nodes
-     * @throws btrplace.json.JSONConverterException
-     *          if the key does not point to an array of ints
+     * @param id the key in the map that points to the set
+     * @return the parsed set
+     * @throws JSONConverterException if the key does not point to a set of nodes identifiers
      */
     public Set<Node> requiredNodes(JSONObject o, String id) throws JSONConverterException {
         Object x = o.get(id);
@@ -152,13 +176,12 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     }
 
     /**
-     * Read an expected int.
+     * Read an expected integer.
      *
      * @param o  the object to parse
-     * @param id the id in the map that should point to the int.
+     * @param id the key in the map that points to an integer
      * @return the int
-     * @throws btrplace.json.JSONConverterException
-     *          if the key does not point to a int
+     * @throws JSONConverterException if the key does not point to a int
      */
     public static int requiredInt(JSONObject o, String id) throws JSONConverterException {
         if (!o.containsKey(id)) {
@@ -171,6 +194,14 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         }
     }
 
+    /**
+     * Read an expected VM.
+     *
+     * @param o  the object to parse
+     * @param id the key in the map that points to the VM identifier
+     * @return the VM
+     * @throws JSONConverterException if the key does not point to a VM identifier
+     */
     public VM requiredVM(JSONObject o, String id) throws JSONConverterException {
         if (!o.containsKey(id)) {
             throw new JSONConverterException("No value at key '" + id + "'");
@@ -182,6 +213,14 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         }
     }
 
+    /**
+     * Read an expected node.
+     *
+     * @param o  the object to parse
+     * @param id the key in the map that points to the node identifier
+     * @return the node
+     * @throws JSONConverterException if the key does not point to a node identifier
+     */
     public Node requiredNode(JSONObject o, String id) throws JSONConverterException {
         if (!o.containsKey(id)) {
             throw new JSONConverterException("No value at key '" + id + "'");
@@ -197,10 +236,9 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
      * Read an expected string.
      *
      * @param o  the object to parse
-     * @param id the id in the map that should point to the string
+     * @param id the key in the map that points to the string
      * @return the string
-     * @throws btrplace.json.JSONConverterException
-     *          if the key does not point to a string
+     * @throws JSONConverterException if the key does not point to a string
      */
     public static String requiredString(JSONObject o, String id) throws JSONConverterException {
         Object x = o.get(id);
@@ -214,10 +252,9 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
      * Read an expected double.
      *
      * @param o  the object to parse
-     * @param id the id in the map that should point to the double
+     * @param id the key in the map that points to the double
      * @return the double
-     * @throws btrplace.json.JSONConverterException
-     *          if the key does not point to a double
+     * @throws JSONConverterException if the key does not point to a double
      */
     public static double requiredDouble(JSONObject o, String id) throws JSONConverterException {
         Object x = o.get(id);
@@ -279,6 +316,15 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         }
     }
 
+    /**
+     * Get a VM from its identifier.
+     * If the VM is already a part of the model, it is reused.
+     * Otherwise, a new VM is created
+     *
+     * @param vmID the VM identifier
+     * @return the resulting VM
+     * @throws JSONConverterException if there is no model.
+     */
     public VM getOrMakeVM(int vmID) throws JSONConverterException {
         if (mo == null) {
             throw new JSONConverterException("Unable to extract VMs without a model to use as a reference");
@@ -291,6 +337,15 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         return mo.newVM(vmID);
     }
 
+    /**
+     * Get a node from its identifier.
+     * If the node is already a part of the model, it is reused.
+     * Otherwise, a new node is created
+     *
+     * @param nodeID the node identifier
+     * @return the resulting node
+     * @throws JSONConverterException if there is no model.
+     */
     public Node getOrMakeNode(int nodeID) throws JSONConverterException {
         if (mo == null) {
             throw new JSONConverterException("Unable to extract VMs without a model to use as a reference");
@@ -320,6 +375,12 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         }
     }
 
+    /**
+     * Get an element identifier.
+     *
+     * @param e the element
+     * @return its identifier
+     */
     public Integer toJSON(Element e) {
         return e.id();
     }

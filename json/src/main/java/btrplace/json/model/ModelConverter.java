@@ -21,7 +21,6 @@ import btrplace.json.AbstractJSONObjectConverter;
 import btrplace.json.JSONConverterException;
 import btrplace.json.model.view.ModelViewsConverter;
 import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.view.ModelView;
 import net.minidev.json.JSONArray;
@@ -91,7 +90,7 @@ public class ModelConverter extends AbstractJSONObjectConverter<Model> {
         }
         Model i = new DefaultModel();
         cfgParser.setModel(i);
-        Mapping cfg = cfgParser.fromJSON((JSONObject) o.get("mapping"));
+        cfgParser.fromJSON((JSONObject) o.get("mapping"));
 
         //MappingUtils.fill(cfg, i.getMapping());
         if (o.containsKey("attributes")) {
@@ -99,9 +98,8 @@ public class ModelConverter extends AbstractJSONObjectConverter<Model> {
             i.setAttributes(attrsParser.fromJSON((JSONObject) o.get("attributes")));
         }
 
-        if (o.containsKey("views"))
+        if (o.containsKey("views")) {
             viewsConverter.setModel(i);
-        {
             for (Object view : (JSONArray) o.get("views")) {
                 i.attach(viewsConverter.fromJSON((JSONObject) view));
             }

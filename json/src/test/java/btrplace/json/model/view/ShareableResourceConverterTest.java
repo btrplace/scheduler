@@ -39,7 +39,7 @@ public class ShareableResourceConverterTest {
     @Test
     public void testSimple() throws JSONConverterException, IOException {
         Model mo = new DefaultModel();
-        ShareableResource rc = new ShareableResource("foo");
+        ShareableResource rc = new ShareableResource("foo", 3, 8);
         rc.setConsumption(mo.newVM(), 3);
         rc.setConsumption(mo.newVM(), 4);
         rc.setCapacity(mo.newNode(), 5);

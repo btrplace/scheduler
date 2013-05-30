@@ -32,7 +32,7 @@ import btrplace.plan.event.*;
  */
 public class CumulatedResourceCapacityChecker extends AllowAllConstraintChecker<CumulatedResourceCapacity> {
 
-    ShareableResource rc;
+    private ShareableResource rc;
 
     private int free;
 

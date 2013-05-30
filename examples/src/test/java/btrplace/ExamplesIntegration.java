@@ -17,10 +17,10 @@
 
 package btrplace;
 
-import btrplace.examples.BasicTuning;
 import btrplace.examples.Example;
 import btrplace.examples.GettingStarted;
 import btrplace.examples.ModelCustomization;
+import btrplace.examples.SolverTuning;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
@@ -39,7 +39,7 @@ public class ExamplesIntegration {
 
     @Test
     public void testBasicTuning() throws Exception {
-        Example ex = new BasicTuning();
+        Example ex = new SolverTuning();
         Assert.assertTrue("Example " + ex.toString() + " failed", ex.run());
     }
 

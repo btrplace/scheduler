@@ -281,7 +281,8 @@ public class ShareableResource implements ModelView, Cloneable {
                 return false;
             }
         }
-        return rcId.equals(that.getResourceIdentifier());
+        return rcId.equals(that.getResourceIdentifier()) && getDefaultCapacity() == that.getDefaultCapacity()
+                && getDefaultConsumption() == that.getDefaultConsumption();
     }
 
     @Override

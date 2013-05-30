@@ -69,7 +69,7 @@ public class CGather implements ChocoSatConstraint {
                     Node node = map.getVMLocation(vm);
                     if (loc == null) {
                         loc = node;
-                    } else if (loc != node) {
+                    } else if (!loc.equals(node)) {
                         rp.getLogger().error("Some VMs in '{}' are already running but not co-located", cstr.getInvolvedVMs());
                         return false;
                     }

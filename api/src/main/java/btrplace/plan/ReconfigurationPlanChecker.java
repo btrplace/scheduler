@@ -292,7 +292,6 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
                     }
                     c = (SatConstraint) a.visit(this);
                     if (c != null) {
-                        System.err.println(p);
                         throw new ReconfigurationPlanCheckerException(c, a);
                     }
                     a = starts.peek();

@@ -27,29 +27,24 @@ import btrplace.plan.event.MigrateVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.durationEvaluator.ActionDurationEvaluator;
-import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
+import btrplace.solver.choco.durationEvaluator.LinearToAResourceActionDuration;
 
 import java.util.*;
 
 /**
  * Tutorial about the basic tuning of a {@link btrplace.solver.choco.ChocoReconfigurationAlgorithm}.
  * The document associated to the tutorial is available
- * on <a href="https://github.com/fhermeni/btrplace-solver/wiki/Basic-Tuning">btrplace website</a>.
+ * on <a href="https://github.com/fhermeni/btrplace-solver/wiki/tuning the reconfiguration algorithm">btrplace website</a>.
  *
  * @author Fabien Hermenier
  */
-public class BasicTuning implements Example {
+public class SolverTuning implements Example {
 
     private List<Node> nodes;
 
-    private ShareableResource rcBW;
-
-    private ShareableResource rcMem;
-
     @Override
     public String toString() {
-        return "Basic Tuning";
+        return "Solver Tuning";
     }
 
     @Override
@@ -59,18 +54,27 @@ public class BasicTuning implements Example {
         Model model = makeModel();
 
         Set<SatConstraint> constraints = new HashSet<>();
-
-        //On 10 nodes, the VMs ask now for more bandwidth
-        constraints.addAll(getNewBWRequirements(model));
-
         //We allow memory over-commitment with a overbooking ratio of 50%
         //i.e. 1MB physical RAM for 1.5MB virtual RAM
         constraints.add(new Overbook(model.getMapping().getAllNodes(), "mem", 1.5));
 
+        /**
+         * On 10 nodes, 4 of the 6 hosted VMs ask now for a 4GB bandwidth
+         */
+        for (int i = 0; i < 5; i++) {
+            Node n = nodes.get(i);
+            Set<VM> vmsOnN = model.getMapping().getRunningVMs(n);
+            Iterator<VM> ite = vmsOnN.iterator();
+            for (int j = 0; ite.hasNext() && j < 4; j++) {
+                VM v = ite.next();
+                constraints.add(new Preserve(Collections.singleton(v), "bandwidth", 4));
+            }
+        }
+
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
 
         //Customize the estimated duration of actions
-        customizeMigrationDuration(cra);
+        cra.getDurationEvaluators().register(MigrateVM.class, new LinearToAResourceActionDuration<VM>("mem", 1, 3));
 
         //We want the best possible solution, computed in up to 5 sec.
         cra.doOptimize(true);
@@ -84,23 +88,6 @@ public class BasicTuning implements Example {
         cra.doRepair(true);
         solve(cra, model, constraints);
         return true;
-    }
-
-    /**
-     * We customize the estimate duration of the VM migration action
-     * to be equals to 1 second per GB of memory plus 3 seconds
-     */
-    private void customizeMigrationDuration(ChocoReconfigurationAlgorithm cra) {
-        DurationEvaluators devs = cra.getDurationEvaluators();
-
-        ActionDurationEvaluator ev = new ActionDurationEvaluator<VM>() {
-            @Override
-            public int evaluate(Model mo, VM e) {
-                return rcMem.getConsumption(e) + 3;
-            }
-        };
-        //Associate the evaluator to an action.
-        devs.register(MigrateVM.class, ev);
     }
 
     private void solve(ChocoReconfigurationAlgorithm cra, Model model, Set<SatConstraint> constraints) {
@@ -118,8 +105,8 @@ public class BasicTuning implements Example {
     /**
      * A default model with 1000 nodes hosting 6,000 VMs.
      * 6 VMs per node
-     * Each node has a 10GB network interface
-     * Each VM consumes 2GB
+     * Each node has a 10GB network interface and 32 GB RAM
+     * Each VM consumes 1GB Bandwidth and between 1 to 5 GB RAM
      */
     private Model makeModel() {
         Model mo = new DefaultModel();
@@ -127,13 +114,13 @@ public class BasicTuning implements Example {
 
 
         //Memory usage/consumption in GB
-        rcMem = new ShareableResource("mem");
+        ShareableResource rcMem = new ShareableResource("mem");
 
         //A resource representing the bandwidth usage/consumption of the elements in GB
-        rcBW = new ShareableResource("bandwidth");
-
+        ShareableResource rcBW = new ShareableResource("bandwidth");
 
         nodes = new ArrayList<>(100);
+
         for (int i = 0; i < 100; i++) {
             Node n = mo.newNode();
             nodes.add(n);
@@ -157,22 +144,5 @@ public class BasicTuning implements Example {
         mo.attach(rcBW);
         mo.attach(rcMem);
         return mo;
-    }
-
-    /**
-     * On 10 nodes, 4 of the 6 VMs ask now for a 4GB bandwidth
-     */
-    public Set<SatConstraint> getNewBWRequirements(Model mo) {
-        Set<SatConstraint> constraints = new HashSet<>();
-        for (int i = 0; i < 5; i++) {
-            Node n = nodes.get(i);
-            Set<VM> vmsOnN = mo.getMapping().getRunningVMs(n);
-            Iterator<VM> ite = vmsOnN.iterator();
-            for (int j = 0; ite.hasNext() && j < 4; j++) {
-                VM v = ite.next();
-                constraints.add(new Preserve(Collections.singleton(v), "bandwidth", 4));
-            }
-        }
-        return constraints;
     }
 }

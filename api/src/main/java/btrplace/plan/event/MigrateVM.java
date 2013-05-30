@@ -83,8 +83,8 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
         if (c.getOnlineNodes().contains(src)
                 && c.getOnlineNodes().contains(dst)
                 && c.getRunningVMs().contains(vm)
-                && c.getVMLocation(vm) == src
-                && src != dst) {
+                && c.getVMLocation(vm).equals(src)
+                && !src.equals(dst)) {
             c.addRunningVM(vm, dst);
             return true;
         }

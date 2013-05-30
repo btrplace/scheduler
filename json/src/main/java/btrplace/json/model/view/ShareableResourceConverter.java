@@ -49,6 +49,8 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
     public JSONObject toJSON(ShareableResource rc) {
         JSONObject o = new JSONObject();
         o.put("id", getJSONId());
+        o.put("defConsumption", rc.getDefaultConsumption());
+        o.put("defCapacity", rc.getDefaultCapacity());
         o.put("rcId", rc.getResourceIdentifier());
 
         Set<VM> elems = rc.getDefinedVMs();
@@ -70,7 +72,8 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
 
     @Override
     public ShareableResource fromJSON(JSONObject o) throws JSONConverterException {
-        if (!o.containsKey("id") || !o.containsKey("vms") || !o.containsKey("nodes") || !o.containsKey("rcId")) {
+        if (!o.containsKey("id") || !o.containsKey("vms") || !o.containsKey("nodes")
+                || !o.containsKey("rcId") || !o.containsKey("defConsumption") || !o.containsKey("defCapacity")) {
             return null;
         }
         String id = o.get("id").toString();
@@ -79,8 +82,19 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
         }
 
         String rcId = o.get("rcId").toString();
+        Object dc = o.get("defConsumption");
+        if (!(dc instanceof Integer)) {
+            throw new JSONConverterException("Integer expected for key 'defConsumption' but got '" + dc.getClass().getName() + "'");
+        }
+        int defConsumption = (Integer) o.get("defConsumption");
+        dc = o.get("defCapacity");
+        if (!(dc instanceof Integer)) {
+            throw new JSONConverterException("Integer expected for key 'defCapacity' but got '" + dc.getClass().getName() + "'");
+        }
+        int defCapacity = (Integer) o.get("defCapacity");
 
-        ShareableResource rc = new ShareableResource(rcId);
+
+        ShareableResource rc = new ShareableResource(rcId, defCapacity, defConsumption);
         JSONObject values = (JSONObject) o.get("vms");
         for (String k : values.keySet()) {
             VM u = getOrMakeVM(Integer.parseInt(k));

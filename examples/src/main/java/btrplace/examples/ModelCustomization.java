@@ -25,7 +25,6 @@ import btrplace.plan.event.MigrateVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.durationEvaluator.ActionDurationEvaluator;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import btrplace.solver.choco.durationEvaluator.LinearToAResourceActionDuration;
 
@@ -40,29 +39,9 @@ import java.util.*;
  */
 public class ModelCustomization implements Example {
 
-    /**
-     * We customize the estimate duration of the VM migration action
-     * to be equals to 2 second per GB of memory plus 3 seconds
-     */
-    class MyMigrationEvaluatorAction implements ActionDurationEvaluator<VM> {
+    private List<VM> vms = new ArrayList<>();
 
-        ShareableResource rc;
-
-        MyMigrationEvaluatorAction(ShareableResource rcMem) {
-            rc = rcMem;
-        }
-
-        @Override
-        public int evaluate(Model mo, VM e) {
-            return rc.getConsumption(e) * 2 + 3;
-        }
-
-    }
-
-    @Override
-    public boolean run() {
-
-
+    private Model makeModel() {
         Model mo = new DefaultModel();
         List<VM> vms = new ArrayList<>();
         List<Node> ns = new ArrayList<>();
@@ -95,23 +74,14 @@ public class ModelCustomization implements Example {
         map.addReadyVM(vms.get(9));
 
         mo.attach(rcMem);
+        return mo;
+    }
 
-        //Change the duration evaluator for MigrateVM action
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        DurationEvaluators dev = cra.getDurationEvaluators();
-        dev.register(MigrateVM.class, new LinearToAResourceActionDuration<VM>("mem", 2, 3));
-
-        //Set some attributes
-        Attributes attrs = mo.getAttributes();
-        for (VM vm : mo.getMapping().getAllVMs()) {
-            attrs.put(vm, "template", vm.id() % 2 == 0 ? "small" : "large");
-            attrs.put(vm, "clone", true);
-            attrs.put(vm, "forge", vm.id() % 2 == 0 ? 2 : 6);
-        }
+    private List<SatConstraint> makeConstraints(Model model) {
         List<SatConstraint> cstrs = new ArrayList<>();
 
         //No more than 5 VMs per node
-        cstrs.add(new SingleRunningCapacity(mo.getMapping().getAllNodes(), 5));
+        cstrs.add(new SingleRunningCapacity(model.getMapping().getAllNodes(), 5));
 
         //vm1 and vm10 on the same node
         cstrs.add(new Gather(new HashSet<>(Arrays.asList(vms.get(0), vms.get(9)))));
@@ -124,10 +94,31 @@ public class ModelCustomization implements Example {
 
         //vm10 must be running
         cstrs.add(new Running(Collections.singleton(vms.get(9))));
+        return cstrs;
+    }
+
+    @Override
+    public boolean run() {
+
+        Model model = makeModel();
+        List<SatConstraint> cstrs = makeConstraints(model);
+
+        //Set attributes for the VMs
+        Attributes attrs = model.getAttributes();
+        for (VM vm : model.getMapping().getAllVMs()) {
+            attrs.put(vm, "template", vm.id() % 2 == 0 ? "small" : "large");
+            attrs.put(vm, "clone", true);
+            attrs.put(vm, "forge", vm.id() % 2 == 0 ? 2 : 6);
+        }
+
+        //Change the duration evaluator for MigrateVM action
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        DurationEvaluators dev = cra.getDurationEvaluators();
+        dev.register(MigrateVM.class, new LinearToAResourceActionDuration<VM>("mem", 2, 3));
 
         try {
             cra.doOptimize(true);
-            ReconfigurationPlan plan = cra.solve(mo, cstrs);
+            ReconfigurationPlan plan = cra.solve(model, cstrs);
             System.out.println(plan);
         } catch (SolverException ex) {
             System.err.println(ex.getMessage());

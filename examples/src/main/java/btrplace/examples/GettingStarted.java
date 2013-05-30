@@ -38,102 +38,67 @@ import java.util.*;
  */
 public class GettingStarted implements Example {
 
-    private List<VM> vms;
-    private List<Node> nodes;
-    /*private static int vm1 = 1;
-    private static int vm2 = 2;
-    private static int vm3 = 3;
-    private static int vm4 = 4;
-    private static int vm5 = 5;
-    private static int vm6 = 6;
-
-    private static int n1 = -1;
-    private static int n2 = -2;
-    private static int n3 = -3;
-    private static int n4 = -4;       */
-
-    public GettingStarted() {
-        vms = new ArrayList<>();
-        nodes = new ArrayList<>();
-    }
+    List<VM> vms = new ArrayList<>();
+    List<Node> nodes = new ArrayList<>();
 
     /**
-     * Make the element mapping that depicts
-     * the element state and the VM positions.
+     * Make a model with 4 online nodes, 6 VMs (5 running, 1 ready).
+     * Declare 2 resources.
      */
-    public Mapping makeMapping(Model o) {
-        Mapping map = o.getMapping();
+    private Model makeModel() {
+        Model model = new DefaultModel();
+        Mapping map = model.getMapping();
 
-        //4 online nodes
+        //Create 4 online nodes
         for (int i = 0; i < 4; i++) {
-            nodes.add(o.newNode());
+            Node n = model.newNode();
+            nodes.add(n);
+            map.addOnlineNode(n);
         }
-        map.addOnlineNode(nodes.get(0));
-        map.addOnlineNode(nodes.get(1));
-        map.addOnlineNode(nodes.get(2));
-        map.addOnlineNode(nodes.get(3));
 
-        //5 VMs are currently running on the nodes
+        //Create 6 VMs: vm0..vm5
         for (int i = 0; i < 6; i++) {
-            vms.add(o.newVM());
+            VM v = model.newVM();
+            vms.add(v);
         }
 
+        //vm2,vm1,vm0,vm3,vm5 are running on the nodes
         map.addRunningVM(vms.get(2), nodes.get(0));
         map.addRunningVM(vms.get(1), nodes.get(1));
         map.addRunningVM(vms.get(0), nodes.get(2));
         map.addRunningVM(vms.get(3), nodes.get(2));
         map.addRunningVM(vms.get(5), nodes.get(3));
 
-        //VM5 is ready to be running on a node.
+        //vm4 is ready to be running on a node.
         map.addReadyVM(vms.get(4));
 
+        //Declare a view to specify the "cpu" physical capacity of the nodes
+        // and the virtual consumption of the VMs.
+        ShareableResource rcCPU = new ShareableResource("cpu", 8, 0); //By default, nodes have 8 "cpu" resources
+        rcCPU.setConsumption(vms.get(0), 2);
+        rcCPU.setConsumption(vms.get(1), 3);
+        rcCPU.setConsumption(vms.get(2), 4);
+        rcCPU.setConsumption(vms.get(3), 3);
+        rcCPU.setConsumption(vms.get(5), 5);
 
-        return map;
+        ShareableResource rcMem = new ShareableResource("mem", 7, 0); //By default, nodes have 7 "mem" resources
+        rcMem.setConsumption(vms.get(0), 2);
+        rcMem.setConsumption(vms.get(1), 2);
+        rcMem.setConsumption(vms.get(2), 4);
+        rcMem.setConsumption(vms.get(3), 3);
+        rcMem.setConsumption(vms.get(5), 4);
+
+        //Attach the resources
+        model.attach(rcCPU);
+        model.attach(rcMem);
+        return model;
     }
 
     /**
-     * Declare the physical number of CPUs available on the nodes
-     * and the number of virtual CPUs that are currently used by the VMs.
+     * Declare some constraints.
      */
-    private ShareableResource makeCPUResourceView() {
-        ShareableResource rc = new ShareableResource("cpu");
-        rc.setCapacity(nodes.get(0), 8);
-        rc.setCapacity(nodes.get(1), 8);
-        rc.setCapacity(nodes.get(2), 8);
-        rc.setCapacity(nodes.get(3), 8);
-
-        rc.setConsumption(vms.get(0), 2);
-        rc.setConsumption(vms.get(1), 3);
-        rc.setConsumption(vms.get(2), 4);
-        rc.setConsumption(vms.get(3), 3);
-        rc.setConsumption(vms.get(5), 5);
-
-        return rc;
-    }
-
-    /**
-     * Declare the physical number of CPUs available on the nodes
-     * and the number of virtual CPUs that are currently used by the VMs.
-     */
-    private ShareableResource makeMemResourceView() {
-        ShareableResource rc = new ShareableResource("mem");
-        rc.setCapacity(nodes.get(0), 7);
-        rc.setCapacity(nodes.get(1), 7);
-        rc.setCapacity(nodes.get(2), 7);
-        rc.setCapacity(nodes.get(3), 7);
-
-        rc.setConsumption(vms.get(0), 2);
-        rc.setConsumption(vms.get(1), 2);
-        rc.setConsumption(vms.get(2), 4);
-        rc.setConsumption(vms.get(3), 3);
-        rc.setConsumption(vms.get(5), 4);
-
-        return rc;
-    }
-
-    private Set<SatConstraint> makeConstraints() {
-        Set<SatConstraint> cstrs = new HashSet<>();
-
+    public List<SatConstraint> makeConstraints() {
+        List<SatConstraint> cstrs = new ArrayList<>();
         //VMs VM2 and VM3 must be running on distinct nodes
         cstrs.add(new Spread(new HashSet<>(Arrays.asList(vms.get(1), vms.get(2)))));
 
@@ -155,23 +120,13 @@ public class GettingStarted implements Example {
 
     @Override
     public boolean run() {
-        Model origin = new DefaultModel();
-        Mapping map = makeMapping(origin);
 
-        //Now, we declare views related to
-        //the memory and the cpu resources
-        ShareableResource rcCPU = makeCPUResourceView();
-        ShareableResource rcMem = makeMemResourceView();
-
-        //We create a model that aggregates the mapping and the views
-        origin.attach(rcCPU);
-        origin.attach(rcMem);
-
-        Set<SatConstraint> cstrs = makeConstraints();
+        Model model = makeModel();
+        List<SatConstraint> cstrs = makeConstraints();
 
         ChocoReconfigurationAlgorithm ra = new DefaultChocoReconfigurationAlgorithm();
         try {
-            ReconfigurationPlan plan = ra.solve(origin, cstrs);
+            ReconfigurationPlan plan = ra.solve(model, cstrs);
             System.out.println("Time-based plan:");
             System.out.println(new TimeBasedPlanApplier().toString(plan));
             System.out.println("\nDependency based plan:");

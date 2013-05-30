@@ -76,6 +76,11 @@ public class DefaultMapping implements Mapping, Cloneable {
         host[SLEEPING_STATE] = new HashMap<>();
     }
 
+    /**
+     * Make a new mapping from an existing one.
+     *
+     * @param m the mapping to copy
+     */
     public DefaultMapping(Mapping m) {
         this();
         for (Node off : m.getOfflineNodes()) {
@@ -104,7 +109,7 @@ public class DefaultMapping implements Mapping, Cloneable {
         if (vmState[RUNNING_STATE].contains(vm)) {
             //If was running, get it's old position
             Node old = place.put(vm, nId);
-            if (old != nId) {
+            if (!old.equals(nId)) {
                 host[RUNNING_STATE].get(old).remove(vm);
                 host[RUNNING_STATE].get(nId).add(vm);
             }
@@ -142,7 +147,7 @@ public class DefaultMapping implements Mapping, Cloneable {
             //If was sleeping, sync the state
             Node old = place.put(vm, nId);
             vmState[SLEEPING_STATE].add(vm);
-            if (old != nId) {
+            if (!old.equals(nId)) {
                 host[SLEEPING_STATE].get(old).remove(vm);
                 host[SLEEPING_STATE].get(nId).add(vm);
             }
