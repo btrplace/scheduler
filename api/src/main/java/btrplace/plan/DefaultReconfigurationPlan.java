@@ -116,7 +116,6 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
         }
 
         ReconfigurationPlan op = (ReconfigurationPlan) o;
-
         return (actions.equals(op.getActions()) && src.equals(op.getOrigin()));
     }
 

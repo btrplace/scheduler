@@ -21,7 +21,6 @@ import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.model.VM;
 import btrplace.model.view.ShareableResource;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -30,7 +29,7 @@ import org.testng.annotations.Test;
  *
  * @author Fabien Hermenier
  */
-public class LinearToAResourceDurationTest implements PremadeElements {
+public class LinearToAResourceDurationTest {
 
     @Test
     public void testSimple() {

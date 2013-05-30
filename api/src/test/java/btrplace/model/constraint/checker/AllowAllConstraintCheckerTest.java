@@ -20,7 +20,6 @@ package btrplace.model.constraint.checker;
 import btrplace.model.*;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.event.*;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -36,7 +35,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Fabien Hermenier
  */
-public class AllowAllConstraintCheckerTest implements PremadeElements {
+public class AllowAllConstraintCheckerTest {
 
     static SatConstraint cstr = mock(SatConstraint.class);
 

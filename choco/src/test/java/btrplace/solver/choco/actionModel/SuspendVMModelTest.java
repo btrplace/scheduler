@@ -26,7 +26,6 @@ import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
@@ -41,7 +40,7 @@ import java.util.Iterator;
  *
  * @author Fabien Hermenier
  */
-public class SuspendVMModelTest implements PremadeElements {
+public class SuspendVMModelTest {
 
     @Test
     public void testBasic() throws ContradictionException, SolverException {

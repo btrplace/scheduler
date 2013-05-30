@@ -22,7 +22,6 @@ import btrplace.model.view.ShareableResource;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.*;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -36,7 +35,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class CumulatedResourceCapacityTest implements PremadeElements {
+public class CumulatedResourceCapacityTest {
 
     @Test
     public void testInstantiation() {

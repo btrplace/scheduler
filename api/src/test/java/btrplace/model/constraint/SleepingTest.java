@@ -18,7 +18,6 @@
 package btrplace.model.constraint;
 
 import btrplace.model.*;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -32,7 +31,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class SleepingTest implements PremadeElements {
+public class SleepingTest {
 
     @Test
     public void testInstantiation() {

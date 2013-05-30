@@ -17,6 +17,7 @@
 
 package btrplace.json.model.view;
 
+import btrplace.json.JSONConverterException;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.view.ShareableResource;
@@ -53,14 +54,14 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
         Set<VM> elems = rc.getDefinedVMs();
         JSONObject values = new JSONObject();
         for (VM u : elems) {
-            values.put(u.toString(), rc.getConsumption(u));
+            values.put(Integer.toString(u.id()), rc.getConsumption(u));
         }
         o.put("vms", values);
 
         Set<Node> nodes = rc.getDefinedNodes();
         values = new JSONObject();
         for (Node u : nodes) {
-            values.put(u.toString(), rc.getCapacity(u));
+            values.put(Integer.toString(u.id()), rc.getCapacity(u));
         }
         o.put("nodes", values);
 
@@ -68,7 +69,7 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
     }
 
     @Override
-    public ShareableResource fromJSON(JSONObject o) {
+    public ShareableResource fromJSON(JSONObject o) throws JSONConverterException {
         if (!o.containsKey("id") || !o.containsKey("vms") || !o.containsKey("nodes") || !o.containsKey("rcId")) {
             return null;
         }

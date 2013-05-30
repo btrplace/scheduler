@@ -29,7 +29,6 @@ import btrplace.solver.choco.view.CShareableResource;
 import btrplace.solver.choco.view.ChocoModelView;
 import btrplace.solver.choco.view.ChocoModelViewBuilder;
 import btrplace.solver.choco.view.ModelViewMapper;
-import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.AtMostNValue;
 import choco.cp.solver.constraints.global.IncreasingNValue;
@@ -47,7 +46,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class DefaultReconfigurationProblemTest implements PremadeElements {
+public class DefaultReconfigurationProblemTest {
 
     public class MockCViewModel implements ChocoModelView {
         @Override

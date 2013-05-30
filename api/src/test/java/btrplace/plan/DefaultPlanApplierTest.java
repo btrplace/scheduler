@@ -22,7 +22,6 @@ import btrplace.model.Node;
 import btrplace.model.Util;
 import btrplace.model.VM;
 import btrplace.plan.event.*;
-import btrplace.test.PremadeElements;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.testng.Assert;
@@ -37,7 +36,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Fabien Hermenier
  */
-public class DefaultPlanApplierTest implements PremadeElements {
+public class DefaultPlanApplierTest {
 
     static List<VM> vms = Util.newVMs(10);
     static List<Node> ns = Util.newNodes(10);

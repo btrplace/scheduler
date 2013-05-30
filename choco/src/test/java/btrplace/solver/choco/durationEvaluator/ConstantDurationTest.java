@@ -20,7 +20,6 @@ package btrplace.solver.choco.durationEvaluator;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.model.Node;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -29,7 +28,7 @@ import org.testng.annotations.Test;
  *
  * @author Fabien Hermenier
  */
-public class ConstantDurationTest implements PremadeElements {
+public class ConstantDurationTest {
 
     @Test
     public void testInstantiate() {

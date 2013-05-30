@@ -23,7 +23,6 @@ import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.Among;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -38,13 +37,13 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class AmongConverterTest implements PremadeElements {
-
-    private static AmongConverter conv = new AmongConverter();
+public class AmongConverterTest {
 
     @Test
     public void testViables() throws JSONConverterException, IOException {
+        AmongConverter conv = new AmongConverter();
         Model mo = new DefaultModel();
+        conv.setModel(mo);
         Set<VM> s1 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
         Set<Node> p1 = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
         Set<Node> p2 = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));

@@ -27,7 +27,6 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.chocoUtil.ChocoUtils;
 import btrplace.solver.choco.objective.minMTTR.MinMTTR;
-import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.ElementV;
 import choco.kernel.common.logging.ChocoLogging;
@@ -45,7 +44,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class Issues implements PremadeElements {
+public class Issues {
 
     /**
      * Another test related to issue #5.

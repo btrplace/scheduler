@@ -27,7 +27,6 @@ import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import btrplace.test.PremadeElements;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -40,7 +39,7 @@ import java.util.Collections;
  *
  * @author Fabien Hermenier
  */
-public class ForgeVMModelTest implements PremadeElements {
+public class ForgeVMModelTest {
 
     @Test
     public void testBasics() throws SolverException {

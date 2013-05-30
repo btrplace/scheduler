@@ -21,7 +21,6 @@ import btrplace.json.JSONConverterException;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.model.constraint.Spread;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -34,9 +33,7 @@ import java.util.HashSet;
  *
  * @author Fabien Hermenier
  */
-public class SpreadConverterTest implements PremadeElements {
-
-    private static SpreadConverter conv = new SpreadConverter();
+public class SpreadConverterTest {
 
     @Test
     public void testViables() throws JSONConverterException, IOException {
@@ -44,6 +41,8 @@ public class SpreadConverterTest implements PremadeElements {
 
         Spread d = new Spread(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())), false);
         Spread c = new Spread(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())), true);
+        SpreadConverter conv = new SpreadConverter();
+        conv.setModel(mo);
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
     }

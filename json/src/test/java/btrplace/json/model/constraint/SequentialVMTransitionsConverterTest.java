@@ -21,7 +21,6 @@ import btrplace.json.JSONConverterException;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.model.constraint.SequentialVMTransitions;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -33,13 +32,13 @@ import java.util.Arrays;
  *
  * @author Fabien Hermenier
  */
-public class SequentialVMTransitionsConverterTest implements PremadeElements {
-
-    private static SequentialVMTransitionsConverter conv = new SequentialVMTransitionsConverter();
+public class SequentialVMTransitionsConverterTest {
 
     @Test
     public void testViables() throws JSONConverterException, IOException {
         Model mo = new DefaultModel();
+        SequentialVMTransitionsConverter conv = new SequentialVMTransitionsConverter();
+        conv.setModel(mo);
         SequentialVMTransitions d = new SequentialVMTransitions(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
         SequentialVMTransitions c = new SequentialVMTransitions(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);

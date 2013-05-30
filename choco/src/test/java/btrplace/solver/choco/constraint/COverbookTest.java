@@ -30,7 +30,6 @@ import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.MappingFiller;
 import btrplace.solver.choco.durationEvaluator.LinearToAResourceActionDuration;
-import btrplace.test.PremadeElements;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -42,7 +41,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class COverbookTest implements PremadeElements {
+public class COverbookTest {
 
     @Test
     public void testBasic() throws SolverException {

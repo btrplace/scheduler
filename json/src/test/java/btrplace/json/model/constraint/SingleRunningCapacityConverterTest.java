@@ -21,7 +21,6 @@ import btrplace.json.JSONConverterException;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.model.constraint.SingleRunningCapacity;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -34,13 +33,14 @@ import java.util.HashSet;
  *
  * @author Fabien Hermenier
  */
-public class SingleRunningCapacityConverterTest implements PremadeElements {
+public class SingleRunningCapacityConverterTest {
 
-    private static SingleRunningCapacityConverter conv = new SingleRunningCapacityConverter();
 
     @Test
     public void testViables() throws JSONConverterException, IOException {
         Model mo = new DefaultModel();
+        SingleRunningCapacityConverter conv = new SingleRunningCapacityConverter();
+        conv.setModel(mo);
         SingleRunningCapacity d = new SingleRunningCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), 5, false);
         SingleRunningCapacity c = new SingleRunningCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), 5, true);
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);

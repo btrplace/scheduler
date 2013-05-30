@@ -141,8 +141,8 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     public JSONObject visit(BootVM a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "bootVM");
-        o.put(VM_LABEL, a.getVM());
-        o.put("destination", a.getDestinationNode());
+        o.put(VM_LABEL, toJSON(a.getVM()));
+        o.put("destination", toJSON(a.getDestinationNode()));
         return o;
     }
 
@@ -157,8 +157,8 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     public JSONObject visit(ShutdownVM a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "shutdownVM");
-        o.put(VM_LABEL, a.getVM());
-        o.put(VM_LOCATION_LABEL, a.getNode());
+        o.put(VM_LABEL, toJSON(a.getVM()));
+        o.put(VM_LOCATION_LABEL, toJSON(a.getNode()));
         return o;
     }
 
@@ -173,7 +173,7 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     public JSONObject visit(ShutdownNode a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "shutdownNode");
-        o.put("node", a.getNode());
+        o.put("node", toJSON(a.getNode()));
         return o;
     }
 
@@ -187,7 +187,7 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     public JSONObject visit(BootNode a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "bootNode");
-        o.put("node", a.getNode());
+        o.put("node", toJSON(a.getNode()));
         return o;
     }
 
@@ -201,9 +201,9 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     public JSONObject visit(MigrateVM a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "migrateVM");
-        o.put(VM_LABEL, a.getVM());
-        o.put(VM_DESTINATION_LABEL, a.getDestinationNode());
-        o.put(VM_LOCATION_LABEL, a.getSourceNode());
+        o.put(VM_LABEL, toJSON(a.getVM()));
+        o.put(VM_DESTINATION_LABEL, toJSON(a.getDestinationNode()));
+        o.put(VM_LOCATION_LABEL, toJSON(a.getSourceNode()));
         return o;
     }
 
@@ -220,9 +220,9 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     public JSONObject visit(SuspendVM a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "suspendVM");
-        o.put(VM_LABEL, a.getVM());
-        o.put(VM_DESTINATION_LABEL, a.getDestinationNode());
-        o.put(VM_LOCATION_LABEL, a.getSourceNode());
+        o.put(VM_LABEL, toJSON(a.getVM()));
+        o.put(VM_DESTINATION_LABEL, toJSON(a.getDestinationNode()));
+        o.put(VM_LOCATION_LABEL, toJSON(a.getSourceNode()));
         return o;
     }
 
@@ -238,9 +238,9 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     public JSONObject visit(ResumeVM a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "resumeVM");
-        o.put(VM_LABEL, a.getVM());
-        o.put(VM_DESTINATION_LABEL, a.getDestinationNode());
-        o.put(VM_LOCATION_LABEL, a.getSourceNode());
+        o.put(VM_LABEL, toJSON(a.getVM()));
+        o.put(VM_DESTINATION_LABEL, toJSON(a.getDestinationNode()));
+        o.put(VM_LOCATION_LABEL, toJSON(a.getSourceNode()));
         return o;
     }
 
@@ -256,8 +256,8 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     public JSONObject visit(KillVM a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "killVM");
-        o.put(VM_LABEL, a.getVM());
-        o.put(VM_LOCATION_LABEL, a.getNode());
+        o.put(VM_LABEL, toJSON(a.getVM()));
+        o.put(VM_LOCATION_LABEL, toJSON(a.getNode()));
         return o;
     }
 
@@ -273,7 +273,7 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     public JSONObject visit(ForgeVM a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "forgeVM");
-        o.put(VM_LABEL, a.getVM());
+        o.put(VM_LABEL, toJSON(a.getVM()));
         return o;
 
     }
@@ -288,10 +288,10 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     public JSONObject visit(Allocate a) {
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "allocate");
-        o.put(VM_LABEL, a.getVM());
+        o.put(VM_LABEL, toJSON(a.getVM()));
         o.put("rc", a.getResourceId());
         o.put("qty", a.getAmount());
-        o.put(VM_LOCATION_LABEL, a.getHost());
+        o.put(VM_LOCATION_LABEL, toJSON(a.getHost()));
         return o;
     }
 
@@ -309,7 +309,7 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
         JSONObject o = new JSONObject();
         o.put(ACTION_ID_LABEL, "allocate");
         o.put("rc", a.getResourceId());
-        o.put(VM_LABEL, a.getVM());
+        o.put(VM_LABEL, toJSON(a.getVM()));
         o.put("qty", a.getAmount());
         return o;
     }
@@ -324,8 +324,8 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     public Object visit(SubstitutedVMEvent a) {
         JSONObject o = new JSONObject();
         o.put(ACTION_ID_LABEL, "substitutedVM");
-        o.put(VM_LABEL, a.getVM());
-        o.put("newint", a.getNewVM());
+        o.put(VM_LABEL, toJSON(a.getVM()));
+        o.put("newint", toJSON(a.getNewVM()));
         return o;
     }
 

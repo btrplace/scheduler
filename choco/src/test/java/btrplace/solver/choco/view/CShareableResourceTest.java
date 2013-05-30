@@ -27,7 +27,6 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.*;
 import btrplace.solver.choco.actionModel.VMActionModel;
-import btrplace.test.PremadeElements;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
@@ -42,7 +41,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class CShareableResourceTest implements PremadeElements {
+public class CShareableResourceTest {
 
     /**
      * Test the instantiation and the creation of the variables.

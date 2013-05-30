@@ -19,7 +19,6 @@ package btrplace.json.model;
 
 import btrplace.json.JSONConverterException;
 import btrplace.model.*;
-import btrplace.test.PremadeElements;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
@@ -30,7 +29,7 @@ import java.io.IOException;
  *
  * @author Fabien Hermenier
  */
-public class MappingConverterTest implements PremadeElements {
+public class MappingConverterTest {
 
     @Test
     public void testSimple() throws JSONConverterException, IOException {
@@ -51,6 +50,7 @@ public class MappingConverterTest implements PremadeElements {
         c.addOnlineNode(n3);
         c.addRunningVM(vm4, n3);
         MappingConverter json = new MappingConverter();
+        json.setModel(mo);
         String ob = json.toJSONString(c);
         Mapping c2 = json.fromJSON(ob);
         Assert.assertEquals(c, c2);

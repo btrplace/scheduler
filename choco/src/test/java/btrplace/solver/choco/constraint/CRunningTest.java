@@ -20,7 +20,6 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.*;
 import btrplace.model.constraint.Running;
 import btrplace.solver.choco.MappingFiller;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -29,7 +28,7 @@ import org.testng.annotations.Test;
  *
  * @author Fabien Hermenier
  */
-public class CRunningTest implements PremadeElements {
+public class CRunningTest {
 
     @Test
     public void testGetMisplaced() {

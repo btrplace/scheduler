@@ -20,7 +20,6 @@ package btrplace.plan;
 import btrplace.model.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.event.*;
-import btrplace.test.PremadeElements;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
@@ -31,7 +30,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class DependenciesExtractorTest implements PremadeElements {
+public class DependenciesExtractorTest {
 
     List<VM> vms = Util.newVMs(10);
     List<Node> ns = Util.newNodes(10);

@@ -22,7 +22,6 @@ import btrplace.model.Attributes;
 import btrplace.model.DefaultAttributes;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -33,7 +32,7 @@ import java.io.IOException;
  *
  * @author Fabien Hermenier
  */
-public class AttributesConverterTest implements PremadeElements {
+public class AttributesConverterTest {
 
     @Test
     public void testSimple() throws IOException, JSONConverterException {
@@ -47,6 +46,7 @@ public class AttributesConverterTest implements PremadeElements {
         attrs.put(mo.newNode(), "ba", 1.34);
 
         AttributesConverter json = new AttributesConverter();
+        json.setModel(mo);
         String o = json.toJSONString(attrs);
         Attributes attrs2 = json.fromJSON(o);
         Assert.assertTrue(attrs.equals(attrs2));

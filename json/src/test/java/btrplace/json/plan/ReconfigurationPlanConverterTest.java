@@ -25,7 +25,6 @@ import btrplace.plan.event.Allocate;
 import btrplace.plan.event.BootNode;
 import btrplace.plan.event.BootVM;
 import btrplace.plan.event.MigrateVM;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -36,7 +35,7 @@ import java.io.IOException;
  *
  * @author Fabien Hermenier
  */
-public class ReconfigurationPlanConverterTest implements PremadeElements {
+public class ReconfigurationPlanConverterTest {
 
     @Test
     public void testConversion() throws JSONConverterException, IOException {
@@ -63,12 +62,13 @@ public class ReconfigurationPlanConverterTest implements PremadeElements {
 
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         plan.add(new MigrateVM(vm2, n1, n3, 0, 1));
-        plan.add(new BootVM(vm1, n3, 0, 1));
-        plan.add(new BootNode(n2, 0, 5));
-        plan.add(new Allocate(vm1, n3, "foo", 5, 2, 5));
+        plan.add(new BootVM(vm1, n3, 1, 2));
+        plan.add(new BootNode(n2, 2, 5));
+        plan.add(new Allocate(vm1, n3, "foo", 5, 3, 5));
 
         ReconfigurationPlanConverter rcp = new ReconfigurationPlanConverter();
-        Assert.assertEquals(rcp.fromJSON(rcp.toJSONString(plan)), plan);
-
+        String j = rcp.toJSONString(plan);
+        ReconfigurationPlan p2 = rcp.fromJSON(j);
+        Assert.assertEquals(p2, plan);
     }
 }

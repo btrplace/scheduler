@@ -20,7 +20,6 @@ package btrplace.solver.choco;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.model.VM;
-import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
@@ -31,7 +30,7 @@ import org.testng.annotations.Test;
  *
  * @author Fabien Hermenier
  */
-public class SliceTest implements PremadeElements {
+public class SliceTest {
 
     /**
      * It's a container so we only tests the instantiation and the getters.

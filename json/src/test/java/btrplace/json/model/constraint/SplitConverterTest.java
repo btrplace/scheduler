@@ -22,7 +22,6 @@ import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.model.VM;
 import btrplace.model.constraint.Split;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -37,9 +36,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class SplitConverterTest implements PremadeElements {
-
-    private static SplitConverter conv = new SplitConverter();
+public class SplitConverterTest {
 
     @Test
     public void testViables() throws JSONConverterException, IOException {
@@ -51,6 +48,9 @@ public class SplitConverterTest implements PremadeElements {
         Set<Set<VM>> vgrps = new HashSet<>(Arrays.asList(s1, s2, s3));
         Split d = new Split(vgrps, false);
         Split c = new Split(vgrps, true);
+
+        SplitConverter conv = new SplitConverter();
+        conv.setModel(mo);
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
     }

@@ -31,7 +31,6 @@ import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.MappingFiller;
 import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -45,7 +44,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class CSingleRunningCapacityTest implements PremadeElements {
+public class CSingleRunningCapacityTest {
 
     @Test
     public void testDiscreteResolution() throws SolverException {

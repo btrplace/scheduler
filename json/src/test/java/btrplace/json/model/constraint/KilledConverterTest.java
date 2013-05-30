@@ -21,7 +21,6 @@ import btrplace.json.JSONConverterException;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.model.constraint.Killed;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -34,13 +33,13 @@ import java.util.HashSet;
  *
  * @author Fabien Hermenier
  */
-public class KilledConverterTest implements PremadeElements {
-
-    private static KilledConverter conv = new KilledConverter();
+public class KilledConverterTest {
 
     @Test
     public void testViables() throws JSONConverterException, IOException {
         Model mo = new DefaultModel();
+        KilledConverter conv = new KilledConverter();
+        conv.setModel(mo);
         Killed d = new Killed(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())));
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
     }

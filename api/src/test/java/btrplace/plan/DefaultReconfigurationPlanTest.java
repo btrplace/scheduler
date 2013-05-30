@@ -19,7 +19,6 @@ package btrplace.plan;
 
 import btrplace.model.*;
 import btrplace.plan.event.Action;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -34,7 +33,7 @@ import static org.mockito.Mockito.when;
  *
  * @author Fabien Hermenier
  */
-public class DefaultReconfigurationPlanTest implements PremadeElements {
+public class DefaultReconfigurationPlanTest {
 
     @Test
     public void testApplierGetAndSet() {

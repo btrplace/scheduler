@@ -21,7 +21,6 @@ import btrplace.json.JSONConverterException;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.model.constraint.Lonely;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -34,13 +33,13 @@ import java.util.HashSet;
  *
  * @author Fabien Hermenier
  */
-public class LonelyConverterTest implements PremadeElements {
-
-    private static LonelyConverter conv = new LonelyConverter();
+public class LonelyConverterTest {
 
     @Test
     public void testViables() throws JSONConverterException, IOException {
         Model mo = new DefaultModel();
+        LonelyConverter conv = new LonelyConverter();
+        conv.setModel(mo);
         Lonely d = new Lonely(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())), false);
         Lonely c = new Lonely(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())), true);
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);

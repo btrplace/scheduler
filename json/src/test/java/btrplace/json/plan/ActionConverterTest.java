@@ -23,7 +23,6 @@ import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.plan.event.*;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -36,7 +35,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class ActionConverterTest implements PremadeElements {
+public class ActionConverterTest {
 
     private static Model mo = new DefaultModel();
     private static VM vm1 = mo.newVM();
@@ -49,6 +48,7 @@ public class ActionConverterTest implements PremadeElements {
     public void testMigrate() throws JSONConverterException, IOException {
         MigrateVM a = new MigrateVM(vm1, n1, n2, 3, 5);
         ActionConverter ac = new ActionConverter();
+        ac.setModel(mo);
         String o = ac.toJSONString(a);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
@@ -57,6 +57,7 @@ public class ActionConverterTest implements PremadeElements {
     public void testBootVM() throws JSONConverterException, IOException {
         BootVM a = new BootVM(vm1, n1, 3, 5);
         ActionConverter ac = new ActionConverter();
+        ac.setModel(mo);
         String o = ac.toJSONString(a);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
@@ -65,6 +66,7 @@ public class ActionConverterTest implements PremadeElements {
     public void testKillVM() throws JSONConverterException, IOException {
         KillVM a = new KillVM(vm1, n1, 3, 5);
         ActionConverter ac = new ActionConverter();
+        ac.setModel(mo);
         String o = ac.toJSONString(a);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
@@ -73,6 +75,7 @@ public class ActionConverterTest implements PremadeElements {
     public void testAllocate() throws JSONConverterException, IOException {
         Allocate a = new Allocate(vm1, n1, "foo", 4, 3, 5);
         ActionConverter ac = new ActionConverter();
+        ac.setModel(mo);
         String o = ac.toJSONString(a);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
@@ -82,6 +85,7 @@ public class ActionConverterTest implements PremadeElements {
     public void testSuspendVM() throws JSONConverterException, IOException {
         SuspendVM a = new SuspendVM(vm1, n1, n2, 3, 5);
         ActionConverter ac = new ActionConverter();
+        ac.setModel(mo);
         String o = ac.toJSONString(a);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
@@ -90,6 +94,7 @@ public class ActionConverterTest implements PremadeElements {
     public void testResumeVM() throws JSONConverterException, IOException {
         ResumeVM a = new ResumeVM(vm1, n1, n2, 3, 5);
         ActionConverter ac = new ActionConverter();
+        ac.setModel(mo);
         String o = ac.toJSONString(a);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
@@ -99,6 +104,7 @@ public class ActionConverterTest implements PremadeElements {
     public void testForgeVM() throws JSONConverterException, IOException {
         ForgeVM a = new ForgeVM(vm1, 3, 5);
         ActionConverter ac = new ActionConverter();
+        ac.setModel(mo);
         String o = ac.toJSONString(a);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
@@ -108,6 +114,7 @@ public class ActionConverterTest implements PremadeElements {
     public void testShutdownVM() throws JSONConverterException, IOException {
         ShutdownVM a = new ShutdownVM(vm1, n1, 3, 5);
         ActionConverter ac = new ActionConverter();
+        ac.setModel(mo);
         String o = ac.toJSONString(a);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
@@ -116,6 +123,7 @@ public class ActionConverterTest implements PremadeElements {
     public void testShutdownNode() throws JSONConverterException, IOException {
         ShutdownNode a = new ShutdownNode(n1, 3, 5);
         ActionConverter ac = new ActionConverter();
+        ac.setModel(mo);
         String o = ac.toJSONString(a);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
@@ -124,6 +132,7 @@ public class ActionConverterTest implements PremadeElements {
     public void testBootNode() throws JSONConverterException, IOException {
         BootNode a = new BootNode(n1, 3, 5);
         ActionConverter ac = new ActionConverter();
+        ac.setModel(mo);
         String o = ac.toJSONString(a);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
@@ -135,6 +144,7 @@ public class ActionConverterTest implements PremadeElements {
         a.addEvent(Action.Hook.post, new AllocateEvent(vm2, "bar", 5));
         a.addEvent(Action.Hook.post, new AllocateEvent(vm3, "baz", 2));
         ActionConverter ac = new ActionConverter();
+        ac.setModel(mo);
         String o = ac.toJSONString(a);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
@@ -142,6 +152,7 @@ public class ActionConverterTest implements PremadeElements {
     @Test
     public void testListSerialization() throws JSONConverterException, IOException {
         ActionConverter ac = new ActionConverter();
+        ac.setModel(mo);
         List<Action> l = new ArrayList<>();
         l.add(new BootVM(vm1, n1, 0, 5));
         l.add(new ShutdownNode(n2, 0, 5));

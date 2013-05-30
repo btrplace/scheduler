@@ -21,7 +21,6 @@ import btrplace.json.JSONConverterException;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.model.constraint.CumulatedRunningCapacity;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -34,13 +33,13 @@ import java.util.HashSet;
  *
  * @author Fabien Hermenier
  */
-public class CumulatedRunningCapacityConverterTest implements PremadeElements {
-
-    private static CumulatedRunningCapacityConverter conv = new CumulatedRunningCapacityConverter();
+public class CumulatedRunningCapacityConverterTest {
 
     @Test
     public void testViables() throws JSONConverterException, IOException {
+        CumulatedRunningCapacityConverter conv = new CumulatedRunningCapacityConverter();
         Model mo = new DefaultModel();
+        conv.setModel(mo);
         CumulatedRunningCapacity d = new CumulatedRunningCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), 5, false);
         CumulatedRunningCapacity c = new CumulatedRunningCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode())), 5, true);
         Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);

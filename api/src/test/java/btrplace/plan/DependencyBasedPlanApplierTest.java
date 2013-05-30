@@ -23,7 +23,6 @@ import btrplace.plan.event.Allocate;
 import btrplace.plan.event.BootNode;
 import btrplace.plan.event.MigrateVM;
 import btrplace.plan.event.ShutdownNode;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -34,13 +33,14 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class DependencyBasedPlanApplierTest implements PremadeElements {
+public class DependencyBasedPlanApplierTest {
 
-    static Model mo = new DefaultModel();
-    static List<VM> vms = Util.newVMs(mo, 10);
-    static List<Node> ns = Util.newNodes(mo, 10);
+    @Test
+    public void testApply() {
 
-    private static ReconfigurationPlan makePlan() {
+        Model mo = new DefaultModel();
+        List<VM> vms = Util.newVMs(mo, 10);
+        List<Node> ns = Util.newNodes(mo, 10);
 
         Mapping map = mo.getMapping();
         map.addOnlineNode(ns.get(0));
@@ -70,26 +70,17 @@ public class DependencyBasedPlanApplierTest implements PremadeElements {
         plan.add(mVM2);
         plan.add(mVM4);
         plan.add(sN1);
-        return plan;
-    }
 
-    @Test
-    public void testApply() {
-        ReconfigurationPlan plan = makePlan();
+
         Model res = new DependencyBasedPlanApplier().apply(plan);
+        Assert.assertNotNull(res);
         Mapping resMapping = res.getMapping();
         Assert.assertTrue(resMapping.getOfflineNodes().contains(ns.get(0)));
         Assert.assertTrue(resMapping.getOnlineNodes().contains(ns.get(3)));
-        ShareableResource rc = (ShareableResource) res.getView(ShareableResource.VIEW_ID_BASE + "cpu");
+        rc = (ShareableResource) res.getView(ShareableResource.VIEW_ID_BASE + "cpu");
         Assert.assertEquals(rc.getConsumption(vms.get(2)), 7);
         Assert.assertEquals(resMapping.getVMLocation(vms.get(0)), ns.get(3));
         Assert.assertEquals(resMapping.getVMLocation(vms.get(1)), ns.get(1));
         Assert.assertEquals(resMapping.getVMLocation(vms.get(3)), ns.get(2));
-    }
-
-    @Test
-    public void testToString() {
-        ReconfigurationPlan plan = makePlan();
-        Assert.assertFalse(new DependencyBasedPlanApplier().toString(plan).contains("null"));
     }
 }

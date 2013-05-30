@@ -17,7 +17,6 @@
 
 package btrplace.model;
 
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -31,7 +30,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class DefaultAttributesTest implements PremadeElements {
+public class DefaultAttributesTest {
 
     private static Model mo = new DefaultModel();
     private static List<VM> vms = Util.newVMs(mo, 10);

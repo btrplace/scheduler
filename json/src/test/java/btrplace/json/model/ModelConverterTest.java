@@ -21,7 +21,6 @@ import btrplace.json.JSONConverterException;
 import btrplace.json.model.view.ModelViewsConverter;
 import btrplace.model.*;
 import btrplace.model.view.ShareableResource;
-import btrplace.test.PremadeElements;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
@@ -32,7 +31,7 @@ import java.io.IOException;
  *
  * @author Fabien Hermenier
  */
-public class ModelConverterTest implements PremadeElements {
+public class ModelConverterTest {
 
     @Test
     public void testInstantiation() {

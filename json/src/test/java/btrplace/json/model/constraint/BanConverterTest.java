@@ -21,7 +21,6 @@ import btrplace.json.JSONConverterException;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.model.constraint.Ban;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -34,14 +33,13 @@ import java.util.HashSet;
  *
  * @author Fabien Hermenier
  */
-public class BanConverterTest implements PremadeElements {
-
-    private static BanConverter conv = new BanConverter();
-
+public class BanConverterTest {
 
     @Test
     public void testViables() throws JSONConverterException, IOException {
+        BanConverter conv = new BanConverter();
         Model mo = new DefaultModel();
+        conv.setModel(mo);
         Ban d = new Ban(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())),
                 new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode())));
 

@@ -21,7 +21,6 @@ import btrplace.json.JSONConverterException;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.model.constraint.Overbook;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -34,13 +33,13 @@ import java.util.HashSet;
  *
  * @author Fabien Hermenier
  */
-public class OverbookConverterTest implements PremadeElements {
-
-    private static OverbookConverter conv = new OverbookConverter();
+public class OverbookConverterTest {
 
     @Test
     public void testViables() throws JSONConverterException, IOException {
         Model mo = new DefaultModel();
+        OverbookConverter conv = new OverbookConverter();
+        conv.setModel(mo);
         Overbook d = new Overbook(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), "foo", 1.4);
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
     }

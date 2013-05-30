@@ -21,7 +21,6 @@ import btrplace.json.JSONConverterException;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.model.constraint.CumulatedResourceCapacity;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -34,13 +33,13 @@ import java.util.HashSet;
  *
  * @author Fabien Hermenier
  */
-public class CumulatedResourceCapacityConverterTest implements PremadeElements {
-
-    private static CumulatedResourceCapacityConverter conv = new CumulatedResourceCapacityConverter();
+public class CumulatedResourceCapacityConverterTest {
 
     @Test
     public void testViables() throws JSONConverterException, IOException {
+        CumulatedResourceCapacityConverter conv = new CumulatedResourceCapacityConverter();
         Model mo = new DefaultModel();
+        conv.setModel(mo);
         CumulatedResourceCapacity d = new CumulatedResourceCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), "cpu", 5, false);
         CumulatedResourceCapacity c = new CumulatedResourceCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode())), "mem", 5, true);
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);

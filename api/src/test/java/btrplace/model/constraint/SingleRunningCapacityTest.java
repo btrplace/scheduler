@@ -23,7 +23,6 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootVM;
 import btrplace.plan.event.ResumeVM;
 import btrplace.plan.event.ShutdownVM;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -37,7 +36,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class SingleRunningCapacityTest implements PremadeElements {
+public class SingleRunningCapacityTest {
 
     @Test
     public void testInstantiation() {

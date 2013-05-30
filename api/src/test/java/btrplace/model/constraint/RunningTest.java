@@ -18,7 +18,6 @@
 package btrplace.model.constraint;
 
 import btrplace.model.*;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -29,7 +28,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class RunningTest implements PremadeElements {
+public class RunningTest {
 
     @Test
     public void testInstantiation() {

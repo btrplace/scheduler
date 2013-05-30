@@ -23,7 +23,6 @@ import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Allocate;
 import btrplace.plan.event.ShutdownVM;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -37,7 +36,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class OverbookTest implements PremadeElements {
+public class OverbookTest {
 
     @Test
     public void testInstantiation() {

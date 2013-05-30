@@ -21,7 +21,6 @@ import btrplace.model.*;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -35,7 +34,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class BanTest implements PremadeElements {
+public class BanTest {
 
     @Test
     public void testInstantiation() {

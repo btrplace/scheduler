@@ -52,7 +52,7 @@ public class PreserveConverter extends SatConstraintConverter<Preserve> {
         c.put("id", getJSONId());
         c.put("vms", vmsToJSON(o.getInvolvedVMs()));
         c.put("rcId", o.getResource());
-        c.put("amount", (long) o.getAmount());
+        c.put("amount", o.getAmount());
         return c;
     }
 }

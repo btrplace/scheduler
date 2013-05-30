@@ -20,7 +20,6 @@ package btrplace.plan;
 import btrplace.model.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.event.*;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -32,7 +31,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class DefaultReconfigurationPlanMonitorTest implements PremadeElements {
+public class DefaultReconfigurationPlanMonitorTest {
 
     static List<VM> vms = Util.newVMs(10);
     static List<Node> ns = Util.newNodes(10);

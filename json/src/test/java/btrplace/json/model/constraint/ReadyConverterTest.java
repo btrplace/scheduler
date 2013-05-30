@@ -21,7 +21,6 @@ import btrplace.json.JSONConverterException;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.model.constraint.Ready;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -34,13 +33,13 @@ import java.util.HashSet;
  *
  * @author Fabien Hermenier
  */
-public class ReadyConverterTest implements PremadeElements {
-
-    private static ReadyConverter conv = new ReadyConverter();
+public class ReadyConverterTest {
 
     @Test
     public void testViables() throws JSONConverterException, IOException {
         Model mo = new DefaultModel();
+        ReadyConverter conv = new ReadyConverter();
+        conv.setModel(mo);
         Ready d = new Ready(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())));
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
     }

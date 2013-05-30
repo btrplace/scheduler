@@ -22,7 +22,6 @@ import btrplace.model.*;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Running;
 import btrplace.model.constraint.SatConstraint;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -36,7 +35,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class InstanceConverterTest implements PremadeElements {
+public class InstanceConverterTest {
 
     @Test
     public void testConversion() throws JSONConverterException, IOException {

@@ -21,7 +21,6 @@ import btrplace.json.JSONConverterException;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.model.constraint.Fence;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -34,13 +33,13 @@ import java.util.HashSet;
  *
  * @author Fabien Hermenier
  */
-public class FenceConverterTest implements PremadeElements {
-
-    private static FenceConverter conv = new FenceConverter();
+public class FenceConverterTest {
 
     @Test
     public void testViables() throws JSONConverterException, IOException {
         Model mo = new DefaultModel();
+        FenceConverter conv = new FenceConverter();
+        conv.setModel(mo);
         Fence d = new Fence(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())),
                 new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode())));
 

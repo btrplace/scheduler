@@ -23,7 +23,6 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
 import btrplace.plan.event.ShutdownVM;
 import btrplace.plan.event.SuspendVM;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -34,7 +33,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class SplitTest implements PremadeElements {
+public class SplitTest {
 
     @Test
     public void testInstantiation() {

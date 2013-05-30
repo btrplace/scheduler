@@ -25,7 +25,6 @@ import btrplace.plan.event.Action;
 import btrplace.plan.event.Allocate;
 import btrplace.plan.event.AllocateEvent;
 import btrplace.plan.event.MigrateVM;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -39,7 +38,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class PreserveTest implements PremadeElements {
+public class PreserveTest {
 
     @Test
     public void testInstantiation() {

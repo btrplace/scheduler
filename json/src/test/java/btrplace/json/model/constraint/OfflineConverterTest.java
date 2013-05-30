@@ -21,7 +21,6 @@ import btrplace.json.JSONConverterException;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.model.constraint.Offline;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -34,13 +33,13 @@ import java.util.HashSet;
  *
  * @author Fabien Hermenier
  */
-public class OfflineConverterTest implements PremadeElements {
-
-    private static OfflineConverter conv = new OfflineConverter();
+public class OfflineConverterTest {
 
     @Test
     public void testViables() throws JSONConverterException, IOException {
         Model mo = new DefaultModel();
+        OfflineConverter conv = new OfflineConverter();
+        conv.setModel(mo);
         Offline d = new Offline(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())));
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
     }

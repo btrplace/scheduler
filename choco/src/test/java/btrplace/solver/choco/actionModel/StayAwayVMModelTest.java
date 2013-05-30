@@ -22,7 +22,6 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.test.PremadeElements;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -32,7 +31,7 @@ import org.testng.annotations.Test;
  *
  * @author Fabien Hermenier
  */
-public class StayAwayVMModelTest implements PremadeElements {
+public class StayAwayVMModelTest {
 
     @Test
     public void testBasic() throws SolverException, ContradictionException {

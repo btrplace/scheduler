@@ -25,7 +25,6 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.ActionModelUtils;
 import btrplace.solver.choco.objective.ReconfigurationObjective;
 import btrplace.solver.choco.view.ModelViewMapper;
-import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.AtMostNValue;
 import choco.kernel.solver.Configuration;
@@ -44,7 +43,7 @@ import static org.mockito.Mockito.when;
  *
  * @author Fabien Hermenier
  */
-public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements {
+public class DefaultChocoReconfigurationAlgorithmTest {
 
     @Test
     public void testGetsAndSets() {

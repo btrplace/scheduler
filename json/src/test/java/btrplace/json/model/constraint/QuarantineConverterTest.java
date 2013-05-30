@@ -21,7 +21,6 @@ import btrplace.json.JSONConverterException;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.model.constraint.Quarantine;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -34,13 +33,13 @@ import java.util.HashSet;
  *
  * @author Fabien Hermenier
  */
-public class QuarantineConverterTest implements PremadeElements {
-
-    private static QuarantineConverter conv = new QuarantineConverter();
+public class QuarantineConverterTest {
 
     @Test
     public void testViables() throws JSONConverterException, IOException {
         Model mo = new DefaultModel();
+        QuarantineConverter conv = new QuarantineConverter();
+        conv.setModel(mo);
         Quarantine d = new Quarantine(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())));
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
     }

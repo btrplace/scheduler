@@ -20,7 +20,6 @@ package btrplace.model.constraint.checker;
 import btrplace.model.*;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.event.*;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -35,7 +34,7 @@ import static org.mockito.Mockito.when;
  *
  * @author Fabien Hermenier
  */
-public class DenyMyVMsActionsTest implements PremadeElements {
+public class DenyMyVMsActionsTest {
 
     static SatConstraint cstr = mock(SatConstraint.class);
 

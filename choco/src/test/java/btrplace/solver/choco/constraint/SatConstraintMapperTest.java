@@ -25,7 +25,6 @@ import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Spread;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -38,7 +37,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class SatConstraintMapperTest implements PremadeElements {
+public class SatConstraintMapperTest {
 
     @Test
     public void testInstantiate() {

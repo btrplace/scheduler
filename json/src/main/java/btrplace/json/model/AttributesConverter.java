@@ -18,6 +18,7 @@
 package btrplace.json.model;
 
 import btrplace.json.AbstractJSONObjectConverter;
+import btrplace.json.JSONConverterException;
 import btrplace.model.*;
 import net.minidev.json.JSONObject;
 
@@ -33,14 +34,14 @@ import net.minidev.json.JSONObject;
 public class AttributesConverter extends AbstractJSONObjectConverter<Attributes> {
 
     @Override
-    public Attributes fromJSON(JSONObject o) {
+    public Attributes fromJSON(JSONObject o) throws JSONConverterException {
         Attributes attrs = new DefaultAttributes();
         JSONObject vms = (JSONObject) o.get("vms");
         JSONObject nodes = (JSONObject) o.get("nodes");
 
         for (String el : vms.keySet()) {
             VM vm = getOrMakeVM(Integer.parseInt(el));
-            JSONObject entries = (JSONObject) o.get(el);
+            JSONObject entries = (JSONObject) vms.get(el);
             for (String key : entries.keySet()) {
                 Object value = entries.get(key);
                 if (value.getClass().equals(Boolean.class)) {
@@ -57,9 +58,9 @@ public class AttributesConverter extends AbstractJSONObjectConverter<Attributes>
             }
         }
 
-        for (String el : vms.keySet()) {
+        for (String el : nodes.keySet()) {
             Node n = getOrMakeNode(Integer.parseInt(el));
-            JSONObject entries = (JSONObject) o.get(el);
+            JSONObject entries = (JSONObject) nodes.get(el);
             for (String key : entries.keySet()) {
                 Object value = entries.get(key);
                 if (value.getClass().equals(Boolean.class)) {
@@ -89,9 +90,9 @@ public class AttributesConverter extends AbstractJSONObjectConverter<Attributes>
                 el.put(k, attributes.get(e, k));
             }
             if (e instanceof VM) {
-                vms.put(e.toString(), el);
+                vms.put(Integer.toString(e.id()), el);
             } else {
-                nodes.put(e.toString(), el);
+                nodes.put(Integer.toString(e.id()), el);
             }
         }
         res.put("vms", vms);

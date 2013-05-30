@@ -40,16 +40,20 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
 
     private Model mo;
 
-    public AbstractJSONObjectConverter(Model mo) {
-        this.mo = mo;
+    public AbstractJSONObjectConverter() {
+        this(null);
     }
 
-    public AbstractJSONObjectConverter() {
-
+    public AbstractJSONObjectConverter(Model m) {
+        this.mo = m;
     }
 
     public void setModel(Model m) {
         mo = m;
+    }
+
+    public Model getModel() {
+        return mo;
     }
 
     /**
@@ -58,7 +62,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
      * @param a the json array
      * @return the set of VMs
      */
-    public Set<VM> vmsFromJSON(JSONArray a) {
+    public Set<VM> vmsFromJSON(JSONArray a) throws JSONConverterException {
         Set<VM> s = new HashSet<>(a.size());
         for (Object o : a) {
             s.add(getOrMakeVM((int) o));
@@ -72,7 +76,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
      * @param a the json array
      * @return the set of nodes
      */
-    public Set<Node> nodesFromJSON(JSONArray a) {
+    public Set<Node> nodesFromJSON(JSONArray a) throws JSONConverterException {
         Set<Node> s = new HashSet<>(a.size());
         for (Object o : a) {
             s.add(getOrMakeNode((int) o));
@@ -119,7 +123,8 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         }
         Set<VM> s = new HashSet<>(((JSONArray) x).size());
         for (Object i : (JSONArray) x) {
-            s.add(getOrMakeVM((Integer) i));
+            VM v = getOrMakeVM((Integer) i);
+            s.add(v);
         }
         return s;
     }
@@ -274,7 +279,10 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         }
     }
 
-    public VM getOrMakeVM(int vmID) {
+    public VM getOrMakeVM(int vmID) throws JSONConverterException {
+        if (mo == null) {
+            throw new JSONConverterException("Unable to extract VMs without a model to use as a reference");
+        }
         for (VM v : mo.getVMs()) {
             if (v.id() == vmID) {
                 return v;
@@ -283,7 +291,10 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         return mo.newVM(vmID);
     }
 
-    public Node getOrMakeNode(int nodeID) {
+    public Node getOrMakeNode(int nodeID) throws JSONConverterException {
+        if (mo == null) {
+            throw new JSONConverterException("Unable to extract VMs without a model to use as a reference");
+        }
         for (Node n : mo.getNodes()) {
             if (n.id() == nodeID) {
                 return n;
@@ -307,5 +318,9 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         try (FileWriter out = new FileWriter(path)) {
             toJSON(e, out);
         }
+    }
+
+    public Integer toJSON(Element e) {
+        return e.id();
     }
 }

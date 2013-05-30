@@ -39,7 +39,7 @@ public class InstanceConverter extends AbstractJSONObjectConverter<Instance> {
         SatConstraintsConverter cstrc = new SatConstraintsConverter();
 
         Model mo = moc.fromJSON((JSONObject) in.get("model"));
-
+        cstrc.setModel(mo);
         return new Instance(mo, cstrc.listFromJSON((JSONArray) in.get("constraints")));
     }
 

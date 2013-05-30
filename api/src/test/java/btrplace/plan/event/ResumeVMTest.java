@@ -18,7 +18,6 @@
 package btrplace.plan.event;
 
 import btrplace.model.*;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -32,7 +31,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Fabien Hermenier
  */
-public class ResumeVMTest implements PremadeElements {
+public class ResumeVMTest {
 
     static Model mo = new DefaultModel();
     static List<Node> ns = Util.newNodes(mo, 10);

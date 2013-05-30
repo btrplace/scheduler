@@ -23,7 +23,6 @@ import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.plan.event.*;
 import btrplace.solver.SolverException;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -32,7 +31,7 @@ import org.testng.annotations.Test;
  *
  * @author Fabien Hermenier
  */
-public class DurationEvaluatorsTest implements PremadeElements {
+public class DurationEvaluatorsTest {
 
     static Model mo = new DefaultModel();
     static VM vm1 = mo.newVM();

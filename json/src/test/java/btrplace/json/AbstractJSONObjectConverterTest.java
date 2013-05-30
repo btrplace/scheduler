@@ -50,7 +50,7 @@ public class AbstractJSONObjectConverterTest {
         };
     }
 
-    @Test(expectedExceptions = {JSONConverterException.class}, dataProvider = "getInvalidints")
+    @Test(expectedExceptions = {JSONConverterException.class}, dataProvider = "getInvalidInts")
     public void testInValidRequiredInt(String storeKey, String readKey, Object o) throws JSONConverterException {
         JSONObject obj = new JSONObject();
         obj.put(storeKey, o);

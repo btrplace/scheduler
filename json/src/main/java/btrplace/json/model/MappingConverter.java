@@ -19,7 +19,6 @@ package btrplace.json.model;
 
 import btrplace.json.AbstractJSONObjectConverter;
 import btrplace.json.JSONConverterException;
-import btrplace.model.DefaultMapping;
 import btrplace.model.Mapping;
 import btrplace.model.Node;
 import btrplace.model.VM;
@@ -52,7 +51,10 @@ public class MappingConverter extends AbstractJSONObjectConverter<Mapping> {
 
     @Override
     public Mapping fromJSON(JSONObject o) throws JSONConverterException {
-        Mapping c = new DefaultMapping();
+        if (getModel() == null) {
+            throw new JSONConverterException("Unable to extract VMs without a model to use as a reference");
+        }
+        Mapping c = getModel().getMapping();
         for (Node u : requiredNodes(o, "offlineNodes")) {
             c.addOfflineNode(u);
         }

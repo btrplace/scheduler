@@ -21,7 +21,6 @@ import btrplace.json.JSONConverterException;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.model.constraint.Sleeping;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -34,13 +33,13 @@ import java.util.HashSet;
  *
  * @author Fabien Hermenier
  */
-public class SleepingConverterTest implements PremadeElements {
-
-    private static SleepingConverter conv = new SleepingConverter();
+public class SleepingConverterTest {
 
     @Test
     public void testViables() throws JSONConverterException, IOException {
         Model mo = new DefaultModel();
+        SleepingConverter conv = new SleepingConverter();
+        conv.setModel(mo);
         Sleeping d = new Sleeping(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())));
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
     }

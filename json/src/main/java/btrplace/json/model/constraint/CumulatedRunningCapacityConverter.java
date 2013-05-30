@@ -52,7 +52,7 @@ public class CumulatedRunningCapacityConverter extends SatConstraintConverter<Cu
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
         c.put("nodes", nodesToJSON(o.getInvolvedNodes()));
-        c.put("amount", (long) o.getAmount());
+        c.put("amount", o.getAmount());
         c.put("continuous", o.isContinuous());
         return c;
     }

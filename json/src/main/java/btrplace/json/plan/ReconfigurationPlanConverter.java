@@ -49,6 +49,7 @@ public class ReconfigurationPlanConverter extends AbstractJSONObjectConverter<Re
         ModelConverter c = new ModelConverter();
         ActionConverter ac = new ActionConverter();
         Model m = c.fromJSON((JSONObject) ob.get("origin"));
+        ac.setModel(m);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(m);
         for (Action a : ac.listFromJSON((JSONArray) ob.get("actions"))) {
             plan.add(a);

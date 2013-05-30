@@ -17,7 +17,6 @@
 
 package btrplace.model;
 
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -31,7 +30,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class DefaultMappingTest implements PremadeElements {
+public class DefaultMappingTest {
 
     private static List<VM> vms = Util.newVMs(10);
     private static List<Node> ns = Util.newNodes(10);

@@ -27,7 +27,6 @@ import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
@@ -42,7 +41,7 @@ import java.util.Collections;
  *
  * @author Fabien Hermenier
  */
-public class BootableNodeModelTest implements PremadeElements {
+public class BootableNodeModelTest {
 
     @Test
     public void testBasic() throws SolverException {

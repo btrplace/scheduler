@@ -20,7 +20,6 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.*;
 import btrplace.model.constraint.Killed;
 import btrplace.solver.choco.MappingFiller;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -31,7 +30,7 @@ import java.util.Collections;
  *
  * @author Fabien Hermenier
  */
-public class CKilledTest implements PremadeElements {
+public class CKilledTest {
 
     @Test
     public void testGetMisplaced() {

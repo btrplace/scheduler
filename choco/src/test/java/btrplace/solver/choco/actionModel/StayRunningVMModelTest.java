@@ -22,7 +22,6 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -34,7 +33,7 @@ import java.util.Collections;
  *
  * @author Fabien Hermenier
  */
-public class StayRunningVMModelTest implements PremadeElements {
+public class StayRunningVMModelTest {
 
     @Test
     public void testBasic() throws SolverException {

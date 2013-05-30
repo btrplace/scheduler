@@ -113,6 +113,7 @@ public class SatConstraintsConverter extends AbstractJSONObjectConverter<SatCons
         if (c == null) {
             throw new JSONConverterException("No converter available for a constraint having id '" + id + "'");
         }
+        c.setModel(getModel());
         return c.fromJSON(in);
     }
 

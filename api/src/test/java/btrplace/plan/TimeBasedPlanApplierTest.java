@@ -23,7 +23,6 @@ import btrplace.plan.event.Allocate;
 import btrplace.plan.event.BootNode;
 import btrplace.plan.event.MigrateVM;
 import btrplace.plan.event.ShutdownNode;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -34,7 +33,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class TimeBasedPlanApplierTest implements PremadeElements {
+public class TimeBasedPlanApplierTest {
 
     static Model mo = new DefaultModel();
     static List<VM> vms = Util.newVMs(mo, 10);

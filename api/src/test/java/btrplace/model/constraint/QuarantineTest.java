@@ -23,7 +23,6 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootVM;
 import btrplace.plan.event.MigrateVM;
 import btrplace.plan.event.ShutdownVM;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -37,7 +36,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class QuarantineTest implements PremadeElements {
+public class QuarantineTest {
 
     @Test
     public void testInstantiation() {
