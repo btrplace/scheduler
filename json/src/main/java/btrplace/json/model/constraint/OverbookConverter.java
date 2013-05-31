@@ -42,7 +42,7 @@ public class OverbookConverter extends SatConstraintConverter<Overbook> {
     public Overbook fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
         return new Overbook(requiredNodes(o, "nodes"),
-                requiredString(o, "rcId"),
+                requiredString(o, "rc"),
                 requiredDouble(o, "ratio"),
                 requiredBoolean(o, "continuous"));
     }
@@ -52,7 +52,7 @@ public class OverbookConverter extends SatConstraintConverter<Overbook> {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
         c.put("nodes", nodesToJSON(o.getInvolvedNodes()));
-        c.put("rcId", o.getResource());
+        c.put("rc", o.getResource());
         c.put("ratio", o.getRatio());
         c.put("continuous", o.isContinuous());
         return c;

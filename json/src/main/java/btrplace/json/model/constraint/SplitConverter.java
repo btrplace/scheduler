@@ -48,7 +48,7 @@ public class SplitConverter extends SatConstraintConverter<Split> {
     public Split fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
         Set<Set<VM>> vms = new HashSet<>();
-        Object x = o.get("vms");
+        Object x = o.get("parts");
         if (!(x instanceof JSONArray)) {
             throw new JSONConverterException("Set of ints sets expected at key 'vms'");
         }
@@ -69,7 +69,7 @@ public class SplitConverter extends SatConstraintConverter<Split> {
             a.add(vmsToJSON(grp));
         }
 
-        c.put("vms", a);
+        c.put("parts", a);
         c.put("continuous", o.isContinuous());
         return c;
     }

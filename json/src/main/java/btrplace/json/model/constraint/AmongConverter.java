@@ -49,7 +49,7 @@ public class AmongConverter extends SatConstraintConverter<Among> {
         checkId(o);
 
         Set<Set<Node>> nodes = new HashSet<>();
-        Object x = o.get("nodes");
+        Object x = o.get("parts");
         if (!(x instanceof JSONArray)) {
             throw new JSONConverterException("Set of ints sets expected at key 'nodes'");
         }
@@ -71,7 +71,7 @@ public class AmongConverter extends SatConstraintConverter<Among> {
         for (Set<Node> grp : o.getGroupsOfNodes()) {
             a.add(nodesToJSON(grp));
         }
-        c.put("nodes", a);
+        c.put("parts", a);
         c.put("continuous", o.isContinuous());
         return c;
     }
