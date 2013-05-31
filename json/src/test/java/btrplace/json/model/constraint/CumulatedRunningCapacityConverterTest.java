@@ -42,6 +42,7 @@ public class CumulatedRunningCapacityConverterTest {
         conv.setModel(mo);
         CumulatedRunningCapacity d = new CumulatedRunningCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), 5, false);
         CumulatedRunningCapacity c = new CumulatedRunningCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode())), 5, true);
+
         Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
         Assert.assertEquals(conv.fromJSON(conv.toJSON(c)), c);
     }

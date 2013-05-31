@@ -40,7 +40,7 @@ public class Root extends SatConstraint {
     /**
      * Make a new constraint.
      *
-     * @param vms the set of VMs to disallow to move
+     * @param vms the VMs to disallow to move
      */
     public Root(Set<VM> vms) {
         super(vms, Collections.<Node>emptySet(), true);

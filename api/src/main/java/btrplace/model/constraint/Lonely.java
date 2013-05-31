@@ -43,7 +43,7 @@ public class Lonely extends SatConstraint {
     /**
      * Make a new constraint with a discrete restriction.
      *
-     * @param vms the set of VMs to consider
+     * @param vms the VMs to consider
      */
     public Lonely(Set<VM> vms) {
         this(vms, false);
@@ -52,7 +52,7 @@ public class Lonely extends SatConstraint {
     /**
      * Make a new constraint.
      *
-     * @param vms        the set of VMs to consider
+     * @param vms        the VMs to consider
      * @param continuous {@code true} for a continuous restriction
      */
     public Lonely(Set<VM> vms, boolean continuous) {

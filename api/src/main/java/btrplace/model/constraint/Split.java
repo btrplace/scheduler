@@ -43,21 +43,21 @@ public class Split extends SatConstraint {
     /**
      * Make a new constraint having a discrete restriction.
      *
-     * @param s the disjoint sets of VMs that must be split
+     * @param parts the disjoint sets of VMs that must be split
      */
-    public Split(Collection<Set<VM>> s) {
-        this(s, false);
+    public Split(Collection<Set<VM>> parts) {
+        this(parts, false);
     }
 
     /**
      * Make a new constraint.
      *
-     * @param s          the disjoint sets of VMs that must be split
+     * @param parts      the disjoint sets of VMs that must be split
      * @param continuous {@code true} for a continuous restriction
      */
-    public Split(Collection<Set<VM>> s, boolean continuous) {
+    public Split(Collection<Set<VM>> parts, boolean continuous) {
         super(null, Collections.<Node>emptySet(), continuous);
-        this.sets = s;
+        this.sets = parts;
     }
 
 

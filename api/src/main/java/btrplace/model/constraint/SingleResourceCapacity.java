@@ -48,25 +48,25 @@ public class SingleResourceCapacity extends SatConstraint {
     /**
      * Make a new constraint with a discrete restriction.
      *
-     * @param nodes  the involved servers.
-     * @param rcId   the resource identifier
-     * @param amount the maximum amount of resource to share among the hosted VMs
+     * @param nodes  the involved nodes.
+     * @param rc     the resource identifier
+     * @param amount the maximum amount of resources to share among the hosted VMs
      */
-    public SingleResourceCapacity(Set<Node> nodes, String rcId, int amount) {
-        this(nodes, rcId, amount, false);
+    public SingleResourceCapacity(Set<Node> nodes, String rc, int amount) {
+        this(nodes, rc, amount, false);
     }
 
     /**
      * Make a new constraint.
      *
-     * @param nodes      the involved servers.
-     * @param rcId       the resource identifier
-     * @param amount     the maximum amount of resource to share among the hosted VMs
+     * @param nodes      the involved nodes.
+     * @param rc         the resource identifier
+     * @param amount     the maximum amount of resources to share among the hosted VMs
      * @param continuous {@code true} for a continuous restriction
      */
-    public SingleResourceCapacity(Set<Node> nodes, String rcId, int amount, boolean continuous) {
+    public SingleResourceCapacity(Set<Node> nodes, String rc, int amount, boolean continuous) {
         super(Collections.<VM>emptySet(), nodes, continuous);
-        this.rcId = rcId;
+        this.rcId = rc;
         this.amount = amount;
     }
 

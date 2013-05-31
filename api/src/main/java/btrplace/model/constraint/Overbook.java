@@ -51,25 +51,25 @@ public class Overbook extends SatConstraint {
     /**
      * Make a new constraint with a continuous restriction.
      *
-     * @param nodes the nodes identifiers
-     * @param rcId  the resource identifier
-     * @param r     the overbooking ratio
+     * @param nodes the nodes
+     * @param rc    the resource identifier
+     * @param r     the overbooking ratio, >= 1
      */
-    public Overbook(Set<Node> nodes, String rcId, double r) {
-        this(nodes, rcId, r, true);
+    public Overbook(Set<Node> nodes, String rc, double r) {
+        this(nodes, rc, r, true);
     }
 
     /**
      * Make a new constraint.
      *
      * @param nodes      the nodes identifiers
-     * @param rcId       the resource identifier
+     * @param rc         the resource identifier
      * @param r          the overbooking ratio
      * @param continuous {@code true} for a continuous restriction
      */
-    public Overbook(Set<Node> nodes, String rcId, double r, boolean continuous) {
+    public Overbook(Set<Node> nodes, String rc, double r, boolean continuous) {
         super(Collections.<VM>emptySet(), nodes, continuous);
-        this.rcId = rcId;
+        this.rcId = rc;
         this.ratio = r;
     }
 
@@ -85,7 +85,7 @@ public class Overbook extends SatConstraint {
     /**
      * Get the overbooking ratio.
      *
-     * @return a positive integer
+     * @return a ratio >= 1
      */
     public double getRatio() {
         return this.ratio;

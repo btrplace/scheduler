@@ -46,22 +46,22 @@ public class CumulatedRunningCapacity extends SatConstraint {
     /**
      * Make a new constraint having a discrete restriction.
      *
-     * @param servers the server involved in the constraint
-     * @param amount  the total amount of resource consumed by all the VMs running on the given servers
+     * @param nodes  the nodes involved in the constraint
+     * @param amount the total amount of resources consumed by all the VMs running on the given nodes
      */
-    public CumulatedRunningCapacity(Set<Node> servers, int amount) {
-        this(servers, amount, false);
+    public CumulatedRunningCapacity(Set<Node> nodes, int amount) {
+        this(nodes, amount, false);
     }
 
     /**
      * Make a new constraint.
      *
-     * @param servers    the server involved in the constraint
-     * @param amount     the total amount of resource consumed by all the VMs running on the given servers
+     * @param nodes      the nodes involved in the constraint
+     * @param amount     the total amount of resources consumed by all the VMs running on the given nodes
      * @param continuous {@code true} for a continuous restriction
      */
-    public CumulatedRunningCapacity(Set<Node> servers, int amount, boolean continuous) {
-        super(Collections.<VM>emptySet(), servers, continuous);
+    public CumulatedRunningCapacity(Set<Node> nodes, int amount, boolean continuous) {
+        super(Collections.<VM>emptySet(), nodes, continuous);
         this.qty = amount;
     }
 

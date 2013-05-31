@@ -61,6 +61,7 @@ public class ModelConverterTest {
         mo.attach(rc);
 
         String jo = conv.toJSONString(mo);
+        System.out.println(jo);
         Model res = conv.fromJSON(jo);
         Assert.assertEquals(res, mo);
     }

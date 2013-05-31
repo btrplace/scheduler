@@ -45,13 +45,13 @@ public class Preserve extends SatConstraint {
     /**
      * Make a new constraint.
      *
-     * @param vms    the VMs identifiers
-     * @param rcId   the resource identifier
-     * @param amount the minimum amount of resource to allocate
+     * @param vms    the VMs
+     * @param rc     the resource identifier
+     * @param amount the minimum amount of resources to allocate to each VM
      */
-    public Preserve(Set<VM> vms, String rcId, int amount) {
+    public Preserve(Set<VM> vms, String rc, int amount) {
         super(vms, Collections.<Node>emptySet(), false);
-        this.rc = rcId;
+        this.rc = rc;
         this.amount = amount;
     }
 

@@ -41,6 +41,7 @@ public class QuarantineConverterTest {
         QuarantineConverter conv = new QuarantineConverter();
         conv.setModel(mo);
         Quarantine d = new Quarantine(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())));
+
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
     }
 }

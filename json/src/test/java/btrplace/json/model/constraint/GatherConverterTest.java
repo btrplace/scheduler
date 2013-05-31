@@ -42,6 +42,7 @@ public class GatherConverterTest {
         conv.setModel(mo);
         Gather d = new Gather(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())), false);
         Gather c = new Gather(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())), true);
+
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
     }

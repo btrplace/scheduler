@@ -48,24 +48,24 @@ public class CumulatedResourceCapacity extends SatConstraint {
     /**
      * Make a new constraint with a discrete restriction.
      *
-     * @param servers the server involved in the constraint
-     * @param rc      the resource to consider
-     * @param amount  the total amount of resource consumed by all the VMs running on the given servers
+     * @param nodes  the nodes involved in the constraint
+     * @param rc     the resource identifier
+     * @param amount the total amount of resource consumed by all the VMs running on the given nodes
      */
-    public CumulatedResourceCapacity(Set<Node> servers, String rc, int amount) {
-        this(servers, rc, amount, false);
+    public CumulatedResourceCapacity(Set<Node> nodes, String rc, int amount) {
+        this(nodes, rc, amount, false);
     }
 
     /**
      * Make a new constraint.
      *
-     * @param servers    the server involved in the constraint
-     * @param rc         the resource to consider
-     * @param amount     the total amount of resource consumed by all the VMs running on the given servers
+     * @param nodes      the nodes involved in the constraint
+     * @param rc         the resource identifier
+     * @param amount     the total amount of resource consumed by all the VMs running on the given nodes
      * @param continuous {@code true} for a continuous restriction.
      */
-    public CumulatedResourceCapacity(Set<Node> servers, String rc, int amount, boolean continuous) {
-        super(Collections.<VM>emptySet(), servers, continuous);
+    public CumulatedResourceCapacity(Set<Node> nodes, String rc, int amount, boolean continuous) {
+        super(Collections.<VM>emptySet(), nodes, continuous);
         this.qty = amount;
         this.rcId = rc;
     }

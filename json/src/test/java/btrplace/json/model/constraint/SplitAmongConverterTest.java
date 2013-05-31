@@ -56,6 +56,7 @@ public class SplitAmongConverterTest {
         SplitAmong c = new SplitAmong(vgrps, pgrps, true);
         SplitAmongConverter conv = new SplitAmongConverter();
         conv.setModel(mo);
+
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
     }

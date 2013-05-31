@@ -41,6 +41,7 @@ public class SleepingConverterTest {
         SleepingConverter conv = new SleepingConverter();
         conv.setModel(mo);
         Sleeping d = new Sleeping(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())));
+
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
     }
 }

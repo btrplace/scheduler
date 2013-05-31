@@ -51,6 +51,7 @@ public class SplitConverterTest {
 
         SplitConverter conv = new SplitConverter();
         conv.setModel(mo);
+
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
     }

@@ -41,6 +41,7 @@ public class PreserveConverterTest {
         PreserveConverter conv = new PreserveConverter();
         conv.setModel(mo);
         Preserve d = new Preserve(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())), "cpu", 5);
+
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
     }
 }

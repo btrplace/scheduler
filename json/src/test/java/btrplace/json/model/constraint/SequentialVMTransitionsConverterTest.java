@@ -41,6 +41,7 @@ public class SequentialVMTransitionsConverterTest {
         conv.setModel(mo);
         SequentialVMTransitions d = new SequentialVMTransitions(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
         SequentialVMTransitions c = new SequentialVMTransitions(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
+
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
     }

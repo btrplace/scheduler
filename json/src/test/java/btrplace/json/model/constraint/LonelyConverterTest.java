@@ -42,6 +42,7 @@ public class LonelyConverterTest {
         conv.setModel(mo);
         Lonely d = new Lonely(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())), false);
         Lonely c = new Lonely(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())), true);
+
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
     }

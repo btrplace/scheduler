@@ -37,8 +37,8 @@ public class Fence extends SatConstraint {
     /**
      * Make a new discrete constraint.
      *
-     * @param vms   the VMs identifiers
-     * @param nodes the nodes identifiers
+     * @param vms   the involved VMs
+     * @param nodes the involved nodes
      */
     public Fence(Set<VM> vms, Set<Node> nodes) {
         super(vms, nodes, false);

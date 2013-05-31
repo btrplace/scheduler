@@ -41,6 +41,7 @@ public class ReadyConverterTest {
         ReadyConverter conv = new ReadyConverter();
         conv.setModel(mo);
         Ready d = new Ready(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())));
+
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
     }
 }

@@ -41,6 +41,7 @@ public class RootConverterTest {
         RootConverter conv = new RootConverter();
         conv.setModel(mo);
         Root d = new Root(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())));
+
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
     }
 }

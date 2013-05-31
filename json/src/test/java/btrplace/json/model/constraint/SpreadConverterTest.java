@@ -43,6 +43,7 @@ public class SpreadConverterTest {
         Spread c = new Spread(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())), true);
         SpreadConverter conv = new SpreadConverter();
         conv.setModel(mo);
+
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
     }

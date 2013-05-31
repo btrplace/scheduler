@@ -41,6 +41,7 @@ public class OnlineConverterTest {
         OnlineConverter conv = new OnlineConverter();
         conv.setModel(mo);
         Online d = new Online(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())));
+
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
     }
 }

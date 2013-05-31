@@ -46,23 +46,23 @@ public class SingleRunningCapacity extends SatConstraint {
     /**
      * Make a new constraint having a discrete restriction.
      *
-     * @param nodes the involved servers.
-     * @param qty   the maximum amount of resource to share among the hosted VMs
+     * @param nodes  the involved nodes.
+     * @param amount the maximum amount of resource to share among the hosted VMs
      */
-    public SingleRunningCapacity(Set<Node> nodes, int qty) {
-        this(nodes, qty, false);
+    public SingleRunningCapacity(Set<Node> nodes, int amount) {
+        this(nodes, amount, false);
     }
 
     /**
      * Make a new constraint.
      *
-     * @param nodes      the involved servers.
-     * @param qty        the maximum amount of resource to share among the hosted VMs
+     * @param nodes      the involved nodes.
+     * @param amount     the maximum amount of resource to share among the hosted VMs
      * @param continuous {@code true} for a continuous restriction
      */
-    public SingleRunningCapacity(Set<Node> nodes, int qty, boolean continuous) {
+    public SingleRunningCapacity(Set<Node> nodes, int amount, boolean continuous) {
         super(Collections.<VM>emptySet(), nodes, continuous);
-        this.amount = qty;
+        this.amount = amount;
     }
 
 

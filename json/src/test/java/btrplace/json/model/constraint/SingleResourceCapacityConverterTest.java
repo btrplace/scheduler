@@ -42,6 +42,7 @@ public class SingleResourceCapacityConverterTest {
         conv.setModel(mo);
         SingleResourceCapacity d = new SingleResourceCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), "cpu", 5, false);
         SingleResourceCapacity c = new SingleResourceCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), "mem", 5, true);
+
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
     }

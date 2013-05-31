@@ -6,10 +6,9 @@ version ????????
 
 - Bugs fix
 - Close #16, #18
-- Switch the type system from a UUID-based to a int-based.
-  Positive ints for VMs, negative for nodes
+- MAJOR API change: Type system for elements. No more UUIDS.
 - Simplify json package
-- New tutorial: 'BasicTuning'
+- 2 new tutorials on customizing a Model and a ChocoReconfigurationAlgorithm.
 
 version 0.29 - 07 May 2013
 ----------------------

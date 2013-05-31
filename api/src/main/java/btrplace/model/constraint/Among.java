@@ -48,11 +48,11 @@ public class Among extends SatConstraint {
     /**
      * Make a new constraint with a discrete restriction.
      *
-     * @param vms       the group of VMs
-     * @param phyGroups the candidate group of nodes.
+     * @param vms   the group of VMs
+     * @param parts disjoint set of nodes
      */
-    public Among(Set<VM> vms, Set<Set<Node>> phyGroups) {
-        this(vms, phyGroups, false);
+    public Among(Set<VM> vms, Set<Set<Node>> parts) {
+        this(vms, parts, false);
 
     }
 
@@ -60,12 +60,12 @@ public class Among extends SatConstraint {
      * Make a new constraint.
      *
      * @param vms        the group of VMs
-     * @param phyGroups  the candidate group of nodes.
+     * @param parts      disjoint set of nodes
      * @param continuous {@code true} for a continuous restriction
      */
-    public Among(Set<VM> vms, Set<Set<Node>> phyGroups, boolean continuous) {
+    public Among(Set<VM> vms, Set<Set<Node>> parts, boolean continuous) {
         super(vms, null, continuous);
-        this.pGrps = phyGroups;
+        this.pGrps = parts;
     }
 
     /**

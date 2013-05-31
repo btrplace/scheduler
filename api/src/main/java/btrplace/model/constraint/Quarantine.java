@@ -40,7 +40,7 @@ public class Quarantine extends SatConstraint {
     /**
      * Make a new constraint.
      *
-     * @param nodes the set of nodes to put into quarantine
+     * @param nodes the nodes to put into quarantine
      */
     public Quarantine(Set<Node> nodes) {
         super(Collections.<VM>emptySet(), nodes, true);

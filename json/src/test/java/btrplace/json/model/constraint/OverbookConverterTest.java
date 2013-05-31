@@ -42,5 +42,7 @@ public class OverbookConverterTest {
         conv.setModel(mo);
         Overbook d = new Overbook(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), "foo", 1.4);
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+
+
     }
 }

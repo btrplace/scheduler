@@ -41,6 +41,7 @@ public class RunningConverterTest {
         RunningConverter conv = new RunningConverter();
         conv.setModel(mo);
         Running d = new Running(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())));
+
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
     }
 }

@@ -43,6 +43,7 @@ public class SingleRunningCapacityConverterTest {
         conv.setModel(mo);
         SingleRunningCapacity d = new SingleRunningCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), 5, false);
         SingleRunningCapacity c = new SingleRunningCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), 5, true);
+
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
     }

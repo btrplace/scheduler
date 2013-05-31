@@ -41,6 +41,7 @@ public class OfflineConverterTest {
         OfflineConverter conv = new OfflineConverter();
         conv.setModel(mo);
         Offline d = new Offline(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())));
+
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
     }
 }

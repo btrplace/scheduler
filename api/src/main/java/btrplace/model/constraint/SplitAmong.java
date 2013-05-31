@@ -54,25 +54,25 @@ public class SplitAmong extends SatConstraint {
     /**
      * Make a new constraint having a discrete restriction.
      *
-     * @param vGrps the set of set of VMs. Sets of VMs must be disjoint
-     * @param pGrps the set of set of nodes. Sets of nodes must be disjoint
+     * @param vParts the disjoint sets of VMs
+     * @param pParts the disjoint sets of nodes.
      */
-    public SplitAmong(Set<Set<VM>> vGrps, Set<Set<Node>> pGrps) {
-        this(vGrps, pGrps, false);
+    public SplitAmong(Set<Set<VM>> vParts, Set<Set<Node>> pParts) {
+        this(vParts, pParts, false);
     }
 
 
     /**
      * Make a new constraint.
      *
-     * @param vGrps      the set of set of VMs. Sets of VMs must be disjoint
-     * @param pGrps      the set of set of nodes. Sets of nodes must be disjoint
+     * @param vParts     the disjoint sets of VMs
+     * @param pParts     the disjoint sets of nodes.
      * @param continuous {@code true} for a continuous restriction
      */
-    public SplitAmong(Set<Set<VM>> vGrps, Set<Set<Node>> pGrps, boolean continuous) {
+    public SplitAmong(Set<Set<VM>> vParts, Set<Set<Node>> pParts, boolean continuous) {
         super(null, null, continuous);
-        this.vGrps = vGrps;
-        this.pGrps = pGrps;
+        this.vGrps = vParts;
+        this.pGrps = pParts;
     }
 
     @Override

@@ -42,6 +42,7 @@ public class CumulatedResourceCapacityConverterTest {
         conv.setModel(mo);
         CumulatedResourceCapacity d = new CumulatedResourceCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), "cpu", 5, false);
         CumulatedResourceCapacity c = new CumulatedResourceCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode())), "mem", 5, true);
+
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
     }
