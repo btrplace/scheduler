@@ -50,6 +50,7 @@ public class ActionConverterTest {
         ActionConverter ac = new ActionConverter();
         ac.setModel(mo);
         String o = ac.toJSONString(a);
+        System.out.println(o);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
 
@@ -59,6 +60,7 @@ public class ActionConverterTest {
         ActionConverter ac = new ActionConverter();
         ac.setModel(mo);
         String o = ac.toJSONString(a);
+        System.out.println(o);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
 
@@ -68,6 +70,7 @@ public class ActionConverterTest {
         ActionConverter ac = new ActionConverter();
         ac.setModel(mo);
         String o = ac.toJSONString(a);
+        System.out.println(o);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
 
@@ -77,6 +80,7 @@ public class ActionConverterTest {
         ActionConverter ac = new ActionConverter();
         ac.setModel(mo);
         String o = ac.toJSONString(a);
+        System.out.println(o);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
 
@@ -87,6 +91,7 @@ public class ActionConverterTest {
         ActionConverter ac = new ActionConverter();
         ac.setModel(mo);
         String o = ac.toJSONString(a);
+        System.out.println(o);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
 
@@ -96,6 +101,7 @@ public class ActionConverterTest {
         ActionConverter ac = new ActionConverter();
         ac.setModel(mo);
         String o = ac.toJSONString(a);
+        System.out.println(o);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
 
@@ -106,6 +112,7 @@ public class ActionConverterTest {
         ActionConverter ac = new ActionConverter();
         ac.setModel(mo);
         String o = ac.toJSONString(a);
+        System.out.println(o);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
 
@@ -116,6 +123,7 @@ public class ActionConverterTest {
         ActionConverter ac = new ActionConverter();
         ac.setModel(mo);
         String o = ac.toJSONString(a);
+        System.out.println(o);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
 
@@ -125,6 +133,7 @@ public class ActionConverterTest {
         ActionConverter ac = new ActionConverter();
         ac.setModel(mo);
         String o = ac.toJSONString(a);
+        System.out.println(o);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
 
@@ -134,6 +143,7 @@ public class ActionConverterTest {
         ActionConverter ac = new ActionConverter();
         ac.setModel(mo);
         String o = ac.toJSONString(a);
+        System.out.println(o);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
 
@@ -146,6 +156,7 @@ public class ActionConverterTest {
         ActionConverter ac = new ActionConverter();
         ac.setModel(mo);
         String o = ac.toJSONString(a);
+        System.out.println(o);
         Assert.assertEquals(a, ac.fromJSON(o));
     }
 
