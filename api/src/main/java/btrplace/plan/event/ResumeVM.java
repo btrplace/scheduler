@@ -40,14 +40,14 @@ public class ResumeVM extends Action implements VMStateTransition, RunningVMPlac
     /**
      * Make a new resume action.
      *
-     * @param vm   the virtual machine to resume
-     * @param from the source node
-     * @param to   the destination node
-     * @param st   the moment the action starts.
-     * @param end  the moment the action finish
+     * @param vm    the virtual machine to resume
+     * @param from  the source node
+     * @param to    the destination node
+     * @param start the moment the action starts.
+     * @param end   the moment the action finish
      */
-    public ResumeVM(VM vm, Node from, Node to, int st, int end) {
-        super(st, end);
+    public ResumeVM(VM vm, Node from, Node to, int start, int end) {
+        super(start, end);
         this.vm = vm;
         this.src = from;
         this.dst = to;

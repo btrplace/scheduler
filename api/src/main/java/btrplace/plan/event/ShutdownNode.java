@@ -36,13 +36,13 @@ public class ShutdownNode extends Action implements NodeEvent {
     /**
      * Create a new shutdown action on an online node.
      *
-     * @param n The node to stop
-     * @param s the moment the action starts
-     * @param f the moment the action is finished
+     * @param node  The node to stop
+     * @param start the moment the action starts
+     * @param end   the moment the action is finished
      */
-    public ShutdownNode(Node n, int s, int f) {
-        super(s, f);
-        this.node = n;
+    public ShutdownNode(Node node, int start, int end) {
+        super(start, end);
+        this.node = node;
     }
 
     @Override

@@ -37,15 +37,15 @@ public class KillVM extends Action implements VMStateTransition {
     /**
      * Make a new action.
      *
-     * @param vm   the VM to kill
-     * @param host its location if any, {@code null} otherwise
-     * @param st   the moment the action starts
-     * @param ed   the moment the action ends
+     * @param vm    the VM to kill
+     * @param on    its location if any, {@code null} otherwise
+     * @param start the moment the action starts
+     * @param end   the moment the action ends
      */
-    public KillVM(VM vm, Node host, int st, int ed) {
-        super(st, ed);
+    public KillVM(VM vm, Node on, int start, int end) {
+        super(start, end);
         id = vm;
-        this.host = host;
+        this.host = on;
     }
 
     /**

@@ -38,17 +38,17 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
     /**
      * Make a new action.
      *
-     * @param vm  the VM to migrate
-     * @param src the node the VM is currently running on
-     * @param dst the node where to place the VM
-     * @param st  the moment the action will consume
-     * @param ed  the moment the action will stop
+     * @param vm    the VM to migrate
+     * @param from  the node the VM is currently running on
+     * @param to    the node where to place the VM
+     * @param start the moment the action will consume
+     * @param end   the moment the action will stop
      */
-    public MigrateVM(VM vm, Node src, Node dst, int st, int ed) {
-        super(st, ed);
+    public MigrateVM(VM vm, Node from, Node to, int start, int end) {
+        super(start, end);
         this.vm = vm;
-        this.src = src;
-        this.dst = dst;
+        this.src = from;
+        this.dst = to;
     }
 
     @Override

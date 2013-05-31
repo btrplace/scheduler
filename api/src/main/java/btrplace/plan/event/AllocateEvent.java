@@ -41,12 +41,12 @@ public class AllocateEvent implements VMEvent {
      * Make a new event.
      *
      * @param vmId   the VM that is subject to the resource allocation
-     * @param rcId   the resource identifier
+     * @param rc     the resource identifier
      * @param amount the amount of resources to allocate
      */
-    public AllocateEvent(VM vmId, String rcId, int amount) {
+    public AllocateEvent(VM vmId, String rc, int amount) {
         this.vm = vmId;
-        this.rc = rcId;
+        this.rc = rc;
         this.qty = amount;
     }
 

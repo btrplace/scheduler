@@ -36,13 +36,13 @@ public class BootNode extends Action implements NodeEvent {
     /**
      * Create a new action on an offline node.
      *
-     * @param n The node to boot
-     * @param s the moment the action starts
-     * @param f the moment the action is finished
+     * @param node  The node to boot
+     * @param start the moment the action starts
+     * @param end   the moment the action is finished
      */
-    public BootNode(Node n, int s, int f) {
-        super(s, f);
-        this.node = n;
+    public BootNode(Node node, int start, int end) {
+        super(start, end);
+        this.node = node;
     }
 
     /**

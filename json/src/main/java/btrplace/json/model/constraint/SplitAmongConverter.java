@@ -52,7 +52,7 @@ public class SplitAmongConverter extends SatConstraintConverter<SplitAmong> {
         Set<Set<Node>> nodes = new HashSet<>();
         Object x = o.get("pParts");
         if (!(x instanceof JSONArray)) {
-            throw new JSONConverterException("Set of ints sets expected at key 'nodes'");
+            throw new JSONConverterException("Set of ints sets expected at key 'vParts'");
         }
         for (Object obj : (JSONArray) x) {
             nodes.add(nodesFromJSON((JSONArray) obj));
@@ -61,7 +61,7 @@ public class SplitAmongConverter extends SatConstraintConverter<SplitAmong> {
         Set<Set<VM>> vms = new HashSet<>();
         x = o.get("vParts");
         if (!(x instanceof JSONArray)) {
-            throw new JSONConverterException("Set of ints sets expected at key 'vms'");
+            throw new JSONConverterException("Set of ints sets expected at key 'vParts'");
         }
         for (Object obj : (JSONArray) x) {
             vms.add(vmsFromJSON((JSONArray) obj));

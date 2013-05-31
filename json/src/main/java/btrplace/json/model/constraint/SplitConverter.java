@@ -50,7 +50,7 @@ public class SplitConverter extends SatConstraintConverter<Split> {
         Set<Set<VM>> vms = new HashSet<>();
         Object x = o.get("parts");
         if (!(x instanceof JSONArray)) {
-            throw new JSONConverterException("Set of ints sets expected at key 'vms'");
+            throw new JSONConverterException("Set of identifiers sets expected at key 'parts'");
         }
         for (Object obj : (JSONArray) x) {
             vms.add(vmsFromJSON((JSONArray) obj));

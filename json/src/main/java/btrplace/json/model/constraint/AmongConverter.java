@@ -51,7 +51,7 @@ public class AmongConverter extends SatConstraintConverter<Among> {
         Set<Set<Node>> nodes = new HashSet<>();
         Object x = o.get("parts");
         if (!(x instanceof JSONArray)) {
-            throw new JSONConverterException("Set of ints sets expected at key 'nodes'");
+            throw new JSONConverterException("Set of int sets expected at key 'parts'");
         }
         for (Object obj : (JSONArray) x) {
             nodes.add(nodesFromJSON((JSONArray) obj));

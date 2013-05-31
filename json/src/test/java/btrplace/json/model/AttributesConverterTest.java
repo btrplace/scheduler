@@ -18,10 +18,7 @@
 package btrplace.json.model;
 
 import btrplace.json.JSONConverterException;
-import btrplace.model.Attributes;
-import btrplace.model.DefaultAttributes;
-import btrplace.model.DefaultModel;
-import btrplace.model.Model;
+import btrplace.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -39,15 +36,22 @@ public class AttributesConverterTest {
         Model mo = new DefaultModel();
         Attributes attrs = new DefaultAttributes();
 
-        attrs.put(mo.newVM(), "foo", true);
-        attrs.put(mo.newNode(), "foo", false);
-        attrs.put(mo.newVM(), "bar", 5);
-        attrs.put(mo.newVM(), "baz", "zab");
-        attrs.put(mo.newNode(), "ba", 1.34);
+        VM vm1 = mo.newVM();
+        VM vm3 = mo.newVM(3);
+
+        Node n1 = mo.newNode();
+
+        attrs.put(n1, "boot", 7);
+        attrs.put(vm1, "template", "xen");
+        attrs.put(vm1, "forge", 3);
+        attrs.put(vm3, "template", "kvm");
+        attrs.put(vm3, "clone", true);
+        attrs.put(vm3, "foo", 1.3);
 
         AttributesConverter json = new AttributesConverter();
         json.setModel(mo);
         String o = json.toJSONString(attrs);
+        System.out.println(o);
         Attributes attrs2 = json.fromJSON(o);
         Assert.assertTrue(attrs.equals(attrs2));
     }

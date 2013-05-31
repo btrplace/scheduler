@@ -290,7 +290,7 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
         o.put(ACTION_ID_LABEL, "allocate");
         o.put(VM_LABEL, toJSON(a.getVM()));
         o.put("rc", a.getResourceId());
-        o.put("qty", a.getAmount());
+        o.put("amount", a.getAmount());
         o.put(VM_LOCATION_LABEL, toJSON(a.getHost()));
         return o;
     }
@@ -299,7 +299,7 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
         return new Allocate(requiredVM(in, VM_LABEL),
                 requiredNode(in, VM_LOCATION_LABEL),
                 requiredString(in, "rc"),
-                requiredInt(in, "qty"),
+                requiredInt(in, "amount"),
                 requiredInt(in, START_LABEL),
                 requiredInt(in, END_LABEL));
     }
@@ -310,14 +310,14 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
         o.put(ACTION_ID_LABEL, "allocate");
         o.put("rc", a.getResourceId());
         o.put(VM_LABEL, toJSON(a.getVM()));
-        o.put("qty", a.getAmount());
+        o.put("amount", a.getAmount());
         return o;
     }
 
     private AllocateEvent allocateEventFromJSON(JSONObject o) throws JSONConverterException {
         return new AllocateEvent(requiredVM(o, VM_LABEL),
                 requiredString(o, "rc"),
-                requiredInt(o, "qty"));
+                requiredInt(o, "amount"));
     }
 
     @Override
@@ -325,13 +325,13 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
         JSONObject o = new JSONObject();
         o.put(ACTION_ID_LABEL, "substitutedVM");
         o.put(VM_LABEL, toJSON(a.getVM()));
-        o.put("newint", toJSON(a.getNewVM()));
+        o.put("newvm", toJSON(a.getNewVM()));
         return o;
     }
 
     private SubstitutedVMEvent substitutedVMEventFromJSON(JSONObject o) throws JSONConverterException {
         return new SubstitutedVMEvent(requiredVM(o, VM_LABEL),
-                requiredVM(o, "newint"));
+                requiredVM(o, "newvm"));
     }
 
     @Override

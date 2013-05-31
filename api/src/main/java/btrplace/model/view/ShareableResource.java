@@ -54,26 +54,26 @@ public class ShareableResource implements ModelView, Cloneable {
      * Make a new resource that use {@link #DEFAULT_NO_VALUE}
      * for both VMs and nodes.
      *
-     * @param id the resource identifier
+     * @param rcId the resource identifier
      */
-    public ShareableResource(String id) {
-        this(id, DEFAULT_NO_VALUE, DEFAULT_NO_VALUE);
+    public ShareableResource(String rcId) {
+        this(rcId, DEFAULT_NO_VALUE, DEFAULT_NO_VALUE);
     }
 
     /**
      * Make a new resource.
      *
-     * @param id           the resource identifier
-     * @param nodeDefValue the nodes default capacity
-     * @param vmDefValue   the VM default consumption
+     * @param id             the resource identifier
+     * @param defCapacity    the nodes default capacity
+     * @param defConsumption the VM default consumption
      */
-    public ShareableResource(String id, int nodeDefValue, int vmDefValue) {
+    public ShareableResource(String id, int defCapacity, int defConsumption) {
         vmsConsumption = new HashMap<>();
         nodesCapacity = new HashMap<>();
         this.rcId = id;
         this.viewId = new StringBuilder(VIEW_ID_BASE).append(rcId).toString();
-        this.nodesNoValue = nodeDefValue;
-        this.vmsNoValue = vmDefValue;
+        this.nodesNoValue = defCapacity;
+        this.vmsNoValue = defConsumption;
     }
 
     /**

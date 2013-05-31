@@ -39,13 +39,13 @@ public class ShutdownVM extends Action implements VMStateTransition {
     /**
      * Make a new action.
      *
-     * @param vm the virtual machine to stop
-     * @param on the hosting node
-     * @param s  the moment the action consume.
-     * @param f  the moment the action finish
+     * @param vm    the virtual machine to stop
+     * @param on    the hosting node
+     * @param start the moment the action starts
+     * @param end   the moment the action finish
      */
-    public ShutdownVM(VM vm, Node on, int s, int f) {
-        super(s, f);
+    public ShutdownVM(VM vm, Node on, int start, int end) {
+        super(start, end);
         this.vm = vm;
         this.node = on;
     }

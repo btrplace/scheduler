@@ -39,16 +39,16 @@ public class Allocate extends Action implements VMEvent {
      * Make a new constraint.
      *
      * @param vm     the VM
-     * @param host   the node hosting the VM
-     * @param rcId   the resource identifier
+     * @param on     the node hosting the VM
+     * @param rc     the resource identifier
      * @param amount the minimum amount of resource to allocate
-     * @param st     the moment the action starts
-     * @param ed     the moment the action ends
+     * @param start  the moment the action starts
+     * @param end    the moment the action ends
      */
-    public Allocate(VM vm, Node host, String rcId, int amount, int st, int ed) {
-        super(st, ed);
-        ev = new AllocateEvent(vm, rcId, amount);
-        this.node = host;
+    public Allocate(VM vm, Node on, String rc, int amount, int start, int end) {
+        super(start, end);
+        ev = new AllocateEvent(vm, rc, amount);
+        this.node = on;
     }
 
     /**

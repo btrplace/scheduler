@@ -142,7 +142,7 @@ public class ActionConverterTest {
         BootNode a = new BootNode(n1, 3, 5);
         a.addEvent(Action.Hook.pre, new AllocateEvent(vm1, "foo", 3));
         a.addEvent(Action.Hook.post, new AllocateEvent(vm2, "bar", 5));
-        a.addEvent(Action.Hook.post, new AllocateEvent(vm3, "baz", 2));
+        a.addEvent(Action.Hook.post, new SubstitutedVMEvent(vm2, vm3));
         ActionConverter ac = new ActionConverter();
         ac.setModel(mo);
         String o = ac.toJSONString(a);

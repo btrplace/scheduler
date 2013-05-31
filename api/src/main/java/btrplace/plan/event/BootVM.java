@@ -39,14 +39,14 @@ public class BootVM extends Action implements VMStateTransition, RunningVMPlacem
     /**
      * Make a new action.
      *
-     * @param vmId the VM to run
-     * @param to   the destination node
-     * @param st   the moment the action starts.
-     * @param end  the moment the action finish
+     * @param vm    the VM to run
+     * @param to    the destination node
+     * @param start the moment the action starts.
+     * @param end   the moment the action finish
      */
-    public BootVM(VM vmId, Node to, int st, int end) {
-        super(st, end);
-        this.vm = vmId;
+    public BootVM(VM vm, Node to, int start, int end) {
+        super(start, end);
+        this.vm = vm;
         this.node = to;
     }
 
