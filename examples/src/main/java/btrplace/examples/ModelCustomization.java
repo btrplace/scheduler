@@ -43,7 +43,7 @@ public class ModelCustomization implements Example {
 
     private Model makeModel() {
         Model mo = new DefaultModel();
-        List<VM> vms = new ArrayList<>();
+        vms = new ArrayList<>();
         List<Node> ns = new ArrayList<>();
 
         for (int i = 0; i < 10; i++) {

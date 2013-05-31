@@ -38,8 +38,8 @@ import java.util.*;
  */
 public class GettingStarted implements Example {
 
-    List<VM> vms = new ArrayList<>();
-    List<Node> nodes = new ArrayList<>();
+    private List<VM> vms = new ArrayList<>();
+    private List<Node> nodes = new ArrayList<>();
 
     /**
      * Make a model with 4 online nodes, 6 VMs (5 running, 1 ready).
@@ -99,21 +99,21 @@ public class GettingStarted implements Example {
      */
     public List<SatConstraint> makeConstraints() {
         List<SatConstraint> cstrs = new ArrayList<>();
-        //VMs VM2 and VM3 must be running on distinct nodes
+        //VM1 and VM2 must be running on distinct nodes
         cstrs.add(new Spread(new HashSet<>(Arrays.asList(vms.get(1), vms.get(2)))));
 
-        //VM VM1 must have at least 3 virtual CPU dedicated to it
+        //VM0 must have at least 3 virtual CPU dedicated to it
         cstrs.add(new Preserve(Collections.singleton(vms.get(0)), "cpu", 3));
 
-        //node N4 must be set offline
+        //N3 must be set offline
         cstrs.add(new Offline(Collections.singleton(nodes.get(3))));
 
-        //VM5 must be running, It asks for 3 cpu and 2 mem resources
+        //VM4 must be running, It asks for 3 cpu and 2 mem resources
         cstrs.add(new Running(Collections.singleton(vms.get(4))));
         cstrs.add(new Preserve(Collections.singleton(vms.get(4)), "cpu", 3));
         cstrs.add(new Preserve(Collections.singleton(vms.get(4)), "mem", 2));
 
-        //VM4 must be turned off, i.e. set back to the ready state
+        //VM3 must be turned off, i.e. set back to the ready state
         cstrs.add(new Ready(Collections.singleton(vms.get(3))));
         return cstrs;
     }

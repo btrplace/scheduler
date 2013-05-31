@@ -129,15 +129,15 @@ public class CumulatedResourceCapacityChecker extends AllowAllConstraintChecker<
 
     @Override
     public boolean endsWith(Model i) {
-        ShareableResource rc = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + getConstraint().getResource());
-        if (rc == null) {
+        ShareableResource r = (ShareableResource) i.getView(ShareableResource.VIEW_ID_BASE + getConstraint().getResource());
+        if (r == null) {
             return false;
         }
 
         int remainder = getConstraint().getAmount();
         for (Node id : getNodes()) {
             if (i.getMapping().getOnlineNodes().contains(id)) {
-                remainder -= rc.sumConsumptions(i.getMapping().getRunningVMs(id), true);
+                remainder -= r.sumConsumptions(i.getMapping().getRunningVMs(id), true);
                 if (remainder < 0) {
                     return false;
                 }

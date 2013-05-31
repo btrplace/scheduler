@@ -67,11 +67,11 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
             pre.clear();
             nbCommitted = 0;
             for (Action a : plan) {
-                Set<Action> dependencies = plan.getDirectDependencies(a);
-                if (dependencies.isEmpty()) {
+                Set<Action> deps = plan.getDirectDependencies(a);
+                if (deps.isEmpty()) {
                     this.dependencies.put(a, new Dependency(a, Collections.<Action>emptySet()));
                 } else {
-                    Dependency dep = new Dependency(a, dependencies);
+                    Dependency dep = new Dependency(a, deps);
                     this.dependencies.put(a, dep);
                     for (Action x : dep.getDependencies()) {
                         Set<Dependency> pres = pre.get(x);
