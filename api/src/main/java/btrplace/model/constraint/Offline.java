@@ -22,8 +22,8 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.OfflineChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
 
 /**
  * A constraint to force a set of nodes at being offline.
@@ -41,8 +41,8 @@ public class Offline extends SatConstraint {
      *
      * @param nodes the nodes to set offline
      */
-    public Offline(Set<Node> nodes) {
-        super(Collections.<VM>emptySet(), nodes, false);
+    public Offline(Collection<Node> nodes) {
+        super(Collections.<VM>emptyList(), nodes, false);
     }
 
     @Override

@@ -47,7 +47,7 @@ public class CumulatedRunningCapacity extends SatConstraint {
      * Make a new constraint having a discrete restriction.
      *
      * @param nodes  the nodes involved in the constraint
-     * @param amount the total amount of resources consumed by all the VMs running on the given nodes
+     * @param amount the maximum amount running VMs running on the given nodes. >= 0
      */
     public CumulatedRunningCapacity(Set<Node> nodes, int amount) {
         this(nodes, amount, false);
@@ -57,11 +57,14 @@ public class CumulatedRunningCapacity extends SatConstraint {
      * Make a new constraint.
      *
      * @param nodes      the nodes involved in the constraint
-     * @param amount     the total amount of resources consumed by all the VMs running on the given nodes
+     * @param amount     the maximum amount running VMs running on the given nodes. >= 0
      * @param continuous {@code true} for a continuous restriction
      */
     public CumulatedRunningCapacity(Set<Node> nodes, int amount, boolean continuous) {
         super(Collections.<VM>emptySet(), nodes, continuous);
+        if (amount < 0) {
+            throw new IllegalArgumentException("The amount of VMs must be >= 0");
+        }
         this.qty = amount;
     }
 

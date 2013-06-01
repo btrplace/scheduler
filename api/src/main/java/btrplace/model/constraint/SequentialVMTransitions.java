@@ -23,7 +23,9 @@ import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.model.constraint.checker.SequentialVMTransitionsChecker;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A constraint to force the actions that change the given VMs state
@@ -44,6 +46,10 @@ public class SequentialVMTransitions extends SatConstraint {
      */
     public SequentialVMTransitions(List<VM> seq) {
         super(seq, Collections.<Node>emptySet(), true);
+        Set<VM> s = new HashSet<>(seq);
+        if (s.size() != seq.size()) {
+            throw new IllegalArgumentException("The list of VMs must not contain duplicates");
+        }
         order = seq;
     }
 

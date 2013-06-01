@@ -71,6 +71,16 @@ public class SplitAmong extends SatConstraint {
      */
     public SplitAmong(Set<Set<VM>> vParts, Set<Set<Node>> pParts, boolean continuous) {
         super(null, null, continuous);
+        int cnt = 0;
+        Set<Node> all = new HashSet<>();
+        for (Set<Node> s : pParts) {
+            cnt += s.size();
+            all.addAll(s);
+            if (cnt != all.size()) {
+                throw new IllegalArgumentException("The constraint expects disjoint sets of nodes");
+            }
+        }
+
         this.vGrps = vParts;
         this.pGrps = pParts;
     }

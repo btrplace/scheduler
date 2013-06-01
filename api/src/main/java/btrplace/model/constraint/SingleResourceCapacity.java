@@ -22,9 +22,9 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.model.constraint.checker.SingleResourceCapacityChecker;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Restrict the amount of virtual resources consumed by
@@ -50,9 +50,9 @@ public class SingleResourceCapacity extends SatConstraint {
      *
      * @param nodes  the involved nodes.
      * @param rc     the resource identifier
-     * @param amount the maximum amount of resources to share among the hosted VMs
+     * @param amount the maximum amount of resources to share among the hosted VMs on each node. >= 0
      */
-    public SingleResourceCapacity(Set<Node> nodes, String rc, int amount) {
+    public SingleResourceCapacity(Collection<Node> nodes, String rc, int amount) {
         this(nodes, rc, amount, false);
     }
 
@@ -61,11 +61,14 @@ public class SingleResourceCapacity extends SatConstraint {
      *
      * @param nodes      the involved nodes.
      * @param rc         the resource identifier
-     * @param amount     the maximum amount of resources to share among the hosted VMs
+     * @param amount     the maximum amount of resources to share among the hosted VMs on each ndoe. >= 0
      * @param continuous {@code true} for a continuous restriction
      */
-    public SingleResourceCapacity(Set<Node> nodes, String rc, int amount, boolean continuous) {
+    public SingleResourceCapacity(Collection<Node> nodes, String rc, int amount, boolean continuous) {
         super(Collections.<VM>emptySet(), nodes, continuous);
+        if (amount < 0) {
+            throw new IllegalArgumentException("The amount of resources must be >= 0");
+        }
         this.rcId = rc;
         this.amount = amount;
     }

@@ -22,8 +22,8 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.GatherChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
 
 /**
  * A constraint to force a set of VMs, if running, to be
@@ -44,7 +44,7 @@ public class Gather extends SatConstraint {
      *
      * @param vms the VMs to group
      */
-    public Gather(Set<VM> vms) {
+    public Gather(Collection<VM> vms) {
         this(vms, false);
     }
 
@@ -54,7 +54,7 @@ public class Gather extends SatConstraint {
      * @param vms        the VMs to group
      * @param continuous {@code true} for a continuous restriction
      */
-    public Gather(Set<VM> vms, boolean continuous) {
+    public Gather(Collection<VM> vms, boolean continuous) {
         super(vms, Collections.<Node>emptySet(), continuous);
     }
 

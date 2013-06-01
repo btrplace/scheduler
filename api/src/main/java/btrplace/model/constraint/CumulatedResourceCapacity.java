@@ -50,7 +50,7 @@ public class CumulatedResourceCapacity extends SatConstraint {
      *
      * @param nodes  the nodes involved in the constraint
      * @param rc     the resource identifier
-     * @param amount the total amount of resource consumed by all the VMs running on the given nodes
+     * @param amount the maximum amount of resource consumed by all the VMs running on the given nodes. >= 0
      */
     public CumulatedResourceCapacity(Set<Node> nodes, String rc, int amount) {
         this(nodes, rc, amount, false);
@@ -61,11 +61,14 @@ public class CumulatedResourceCapacity extends SatConstraint {
      *
      * @param nodes      the nodes involved in the constraint
      * @param rc         the resource identifier
-     * @param amount     the total amount of resource consumed by all the VMs running on the given nodes
+     * @param amount     the maximum amount of resource consumed by all the VMs running on the given nodes. >= 0
      * @param continuous {@code true} for a continuous restriction.
      */
     public CumulatedResourceCapacity(Set<Node> nodes, String rc, int amount, boolean continuous) {
         super(Collections.<VM>emptySet(), nodes, continuous);
+        if (amount < 0) {
+            throw new IllegalArgumentException("The amount of resource must be >= 0");
+        }
         this.qty = amount;
         this.rcId = rc;
     }

@@ -22,8 +22,8 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.RootChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
 
 /**
  * A constraint to avoid VM relocation. Any running VMs given in parameters
@@ -42,7 +42,7 @@ public class Root extends SatConstraint {
      *
      * @param vms the VMs to disallow to move
      */
-    public Root(Set<VM> vms) {
+    public Root(Collection<VM> vms) {
         super(vms, Collections.<Node>emptySet(), true);
     }
 

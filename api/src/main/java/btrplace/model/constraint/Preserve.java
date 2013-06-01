@@ -22,9 +22,9 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.PreserveChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Ensure the allocation of a given minimum amount of resources for
@@ -47,10 +47,13 @@ public class Preserve extends SatConstraint {
      *
      * @param vms    the VMs
      * @param rc     the resource identifier
-     * @param amount the minimum amount of resources to allocate to each VM
+     * @param amount the minimum amount of resources to allocate to each VM. >= 0
      */
-    public Preserve(Set<VM> vms, String rc, int amount) {
+    public Preserve(Collection<VM> vms, String rc, int amount) {
         super(vms, Collections.<Node>emptySet(), false);
+        if (amount < 0) {
+            throw new IllegalArgumentException("The amount of resource must be >= 0");
+        }
         this.rc = rc;
         this.amount = amount;
     }

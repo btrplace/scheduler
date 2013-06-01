@@ -22,7 +22,7 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.FenceChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * A constraint to force the given VMs, when running,
@@ -40,7 +40,7 @@ public class Fence extends SatConstraint {
      * @param vms   the involved VMs
      * @param nodes the involved nodes
      */
-    public Fence(Set<VM> vms, Set<Node> nodes) {
+    public Fence(Collection<VM> vms, Collection<Node> nodes) {
         super(vms, nodes, false);
     }
 

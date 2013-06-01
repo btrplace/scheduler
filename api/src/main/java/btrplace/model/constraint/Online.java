@@ -22,8 +22,8 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.OnlineChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
 
 /**
  * A constraint to force a set of nodes at being online.
@@ -41,7 +41,7 @@ public class Online extends SatConstraint {
      *
      * @param nodes the nodes to set online
      */
-    public Online(Set<Node> nodes) {
+    public Online(Collection<Node> nodes) {
         super(Collections.<VM>emptySet(), nodes, false);
     }
 

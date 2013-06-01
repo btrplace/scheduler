@@ -42,7 +42,7 @@ public class Among extends SatConstraint {
     /**
      * Set of set of nodes.
      */
-    private Set<Set<Node>> pGrps;
+    private Collection<Set<Node>> pGrps;
 
 
     /**
@@ -51,7 +51,7 @@ public class Among extends SatConstraint {
      * @param vms   the group of VMs
      * @param parts disjoint set of nodes
      */
-    public Among(Set<VM> vms, Set<Set<Node>> parts) {
+    public Among(Set<VM> vms, Collection<Set<Node>> parts) {
         this(vms, parts, false);
 
     }
@@ -63,8 +63,17 @@ public class Among extends SatConstraint {
      * @param parts      disjoint set of nodes
      * @param continuous {@code true} for a continuous restriction
      */
-    public Among(Set<VM> vms, Set<Set<Node>> parts, boolean continuous) {
+    public Among(Set<VM> vms, Collection<Set<Node>> parts, boolean continuous) {
         super(vms, null, continuous);
+        Set<Node> all = new HashSet<>();
+        int cnt = 0;
+        for (Set<Node> s : parts) {
+            cnt += s.size();
+            all.addAll(s);
+            if (cnt != all.size()) {
+                throw new IllegalArgumentException("The constraint expects disjoint sets of nodes");
+            }
+        }
         this.pGrps = parts;
     }
 
@@ -97,7 +106,7 @@ public class Among extends SatConstraint {
      *
      * @return the groups
      */
-    public Set<Set<Node>> getGroupsOfNodes() {
+    public Collection<Set<Node>> getGroupsOfNodes() {
         return pGrps;
     }
 

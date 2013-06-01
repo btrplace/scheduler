@@ -22,9 +22,9 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.model.constraint.checker.SingleRunningCapacityChecker;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Restrict the hosting capacity of each of the given node to a given
@@ -47,9 +47,9 @@ public class SingleRunningCapacity extends SatConstraint {
      * Make a new constraint having a discrete restriction.
      *
      * @param nodes  the involved nodes.
-     * @param amount the maximum amount of resource to share among the hosted VMs
+     * @param amount the maximum amount of running VMs on each node
      */
-    public SingleRunningCapacity(Set<Node> nodes, int amount) {
+    public SingleRunningCapacity(Collection<Node> nodes, int amount) {
         this(nodes, amount, false);
     }
 
@@ -57,11 +57,14 @@ public class SingleRunningCapacity extends SatConstraint {
      * Make a new constraint.
      *
      * @param nodes      the involved nodes.
-     * @param amount     the maximum amount of resource to share among the hosted VMs
+     * @param amount     the maximum amount of running VMs on each node
      * @param continuous {@code true} for a continuous restriction
      */
-    public SingleRunningCapacity(Set<Node> nodes, int amount, boolean continuous) {
+    public SingleRunningCapacity(Collection<Node> nodes, int amount, boolean continuous) {
         super(Collections.<VM>emptySet(), nodes, continuous);
+        if (amount < 0) {
+            throw new IllegalArgumentException("The amount of VMs must be >= 0");
+        }
         this.amount = amount;
     }
 

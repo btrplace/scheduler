@@ -22,8 +22,8 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.ReadyChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
 
 /**
  * A constraint to force a set of VMs at being ready for running.
@@ -41,7 +41,7 @@ public class Ready extends SatConstraint {
      *
      * @param vms the VMs to make ready
      */
-    public Ready(Set<VM> vms) {
+    public Ready(Collection<VM> vms) {
         super(vms, Collections.<Node>emptySet(), false);
     }
 

@@ -57,6 +57,16 @@ public class Split extends SatConstraint {
      */
     public Split(Collection<Set<VM>> parts, boolean continuous) {
         super(null, Collections.<Node>emptySet(), continuous);
+        Set<VM> all = new HashSet<>();
+        int cnt = 0;
+        for (Set<VM> s : parts) {
+            cnt += s.size();
+            all.addAll(s);
+            if (cnt != all.size()) {
+                throw new IllegalArgumentException("The constraint expects disjoint sets of VMs");
+            }
+        }
+
         this.sets = parts;
     }
 

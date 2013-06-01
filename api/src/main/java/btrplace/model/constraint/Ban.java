@@ -22,7 +22,7 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.BanChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * A constraint to disallow the given VMs, when running,
@@ -41,7 +41,7 @@ public class Ban extends SatConstraint {
      * @param vms   the VMs identifiers
      * @param nodes the nodes identifiers
      */
-    public Ban(Set<VM> vms, Set<Node> nodes) {
+    public Ban(Collection<VM> vms, Collection<Node> nodes) {
         super(vms, nodes, false);
     }
 

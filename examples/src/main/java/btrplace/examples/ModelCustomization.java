@@ -84,13 +84,13 @@ public class ModelCustomization implements Example {
         cstrs.add(new SingleRunningCapacity(model.getMapping().getAllNodes(), 5));
 
         //vm1 and vm10 on the same node
-        cstrs.add(new Gather(new HashSet<>(Arrays.asList(vms.get(0), vms.get(9)))));
+        cstrs.add(new Gather(Arrays.asList(vms.get(0), vms.get(9))));
 
         //(vm1, vm2, vm4) and (vm5, vm6, vm8) must not share node
         Set<VM> g1 = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1), vms.get(3)));
         Set<VM> g2 = new HashSet<>(Arrays.asList(vms.get(4), vms.get(5), vms.get(7)));
 
-        cstrs.add(new Split(new HashSet<>(Arrays.asList(g1, g2))));
+        cstrs.add(new Split(Arrays.asList(g1, g2)));
 
         //vm10 must be running
         cstrs.add(new Running(Collections.singleton(vms.get(9))));

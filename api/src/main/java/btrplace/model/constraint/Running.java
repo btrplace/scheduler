@@ -22,8 +22,8 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.RunningChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
 
 /**
  * A constraint to force a set of VMs at being running.
@@ -41,7 +41,7 @@ public class Running extends SatConstraint {
      *
      * @param vms the VMs to make running
      */
-    public Running(Set<VM> vms) {
+    public Running(Collection<VM> vms) {
         super(vms, Collections.<Node>emptySet(), false);
     }
 

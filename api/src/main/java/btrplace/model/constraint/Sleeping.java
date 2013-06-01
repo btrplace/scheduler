@@ -22,8 +22,8 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.model.constraint.checker.SleepingChecker;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
 
 /**
  * A constraint to force a set of VMs at being sleeping.
@@ -41,7 +41,7 @@ public class Sleeping extends SatConstraint {
      *
      * @param vms the VMs to make sleeping
      */
-    public Sleeping(Set<VM> vms) {
+    public Sleeping(Collection<VM> vms) {
         super(vms, Collections.<Node>emptySet(), false);
     }
 
