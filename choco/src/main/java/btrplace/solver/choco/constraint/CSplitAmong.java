@@ -30,6 +30,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.matching.AllDifferent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -60,15 +61,15 @@ public class CSplitAmong implements ChocoSatConstraint {
             return false;
         }
 
-        Set<Set<VM>> vGrps = cstr.getGroupsOfVMs();
-        Set<Set<Node>> pGrps = cstr.getGroupsOfNodes();
+        Collection<Collection<VM>> vGrps = cstr.getGroupsOfVMs();
+        Collection<Collection<Node>> pGrps = cstr.getGroupsOfNodes();
         CPSolver s = rp.getSolver();
 
         IntDomainVar[] grpVars = new IntDomainVar[vGrps.size()];
         //VM is assigned on a node <-> group variable associated to the VM
         //is assigned to the group of nodes it belong too.
         int i = 0;
-        for (Set<VM> vms : vGrps) {
+        for (Collection<VM> vms : vGrps) {
 
             Among a = new Among(vms, pGrps);
             //If the constraint is continuous, there is no way a group of VMs already binded to a group of
@@ -95,7 +96,7 @@ public class CSplitAmong implements ChocoSatConstraint {
      */
     public int getPGroup(Node n) {
         int i = 0;
-        for (Set<Node> pGrp : cstr.getGroupsOfNodes()) {
+        for (Collection<Node> pGrp : cstr.getGroupsOfNodes()) {
             if (pGrp.contains(n)) {
                 break;
             }
@@ -107,12 +108,12 @@ public class CSplitAmong implements ChocoSatConstraint {
     @Override
     public Set<VM> getMisPlacedVMs(Model m) {
         //contains the set of VMs hosted on a group id.
-        Set<VM>[] usedGrp = new Set[cstr.getGroupsOfNodes().size()];
+        Collection<VM>[] usedGrp = new Set[cstr.getGroupsOfNodes().size()];
 
         Mapping map = m.getMapping();
 
         Set<VM> bad = new HashSet<>();
-        for (Set<VM> vms : cstr.getGroupsOfVMs()) {
+        for (Collection<VM> vms : cstr.getGroupsOfVMs()) {
             int grp = -1;
             for (VM vm : vms) {
                 if (map.getRunningVMs().contains(vm)) {

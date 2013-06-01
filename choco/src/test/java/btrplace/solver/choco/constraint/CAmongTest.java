@@ -60,7 +60,7 @@ public class CAmongTest {
 
         Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
 
-        Set<Set<Node>> pGrps = new HashSet<>();
+        Collection<Collection<Node>> pGrps = new HashSet<>();
         Set<Node> s = new HashSet<>();
         s.add(n1);
         s.add(n2);
@@ -98,9 +98,9 @@ public class CAmongTest {
 
         Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
 
-        Set<Node> s1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<Node> s2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Set<Node>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Collection<Node> s1 = new HashSet<>(Arrays.asList(n1, n2));
+        Collection<Node> s2 = new HashSet<>(Arrays.asList(n3, n4));
+        Collection<Collection<Node>> pGrps = Arrays.asList(s1, s2);
         Among a = new Among(vms, pGrps);
         a.setContinuous(false);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
@@ -142,9 +142,9 @@ public class CAmongTest {
         Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
 
 
-        Set<Node> s = new HashSet<>(Arrays.asList(n1, n2));
-        Set<Node> s2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Set<Node>> pGrps = new HashSet<>(Arrays.asList(s, s2));
+        Collection<Node> s = new HashSet<>(Arrays.asList(n1, n2));
+        Collection<Node> s2 = new HashSet<>(Arrays.asList(n3, n4));
+        Collection<Collection<Node>> pGrps = new HashSet<>(Arrays.asList(s, s2));
 
         Among a = new Among(vms, pGrps);
         a.setContinuous(false);
@@ -179,9 +179,9 @@ public class CAmongTest {
                 .ready(vm4, vm5).get();
 
         Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
-        Set<Node> s1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<Node> s2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Set<Node>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Collection<Node> s1 = new HashSet<>(Arrays.asList(n1, n2));
+        Collection<Node> s2 = new HashSet<>(Arrays.asList(n3, n4));
+        Collection<Collection<Node>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
 
         Among a = new Among(vms, pGrps);
         CAmong ca = new CAmong(a);
@@ -210,9 +210,9 @@ public class CAmongTest {
                 .ready(vm4, vm5).get();
 
         Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
-        Set<Node> s1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<Node> s2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Set<Node>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Collection<Node> s1 = new HashSet<>(Arrays.asList(n1, n2));
+        Collection<Node> s2 = new HashSet<>(Arrays.asList(n3, n4));
+        Collection<Collection<Node>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
 
         Among a = new Among(vms, pGrps);
         a.setContinuous(true);
@@ -246,9 +246,9 @@ public class CAmongTest {
 
         Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
 
-        Set<Node> s1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<Node> s2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Set<Node>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Collection<Node> s1 = new HashSet<>(Arrays.asList(n1, n2));
+        Collection<Node> s2 = new HashSet<>(Arrays.asList(n3, n4));
+        Collection<Collection<Node>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
 
         Among a = new Among(vms, pGrps);
         a.setContinuous(true);

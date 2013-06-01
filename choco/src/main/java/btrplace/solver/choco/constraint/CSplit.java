@@ -33,10 +33,7 @@ import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntArrayList;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Choco implementation of the {@link btrplace.model.constraint.Split} constraint.
@@ -60,7 +57,7 @@ public class CSplit implements ChocoSatConstraint {
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
         List<List<IntDomainVar>> groups = new ArrayList<>();
         List<List<VM>> vmGroups = new ArrayList<>();
-        for (Set<VM> grp : cstr.getSets()) {
+        for (Collection<VM> grp : cstr.getSets()) {
             List<IntDomainVar> l = new ArrayList<>();
             List<VM> vl = new ArrayList<>();
             for (VM vm : grp) {
@@ -157,10 +154,10 @@ public class CSplit implements ChocoSatConstraint {
     @Override
     public Set<VM> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-        List<Set<VM>> groups = new ArrayList<>(cstr.getSets());
+        List<Collection<VM>> groups = new ArrayList<>(cstr.getSets());
         //Bad contains the VMs on nodes that host VMs from different groups.
         Set<VM> bad = new HashSet<>();
-        for (Set<VM> grp : groups) {
+        for (Collection<VM> grp : groups) {
             for (VM vm : grp) {
                 if (map.getRunningVMs().contains(vm)) {
                     Node n = map.getVMLocation(vm);
@@ -178,8 +175,8 @@ public class CSplit implements ChocoSatConstraint {
         return bad;
     }
 
-    private boolean inOtherGroup(List<Set<VM>> groups, Set<VM> grp, VM vmOnN) {
-        for (Set<VM> s : groups) {
+    private boolean inOtherGroup(List<Collection<VM>> groups, Collection<VM> grp, VM vmOnN) {
+        for (Collection<VM> s : groups) {
             if (s.contains(vmOnN) && !grp.contains(vmOnN)) {
                 return true;
             }

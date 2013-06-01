@@ -25,9 +25,9 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Unit tests for {@link SplitAmong}.
@@ -42,15 +42,15 @@ public class SplitAmongTest {
         List<Node> ns = Util.newNodes(mo, 5);
         List<VM> vms = Util.newVMs(mo, 5);
 
-        Set<VM> vs1 = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
-        Set<VM> vs2 = new HashSet<>(Arrays.asList(vms.get(2), vms.get(3)));
+        Collection<VM> vs1 = Arrays.asList(vms.get(0), vms.get(1));
+        Collection<VM> vs2 = Arrays.asList(vms.get(2), vms.get(3));
 
-        Set<Set<VM>> vGrps = new HashSet<>(Arrays.asList(vs1, vs2));
+        Collection<Collection<VM>> vGrps = Arrays.asList(vs1, vs2);
 
 
-        Set<Node> ps1 = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
-        Set<Node> ps2 = new HashSet<>(Arrays.asList(ns.get(2), ns.get(3)));
-        Set<Set<Node>> pGrps = new HashSet<>(Arrays.asList(ps1, ps2));
+        Collection<Node> ps1 = Arrays.asList(ns.get(0), ns.get(1));
+        Collection<Node> ps2 = Arrays.asList(ns.get(2), ns.get(3));
+        Collection<Collection<Node>> pGrps = Arrays.asList(ps1, ps2);
 
         SplitAmong sp = new SplitAmong(vGrps, pGrps);
         Assert.assertNotNull(sp.getChecker());
@@ -79,21 +79,21 @@ public class SplitAmongTest {
         List<Node> ns = Util.newNodes(mo, 5);
         List<VM> vms = Util.newVMs(mo, 5);
 
-        Set<VM> vs1 = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
-        Set<VM> vs2 = new HashSet<>(Arrays.asList(vms.get(2), vms.get(3)));
-        Set<Set<VM>> vGrps = new HashSet<>(Arrays.asList(vs1, vs2));
+        Collection<VM> vs1 = Arrays.asList(vms.get(0), vms.get(1));
+        Collection<VM> vs2 = Arrays.asList(vms.get(2), vms.get(3));
+        Collection<Collection<VM>> vGrps = Arrays.asList(vs1, vs2);
 
 
-        Set<Node> ps1 = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
-        Set<Node> ps2 = new HashSet<>(Arrays.asList(ns.get(2), ns.get(3)));
-        Set<Set<Node>> pGrps = new HashSet<>(Arrays.asList(ps1, ps2));
+        Collection<Node> ps1 = Arrays.asList(ns.get(0), ns.get(1));
+        Collection<Node> ps2 = Arrays.asList(ns.get(2), ns.get(3));
+        Collection<Collection<Node>> pGrps = Arrays.asList(ps1, ps2);
 
         SplitAmong sp = new SplitAmong(vGrps, pGrps);
         Assert.assertTrue(sp.equals(sp));
         Assert.assertTrue(sp.equals(new SplitAmong(vGrps, pGrps)));
         Assert.assertEquals(sp.hashCode(), new SplitAmong(vGrps, pGrps).hashCode());
-        Assert.assertFalse(sp.equals(new SplitAmong(new HashSet<Set<VM>>(), pGrps)));
-        Assert.assertFalse(sp.equals(new SplitAmong(vGrps, new HashSet<Set<Node>>())));
+        Assert.assertFalse(sp.equals(new SplitAmong(Collections.<Collection<VM>>emptyList(), pGrps)));
+        Assert.assertFalse(sp.equals(new SplitAmong(vGrps, Collections.<Collection<Node>>emptyList())));
 
         SplitAmong sp2 = new SplitAmong(vGrps, pGrps);
         sp2.setContinuous(true);
@@ -107,14 +107,14 @@ public class SplitAmongTest {
         List<Node> ns = Util.newNodes(mo, 5);
         List<VM> vms = Util.newVMs(mo, 5);
 
-        Set<VM> vs1 = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
-        Set<VM> vs2 = new HashSet<>(Arrays.asList(vms.get(2), vms.get(3)));
-        Set<Set<VM>> vGrps = new HashSet<>(Arrays.asList(vs1, vs2));
+        Collection<VM> vs1 = Arrays.asList(vms.get(0), vms.get(1));
+        Collection<VM> vs2 = Arrays.asList(vms.get(2), vms.get(3));
+        Collection<Collection<VM>> vGrps = Arrays.asList(vs1, vs2);
 
 
-        Set<Node> ps1 = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
-        Set<Node> ps2 = new HashSet<>(Arrays.asList(ns.get(2), ns.get(3)));
-        Set<Set<Node>> pGrps = new HashSet<>(Arrays.asList(ps1, ps2));
+        Collection<Node> ps1 = Arrays.asList(ns.get(0), ns.get(1));
+        Collection<Node> ps2 = Arrays.asList(ns.get(2), ns.get(3));
+        Collection<Collection<Node>> pGrps = Arrays.asList(ps1, ps2);
 
         Mapping map = mo.getMapping();
         map.addOnlineNode(ns.get(0));
@@ -146,14 +146,14 @@ public class SplitAmongTest {
         List<VM> vms = Util.newVMs(mo, 5);
 
 
-        Set<VM> vs1 = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
-        Set<VM> vs2 = new HashSet<>(Arrays.asList(vms.get(2), vms.get(3)));
-        Set<Set<VM>> vGrps = new HashSet<>(Arrays.asList(vs1, vs2));
+        Collection<VM> vs1 = Arrays.asList(vms.get(0), vms.get(1));
+        Collection<VM> vs2 = Arrays.asList(vms.get(2), vms.get(3));
+        Collection<Collection<VM>> vGrps = Arrays.asList(vs1, vs2);
 
 
-        Set<Node> ps1 = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
-        Set<Node> ps2 = new HashSet<>(Arrays.asList(ns.get(2), ns.get(3)));
-        Set<Set<Node>> pGrps = new HashSet<>(Arrays.asList(ps1, ps2));
+        Collection<Node> ps1 = Arrays.asList(ns.get(0), ns.get(1));
+        Collection<Node> ps2 = Arrays.asList(ns.get(2), ns.get(3));
+        Collection<Collection<Node>> pGrps = Arrays.asList(ps1, ps2);
 
         Mapping map = mo.getMapping();
         map.addOnlineNode(ns.get(0));

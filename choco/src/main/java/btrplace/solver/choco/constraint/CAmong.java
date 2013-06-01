@@ -68,7 +68,7 @@ public class CAmong implements ChocoSatConstraint {
         int nextGrp = -1;
         int curGrp = -1;
 
-        List<Set<Node>> groups = new ArrayList<>();
+        List<Collection<Node>> groups = new ArrayList<>();
         groups.addAll(cstr.getGroupsOfNodes());
 
         //Browse every VM, check if one is already placed and isolate future runnings
@@ -157,7 +157,7 @@ public class CAmong implements ChocoSatConstraint {
      */
     public int getGroup(Node n) {
         int i = 0;
-        for (Set<Node> pGrp : cstr.getGroupsOfNodes()) {
+        for (Collection<Node> pGrp : cstr.getGroupsOfNodes()) {
             if (pGrp.contains(n)) {
                 return i;
             }

@@ -24,10 +24,7 @@ import btrplace.plan.event.MigrateVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Unit tests for {@link Among}.
@@ -43,9 +40,9 @@ public class AmongTest {
         List<Node> ns = Util.newNodes(mo, 10);
         List<VM> vms = Util.newVMs(mo, 10);
 
-        Set<Node> s1 = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
-        Set<Node> s2 = new HashSet<>(Arrays.asList(ns.get(2)));
-        Set<Set<Node>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Collection<Node> s1 = Arrays.asList(ns.get(0), ns.get(1));
+        Collection<Node> s2 = Arrays.asList(ns.get(2));
+        Collection<Collection<Node>> pGrps = Arrays.asList(s1, s2);
         Set<VM> vg = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1), vms.get(2)));
         Among a = new Among(vg, pGrps);
         Assert.assertNotNull(a.getChecker());
@@ -71,9 +68,9 @@ public class AmongTest {
         List<VM> vms = Util.newVMs(mo, 10);
 
 
-        Set<Node> s1 = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
-        Set<Node> s2 = new HashSet<>(Arrays.asList(ns.get(2)));
-        Set<Set<Node>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Collection<Node> s1 = Arrays.asList(ns.get(0), ns.get(1));
+        Collection<Node> s2 = Arrays.asList(ns.get(2));
+        Collection<Collection<Node>> pGrps = Arrays.asList(s1, s2);
         Set<VM> vg = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1), vms.get(2)));
 
         Among a = new Among(vg, pGrps);
@@ -81,8 +78,8 @@ public class AmongTest {
         Assert.assertTrue(a.equals(new Among(new HashSet<>(vg), pGrps)));
         Assert.assertEquals(a.hashCode(), new Among(new HashSet<>(vg), pGrps).hashCode());
         Assert.assertFalse(a.equals(new Among(new HashSet<VM>(), pGrps)));
-        Assert.assertFalse(a.equals(new Among(new HashSet<>(vg), new HashSet<Set<Node>>())));
-        Among a2 = new Among(new HashSet<>(vg), new HashSet<Set<Node>>());
+        Assert.assertFalse(a.equals(new Among(new HashSet<>(vg), Collections.<Collection<Node>>emptyList())));
+        Among a2 = new Among(new HashSet<>(vg), Collections.<Collection<Node>>emptyList());
         a2.setContinuous(true);
         Assert.assertFalse(a.equals(a2));
     }
@@ -94,9 +91,9 @@ public class AmongTest {
         List<Node> ns = Util.newNodes(mo, 10);
         List<VM> vms = Util.newVMs(mo, 10);
 
-        Set<Node> s1 = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
-        Set<Node> s2 = new HashSet<>(Arrays.asList(ns.get(2)));
-        Set<Set<Node>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Collection<Node> s1 = Arrays.asList(ns.get(0), ns.get(1));
+        Collection<Node> s2 = Arrays.asList(ns.get(2));
+        Collection<Collection<Node>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
         Set<VM> vs = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1), vms.get(2)));
 
         Among a = new Among(vs, pGrps);
@@ -124,9 +121,9 @@ public class AmongTest {
         List<VM> vms = Util.newVMs(mo, 10);
 
 
-        Set<Node> s1 = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
-        Set<Node> s2 = new HashSet<>(Arrays.asList(ns.get(2)));
-        Set<Set<Node>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Collection<Node> s1 = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
+        Collection<Node> s2 = new HashSet<>(Arrays.asList(ns.get(2)));
+        Collection<Collection<Node>> pGrps = Arrays.asList(s1, s2);
         Set<VM> vs = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1), vms.get(2)));
 
         Among a = new Among(vs, pGrps, true);

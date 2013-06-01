@@ -22,8 +22,8 @@ import btrplace.model.constraint.Split;
 import btrplace.plan.event.RunningVMPlacement;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Checker for the {@link btrplace.model.constraint.Split} constraint
@@ -36,7 +36,7 @@ public class SplitChecker extends AllowAllConstraintChecker<Split> {
     /**
      * The group of VMs.
      */
-    private List<Set<VM>> vGroups;
+    private List<Collection<VM>> vGroups;
 
     private Model mockModel;
 
@@ -48,7 +48,7 @@ public class SplitChecker extends AllowAllConstraintChecker<Split> {
     public SplitChecker(Split s) {
         super(s);
         vGroups = new ArrayList<>(s.getSets());
-        for (Set<VM> set : vGroups) {
+        for (Collection<VM> set : vGroups) {
             track(set);
         }
     }
@@ -71,7 +71,7 @@ public class SplitChecker extends AllowAllConstraintChecker<Split> {
     }
 
     private boolean checkModel() {
-        for (Set<VM> vGroup : vGroups) {
+        for (Collection<VM> vGroup : vGroups) {
             for (VM vmId : vGroup) {
                 if (mockModel.getMapping().getRunningVMs().contains(vmId)) {
                     //Get the hosting server

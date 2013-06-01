@@ -21,10 +21,7 @@ import btrplace.model.*;
 import btrplace.model.constraint.SplitAmong;
 import btrplace.plan.event.RunningVMPlacement;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Checker for the {@link btrplace.model.constraint.SplitAmong} constraint
@@ -46,7 +43,7 @@ public class SplitAmongChecker extends AllowAllConstraintChecker<SplitAmong> {
     public SplitAmongChecker(SplitAmong s) {
         super(s);
         vGrps = new ArrayList<>();
-        for (Set<VM> vGroup : s.getGroupsOfVMs()) {
+        for (Collection<VM> vGroup : s.getGroupsOfVMs()) {
             Set<VM> x = new HashSet<>(vGroup);
             track(x);
             vGrps.add(x);
@@ -54,9 +51,9 @@ public class SplitAmongChecker extends AllowAllConstraintChecker<SplitAmong> {
     }
 
     private boolean checkMapping(Mapping m) {
-        Set<Set<Node>> pUsed = new HashSet<>();
+        Set<Collection<Node>> pUsed = new HashSet<>();
         for (Set<VM> vgrp : vGrps) {
-            Set<Node> choosedGroup = null;
+            Collection<Node> choosedGroup = null;
             //Check every running VM in a single vgroup are running in the same pgroup
             for (VM vmId : vgrp) {
                 if (m.getRunningVMs().contains(vmId)) {

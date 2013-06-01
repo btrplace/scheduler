@@ -65,15 +65,15 @@ public class CSplitAmongTest {
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
 
-        Set<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        Set<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
-        Set<VM> vg3 = new HashSet<>(Arrays.asList(vm7));
+        Collection<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Collection<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
+        Collection<VM> vg3 = new HashSet<>(Arrays.asList(vm7));
 
-        Set<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Node> pg3 = new HashSet<>(Arrays.asList(n5));
-        Set<Set<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
-        Set<Set<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
+        Collection<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
+        Collection<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
+        Collection<Node> pg3 = new HashSet<>(Arrays.asList(n5));
+        Collection<Collection<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
+        Collection<Collection<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
         SplitAmong s = new SplitAmong(vgs, pgs);
         CSplitAmong cs = new CSplitAmong(s);
@@ -124,15 +124,15 @@ public class CSplitAmongTest {
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
 
-        Set<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        Set<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
-        Set<VM> vg3 = new HashSet<>(Arrays.asList(vm7));
+        Collection<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Collection<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
+        Collection<VM> vg3 = new HashSet<>(Arrays.asList(vm7));
 
-        Set<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Node> pg3 = new HashSet<>(Arrays.asList(n5));
-        Set<Set<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
-        Set<Set<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
+        Collection<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
+        Collection<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
+        Collection<Node> pg3 = new HashSet<>(Arrays.asList(n5));
+        Collection<Collection<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
+        Collection<Collection<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
         SplitAmong s = new SplitAmong(vgs, pgs);
         s.setContinuous(false);
@@ -173,15 +173,15 @@ public class CSplitAmongTest {
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
 
-        Set<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        Set<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
-        Set<VM> vg3 = new HashSet<>(Arrays.asList(vm7));
+        Collection<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Collection<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
+        Collection<VM> vg3 = new HashSet<>(Arrays.asList(vm7));
 
-        Set<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Node> pg3 = new HashSet<>(Arrays.asList(n5));
-        Set<Set<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
-        Set<Set<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
+        Collection<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
+        Collection<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
+        Collection<Node> pg3 = new HashSet<>(Arrays.asList(n5));
+        Collection<Collection<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
+        Collection<Collection<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
         SplitAmong s = new SplitAmong(vgs, pgs);
         s.setContinuous(true);
@@ -220,14 +220,14 @@ public class CSplitAmongTest {
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
 
-        Set<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        Set<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
+        Collection<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Collection<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
 
-        Set<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Node> pg3 = new HashSet<>(Arrays.asList(n5));
-        Set<Set<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2));
-        Set<Set<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
+        Collection<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
+        Collection<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
+        Collection<Node> pg3 = new HashSet<>(Arrays.asList(n5));
+        Collection<Collection<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2));
+        Collection<Collection<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
         List<SatConstraint> cstrs = new ArrayList<>();
         SplitAmong s = new SplitAmong(vgs, pgs);
@@ -271,14 +271,14 @@ public class CSplitAmongTest {
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
 
-        Set<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        Set<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
+        Collection<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Collection<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
 
-        Set<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Node> pg3 = new HashSet<>(Arrays.asList(n5));
-        Set<Set<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2));
-        Set<Set<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
+        Collection<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
+        Collection<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
+        Collection<Node> pg3 = new HashSet<>(Arrays.asList(n5));
+        Collection<Collection<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2));
+        Collection<Collection<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
         List<SatConstraint> cstrs = new ArrayList<>();
         SplitAmong s = new SplitAmong(vgs, pgs);

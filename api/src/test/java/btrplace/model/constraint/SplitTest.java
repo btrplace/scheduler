@@ -41,9 +41,9 @@ public class SplitTest {
         List<Node> ns = Util.newNodes(mo, 3);
         List<VM> vms = Util.newVMs(mo, 3);
 
-        Set<VM> s1 = Collections.singleton(vms.get(0));
-        Set<VM> s2 = Collections.singleton(vms.get(1));
-        List<Set<VM>> args = Arrays.asList(s1, s2);
+        Collection<VM> s1 = Collections.singleton(vms.get(0));
+        Collection<VM> s2 = Collections.singleton(vms.get(1));
+        List<Collection<VM>> args = Arrays.asList(s1, s2);
         Split sp = new Split(args);
         Assert.assertNotNull(sp.getChecker());
         Assert.assertEquals(args, sp.getSets());
@@ -67,14 +67,14 @@ public class SplitTest {
         List<Node> ns = Util.newNodes(mo, 3);
         List<VM> vms = Util.newVMs(mo, 3);
 
-        Set<VM> s1 = Collections.singleton(vms.get(0));
-        Set<VM> s2 = Collections.singleton(vms.get(1));
-        List<Set<VM>> args = Arrays.asList(s1, s2);
+        Collection<VM> s1 = Collections.singleton(vms.get(0));
+        Collection<VM> s2 = Collections.singleton(vms.get(1));
+        List<Collection<VM>> args = Arrays.asList(s1, s2);
         Split sp = new Split(args);
         Assert.assertTrue(sp.equals(sp));
         Assert.assertTrue(new Split(args).equals(sp));
         Assert.assertEquals(new Split(args).hashCode(), sp.hashCode());
-        List<Set<VM>> args2 = new ArrayList<>(args);
+        List<Collection<VM>> args2 = new ArrayList<>(args);
         args2.add(Collections.singleton(vms.get(2)));
         Assert.assertFalse(new Split(args2).equals(sp));
     }
@@ -90,10 +90,10 @@ public class SplitTest {
         map.addOnlineNode(ns.get(1));
         map.addOnlineNode(ns.get(2));
 
-        Set<VM> s1 = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
-        Set<VM> s2 = new HashSet<>(Arrays.asList(vms.get(2), vms.get(3)));
-        Set<VM> s3 = Collections.singleton(vms.get(4));
-        Set<Set<VM>> args = new HashSet<>(Arrays.asList(s1, s2, s3));
+        Collection<VM> s1 = Arrays.asList(vms.get(0), vms.get(1));
+        Collection<VM> s2 = Arrays.asList(vms.get(2), vms.get(3));
+        Collection<VM> s3 = Collections.singleton(vms.get(4));
+        Collection<Collection<VM>> args = Arrays.asList(s1, s2, s3);
 
         map.addRunningVM(vms.get(0), ns.get(0));
         map.addRunningVM(vms.get(1), ns.get(0));
@@ -119,10 +119,10 @@ public class SplitTest {
         map.addOnlineNode(ns.get(1));
         map.addOnlineNode(ns.get(2));
 
-        Set<VM> s1 = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
-        Set<VM> s2 = new HashSet<>(Arrays.asList(vms.get(2), vms.get(3)));
-        Set<VM> s3 = Collections.singleton(vms.get(4));
-        Set<Set<VM>> args = new HashSet<>(Arrays.asList(s1, s2, s3));
+        Collection<VM> s1 = Arrays.asList(vms.get(0), vms.get(1));
+        Collection<VM> s2 = Arrays.asList(vms.get(2), vms.get(3));
+        Collection<VM> s3 = Collections.singleton(vms.get(4));
+        Collection<Collection<VM>> args = Arrays.asList(s1, s2, s3);
 
         map.addRunningVM(vms.get(0), ns.get(0));
         map.addRunningVM(vms.get(1), ns.get(0));

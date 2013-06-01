@@ -27,6 +27,7 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -42,10 +43,10 @@ public class SplitConverterTest {
     public void testViables() throws JSONConverterException, IOException {
         Model mo = new DefaultModel();
 
-        Set<VM> s1 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
-        Set<VM> s2 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
-        Set<VM> s3 = new HashSet<>(Arrays.asList(mo.newVM()));
-        Set<Set<VM>> vgrps = new HashSet<>(Arrays.asList(s1, s2, s3));
+        Collection<VM> s1 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
+        Collection<VM> s2 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
+        Collection<VM> s3 = new HashSet<>(Arrays.asList(mo.newVM()));
+        Set<Collection<VM>> vgrps = new HashSet<>(Arrays.asList(s1, s2, s3));
         Split d = new Split(vgrps, false);
         Split c = new Split(vgrps, true);
 

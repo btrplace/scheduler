@@ -28,6 +28,7 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -45,11 +46,11 @@ public class AmongConverterTest {
         Model mo = new DefaultModel();
         conv.setModel(mo);
         Set<VM> s1 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
-        Set<Node> p1 = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
+        Collection<Node> p1 = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
         Set<Node> p2 = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
         Set<Node> p3 = new HashSet<>(Arrays.asList(mo.newNode()));
 
-        Set<Set<Node>> pgrps = new HashSet<>(Arrays.asList(p1, p2, p3));
+        Set<Collection<Node>> pgrps = new HashSet<>(Arrays.asList(p1, p2, p3));
 
         Among d = new Among(s1, pgrps, false);
         Among c = new Among(s1, pgrps, true);

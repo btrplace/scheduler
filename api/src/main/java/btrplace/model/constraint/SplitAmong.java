@@ -44,12 +44,12 @@ public class SplitAmong extends SatConstraint {
     /**
      * Set of set of vms.
      */
-    private Set<Set<VM>> vGrps;
+    private Collection<Collection<VM>> vGrps;
 
     /**
      * Set of set of nodes.
      */
-    private Set<Set<Node>> pGrps;
+    private Collection<Collection<Node>> pGrps;
 
     /**
      * Make a new constraint having a discrete restriction.
@@ -57,7 +57,7 @@ public class SplitAmong extends SatConstraint {
      * @param vParts the disjoint sets of VMs
      * @param pParts the disjoint sets of nodes.
      */
-    public SplitAmong(Set<Set<VM>> vParts, Set<Set<Node>> pParts) {
+    public SplitAmong(Collection<Collection<VM>> vParts, Collection<Collection<Node>> pParts) {
         this(vParts, pParts, false);
     }
 
@@ -69,11 +69,11 @@ public class SplitAmong extends SatConstraint {
      * @param pParts     the disjoint sets of nodes.
      * @param continuous {@code true} for a continuous restriction
      */
-    public SplitAmong(Set<Set<VM>> vParts, Set<Set<Node>> pParts, boolean continuous) {
+    public SplitAmong(Collection<Collection<VM>> vParts, Collection<Collection<Node>> pParts, boolean continuous) {
         super(null, null, continuous);
         int cnt = 0;
         Set<Node> all = new HashSet<>();
-        for (Set<Node> s : pParts) {
+        for (Collection<Node> s : pParts) {
             cnt += s.size();
             all.addAll(s);
             if (cnt != all.size()) {
@@ -86,18 +86,18 @@ public class SplitAmong extends SatConstraint {
     }
 
     @Override
-    public Collection<VM> getInvolvedVMs() {
+    public Set<VM> getInvolvedVMs() {
         Set<VM> s = new HashSet<>();
-        for (Set<VM> x : vGrps) {
+        for (Collection<VM> x : vGrps) {
             s.addAll(x);
         }
         return s;
     }
 
     @Override
-    public Collection<Node> getInvolvedNodes() {
+    public Set<Node> getInvolvedNodes() {
         Set<Node> s = new HashSet<>();
-        for (Set<Node> x : pGrps) {
+        for (Collection<Node> x : pGrps) {
             s.addAll(x);
         }
         return s;
@@ -108,7 +108,7 @@ public class SplitAmong extends SatConstraint {
      *
      * @return the groups
      */
-    public Set<Set<VM>> getGroupsOfVMs() {
+    public Collection<Collection<VM>> getGroupsOfVMs() {
         return vGrps;
     }
 
@@ -117,7 +117,7 @@ public class SplitAmong extends SatConstraint {
      *
      * @return the groups
      */
-    public Set<Set<Node>> getGroupsOfNodes() {
+    public Collection<Collection<Node>> getGroupsOfNodes() {
         return pGrps;
     }
 
@@ -127,8 +127,8 @@ public class SplitAmong extends SatConstraint {
      * @param u the node
      * @return the associated group of nodes if exists, {@code null} otherwise
      */
-    public Set<Node> getAssociatedPGroup(Node u) {
-        for (Set<Node> pGrp : pGrps) {
+    public Collection<Node> getAssociatedPGroup(Node u) {
+        for (Collection<Node> pGrp : pGrps) {
             if (pGrp.contains(u)) {
                 return pGrp;
             }
@@ -142,8 +142,8 @@ public class SplitAmong extends SatConstraint {
      * @param u the VM
      * @return the associated group of VMs if exists, {@code null} otherwise
      */
-    public Set<VM> getAssociatedVGroup(VM u) {
-        for (Set<VM> vGrp : vGrps) {
+    public Collection<VM> getAssociatedVGroup(VM u) {
+        for (Collection<VM> vGrp : vGrps) {
             if (vGrp.contains(u)) {
                 return vGrp;
             }
@@ -174,14 +174,14 @@ public class SplitAmong extends SatConstraint {
     public String toString() {
         StringBuilder b = new StringBuilder("splitAmong(");
         b.append("vms=[");
-        for (Iterator<Set<VM>> ite = vGrps.iterator(); ite.hasNext(); ) {
+        for (Iterator<Collection<VM>> ite = vGrps.iterator(); ite.hasNext(); ) {
             b.append(ite.next());
             if (ite.hasNext()) {
                 b.append(", ");
             }
         }
         b.append("], nodes=[");
-        for (Iterator<Set<Node>> ite = pGrps.iterator(); ite.hasNext(); ) {
+        for (Iterator<Collection<Node>> ite = pGrps.iterator(); ite.hasNext(); ) {
             b.append(ite.next());
             if (ite.hasNext()) {
                 b.append(", ");

@@ -24,6 +24,7 @@ import btrplace.model.constraint.SplitAmong;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -49,7 +50,7 @@ public class SplitAmongConverter extends SatConstraintConverter<SplitAmong> {
     public SplitAmong fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
 
-        Set<Set<Node>> nodes = new HashSet<>();
+        Set<Collection<Node>> nodes = new HashSet<>();
         Object x = o.get("pParts");
         if (!(x instanceof JSONArray)) {
             throw new JSONConverterException("Set of ints sets expected at key 'vParts'");
@@ -58,7 +59,7 @@ public class SplitAmongConverter extends SatConstraintConverter<SplitAmong> {
             nodes.add(nodesFromJSON((JSONArray) obj));
         }
 
-        Set<Set<VM>> vms = new HashSet<>();
+        Set<Collection<VM>> vms = new HashSet<>();
         x = o.get("vParts");
         if (!(x instanceof JSONArray)) {
             throw new JSONConverterException("Set of ints sets expected at key 'vParts'");
@@ -76,12 +77,12 @@ public class SplitAmongConverter extends SatConstraintConverter<SplitAmong> {
         c.put("id", getJSONId());
 
         JSONArray vGroups = new JSONArray();
-        for (Set<VM> grp : o.getGroupsOfVMs()) {
+        for (Collection<VM> grp : o.getGroupsOfVMs()) {
             vGroups.add(vmsToJSON(grp));
         }
 
         JSONArray pGroups = new JSONArray();
-        for (Set<Node> grp : o.getGroupsOfNodes()) {
+        for (Collection<Node> grp : o.getGroupsOfNodes()) {
             pGroups.add(nodesToJSON(grp));
         }
 

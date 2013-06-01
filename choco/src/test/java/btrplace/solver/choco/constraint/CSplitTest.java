@@ -63,10 +63,10 @@ public class CSplitTest {
                 .run(n4, vm6)
                 .run(n5, vm7, vm8).get();
 
-        Set<VM> g1 = new HashSet<>(Arrays.asList(vm1, vm2));
-        Set<VM> g2 = new HashSet<>(Arrays.asList(vm3, vm4, vm5));
-        Set<VM> g3 = new HashSet<>(Arrays.asList(vm6, vm7));
-        Set<Set<VM>> grps = new HashSet<>(Arrays.asList(g1, g2, g3));
+        Collection<VM> g1 = Arrays.asList(vm1, vm2);
+        Collection<VM> g2 = new HashSet<>(Arrays.asList(vm3, vm4, vm5));
+        Collection<VM> g3 = new HashSet<>(Arrays.asList(vm6, vm7));
+        Collection<Collection<VM>> grps = Arrays.asList(g1, g2, g3);
         Split s = new Split(grps);
         CSplit cs = new CSplit(s);
 
@@ -106,11 +106,11 @@ public class CSplitTest {
                 .run(n3, vm4, vm5, vm6/*violation*/)
                 .run(n5, vm7, vm8).get();
 
-        Set<VM> g1 = new HashSet<>(Arrays.asList(vm1, vm2));
-        Set<VM> g2 = new HashSet<>(Arrays.asList(vm3, vm4, vm5));
-        Set<VM> g3 = new HashSet<>(Arrays.asList(vm6, vm7));
+        Collection<VM> g1 = Arrays.asList(vm1, vm2);
+        Collection<VM> g2 = Arrays.asList(vm3, vm4, vm5);
+        Collection<VM> g3 = Arrays.asList(vm6, vm7);
 
-        Set<Set<VM>> grps = new HashSet<>(Arrays.asList(g1, g2, g3));
+        Collection<Collection<VM>> grps = Arrays.asList(g1, g2, g3);
         Split s = new Split(grps);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
@@ -142,10 +142,10 @@ public class CSplitTest {
                 .run(n3, vm3, vm4, vm5)
                 .run(n5, vm6, vm7, vm8).get();
 
-        Set<VM> g1 = new HashSet<>(Arrays.asList(vm1, vm2));
-        Set<VM> g2 = new HashSet<>(Arrays.asList(vm3, vm4, vm5));
-        Set<VM> g3 = new HashSet<>(Arrays.asList(vm6, vm7));
-        Set<Set<VM>> grps = new HashSet<>(Arrays.asList(g1, g2, g3));
+        Collection<VM> g1 = Arrays.asList(vm1, vm2);
+        Collection<VM> g2 = Arrays.asList(vm3, vm4, vm5);
+        Collection<VM> g3 = Arrays.asList(vm6, vm7);
+        Collection<Collection<VM>> grps = Arrays.asList(g1, g2, g3);
         Split s = new Split(grps);
 
         s.setContinuous(true);

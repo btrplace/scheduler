@@ -87,8 +87,8 @@ public class ModelCustomization implements Example {
         cstrs.add(new Gather(Arrays.asList(vms.get(0), vms.get(9))));
 
         //(vm1, vm2, vm4) and (vm5, vm6, vm8) must not share node
-        Set<VM> g1 = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1), vms.get(3)));
-        Set<VM> g2 = new HashSet<>(Arrays.asList(vms.get(4), vms.get(5), vms.get(7)));
+        Collection<VM> g1 = Arrays.asList(vms.get(0), vms.get(1), vms.get(3));
+        Collection<VM> g2 = Arrays.asList(vms.get(4), vms.get(5), vms.get(7));
 
         cstrs.add(new Split(Arrays.asList(g1, g2)));
 

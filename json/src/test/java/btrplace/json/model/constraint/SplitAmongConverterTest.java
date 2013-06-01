@@ -28,8 +28,8 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
 
 /**
@@ -42,15 +42,15 @@ public class SplitAmongConverterTest {
     @Test
     public void testViables() throws JSONConverterException, IOException {
         Model mo = new DefaultModel();
-        Set<VM> s1 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
-        Set<VM> s2 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
-        Set<VM> s3 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
-        Set<Set<VM>> vgrps = new HashSet<>(Arrays.asList(s1, s2, s3));
+        Collection<VM> s1 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
+        Collection<VM> s2 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
+        Collection<VM> s3 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
+        Collection<Collection<VM>> vgrps = new HashSet<>(Arrays.asList(s1, s2, s3));
 
-        Set<Node> p1 = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
-        Set<Node> p2 = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
-        Set<Node> p3 = new HashSet<>(Arrays.asList(mo.newNode()));
-        Set<Set<Node>> pgrps = new HashSet<>(Arrays.asList(p1, p2, p3));
+        Collection<Node> p1 = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
+        Collection<Node> p2 = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
+        Collection<Node> p3 = new HashSet<>(Arrays.asList(mo.newNode()));
+        Collection<Collection<Node>> pgrps = new HashSet<>(Arrays.asList(p1, p2, p3));
 
         SplitAmong d = new SplitAmong(vgrps, pgrps, false);
         SplitAmong c = new SplitAmong(vgrps, pgrps, true);

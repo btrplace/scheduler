@@ -23,6 +23,7 @@ import btrplace.model.constraint.Among;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -48,7 +49,7 @@ public class AmongConverter extends SatConstraintConverter<Among> {
     public Among fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
 
-        Set<Set<Node>> nodes = new HashSet<>();
+        Set<Collection<Node>> nodes = new HashSet<>();
         Object x = o.get("parts");
         if (!(x instanceof JSONArray)) {
             throw new JSONConverterException("Set of int sets expected at key 'parts'");
@@ -68,7 +69,7 @@ public class AmongConverter extends SatConstraintConverter<Among> {
         c.put("id", getJSONId());
         c.put("vms", vmsToJSON(o.getInvolvedVMs()));
         JSONArray a = new JSONArray();
-        for (Set<Node> grp : o.getGroupsOfNodes()) {
+        for (Collection<Node> grp : o.getGroupsOfNodes()) {
             a.add(nodesToJSON(grp));
         }
         c.put("parts", a);
