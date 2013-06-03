@@ -31,10 +31,9 @@ import java.util.*;
 
 /**
  * Simple tutorial about the usage of Btrplace.
- * The document associated to the tutorial is available
- * on <a href="https://github.com/fhermeni/btrplace-solver/wiki/GettingStarted">btrplace website</a>.
  *
  * @author Fabien Hermenier
+ * @see <a href="https://github.com/fhermeni/btrplace-solver/wiki/GettingStarted">btrplace website</a>.
  */
 public class GettingStarted implements Example {
 

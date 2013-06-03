@@ -32,10 +32,9 @@ import java.util.*;
 
 /**
  * Tutorial about the basic tuning of a model.
- * The document associated to the tutorial is available
- * on <a href="https://github.com/fhermeni/btrplace-solver/wiki/Customizing-a-model">btrplace website</a>.
  *
  * @author Fabien Hermenier
+ * @see <a href="https://github.com/fhermeni/btrplace-solver/wiki/Customizing-a-model">btrplace website</a>.
  */
 public class ModelCustomization implements Example {
 
@@ -91,7 +90,7 @@ public class ModelCustomization implements Example {
         Collection<VM> g1 = Arrays.asList(vms.get(0), vms.get(1), vms.get(3));
         Collection<VM> g2 = Arrays.asList(vms.get(4), vms.get(5), vms.get(7));
 
-        cstrs.add(new Split(Arrays.asList(g1, g2), true));
+        cstrs.add(new Split(Arrays.asList(g1, g2)));
 
         //vm10 must be running
         cstrs.add(new Running(Collections.singleton(vms.get(9))));
@@ -110,6 +109,8 @@ public class ModelCustomization implements Example {
             attrs.put(vm, "template", vm.id() % 2 == 0 ? "small" : "large");
             attrs.put(vm, "clone", true);
             attrs.put(vm, "forge", vm.id() % 2 == 0 ? 2 : 7);
+            //forge == 2 && template == small  for vm0, vm2, vm4, vm6, vm8
+            //forge == 7 && template == large for vm1, vm3, vm5, vm7, vm9
         }
 
         //Change the duration evaluator for MigrateVM action
@@ -118,16 +119,15 @@ public class ModelCustomization implements Example {
         dev.register(MigrateVM.class, new LinearToAResourceActionDuration<VM>("mem", 2, 3));
 
         //Relocate VM4:
-        // migration: 7
-        // re-instantiate: forge: 2 + boot 1
+        //  using a migration: 7 sec. (mem=2)
+        //  using a re-instantiation: 3 sec. (forge:2 + boot:1)
         //Relocate VM5:
-        // migration: mem=1 -> duration = 5
-        // re-instantiate: forge: 7 + boot 1 -> 8
+        //  using a migration: 5 sec. (mem=1)
+        //  using a re-instantiation: 8 sec. (forge:7 + boot:1)
 
         try {
             cra.doOptimize(true);
             ReconfigurationPlan plan = cra.solve(model, cstrs);
-            System.out.println(cra.getSolvingStatistics());
             System.out.println(plan);
         } catch (SolverException ex) {
             System.err.println(ex.getMessage());

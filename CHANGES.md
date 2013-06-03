@@ -5,7 +5,7 @@ version ????????
 ----------------------
 
 - Bugs fix
-- Close #16, #18
+- Close #16, #18, #19
 - MAJOR API change: Type system for elements. No more UUIDS.
 - Simplify json package
 - 2 new tutorials on customizing a Model and a ChocoReconfigurationAlgorithm.
