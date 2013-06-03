@@ -11,8 +11,6 @@ JAVA_OPTS="-classpath $CLASSPATH.:src"
 
 if [ $# -ne 1 ]; then
 	echo "Usage: $0 tutorial_name"
-	echo "\trun: compile and run the expected tutorial"
-	echo "\treset: delete all modifications made on the tutorial"
 	exit 1
 fi
 
