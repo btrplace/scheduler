@@ -295,4 +295,14 @@ public class Issues {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan dp = cra.solve(model, ctrsC);
     }
+
+    @Test
+    public void issue19() {
+        Model m = new DefaultModel();
+        ShareableResource cpu = new ShareableResource("cpu", 4, 1);
+        Node n = m.newNode();
+        Node n2 = m.newNode();
+        m.attach(cpu);
+        Assert.assertEquals(cpu.sumCapacities(Arrays.asList(n, n2), true), 8);
+    }
 }

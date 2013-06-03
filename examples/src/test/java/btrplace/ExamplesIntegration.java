@@ -38,7 +38,7 @@ public class ExamplesIntegration {
     }
 
     @Test
-    public void testBasicTuning() throws Exception {
+    public void testSolvingTuning() throws Exception {
         Example ex = new SolverTuning();
         Assert.assertTrue("Example " + ex.toString() + " failed", ex.run());
     }

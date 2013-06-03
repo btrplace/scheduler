@@ -58,9 +58,10 @@ public class ModelCustomization implements Example {
 
         ShareableResource rcMem = new ShareableResource("mem", 32, 1); //32GB by default for the nodes
 
-        rcMem.setConsumption(vms.get(0), 1).setConsumption(vms.get(1), 2).setConsumption(vms.get(2), 3)
-                .setConsumption(vms.get(3), 1).setConsumption(vms.get(4), 2).setConsumption(vms.get(5), 3)
-                .setConsumption(vms.get(6), 1).setConsumption(vms.get(7), 2).setConsumption(vms.get(8), 3).setConsumption(vms.get(9), 1);
+        for (int i = 0; i < 10; i++) {
+            rcMem.setConsumption(vms.get(i), i % 3 + 1);
+            //vm0: 1, vm1:2, vm2:3, vm3:1, vm4:2, vm5:3, vm6:1, ...
+        }
 
         map.addRunningVM(vms.get(0), ns.get(0));
         map.addRunningVM(vms.get(1), ns.get(0));
@@ -90,7 +91,7 @@ public class ModelCustomization implements Example {
         Collection<VM> g1 = Arrays.asList(vms.get(0), vms.get(1), vms.get(3));
         Collection<VM> g2 = Arrays.asList(vms.get(4), vms.get(5), vms.get(7));
 
-        cstrs.add(new Split(Arrays.asList(g1, g2)));
+        cstrs.add(new Split(Arrays.asList(g1, g2), true));
 
         //vm10 must be running
         cstrs.add(new Running(Collections.singleton(vms.get(9))));
@@ -108,7 +109,7 @@ public class ModelCustomization implements Example {
         for (VM vm : model.getMapping().getAllVMs()) {
             attrs.put(vm, "template", vm.id() % 2 == 0 ? "small" : "large");
             attrs.put(vm, "clone", true);
-            attrs.put(vm, "forge", vm.id() % 2 == 0 ? 2 : 6);
+            attrs.put(vm, "forge", vm.id() % 2 == 0 ? 2 : 7);
         }
 
         //Change the duration evaluator for MigrateVM action
@@ -116,9 +117,17 @@ public class ModelCustomization implements Example {
         DurationEvaluators dev = cra.getDurationEvaluators();
         dev.register(MigrateVM.class, new LinearToAResourceActionDuration<VM>("mem", 2, 3));
 
+        //Relocate VM4:
+        // migration: 7
+        // re-instantiate: forge: 2 + boot 1
+        //Relocate VM5:
+        // migration: mem=1 -> duration = 5
+        // re-instantiate: forge: 7 + boot 1 -> 8
+
         try {
             cra.doOptimize(true);
             ReconfigurationPlan plan = cra.solve(model, cstrs);
+            System.out.println(cra.getSolvingStatistics());
             System.out.println(plan);
         } catch (SolverException ex) {
             System.err.println(ex.getMessage());

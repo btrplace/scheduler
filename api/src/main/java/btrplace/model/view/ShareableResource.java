@@ -356,7 +356,7 @@ public class ShareableResource implements ModelView, Cloneable {
         int s = 0;
         for (Node u : ids) {
             if (capacityDefined(u) || undef) {
-                s += capacityDefined(u) ? nodesCapacity.get(u) : vmsNoValue;
+                s += capacityDefined(u) ? nodesCapacity.get(u) : nodesNoValue;
             }
         }
         return s;
