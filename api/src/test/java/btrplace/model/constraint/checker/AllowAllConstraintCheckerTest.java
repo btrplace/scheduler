@@ -37,7 +37,7 @@ import static org.mockito.Mockito.*;
  */
 public class AllowAllConstraintCheckerTest {
 
-    static SatConstraint cstr = mock(SatConstraint.class);
+    private static SatConstraint cstr = mock(SatConstraint.class);
 
 
     @Test
@@ -87,7 +87,7 @@ public class AllowAllConstraintCheckerTest {
         //while earlier, the mock was needed for the verify()
         c = new AllowAllConstraintChecker(cstr) {
         };
-
+        c.track(mo.getVMs());
         SuspendVM s = new SuspendVM(vms.get(0), ns.get(0), ns.get(1), 0, 3);
         Assert.assertTrue(c.start(s));
 
