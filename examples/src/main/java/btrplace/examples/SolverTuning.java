@@ -33,10 +33,9 @@ import java.util.*;
 
 /**
  * Tutorial about the basic tuning of a {@link btrplace.solver.choco.ChocoReconfigurationAlgorithm}.
- * The document associated to the tutorial is available
- * on <a href="https://github.com/fhermeni/btrplace-solver/wiki/tuning the reconfiguration algorithm">btrplace website</a>.
  *
  * @author Fabien Hermenier
+ * @see <a href="https://github.com/fhermeni/btrplace-solver/wiki/Tuning-the-Reconfiguration-Algorithm">btrplace website</a>.
  */
 public class SolverTuning implements Example {
 
