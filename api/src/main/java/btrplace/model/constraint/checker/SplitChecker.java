@@ -21,9 +21,7 @@ import btrplace.model.*;
 import btrplace.model.constraint.Split;
 import btrplace.plan.event.RunningVMPlacement;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * Checker for the {@link btrplace.model.constraint.Split} constraint
@@ -36,7 +34,7 @@ public class SplitChecker extends AllowAllConstraintChecker<Split> {
     /**
      * The group of VMs.
      */
-    private List<Collection<VM>> vGroups;
+    private List<Set<VM>> vGroups;
 
     private Model mockModel;
 
@@ -47,9 +45,11 @@ public class SplitChecker extends AllowAllConstraintChecker<Split> {
      */
     public SplitChecker(Split s) {
         super(s);
-        vGroups = new ArrayList<>(s.getSets());
-        for (Collection<VM> set : vGroups) {
-            track(set);
+        vGroups = new ArrayList<>(s.getSets().size());
+        for (Collection<VM> set : s.getSets()) {
+            Set<VM> ss = new HashSet<>(set);
+            vGroups.add(ss);
+            track(ss);
         }
     }
 
