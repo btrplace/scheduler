@@ -1,7 +1,7 @@
 Release notes
 ======================
 
-version ????????
+version 0.30 - 04 Jun 2013
 ----------------------
 
 - Bugs fix
