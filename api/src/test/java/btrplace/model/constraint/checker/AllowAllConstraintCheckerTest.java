@@ -37,11 +37,10 @@ import static org.mockito.Mockito.*;
  */
 public class AllowAllConstraintCheckerTest {
 
-    private static SatConstraint cstr = mock(SatConstraint.class);
-
 
     @Test
     public void testInstantiation() {
+        SatConstraint cstr = mock(SatConstraint.class);
         Model mo = new DefaultModel();
         List<VM> vms = Util.newVMs(mo, 10);
         List<Node> ns = Util.newNodes(mo, 10);
@@ -58,11 +57,14 @@ public class AllowAllConstraintCheckerTest {
 
     @Test
     public void testAcceptance() {
+        SatConstraint cstr = mock(SatConstraint.class);
         AllowAllConstraintChecker c = mock(AllowAllConstraintChecker.class, CALLS_REAL_METHODS);
 
         Model mo = new DefaultModel();
         List<VM> vms = Util.newVMs(mo, 10);
         List<Node> ns = Util.newNodes(mo, 10);
+        when(cstr.getInvolvedNodes()).thenReturn(ns);
+        when(cstr.getInvolvedVMs()).thenReturn(vms);
 
         MigrateVM m = new MigrateVM(vms.get(0), ns.get(0), ns.get(1), 0, 3);
         Assert.assertTrue(c.start(m));
@@ -118,7 +120,7 @@ public class AllowAllConstraintCheckerTest {
 
     @Test(dependsOnMethods = "testInstantiation")
     public void testMyVMsTracking() {
-
+        SatConstraint cstr = mock(SatConstraint.class);
         Model mo = new DefaultModel();
         List<VM> vms = Util.newVMs(mo, 10);
         List<Node> ns = Util.newNodes(mo, 10);
@@ -142,12 +144,13 @@ public class AllowAllConstraintCheckerTest {
 
     @Test(dependsOnMethods = "testInstantiation")
     public void testAnyTracking() {
-
+        SatConstraint cstr = mock(SatConstraint.class);
         AllowAllConstraintChecker c = new AllowAllConstraintChecker(cstr) {
         };
 
         Model mo = new DefaultModel();
         List<VM> vms = Util.newVMs(mo, 10);
+        when(cstr.getInvolvedVMs()).thenReturn(vms);
 
         Set<VM> vs = new HashSet<>(Arrays.asList(vms.get(4), vms.get(6), vms.get(9)));
         c.track(vs);

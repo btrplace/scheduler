@@ -206,7 +206,11 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
                 c.add(e.getNewVM());
             }
         }
-        return !vms.remove(e.getVM()) || vms.add(e.getNewVM());
+        if (vms.remove(e.getVM())) {
+            vms.add(e.getNewVM());
+        }
+        //return !vms.remove(e.getVM()) || vms.add(e.getNewVM());
+        return true;
     }
 
     @Override
