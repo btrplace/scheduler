@@ -287,6 +287,16 @@ public interface ReconfigurationProblem {
     Collection<ChocoModelView> getViews();
 
     /**
+     * Add a view.
+     * There must not be a view with a same identifier already in.
+     *
+     * @param v the view to add
+     * @return {@code true} iff the view has been added.
+     */
+    boolean addView(ChocoModelView v);
+
+
+    /**
      * Get the amount of VMs hosted on each node.
      *
      * @return an array of variable counting the number of VMs on each node

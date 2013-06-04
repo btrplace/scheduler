@@ -522,6 +522,15 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
+    public boolean addView(ChocoModelView v) {
+        if (views.containsKey(v.getIdentifier())) {
+            return false;
+        }
+        views.put(v.getIdentifier(), v);
+        return true;
+    }
+
+    @Override
     public CPSolver getSolver() {
         return solver;
     }

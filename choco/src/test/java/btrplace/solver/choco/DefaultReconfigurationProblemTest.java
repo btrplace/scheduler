@@ -981,4 +981,15 @@ public class DefaultReconfigurationProblemTest {
         ReconfigurationPlan plan = rp.solve(0, true);
         Assert.assertNull(plan);
     }
+
+
+    @Test
+    public void testViewAddition() throws SolverException {
+        Model mo = new DefaultModel();
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
+        MockCViewModel view = new MockCViewModel();
+        Assert.assertTrue(rp.addView(view));
+        Assert.assertEquals(rp.getView(view.getIdentifier()), view);
+        Assert.assertFalse(rp.addView(view));
+    }
 }
