@@ -66,14 +66,6 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * <li>{@code T} = { {@code 0}, {@link btrplace.solver.choco.ReconfigurationProblem#getEnd()} }; {@link #getHostingEnd()} = T[{@link #getState()}]</li>
  * </ul>
  * </li>
- * <li>
- * The moment the node is powered up and down equals the moment the action starts and the moment it can not host VMs.
- * If the node is not powered up, these duration equals then 0
- * <ul>
- * <li>{@link #getPoweringStart()} = {@link #getStart()}</li>
- * <li>{@link #getPoweringEnd()} = {@link #getHostingEnd()}</li>
- * </ul>
- * </li>
  * </ul>
  * <p/>
  * If the reconfiguration problem has a solution, a {@link btrplace.plan.event.BootNode} action
@@ -197,16 +189,6 @@ public class BootableNodeModel implements NodeActionModel {
 
     @Override
     public IntDomainVar getHostingEnd() {
-        return hostingEnd;
-    }
-
-    @Override
-    public IntDomainVar getPoweringStart() {
-        return start;
-    }
-
-    @Override
-    public IntDomainVar getPoweringEnd() {
         return hostingEnd;
     }
 }

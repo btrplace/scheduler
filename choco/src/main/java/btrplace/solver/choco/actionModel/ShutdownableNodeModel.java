@@ -68,14 +68,6 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * <li>{@code T} = { {@link #getStart()}, {@link btrplace.solver.choco.ReconfigurationProblem#getEnd()} }; {@link #getHostingEnd()} = T[{@link #getState()}]</li>
  * </ul>
  * </li>
- * <li>
- * The moment the node is powered up equals the moment the reconfiguration starts as the node is already online.
- * The moment the node is powered down equals the moment the node can no longer host VMs plus the action duration.
- * <ul>
- * <li>{@link #getPoweringStart()} = {@link #getStart()}</li>
- * <li>{@link #getPoweringEnd()} = {@link #getHostingEnd()} + {@link #getDuration()}</li>
- * </ul>
- * </li>
  * </ul>
  * <p/>
  * If the reconfiguration problem has a solution, a {@link btrplace.plan.event.ShutdownNode} action is inserted
@@ -98,10 +90,6 @@ public class ShutdownableNodeModel implements NodeActionModel {
     private IntDomainVar hostingEnd;
 
     private IntDomainVar start;
-
-    private IntDomainVar powerStart;
-
-    private IntDomainVar powerEnd;
 
     /**
      * Make a new model.
@@ -154,13 +142,6 @@ public class ShutdownableNodeModel implements NodeActionModel {
           He = T[St]
          */
         s.post(new ElementV(new IntDomainVar[]{start, rp.getEnd(), isOnline, hostingEnd}, 0, s.getEnvironment()));
-
-
-        //The node is already online, so it starts at the beginning of the RP
-        powerStart = rp.getStart();
-        //The moment the node is offline. It depends on the hosting end time and the duration of the shutdown action
-        powerEnd = rp.makeUnboundedDuration("shutdownableNode(", e, ").powerEnd");
-        s.post(s.eq(powerEnd, s.plus(hostingEnd, duration)));
     }
 
 
@@ -210,15 +191,5 @@ public class ShutdownableNodeModel implements NodeActionModel {
     @Override
     public IntDomainVar getHostingEnd() {
         return hostingEnd;
-    }
-
-    @Override
-    public IntDomainVar getPoweringStart() {
-        return powerStart;
-    }
-
-    @Override
-    public IntDomainVar getPoweringEnd() {
-        return powerEnd;
     }
 }

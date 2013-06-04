@@ -28,12 +28,20 @@ import java.util.Set;
 
 /**
  * Serialize/Un-serialize an {@link btrplace.model.view.ShareableResource}.
- * <p/>
- * TODO: Missing default values
  *
  * @author Fabien Hermenier
  */
 public class ShareableResourceConverter extends ModelViewConverter<ShareableResource> {
+
+    /**
+     * JSON label for default VM consumption.
+     */
+    public static final String DEFAULT_CONSUMPTION = "defConsumption";
+
+    /**
+     * JSON label for default node capacity.
+     */
+    public static final String DEFAULT_CAPACITY = "defCapacity";
 
     @Override
     public Class<ShareableResource> getSupportedConstraint() {
@@ -49,8 +57,8 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
     public JSONObject toJSON(ShareableResource rc) {
         JSONObject o = new JSONObject();
         o.put("id", getJSONId());
-        o.put("defConsumption", rc.getDefaultConsumption());
-        o.put("defCapacity", rc.getDefaultCapacity());
+        o.put(DEFAULT_CONSUMPTION, rc.getDefaultConsumption());
+        o.put(DEFAULT_CAPACITY, rc.getDefaultCapacity());
         o.put("rcId", rc.getResourceIdentifier());
 
         Set<VM> elems = rc.getDefinedVMs();
@@ -73,7 +81,7 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
     @Override
     public ShareableResource fromJSON(JSONObject o) throws JSONConverterException {
         if (!o.containsKey("id") || !o.containsKey("vms") || !o.containsKey("nodes")
-                || !o.containsKey("rcId") || !o.containsKey("defConsumption") || !o.containsKey("defCapacity")) {
+                || !o.containsKey("rcId") || !o.containsKey(DEFAULT_CONSUMPTION) || !o.containsKey(DEFAULT_CAPACITY)) {
             return null;
         }
         String id = o.get("id").toString();
@@ -82,16 +90,16 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
         }
 
         String rcId = o.get("rcId").toString();
-        Object dc = o.get("defConsumption");
+        Object dc = o.get(DEFAULT_CONSUMPTION);
         if (!(dc instanceof Integer)) {
-            throw new JSONConverterException("Integer expected for key 'defConsumption' but got '" + dc.getClass().getName() + "'");
+            throw new JSONConverterException("Integer expected for key '" + DEFAULT_CONSUMPTION + "' but got '" + dc.getClass().getName() + "'");
         }
-        int defConsumption = (Integer) o.get("defConsumption");
-        dc = o.get("defCapacity");
+        int defConsumption = (Integer) o.get(DEFAULT_CONSUMPTION);
+        dc = o.get(DEFAULT_CAPACITY);
         if (!(dc instanceof Integer)) {
-            throw new JSONConverterException("Integer expected for key 'defCapacity' but got '" + dc.getClass().getName() + "'");
+            throw new JSONConverterException("Integer expected for key '" + DEFAULT_CAPACITY + "' but got '" + dc.getClass().getName() + "'");
         }
-        int defCapacity = (Integer) o.get("defCapacity");
+        int defCapacity = (Integer) o.get(DEFAULT_CAPACITY);
 
 
         ShareableResource rc = new ShareableResource(rcId, defCapacity, defConsumption);
