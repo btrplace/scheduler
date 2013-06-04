@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,21 +17,27 @@
 
 package btrplace.solver.choco.durationEvaluator;
 
-import btrplace.plan.event.Action;
+import btrplace.model.Element;
+import btrplace.model.Model;
+import btrplace.plan.event.*;
 import btrplace.solver.SolverException;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
+
 
 /**
- * Class to store the {@link DurationEvaluator} associated to each of the possible actions.
+ * Class to store the {@link ActionDurationEvaluator} associated to each of the possible actions.
+ * <p/>
+ * By default, each action is associated to a {@link ActionDurationFromOptionalAttribute} evaluator.
+ * See https://github.com/fhermeni/btrplace-solver/wiki/attributes to get the attribute identifiers.
+ * If the attribute is not set, a {@link ConstantActionDuration} is used and evaluate the duration to 1 second.
  *
  * @author Fabien Hermenier
  */
 public class DurationEvaluators {
 
-    private Map<Class<? extends Action>, DurationEvaluator> durations;
+    private Map<Class<? extends Action>, ActionDurationEvaluator> durations;
 
     /**
      * Make a new mapper.
@@ -40,46 +45,46 @@ public class DurationEvaluators {
     public DurationEvaluators() {
         durations = new HashMap<>();
 
-
         //Default constructors
-        durations.put(btrplace.plan.event.MigrateVM.class, new ConstantDuration(1));
-        durations.put(btrplace.plan.event.BootVM.class, new ConstantDuration(1));
-        durations.put(btrplace.plan.event.ShutdownVM.class, new ConstantDuration(1));
-        durations.put(btrplace.plan.event.SuspendVM.class, new ConstantDuration(1));
-        durations.put(btrplace.plan.event.ResumeVM.class, new ConstantDuration(1));
-        durations.put(btrplace.plan.event.ForgeVM.class, new ConstantDuration(1));
-        durations.put(btrplace.plan.event.ShutdownNode.class, new ConstantDuration(1));
-        durations.put(btrplace.plan.event.BootNode.class, new ConstantDuration(1));
-        durations.put(btrplace.plan.event.KillVM.class, new ConstantDuration(1));
+        durations.put(MigrateVM.class, new ActionDurationFromOptionalAttribute<>("migrate", new ConstantActionDuration<>(1)));
+        durations.put(BootVM.class, new ActionDurationFromOptionalAttribute<>("boot", new ConstantActionDuration<>(1)));
+        durations.put(ShutdownVM.class, new ActionDurationFromOptionalAttribute<>("shutdown", new ConstantActionDuration<>(1)));
+        durations.put(SuspendVM.class, new ActionDurationFromOptionalAttribute<>("suspend", new ConstantActionDuration<>(1)));
+        durations.put(ResumeVM.class, new ActionDurationFromOptionalAttribute<>("resume", new ConstantActionDuration<>(1)));
+        durations.put(ForgeVM.class, new ActionDurationFromOptionalAttribute<>("forge", new ConstantActionDuration<>(1)));
+        durations.put(ShutdownNode.class, new ActionDurationFromOptionalAttribute<>("shutdown", new ConstantActionDuration<>(1)));
+        durations.put(BootNode.class, new ActionDurationFromOptionalAttribute<>("boot", new ConstantActionDuration<>(1)));
+        durations.put(KillVM.class, new ActionDurationFromOptionalAttribute<>("kill", new ConstantActionDuration<>(1)));
+        durations.put(Allocate.class, new ActionDurationFromOptionalAttribute<>("allocate", new ConstantActionDuration<>(1)));
     }
 
     /**
-     * Register a new {@link DurationEvaluator}.
+     * Register a new {@link ActionDurationEvaluator}.
      *
      * @param a the action class
      * @param e the evaluator to register for the given action
      * @return {@code false} if this action delete a previous evaluator for that action
      */
-    public boolean register(Class<? extends Action> a, DurationEvaluator e) {
+    public boolean register(Class<? extends Action> a, ActionDurationEvaluator e) {
         return durations.put(a, e) == null;
     }
 
     /**
-     * Un-register the {@link DurationEvaluator} associated to a given
+     * Un-register the {@link ActionDurationEvaluator} associated to a given
      * action, if exists.
      *
      * @param a the action class
-     * @return {@code true} if a {@link DurationEvaluator} was associated to the action.
+     * @return {@code true} if a {@link ActionDurationEvaluator} was associated to the action.
      */
     public boolean unregister(Class<? extends Action> a) {
         return durations.remove(a) != null;
     }
 
     /**
-     * Check if a {@link DurationEvaluator} is registered for a given action.
+     * Check if a {@link ActionDurationEvaluator} is registered for a given action.
      *
      * @param a the action' class
-     * @return {@code true} iff a {@link DurationEvaluator} is registered for that action
+     * @return {@code true} iff a {@link ActionDurationEvaluator} is registered for that action
      */
     public boolean isRegistered(Class<? extends Action> a) {
         return durations.containsKey(a);
@@ -91,24 +96,25 @@ public class DurationEvaluators {
      * @param a the action' class
      * @return the registered evaluator, if exists
      */
-    public DurationEvaluator getEvaluator(Class<? extends Action> a) {
+    public ActionDurationEvaluator getEvaluator(Class<? extends Action> a) {
         return durations.get(a);
     }
 
     /**
      * Evaluate the duration of given action on a given element.
      *
-     * @param a the action' class
-     * @param e the element
+     * @param mo the model to consider
+     * @param a  the action' class
+     * @param e  the element identifier
      * @return a positive number if the evaluation succeeded. A negative number otherwise
      */
-    public int evaluate(Class<? extends Action> a, UUID e) throws SolverException {
-        DurationEvaluator ev = durations.get(a);
+    public int evaluate(Model mo, Class<? extends Action> a, Element e) throws SolverException {
+        ActionDurationEvaluator ev = durations.get(a);
         if (ev == null) {
             throw new SolverException(null, "Unable to estimate the action duration related to '" + e + "'");
         }
-        int d = ev.evaluate(e);
-        if (d < 0) {
+        int d = ev.evaluate(mo, e);
+        if (d <= 0) {
             throw new SolverException(null, "Unable to estimate the action duration related to '" + e + "'");
         }
         return d;

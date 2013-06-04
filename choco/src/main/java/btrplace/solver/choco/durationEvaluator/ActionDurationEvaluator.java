@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,32 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.json;
+package btrplace.solver.choco.durationEvaluator;
 
-import net.minidev.json.JSONObject;
+import btrplace.model.Element;
+import btrplace.model.Model;
+
 
 /**
- * Basic abstract solver-API/JSON objects converter.
+ * Interface to specify the duration evaluator for a possible action on an elemnt.
  *
  * @author Fabien Hermenier
  */
-public interface JSONConverter<E> {
+public interface ActionDurationEvaluator<E extends Element> {
 
     /**
-     * JSON to Java object conversion
+     * Evaluate the duration of the action on a given element.
      *
-     * @param in the json object
-     * @return the conversion result
-     * @throws JSONConverterException if an error occurred while converting the object
+     * @param mo the model to consider
+     * @param e  the VM
+     * @return a positive integer
      */
-    E fromJSON(JSONObject in) throws JSONConverterException;
-
-    /**
-     * Java to JSON conversion
-     *
-     * @param e the Java object to convert
-     * @return the conversion result
-     * @throws JSONConverterException if an error occurred while converting the object
-     */
-    JSONObject toJSON(E e) throws JSONConverterException;
+    int evaluate(Model mo, E e);
 }

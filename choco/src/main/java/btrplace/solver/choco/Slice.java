@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,15 +17,16 @@
 
 package btrplace.solver.choco;
 
+import btrplace.model.VM;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.UUID;
 
 /**
  * Model a period where an element is hosted on a node.
  * {@link SliceBuilder} may be used to ease the creation of Slices.
  *
  * @author Fabien Hermenier
+ * @see {@link SliceUtils} to extract components of Slices.
  */
 public class Slice {
 
@@ -38,18 +38,18 @@ public class Slice {
 
     private IntDomainVar duration;
 
-    private UUID subject;
+    private VM subject;
 
     /**
      * Make a new slice.
      *
-     * @param s   the element associated to the slice
+     * @param s   the VM associated to the slice
      * @param st  the moment the slice starts
      * @param ed  the moment the slice ends
      * @param dur the slice duration
      * @param h   the slice host
      */
-    public Slice(UUID s, IntDomainVar st, IntDomainVar ed, IntDomainVar dur, IntDomainVar h) {
+    public Slice(VM s, IntDomainVar st, IntDomainVar ed, IntDomainVar dur, IntDomainVar h) {
 
         this.start = st;
         this.end = ed;
@@ -111,11 +111,11 @@ public class Slice {
     }
 
     /**
-     * Get the subject of the slice.
+     * Get the VM associated to the slice.
      *
-     * @return the subject identifier
+     * @return the VM identifier
      */
-    public UUID getSubject() {
+    public VM getSubject() {
         return subject;
     }
 }

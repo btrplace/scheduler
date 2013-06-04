@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,9 +19,10 @@ package btrplace.plan.event;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * Migrate a running VM from one online node to another one.
@@ -31,29 +31,28 @@ import java.util.UUID;
  */
 public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
 
-    private UUID vm;
+    private VM vm;
 
-    private UUID src, dst;
-
+    private Node src, dst;
 
     /**
-     * Make a new migrate action.
+     * Make a new action.
      *
-     * @param vm  the VM to migrate
-     * @param src the node the VM is currently running on
-     * @param dst the node where to place the VM
-     * @param st  the moment the action will consume
-     * @param ed  the moment the action will stop
+     * @param vm    the VM to migrate
+     * @param from  the node the VM is currently running on
+     * @param to    the node where to place the VM
+     * @param start the moment the action will consume
+     * @param end   the moment the action will stop
      */
-    public MigrateVM(UUID vm, UUID src, UUID dst, int st, int ed) {
-        super(st, ed);
+    public MigrateVM(VM vm, Node from, Node to, int start, int end) {
+        super(start, end);
         this.vm = vm;
-        this.src = src;
-        this.dst = dst;
+        this.src = from;
+        this.dst = to;
     }
 
     @Override
-    public UUID getDestinationNode() {
+    public Node getDestinationNode() {
         return dst;
     }
 
@@ -62,12 +61,12 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
      *
      * @return the node identifier
      */
-    public UUID getSourceNode() {
+    public Node getSourceNode() {
         return src;
     }
 
     @Override
-    public UUID getVM() {
+    public VM getVM() {
         return vm;
     }
 
@@ -76,7 +75,7 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
      * in the given model.
      *
      * @param i the model to alter with the action
-     * @return {@code true} iff the vm if running on the destination node
+     * @return {@code true} iff the VM is running on the destination node
      */
     @Override
     public boolean applyAction(Model i) {
@@ -92,13 +91,6 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
         return false;
     }
 
-    /**
-     * Test if this action is equals to another object.
-     *
-     * @param o the object to compare with
-     * @return true if ref is an instance of Instantiate and if both
-     *         instance involve the same virtual machine
-     */
     @Override
     public boolean equals(Object o) {
         if (o == null) {

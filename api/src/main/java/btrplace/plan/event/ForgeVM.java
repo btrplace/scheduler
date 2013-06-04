@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,9 +19,9 @@ package btrplace.plan.event;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.VM;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * Prepare a VM for being deployed.
@@ -31,21 +30,21 @@ import java.util.UUID;
  */
 public class ForgeVM extends Action implements VMStateTransition {
 
-    private UUID id;
+    private VM id;
 
     /**
      * Make a new action.
      *
-     * @param vm the VM to force.
+     * @param vm the VM to forge.
      */
-    public ForgeVM(UUID vm, int st, int ed) {
-        super(st, ed);
+    public ForgeVM(VM vm, int start, int end) {
+        super(start, end);
         this.id = vm;
     }
 
     /**
-     * Put the VM in the ready state if it does not already belong
-     * to the mapping.
+     * Put the VM in the ready state iff
+     * it does not already belong to the mapping.
      *
      * @param m the model to modify
      * @return {@code true} iff successful
@@ -62,11 +61,11 @@ public class ForgeVM extends Action implements VMStateTransition {
     }
 
     /**
-     * Test if this action is equals to another object.
+     * Test if the action is equals to another object.
      *
      * @param o the object to compare with
-     * @return true if ref is an instance of Force and if both
-     *         instance involve the same virtual machine
+     * @return true if {@code o} is an instance of {@link ForgeVM} and if both
+     *         instances involve the same VM
      */
     @Override
     public boolean equals(Object o) {
@@ -89,7 +88,7 @@ public class ForgeVM extends Action implements VMStateTransition {
     }
 
     @Override
-    public UUID getVM() {
+    public VM getVM() {
         return id;
     }
 

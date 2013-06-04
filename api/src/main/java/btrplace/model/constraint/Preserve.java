@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,13 +17,14 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.PreserveChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
 
 /**
  * Ensure the allocation of a given minimum amount of resources for
@@ -45,13 +45,16 @@ public class Preserve extends SatConstraint {
     /**
      * Make a new constraint.
      *
-     * @param vms    the VMs identifiers
-     * @param rcId   the resource identifier
-     * @param amount the minimum amount of resource to allocate
+     * @param vms    the VMs
+     * @param rc     the resource identifier
+     * @param amount the minimum amount of resources to allocate to each VM. >= 0
      */
-    public Preserve(Set<UUID> vms, String rcId, int amount) {
-        super(vms, Collections.<UUID>emptySet(), false);
-        this.rc = rcId;
+    public Preserve(Collection<VM> vms, String rc, int amount) {
+        super(vms, Collections.<Node>emptySet(), false);
+        if (amount < 0) {
+            throw new IllegalArgumentException("The amount of resource must be >= 0");
+        }
+        this.rc = rc;
         this.amount = amount;
     }
 

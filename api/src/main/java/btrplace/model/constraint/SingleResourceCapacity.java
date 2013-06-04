@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,13 +17,14 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.model.constraint.checker.SingleResourceCapacityChecker;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
 
 /**
  * Restrict the amount of virtual resources consumed by
@@ -48,25 +48,28 @@ public class SingleResourceCapacity extends SatConstraint {
     /**
      * Make a new constraint with a discrete restriction.
      *
-     * @param nodes  the involved servers.
-     * @param rcId   the resource identifier
-     * @param amount the maximum amount of resource to share among the hosted VMs
+     * @param nodes  the involved nodes.
+     * @param rc     the resource identifier
+     * @param amount the maximum amount of resources to share among the hosted VMs on each node. >= 0
      */
-    public SingleResourceCapacity(Set<UUID> nodes, String rcId, int amount) {
-        this(nodes, rcId, amount, false);
+    public SingleResourceCapacity(Collection<Node> nodes, String rc, int amount) {
+        this(nodes, rc, amount, false);
     }
 
     /**
      * Make a new constraint.
      *
-     * @param nodes      the involved servers.
-     * @param rcId       the resource identifier
-     * @param amount     the maximum amount of resource to share among the hosted VMs
+     * @param nodes      the involved nodes.
+     * @param rc         the resource identifier
+     * @param amount     the maximum amount of resources to share among the hosted VMs on each ndoe. >= 0
      * @param continuous {@code true} for a continuous restriction
      */
-    public SingleResourceCapacity(Set<UUID> nodes, String rcId, int amount, boolean continuous) {
-        super(Collections.<UUID>emptySet(), nodes, continuous);
-        this.rcId = rcId;
+    public SingleResourceCapacity(Collection<Node> nodes, String rc, int amount, boolean continuous) {
+        super(Collections.<VM>emptySet(), nodes, continuous);
+        if (amount < 0) {
+            throw new IllegalArgumentException("The amount of resources must be >= 0");
+        }
+        this.rcId = rc;
         this.amount = amount;
     }
 

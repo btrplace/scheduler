@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,11 +18,13 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
+import btrplace.model.DefaultModel;
+import btrplace.model.Model;
 import btrplace.model.constraint.CumulatedRunningCapacity;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -32,14 +33,16 @@ import java.util.HashSet;
  *
  * @author Fabien Hermenier
  */
-public class CumulatedRunningCapacityConverterTest implements PremadeElements {
-
-    private static CumulatedRunningCapacityConverter conv = new CumulatedRunningCapacityConverter();
+public class CumulatedRunningCapacityConverterTest {
 
     @Test
-    public void testViables() throws JSONConverterException {
-        CumulatedRunningCapacity d = new CumulatedRunningCapacity(new HashSet<>(Arrays.asList(n1, n2, n3)), 5, false);
-        CumulatedRunningCapacity c = new CumulatedRunningCapacity(new HashSet<>(Arrays.asList(n1, n2, n3)), 5, true);
+    public void testViables() throws JSONConverterException, IOException {
+        CumulatedRunningCapacityConverter conv = new CumulatedRunningCapacityConverter();
+        Model mo = new DefaultModel();
+        conv.setModel(mo);
+        CumulatedRunningCapacity d = new CumulatedRunningCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), 5, false);
+        CumulatedRunningCapacity c = new CumulatedRunningCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode())), 5, true);
+
         Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
         Assert.assertEquals(conv.fromJSON(conv.toJSON(c)), c);
     }

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,9 +17,9 @@
 
 package btrplace.solver.choco.actionModel;
 
+import btrplace.model.VM;
 import btrplace.solver.choco.Slice;
 
-import java.util.UUID;
 
 /**
  * Interface to specify an action model that manipulate a VM.
@@ -34,7 +33,7 @@ public interface VMActionModel extends ActionModel {
      *
      * @return the VM identifier
      */
-    UUID getVM();
+    VM getVM();
 
     /**
      * Get the slice denoting the possible current placement of the subject on a node.

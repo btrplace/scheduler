@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,34 +17,31 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.event.Allocate;
-import btrplace.plan.event.MigrateVM;
-import btrplace.test.PremadeElements;
+import btrplace.plan.event.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Unit tests for {@link CumulatedResourceCapacity}.
  *
  * @author Fabien Hermenier
  */
-public class CumulatedResourceCapacityTest implements PremadeElements {
+public class CumulatedResourceCapacityTest {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 10);
+        Set<Node> s = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
         CumulatedResourceCapacity c = new CumulatedResourceCapacity(s, "foo", 3);
         Assert.assertNotNull(c.getChecker());
         Assert.assertEquals(s, c.getInvolvedNodes());
@@ -65,7 +61,9 @@ public class CumulatedResourceCapacityTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsAndHashCode() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 10);
+        Set<Node> s = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
         CumulatedResourceCapacity c = new CumulatedResourceCapacity(s, "foo", 3);
         CumulatedResourceCapacity c2 = new CumulatedResourceCapacity(s, "foo", 3);
         Assert.assertTrue(c.equals(c));
@@ -74,65 +72,75 @@ public class CumulatedResourceCapacityTest implements PremadeElements {
 
         Assert.assertFalse(c.equals(new CumulatedResourceCapacity(s, "bar", 3)));
         Assert.assertFalse(c.equals(new CumulatedResourceCapacity(s, "foo", 2)));
-        Assert.assertFalse(c.equals(new CumulatedResourceCapacity(new HashSet<UUID>(), "foo", 3)));
+        Assert.assertFalse(c.equals(new CumulatedResourceCapacity(new HashSet<Node>(), "foo", 3)));
     }
 
     @Test
     public void testDiscreteIsSatisfied() {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 10);
+        List<VM> vms = Util.newVMs(mo, 10);
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addOnlineNode(ns.get(2));
 
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addRunningVM(vm4, n3);
+        map.addRunningVM(vms.get(0), ns.get(0));
+        map.addRunningVM(vms.get(1), ns.get(0));
+        map.addRunningVM(vms.get(2), ns.get(1));
+        map.addRunningVM(vms.get(3), ns.get(2));
 
-        Model mo = new DefaultModel(map);
-        ShareableResource rc = new ShareableResource("foo", 1);
-        rc.set(vm2, 2);
+        ShareableResource rc = new ShareableResource("foo", 1, 1);
+        rc.setConsumption(vms.get(1), 2);
         mo.attach(rc);
-        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Node> nodes = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
         CumulatedResourceCapacity cc = new CumulatedResourceCapacity(nodes, "foo", 4);
         Assert.assertEquals(cc.isSatisfied(mo), true);
         Assert.assertEquals(new CumulatedResourceCapacity(nodes, "bar", 100).isSatisfied(mo), false);
 
-        rc.set(vm1, 3);
+        rc.setConsumption(vms.get(0), 3);
         Assert.assertEquals(cc.isSatisfied(mo), false);
-        map.addSleepingVM(vm2, n1);
-        map.addSleepingVM(vm3, n1);
+        map.addSleepingVM(vms.get(1), ns.get(0));
+        map.addSleepingVM(vms.get(2), ns.get(0));
         Assert.assertEquals(cc.isSatisfied(mo), true);
     }
 
     @Test
     public void testContinuousIsSatisfied() {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 10);
+        List<VM> vms = Util.newVMs(mo, 10);
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addOnlineNode(ns.get(2));
 
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addRunningVM(vm4, n3);
-
-        Model mo = new DefaultModel(map);
-        ShareableResource rc = new ShareableResource("foo", 1);
-        rc.set(vm2, 2);
+        map.addRunningVM(vms.get(0), ns.get(0));
+        map.addRunningVM(vms.get(1), ns.get(0));
+        map.addRunningVM(vms.get(2), ns.get(1));
+        map.addRunningVM(vms.get(3), ns.get(2));
+        map.addReadyVM(vms.get(4));
+        ShareableResource rc = new ShareableResource("foo", 1, 1);
         mo.attach(rc);
-        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
-        CumulatedResourceCapacity cc = new CumulatedResourceCapacity(nodes, "foo", 4);
 
+        Set<Node> nodes = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
+        CumulatedResourceCapacity cc = new CumulatedResourceCapacity(nodes, "foo", 4, true);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(cc.isSatisfied(plan), true);
-        plan.add(new MigrateVM(vm4, n3, n2, 1, 2));
-        Assert.assertEquals(cc.isSatisfied(plan), false);
-        plan.add(new MigrateVM(vm1, n1, n3, 0, 1));
+        //3/4
+        MigrateVM m = new MigrateVM(vms.get(3), ns.get(2), ns.get(1), 0, 1);
+        m.addEvent(Action.Hook.post, new AllocateEvent(vms.get(3), "foo", 2));
+        plan.add(m);
+        //5/4
+        plan.add(new ShutdownVM(vms.get(2), ns.get(1), 1, 2));
+        //4/4
+        plan.add(new BootVM(vms.get(4), ns.get(2), 2, 3));
+        //4/4
+        plan.add(new Allocate(vms.get(1), ns.get(0), "foo", 2, 2, 3));
+        //5/4
+        plan.add(new MigrateVM(vms.get(0), ns.get(0), ns.get(2), 3, 4));
+        System.out.println(plan);
         Assert.assertEquals(cc.isSatisfied(plan), true);
-        plan.add(new Allocate(vm4, n2, "foo", 2, 5, 6));
-        Assert.assertEquals(cc.isSatisfied(plan), false);
-        plan.add(new Allocate(vm2, n1, "foo", 1, 4, 5));
-        Assert.assertEquals(cc.isSatisfied(plan), true);
+
     }
 }

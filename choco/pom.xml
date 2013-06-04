@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2012 University of Nice Sophia-Antipolis
+  ~ Copyright (c) 2013 University of Nice Sophia-Antipolis
   ~
   ~ This file is part of btrplace.
-  ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -23,9 +22,10 @@
     <parent>
         <groupId>btrplace</groupId>
         <artifactId>solver</artifactId>
-        <version>0.29-SNAPSHOT</version>
+        <version>0.30</version>
     </parent>
     <artifactId>solver-choco</artifactId>
+    <name>solver-choco</name>
     <description>Implementation of a reconfiguration algorithm that use
         the Constraint Programming solver CHOCO to compute solutions.
     </description>
@@ -35,12 +35,6 @@
             <groupId>btrplace</groupId>
             <artifactId>solver-api</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>btrplace</groupId>
-            <artifactId>solver-testMaterial</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>net.sf.trove4j</groupId>

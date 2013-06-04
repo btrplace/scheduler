@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,35 +15,54 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.durationEvaluator;
-
-import java.util.UUID;
+package btrplace.model;
 
 /**
- * Evaluate an action duration to a constant.
+ * Model a node.
+ * A node should not be instantiated directly. Use {@link Model#newNode()} instead.
  *
  * @author Fabien Hermenier
+ * @see {@link Model#newNode()}
  */
-public class ConstantDuration implements DurationEvaluator {
+public class Node implements Element {
 
-    private int duration;
+    private int id;
 
     /**
-     * Make a new evaluator.
+     * Make a new node.
      *
-     * @param d the estimated duration to accomplish the action. Must be strictly positive
+     * @param id the node identifier.
      */
-    public ConstantDuration(int d) {
-        this.duration = d;
+    Node(int id) {
+        this.id = id;
     }
 
     @Override
-    public int evaluate(UUID e) {
-        return duration;
+    public int id() {
+        return id;
     }
 
     @Override
     public String toString() {
-        return new StringBuilder("d=").append(duration).toString();
+        return "node#" + id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Node)) {
+            return false;
+        }
+
+        Node node = (Node) o;
+
+        return id == node.id();
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 }

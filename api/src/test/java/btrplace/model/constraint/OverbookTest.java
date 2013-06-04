@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,34 +17,33 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Allocate;
 import btrplace.plan.event.ShutdownVM;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Unit tests for {@link Overbook}.
  *
  * @author Fabien Hermenier
  */
-public class OverbookTest implements PremadeElements {
+public class OverbookTest {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 10);
+
+        Set<Node> s = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
         Overbook o = new Overbook(s, "foo", 1.5);
         Assert.assertNotNull(o.getChecker());
         Assert.assertEquals(s, o.getInvolvedNodes());
@@ -64,36 +62,38 @@ public class OverbookTest implements PremadeElements {
 
     @Test
     public void testDiscreteIsSatisfied() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 10);
+        List<VM> vms = Util.newVMs(mo, 10);
+        Set<Node> s = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
 
-        Mapping cfg = new DefaultMapping();
-        cfg.addOnlineNode(n1);
-        cfg.addOnlineNode(n2);
+        Model i = new DefaultModel();
+        Mapping cfg = i.getMapping();
+        cfg.addOnlineNode(ns.get(0));
+        cfg.addOnlineNode(ns.get(1));
 
         ShareableResource rc = new ShareableResource("cpu");
-        rc.set(n1, 1);
-        rc.set(n2, 4);
+        rc.setCapacity(ns.get(0), 1);
+        rc.setCapacity(ns.get(1), 4);
 
-        rc.set(vm1, 2);
-        rc.set(vm2, 2);
-        rc.set(vm3, 4);
+        rc.setConsumption(vms.get(0), 2);
+        rc.setConsumption(vms.get(1), 2);
+        rc.setConsumption(vms.get(2), 4);
 
-        cfg.addRunningVM(vm1, n1);
-        cfg.addRunningVM(vm2, n2);
-        cfg.addRunningVM(vm3, n2);
-        cfg.addRunningVM(vm4, n2);
+        cfg.addRunningVM(vms.get(0), ns.get(0));
+        cfg.addRunningVM(vms.get(1), ns.get(1));
+        cfg.addRunningVM(vms.get(2), ns.get(1));
+        cfg.addRunningVM(vms.get(3), ns.get(1));
 
-
-        Model i = new DefaultModel(cfg);
         i.attach(rc);
 
         Overbook o = new Overbook(s, "cpu", 2);
         Assert.assertEquals(o.isSatisfied(i), true);
 
-        rc.set(vm1, 4);
+        rc.setConsumption(vms.get(0), 4);
         Assert.assertEquals(o.isSatisfied(i), false);
 
-        cfg.addRunningVM(vm1, n2);
+        cfg.addRunningVM(vms.get(0), ns.get(1));
         Assert.assertEquals(o.isSatisfied(i), false);
 
         Overbook o2 = new Overbook(s, "mem", 2);
@@ -102,27 +102,31 @@ public class OverbookTest implements PremadeElements {
 
     @Test
     public void testContinuousIsSatisfied() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
 
-        Mapping cfg = new DefaultMapping();
-        cfg.addOnlineNode(n1);
-        cfg.addOnlineNode(n2);
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 10);
+        List<VM> vms = Util.newVMs(mo, 10);
+
+        Set<Node> s = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
+
+        Model i = new DefaultModel();
+        Mapping cfg = i.getMapping();
+        cfg.addOnlineNode(ns.get(0));
+        cfg.addOnlineNode(ns.get(1));
 
         ShareableResource rc = new ShareableResource("cpu");
-        rc.set(n1, 1);
-        rc.set(n2, 4);
+        rc.setCapacity(ns.get(0), 1);
+        rc.setCapacity(ns.get(1), 4);
 
-        rc.set(vm1, 2);
-        rc.set(vm2, 2);
-        rc.set(vm3, 4);
+        rc.setConsumption(vms.get(0), 2);
+        rc.setConsumption(vms.get(1), 2);
+        rc.setConsumption(vms.get(2), 4);
 
-        cfg.addRunningVM(vm1, n1);
-        cfg.addRunningVM(vm2, n2);
-        cfg.addRunningVM(vm3, n2);
-        cfg.addRunningVM(vm4, n2);
+        cfg.addRunningVM(vms.get(0), ns.get(0));
+        cfg.addRunningVM(vms.get(1), ns.get(1));
+        cfg.addRunningVM(vms.get(2), ns.get(1));
+        cfg.addRunningVM(vms.get(3), ns.get(1));
 
-
-        Model i = new DefaultModel(cfg);
         i.attach(rc);
 
         Overbook o = new Overbook(s, "cpu", 2);
@@ -130,26 +134,30 @@ public class OverbookTest implements PremadeElements {
         ReconfigurationPlan p = new DefaultReconfigurationPlan(i);
         Assert.assertEquals(o.isSatisfied(p), true);
 
-        p.add(new Allocate(vm1, n1, "cpu", 1, 2, 5));
+        p.add(new Allocate(vms.get(0), ns.get(0), "cpu", 1, 2, 5));
         Assert.assertEquals(o.isSatisfied(p), true);
 
-        p.add(new Allocate(vm2, n2, "cpu", 5, 2, 5));
+        p.add(new Allocate(vms.get(1), ns.get(1), "cpu", 5, 2, 5));
         Assert.assertEquals(o.isSatisfied(p), false);
 
-        p.add(new Allocate(vm3, n2, "cpu", 2, 0, 1));
+        p.add(new Allocate(vms.get(2), ns.get(1), "cpu", 2, 0, 1));
         Assert.assertEquals(o.isSatisfied(p), true);
 
-        p.add(new Allocate(vm4, n2, "cpu", 3, 4, 6));
+        p.add(new Allocate(vms.get(3), ns.get(1), "cpu", 3, 4, 6));
         Assert.assertEquals(o.isSatisfied(p), false);
 
-        p.add(new ShutdownVM(vm3, n2, 2, 3));
+        p.add(new ShutdownVM(vms.get(2), ns.get(1), 2, 3));
 
         Assert.assertEquals(o.isSatisfied(p), true);
     }
 
     @Test
     public void testEquals() {
-        Set<UUID> x = new HashSet<>(Arrays.asList(n1, n2));
+
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 10);
+
+        Set<Node> x = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
         Overbook s = new Overbook(x, "foo", 3);
 
         Assert.assertTrue(s.equals(s));
@@ -158,7 +166,7 @@ public class OverbookTest implements PremadeElements {
         Assert.assertEquals(o2.hashCode(), s.hashCode());
         Assert.assertFalse(new Overbook(x, "bar", 3).equals(s));
         Assert.assertFalse(new Overbook(x, "foo", 2).equals(s));
-        x = new HashSet<>(Arrays.asList(n3));
+        x = new HashSet<>(Arrays.asList(ns.get(2)));
         Assert.assertFalse(new Overbook(x, "foo", 3).equals(s));
     }
 }

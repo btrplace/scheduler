@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,29 +17,33 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.view.ShareableResource;
-import btrplace.test.PremadeElements;
+import btrplace.plan.DefaultReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.Action;
+import btrplace.plan.event.Allocate;
+import btrplace.plan.event.AllocateEvent;
+import btrplace.plan.event.MigrateVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Unit tests for {@link Preserve}.
  *
  * @author Fabien Hermenier
  */
-public class PreserveTest implements PremadeElements {
+public class PreserveTest {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2));
+        Model mo = new DefaultModel();
+        Set<VM> vms = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
         Preserve p = new Preserve(vms, "cpu", 3);
         Assert.assertNotNull(p.getChecker());
         Assert.assertEquals(vms, p.getInvolvedVMs());
@@ -55,7 +58,8 @@ public class PreserveTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsAndHashCode() {
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2));
+        Model mo = new DefaultModel();
+        Set<VM> vms = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
         Preserve p = new Preserve(vms, "cpu", 3);
         Preserve p2 = new Preserve(vms, "cpu", 3);
         Assert.assertTrue(p.equals(p));
@@ -63,23 +67,45 @@ public class PreserveTest implements PremadeElements {
         Assert.assertEquals(p2.hashCode(), p.hashCode());
         Assert.assertFalse(new Preserve(vms, "mem", 3).equals(p));
         Assert.assertFalse(new Preserve(vms, "cpu", 2).equals(p));
-        Assert.assertFalse(new Preserve(new HashSet<UUID>(), "cpu", 3).equals(p));
+        Assert.assertFalse(new Preserve(new HashSet<VM>(), "cpu", 3).equals(p));
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testIsSatisfied() {
-        ShareableResource rc = new ShareableResource("cpu");
-        Model m = new DefaultModel(new DefaultMapping());
+        Model m = new DefaultModel();
+        List<VM> vms = Util.newVMs(m, 5);
+        List<Node> ns = Util.newNodes(m, 5);
+
+        ShareableResource rc = new ShareableResource("cpu", 3, 3);
+        Mapping map = m.getMapping();
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addRunningVM(vms.get(0), ns.get(0));
+        map.addSleepingVM(vms.get(1), ns.get(0));
+        map.addRunningVM(vms.get(2), ns.get(0));
         m.attach(rc);
-        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<VM> s = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1), vms.get(2)));
         Preserve p = new Preserve(s, "cpu", 3);
-        rc.set(vm1, 3);
-        rc.set(vm2, 4);
-        rc.set(vm3, 3);
+        rc.setConsumption(vms.get(0), 3);
+        rc.setConsumption(vms.get(1), 1); //Not running so we don't care
+        rc.setConsumption(vms.get(2), 3);
         Assert.assertEquals(true, p.isSatisfied(m));
 
-        rc.unset(vm3); //Set to 3 by default
+        rc.unset(vms.get(2)); //Set to 3 by default
         Assert.assertEquals(true, p.isSatisfied(m));
         Assert.assertEquals(false, new Preserve(s, "mem", 3).isSatisfied(m));
+
+        ReconfigurationPlan plan = new DefaultReconfigurationPlan(m);
+        rc.setConsumption(vms.get(2), 1);
+        Assert.assertFalse(p.isSatisfied(plan));
+        plan.add(new Allocate(vms.get(2), ns.get(0), "cpu", 7, 5, 7));
+        Assert.assertTrue(p.isSatisfied(plan));
+        rc.setConsumption(vms.get(0), 1);
+        AllocateEvent e = new AllocateEvent(vms.get(0), "cpu", 4);
+        Assert.assertFalse(p.isSatisfied(plan));
+        MigrateVM mig = new MigrateVM(vms.get(0), ns.get(0), ns.get(1), 0, 3);
+        mig.addEvent(Action.Hook.post, e);
+        plan.add(mig);
+        Assert.assertTrue(p.isSatisfied(plan));
     }
 }

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,13 +18,15 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.JSONUtils;
+import btrplace.model.VM;
 import btrplace.model.constraint.Split;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * JSON converter for the {@link btrplace.model.constraint.Split} constraint.
@@ -47,7 +48,16 @@ public class SplitConverter extends SatConstraintConverter<Split> {
     @Override
     public Split fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Split(JSONUtils.requiredSets(o, "vms"), JSONUtils.requiredBoolean(o, "continuous"));
+        Set<Collection<VM>> vms = new HashSet<>();
+        Object x = o.get("parts");
+        if (!(x instanceof JSONArray)) {
+            throw new JSONConverterException("Set of identifiers sets expected at key 'parts'");
+        }
+        for (Object obj : (JSONArray) x) {
+            vms.add(vmsFromJSON((JSONArray) obj));
+        }
+
+        return new Split(vms, requiredBoolean(o, "continuous"));
     }
 
     @Override
@@ -56,11 +66,11 @@ public class SplitConverter extends SatConstraintConverter<Split> {
         c.put("id", getJSONId());
 
         JSONArray a = new JSONArray();
-        for (Set<UUID> grp : o.getSets()) {
-            a.add(JSONUtils.toJSON(grp));
+        for (Collection<VM> grp : o.getSets()) {
+            a.add(vmsToJSON(grp));
         }
 
-        c.put("vms", a);
+        c.put("parts", a);
         c.put("continuous", o.isContinuous());
         return c;
     }

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,14 +18,14 @@
 package btrplace.plan.event;
 
 import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.model.view.ShareableResource;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
- * A event to inform a node that a VM
- * it is hosting may have a new resource allocation.
+ * A event to notify a VM
+ * requires a new resource allocation.
  *
  * @author Fabien Hermenier
  */
@@ -34,7 +33,7 @@ public class AllocateEvent implements VMEvent {
 
     private int qty;
 
-    private UUID vm;
+    private VM vm;
 
     private String rc;
 
@@ -42,17 +41,17 @@ public class AllocateEvent implements VMEvent {
      * Make a new event.
      *
      * @param vmId   the VM that is subject to the resource allocation
-     * @param rcId   the resource identifier
+     * @param rc     the resource identifier
      * @param amount the amount of resources to allocate
      */
-    public AllocateEvent(UUID vmId, String rcId, int amount) {
+    public AllocateEvent(VM vmId, String rc, int amount) {
         this.vm = vmId;
-        this.rc = rcId;
+        this.rc = rc;
         this.qty = amount;
     }
 
     @Override
-    public UUID getVM() {
+    public VM getVM() {
         return vm;
     }
 
@@ -80,7 +79,7 @@ public class AllocateEvent implements VMEvent {
         if (r == null) {
             return false;
         }
-        r.set(vm, qty);
+        r.setConsumption(vm, qty);
         return true;
     }
 
@@ -101,7 +100,7 @@ public class AllocateEvent implements VMEvent {
             return true;
         } else if (o.getClass() == this.getClass()) {
             AllocateEvent that = (AllocateEvent) o;
-            return this.vm.equals(that.vm)
+            return this.vm == that.vm
                     && this.rc.equals(that.rc)
                     && this.qty == that.qty;
         }

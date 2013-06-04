@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2012 University of Nice Sophia-Antipolis
+  ~ Copyright (c) 2013 University of Nice Sophia-Antipolis
   ~
   ~ This file is part of btrplace.
-  ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -22,15 +21,15 @@
 
     <groupId>btrplace</groupId>
     <artifactId>solver</artifactId>
-    <version>0.29-SNAPSHOT</version>
+    <version>0.30</version>
     <description>A flexible VM placement algorithm for hosting platforms.</description>
     <packaging>pom</packaging>
+    <url>http://btrp.inria.fr</url>
     <modules>
         <module>choco</module>
         <module>json</module>
         <module>api</module>
         <module>bundle</module>
-        <module>testMaterial</module>
         <module>examples</module>
     </modules>
     <properties>
@@ -47,7 +46,7 @@
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>6.8</version>
+            <version>6.8.5</version>
             <type>jar</type>
             <scope>test</scope>
             <optional>false</optional>
@@ -55,12 +54,12 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.0.7</version>
+            <version>1.0.13</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.2</version>
+            <version>1.7.5</version>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -91,7 +90,7 @@
         <connection>scm:git:git://github.com/fhermeni/btrplace-solver.git</connection>
         <url>scm:git:git@github.com:fhermeni/btrplace-solver</url>
         <developerConnection>scm:git:git@github.com:fhermeni/btrplace-solver.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>btrplace-solver-0.30</tag>
     </scm>
 
     <build>
@@ -136,6 +135,35 @@
                     <!--<quiet />-->
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.14.1</version>
+                <configuration>
+                    <includes>
+                        <include>**/*Test.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.14.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includes>
+                        <include>**/*Integration.java</include>
+                    </includes>
+                </configuration>
+
+            </plugin>
         </plugins>
     </build>
 
@@ -146,11 +174,11 @@
         </repository>
         <repository>
             <id>btrp-releases</id>
-            <url>http://btrp.inria.fr:8080/repos/releases</url>
+            <url>http://btrp.inria.fr/repos/releases</url>
         </repository>
         <repository>
             <id>btrp-snapshots</id>
-            <url>http://btrp.inria.fr:8080/repos/snapshot-releases</url>
+            <url>http://btrp.inria.fr/repos/snapshot-releases</url>
         </repository>
     </repositories>
 </project>

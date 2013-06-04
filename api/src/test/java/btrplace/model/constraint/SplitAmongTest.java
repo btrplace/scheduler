@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,41 +17,40 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Unit tests for {@link SplitAmong}.
  *
  * @author Fabien Hermenier
  */
-public class SplitAmongTest implements PremadeElements {
+public class SplitAmongTest {
 
     @Test
     public void testInstantiation() {
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 5);
+        List<VM> vms = Util.newVMs(mo, 5);
 
-        Set<UUID> vs1 = new HashSet<>(Arrays.asList(vm1, vm2));
-        Set<UUID> vs2 = new HashSet<>(Arrays.asList(vm3, vm4));
+        Collection<VM> vs1 = Arrays.asList(vms.get(0), vms.get(1));
+        Collection<VM> vs2 = Arrays.asList(vms.get(2), vms.get(3));
 
-        Set<Set<UUID>> vGrps = new HashSet<>(Arrays.asList(vs1, vs2));
+        Collection<Collection<VM>> vGrps = Arrays.asList(vs1, vs2);
 
 
-        Set<UUID> ps1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> ps2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(ps1, ps2));
+        Collection<Node> ps1 = Arrays.asList(ns.get(0), ns.get(1));
+        Collection<Node> ps2 = Arrays.asList(ns.get(2), ns.get(3));
+        Collection<Collection<Node>> pGrps = Arrays.asList(ps1, ps2);
 
         SplitAmong sp = new SplitAmong(vGrps, pGrps);
         Assert.assertNotNull(sp.getChecker());
@@ -77,22 +75,25 @@ public class SplitAmongTest implements PremadeElements {
 
     @Test
     public void testEqualsAndHashCode() {
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 5);
+        List<VM> vms = Util.newVMs(mo, 5);
 
-        Set<UUID> vs1 = new HashSet<>(Arrays.asList(vm1, vm2));
-        Set<UUID> vs2 = new HashSet<>(Arrays.asList(vm3, vm4));
-        Set<Set<UUID>> vGrps = new HashSet<>(Arrays.asList(vs1, vs2));
+        Collection<VM> vs1 = Arrays.asList(vms.get(0), vms.get(1));
+        Collection<VM> vs2 = Arrays.asList(vms.get(2), vms.get(3));
+        Collection<Collection<VM>> vGrps = Arrays.asList(vs1, vs2);
 
 
-        Set<UUID> ps1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> ps2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(ps1, ps2));
+        Collection<Node> ps1 = Arrays.asList(ns.get(0), ns.get(1));
+        Collection<Node> ps2 = Arrays.asList(ns.get(2), ns.get(3));
+        Collection<Collection<Node>> pGrps = Arrays.asList(ps1, ps2);
 
         SplitAmong sp = new SplitAmong(vGrps, pGrps);
         Assert.assertTrue(sp.equals(sp));
         Assert.assertTrue(sp.equals(new SplitAmong(vGrps, pGrps)));
         Assert.assertEquals(sp.hashCode(), new SplitAmong(vGrps, pGrps).hashCode());
-        Assert.assertFalse(sp.equals(new SplitAmong(new HashSet<Set<UUID>>(), pGrps)));
-        Assert.assertFalse(sp.equals(new SplitAmong(vGrps, new HashSet<Set<UUID>>())));
+        Assert.assertFalse(sp.equals(new SplitAmong(Collections.<Collection<VM>>emptyList(), pGrps)));
+        Assert.assertFalse(sp.equals(new SplitAmong(vGrps, Collections.<Collection<Node>>emptyList())));
 
         SplitAmong sp2 = new SplitAmong(vGrps, pGrps);
         sp2.setContinuous(true);
@@ -102,75 +103,79 @@ public class SplitAmongTest implements PremadeElements {
     @Test
     public void testDiscreteIsSatisfied() {
 
-        Set<UUID> vs1 = new HashSet<>(Arrays.asList(vm1, vm2));
-        Set<UUID> vs2 = new HashSet<>(Arrays.asList(vm3, vm4));
-        Set<Set<UUID>> vGrps = new HashSet<>(Arrays.asList(vs1, vs2));
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 5);
+        List<VM> vms = Util.newVMs(mo, 5);
+
+        Collection<VM> vs1 = Arrays.asList(vms.get(0), vms.get(1));
+        Collection<VM> vs2 = Arrays.asList(vms.get(2), vms.get(3));
+        Collection<Collection<VM>> vGrps = Arrays.asList(vs1, vs2);
 
 
-        Set<UUID> ps1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> ps2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(ps1, ps2));
+        Collection<Node> ps1 = Arrays.asList(ns.get(0), ns.get(1));
+        Collection<Node> ps2 = Arrays.asList(ns.get(2), ns.get(3));
+        Collection<Collection<Node>> pGrps = Arrays.asList(ps1, ps2);
 
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOnlineNode(n4);
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addOnlineNode(ns.get(2));
+        map.addOnlineNode(ns.get(3));
 
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n3);
-        map.addRunningVM(vm4, n4);
-
-        Model mo = new DefaultModel(map);
+        map.addRunningVM(vms.get(0), ns.get(0));
+        map.addRunningVM(vms.get(1), ns.get(0));
+        map.addRunningVM(vms.get(2), ns.get(2));
+        map.addRunningVM(vms.get(3), ns.get(3));
 
         SplitAmong sp = new SplitAmong(vGrps, pGrps);
         Assert.assertEquals(sp.isSatisfied(mo), true);
 
         //Spread over multiple groups, not allowed
-        map.addRunningVM(vm2, n3);
+        map.addRunningVM(vms.get(1), ns.get(2));
         Assert.assertEquals(sp.isSatisfied(mo), false);
         //pGroup co-location. Not allowed
-        map.addRunningVM(vm1, n3);
-        map.addRunningVM(vm3, n4);
+        map.addRunningVM(vms.get(0), ns.get(2));
+        map.addRunningVM(vms.get(2), ns.get(3));
         Assert.assertEquals(sp.isSatisfied(mo), false);
     }
 
     @Test
     public void testContinuousIsSatisfied() {
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 5);
+        List<VM> vms = Util.newVMs(mo, 5);
 
-        Set<UUID> vs1 = new HashSet<>(Arrays.asList(vm1, vm2));
-        Set<UUID> vs2 = new HashSet<>(Arrays.asList(vm3, vm4));
-        Set<Set<UUID>> vGrps = new HashSet<>(Arrays.asList(vs1, vs2));
+
+        Collection<VM> vs1 = Arrays.asList(vms.get(0), vms.get(1));
+        Collection<VM> vs2 = Arrays.asList(vms.get(2), vms.get(3));
+        Collection<Collection<VM>> vGrps = Arrays.asList(vs1, vs2);
 
 
-        Set<UUID> ps1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> ps2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(ps1, ps2));
+        Collection<Node> ps1 = Arrays.asList(ns.get(0), ns.get(1));
+        Collection<Node> ps2 = Arrays.asList(ns.get(2), ns.get(3));
+        Collection<Collection<Node>> pGrps = Arrays.asList(ps1, ps2);
 
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOnlineNode(n4);
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addOnlineNode(ns.get(2));
+        map.addOnlineNode(ns.get(3));
 
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n3);
-        map.addRunningVM(vm4, n4);
+        map.addRunningVM(vms.get(0), ns.get(0));
+        map.addRunningVM(vms.get(1), ns.get(0));
+        map.addRunningVM(vms.get(2), ns.get(2));
+        map.addRunningVM(vms.get(3), ns.get(3));
 
-        Model mo = new DefaultModel(map);
-
-        SplitAmong sp = new SplitAmong(vGrps, pGrps);
+        SplitAmong sp = new SplitAmong(vGrps, pGrps, true);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(sp.isSatisfied(plan), true);
 
-        plan.add(new MigrateVM(vm1, n1, n2, 3, 4));
+        plan.add(new MigrateVM(vms.get(0), ns.get(0), ns.get(1), 3, 4));
         Assert.assertEquals(sp.isSatisfied(plan), true);
 
-        map.addRunningVM(vm5, n4);
+        map.addRunningVM(vms.get(4), ns.get(3));
         Assert.assertEquals(sp.isSatisfied(plan), true);
-        plan.add(new MigrateVM(vm2, n1, n3, 0, 2));
+        plan.add(new MigrateVM(vms.get(1), ns.get(0), ns.get(2), 0, 2));
         Assert.assertEquals(sp.isSatisfied(plan), false);
 
 

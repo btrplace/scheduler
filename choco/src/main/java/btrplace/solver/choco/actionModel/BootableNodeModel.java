@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,6 +17,7 @@
 
 package btrplace.solver.choco.actionModel;
 
+import btrplace.model.Node;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootNode;
 import btrplace.solver.SolverException;
@@ -28,12 +28,11 @@ import choco.cp.solver.constraints.integer.ElementV;
 import choco.cp.solver.constraints.integer.TimesXYZ;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.UUID;
 
 /**
  * Model an action that allows a node to be booted if necessary.
  * The model must provide an estimation of the action duration through a
- * {@link btrplace.solver.choco.durationEvaluator.DurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.durationEvaluator.ActionDurationEvaluator} accessible from
  * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code BootNode.class}
  * <p/>
  * The action is modeled as follow:
@@ -67,14 +66,6 @@ import java.util.UUID;
  * <li>{@code T} = { {@code 0}, {@link btrplace.solver.choco.ReconfigurationProblem#getEnd()} }; {@link #getHostingEnd()} = T[{@link #getState()}]</li>
  * </ul>
  * </li>
- * <li>
- * The moment the node is powered up and down equals the moment the action starts and the moment it can not host VMs.
- * If the node is not powered up, these duration equals then 0
- * <ul>
- * <li>{@link #getPoweringStart()} = {@link #getStart()}</li>
- * <li>{@link #getPoweringEnd()} = {@link #getHostingEnd()}</li>
- * </ul>
- * </li>
  * </ul>
  * <p/>
  * If the reconfiguration problem has a solution, a {@link btrplace.plan.event.BootNode} action
@@ -96,7 +87,7 @@ public class BootableNodeModel implements NodeActionModel {
 
     private IntDomainVar effectiveDuration;
 
-    private UUID node;
+    private Node node;
 
     /**
      * Make a new model.
@@ -105,10 +96,10 @@ public class BootableNodeModel implements NodeActionModel {
      * @param nId the node managed by the action
      * @throws SolverException if an error occurred
      */
-    public BootableNodeModel(ReconfigurationProblem rp, UUID nId) throws SolverException {
+    public BootableNodeModel(ReconfigurationProblem rp, Node nId) throws SolverException {
         node = nId;
 
-        int d = rp.getDurationEvaluators().evaluate(BootNode.class, nId);
+        int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), BootNode.class, nId);
         CPSolver s = rp.getSolver();
 
         /*
@@ -177,7 +168,7 @@ public class BootableNodeModel implements NodeActionModel {
     }
 
     @Override
-    public UUID getNode() {
+    public Node getNode() {
         return node;
     }
 
@@ -198,16 +189,6 @@ public class BootableNodeModel implements NodeActionModel {
 
     @Override
     public IntDomainVar getHostingEnd() {
-        return hostingEnd;
-    }
-
-    @Override
-    public IntDomainVar getPoweringStart() {
-        return start;
-    }
-
-    @Override
-    public IntDomainVar getPoweringEnd() {
         return hostingEnd;
     }
 }

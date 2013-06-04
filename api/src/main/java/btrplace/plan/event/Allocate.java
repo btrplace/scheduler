@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,49 +18,50 @@
 package btrplace.plan.event;
 
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
- * An action to indicate the amount of resource of a given type
+ * An action to indicate the amount of resources of a given type
  * to allocate to a VM.
  *
  * @author Fabien Hermenier
  */
 public class Allocate extends Action implements VMEvent {
 
-    private UUID node;
+    private Node node;
 
     private AllocateEvent ev;
 
     /**
      * Make a new constraint.
      *
-     * @param vm     the VM identifier
-     * @param host   the identifier of the node hosting the VM
-     * @param rcId   the resource identifier
+     * @param vm     the VM
+     * @param on     the node hosting the VM
+     * @param rc     the resource identifier
      * @param amount the minimum amount of resource to allocate
-     * @param st     the moment the action starts
-     * @param ed     the moment the action ends
+     * @param start  the moment the action starts
+     * @param end    the moment the action ends
      */
-    public Allocate(UUID vm, UUID host, String rcId, int amount, int st, int ed) {
-        super(st, ed);
-        ev = new AllocateEvent(vm, rcId, amount);
-        this.node = host;
+    public Allocate(VM vm, Node on, String rc, int amount, int start, int end) {
+        super(start, end);
+        ev = new AllocateEvent(vm, rc, amount);
+        this.node = on;
     }
 
     /**
      * Get the node that is currently hosting the VM.
      *
-     * @return the node identifier
+     * @return the node
      */
-    public UUID getHost() {
+    public Node getHost() {
         return node;
     }
 
     @Override
-    public UUID getVM() {
+    public VM getVM() {
         return ev.getVM();
     }
 

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +19,8 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Split;
 import btrplace.solver.SolverException;
@@ -55,11 +56,11 @@ public class CSplit implements ChocoSatConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
         List<List<IntDomainVar>> groups = new ArrayList<>();
-        List<List<UUID>> vmGroups = new ArrayList<>();
-        for (Set<UUID> grp : cstr.getSets()) {
+        List<List<VM>> vmGroups = new ArrayList<>();
+        for (Collection<VM> grp : cstr.getSets()) {
             List<IntDomainVar> l = new ArrayList<>();
-            List<UUID> vl = new ArrayList<>();
-            for (UUID vm : grp) {
+            List<VM> vl = new ArrayList<>();
+            for (VM vm : grp) {
                 if (rp.getFutureRunningVMs().contains(vm)) {
                     Slice s = rp.getVMAction(vm).getDSlice();
                     l.add(s.getHoster());
@@ -111,8 +112,8 @@ public class CSplit implements ChocoSatConstraint {
 
                 //Fulfill the others stuff.
                 for (int i = 0; i < vmGroups.size(); i++) {
-                    List<UUID> grp = vmGroups.get(i);
-                    for (UUID vm : grp) {
+                    List<VM> grp = vmGroups.get(i);
+                    for (VM vm : grp) {
                         if (map.getRunningVMs().contains(vm)) {
                             int myPos = rp.getNode(map.getVMLocation(vm));
                             IntDomainVar myEnd = rp.getVMAction(vm).getCSlice().getEnd();
@@ -135,8 +136,8 @@ public class CSplit implements ChocoSatConstraint {
 
                 //Now, we just have to put way too many precedences constraint, one per VM.
                 for (int i = 0; i < vmGroups.size(); i++) {
-                    List<UUID> grp = vmGroups.get(i);
-                    for (UUID vm : grp) {
+                    List<VM> grp = vmGroups.get(i);
+                    for (VM vm : grp) {
                         if (rp.getFutureRunningVMs().contains(vm)) {
                             VMActionModel a = rp.getVMAction(vm);
                             IntDomainVar myPos = a.getDSlice().getHoster();
@@ -151,17 +152,17 @@ public class CSplit implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-        List<Set<UUID>> groups = new ArrayList<>(cstr.getSets());
+        List<Collection<VM>> groups = new ArrayList<>(cstr.getSets());
         //Bad contains the VMs on nodes that host VMs from different groups.
-        Set<UUID> bad = new HashSet<>();
-        for (Set<UUID> grp : groups) {
-            for (UUID vm : grp) {
+        Set<VM> bad = new HashSet<>();
+        for (Collection<VM> grp : groups) {
+            for (VM vm : grp) {
                 if (map.getRunningVMs().contains(vm)) {
-                    UUID n = map.getVMLocation(vm);
-                    Set<UUID> allOnN = map.getRunningVMs(n);
-                    for (UUID vmOnN : allOnN) {
+                    Node n = map.getVMLocation(vm);
+                    Set<VM> allOnN = map.getRunningVMs(n);
+                    for (VM vmOnN : allOnN) {
                         if (inOtherGroup(groups, grp, vmOnN)) {
                             //The VM belong to another group
                             bad.add(vm);
@@ -174,8 +175,8 @@ public class CSplit implements ChocoSatConstraint {
         return bad;
     }
 
-    private boolean inOtherGroup(List<Set<UUID>> groups, Set<UUID> grp, UUID vmOnN) {
-        for (Set<UUID> s : groups) {
+    private boolean inOtherGroup(List<Collection<VM>> groups, Collection<VM> grp, VM vmOnN) {
+        for (Collection<VM> s : groups) {
             if (s.contains(vmOnN) && !grp.contains(vmOnN)) {
                 return true;
             }

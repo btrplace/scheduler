@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +17,7 @@
 
 package btrplace.plan.event;
 
-import java.util.UUID;
+import btrplace.model.VM;
 
 /**
  * A event to apply on a VM.
@@ -32,5 +31,5 @@ public interface VMEvent extends Event {
      *
      * @return the VM identifier
      */
-    UUID getVM();
+    VM getVM();
 }

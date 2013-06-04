@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,14 +17,12 @@
 
 package btrplace.plan.event;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.view.ShareableResource;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -35,14 +32,17 @@ import static org.mockito.Mockito.verify;
  *
  * @author Fabien Hermenier
  */
-public class AllocateEventTest implements PremadeElements {
+public class AllocateEventTest {
 
-    static AllocateEvent a = new AllocateEvent(vm1, "foo", 3);
+    static Model mo = new DefaultModel();
+    static List<Node> ns = Util.newNodes(mo, 10);
+    static List<VM> vms = Util.newVMs(mo, 10);
+    static AllocateEvent a = new AllocateEvent(vms.get(0), "foo", 3);
 
     @Test
     public void testBasics() {
-        AllocateEvent na = new AllocateEvent(vm1, "foo", 3);
-        Assert.assertEquals(vm1, na.getVM());
+        AllocateEvent na = new AllocateEvent(vms.get(0), "foo", 3);
+        Assert.assertEquals(vms.get(0), na.getVM());
         Assert.assertEquals("foo", na.getResourceId());
         Assert.assertEquals(3, na.getAmount());
         Assert.assertFalse(na.toString().contains("null"));
@@ -51,30 +51,30 @@ public class AllocateEventTest implements PremadeElements {
 
     @Test
     public void testEqualsHashCode() {
-        AllocateEvent na = new AllocateEvent(vm1, "foo", 3);
-        AllocateEvent na2 = new AllocateEvent(vm1, "foo", 3);
+        AllocateEvent na = new AllocateEvent(vms.get(0), "foo", 3);
+        AllocateEvent na2 = new AllocateEvent(vms.get(0), "foo", 3);
         Assert.assertFalse(na.equals(new Object()));
         Assert.assertTrue(na.equals(na));
         Assert.assertTrue(na.equals(na2));
         Assert.assertTrue(na2.equals(na));
         Assert.assertEquals(na.hashCode(), na2.hashCode());
-        Assert.assertFalse(na.equals(new AllocateEvent(vm2, "foo", 3)));
-        Assert.assertFalse(na.equals(new AllocateEvent(vm1, "bar", 3)));
-        Assert.assertFalse(na.equals(new AllocateEvent(vm1, "foo", 5)));
+        Assert.assertFalse(na.equals(new AllocateEvent(vms.get(1), "foo", 3)));
+        Assert.assertFalse(na.equals(new AllocateEvent(vms.get(0), "bar", 3)));
+        Assert.assertFalse(na.equals(new AllocateEvent(vms.get(0), "foo", 5)));
     }
 
     @Test
     public void testApply() {
-        AllocateEvent na = new AllocateEvent(vm1, "foo", 3);
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addRunningVM(vm1, n1);
-        Model mo = new DefaultModel(map);
+        AllocateEvent na = new AllocateEvent(vms.get(0), "foo", 3);
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(ns.get(0));
+        map.addRunningVM(vms.get(0), ns.get(0));
         Assert.assertFalse(na.apply(mo));
         ShareableResource rc = new ShareableResource("foo");
         mo.attach(rc);
         Assert.assertTrue(na.apply(mo));
-        Assert.assertEquals(3, rc.get(vm1));
+        Assert.assertEquals(3, rc.getConsumption(vms.get(0)));
     }
 
     @Test

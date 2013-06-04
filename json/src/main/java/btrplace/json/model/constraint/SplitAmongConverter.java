@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,13 +18,16 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.JSONUtils;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.SplitAmong;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * JSON converter for the {@link SplitAmong} constraint.
@@ -47,9 +49,26 @@ public class SplitAmongConverter extends SatConstraintConverter<SplitAmong> {
     @Override
     public SplitAmong fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new SplitAmong(JSONUtils.requiredSets(o, "vms"),
-                JSONUtils.requiredSets(o, "nodes"),
-                JSONUtils.requiredBoolean(o, "continuous"));
+
+        Set<Collection<Node>> nodes = new HashSet<>();
+        Object x = o.get("pParts");
+        if (!(x instanceof JSONArray)) {
+            throw new JSONConverterException("Set of ints sets expected at key 'vParts'");
+        }
+        for (Object obj : (JSONArray) x) {
+            nodes.add(nodesFromJSON((JSONArray) obj));
+        }
+
+        Set<Collection<VM>> vms = new HashSet<>();
+        x = o.get("vParts");
+        if (!(x instanceof JSONArray)) {
+            throw new JSONConverterException("Set of ints sets expected at key 'vParts'");
+        }
+        for (Object obj : (JSONArray) x) {
+            vms.add(vmsFromJSON((JSONArray) obj));
+        }
+
+        return new SplitAmong(vms, nodes, requiredBoolean(o, "continuous"));
     }
 
     @Override
@@ -58,17 +77,17 @@ public class SplitAmongConverter extends SatConstraintConverter<SplitAmong> {
         c.put("id", getJSONId());
 
         JSONArray vGroups = new JSONArray();
-        for (Set<UUID> grp : o.getGroupsOfVMs()) {
-            vGroups.add(JSONUtils.toJSON(grp));
+        for (Collection<VM> grp : o.getGroupsOfVMs()) {
+            vGroups.add(vmsToJSON(grp));
         }
 
         JSONArray pGroups = new JSONArray();
-        for (Set<UUID> grp : o.getGroupsOfNodes()) {
-            pGroups.add(JSONUtils.toJSON(grp));
+        for (Collection<Node> grp : o.getGroupsOfNodes()) {
+            pGroups.add(nodesToJSON(grp));
         }
 
-        c.put("vms", vGroups);
-        c.put("nodes", pGroups);
+        c.put("vParts", vGroups);
+        c.put("pParts", pGroups);
         c.put("continuous", o.isContinuous());
         return c;
     }

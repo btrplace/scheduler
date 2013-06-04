@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,6 +17,8 @@
 
 package btrplace.solver.choco.actionModel;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ResumeVM;
 import btrplace.solver.SolverException;
@@ -28,12 +29,11 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.UUID;
 
 /**
  * Model an action that resume a sleeping VM.
  * The model must provide an estimation of the action duration through a
- * {@link btrplace.solver.choco.durationEvaluator.DurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.durationEvaluator.ActionDurationEvaluator} accessible from
  * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code ResumeVM.class}
  * <p/>
  * If the reconfiguration problem has a solution, a {@link btrplace.plan.event.ResumeVM} action
@@ -43,7 +43,7 @@ import java.util.UUID;
  */
 public class ResumeVMModel implements VMActionModel {
 
-    private UUID vm;
+    private VM vm;
 
     private ReconfigurationProblem rp;
 
@@ -64,11 +64,11 @@ public class ResumeVMModel implements VMActionModel {
      * @param e  the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public ResumeVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
+    public ResumeVMModel(ReconfigurationProblem rp, VM e) throws SolverException {
         this.rp = rp;
         this.vm = e;
 
-        int d = rp.getDurationEvaluators().evaluate(ResumeVM.class, e);
+        int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), ResumeVM.class, e);
 
         start = rp.makeDuration(rp.getEnd().getSup() - d, 0, "resumeVM(", e, ").start");
         end = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel("resumeVM(", e, ").end"), start, d);
@@ -86,15 +86,15 @@ public class ResumeVMModel implements VMActionModel {
     public boolean insertActions(ReconfigurationPlan plan) {
         int ed = end.getVal();
         int st = start.getVal();
-        UUID src = rp.getSourceModel().getMapping().getVMLocation(vm);
-        UUID dst = rp.getNode(dSlice.getHoster().getVal());
+        Node src = rp.getSourceModel().getMapping().getVMLocation(vm);
+        Node dst = rp.getNode(dSlice.getHoster().getVal());
         ResumeVM a = new ResumeVM(vm, src, dst, st, ed);
         plan.add(a);
         return true;
     }
 
     @Override
-    public UUID getVM() {
+    public VM getVM() {
         return vm;
     }
 

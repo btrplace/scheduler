@@ -19,13 +19,13 @@
 package btrplace.solver.choco.actionModel;
 
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.solver.choco.actionModel.ActionModelVisitor;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
  * Model an action.
  *
  * @author Fabien Hermenier
+ * @see {@link ActionModelUtils} a utility class to extract components of ActionModels.
  */
 public interface ActionModel {
 

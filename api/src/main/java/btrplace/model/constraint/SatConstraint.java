@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,6 +18,8 @@
 package btrplace.model.constraint;
 
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlanChecker;
@@ -26,7 +27,6 @@ import btrplace.plan.ReconfigurationPlanCheckerException;
 
 import java.util.Collection;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * Abstract class to characterize a satisfaction-oriented constraint
@@ -48,12 +48,12 @@ public abstract class SatConstraint {
     /**
      * The virtual machines involved in the constraint.
      */
-    private Collection<UUID> vms;
+    private Collection<VM> vms;
 
     /**
      * The nodes involved in the constraint.
      */
-    private Collection<UUID> nodes;
+    private Collection<Node> nodes;
 
     /**
      * Make a new constraint.
@@ -62,7 +62,7 @@ public abstract class SatConstraint {
      * @param nodes the involved nodes
      * @param c     {@code true} to indicate a continuous restriction
      */
-    public SatConstraint(Collection<UUID> vms, Collection<UUID> nodes, boolean c) {
+    public SatConstraint(Collection<VM> vms, Collection<Node> nodes, boolean c) {
         this.vms = vms;
         this.nodes = nodes;
         this.continuous = c;
@@ -73,7 +73,7 @@ public abstract class SatConstraint {
      *
      * @return a set of VM identifiers that may be empty
      */
-    public Collection<UUID> getInvolvedVMs() {
+    public Collection<VM> getInvolvedVMs() {
         return this.vms;
     }
 
@@ -82,7 +82,7 @@ public abstract class SatConstraint {
      *
      * @return a set of nodes identifiers that may be empty
      */
-    public Collection<UUID> getInvolvedNodes() {
+    public Collection<Node> getInvolvedNodes() {
         return this.nodes;
     }
 
@@ -100,7 +100,6 @@ public abstract class SatConstraint {
     /**
      * Check if a plan satisfies the constraint.
      * This method is only considered when the constraint provides a continuous restriction.
-     * By default, the method checks that the result model satisfies the constraint
      *
      * @param p the plan to inspect
      * @return {@code true} iff the plan satisfies the constraint
@@ -135,8 +134,7 @@ public abstract class SatConstraint {
     }
 
     /**
-     * Indicates if the restriction provided by the constraint has to be
-     * continuous if it is possible.
+     * Indicates if the restriction provided by the constraint is continuous.
      *
      * @param b {@code true} to ask for a continuous satisfaction, {@code false} for a discrete satisfaction.
      * @return {@code true} iff the parameter has been considered
@@ -147,7 +145,7 @@ public abstract class SatConstraint {
     }
 
     /**
-     * Check if the restriction provided by the constraint be continuous.
+     * Check if the restriction provided by the constraint is continuous.
      *
      * @return {@code true} for a continuous restriction
      */

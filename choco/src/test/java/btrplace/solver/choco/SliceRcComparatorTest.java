@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,11 +17,17 @@
 
 package btrplace.solver.choco;
 
+import btrplace.model.DefaultModel;
+import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.model.view.ShareableResource;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Unit tests for {@link SliceRcComparator}.
@@ -34,11 +39,10 @@ public class SliceRcComparatorTest {
     private static Random rnd = new Random();
 
     private static List<Slice> makeSlices() {
-
+        Model mo = new DefaultModel();
         List<Slice> l = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
-            UUID u = new UUID(0, i);
-            l.add(new Slice(u, null, null, null, null));
+            l.add(new Slice(mo.newVM(), null, null, null, null));
         }
         return l;
     }
@@ -48,14 +52,14 @@ public class SliceRcComparatorTest {
         List<Slice> l = makeSlices();
         ShareableResource rc = new ShareableResource("cpu");
         for (Slice s : l) {
-            rc.set(s.getSubject(), rnd.nextInt(10));
+            rc.setConsumption(s.getSubject(), rnd.nextInt(10));
         }
         SliceRcComparator cmp = new SliceRcComparator(rc, true);
         Collections.sort(l, cmp);
         for (int i = 0; i < l.size() - 1; i++) {
-            UUID u1 = l.get(i).getSubject();
-            UUID u2 = l.get(i + 1).getSubject();
-            Assert.assertTrue(rc.get(u1) <= rc.get(u2));
+            VM u1 = l.get(i).getSubject();
+            VM u2 = l.get(i + 1).getSubject();
+            Assert.assertTrue(rc.getConsumption(u1) <= rc.getConsumption(u2));
         }
     }
 
@@ -64,14 +68,14 @@ public class SliceRcComparatorTest {
         List<Slice> l = makeSlices();
         ShareableResource rc = new ShareableResource("cpu");
         for (Slice s : l) {
-            rc.set(s.getSubject(), rnd.nextInt(10));
+            rc.setConsumption(s.getSubject(), rnd.nextInt(10));
         }
         SliceRcComparator cmp = new SliceRcComparator(rc, false);
         Collections.sort(l, cmp);
         for (int i = 0; i < l.size() - 1; i++) {
-            UUID u1 = l.get(i).getSubject();
-            UUID u2 = l.get(i + 1).getSubject();
-            Assert.assertTrue(rc.get(u1) >= rc.get(u2));
+            VM u1 = l.get(i).getSubject();
+            VM u2 = l.get(i + 1).getSubject();
+            Assert.assertTrue(rc.getConsumption(u1) >= rc.getConsumption(u2));
         }
     }
 }

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,13 +17,15 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.model.constraint.checker.SplitAmongChecker;
 
 import java.util.*;
 
 /**
- * A constraint to force sets of VMs inside to be hosted on distinct set of servers.
+ * A constraint to force sets of running VMs to be hosted on distinct set of nodes.
  * VMs inside a same set may still be collocated.
  * <p/>
  * The set of VMs must be disjoint so must be the set of servers.
@@ -43,50 +44,60 @@ public class SplitAmong extends SatConstraint {
     /**
      * Set of set of vms.
      */
-    private Set<Set<UUID>> vGrps;
+    private Collection<Collection<VM>> vGrps;
 
     /**
      * Set of set of nodes.
      */
-    private Set<Set<UUID>> pGrps;
+    private Collection<Collection<Node>> pGrps;
 
     /**
      * Make a new constraint having a discrete restriction.
      *
-     * @param vGrps the set of set of VMs. Sets of VMs must be disjoint
-     * @param pGrps the set of set of nodes. Sets of nodes must be disjoint
+     * @param vParts the disjoint sets of VMs
+     * @param pParts the disjoint sets of nodes.
      */
-    public SplitAmong(Set<Set<UUID>> vGrps, Set<Set<UUID>> pGrps) {
-        this(vGrps, pGrps, false);
+    public SplitAmong(Collection<Collection<VM>> vParts, Collection<Collection<Node>> pParts) {
+        this(vParts, pParts, false);
     }
 
 
     /**
      * Make a new constraint.
      *
-     * @param vGrps      the set of set of VMs. Sets of VMs must be disjoint
-     * @param pGrps      the set of set of nodes. Sets of nodes must be disjoint
+     * @param vParts     the disjoint sets of VMs
+     * @param pParts     the disjoint sets of nodes.
      * @param continuous {@code true} for a continuous restriction
      */
-    public SplitAmong(Set<Set<UUID>> vGrps, Set<Set<UUID>> pGrps, boolean continuous) {
+    public SplitAmong(Collection<Collection<VM>> vParts, Collection<Collection<Node>> pParts, boolean continuous) {
         super(null, null, continuous);
-        this.vGrps = vGrps;
-        this.pGrps = pGrps;
+        int cnt = 0;
+        Set<Node> all = new HashSet<>();
+        for (Collection<Node> s : pParts) {
+            cnt += s.size();
+            all.addAll(s);
+            if (cnt != all.size()) {
+                throw new IllegalArgumentException("The constraint expects disjoint sets of nodes");
+            }
+        }
+
+        this.vGrps = vParts;
+        this.pGrps = pParts;
     }
 
     @Override
-    public Collection<UUID> getInvolvedVMs() {
-        Set<UUID> s = new HashSet<>();
-        for (Set<UUID> x : vGrps) {
+    public Set<VM> getInvolvedVMs() {
+        Set<VM> s = new HashSet<>();
+        for (Collection<VM> x : vGrps) {
             s.addAll(x);
         }
         return s;
     }
 
     @Override
-    public Collection<UUID> getInvolvedNodes() {
-        Set<UUID> s = new HashSet<>();
-        for (Set<UUID> x : pGrps) {
+    public Set<Node> getInvolvedNodes() {
+        Set<Node> s = new HashSet<>();
+        for (Collection<Node> x : pGrps) {
             s.addAll(x);
         }
         return s;
@@ -97,7 +108,7 @@ public class SplitAmong extends SatConstraint {
      *
      * @return the groups
      */
-    public Set<Set<UUID>> getGroupsOfVMs() {
+    public Collection<Collection<VM>> getGroupsOfVMs() {
         return vGrps;
     }
 
@@ -106,7 +117,7 @@ public class SplitAmong extends SatConstraint {
      *
      * @return the groups
      */
-    public Set<Set<UUID>> getGroupsOfNodes() {
+    public Collection<Collection<Node>> getGroupsOfNodes() {
         return pGrps;
     }
 
@@ -116,8 +127,8 @@ public class SplitAmong extends SatConstraint {
      * @param u the node
      * @return the associated group of nodes if exists, {@code null} otherwise
      */
-    public Set<UUID> getAssociatedPGroup(UUID u) {
-        for (Set<UUID> pGrp : pGrps) {
+    public Collection<Node> getAssociatedPGroup(Node u) {
+        for (Collection<Node> pGrp : pGrps) {
             if (pGrp.contains(u)) {
                 return pGrp;
             }
@@ -131,8 +142,8 @@ public class SplitAmong extends SatConstraint {
      * @param u the VM
      * @return the associated group of VMs if exists, {@code null} otherwise
      */
-    public Set<UUID> getAssociatedVGroup(UUID u) {
-        for (Set<UUID> vGrp : vGrps) {
+    public Collection<VM> getAssociatedVGroup(VM u) {
+        for (Collection<VM> vGrp : vGrps) {
             if (vGrp.contains(u)) {
                 return vGrp;
             }
@@ -163,14 +174,14 @@ public class SplitAmong extends SatConstraint {
     public String toString() {
         StringBuilder b = new StringBuilder("splitAmong(");
         b.append("vms=[");
-        for (Iterator<Set<UUID>> ite = vGrps.iterator(); ite.hasNext(); ) {
+        for (Iterator<Collection<VM>> ite = vGrps.iterator(); ite.hasNext(); ) {
             b.append(ite.next());
             if (ite.hasNext()) {
                 b.append(", ");
             }
         }
         b.append("], nodes=[");
-        for (Iterator<Set<UUID>> ite = pGrps.iterator(); ite.hasNext(); ) {
+        for (Iterator<Collection<Node>> ite = pGrps.iterator(); ite.hasNext(); ) {
             b.append(ite.next());
             if (ite.hasNext()) {
                 b.append(", ");

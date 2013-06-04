@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,21 +17,24 @@
 
 package btrplace.json.model.view;
 
-import btrplace.json.JSONConverter;
+import btrplace.json.AbstractJSONObjectConverter;
+import btrplace.json.JSONArrayConverter;
 import btrplace.json.JSONConverterException;
 import btrplace.model.view.ModelView;
+import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import net.minidev.json.parser.ParseException;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
 
 /**
  * Extensible converter for {@link btrplace.model.view.ModelView}.
  *
  * @author Fabien Hermenier
  */
-public class ModelViewsConverter implements JSONConverter<ModelView> {
+public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> implements JSONArrayConverter<ModelView> {
 
     private Map<Class<? extends ModelView>, ModelViewConverter<? extends ModelView>> java2json;
     private Map<String, ModelViewConverter<? extends ModelView>> json2java;
@@ -89,6 +91,7 @@ public class ModelViewsConverter implements JSONConverter<ModelView> {
         if (c == null) {
             throw new JSONConverterException("No converter available for a view having id '" + id + "'");
         }
+        c.setModel(getModel());
         return c.fromJSON(in);
     }
 
@@ -100,4 +103,73 @@ public class ModelViewsConverter implements JSONConverter<ModelView> {
         }
         return c.toJSON(o);
     }
+
+    @Override
+    public List<ModelView> listFromJSON(JSONArray in) throws JSONConverterException {
+        List<ModelView> l = new ArrayList<>(in.size());
+        for (Object o : in) {
+            if (!(o instanceof JSONObject)) {
+                throw new JSONConverterException("Expected an array of JSONObject but got an array of " + o.getClass().getName());
+            }
+            l.add(fromJSON((JSONObject) o));
+        }
+        return l;
+    }
+
+    @Override
+    public JSONArray toJSON(Collection<ModelView> e) throws JSONConverterException {
+        JSONArray arr = new JSONArray();
+        for (ModelView cstr : e) {
+            arr.add(toJSON(cstr));
+        }
+        return arr;
+    }
+
+    @Override
+    public List<ModelView> listFromJSON(File path) throws IOException, JSONConverterException {
+        try (BufferedReader in = new BufferedReader(new FileReader(path))) {
+            return listFromJSON(in);
+        }
+
+    }
+
+    @Override
+    public List<ModelView> listFromJSON(String buf) throws IOException, JSONConverterException {
+        try (StringReader in = new StringReader(buf)) {
+            return listFromJSON(in);
+        }
+    }
+
+    @Override
+    public List<ModelView> listFromJSON(Reader r) throws IOException, JSONConverterException {
+        try {
+            JSONParser p = new JSONParser(JSONParser.MODE_RFC4627);
+            Object o = p.parse(r);
+            if (!(o instanceof JSONArray)) {
+                throw new JSONConverterException("Unable to parse a JSONArray");
+            }
+            return listFromJSON((JSONArray) o);
+        } catch (ParseException ex) {
+            throw new JSONConverterException(ex);
+        }
+    }
+
+    @Override
+    public String toJSONString(Collection<ModelView> o) throws JSONConverterException {
+        return toJSON(o).toJSONString();
+    }
+
+    @Override
+    public void toJSON(Collection<ModelView> e, Appendable w) throws JSONConverterException, IOException {
+        toJSON(e).writeJSONString(w);
+    }
+
+    @Override
+    public void toJSON(Collection<ModelView> e, File path) throws JSONConverterException, IOException {
+        try (FileWriter out = new FileWriter(path)) {
+            toJSON(e, out);
+        }
+    }
+
+
 }

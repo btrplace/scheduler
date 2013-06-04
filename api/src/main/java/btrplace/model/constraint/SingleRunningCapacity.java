@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,16 +17,17 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.model.constraint.checker.SingleRunningCapacityChecker;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
 
 /**
- * Restrict the hosting capacity of each of the given server to a given
+ * Restrict the hosting capacity of each of the given node to a given
  * amount of VMs.
  * <p/>
  * The restriction provided by the constraint can be either discrete or continuous.
@@ -46,23 +46,26 @@ public class SingleRunningCapacity extends SatConstraint {
     /**
      * Make a new constraint having a discrete restriction.
      *
-     * @param nodes the involved servers.
-     * @param qty   the maximum amount of resource to share among the hosted VMs
+     * @param nodes  the involved nodes.
+     * @param amount the maximum amount of running VMs on each node
      */
-    public SingleRunningCapacity(Set<UUID> nodes, int qty) {
-        this(nodes, qty, false);
+    public SingleRunningCapacity(Collection<Node> nodes, int amount) {
+        this(nodes, amount, false);
     }
 
     /**
      * Make a new constraint.
      *
-     * @param nodes      the involved servers.
-     * @param qty        the maximum amount of resource to share among the hosted VMs
+     * @param nodes      the involved nodes.
+     * @param amount     the maximum amount of running VMs on each node
      * @param continuous {@code true} for a continuous restriction
      */
-    public SingleRunningCapacity(Set<UUID> nodes, int qty, boolean continuous) {
-        super(Collections.<UUID>emptySet(), nodes, continuous);
-        this.amount = qty;
+    public SingleRunningCapacity(Collection<Node> nodes, int amount, boolean continuous) {
+        super(Collections.<VM>emptySet(), nodes, continuous);
+        if (amount < 0) {
+            throw new IllegalArgumentException("The amount of VMs must be >= 0");
+        }
+        this.amount = amount;
     }
 
 

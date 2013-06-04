@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,29 +17,27 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.test.PremadeElements;
+import btrplace.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Unit tests for {@link btrplace.model.constraint.Online}.
  *
  * @author Fabien Hermenier
  */
-public class OnlineTest implements PremadeElements {
+public class OnlineTest {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Model mo = new DefaultModel();
+
+        Set<Node> s = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
         Online o = new Online(s);
         Assert.assertNotNull(o.getChecker());
         Assert.assertEquals(o.getInvolvedNodes(), s);
@@ -51,28 +48,31 @@ public class OnlineTest implements PremadeElements {
 
     @Test
     public void testIsSatisfied() {
-        Mapping c = new DefaultMapping();
-        c.addOnlineNode(n1);
-        c.addOnlineNode(n2);
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Model i = new DefaultModel();
+        List<Node> ns = Util.newNodes(i, 3);
+
+        Mapping c = i.getMapping();
+        c.addOnlineNode(ns.get(0));
+        c.addOnlineNode(ns.get(1));
+        Set<Node> s = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
         Online o = new Online(s);
 
-        Model i = new DefaultModel(c);
-
         Assert.assertEquals(o.isSatisfied(i), true);
-        c.addOfflineNode(n2);
+        c.addOfflineNode(ns.get(1));
         Assert.assertEquals(o.isSatisfied(i), false);
     }
 
     @Test
     public void testEquals() {
-        Set<UUID> x = new HashSet<>(Arrays.asList(n1, n2));
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 10);
+        Set<Node> x = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
         Online s = new Online(x);
 
         Assert.assertTrue(s.equals(s));
         Assert.assertTrue(new Online(x).equals(s));
         Assert.assertEquals(new Online(x).hashCode(), s.hashCode());
-        x = new HashSet<>(Arrays.asList(n3));
+        x = new HashSet<>(Arrays.asList(ns.get(2)));
         Assert.assertFalse(new Online(x).equals(s));
     }
 }

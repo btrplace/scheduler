@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,11 +17,10 @@
 
 package btrplace.json.model;
 
-import btrplace.json.JSONConverter;
+import btrplace.json.AbstractJSONObjectConverter;
 import btrplace.json.JSONConverterException;
 import btrplace.json.model.view.ModelViewsConverter;
 import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.view.ModelView;
 import net.minidev.json.JSONArray;
@@ -33,7 +31,7 @@ import net.minidev.json.JSONObject;
  *
  * @author Fabien Hermenier
  */
-public class ModelConverter implements JSONConverter<Model> {
+public class ModelConverter extends AbstractJSONObjectConverter<Model> {
 
     private MappingConverter cfgParser;
 
@@ -70,8 +68,10 @@ public class ModelConverter implements JSONConverter<Model> {
 
     @Override
     public JSONObject toJSON(Model i) throws JSONConverterException {
-        JSONArray rcs = new JSONArray();
+        cfgParser.setModel(i);
+        attrsParser.setModel(i);
 
+        JSONArray rcs = new JSONArray();
         for (ModelView v : i.getViews()) {
             rcs.add(viewsConverter.toJSON(v));
         }
@@ -88,13 +88,18 @@ public class ModelConverter implements JSONConverter<Model> {
         if (!o.containsKey("mapping")) {
             throw new JSONConverterException("Missing required mapping as a value of the key 'mapping'");
         }
-        Mapping cfg = cfgParser.fromJSON((JSONObject) o.get("mapping"));
-        Model i = new DefaultModel(cfg);
+        Model i = new DefaultModel();
+        cfgParser.setModel(i);
+        cfgParser.fromJSON((JSONObject) o.get("mapping"));
+
+        //MappingUtils.fill(cfg, i.getMapping());
         if (o.containsKey("attributes")) {
+            attrsParser.setModel(i);
             i.setAttributes(attrsParser.fromJSON((JSONObject) o.get("attributes")));
         }
 
         if (o.containsKey("views")) {
+            viewsConverter.setModel(i);
             for (Object view : (JSONArray) o.get("views")) {
                 i.attach(viewsConverter.fromJSON((JSONObject) view));
             }

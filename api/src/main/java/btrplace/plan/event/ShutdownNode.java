@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,9 +19,9 @@ package btrplace.plan.event;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * An action to shutdown an online node.
@@ -32,22 +31,22 @@ import java.util.UUID;
  */
 public class ShutdownNode extends Action implements NodeEvent {
 
-    private UUID node;
+    private Node node;
 
     /**
      * Create a new shutdown action on an online node.
      *
-     * @param n The node to stop
-     * @param s the moment the action starts
-     * @param f the moment the action is finished
+     * @param node  The node to stop
+     * @param start the moment the action starts
+     * @param end   the moment the action is finished
      */
-    public ShutdownNode(UUID n, int s, int f) {
-        super(s, f);
-        this.node = n;
+    public ShutdownNode(Node node, int start, int end) {
+        super(start, end);
+        this.node = node;
     }
 
     @Override
-    public UUID getNode() {
+    public Node getNode() {
         return node;
     }
 

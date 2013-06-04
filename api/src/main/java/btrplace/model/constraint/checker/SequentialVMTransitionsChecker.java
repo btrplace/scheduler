@@ -1,11 +1,31 @@
+/*
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ *
+ * This file is part of btrplace.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.model.constraint.checker;
 
 import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.model.constraint.SequentialVMTransitions;
-import btrplace.plan.event.RunningVMPlacement;
 import btrplace.plan.event.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Checker for the {@link btrplace.model.constraint.SequentialVMTransitions} constraint
@@ -15,11 +35,11 @@ import java.util.*;
  */
 public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<SequentialVMTransitions> {
 
-    private Set<UUID> runnings;
+    private Set<VM> runnings;
 
-    private List<UUID> order;
+    private List<VM> order;
 
-    private UUID pending;
+    private VM pending;
 
     /**
      * Make a new checker.
@@ -29,6 +49,7 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<Se
     public SequentialVMTransitionsChecker(SequentialVMTransitions s) {
         super(s);
         order = new ArrayList<>(s.getInvolvedVMs());
+        pending = null;
     }
 
     @Override
@@ -43,7 +64,7 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<Se
         return true;
     }
 
-    private boolean makePending(UUID vm) {
+    private boolean makePending(VM vm) {
         if (getVMs().contains(vm)) {
             if (pending == null) {
                 //Burn all the VMs in order that are before vm
@@ -101,21 +122,21 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<Se
 
     @Override
     public void end(BootVM a) {
-        if (a.getVM().equals(pending)) {
+        if (a.getVM() == pending) {
             pending = null;
         }
     }
 
     @Override
     public void end(ShutdownVM a) {
-        if (a.getVM().equals(pending)) {
+        if (a.getVM() == pending) {
             pending = null;
         }
     }
 
     @Override
     public void end(ResumeVM a) {
-        if (a.getVM().equals(pending)) {
+        if (a.getVM() == pending) {
             pending = null;
         }
 
@@ -123,7 +144,7 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<Se
 
     @Override
     public void end(SuspendVM a) {
-        if (a.getVM().equals(pending)) {
+        if (a.getVM() == pending) {
             pending = null;
         }
 
@@ -131,14 +152,14 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<Se
 
     @Override
     public void end(KillVM a) {
-        if (a.getVM().equals(pending)) {
+        if (a.getVM() == pending) {
             pending = null;
         }
     }
 
     @Override
     public void end(ForgeVM a) {
-        if (a.getVM().equals(pending)) {
+        if (a.getVM() == pending) {
             pending = null;
         }
     }

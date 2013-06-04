@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -27,83 +26,126 @@ import java.util.*;
  */
 public class DefaultAttributes implements Attributes, Cloneable {
 
-    private Map<UUID, Map<String, Object>> attrs;
+    private Map<VM, Map<String, Object>> vmAttrs;
+    private Map<Node, Map<String, Object>> nodeAttrs;
 
     /**
      * Make a new empty list of attributes.
      */
     public DefaultAttributes() {
-        attrs = new HashMap<>();
+        vmAttrs = new HashMap<>();
+        nodeAttrs = new HashMap<>();
     }
 
-    private boolean putObject(UUID e, String k, Object v) {
-        Map<String, Object> m = attrs.get(e);
-        if (m == null) {
-            m = new HashMap<>();
-            attrs.put(e, m);
+    private boolean putObject(Element e, String k, Object v) {
+        Map<String, Object> m;
+        if (e instanceof VM) {
+            m = vmAttrs.get(e);
+            if (m == null) {
+                m = new HashMap<>();
+                vmAttrs.put((VM) e, m);
+            }
+        } else if (e instanceof Node) {
+            m = nodeAttrs.get(e);
+            if (m == null) {
+                m = new HashMap<>();
+                nodeAttrs.put((Node) e, m);
+            }
+        } else {
+            return false;
         }
         return m.put(k, v) != null;
     }
 
     @Override
-    public Object get(UUID e, String k) {
-        Map<String, Object> m = attrs.get(e);
-        if (m == null) {
+    public Object get(Element e, String k) {
+        Map<String, Object> m;
+        if (e instanceof Node) {
+            m = nodeAttrs.get(e);
+        } else if (e instanceof VM) {
+            m = vmAttrs.get(e);
+        } else {
             return null;
         }
-        return m.get(k);
+        return m == null ? null : m.get(k);
     }
 
-
     @Override
-    public boolean isSet(UUID e, String k) {
-        Map<String, Object> m = attrs.get(e);
+    public boolean isSet(Element e, String k) {
+        Map<String, Object> m;
+        if (e instanceof Node) {
+            m = nodeAttrs.get(e);
+        } else if (e instanceof VM) {
+            m = vmAttrs.get(e);
+        } else {
+            return false;
+        }
         return m != null && m.containsKey(k);
     }
 
     @Override
-    public boolean unset(UUID e, String k) {
-        Map<String, Object> m = attrs.get(e);
-        if (m == null) {
+    public boolean unset(Element e, String k) {
+        Map<String, Object> m;
+        if (e instanceof Node) {
+            m = nodeAttrs.get(e);
+        } else if (e instanceof VM) {
+            m = vmAttrs.get(e);
+        } else {
             return false;
         }
-        return m.remove(k) != null;
-
+        return m != null && m.remove(k) != null;
     }
 
     @Override
     public Attributes clone() {
         DefaultAttributes cpy = new DefaultAttributes();
-        for (Map.Entry<UUID, Map<String, Object>> e : attrs.entrySet()) {
-            cpy.attrs.put(e.getKey(), new HashMap<>(e.getValue()));
+        for (Map.Entry<VM, Map<String, Object>> e : vmAttrs.entrySet()) {
+            cpy.vmAttrs.put(e.getKey(), new HashMap<>(e.getValue()));
         }
+
+        for (Map.Entry<Node, Map<String, Object>> e : nodeAttrs.entrySet()) {
+            cpy.nodeAttrs.put(e.getKey(), new HashMap<>(e.getValue()));
+        }
+
         return cpy;
     }
 
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        for (Map.Entry<UUID, Map<String, Object>> e : attrs.entrySet()) {
+        for (Map.Entry<VM, Map<String, Object>> e : vmAttrs.entrySet()) {
             b.append(e.getKey());
             b.append(':');
-            for (Map.Entry<String, Object> attr : e.getValue().entrySet()) {
-                b.append(" <").append(attr.getKey()).append(',');
-                Object val = attr.getValue();
-                if (val instanceof String) {
-                    b.append('"').append(val).append('"');
-                } else {
-                    b.append(val);
-                }
-                b.append('>');
-            }
+            b.append(stringify(e.getValue()));
             b.append('\n');
+        }
+        for (Map.Entry<Node, Map<String, Object>> e : nodeAttrs.entrySet()) {
+            b.append(e.getKey());
+            b.append(':');
+            b.append(stringify(e.getValue()));
+            b.append('\n');
+        }
+        return b.toString();
+    }
+
+    private String stringify(Map<String, Object> map) {
+        StringBuilder b = new StringBuilder();
+        for (Map.Entry<String, Object> attr : map.entrySet()) {
+            b.append(" <").append(attr.getKey()).append(',');
+            Object val = attr.getValue();
+            if (val instanceof String) {
+                b.append('"').append(val).append('"');
+            } else {
+                b.append(val);
+            }
+            b.append('>');
         }
         return b.toString();
     }
 
     @Override
     public int hashCode() {
-        return attrs.hashCode();
+        return Objects.hash(vmAttrs, nodeAttrs);
     }
 
     @Override
@@ -118,87 +160,95 @@ public class DefaultAttributes implements Attributes, Cloneable {
             return false;
         }
         DefaultAttributes that = (DefaultAttributes) o;
-        return attrs.equals(that.attrs);
+        return vmAttrs.equals(that.vmAttrs) && nodeAttrs.equals(that.nodeAttrs);
     }
 
     @Override
-    public Set<UUID> getElements() {
-        return attrs.keySet();
+    public Set<Element> getDefined() {
+        Set<Element> s = new HashSet<>(vmAttrs.size() + nodeAttrs.size());
+        s.addAll(vmAttrs.keySet());
+        s.addAll(nodeAttrs.keySet());
+        return s;
     }
 
     @Override
     public void clear() {
-        this.attrs.clear();
+        this.vmAttrs.clear();
+        this.nodeAttrs.clear();
     }
 
     @Override
-    public boolean put(UUID e, String k, boolean b) {
+    public boolean put(Element e, String k, boolean b) {
         return putObject(e, k, b);
     }
 
     @Override
-    public boolean put(UUID e, String k, String s) {
+    public boolean put(Element e, String k, int n) {
+        return putObject(e, k, n);
+    }
+
+    @Override
+    public boolean put(Element e, String k, String s) {
         return putObject(e, k, s);
     }
 
     @Override
-    public boolean put(UUID e, String k, long l) {
-        return putObject(e, k, l);
-    }
-
-    @Override
-    public boolean put(UUID e, String k, double d) {
+    public boolean put(Element e, String k, double d) {
         return putObject(e, k, d);
     }
 
     @Override
-    public Boolean getBoolean(UUID e, String k) {
+    public Boolean getBoolean(Element e, String k) {
         return (Boolean) get(e, k);
     }
 
     @Override
-    public Long getLong(UUID e, String k) {
-        return (Long) get(e, k);
-    }
-
-    @Override
-    public String getString(UUID e, String k) {
+    public String getString(Element e, String k) {
         Object o = get(e, k);
         return o == null ? null : o.toString();
     }
 
     @Override
-    public Double getDouble(UUID e, String k) {
+    public Double getDouble(Element e, String k) {
         return (Double) get(e, k);
     }
 
     @Override
-    public Set<String> getKeys(UUID u) {
-        Map<String, Object> m = attrs.get(u);
-        if (m == null) {
-            return Collections.emptySet();
-        }
-        return m.keySet();
+    public Integer getInteger(Element e, String k) {
+        return (Integer) get(e, k);
     }
 
     @Override
-    public boolean castAndPut(UUID u, String k, String v) {
+    public Set<String> getKeys(Element e) {
+        Map<String, Object> m;
+        if (e instanceof Node) {
+            m = nodeAttrs.get(e);
+        } else if (e instanceof VM) {
+            m = vmAttrs.get(e);
+        } else {
+            return Collections.emptySet();
+        }
+        return m == null ? Collections.<String>emptySet() : m.keySet();
+    }
+
+    @Override
+    public boolean castAndPut(Element e, String k, String v) {
         String x = v.toLowerCase().trim();
         if (x.equals("true")) {
-            return put(u, k, true);
+            return put(e, k, true);
         } else if (x.equals("false")) {
-            return put(u, k, false);
+            return put(e, k, false);
         }
         try {
-            return put(u, k, Long.parseLong(x));
+            return put(e, k, Integer.parseInt(x));
         } catch (NumberFormatException ex) {
         }
 
         try {
-            return put(u, k, Double.parseDouble(x));
+            return put(e, k, Double.parseDouble(x));
         } catch (NumberFormatException ex) {
         }
 
-        return put(u, k, v);
+        return put(e, k, v);
     }
 }

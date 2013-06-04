@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,11 +18,13 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
+import btrplace.model.DefaultModel;
+import btrplace.model.Model;
 import btrplace.model.constraint.SingleResourceCapacity;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -32,15 +33,17 @@ import java.util.HashSet;
  *
  * @author Fabien Hermenier
  */
-public class SingleResourceCapacityConverterTest implements PremadeElements {
-
-    private static SingleResourceCapacityConverter conv = new SingleResourceCapacityConverter();
+public class SingleResourceCapacityConverterTest {
 
     @Test
-    public void testViables() throws JSONConverterException {
-        SingleResourceCapacity d = new SingleResourceCapacity(new HashSet<>(Arrays.asList(n1, n2, n3)), "cpu", 5, false);
-        SingleResourceCapacity c = new SingleResourceCapacity(new HashSet<>(Arrays.asList(n1, n2, n3)), "mem", 5, true);
-        Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
-        Assert.assertEquals(conv.fromJSON(conv.toJSON(c)), c);
+    public void testViables() throws JSONConverterException, IOException {
+        Model mo = new DefaultModel();
+        SingleResourceCapacityConverter conv = new SingleResourceCapacityConverter();
+        conv.setModel(mo);
+        SingleResourceCapacity d = new SingleResourceCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), "cpu", 5, false);
+        SingleResourceCapacity c = new SingleResourceCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), "mem", 5, true);
+
+        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+        Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
     }
 }

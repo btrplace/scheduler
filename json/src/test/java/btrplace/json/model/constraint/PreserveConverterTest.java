@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,11 +18,13 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
+import btrplace.model.DefaultModel;
+import btrplace.model.Model;
 import btrplace.model.constraint.Preserve;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -32,13 +33,15 @@ import java.util.HashSet;
  *
  * @author Fabien Hermenier
  */
-public class PreserveConverterTest implements PremadeElements {
-
-    private static PreserveConverter conv = new PreserveConverter();
+public class PreserveConverterTest {
 
     @Test
-    public void testViables() throws JSONConverterException {
-        Preserve d = new Preserve(new HashSet<>(Arrays.asList(vm1, vm2, vm3)), "cpu", 5);
-        Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
+    public void testViables() throws JSONConverterException, IOException {
+        Model mo = new DefaultModel();
+        PreserveConverter conv = new PreserveConverter();
+        conv.setModel(mo);
+        Preserve d = new Preserve(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())), "cpu", 5);
+
+        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
     }
 }

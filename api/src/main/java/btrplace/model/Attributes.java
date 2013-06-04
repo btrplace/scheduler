@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,11 +18,10 @@
 package btrplace.model;
 
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Allow to specify attributes related to managed elements.
- * Attributes are key/value pair, where values are Java primitives (long, double, String, boolean)
+ * Attributes are key/value pairs, where values are Java primitives (integer, double, String, boolean)
  *
  * @author Fabien Hermenier
  */
@@ -32,87 +30,87 @@ public interface Attributes extends Cloneable {
     /**
      * Put a boolean value.
      *
-     * @param e the element identifier
+     * @param e the element
      * @param k the attribute identifier
      * @param b the value to set
      * @return {@code true} if a previous value was overridden
      */
-    boolean put(UUID e, String k, boolean b);
+    boolean put(Element e, String k, boolean b);
 
     /**
      * Put a String value.
      *
-     * @param e the element identifier
+     * @param e the element
      * @param k the attribute identifier
      * @param s the value to set
      * @return {@code true} if a previous value was overridden
      */
-    boolean put(UUID e, String k, String s);
-
-    /**
-     * Put a long value.
-     *
-     * @param e the element identifier
-     * @param k the attribute identifier
-     * @param l the value to set
-     * @return {@code true} if a previous value was overridden
-     */
-    boolean put(UUID e, String k, long l);
+    boolean put(Element e, String k, String s);
 
     /**
      * Put a double value.
      *
-     * @param e the element identifier
+     * @param e the element
      * @param k the attribute identifier
      * @param d the value to set
      * @return {@code true} if a previous value was overridden
      */
-    boolean put(UUID e, String k, double d);
+    boolean put(Element e, String k, double d);
+
+    /**
+     * Put an integer value.
+     *
+     * @param e the element
+     * @param k the attribute identifier
+     * @param d the value to set
+     * @return {@code true} if a previous value was overridden
+     */
+    boolean put(Element e, String k, int d);
 
     /**
      * Get an attribute value as a simple Object.
      *
-     * @param e the element identifier
+     * @param e the element
      * @param k the attribute value
      * @return the value if it has been stated. {@code null} otherwise
      */
-    Object get(UUID e, String k);
+    Object get(Element e, String k);
 
     /**
      * Get an attribute value as a boolean.
      *
-     * @param e the element identifier
+     * @param e the element
      * @param k the attribute value
      * @return the value if it has been stated. {@code null} otherwise
      */
-    Boolean getBoolean(UUID e, String k);
-
-    /**
-     * Get an attribute value as a long.
-     *
-     * @param e the element identifier
-     * @param k the attribute value
-     * @return the value if it has been stated. {@code null} otherwise
-     */
-    Long getLong(UUID e, String k);
+    Boolean getBoolean(Element e, String k);
 
     /**
      * Get an attribute value as a string.
      *
-     * @param e the element identifier
+     * @param e the element
      * @param k the attribute value
      * @return the value if it has been stated. {@code null} otherwise
      */
-    String getString(UUID e, String k);
+    String getString(Element e, String k);
 
     /**
      * Get an attribute value as a double.
      *
-     * @param e the element identifier
+     * @param e the element
      * @param k the attribute value
      * @return the value if it has been stated. {@code null} otherwise
      */
-    Double getDouble(UUID e, String k);
+    Double getDouble(Element e, String k);
+
+    /**
+     * Get an attribute value as an integer.
+     *
+     * @param e the element
+     * @param k the attribute value
+     * @return the value if it has been stated. {@code null} otherwise
+     */
+    Integer getInteger(Element e, String k);
 
     /**
      * Check if an attribute is set for a given element.
@@ -121,16 +119,16 @@ public interface Attributes extends Cloneable {
      * @param k the attribute identifier
      * @return {@code true} iff the attribute is set
      */
-    boolean isSet(UUID e, String k);
+    boolean isSet(Element e, String k);
 
     /**
      * Unset an attribute for a given element.
      *
-     * @param e the element identifier
+     * @param e the element
      * @param k the attribute identifier
      * @return {@code true} iff a value was removed
      */
-    boolean unset(UUID e, String k);
+    boolean unset(Element e, String k);
 
     /**
      * Clone the attributes.
@@ -144,31 +142,31 @@ public interface Attributes extends Cloneable {
      *
      * @return a set that may be empty
      */
-    Set<UUID> getElements();
+    Set<Element> getDefined();
 
     /**
-     * Get all the attributes keys that are registered for an element.
+     * Get all the attributes keys that are registered.
      *
-     * @param u the element identifier
+     * @param e the element
      * @return a set that may be empty
      */
-    Set<String> getKeys(UUID u);
+    Set<String> getKeys(Element e);
 
     /**
      * Put a value but try to cast into to a supported primitive if possible.
-     * First, it tries to cast {@code v} first to a boolean, then to a long value,
+     * First, it tries to cast {@code v} first to a boolean, then to a integer value,
      * finally to a double value. If none of the cast succeeded, the value is let
      * as a string.
      *
-     * @param u the element identifier
+     * @param e the element
      * @param k the attribute identifier
      * @param v the value to set
      * @return {@code true} if a previous value was overridden
      */
-    boolean castAndPut(UUID u, String k, String v);
+    boolean castAndPut(Element e, String k, String v);
 
-        /**
-         * Remove all the attributes.
-         */
+    /**
+     * Remove all the attributes.
+     */
     void clear();
 }

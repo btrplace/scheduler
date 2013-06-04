@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,20 +17,17 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
+import btrplace.model.*;
 import btrplace.model.constraint.CumulatedResourceCapacity;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Running;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.MappingBuilder;
-import btrplace.test.PremadeElements;
+import btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -42,23 +38,31 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class CCumulatedResourceCapacityTest implements PremadeElements {
+public class CCumulatedResourceCapacityTest {
 
     @Test
     public void testWithSatisfiedConstraint() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm2)
                 .run(n3, vm3, vm4)
-                .sleep(n2, vm5).build();
+                .sleep(n2, vm5).get();
 
-        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
-        rc.set(vm1, 2);
-        rc.set(vm2, 3);
-        rc.set(vm3, 3);
-        rc.set(vm4, 1);
-        rc.set(vm5, 5);
+        ShareableResource rc = new ShareableResource("cpu", 5, 5);
+        rc.setConsumption(vm1, 2);
+        rc.setConsumption(vm2, 3);
+        rc.setConsumption(vm3, 3);
+        rc.setConsumption(vm4, 1);
+        rc.setConsumption(vm5, 5);
 
-        Model mo = new DefaultModel(map);
         mo.attach(rc);
         List<SatConstraint> l = new ArrayList<>();
         CumulatedResourceCapacity x = new CumulatedResourceCapacity(map.getAllNodes(), "cpu", 10);
@@ -72,21 +76,28 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
 
     @Test
     public void testDiscreteSatisfaction() throws SolverException {
-
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm2)
-                .run(n2, vm3, vm4, vm5).build();
+                .run(n2, vm3, vm4, vm5).get();
 
-        Set<UUID> on = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Node> on = new HashSet<>(Arrays.asList(n1, n2));
 
-        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
-        rc.set(vm1, 2);
-        rc.set(vm2, 3);
-        rc.set(vm3, 3);
-        rc.set(vm4, 1);
-        rc.set(vm5, 1);
+        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5, 5);
+        rc.setConsumption(vm1, 2);
+        rc.setConsumption(vm2, 3);
+        rc.setConsumption(vm3, 3);
+        rc.setConsumption(vm4, 1);
+        rc.setConsumption(vm5, 1);
 
-        Model mo = new DefaultModel(map);
         mo.attach(rc);
         List<SatConstraint> l = new ArrayList<>();
         CumulatedResourceCapacity x = new CumulatedResourceCapacity(on, "cpu", 9);
@@ -101,19 +112,27 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
     @Test
     public void testFeasibleContinuousResolution() throws SolverException {
 
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3, vm4)
-                .ready(vm5).build();
-        Set<UUID> on = new HashSet<>(Arrays.asList(n1, n2));
-        Model mo = new DefaultModel(map);
+                .ready(vm5).get();
+        Set<Node> on = new HashSet<>(Arrays.asList(n1, n2));
 
-        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
-        rc.set(vm1, 2);
-        rc.set(vm2, 3);
-        rc.set(vm3, 3);
-        rc.set(vm4, 1);
-        rc.set(vm5, 5);
+        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5, 5);
+        rc.setConsumption(vm1, 2);
+        rc.setConsumption(vm2, 3);
+        rc.setConsumption(vm3, 3);
+        rc.setConsumption(vm4, 1);
+        rc.setConsumption(vm5, 5);
         mo.attach(rc);
 
         List<SatConstraint> l = new ArrayList<>();
@@ -132,16 +151,24 @@ public class CCumulatedResourceCapacityTest implements PremadeElements {
 
     @Test
     public void testGetMisplaced() {
-        Mapping m = new MappingBuilder().on(n1, n2, n3)
-                .run(n1, vm1, vm2, vm3).run(n2, vm4).ready(vm5).build();
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Mapping m = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+                .run(n1, vm1, vm2, vm3).run(n2, vm4).ready(vm5).get();
 
-        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 5);
-        rc.set(vm1, 2);
-        rc.set(vm2, 3);
-        rc.set(vm3, 3);
-        rc.set(vm4, 1);
-        rc.set(vm5, 5);
-        Model mo = new DefaultModel(m);
+        ShareableResource rc = new ShareableResource("cpu", 5, 5);
+        rc.setConsumption(vm1, 2);
+        rc.setConsumption(vm2, 3);
+        rc.setConsumption(vm3, 3);
+        rc.setConsumption(vm4, 1);
+        rc.setConsumption(vm5, 5);
         mo.attach(rc);
         CumulatedResourceCapacity c = new CumulatedResourceCapacity(m.getAllNodes(), "cpu", 10);
         CCumulatedResourceCapacity cc = new CCumulatedResourceCapacity(c);

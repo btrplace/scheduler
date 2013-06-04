@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,10 +17,7 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Overbook;
 import btrplace.model.constraint.Preserve;
@@ -37,10 +33,9 @@ import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.durationEvaluator.ConstantDuration;
+import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import btrplace.solver.choco.objective.minMTTR.MinMTTR;
-import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
@@ -49,27 +44,31 @@ import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
+
 
 /**
  * Unit tests for {@link RelocatableVMModel}.
  *
  * @author Fabien Hermenier
  */
-public class RelocatableVMModelTest implements PremadeElements {
+public class RelocatableVMModelTest {
 
     @Test
     public void testForcedToMove() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        final VM vm1 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm1, n1);
 
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(MigrateVM.class, new ConstantDuration(5));
-        Model mo = new DefaultModel(map);
+        dev.register(MigrateVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<UUID>emptySet(), map.getAllVMs(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .setDurationEvaluatators(dev)
                 .labelVariables()
                 .build();
@@ -109,16 +108,20 @@ public class RelocatableVMModelTest implements PremadeElements {
 
     @Test
     public void testForcedToStay() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        final VM vm1 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm1, n1);
 
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(MigrateVM.class, new ConstantDuration(5));
-        Model mo = new DefaultModel(map);
+        dev.register(MigrateVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<UUID>emptySet(), map.getAllVMs(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .setDurationEvaluatators(dev)
                 .build();
         rp.getNodeActions()[0].getState().setVal(1);
@@ -144,22 +147,28 @@ public class RelocatableVMModelTest implements PremadeElements {
 
     @Test
     public void testRelocateDueToPreserve() throws SolverException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+
+        final VM vm1 = mo.newVM();
+        final VM vm2 = mo.newVM();
+        final VM vm3 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
 
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n1);
         map.addRunningVM(vm3, n2);
-        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 10);
-        rc.set(n1, 7);
-        rc.set(vm1, 3);
-        rc.set(vm2, 3);
-        rc.set(vm3, 5);
+        btrplace.model.view.ShareableResource rc = new ShareableResource("cpu", 10, 10);
+        rc.setCapacity(n1, 7);
+        rc.setConsumption(vm1, 3);
+        rc.setConsumption(vm2, 3);
+        rc.setConsumption(vm3, 5);
 
         Preserve pr = new Preserve(map.getAllVMs(), "cpu", 5);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        Model mo = new DefaultModel(map);
         mo.attach(rc);
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Online(map.getAllNodes()));
@@ -177,18 +186,23 @@ public class RelocatableVMModelTest implements PremadeElements {
      */
     @Test
     public void testNotWorthyReInstantiation() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+
+        final VM vm1 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm1, n1);
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(MigrateVM.class, new ConstantDuration(2));
-        Model mo = new DefaultModel(map);
+        dev.register(MigrateVM.class, new ConstantActionDuration(2));
 
         mo.getAttributes().put(vm1, "template", "small");
         mo.getAttributes().put(vm1, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<UUID>emptySet(), map.getAllVMs(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .setDurationEvaluatators(dev)
                 .labelVariables()
                 .build();
@@ -204,21 +218,26 @@ public class RelocatableVMModelTest implements PremadeElements {
      */
     @Test
     public void testWorthyReInstantiation() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        VM vm10 = mo.newVM();
+
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
-        map.addRunningVM(vm10, n1); //Not using vm1 because UUIDPool starts at 0 so their will be multiple (0,1) VMs.
+        map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(MigrateVM.class, new ConstantDuration(20));
-        dev.register(ForgeVM.class, new ConstantDuration(3));
-        dev.register(BootVM.class, new ConstantDuration(2));
-        dev.register(ShutdownVM.class, new ConstantDuration(1));
-        Model mo = new DefaultModel(map);
+        dev.register(MigrateVM.class, new ConstantActionDuration(20));
+        dev.register(ForgeVM.class, new ConstantActionDuration(3));
+        dev.register(BootVM.class, new ConstantActionDuration(2));
+        dev.register(ShutdownVM.class, new ConstantActionDuration(1));
 
         mo.getAttributes().put(vm10, "template", "small");
         mo.getAttributes().put(vm10, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<UUID>emptySet(), map.getAllVMs(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .setDurationEvaluatators(dev)
                 .labelVariables()
                 .setManageableVMs(map.getAllVMs())
@@ -246,21 +265,26 @@ public class RelocatableVMModelTest implements PremadeElements {
      */
     @Test
     public void testWorthlessReInstantiation() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        final VM vm10 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
+
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
-        map.addRunningVM(vm10, n1); //Not using vm1 because UUIDPool starts at 0 so their will be multiple (0,1) VMs.
+        map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(MigrateVM.class, new ConstantDuration(2));
-        dev.register(ForgeVM.class, new ConstantDuration(3));
-        dev.register(BootVM.class, new ConstantDuration(2));
-        dev.register(ShutdownVM.class, new ConstantDuration(1));
-        Model mo = new DefaultModel(map);
+        dev.register(MigrateVM.class, new ConstantActionDuration(2));
+        dev.register(ForgeVM.class, new ConstantActionDuration(3));
+        dev.register(BootVM.class, new ConstantActionDuration(2));
+        dev.register(ShutdownVM.class, new ConstantActionDuration(1));
 
         mo.getAttributes().put(vm10, "template", "small");
         mo.getAttributes().put(vm10, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<UUID>emptySet(), map.getAllVMs(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .setDurationEvaluatators(dev)
                 .labelVariables()
                 .setManageableVMs(map.getAllVMs())
@@ -282,21 +306,26 @@ public class RelocatableVMModelTest implements PremadeElements {
 
     @Test
     public void testForcedReInstantiation() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+
+        final VM vm10 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
-        map.addRunningVM(vm10, n1); //Not using vm1 because UUIDPool starts at 0 so their will be multiple (0,1) VMs.
+        map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(MigrateVM.class, new ConstantDuration(20));
-        dev.register(ForgeVM.class, new ConstantDuration(3));
-        dev.register(BootVM.class, new ConstantDuration(2));
-        dev.register(ShutdownVM.class, new ConstantDuration(1));
-        Model mo = new DefaultModel(map);
+        dev.register(MigrateVM.class, new ConstantActionDuration(20));
+        dev.register(ForgeVM.class, new ConstantActionDuration(3));
+        dev.register(BootVM.class, new ConstantActionDuration(2));
+        dev.register(ShutdownVM.class, new ConstantActionDuration(1));
 
         mo.getAttributes().put(vm10, "template", "small");
         mo.getAttributes().put(vm10, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<UUID>emptySet(), map.getAllVMs(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .setDurationEvaluatators(dev)
                 .labelVariables()
                 .setManageableVMs(map.getAllVMs())
@@ -319,21 +348,26 @@ public class RelocatableVMModelTest implements PremadeElements {
 
     @Test
     public void testForcedMigration() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+
+        final VM vm10 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
-        map.addRunningVM(vm10, n1); //Not using vm1 because UUIDPool starts at 0 so their will be multiple (0,1) VMs.
+        map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(MigrateVM.class, new ConstantDuration(20));
-        dev.register(ForgeVM.class, new ConstantDuration(3));
-        dev.register(BootVM.class, new ConstantDuration(2));
-        dev.register(ShutdownVM.class, new ConstantDuration(1));
-        Model mo = new DefaultModel(map);
+        dev.register(MigrateVM.class, new ConstantActionDuration(20));
+        dev.register(ForgeVM.class, new ConstantActionDuration(3));
+        dev.register(BootVM.class, new ConstantActionDuration(2));
+        dev.register(ShutdownVM.class, new ConstantActionDuration(1));
 
         mo.getAttributes().put(vm10, "template", "small");
         mo.getAttributes().put(vm10, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<UUID>emptySet(), map.getAllVMs(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .setDurationEvaluatators(dev)
                 .labelVariables()
                 .setManageableVMs(map.getAllVMs())
@@ -356,28 +390,33 @@ public class RelocatableVMModelTest implements PremadeElements {
 
     @Test
     public void testReinstantiationWithPreserve() throws SolverException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        VM vm7 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
 
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm5, n1);
         map.addRunningVM(vm6, n1);
         map.addRunningVM(vm7, n2);
-        ShareableResource rc = new ShareableResource("cpu", 10);
-        rc.set(n1, 7);
-        rc.set(vm5, 3);
-        rc.set(vm6, 3);
-        rc.set(vm7, 5);
+        ShareableResource rc = new ShareableResource("cpu", 10, 10);
+        rc.setCapacity(n1, 7);
+        rc.setConsumption(vm5, 3);
+        rc.setConsumption(vm6, 3);
+        rc.setConsumption(vm7, 5);
 
-        Model mo = new DefaultModel(map);
-
-        for (UUID vm : map.getAllVMs()) {
+        for (VM vm : map.getAllVMs()) {
             mo.getAttributes().put(vm, "template", "small");
             mo.getAttributes().put(vm, "clone", true);
         }
         Preserve pr = new Preserve(map.getAllVMs(), "cpu", 5);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.getDurationEvaluators().register(MigrateVM.class, new ConstantDuration(20));
+        cra.getDurationEvaluators().register(MigrateVM.class, new ConstantActionDuration(20));
 
         mo.attach(rc);
         List<SatConstraint> cstrs = new ArrayList<>();

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +19,8 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.CumulatedResourceCapacity;
 import btrplace.model.constraint.CumulatedRunningCapacity;
 import btrplace.model.constraint.SatConstraint;
@@ -33,7 +34,10 @@ import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntArrayList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Choco implementation of {@link btrplace.model.constraint.CumulatedResourceCapacity}.
@@ -69,19 +73,19 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
             } else {
                 int[] alias = new int[cstr.getInvolvedNodes().size()];
                 int i = 0;
-                for (UUID n : cstr.getInvolvedNodes()) {
+                for (Node n : cstr.getInvolvedNodes()) {
                     alias[i++] = rp.getNode(n);
                 }
 
                 TIntArrayList cUse = new TIntArrayList();
                 List<IntDomainVar> dUse = new ArrayList<>();
 
-                for (UUID vmId : rp.getVMs()) {
+                for (VM vmId : rp.getVMs()) {
                     VMActionModel a = rp.getVMAction(vmId);
                     Slice c = a.getCSlice();
                     Slice d = a.getDSlice();
                     if (c != null) {
-                        cUse.add(rcm.getSourceResource().get(vmId));
+                        cUse.add(rcm.getSourceResource().getConsumption(vmId));
                     }
                     if (d != null) {
                         dUse.add(rcm.getVMsAllocation()[rp.getVM(vmId)]);
@@ -91,7 +95,7 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
             }
         }
         List<IntDomainVar> vs = new ArrayList<>();
-        for (UUID u : cstr.getInvolvedNodes()) {
+        for (Node u : cstr.getInvolvedNodes()) {
             vs.add(rcm.getVirtualUsage()[rp.getNode(u)]);
         }
         CPSolver s = rp.getSolver();
@@ -100,19 +104,19 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
         ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         if (rc == null) {
             return map.getRunningVMs(cstr.getInvolvedNodes());
         }
-        Set<UUID> bad = new HashSet<>();
+        Set<VM> bad = new HashSet<>();
         int remainder = cstr.getAmount();
-        for (UUID n : cstr.getInvolvedNodes()) {
-            for (UUID v : map.getRunningVMs(n)) {
-                remainder -= rc.get(v);
+        for (Node n : cstr.getInvolvedNodes()) {
+            for (VM v : map.getRunningVMs(n)) {
+                remainder -= rc.getConsumption(v);
                 if (remainder < 0) {
-                    for (UUID n2 : cstr.getInvolvedNodes()) {
+                    for (Node n2 : cstr.getInvolvedNodes()) {
                         bad.addAll(map.getRunningVMs(n2));
                     }
                     return bad;

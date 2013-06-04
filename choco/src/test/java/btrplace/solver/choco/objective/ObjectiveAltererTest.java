@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,9 +17,8 @@
 
 package btrplace.solver.choco.objective;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
+import btrplace.model.Model;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -37,8 +35,8 @@ public class ObjectiveAltererTest {
 
     @Test
     public void testBasic() throws SolverException {
-        Mapping map = new DefaultMapping();
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(new DefaultModel(map)).build();
+        Model mo = new DefaultModel();
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         IntDomainVar obj = rp.getSolver().createBoundIntVar("obj", 10, 1000);
         rp.getSolver().setObjective(obj);
         ObjectiveAlterer oa = new ObjectiveAlterer(rp) {

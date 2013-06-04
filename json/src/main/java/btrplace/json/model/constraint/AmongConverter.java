@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,13 +18,15 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.JSONUtils;
+import btrplace.model.Node;
 import btrplace.model.constraint.Among;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * JSON converter for the {@link Among} constraint.
@@ -47,8 +48,18 @@ public class AmongConverter extends SatConstraintConverter<Among> {
     @Override
     public Among fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Among(JSONUtils.requiredUUIDs(o, "vms"),
-                JSONUtils.requiredSets(o, "nodes"),
+
+        Set<Collection<Node>> nodes = new HashSet<>();
+        Object x = o.get("parts");
+        if (!(x instanceof JSONArray)) {
+            throw new JSONConverterException("Set of int sets expected at key 'parts'");
+        }
+        for (Object obj : (JSONArray) x) {
+            nodes.add(nodesFromJSON((JSONArray) obj));
+        }
+
+        return new Among(requiredVMs(o, "vms"),
+                nodes,
                 (Boolean) o.get("continuous"));
     }
 
@@ -56,12 +67,12 @@ public class AmongConverter extends SatConstraintConverter<Among> {
     public JSONObject toJSON(Among o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", JSONUtils.toJSON(o.getInvolvedVMs()));
+        c.put("vms", vmsToJSON(o.getInvolvedVMs()));
         JSONArray a = new JSONArray();
-        for (Set<UUID> grp : o.getGroupsOfNodes()) {
-            a.add(JSONUtils.toJSON(grp));
+        for (Collection<Node> grp : o.getGroupsOfNodes()) {
+            a.add(nodesToJSON(grp));
         }
-        c.put("nodes", a);
+        c.put("parts", a);
         c.put("continuous", o.isContinuous());
         return c;
     }

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -23,7 +22,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.HashSet;
-import java.util.UUID;
 
 /**
  * Basic tests for {@link btrplace.model.constraint.SatConstraint}.
@@ -35,8 +33,8 @@ public class SatConstraintTest {
     static class MockSatConstraints extends SatConstraint {
 
         public MockSatConstraints() {
-            super(new HashSet<UUID>(), new HashSet<UUID>(), false);
-            getInvolvedVMs().add(UUID.randomUUID());
+            super(new HashSet<VM>(), new HashSet<Node>(), false);
+            getInvolvedVMs().add(new VM(5));
         }
 
         @Override

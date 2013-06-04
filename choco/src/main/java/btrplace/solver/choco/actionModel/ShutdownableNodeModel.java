@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,6 +17,7 @@
 
 package btrplace.solver.choco.actionModel;
 
+import btrplace.model.Node;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.SolverException;
@@ -30,12 +30,11 @@ import choco.cp.solver.variables.integer.BoolVarNot;
 import choco.cp.solver.variables.integer.BooleanVarImpl;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.UUID;
 
 /**
  * Model an action that allow a node to boot if necessary.
  * The model must provide an estimation of the action duration through a
- * {@link btrplace.solver.choco.durationEvaluator.DurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.durationEvaluator.ActionDurationEvaluator} accessible from
  * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code ShutdownNode.class}
  * <p/>
  * The action is modeled as follow:
@@ -69,14 +68,6 @@ import java.util.UUID;
  * <li>{@code T} = { {@link #getStart()}, {@link btrplace.solver.choco.ReconfigurationProblem#getEnd()} }; {@link #getHostingEnd()} = T[{@link #getState()}]</li>
  * </ul>
  * </li>
- * <li>
- * The moment the node is powered up equals the moment the reconfiguration starts as the node is already online.
- * The moment the node is powered down equals the moment the node can no longer host VMs plus the action duration.
- * <ul>
- * <li>{@link #getPoweringStart()} = {@link #getStart()}</li>
- * <li>{@link #getPoweringEnd()} = {@link #getHostingEnd()} + {@link #getDuration()}</li>
- * </ul>
- * </li>
  * </ul>
  * <p/>
  * If the reconfiguration problem has a solution, a {@link btrplace.plan.event.ShutdownNode} action is inserted
@@ -86,7 +77,7 @@ import java.util.UUID;
  */
 public class ShutdownableNodeModel implements NodeActionModel {
 
-    private UUID node;
+    private Node node;
 
     private IntDomainVar isOnline, isOffline;
 
@@ -100,10 +91,6 @@ public class ShutdownableNodeModel implements NodeActionModel {
 
     private IntDomainVar start;
 
-    private IntDomainVar powerStart;
-
-    private IntDomainVar powerEnd;
-
     /**
      * Make a new model.
      *
@@ -111,7 +98,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
      * @param e  the node managed by the action
      * @throws SolverException if an error occurred
      */
-    public ShutdownableNodeModel(ReconfigurationProblem rp, UUID e) throws SolverException {
+    public ShutdownableNodeModel(ReconfigurationProblem rp, Node e) throws SolverException {
         this.node = e;
 
 
@@ -129,7 +116,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
         * D = {0, d}
         * D = St * d;
         */
-        int d = rp.getDurationEvaluators().evaluate(ShutdownNode.class, e);
+        int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), ShutdownNode.class, e);
         duration = s.createEnumIntVar(rp.makeVarLabel("shutdownableNode(", e, ").duration"), new int[]{0, d});
         s.post(new BooleanChanneling(isOnline, duration, 0));
 
@@ -155,13 +142,6 @@ public class ShutdownableNodeModel implements NodeActionModel {
           He = T[St]
          */
         s.post(new ElementV(new IntDomainVar[]{start, rp.getEnd(), isOnline, hostingEnd}, 0, s.getEnvironment()));
-
-
-        //The node is already online, so it starts at the beginning of the RP
-        powerStart = rp.getStart();
-        //The moment the node is offline. It depends on the hosting end time and the duration of the shutdown action
-        powerEnd = rp.makeUnboundedDuration("shutdownableNode(", e, ").powerEnd");
-        s.post(s.eq(powerEnd, s.plus(hostingEnd, duration)));
     }
 
 
@@ -174,7 +154,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
     }
 
     @Override
-    public UUID getNode() {
+    public Node getNode() {
         return node;
     }
 
@@ -211,15 +191,5 @@ public class ShutdownableNodeModel implements NodeActionModel {
     @Override
     public IntDomainVar getHostingEnd() {
         return hostingEnd;
-    }
-
-    @Override
-    public IntDomainVar getPoweringStart() {
-        return powerStart;
-    }
-
-    @Override
-    public IntDomainVar getPoweringEnd() {
-        return powerEnd;
     }
 }

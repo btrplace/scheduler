@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,16 +17,12 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
 import btrplace.plan.event.ShutdownVM;
 import btrplace.plan.event.SuspendVM;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -38,13 +33,17 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class SplitTest implements PremadeElements {
+public class SplitTest {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s1 = Collections.singleton(vm1);
-        Set<UUID> s2 = Collections.singleton(vm2);
-        List<Set<UUID>> args = Arrays.asList(s1, s2);
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 3);
+        List<VM> vms = Util.newVMs(mo, 3);
+
+        Collection<VM> s1 = Collections.singleton(vms.get(0));
+        Collection<VM> s2 = Collections.singleton(vms.get(1));
+        List<Collection<VM>> args = Arrays.asList(s1, s2);
         Split sp = new Split(args);
         Assert.assertNotNull(sp.getChecker());
         Assert.assertEquals(args, sp.getSets());
@@ -64,77 +63,93 @@ public class SplitTest implements PremadeElements {
 
     @Test
     public void testEquals() {
-        Set<UUID> s1 = Collections.singleton(vm1);
-        Set<UUID> s2 = Collections.singleton(vm2);
-        List<Set<UUID>> args = Arrays.asList(s1, s2);
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 3);
+        List<VM> vms = Util.newVMs(mo, 3);
+
+        Collection<VM> s1 = Collections.singleton(vms.get(0));
+        Collection<VM> s2 = Collections.singleton(vms.get(1));
+        List<Collection<VM>> args = Arrays.asList(s1, s2);
         Split sp = new Split(args);
         Assert.assertTrue(sp.equals(sp));
         Assert.assertTrue(new Split(args).equals(sp));
         Assert.assertEquals(new Split(args).hashCode(), sp.hashCode());
-        List<Set<UUID>> args2 = new ArrayList<>(args);
-        args2.add(Collections.singleton(vm3));
+        List<Collection<VM>> args2 = new ArrayList<>(args);
+        args2.add(Collections.singleton(vms.get(2)));
         Assert.assertFalse(new Split(args2).equals(sp));
     }
 
     @Test
     public void testDiscreteIsSatisfied() {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 3);
+        List<VM> vms = Util.newVMs(mo, 5);
 
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addOnlineNode(ns.get(2));
 
-        Set<UUID> s1 = new HashSet<>(Arrays.asList(vm1, vm2));
-        Set<UUID> s2 = new HashSet<>(Arrays.asList(vm3, vm4));
-        Set<UUID> s3 = Collections.singleton(vm5);
-        Set<Set<UUID>> args = new HashSet<>(Arrays.asList(s1, s2, s3));
+        Collection<VM> s1 = Arrays.asList(vms.get(0), vms.get(1));
+        Collection<VM> s2 = Arrays.asList(vms.get(2), vms.get(3));
+        Collection<VM> s3 = Collections.singleton(vms.get(4));
+        Collection<Collection<VM>> args = Arrays.asList(s1, s2, s3);
 
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addRunningVM(vm4, n2);
+        map.addRunningVM(vms.get(0), ns.get(0));
+        map.addRunningVM(vms.get(1), ns.get(0));
+        map.addRunningVM(vms.get(2), ns.get(1));
+        map.addRunningVM(vms.get(3), ns.get(1));
 
         Split sp = new Split(args);
-        Model mo = new DefaultModel(map);
-        Assert.assertEquals(true, sp.isSatisfied(mo));
-        map.addRunningVM(vm3, n3);
-        Assert.assertEquals(true, sp.isSatisfied(mo));
-        map.addRunningVM(vm3, n1);
-        Assert.assertEquals(false, sp.isSatisfied(mo));
+        Assert.assertEquals(sp.isSatisfied(mo), true);
+        map.addRunningVM(vms.get(2), ns.get(2));
+        Assert.assertEquals(sp.isSatisfied(mo), true);
+        map.addRunningVM(vms.get(2), ns.get(0));
+        Assert.assertEquals(sp.isSatisfied(mo), false);
     }
 
     @Test
     public void testContinuousIsSatisfied() {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        List<Node> ns = Util.newNodes(mo, 3);
+        List<VM> vms = Util.newVMs(mo, 5);
 
-        Set<UUID> s1 = new HashSet<>(Arrays.asList(vm1, vm2));
-        Set<UUID> s2 = new HashSet<>(Arrays.asList(vm3, vm4));
-        Set<UUID> s3 = Collections.singleton(vm5);
-        Set<Set<UUID>> args = new HashSet<>(Arrays.asList(s1, s2, s3));
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addOnlineNode(ns.get(2));
 
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addRunningVM(vm4, n2);
+        Collection<VM> s1 = Arrays.asList(vms.get(0), vms.get(1));
+        Collection<VM> s2 = Arrays.asList(vms.get(2), vms.get(3));
+        Collection<VM> s3 = Collections.singleton(vms.get(4));
+        Collection<Collection<VM>> args = Arrays.asList(s1, s2, s3);
 
-        Split sp = new Split(args);
-        Model mo = new DefaultModel(map);
+        map.addRunningVM(vms.get(0), ns.get(0));
+        map.addRunningVM(vms.get(1), ns.get(0));
+        map.addRunningVM(vms.get(2), ns.get(1));
+        map.addRunningVM(vms.get(3), ns.get(1));
+
+        Split sp = new Split(args, true);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(sp.isSatisfied(plan), true);
-        map.addRunningVM(vm3, n1); //Violation
+        map.addRunningVM(vms.get(2), ns.get(0)); //Violation
         Assert.assertEquals(sp.isSatisfied(plan), false);
 
-        plan.add(new MigrateVM(vm3, n1, n2, 0, 1));
+        plan.add(new MigrateVM(vms.get(2), ns.get(0), ns.get(1), 0, 1));
+        Assert.assertEquals(sp.isSatisfied(plan), false); //False cause there is the initial violation
+        sp.setContinuous(false);
         Assert.assertEquals(sp.isSatisfied(plan), true);
+
+        sp.setContinuous(true);
         //Temporary overlap
-        plan.add(new MigrateVM(vm3, n2, n1, 5, 6));
+        plan.add(new MigrateVM(vms.get(2), ns.get(1), ns.get(0), 5, 6));
+        plan.add(new MigrateVM(vms.get(2), ns.get(0), ns.get(1), 6, 7));
         Assert.assertEquals(sp.isSatisfied(plan), false);
-        //Liberate n1 from vm1 and vm2 before
-        plan.add(new SuspendVM(vm1, n1, n1, 2, 3));
-        plan.add(new ShutdownVM(vm2, n1, 2, 3));
+
+        //Liberate ns.get(0) from vms.get(0) and vms.get(1) before
+        plan.add(new SuspendVM(vms.get(0), ns.get(0), ns.get(0), 2, 3));
+        plan.add(new ShutdownVM(vms.get(1), ns.get(0), 2, 3));
+        sp.setContinuous(false);
         Assert.assertEquals(sp.isSatisfied(plan), true);
     }
 }

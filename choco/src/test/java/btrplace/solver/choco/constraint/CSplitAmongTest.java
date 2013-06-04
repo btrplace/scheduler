@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,18 +17,15 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
+import btrplace.model.*;
 import btrplace.model.constraint.Fence;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.SplitAmong;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.MappingBuilder;
-import btrplace.test.PremadeElements;
+import btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -40,39 +36,52 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class CSplitAmongTest implements PremadeElements {
+public class CSplitAmongTest {
 
     @Test
     public void testGetMisplaced() {
-        Mapping map = new MappingBuilder().on(n1, n2, n3, n4, n5)
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        VM vm7 = mo.newVM();
+        VM vm8 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+        Node n5 = mo.newNode();
+
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2)
                 .run(n3, vm4, vm6)
                 .run(n4, vm5)
-                .run(n5, vm7).build();
+                .run(n5, vm7).get();
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
 
-        Set<UUID> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        Set<UUID> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
-        Set<UUID> vg3 = new HashSet<>(Arrays.asList(vm7));
+        Collection<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Collection<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
+        Collection<VM> vg3 = new HashSet<>(Arrays.asList(vm7));
 
-        Set<UUID> pg1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<UUID> pg3 = new HashSet<>(Arrays.asList(n5));
-        Set<Set<UUID>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
-        Set<Set<UUID>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
+        Collection<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
+        Collection<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
+        Collection<Node> pg3 = new HashSet<>(Arrays.asList(n5));
+        Collection<Collection<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
+        Collection<Collection<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
         SplitAmong s = new SplitAmong(vgs, pgs);
         CSplitAmong cs = new CSplitAmong(s);
 
-        Model mo = new DefaultModel(map);
-
         Assert.assertTrue(cs.getMisPlacedVMs(mo).isEmpty());
 
 
-        map.removeVM(vm7);
+        map.remove(vm7);
         map.addRunningVM(vm6, n5);
         //vg2 is on 2 group of nodes, the whole group is mis-placed
 
@@ -90,25 +99,40 @@ public class CSplitAmongTest implements PremadeElements {
 
     @Test
     public void testDiscrete() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3, n4, n5)
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        VM vm7 = mo.newVM();
+        VM vm8 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+        Node n5 = mo.newNode();
+
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2)
                 .run(n3, vm4, vm6)
                 .run(n4, vm5)
-                .run(n5, vm7).build();
+                .run(n5, vm7).get();
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
 
-        Set<UUID> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        Set<UUID> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
-        Set<UUID> vg3 = new HashSet<>(Arrays.asList(vm7));
+        Collection<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Collection<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
+        Collection<VM> vg3 = new HashSet<>(Arrays.asList(vm7));
 
-        Set<UUID> pg1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<UUID> pg3 = new HashSet<>(Arrays.asList(n5));
-        Set<Set<UUID>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
-        Set<Set<UUID>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
+        Collection<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
+        Collection<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
+        Collection<Node> pg3 = new HashSet<>(Arrays.asList(n5));
+        Collection<Collection<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
+        Collection<Collection<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
         SplitAmong s = new SplitAmong(vgs, pgs);
         s.setContinuous(false);
@@ -116,7 +140,6 @@ public class CSplitAmongTest implements PremadeElements {
         //vg1 and vg2 overlap on n2. The two groups are mis-placed
         map.addRunningVM(vm6, n2);
 
-        Model mo = new DefaultModel(map);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>singleton(s));
         Assert.assertNotNull(p);
@@ -125,25 +148,40 @@ public class CSplitAmongTest implements PremadeElements {
 
     @Test
     public void testContinuousWithAllDiffViolated() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3, n4, n5)
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        VM vm7 = mo.newVM();
+        VM vm8 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+        Node n5 = mo.newNode();
+
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2)
                 .run(n3, vm4, vm6)
                 .run(n4, vm5)
-                .run(n5, vm7).build();
+                .run(n5, vm7).get();
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
 
-        Set<UUID> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        Set<UUID> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
-        Set<UUID> vg3 = new HashSet<>(Arrays.asList(vm7));
+        Collection<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Collection<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
+        Collection<VM> vg3 = new HashSet<>(Arrays.asList(vm7));
 
-        Set<UUID> pg1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<UUID> pg3 = new HashSet<>(Arrays.asList(n5));
-        Set<Set<UUID>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
-        Set<Set<UUID>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
+        Collection<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
+        Collection<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
+        Collection<Node> pg3 = new HashSet<>(Arrays.asList(n5));
+        Collection<Collection<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2, vg3));
+        Collection<Collection<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
         SplitAmong s = new SplitAmong(vgs, pgs);
         s.setContinuous(true);
@@ -151,31 +189,45 @@ public class CSplitAmongTest implements PremadeElements {
         //vg1 and vg2 overlap on n2.
         map.addRunningVM(vm6, n2);
 
-        Model mo = new DefaultModel(map);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         Assert.assertNull(cra.solve(mo, Collections.<SatConstraint>singleton(s)));
     }
 
     @Test
     public void testContinuousWithGroupChange() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3, n4, n5)
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        VM vm7 = mo.newVM();
+        VM vm8 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+        Node n5 = mo.newNode();
+
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2)
                 .run(n3, vm4, vm6)
                 .run(n4, vm5)
-                .run(n5, vm7).build();
+                .run(n5, vm7).get();
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
 
-        Set<UUID> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        Set<UUID> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
+        Collection<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Collection<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
 
-        Set<UUID> pg1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<UUID> pg3 = new HashSet<>(Arrays.asList(n5));
-        Set<Set<UUID>> vgs = new HashSet<>(Arrays.asList(vg1, vg2));
-        Set<Set<UUID>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
+        Collection<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
+        Collection<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
+        Collection<Node> pg3 = new HashSet<>(Arrays.asList(n5));
+        Collection<Collection<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2));
+        Collection<Collection<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
         List<SatConstraint> cstrs = new ArrayList<>();
         SplitAmong s = new SplitAmong(vgs, pgs);
@@ -184,8 +236,6 @@ public class CSplitAmongTest implements PremadeElements {
         //Move group of VMs 1 to the group of nodes 2. Cannot work as
         //the among part of the constraint will be violated
         Fence f = new Fence(vg1, pg2);
-
-        Model mo = new DefaultModel(map);
 
         cstrs.add(s);
         cstrs.add(f);
@@ -196,24 +246,39 @@ public class CSplitAmongTest implements PremadeElements {
 
     @Test
     public void testDiscreteWithGroupChange() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3, n4, n5)
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        VM vm7 = mo.newVM();
+        VM vm8 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+        Node n5 = mo.newNode();
+
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm3)
                 .run(n2, vm2)
                 .run(n3, vm4, vm6)
                 .run(n4, vm5)
-                .run(n5, vm7).build();
+                .run(n5, vm7).get();
 
         //Isolated VM not considered by the constraint
         map.addRunningVM(vm8, n1);
 
-        Set<UUID> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        Set<UUID> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
+        Collection<VM> vg1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Collection<VM> vg2 = new HashSet<>(Arrays.asList(vm4, vm5, vm6));
 
-        Set<UUID> pg1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> pg2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<UUID> pg3 = new HashSet<>(Arrays.asList(n5));
-        Set<Set<UUID>> vgs = new HashSet<>(Arrays.asList(vg1, vg2));
-        Set<Set<UUID>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
+        Collection<Node> pg1 = new HashSet<>(Arrays.asList(n1, n2));
+        Collection<Node> pg2 = new HashSet<>(Arrays.asList(n3, n4));
+        Collection<Node> pg3 = new HashSet<>(Arrays.asList(n5));
+        Collection<Collection<VM>> vgs = new HashSet<>(Arrays.asList(vg1, vg2));
+        Collection<Collection<Node>> pgs = new HashSet<>(Arrays.asList(pg1, pg2, pg3));
 
         List<SatConstraint> cstrs = new ArrayList<>();
         SplitAmong s = new SplitAmong(vgs, pgs);
@@ -222,8 +287,6 @@ public class CSplitAmongTest implements PremadeElements {
         //Move group of VMs 1 to the group of nodes 2. This is allowed
         //group of VMs 2 will move to another group of node so at the end, the constraint should be satisfied
         Fence f = new Fence(vg1, pg2);
-
-        Model mo = new DefaultModel(map);
 
         cstrs.add(s);
         cstrs.add(f);

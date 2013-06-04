@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,29 +20,35 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.DefaultModel;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
+import btrplace.model.Node;
 import btrplace.model.constraint.Online;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.MappingBuilder;
-import btrplace.test.PremadeElements;
+import btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Unit tests for {@link COnline}.
  *
  * @author Fabien Hermenier
  */
-public class COnlineTest implements PremadeElements {
+public class COnlineTest {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Model mo = new DefaultModel();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Set<Node> s = new HashSet<>(Arrays.asList(n1, n2));
         Online on = new Online(s);
         COnline con = new COnline(on);
         Assert.assertEquals(con.toString(), on.toString());
@@ -51,8 +56,9 @@ public class COnlineTest implements PremadeElements {
 
     @Test
     public void testSolvableProblem() throws SolverException {
-        Mapping map = new MappingBuilder().off(n1).build();
-        Model mo = new DefaultModel(map);
+        Model mo = new DefaultModel();
+        Node n1 = mo.newNode();
+        Mapping map = new MappingFiller(mo.getMapping()).off(n1).get();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Online(Collections.singleton(n1))));
         Assert.assertNotNull(plan);

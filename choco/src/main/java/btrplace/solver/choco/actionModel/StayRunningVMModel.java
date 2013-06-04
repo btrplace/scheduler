@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,6 +17,7 @@
 
 package btrplace.solver.choco.actionModel;
 
+import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -26,7 +26,6 @@ import btrplace.solver.choco.SliceBuilder;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.UUID;
 
 /**
  * A model for a running VM that stay online on the same node.
@@ -39,7 +38,7 @@ public class StayRunningVMModel implements KeepRunningVMModel {
 
     private ReconfigurationProblem rp;
 
-    private UUID vm;
+    private VM vm;
 
     private IntDomainVar stay;
 
@@ -50,7 +49,7 @@ public class StayRunningVMModel implements KeepRunningVMModel {
      * @param e  the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public StayRunningVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
+    public StayRunningVMModel(ReconfigurationProblem rp, VM e) throws SolverException {
         this.vm = e;
         this.rp = rp;
         IntDomainVar host = rp.makeCurrentHost("stayRunningVM(" + e + ").host", e);
@@ -103,7 +102,7 @@ public class StayRunningVMModel implements KeepRunningVMModel {
     }
 
     @Override
-    public UUID getVM() {
+    public VM getVM() {
         return vm;
     }
 

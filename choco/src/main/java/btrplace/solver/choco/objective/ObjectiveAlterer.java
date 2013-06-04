@@ -41,7 +41,7 @@ public abstract class ObjectiveAlterer {
     /**
      * The reconfiguration problem to consider.
      */
-    protected ReconfigurationProblem rp;
+    private ReconfigurationProblem rp;
 
     /**
      * Make a new alterer on a given problem.
@@ -74,5 +74,13 @@ public abstract class ObjectiveAlterer {
      */
     public Var getObjective() {
         return obj;
+    }
+
+    /**
+     * Get the reconfiguration problem associated to that objective.
+     * @return the reconfiguration problem
+     */
+    public ReconfigurationProblem getReconfigurationProblem() {
+        return rp;
     }
 }

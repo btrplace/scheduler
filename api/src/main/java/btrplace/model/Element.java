@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,22 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.durationEvaluator;
-
-import java.util.UUID;
+package btrplace.model;
 
 /**
- * Interface to specify the duration evaluator for a possible action on an element.
+ * An element managed by BtrPlace.
  *
  * @author Fabien Hermenier
  */
-public interface DurationEvaluator {
+public interface Element {
 
     /**
-     * Evaluate the duration of the action on a given element.
+     * The element identifier.
+     * Unique among every elements having the same type
      *
-     * @param e the element
-     * @return a positive integer
+     * @return an integer
      */
-    int evaluate(UUID e);
+    int id();
+
 }

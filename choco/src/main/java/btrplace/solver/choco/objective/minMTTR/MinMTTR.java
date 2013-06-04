@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +19,7 @@ package btrplace.solver.choco.objective.minMTTR;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.actionModel.ActionModel;
@@ -50,6 +50,8 @@ public class MinMTTR implements ReconfigurationObjective {
 
     private List<SConstraint> costConstraints;
 
+    private boolean costActivated = false;
+
     private ReconfigurationProblem rp;
 
     /**
@@ -62,7 +64,7 @@ public class MinMTTR implements ReconfigurationObjective {
     @Override
     public void inject(ReconfigurationProblem rp) throws SolverException {
         this.rp = rp;
-        costConstraints.clear();
+        costActivated = false;
         List<IntDomainVar> mttrs = new ArrayList<>();
         for (ActionModel m : rp.getVMActions()) {
             mttrs.add(m.getEnd());
@@ -75,6 +77,7 @@ public class MinMTTR implements ReconfigurationObjective {
         IntDomainVar cost = s.createBoundIntVar(rp.makeVarLabel("globalCost"), 0, Choco.MAX_UPPER_BOUND);
 
         SConstraint costConstraint = s.eq(cost, CPSolver.sum(costs));
+        costConstraints.clear();
         costConstraints.add(costConstraint);
 
         s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
@@ -100,37 +103,37 @@ public class MinMTTR implements ReconfigurationObjective {
         OnStableNodeFirst schedHeuristic = new OnStableNodeFirst("stableNodeFirst", rp, actions, this);
 
         //Get the VMs to move
-        Set<UUID> onBadNodes = rp.getManageableVMs();
+        Set<VM> onBadNodes = rp.getManageableVMs();
 
-        for (UUID vm : map.getSleepingVMs()) {
+        for (VM vm : map.getSleepingVMs()) {
             if (rp.getFutureRunningVMs().contains(vm)) {
                 onBadNodes.add(vm);
             }
         }
 
-        Set<UUID> onGoodNodes = new HashSet<>(map.getRunningVMs());
+        Set<VM> onGoodNodes = new HashSet<>(map.getRunningVMs());
         onGoodNodes.removeAll(onBadNodes);
 
         List<VMActionModel> goodActions = new ArrayList<>();
-        for (UUID vm : onGoodNodes) {
+        for (VM vm : onGoodNodes) {
             goodActions.add(rp.getVMAction(vm));
         }
         List<VMActionModel> badActions = new ArrayList<>();
-        for (UUID vm : onBadNodes) {
+        for (VM vm : onBadNodes) {
             badActions.add(rp.getVMAction(vm));
         }
 
         CPSolver s = rp.getSolver();
 
         //Get the VMs to move for exclusion issue
-        Set<UUID> vmsToExclude = new HashSet<>(rp.getManageableVMs());
-        for (Iterator<UUID> ite = vmsToExclude.iterator(); ite.hasNext(); ) {
-            UUID vm = ite.next();
+        Set<VM> vmsToExclude = new HashSet<>(rp.getManageableVMs());
+        for (Iterator<VM> ite = vmsToExclude.iterator(); ite.hasNext(); ) {
+            VM vm = ite.next();
             if (!(map.getRunningVMs().contains(vm) && rp.getFutureRunningVMs().contains(vm))) {
                 ite.remove();
             }
         }
-        Map<IntDomainVar, UUID> pla = VMPlacementUtils.makePlacementMap(rp);
+        Map<IntDomainVar, VM> pla = VMPlacementUtils.makePlacementMap(rp);
 
         s.addGoal(new AssignVar(new MovingVMs("movingVMs", rp, map, vmsToExclude), new RandomVMPlacement("movingVMs", rp, pla, true)));
         HostingVariableSelector selectForBads = new HostingVariableSelector("selectForBads", rp, ActionModelUtils.getDSlices(badActions), schedHeuristic);
@@ -141,12 +144,12 @@ public class MinMTTR implements ReconfigurationObjective {
         s.addGoal(new AssignVar(selectForGoods, new RandomVMPlacement("selectForGoods", rp, pla, true)));
 
         //VMs to run
-        Set<UUID> vmsToRun = new HashSet<>(map.getReadyVMs());
+        Set<VM> vmsToRun = new HashSet<>(map.getReadyVMs());
         vmsToRun.removeAll(rp.getFutureReadyVMs());
 
         VMActionModel[] runActions = new VMActionModel[vmsToRun.size()];
         int i = 0;
-        for (UUID vm : vmsToRun) {
+        for (VM vm : vmsToRun) {
             runActions[i++] = rp.getVMAction(vm);
         }
         HostingVariableSelector selectForRuns = new HostingVariableSelector("selectForRuns", rp, ActionModelUtils.getDSlices(runActions), schedHeuristic);
@@ -161,11 +164,9 @@ public class MinMTTR implements ReconfigurationObjective {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         return Collections.emptySet();
     }
-
-    private boolean costActivated = false;
 
     /**
      * Post the constraints related to the objective.

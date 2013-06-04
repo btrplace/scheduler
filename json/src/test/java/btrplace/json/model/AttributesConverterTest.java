@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,10 +17,8 @@
 
 package btrplace.json.model;
 
-import btrplace.model.Attributes;
-import btrplace.model.DefaultAttributes;
-import btrplace.test.PremadeElements;
-import net.minidev.json.JSONObject;
+import btrplace.json.JSONConverterException;
+import btrplace.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -32,20 +29,29 @@ import java.io.IOException;
  *
  * @author Fabien Hermenier
  */
-public class AttributesConverterTest implements PremadeElements {
+public class AttributesConverterTest {
 
     @Test
-    public void testSimple() throws IOException {
+    public void testSimple() throws IOException, JSONConverterException {
+        Model mo = new DefaultModel();
         Attributes attrs = new DefaultAttributes();
 
-        attrs.put(n1, "foo", true);
-        attrs.put(n2, "foo", false);
-        attrs.put(n1, "bar", 5);
-        attrs.put(n2, "baz", "zab");
-        attrs.put(n2, "ba", 1.34);
+        VM vm1 = mo.newVM();
+        VM vm3 = mo.newVM(3);
+
+        Node n1 = mo.newNode();
+
+        attrs.put(n1, "boot", 7);
+        attrs.put(vm1, "template", "xen");
+        attrs.put(vm1, "forge", 3);
+        attrs.put(vm3, "template", "kvm");
+        attrs.put(vm3, "clone", true);
+        attrs.put(vm3, "foo", 1.3);
 
         AttributesConverter json = new AttributesConverter();
-        JSONObject o = json.toJSON(attrs);
+        json.setModel(mo);
+        String o = json.toJSONString(attrs);
+        System.out.println(o);
         Attributes attrs2 = json.fromJSON(o);
         Assert.assertTrue(attrs.equals(attrs2));
     }

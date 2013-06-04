@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,12 +17,12 @@
 
 package btrplace.solver.choco;
 
+import btrplace.model.VM;
 import btrplace.solver.SolverException;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.UUID;
 
 /**
  * A tool to help at the instantiation of Slices.
@@ -42,7 +41,7 @@ public class SliceBuilder {
 
     private IntDomainVar hoster = null;
 
-    private UUID e;
+    private VM e;
 
     private String lblPrefix;
 
@@ -50,10 +49,10 @@ public class SliceBuilder {
      * Make a new Builder.
      *
      * @param rp     the problem to customize
-     * @param e      the element associated to the slice
+     * @param e      the VM associated to the slice
      * @param prefix the label prefix for the variables
      */
-    public SliceBuilder(ReconfigurationProblem rp, UUID e, String prefix) {
+    public SliceBuilder(ReconfigurationProblem rp, VM e, String prefix) {
         this.rp = rp;
         this.e = e;
         lblPrefix = prefix;

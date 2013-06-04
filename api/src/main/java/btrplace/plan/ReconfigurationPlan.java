@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -36,7 +35,7 @@ public interface ReconfigurationPlan extends Iterable<Action> {
 
     /**
      * Get the model that is used as a starting point
-     * to perform the reconfiguration
+     * to perform the reconfiguration.
      *
      * @return the original model
      */
@@ -51,7 +50,7 @@ public interface ReconfigurationPlan extends Iterable<Action> {
     boolean add(Action a);
 
     /**
-     * Get the number of action in the plan.
+     * Get the number of actions in the plan.
      *
      * @return a positive integer
      */
@@ -60,7 +59,7 @@ public interface ReconfigurationPlan extends Iterable<Action> {
     /**
      * Return the theoretical duration of a reconfiguration plan.
      *
-     * @return the finish moment of the last action to execute
+     * @return the end moment of the last exectuted action
      */
     int getDuration();
 
@@ -74,7 +73,7 @@ public interface ReconfigurationPlan extends Iterable<Action> {
     /**
      * Get the resulting model once all the actions are executed.
      *
-     * @return the resulting model or {@code null} if the plan can be applied
+     * @return the resulting model or {@code null} if the plan cannot be applied
      */
     Model getResult();
 
@@ -99,7 +98,7 @@ public interface ReconfigurationPlan extends Iterable<Action> {
 
     /**
      * Get the applier that is used to simulate the actions application
-     * on the origin model.
+     * on the starting model.
      *
      * @return the applier in use.
      */

@@ -1,3 +1,20 @@
+/*
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ *
+ * This file is part of btrplace.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.plan;
 
 import btrplace.model.Model;
@@ -10,13 +27,15 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 /**
- * Checker to verify if a reconfiguration plan satisfies a set of {@link btrplace.model.constraint.checker.SatConstraintChecker}.
+ * Checker to verify if a reconfiguration plan satisfies a set of
+ * {@link btrplace.model.constraint.checker.SatConstraintChecker}.
  * <p/>
- * In practice, the origin model is sends to each of the checkers.
- * Then it notifies all the checker for the consume then the end moment of each of the action and event.
+ * In practice, the origin model is send to each of the checkers.
+ * Then it notifies all the checkers for the beginning and the end moment of each of the actions and events.
  * Finally, it sends the resulting model to each of the checkers.
  * <p/>
- * Action consume and end moment are notified in the increasing order of their associated moment.
+ * Actions start and end moment are notified in the increasing order of their associated moment with
+ * a priority given to the end moments.
  *
  * @author Fabien Hermenier
  */
@@ -24,8 +43,8 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
 
     private boolean startingEvent = true;
 
-    private static final TimedBasedActionComparator startsCmp = new TimedBasedActionComparator(true, true);
-    private static final TimedBasedActionComparator endsCmp = new TimedBasedActionComparator(false, true);
+    private static final TimedBasedActionComparator STARTS_CMP = new TimedBasedActionComparator(true, true);
+    private static final TimedBasedActionComparator ENDS_CMP = new TimedBasedActionComparator(false, true);
     private List<SatConstraintChecker> checkers;
 
     /**
@@ -219,7 +238,7 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
     }
 
     /**
-     * Check if a plan satisfies all the stated {@link SatConstraintChecker}.
+     * Check if a plan satisfies all the {@link SatConstraintChecker}.
      *
      * @param p the plan to check
      * @throws ReconfigurationPlanCheckerException
@@ -236,8 +255,8 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
         }
 
         if (!p.getActions().isEmpty()) {
-            PriorityQueue<Action> starts = new PriorityQueue<>(p.getActions().size(), startsCmp);
-            PriorityQueue<Action> ends = new PriorityQueue<>(p.getActions().size(), endsCmp);
+            PriorityQueue<Action> starts = new PriorityQueue<>(p.getActions().size(), STARTS_CMP);
+            PriorityQueue<Action> ends = new PriorityQueue<>(p.getActions().size(), ENDS_CMP);
             starts.addAll(p.getActions());
             ends.addAll(p.getActions());
 

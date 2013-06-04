@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,33 +17,29 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
 import btrplace.plan.event.KillVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.durationEvaluator.ConstantDuration;
+import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import btrplace.test.PremadeElements;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Unit tests for {@link KillVMActionModel}.
  *
  * @author Fabien Hermenier
  */
-public class KillVMActionModelTest implements PremadeElements {
+public class KillVMActionModelTest {
 
     /**
      * Test the action model with different action models.
@@ -54,24 +49,30 @@ public class KillVMActionModelTest implements PremadeElements {
      */
     @Test
     public void testBasics() throws ContradictionException, SolverException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
 
+        Mapping map = mo.getMapping();
+
+        Node n1 = mo.newNode();
         map.addOnlineNode(n1);
+        VM vm1 = mo.newVM();
         map.addRunningVM(vm1, n1);
+
+        VM vm2 = mo.newVM();
         map.addReadyVM(vm2);
+        VM vm3 = mo.newVM();
         map.addSleepingVM(vm3, n1);
 
-        Model mo = new DefaultModel(map);
-        Set<UUID> empty = new HashSet<>();
+        Set<VM> empty = new HashSet<>();
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(KillVM.class, new ConstantDuration(1));
+        dev.register(KillVM.class, new ConstantActionDuration(1));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables()
                 .setNextVMsStates(empty, empty, empty, map.getAllVMs())
                 .build();
 
-        rp.getNodeAction(n1).getState().setVal(1);
+        rp.getNodeAction(n1).getState().setVal(rp.getVM(vm1));
         //Common stuff
-        for (UUID vm : map.getAllVMs()) {
+        for (VM vm : map.getAllVMs()) {
             KillVMActionModel m = (KillVMActionModel) rp.getVMAction(vm);
             Assert.assertEquals(vm, m.getVM());
             Assert.assertTrue(m.getState().isInstantiatedTo(0));
@@ -87,20 +88,23 @@ public class KillVMActionModelTest implements PremadeElements {
 
         //The running VM has a CSlice
         Assert.assertNotNull(rp.getVMAction(vm1).getCSlice());
+        System.out.println(rp.getVMAction(vm1).getCSlice() + " " + rp.getNode(n1));
         Assert.assertTrue(rp.getVMAction(vm1).getCSlice().getHoster().isInstantiatedTo(rp.getNode(n1)));
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
 
         for (Action a : p) {
-            KillVM vma = (KillVM) a;
-            Assert.assertEquals(1, a.getEnd());
-            Assert.assertEquals(0, a.getStart());
-            if (vma.getVM().equals(vm1) || vma.getVM().equals(vm3)) {
-                Assert.assertEquals(n1, vma.getNode());
-            } else if (vma.getVM().equals(vm2)) {
-                Assert.assertNull(vma.getNode());
-            } else {
-                Assert.fail();
+            if (a instanceof KillVM) {
+                KillVM vma = (KillVM) a;
+                Assert.assertEquals(1, a.getEnd());
+                Assert.assertEquals(0, a.getStart());
+                if (vma.getVM().equals(vm1) || vma.getVM().equals(vm3)) {
+                    Assert.assertEquals(vma.getNode(), n1);
+                } else if (vma.getVM().equals(vm2)) {
+                    Assert.assertNull(vma.getNode());
+                } else {
+                    Assert.fail();
+                }
             }
         }
     }

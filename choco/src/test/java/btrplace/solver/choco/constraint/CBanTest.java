@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,10 +17,7 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.Ban;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Running;
@@ -29,30 +25,33 @@ import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.MappingBuilder;
-import btrplace.test.PremadeElements;
+import btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Unit tests for {@link CBan}.
  *
  * @author Fabien Hermenier
  */
-public class CBanTest implements PremadeElements {
+public class CBanTest {
 
     @Test
     public void testBasic() throws SolverException {
-        UUID[] nodes = new UUID[5];
-        UUID[] vms = new UUID[5];
-        Mapping m = new DefaultMapping();
-        Set<UUID> sVMs = new HashSet<>();
-        Set<UUID> sNodes = new HashSet<>();
+        Node[] nodes = new Node[5];
+        VM[] vms = new VM[5];
+        Model mo = new DefaultModel();
+        Mapping m = mo.getMapping();
+        Set<VM> sVMs = new HashSet<>();
+        Set<Node> sNodes = new HashSet<>();
         for (int i = 0; i < vms.length; i++) {
-            nodes[i] = new UUID(1, i);
-            vms[i] = new UUID(0, i);
+            nodes[i] = mo.newNode();
+            vms[i] = mo.newVM();
             m.addOnlineNode(nodes[i]);
             m.addRunningVM(vms[i], nodes[i]);
             if (i % 2 == 0) {
@@ -60,8 +59,6 @@ public class CBanTest implements PremadeElements {
                 sNodes.add(nodes[i]);
             }
         }
-
-        Model mo = new DefaultModel(m);
         Ban b = new Ban(sVMs, sNodes);
         Collection<SatConstraint> s = new HashSet<>();
         s.add(b);
@@ -83,24 +80,34 @@ public class CBanTest implements PremadeElements {
      */
     @Test
     public void testGetMisPlaced() {
-        Mapping m = new MappingBuilder().on(n1, n2, n3, n4, n5)
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+        Node n5 = mo.newNode();
+        Mapping m = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4, n5)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3)
                 .run(n3, vm4)
-                .sleep(n4, vm5).build();
+                .sleep(n4, vm5).get();
 
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2));
-        Set<UUID> ns = new HashSet<>(Arrays.asList(n3, n4));
+        Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<Node> ns = new HashSet<>(Arrays.asList(n3, n4));
 
         CBan c = new CBan(new Ban(vms, ns));
-        Model mo = new DefaultModel(m);
         org.testng.Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
-        ns.add(vm4);
+        ns.add(mo.newNode());
         org.testng.Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
-        vms.add(vm5);
+        vms.add(mo.newVM());
         org.testng.Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
         ns.add(n1);
-        Set<UUID> bad = c.getMisPlacedVMs(mo);
+        Set<VM> bad = c.getMisPlacedVMs(mo);
         org.testng.Assert.assertEquals(2, bad.size());
         org.testng.Assert.assertTrue(bad.contains(vm1) && bad.contains(vm2));
     }

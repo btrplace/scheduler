@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,33 +17,33 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.test.PremadeElements;
+import btrplace.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Unit tests for {@link Fence}.
  *
  * @author Fabien Hermenier
  */
-public class FenceTest implements PremadeElements {
+public class FenceTest {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1));
-        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1));
-        Fence f = new Fence(vms, nodes);
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 10);
+        List<VM> vms = Util.newVMs(mo, 10);
+
+        Set<VM> vs = new HashSet<>(Arrays.asList(vms.get(0)));
+        Set<Node> nodes = new HashSet<>(Arrays.asList(ns.get(0)));
+        Fence f = new Fence(vs, nodes);
         Assert.assertNotNull(f.getChecker());
-        Assert.assertEquals(vms, f.getInvolvedVMs());
+        Assert.assertEquals(vs, f.getInvolvedVMs());
         Assert.assertEquals(nodes, f.getInvolvedNodes());
         Assert.assertFalse(f.toString().contains("null"));
         Assert.assertFalse(f.isContinuous());
@@ -54,34 +53,36 @@ public class FenceTest implements PremadeElements {
 
     @Test
     public void testIsSatisfied() {
+        Model m = new DefaultModel();
+        List<Node> ns = Util.newNodes(m, 10);
+        List<VM> vms = Util.newVMs(m, 10);
 
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
-        map.addRunningVM(vm3, n2);
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Mapping map = m.getMapping();
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addOnlineNode(ns.get(2));
+        map.addRunningVM(vms.get(0), ns.get(0));
+        map.addRunningVM(vms.get(1), ns.get(1));
+        map.addRunningVM(vms.get(2), ns.get(1));
+        Set<VM> vs = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1), vms.get(2)));
 
-        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Node> nodes = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
 
-        Fence f = new Fence(vms, nodes);
-        Model m = new DefaultModel(map);
+        Fence f = new Fence(vs, nodes);
         Assert.assertEquals(true, f.isSatisfied(m));
-        map.addRunningVM(vm3, n3);
+        map.addRunningVM(vms.get(2), ns.get(2));
         Assert.assertEquals(false, f.isSatisfied(m));
     }
 
     @Test
     public void testEquals() {
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2));
-        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
+
+        Model mo = new DefaultModel();
+        Set<VM> vms = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
+        Set<Node> nodes = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
         Fence f = new Fence(vms, nodes);
         Assert.assertTrue(f.equals(f));
         Assert.assertTrue(new Fence(vms, nodes).equals(f));
         Assert.assertEquals(new Fence(vms, nodes).hashCode(), f.hashCode());
-
-        Assert.assertFalse(new Fence(nodes, vms).equals(f));
     }
 }

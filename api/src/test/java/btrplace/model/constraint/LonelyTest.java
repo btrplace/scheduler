@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,33 +17,31 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
 import btrplace.plan.event.ShutdownVM;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Unit tests for {@link Lonely}.
  *
  * @author Fabien Hermenier
  */
-public class LonelyTest implements PremadeElements {
+public class LonelyTest {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Model i = new DefaultModel();
+        Set<VM> s = new HashSet<>(Arrays.asList(i.newVM(), i.newVM(), i.newVM()));
+
         Lonely l = new Lonely(s);
         Assert.assertNotNull(l.getChecker());
         Assert.assertFalse(l.toString().contains("null"));
@@ -61,67 +58,71 @@ public class LonelyTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsHashCode() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Model i = new DefaultModel();
+        Set<VM> s = new HashSet<>(Arrays.asList(i.newVM(), i.newVM(), i.newVM()));
         Lonely l = new Lonely(s);
         Assert.assertTrue(l.equals(l));
         Assert.assertTrue(l.equals(new Lonely(new HashSet<>(s))));
         Assert.assertEquals(l.hashCode(), new Lonely(new HashSet<>(s)).hashCode());
-        Assert.assertFalse(l.equals(new Lonely(new HashSet<UUID>())));
+        Assert.assertFalse(l.equals(new Lonely(new HashSet<VM>())));
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testContinuousIsSatisfied() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
+        Model mo = new DefaultModel();
+        List<VM> vms = Util.newVMs(mo, 10);
+        List<Node> ns = Util.newNodes(mo, 10);
+        Set<VM> s = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
 
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addOnlineNode(ns.get(2));
 
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addRunningVM(vm4, n2);
-
-        Model mo = new DefaultModel(map);
+        map.addRunningVM(vms.get(0), ns.get(0));
+        map.addRunningVM(vms.get(1), ns.get(0));
+        map.addRunningVM(vms.get(2), ns.get(1));
+        map.addRunningVM(vms.get(3), ns.get(1));
 
         Lonely l = new Lonely(s, true);
 
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(l.isSatisfied(p), true);
-        p.add(new MigrateVM(vm2, n1, n2, 2, 4));
+        p.add(new MigrateVM(vms.get(1), ns.get(0), ns.get(1), 2, 4));
 
         Assert.assertEquals(l.isSatisfied(p), false);
-        p.add(new ShutdownVM(vm3, n2, 0, 1));
+        p.add(new ShutdownVM(vms.get(2), ns.get(1), 0, 1));
         Assert.assertEquals(l.isSatisfied(p), false);
-        p.add(new MigrateVM(vm4, n2, n3, 1, 2));
+        p.add(new MigrateVM(vms.get(3), ns.get(1), ns.get(2), 1, 2));
         Assert.assertEquals(l.isSatisfied(p), true);
     }
 
     @Test
     public void testDiscreteIsSatisfied() {
 
+        Model mo = new DefaultModel();
+        List<VM> vms = Util.newVMs(mo, 10);
+        List<Node> ns = Util.newNodes(mo, 10);
 
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addOnlineNode(ns.get(2));
 
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
-        map.addSleepingVM(vm4, n2);
+        map.addRunningVM(vms.get(0), ns.get(0));
+        map.addRunningVM(vms.get(1), ns.get(1));
+        map.addSleepingVM(vms.get(3), ns.get(1));
 
-        Model mo = new DefaultModel(map);
 
-        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<VM> s = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
         Lonely l = new Lonely(s);
 
         Assert.assertEquals(l.isSatisfied(mo), true);
 
-        s.add(vm4);
+        s.add(vms.get(3));
         Assert.assertEquals(l.isSatisfied(mo), true);
 
-        map.addRunningVM(vm3, n1);
+        map.addRunningVM(vms.get(2), ns.get(0));
         Assert.assertEquals(l.isSatisfied(mo), false);
 
     }

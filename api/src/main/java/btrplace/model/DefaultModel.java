@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,10 +19,7 @@ package btrplace.model;
 
 import btrplace.model.view.ModelView;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Default implementation for {@link Model}.
@@ -38,17 +34,25 @@ public class DefaultModel implements Model, Cloneable {
 
     private Attributes attrs;
 
+    private int nextVM;
+
+    private int nextNode;
+
+    private Set<VM> usedVMIds;
+    private Set<Node> usedNodeIds;
+
     /**
-     * Make a new instance using a particular mapping.
-     *
-     * @param m the mapping to use
+     * Make a new instance.
      */
-    public DefaultModel(Mapping m) {
-        this.cfg = m;
+    public DefaultModel() {
+        usedNodeIds = new HashSet<>();
+        usedVMIds = new HashSet<>();
         this.resources = new HashMap<>();
         attrs = new DefaultAttributes();
+        cfg = new DefaultMapping();
+        nextVM = 0;
+        nextNode = 0;
     }
-
 
     @Override
     public ModelView getView(String id) {
@@ -123,7 +127,8 @@ public class DefaultModel implements Model, Cloneable {
 
     @Override
     public Model clone() {
-        Model m = new DefaultModel(cfg.clone());
+        DefaultModel m = new DefaultModel();
+        MappingUtils.fill(cfg, m.cfg);
         for (ModelView rc : resources.values()) {
             m.attach(rc.clone());
         }
@@ -144,5 +149,64 @@ public class DefaultModel implements Model, Cloneable {
             b.append(entry.getValue()).append("\n");
         }
         return b.toString();
+    }
+
+    @Override
+    public VM newVM() {
+        if (usedVMIds.size() == Integer.MAX_VALUE) {
+            //No more ids left
+            return null;
+        }
+        //Find the first free id.
+        VM v = new VM(nextVM++);
+        while (!usedVMIds.add(v)) {
+            v = new VM(nextVM++);
+
+        }
+        return v;
+    }
+
+    @Override
+    public Node newNode() {
+        if (usedNodeIds.size() == Integer.MAX_VALUE) {
+            //No more ids left
+            return null;
+        }
+
+        //Find the first free id.
+        Node n = new Node(nextNode++);
+        while (!usedNodeIds.add(n)) {
+            n = new Node(nextNode++);
+
+        }
+        return n;
+    }
+
+    @Override
+    public VM newVM(int id) {
+        VM v = new VM(id);
+        if (usedVMIds.contains(v)) {
+            return null;
+        }
+        return v;
+    }
+
+    @Override
+    public Node newNode(int id) {
+        Node n = new Node(id);
+        if (usedNodeIds.contains(n)) {
+            return null;
+        }
+        return n;
+    }
+
+    @Override
+    public Set<Node> getNodes() {
+        return usedNodeIds;
+    }
+
+    @Override
+    public Set<VM> getVMs() {
+        return usedVMIds;
     }
 }

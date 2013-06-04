@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,32 +17,29 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Unit tests for {@link btrplace.model.constraint.Spread}.
  *
  * @author Fabien Hermenier
  */
-public class SpreadTest implements PremadeElements {
+public class SpreadTest {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> x = new HashSet<>(Arrays.asList(vm1, vm2));
+        Model mo = new DefaultModel();
+        Set<VM> x = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
         Spread s = new Spread(x);
         Assert.assertNotNull(s.getChecker());
         Assert.assertEquals(x, s.getInvolvedVMs());
@@ -60,13 +56,14 @@ public class SpreadTest implements PremadeElements {
 
     @Test
     public void testEquals() {
-        Set<UUID> x = new HashSet<>(Arrays.asList(vm1, vm2));
+        Model mo = new DefaultModel();
+        Set<VM> x = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
         Spread s = new Spread(x);
 
         Assert.assertTrue(s.equals(s));
         Assert.assertTrue(new Spread(x).equals(s));
         Assert.assertEquals(s.hashCode(), new Spread(x).hashCode());
-        x = new HashSet<>(Arrays.asList(vm3));
+        x = new HashSet<>(Arrays.asList(mo.newVM()));
         Assert.assertFalse(new Spread(x).equals(s));
     }
 
@@ -76,59 +73,64 @@ public class SpreadTest implements PremadeElements {
     @Test
     public void testDiscreteIsSatisfied() {
 
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOnlineNode(n4);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
-        map.addRunningVM(vm3, n1);
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 4);
+        List<VM> vms = Util.newVMs(mo, 3);
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addOnlineNode(ns.get(2));
+        map.addOnlineNode(ns.get(3));
+        map.addRunningVM(vms.get(0), ns.get(0));
+        map.addRunningVM(vms.get(1), ns.get(1));
+        map.addRunningVM(vms.get(2), ns.get(0));
 
-        Model mo = new DefaultModel(map);
 
         //Discrete satisfaction.
         Spread s = new Spread(map.getAllVMs());
         s.setContinuous(false);
 
         Assert.assertEquals(s.isSatisfied(mo), false);
-        map.addRunningVM(vm1, n4);
+        map.addRunningVM(vms.get(0), ns.get(3));
         Assert.assertEquals(s.isSatisfied(mo), true);
     }
 
     @Test
     public void testContinuousIsSatisfied() {
 
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOnlineNode(n4);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 4);
+        List<VM> vms = Util.newVMs(mo, 4);
+
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addOnlineNode(ns.get(2));
+        map.addOnlineNode(ns.get(3));
+        map.addRunningVM(vms.get(0), ns.get(0));
+        map.addRunningVM(vms.get(1), ns.get(1));
 
         Spread s = new Spread(map.getAllVMs());
 
-        Model mo = new DefaultModel(map);
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(s.isSatisfied(p), true);
 
-        MigrateVM m1 = new MigrateVM(vm1, n1, n2, 1, 2);
+        MigrateVM m1 = new MigrateVM(vms.get(0), ns.get(0), ns.get(1), 1, 2);
         p.add(m1);
         Assert.assertEquals(s.isSatisfied(p), false);
 
         //No overlapping at moment 1
-        MigrateVM m2 = new MigrateVM(vm2, n2, n3, 0, 1);
+        MigrateVM m2 = new MigrateVM(vms.get(1), ns.get(1), ns.get(2), 0, 1);
         p.add(m2);
         Assert.assertEquals(s.isSatisfied(p), true);
 
 
-        map.addRunningVM(vm3, n2);
+        map.addRunningVM(vms.get(2), ns.get(1));
         s = new Spread(map.getAllVMs());
         p = new DefaultReconfigurationPlan(mo);
         System.out.println(p.getOrigin() + "\n" + p.getResult());
         Assert.assertEquals(s.isSatisfied(p), false);
-        p.add(new MigrateVM(vm3, n2, n3, 0, 5));
+        p.add(new MigrateVM(vms.get(2), ns.get(1), ns.get(2), 0, 5));
         Assert.assertEquals(s.isSatisfied(p), true);
     }
 }

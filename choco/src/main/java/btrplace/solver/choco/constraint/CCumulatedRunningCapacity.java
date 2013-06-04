@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,11 +19,14 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.CumulatedRunningCapacity;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import choco.cp.solver.CPSolver;
+import choco.kernel.solver.constraints.integer.IntExp;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.*;
@@ -58,7 +60,7 @@ public class CCumulatedRunningCapacity implements ChocoSatConstraint {
             } else {
                 int[] alias = new int[cstr.getInvolvedNodes().size()];
                 int i = 0;
-                for (UUID n : cstr.getInvolvedNodes()) {
+                for (Node n : cstr.getInvolvedNodes()) {
                     alias[i++] = rp.getNode(n);
                 }
                 int[] cUse = new int[rp.getSourceModel().getMapping().getRunningVMs().size()];
@@ -69,22 +71,29 @@ public class CCumulatedRunningCapacity implements ChocoSatConstraint {
             }
         }
         List<IntDomainVar> vs = new ArrayList<>();
-        for (UUID u : cstr.getInvolvedNodes()) {
+        for (Node u : cstr.getInvolvedNodes()) {
             vs.add(rp.getNbRunningVMs()[rp.getNode(u)]);
         }
-        s.post(s.leq(CPSolver.sum(vs.toArray(new IntDomainVar[vs.size()])), cstr.getAmount()));
+        //Try to get a lower bound
+        //basically, we count 1 per VM necessarily in the set of nodes
+        //if involved nodes == all the nodes, then sum == nb of running VMs
+        IntExp on = CPSolver.sum(vs.toArray(new IntDomainVar[vs.size()]));
+        if (cstr.getInvolvedNodes().equals(rp.getSourceModel().getMapping().getAllNodes())) {
+            s.post(s.eq(on, rp.getFutureRunningVMs().size()));
+        }
+        s.post(s.leq(on, cstr.getAmount()));
         return true;
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-        Set<UUID> bad = new HashSet<>();
+        Set<VM> bad = new HashSet<>();
         int remainder = cstr.getAmount();
-        for (UUID n : cstr.getInvolvedNodes()) {
+        for (Node n : cstr.getInvolvedNodes()) {
             remainder -= map.getRunningVMs(n).size();
             if (remainder < 0) {
-                for (UUID n2 : cstr.getInvolvedNodes()) {
+                for (Node n2 : cstr.getInvolvedNodes()) {
                     bad.addAll(map.getRunningVMs(n2));
                 }
                 return bad;

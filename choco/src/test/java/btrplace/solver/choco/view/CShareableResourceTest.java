@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,29 +17,31 @@
 
 package btrplace.solver.choco.view;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
+import btrplace.model.constraint.Online;
+import btrplace.model.constraint.Overbook;
+import btrplace.model.constraint.Preserve;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
-import btrplace.solver.choco.MappingBuilder;
-import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.*;
 import btrplace.solver.choco.actionModel.VMActionModel;
-import btrplace.test.PremadeElements;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Unit tests for {@link CShareableResource}.
  *
  * @author Fabien Hermenier
  */
-public class CShareableResourceTest implements PremadeElements {
+public class CShareableResourceTest {
 
     /**
      * Test the instantiation and the creation of the variables.
@@ -49,16 +50,23 @@ public class CShareableResourceTest implements PremadeElements {
      */
     @Test
     public void testSimple() throws SolverException {
-        Mapping ma = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping ma = mo.getMapping();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
         ma.addOnlineNode(n1);
         ma.addOfflineNode(n2);
         ma.addRunningVM(vm1, n1);
         ma.addRunningVM(vm2, n1);
         ma.addReadyVM(vm3);
-        ShareableResource rc = new ShareableResource("foo", 0);
-        rc.set(vm2, 3);
-        rc.set(n1, 4);
-        Model mo = new DefaultModel(ma);
+        ShareableResource rc = new ShareableResource("foo", 0, 0);
+        rc.setConsumption(vm2, 3);
+        rc.setCapacity(n1, 4);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         CShareableResource rcm = new CShareableResource(rp, rc);
         Assert.assertEquals(rc.getIdentifier(), rcm.getIdentifier());
@@ -87,19 +95,26 @@ public class CShareableResourceTest implements PremadeElements {
      */
     @Test
     public void testRealNodeUsage() throws SolverException, ContradictionException {
-        Mapping ma = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping ma = mo.getMapping();
+
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
 
         ma.addOnlineNode(n1);
         ma.addOnlineNode(n2);
         ma.addRunningVM(vm1, n1);
         ma.addRunningVM(vm2, n1);
 
-        ShareableResource rc = new ShareableResource("foo", 0);
-        rc.set(vm1, 2);
-        rc.set(vm2, 3);
-        rc.set(n1, 5);
-        rc.set(n2, 3);
-        Model mo = new DefaultModel(ma);
+        ShareableResource rc = new ShareableResource("foo", 0, 0);
+        rc.setConsumption(vm1, 2);
+        rc.setConsumption(vm2, 3);
+        rc.setCapacity(n1, 5);
+        rc.setCapacity(n2, 3);
         mo.attach(rc);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
@@ -119,17 +134,21 @@ public class CShareableResourceTest implements PremadeElements {
 
     @Test
     public void testMaintainResourceUsage() throws SolverException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+
+        Node n1 = mo.newNode();
 
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n1);
         ShareableResource rc = new ShareableResource("foo");
-        rc.set(vm1, 5);
-        rc.set(vm2, 7);
-        rc.set(n1, 25);
+        rc.setConsumption(vm1, 5);
+        rc.setConsumption(vm2, 7);
+        rc.setCapacity(n1, 25);
 
-        Model mo = new DefaultModel(map);
         mo.attach(rc);
 
         ModelViewMapper vMapper = new ModelViewMapper();
@@ -148,8 +167,8 @@ public class CShareableResourceTest implements PremadeElements {
         //And on the resulting plan.
         Model res = p.getResult();
         ShareableResource resRc = (ShareableResource) res.getView(rc.getIdentifier());
-        Assert.assertEquals(resRc.get(vm1), 5);
-        Assert.assertEquals(resRc.get(vm2), 7);
+        Assert.assertEquals(resRc.getConsumption(vm1), 5);
+        Assert.assertEquals(resRc.getConsumption(vm2), 7);
     }
 
     /**
@@ -157,13 +176,18 @@ public class CShareableResourceTest implements PremadeElements {
      */
     @Test
     public void testDefaultOverbookRatio() throws ContradictionException, SolverException {
-        Mapping ma = new MappingBuilder().on(n1).run(n1, vm1, vm2).build();
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        Node n1 = mo.newNode();
 
-        ShareableResource rc = new ShareableResource("foo", 0);
-        rc.set(vm1, 2);
-        rc.set(vm2, 3);
-        rc.set(n1, 5);
-        Model mo = new DefaultModel(ma);
+        Mapping ma = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1, vm2).get();
+
+        ShareableResource rc = new ShareableResource("foo", 0, 0);
+        rc.setConsumption(vm1, 2);
+        rc.setConsumption(vm2, 3);
+        rc.setCapacity(n1, 5);
+
         mo.attach(rc);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
@@ -174,5 +198,34 @@ public class CShareableResourceTest implements PremadeElements {
         rcm.getVMsAllocation()[rp.getVM(vm2)].setInf(4);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNull(p);
+    }
+
+    @Test
+    public void testWithFloat() throws SolverException {
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1, vm2).get();
+
+        btrplace.model.view.ShareableResource rc = new ShareableResource("foo");
+        rc.setCapacity(n1, 32);
+        rc.setConsumption(vm1, 3);
+        rc.setConsumption(vm2, 2);
+        mo.attach(rc);
+
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.labelVariables(true);
+        List<SatConstraint> cstrs = new ArrayList<>();
+        cstrs.add(new Online(map.getAllNodes()));
+        Overbook o = new Overbook(map.getAllNodes(), "foo", 1.5);
+        o.setContinuous(false);
+        cstrs.add(o);
+        cstrs.add(new Preserve(Collections.singleton(vm1), "foo", 5));
+        ReconfigurationPlan p = cra.solve(mo, cstrs);
+        Assert.assertNotNull(p);
+        System.out.println(p);
     }
 }

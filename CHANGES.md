@@ -1,7 +1,16 @@
 Release notes
 ======================
 
-version ???????????
+version 0.30 - 04 Jun 2013
+----------------------
+
+- Bugs fix
+- Close #16, #18, #19
+- MAJOR API change: Type system for elements. No more UUIDS.
+- Simplify json package
+- 2 new tutorials on customizing a Model and a ChocoReconfigurationAlgorithm.
+
+version 0.29 - 07 May 2013
 ----------------------
 - Multiple Bug fixes
 - Fix regressions in the placement subproblems that appeared in 0.28

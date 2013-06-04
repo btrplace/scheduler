@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,6 +18,8 @@
 package btrplace.solver.choco;
 
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlanChecker;
@@ -109,12 +110,12 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     @Override
-    public void repair(boolean b) {
+    public void doRepair(boolean b) {
         repair = b;
     }
 
     @Override
-    public boolean repair() {
+    public boolean doRepair() {
         return repair;
     }
 
@@ -128,9 +129,9 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         return useLabels;
     }
 
-    private void checkUnkownVMsInMapping(Model m, Collection<UUID> vms) throws SolverException {
+    private void checkUnkownVMsInMapping(Model m, Collection<VM> vms) throws SolverException {
         if (!m.getMapping().getAllVMs().containsAll(vms)) {
-            Set<UUID> unknown = new HashSet<>(vms);
+            Set<VM> unknown = new HashSet<>(vms);
             unknown.removeAll(m.getMapping().getAllVMs());
             throw new SolverException(m, "Unknown VMs: " + unknown);
         }
@@ -143,8 +144,8 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
      * @param ns the nodes to check
      * @throws SolverException if at least one of the given nodes is not in the RP.
      */
-    private void checkNodesExistence(Model mo, Collection<UUID> ns) throws SolverException {
-        for (UUID node : ns) {
+    private void checkNodesExistence(Model mo, Collection<Node> ns) throws SolverException {
+        for (Node node : ns) {
             if (!mo.getMapping().getAllNodes().contains(node)) {
                 throw new SolverException(mo, "Unknown node '" + node + "'");
             }
@@ -159,10 +160,10 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         //Build the RP. As VM state management is not possible
         //We extract VM-state related constraints first.
         //For other constraint, we just create the right choco constraint
-        Set<UUID> toRun = new HashSet<>();
-        Set<UUID> toForge = new HashSet<>();
-        Set<UUID> toKill = new HashSet<>();
-        Set<UUID> toSleep = new HashSet<>();
+        Set<VM> toRun = new HashSet<>();
+        Set<VM> toForge = new HashSet<>();
+        Set<VM> toKill = new HashSet<>();
+        Set<VM> toSleep = new HashSet<>();
 
         List<ChocoSatConstraint> cConstraints = new ArrayList<>();
         for (SatConstraint cstr : cstrs) {
@@ -205,7 +206,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
                 .setViewMapper(viewMapper)
                 .setDurationEvaluatators(durationEvaluators);
         if (repair) {
-            Set<UUID> toManage = new HashSet<>();
+            Set<VM> toManage = new HashSet<>();
             for (ChocoSatConstraint cstr : cConstraints) {
                 toManage.addAll(cstr.getMisPlacedVMs(i));
             }

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,6 +18,8 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
@@ -28,7 +29,7 @@ import choco.kernel.solver.ContradictionException;
 
 import java.util.Collections;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Choco implementation of {@link btrplace.model.constraint.Online}.
@@ -50,7 +51,7 @@ public class COnline implements ChocoSatConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        for (UUID nId : cstr.getInvolvedNodes()) {
+        for (Node nId : cstr.getInvolvedNodes()) {
             ActionModel m = rp.getNodeAction(nId);
             try {
                 m.getState().setVal(1);
@@ -63,7 +64,7 @@ public class COnline implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         return Collections.emptySet();
     }
 

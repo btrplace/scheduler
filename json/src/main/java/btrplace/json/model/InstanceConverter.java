@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,20 +17,21 @@
 
 package btrplace.json.model;
 
-import btrplace.json.JSONConverter;
+import btrplace.json.AbstractJSONObjectConverter;
 import btrplace.json.JSONConverterException;
 import btrplace.json.model.constraint.SatConstraintsConverter;
+import btrplace.model.Instance;
 import btrplace.model.Model;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
 /**
- * A JSON converter for {@link btrplace.json.model.Instance}.
+ * A JSON converter for {@link btrplace.model.Instance}.
  *
  * @author Fabien Hermenier
  */
 
-public class InstanceConverter implements JSONConverter<Instance> {
+public class InstanceConverter extends AbstractJSONObjectConverter<Instance> {
 
     @Override
     public Instance fromJSON(JSONObject in) throws JSONConverterException {
@@ -39,8 +39,8 @@ public class InstanceConverter implements JSONConverter<Instance> {
         SatConstraintsConverter cstrc = new SatConstraintsConverter();
 
         Model mo = moc.fromJSON((JSONObject) in.get("model"));
-
-        return new Instance(mo, cstrc.fromJSON((JSONArray) in.get("constraints")));
+        cstrc.setModel(mo);
+        return new Instance(mo, cstrc.listFromJSON((JSONArray) in.get("constraints")));
     }
 
     @Override

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,6 +18,8 @@
 package btrplace.solver.choco.objective.minMTTR;
 
 import btrplace.model.Mapping;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.actionModel.VMActionModel;
@@ -28,7 +29,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * A variable selector that focuses on the VMs that will be running
@@ -57,7 +58,7 @@ public class MovingVMs extends AbstractIntVarSelector {
      * @param m   the initial configuration
      * @param vms the VMs to consider
      */
-    public MovingVMs(String label, ReconfigurationProblem s, Mapping m, Set<UUID> vms) {
+    public MovingVMs(String label, ReconfigurationProblem s, Mapping m, Set<VM> vms) {
         super(s.getSolver());
         this.label = label;
         map = m;
@@ -65,7 +66,7 @@ public class MovingVMs extends AbstractIntVarSelector {
         this.rp = s;
         this.actions = new LinkedList<>();
         //Get all the involved slices
-        for (UUID vm : vms) {
+        for (VM vm : vms) {
             if (rp.getFutureRunningVMs().contains(vm)) {
                 actions.add(rp.getVMAction(vm));
             }
@@ -76,8 +77,8 @@ public class MovingVMs extends AbstractIntVarSelector {
     public IntDomainVar selectVar() {
         for (VMActionModel a : actions) {
             if (!a.getDSlice().getHoster().isInstantiated()) {
-                UUID vm = a.getVM();
-                UUID nId = map.getVMLocation(vm);
+                VM vm = a.getVM();
+                Node nId = map.getVMLocation(vm);
                 if (nId != null) {
                     //VM was running
                     Slice slice = a.getDSlice();

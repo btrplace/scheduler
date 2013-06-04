@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,37 +18,43 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
+import btrplace.model.DefaultModel;
+import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.Among;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Unit tests for {@link btrplace.json.model.constraint.AmongConverter}.
  *
  * @author Fabien Hermenier
  */
-public class AmongConverterTest implements PremadeElements {
-
-    private static AmongConverter conv = new AmongConverter();
+public class AmongConverterTest {
 
     @Test
-    public void testViables() throws JSONConverterException {
-        Set<UUID> s1 = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
-        Set<UUID> p1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> p2 = new HashSet<>(Arrays.asList(n4, n5));
-        Set<UUID> p3 = new HashSet<>(Arrays.asList(n3));
+    public void testViables() throws JSONConverterException, IOException {
+        AmongConverter conv = new AmongConverter();
+        Model mo = new DefaultModel();
+        conv.setModel(mo);
+        Set<VM> s1 = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM()));
+        Collection<Node> p1 = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
+        Set<Node> p2 = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
+        Set<Node> p3 = new HashSet<>(Arrays.asList(mo.newNode()));
 
-        Set<Set<UUID>> pgrps = new HashSet<>(Arrays.asList(p1, p2, p3));
+        Set<Collection<Node>> pgrps = new HashSet<>(Arrays.asList(p1, p2, p3));
 
         Among d = new Among(s1, pgrps, false);
         Among c = new Among(s1, pgrps, true);
-        Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
-        Assert.assertEquals(conv.fromJSON(conv.toJSON(c)), c);
+        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+        Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
     }
 }

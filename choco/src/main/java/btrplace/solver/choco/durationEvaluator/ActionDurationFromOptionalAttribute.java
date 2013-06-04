@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,8 +18,8 @@
 package btrplace.solver.choco.durationEvaluator;
 
 import btrplace.model.Attributes;
-
-import java.util.UUID;
+import btrplace.model.Element;
+import btrplace.model.Model;
 
 /**
  * A duration evaluator that try to get a duration from an attribute
@@ -29,37 +28,34 @@ import java.util.UUID;
  *
  * @author Fabien Hermenier
  */
-public class DurationFromAttribute implements DurationEvaluator {
+public class ActionDurationFromOptionalAttribute<E extends Element> implements ActionDurationEvaluator<E> {
 
-    private Attributes attrs;
-
-    private DurationEvaluator parent;
+    private ActionDurationEvaluator<E> parent;
 
     private String key;
 
     /**
      * Make a new evaluator.
      *
-     * @param a      the attributed to rely on
      * @param attrId the attribute identifier. The associated value must be an {@link Integer}.
      * @param dev    the evaluator to rely on if the attribute is not set or invalid
      */
-    public DurationFromAttribute(Attributes a, String attrId, DurationEvaluator dev) {
-        attrs = a;
+    public ActionDurationFromOptionalAttribute(String attrId, ActionDurationEvaluator<E> dev) {
         parent = dev;
         key = attrId;
     }
 
     @Override
-    public int evaluate(UUID e) {
+    public int evaluate(Model mo, E e) {
+        Attributes attrs = mo.getAttributes();
         if (attrs.isSet(e, key)) {
             try {
-                return attrs.getLong(e, key).intValue();
+                return attrs.getInteger(e, key);
             } catch (Exception ex) {
-                return parent.evaluate(e);
+                return parent.evaluate(mo, e);
             }
         }
-        return parent.evaluate(e);
+        return parent.evaluate(mo, e);
     }
 
     /**
@@ -68,7 +64,7 @@ public class DurationFromAttribute implements DurationEvaluator {
      *
      * @return an evaluator.
      */
-    public DurationEvaluator getParent() {
+    public ActionDurationEvaluator getParent() {
         return parent;
     }
 
@@ -77,7 +73,7 @@ public class DurationFromAttribute implements DurationEvaluator {
      *
      * @param dev the evaluator to use
      */
-    public void setParent(DurationEvaluator dev) {
+    public void setParent(ActionDurationEvaluator<E> dev) {
         parent = dev;
     }
 

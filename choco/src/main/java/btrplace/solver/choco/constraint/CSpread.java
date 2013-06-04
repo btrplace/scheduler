@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +19,8 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Spread;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -55,7 +56,7 @@ public class CSpread implements ChocoSatConstraint {
     public boolean inject(ReconfigurationProblem rp) {
 
         List<IntDomainVar> onlyRunnings = new ArrayList<>();
-        for (UUID vmId : cstr.getInvolvedVMs()) {
+        for (VM vmId : cstr.getInvolvedVMs()) {
             if (rp.getFutureRunningVMs().contains(vmId)) {
                 VMActionModel a = rp.getVMAction(vmId);
                 Slice d = a.getDSlice();
@@ -70,18 +71,18 @@ public class CSpread implements ChocoSatConstraint {
             s.post(new BoundAllDiff(onlyRunnings.toArray(new IntDomainVar[onlyRunnings.size()]), true));
 
             if (cstr.isContinuous()) {
-                UUID[] vms = new UUID[onlyRunnings.size()];
+                VM[] vms = new VM[onlyRunnings.size()];
                 int x = 0;
-                for (UUID vm : cstr.getInvolvedVMs()) {
+                for (VM vm : cstr.getInvolvedVMs()) {
                     if (rp.getFutureRunningVMs().contains(vm)) {
                         vms[x++] = vm;
                     }
                 }
                 for (int i = 0; i < vms.length; i++) {
-                    UUID vm = vms[i];
+                    VM vm = vms[i];
                     VMActionModel aI = rp.getVMAction(vm);
                     for (int j = 0; j < i; j++) {
-                        UUID vmJ = vms[j];
+                        VM vmJ = vms[j];
                         VMActionModel aJ = rp.getVMAction(vmJ);
                         Slice dI = aI.getDSlice();
                         Slice cJ = aJ.getCSlice();
@@ -91,7 +92,7 @@ public class CSpread implements ChocoSatConstraint {
 
                         //If both are currently hosted on the same node, no need to worry about non-overlapping
                         //between the c and the d-slices as it may create a non-solution
-                        boolean currentlyGathered = cI != null && cJ != null && cJ.getHoster().isInstantiatedTo(dJ.getHoster().getVal());
+                        boolean currentlyGathered = cI != null && cJ != null && cJ.getHoster().isInstantiatedTo(cI.getHoster().getVal());
 
                         if (!currentlyGathered && dI != null && cJ != null) {
                             //No need to place the constraints if the slices do not have a chance to overlap
@@ -124,21 +125,21 @@ public class CSpread implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
-        Map<UUID, Set<UUID>> spots = new HashMap<>();
-        Set<UUID> bad = new HashSet<>();
+    public Set<VM> getMisPlacedVMs(Model m) {
+        Map<Node, Set<VM>> spots = new HashMap<>();
+        Set<VM> bad = new HashSet<>();
         Mapping map = m.getMapping();
-        for (UUID vm : cstr.getInvolvedVMs()) {
-            UUID h = map.getVMLocation(vm);
+        for (VM vm : cstr.getInvolvedVMs()) {
+            Node h = map.getVMLocation(vm);
             if (map.getRunningVMs().contains(vm)) {
                 if (!spots.containsKey(h)) {
-                    spots.put(h, new HashSet<UUID>());
+                    spots.put(h, new HashSet<VM>());
                 }
                 spots.get(h).add(vm);
             }
 
         }
-        for (Map.Entry<UUID, Set<UUID>> e : spots.entrySet()) {
+        for (Map.Entry<Node, Set<VM>> e : spots.entrySet()) {
             if (e.getValue().size() > 1) {
                 bad.addAll(e.getValue());
             }
