@@ -11,6 +11,10 @@ JAVA_OPTS="-classpath $CLASSPATH.:src"
 
 if [ $# -ne 1 ]; then
 	echo "Usage: $0 tutorial_name"
+	echo "Available tutorials:"
+	ls src/btrplace/examples/*.java|\
+	cut -d "." -f1|cut -d'/' -f4|\
+	grep -v Launcher|grep -v Example
 	exit 1
 fi
 
