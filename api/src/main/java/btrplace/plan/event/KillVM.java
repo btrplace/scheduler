@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,9 +18,10 @@
 package btrplace.plan.event;
 
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * An action to destroy a VM that can be in any state.
@@ -30,41 +30,41 @@ import java.util.UUID;
  */
 public class KillVM extends Action implements VMStateTransition {
 
-    private UUID id;
+    private VM id;
 
-    private UUID host;
+    private Node host;
 
     /**
      * Make a new action.
      *
-     * @param vm   the VM to kill
-     * @param host its location if any, {@code null} otherwise
-     * @param st   the moment the action starts
-     * @param ed   the moment the action ends
+     * @param vm    the VM to kill
+     * @param on    its location if any, {@code null} otherwise
+     * @param start the moment the action starts
+     * @param end   the moment the action ends
      */
-    public KillVM(UUID vm, UUID host, int st, int ed) {
-        super(st, ed);
+    public KillVM(VM vm, Node on, int start, int end) {
+        super(start, end);
         id = vm;
-        this.host = host;
+        this.host = on;
     }
 
     /**
      * Get the VM location.
      *
-     * @return the node identifier if the VM is hosted somewhere. Otherwise, {@code null}
+     * @return the node if the VM is hosted somewhere.{@code null} otherwise
      */
-    public UUID getNode() {
+    public Node getNode() {
         return host;
     }
 
     @Override
-    public UUID getVM() {
+    public VM getVM() {
         return id;
     }
 
     @Override
     public boolean applyAction(Model i) {
-        return i.getMapping().removeVM(id);
+        return i.getMapping().remove(id);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class KillVM extends Action implements VMStateTransition {
             return true;
         } else if (o.getClass() == this.getClass()) {
             KillVM that = (KillVM) o;
-            return this.id.equals(that.id) &&
+            return this.id == that.id &&
                     ((host == null && that.host == null) || (host != null && host.equals(that.host))) &&
                     this.getStart() == that.getStart() &&
                     this.getEnd() == that.getEnd();

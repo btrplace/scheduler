@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +19,8 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.SingleResourceCapacity;
 import btrplace.model.view.ShareableResource;
@@ -32,7 +33,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Choco implementation of {@link btrplace.model.constraint.SingleResourceCapacity}.
@@ -60,7 +61,7 @@ public class CSingleResourceCapacity implements ChocoSatConstraint {
         }
         int amount = cstr.getAmount();
         CPSolver s = rp.getSolver();
-        for (UUID n : cstr.getInvolvedNodes()) {
+        for (Node n : cstr.getInvolvedNodes()) {
             IntDomainVar v = rcm.getVirtualUsage()[rp.getNode(n)];
             s.post(s.leq(v, amount));
 
@@ -85,14 +86,14 @@ public class CSingleResourceCapacity implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-        Set<UUID> bad = new HashSet<>();
+        Set<VM> bad = new HashSet<>();
         ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
-        for (UUID n : cstr.getInvolvedNodes()) {
+        for (Node n : cstr.getInvolvedNodes()) {
             int remainder = cstr.getAmount();
-            for (UUID v : map.getRunningVMs(n)) {
-                remainder -= rc.get(v);
+            for (VM v : map.getRunningVMs(n)) {
+                remainder -= rc.getConsumption(v);
                 if (remainder < 0) {
                     bad.addAll(map.getRunningVMs(n));
                     break;

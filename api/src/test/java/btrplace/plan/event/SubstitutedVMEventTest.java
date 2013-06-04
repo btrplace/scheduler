@@ -1,10 +1,28 @@
+/*
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ *
+ * This file is part of btrplace.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.plan.event;
 
 import btrplace.model.*;
 import btrplace.model.view.ModelView;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -14,14 +32,17 @@ import static org.mockito.Mockito.verify;
  *
  * @author Fabien Hermenier
  */
-public class SubstitutedVMEventTest implements PremadeElements {
+public class SubstitutedVMEventTest {
 
-    static SubstitutedVMEvent s = new SubstitutedVMEvent(vm1, vm2);
+    static Model mo = new DefaultModel();
+    static List<Node> ns = Util.newNodes(mo, 10);
+    static List<VM> vms = Util.newVMs(mo, 10);
+    static SubstitutedVMEvent s = new SubstitutedVMEvent(vms.get(0), vms.get(1));
 
     @Test
     public void testInstantiation() {
-        Assert.assertEquals(s.getVM(), vm1);
-        Assert.assertEquals(s.getNewUUID(), vm2);
+        Assert.assertEquals(s.getVM(), vms.get(0));
+        Assert.assertEquals(s.getNewVM(), vms.get(1));
         Assert.assertFalse(s.toString().contains("null"));
     }
 
@@ -34,15 +55,15 @@ public class SubstitutedVMEventTest implements PremadeElements {
 
     @Test
     public void testApply() {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addReadyVM(vm1);
-        map.addReadyVM(vm3);
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addReadyVM(vms.get(0));
+        map.addReadyVM(vms.get(2));
         ModelView v = mock(ModelView.class);
-        Model mo = new DefaultModel(map);
         mo.attach(v);
         Assert.assertTrue(s.apply(mo));
-        verify(v).substitute(vm1, vm2);
+        verify(v).substituteVM(vms.get(0), vms.get(1));
     }
 }

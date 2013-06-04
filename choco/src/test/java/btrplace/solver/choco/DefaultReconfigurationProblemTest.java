@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -30,7 +29,6 @@ import btrplace.solver.choco.view.CShareableResource;
 import btrplace.solver.choco.view.ChocoModelView;
 import btrplace.solver.choco.view.ChocoModelViewBuilder;
 import btrplace.solver.choco.view.ModelViewMapper;
-import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.AtMostNValue;
 import choco.cp.solver.constraints.global.IncreasingNValue;
@@ -48,7 +46,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class DefaultReconfigurationProblemTest implements PremadeElements {
+public class DefaultReconfigurationProblemTest {
 
     public class MockCViewModel implements ChocoModelView {
         @Override
@@ -67,7 +65,7 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
         }
 
         @Override
-        public boolean cloneVM(UUID vm, UUID clone) {
+        public boolean cloneVM(VM vm, VM clone) {
             throw new UnsupportedOperationException();
         }
     }
@@ -84,13 +82,24 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
         }
 
         @Override
-        public boolean substitute(UUID curId, UUID nextId) {
+        public boolean substituteVM(VM curId, VM nextId) {
             throw new UnsupportedOperationException();
         }
     }
 
-    private static Model defaultModel() {
-        Mapping map = new DefaultMapping();
+    /*private static Model defaultModel() {
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+
+        Mapping map = mo.getMapping();
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addOfflineNode(n3);
@@ -101,8 +110,8 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
         map.addSleepingVM(vm4, n2);
         map.addReadyVM(vm5);
         map.addReadyVM(vm6);
-        return new DefaultModel(map);
-    }
+        return mo;
+    }                 */
 
 
     /**
@@ -112,26 +121,45 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
      */
     @Test
     public void testSimplestInstantiation() throws SolverException {
-        Model m = defaultModel();
-        Set<UUID> toRun = new HashSet<>();
-        Set<UUID> toWait = new HashSet<>();
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOfflineNode(n3);
+
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm3, n2);
+        map.addSleepingVM(vm4, n2);
+        map.addReadyVM(vm5);
+        map.addReadyVM(vm6);
+        VM vm7 = mo.newVM();
+        Set<VM> toRun = new HashSet<>();
+        Set<VM> toWait = new HashSet<>();
         toWait.add(vm6);
         toWait.add(vm7);
         toRun.add(vm5);
         toRun.add(vm4);
         toRun.add(vm1);
-        m.getAttributes().put(vm7, "template", "small");
+        mo.getAttributes().put(vm7, "template", "small");
         DurationEvaluators dEval = new DurationEvaluators();
-        UUIDPool p = new InMemoryUUIDPool();
-        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(m)
-                .setUUIDPool(p)
+        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(toWait, toRun, Collections.singleton(vm3), Collections.singleton(vm2))
                 .setDurationEvaluatators(dEval).build();
 
         Assert.assertEquals(dEval, rp.getDurationEvaluators());
         Assert.assertNotNull(rp.getViewMapper());
         Assert.assertNull(rp.getObjectiveAlterer());
-        Assert.assertEquals(rp.getUUIDPool(), p);
         Assert.assertEquals(rp.getFutureReadyVMs(), toWait);
         Assert.assertEquals(rp.getFutureRunningVMs(), toRun);
         Assert.assertEquals(rp.getFutureSleepingVMs(), Collections.singleton(vm3));
@@ -143,34 +171,55 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
 
         //Test the index values of the nodes and the VMs.
         for (int i = 0; i < rp.getVMs().length; i++) {
-            UUID vm = rp.getVM(i);
+            VM vm = rp.getVM(i);
             Assert.assertEquals(i, rp.getVM(vm));
         }
-        Assert.assertEquals(-1, rp.getVM(vm10));
+        Assert.assertEquals(rp.getVM(mo.newVM()), -1);
 
         for (int i = 0; i < rp.getNodes().length; i++) {
-            UUID n = rp.getNode(i);
+            Node n = rp.getNode(i);
             Assert.assertEquals(i, rp.getNode(n));
         }
-        Assert.assertEquals(-1, rp.getNode(n10));
+        Assert.assertEquals(rp.getNode(mo.newNode()), -1);
     }
 
     @Test
     public void testManageableVMs() throws SolverException {
-        Model mo = defaultModel();
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+
         Mapping map = mo.getMapping();
-        Set<UUID> runnings = new HashSet<>(map.getRunningVMs());
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOfflineNode(n3);
+
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm3, n2);
+        map.addSleepingVM(vm4, n2);
+        map.addReadyVM(vm5);
+        map.addReadyVM(vm6);
+
+        Set<VM> runnings = new HashSet<>(map.getRunningVMs());
         runnings.add(vm6);
         runnings.add(vm5);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.<UUID>emptySet(), runnings, map.getSleepingVMs(), Collections.<UUID>emptySet())
+                .setNextVMsStates(Collections.<VM>emptySet(), runnings, map.getSleepingVMs(), Collections.<VM>emptySet())
                 .setManageableVMs(map.getRunningVMs(n1)).build();
-        Set<UUID> manageable = rp.getManageableVMs();
+        Set<VM> manageable = rp.getManageableVMs();
 
         Assert.assertEquals(manageable.size(), 4);
         Assert.assertTrue(manageable.containsAll(Arrays.asList(vm6, vm5, vm1, vm2)));
         //Check the action model that has been used for each of the VM.
-        for (UUID vm : map.getAllVMs()) {
+        for (VM vm : map.getAllVMs()) {
             if (map.getRunningVMs().contains(vm) && rp.getFutureRunningVMs().contains(vm)) {
                 if (!manageable.contains(vm)) {
                     Assert.assertEquals(rp.getVMAction(vm).getClass(), StayRunningVMModel.class);
@@ -186,30 +235,72 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
 
     @Test
     public void testVMToWaiting() throws SolverException {
-        Mapping m = new DefaultMapping();
-        Model mo = new DefaultModel(m);
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOfflineNode(n3);
+
+        //map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm3, n2);
+        map.addSleepingVM(vm4, n2);
+        map.addReadyVM(vm5);
+        map.addReadyVM(vm6);
         mo.getAttributes().put(vm1, "template", "small");
         ReconfigurationProblem rp =
                 new DefaultReconfigurationProblemBuilder(mo)
                         .setNextVMsStates(Collections.singleton(vm1),
-                                new HashSet<UUID>(),
-                                new HashSet<UUID>(),
-                                new HashSet<UUID>()).build();
+                                new HashSet<VM>(),
+                                new HashSet<VM>(),
+                                new HashSet<VM>()).build();
 
-        ActionModel a = rp.getVMActions()[0];
+        ActionModel a = rp.getVMActions()[rp.getVM(vm1)];
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(ForgeVMModel.class, a.getClass());
     }
 
     @Test
     public void testWaitinVMToRun() throws SolverException {
-        Mapping m = new DefaultMapping();
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOfflineNode(n3);
+
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm3, n2);
+        map.addSleepingVM(vm4, n2);
+        map.addReadyVM(vm5);
+        map.addReadyVM(vm6);
+        Mapping m = mo.getMapping();
         m.addReadyVM(vm1);
-        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(new DefaultModel(m))
-                .setNextVMsStates(new HashSet<UUID>(),
+        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setNextVMsStates(new HashSet<VM>(),
                         Collections.singleton(vm1),
-                        new HashSet<UUID>(),
-                        new HashSet<UUID>()).build();
+                        new HashSet<VM>(),
+                        new HashSet<VM>()).build();
 
         ActionModel a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMAction(vm1));
@@ -218,15 +309,37 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
 
     @Test
     public void testVMStayRunning() throws SolverException {
-        Mapping m = new DefaultMapping();
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOfflineNode(n3);
+
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm3, n2);
+        map.addSleepingVM(vm4, n2);
+        map.addReadyVM(vm5);
+        map.addReadyVM(vm6);
+        Mapping m = mo.getMapping();
         m.addOnlineNode(n1);
         m.addRunningVM(vm1, n1);
 
-        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(new DefaultModel(m))
-                .setNextVMsStates(new HashSet<UUID>(),
+        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setNextVMsStates(new HashSet<VM>(),
                         Collections.singleton(vm1),
-                        new HashSet<UUID>(),
-                        new HashSet<UUID>()).build();
+                        new HashSet<VM>(),
+                        new HashSet<VM>()).build();
         ActionModel a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(RelocatableVMModel.class, a.getClass());
@@ -234,14 +347,36 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
 
     @Test
     public void testVMRunningToSleeping() throws SolverException {
-        Mapping m = new DefaultMapping();
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOfflineNode(n3);
+
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm3, n2);
+        map.addSleepingVM(vm4, n2);
+        map.addReadyVM(vm5);
+        map.addReadyVM(vm6);
+        Mapping m = mo.getMapping();
         m.addOnlineNode(n1);
         m.addRunningVM(vm1, n1);
-        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(new DefaultModel(m))
-                .setNextVMsStates(new HashSet<UUID>(),
-                        new HashSet<UUID>(),
+        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setNextVMsStates(new HashSet<VM>(),
+                        new HashSet<VM>(),
                         Collections.singleton(vm1),
-                        new HashSet<UUID>()).build();
+                        new HashSet<VM>()).build();
 
         ActionModel a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMAction(vm1));
@@ -250,15 +385,37 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
 
     @Test
     public void testVMsToKill() throws SolverException {
-        Mapping m = new DefaultMapping();
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOfflineNode(n3);
+
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm3, n2);
+        map.addSleepingVM(vm4, n2);
+        map.addReadyVM(vm5);
+        map.addReadyVM(vm6);
+        Mapping m = mo.getMapping();
         m.addOnlineNode(n1);
         m.addRunningVM(vm1, n1);
         m.addSleepingVM(vm2, n1);
         m.addReadyVM(vm3);
-        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(new DefaultModel(m))
-                .setNextVMsStates(new HashSet<UUID>(),
-                        new HashSet<UUID>(),
-                        new HashSet<UUID>(),
+        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setNextVMsStates(new HashSet<VM>(),
+                        new HashSet<VM>(),
+                        new HashSet<VM>(),
                         m.getAllVMs()).build();
 
         for (ActionModel a : rp.getVMActions()) {
@@ -268,14 +425,36 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
 
     @Test
     public void testVMToShutdown() throws SolverException {
-        Mapping m = new DefaultMapping();
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOfflineNode(n3);
+
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm3, n2);
+        map.addSleepingVM(vm4, n2);
+        map.addReadyVM(vm5);
+        map.addReadyVM(vm6);
+        Mapping m = mo.getMapping();
         m.addOnlineNode(n1);
         m.addRunningVM(vm1, n1);
-        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(new DefaultModel(m))
+        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.singleton(vm1),
-                        new HashSet<UUID>(),
-                        new HashSet<UUID>(),
-                        new HashSet<UUID>()).build();
+                        new HashSet<VM>(),
+                        new HashSet<VM>(),
+                        new HashSet<VM>()).build();
         ActionModel a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(ShutdownVMModel.class, a.getClass());
@@ -285,14 +464,36 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
 
     @Test
     public void testVMStaySleeping() throws SolverException {
-        Mapping m = new DefaultMapping();
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOfflineNode(n3);
+
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm3, n2);
+        map.addSleepingVM(vm4, n2);
+        map.addReadyVM(vm5);
+        map.addReadyVM(vm6);
+        Mapping m = mo.getMapping();
         m.addOnlineNode(n1);
         m.addSleepingVM(vm1, n1);
-        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(new DefaultModel(m))
-                .setNextVMsStates(new HashSet<UUID>(),
-                        new HashSet<UUID>(),
+        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setNextVMsStates(new HashSet<VM>(),
+                        new HashSet<VM>(),
                         Collections.singleton(vm1),
-                        new HashSet<UUID>()).build();
+                        new HashSet<VM>()).build();
 
         ActionModel a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMAction(vm1));
@@ -301,14 +502,36 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
 
     @Test
     public void testVMSleepToRun() throws SolverException {
-        Mapping m = new DefaultMapping();
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOfflineNode(n3);
+
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm3, n2);
+        map.addSleepingVM(vm4, n2);
+        map.addReadyVM(vm5);
+        map.addReadyVM(vm6);
+        Mapping m = mo.getMapping();
         m.addOnlineNode(n1);
         m.addSleepingVM(vm1, n1);
-        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(new DefaultModel(m))
-                .setNextVMsStates(new HashSet<UUID>(),
+        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setNextVMsStates(new HashSet<VM>(),
                         Collections.singleton(vm1),
-                        new HashSet<UUID>(),
-                        new HashSet<UUID>()).build();
+                        new HashSet<VM>(),
+                        new HashSet<VM>()).build();
         ActionModel a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMAction(vm1));
         Assert.assertEquals(ResumeVMModel.class, a.getClass());
@@ -316,13 +539,15 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
 
     @Test
     public void testNodeOn() throws SolverException {
-        Mapping m = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping m = mo.getMapping();
+        Node n1 = mo.newNode();
         m.addOnlineNode(n1);
-        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(new DefaultModel(m))
-                .setNextVMsStates(new HashSet<UUID>(),
-                        new HashSet<UUID>(),
-                        new HashSet<UUID>(),
-                        new HashSet<UUID>()).build();
+        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setNextVMsStates(new HashSet<VM>(),
+                        new HashSet<VM>(),
+                        new HashSet<VM>(),
+                        new HashSet<VM>()).build();
 
         ActionModel a = rp.getNodeActions()[0];
         Assert.assertEquals(a, rp.getNodeAction(n1));
@@ -332,33 +557,76 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
 
     @Test
     public void testNodeOff() throws SolverException {
-        Mapping m = new DefaultMapping();
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOfflineNode(n3);
+
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm3, n2);
+        map.addSleepingVM(vm4, n2);
+        map.addReadyVM(vm5);
+        map.addReadyVM(vm6);
+        Mapping m = mo.getMapping();
         m.addOfflineNode(n1);
 
-        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(new DefaultModel(m))
-                .setNextVMsStates(new HashSet<UUID>(),
-                        new HashSet<UUID>(),
-                        new HashSet<UUID>(),
-                        new HashSet<UUID>()).build();
+        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setNextVMsStates(new HashSet<VM>(),
+                        new HashSet<VM>(),
+                        new HashSet<VM>(),
+                        new HashSet<VM>()).build();
 
-        ActionModel a = rp.getNodeActions()[0];
-        Assert.assertEquals(a, rp.getNodeAction(n1));
+        ActionModel a = rp.getNodeActions()[rp.getNode(n3)];
+        Assert.assertEquals(a, rp.getNodeAction(n3));
         Assert.assertEquals(BootableNodeModel.class, a.getClass());
     }
 
     @Test
     public void testGetResourceMapping() throws SolverException {
-        Model m = defaultModel();
-        ShareableResource rc = new ShareableResource("cpu", 0);
-        for (UUID n : m.getMapping().getAllNodes()) {
-            rc.set(n, 4);
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOfflineNode(n3);
+
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm3, n2);
+        map.addSleepingVM(vm4, n2);
+        map.addReadyVM(vm5);
+        map.addReadyVM(vm6);
+        ShareableResource rc = new ShareableResource("cpu", 0, 0);
+        for (Node n : mo.getMapping().getAllNodes()) {
+            rc.setCapacity(n, 4);
         }
 
-        for (UUID vm : m.getMapping().getReadyVMs()) {
-            rc.set(vm, 2);
+        for (VM vm : mo.getMapping().getReadyVMs()) {
+            rc.setConsumption(vm, 2);
         }
-        m.attach(rc);
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(m).build();
+        mo.attach(rc);
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         CShareableResource rcm = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + "cpu");
         Assert.assertNotNull(rcm);
         Assert.assertNull(rp.getView("bar"));
@@ -368,7 +636,28 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
 
     @Test
     public void testViewMapping() throws SolverException {
-        Model m = defaultModel();
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOfflineNode(n3);
+
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm3, n2);
+        map.addSleepingVM(vm4, n2);
+        map.addReadyVM(vm5);
+        map.addReadyVM(vm6);
 
         ModelViewMapper mapper = new ModelViewMapper();
         mapper.register(new ChocoModelViewBuilder() {
@@ -384,9 +673,9 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
         });
 
         MockView v = new MockView();
-        m.attach(v);
+        mo.attach(v);
 
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(m)
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setViewMapper(mapper)
                 .build();
 
@@ -397,12 +686,33 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
 
     @Test(expectedExceptions = {SolverException.class})
     public void testNoViewImplementation() throws SolverException {
-        Model m = defaultModel();
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(n1);
+        map.addOnlineNode(n2);
+        map.addOfflineNode(n3);
+
+        map.addRunningVM(vm1, n1);
+        map.addRunningVM(vm2, n1);
+        map.addRunningVM(vm3, n2);
+        map.addSleepingVM(vm4, n2);
+        map.addReadyVM(vm5);
+        map.addReadyVM(vm6);
 
         MockView v = new MockView();
-        m.attach(v);
+        mo.attach(v);
 
-        new DefaultReconfigurationProblemBuilder(m).build();
+        new DefaultReconfigurationProblemBuilder(mo).build();
     }
 
     /**
@@ -414,19 +724,21 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
      */
     @Test
     public void testVMCounting() throws SolverException, ContradictionException {
-        Model m = defaultModel();
-        Mapping map = m.getMapping().clone();
-        Set<UUID> s = new HashSet<>(map.getAllVMs());
-        for (UUID vm : s) {
+        Model mo = new DefaultModel();
+        Node n3 = mo.newNode();
+
+
+        Mapping map = mo.getMapping();
+        Set<VM> s = new HashSet<>(map.getAllVMs());
+        for (VM vm : s) {
             map.addReadyVM(vm);
         }
-        map.removeNode(n3);
-        m = new DefaultModel(map);
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(m)
-                .setNextVMsStates(new HashSet<UUID>()
+        map.remove(n3);
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setNextVMsStates(new HashSet<VM>()
                         , map.getAllVMs()
-                        , new HashSet<UUID>()
-                        , new HashSet<UUID>())
+                        , new HashSet<VM>()
+                        , new HashSet<VM>())
                 .labelVariables()
                 .build();
 
@@ -438,13 +750,13 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
         Assert.assertNotNull(p);
         //Check consistency between the counting and the hoster variables
         int[] counts = new int[map.getAllNodes().size()];
-        for (UUID n : map.getOnlineNodes()) {
+        for (Node n : map.getOnlineNodes()) {
             int nIdx = rp.getNode(n);
             counts[nIdx] = rp.getNbRunningVMs()[nIdx].getVal();
         }
-        for (UUID vm : rp.getFutureRunningVMs()) {
-            VMActionModel mo = rp.getVMActions()[rp.getVM(vm)];
-            int on = mo.getDSlice().getHoster().getVal();
+        for (VM vm : rp.getFutureRunningVMs()) {
+            VMActionModel vmo = rp.getVMActions()[rp.getVM(vm)];
+            int on = vmo.getDSlice().getHoster().getVal();
             counts[on]--;
         }
         for (int count : counts) {
@@ -454,7 +766,14 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
 
     @Test
     public void testMaintainState() throws SolverException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Mapping map = mo.getMapping();
 
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);
@@ -462,19 +781,17 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
         map.addSleepingVM(vm3, n1);
         map.addReadyVM(vm5);
         ShareableResource rc = new ShareableResource("foo");
-        rc.set(vm1, 5);
-        rc.set(vm2, 7);
+        rc.setConsumption(vm1, 5);
+        rc.setConsumption(vm2, 7);
 
-        Model mo = new DefaultModel(map);
         mo.getAttributes().put(vm4, "template", "small");
         mo.attach(rc);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblem(mo, new DurationEvaluators(), new ModelViewMapper(),
-                new InMemoryUUIDPool(),
                 Collections.singleton(vm4),
                 Collections.singleton(vm5),
                 Collections.singleton(vm1),
-                Collections.<UUID>emptySet(),
+                Collections.<VM>emptySet(),
                 map.getAllVMs(),
                 false);
         Assert.assertTrue(rp.getFutureSleepingVMs().contains(vm1));
@@ -491,14 +808,14 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
      */
     @Test
     public void testMinimize() throws SolverException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         for (int i = 0; i < 10; i++) {
-            UUID n = new UUID(2, i);
-            UUID vm = new UUID(3, i);
+            Node n = mo.newNode();
+            VM vm = mo.newVM();
             map.addOnlineNode(n);
             map.addRunningVM(vm, n);
         }
-        Model mo = new DefaultModel(map);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
         CPSolver s = rp.getSolver();
         IntDomainVar nbNodes = s.createBoundIntVar("nbNodes", 1, map.getAllNodes().size());
@@ -522,14 +839,14 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
      */
     @Test
     public void testMinimizationWithAlterer() throws SolverException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         for (int i = 0; i < 10; i++) {
-            UUID n = new UUID(2, i);
-            UUID vm = new UUID(3, i);
+            Node n = mo.newNode();
+            VM vm = mo.newVM();
             map.addOnlineNode(n);
             map.addRunningVM(vm, n);
         }
-        Model mo = new DefaultModel(map);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
         CPSolver s = rp.getSolver();
         IntDomainVar nbNodes = s.createBoundIntVar("nbNodes", 1, map.getAllNodes().size());
@@ -561,15 +878,16 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
      */
     @Test
     public void testMaximization() throws SolverException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        Node n1 = mo.newNode();
         map.addOnlineNode(n1);
         for (int i = 0; i < 10; i++) {
-            UUID n = new UUID(2, i);
-            UUID vm = new UUID(3, i);
+            Node n = mo.newNode();
+            VM vm = mo.newVM();
             map.addOnlineNode(n);
             map.addRunningVM(vm, n1);
         }
-        Model mo = new DefaultModel(map);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
         CPSolver s = rp.getSolver();
         IntDomainVar nbNodes = s.createBoundIntVar("nbNodes", 1, map.getOnlineNodes().size());
@@ -593,15 +911,16 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
      */
     @Test
     public void testMaximizationWithAlterer() throws SolverException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        Node n1 = mo.newNode();
         map.addOnlineNode(n1);
         for (int i = 0; i < 10; i++) {
-            UUID n = new UUID(2, i);
-            UUID vm = new UUID(3, i);
+            Node n = mo.newNode();
+            VM vm = mo.newVM();
             map.addOnlineNode(n);
             map.addRunningVM(vm, n1);
         }
-        Model mo = new DefaultModel(map);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
         CPSolver s = rp.getSolver();
         final IntDomainVar nbNodes = s.createBoundIntVar("nbNodes", 1, map.getOnlineNodes().size());
@@ -635,14 +954,14 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
      */
     @Test
     public void testUnfeasibleOptimizeWithAlterer() throws SolverException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
         for (int i = 0; i < 10; i++) {
-            UUID n = new UUID(2, i);
-            UUID vm = new UUID(3, i);
+            Node n = mo.newNode();
+            VM vm = mo.newVM();
             map.addOnlineNode(n);
             map.addRunningVM(vm, n);
         }
-        Model mo = new DefaultModel(map);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
         CPSolver s = rp.getSolver();
         IntDomainVar nbNodes = s.createBoundIntVar("nbNodes", 0, 0);
@@ -661,5 +980,16 @@ public class DefaultReconfigurationProblemTest implements PremadeElements {
         rp.setObjectiveAlterer(alt);
         ReconfigurationPlan plan = rp.solve(0, true);
         Assert.assertNull(plan);
+    }
+
+
+    @Test
+    public void testViewAddition() throws SolverException {
+        Model mo = new DefaultModel();
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
+        MockCViewModel view = new MockCViewModel();
+        Assert.assertTrue(rp.addView(view));
+        Assert.assertEquals(rp.getView(view.getIdentifier()), view);
+        Assert.assertFalse(rp.addView(view));
     }
 }

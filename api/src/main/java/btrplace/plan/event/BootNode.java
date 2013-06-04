@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,36 +19,38 @@ package btrplace.plan.event;
 
 
 import btrplace.model.Model;
+import btrplace.model.Node;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
- * An action to consume an offline node. Once the execution is finished, the node is online.
+ * An action to boot an offline node.
+ * Once the execution is finished, the node is online.
  *
  * @author Fabien Hermenier
  */
 public class BootNode extends Action implements NodeEvent {
 
-    private UUID node;
+    private Node node;
 
     /**
-     * Create a new startup action on an offline node.
+     * Create a new action on an offline node.
      *
-     * @param n The node to consume
-     * @param s the moment the action starts
-     * @param f the moment the action is finished
+     * @param node  The node to boot
+     * @param start the moment the action starts
+     * @param end   the moment the action is finished
      */
-    public BootNode(UUID n, int s, int f) {
-        super(s, f);
-        this.node = n;
+    public BootNode(Node node, int start, int end) {
+        super(start, end);
+        this.node = node;
     }
 
     /**
      * Test the equality with another object.
      *
      * @param obj The object to compare with
-     * @return true if o is an instance of Startup and if both actions act on the same node
+     * @return {@code true} if {@code obj} is an instance of {@link BootNode}
+     *         and if both actions act on the same node
      */
     @Override
     public boolean equals(Object obj) {
@@ -67,7 +68,7 @@ public class BootNode extends Action implements NodeEvent {
     }
 
     @Override
-    public UUID getNode() {
+    public Node getNode() {
         return node;
     }
 

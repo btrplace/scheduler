@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,37 +15,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.durationEvaluator;
 
-import java.util.UUID;
+import btrplace.model.Element;
+import btrplace.model.Model;
+
 
 /**
- * Allow to retrieve and release UUIDs that
- * are the basic element identifiers in btrplace.
+ * Evaluate an action duration to a constant.
  *
  * @author Fabien Hermenier
  */
-public interface UUIDPool {
+public class ConstantActionDuration<E extends Element> implements ActionDurationEvaluator<E> {
+
+    private int duration;
 
     /**
-     * Get a new UUID.
+     * Make a new evaluator.
      *
-     * @return the UUID if possible, {@code null} if the pool is empty
+     * @param d the estimated duration to accomplish the action. Must be strictly positive
      */
-    UUID request();
+    public ConstantActionDuration(int d) {
+        this.duration = d;
+    }
 
-    /**
-     * Release a UUID that will be available again.
-     *
-     * @return {@code true}
-     */
-    boolean release(UUID u);
+    @Override
+    public int evaluate(Model mo, E e) {
+        return duration;
+    }
 
-    /**
-     * Check whether a UUID is used or not.
-     *
-     * @param u the UUID to check
-     * @return {@code true} iff the UUID is in used
-     */
-    boolean inUse(UUID u);
+
+    @Override
+    public String toString() {
+        return new StringBuilder("d=").append(duration).toString();
+    }
 }

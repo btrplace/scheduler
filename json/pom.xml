@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
-  ~ Copyright (c) 2012 University of Nice Sophia-Antipolis
+  ~ Copyright (c) 2013 University of Nice Sophia-Antipolis
   ~
   ~ This file is part of btrplace.
-  ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
@@ -21,11 +21,11 @@
     <parent>
         <groupId>btrplace</groupId>
         <artifactId>solver</artifactId>
-        <version>0.29-SNAPSHOT</version>
+        <version>0.31-SNAPSHOT</version>
     </parent>
 
     <artifactId>solver-json</artifactId>
-
+    <name>solver-json</name>
     <description>Read and write model according to the JSON format</description>
 
     <dependencies>
@@ -38,12 +38,6 @@
             <groupId>net.minidev</groupId>
             <artifactId>json-smart</artifactId>
             <version>1.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>btrplace</groupId>
-            <artifactId>solver-testMaterial</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

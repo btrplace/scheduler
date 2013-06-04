@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,30 +17,30 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.test.PremadeElements;
+import btrplace.model.*;
+import btrplace.plan.DefaultReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.MigrateVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Unit tests for {@link Ban}.
  *
  * @author Fabien Hermenier
  */
-public class BanTest implements PremadeElements {
+public class BanTest {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1));
-        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1));
+        Model mo = new DefaultModel();
+        Set<VM> vms = new HashSet<>(Arrays.asList(mo.newVM()));
+        Set<Node> nodes = new HashSet<>(Arrays.asList(mo.newNode()));
         Ban b = new Ban(vms, nodes);
         Assert.assertEquals(vms, b.getInvolvedVMs());
         Assert.assertEquals(nodes, b.getInvolvedNodes());
@@ -55,35 +54,45 @@ public class BanTest implements PremadeElements {
     @Test
     public void testIsSatisfied() {
 
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
+        Model m = new DefaultModel();
+        List<VM> vms = Util.newVMs(m, 10);
+        List<Node> ns = Util.newNodes(m, 10);
+        Mapping map = m.getMapping();
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addOnlineNode(ns.get(2));
 
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
-        map.addRunningVM(vm3, n3);
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm2, vm3));
+        map.addRunningVM(vms.get(0), ns.get(0));
+        map.addRunningVM(vms.get(1), ns.get(1));
+        map.addRunningVM(vms.get(2), ns.get(2));
+        Set<VM> vs = new HashSet<>(Arrays.asList(vms.get(1), vms.get(2)));
 
-        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1));
+        Set<Node> nodes = new HashSet<>(Arrays.asList(ns.get(0)));
 
-        Ban b = new Ban(vms, nodes);
-        Model m = new DefaultModel(map);
+        Ban b = new Ban(vs, nodes);
         Assert.assertEquals(b.isSatisfied(m), true);
-        map.addRunningVM(vm3, n1);
+        map.addRunningVM(vms.get(2), ns.get(0));
         Assert.assertEquals(b.isSatisfied(m), false);
+
+        ReconfigurationPlan plan = new DefaultReconfigurationPlan(m);
+        plan.add(new MigrateVM(vms.get(0), ns.get(0), ns.get(1), 0, 3));
+        plan.add(new MigrateVM(vms.get(0), ns.get(1), ns.get(0), 3, 6));
+        plan.add(new MigrateVM(vms.get(1), ns.get(1), ns.get(2), 3, 6));
+        Assert.assertEquals(b.isSatisfied(plan), false);
     }
 
     @Test
     public void testEquals() {
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2));
-        Set<UUID> nodes = new HashSet<>(Arrays.asList(n1, n2));
+        Model m = new DefaultModel();
+        List<VM> vms = Util.newVMs(m, 10);
+        List<Node> ns = Util.newNodes(m, 10);
 
-        Ban b = new Ban(vms, nodes);
+        Set<VM> vs = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
+        Set<Node> nodes = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
+
+        Ban b = new Ban(vs, nodes);
         Assert.assertTrue(b.equals(b));
-        Assert.assertTrue(new Ban(vms, nodes).equals(b));
-        Assert.assertEquals(new Ban(vms, nodes).hashCode(), b.hashCode());
-
-        Assert.assertFalse(new Ban(nodes, vms).equals(b));
+        Assert.assertTrue(new Ban(vs, nodes).equals(b));
+        Assert.assertEquals(new Ban(vs, nodes).hashCode(), b.hashCode());
     }
 }

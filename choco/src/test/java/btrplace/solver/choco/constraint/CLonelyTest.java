@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,40 +17,48 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
+import btrplace.model.*;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Lonely;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.MappingBuilder;
-import btrplace.test.PremadeElements;
+import btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Unit tests for {@link CLonely}.
  *
  * @author Fabien Hermenier
  */
-public class CLonelyTest implements PremadeElements {
+public class CLonelyTest {
 
     @Test
     public void testFeasibleDiscrete() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm2)
-                .run(n2, vm3, vm4, vm5).build();
+                .run(n2, vm3, vm4, vm5).get();
 
-        Set<UUID> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<VM> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
-        Model mo = new DefaultModel(map);
         Lonely l = new Lonely(mine);
         l.setContinuous(false);
         ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(l));
@@ -68,13 +75,21 @@ public class CLonelyTest implements PremadeElements {
      */
     @Test
     public void testFeasibleContinuous() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm2, vm3)
-                .run(n2, vm4, vm5).build();
-        Set<UUID> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+                .run(n2, vm4, vm5).get();
+        Set<VM> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
-        Model mo = new DefaultModel(map);
         Lonely l = new Lonely(mine);
         l.setContinuous(true);
         Set<SatConstraint> cstrs = new HashSet<>();
@@ -87,12 +102,21 @@ public class CLonelyTest implements PremadeElements {
     @Test
     public void testGetMisplaced() {
 
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
-                .run(n1, vm1, vm2, vm3)
-                .run(n2, vm4, vm5).build();
-        Set<UUID> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
 
-        Model mo = new DefaultModel(map);
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+                .run(n1, vm1, vm2, vm3)
+                .run(n2, vm4, vm5).get();
+        Set<VM> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+
 
         CLonely c = new CLonely(new Lonely(mine));
         Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());

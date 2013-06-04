@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,19 +17,15 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
 import btrplace.plan.event.ResumeVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.durationEvaluator.ConstantDuration;
+import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
@@ -38,32 +33,36 @@ import org.testng.annotations.Test;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.UUID;
+
 
 /**
  * Basic unit tests for {@link btrplace.solver.choco.actionModel.ResumeVMModel}.
  *
  * @author Fabien Hermenier
  */
-public class ResumeVMModelTest implements PremadeElements {
+public class ResumeVMModelTest {
 
     /**
      * Just resume a VM on its current node.
      */
     @Test
     public void testBasics() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        final VM vm1 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addSleepingVM(vm1, n1);
 
-        Model mo = new DefaultModel(map);
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(ResumeVM.class, new ConstantDuration(10));
+        dev.register(ResumeVM.class, new ConstantActionDuration(10));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
-                .setNextVMsStates(new HashSet<UUID>(), map.getAllVMs(), new HashSet<UUID>(), new HashSet<UUID>())
+                .setNextVMsStates(new HashSet<VM>(), map.getAllVMs(), new HashSet<VM>(), new HashSet<VM>())
                 .build();
         rp.getNodeActions()[0].getState().setVal(1);
         rp.getNodeActions()[1].getState().setVal(1);
@@ -80,7 +79,7 @@ public class ResumeVMModelTest implements PremadeElements {
         Assert.assertNotNull(p);
         ResumeVM a = (ResumeVM) p.getActions().iterator().next();
 
-        UUID dest = rp.getNode(m.getDSlice().getHoster().getVal());
+        Node dest = rp.getNode(m.getDSlice().getHoster().getVal());
         Assert.assertEquals(vm1, a.getVM());
         Assert.assertEquals(dest, a.getDestinationNode());
         Assert.assertEquals(n1, a.getSourceNode());
@@ -94,19 +93,24 @@ public class ResumeVMModelTest implements PremadeElements {
      */
     @Test
     public void testResumeSequence() throws SolverException, ContradictionException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addSleepingVM(vm1, n1);
         map.addSleepingVM(vm2, n2);
 
-        Model mo = new DefaultModel(map);
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(ResumeVM.class, new ConstantDuration(5));
+        dev.register(ResumeVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
                 .labelVariables()
-                .setNextVMsStates(new HashSet<UUID>(), map.getAllVMs(), new HashSet<UUID>(), new HashSet<UUID>())
+                .setNextVMsStates(new HashSet<VM>(), map.getAllVMs(), new HashSet<VM>(), new HashSet<VM>())
                 .build();
         ResumeVMModel m1 = (ResumeVMModel) rp.getVMActions()[rp.getVM(vm1)];
         ResumeVMModel m2 = (ResumeVMModel) rp.getVMActions()[rp.getVM(vm2)];

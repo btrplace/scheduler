@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,20 +17,17 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
+import btrplace.model.*;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Ready;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.MappingBuilder;
-import btrplace.test.PremadeElements;
+import btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -42,50 +38,66 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class CFenceTest implements PremadeElements {
+public class CFenceTest {
 
     /**
      * Test getMisPlaced() in various situations.
      */
     @Test
     public void testGetMisPlaced() {
-        Mapping m = new MappingBuilder().on(n1, n2, n3, n4)
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+        Node n5 = mo.newNode();
+        Mapping m = new MappingFiller(mo.getMapping()).on(n1, n2, n3, n4)
                 .off(n5)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3)
                 .run(n3, vm4)
-                .sleep(n4, vm5).build();
+                .sleep(n4, vm5).get();
 
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2));
-        Set<UUID> ns = new HashSet<>(Arrays.asList(n1, n2));
+        Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<Node> ns = new HashSet<>(Arrays.asList(n1, n2));
         CFence c = new CFence(new Fence(vms, ns));
-        Model mo = new DefaultModel(m);
         Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
-        ns.add(vm5);
+        ns.add(mo.newNode());
         Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
         vms.add(vm3);
         Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
         vms.add(vm4);
-        Set<UUID> bad = c.getMisPlacedVMs(mo);
+        Set<VM> bad = c.getMisPlacedVMs(mo);
         Assert.assertEquals(1, bad.size());
         Assert.assertTrue(bad.contains(vm4));
     }
 
     @Test
     public void testBasic() throws SolverException {
-
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm4)
                 .run(n2, vm2)
-                .run(n3, vm3).build();
+                .run(n3, vm3).get();
 
-        Set<UUID> on = new HashSet<>(Arrays.asList(n1, n3));
+        Set<Node> on = new HashSet<>(Arrays.asList(n1, n3));
         Fence f = new Fence(map.getAllVMs(), on);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(f);
         cstrs.add(new Online(map.getAllNodes()));
-        Model mo = new DefaultModel(map);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
         Assert.assertTrue(p.getSize() > 0);

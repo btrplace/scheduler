@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -34,8 +33,6 @@ import java.util.BitSet;
 /**
  * Enforces two sets of variables values to be disjoint
  * created sofdem - 08/09/11
- * <p/>
- * TODO: Seems buggy but hard to reproduce
  *
  * @author Sophie Demassey
  */

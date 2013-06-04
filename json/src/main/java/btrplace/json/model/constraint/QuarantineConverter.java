@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,7 +18,6 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.JSONUtils;
 import btrplace.model.constraint.Quarantine;
 import net.minidev.json.JSONObject;
 
@@ -44,14 +42,14 @@ public class QuarantineConverter extends SatConstraintConverter<Quarantine> {
     @Override
     public Quarantine fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Quarantine(JSONUtils.requiredUUIDs(o, "nodes"));
+        return new Quarantine(requiredNodes(o, "nodes"));
     }
 
     @Override
     public JSONObject toJSON(Quarantine o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("nodes", JSONUtils.toJSON(o.getInvolvedNodes()));
+        c.put("nodes", nodesToJSON(o.getInvolvedNodes()));
         return c;
     }
 }

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,6 +18,8 @@
 package btrplace.solver.choco;
 
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.NodeActionModel;
@@ -33,10 +34,12 @@ import org.slf4j.Logger;
 
 import java.util.Collection;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Interface for the Reconfiguration Problem.
+ * <p/>
+ * VM and node identifiers are translated to a position in an array.
  *
  * @author Fabien Hermenier
  */
@@ -45,24 +48,24 @@ public interface ReconfigurationProblem {
     /**
      * Get the current location of a running or a sleeping VM.
      *
-     * @param vmIdx the index of the virtual machine
-     * @return the node index if exists or -1 if the VM is not already placed
+     * @param vmIdx the index of the VM
+     * @return the node index if exists, -1 if the VM is unknown
      */
     int getCurrentVMLocation(int vmIdx);
 
     /**
      * Get all the nodes in the model. Indexed by their identifier.
      *
-     * @return an array of node.
+     * @return an array of node identifiers.
      */
-    UUID[] getNodes();
+    Node[] getNodes();
 
     /**
-     * Get all the virtual machines in the model. Indexed by their identifier.
+     * Get all the VMs in the model. Indexed by their identifier.
      *
-     * @return an array of virtual machines.
+     * @return an array of VM identifiers
      */
-    UUID[] getVMs();
+    VM[] getVMs();
 
     /**
      * Get the initial Model.
@@ -72,36 +75,36 @@ public interface ReconfigurationProblem {
     Model getSourceModel();
 
     /**
-     * Get the virtual machines that will be in the running state at the
+     * Get the VMs that will be in the running state at the
      * end of the reconfiguration process.
      *
      * @return a set, may be empty
      */
-    Set<UUID> getFutureRunningVMs();
+    Set<VM> getFutureRunningVMs();
 
     /**
-     * Get the virtual machines that will be in the ready state at the
+     * Get the VMs that will be in the ready state at the
      * end of the reconfiguration process.
      *
      * @return a set, may be empty
      */
-    Set<UUID> getFutureReadyVMs();
+    Set<VM> getFutureReadyVMs();
 
     /**
-     * Get the virtual machines that will be in the sleeping state at the
+     * Get the VMs that will be in the sleeping state at the
      * end of the reconfiguration process.
      *
      * @return a set, may be empty
      */
-    Set<UUID> getFutureSleepingVMs();
+    Set<VM> getFutureSleepingVMs();
 
     /**
-     * Get the virtual machines that will be killed at the
+     * Get the VMs that will be killed at the
      * end of the reconfiguration process.
      *
      * @return a set, may be empty
      */
-    Set<UUID> getFutureKilledVMs();
+    Set<VM> getFutureKilledVMs();
 
     /**
      * Get the starting moment of the reconfiguration.
@@ -118,39 +121,39 @@ public interface ReconfigurationProblem {
     IntDomainVar getEnd();
 
     /**
-     * Get the index of a virtual machine
+     * Get the index of a VM
      *
-     * @param vm the virtual machine
+     * @param vm the VM
      * @return its index or -1 in case of failure
      */
-    int getVM(UUID vm);
+    int getVM(VM vm);
 
     /**
-     * Get the virtual machine with a specified index
+     * Get the VM with a specified index.
      *
-     * @param idx the index of the virtual machine
-     * @return the virtual machine or null in case of failure
+     * @param idx the index of the VM
+     * @return the VM or null in case of failure
      */
-    UUID getVM(int idx);
+    VM getVM(int idx);
 
     /**
-     * Get the index of a node
+     * Get the index of a node.
      *
      * @param n the node
      * @return its index or -1 in case of failure
      */
-    int getNode(UUID n);
+    int getNode(Node n);
 
     /**
-     * Get the node with a specified index
+     * Get the node with a specified index.
      *
      * @param idx the index of the node
      * @return the node or null in case of failure
      */
-    UUID getNode(int idx);
+    Node getNode(int idx);
 
     /**
-     * Get all the actions related to virtual machines.
+     * Get all the actions related to VMs.
      *
      * @return a list of actions.
      */
@@ -162,15 +165,15 @@ public interface ReconfigurationProblem {
      * @param id the VM identifier
      * @return the associated action if exists, {@code null} otherwise
      */
-    VMActionModel getVMAction(UUID id);
+    VMActionModel getVMAction(VM id);
 
     /**
-     * Get all the actions associated to a list of virtual machines.
+     * Get all the actions associated to a list of VMs.
      *
-     * @param id the virtual machines
+     * @param id the VMs
      * @return a list of actions. The order is the same than the order of the VMs.
      */
-    VMActionModel[] getVMActions(Set<UUID> id);
+    VMActionModel[] getVMActions(Set<VM> id);
 
 
     /**
@@ -186,7 +189,7 @@ public interface ReconfigurationProblem {
      * @param id the node identifier
      * @return the associated action if exists, {@code null} otherwise
      */
-    NodeActionModel getNodeAction(UUID id);
+    NodeActionModel getNodeAction(Node id);
 
     /**
      * Get the evaluator to estimate the duration of the actions.
@@ -228,7 +231,7 @@ public interface ReconfigurationProblem {
      * @return the created variable
      * @throws SolverException if an error occurred while creating the variable
      */
-    IntDomainVar makeCurrentHost(String n, UUID vmId) throws SolverException;
+    IntDomainVar makeCurrentHost(String n, VM vmId) throws SolverException;
 
     /**
      * Create a variable that indicate a given node.
@@ -239,7 +242,7 @@ public interface ReconfigurationProblem {
      * @return the created variable
      * @throws SolverException if an error occurred while creating the variable
      */
-    IntDomainVar makeCurrentNode(String n, UUID nId) throws SolverException;
+    IntDomainVar makeCurrentNode(String n, Node nId) throws SolverException;
 
     /**
      * Create a variable denoting a duration.
@@ -284,6 +287,16 @@ public interface ReconfigurationProblem {
     Collection<ChocoModelView> getViews();
 
     /**
+     * Add a view.
+     * There must not be a view with a same identifier already in.
+     *
+     * @param v the view to add
+     * @return {@code true} iff the view has been added.
+     */
+    boolean addView(ChocoModelView v);
+
+
+    /**
      * Get the amount of VMs hosted on each node.
      *
      * @return an array of variable counting the number of VMs on each node
@@ -313,7 +326,7 @@ public interface ReconfigurationProblem {
      *
      * @return a set of VMs identifier
      */
-    Set<UUID> getManageableVMs();
+    Set<VM> getManageableVMs();
 
     /**
      * Get the builder that handle the scheduling part of the problem.
@@ -359,18 +372,11 @@ public interface ReconfigurationProblem {
     void setObjectiveAlterer(ObjectiveAlterer a);
 
     /**
-     * Get the pool that is used to book UUIDs.
-     *
-     * @return the pool
-     */
-    UUIDPool getUUIDPool();
-
-    /**
      * Create a clone of a given VM.
      * The clone will take the place of the VM by the end of the reconfiguration process.
      *
-     * @param vm the current VM to substitute
+     * @param vm the identifier of the  VM to substitute
      * @return the identifier of the new VM. {@code null} if the process failed
      */
-    UUID cloneVM(UUID vm);
+    VM cloneVM(VM vm);
 }

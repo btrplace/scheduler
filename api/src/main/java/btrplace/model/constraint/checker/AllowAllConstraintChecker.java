@@ -1,8 +1,26 @@
+/*
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ *
+ * This file is part of btrplace.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.model.constraint.checker;
 
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.SatConstraint;
-import btrplace.plan.event.RunningVMPlacement;
 import btrplace.plan.event.*;
 
 import java.util.*;
@@ -19,18 +37,18 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
 
     /**
      * VMs involved in the constraint.
-     * Updated after each {@link btrplace.plan.event.SubstitutedVMEvent} event.
+     * Updated after each {@link SubstitutedVMEvent} event.
      */
-    private Set<UUID> vms;
+    private Set<VM> vms;
 
     /**
      * Nodes involved in the constraint.
      */
-    private Set<UUID> nodes;
+    private Set<Node> nodes;
 
     private C cstr;
 
-    private List<Collection<UUID>> tracked;
+    private List<Collection<VM>> tracked;
 
     /**
      * Make a new checker.
@@ -45,7 +63,7 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
     }
 
     /**
-     * Register a new set of VMs UUID to track.
+     * Register a new set of VMs int to track.
      * Each {@link SubstitutedVMEvent} event is catched
      * and all of the registered collections are updated
      * accordingly
@@ -53,7 +71,7 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
      * @param c the collection to register
      * @return {@code true} iff the collection has been added
      */
-    public boolean track(Collection<UUID> c) {
+    public boolean track(Collection<VM> c) {
         return tracked.add(c);
     }
 
@@ -183,12 +201,16 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
 
     @Override
     public boolean consume(SubstitutedVMEvent e) {
-        for (Collection<UUID> c : tracked) {
+        for (Collection<VM> c : tracked) {
             if (c.remove(e.getVM())) {
-                c.add(e.getNewUUID());
+                c.add(e.getNewVM());
             }
         }
-        return !vms.remove(e.getVM()) || vms.add(e.getNewUUID());
+        if (vms.remove(e.getVM())) {
+            vms.add(e.getNewVM());
+        }
+        //return !vms.remove(e.getVM()) || vms.add(e.getNewVM());
+        return true;
     }
 
     @Override
@@ -236,7 +258,7 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
      *
      * @return a set of VMs that may be empty
      */
-    public Set<UUID> getVMs() {
+    public Set<VM> getVMs() {
         return vms;
     }
 
@@ -245,7 +267,7 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
      *
      * @return a set of nodes that may be empty
      */
-    public Set<UUID> getNodes() {
+    public Set<Node> getNodes() {
         return nodes;
     }
 }

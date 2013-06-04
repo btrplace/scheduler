@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,9 +20,10 @@ package btrplace.plan.event;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * An action to stop a virtual machine running on an online node and put it into the ready state.
@@ -32,20 +32,20 @@ import java.util.UUID;
  */
 public class ShutdownVM extends Action implements VMStateTransition {
 
-    private UUID vm;
+    private VM vm;
 
-    private UUID node;
+    private Node node;
 
     /**
      * Make a new action.
      *
-     * @param vm the virtual machine to stop
-     * @param on the hosting node
-     * @param s  the moment the action consume.
-     * @param f  the moment the action finish
+     * @param vm    the virtual machine to stop
+     * @param on    the hosting node
+     * @param start the moment the action starts
+     * @param end   the moment the action finish
      */
-    public ShutdownVM(UUID vm, UUID on, int s, int f) {
-        super(s, f);
+    public ShutdownVM(VM vm, Node on, int start, int end) {
+        super(start, end);
         this.vm = vm;
         this.node = on;
     }
@@ -62,7 +62,7 @@ public class ShutdownVM extends Action implements VMStateTransition {
         Mapping map = m.getMapping();
         if (map.getOnlineNodes().contains(node) &&
                 map.getRunningVMs().contains(vm) &&
-                map.getVMLocation(vm).equals(node)) {
+                map.getVMLocation(vm) == node) {
             map.addReadyVM(vm);
             return true;
         }
@@ -99,7 +99,7 @@ public class ShutdownVM extends Action implements VMStateTransition {
     }
 
     @Override
-    public UUID getVM() {
+    public VM getVM() {
         return vm;
     }
 
@@ -108,7 +108,7 @@ public class ShutdownVM extends Action implements VMStateTransition {
      *
      * @return the node identifier
      */
-    public UUID getNode() {
+    public Node getNode() {
         return node;
     }
 

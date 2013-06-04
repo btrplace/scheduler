@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,6 +18,8 @@
 package btrplace.solver.choco.actionModel;
 
 import btrplace.model.Mapping;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.KillVM;
 import btrplace.solver.SolverException;
@@ -27,12 +28,11 @@ import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.UUID;
 
 /**
  * An action to model a VM that is killed.
  * The model must provide an estimation of the action duration through a
- * {@link btrplace.solver.choco.durationEvaluator.DurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.durationEvaluator.ActionDurationEvaluator} accessible from
  * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code KillVM.class}
  * <p/>
  * If the reconfiguration problem has a solution, a {@link btrplace.plan.event.KillVM} action
@@ -45,9 +45,9 @@ import java.util.UUID;
  */
 public class KillVMActionModel implements VMActionModel {
 
-    private UUID vm;
+    private VM vm;
 
-    private UUID node;
+    private Node node;
 
     private IntDomainVar state;
 
@@ -64,13 +64,13 @@ public class KillVMActionModel implements VMActionModel {
      * @param e  the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public KillVMActionModel(ReconfigurationProblem rp, UUID e) throws SolverException {
+    public KillVMActionModel(ReconfigurationProblem rp, VM e) throws SolverException {
         vm = e;
         Mapping map = rp.getSourceModel().getMapping();
         node = map.getVMLocation(vm);
         state = rp.getSolver().makeConstantIntVar(0);
 
-        int d = rp.getDurationEvaluators().evaluate(KillVM.class, e);
+        int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), KillVM.class, e);
 
         if (map.getRunningVMs().contains(vm)) {
             cSlice = new SliceBuilder(rp, e, "killVM('" + e + "').cSlice")
@@ -113,7 +113,7 @@ public class KillVMActionModel implements VMActionModel {
     }
 
     @Override
-    public UUID getVM() {
+    public VM getVM() {
         return vm;
     }
 

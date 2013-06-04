@@ -1,17 +1,32 @@
+/*
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ *
+ * This file is part of btrplace.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.plan;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.plan.event.BootNode;
 import btrplace.plan.event.BootVM;
 import btrplace.plan.event.MigrateVM;
-import btrplace.test.PremadeElements;
 import org.mockito.InOrder;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.List;
 
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -21,8 +36,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Fabien Hermenier
  */
-public class ReconfigurationPlanCheckerTest implements PremadeElements {
-
+public class ReconfigurationPlanCheckerTest {
 
     @Test
     public void tesAddandRemove() {
@@ -35,21 +49,24 @@ public class ReconfigurationPlanCheckerTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"tesAddandRemove"})
     public void testSequencing() throws ReconfigurationPlanCheckerException {
-        Mapping m = new DefaultMapping();
-        m.addOnlineNode(n1);
-        m.addOnlineNode(n2);
-        m.addOfflineNode(n4);
-        m.addReadyVM(vm2);
-        m.addRunningVM(vm1, n1);
-        Model mo = new DefaultModel(m);
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 10);
+        List<VM> vms = Util.newVMs(mo, 10);
+
+        Mapping m = mo.getMapping();
+        m.addOnlineNode(ns.get(0));
+        m.addOnlineNode(ns.get(1));
+        m.addOfflineNode(ns.get(3));
+        m.addReadyVM(vms.get(1));
+        m.addRunningVM(vms.get(0), ns.get(0));
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
         SatConstraintChecker chk = mock(SatConstraintChecker.class);
-        MigrateVM m1 = new MigrateVM(vm1, n1, n2, 0, 3);
-        BootVM b1 = new BootVM(vm2, n1, 1, 5);
-        BootNode bn1 = new BootNode(n4, 3, 6);
+        MigrateVM m1 = new MigrateVM(vms.get(0), ns.get(0), ns.get(1), 0, 3);
+        BootVM b1 = new BootVM(vms.get(1), ns.get(0), 1, 5);
+        BootNode bn = new BootNode(ns.get(3), 3, 6);
         p.add(m1);
         p.add(b1);
-        p.add(bn1);
+        p.add(bn);
         Model res = p.getResult();
         Assert.assertNotNull(res);
         ReconfigurationPlanChecker rc = new ReconfigurationPlanChecker();
@@ -62,21 +79,23 @@ public class ReconfigurationPlanCheckerTest implements PremadeElements {
         order.verify(chk).start(m1);
         order.verify(chk).start(b1);
         order.verify(chk).end(m1);
-        order.verify(chk).start(bn1);
+        order.verify(chk).start(bn);
         order.verify(chk).end(b1);
-        order.verify(chk).end(bn1);
+        order.verify(chk).end(bn);
         order.verify(chk).endsWith(res);
     }
 
     @Test
     public void testWithNoActions() throws ReconfigurationPlanCheckerException {
-        Mapping m = new DefaultMapping();
-        m.addOnlineNode(n1);
-        m.addOnlineNode(n2);
-        m.addOfflineNode(n4);
-        m.addReadyVM(vm2);
-        m.addRunningVM(vm1, n1);
-        Model mo = new DefaultModel(m);
+        Model mo = new DefaultModel();
+        Mapping m = mo.getMapping();
+        List<Node> ns = Util.newNodes(mo, 10);
+        List<VM> vms = Util.newVMs(mo, 10);
+        m.addOnlineNode(ns.get(0));
+        m.addOnlineNode(ns.get(1));
+        m.addOfflineNode(ns.get(3));
+        m.addReadyVM(vms.get(1));
+        m.addRunningVM(vms.get(0), ns.get(0));
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
         SatConstraintChecker chk = mock(SatConstraintChecker.class);
         ReconfigurationPlanChecker rc = new ReconfigurationPlanChecker();

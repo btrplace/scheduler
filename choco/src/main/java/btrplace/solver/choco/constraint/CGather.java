@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +19,8 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.Gather;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -52,7 +53,7 @@ public class CGather implements ChocoSatConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) {
         List<Slice> dSlices = new ArrayList<>();
-        for (UUID vm : cstr.getInvolvedVMs()) {
+        for (VM vm : cstr.getInvolvedVMs()) {
             VMActionModel a = rp.getVMAction(vm);
             Slice dSlice = a.getDSlice();
             if (dSlice != null) {
@@ -62,10 +63,10 @@ public class CGather implements ChocoSatConstraint {
         if (cstr.isContinuous()) {
             //Check for the already running VMs
             Mapping map = rp.getSourceModel().getMapping();
-            UUID loc = null;
-            for (UUID vm : cstr.getInvolvedVMs()) {
+            Node loc = null;
+            for (VM vm : cstr.getInvolvedVMs()) {
                 if (map.getRunningVMs().contains(vm)) {
-                    UUID node = map.getVMLocation(vm);
+                    Node node = map.getVMLocation(vm);
                     if (loc == null) {
                         loc = node;
                     } else if (!loc.equals(node)) {
@@ -104,7 +105,7 @@ public class CGather implements ChocoSatConstraint {
                 IntDomainVar i1 = s1.getHoster();
                 IntDomainVar i2 = s2.getHoster();
                 if (i1.isInstantiated() && i2.isInstantiated() && i1.getVal() != i2.getVal()) {
-                    rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with '" + s2.getSubject() + "'");
+                    rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with VM '" + s2.getSubject() + "'");
                     return false;
                 } else {
                     try {
@@ -116,7 +117,7 @@ public class CGather implements ChocoSatConstraint {
                             s.post(s.eq(i1, i2));
                         }
                     } catch (ContradictionException ex) {
-                        rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with '" + s2.getSubject() + "'");
+                        rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with VM '" + s2.getSubject() + "'");
                         return false;
                     }
                 }
@@ -132,7 +133,7 @@ public class CGather implements ChocoSatConstraint {
 
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         if (!cstr.isSatisfied(m)) {
             return new HashSet<>(cstr.getInvolvedVMs());
         }

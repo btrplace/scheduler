@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,7 +18,6 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.JSONUtils;
 import btrplace.model.constraint.Preserve;
 import net.minidev.json.JSONObject;
 
@@ -43,18 +41,18 @@ public class PreserveConverter extends SatConstraintConverter<Preserve> {
     @Override
     public Preserve fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Preserve(JSONUtils.requiredUUIDs(o, "vms"),
-                JSONUtils.requiredString(o, "rcId"),
-                (int) JSONUtils.requiredLong(o, "amount"));
+        return new Preserve(requiredVMs(o, "vms"),
+                requiredString(o, "rc"),
+                requiredInt(o, "amount"));
     }
 
     @Override
     public JSONObject toJSON(Preserve o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", JSONUtils.toJSON(o.getInvolvedVMs()));
-        c.put("rcId", o.getResource());
-        c.put("amount", (long) o.getAmount());
+        c.put("vms", vmsToJSON(o.getInvolvedVMs()));
+        c.put("rc", o.getResource());
+        c.put("amount", o.getAmount());
         return c;
     }
 }

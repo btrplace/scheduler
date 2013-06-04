@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,34 +17,33 @@
 
 package btrplace.json.model;
 
-import btrplace.json.JSONConverter;
+import btrplace.json.AbstractJSONObjectConverter;
 import btrplace.json.JSONConverterException;
-import btrplace.json.JSONUtils;
-import btrplace.model.DefaultMapping;
 import btrplace.model.Mapping;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import net.minidev.json.JSONObject;
 
-import java.util.UUID;
 
 /**
  * Class to serialize and un-serialize {@link Mapping}.
  *
  * @author Fabien Hermenier
  */
-public class MappingConverter implements JSONConverter<Mapping> {
+public class MappingConverter extends AbstractJSONObjectConverter<Mapping> {
 
     @Override
     public JSONObject toJSON(Mapping c) {
         JSONObject o = new JSONObject();
-        o.put("offlineNodes", JSONUtils.toJSON(c.getOfflineNodes()));
-        o.put("readyVMs", JSONUtils.toJSON(c.getReadyVMs()));
+        o.put("offlineNodes", nodesToJSON(c.getOfflineNodes()));
+        o.put("readyVMs", vmsToJSON(c.getReadyVMs()));
 
         JSONObject ons = new JSONObject();
-        for (UUID n : c.getOnlineNodes()) {
+        for (Node n : c.getOnlineNodes()) {
             JSONObject w = new JSONObject();
-            w.put("runningVMs", JSONUtils.toJSON(c.getRunningVMs(n)));
-            w.put("sleepingVMs", JSONUtils.toJSON(c.getSleepingVMs(n)));
-            ons.put(n.toString(), w);
+            w.put("runningVMs", vmsToJSON(c.getRunningVMs(n)));
+            w.put("sleepingVMs", vmsToJSON(c.getSleepingVMs(n)));
+            ons.put(Integer.toString(n.id()), w);
         }
         o.put("onlineNodes", ons);
         return o;
@@ -53,23 +51,26 @@ public class MappingConverter implements JSONConverter<Mapping> {
 
     @Override
     public Mapping fromJSON(JSONObject o) throws JSONConverterException {
-        Mapping c = new DefaultMapping();
-        for (UUID u : JSONUtils.requiredUUIDs(o, "offlineNodes")) {
+        if (getModel() == null) {
+            throw new JSONConverterException("Unable to extract VMs without a model to use as a reference");
+        }
+        Mapping c = getModel().getMapping();
+        for (Node u : requiredNodes(o, "offlineNodes")) {
             c.addOfflineNode(u);
         }
-        for (UUID u : JSONUtils.requiredUUIDs(o, "readyVMs")) {
+        for (VM u : requiredVMs(o, "readyVMs")) {
             c.addReadyVM(u);
         }
         JSONObject ons = (JSONObject) o.get("onlineNodes");
-        for (Object k : ons.keySet()) {
-            UUID u = UUID.fromString((String) k);
-            JSONObject on = (JSONObject) ons.get(k);
+        for (String nId : ons.keySet()) {
+            Node u = getOrMakeNode(Integer.parseInt(nId));
+            JSONObject on = (JSONObject) ons.get(nId);
             c.addOnlineNode(u);
-            for (UUID vmId : JSONUtils.requiredUUIDs(on, "runningVMs")) {
-                c.addRunningVM(vmId, u);
+            for (VM vm : requiredVMs(on, "runningVMs")) {
+                c.addRunningVM(vm, u);
             }
-            for (UUID vmId : JSONUtils.requiredUUIDs(on, "sleepingVMs")) {
-                c.addSleepingVM(vmId, u);
+            for (VM vm : requiredVMs(on, "sleepingVMs")) {
+                c.addSleepingVM(vm, u);
             }
         }
 

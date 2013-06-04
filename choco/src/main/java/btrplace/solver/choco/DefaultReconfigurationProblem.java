@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +19,8 @@ package btrplace.solver.choco;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.view.ModelView;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
@@ -37,6 +38,7 @@ import choco.cp.solver.search.integer.objective.IntObjectiveManager;
 import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.cp.solver.search.set.StaticSetVarOrder;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Configuration;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.IObjectiveManager;
@@ -73,18 +75,18 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private CPSolver solver;
 
-    private Set<UUID> ready;
-    private Set<UUID> runnings;
-    private Set<UUID> sleepings;
-    private Set<UUID> killed;
+    private Set<VM> ready;
+    private Set<VM> runnings;
+    private Set<VM> sleepings;
+    private Set<VM> killed;
 
-    private Set<UUID> manageable;
+    private Set<VM> manageable;
 
-    private UUID[] vms;
-    private TObjectIntHashMap<UUID> revVMs;
+    private VM[] vms;
+    private TObjectIntHashMap<VM> revVMs;
 
-    private UUID[] nodes;
-    private TObjectIntHashMap<UUID> revNodes;
+    private Node[] nodes;
+    private TObjectIntHashMap<Node> revNodes;
 
     private IntDomainVar start;
     private IntDomainVar end;
@@ -108,8 +110,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private ModelViewMapper viewMapper;
 
-    private UUIDPool uuidPool;
-
     /**
      * Make a new RP where the next state for every VM is indicated.
      * If the state for a VM is omitted, it is considered as unchanged
@@ -128,12 +128,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     public DefaultReconfigurationProblem(Model m,
                                          DurationEvaluators dEval,
                                          ModelViewMapper vMapper,
-                                         UUIDPool uuidPool,
-                                         Set<UUID> ready,
-                                         Set<UUID> running,
-                                         Set<UUID> sleeping,
-                                         Set<UUID> killed,
-                                         Set<UUID> runningsToConsider,
+                                         Set<VM> ready,
+                                         Set<VM> running,
+                                         Set<VM> sleeping,
+                                         Set<VM> killed,
+                                         Set<VM> runningsToConsider,
                                          boolean label
     ) throws SolverException {
         this.ready = new HashSet<>(ready);
@@ -142,7 +141,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         this.killed = new HashSet<>(killed);
         this.manageable = new HashSet<>(runningsToConsider);
         this.useLabels = label;
-        this.uuidPool = uuidPool;
         model = m;
         durEval = dEval;
         this.viewMapper = vMapper;
@@ -222,6 +220,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             launchWithAlterer();
         }
 
+        ChocoLogging.flushLogs();
         return makeResultingPlan();
     }
 
@@ -366,24 +365,24 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private void fillElements() {
 
-        Set<UUID> allVMs = new HashSet<>(model.getMapping().getAllVMs());
+        Set<VM> allVMs = new HashSet<>(model.getMapping().getAllVMs());
         //We have to integrate VMs in the ready state: the only VMs that may not appear in the mapping
         allVMs.addAll(ready);
 
-        vms = new UUID[allVMs.size()];
+        vms = new VM[allVMs.size()];
         //0.5f is a default load factor in trove.
         revVMs = new TObjectIntHashMap<>(allVMs.size(), 0.5f, -1);
 
         int i = 0;
-        for (UUID vm : allVMs) {
+        for (VM vm : allVMs) {
             vms[i] = vm;
             revVMs.put(vm, i++);
         }
 
-        nodes = new UUID[model.getMapping().getAllNodes().size()];
+        nodes = new Node[model.getMapping().getAllNodes().size()];
         revNodes = new TObjectIntHashMap<>(nodes.length, 0.5f, -1);
         i = 0;
-        for (UUID nId : model.getMapping().getAllNodes()) {
+        for (Node nId : model.getMapping().getAllNodes()) {
             nodes[i] = nId;
             revNodes.put(nId, i++);
         }
@@ -393,7 +392,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         Mapping map = model.getMapping();
         vmActions = new VMActionModel[vms.length];
         for (int i = 0; i < vms.length; i++) {
-            UUID vmId = vms[i];
+            VM vmId = vms[i];
             if (runnings.contains(vmId)) {
                 if (map.getSleepingVMs().contains(vmId)) {
                     vmActions[i] = new ResumeVMModel(this, vmId);
@@ -441,7 +440,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             if (killed.contains(vmId)) {
                 if (vmActions[i] != null) {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
-                } else if (map.containsVM(vmId)) {
+                } else if (map.contains(vmId)) {
                     vmActions[i] = new KillVMActionModel(this, vmId);
                     manageable.add(vmId);
                 } else {
@@ -476,7 +475,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         Mapping m = model.getMapping();
         nodeActions = new NodeActionModel[nodes.length];
         for (int i = 0; i < nodes.length; i++) {
-            UUID nId = nodes[i];
+            Node nId = nodes[i];
             if (m.getOfflineNodes().contains(nId)) {
                 nodeActions[i] = new BootableNodeModel(this, nId);
             }
@@ -491,11 +490,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public int getCurrentVMLocation(int vmIdx) {
-        UUID id = getVM(vmIdx);
+        VM id = getVM(vmIdx);
         if (id == null) {
             return -1;
         }
-        UUID nodeId = model.getMapping().getVMLocation(id);
+        Node nodeId = model.getMapping().getVMLocation(id);
         return nodeId == null ? -1 : getNode(nodeId);
     }
 
@@ -520,6 +519,15 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     @Override
     public Collection<ChocoModelView> getViews() {
         return views.values();
+    }
+
+    @Override
+    public boolean addView(ChocoModelView v) {
+        if (views.containsKey(v.getIdentifier())) {
+            return false;
+        }
+        views.put(v.getIdentifier(), v);
+        return true;
     }
 
     @Override
@@ -556,7 +564,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public IntDomainVar makeCurrentHost(String n, UUID vmId) throws SolverException {
+    public IntDomainVar makeCurrentHost(String n, VM vmId) throws SolverException {
         int idx = getVM(vmId);
         if (idx < 0) {
             throw new SolverException(model, "Unknown VM '" + vmId + "'");
@@ -565,7 +573,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public IntDomainVar makeCurrentNode(String n, UUID nId) throws SolverException {
+    public IntDomainVar makeCurrentNode(String n, Node nId) throws SolverException {
         int idx = getNode(nId);
         if (idx < 0) {
             throw new SolverException(model, "Unknown node '" + nId + "'");
@@ -618,7 +626,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public Set<UUID> getManageableVMs() {
+    public Set<VM> getManageableVMs() {
         return manageable;
     }
 
@@ -648,12 +656,12 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public UUID[] getNodes() {
+    public Node[] getNodes() {
         return nodes;
     }
 
     @Override
-    public UUID[] getVMs() {
+    public VM[] getVMs() {
         return vms;
     }
 
@@ -663,22 +671,22 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public Set<UUID> getFutureRunningVMs() {
+    public Set<VM> getFutureRunningVMs() {
         return runnings;
     }
 
     @Override
-    public Set<UUID> getFutureReadyVMs() {
+    public Set<VM> getFutureReadyVMs() {
         return ready;
     }
 
     @Override
-    public Set<UUID> getFutureSleepingVMs() {
+    public Set<VM> getFutureSleepingVMs() {
         return sleepings;
     }
 
     @Override
-    public Set<UUID> getFutureKilledVMs() {
+    public Set<VM> getFutureKilledVMs() {
         return killed;
     }
 
@@ -693,22 +701,22 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public int getVM(UUID vm) {
+    public int getVM(VM vm) {
         return revVMs.get(vm);
     }
 
     @Override
-    public UUID getVM(int idx) {
+    public VM getVM(int idx) {
         return vms[idx];
     }
 
     @Override
-    public int getNode(UUID n) {
+    public int getNode(Node n) {
         return revNodes.get(n);
     }
 
     @Override
-    public UUID getNode(int idx) {
+    public Node getNode(int idx) {
         return nodes[idx];
     }
 
@@ -718,18 +726,18 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public VMActionModel[] getVMActions(Set<UUID> id) {
+    public VMActionModel[] getVMActions(Set<VM> id) {
         return vmActions;
     }
 
     @Override
-    public VMActionModel getVMAction(UUID id) {
+    public VMActionModel getVMAction(VM id) {
         int idx = getVM(id);
         return idx < 0 ? null : vmActions[idx];
     }
 
     @Override
-    public NodeActionModel getNodeAction(UUID id) {
+    public NodeActionModel getNodeAction(Node id) {
         int idx = getNode(id);
         return idx < 0 ? null : nodeActions[idx];
     }
@@ -740,20 +748,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public UUIDPool getUUIDPool() {
-        return uuidPool;
-    }
-
-    @Override
-    public UUID cloneVM(UUID vm) {
-        UUID newVM = uuidPool.request();
+    public VM cloneVM(VM vm) {
+        VM newVM = model.newVM();
         if (newVM == null) {
-            return null;
+            return newVM;
         }
         for (ChocoModelView v : views.values()) {
-            if (!v.cloneVM(vm, newVM)) {
-                uuidPool.release(newVM);
-            }
+            v.cloneVM(vm, newVM);
         }
         return newVM;
     }

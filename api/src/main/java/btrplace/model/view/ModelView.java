@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +17,7 @@
 
 package btrplace.model.view;
 
-import java.util.UUID;
+import btrplace.model.VM;
 
 /**
  * A view provides some domain-specific information about the elements of a model.
@@ -45,9 +44,10 @@ public interface ModelView extends Cloneable {
     /**
      * Notify the view a VM that already exist
      * will be substituted by another VM during the reconfiguration process.
-     * @param curId the current VM identifier
+     *
+     * @param curId  the current VM identifier
      * @param nextId the new VM identifier
      * @return {@code true} iff the operation succeeded
      */
-    boolean substitute(UUID curId, UUID nextId);
+    boolean substituteVM(VM curId, VM nextId);
 }

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,41 +17,47 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
+import btrplace.model.*;
 import btrplace.model.constraint.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.MappingBuilder;
-import btrplace.test.PremadeElements;
+import btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Unit tests for {@link CSequentialVMTransitions}.
  *
  * @author Fabien Hermenier
  */
-public class CSequentialVMTransitionsTest implements PremadeElements {
+public class CSequentialVMTransitionsTest {
 
     @Test
     public void testWithOnlyTransitions() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2).ready(vm1).run(n1, vm2, vm4).sleep(n2, vm3).build();
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).ready(vm1).run(n1, vm2, vm4).sleep(n2, vm3).get();
         List<SatConstraint> cstrs = new ArrayList<>();
-        Model mo = new DefaultModel(map);
         cstrs.add(new Running(Collections.singleton(vm1)));
         cstrs.add(new Sleeping(Collections.singleton(vm2)));
         cstrs.add(new Running(Collections.singleton(vm3)));
         cstrs.add(new Ready(Collections.singleton(vm4)));
         cstrs.add(new Online(map.getAllNodes()));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        List<UUID> seq = Arrays.asList(vm1, vm2, vm3, vm4);
+        List<VM> seq = Arrays.asList(vm1, vm2, vm3, vm4);
         cstrs.add(new SequentialVMTransitions(seq));
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
         Assert.assertNotNull(plan);
@@ -60,15 +65,21 @@ public class CSequentialVMTransitionsTest implements PremadeElements {
 
     @Test
     public void testWithVMsWithNoTransitions() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2).ready(vm1).run(n1, vm2, vm4).run(n2, vm3).build();
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).ready(vm1).run(n1, vm2, vm4).run(n2, vm3).get();
         List<SatConstraint> cstrs = new ArrayList<>();
-        Model mo = new DefaultModel(map);
         cstrs.add(new Running(Collections.singleton(vm1)));
         cstrs.add(new Running(Collections.singleton(vm2)));
         cstrs.add(new Running(Collections.singleton(vm3)));
         cstrs.add(new Ready(Collections.singleton(vm4)));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        List<UUID> seq = Arrays.asList(vm1, vm2, vm3, vm4);
+        List<VM> seq = Arrays.asList(vm1, vm2, vm3, vm4);
         cstrs.add(new SequentialVMTransitions(seq));
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
         Assert.assertNotNull(plan);

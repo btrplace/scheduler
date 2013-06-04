@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,9 +18,10 @@
 package btrplace.solver.choco;
 
 import btrplace.model.Model;
+import btrplace.model.VM;
 
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * An interface to specify an object that can estimated a supposed
@@ -45,5 +45,5 @@ public interface MisplacedVMsEstimator {
      * @param m the model to use to inspect the VMs.
      * @return a set of VMs identifier that may be empty (when no VMs are misplaced)
      */
-    Set<UUID> getMisPlacedVMs(Model m);
+    Set<VM> getMisPlacedVMs(Model m);
 }

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -42,7 +41,7 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
     private ReconfigurationPlanApplier applier = new TimeBasedPlanApplier();
 
     /**
-     * Make a new plan that starts for a given model.
+     * Make a new plan that starts from a given model.
      *
      * @param src the source model
      */
@@ -117,7 +116,6 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
         }
 
         ReconfigurationPlan op = (ReconfigurationPlan) o;
-
         return (actions.equals(op.getActions()) && src.equals(op.getOrigin()));
     }
 

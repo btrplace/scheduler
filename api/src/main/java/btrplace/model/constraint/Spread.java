@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,16 +17,17 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.model.constraint.checker.SpreadChecker;
 
 import java.util.Collections;
 import java.util.Set;
-import java.util.UUID;
 
 /**
- * A constraint to indicate that the given VMs, if running,
- * must be hosted on distinct nodes.
+ * A constraint to force that the given VMs, if running,
+ * to be hosted on distinct nodes.
  * <p/>
  * If the restriction is continuous, the constraint ensure no VMs are relocated to a node hosting a VM
  * involved in the same Spread constraint.
@@ -44,7 +44,7 @@ public class Spread extends SatConstraint {
      *
      * @param vms the VMs to consider
      */
-    public Spread(Set<UUID> vms) {
+    public Spread(Set<VM> vms) {
         this(vms, true);
     }
 
@@ -54,8 +54,8 @@ public class Spread extends SatConstraint {
      * @param vms        the VMs to consider
      * @param continuous {@code true} for a continuous restriction.
      */
-    public Spread(Set<UUID> vms, boolean continuous) {
-        super(vms, Collections.<UUID>emptySet(), continuous);
+    public Spread(Set<VM> vms, boolean continuous) {
+        super(vms, Collections.<Node>emptySet(), continuous);
     }
 
     @Override

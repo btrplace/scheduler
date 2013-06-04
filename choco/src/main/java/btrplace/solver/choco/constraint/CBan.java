@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +19,8 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.Ban;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -29,7 +30,7 @@ import choco.kernel.solver.ContradictionException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Choco implementation of the constraint {@link Ban}.
@@ -51,15 +52,15 @@ public class CBan implements ChocoSatConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) {
-        Collection<UUID> nodes = ban.getInvolvedNodes();
-        Collection<UUID> vms = ban.getInvolvedVMs();
+        Collection<Node> nodes = ban.getInvolvedNodes();
+        Collection<VM> vms = ban.getInvolvedVMs();
         int[] nodesIdx = new int[nodes.size()];
         int i = 0;
-        for (UUID n : ban.getInvolvedNodes()) {
+        for (Node n : ban.getInvolvedNodes()) {
             nodesIdx[i++] = rp.getNode(n);
         }
 
-        for (UUID vm : vms) {
+        for (VM vm : vms) {
             if (rp.getFutureRunningVMs().contains(vm)) {
                 Slice t = rp.getVMAction(vm).getDSlice();
                 if (t != null) {
@@ -78,11 +79,11 @@ public class CBan implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
 
-        Set<UUID> bad = new HashSet<>();
-        for (UUID vm : ban.getInvolvedVMs()) {
+        Set<VM> bad = new HashSet<>();
+        for (VM vm : ban.getInvolvedVMs()) {
             if (map.getRunningVMs().contains(vm) && ban.getInvolvedNodes().contains(map.getVMLocation(vm))) {
                 bad.add(vm);
             }

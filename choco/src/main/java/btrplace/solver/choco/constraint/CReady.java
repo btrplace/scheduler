@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +19,7 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.model.constraint.Ready;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Sleeping;
@@ -28,7 +28,7 @@ import btrplace.solver.choco.ReconfigurationProblem;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Naive implementation of {@link btrplace.model.constraint.Ready}.
@@ -56,10 +56,10 @@ public class CReady implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
-        Set<UUID> bad = new HashSet<>();
+    public Set<VM> getMisPlacedVMs(Model m) {
+        Set<VM> bad = new HashSet<>();
         Mapping map = m.getMapping();
-        for (UUID vm : cstr.getInvolvedVMs()) {
+        for (VM vm : cstr.getInvolvedVMs()) {
             if (!map.getReadyVMs().contains(vm)) {
                 bad.add(vm);
             }

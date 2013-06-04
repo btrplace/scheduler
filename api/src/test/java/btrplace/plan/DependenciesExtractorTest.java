@@ -1,44 +1,62 @@
+/*
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ *
+ * This file is part of btrplace.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.plan;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.event.*;
-import btrplace.test.PremadeElements;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
+
+import java.util.List;
 
 /**
  * Unit tests for {@link DependenciesExtractor}.
  *
  * @author Fabien Hermenier
  */
-public class DependenciesExtractorTest implements PremadeElements {
+public class DependenciesExtractorTest {
 
-    MigrateVM m1 = new MigrateVM(vm1, n2, n1, 0, 5);
-    MigrateVM m2 = new MigrateVM(vm2, n3, n4, 0, 5);
-    BootNode b1 = new BootNode(n5, 0, 5);
-    BootVM r1 = new BootVM(vm3, n5, 5, 7);
-    ShutdownNode s1 = new ShutdownNode(n6, 3, 7);
-    MigrateVM m3 = new MigrateVM(vm4, n6, n2, 0, 2);
-    MigrateVM m4 = new MigrateVM(vm5, n6, n2, 7, 9);
+    List<VM> vms = Util.newVMs(10);
+    List<Node> ns = Util.newNodes(10);
+
+    MigrateVM m1 = new MigrateVM(vms.get(0), ns.get(1), ns.get(0), 0, 5);
+    MigrateVM m2 = new MigrateVM(vms.get(1), ns.get(2), ns.get(3), 0, 5);
+    BootNode b1 = new BootNode(ns.get(4), 0, 5);
+    BootVM r1 = new BootVM(vms.get(2), ns.get(4), 5, 7);
+    ShutdownNode s1 = new ShutdownNode(ns.get(5), 3, 7);
+    MigrateVM m3 = new MigrateVM(vms.get(3), ns.get(5), ns.get(1), 0, 2);
+    MigrateVM m4 = new MigrateVM(vms.get(4), ns.get(5), ns.get(1), 7, 9);
 
     /**
      * Disjoint reconfiguration graph, so no dependencies
      */
     @Test
     public void testDisjointGraphs() {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOnlineNode(n4);
-        map.addOnlineNode(n6);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n3);
-        Model mo = new DefaultModel(map);
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addOnlineNode(ns.get(2));
+        map.addOnlineNode(ns.get(3));
+        map.addOnlineNode(ns.get(5));
+        map.addRunningVM(vms.get(0), ns.get(0));
+        map.addRunningVM(vms.get(1), ns.get(2));
         DependenciesExtractor ex = new DependenciesExtractor(mo);
         Assert.assertTrue(ex.visit(m1));
         Assert.assertTrue(ex.visit(m2));
@@ -50,10 +68,10 @@ public class DependenciesExtractorTest implements PremadeElements {
 
     @Test
     public void testSimpleDependencies() {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n5);
-        map.addReadyVM(vm3);
-        Model mo = new DefaultModel(map);
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(ns.get(4));
+        map.addReadyVM(vms.get(2));
         DependenciesExtractor ex = new DependenciesExtractor(mo);
         Assert.assertTrue(ex.visit(b1));
         Assert.assertTrue(ex.visit(r1));
@@ -64,13 +82,13 @@ public class DependenciesExtractorTest implements PremadeElements {
 
     @Test
     public void testNoDependencyDueToTiming() {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n6);
-        map.addRunningVM(vm1, n2);
-        map.addRunningVM(vm4, n6);
-        Model mo = new DefaultModel(map);
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addOnlineNode(ns.get(5));
+        map.addRunningVM(vms.get(0), ns.get(1));
+        map.addRunningVM(vms.get(3), ns.get(5));
         DependenciesExtractor ex = new DependenciesExtractor(mo);
         Assert.assertTrue(ex.visit(m1));
         Assert.assertTrue(ex.visit(m3));
@@ -84,11 +102,11 @@ public class DependenciesExtractorTest implements PremadeElements {
 
     @Test
     public void testDependenciesWithShutdown() {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n6);
-        map.addRunningVM(vm4, n6);
-        Model mo = new DefaultModel(map);
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(ns.get(1));
+        map.addOnlineNode(ns.get(5));
+        map.addRunningVM(vms.get(3), ns.get(5));
         DependenciesExtractor ex = new DependenciesExtractor(mo);
         Assert.assertTrue(ex.visit(s1));
         Assert.assertTrue(ex.visit(m3));
@@ -102,21 +120,21 @@ public class DependenciesExtractorTest implements PremadeElements {
     public void testDependencyWithAllocate() {
 
         //An increase allocation is impossible until a decreasing allocation
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(ns.get(0));
+        map.addRunningVM(vms.get(0), ns.get(0));
+        map.addRunningVM(vms.get(1), ns.get(0));
 
-        ShareableResource rc = new ShareableResource("cpu", 0);
-        rc.set(vm1, 3);
-        rc.set(vm2, 5);
+        ShareableResource rc = new ShareableResource("cpu", 0, 0);
+        rc.setConsumption(vms.get(0), 3);
+        rc.setConsumption(vms.get(1), 5);
 
-        Model mo = new DefaultModel(map);
         mo.attach(rc);
 
         DependenciesExtractor ex = new DependenciesExtractor(mo);
-        Allocate a1 = new Allocate(vm1, n1, "cpu", 5, 5, 7); // 3->5
-        Allocate a2 = new Allocate(vm2, n1, "cpu", 3, 0, 3); // 5->3
+        Allocate a1 = new Allocate(vms.get(0), ns.get(0), "cpu", 5, 5, 7); // 3->5
+        Allocate a2 = new Allocate(vms.get(1), ns.get(0), "cpu", 3, 0, 3); // 5->3
         Assert.assertTrue(ex.visit(a1));
         Assert.assertTrue(ex.visit(a2));
         Assert.assertTrue(ex.getDependencies(a2).toString(), ex.getDependencies(a2).isEmpty());

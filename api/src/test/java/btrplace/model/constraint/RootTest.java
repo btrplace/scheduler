@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,29 +17,28 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.MigrateVM;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Unit tests for {@link btrplace.model.constraint.Root}.
  *
  * @author Fabien Hermenier
  */
-public class RootTest implements PremadeElements {
+public class RootTest {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> x = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<VM> x = new HashSet<>(Util.newVMs(new DefaultModel(), 2));
         Root s = new Root(x);
         Assert.assertNotNull(s.getChecker());
         Assert.assertEquals(x, s.getInvolvedVMs());
@@ -56,42 +54,43 @@ public class RootTest implements PremadeElements {
 
     @Test
     public void testEquals() {
-        Set<UUID> x = new HashSet<>(Arrays.asList(vm1, vm2));
+        Set<VM> x = new HashSet<>(Util.newVMs(new DefaultModel(), 2));
         Root s = new Root(x);
 
         Assert.assertTrue(s.equals(s));
         Assert.assertTrue(new Root(x).equals(s));
         Assert.assertEquals(s.hashCode(), new Root(x).hashCode());
-        x = Collections.singleton(vm3);
+        x = new HashSet<>(Util.newVMs(new DefaultModel(), 1));
         Assert.assertFalse(new Root(x).equals(s));
     }
 
     @Test
     public void testIsSatisfied() {
-        Mapping c = new DefaultMapping();
-        c.addReadyVM(n1);
-        c.addReadyVM(n2);
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
-        Root o = new Root(s);
+        Model mo = new DefaultModel();
+        List<VM> vms = Util.newVMs(mo, 2);
+        Mapping map = mo.getMapping();
+        map.addReadyVM(vms.get(0));
+        map.addReadyVM(vms.get(1));
+        Root o = new Root(new HashSet<>(vms));
 
-        Model i = new DefaultModel(c);
-
-        Assert.assertEquals(o.isSatisfied(i), true);
-        c.clear();
-        Assert.assertEquals(o.isSatisfied(i), true);
+        Assert.assertEquals(o.isSatisfied(mo), true);
+        map.clear();
+        Assert.assertEquals(o.isSatisfied(mo), true);
     }
 
     @Test
     public void testContinuousIsSatisfied() {
-        Mapping map = new DefaultMapping();
-        Model mo = new DefaultModel(map);
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addRunningVM(vm1, n1);
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        List<Node> ns = Util.newNodes(mo, 3);
+        VM vm1 = mo.newVM();
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addRunningVM(vm1, ns.get(0));
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
         Root r = new Root(Collections.singleton(vm1));
         Assert.assertEquals(r.isSatisfied(p), true);
-        p.add(new MigrateVM(vm1, n1, n2, 1, 2));
+        p.add(new MigrateVM(vm1, ns.get(0), ns.get(1), 1, 2));
         Assert.assertEquals(r.isSatisfied(p), false);
     }
 

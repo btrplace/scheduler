@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,9 +17,9 @@
 
 package btrplace.solver.choco.actionModel;
 
+import btrplace.model.Node;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.UUID;
 
 /**
  * Interface to specify an action model that manipulate a node.
@@ -34,7 +33,7 @@ public interface NodeActionModel extends ActionModel {
      *
      * @return the node identifier
      */
-    UUID getNode();
+    Node getNode();
 
     /**
      * Get the moment the node is being capable of hosting VMs.
@@ -49,18 +48,4 @@ public interface NodeActionModel extends ActionModel {
      * @return a variable
      */
     IntDomainVar getHostingEnd();
-
-    /**
-     * Get the moment the server has been powered up.
-     *
-     * @return a variable
-     */
-    IntDomainVar getPoweringStart();
-
-    /**
-     * Get the moment the server has been powered down.
-     *
-     * @return a variable
-     */
-    IntDomainVar getPoweringEnd();
 }

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,13 +17,14 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.OverbookChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
 
 /**
  * A constraint to specify and overbooking factor between
@@ -35,6 +35,8 @@ import java.util.UUID;
  * by the overbooking factor. The result is then truncated.
  * <p/>
  * The restriction provided by the constraint can be either discrete or continuous.
+ * If the restriction is discrete, then the constraint imposes the restriction
+ * only on the end of the reconfiguration process (the resulting model).
  * If the restriction is continuous, then the constraint imposes the restriction
  * in the source model, during the reconfiguration and at the end.
  *
@@ -49,25 +51,28 @@ public class Overbook extends SatConstraint {
     /**
      * Make a new constraint with a continuous restriction.
      *
-     * @param nodes the nodes identifiers
-     * @param rcId  the resource identifier
-     * @param r     the overbooking ratio
+     * @param nodes the nodes
+     * @param rc    the resource identifier
+     * @param r     the overbooking ratio, >= 1
      */
-    public Overbook(Set<UUID> nodes, String rcId, double r) {
-        this(nodes, rcId, r, true);
+    public Overbook(Collection<Node> nodes, String rc, double r) {
+        this(nodes, rc, r, true);
     }
 
     /**
      * Make a new constraint.
      *
      * @param nodes      the nodes identifiers
-     * @param rcId       the resource identifier
-     * @param r          the overbooking ratio
+     * @param rc         the resource identifier
+     * @param r          the overbooking ratio, >= 1
      * @param continuous {@code true} for a continuous restriction
      */
-    public Overbook(Set<UUID> nodes, String rcId, double r, boolean continuous) {
-        super(Collections.<UUID>emptySet(), nodes, continuous);
-        this.rcId = rcId;
+    public Overbook(Collection<Node> nodes, String rc, double r, boolean continuous) {
+        super(Collections.<VM>emptySet(), nodes, continuous);
+        if (r < 1.0d) {
+            throw new IllegalArgumentException("The overbooking ratio must be >= 1.0");
+        }
+        this.rcId = rc;
         this.ratio = r;
     }
 
@@ -83,7 +88,7 @@ public class Overbook extends SatConstraint {
     /**
      * Get the overbooking ratio.
      *
-     * @return a positive integer
+     * @return a ratio >= 1
      */
     public double getRatio() {
         return this.ratio;

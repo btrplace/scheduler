@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,26 +17,27 @@
 
 package btrplace.solver.choco.constraint;
 
+import btrplace.model.DefaultModel;
 import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.model.constraint.Ban;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Spread;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Collections;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Unit tests for {@link btrplace.solver.choco.constraint.SatConstraintMapper}.
  *
  * @author Fabien Hermenier
  */
-public class SatConstraintMapperTest implements PremadeElements {
+public class SatConstraintMapperTest {
 
     @Test
     public void testInstantiate() {
@@ -74,8 +74,9 @@ public class SatConstraintMapperTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiate", "testUnregister", "testRegister"})
     public void testMap() {
+        Model mo = new DefaultModel();
         SatConstraintMapper map = new SatConstraintMapper();
-        Spread s = new Spread(Collections.singleton(vm1));
+        Spread s = new Spread(Collections.singleton(mo.newVM()));
         ChocoSatConstraint c = map.map(s);
         Assert.assertTrue(c.getClass().equals(CSpread.class));
 
@@ -121,7 +122,7 @@ public class SatConstraintMapperTest implements PremadeElements {
         }
 
         @Override
-        public Set<UUID> getMisPlacedVMs(Model m) {
+        public Set<VM> getMisPlacedVMs(Model m) {
             throw new UnsupportedOperationException();
         }
     }

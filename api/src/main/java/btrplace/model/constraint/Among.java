@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,6 +17,8 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.AmongChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
@@ -41,17 +42,17 @@ public class Among extends SatConstraint {
     /**
      * Set of set of nodes.
      */
-    private Set<Set<UUID>> pGrps;
+    private Collection<Collection<Node>> pGrps;
 
 
     /**
      * Make a new constraint with a discrete restriction.
      *
-     * @param vms       the group of VMs
-     * @param phyGroups the candidate group of nodes.
+     * @param vms   the group of VMs
+     * @param parts disjoint set of nodes
      */
-    public Among(Set<UUID> vms, Set<Set<UUID>> phyGroups) {
-        this(vms, phyGroups, false);
+    public Among(Collection<VM> vms, Collection<Collection<Node>> parts) {
+        this(vms, parts, false);
 
     }
 
@@ -59,12 +60,21 @@ public class Among extends SatConstraint {
      * Make a new constraint.
      *
      * @param vms        the group of VMs
-     * @param phyGroups  the candidate group of nodes.
+     * @param parts      disjoint set of nodes
      * @param continuous {@code true} for a continuous restriction
      */
-    public Among(Set<UUID> vms, Set<Set<UUID>> phyGroups, boolean continuous) {
+    public Among(Collection<VM> vms, Collection<Collection<Node>> parts, boolean continuous) {
         super(vms, null, continuous);
-        this.pGrps = phyGroups;
+        Set<Node> all = new HashSet<>();
+        int cnt = 0;
+        for (Collection<Node> s : parts) {
+            cnt += s.size();
+            all.addAll(s);
+            if (cnt != all.size()) {
+                throw new IllegalArgumentException("The constraint expects disjoint sets of nodes");
+            }
+        }
+        this.pGrps = parts;
     }
 
     /**
@@ -73,8 +83,8 @@ public class Among extends SatConstraint {
      * @param u the node identifier
      * @return the group of nodes if exists, {@code null} otherwise
      */
-    public Set<UUID> getAssociatedPGroup(UUID u) {
-        for (Set<UUID> pGrp : pGrps) {
+    public Collection<Node> getAssociatedPGroup(Node u) {
+        for (Collection<Node> pGrp : pGrps) {
             if (pGrp.contains(u)) {
                 return pGrp;
             }
@@ -83,9 +93,9 @@ public class Among extends SatConstraint {
     }
 
     @Override
-    public Collection<UUID> getInvolvedNodes() {
-        Set<UUID> s = new HashSet<>();
-        for (Set<UUID> x : pGrps) {
+    public Collection<Node> getInvolvedNodes() {
+        Set<Node> s = new HashSet<>();
+        for (Collection<Node> x : pGrps) {
             s.addAll(x);
         }
         return s;
@@ -96,7 +106,7 @@ public class Among extends SatConstraint {
      *
      * @return the groups
      */
-    public Set<Set<UUID>> getGroupsOfNodes() {
+    public Collection<Collection<Node>> getGroupsOfNodes() {
         return pGrps;
     }
 
@@ -126,7 +136,7 @@ public class Among extends SatConstraint {
         StringBuilder b = new StringBuilder("among(");
         b.append("vms=").append(getInvolvedVMs());
         b.append(", nodes=[");
-        for (Iterator<Set<UUID>> ite = pGrps.iterator(); ite.hasNext(); ) {
+        for (Iterator<Collection<Node>> ite = pGrps.iterator(); ite.hasNext(); ) {
             b.append(ite.next());
             if (ite.hasNext()) {
                 b.append(", ");

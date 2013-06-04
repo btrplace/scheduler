@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,17 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.json.model.view.view;
+package btrplace.json.model.view;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.model.view.ModelViewConverter;
-import btrplace.json.model.view.ModelViewsConverter;
+import btrplace.model.VM;
 import btrplace.model.view.ModelView;
-import junit.framework.Assert;
 import net.minidev.json.JSONObject;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.UUID;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * Unit tests for {@link btrplace.json.model.view.ModelViewsConverter}.
@@ -54,12 +55,12 @@ public class ModelViewsConverterTest {
         }
 
         @Override
-        public boolean substitute(UUID curId, UUID nextId) {
+        public boolean substituteVM(VM curId, VM nextId) {
             throw new UnsupportedOperationException();
         }
     }
 
-    public static class MockModelViewConverter implements ModelViewConverter<MockModelView> {
+    public static class MockModelViewConverter extends ModelViewConverter<MockModelView> {
 
         @Override
         public Class<MockModelView> getSupportedConstraint() {
@@ -94,13 +95,37 @@ public class ModelViewsConverterTest {
     }
 
     @Test(dependsOnMethods = {"testRegister"})
-    public void testWithExistingConverter() throws JSONConverterException {
+    public void testWithExistingConverter() throws JSONConverterException, IOException {
         ModelViewsConverter c = new ModelViewsConverter();
         Assert.assertNull(c.register(new MockModelViewConverter()));
         MockModelView m = new MockModelView("bar");
-        JSONObject o = c.toJSON(m);
+        String o = c.toJSONString(m);
         MockModelView m2 = (MockModelView) c.fromJSON(o);
         Assert.assertEquals(m.value, m2.value);
+    }
+
+    @Test
+    public void testWithMultipleViews() throws JSONConverterException, IOException {
+        ModelViewsConverter c = new ModelViewsConverter();
+        Assert.assertNull(c.register(new MockModelViewConverter()));
+        List<ModelView> l = new ArrayList<>();
+        l.add(new MockModelView("foo"));
+        l.add(new MockModelView("bar"));
+        String o = c.toJSONString(l);
+        List<ModelView> l2 = c.listFromJSON(o);
+        Assert.assertEquals(l2.size(), l.size());
+        int j = 0;
+        for (int i = 0; i < l2.size(); i++) {
+            MockModelView v = (MockModelView) l2.get(i);
+            if (v.value.equals("foo")) {
+                j++;
+            } else if (v.value.equals("bar")) {
+                j--;
+            } else {
+                Assert.fail("Unexpected identifier: " + v.getIdentifier());
+            }
+        }
+        Assert.assertEquals(j, 0);
     }
 
     @Test(dependsOnMethods = {"testRegister"}, expectedExceptions = {JSONConverterException.class})

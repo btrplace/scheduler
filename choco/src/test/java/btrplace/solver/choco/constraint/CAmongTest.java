@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,19 +17,16 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
+import btrplace.model.*;
 import btrplace.model.constraint.Among;
 import btrplace.model.constraint.Fence;
 import btrplace.model.constraint.Running;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.MappingBuilder;
-import btrplace.test.PremadeElements;
+import btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -41,20 +37,31 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class CAmongTest implements PremadeElements {
+public class CAmongTest {
 
     @Test
     public void testWithOnGroup() throws SolverException {
 
-        Mapping map = new MappingBuilder()
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+
+        Mapping map = new MappingFiller(mo.getMapping())
                 .on(n1, n2, n3, n4)
                 .run(n1, vm1).run(n2, vm2).run(n3, vm3)
-                .ready(vm4, vm5).build();
+                .ready(vm4, vm5).get();
 
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
+        Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
 
-        Set<Set<UUID>> pGrps = new HashSet<>();
-        Set<UUID> s = new HashSet<>();
+        Collection<Collection<Node>> pGrps = new HashSet<>();
+        Set<Node> s = new HashSet<>();
         s.add(n1);
         s.add(n2);
         pGrps.add(s);
@@ -65,7 +72,6 @@ public class CAmongTest implements PremadeElements {
         cstrs.add(new Running(map.getAllVMs()));
         cstrs.add(a);
 
-        Model mo = new DefaultModel(map);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
         //System.out.println(p);
@@ -75,16 +81,26 @@ public class CAmongTest implements PremadeElements {
     @Test
     public void testWithGroupChange() throws SolverException {
 
-        Mapping map = new MappingBuilder()
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+        Mapping map = new MappingFiller(mo.getMapping())
                 .on(n1, n2, n3, n4)
                 .run(n1, vm1).run(n2, vm2, vm3)
-                .ready(vm4, vm5).build();
+                .ready(vm4, vm5).get();
 
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
+        Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
 
-        Set<UUID> s1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> s2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Collection<Node> s1 = new HashSet<>(Arrays.asList(n1, n2));
+        Collection<Node> s2 = new HashSet<>(Arrays.asList(n3, n4));
+        Collection<Collection<Node>> pGrps = Arrays.asList(s1, s2);
         Among a = new Among(vms, pGrps);
         a.setContinuous(false);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
@@ -93,7 +109,6 @@ public class CAmongTest implements PremadeElements {
         cstrs.add(new Fence(Collections.singleton(vm2), s2));
         cstrs.add(a);
 
-        Model mo = new DefaultModel(map);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
         //System.out.println(p);
@@ -108,17 +123,28 @@ public class CAmongTest implements PremadeElements {
     @Test
     public void testWithNoSolution() throws SolverException {
 
-        Mapping map = new MappingBuilder()
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+
+        Mapping map = new MappingFiller(mo.getMapping())
                 .on(n1, n2, n3, n4)
                 .run(n1, vm1).run(n2, vm2, vm3)
-                .ready(vm4, vm5).build();
+                .ready(vm4, vm5).get();
 
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
+        Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
 
 
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> s2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(s, s2));
+        Collection<Node> s = new HashSet<>(Arrays.asList(n1, n2));
+        Collection<Node> s2 = new HashSet<>(Arrays.asList(n3, n4));
+        Collection<Collection<Node>> pGrps = new HashSet<>(Arrays.asList(s, s2));
 
         Among a = new Among(vms, pGrps);
         a.setContinuous(false);
@@ -129,7 +155,6 @@ public class CAmongTest implements PremadeElements {
         cstrs.add(new Fence(Collections.singleton(vm1), Collections.singleton(n1)));
         cstrs.add(a);
 
-        Model mo = new DefaultModel(map);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNull(p);
     }
@@ -137,17 +162,27 @@ public class CAmongTest implements PremadeElements {
     @Test
     public void testGetMisplaced() {
 
-        Mapping map = new MappingBuilder()
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+
+        Mapping map = new MappingFiller(mo.getMapping())
                 .on(n1, n2, n3, n4)
                 .run(n1, vm1).run(n2, vm2, vm3)
-                .ready(vm4, vm5).build();
+                .ready(vm4, vm5).get();
 
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
-        Set<UUID> s1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> s2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
+        Collection<Node> s1 = new HashSet<>(Arrays.asList(n1, n2));
+        Collection<Node> s2 = new HashSet<>(Arrays.asList(n3, n4));
+        Collection<Collection<Node>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
 
-        Model mo = new DefaultModel(map);
         Among a = new Among(vms, pGrps);
         CAmong ca = new CAmong(a);
         Assert.assertEquals(ca.getMisPlacedVMs(mo), Collections.emptySet());
@@ -158,17 +193,27 @@ public class CAmongTest implements PremadeElements {
 
     @Test
     public void testContinuousWithAlreadySatisfied() throws SolverException {
-        Mapping map = new MappingBuilder()
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+
+        Mapping map = new MappingFiller(mo.getMapping())
                 .on(n1, n2, n3, n4)
                 .run(n1, vm1).run(n2, vm2, vm3)
-                .ready(vm4, vm5).build();
+                .ready(vm4, vm5).get();
 
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
-        Set<UUID> s1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> s2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
+        Collection<Node> s1 = new HashSet<>(Arrays.asList(n1, n2));
+        Collection<Node> s2 = new HashSet<>(Arrays.asList(n3, n4));
+        Collection<Collection<Node>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
 
-        Model mo = new DefaultModel(map);
         Among a = new Among(vms, pGrps);
         a.setContinuous(true);
 
@@ -179,24 +224,32 @@ public class CAmongTest implements PremadeElements {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
-        //System.out.println(p);
-        //Assert.assertEquals(a.isSatisfied(p.getResult()), SatConstraint.Sat.SATISFIED);
     }
 
     @Test
     public void testContinuousWithNotAlreadySatisfied() throws SolverException {
-        Mapping map = new MappingBuilder()
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+
+        Mapping map = new MappingFiller(mo.getMapping())
                 .on(n1, n2, n3, n4)
                 .run(n1, vm1).run(n2, vm2).run(n3, vm3)
-                .ready(vm4, vm5).build();
+                .ready(vm4, vm5).get();
 
-        Set<UUID> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
+        Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2, vm5));
 
-        Set<UUID> s1 = new HashSet<>(Arrays.asList(n1, n2));
-        Set<UUID> s2 = new HashSet<>(Arrays.asList(n3, n4));
-        Set<Set<UUID>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
+        Collection<Node> s1 = new HashSet<>(Arrays.asList(n1, n2));
+        Collection<Node> s2 = new HashSet<>(Arrays.asList(n3, n4));
+        Collection<Collection<Node>> pGrps = new HashSet<>(Arrays.asList(s1, s2));
 
-        Model mo = new DefaultModel(map);
         Among a = new Among(vms, pGrps);
         a.setContinuous(true);
 

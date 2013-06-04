@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,16 +17,15 @@
 
 package btrplace.plan;
 
-import btrplace.model.DefaultMapping;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.plan.event.Action;
 import btrplace.plan.event.ActionVisitor;
 import btrplace.plan.event.Event;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.util.UUID;
 
 /**
  * Unit tests for {@link btrplace.plan.event.Action}.
@@ -35,6 +33,10 @@ import java.util.UUID;
  * @author Fabien Hermenier
  */
 public class ActionTest {
+
+    static Model mo = new DefaultModel();
+    VM vm = mo.newVM();
+    Node n = mo.newNode();
 
     public static class MockEvent implements Event {
 
@@ -58,7 +60,7 @@ public class ActionTest {
 
     @Test
     public void testBasics() {
-        Action a1 = new MockAction(UUID.randomUUID(), 1, 3);
+        Action a1 = new MockAction(vm, 1, 3);
         Assert.assertEquals(1, a1.getStart());
         Assert.assertEquals(3, a1.getEnd());
         Assert.assertTrue(a1.getEvents(Action.Hook.pre).isEmpty());
@@ -67,24 +69,24 @@ public class ActionTest {
 
     @Test
     public void testEvents() {
-        Action a1 = new MockAction(UUID.randomUUID(), 1, 3);
-        MockEvent n1 = new MockEvent();
-        a1.addEvent(Action.Hook.pre, n1);
+        Action a1 = new MockAction(vm, 1, 3);
+        MockEvent m = new MockEvent();
+        a1.addEvent(Action.Hook.pre, m);
         Assert.assertEquals(1, a1.getEvents(Action.Hook.pre).size());
-        a1.addEvent(Action.Hook.post, n1);
+        a1.addEvent(Action.Hook.post, m);
         Assert.assertEquals(1, a1.getEvents(Action.Hook.post).size());
-        System.out.println(a1);
+        //System.out.println(a1);
     }
 
     @Test
     public void testApply() {
-        MockAction a1 = new MockAction(UUID.randomUUID(), 1, 3);
-        MockEvent n1 = new MockEvent();
-        a1.addEvent(Action.Hook.pre, n1);
-        a1.addEvent(Action.Hook.post, n1);
-        Model mo = new DefaultModel(new DefaultMapping());
+        MockAction a1 = new MockAction(vm, 1, 3);
+        MockEvent m = new MockEvent();
+        a1.addEvent(Action.Hook.pre, m);
+        a1.addEvent(Action.Hook.post, m);
+        Model mo = new DefaultModel();
         a1.apply(mo);
-        Assert.assertEquals(n1.count, 2);
+        Assert.assertEquals(m.count, 2);
         Assert.assertEquals(a1.count, 1);
     }
 }

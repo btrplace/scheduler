@@ -1,3 +1,20 @@
+/*
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ *
+ * This file is part of btrplace.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.plan;
 
 import btrplace.model.Model;
@@ -7,7 +24,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A reconfiguration plan applier that relies on the dependencies between the actions composing the plan.
+ * A plan applier that relies on the dependencies between the actions composing the plan.
  * Only unblocked actions are executed. Once executed, the unblocked actions are executed.
  * <p/>
  * This process is repeated until all the actions are executed. This process is ensure to finish

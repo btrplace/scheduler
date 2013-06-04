@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,10 +17,7 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
 import btrplace.plan.event.ForgeVM;
@@ -29,33 +25,34 @@ import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.durationEvaluator.ConstantDuration;
+import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import btrplace.test.PremadeElements;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Collections;
-import java.util.UUID;
+
 
 /**
  * Unit tests for {@link ForgeVMModel}.
  *
  * @author Fabien Hermenier
  */
-public class ForgeVMModelTest implements PremadeElements {
+public class ForgeVMModelTest {
 
     @Test
     public void testBasics() throws SolverException {
-        Mapping m = new DefaultMapping();
-        Model mo = new DefaultModel(m);
+        Model mo = new DefaultModel();
+        Mapping m = mo.getMapping();
+        final VM vm1 = mo.newVM();
+
         mo.getAttributes().put(vm1, "template", "small");
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(ForgeVM.class, new ConstantDuration(7));
+        dev.register(ForgeVM.class, new ConstantActionDuration(7));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
-                .setNextVMsStates(Collections.singleton(vm1), Collections.<UUID>emptySet(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .build();
         ForgeVMModel ma = (ForgeVMModel) rp.getVMAction(vm1);
         Assert.assertEquals(vm1, ma.getVM());
@@ -70,29 +67,34 @@ public class ForgeVMModelTest implements PremadeElements {
 
     @Test(expectedExceptions = {SolverException.class})
     public void testWithoutTemplate() throws SolverException {
-        Mapping m = new DefaultMapping();
-        Model mo = new DefaultModel(m);
+        Model mo = new DefaultModel();
+        Mapping m = mo.getMapping();
+        final VM vm1 = mo.newVM();
+
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(ForgeVM.class, new ConstantDuration(7));
+        dev.register(ForgeVM.class, new ConstantActionDuration(7));
         new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
-                .setNextVMsStates(Collections.singleton(vm1), Collections.<UUID>emptySet(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .build();
 
     }
 
     @Test
     public void testResolution() throws SolverException, ContradictionException {
-        Mapping m = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping m = mo.getMapping();
+        final VM vm1 = mo.newVM();
+        Node n1 = mo.newNode();
+
         m.addOnlineNode(n1);
-        Model mo = new DefaultModel(m);
         mo.getAttributes().put(vm1, "template", "small");
         DurationEvaluators dev = new DurationEvaluators();
-        dev.register(ForgeVM.class, new ConstantDuration(7));
-        dev.register(ShutdownNode.class, new ConstantDuration(20));
+        dev.register(ForgeVM.class, new ConstantActionDuration(7));
+        dev.register(ShutdownNode.class, new ConstantActionDuration(20));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
-                .setNextVMsStates(Collections.singleton(vm1), Collections.<UUID>emptySet(), Collections.<UUID>emptySet(), Collections.<UUID>emptySet())
+                .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .labelVariables()
                 .build();
         //Force the node to get offline

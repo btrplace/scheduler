@@ -1,3 +1,20 @@
+/*
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ *
+ * This file is part of btrplace.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.plan.event;
 
 /**
@@ -8,7 +25,7 @@ package btrplace.plan.event;
 public interface ActionVisitor {
 
     /**
-     * Visit an {@link Allocate} action.
+     * Visit a {@link Allocate} action.
      *
      * @param a the action to visit
      * @return a possible value
@@ -16,7 +33,7 @@ public interface ActionVisitor {
     Object visit(Allocate a);
 
     /**
-     * Visit an {@link AllocateEvent} event.
+     * Visit a {@link AllocateEvent} event.
      *
      * @param a the event to visit
      * @return a possible value
@@ -24,7 +41,7 @@ public interface ActionVisitor {
     Object visit(AllocateEvent a);
 
     /**
-     * Visit an {@link SubstitutedVMEvent} event.
+     * Visit a {@link SubstitutedVMEvent} event.
      *
      * @param a the event to visit
      * @return a possible value
@@ -32,7 +49,7 @@ public interface ActionVisitor {
     Object visit(SubstitutedVMEvent a);
 
     /**
-     * Visit an {@link BootNode} action.
+     * Visit a {@link BootNode} action.
      *
      * @param a the action to visit
      * @return a possible value
@@ -40,7 +57,7 @@ public interface ActionVisitor {
     Object visit(BootNode a);
 
     /**
-     * Visit an {@link BootVM} action.
+     * Visit a {@link BootVM} action.
      *
      * @param a the action to visit
      * @return a possible value
@@ -48,7 +65,7 @@ public interface ActionVisitor {
     Object visit(BootVM a);
 
     /**
-     * Visit an {@link ForgeVM} action.
+     * Visit a {@link ForgeVM} action.
      *
      * @param a the action to visit
      * @return a possible value
@@ -56,7 +73,7 @@ public interface ActionVisitor {
     Object visit(ForgeVM a);
 
     /**
-     * Visit an {@link KillVM} action.
+     * Visit a {@link KillVM} action.
      *
      * @param a the action to visit
      * @return a possible value
@@ -64,7 +81,7 @@ public interface ActionVisitor {
     Object visit(KillVM a);
 
     /**
-     * Visit an {@link MigrateVM} action.
+     * Visit a {@link MigrateVM} action.
      *
      * @param a the action to visit
      * @return a possible value
@@ -72,7 +89,7 @@ public interface ActionVisitor {
     Object visit(MigrateVM a);
 
     /**
-     * Visit an {@link ResumeVM} action.
+     * Visit a {@link ResumeVM} action.
      *
      * @param a the action to visit
      * @return a possible value
@@ -80,7 +97,7 @@ public interface ActionVisitor {
     Object visit(ResumeVM a);
 
     /**
-     * Visit an {@link ShutdownNode} action.
+     * Visit a {@link ShutdownNode} action.
      *
      * @param a the action to visit
      * @return a possible value
@@ -88,7 +105,7 @@ public interface ActionVisitor {
     Object visit(ShutdownNode a);
 
     /**
-     * Visit an {@link ShutdownVM} action.
+     * Visit a {@link ShutdownVM} action.
      *
      * @param a the action to visit
      * @return a possible value
@@ -96,7 +113,7 @@ public interface ActionVisitor {
     Object visit(ShutdownVM a);
 
     /**
-     * Visit an {@link SuspendVM} action.
+     * Visit a {@link SuspendVM} action.
      *
      * @param a the action to visit
      * @return a possible value

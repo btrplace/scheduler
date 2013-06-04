@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,9 +20,10 @@ package btrplace.plan.event;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * An action to resume a VirtualMachine on an online node.
@@ -33,33 +33,33 @@ import java.util.UUID;
  */
 public class ResumeVM extends Action implements VMStateTransition, RunningVMPlacement {
 
-    private UUID vm;
+    private VM vm;
 
-    private UUID src, dst;
+    private Node src, dst;
 
     /**
      * Make a new resume action.
      *
-     * @param vm   the virtual machine to resume
-     * @param from the source node
-     * @param to   the destination node
-     * @param st   the moment the action starts.
-     * @param end  the moment the action finish
+     * @param vm    the virtual machine to resume
+     * @param from  the source node
+     * @param to    the destination node
+     * @param start the moment the action starts.
+     * @param end   the moment the action finish
      */
-    public ResumeVM(UUID vm, UUID from, UUID to, int st, int end) {
-        super(st, end);
+    public ResumeVM(VM vm, Node from, Node to, int start, int end) {
+        super(start, end);
         this.vm = vm;
         this.src = from;
         this.dst = to;
     }
 
     @Override
-    public UUID getVM() {
+    public VM getVM() {
         return vm;
     }
 
     @Override
-    public UUID getDestinationNode() {
+    public Node getDestinationNode() {
         return dst;
     }
 
@@ -68,7 +68,7 @@ public class ResumeVM extends Action implements VMStateTransition, RunningVMPlac
      *
      * @return the node identifier
      */
-    public UUID getSourceNode() {
+    public Node getSourceNode() {
         return src;
     }
 
@@ -88,7 +88,7 @@ public class ResumeVM extends Action implements VMStateTransition, RunningVMPlac
         return (map.getOnlineNodes().contains(src)
                 && map.getOnlineNodes().contains(dst)
                 && map.getSleepingVMs().contains(vm)
-                && map.getVMLocation(vm).equals(src)
+                && map.getVMLocation(vm) == src
                 && map.addRunningVM(vm, dst));
     }
 

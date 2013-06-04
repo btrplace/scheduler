@@ -1,13 +1,24 @@
+/*
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ *
+ * This file is part of btrplace.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.examples;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.model.constraint.Offline;
-import btrplace.model.constraint.Preserve;
-import btrplace.model.constraint.SatConstraint;
-import btrplace.model.constraint.Spread;
+import btrplace.model.*;
+import btrplace.model.constraint.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.DependencyBasedPlanApplier;
 import btrplace.plan.ReconfigurationPlan;
@@ -20,127 +31,101 @@ import java.util.*;
 
 /**
  * Simple tutorial about the usage of Btrplace.
- * The document associated to the tutorial is available
- * on <a href="https://github.com/fhermeni/btrplace-solver/wiki/GettingStarted">btrplace website</a>.
  *
  * @author Fabien Hermenier
+ * @see <a href="https://github.com/fhermeni/btrplace-solver/wiki/GettingStarted">btrplace website</a>.
  */
 public class GettingStarted implements Example {
 
-    private static UUID vm1 = new UUID(0, 1);
-    private static UUID vm2 = new UUID(0, 2);
-    private static UUID vm3 = new UUID(0, 3);
-    private static UUID vm4 = new UUID(0, 4);
-    private static UUID vm5 = new UUID(0, 5);
-    private static UUID vm6 = new UUID(0, 6);
-
-    private static UUID n1 = new UUID(1, 1);
-    private static UUID n2 = new UUID(1, 2);
-    private static UUID n3 = new UUID(1, 3);
-    private static UUID n4 = new UUID(1, 4);
+    private List<VM> vms = new ArrayList<>();
+    private List<Node> nodes = new ArrayList<>();
 
     /**
-     * Make the element mapping that depicts
-     * the element state and the VM positions.
+     * Make a model with 4 online nodes, 6 VMs (5 running, 1 ready).
+     * Declare 2 resources.
      */
-    public static Mapping makeMapping() {
-        Mapping map = new DefaultMapping();
+    private Model makeModel() {
+        Model model = new DefaultModel();
+        Mapping map = model.getMapping();
 
-        //4 online nodes
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOnlineNode(n3);
-        map.addOnlineNode(n4);
+        //Create 4 online nodes
+        for (int i = 0; i < 4; i++) {
+            Node n = model.newNode();
+            nodes.add(n);
+            map.addOnlineNode(n);
+        }
 
-        //Running 6 VMs
-        map.addRunningVM(vm3, n1);
-        map.addRunningVM(vm2, n1);
+        //Create 6 VMs: vm0..vm5
+        for (int i = 0; i < 6; i++) {
+            VM v = model.newVM();
+            vms.add(v);
+        }
 
-        map.addRunningVM(vm1, n3);
-        map.addRunningVM(vm5, n3);
-        map.addRunningVM(vm4, n3);
+        //vm2,vm1,vm0,vm3,vm5 are running on the nodes
+        map.addRunningVM(vms.get(2), nodes.get(0));
+        map.addRunningVM(vms.get(1), nodes.get(1));
+        map.addRunningVM(vms.get(0), nodes.get(2));
+        map.addRunningVM(vms.get(3), nodes.get(2));
+        map.addRunningVM(vms.get(5), nodes.get(3));
 
-        map.addRunningVM(vm6, n4);
+        //vm4 is ready to be running on a node.
+        map.addReadyVM(vms.get(4));
 
-        return map;
+        //Declare a view to specify the "cpu" physical capacity of the nodes
+        // and the virtual consumption of the VMs.
+        ShareableResource rcCPU = new ShareableResource("cpu", 8, 0); //By default, nodes have 8 "cpu" resources
+        rcCPU.setConsumption(vms.get(0), 2);
+        rcCPU.setConsumption(vms.get(1), 3);
+        rcCPU.setConsumption(vms.get(2), 4);
+        rcCPU.setConsumption(vms.get(3), 3);
+        rcCPU.setConsumption(vms.get(5), 5);
+
+        ShareableResource rcMem = new ShareableResource("mem", 7, 0); //By default, nodes have 7 "mem" resources
+        rcMem.setConsumption(vms.get(0), 2);
+        rcMem.setConsumption(vms.get(1), 2);
+        rcMem.setConsumption(vms.get(2), 4);
+        rcMem.setConsumption(vms.get(3), 3);
+        rcMem.setConsumption(vms.get(5), 4);
+
+        //Attach the resources
+        model.attach(rcCPU);
+        model.attach(rcMem);
+        return model;
     }
 
     /**
-     * Declare the physical number of CPUs available on the nodes
-     * and the number of virtual CPUs that are currently used by the VMs.
+     * Declare some constraints.
      */
-    private static ShareableResource makeCPUResourceView() {
-        ShareableResource rc = new ShareableResource("cpu");
-        rc.set(n1, 8);
-        rc.set(n2, 8);
-        rc.set(n3, 8);
-        rc.set(n4, 8);
+    public List<SatConstraint> makeConstraints() {
+        List<SatConstraint> cstrs = new ArrayList<>();
+        //VM1 and VM2 must be running on distinct nodes
+        cstrs.add(new Spread(new HashSet<>(Arrays.asList(vms.get(1), vms.get(2)))));
 
-        rc.set(vm1, 2);
-        rc.set(vm2, 3);
-        rc.set(vm3, 4);
-        rc.set(vm4, 3);
-        rc.set(vm5, 3);
-        rc.set(vm6, 5);
+        //VM0 must have at least 3 virtual CPU dedicated to it
+        cstrs.add(new Preserve(Collections.singleton(vms.get(0)), "cpu", 3));
 
-        return rc;
-    }
+        //N3 must be set offline
+        cstrs.add(new Offline(Collections.singleton(nodes.get(3))));
 
-    /**
-     * Declare the physical number of CPUs available on the nodes
-     * and the number of virtual CPUs that are currently used by the VMs.
-     */
-    private static ShareableResource makeMemResourceView() {
-        ShareableResource rc = new ShareableResource("mem");
-        rc.set(n1, 7);
-        rc.set(n2, 7);
-        rc.set(n3, 7);
-        rc.set(n4, 7);
+        //VM4 must be running, It asks for 3 cpu and 2 mem resources
+        cstrs.add(new Running(Collections.singleton(vms.get(4))));
+        cstrs.add(new Preserve(Collections.singleton(vms.get(4)), "cpu", 3));
+        cstrs.add(new Preserve(Collections.singleton(vms.get(4)), "mem", 2));
 
-        rc.set(vm1, 2);
-        rc.set(vm2, 2);
-        rc.set(vm3, 4);
-        rc.set(vm4, 3);
-        rc.set(vm5, 2);
-        rc.set(vm6, 4);
-
-        return rc;
-    }
-
-    private static Set<SatConstraint> makeConstraints() {
-        Set<SatConstraint> cstrs = new HashSet<>();
-
-        //VMs VM2 and VM3 must be running on distinct nodes
-        cstrs.add(new Spread(new HashSet<>(Arrays.asList(vm2, vm3))));
-
-        //VM VM1 must have at least 3 virtual CPU dedicated to it
-        cstrs.add(new Preserve(Collections.singleton(vm1), "cpu", 3));
-
-        //node N4 must be offline
-        cstrs.add(new Offline(Collections.singleton(n4)));
-
+        //VM3 must be turned off, i.e. set back to the ready state
+        cstrs.add(new Ready(Collections.singleton(vms.get(3))));
         return cstrs;
     }
 
     @Override
     public boolean run() {
-        Mapping map = makeMapping();
 
-        //Now, we declare views related to
-        //the memory and the cpu resources
-        ShareableResource rcCPU = makeCPUResourceView();
-        ShareableResource rcMem = makeMemResourceView();
-
-        //We create a model that aggregates the mapping and the views
-        Model origin = new DefaultModel(map);
-        origin.attach(rcCPU);
-        origin.attach(rcMem);
-
-        Set<SatConstraint> cstrs = makeConstraints();
+        Model model = makeModel();
+        List<SatConstraint> cstrs = makeConstraints();
 
         ChocoReconfigurationAlgorithm ra = new DefaultChocoReconfigurationAlgorithm();
         try {
-            ReconfigurationPlan plan = ra.solve(origin, cstrs);
+            ReconfigurationPlan plan = ra.solve(model, cstrs);
             System.out.println("Time-based plan:");
             System.out.println(new TimeBasedPlanApplier().toString(plan));
             System.out.println("\nDependency based plan:");

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,7 +19,6 @@ package btrplace.json.model.constraint;
 
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.JSONUtils;
 import btrplace.model.constraint.Killed;
 import net.minidev.json.JSONObject;
 
@@ -45,14 +43,14 @@ public class KilledConverter extends SatConstraintConverter<Killed> {
     @Override
     public Killed fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Killed(JSONUtils.requiredUUIDs(o, "vms"));
+        return new Killed(requiredVMs(o, "vms"));
     }
 
     @Override
     public JSONObject toJSON(Killed o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", JSONUtils.toJSON(o.getInvolvedVMs()));
+        c.put("vms", vmsToJSON(o.getInvolvedVMs()));
         return c;
     }
 }

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,12 +17,9 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.Running;
-import btrplace.solver.choco.MappingBuilder;
-import btrplace.test.PremadeElements;
+import btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -32,12 +28,15 @@ import org.testng.annotations.Test;
  *
  * @author Fabien Hermenier
  */
-public class CRunningTest implements PremadeElements {
+public class CRunningTest {
 
     @Test
     public void testGetMisplaced() {
-        Mapping m = new MappingBuilder().on(n1).ready(vm1).run(n1, vm2).build();
-        Model mo = new DefaultModel(m);
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        Node n1 = mo.newNode();
+        Mapping m = new MappingFiller(mo.getMapping()).on(n1).ready(vm1).run(n1, vm2).get();
 
         CRunning k = new CRunning(new Running(m.getAllVMs()));
         Assert.assertEquals(1, k.getMisPlacedVMs(mo).size());

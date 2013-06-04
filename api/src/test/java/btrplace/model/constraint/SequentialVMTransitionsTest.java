@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,33 +17,29 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.*;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Unit tests for {@link SequentialVMTransitions}.
  *
  * @author Fabien Hermenier
  */
-public class SequentialVMTransitionsTest implements PremadeElements {
+public class SequentialVMTransitionsTest {
 
     @Test
     public void testInstantiation() {
 
-        List<UUID> l = Arrays.asList(vm1, vm2, vm3);
+        Model mo = new DefaultModel();
+        List<VM> l = Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM());
         SequentialVMTransitions c = new SequentialVMTransitions(l);
         Assert.assertNotNull(c.getChecker());
         Assert.assertEquals(l, c.getInvolvedVMs());
@@ -59,9 +54,10 @@ public class SequentialVMTransitionsTest implements PremadeElements {
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEquals() {
-        List<UUID> l = Arrays.asList(vm1, vm2, vm3);
+        Model mo = new DefaultModel();
+        List<VM> l = Arrays.asList(mo.newVM(), mo.newVM(), mo.newVM());
         SequentialVMTransitions c = new SequentialVMTransitions(l);
-        List<UUID> l2 = new ArrayList<>(l);
+        List<VM> l2 = new ArrayList<>(l);
         SequentialVMTransitions c2 = new SequentialVMTransitions(l2);
         Assert.assertTrue(c.equals(c2));
         Assert.assertEquals(c.hashCode(), c2.hashCode());
@@ -71,54 +67,57 @@ public class SequentialVMTransitionsTest implements PremadeElements {
 
     @Test
     public void testContinuousIsSatisfied() {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addRunningVM(vm1, n1);
-        map.addReadyVM(vm2);
-        map.addSleepingVM(vm3, n1);
-        map.addRunningVM(vm4, n1);
-        List<UUID> l = Arrays.asList(vm1, vm2, vm3, vm4);
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 5);
+        List<VM> vms = Util.newVMs(mo, 5);
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addRunningVM(vms.get(0), ns.get(0));
+        map.addReadyVM(vms.get(1));
+        map.addSleepingVM(vms.get(2), ns.get(0));
+        map.addRunningVM(vms.get(3), ns.get(0));
+        List<VM> l = Arrays.asList(vms.get(0), vms.get(1), vms.get(2), vms.get(3));
         SequentialVMTransitions c = new SequentialVMTransitions(l);
-        Model mo = new DefaultModel(map);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
-        plan.add(new MigrateVM(vm4, n1, n2, 0, 1));
-        plan.add(new SuspendVM(vm1, n1, n1, 2, 3));
-        plan.add(new BootVM(vm2, n1, 3, 4));
-        plan.add(new ResumeVM(vm3, n1, n1, 4, 5));
+        plan.add(new MigrateVM(vms.get(3), ns.get(0), ns.get(1), 0, 1));
+        plan.add(new SuspendVM(vms.get(0), ns.get(0), ns.get(0), 2, 3));
+        plan.add(new BootVM(vms.get(1), ns.get(0), 3, 4));
+        plan.add(new ResumeVM(vms.get(2), ns.get(0), ns.get(0), 4, 5));
         Assert.assertEquals(c.isSatisfied(plan), true);
 
         //Overlap
         plan = new DefaultReconfigurationPlan(mo);
-        plan.add(new BootVM(vm2, n1, 3, 4));
-        plan.add(new ResumeVM(vm3, n1, n1, 3, 5));
+        plan.add(new BootVM(vms.get(1), ns.get(0), 3, 4));
+        plan.add(new ResumeVM(vms.get(2), ns.get(0), ns.get(0), 3, 5));
         Assert.assertEquals(c.isSatisfied(plan), false);
 
         //Not the right precedence
         plan = new DefaultReconfigurationPlan(mo);
-        plan.add(new BootVM(vm2, n1, 3, 4));
-        plan.add(new ResumeVM(vm3, n1, n1, 0, 1));
+        plan.add(new BootVM(vms.get(1), ns.get(0), 3, 4));
+        plan.add(new ResumeVM(vms.get(2), ns.get(0), ns.get(0), 0, 1));
         Assert.assertEquals(c.isSatisfied(plan), false);
     }
 
     @Test
     public void testContinuousSatisfied2() {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addReadyVM(vm1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addRunningVM(vm4, n1);
-
-        Model mo = new DefaultModel(map);
+        Model mo = new DefaultModel();
+        List<Node> ns = Util.newNodes(mo, 5);
+        List<VM> vms = Util.newVMs(mo, 5);
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addReadyVM(vms.get(0));
+        map.addRunningVM(vms.get(1), ns.get(0));
+        map.addRunningVM(vms.get(2), ns.get(1));
+        map.addRunningVM(vms.get(3), ns.get(0));
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
 
-        p.add(new BootVM(vm1, n1, 0, 1));
-        p.add(new SuspendVM(vm3, n2, n2, 1, 2));
-        p.add(new ShutdownVM(vm4, n1, 2, 3));
+        p.add(new BootVM(vms.get(0), ns.get(0), 0, 1));
+        p.add(new SuspendVM(vms.get(2), ns.get(1), ns.get(1), 1, 2));
+        p.add(new ShutdownVM(vms.get(3), ns.get(0), 2, 3));
 
-        List<UUID> seq = Arrays.asList(vm1, vm2, vm3, vm4);
+        List<VM> seq = Arrays.asList(vms.get(0), vms.get(1), vms.get(2), vms.get(3));
 
         SequentialVMTransitions cstr = new SequentialVMTransitions(seq);
         Assert.assertEquals(cstr.isSatisfied(p), true);

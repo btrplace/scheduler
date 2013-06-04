@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -26,7 +25,6 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.ActionModelUtils;
 import btrplace.solver.choco.objective.ReconfigurationObjective;
 import btrplace.solver.choco.view.ModelViewMapper;
-import btrplace.test.PremadeElements;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.AtMostNValue;
 import choco.kernel.solver.Configuration;
@@ -45,7 +43,7 @@ import static org.mockito.Mockito.when;
  *
  * @author Fabien Hermenier
  */
-public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements {
+public class DefaultChocoReconfigurationAlgorithmTest {
 
     @Test
     public void testGetsAndSets() {
@@ -60,8 +58,8 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
         cra.doOptimize(false);
         Assert.assertEquals(cra.doOptimize(), false);
 
-        cra.repair(true);
-        Assert.assertEquals(cra.repair(), true);
+        cra.doRepair(true);
+        Assert.assertEquals(cra.doRepair(), true);
 
         cra.labelVariables(true);
         Assert.assertEquals(cra.areVariablesLabelled(), true);
@@ -78,7 +76,7 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
             }
 
             @Override
-            public Set<UUID> getMisPlacedVMs(Model m) {
+            public Set<VM> getMisPlacedVMs(Model m) {
                 return Collections.emptySet();
             }
         };
@@ -88,15 +86,15 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
 
     @Test
     public void testGetStatistics() throws SolverException {
-        Mapping map = new DefaultMapping();
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        Node n1 = mo.newNode();
         map.addOnlineNode(n1);
         for (int i = 0; i < 10; i++) {
-            UUID n = new UUID(2, i);
-            UUID vm = new UUID(3, i);
+            Node n = mo.newNode();
             map.addOnlineNode(n);
-            map.addRunningVM(vm, n);
+            map.addRunningVM(mo.newVM(), n);
         }
-        Model mo = new DefaultModel(map);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.doOptimize(true);
         cra.setTimeLimit(0);
@@ -113,7 +111,7 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
             }
 
             @Override
-            public Set<UUID> getMisPlacedVMs(Model m) {
+            public Set<VM> getMisPlacedVMs(Model m) {
                 return Collections.emptySet();
             }
         });
@@ -134,8 +132,18 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
 
     @Test
     public void testSolvableRepair() throws SolverException {
+        Model mo = new DefaultModel();
+        final VM vm1 = mo.newVM();
+        final VM vm2 = mo.newVM();
+        final VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
 
-        Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5).build();
+        new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5).get();
 
         //A satisfied constraint
         Fence c1 = new Fence(new HashSet<>(Arrays.asList(vm1, vm2)), new HashSet<>(Arrays.asList(n1, n2)));
@@ -151,15 +159,16 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
             }
 
             @Override
-            public Set<UUID> getMisPlacedVMs(Model m) {
+            public Set<VM> getMisPlacedVMs(Model m) {
                 return new HashSet<>(Arrays.asList(vm2, vm3));
             }
         };
 
         Set<SatConstraint> cstrs = new HashSet<SatConstraint>(Arrays.asList(c1, c2));
-        Model mo = new DefaultModel(map);
+        mo = new DefaultModel();
+        new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5).get();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.repair(true);
+        cra.doRepair(true);
         cra.doOptimize(false);
         cra.setObjective(o);
 
@@ -171,11 +180,22 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
 
     @Test(expectedExceptions = {SolverException.class})
     public void testWithUnknownVMs() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5).build();
-        Model mo = new DefaultModel(map);
+        Model mo = new DefaultModel();
+        final VM vm1 = mo.newVM();
+        final VM vm2 = mo.newVM();
+        final VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        VM vm6 = mo.newVM();
+        VM vm7 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+        new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5);
         SatConstraint cstr = mock(SatConstraint.class);
         when(cstr.getInvolvedVMs()).thenReturn(Arrays.asList(vm1, vm2, vm6));
-        when(cstr.getInvolvedNodes()).thenReturn(Arrays.asList(n1, vm2, vm7));
+        when(cstr.getInvolvedNodes()).thenReturn(Arrays.asList(n1, n4));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.solve(mo, Collections.singleton(cstr));
     }
@@ -189,33 +209,42 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
     public void testNonHomogeneousIncrease() throws SolverException {
         ShareableResource cpu = new ShareableResource("cpu");
         ShareableResource mem = new ShareableResource("mem");
-        cpu.set(n1, 10);
-        mem.set(n1, 10);
-        cpu.set(n2, 10);
-        mem.set(n2, 10);
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
 
-        cpu.set(vm1, 5);
-        mem.set(vm1, 4);
 
-        cpu.set(vm2, 3);
-        mem.set(vm2, 8);
+        cpu.setCapacity(n1, 10);
+        mem.setCapacity(n1, 10);
+        cpu.setCapacity(n2, 10);
+        mem.setCapacity(n2, 10);
 
-        cpu.set(vm3, 5);
-        cpu.set(vm3, 4);
+        cpu.setConsumption(vm1, 5);
+        mem.setConsumption(vm1, 4);
 
-        cpu.set(vm4, 4);
-        cpu.set(vm4, 5);
+        cpu.setConsumption(vm2, 3);
+        mem.setConsumption(vm2, 8);
+
+        cpu.setConsumption(vm3, 5);
+        cpu.setConsumption(vm3, 4);
+
+        cpu.setConsumption(vm4, 4);
+        cpu.setConsumption(vm4, 5);
 
         //vm1 requires more cpu resources, but fewer mem resources
         Preserve pCPU = new Preserve(new HashSet<>(Arrays.asList(vm1, vm3)), "cpu", 7);
         Preserve pMem = new Preserve(new HashSet<>(Arrays.asList(vm1, vm3)), "mem", 2);
 
 
-        Mapping map = new MappingBuilder().on(n1, n2)
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2)
                 .run(n1, vm1)
                 .run(n2, vm3, vm4)
-                .ready(vm2).build();
-        Model mo = new DefaultModel(map);
+                .ready(vm2).get();
+
         mo.attach(cpu);
         mo.attach(mem);
 
@@ -226,7 +255,7 @@ public class DefaultChocoReconfigurationAlgorithmTest implements PremadeElements
                 new Running(Collections.singleton(vm2)),
                 new Ready(Collections.singleton(vm3))));
         Assert.assertNotNull(p);
-        System.out.println(p);
+        //System.out.println(p);
     }
 
 }

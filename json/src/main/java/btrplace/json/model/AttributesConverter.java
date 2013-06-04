@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,45 +17,63 @@
 
 package btrplace.json.model;
 
-import btrplace.json.JSONConverter;
-import btrplace.model.Attributes;
-import btrplace.model.DefaultAttributes;
+import btrplace.json.AbstractJSONObjectConverter;
+import btrplace.json.JSONConverterException;
+import btrplace.model.*;
 import net.minidev.json.JSONObject;
 
-import java.util.UUID;
 
 /**
  * Serialize/un-serialize attributes.
- * In practice, the JSON representation is a hashmap where UUID are the keys.
- * For each of these keys, a hashmap contains the key/values pair associated
+ * In practice, the JSON representation is a map where int are the keys.
+ * For each of these keys, a map contains the key/values pair associated
  * to the element. A value is either a boolean ("true" or "false"), a number (integer or real), or a string.
  *
  * @author Fabien Hermenier
  */
-public class AttributesConverter implements JSONConverter<Attributes> {
+public class AttributesConverter extends AbstractJSONObjectConverter<Attributes> {
 
     @Override
-    public Attributes fromJSON(JSONObject o) {
+    public Attributes fromJSON(JSONObject o) throws JSONConverterException {
         Attributes attrs = new DefaultAttributes();
-        for (Object el : o.keySet()) {
-            UUID u = UUID.fromString(el.toString());
-            JSONObject entries = (JSONObject) o.get(el);
-            for (Object entry : entries.keySet()) {
-                Object value = entries.get(entry);
+        JSONObject vms = (JSONObject) o.get("vms");
+        JSONObject nodes = (JSONObject) o.get("nodes");
+
+        for (String el : vms.keySet()) {
+            VM vm = getOrMakeVM(Integer.parseInt(el));
+            JSONObject entries = (JSONObject) vms.get(el);
+            for (String key : entries.keySet()) {
+                Object value = entries.get(key);
                 if (value.getClass().equals(Boolean.class)) {
-                    attrs.put(u, entry.toString(), (Boolean) value);
-                } else if (value.getClass().equals(Long.class)) {
-                    attrs.put(u, entry.toString(), (Long) value);
+                    attrs.put(vm, key, (Boolean) value);
                 } else if (value.getClass().equals(String.class)) {
-                    attrs.put(u, entry.toString(), (String) value);
+                    attrs.put(vm, key, (String) value);
                 } else if (value.getClass().equals(Double.class)) {
-                    attrs.put(u, entry.toString(), (Double) value);
+                    attrs.put(vm, key, (Double) value);
                 } else if (value.getClass().equals(Integer.class)) {
-                    attrs.put(u, entry.toString(), (Integer) value);
+                    attrs.put(vm, key, (Integer) value);
                 } else {
                     throw new ClassCastException(value.toString() + " is not a basic type (" + value.getClass() + ")");
                 }
+            }
+        }
 
+        for (String el : nodes.keySet()) {
+            Node n = getOrMakeNode(Integer.parseInt(el));
+            JSONObject entries = (JSONObject) nodes.get(el);
+            for (String key : entries.keySet()) {
+                Object value = entries.get(key);
+                if (value.getClass().equals(Boolean.class)) {
+                    attrs.put(n, key, (Boolean) value);
+                } else if (value.getClass().equals(String.class)) {
+                    attrs.put(n, key, (String) value);
+                } else if (value.getClass().equals(Double.class)) {
+                    attrs.put(n, key, (Double) value);
+                } else if (value.getClass().equals(Integer.class)) {
+                    attrs.put(n, key, (Integer) value);
+                } else {
+                    throw new ClassCastException(value.toString() + " is not a basic type (" + value.getClass() + ")");
+                }
             }
         }
         return attrs;
@@ -65,13 +82,21 @@ public class AttributesConverter implements JSONConverter<Attributes> {
     @Override
     public JSONObject toJSON(Attributes attributes) {
         JSONObject res = new JSONObject();
-        for (UUID e : attributes.getElements()) {
+        JSONObject vms = new JSONObject();
+        JSONObject nodes = new JSONObject();
+        for (Element e : attributes.getDefined()) {
             JSONObject el = new JSONObject();
             for (String k : attributes.getKeys(e)) {
                 el.put(k, attributes.get(e, k));
             }
-            res.put(e.toString(), el);
+            if (e instanceof VM) {
+                vms.put(Integer.toString(e.id()), el);
+            } else {
+                nodes.put(Integer.toString(e.id()), el);
+            }
         }
+        res.put("vms", vms);
+        res.put("nodes", nodes);
         return res;
     }
 }

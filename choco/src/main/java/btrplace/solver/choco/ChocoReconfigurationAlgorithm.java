@@ -37,14 +37,14 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm 
      *
      * @param b {@code true} to repair
      */
-    void repair(boolean b);
+    void doRepair(boolean b);
 
     /**
      * Indicate if the algorithm repair the model.
      *
      * @return {@code true} iff it repairs the model.
      */
-    boolean repair();
+    boolean doRepair();
 
     /**
      * State if the algorithm must try to improve the first computed solution.

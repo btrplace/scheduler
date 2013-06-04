@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,18 +17,31 @@
 
 package btrplace.json.model.view;
 
+import btrplace.json.JSONConverterException;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.view.ShareableResource;
 import net.minidev.json.JSONObject;
 
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Serialize/Un-serialize an {@link btrplace.model.view.ShareableResource}.
  *
  * @author Fabien Hermenier
  */
-public class ShareableResourceConverter implements ModelViewConverter<ShareableResource> {
+public class ShareableResourceConverter extends ModelViewConverter<ShareableResource> {
+
+    /**
+     * JSON label for default VM consumption.
+     */
+    public static final String DEFAULT_CONSUMPTION = "defConsumption";
+
+    /**
+     * JSON label for default node capacity.
+     */
+    public static final String DEFAULT_CAPACITY = "defCapacity";
 
     @Override
     public Class<ShareableResource> getSupportedConstraint() {
@@ -45,19 +57,31 @@ public class ShareableResourceConverter implements ModelViewConverter<ShareableR
     public JSONObject toJSON(ShareableResource rc) {
         JSONObject o = new JSONObject();
         o.put("id", getJSONId());
+        o.put(DEFAULT_CONSUMPTION, rc.getDefaultConsumption());
+        o.put(DEFAULT_CAPACITY, rc.getDefaultCapacity());
         o.put("rcId", rc.getResourceIdentifier());
-        Set<UUID> elems = rc.getDefined();
+
+        Set<VM> elems = rc.getDefinedVMs();
         JSONObject values = new JSONObject();
-        for (UUID u : elems) {
-            values.put(u.toString(), rc.get(u));
+        for (VM u : elems) {
+            values.put(Integer.toString(u.id()), rc.getConsumption(u));
         }
-        o.put("values", values);
+        o.put("vms", values);
+
+        Set<Node> nodes = rc.getDefinedNodes();
+        values = new JSONObject();
+        for (Node u : nodes) {
+            values.put(Integer.toString(u.id()), rc.getCapacity(u));
+        }
+        o.put("nodes", values);
+
         return o;
     }
 
     @Override
-    public ShareableResource fromJSON(JSONObject o) {
-        if (!o.containsKey("id") || !o.containsKey("values") || !o.containsKey("rcId")) {
+    public ShareableResource fromJSON(JSONObject o) throws JSONConverterException {
+        if (!o.containsKey("id") || !o.containsKey("vms") || !o.containsKey("nodes")
+                || !o.containsKey("rcId") || !o.containsKey(DEFAULT_CONSUMPTION) || !o.containsKey(DEFAULT_CAPACITY)) {
             return null;
         }
         String id = o.get("id").toString();
@@ -66,14 +90,32 @@ public class ShareableResourceConverter implements ModelViewConverter<ShareableR
         }
 
         String rcId = o.get("rcId").toString();
-
-        ShareableResource rc = new ShareableResource(rcId);
-        JSONObject values = (JSONObject) o.get("values");
-        for (String k : values.keySet()) {
-            UUID u = UUID.fromString(k);
-            int v = Integer.parseInt(values.get(k).toString());
-            rc.set(u, v);
+        Object dc = o.get(DEFAULT_CONSUMPTION);
+        if (!(dc instanceof Integer)) {
+            throw new JSONConverterException("Integer expected for key '" + DEFAULT_CONSUMPTION + "' but got '" + dc.getClass().getName() + "'");
         }
+        int defConsumption = (Integer) o.get(DEFAULT_CONSUMPTION);
+        dc = o.get(DEFAULT_CAPACITY);
+        if (!(dc instanceof Integer)) {
+            throw new JSONConverterException("Integer expected for key '" + DEFAULT_CAPACITY + "' but got '" + dc.getClass().getName() + "'");
+        }
+        int defCapacity = (Integer) o.get(DEFAULT_CAPACITY);
+
+
+        ShareableResource rc = new ShareableResource(rcId, defCapacity, defConsumption);
+        JSONObject values = (JSONObject) o.get("vms");
+        for (String k : values.keySet()) {
+            VM u = getOrMakeVM(Integer.parseInt(k));
+            int v = Integer.parseInt(values.get(k).toString());
+            rc.setConsumption(u, v);
+        }
+        values = (JSONObject) o.get("nodes");
+        for (String k : values.keySet()) {
+            Node u = getOrMakeNode(Integer.parseInt(k));
+            int v = Integer.parseInt(values.get(k).toString());
+            rc.setCapacity(u, v);
+        }
+
         return rc;
     }
 }

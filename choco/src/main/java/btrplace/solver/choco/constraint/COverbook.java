@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +19,8 @@ package btrplace.solver.choco.constraint;
 
 
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.Overbook;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.view.ShareableResource;
@@ -33,7 +34,7 @@ import choco.kernel.solver.variables.real.RealVar;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Choco implementation of {@link btrplace.model.constraint.SatConstraint}.
@@ -62,9 +63,8 @@ public class COverbook implements ChocoSatConstraint {
             throw new SolverException(rp.getSourceModel(), "Unable to get the resource mapping '" + cstr.getResource() + "'");
         }
 
-        for (UUID u : cstr.getInvolvedNodes()) {
+        for (Node u : cstr.getInvolvedNodes()) {
             RealVar v = rcm.getOverbookRatio(rp.getNode(u));
-            v.getSup();
             RealInterval ric = new RealIntervalConstant(v.getInf(), cstr.getRatio());
             try {
                 v.intersect(ric);
@@ -77,21 +77,21 @@ public class COverbook implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
-        Set<UUID> bads = new HashSet<>();
+        Set<VM> bads = new HashSet<>();
         if (rc == null) {
             //No resource given, all the VMs are considered as misplaced
-            for (UUID n : cstr.getInvolvedNodes()) {
+            for (Node n : cstr.getInvolvedNodes()) {
                 bads.addAll(m.getMapping().getRunningVMs(n));
             }
         } else {
             //Check if the node is saturated
-            for (UUID n : cstr.getInvolvedNodes()) {
-                int overCapa = (int) (cstr.getRatio() * rc.get(n));
+            for (Node n : cstr.getInvolvedNodes()) {
+                int overCapa = (int) (cstr.getRatio() * rc.getCapacity(n));
                 //Minus the VMs usage
-                for (UUID vmId : m.getMapping().getRunningVMs(n)) {
-                    overCapa -= rc.get(vmId);
+                for (VM vmId : m.getMapping().getRunningVMs(n)) {
+                    overCapa -= rc.getConsumption(vmId);
                     if (overCapa < 0) {
                         bads.addAll(m.getMapping().getRunningVMs());
                         break;

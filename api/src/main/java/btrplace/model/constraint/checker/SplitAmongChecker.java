@@ -1,13 +1,27 @@
+/*
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ *
+ * This file is part of btrplace.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.model.constraint.checker;
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.model.constraint.SplitAmong;
+import btrplace.plan.event.RunningVMPlacement;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Checker for the {@link btrplace.model.constraint.SplitAmong} constraint
@@ -17,7 +31,9 @@ import java.util.UUID;
  */
 public class SplitAmongChecker extends AllowAllConstraintChecker<SplitAmong> {
 
-    private Collection<Set<UUID>> vGrps;
+    private List<Set<VM>> vGrps;
+
+    private Model mockModel;
 
     /**
      * Make a new checker.
@@ -26,19 +42,20 @@ public class SplitAmongChecker extends AllowAllConstraintChecker<SplitAmong> {
      */
     public SplitAmongChecker(SplitAmong s) {
         super(s);
-        vGrps = s.getGroupsOfVMs();
+        vGrps = new ArrayList<>();
+        for (Collection<VM> vGroup : s.getGroupsOfVMs()) {
+            Set<VM> x = new HashSet<>(vGroup);
+            track(x);
+            vGrps.add(x);
+        }
     }
 
-    @Override
-    public boolean endsWith(Model i) {
-        Mapping m = i.getMapping();
-        //The pgroups that are used:
-        Set<Set<UUID>> pUsed = new HashSet<>();
-        for (Set<UUID> vgrp : vGrps) {
-            Set<UUID> choosedGroup = null;
-
+    private boolean checkMapping(Mapping m) {
+        Set<Collection<Node>> pUsed = new HashSet<>();
+        for (Set<VM> vgrp : vGrps) {
+            Collection<Node> choosedGroup = null;
             //Check every running VM in a single vgroup are running in the same pgroup
-            for (UUID vmId : vgrp) {
+            for (VM vmId : vgrp) {
                 if (m.getRunningVMs().contains(vmId)) {
                     if (choosedGroup == null) {
                         choosedGroup = getConstraint().getAssociatedPGroup(m.getVMLocation(vmId));
@@ -57,5 +74,29 @@ public class SplitAmongChecker extends AllowAllConstraintChecker<SplitAmong> {
             }
         }
         return true;
+    }
+
+    @Override
+    public boolean startsWith(Model mo) {
+        if (getConstraint().isContinuous()) {
+            mockModel = new DefaultModel();
+            MappingUtils.fill(mo.getMapping(), mockModel.getMapping());
+            return endsWith(mockModel);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean startRunningVMPlacement(RunningVMPlacement a) {
+        if (getConstraint().isContinuous()) {
+            a.apply(mockModel);
+            return endsWith(mockModel);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean endsWith(Model i) {
+        return checkMapping(i.getMapping());
     }
 }

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,12 +17,13 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.GatherChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
-import java.util.UUID;
 
 /**
  * A constraint to force a set of VMs, if running, to be
@@ -44,7 +44,7 @@ public class Gather extends SatConstraint {
      *
      * @param vms the VMs to group
      */
-    public Gather(Set<UUID> vms) {
+    public Gather(Collection<VM> vms) {
         this(vms, false);
     }
 
@@ -54,8 +54,8 @@ public class Gather extends SatConstraint {
      * @param vms        the VMs to group
      * @param continuous {@code true} for a continuous restriction
      */
-    public Gather(Set<UUID> vms, boolean continuous) {
-        super(vms, Collections.<UUID>emptySet(), continuous);
+    public Gather(Collection<VM> vms, boolean continuous) {
+        super(vms, Collections.<Node>emptySet(), continuous);
     }
 
     @Override

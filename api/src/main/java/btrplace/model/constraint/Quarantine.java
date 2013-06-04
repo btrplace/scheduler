@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,16 +17,17 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.QuarantineChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
-import java.util.UUID;
 
 /**
  * A constraint to put some nodes into quarantine.
- * running VMs in the quarantine zone can not leave their node
+ * Running VMs in the quarantine zone can not leave their node
  * while no VMs outside the quarantine zone can be hosted on
  * the nodes in quarantine.
  * <p/>
@@ -40,10 +40,10 @@ public class Quarantine extends SatConstraint {
     /**
      * Make a new constraint.
      *
-     * @param nodes the set of nodes to put into quarantine
+     * @param nodes the nodes to put into quarantine
      */
-    public Quarantine(Set<UUID> nodes) {
-        super(Collections.<UUID>emptySet(), nodes, true);
+    public Quarantine(Collection<Node> nodes) {
+        super(Collections.<VM>emptySet(), nodes, true);
     }
 
     @Override

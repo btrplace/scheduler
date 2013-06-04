@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,12 +17,13 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.KilledChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
-import java.util.UUID;
 
 /**
  * A constraint to force a set of VMs to be killed.
@@ -39,8 +39,8 @@ public class Killed extends SatConstraint {
      *
      * @param vms the VMs to remove
      */
-    public Killed(Set<UUID> vms) {
-        super(vms, Collections.<UUID>emptySet(), false);
+    public Killed(Collection<VM> vms) {
+        super(vms, Collections.<Node>emptySet(), false);
     }
 
     @Override

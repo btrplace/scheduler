@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,33 +17,31 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
+import btrplace.model.*;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootVM;
+import btrplace.plan.event.MigrateVM;
 import btrplace.plan.event.ShutdownVM;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Unit tests for {@link Quarantine}.
  *
  * @author Fabien Hermenier
  */
-public class QuarantineTest implements PremadeElements {
+public class QuarantineTest {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Model mo = new DefaultModel();
+        Set<Node> s = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
         Quarantine q = new Quarantine(s);
         Assert.assertNotNull(q.getChecker());
         Assert.assertTrue(q.getInvolvedVMs().isEmpty());
@@ -53,38 +50,55 @@ public class QuarantineTest implements PremadeElements {
         Assert.assertFalse(q.setContinuous(false));
         Assert.assertTrue(q.setContinuous(true));
         Assert.assertFalse(q.toString().contains("null"));
-//        Assert.assertEquals(q.isSatisfied(new DefaultModel(new DefaultMapping())), SatConstraint.Sat.UNDEFINED);
+//        Assert.assertEquals(q.isSatisfied(new DefaultModel()), SatConstraint.Sat.UNDEFINED);
         System.out.println(q);
     }
 
     @Test
     public void testEqualsHashCode() {
-        Set<UUID> s = new HashSet<>(Arrays.asList(n1, n2));
+        Model mo = new DefaultModel();
+        Set<Node> s = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
         Quarantine q = new Quarantine(s);
         Assert.assertTrue(q.equals(q));
         Assert.assertTrue(q.equals(new Quarantine(new HashSet<>(s))));
         Assert.assertEquals(q.hashCode(), new Quarantine(new HashSet<>(s)).hashCode());
-        Assert.assertFalse(q.equals(new Quarantine(new HashSet<UUID>())));
+        Assert.assertFalse(q.equals(new Quarantine(new HashSet<Node>())));
     }
 
     @Test
     public void testContinuousIsSatisfied() {
-        Mapping map = new DefaultMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n2);
-        map.addReadyVM(vm3);
+        Model mo = new DefaultModel();
+        List<VM> vms = Util.newVMs(mo, 5);
+        List<Node> ns = Util.newNodes(mo, 5);
+        Mapping map = mo.getMapping();
+        map.addOnlineNode(ns.get(0));
+        map.addOnlineNode(ns.get(1));
+        map.addOnlineNode(ns.get(2));
+        map.addRunningVM(vms.get(0), ns.get(0));
+        map.addRunningVM(vms.get(1), ns.get(1));
+        map.addReadyVM(vms.get(2));
+        map.addRunningVM(vms.get(3), ns.get(2));
 
-        Quarantine q = new Quarantine(map.getOnlineNodes());
+        Quarantine q = new Quarantine(new HashSet<>(Arrays.asList(ns.get(0), ns.get(1))));
 
-        Model mo = new DefaultModel(map);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(q.isSatisfied(plan), true);
-        plan.add(new ShutdownVM(vm2, n2, 1, 2));
+        plan.add(new ShutdownVM(vms.get(1), ns.get(1), 1, 2));
         Assert.assertEquals(q.isSatisfied(plan), true);
 
-        plan.add(new BootVM(vm3, n1, 0, 1));
+        plan.add(new BootVM(vms.get(2), ns.get(0), 0, 1));
         Assert.assertEquals(q.isSatisfied(plan), false);
+
+        plan = new DefaultReconfigurationPlan(mo);
+        plan.add(new BootVM(vms.get(2), ns.get(2), 0, 1));
+        Assert.assertEquals(q.isSatisfied(plan), true);
+        plan.add(new MigrateVM(vms.get(3), ns.get(2), ns.get(1), 0, 1));
+        Assert.assertEquals(q.isSatisfied(plan), false);
+
+        plan = new DefaultReconfigurationPlan(mo);
+        plan.add(new MigrateVM(vms.get(1), ns.get(1), ns.get(0), 0, 1));
+        Assert.assertEquals(q.isSatisfied(plan), false);
+
+
     }
 }

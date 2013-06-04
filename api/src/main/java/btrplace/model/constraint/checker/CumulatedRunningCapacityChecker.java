@@ -1,13 +1,31 @@
+/*
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ *
+ * This file is part of btrplace.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.model.constraint.checker;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.CumulatedRunningCapacity;
 import btrplace.plan.event.*;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Checker for the {@link btrplace.model.constraint.CumulatedRunningCapacity} constraint
@@ -19,7 +37,7 @@ public class CumulatedRunningCapacityChecker extends AllowAllConstraintChecker<C
 
     private int usage;
 
-    private Set<UUID> srcRunnings;
+    private Set<VM> srcRunnings;
 
     private int qty;
 
@@ -33,20 +51,15 @@ public class CumulatedRunningCapacityChecker extends AllowAllConstraintChecker<C
         qty = c.getAmount();
     }
 
-    private boolean leave(UUID n) {
+    private boolean leave(Node n) {
         if (getConstraint().isContinuous() && getNodes().contains(n)) {
             usage--;
         }
         return true;
     }
 
-    private boolean arrive(UUID n) {
-        if (getConstraint().isContinuous() && getNodes().contains(n)) {
-            if (usage++ == qty) {
-                return false;
-            }
-        }
-        return true;
+    private boolean arrive(Node n) {
+        return !(getConstraint().isContinuous() && getNodes().contains(n) && usage++ == qty);
     }
 
     @Override
@@ -92,7 +105,7 @@ public class CumulatedRunningCapacityChecker extends AllowAllConstraintChecker<C
         if (getConstraint().isContinuous()) {
             int nb = 0;
             Mapping map = mo.getMapping();
-            for (UUID n : getNodes()) {
+            for (Node n : getNodes()) {
                 nb += map.getRunningVMs(n).size();
                 if (nb > qty) {
                     return false;
@@ -108,7 +121,7 @@ public class CumulatedRunningCapacityChecker extends AllowAllConstraintChecker<C
     public boolean endsWith(Model mo) {
         int nb = 0;
         Mapping map = mo.getMapping();
-        for (UUID n : getNodes()) {
+        for (Node n : getNodes()) {
             nb += map.getRunningVMs(n).size();
             if (nb > qty) {
                 return false;

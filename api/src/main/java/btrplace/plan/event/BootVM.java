@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,33 +19,34 @@ package btrplace.plan.event;
 
 
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
- * An action that demand to run a virtual machine on an online node.
- * The virtual machine is originally in the state 'ready'.
+ * An action that starts a VM on an online node.
+ * The VM is originally in the 'ready' state.
  *
  * @author Fabien Hermenier
  */
 public class BootVM extends Action implements VMStateTransition, RunningVMPlacement {
 
-    private UUID vm;
+    private VM vm;
 
-    private UUID node;
+    private Node node;
 
     /**
-     * Make a new time-bounded run.
+     * Make a new action.
      *
-     * @param vmId the virtual machine to run
-     * @param to   the destination node
-     * @param st   the moment the action starts.
-     * @param end  the moment the action finish
+     * @param vm    the VM to run
+     * @param to    the destination node
+     * @param start the moment the action starts.
+     * @param end   the moment the action finish
      */
-    public BootVM(UUID vmId, UUID to, int st, int end) {
-        super(st, end);
-        this.vm = vmId;
+    public BootVM(VM vm, Node to, int start, int end) {
+        super(start, end);
+        this.vm = vm;
         this.node = to;
     }
 
@@ -59,12 +59,12 @@ public class BootVM extends Action implements VMStateTransition, RunningVMPlacem
     }
 
     @Override
-    public UUID getDestinationNode() {
+    public Node getDestinationNode() {
         return node;
     }
 
     @Override
-    public UUID getVM() {
+    public VM getVM() {
         return vm;
     }
 
@@ -78,8 +78,8 @@ public class BootVM extends Action implements VMStateTransition, RunningVMPlacem
      * Test if this action is equals to another object.
      *
      * @param o the object to compare with
-     * @return true if ref is an instanceof Run and if both
-     *         instance involve the same virtual machine and the same nodes
+     * @return true if {@code o} is an instanceof {@link BootVM} and if both
+     *         instance involve the same VM and the same node
      */
     @Override
     public boolean equals(Object o) {

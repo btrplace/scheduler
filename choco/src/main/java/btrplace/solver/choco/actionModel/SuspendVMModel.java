@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,6 +17,8 @@
 
 package btrplace.solver.choco.actionModel;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.SuspendVM;
 import btrplace.solver.SolverException;
@@ -27,12 +28,11 @@ import btrplace.solver.choco.SliceBuilder;
 import choco.cp.solver.variables.integer.IntDomainVarAddCste;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.UUID;
 
 /**
  * Model an action where a running VM goes into the sleeping state through a {@link SuspendVM} action.
  * The model must provide an estimation of the action duration through a
- * {@link btrplace.solver.choco.durationEvaluator.DurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.durationEvaluator.ActionDurationEvaluator} accessible from
  * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code SuspendVM.class}
  * <p/>
  * If the reconfiguration problem has a solution, a {@link SuspendVM} action is inserted into the resulting
@@ -48,7 +48,7 @@ public class SuspendVMModel implements VMActionModel {
 
     private IntDomainVar duration;
 
-    private UUID vm;
+    private VM vm;
 
     private ReconfigurationProblem rp;
 
@@ -61,11 +61,11 @@ public class SuspendVMModel implements VMActionModel {
      * @param e  the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public SuspendVMModel(ReconfigurationProblem rp, UUID e) throws SolverException {
+    public SuspendVMModel(ReconfigurationProblem rp, VM e) throws SolverException {
         this.rp = rp;
         this.vm = e;
 
-        int d = rp.getDurationEvaluators().evaluate(SuspendVM.class, e);
+        int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), SuspendVM.class, e);
 
         duration = rp.makeDuration(d, d, "suspendVM(", e, ").duration");
         this.cSlice = new SliceBuilder(rp, e, "suspendVM(" + e + ").cSlice").setHoster(rp.getCurrentVMLocation(rp.getVM(e)))
@@ -77,7 +77,7 @@ public class SuspendVMModel implements VMActionModel {
 
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
-        UUID node = rp.getNode(cSlice.getHoster().getVal());
+        Node node = rp.getNode(cSlice.getHoster().getVal());
         plan.add(new SuspendVM(vm, node, node, start.getVal(), getEnd().getVal()));
         return true;
     }
@@ -113,7 +113,7 @@ public class SuspendVMModel implements VMActionModel {
     }
 
     @Override
-    public UUID getVM() {
+    public VM getVM() {
         return vm;
     }
 

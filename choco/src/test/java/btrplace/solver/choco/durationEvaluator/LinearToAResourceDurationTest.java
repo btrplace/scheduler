@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,28 +17,49 @@
 
 package btrplace.solver.choco.durationEvaluator;
 
+import btrplace.model.DefaultModel;
+import btrplace.model.Model;
+import btrplace.model.VM;
 import btrplace.model.view.ShareableResource;
-import btrplace.test.PremadeElements;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * Unit tests for {@link LinearToAResourceDuration}.
+ * Unit tests for {@link LinearToAResourceActionDuration}.
  *
  * @author Fabien Hermenier
  */
-public class LinearToAResourceDurationTest implements PremadeElements {
+public class LinearToAResourceDurationTest {
 
     @Test
     public void testSimple() {
-        ShareableResource rc = new ShareableResource("foo", 0);
-        rc.set(vm1, 3);
-        LinearToAResourceDuration d = new LinearToAResourceDuration(rc, 3);
-        Assert.assertEquals(d.evaluate(vm1), 9);
-        Assert.assertEquals(d.evaluate(vm2), 0);
+        ShareableResource rc = new ShareableResource("foo", 0, 0);
+        Model mo = new DefaultModel();
 
-        d = new LinearToAResourceDuration(rc, 3, 4);
-        Assert.assertEquals(d.evaluate(vm1), 13);
-        Assert.assertEquals(d.evaluate(vm3), 4);
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        mo.attach(rc);
+        rc.setConsumption(vm1, 3);
+        LinearToAResourceActionDuration<VM> d = new LinearToAResourceActionDuration<>("foo", 3);
+        Assert.assertEquals(d.getCoefficient(), 3.0);
+        Assert.assertEquals(d.getOffset(), 0.0);
+        Assert.assertEquals(d.getResourceId(), "foo");
+        Assert.assertEquals(d.evaluate(mo, vm1), 9);
+        Assert.assertEquals(d.evaluate(mo, vm2), 0);
+
+        d = new LinearToAResourceActionDuration<>("foo", 3, 4);
+        Assert.assertEquals(d.evaluate(mo, vm1), 13);
+        Assert.assertEquals(d.evaluate(mo, vm3), 4);
+
+        d = new LinearToAResourceActionDuration<>("bar", 3, 4);
+        Assert.assertEquals(d.evaluate(mo, vm3), -1);
+
+        d.setCoefficient(5);
+        d.setOffset(12);
+        d.setResourceId("bar");
+        Assert.assertEquals(d.getCoefficient(), 5.0);
+        Assert.assertEquals(d.getOffset(), 12.0);
+        Assert.assertEquals(d.getResourceId(), "bar");
     }
 }

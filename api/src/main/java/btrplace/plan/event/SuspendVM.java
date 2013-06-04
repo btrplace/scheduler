@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,9 +20,10 @@ package btrplace.plan.event;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * An action that suspend a running virtual machine to disk.
@@ -32,22 +32,22 @@ import java.util.UUID;
  */
 public class SuspendVM extends Action implements VMStateTransition {
 
-    private UUID vm;
+    private VM vm;
 
-    private UUID src, dst;
+    private Node src, dst;
 
     /**
      * Make a new suspend action.
      *
-     * @param vmId the virtual machine to suspend
-     * @param from The node that host the virtual machine
-     * @param to   the destination node.
-     * @param s    the moment the action starts.
-     * @param f    the moment the action finish
+     * @param vm    the virtual machine to suspend
+     * @param from  The node that host the virtual machine
+     * @param to    the destination node.
+     * @param start the moment the action starts.
+     * @param end   the moment the action finish
      */
-    public SuspendVM(UUID vmId, UUID from, UUID to, int s, int f) {
-        super(s, f);
-        this.vm = vmId;
+    public SuspendVM(VM vm, Node from, Node to, int start, int end) {
+        super(start, end);
+        this.vm = vm;
         this.src = from;
         this.dst = to;
 
@@ -74,7 +74,7 @@ public class SuspendVM extends Action implements VMStateTransition {
         return (map.getOnlineNodes().contains(src) &&
                 map.getOnlineNodes().contains(dst) &&
                 map.getRunningVMs().contains(vm) &&
-                map.getVMLocation(vm).equals(src) &&
+                map.getVMLocation(vm) == src &&
                 map.addSleepingVM(vm, dst)
         );
     }
@@ -106,7 +106,7 @@ public class SuspendVM extends Action implements VMStateTransition {
      *
      * @return the node identifier
      */
-    public UUID getDestinationNode() {
+    public Node getDestinationNode() {
         return dst;
     }
 
@@ -115,12 +115,12 @@ public class SuspendVM extends Action implements VMStateTransition {
      *
      * @return the node identifier
      */
-    public UUID getSourceNode() {
+    public Node getSourceNode() {
         return src;
     }
 
     @Override
-    public UUID getVM() {
+    public VM getVM() {
         return vm;
     }
 

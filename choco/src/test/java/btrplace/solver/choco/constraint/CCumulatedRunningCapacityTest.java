@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,19 +17,15 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
+import btrplace.model.*;
 import btrplace.model.constraint.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.MappingBuilder;
-import btrplace.solver.choco.durationEvaluator.ConstantDuration;
-import btrplace.test.PremadeElements;
+import btrplace.solver.choco.MappingFiller;
+import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -41,40 +36,56 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class CCumulatedRunningCapacityTest implements PremadeElements {
+public class CCumulatedRunningCapacityTest {
 
     @Test
     public void testWithSatisfiedConstraint() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm2)
                 .run(n3, vm3, vm4)
-                .sleep(n2, vm5).build();
-        Model mo = new DefaultModel(map);
+                .sleep(n2, vm5).get();
         List<SatConstraint> l = new ArrayList<>();
         CumulatedRunningCapacity x = new CumulatedRunningCapacity(map.getAllNodes(), 4);
         x.setContinuous(false);
         l.add(x);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
-        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantDuration(10));
+        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertEquals(plan.getSize(), 0);
     }
 
     @Test
     public void testDiscreteSatisfaction() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm2)
-                .run(n2, vm3, vm4, vm5).build();
-        Set<UUID> on = new HashSet<>(Arrays.asList(n1, n2));
-        Model mo = new DefaultModel(map);
+                .run(n2, vm3, vm4, vm5).get();
+        Set<Node> on = new HashSet<>(Arrays.asList(n1, n2));
         List<SatConstraint> l = new ArrayList<>();
         CumulatedRunningCapacity x = new CumulatedRunningCapacity(on, 4);
         x.setContinuous(false);
         l.add(x);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
-        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantDuration(10));
+        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
         //System.out.println(plan);
@@ -84,11 +95,19 @@ public class CCumulatedRunningCapacityTest implements PremadeElements {
 
     @Test
     public void testFeasibleContinuousResolution() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm2)
-                .run(n2, vm3, vm4).ready(vm5).build();
-        Set<UUID> on = new HashSet<>(Arrays.asList(n1, n2));
-        Model mo = new DefaultModel(map);
+                .run(n2, vm3, vm4).ready(vm5).get();
+        Set<Node> on = new HashSet<>(Arrays.asList(n1, n2));
         List<SatConstraint> l = new ArrayList<>();
         l.add(new Running(Collections.singleton(vm5)));
         l.add(new Fence(Collections.singleton(vm5), Collections.singleton(n1)));
@@ -100,7 +119,7 @@ public class CCumulatedRunningCapacityTest implements PremadeElements {
         for (SatConstraint c : l) {
             System.out.println(c);
         }
-        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantDuration(10));
+        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
         //System.out.println(plan);
@@ -109,16 +128,23 @@ public class CCumulatedRunningCapacityTest implements PremadeElements {
 
     @Test
     public void testUnFeasibleContinuousResolution() throws SolverException {
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .ready(vm1)
                 .run(n1, vm2)
                 .run(n2, vm3, vm4)
-                .run(n3, vm5).build();
-
-        Model mo = new DefaultModel(map);
+                .run(n3, vm5).get();
         List<SatConstraint> l = new ArrayList<>();
 
-        List<UUID> seq = new ArrayList<>();
+        List<VM> seq = new ArrayList<>();
         seq.add(vm1);
         seq.add(vm2);
         l.add(new SequentialVMTransitions(seq));
@@ -128,14 +154,14 @@ public class CCumulatedRunningCapacityTest implements PremadeElements {
         l.add(new Root(Collections.singleton(vm3)));
         l.add(new Root(Collections.singleton(vm4)));
 
-        Set<UUID> on = new HashSet<>(Arrays.asList(n1, n2));
+        Set<Node> on = new HashSet<>(Arrays.asList(n1, n2));
         CumulatedRunningCapacity x = new CumulatedRunningCapacity(on, 3);
         x.setContinuous(true);
         l.add(x);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.setMaxEnd(5);
         cra.labelVariables(true);
-        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantDuration(10));
+        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         System.out.println(plan);
         Assert.assertNull(plan);
@@ -143,11 +169,18 @@ public class CCumulatedRunningCapacityTest implements PremadeElements {
 
     @Test
     public void testGetMisplaced() {
-        Mapping map = new MappingBuilder().on(n1, n2, n3)
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        VM vm5 = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm2, vm3)
-                .run(n2, vm4).ready(vm5).build();
-
-        Model mo = new DefaultModel(map);
+                .run(n2, vm4).ready(vm5).get();
 
         CumulatedRunningCapacity c = new CumulatedRunningCapacity(map.getAllNodes(), 4);
         CCumulatedRunningCapacity cc = new CCumulatedRunningCapacity(c);
@@ -155,5 +188,30 @@ public class CCumulatedRunningCapacityTest implements PremadeElements {
         Assert.assertTrue(cc.getMisPlacedVMs(mo).isEmpty());
         map.addRunningVM(vm5, n3);
         Assert.assertEquals(cc.getMisPlacedVMs(mo), map.getAllVMs());
+    }
+
+    @Test
+    public void testUnfeasible() throws SolverException {
+
+        Model model = new DefaultModel();
+        VM vm1 = model.newVM();
+        VM vm2 = model.newVM();
+        VM vm3 = model.newVM();
+        VM vm4 = model.newVM();
+        Node n1 = model.newNode();
+        Node n2 = model.newNode();
+        Node n3 = model.newNode();
+
+        Mapping map = new MappingFiller(model.getMapping()).on(n1, n2, n3)
+                .run(n1, vm1, vm2)
+                .run(n2, vm3)
+                .run(n3, vm4).get();
+        Collection<SatConstraint> ctrs = new HashSet<>();
+        ctrs.add(new CumulatedRunningCapacity(map.getAllNodes(), 2));
+
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        ReconfigurationPlan plan = cra.solve(model, ctrs);
+        Assert.assertNull(plan);
+
     }
 }

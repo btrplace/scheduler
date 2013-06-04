@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,13 +17,14 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.CumulatedResourceCapacityChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Restrict the cumulated amount of virtual resources consumed by
@@ -48,24 +48,27 @@ public class CumulatedResourceCapacity extends SatConstraint {
     /**
      * Make a new constraint with a discrete restriction.
      *
-     * @param servers the server involved in the constraint
-     * @param rc      the resource to consider
-     * @param amount  the total amount of resource consumed by all the VMs running on the given servers
+     * @param nodes  the nodes involved in the constraint
+     * @param rc     the resource identifier
+     * @param amount the maximum amount of resource consumed by all the VMs running on the given nodes. >= 0
      */
-    public CumulatedResourceCapacity(Set<UUID> servers, String rc, int amount) {
-        this(servers, rc, amount, false);
+    public CumulatedResourceCapacity(Set<Node> nodes, String rc, int amount) {
+        this(nodes, rc, amount, false);
     }
 
     /**
      * Make a new constraint.
      *
-     * @param servers    the server involved in the constraint
-     * @param rc         the resource to consider
-     * @param amount     the total amount of resource consumed by all the VMs running on the given servers
+     * @param nodes      the nodes involved in the constraint
+     * @param rc         the resource identifier
+     * @param amount     the maximum amount of resource consumed by all the VMs running on the given nodes. >= 0
      * @param continuous {@code true} for a continuous restriction.
      */
-    public CumulatedResourceCapacity(Set<UUID> servers, String rc, int amount, boolean continuous) {
-        super(Collections.<UUID>emptySet(), servers, continuous);
+    public CumulatedResourceCapacity(Set<Node> nodes, String rc, int amount, boolean continuous) {
+        super(Collections.<VM>emptySet(), nodes, continuous);
+        if (amount < 0) {
+            throw new IllegalArgumentException("The amount of resource must be >= 0");
+        }
         this.qty = amount;
         this.rcId = rc;
     }

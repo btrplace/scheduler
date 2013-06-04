@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,11 +17,7 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.DefaultModel;
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.test.PremadeElements;
+import btrplace.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -33,11 +28,12 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class RunningTest implements PremadeElements {
+public class RunningTest {
 
     @Test
     public void testInstantiation() {
-        Set<UUID> x = new HashSet<>(Arrays.asList(vm1, vm2));
+        Model mo = new DefaultModel();
+        Set<VM> x = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
         Running s = new Running(x);
         Assert.assertNotNull(s.getChecker());
         Assert.assertEquals(x, s.getInvolvedVMs());
@@ -48,31 +44,34 @@ public class RunningTest implements PremadeElements {
 
     @Test
     public void testEquals() {
-        Set<UUID> x = new HashSet<>(Arrays.asList(vm1, vm2));
+        Model mo = new DefaultModel();
+        Set<VM> x = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
         Running s = new Running(x);
 
         Assert.assertTrue(s.equals(s));
         Assert.assertTrue(new Running(x).equals(s));
         Assert.assertEquals(new Running(x).hashCode(), s.hashCode());
-        x = Collections.singleton(vm3);
+        x = Collections.singleton(mo.newVM());
         Assert.assertFalse(new Running(x).equals(s));
     }
 
     @Test
     public void testIsSatisfied() {
-        Mapping c = new DefaultMapping();
-        Set<UUID> s = new HashSet<>(Arrays.asList(vm1, vm2));
-        c.addOnlineNode(n1);
-        c.addRunningVM(vm1, n1);
-        c.addRunningVM(vm2, n1);
+        Model i = new DefaultModel();
+        List<VM> vms = Util.newVMs(i, 2);
+        List<Node> ns = Util.newNodes(i, 2);
+        Mapping c = i.getMapping();
+        Set<VM> s = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
+        c.addOnlineNode(ns.get(0));
+        c.addRunningVM(vms.get(0), ns.get(0));
+        c.addRunningVM(vms.get(1), ns.get(0));
         Running d = new Running(s);
-        Model i = new DefaultModel(c);
         Assert.assertEquals(d.isSatisfied(i), true);
-        c.addReadyVM(vm1);
+        c.addReadyVM(vms.get(0));
         Assert.assertEquals(d.isSatisfied(i), false);
-        c.addSleepingVM(vm1, n1);
+        c.addSleepingVM(vms.get(0), ns.get(0));
         Assert.assertEquals(d.isSatisfied(i), false);
-        c.removeVM(vm1);
+        c.remove(vms.get(0));
         Assert.assertEquals(d.isSatisfied(i), false);
     }
 }

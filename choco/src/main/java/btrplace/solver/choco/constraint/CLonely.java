@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +19,8 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.Lonely;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
@@ -56,9 +57,9 @@ public class CLonely implements ChocoSatConstraint {
         //Remove non future-running VMs
         List<IntDomainVar> myHosts = new ArrayList<>();
         List<IntDomainVar> otherHosts = new ArrayList<>();
-        Collection<UUID> vms = new HashSet<>();
-        Set<UUID> otherVMs = new HashSet<>();
-        for (UUID vm : rp.getFutureRunningVMs()) {
+        Collection<VM> vms = new HashSet<>();
+        Set<VM> otherVMs = new HashSet<>();
+        for (VM vm : rp.getFutureRunningVMs()) {
             IntDomainVar host = rp.getVMAction(vm).getDSlice().getHoster();
             if (cstr.getInvolvedVMs().contains(vm)) {
                 myHosts.add(host);
@@ -81,7 +82,7 @@ public class CLonely implements ChocoSatConstraint {
             List<IntDomainVar> otherEnds = new ArrayList<>();
             List<IntDomainVar> mineEnds = new ArrayList<>();
             Mapping map = rp.getSourceModel().getMapping();
-            for (UUID vm : map.getRunningVMs()) {
+            for (VM vm : map.getRunningVMs()) {
                 if (!vms.contains(vm)) {
                     otherPos.add(rp.getNode(map.getVMLocation(vm)));
                     VMActionModel a = rp.getVMAction(vm);
@@ -92,7 +93,7 @@ public class CLonely implements ChocoSatConstraint {
                     mineEnds.add(a.getCSlice().getEnd());
                 }
             }
-            for (UUID vm : vms) {
+            for (VM vm : vms) {
                 VMActionModel a = rp.getVMAction(vm);
                 Precedences prec = new Precedences(s.getEnvironment(), a.getDSlice().getHoster(),
                         a.getDSlice().getStart(),
@@ -102,7 +103,7 @@ public class CLonely implements ChocoSatConstraint {
             }
 
             //TODO: The following reveals a model problem. Too many constraints!!
-            for (UUID vm : otherVMs) {
+            for (VM vm : otherVMs) {
                 VMActionModel a = rp.getVMAction(vm);
                 Precedences prec = new Precedences(s.getEnvironment(), a.getDSlice().getHoster(),
                         a.getDSlice().getStart(),
@@ -115,20 +116,20 @@ public class CLonely implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
-        Set<UUID> bad = new HashSet<>();
-        Set<UUID> hosters = new HashSet<>();
-        Collection<UUID> vms = cstr.getInvolvedVMs();
+    public Set<VM> getMisPlacedVMs(Model m) {
+        Set<VM> bad = new HashSet<>();
+        Set<Node> hosters = new HashSet<>();
+        Collection<VM> vms = cstr.getInvolvedVMs();
         Mapping map = m.getMapping();
-        for (UUID vm : vms) {
+        for (VM vm : vms) {
             if (map.getRunningVMs().contains(vm)) {
                 hosters.add(map.getVMLocation(vm));
             }
         }
-        for (UUID n : hosters) {
+        for (Node n : hosters) {
             //Every used node that host a VMs that is not a part of the constraint
             //is a bad node. All the hosted VMs are candidate for relocation. Not optimal, but safe
-            for (UUID vm : map.getRunningVMs(n)) {
+            for (VM vm : map.getRunningVMs(n)) {
                 if (!vms.contains(vm)) {
                     bad.addAll(map.getRunningVMs(n));
                     break;

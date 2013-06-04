@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +19,8 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.Ban;
 import btrplace.model.constraint.Quarantine;
 import btrplace.model.constraint.Root;
@@ -27,7 +28,10 @@ import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Choco implementation of {@link btrplace.model.constraint.Quarantine}.
@@ -52,10 +56,10 @@ public class CQuarantine implements ChocoSatConstraint {
         // It is just a composition of a root constraint on the VMs on the given nodes (the zone)
         // plus a ban on the other VMs to prevent them for being hosted in the zone
         Mapping map = rp.getSourceModel().getMapping();
-        Set<UUID> toRoot = new HashSet<>();
-        Set<UUID> toBan = new HashSet<>();
-        Collection<UUID> zone = cstr.getInvolvedNodes();
-        for (UUID vm : rp.getFutureRunningVMs()) {
+        Set<VM> toRoot = new HashSet<>();
+        Set<VM> toBan = new HashSet<>();
+        Collection<Node> zone = cstr.getInvolvedNodes();
+        for (VM vm : rp.getFutureRunningVMs()) {
             if (zone.contains(map.getVMLocation(vm))) {
                 toRoot.add(vm);
             } else {
@@ -72,7 +76,7 @@ public class CQuarantine implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         return Collections.emptySet();
     }
 

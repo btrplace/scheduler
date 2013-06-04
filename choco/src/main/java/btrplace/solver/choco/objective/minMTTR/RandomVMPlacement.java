@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,6 +18,7 @@
 package btrplace.solver.choco.objective.minMTTR;
 
 
+import btrplace.model.VM;
 import btrplace.solver.choco.ReconfigurationProblem;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.search.ValSelector;
@@ -28,7 +28,7 @@ import gnu.trove.list.array.TIntArrayList;
 
 import java.util.Map;
 import java.util.Random;
-import java.util.UUID;
+
 
 /**
  * A heuristic to place a VM on a server picked up randomly.
@@ -45,11 +45,10 @@ public class RandomVMPlacement implements ValSelector<IntDomainVar> {
 
     private Random rnd;
 
-    private Map<IntDomainVar, UUID> vmPlacement;
+    private Map<IntDomainVar, VM> vmPlacement;
 
     private TIntHashSet[] ranks;
 
-    private String dbgLbl;
 
     /**
      * Make a new heuristic.
@@ -59,9 +58,8 @@ public class RandomVMPlacement implements ValSelector<IntDomainVar> {
      * @param pVarMapping a map to indicate the VM associated to each of the placement variable
      * @param stayFirst   {@code true} to force an already VM to stay on its current node if possible
      */
-    public RandomVMPlacement(String dbgLbl, ReconfigurationProblem rp, Map<IntDomainVar, UUID> pVarMapping, boolean stayFirst) {
+    public RandomVMPlacement(String dbgLbl, ReconfigurationProblem rp, Map<IntDomainVar, VM> pVarMapping, boolean stayFirst) {
         this(rp, pVarMapping, null, stayFirst);
-        this.dbgLbl = dbgLbl;
     }
 
     /**
@@ -72,7 +70,7 @@ public class RandomVMPlacement implements ValSelector<IntDomainVar> {
      * @param ranks       a list of favorites servers. Servers in rank i will be favored wrt. servers in rank i + 1
      * @param stayFirst   {@code true} to force an already VM to stay on its current node if possible
      */
-    public RandomVMPlacement(ReconfigurationProblem rp, Map<IntDomainVar, UUID> pVarMapping, TIntHashSet[] ranks, boolean stayFirst) {
+    public RandomVMPlacement(ReconfigurationProblem rp, Map<IntDomainVar, VM> pVarMapping, TIntHashSet[] ranks, boolean stayFirst) {
         stay = stayFirst;
         this.rp = rp;
         rnd = new Random();
@@ -137,7 +135,7 @@ public class RandomVMPlacement implements ValSelector<IntDomainVar> {
     @Override
     public int getBestVal(IntDomainVar x) {
         if (stay) {
-            UUID vm = vmPlacement.get(x);
+            VM vm = vmPlacement.get(x);
             if (VMPlacementUtils.canStay(rp, vm)) {
                 return rp.getNode(rp.getSourceModel().getMapping().getVMLocation(vm));
             }

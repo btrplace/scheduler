@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +19,8 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.Among;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.SplitAmong;
@@ -29,9 +30,10 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.matching.AllDifferent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
 
 /**
  * Choco implementation of the {@link btrplace.model.constraint.SplitAmong} constraint.
@@ -59,15 +61,15 @@ public class CSplitAmong implements ChocoSatConstraint {
             return false;
         }
 
-        Set<Set<UUID>> vGrps = cstr.getGroupsOfVMs();
-        Set<Set<UUID>> pGrps = cstr.getGroupsOfNodes();
+        Collection<Collection<VM>> vGrps = cstr.getGroupsOfVMs();
+        Collection<Collection<Node>> pGrps = cstr.getGroupsOfNodes();
         CPSolver s = rp.getSolver();
 
         IntDomainVar[] grpVars = new IntDomainVar[vGrps.size()];
         //VM is assigned on a node <-> group variable associated to the VM
         //is assigned to the group of nodes it belong too.
         int i = 0;
-        for (Set<UUID> vms : vGrps) {
+        for (Collection<VM> vms : vGrps) {
 
             Among a = new Among(vms, pGrps);
             //If the constraint is continuous, there is no way a group of VMs already binded to a group of
@@ -92,9 +94,9 @@ public class CSplitAmong implements ChocoSatConstraint {
      * @param n the node
      * @return the group identifier, {@code -1} if the node does not belong to a group
      */
-    public int getPGroup(UUID n) {
+    public int getPGroup(Node n) {
         int i = 0;
-        for (Set<UUID> pGrp : cstr.getGroupsOfNodes()) {
+        for (Collection<Node> pGrp : cstr.getGroupsOfNodes()) {
             if (pGrp.contains(n)) {
                 break;
             }
@@ -104,18 +106,18 @@ public class CSplitAmong implements ChocoSatConstraint {
     }
 
     @Override
-    public Set<UUID> getMisPlacedVMs(Model m) {
+    public Set<VM> getMisPlacedVMs(Model m) {
         //contains the set of VMs hosted on a group id.
-        Set<UUID>[] usedGrp = new Set[cstr.getGroupsOfNodes().size()];
+        Collection<VM>[] usedGrp = new Set[cstr.getGroupsOfNodes().size()];
 
         Mapping map = m.getMapping();
 
-        Set<UUID> bad = new HashSet<>();
-        for (Set<UUID> vms : cstr.getGroupsOfVMs()) {
+        Set<VM> bad = new HashSet<>();
+        for (Collection<VM> vms : cstr.getGroupsOfVMs()) {
             int grp = -1;
-            for (UUID vm : vms) {
+            for (VM vm : vms) {
                 if (map.getRunningVMs().contains(vm)) {
-                    UUID n = map.getVMLocation(vm);
+                    Node n = map.getVMLocation(vm);
                     int g = getPGroup(n);
                     if (g == -1) {
                         //The VM is on a node that belong to none of the given groups

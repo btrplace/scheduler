@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -21,11 +20,12 @@ package btrplace.model;
 import btrplace.model.view.ModelView;
 
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * A model depicts a consistent snapshot of an infrastructure.
  * Basically, a model is composed by a {@link Mapping} to indicate the state
- * and the location of the elements, and a variety of {@link btrplace.model.view.ModelView} to
+ * and the location of the elements, and a variety of {@link ModelView} to
  * provide additional data about the elements.
  * <p/>
  * In addition, it is possible to declare attributes for specific elements.
@@ -67,7 +67,7 @@ public interface Model extends Cloneable {
     boolean detach(ModelView v);
 
     /**
-     * Detach all the view from this model.
+     * Detach all the views from this model.
      */
     void clearViews();
 
@@ -98,4 +98,48 @@ public interface Model extends Cloneable {
      * @return a new model
      */
     Model clone();
+
+    /**
+     * Generate a new VM for this model.
+     *
+     * @return {@code null} if no identifiers are available for the VM.
+     */
+    VM newVM();
+
+    /**
+     * Generate a new VM for this model.
+     *
+     * @param id the identifier to use for that VM
+     * @return a VM or {@code null} if the identifier is already used
+     */
+    VM newVM(int id);
+
+    /**
+     * Generate a new Node for this model.
+     *
+     * @return {@code null} if no identifiers are available for the Node.
+     */
+    Node newNode();
+
+    /**
+     * Generate a new node for this model.
+     *
+     * @param id the identifier to use for that node
+     * @return a Node or {@code null} if the identifier is already used
+     */
+    Node newNode(int id);
+
+    /**
+     * Get all the registered nodes.
+     *
+     * @return a set of nodes, may be empty
+     */
+    Set<Node> getNodes();
+
+    /**
+     * Get all the registered VMs.
+     *
+     * @return a set of VMs, may be empty
+     */
+    Set<VM> getVMs();
 }
