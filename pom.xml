@@ -25,12 +25,12 @@
     <version>0.30-SNAPSHOT</version>
     <description>A flexible VM placement algorithm for hosting platforms.</description>
     <packaging>pom</packaging>
+    <url>http://btrp.inria.fr</url>
     <modules>
         <module>choco</module>
         <module>json</module>
         <module>api</module>
         <module>bundle</module>
-        <module>testMaterial</module>
         <module>examples</module>
     </modules>
     <properties>
@@ -47,7 +47,7 @@
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>6.8</version>
+            <version>6.8.5</version>
             <type>jar</type>
             <scope>test</scope>
             <optional>false</optional>
@@ -55,12 +55,12 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.0.7</version>
+            <version>1.0.13</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.2</version>
+            <version>1.7.5</version>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>

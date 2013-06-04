@@ -24,6 +24,7 @@
         <artifactId>solver</artifactId>
         <version>0.30-SNAPSHOT</version>
     </parent>
+    <name>solver-api</name>
     <artifactId>solver-api</artifactId>
     <description>Core components for a reconfiguration algorithm</description>
 </project>

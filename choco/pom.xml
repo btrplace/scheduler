@@ -26,6 +26,7 @@
         <version>0.30-SNAPSHOT</version>
     </parent>
     <artifactId>solver-choco</artifactId>
+    <name>solver-choco</name>
     <description>Implementation of a reconfiguration algorithm that use
         the Constraint Programming solver CHOCO to compute solutions.
     </description>
