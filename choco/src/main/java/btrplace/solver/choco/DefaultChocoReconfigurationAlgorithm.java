@@ -76,6 +76,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
     private long speRPDuration;
 
+    private int verbosityLevel;
     /**
      * Make a new algorithm.
      */
@@ -243,12 +244,31 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         rp.getLogger().debug("{} nodes; {} VMs; {} constraints", rp.getNodes().length, rp.getVMs().length, cstrs.size());
         rp.getLogger().debug("optimize: {}; timeLimit: {}; manageableVMs: {}", optimize, getTimeLimit(), rp.getManageableVMs().size());
 
+        stateVerbosity();
+
+        //The actual solving process
         ReconfigurationPlan p = rp.solve(timeLimit, optimize);
         if (p == null) {
             return null;
         }
         checkSatisfaction2(p, cstrs);
         return p;
+    }
+
+    private void stateVerbosity() {
+        if (verbosityLevel <= 0) {
+            ChocoLogging.setVerbosity(Verbosity.SILENT);
+            labelVariables(false);
+        } else {
+            labelVariables(true);
+            ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+            if (verbosityLevel == 2) {
+                ChocoLogging.setVerbosity(Verbosity.SEARCH);
+                ChocoLogging.setLoggingMaxDepth(Integer.MAX_VALUE);
+            } else if (verbosityLevel > 2) {
+                ChocoLogging.setVerbosity(Verbosity.FINEST);
+            }
+        }
     }
 
     private void checkSatisfaction2(ReconfigurationPlan p, Collection<SatConstraint> cstrs) throws SolverException {
@@ -343,18 +363,21 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
     @Override
     public void setVerbosity(int lvl) {
-        if (lvl <= 0) {
-            ChocoLogging.setVerbosity(Verbosity.SILENT);
-            labelVariables(false);
-        } else {
-            labelVariables(true);
-            ChocoLogging.setVerbosity(Verbosity.SOLUTION);
-            if (lvl == 2) {
-                ChocoLogging.setVerbosity(Verbosity.SEARCH);
-                ChocoLogging.setLoggingMaxDepth(Integer.MAX_VALUE);
-            } else if (lvl > 2) {
-                ChocoLogging.setVerbosity(Verbosity.FINEST);
-            }
-        }
+        this.verbosityLevel = lvl;
+    }
+
+    @Override
+    public void setSatConstraintMapper(SatConstraintMapper map) {
+        cstrMapper = map;
+    }
+
+    @Override
+    public void setDurationEvaluators(DurationEvaluators d) {
+        durationEvaluators = d;
+    }
+
+    @Override
+    public int getVerbosity() {
+        return verbosityLevel;
     }
 }
