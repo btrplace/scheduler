@@ -20,6 +20,7 @@ package btrplace.json.model.constraint;
 import btrplace.json.AbstractJSONObjectConverter;
 import btrplace.json.JSONArrayConverter;
 import btrplace.json.JSONConverterException;
+import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.SatConstraint;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -34,10 +35,10 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class SatConstraintsConverter extends AbstractJSONObjectConverter<SatConstraint> implements JSONArrayConverter<SatConstraint> {
+public class SatConstraintsConverter extends AbstractJSONObjectConverter<Constraint> implements JSONArrayConverter<SatConstraint> {
 
-    private Map<Class<? extends SatConstraint>, SatConstraintConverter<? extends SatConstraint>> java2json;
-    private Map<String, SatConstraintConverter<? extends SatConstraint>> json2java;
+    private Map<Class<? extends Constraint>, SatConstraintConverter<? extends Constraint>> java2json;
+    private Map<String, SatConstraintConverter<? extends Constraint>> json2java;
 
     /**
      * Make a new converter.
@@ -70,6 +71,8 @@ public class SatConstraintsConverter extends AbstractJSONObjectConverter<SatCons
         register(new SplitAmongConverter());
         register(new SplitConverter());
         register(new SpreadConverter());
+
+        register(new MinMTTRConverter());
     }
 
     /**
@@ -79,7 +82,7 @@ public class SatConstraintsConverter extends AbstractJSONObjectConverter<SatCons
      * @return the container that was previously registered for a constraint. {@code null} if there was
      *         no registered converter
      */
-    public SatConstraintConverter register(SatConstraintConverter<? extends SatConstraint> c) {
+    public SatConstraintConverter register(SatConstraintConverter<? extends Constraint> c) {
         java2json.put(c.getSupportedConstraint(), c);
         return json2java.put(c.getJSONId(), c);
 
@@ -90,7 +93,7 @@ public class SatConstraintsConverter extends AbstractJSONObjectConverter<SatCons
      *
      * @return a set of classes derived from {@link SatConstraint} that may be empty
      */
-    public Set<Class<? extends SatConstraint>> getSupportedJavaConstraints() {
+    public Set<Class<? extends Constraint>> getSupportedJavaConstraints() {
         return java2json.keySet();
     }
 
@@ -104,12 +107,12 @@ public class SatConstraintsConverter extends AbstractJSONObjectConverter<SatCons
     }
 
     @Override
-    public SatConstraint fromJSON(JSONObject in) throws JSONConverterException {
+    public Constraint fromJSON(JSONObject in) throws JSONConverterException {
         Object id = in.get("id");
         if (id == null) {
             throw new JSONConverterException("No 'id' key in the object to choose the converter to use");
         }
-        SatConstraintConverter<? extends SatConstraint> c = json2java.get(id.toString());
+        SatConstraintConverter<? extends Constraint> c = json2java.get(id.toString());
         if (c == null) {
             throw new JSONConverterException("No converter available for a constraint having id '" + id + "'");
         }
@@ -118,7 +121,7 @@ public class SatConstraintsConverter extends AbstractJSONObjectConverter<SatCons
     }
 
     @Override
-    public JSONObject toJSON(SatConstraint o) throws JSONConverterException {
+    public JSONObject toJSON(Constraint o) throws JSONConverterException {
         SatConstraintConverter c = java2json.get(o.getClass());
         if (c == null) {
             throw new JSONConverterException("No converter available for a constraint with the '" + o.getClass() + "' classname");
@@ -133,7 +136,7 @@ public class SatConstraintsConverter extends AbstractJSONObjectConverter<SatCons
             if (!(o instanceof JSONObject)) {
                 throw new JSONConverterException("Expected an array of JSONObject but got an array of " + o.getClass().getName());
             }
-            l.add(fromJSON((JSONObject) o));
+            l.add((SatConstraint) fromJSON((JSONObject) o));
         }
         return l;
     }
@@ -141,7 +144,7 @@ public class SatConstraintsConverter extends AbstractJSONObjectConverter<SatCons
     @Override
     public JSONArray toJSON(Collection<SatConstraint> e) throws JSONConverterException {
         JSONArray arr = new JSONArray();
-        for (SatConstraint cstr : e) {
+        for (Constraint cstr : e) {
             arr.add(toJSON(cstr));
         }
         return arr;
