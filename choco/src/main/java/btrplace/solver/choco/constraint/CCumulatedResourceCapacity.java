@@ -21,9 +21,9 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
+import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.CumulatedResourceCapacity;
 import btrplace.model.constraint.CumulatedRunningCapacity;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -44,7 +44,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class CCumulatedResourceCapacity implements ChocoSatConstraint {
+public class CCumulatedResourceCapacity implements ChocoConstraint {
 
     private CumulatedResourceCapacity cstr;
 
@@ -134,14 +134,14 @@ public class CCumulatedResourceCapacity implements ChocoSatConstraint {
     /**
      * The builder associated to that constraint.
      */
-    public static class Builder implements ChocoSatConstraintBuilder {
+    public static class Builder implements ChocoConstraintBuilder {
         @Override
-        public Class<? extends SatConstraint> getKey() {
+        public Class<? extends Constraint> getKey() {
             return CumulatedRunningCapacity.class;
         }
 
         @Override
-        public CCumulatedResourceCapacity build(SatConstraint cstr) {
+        public CCumulatedResourceCapacity build(Constraint cstr) {
             return new CCumulatedResourceCapacity((CumulatedResourceCapacity) cstr);
         }
     }

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.objective.minMTTR;
+package btrplace.solver.choco.constraint.minMTTR;
 
 import btrplace.model.Mapping;
 import btrplace.model.Node;
@@ -58,7 +58,7 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
     private BitSet[] ins;
 
 
-    private MinMTTR obj;
+    private CMinMTTR obj;
 
     private IStateInt firstFree;
 
@@ -69,7 +69,7 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
      * @param rp      the problem to rely on
      * @param actions the actions to consider.
      */
-    public OnStableNodeFirst(String lbl, ReconfigurationProblem rp, List<ActionModel> actions, MinMTTR obj) {
+    public OnStableNodeFirst(String lbl, ReconfigurationProblem rp, List<ActionModel> actions, CMinMTTR obj) {
         super(rp.getSolver(), ActionModelUtils.getStarts(actions.toArray(new ActionModel[actions.size()])));
         firstFree = rp.getSolver().getEnvironment().makeInt(0);
         this.obj = obj;

@@ -17,11 +17,16 @@
 
 package btrplace.solver.choco;
 
+import btrplace.model.Model;
+import btrplace.model.constraint.SatConstraint;
+import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.ReconfigurationAlgorithm;
-import btrplace.solver.choco.constraint.SatConstraintMapper;
+import btrplace.solver.SolverException;
+import btrplace.solver.choco.constraint.ConstraintMapper;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import btrplace.solver.choco.objective.ReconfigurationObjective;
 import btrplace.solver.choco.view.ModelViewMapper;
+
+import java.util.Collection;
 
 /**
  * A reconfiguration algorithm based on the Choco constraint solver.
@@ -107,32 +112,18 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm 
     boolean areVariablesLabelled();
 
     /**
-     * Get the objective associated to this algorithm.
-     *
-     * @return the stated objective.
-     */
-    ReconfigurationObjective getObjective();
-
-    /**
-     * Set the objective to consider for this algorithm.
-     *
-     * @param o the objective
-     */
-    void setObjective(ReconfigurationObjective o);
-
-    /**
-     * Get the mapper that converts {@link btrplace.model.constraint.SatConstraint} to {@link btrplace.solver.choco.constraint.ChocoSatConstraint}.
+     * Get the mapper that converts {@link btrplace.model.constraint.Constraint} to {@link btrplace.solver.choco.constraint.ChocoConstraint}.
      *
      * @return the mapper.
      */
-    SatConstraintMapper getSatConstraintMapper();
+    ConstraintMapper getConstraintMapper();
 
     /**
-     * Set the mapper that converts {@link btrplace.model.constraint.SatConstraint} to {@link btrplace.solver.choco.constraint.ChocoSatConstraint}.
+     * Set the mapper that converts {@link btrplace.model.constraint.Constraint} to {@link btrplace.solver.choco.constraint.ChocoConstraint}.
      *
      * @param map the mapper to use
      */
-    void setSatConstraintMapper(SatConstraintMapper map);
+    void setConstraintMapper(ConstraintMapper map);
 
     /**
      * Get the evaluator that is used to indicate the estimated duration of each action.
@@ -186,4 +177,16 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm 
      * @see {@link #setVerbosity(int)} for more informations about the available levels
      */
     int getVerbosity();
+
+    /**
+     * Compute a reconfiguration plan to reach a solution to the model.
+     * The {@link btrplace.model.constraint.MinMTTR} optimization constraint is used
+     *
+     * @param i     the current model
+     * @param cstrs the satisfaction-oriented constraints that must be considered
+     * @return the plan to execute to reach the new solution or {@code null} if there is no
+     *         solution.
+     * @throws SolverException if an error occurred while trying to solve the problem
+     */
+    ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs) throws SolverException;
 }

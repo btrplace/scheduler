@@ -28,7 +28,6 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
 import btrplace.solver.choco.chocoUtil.AliasedCumulatives;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import btrplace.solver.choco.objective.ObjectiveAlterer;
 import btrplace.solver.choco.view.ChocoModelView;
 import btrplace.solver.choco.view.ModelViewMapper;
 import choco.cp.solver.CPSolver;

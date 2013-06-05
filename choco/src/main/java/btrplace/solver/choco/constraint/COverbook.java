@@ -21,8 +21,8 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
+import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Overbook;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -41,7 +41,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class COverbook implements ChocoSatConstraint {
+public class COverbook implements ChocoConstraint {
 
     private Overbook cstr;
 
@@ -111,14 +111,14 @@ public class COverbook implements ChocoSatConstraint {
     /**
      * Builder associated to the constraint.
      */
-    public static class Builder implements ChocoSatConstraintBuilder {
+    public static class Builder implements ChocoConstraintBuilder {
         @Override
-        public Class<? extends SatConstraint> getKey() {
+        public Class<? extends Constraint> getKey() {
             return Overbook.class;
         }
 
         @Override
-        public COverbook build(SatConstraint cstr) {
+        public COverbook build(Constraint cstr) {
             return new COverbook((Overbook) cstr);
         }
     }

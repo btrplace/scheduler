@@ -25,12 +25,11 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlanChecker;
 import btrplace.plan.ReconfigurationPlanCheckerException;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.constraint.ChocoSatConstraint;
-import btrplace.solver.choco.constraint.ChocoSatConstraintBuilder;
-import btrplace.solver.choco.constraint.SatConstraintMapper;
+import btrplace.solver.choco.constraint.ChocoConstraint;
+import btrplace.solver.choco.constraint.ChocoConstraintBuilder;
+import btrplace.solver.choco.constraint.ConstraintMapper;
+import btrplace.solver.choco.constraint.minMTTR.CMinMTTR;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import btrplace.solver.choco.objective.ReconfigurationObjective;
-import btrplace.solver.choco.objective.minMTTR.MinMTTR;
 import btrplace.solver.choco.view.ModelViewMapper;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
@@ -49,7 +48,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
     private ModelViewMapper viewMapper;
 
-    private SatConstraintMapper cstrMapper;
+    private ConstraintMapper cstrMapper;
 
     private boolean optimize = false;
 
@@ -68,7 +67,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
     private DurationEvaluators durationEvaluators;
 
-    private ReconfigurationObjective obj;
+    private ChocoConstraint obj;
 
     private int maxEnd = DefaultReconfigurationProblem.DEFAULT_MAX_TIME;
 
@@ -77,17 +76,18 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     private long speRPDuration;
 
     private int verbosityLevel;
+
     /**
      * Make a new algorithm.
      */
     public DefaultChocoReconfigurationAlgorithm() {
 
-        cstrMapper = new SatConstraintMapper();
+        cstrMapper = new ConstraintMapper();
         durationEvaluators = new DurationEvaluators();
         viewMapper = new ModelViewMapper();
 
         //Default objective
-        obj = new MinMTTR();
+        obj = new CMinMTTR();
     }
 
     @Override
@@ -155,6 +155,11 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
     @Override
     public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs) throws SolverException {
+        return solve(i, cstrs, new btrplace.model.constraint.MinMTTR());
+    }
+
+    @Override
+    public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs, OptimizationConstraint opt) throws SolverException {
         rp = null;
         this.cstrs = cstrs;
         coreRPDuration = -System.currentTimeMillis();
@@ -166,7 +171,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         Set<VM> toKill = new HashSet<>();
         Set<VM> toSleep = new HashSet<>();
 
-        List<ChocoSatConstraint> cConstraints = new ArrayList<>();
+        List<ChocoConstraint> cConstraints = new ArrayList<>();
         for (SatConstraint cstr : cstrs) {
             checkNodesExistence(i, cstr.getInvolvedNodes());
 
@@ -189,17 +194,30 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
                 toKill.addAll(cstr.getInvolvedVMs());
             }
 
-            ChocoSatConstraintBuilder ccstrb = cstrMapper.getBuilder(cstr.getClass());
+            ChocoConstraintBuilder ccstrb = cstrMapper.getBuilder(cstr.getClass());
             if (ccstrb == null) {
                 throw new SolverException(i, "Unable to map constraint '" + cstr.getClass().getSimpleName() + "'");
             }
-            ChocoSatConstraint ccstr = ccstrb.build(cstr);
+            ChocoConstraint ccstr = ccstrb.build(cstr);
             if (ccstr == null) {
                 throw new SolverException(i, "Error while mapping the constraint '"
                         + cstr.getClass().getSimpleName() + "'");
             }
+
             cConstraints.add(ccstr);
         }
+
+        //Make the optimization constraint
+        ChocoConstraintBuilder ccstrb = cstrMapper.getBuilder(opt.getClass());
+        if (ccstrb == null) {
+            throw new SolverException(i, "Unable to map constraint '" + opt.getClass().getSimpleName() + "'");
+        }
+        obj = ccstrb.build(opt);
+        if (obj == null) {
+            throw new SolverException(i, "Error while mapping the constraint '"
+                    + opt.getClass().getSimpleName() + "'");
+        }
+
 
         //Make the core-RP
         DefaultReconfigurationProblemBuilder rpb = new DefaultReconfigurationProblemBuilder(i)
@@ -208,7 +226,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
                 .setDurationEvaluatators(durationEvaluators);
         if (repair) {
             Set<VM> toManage = new HashSet<>();
-            for (ChocoSatConstraint cstr : cConstraints) {
+            for (ChocoConstraint cstr : cConstraints) {
                 toManage.addAll(cstr.getMisPlacedVMs(i));
             }
             toManage.addAll(obj.getMisPlacedVMs(i));
@@ -230,7 +248,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
         //Customize with the constraints
         speRPDuration = -System.currentTimeMillis();
-        for (ChocoSatConstraint ccstr : cConstraints) {
+        for (ChocoConstraint ccstr : cConstraints) {
             if (!ccstr.inject(rp)) {
                 return null;
             }
@@ -284,23 +302,13 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     @Override
-    public SatConstraintMapper getSatConstraintMapper() {
+    public ConstraintMapper getConstraintMapper() {
         return cstrMapper;
     }
 
     @Override
     public DurationEvaluators getDurationEvaluators() {
         return durationEvaluators;
-    }
-
-    @Override
-    public ReconfigurationObjective getObjective() {
-        return obj;
-    }
-
-    @Override
-    public void setObjective(ReconfigurationObjective o) {
-        obj = o;
     }
 
     @Override
@@ -367,7 +375,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     @Override
-    public void setSatConstraintMapper(SatConstraintMapper map) {
+    public void setConstraintMapper(ConstraintMapper map) {
         cstrMapper = map;
     }
 

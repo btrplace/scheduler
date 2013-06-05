@@ -21,8 +21,8 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
+import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Lonely;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.actionModel.VMActionModel;
@@ -39,7 +39,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class CLonely implements ChocoSatConstraint {
+public class CLonely implements ChocoConstraint {
 
     private Lonely cstr;
 
@@ -147,14 +147,14 @@ public class CLonely implements ChocoSatConstraint {
     /**
      * Builder associated to the constraint.
      */
-    public static class Builder implements ChocoSatConstraintBuilder {
+    public static class Builder implements ChocoConstraintBuilder {
         @Override
-        public Class<? extends SatConstraint> getKey() {
+        public Class<? extends Constraint> getKey() {
             return Lonely.class;
         }
 
         @Override
-        public CLonely build(SatConstraint cstr) {
+        public CLonely build(Constraint cstr) {
             return new CLonely((Lonely) cstr);
         }
     }

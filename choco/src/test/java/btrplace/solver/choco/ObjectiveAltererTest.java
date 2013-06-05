@@ -15,19 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.objective;
+package btrplace.solver.choco;
 
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
-import btrplace.solver.choco.ReconfigurationProblem;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * Unit tests for {@link btrplace.solver.choco.objective.ObjectiveAlterer}.
+ * Unit tests for {@link btrplace.solver.choco.ObjectiveAlterer}.
  *
  * @author Fabien Hermenier
  */

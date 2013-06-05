@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,23 +17,29 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.solver.SolverException;
-import btrplace.solver.choco.MisplacedVMsEstimator;
-import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.model.constraint.Constraint;
 
 /**
- * An interface to describe a constraint implementation for the solver.
+ * Interface to specify a builder that create a {@link ChocoConstraint} from
+ * a specific {@link btrplace.model.constraint.Constraint}.
  *
  * @author Fabien Hermenier
  */
-public interface ChocoSatConstraint extends MisplacedVMsEstimator {
+public interface ChocoConstraintBuilder {
 
     /**
-     * Inject the constraint into the problem.
+     * Get the class of the SatConstraint associated to the builder.
      *
-     * @param rp the problem
-     * @return {@code true} if the injection succeeded, {@code false} if the problem is sure to not have a solution
-     * @throws SolverException if an error occurred while injecting.
+     * @return a Class derived from {@link Constraint}
      */
-    boolean inject(ReconfigurationProblem rp) throws SolverException;
+    Class<? extends Constraint> getKey();
+
+    /**
+     * Build the ChocoConstraint associated to the {@link Constraint}
+     * identified as key.
+     *
+     * @param cstr the model constraint
+     * @return the associated ChocoConstraint or {@code null} if an error occurred
+     */
+    ChocoConstraint build(Constraint cstr);
 }

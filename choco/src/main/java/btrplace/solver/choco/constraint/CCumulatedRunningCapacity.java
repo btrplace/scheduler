@@ -21,8 +21,8 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
+import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.CumulatedRunningCapacity;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import choco.cp.solver.CPSolver;
@@ -36,7 +36,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class CCumulatedRunningCapacity implements ChocoSatConstraint {
+public class CCumulatedRunningCapacity implements ChocoConstraint {
 
     private CumulatedRunningCapacity cstr;
 
@@ -110,14 +110,14 @@ public class CCumulatedRunningCapacity implements ChocoSatConstraint {
     /**
      * The builder associated to that constraint.
      */
-    public static class Builder implements ChocoSatConstraintBuilder {
+    public static class Builder implements ChocoConstraintBuilder {
         @Override
-        public Class<? extends SatConstraint> getKey() {
+        public Class<? extends Constraint> getKey() {
             return CumulatedRunningCapacity.class;
         }
 
         @Override
-        public CCumulatedRunningCapacity build(SatConstraint cstr) {
+        public CCumulatedRunningCapacity build(Constraint cstr) {
             return new CCumulatedRunningCapacity((CumulatedRunningCapacity) cstr);
         }
     }

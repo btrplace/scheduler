@@ -17,6 +17,7 @@
 
 package btrplace.model;
 
+import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Running;
 import btrplace.model.constraint.SatConstraint;
@@ -40,9 +41,11 @@ public class InstanceTest {
         Model mo = Mockito.mock(Model.class);
         List<SatConstraint> l = new ArrayList<>();
         l.add(Mockito.mock(SatConstraint.class));
-        Instance i = new Instance(mo, l);
+        MinMTTR o = new MinMTTR();
+        Instance i = new Instance(mo, l, o);
         Assert.assertEquals(i.getModel(), mo);
         Assert.assertEquals(i.getConstraints(), l);
+        Assert.assertEquals(i.getOptimizationConstraint(), o);
     }
 
     @Test
@@ -58,8 +61,8 @@ public class InstanceTest {
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Online(ma.getAllNodes()));
         cstrs.add(new Running(Collections.singleton(vms.get(0))));
-        Instance i = new Instance(mo, cstrs);
-        Instance i2 = new Instance(mo.clone(), new ArrayList<>(cstrs));
+        Instance i = new Instance(mo, cstrs, new MinMTTR());
+        Instance i2 = new Instance(mo.clone(), new ArrayList<>(cstrs), new MinMTTR());
 
         Assert.assertEquals(i, i2);
         Assert.assertEquals(i.hashCode(), i2.hashCode());

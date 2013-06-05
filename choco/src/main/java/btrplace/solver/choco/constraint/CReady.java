@@ -20,8 +20,8 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.VM;
+import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Ready;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Sleeping;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -37,7 +37,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class CReady implements ChocoSatConstraint {
+public class CReady implements ChocoConstraint {
 
     private Ready cstr;
 
@@ -77,14 +77,14 @@ public class CReady implements ChocoSatConstraint {
     /**
      * Builder associated to the constraint.
      */
-    public static class Builder implements ChocoSatConstraintBuilder {
+    public static class Builder implements ChocoConstraintBuilder {
         @Override
-        public Class<? extends SatConstraint> getKey() {
+        public Class<? extends Constraint> getKey() {
             return Sleeping.class;
         }
 
         @Override
-        public CReady build(SatConstraint cstr) {
+        public CReady build(Constraint cstr) {
             return new CReady((Ready) cstr);
         }
     }
