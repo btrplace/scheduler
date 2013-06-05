@@ -1,9 +1,14 @@
 Release notes
 ======================
 
+??????????
+----------------------
+- Bugs fix
+- Optimization constraint is now a part of a reconfiguration algorithm
+  at the API level
+
 version 0.30 - 04 Jun 2013
 ----------------------
-
 - Bugs fix
 - Close #16, #18, #19
 - MAJOR API change: Type system for elements. No more UUIDS.
