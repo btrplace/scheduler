@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -122,11 +121,18 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm 
     void setObjective(ReconfigurationObjective o);
 
     /**
-     * Get the mapper that convert {@link btrplace.model.constraint.SatConstraint} to {@link btrplace.solver.choco.constraint.ChocoSatConstraint}.
+     * Get the mapper that converts {@link btrplace.model.constraint.SatConstraint} to {@link btrplace.solver.choco.constraint.ChocoSatConstraint}.
      *
      * @return the mapper.
      */
     SatConstraintMapper getSatConstraintMapper();
+
+    /**
+     * Set the mapper that converts {@link btrplace.model.constraint.SatConstraint} to {@link btrplace.solver.choco.constraint.ChocoSatConstraint}.
+     *
+     * @param map the mapper to use
+     */
+    void setSatConstraintMapper(SatConstraintMapper map);
 
     /**
      * Get the evaluator that is used to indicate the estimated duration of each action.
@@ -134,6 +140,13 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm 
      * @return the evaluator
      */
     DurationEvaluators getDurationEvaluators();
+
+    /**
+     * Set the duration evaluators to use.
+     *
+     * @param dev the evaluator to use
+     */
+    void setDurationEvaluators(DurationEvaluators dev);
 
     /**
      * Get statistics about the solving process
@@ -165,4 +178,12 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm 
      * @param lvl the level of verbosity
      */
     void setVerbosity(int lvl);
+
+    /**
+     * Get the verbosity level of the solver.
+     *
+     * @return the verbosity level.
+     * @see {@link #setVerbosity(int)} for more informations about the available levels
+     */
+    int getVerbosity();
 }
