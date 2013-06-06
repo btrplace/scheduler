@@ -18,64 +18,251 @@
 package btrplace.solver.choco.partitioner;
 
 import btrplace.model.Instance;
+import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
+import btrplace.model.constraint.*;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlanChecker;
+import btrplace.plan.ReconfigurationPlanCheckerException;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.SolvingStatistics;
+import btrplace.solver.choco.*;
+import btrplace.solver.choco.constraint.ChocoConstraint;
+import btrplace.solver.choco.constraint.ChocoConstraintBuilder;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solution;
+import choco.kernel.solver.search.measure.IMeasures;
+
+import java.util.*;
+import java.util.concurrent.Callable;
 
 /**
  * @author Fabien Hermenier
  */
-public class InstanceSolverRunner implements Runnable {
+public class InstanceSolverRunner implements Callable<InstanceResult> {
 
-    private Instance i;
+    private ChocoReconfigurationAlgorithmParams params;
 
-    private SolvingStatistics stats;
+    private ReconfigurationProblem rp;
 
-    private SolverException ex;
+    private Collection<SatConstraint> cstrs;
 
-    private ReconfigurationPlan plan;
+    private OptimizationConstraint obj;
 
-    private ChocoReconfigurationAlgorithm origAlgo;
+    private Model origin;
 
-    public InstanceSolverRunner(ChocoReconfigurationAlgorithm orig, Instance i) {
-        this.i = i;
-        stats = null;
-        ex = null;
-        plan = null;
-        origAlgo = orig;
+    private long coreRPDuration;
+
+    private long speRPDuration;
+
+    public InstanceSolverRunner(ChocoReconfigurationAlgorithmParams ps, Instance i) {
+        cstrs = i.getConstraints();
+        obj = i.getOptimizationConstraint();
+        origin = i.getModel();
+        params = ps;
     }
 
     @Override
-    public void run() {
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        //Copy the orig parameters
-        cra.setVerbosity(origAlgo.getVerbosity());
-        cra.setViewMapper(origAlgo.getViewMapper());
-        cra.setMaxEnd(origAlgo.getMaxEnd());
-        cra.setObjective(origAlgo.getObjective());
-        cra.setDurationEvaluators(origAlgo.getDurationEvaluators());
-        cra.setSatConstraintMapper(origAlgo.getSatConstraintMapper());
-        cra.doOptimize(origAlgo.doOptimize());
-        cra.doRepair(origAlgo.doRepair());
-        cra.setTimeLimit(origAlgo.getTimeLimit());
-        cra.labelVariables(origAlgo.areVariablesLabelled());
+    public InstanceResult call() throws SolverException {
+        rp = null;
+        coreRPDuration = -System.currentTimeMillis();
+        //Build the RP. As VM state management is not possible
+        //We extract VM-state related constraints first.
+        //For other constraint, we just create the right choco constraint
+        Set<VM> toRun = new HashSet<>();
+        Set<VM> toForge = new HashSet<>();
+        Set<VM> toKill = new HashSet<>();
+        Set<VM> toSleep = new HashSet<>();
+
+        List<ChocoConstraint> cConstraints = new ArrayList<>();
+        for (SatConstraint cstr : cstrs) {
+            checkNodesExistence(origin, cstr.getInvolvedNodes());
+
+            //We cannot check for VMs that are going to the ready state
+            //as they are not forced to be a part of the initial model
+            //(when they will be forged)
+            if (!(cstrs instanceof Ready)) {
+                checkUnkownVMsInMapping(origin, cstr.getInvolvedVMs());
+            }
+
+            if (cstr instanceof Running) {
+                toRun.addAll(cstr.getInvolvedVMs());
+            } else if (cstr instanceof Sleeping) {
+                toSleep.addAll(cstr.getInvolvedVMs());
+            } else if (cstr instanceof Ready) {
+                checkUnkownVMsInMapping(origin, cstr.getInvolvedVMs());
+                toForge.addAll(cstr.getInvolvedVMs());
+            } else if (cstr instanceof Killed) {
+                checkUnkownVMsInMapping(origin, cstr.getInvolvedVMs());
+                toKill.addAll(cstr.getInvolvedVMs());
+            }
+
+            ChocoConstraintBuilder ccstrb = params.getConstraintMapper().getBuilder(cstr.getClass());
+            if (ccstrb == null) {
+                throw new SolverException(origin, "Unable to map constraint '" + cstr.getClass().getSimpleName() + "'");
+            }
+            ChocoConstraint ccstr = ccstrb.build(cstr);
+            if (ccstr == null) {
+                throw new SolverException(origin, "Error while mapping the constraint '"
+                        + cstr.getClass().getSimpleName() + "'");
+            }
+
+            cConstraints.add(ccstr);
+        }
+
+        //Make the optimization constraint
+        ChocoConstraintBuilder ccstrb = params.getConstraintMapper().getBuilder(obj.getClass());
+        if (ccstrb == null) {
+            throw new SolverException(origin, "Unable to map constraint '" + obj.getClass().getSimpleName() + "'");
+        }
+        ChocoConstraint cObj = ccstrb.build(obj);
+        if (cObj == null) {
+            throw new SolverException(origin, "Error while mapping the constraint '"
+                    + obj.getClass().getSimpleName() + "'");
+        }
+
+
+        //Make the core-RP
+        DefaultReconfigurationProblemBuilder rpb = new DefaultReconfigurationProblemBuilder(origin)
+                .setNextVMsStates(toForge, toRun, toSleep, toKill)
+                .setViewMapper(params.getViewMapper())
+                .setDurationEvaluatators(params.getDurationEvaluators());
+        if (params.doRepair()) {
+            Set<VM> toManage = new HashSet<>();
+            for (ChocoConstraint cstr : cConstraints) {
+                toManage.addAll(cstr.getMisPlacedVMs(origin));
+            }
+            toManage.addAll(cObj.getMisPlacedVMs(origin));
+            rpb.setManageableVMs(toManage);
+        }
+        if (params.areVariablesLabelled()) {
+            rpb.labelVariables();
+        }
+        rp = rpb.build();
+
+        //Set the maximum duration
         try {
-            cra.solve(i.getModel(), i.getConstraints());
-        } catch (SolverException e) {
-            ex = e;
+            rp.getEnd().setSup(params.getMaxEnd());
+        } catch (ContradictionException e) {
+            rp.getLogger().error("Unable to restrict the maximum plan duration to {}", params.getMaxEnd());
+            return null;
+        }
+        coreRPDuration += System.currentTimeMillis();
+
+        //Customize with the constraints
+        speRPDuration = -System.currentTimeMillis();
+        for (ChocoConstraint ccstr : cConstraints) {
+            if (!ccstr.inject(rp)) {
+                return null;
+            }
+        }
+
+        //The objective
+        cObj.inject(rp);
+        speRPDuration += System.currentTimeMillis();
+        rp.getLogger().debug("{} ms to build the core-RP + {} ms to tune it", coreRPDuration, speRPDuration);
+
+        rp.getLogger().debug("{} nodes; {} VMs; {} constraints", rp.getNodes().length, rp.getVMs().length, cstrs.size());
+        rp.getLogger().debug("optimize: {}; timeLimit: {}; manageableVMs: {}", params.doOptimize(), params.getTimeLimit(), rp.getManageableVMs().size());
+
+        stateVerbosity();
+
+        //The actual solving process
+        ReconfigurationPlan p = rp.solve(params.getTimeLimit(), params.doOptimize());
+        if (p == null) {
+            return null;
+        }
+        checkSatisfaction2(p, cstrs);
+        return new InstanceResult(p, makeStatistics());
+    }
+
+    private void stateVerbosity() {
+        if (params.getVerbosity() <= 0) {
+            ChocoLogging.setVerbosity(Verbosity.SILENT);
+            params.labelVariables(false);
+        } else {
+            params.labelVariables(true);
+            ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+            if (params.getVerbosity() == 2) {
+                ChocoLogging.setVerbosity(Verbosity.SEARCH);
+                ChocoLogging.setLoggingMaxDepth(Integer.MAX_VALUE);
+            } else if (params.getVerbosity() > 2) {
+                ChocoLogging.setVerbosity(Verbosity.FINEST);
+            }
         }
     }
 
-    public ReconfigurationPlan getResult() throws SolverException {
-        if (ex != null) {
-            throw ex;
+    private void checkSatisfaction2(ReconfigurationPlan p, Collection<SatConstraint> cstrs) throws SolverException {
+        ReconfigurationPlanChecker chk = new ReconfigurationPlanChecker();
+        for (SatConstraint c : cstrs) {
+            chk.addChecker(c.getChecker());
         }
-        return plan;
+        try {
+            chk.check(p);
+        } catch (ReconfigurationPlanCheckerException ex) {
+            throw new SolverException(p.getOrigin(), ex.getMessage(), ex);
+        }
     }
 
-    public SolvingStatistics getSolvingStatistics() {
-        return stats;
+    private void checkUnkownVMsInMapping(Model m, Collection<VM> vms) throws SolverException {
+        if (!m.getMapping().getAllVMs().containsAll(vms)) {
+            Set<VM> unknown = new HashSet<>(vms);
+            unknown.removeAll(m.getMapping().getAllVMs());
+            throw new SolverException(m, "Unknown VMs: " + unknown);
+        }
+    }
+
+    /**
+     * Check for the existence of nodes in a model
+     *
+     * @param mo the model to check
+     * @param ns the nodes to check
+     * @throws SolverException if at least one of the given nodes is not in the RP.
+     */
+    private void checkNodesExistence(Model mo, Collection<Node> ns) throws SolverException {
+        for (Node node : ns) {
+            if (!mo.getMapping().getAllNodes().contains(node)) {
+                throw new SolverException(mo, "Unknown node '" + node + "'");
+            }
+        }
+    }
+
+    private SolvingStatistics makeStatistics() {
+        if (rp == null) {
+            return new SolvingStatistics(0, 0, 0, params.doOptimize(), params.getTimeLimit(), 0, 0, 0, 0, false, 0, 0);
+        }
+        SolvingStatistics st = new SolvingStatistics(
+                rp.getNodes().length,
+                rp.getVMs().length,
+                cstrs.size(),
+                params.doOptimize(),
+                params.getTimeLimit(),
+                rp.getManageableVMs().size(),
+                rp.getSolver().getTimeCount(),
+                rp.getSolver().getNodeCount(),
+                rp.getSolver().getBackTrackCount(),
+                rp.getSolver().isEncounteredLimit(),
+                coreRPDuration,
+                speRPDuration);
+
+        for (Solution s : rp.getSolver().getSearchStrategy().getStoredSolutions()) {
+            IMeasures m = s.getMeasures();
+            SolutionStatistics sol;
+            if (m.getObjectiveValue() != null) {
+                sol = new SolutionStatistics(m.getNodeCount(),
+                        m.getBackTrackCount(),
+                        m.getTimeCount(),
+                        m.getObjectiveValue().intValue());
+            } else {
+                sol = new SolutionStatistics(m.getNodeCount(),
+                        m.getBackTrackCount(),
+                        m.getTimeCount());
+            }
+            st.addSolution(sol);
+
+        }
+        return st;
     }
 }

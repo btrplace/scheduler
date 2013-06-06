@@ -17,41 +17,28 @@
 
 package btrplace.solver.choco.partitioner;
 
-import btrplace.model.Instance;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.SolvingStatistics;
-
-import java.util.Collection;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 /**
  * @author Fabien Hermenier
  */
-public class IndependentInstancesSolver implements InstancesSolver {
+public class InstanceResult {
 
-    private int workersCount;
+    private ReconfigurationPlan plan;
 
-    public int getWorkersCount() {
-        return workersCount;
+    private SolvingStatistics stats;
+
+    public InstanceResult(ReconfigurationPlan p, SolvingStatistics st) {
+        plan = p;
+        stats = st;
     }
 
-    public void setWorkersCount(int s) {
-        this.workersCount = s;
+    public ReconfigurationPlan getPlan() {
+        return plan;
     }
 
-    @Override
-    public ReconfigurationPlan solve(ChocoReconfigurationAlgorithm cra, Collection<Instance> instances) {
-        Executor exe = Executors.newFixedThreadPool(this.workersCount);
-        for (Instance i : instances) {
-            exe.execute(new InstanceSolverRunner(cra, i));
-        }
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public SolvingStatistics getSolvingStatistics() {
-        throw new UnsupportedOperationException();
+    public SolvingStatistics getStatistics() {
+        return stats;
     }
 }

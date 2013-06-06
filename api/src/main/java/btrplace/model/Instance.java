@@ -45,7 +45,7 @@ public class Instance {
      * @param cs the list of constraints
      * @param o  the optimization constraint
      */
-    public Instance(Model mo, List<SatConstraint> cs, OptimizationConstraint o) {
+    public Instance(Model mo, Collection<SatConstraint> cs, OptimizationConstraint o) {
         cstrs = new ArrayList<>(cs);
         this.mo = mo;
         this.opt = o;

@@ -18,9 +18,8 @@
 package btrplace.solver.choco.partitioner;
 
 import btrplace.model.Instance;
-import btrplace.plan.ReconfigurationPlan;
-import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.SolvingStatistics;
+import btrplace.solver.SolverException;
+import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
 
 import java.util.Collection;
 
@@ -29,7 +28,5 @@ import java.util.Collection;
  */
 public interface InstancesSolver {
 
-    ReconfigurationPlan solve(ChocoReconfigurationAlgorithm cra, Collection<Instance> instances);
-
-    SolvingStatistics getSolvingStatistics();
+    InstanceResult solve(ChocoReconfigurationAlgorithmParams cra, Collection<Instance> instances) throws SolverException;
 }

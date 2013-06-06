@@ -19,23 +19,30 @@ package btrplace.solver.choco.partitioner;
 
 import btrplace.model.Instance;
 import btrplace.model.Model;
+import btrplace.model.constraint.OptimizationConstraint;
 import btrplace.model.constraint.SatConstraint;
-import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
+ * A fake partitioner.
+ * Create a single partition containing the whole original model and set of constraints.
+ *
  * @author Fabien Hermenier
  */
 public class SinglePartition implements Partitioner {
 
+    /**
+     * Make a new partitioner.
+     */
     public SinglePartition() {
         super();    //To change body of overridden methods use File | Settings | File Templates.
     }
 
     @Override
-    public Collection<Instance> part(ChocoReconfigurationAlgorithm cra, Model mo, Collection<SatConstraint> cstrs) {
-        return Collections.singleton(new Instance(mo, cstrs,));
+    public Collection<Instance> part(Model mo, Collection<SatConstraint> cstrs,
+                                     OptimizationConstraint obj) {
+        return Collections.singleton(new Instance(mo, cstrs, obj));
     }
 }

@@ -33,15 +33,7 @@ import java.util.Collection;
  *
  * @author Fabien Hermenier
  */
-public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm {
-
-    /**
-     * State if the algorithm only have to repair the model instead
-     * of rebuilding a complete new solution.
-     *
-     * @param b {@code true} to repair
-     */
-    void doRepair(boolean b);
+public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm, ChocoReconfigurationAlgorithmParams {
 
     /**
      * Indicate if the algorithm repair the model.
@@ -49,13 +41,6 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm 
      * @return {@code true} iff it repairs the model.
      */
     boolean doRepair();
-
-    /**
-     * State if the algorithm must try to improve the first computed solution.
-     *
-     * @param b {@code true} to make the algorithm try to improve the solution
-     */
-    void doOptimize(boolean b);
 
     /**
      * Tell is the solver tries to improve the first computed solution.
@@ -73,36 +58,12 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm 
     ModelViewMapper getViewMapper();
 
     /**
-     * Set the mapper to use to associate the {@link btrplace.model.view.ModelView}
-     * to the {@link btrplace.solver.choco.view.ChocoModelView}.
-     *
-     * @param m the mapper to use
-     */
-    void setViewMapper(ModelViewMapper m);
-
-    /**
-     * Set the timeout value for the solving process.
-     * Use a negative number to remove any timeout.
-     *
-     * @param t the timeout value, in second.
-     */
-    void setTimeLimit(int t);
-
-    /**
      * Get the timeout value.
      *
      * @return a positive integer in seconds to indicate the timeout value or a negative value to
      *         indicate no timeout has been set
      */
     int getTimeLimit();
-
-    /**
-     * Indicate if variables have to be labelled.
-     * This is convenient for debugging but not activated by default.
-     *
-     * @param b {@code true} to create label for variables
-     */
-    void labelVariables(boolean b);
 
     /**
      * Indicate if variables are labelled.
@@ -119,25 +80,11 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm 
     ConstraintMapper getConstraintMapper();
 
     /**
-     * Set the mapper that converts {@link btrplace.model.constraint.Constraint} to {@link btrplace.solver.choco.constraint.ChocoConstraint}.
-     *
-     * @param map the mapper to use
-     */
-    void setConstraintMapper(ConstraintMapper map);
-
-    /**
      * Get the evaluator that is used to indicate the estimated duration of each action.
      *
      * @return the evaluator
      */
     DurationEvaluators getDurationEvaluators();
-
-    /**
-     * Set the duration evaluators to use.
-     *
-     * @param dev the evaluator to use
-     */
-    void setDurationEvaluators(DurationEvaluators dev);
 
     /**
      * Get statistics about the solving process
@@ -147,28 +94,11 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm 
     SolvingStatistics getSolvingStatistics();
 
     /**
-     * Set the maximum duration of a reconfiguration plan.
-     *
-     * @param end a positive integer
-     */
-    void setMaxEnd(int end);
-
-    /**
      * Get the maximum duration of a reconfiguration plan.
      *
      * @return a positive integer
      */
     int getMaxEnd();
-
-    /**
-     * Set the verbosity level of the solver.
-     * At level 0, their is no information about the solving process.
-     * Increasing the level increases the verbosity. The highest level
-     * of verbosity is the level 3.
-     *
-     * @param lvl the level of verbosity
-     */
-    void setVerbosity(int lvl);
 
     /**
      * Get the verbosity level of the solver.

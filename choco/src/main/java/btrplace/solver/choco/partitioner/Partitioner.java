@@ -19,8 +19,8 @@ package btrplace.solver.choco.partitioner;
 
 import btrplace.model.Instance;
 import btrplace.model.Model;
+import btrplace.model.constraint.OptimizationConstraint;
 import btrplace.model.constraint.SatConstraint;
-import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 
 import java.util.Collection;
 
@@ -29,5 +29,5 @@ import java.util.Collection;
  */
 public interface Partitioner {
 
-    Collection<Instance> part(ChocoReconfigurationAlgorithm cra, Model mo, Collection<SatConstraint> cstrs, OptimizationC);
+    Collection<Instance> part(Model mo, Collection<SatConstraint> cstrs, OptimizationConstraint obj);
 }

@@ -41,11 +41,13 @@ import java.util.*;
 
 /**
  * Default implementation of {@link ChocoReconfigurationAlgorithm}.
+ * A same instance cannot be used to solve multiple problems simultaneously.
  *
  * @author Fabien Hermenier
  */
 public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfigurationAlgorithm {
 
+    private ChocoReconfigurationAlgorithmParams params;
     private ModelViewMapper viewMapper;
 
     private ConstraintMapper cstrMapper;
@@ -82,6 +84,8 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
      */
     public DefaultChocoReconfigurationAlgorithm() {
 
+        params = new DefaultChocoReconfigurationAlgorithParams();
+
         cstrMapper = new ConstraintMapper();
         durationEvaluators = new DurationEvaluators();
         viewMapper = new ModelViewMapper();
@@ -91,8 +95,8 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     @Override
-    public void doOptimize(boolean b) {
-        this.optimize = b;
+    public ChocoReconfigurationAlgorithmParams doOptimize(boolean b) {
+        return params.doOptimize(b);
     }
 
     @Override
@@ -101,8 +105,8 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     @Override
-    public void setTimeLimit(int t) {
-        timeLimit = t;
+    public ChocoReconfigurationAlgorithmParams setTimeLimit(int t) {
+        return params.setTimeLimit(t);
     }
 
     @Override
@@ -111,8 +115,8 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     @Override
-    public void doRepair(boolean b) {
-        repair = b;
+    public ChocoReconfigurationAlgorithmParams doRepair(boolean b) {
+        return params.doRepair(b);
     }
 
     @Override
@@ -121,8 +125,8 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     @Override
-    public void labelVariables(boolean b) {
-        useLabels = b;
+    public ChocoReconfigurationAlgorithmParams labelVariables(boolean b) {
+        return params.labelVariables(b);
     }
 
     @Override
@@ -350,8 +354,8 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     @Override
-    public void setMaxEnd(int end) {
-        this.maxEnd = end;
+    public ChocoReconfigurationAlgorithmParams setMaxEnd(int end) {
+        return params.setMaxEnd(end);
     }
 
     @Override
@@ -365,23 +369,23 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     @Override
-    public void setViewMapper(ModelViewMapper m) {
-        viewMapper = m;
+    public ChocoReconfigurationAlgorithmParams setViewMapper(ModelViewMapper m) {
+        return params.setViewMapper(m);
     }
 
     @Override
-    public void setVerbosity(int lvl) {
-        this.verbosityLevel = lvl;
+    public ChocoReconfigurationAlgorithmParams setVerbosity(int lvl) {
+        return params.setVerbosity(lvl);
     }
 
     @Override
-    public void setConstraintMapper(ConstraintMapper map) {
-        cstrMapper = map;
+    public ChocoReconfigurationAlgorithmParams setConstraintMapper(ConstraintMapper map) {
+        return params.setConstraintMapper(map);
     }
 
     @Override
-    public void setDurationEvaluators(DurationEvaluators d) {
-        durationEvaluators = d;
+    public ChocoReconfigurationAlgorithmParams setDurationEvaluators(DurationEvaluators d) {
+        return params.setDurationEvaluators(d);
     }
 
     @Override
