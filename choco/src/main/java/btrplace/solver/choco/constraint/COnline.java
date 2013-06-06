@@ -20,6 +20,7 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
+import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
@@ -36,7 +37,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class COnline implements ChocoSatConstraint {
+public class COnline implements ChocoConstraint {
 
     private Online cstr;
 
@@ -76,14 +77,14 @@ public class COnline implements ChocoSatConstraint {
     /**
      * Builder associated to the constraint.
      */
-    public static class Builder implements ChocoSatConstraintBuilder {
+    public static class Builder implements ChocoConstraintBuilder {
         @Override
-        public Class<? extends SatConstraint> getKey() {
+        public Class<? extends Constraint> getKey() {
             return Online.class;
         }
 
         @Override
-        public COnline build(SatConstraint cstr) {
+        public COnline build(Constraint cstr) {
             return new COnline((Online) cstr);
         }
     }

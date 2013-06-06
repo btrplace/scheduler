@@ -23,7 +23,8 @@ import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.ActionModelUtils;
-import btrplace.solver.choco.objective.ReconfigurationObjective;
+import btrplace.solver.choco.constraint.ChocoConstraint;
+import btrplace.solver.choco.constraint.ChocoConstraintBuilder;
 import btrplace.solver.choco.view.ModelViewMapper;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.AtMostNValue;
@@ -68,20 +69,6 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         ModelViewMapper m = new ModelViewMapper();
         cra.setViewMapper(m);
         Assert.assertEquals(cra.getViewMapper(), m);
-
-        ReconfigurationObjective obj = new ReconfigurationObjective() {
-            @Override
-            public void inject(ReconfigurationProblem rp) throws SolverException {
-
-            }
-
-            @Override
-            public Set<VM> getMisPlacedVMs(Model m) {
-                return Collections.emptySet();
-            }
-        };
-        cra.setObjective(obj);
-        Assert.assertEquals(cra.getObjective(), obj);
     }
 
     @Test
@@ -98,23 +85,7 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.doOptimize(true);
         cra.setTimeLimit(0);
-        cra.setObjective(new ReconfigurationObjective() {
-            @Override
-            public void inject(ReconfigurationProblem rp) throws SolverException {
-                Mapping map = rp.getSourceModel().getMapping();
-                CPSolver s = rp.getSolver();
-                IntDomainVar nbNodes = s.createBoundIntVar("nbNodes", 1, map.getOnlineNodes().size());
-                IntDomainVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
-                s.post(new AtMostNValue(hosters, nbNodes));
-                s.setObjective(nbNodes);
-                s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
-            }
 
-            @Override
-            public Set<VM> getMisPlacedVMs(Model m) {
-                return Collections.emptySet();
-            }
-        });
 
         SolvingStatistics st = cra.getSolvingStatistics();
         Assert.assertEquals(st.getNbBacktracks(), 0);
@@ -122,8 +93,42 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         Assert.assertEquals(st.getSolvingDuration(), 0);
         Assert.assertTrue(st.getSolutions().isEmpty());
         Assert.assertFalse(st.isTimeout());
-        //cra.setVerbosity(3);
-        ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>emptyList());
+
+        class Foo extends OptimizationConstraint {
+            @Override
+            public String id() {
+                return "foo";
+            }
+        }
+
+        cra.getConstraintMapper().register(new ChocoConstraintBuilder() {
+            @Override
+            public Class<? extends Constraint> getKey() {
+                return Foo.class;
+            }
+
+            @Override
+            public ChocoConstraint build(Constraint cstr) {
+                return new ChocoConstraint() {
+                    public boolean inject(ReconfigurationProblem rp) throws SolverException {
+                        Mapping map = rp.getSourceModel().getMapping();
+                        CPSolver s = rp.getSolver();
+                        IntDomainVar nbNodes = s.createBoundIntVar("nbNodes", 1, map.getOnlineNodes().size());
+                        IntDomainVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
+                        s.post(new AtMostNValue(hosters, nbNodes));
+                        s.setObjective(nbNodes);
+                        s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
+                        return true;
+                    }
+
+                    public Set<VM> getMisPlacedVMs(Model m) {
+                        return Collections.emptySet();
+                    }
+                };
+            }
+        });
+
+        ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>emptyList(), new Foo());
         Mapping res = p.getResult().getMapping();
         Assert.assertEquals(MappingUtils.usedNodes(res, EnumSet.of(MappingUtils.State.Runnings)).size(), 1);
         st = cra.getSolvingStatistics();
@@ -151,29 +156,41 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         //A constraint that is not satisfied. vm2 is misplaced
         Fence c2 = new Fence(new HashSet<>(Arrays.asList(vm1, vm2)), new HashSet<>(Arrays.asList(n1, n3)));
 
-        ReconfigurationObjective o = new ReconfigurationObjective() {
-
-            @Override
-            public void inject(ReconfigurationProblem rp) throws SolverException {
-                //Do noting.
-            }
-
-            @Override
-            public Set<VM> getMisPlacedVMs(Model m) {
-                return new HashSet<>(Arrays.asList(vm2, vm3));
-            }
-        };
-
         Set<SatConstraint> cstrs = new HashSet<SatConstraint>(Arrays.asList(c1, c2));
         mo = new DefaultModel();
         new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5).get();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        class Foo extends OptimizationConstraint {
+            @Override
+            public String id() {
+                return "foo";
+            }
+        }
+
+        cra.getConstraintMapper().register(new ChocoConstraintBuilder() {
+            @Override
+            public Class<? extends Constraint> getKey() {
+                return Foo.class;
+            }
+
+            @Override
+            public ChocoConstraint build(Constraint cstr) {
+                return new ChocoConstraint() {
+                    public boolean inject(ReconfigurationProblem rp) throws SolverException {
+                        return true;
+                    }
+
+                    public Set<VM> getMisPlacedVMs(Model m) {
+                        return new HashSet<>(Arrays.asList(vm2, vm3));
+                    }
+                };
+            }
+        });
         cra.doRepair(true);
         cra.doOptimize(false);
-        cra.setObjective(o);
 
         //Solve a problem with the repair mode
-        Assert.assertNotNull(cra.solve(mo, cstrs));
+        Assert.assertNotNull(cra.solve(mo, cstrs, new Foo()));
         SolvingStatistics st = cra.getSolvingStatistics();
         Assert.assertEquals(st.getNbManagedVMs(), 2); //vm2, vm3.
     }

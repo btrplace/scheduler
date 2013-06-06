@@ -25,7 +25,6 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.NodeActionModel;
 import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import btrplace.solver.choco.objective.ObjectiveAlterer;
 import btrplace.solver.choco.view.ChocoModelView;
 import btrplace.solver.choco.view.ModelViewMapper;
 import choco.cp.solver.CPSolver;

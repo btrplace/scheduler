@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,24 +15,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.objective;
-
-import btrplace.solver.SolverException;
-import btrplace.solver.choco.MisplacedVMsEstimator;
-import btrplace.solver.choco.ReconfigurationProblem;
+package btrplace.model.constraint;
 
 /**
- * An objective for the reconfiguration algorithm.
+ * Optimization oriented constraint.
+ * Such a constraint cannot be violated. It just asks to minimize or minimize
+ * a value.
  *
  * @author Fabien Hermenier
  */
-public interface ReconfigurationObjective extends MisplacedVMsEstimator {
+public abstract class OptimizationConstraint implements Constraint {
 
     /**
-     * Inject the objective into a given problem
+     * Get the constraint identifier.
      *
-     * @param rp the problem to inject the objective into
-     * @throws SolverException if an error occurs.
+     * @return a non-empty String
      */
-    void inject(ReconfigurationProblem rp) throws SolverException;
+    public abstract String id();
+
+    @Override
+    public int hashCode() {
+        return id().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return (obj != null && this.getClass().equals(obj.getClass()));
+    }
+
+    @Override
+    public String toString() {
+        return id();
+    }
 }

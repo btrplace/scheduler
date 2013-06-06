@@ -24,7 +24,6 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import btrplace.solver.choco.objective.ObjectiveAlterer;
 import btrplace.solver.choco.view.CShareableResource;
 import btrplace.solver.choco.view.ChocoModelView;
 import btrplace.solver.choco.view.ChocoModelViewBuilder;

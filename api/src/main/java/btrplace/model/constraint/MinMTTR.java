@@ -15,7 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+package btrplace.model.constraint;
+
 /**
- * Materiel to declare optimization oriented constraints.
+ * An optimization constraint that minimizes the time to repair a non-viable model.
+ * In practice it minimizes the sum of the ending moment for each actions.
+ *
+ * @author Fabien Hermenier
  */
-package btrplace.solver.choco.objective;
+public class MinMTTR extends OptimizationConstraint {
+
+
+    @Override
+    public String id() {
+        return "minimizeMTTR";
+    }
+}

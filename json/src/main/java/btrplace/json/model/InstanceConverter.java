@@ -22,6 +22,7 @@ import btrplace.json.JSONConverterException;
 import btrplace.json.model.constraint.SatConstraintsConverter;
 import btrplace.model.Instance;
 import btrplace.model.Model;
+import btrplace.model.constraint.OptimizationConstraint;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
@@ -40,7 +41,8 @@ public class InstanceConverter extends AbstractJSONObjectConverter<Instance> {
 
         Model mo = moc.fromJSON((JSONObject) in.get("model"));
         cstrc.setModel(mo);
-        return new Instance(mo, cstrc.listFromJSON((JSONArray) in.get("constraints")));
+        return new Instance(mo, cstrc.listFromJSON((JSONArray) in.get("constraints")),
+                (OptimizationConstraint) cstrc.fromJSON((JSONObject) in.get("objective")));
     }
 
     @Override
@@ -50,6 +52,7 @@ public class InstanceConverter extends AbstractJSONObjectConverter<Instance> {
         JSONObject ob = new JSONObject();
         ob.put("model", moc.toJSON(instance.getModel()));
         ob.put("constraints", cstrc.toJSON(instance.getConstraints()));
+        ob.put("objective", cstrc.toJSON(instance.getOptimizationConstraint()));
         return ob;
     }
 }

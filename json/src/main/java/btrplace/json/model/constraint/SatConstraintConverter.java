@@ -19,15 +19,15 @@ package btrplace.json.model.constraint;
 
 import btrplace.json.AbstractJSONObjectConverter;
 import btrplace.json.JSONConverterException;
-import btrplace.model.constraint.SatConstraint;
+import btrplace.model.constraint.Constraint;
 import net.minidev.json.JSONObject;
 
 /**
- * Specify a JSON converter for a {@link btrplace.model.constraint.SatConstraint}.
+ * Specify a JSON converter for a {@link btrplace.model.constraint.Constraint}.
  *
  * @author Fabien Hermenier
  */
-public abstract class SatConstraintConverter<E extends SatConstraint> extends AbstractJSONObjectConverter<E> {
+public abstract class SatConstraintConverter<E extends Constraint> extends AbstractJSONObjectConverter<E> {
 
     /**
      * Get the name of the constraint that is supported by the converter.

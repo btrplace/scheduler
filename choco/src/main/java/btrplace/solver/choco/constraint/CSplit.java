@@ -21,7 +21,7 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
-import btrplace.model.constraint.SatConstraint;
+import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Split;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -40,7 +40,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class CSplit implements ChocoSatConstraint {
+public class CSplit implements ChocoConstraint {
 
     private Split cstr;
 
@@ -193,14 +193,14 @@ public class CSplit implements ChocoSatConstraint {
     /**
      * Builder associated to the constraint.
      */
-    public static class Builder implements ChocoSatConstraintBuilder {
+    public static class Builder implements ChocoConstraintBuilder {
         @Override
-        public Class<? extends SatConstraint> getKey() {
+        public Class<? extends Constraint> getKey() {
             return Split.class;
         }
 
         @Override
-        public CSplit build(SatConstraint cstr) {
+        public CSplit build(Constraint cstr) {
             return new CSplit((Split) cstr);
         }
     }

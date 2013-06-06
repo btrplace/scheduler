@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,23 +18,24 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.constraint.*;
+import btrplace.solver.choco.constraint.minMTTR.CMinMTTR;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Mapper that allow to convert {@link SatConstraint} to {@link ChocoSatConstraint}.
+ * Mapper that allow to convert {@link SatConstraint} and {@link OptimizationConstraint} to {@link ChocoConstraint}.
  *
  * @author Fabien Hermenier
  */
-public class SatConstraintMapper {
+public class ConstraintMapper {
 
-    private Map<Class<? extends SatConstraint>, ChocoSatConstraintBuilder> builders;
+    private Map<Class<? extends Constraint>, ChocoConstraintBuilder> builders;
 
     /**
      * Make a new mapper.
      */
-    public SatConstraintMapper() {
+    public ConstraintMapper() {
         builders = new HashMap<>();
 
         builders.put(Spread.class, new CSpread.Builder());
@@ -61,6 +61,8 @@ public class SatConstraintMapper {
         builders.put(Gather.class, new CGather.Builder());
         builders.put(Lonely.class, new CLonely.Builder());
         builders.put(SequentialVMTransitions.class, new CSequentialVMTransitions.Builder());
+
+        builders.put(MinMTTR.class, new CMinMTTR.Builder());
     }
 
     /**
@@ -69,7 +71,7 @@ public class SatConstraintMapper {
      * @param ccb the builder to register
      * @return {@code true} if no builder previously registered for the given constraint was deleted
      */
-    public boolean register(ChocoSatConstraintBuilder ccb) {
+    public boolean register(ChocoConstraintBuilder ccb) {
         return builders.put(ccb.getKey(), ccb) == null;
     }
 
@@ -79,38 +81,38 @@ public class SatConstraintMapper {
      * @param c the class of the {@link SatConstraint} to un-register
      * @return {@code true} if a builder was registered
      */
-    public boolean unregister(Class<? extends SatConstraint> c) {
+    public boolean unregister(Class<? extends Constraint> c) {
         return builders.remove(c) != null;
     }
 
     /**
-     * Check if a {@link ChocoSatConstraintBuilder} is registered for a given {@link SatConstraint}.
+     * Check if a {@link ChocoConstraintBuilder} is registered for a given {@link Constraint}.
      *
      * @param c the constraint to check
      * @return {@code true} iff a builder is registered
      */
-    public boolean isRegistered(Class<? extends SatConstraint> c) {
+    public boolean isRegistered(Class<? extends Constraint> c) {
         return builders.containsKey(c);
     }
 
     /**
-     * Get the builder associated to a {@link SatConstraint}.
+     * Get the builder associated to a {@link Constraint}.
      *
      * @param c the constraint
      * @return the associated builder if exists. {@code null} otherwise
      */
-    public ChocoSatConstraintBuilder getBuilder(Class<? extends SatConstraint> c) {
+    public ChocoConstraintBuilder getBuilder(Class<? extends Constraint> c) {
         return builders.get(c);
     }
 
     /**
-     * Map the given {@link SatConstraint} to a {@link ChocoSatConstraint} if possible.
+     * Map the given {@link Constraint} to a {@link ChocoConstraint} if possible.
      *
      * @param c the constraint to map
-     * @return the mapping result or {@code null} if no {@link ChocoSatConstraint} was available
+     * @return the mapping result or {@code null} if no {@link ChocoConstraint} was available
      */
-    public ChocoSatConstraint map(SatConstraint c) {
-        ChocoSatConstraintBuilder b = builders.get(c.getClass());
+    public ChocoConstraint map(Constraint c) {
+        ChocoConstraintBuilder b = builders.get(c.getClass());
         if (b != null) {
             return b.build(c);
         }

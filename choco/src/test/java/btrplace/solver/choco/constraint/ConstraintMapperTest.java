@@ -21,6 +21,7 @@ import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.model.VM;
 import btrplace.model.constraint.Ban;
+import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Spread;
 import btrplace.solver.SolverException;
@@ -33,15 +34,15 @@ import java.util.Set;
 
 
 /**
- * Unit tests for {@link btrplace.solver.choco.constraint.SatConstraintMapper}.
+ * Unit tests for {@link ConstraintMapper}.
  *
  * @author Fabien Hermenier
  */
-public class SatConstraintMapperTest {
+public class ConstraintMapperTest {
 
     @Test
     public void testInstantiate() {
-        SatConstraintMapper map = new SatConstraintMapper();
+        ConstraintMapper map = new ConstraintMapper();
 
         //Only check if the default mapper are here
         Assert.assertTrue(map.isRegistered(Spread.class));
@@ -50,8 +51,8 @@ public class SatConstraintMapperTest {
 
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testGetBuilder() {
-        SatConstraintMapper map = new SatConstraintMapper();
-        ChocoSatConstraintBuilder b = map.getBuilder(Spread.class);
+        ConstraintMapper map = new ConstraintMapper();
+        ChocoConstraintBuilder b = map.getBuilder(Spread.class);
         Assert.assertEquals(b.getClass(), CSpread.Builder.class);
 
         Assert.assertNull(map.getBuilder(MockSatConstraint.class));
@@ -59,14 +60,14 @@ public class SatConstraintMapperTest {
 
     @Test(dependsOnMethods = {"testInstantiate", "testRegister"})
     public void testUnregister() {
-        SatConstraintMapper map = new SatConstraintMapper();
+        ConstraintMapper map = new ConstraintMapper();
         Assert.assertNull(map.getBuilder(MockSatConstraint.class));
         Assert.assertFalse(map.unregister(MockSatConstraint.class));
     }
 
     @Test(dependsOnMethods = {"testInstantiate", "testGetBuilder"})
     public void testRegister() {
-        SatConstraintMapper map = new SatConstraintMapper();
+        ConstraintMapper map = new ConstraintMapper();
         Builder cb = new Builder();
         Assert.assertTrue(map.register(cb));
         Assert.assertEquals(map.getBuilder(MockSatConstraint.class), cb);
@@ -75,9 +76,9 @@ public class SatConstraintMapperTest {
     @Test(dependsOnMethods = {"testInstantiate", "testUnregister", "testRegister"})
     public void testMap() {
         Model mo = new DefaultModel();
-        SatConstraintMapper map = new SatConstraintMapper();
+        ConstraintMapper map = new ConstraintMapper();
         Spread s = new Spread(Collections.singleton(mo.newVM()));
-        ChocoSatConstraint c = map.map(s);
+        ChocoConstraint c = map.map(s);
         Assert.assertTrue(c.getClass().equals(CSpread.class));
 
         map.unregister(Spread.class);
@@ -101,19 +102,19 @@ public class SatConstraintMapperTest {
         }
     }
 
-    public class Builder implements ChocoSatConstraintBuilder {
+    public class Builder implements ChocoConstraintBuilder {
         @Override
-        public Class<? extends SatConstraint> getKey() {
+        public Class<? extends Constraint> getKey() {
             return MockSatConstraint.class;
         }
 
         @Override
-        public ChocoSatConstraint build(SatConstraint cstr) {
+        public ChocoConstraint build(Constraint cstr) {
             throw new UnsupportedOperationException();
         }
     }
 
-    public static class MockCConstraint implements ChocoSatConstraint {
+    public static class MockCConstraint implements ChocoConstraint {
 
 
         @Override

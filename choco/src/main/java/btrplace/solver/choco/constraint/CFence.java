@@ -22,8 +22,8 @@ import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.Ban;
+import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Fence;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import choco.kernel.solver.ContradictionException;
@@ -38,7 +38,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class CFence implements ChocoSatConstraint {
+public class CFence implements ChocoConstraint {
 
     private Fence cstr;
 
@@ -109,14 +109,14 @@ public class CFence implements ChocoSatConstraint {
     /**
      * Builder associated to the constraint.
      */
-    public static class Builder implements ChocoSatConstraintBuilder {
+    public static class Builder implements ChocoConstraintBuilder {
         @Override
-        public Class<? extends SatConstraint> getKey() {
+        public Class<? extends Constraint> getKey() {
             return Fence.class;
         }
 
         @Override
-        public CFence build(SatConstraint cstr) {
+        public CFence build(Constraint cstr) {
             return new CFence((Fence) cstr);
         }
     }

@@ -15,17 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.objective.minMTTR;
+package btrplace.solver.choco.constraint.minMTTR;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.VM;
+import btrplace.model.constraint.Constraint;
+import btrplace.model.constraint.MinMTTR;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.actionModel.ActionModel;
 import btrplace.solver.choco.actionModel.ActionModelUtils;
 import btrplace.solver.choco.actionModel.VMActionModel;
-import btrplace.solver.choco.objective.ReconfigurationObjective;
+import btrplace.solver.choco.constraint.ChocoConstraint;
+import btrplace.solver.choco.constraint.ChocoConstraintBuilder;
 import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarVal;
@@ -42,11 +45,11 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import java.util.*;
 
 /**
- * An objective that minimize the time to repair a non-viable model.
+ * An objective that minimizes the time to repair a non-viable model.
  *
  * @author Fabien Hermenier
  */
-public class MinMTTR implements ReconfigurationObjective {
+public class CMinMTTR implements ChocoConstraint {
 
     private List<SConstraint> costConstraints;
 
@@ -57,12 +60,12 @@ public class MinMTTR implements ReconfigurationObjective {
     /**
      * Make a new objective.
      */
-    public MinMTTR() {
+    public CMinMTTR() {
         costConstraints = new ArrayList<>();
     }
 
     @Override
-    public void inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) throws SolverException {
         this.rp = rp;
         costActivated = false;
         List<IntDomainVar> mttrs = new ArrayList<>();
@@ -91,6 +94,7 @@ public class MinMTTR implements ReconfigurationObjective {
             s.setRestart(true);
         }
         injectPlacementHeuristic(rp, cost);
+        return true;
     }
 
     private void injectPlacementHeuristic(ReconfigurationProblem rp, IntDomainVar cost) {
@@ -185,6 +189,21 @@ public class MinMTTR implements ReconfigurationObjective {
                 s.setFeasible(false);
                 s.post(Constant.FALSE);
             }
+        }
+    }
+
+    /**
+     * Builder associated to the constraint.
+     */
+    public static class Builder implements ChocoConstraintBuilder {
+        @Override
+        public Class<? extends Constraint> getKey() {
+            return MinMTTR.class;
+        }
+
+        @Override
+        public CMinMTTR build(Constraint cstr) {
+            return new CMinMTTR();
         }
     }
 }

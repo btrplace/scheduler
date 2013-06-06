@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,6 +17,7 @@
 
 package btrplace.model;
 
+import btrplace.model.constraint.OptimizationConstraint;
 import btrplace.model.constraint.SatConstraint;
 
 import java.util.ArrayList;
@@ -36,15 +36,19 @@ public class Instance {
 
     private List<SatConstraint> cstrs;
 
+    private OptimizationConstraint opt;
+
     /**
      * Make a new instance.
      *
      * @param mo the model to use
      * @param cs the list of constraints
+     * @param o  the optimization constraint
      */
-    public Instance(Model mo, List<SatConstraint> cs) {
+    public Instance(Model mo, List<SatConstraint> cs, OptimizationConstraint o) {
         cstrs = new ArrayList<>(cs);
         this.mo = mo;
+        this.opt = o;
     }
 
     /**
@@ -65,6 +69,15 @@ public class Instance {
         return cstrs;
     }
 
+    /**
+     * Get the declared optimization constraint.
+     *
+     * @return the optimization constraint to consider
+     */
+    public OptimizationConstraint getOptimizationConstraint() {
+        return opt;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -76,7 +89,7 @@ public class Instance {
 
         Instance instance = (Instance) o;
 
-        return (cstrs.equals(instance.cstrs) && mo.equals(instance.mo));
+        return (cstrs.equals(instance.cstrs) && mo.equals(instance.mo) && opt.equals(instance.opt));
     }
 
     @Override

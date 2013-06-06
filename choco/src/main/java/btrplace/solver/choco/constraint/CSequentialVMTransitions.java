@@ -19,7 +19,7 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Model;
 import btrplace.model.VM;
-import btrplace.model.constraint.SatConstraint;
+import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.SequentialVMTransitions;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -36,7 +36,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class CSequentialVMTransitions implements ChocoSatConstraint {
+public class CSequentialVMTransitions implements ChocoConstraint {
 
     private SequentialVMTransitions cstr;
 
@@ -90,14 +90,14 @@ public class CSequentialVMTransitions implements ChocoSatConstraint {
     /**
      * Builder associated to the constraint.
      */
-    public static class Builder implements ChocoSatConstraintBuilder {
+    public static class Builder implements ChocoConstraintBuilder {
         @Override
-        public Class<? extends SatConstraint> getKey() {
+        public Class<? extends Constraint> getKey() {
             return SequentialVMTransitions.class;
         }
 
         @Override
-        public CSequentialVMTransitions build(SatConstraint cstr) {
+        public CSequentialVMTransitions build(Constraint cstr) {
             return new CSequentialVMTransitions((SequentialVMTransitions) cstr);
         }
     }
