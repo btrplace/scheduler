@@ -15,12 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.partitioner;
+package btrplace.solver.choco.runner;
 
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.choco.SolvingStatistics;
 
 /**
+ * Store the result of a solving process made by a runner.
+ *
  * @author Fabien Hermenier
  */
 public class InstanceResult {
@@ -29,15 +31,31 @@ public class InstanceResult {
 
     private SolvingStatistics stats;
 
+    /**
+     * Make a new result.
+     *
+     * @param p  the computed reconfiguration plan
+     * @param st the statistics associated to the solving process
+     */
     public InstanceResult(ReconfigurationPlan p, SolvingStatistics st) {
         plan = p;
         stats = st;
     }
 
+    /**
+     * Get the resulting reconfiguration plan.
+     *
+     * @return a plan. {@code null} if the runner found there was no solution.
+     */
     public ReconfigurationPlan getPlan() {
         return plan;
     }
 
+    /**
+     * Get the statistics associated to the solving process.
+     *
+     * @return some statistics
+     */
     public SolvingStatistics getStatistics() {
         return stats;
     }

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.partitioner;
+package btrplace.solver.choco.runner;
 
 import btrplace.model.Instance;
 import btrplace.model.Model;
@@ -57,6 +57,12 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
 
     private long speRPDuration;
 
+    /**
+     * Make a new runner.
+     *
+     * @param ps the parameters for the solving process
+     * @param i  the instance to solve
+     */
     public InstanceSolverRunner(ChocoReconfigurationAlgorithmParams ps, Instance i) {
         cstrs = i.getConstraints();
         obj = i.getOptimizationConstraint();
@@ -155,7 +161,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         speRPDuration = -System.currentTimeMillis();
         for (ChocoConstraint ccstr : cConstraints) {
             if (!ccstr.inject(rp)) {
-                return null;
+                return new InstanceResult(null, makeStatistics());
             }
         }
 
@@ -172,7 +178,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         //The actual solving process
         ReconfigurationPlan p = rp.solve(params.getTimeLimit(), params.doOptimize());
         if (p == null) {
-            return null;
+            return new InstanceResult(null, makeStatistics());
         }
         checkSatisfaction2(p, cstrs);
         return new InstanceResult(p, makeStatistics());
@@ -247,21 +253,22 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
                 coreRPDuration,
                 speRPDuration);
 
-        for (Solution s : rp.getSolver().getSearchStrategy().getStoredSolutions()) {
-            IMeasures m = s.getMeasures();
-            SolutionStatistics sol;
-            if (m.getObjectiveValue() != null) {
-                sol = new SolutionStatistics(m.getNodeCount(),
-                        m.getBackTrackCount(),
-                        m.getTimeCount(),
-                        m.getObjectiveValue().intValue());
-            } else {
-                sol = new SolutionStatistics(m.getNodeCount(),
-                        m.getBackTrackCount(),
-                        m.getTimeCount());
+        if (rp.getSolver().getSearchStrategy() != null) {
+            for (Solution s : rp.getSolver().getSearchStrategy().getStoredSolutions()) {
+                IMeasures m = s.getMeasures();
+                SolutionStatistics sol;
+                if (m.getObjectiveValue() != null) {
+                    sol = new SolutionStatistics(m.getNodeCount(),
+                            m.getBackTrackCount(),
+                            m.getTimeCount(),
+                            m.getObjectiveValue().intValue());
+                } else {
+                    sol = new SolutionStatistics(m.getNodeCount(),
+                            m.getBackTrackCount(),
+                            m.getTimeCount());
+                }
+                st.addSolution(sol);
             }
-            st.addSolution(sol);
-
         }
         return st;
     }

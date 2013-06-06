@@ -94,7 +94,7 @@ public class SolverTuning implements Example {
             ReconfigurationPlan p = cra.solve(model, constraints);
             if (p != null) {
                 System.out.println("--- Solving using repair : " + cra.doRepair());
-                System.out.println(cra.getSolvingStatistics());
+                System.out.println(cra.getStatistics());
             }
         } catch (SolverException e) {
             System.err.println("--- Solving using repair : " + cra.doRepair() + "; Error: " + e.getMessage());

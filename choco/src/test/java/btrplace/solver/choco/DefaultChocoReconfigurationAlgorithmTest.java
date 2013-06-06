@@ -87,7 +87,7 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         cra.setTimeLimit(0);
 
 
-        SolvingStatistics st = cra.getSolvingStatistics();
+        SolvingStatistics st = cra.getStatistics();
         Assert.assertEquals(st.getNbBacktracks(), 0);
         Assert.assertEquals(st.getNbSearchNodes(), 0);
         Assert.assertEquals(st.getSolvingDuration(), 0);
@@ -131,7 +131,7 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>emptyList(), new Foo());
         Mapping res = p.getResult().getMapping();
         Assert.assertEquals(MappingUtils.usedNodes(res, EnumSet.of(MappingUtils.State.Runnings)).size(), 1);
-        st = cra.getSolvingStatistics();
+        st = cra.getStatistics();
         Assert.assertEquals(st.getSolutions().size(), 10);
     }
 
@@ -191,7 +191,7 @@ public class DefaultChocoReconfigurationAlgorithmTest {
 
         //Solve a problem with the repair mode
         Assert.assertNotNull(cra.solve(mo, cstrs, new Foo()));
-        SolvingStatistics st = cra.getSolvingStatistics();
+        SolvingStatistics st = cra.getStatistics();
         Assert.assertEquals(st.getNbManagedVMs(), 2); //vm2, vm3.
     }
 

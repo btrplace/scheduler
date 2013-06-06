@@ -22,9 +22,7 @@ import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.ReconfigurationAlgorithm;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.constraint.ConstraintMapper;
-import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import btrplace.solver.choco.view.ModelViewMapper;
+import btrplace.solver.choco.runner.InstanceSolver;
 
 import java.util.Collection;
 
@@ -36,77 +34,11 @@ import java.util.Collection;
 public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm, ChocoReconfigurationAlgorithmParams {
 
     /**
-     * Indicate if the algorithm repair the model.
-     *
-     * @return {@code true} iff it repairs the model.
-     */
-    boolean doRepair();
-
-    /**
-     * Tell is the solver tries to improve the first computed solution.
-     *
-     * @return {@code true} iff it try to improve the solution
-     */
-    boolean doOptimize();
-
-    /**
-     * Get the mapper that is used to associate the {@link btrplace.model.view.ModelView}
-     * to the {@link btrplace.solver.choco.view.ChocoModelView}.
-     *
-     * @return the mapper
-     */
-    ModelViewMapper getViewMapper();
-
-    /**
-     * Get the timeout value.
-     *
-     * @return a positive integer in seconds to indicate the timeout value or a negative value to
-     *         indicate no timeout has been set
-     */
-    int getTimeLimit();
-
-    /**
-     * Indicate if variables are labelled.
-     *
-     * @return {@code true} iff the variables are labelled
-     */
-    boolean areVariablesLabelled();
-
-    /**
-     * Get the mapper that converts {@link btrplace.model.constraint.Constraint} to {@link btrplace.solver.choco.constraint.ChocoConstraint}.
-     *
-     * @return the mapper.
-     */
-    ConstraintMapper getConstraintMapper();
-
-    /**
-     * Get the evaluator that is used to indicate the estimated duration of each action.
-     *
-     * @return the evaluator
-     */
-    DurationEvaluators getDurationEvaluators();
-
-    /**
      * Get statistics about the solving process
      *
      * @return some statistics
      */
-    SolvingStatistics getSolvingStatistics();
-
-    /**
-     * Get the maximum duration of a reconfiguration plan.
-     *
-     * @return a positive integer
-     */
-    int getMaxEnd();
-
-    /**
-     * Get the verbosity level of the solver.
-     *
-     * @return the verbosity level.
-     * @see {@link #setVerbosity(int)} for more informations about the available levels
-     */
-    int getVerbosity();
+    SolvingStatistics getStatistics();
 
     /**
      * Compute a reconfiguration plan to reach a solution to the model.
@@ -119,4 +51,19 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm,
      * @throws SolverException if an error occurred while trying to solve the problem
      */
     ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs) throws SolverException;
+
+    /**
+     * Get the solver used to solve a problem.
+     *
+     * @return the current used solver
+     */
+    InstanceSolver getPartitionner();
+
+    /**
+     * Set the solver to use to solve a problem
+     *
+     * @param p the runner to use
+     */
+    void setPartitioner(InstanceSolver p);
+
 }

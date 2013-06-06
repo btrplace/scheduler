@@ -15,18 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.partitioner;
+package btrplace.solver.choco.runner;
 
 import btrplace.model.Instance;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
 
-import java.util.Collection;
-
 /**
+ * Interface to specify an instance solver.
+ *
  * @author Fabien Hermenier
  */
-public interface InstancesSolver {
+public interface InstanceSolver {
 
-    InstanceResult solve(ChocoReconfigurationAlgorithmParams cra, Collection<Instance> instances) throws SolverException;
+    /**
+     * Solve an instance.
+     *
+     * @param ps the parameters to consider
+     * @param i  the instance to solve
+     * @return the result of the solving process
+     * @throws SolverException if an error prevent from running a solving process
+     */
+    InstanceResult solve(ChocoReconfigurationAlgorithmParams ps,
+                         Instance i) throws SolverException;
 }

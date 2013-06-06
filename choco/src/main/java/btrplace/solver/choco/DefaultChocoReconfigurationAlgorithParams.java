@@ -47,6 +47,15 @@ public class DefaultChocoReconfigurationAlgorithParams implements ChocoReconfigu
 
     private int verbosityLevel;
 
+    /**
+     * New set of parameters.
+     */
+    public DefaultChocoReconfigurationAlgorithParams() {
+        cstrMapper = new ConstraintMapper();
+        durationEvaluators = new DurationEvaluators();
+        viewMapper = new ModelViewMapper();
+    }
+
     @Override
     public ChocoReconfigurationAlgorithmParams doRepair(boolean b) {
         repair = b;
