@@ -23,11 +23,19 @@ import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @author Fabien Hermenier
  */
-public interface Partitioner {
+public class SinglePartition implements Partitioner {
 
-    Collection<Instance> part(ChocoReconfigurationAlgorithm cra, Model mo, Collection<SatConstraint> cstrs, OptimizationC);
+    public SinglePartition() {
+        super();    //To change body of overridden methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Collection<Instance> part(ChocoReconfigurationAlgorithm cra, Model mo, Collection<SatConstraint> cstrs) {
+        return Collections.singleton(new Instance(mo, cstrs,));
+    }
 }
