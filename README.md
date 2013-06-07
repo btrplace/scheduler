@@ -30,7 +30,7 @@ Next, just declare the dependency:
 <dependency>
    <groupId>btrplace</groupId>
    <artifactId>solver-bundle</artifactId>
-   <version>0.29-SNAPSHOT</version>
+   <version>0.31-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -47,7 +47,7 @@ solver Choco
 For each version of Btrplace, a bundle that contains the three basics artifacts and their dependencies is made available.
 The jar can be downloaded from this URL:
 
-* http://btrp.inria.fr/repos/snapshot-releases/btrplace/solver-bundle/0.29-SNAPSHOT/
+* http://btrp.inria.fr/repos/snapshot-releases/btrplace/solver-bundle/0.31-SNAPSHOT/
 
 
 
@@ -58,7 +58,7 @@ The jar can be downloaded from this URL:
 ## Building from sources ##
 
 Requirements:
-* JDK 6+
+* JDK 7+
 * maven 3+
 
 The source of the released versions are directly available in the `Tag` section.
