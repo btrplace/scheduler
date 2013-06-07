@@ -57,13 +57,13 @@ public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm,
      *
      * @return the current used solver
      */
-    InstanceSolver getPartitionner();
+    InstanceSolver getInstanceSolver();
 
     /**
-     * Set the solver to use to solve a problem
+     * Set the solver to use to solve a problem.
      *
      * @param p the runner to use
      */
-    void setPartitioner(InstanceSolver p);
+    void setInstanceSolver(InstanceSolver p);
 
 }

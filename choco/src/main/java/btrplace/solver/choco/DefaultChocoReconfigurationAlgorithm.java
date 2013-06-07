@@ -171,12 +171,12 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     @Override
-    public InstanceSolver getPartitionner() {
+    public InstanceSolver getInstanceSolver() {
         return runner;
     }
 
     @Override
-    public void setPartitioner(InstanceSolver p) {
+    public void setInstanceSolver(InstanceSolver p) {
         runner = p;
     }
 }
