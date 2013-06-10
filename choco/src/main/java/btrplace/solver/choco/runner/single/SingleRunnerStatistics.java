@@ -26,7 +26,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Statistics related to a solving process.
+ * Statistics related to a solving process on one instance.
  *
  * @author Fabien Hermenier
  */

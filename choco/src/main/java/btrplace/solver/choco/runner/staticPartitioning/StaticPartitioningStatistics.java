@@ -25,23 +25,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Statistics for a solving process partitioned statically.
+ *
  * @author Fabien Hermenier
  */
 public class StaticPartitioningStatistics implements SolvingStatistics {
 
     private List<SolvingStatistics> partResults;
 
-    private int nbNodes, nbVMs, nbConstraints, duration, nbSearchNodes, nbBacktracks, nbManaged, coreRPDuration, speRPDuration;
+    private int nbNodes, nbVMs, nbConstraints, duration, nbManaged, coreRPDuration, speRPDuration;
 
-    private int nbWorkers;
+    private int nbWorkers, nbSearchNodes, nbBacktracks, splitDuration, nbPartitions;
 
     private boolean hitTimeout;
 
-    private int splitDuration;
-
     private ChocoReconfigurationAlgorithmParams params;
 
-    public StaticPartitioningStatistics(ChocoReconfigurationAlgorithmParams ps, int nbNodes, int nbVMs, int nbConstraints, int splitDuration, int duration, int nbWorkers) {
+    /**
+     * Make the statistics.
+     *
+     * @param ps            the standard parameters for the solving process
+     * @param nbNodes       the number of nodes in the model
+     * @param nbVMs         the number of VMs in the model
+     * @param nbConstraints the number of satisfaction-oriented constraints.
+     * @param splitDuration the duration of the splitting process in milliseconds
+     * @param duration      the solving process duration in milliseconds
+     * @param nbWorkers     the number of workers to solve the partitions in parallel
+     * @param nbParts       the number of partitions to compute
+     */
+    public StaticPartitioningStatistics(ChocoReconfigurationAlgorithmParams ps, int nbNodes, int nbVMs, int nbConstraints,
+                                        int splitDuration, int duration, int nbWorkers, int nbParts) {
         partResults = new ArrayList<>();
         this.nbNodes = nbNodes;
         this.nbVMs = nbVMs;
@@ -56,6 +69,7 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
         this.nbWorkers = nbWorkers;
         params = ps;
         this.splitDuration = splitDuration;
+        this.nbPartitions = nbParts;
     }
 
     @Override
@@ -118,14 +132,29 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
         return nbConstraints;
     }
 
+    /**
+     * Get the number of partitions.
+     *
+     * @return a number >= 1
+     */
     public int getNbParts() {
-        return partResults.size();
+        return nbPartitions;
     }
 
+    /**
+     * Get the maximum number of workers to that works in parallel
+     *
+     * @return a number >= 1
+     */
     public int getNbWorkers() {
         return nbWorkers;
     }
 
+    /**
+     * Add the statistics related to a partition.
+     *
+     * @param stats the partition statistics.
+     */
     public void addPartitionStatistics(SolvingStatistics stats) {
         nbBacktracks += stats.getNbBacktracks();
         nbSearchNodes += stats.getNbSearchNodes();
@@ -136,6 +165,11 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
         partResults.add(stats);
     }
 
+    /**
+     * Get the partition splitting duration in milliseconds.
+     *
+     * @return a positive value.
+     */
     public int getSplitDuration() {
         return splitDuration;
     }

@@ -109,7 +109,9 @@ public abstract class StaticPartitioning implements InstanceSolver {
                 nbConstraints,
                 (int) splitDuration,
                 (int) duration,
-                workersCount);
+                workersCount,
+                partitions.size()
+        );
 
         exe.shutdown();
 
