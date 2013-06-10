@@ -224,4 +224,61 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
     public long getStart() {
         return start;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+        b.append(nbNodes).append(" node(s)")
+                .append("; ").append(nbVMs).append(" VM(s)");
+        if (getNbManagedVMs() != nbVMs) {
+            b.append(" (").append(getNbManagedVMs()).append(" managed)");
+        }
+        b.append("; ").append(nbWorkers).append(" worker(s)");
+        b.append("; ").append(nbConstraints).append(" constraint(s)");
+
+        if (params.doOptimize()) {
+            b.append("; optimize");
+        }
+        if (params.getTimeLimit() > 0) {
+            b.append("; timeout: ").append(params.getTimeLimit()).append("s");
+        }
+        b.append("\nmax. building duration: ").append(getCoreRPBuildDuration()).append("ms (core-RP) + ").append(getSpeRPDuration()).append("ms (specialization)");
+        b.append("\nAfter ").append(getSolvingDuration()).append("ms of search");
+        if (hitTimeout()) {
+            b.append(" (timeout)");
+        } else {
+            b.append(" (terminated)");
+        }
+
+        List<SolutionStatistics> stats = getSolutions();
+
+        b.append(": ")
+                .append(nbSearchNodes).append(" opened search node(s), ")
+                .append(nbBacktracks).append(" backtrack(s), ")
+                .append(stats.size()).append(" solution(s)");
+        if (!stats.isEmpty()) {
+            b.append(nbPartitions).append("parts. #solutions: (");
+            b.append(partResults.get(0).getSolutions().size());
+            for (int i = 1; i < partResults.size(); i++) {
+                b.append(", ").append(partResults.get(i).getSolutions().size());
+            }
+            b.append(')');
+            b.append(":\n");
+        } else {
+            b.append(": ").append(partResults.size()).append('/').append(nbPartitions).append(" solved partition(s)");
+        }
+        int i = 1;
+        for (SolutionStatistics st : stats) {
+            b.append("\t").append(i).append(')')
+                    .append(" at ").append(st.getTime()).append("ms: ")
+                    .append(st.getNbNodes()).append(" node(s), ")
+                    .append(st.getNbBacktracks()).append(" backtrack(s)");
+            if (st.hasObjective()) {
+                b.append(", objective: ").append(st.getOptValue());
+            }
+            b.append('\n');
+            i++;
+        }
+        return b.toString();
+    }
 }

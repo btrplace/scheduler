@@ -208,14 +208,14 @@ public class SingleRunnerStatistics implements SolvingStatistics {
         }
         int i = 1;
         for (SolutionStatistics st : solutions) {
-            b.append("\t").append(i).append(")")
+            b.append("\t").append(i).append(')')
                     .append(" at ").append(st.getTime()).append("ms: ")
                     .append(st.getNbNodes()).append(" node(s), ")
                     .append(st.getNbBacktracks()).append(" backtrack(s)");
             if (st.hasObjective()) {
                 b.append(", objective: ").append(st.getOptValue());
             }
-            b.append("\n");
+            b.append('\n');
             i++;
         }
         return b.toString();
