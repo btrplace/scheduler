@@ -102,9 +102,45 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
         return hitTimeout;
     }
 
+    /**
+     * Get the computed solutions.
+     * To get a solution, it is expected to have one solution for each partition.
+     * This method does not return all the reported solutions. If some partitions get multiple solution,
+     * only the last is considered.
+     *
+     * @return a list of solutions that may be empty
+     */
     @Override
     public List<SolutionStatistics> getSolutions() {
-        throw new UnsupportedOperationException();
+
+        //Check for the first solution that concatenate all the first solutions.
+        List<SolutionStatistics> solutions = new ArrayList<>();
+
+        int firstN = 0, firstB = 0, firstOptValue = 0, firstTime = 0;
+        int lastN = 0, lastB = 0, lastOptValue = 0, lastTime = 0;
+        for (SolvingStatistics st : partResults) {
+            if (st.getSolutions().isEmpty()) { //At least 1 partition does not have a result.
+                return solutions;
+            } else {
+                SolutionStatistics first = st.getSolutions().get(0);
+                firstN += first.getNbNodes();
+                firstB += first.getNbBacktracks();
+                firstOptValue += first.getOptValue();
+
+                if (st.getSolutions().size() > 1) {
+                    SolutionStatistics last = st.getSolutions().get(st.getSolutions().size());
+                    lastN += last.getNbNodes();
+                    lastB += last.getNbBacktracks();
+                    lastOptValue += last.getOptValue();
+                }
+            }
+        }
+
+        solutions.add(new SolutionStatistics(firstN, firstB, firstTime, firstOptValue));
+        if (lastOptValue != firstOptValue) {
+            solutions.add(new SolutionStatistics(lastN, lastB, lastTime, lastOptValue));
+        }
+        return solutions;
     }
 
     @Override
