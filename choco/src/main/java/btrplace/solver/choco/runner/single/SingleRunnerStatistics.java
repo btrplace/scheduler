@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,18 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.runner.single;
 
+import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.runner.SolutionStatistics;
+import btrplace.solver.choco.runner.SolvingStatistics;
+
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.List;
 
 /**
  * Statistics related to a solving process.
  *
  * @author Fabien Hermenier
  */
-public class SolvingStatistics {
+public class SingleRunnerStatistics implements SolvingStatistics {
+
+    private ChocoReconfigurationAlgorithmParams params;
 
     /**
      * The number of VMs actually managed by the problem.
@@ -58,11 +63,7 @@ public class SolvingStatistics {
 
     private int nbNodes;
 
-    private boolean doOptimize;
-
-    private int maxDuration;
-
-    private Set<SolutionStatistics> solutions;
+    private List<SolutionStatistics> solutions;
 
     private int nbConstraints;
 
@@ -93,8 +94,6 @@ public class SolvingStatistics {
      * @param nbNodes             the number of nodes in the model
      * @param nbVMs               the number of VMs in the model
      * @param nbConstraints       the number of constraints
-     * @param doOptimize          {@code true} to indicate the solver tried to improve the computed solution
-     * @param timeout             the timeout value for the solver in seconds
      * @param managedVMs          the number of VMs managed by the algorithm.
      * @param t                   the solving duration in milliseconds
      * @param nbN                 the number of opened nodes at the moment
@@ -103,83 +102,55 @@ public class SolvingStatistics {
      * @param coreRPBuildDuration the duration of the core-RP building process
      * @param speRPDuration       the duration of the core-RP specialization process
      */
-    public SolvingStatistics(int nbNodes, int nbVMs, int nbConstraints, boolean doOptimize, int timeout, int managedVMs,
-                             int t, int nbN, int nbB, boolean to, long coreRPBuildDuration, long speRPDuration) {
+    public SingleRunnerStatistics(ChocoReconfigurationAlgorithmParams ps, int nbNodes, int nbVMs, int nbConstraints, int managedVMs,
+                                  int t, int nbN, int nbB, boolean to, long coreRPBuildDuration, long speRPDuration) {
         nbManagedVMs = managedVMs;
+        this.params = ps;
         this.nbNodes = nbNodes;
         this.nbVMs = nbVMs;
         this.nbConstraints = nbConstraints;
         time = t;
         nbSearchNodes = nbN;
         nbBacktracks = nbB;
-        this.maxDuration = timeout;
         this.timeout = to;
-        this.doOptimize = doOptimize;
-        solutions = new TreeSet<>(solutionsCmp);
+        solutions = new ArrayList<>();
         this.coreRPBuildDuration = coreRPBuildDuration;
         this.speRPDuration = speRPDuration;
     }
 
-    /**
-     * Get the number of constraints to satisfy
-     *
-     * @return a positive number
-     */
+    @Override
     public int getNbConstraints() {
         return nbConstraints;
     }
 
-    /**
-     * Get the time since the beginning of the solving process.
-     *
-     * @return a duration in milliseconds
-     */
+    @Override
     public int getSolvingDuration() {
         return time;
     }
 
-    /**
-     * Get the time that was necessary to build the core-RP.
-     *
-     * @return a duration in milliseconds
-     */
+
+    @Override
     public long getCoreRPBuildDuration() {
         return coreRPBuildDuration;
     }
 
-    /**
-     * Get the time that was necessary to specialize the core-CP.
-     *
-     * @return a duratio in milliseconds
-     */
+    @Override
     public long getSpeRPDuration() {
         return speRPDuration;
     }
 
-    /**
-     * Get the number of opened nodes.
-     *
-     * @return a positive number
-     */
+    @Override
     public int getNbSearchNodes() {
         return nbSearchNodes;
     }
 
-    /**
-     * Get the number of backtracks.
-     *
-     * @return a positive number
-     */
+    @Override
     public int getNbBacktracks() {
         return nbBacktracks;
     }
 
-    /**
-     * Indicates if the solver hit a timeout.
-     *
-     * @return {@code true} iff the solver hit a timeout
-     */
-    public boolean isTimeout() {
+    @Override
+    public boolean hitTimeout() {
         return timeout;
     }
 
@@ -192,56 +163,22 @@ public class SolvingStatistics {
         this.solutions.add(so);
     }
 
-    /**
-     * Get all the computed solutions ordered by time.
-     *
-     * @return a list of solutions that may be empty
-     */
-    public Set<SolutionStatistics> getSolutions() {
+    @Override
+    public List<SolutionStatistics> getSolutions() {
         return solutions;
     }
 
-    /**
-     * Get the number of VMs in the model.
-     *
-     * @return a positive integer
-     */
+    @Override
     public int getNbVMs() {
         return nbVMs;
     }
 
-    /**
-     * Get the number of nodes in the model.
-     *
-     * @return a positive integer
-     */
+    @Override
     public int getNbNodes() {
         return nbNodes;
     }
 
-    /**
-     * Tell if the solver tried to optimize the computed solution.
-     *
-     * @return {@code true} iff the solver was configured for optimization
-     */
-    public boolean doOptimize() {
-        return doOptimize;
-    }
-
-    /**
-     * Get the maximum solving duration.
-     *
-     * @return a duration is seconds. A negative number for no timeout.
-     */
-    public int getTimeout() {
-        return maxDuration;
-    }
-
-    /**
-     * Get the number of VMs managed by the algorithm.
-     *
-     * @return a positive number
-     */
+    @Override
     public int getNbManagedVMs() {
         return nbManagedVMs;
     }
@@ -256,11 +193,11 @@ public class SolvingStatistics {
         }
         b.append("; ").append(nbConstraints).append(" constraint(s)");
 
-        if (doOptimize) {
+        if (params.doOptimize()) {
             b.append("; optimize");
         }
-        if (maxDuration > 0) {
-            b.append("; timeout: ").append(maxDuration).append("s");
+        if (params.getTimeLimit() > 0) {
+            b.append("; timeout: ").append(params.getTimeLimit()).append("s");
         }
         b.append("\nBuilding duration: ").append(coreRPBuildDuration).append("ms (core-RP) + ").append(speRPDuration).append("ms (specialization)");
         b.append("\nAfter ").append(time).append("ms of search");
@@ -291,5 +228,10 @@ public class SolvingStatistics {
             i++;
         }
         return b.toString();
+    }
+
+    @Override
+    public ChocoReconfigurationAlgorithmParams getParameters() {
+        return params;
     }
 }

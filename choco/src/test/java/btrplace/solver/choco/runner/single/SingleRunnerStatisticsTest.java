@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,33 +15,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.runner.single;
 
+import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithParams;
+import btrplace.solver.choco.runner.SolutionStatistics;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Iterator;
 
 /**
- * Unit tests for {@link SolvingStatistics}.
+ * Unit tests for {@link btrplace.solver.choco.runner.single.SingleRunnerStatistics}.
  *
  * @author Fabien Hermenier
  */
-public class SolvingStatisticsTest {
+public class SingleRunnerStatisticsTest {
 
     @Test
     public void testInstantiate() {
-        SolvingStatistics st = new SolvingStatistics(10, 20, 44, true, 40, 100, 1, 2, 3, false, 7, 34);
+        ChocoReconfigurationAlgorithmParams params = new DefaultChocoReconfigurationAlgorithParams();
+        SingleRunnerStatistics st = new SingleRunnerStatistics(params, 10, 20, 44, 40, 100, 1, 2, false, 7, 34);
         Assert.assertEquals(st.getNbNodes(), 10);
         Assert.assertEquals(st.getNbVMs(), 20);
         Assert.assertEquals(st.getNbConstraints(), 44);
-        Assert.assertEquals(st.doOptimize(), true);
-        Assert.assertEquals(st.getTimeout(), 40);
-        Assert.assertEquals(st.getNbManagedVMs(), 100);
-        Assert.assertEquals(st.getSolvingDuration(), 1);
-        Assert.assertEquals(st.getNbSearchNodes(), 2);
-        Assert.assertEquals(st.getNbBacktracks(), 3);
-        Assert.assertFalse(st.isTimeout());
+        Assert.assertEquals(st.getParameters(), params);
+        Assert.assertEquals(st.getNbManagedVMs(), 40);
+        Assert.assertEquals(st.getSolvingDuration(), 100);
+        Assert.assertEquals(st.getNbSearchNodes(), 1);
+        Assert.assertEquals(st.getNbBacktracks(), 2);
+        Assert.assertFalse(st.hitTimeout());
         Assert.assertEquals(st.getCoreRPBuildDuration(), 7);
         Assert.assertEquals(st.getSpeRPDuration(), 34);
         System.out.println(st);
@@ -50,7 +52,8 @@ public class SolvingStatisticsTest {
 
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testAddSolution() {
-        SolvingStatistics st = new SolvingStatistics(10, 20, 44, true, 40, 100, 1, 2, 3, false, 7, 34);
+        ChocoReconfigurationAlgorithmParams params = new DefaultChocoReconfigurationAlgorithParams();
+        SingleRunnerStatistics st = new SingleRunnerStatistics(params, 10, 20, 44, 40, 100, 1, 2, false, 7, 34);
         SolutionStatistics s0 = new SolutionStatistics(1, 2, 3, 4);
         SolutionStatistics s1 = new SolutionStatistics(2, 2, 3, 4);
         SolutionStatistics s2 = new SolutionStatistics(2, 3, 4, 3);
@@ -62,10 +65,10 @@ public class SolvingStatisticsTest {
         Assert.assertNotNull(st.toString());
         Assert.assertEquals(st.getSolutions().size(), 4);
         Iterator<SolutionStatistics> ite = st.getSolutions().iterator();
-        Assert.assertEquals(ite.next(), s0);
         Assert.assertEquals(ite.next(), s1);
         Assert.assertEquals(ite.next(), s2);
         Assert.assertEquals(ite.next(), s3);
+        Assert.assertEquals(ite.next(), s0);
 
     }
 }

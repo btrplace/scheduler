@@ -23,7 +23,7 @@ package btrplace.model.constraint;
  *
  * @author Fabien Hermenier
  */
-public class MinMTTR extends OptimizationConstraint {
+public class MinMTTR extends OptConstraint {
 
 
     @Override

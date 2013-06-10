@@ -18,7 +18,7 @@
 package btrplace.solver;
 
 import btrplace.model.Model;
-import btrplace.model.constraint.OptimizationConstraint;
+import btrplace.model.constraint.OptConstraint;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 
@@ -41,6 +41,6 @@ public interface ReconfigurationAlgorithm {
      *         solution.
      * @throws SolverException if an error occurred while trying to solve the problem
      */
-    ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs, OptimizationConstraint obj) throws SolverException;
+    ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs, OptConstraint obj) throws SolverException;
 
 }

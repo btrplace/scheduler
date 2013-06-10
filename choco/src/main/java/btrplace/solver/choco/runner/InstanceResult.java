@@ -18,7 +18,6 @@
 package btrplace.solver.choco.runner;
 
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.solver.choco.SolvingStatistics;
 
 /**
  * Store the result of a solving process made by a runner.

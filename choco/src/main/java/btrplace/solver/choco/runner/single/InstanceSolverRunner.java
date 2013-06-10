@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.runner;
+package btrplace.solver.choco.runner.single;
 
 import btrplace.model.Instance;
 import btrplace.model.Model;
@@ -26,9 +26,13 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlanChecker;
 import btrplace.plan.ReconfigurationPlanCheckerException;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.*;
+import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
+import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.constraint.ChocoConstraint;
 import btrplace.solver.choco.constraint.ChocoConstraintBuilder;
+import btrplace.solver.choco.runner.InstanceResult;
+import btrplace.solver.choco.runner.SolutionStatistics;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
 import choco.kernel.solver.ContradictionException;
@@ -49,7 +53,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
 
     private Collection<SatConstraint> cstrs;
 
-    private OptimizationConstraint obj;
+    private OptConstraint obj;
 
     private Model origin;
 
@@ -235,16 +239,15 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         }
     }
 
-    private SolvingStatistics makeStatistics() {
+    private SingleRunnerStatistics makeStatistics() {
         if (rp == null) {
-            return new SolvingStatistics(0, 0, 0, params.doOptimize(), params.getTimeLimit(), 0, 0, 0, 0, false, 0, 0);
+            return new SingleRunnerStatistics(params, 0, 0, 0, 0, 0, 0, 0, false, 0, 0);
         }
-        SolvingStatistics st = new SolvingStatistics(
+        SingleRunnerStatistics st = new SingleRunnerStatistics(
+                params,
                 rp.getNodes().length,
                 rp.getVMs().length,
                 cstrs.size(),
-                params.doOptimize(),
-                params.getTimeLimit(),
                 rp.getManageableVMs().size(),
                 rp.getSolver().getTimeCount(),
                 rp.getSolver().getNodeCount(),

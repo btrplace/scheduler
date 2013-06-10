@@ -24,7 +24,7 @@ package btrplace.model.constraint;
  *
  * @author Fabien Hermenier
  */
-public abstract class OptimizationConstraint implements Constraint {
+public abstract class OptConstraint implements Constraint {
 
     /**
      * Get the constraint identifier.

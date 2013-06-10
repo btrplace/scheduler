@@ -15,12 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.runner;
+package btrplace.solver.choco.runner.staticPartitioning;
 
 import btrplace.model.Instance;
+import btrplace.plan.DefaultReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.Action;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.runner.InstanceResult;
+import btrplace.solver.choco.runner.InstanceSolver;
+import btrplace.solver.choco.runner.SolvingStatistics;
+import btrplace.solver.choco.runner.single.InstanceSolverRunner;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -64,21 +73,27 @@ public abstract class StaticPartitioning implements InstanceSolver {
     }
 
     @Override
-    public InstanceResult solve(ChocoReconfigurationAlgorithmParams cra, Instance instance) throws SolverException {
-        List<Instance> partitions = split(cra, instance);
+    public InstanceResult solve(ChocoReconfigurationAlgorithmParams cra, Instance orig) throws SolverException {
+        long splitDuration = -System.currentTimeMillis();
+        List<Instance> partitions = split(cra, orig);
+        splitDuration += System.currentTimeMillis();
 
         ExecutorService exe = Executors.newFixedThreadPool(this.workersCount);
         CompletionService<InstanceResult> completionService = new ExecutorCompletionService<>(exe);
+        List<InstanceResult> results = new ArrayList<>(partitions.size());
+
+        int nbNodes = orig.getModel().getNodes().size();
+        int nbVMs = orig.getModel().getVMs().size();
+        int nbConstraints = orig.getConstraints().size();
+
+        long duration = -System.currentTimeMillis();
         for (Instance partition : partitions) {
             completionService.submit(new InstanceSolverRunner(cra, partition));
         }
 
         for (int i = 0; i < partitions.size(); ++i) {
             try {
-                InstanceResult res = completionService.take().get();
-                if (res != null) {
-                    System.out.println(res);
-                }
+                results.add(completionService.take().get());
             } catch (ExecutionException ignore) {
                 Throwable cause = ignore.getCause();
                 if (cause != null) {
@@ -88,11 +103,33 @@ public abstract class StaticPartitioning implements InstanceSolver {
                 System.err.println(e);
             }
         }
+        duration += System.currentTimeMillis();
+        StaticPartitioningStatistics stats = new StaticPartitioningStatistics(cra, nbNodes,
+                nbVMs,
+                nbConstraints,
+                (int) splitDuration,
+                (int) duration,
+                workersCount);
 
         exe.shutdown();
-        //TODO: merge the statistics and the reconfiguration plans
-        return null;
 
+        InstanceResult res = new InstanceResult(new DefaultReconfigurationPlan(orig.getModel()), stats);
+        merge(res, results);
+        return res;
+    }
+
+    private void merge(InstanceResult res, Collection<InstanceResult> results) throws SolverException {
+        ReconfigurationPlan plan = res.getPlan();
+        for (InstanceResult result : results) {
+            for (Action a : res.getPlan()) {
+                if (!plan.add(a)) {
+                    throw new SolverException(res.getPlan().getOrigin(), "Unable to add action " + a);
+                }
+            }
+            SolvingStatistics st = res.getStatistics();
+            ((StaticPartitioningStatistics) res.getStatistics()).addPartitionStatistics(st);
+
+        }
     }
 
     /**
@@ -104,6 +141,4 @@ public abstract class StaticPartitioning implements InstanceSolver {
      * @throws SolverException if an error prevent the spliting process
      */
     public abstract List<Instance> split(ChocoReconfigurationAlgorithmParams ps, Instance i) throws SolverException;
-
-
 }

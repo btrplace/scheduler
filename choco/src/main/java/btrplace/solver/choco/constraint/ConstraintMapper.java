@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Mapper that allow to convert {@link SatConstraint} and {@link OptimizationConstraint} to {@link ChocoConstraint}.
+ * Mapper that allow to convert {@link SatConstraint} and {@link btrplace.model.constraint.OptConstraint} to {@link ChocoConstraint}.
  *
  * @author Fabien Hermenier
  */

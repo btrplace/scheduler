@@ -23,6 +23,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.ReconfigurationAlgorithm;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.runner.InstanceSolver;
+import btrplace.solver.choco.runner.SolvingStatistics;
 
 import java.util.Collection;
 
@@ -34,9 +35,9 @@ import java.util.Collection;
 public interface ChocoReconfigurationAlgorithm extends ReconfigurationAlgorithm, ChocoReconfigurationAlgorithmParams {
 
     /**
-     * Get statistics about the solving process
+     * Get statistics about the last solved problem.
      *
-     * @return some statistics
+     * @return some statistics, {@code null} if no problem has been solved for the moment
      */
     SolvingStatistics getStatistics();
 

@@ -20,7 +20,7 @@ package btrplace.solver.choco;
 import btrplace.model.Instance;
 import btrplace.model.Model;
 import btrplace.model.constraint.MinMTTR;
-import btrplace.model.constraint.OptimizationConstraint;
+import btrplace.model.constraint.OptConstraint;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
@@ -28,7 +28,8 @@ import btrplace.solver.choco.constraint.ConstraintMapper;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import btrplace.solver.choco.runner.InstanceResult;
 import btrplace.solver.choco.runner.InstanceSolver;
-import btrplace.solver.choco.runner.SingleRunner;
+import btrplace.solver.choco.runner.SolvingStatistics;
+import btrplace.solver.choco.runner.single.SingleRunner;
 import btrplace.solver.choco.view.ModelViewMapper;
 
 import java.util.Collection;
@@ -105,7 +106,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     @Override
-    public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs, OptimizationConstraint opt) throws SolverException {
+    public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs, OptConstraint opt) throws SolverException {
         stats = null;
         InstanceResult res = runner.solve(params, new Instance(i, cstrs, opt));
         stats = res.getStatistics();
@@ -124,9 +125,6 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
     @Override
     public SolvingStatistics getStatistics() {
-        if (stats == null) {
-            return new SolvingStatistics(0, 0, 0, params.doOptimize(), getTimeLimit(), 0, 0, 0, 0, false, 0, 0);
-        }
         return stats;
     }
 

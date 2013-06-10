@@ -17,7 +17,7 @@
 
 package btrplace.model;
 
-import btrplace.model.constraint.OptimizationConstraint;
+import btrplace.model.constraint.OptConstraint;
 import btrplace.model.constraint.SatConstraint;
 
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class Instance {
 
     private List<SatConstraint> cstrs;
 
-    private OptimizationConstraint opt;
+    private OptConstraint opt;
 
     /**
      * Make a new instance.
@@ -45,7 +45,7 @@ public class Instance {
      * @param cs the list of constraints
      * @param o  the optimization constraint
      */
-    public Instance(Model mo, Collection<SatConstraint> cs, OptimizationConstraint o) {
+    public Instance(Model mo, Collection<SatConstraint> cs, OptConstraint o) {
         cstrs = new ArrayList<>(cs);
         this.mo = mo;
         this.opt = o;
@@ -74,7 +74,7 @@ public class Instance {
      *
      * @return the optimization constraint to consider
      */
-    public OptimizationConstraint getOptimizationConstraint() {
+    public OptConstraint getOptimizationConstraint() {
         return opt;
     }
 
