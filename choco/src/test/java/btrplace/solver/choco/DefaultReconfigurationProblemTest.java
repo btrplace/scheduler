@@ -683,7 +683,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertTrue(rp.getView("cmock") instanceof MockCViewModel);
     }
 
-    @Test(expectedExceptions = {SolverException.class})
+    @Test
     public void testNoViewImplementation() throws SolverException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
@@ -711,7 +711,8 @@ public class DefaultReconfigurationProblemTest {
         MockView v = new MockView();
         mo.attach(v);
 
-        new DefaultReconfigurationProblemBuilder(mo).build();
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
+        Assert.assertNull(rp.getView("mock"));
     }
 
     /**
