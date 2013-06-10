@@ -40,7 +40,7 @@ public interface SolvingStatistics {
      *
      * @return a duration in milliseconds
      */
-    public int getSolvingDuration();
+    public long getSolvingDuration();
 
     /**
      * Get the time that was necessary to build the core-RP.
@@ -52,9 +52,16 @@ public interface SolvingStatistics {
     /**
      * Get the time that was necessary to specialize the core-CP.
      *
-     * @return a duratio in milliseconds
+     * @return a duration in milliseconds
      */
     public long getSpeRPDuration();
+
+    /**
+     * Get the moment the computation starts.
+     *
+     * @return a time period in the epoch format
+     */
+    public long getStart();
 
     /**
      * Get the number of opened nodes.

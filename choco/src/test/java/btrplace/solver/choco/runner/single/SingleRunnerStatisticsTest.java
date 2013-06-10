@@ -35,12 +35,13 @@ public class SingleRunnerStatisticsTest {
     @Test
     public void testInstantiate() {
         ChocoReconfigurationAlgorithmParams params = new DefaultChocoReconfigurationAlgorithParams();
-        SingleRunnerStatistics st = new SingleRunnerStatistics(params, 10, 20, 44, 40, 100, 1, 2, false, 7, 34);
+        SingleRunnerStatistics st = new SingleRunnerStatistics(params, 10, 20, 44, 40, 12, 100, 1, 2, false, 7, 34);
         Assert.assertEquals(st.getNbNodes(), 10);
         Assert.assertEquals(st.getNbVMs(), 20);
         Assert.assertEquals(st.getNbConstraints(), 44);
         Assert.assertEquals(st.getParameters(), params);
         Assert.assertEquals(st.getNbManagedVMs(), 40);
+        Assert.assertEquals(st.getStart(), 12);
         Assert.assertEquals(st.getSolvingDuration(), 100);
         Assert.assertEquals(st.getNbSearchNodes(), 1);
         Assert.assertEquals(st.getNbBacktracks(), 2);
@@ -53,7 +54,7 @@ public class SingleRunnerStatisticsTest {
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testAddSolution() {
         ChocoReconfigurationAlgorithmParams params = new DefaultChocoReconfigurationAlgorithParams();
-        SingleRunnerStatistics st = new SingleRunnerStatistics(params, 10, 20, 44, 40, 100, 1, 2, false, 7, 34);
+        SingleRunnerStatistics st = new SingleRunnerStatistics(params, 10, 20, 44, 40, 12, 100, 1, 2, false, 7, 34);
         SolutionStatistics s0 = new SolutionStatistics(1, 2, 3, 4);
         SolutionStatistics s1 = new SolutionStatistics(2, 2, 3, 4);
         SolutionStatistics s2 = new SolutionStatistics(2, 3, 4, 3);

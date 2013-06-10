@@ -74,6 +74,7 @@ public abstract class StaticPartitioning implements InstanceSolver {
 
     @Override
     public InstanceResult solve(ChocoReconfigurationAlgorithmParams cra, Instance orig) throws SolverException {
+        long start = System.currentTimeMillis();
         long splitDuration = -System.currentTimeMillis();
         List<Instance> partitions = split(cra, orig);
         splitDuration += System.currentTimeMillis();
@@ -107,8 +108,9 @@ public abstract class StaticPartitioning implements InstanceSolver {
         StaticPartitioningStatistics stats = new StaticPartitioningStatistics(cra, nbNodes,
                 nbVMs,
                 nbConstraints,
-                (int) splitDuration,
-                (int) duration,
+                start,
+                splitDuration,
+                duration,
                 workersCount,
                 partitions.size()
         );

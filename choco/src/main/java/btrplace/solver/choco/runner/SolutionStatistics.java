@@ -35,9 +35,9 @@ public class SolutionStatistics {
     private int nbBacktracks;
 
     /**
-     * The moment the solver computed the solution.
+     * The time since the beginning of the solving process.
      */
-    private int time;
+    private long time;
 
     /**
      * The objective value if an objective was designed.
@@ -66,7 +66,7 @@ public class SolutionStatistics {
      * @param t   the time in milliseconds
      * @param o   the value of the optimization variable
      */
-    public SolutionStatistics(int nbN, int nbB, int t, int o) {
+    public SolutionStatistics(int nbN, int nbB, long t, int o) {
         nbNodes = nbN;
         nbBacktracks = nbB;
         time = t;
@@ -96,7 +96,7 @@ public class SolutionStatistics {
      *
      * @return a time in milliseconds
      */
-    public int getTime() {
+    public long getTime() {
         return time;
     }
 

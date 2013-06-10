@@ -61,6 +61,8 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
 
     private long speRPDuration;
 
+    private long start;
+
     /**
      * Make a new runner.
      *
@@ -77,6 +79,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
     @Override
     public InstanceResult call() throws SolverException {
         rp = null;
+        start = System.currentTimeMillis();
         coreRPDuration = -System.currentTimeMillis();
         //Build the RP. As VM state management is not possible
         //We extract VM-state related constraints first.
@@ -241,7 +244,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
 
     private SingleRunnerStatistics makeStatistics() {
         if (rp == null) {
-            return new SingleRunnerStatistics(params, 0, 0, 0, 0, 0, 0, 0, false, 0, 0);
+            return new SingleRunnerStatistics(params, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0);
         }
         SingleRunnerStatistics st = new SingleRunnerStatistics(
                 params,
@@ -249,6 +252,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
                 rp.getVMs().length,
                 cstrs.size(),
                 rp.getManageableVMs().size(),
+                start,
                 rp.getSolver().getTimeCount(),
                 rp.getSolver().getNodeCount(),
                 rp.getSolver().getBackTrackCount(),

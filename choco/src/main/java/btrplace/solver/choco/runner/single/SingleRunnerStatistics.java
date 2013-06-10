@@ -22,7 +22,6 @@ import btrplace.solver.choco.runner.SolutionStatistics;
 import btrplace.solver.choco.runner.SolvingStatistics;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -42,7 +41,7 @@ public class SingleRunnerStatistics implements SolvingStatistics {
     /**
      * The total duration of the solving process in milliseconds.
      */
-    private int time;
+    private long time;
 
     /**
      * The total number of opened nodes.
@@ -71,22 +70,7 @@ public class SingleRunnerStatistics implements SolvingStatistics {
 
     private long speRPDuration;
 
-    /**
-     * Compare the solution by their moment. If equal, the number of nodes then the number of backtracks.
-     */
-    private static Comparator<SolutionStatistics> solutionsCmp = new Comparator<SolutionStatistics>() {
-        @Override
-        public int compare(SolutionStatistics sol1, SolutionStatistics sol2) {
-            if (sol1.getTime() == sol2.getTime()) {
-                //Compare wrt. the number of nodes or backtracks
-                if (sol1.getNbNodes() == sol2.getNbNodes()) {
-                    return sol1.getNbBacktracks() - sol2.getNbBacktracks();
-                }
-                return sol1.getNbNodes() - sol2.getNbNodes();
-            }
-            return sol1.getTime() - sol2.getTime();
-        }
-    };
+    private long start;
 
     /**
      * Make new statistics.
@@ -95,6 +79,7 @@ public class SingleRunnerStatistics implements SolvingStatistics {
      * @param nbVMs               the number of VMs in the model
      * @param nbConstraints       the number of constraints
      * @param managedVMs          the number of VMs managed by the algorithm.
+     * @param st                  the moment the computation starts (epoch format)
      * @param t                   the solving duration in milliseconds
      * @param nbN                 the number of opened nodes at the moment
      * @param nbB                 the number of backtracks at the moment
@@ -102,14 +87,15 @@ public class SingleRunnerStatistics implements SolvingStatistics {
      * @param coreRPBuildDuration the duration of the core-RP building process
      * @param speRPDuration       the duration of the core-RP specialization process
      */
-    public SingleRunnerStatistics(ChocoReconfigurationAlgorithmParams ps, int nbNodes, int nbVMs, int nbConstraints, int managedVMs,
-                                  int t, int nbN, int nbB, boolean to, long coreRPBuildDuration, long speRPDuration) {
+    public SingleRunnerStatistics(ChocoReconfigurationAlgorithmParams ps, int nbNodes, int nbVMs, int nbConstraints, int managedVMs, long st,
+                                  long t, int nbN, int nbB, boolean to, long coreRPBuildDuration, long speRPDuration) {
         nbManagedVMs = managedVMs;
         this.params = ps;
         this.nbNodes = nbNodes;
         this.nbVMs = nbVMs;
         this.nbConstraints = nbConstraints;
         time = t;
+        this.start = st;
         nbSearchNodes = nbN;
         nbBacktracks = nbB;
         this.timeout = to;
@@ -124,7 +110,7 @@ public class SingleRunnerStatistics implements SolvingStatistics {
     }
 
     @Override
-    public int getSolvingDuration() {
+    public long getSolvingDuration() {
         return time;
     }
 
@@ -181,6 +167,11 @@ public class SingleRunnerStatistics implements SolvingStatistics {
     @Override
     public int getNbManagedVMs() {
         return nbManagedVMs;
+    }
+
+    @Override
+    public long getStart() {
+        return start;
     }
 
     @Override

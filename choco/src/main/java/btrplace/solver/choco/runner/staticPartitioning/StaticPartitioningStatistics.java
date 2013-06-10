@@ -33,9 +33,11 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
 
     private List<SolvingStatistics> partResults;
 
-    private int nbNodes, nbVMs, nbConstraints, duration, nbManaged, coreRPDuration, speRPDuration;
+    private int nbNodes, nbVMs, nbConstraints, nbManaged, coreRPDuration, speRPDuration;
 
-    private int nbWorkers, nbSearchNodes, nbBacktracks, splitDuration, nbPartitions;
+    private int nbWorkers, nbSearchNodes, nbBacktracks, nbPartitions;
+
+    private long splitDuration, duration, start;
 
     private boolean hitTimeout;
 
@@ -54,8 +56,9 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
      * @param nbParts       the number of partitions to compute
      */
     public StaticPartitioningStatistics(ChocoReconfigurationAlgorithmParams ps, int nbNodes, int nbVMs, int nbConstraints,
-                                        int splitDuration, int duration, int nbWorkers, int nbParts) {
+                                        long st, long splitDuration, long duration, int nbWorkers, int nbParts) {
         partResults = new ArrayList<>();
+        this.start = st;
         this.nbNodes = nbNodes;
         this.nbVMs = nbVMs;
         this.nbConstraints = nbConstraints;
@@ -73,7 +76,7 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
     }
 
     @Override
-    public int getSolvingDuration() {
+    public long getSolvingDuration() {
         return duration;
     }
 
@@ -116,8 +119,14 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
         //Check for the first solution that concatenate all the first solutions.
         List<SolutionStatistics> solutions = new ArrayList<>();
 
-        int firstN = 0, firstB = 0, firstOptValue = 0, firstTime = 0;
-        int lastN = 0, lastB = 0, lastOptValue = 0, lastTime = 0;
+        int firstN = 0, firstB = 0, firstOptValue = 0;
+        int lastN = 0, lastB = 0, lastOptValue = 0;
+
+        //firstTime  == end of the last first solution
+        //lastTime ==  end of the last computed partition solution
+        long start = System.currentTimeMillis();
+        long endFirst = start;
+        long endLast = start;
         for (SolvingStatistics st : partResults) {
             if (st.getSolutions().isEmpty()) { //At least 1 partition does not have a result.
                 return solutions;
@@ -126,19 +135,20 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
                 firstN += first.getNbNodes();
                 firstB += first.getNbBacktracks();
                 firstOptValue += first.getOptValue();
-
+                endFirst = Math.max(endFirst, st.getStart() + first.getTime());
                 if (st.getSolutions().size() > 1) {
                     SolutionStatistics last = st.getSolutions().get(st.getSolutions().size());
                     lastN += last.getNbNodes();
                     lastB += last.getNbBacktracks();
                     lastOptValue += last.getOptValue();
+                    endLast = Math.max(endLast, st.getStart() + last.getTime());
                 }
             }
         }
 
-        solutions.add(new SolutionStatistics(firstN, firstB, firstTime, firstOptValue));
+        solutions.add(new SolutionStatistics(firstN, firstB, endFirst - start, firstOptValue));
         if (lastOptValue != firstOptValue) {
-            solutions.add(new SolutionStatistics(lastN, lastB, lastTime, lastOptValue));
+            solutions.add(new SolutionStatistics(lastN, lastB, endLast - start, lastOptValue));
         }
         return solutions;
     }
@@ -206,9 +216,12 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
      *
      * @return a positive value.
      */
-    public int getSplitDuration() {
+    public long getSplitDuration() {
         return splitDuration;
     }
 
-
+    @Override
+    public long getStart() {
+        return start;
+    }
 }
