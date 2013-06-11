@@ -59,7 +59,7 @@ import java.util.*;
  */
 public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
-    private final Logger logger = LoggerFactory.getLogger("ChocoRP");
+    private final static Logger logger = LoggerFactory.getLogger("ChocoRP");
 
     private boolean useLabels = false;
 

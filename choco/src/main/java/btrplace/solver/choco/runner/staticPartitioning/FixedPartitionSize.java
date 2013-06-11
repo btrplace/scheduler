@@ -61,7 +61,7 @@ public class FixedPartitionSize extends StaticPartitioning {
     public List<Instance> split(ChocoReconfigurationAlgorithmParams ps, Instance i) throws SolverException {
         Model mo = i.getModel();
         Mapping map = mo.getMapping();
-        int nbPartitions = map.getAllNodes().size() / partSize;
+        int nbPartitions = (int) Math.ceil(1.0 * map.getAllNodes().size() / partSize);
         List<Set<Node>> partOfNodes = new ArrayList<>();
         Set<Node> curPartition = new HashSet<>(partSize);
         partOfNodes.add(curPartition);
@@ -76,6 +76,7 @@ public class FixedPartitionSize extends StaticPartitioning {
         List<Instance> parts = new ArrayList<>(nbPartitions);
         for (Set<Node> s : partOfNodes) {
             Model partModel = new DefaultModel();
+            parts.add(new Instance(partModel, new HashSet<SatConstraint>(), i.getOptimizationConstraint()));
             for (Node n : s) {
                 Node n2 = partModel.newNode(n.id());
                 if (map.getOfflineNodes().contains(n)) {
@@ -83,13 +84,20 @@ public class FixedPartitionSize extends StaticPartitioning {
                 } else {
                     partModel.getMapping().addOnlineNode(n2);
                     for (VM v : map.getRunningVMs(n)) {
-                        partModel.getMapping().addRunningVM(mo.newVM(v.id()), n2);
+                        VM v2 = partModel.newVM(v.id());
+                        if (v2 == null) {
+                            throw new SolverException(partModel, "Unable to make a VM '" + v2 + "' on the partition");
+                        }
+                        partModel.getMapping().addRunningVM(v2, n2);
                     }
                     for (VM v : map.getSleepingVMs(n)) {
-                        partModel.getMapping().addRunningVM(mo.newVM(v.id()), n2);
+                        VM v2 = partModel.newVM(v.id());
+                        if (v2 == null) {
+                            throw new SolverException(partModel, "Unable to make a VM '" + v2 + "' on the partition");
+                        }
+                        partModel.getMapping().addRunningVM(v2, n2);
                     }
                 }
-                parts.add(new Instance(mo, new HashSet<SatConstraint>(), i.getOptimizationConstraint()));
             }
         }
         //TODO: deal with ready VMs to run and state-oriented constraints

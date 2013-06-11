@@ -122,16 +122,16 @@ public abstract class StaticPartitioning implements InstanceSolver {
         return res;
     }
 
-    private void merge(InstanceResult res, Collection<InstanceResult> results) throws SolverException {
-        ReconfigurationPlan plan = res.getPlan();
+    private void merge(InstanceResult merged, Collection<InstanceResult> results) throws SolverException {
+        ReconfigurationPlan plan = merged.getPlan();
         for (InstanceResult result : results) {
-            for (Action a : res.getPlan()) {
+            for (Action a : result.getPlan()) {
                 if (!plan.add(a)) {
-                    throw new SolverException(res.getPlan().getOrigin(), "Unable to add action " + a);
+                    throw new SolverException(result.getPlan().getOrigin(), "Unable to add action " + a);
                 }
             }
-            SolvingStatistics st = res.getStatistics();
-            ((StaticPartitioningStatistics) res.getStatistics()).addPartitionStatistics(st);
+            SolvingStatistics st = result.getStatistics();
+            ((StaticPartitioningStatistics) merged.getStatistics()).addPartitionStatistics(st);
 
         }
     }

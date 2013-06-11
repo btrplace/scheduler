@@ -243,7 +243,7 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
         if (getNbManagedVMs() != nbVMs) {
             b.append(" (").append(getNbManagedVMs()).append(" managed)");
         }
-        b.append("; ").append(nbWorkers).append(" worker(s)");
+        b.append("; ").append(nbWorkers).append(" worker(s)").append(", ").append(nbPartitions).append(" partition(s)");
         b.append("; ").append(nbConstraints).append(" constraint(s)");
 
         if (params.doOptimize()) {
@@ -267,14 +267,13 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
                 .append(nbBacktracks).append(" backtrack(s), ")
                 .append(stats.size()).append(" solution(s)");
         if (!stats.isEmpty()) {
-            b.append(nbPartitions).append("parts");
             if (!partResults.isEmpty()) {
-                b.append("#solutions (");
+                b.append(" [");
                 b.append(partResults.get(0).getSolutions().size());
                 for (int i = 1; i < partResults.size(); i++) {
                     b.append(", ").append(partResults.get(i).getSolutions().size());
                 }
-                b.append(')');
+                b.append(']');
             }
             b.append(":\n");
         } else {
