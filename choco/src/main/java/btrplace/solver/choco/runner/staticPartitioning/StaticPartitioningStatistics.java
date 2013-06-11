@@ -50,6 +50,7 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
      * @param nbNodes       the number of nodes in the model
      * @param nbVMs         the number of VMs in the model
      * @param nbConstraints the number of satisfaction-oriented constraints.
+     * @param st            the moment the computation started, epoch format
      * @param splitDuration the duration of the splitting process in milliseconds
      * @param duration      the solving process duration in milliseconds
      * @param nbWorkers     the number of workers to solve the partitions in parallel
@@ -124,9 +125,12 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
 
         //firstTime  == end of the last first solution
         //lastTime ==  end of the last computed partition solution
-        long start = System.currentTimeMillis();
         long endFirst = start;
         long endLast = start;
+        boolean multipleSolution = false;
+        if (partResults.isEmpty()) {
+            return solutions;
+        }
         for (SolvingStatistics st : partResults) {
             if (st.getSolutions().isEmpty()) { //At least 1 partition does not have a result.
                 return solutions;
@@ -137,17 +141,23 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
                 firstOptValue += first.getOptValue();
                 endFirst = Math.max(endFirst, st.getStart() + first.getTime());
                 if (st.getSolutions().size() > 1) {
-                    SolutionStatistics last = st.getSolutions().get(st.getSolutions().size());
+                    multipleSolution = true;
+                    SolutionStatistics last = st.getSolutions().get(st.getSolutions().size() - 1);
                     lastN += last.getNbNodes();
                     lastB += last.getNbBacktracks();
                     lastOptValue += last.getOptValue();
                     endLast = Math.max(endLast, st.getStart() + last.getTime());
+                } else {
+                    lastN += first.getNbNodes();
+                    lastB += first.getNbBacktracks();
+                    lastOptValue += first.getOptValue();
+                    endLast = Math.max(endLast, st.getStart() + first.getTime());
                 }
             }
         }
 
         solutions.add(new SolutionStatistics(firstN, firstB, endFirst - start, firstOptValue));
-        if (lastOptValue != firstOptValue) {
+        if (multipleSolution) {
             solutions.add(new SolutionStatistics(lastN, lastB, endLast - start, lastOptValue));
         }
         return solutions;
@@ -207,7 +217,7 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
         nbManaged += stats.getNbManagedVMs();
         hitTimeout |= stats.hitTimeout();
         coreRPDuration = (int) Math.max(coreRPDuration, stats.getCoreRPBuildDuration());
-        speRPDuration = (int) Math.max(speRPDuration, stats.getCoreRPBuildDuration());
+        speRPDuration = (int) Math.max(speRPDuration, stats.getSpeRPDuration());
         partResults.add(stats);
     }
 
@@ -257,15 +267,24 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
                 .append(nbBacktracks).append(" backtrack(s), ")
                 .append(stats.size()).append(" solution(s)");
         if (!stats.isEmpty()) {
-            b.append(nbPartitions).append("parts. #solutions: (");
-            b.append(partResults.get(0).getSolutions().size());
-            for (int i = 1; i < partResults.size(); i++) {
-                b.append(", ").append(partResults.get(i).getSolutions().size());
+            b.append(nbPartitions).append("parts");
+            if (!partResults.isEmpty()) {
+                b.append("#solutions (");
+                b.append(partResults.get(0).getSolutions().size());
+                for (int i = 1; i < partResults.size(); i++) {
+                    b.append(", ").append(partResults.get(i).getSolutions().size());
+                }
+                b.append(')');
             }
-            b.append(')');
             b.append(":\n");
         } else {
-            b.append(": ").append(partResults.size()).append('/').append(nbPartitions).append(" solved partition(s)");
+            int nbSolved = 0;
+            for (SolvingStatistics x : partResults) {
+                if (!x.getSolutions().isEmpty()) {
+                    nbSolved++;
+                }
+            }
+            b.append(": ").append(nbSolved).append('/').append(nbPartitions).append(" solved partition(s)");
         }
         int i = 1;
         for (SolutionStatistics st : stats) {

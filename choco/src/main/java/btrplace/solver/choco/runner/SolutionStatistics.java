@@ -53,7 +53,7 @@ public class SolutionStatistics {
      * @param nbB the number of backtracks
      * @param t   the time in milliseconds
      */
-    public SolutionStatistics(int nbN, int nbB, int t) {
+    public SolutionStatistics(int nbN, int nbB, long t) {
         this(nbN, nbB, t, -1);
         hasObjective = false;
     }
