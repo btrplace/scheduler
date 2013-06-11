@@ -76,9 +76,9 @@ public class ConstraintMapper {
     }
 
     /**
-     * Un-register the builder associated to a given {@link SatConstraint}.
+     * Un-register the builder associated to a given {@link Constraint}.
      *
-     * @param c the class of the {@link SatConstraint} to un-register
+     * @param c the class of the {@link Constraint} to un-register
      * @return {@code true} if a builder was registered
      */
     public boolean unregister(Class<? extends Constraint> c) {

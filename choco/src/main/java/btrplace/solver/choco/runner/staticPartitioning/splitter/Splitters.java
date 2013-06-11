@@ -15,31 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.constraint;
+package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
-import btrplace.model.constraint.Constraint;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
- * Interface to specify a builder that create a {@link ChocoConstraint} from
- * a specific {@link btrplace.model.constraint.Constraint}.
- *
  * @author Fabien Hermenier
  */
-public interface ChocoConstraintBuilder {
+public final class Splitters {
 
-    /**
-     * Get the class of the Constraint associated to the builder.
-     *
-     * @return a Class derived from {@link Constraint}
-     */
-    Class<? extends Constraint> getKey();
+    private Splitters() {
+    }
 
-    /**
-     * Build the ChocoConstraint associated to the {@link Constraint}
-     * identified as key.
-     *
-     * @param cstr the model constraint
-     * @return the associated ChocoConstraint or {@code null} if an error occurred
-     */
-    ChocoConstraint build(Constraint cstr);
+    public static <T> Set<T> extractInside(Set<T> s, Set<T> in) {
+        Set<T> res = new HashSet<>();
+        for (Iterator<T> ite = s.iterator(); ite.hasNext(); ) {
+            T v = ite.next();
+            if (in.contains(v)) {
+                ite.remove();
+                res.add(v);
+            }
+        }
+        return res;
+    }
 }

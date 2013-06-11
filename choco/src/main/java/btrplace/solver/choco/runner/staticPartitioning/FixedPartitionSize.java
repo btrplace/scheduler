@@ -21,6 +21,7 @@ import btrplace.model.*;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.runner.staticPartitioning.splitter.ConstraintSplitterMapper;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -39,6 +40,8 @@ public class FixedPartitionSize extends StaticPartitioning {
 
     private int partSize;
 
+    private ConstraintSplitterMapper cstrMapper;
+
     /**
      * Make a new partitioning algorithm.
      *
@@ -46,6 +49,7 @@ public class FixedPartitionSize extends StaticPartitioning {
      */
     public FixedPartitionSize(int partSize) {
         this.partSize = partSize;
+        cstrMapper = new ConstraintSplitterMapper();
     }
 
     /**
@@ -79,6 +83,9 @@ public class FixedPartitionSize extends StaticPartitioning {
             parts.add(new Instance(partModel, new HashSet<SatConstraint>(), i.getOptimizationConstraint()));
             for (Node n : s) {
                 Node n2 = partModel.newNode(n.id());
+                if (n2 == null) {
+                    throw new SolverException(partModel, "Unable to make a node '" + n + "' on the partition");
+                }
                 if (map.getOfflineNodes().contains(n)) {
                     partModel.getMapping().addOfflineNode(n2);
                 } else {
@@ -86,19 +93,22 @@ public class FixedPartitionSize extends StaticPartitioning {
                     for (VM v : map.getRunningVMs(n)) {
                         VM v2 = partModel.newVM(v.id());
                         if (v2 == null) {
-                            throw new SolverException(partModel, "Unable to make a VM '" + v2 + "' on the partition");
+                            throw new SolverException(partModel, "Unable to make a VM '" + v + "' on the partition");
                         }
                         partModel.getMapping().addRunningVM(v2, n2);
                     }
                     for (VM v : map.getSleepingVMs(n)) {
                         VM v2 = partModel.newVM(v.id());
                         if (v2 == null) {
-                            throw new SolverException(partModel, "Unable to make a VM '" + v2 + "' on the partition");
+                            throw new SolverException(partModel, "Unable to make a VM '" + v + "' on the partition");
                         }
                         partModel.getMapping().addRunningVM(v2, n2);
                     }
                 }
             }
+        }
+        for (SatConstraint cstr : i.getConstraints()) {
+            cstrMapper.split(cstr, parts);
         }
         //TODO: deal with ready VMs to run and state-oriented constraints
         return parts;

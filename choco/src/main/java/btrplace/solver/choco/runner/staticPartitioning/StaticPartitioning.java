@@ -92,7 +92,7 @@ public abstract class StaticPartitioning implements InstanceSolver {
             completionService.submit(new InstanceSolverRunner(cra, partition));
         }
 
-        for (int i = 0; i < partitions.size(); ++i) {
+        for (int i = 0; i < partitions.size(); i++) {
             try {
                 results.add(completionService.take().get());
             } catch (ExecutionException ignore) {
@@ -142,7 +142,7 @@ public abstract class StaticPartitioning implements InstanceSolver {
      * @param ps the parameters for the solver
      * @param i  the instance to split
      * @return a list of disjoint instances. Cannot be empty.
-     * @throws SolverException if an error prevent the spliting process
+     * @throws SolverException if an error prevent the splitting process
      */
     public abstract List<Instance> split(ChocoReconfigurationAlgorithmParams ps, Instance i) throws SolverException;
 }

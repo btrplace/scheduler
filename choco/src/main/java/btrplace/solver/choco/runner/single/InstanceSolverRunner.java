@@ -43,6 +43,9 @@ import java.util.*;
 import java.util.concurrent.Callable;
 
 /**
+ * A basic solver that solve a whole instance.
+ * Use {@link #call()} to compute a solution
+ *
  * @author Fabien Hermenier
  */
 public class InstanceSolverRunner implements Callable<InstanceResult> {
