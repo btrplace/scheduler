@@ -26,7 +26,7 @@ import net.minidev.json.JSONObject;
  *
  * @author Fabien Hermenier
  */
-public class LonelyConverter extends SatConstraintConverter<Lonely> {
+public class LonelyConverter extends ConstraintConverter<Lonely> {
 
     @Override
     public Class<Lonely> getSupportedConstraint() {

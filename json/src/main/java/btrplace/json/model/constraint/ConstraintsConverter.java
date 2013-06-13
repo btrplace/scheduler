@@ -31,48 +31,58 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Extensible converter for {@link btrplace.model.constraint.SatConstraint}.
+ * Extensible converter for {@link btrplace.model.constraint.Constraint}.
  *
  * @author Fabien Hermenier
  */
-public class SatConstraintsConverter extends AbstractJSONObjectConverter<Constraint> implements JSONArrayConverter<SatConstraint> {
+public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint> implements JSONArrayConverter<SatConstraint> {
 
-    private Map<Class<? extends Constraint>, SatConstraintConverter<? extends Constraint>> java2json;
-    private Map<String, SatConstraintConverter<? extends Constraint>> json2java;
+    private Map<Class<? extends Constraint>, ConstraintConverter<? extends Constraint>> java2json;
+    private Map<String, ConstraintConverter<? extends Constraint>> json2java;
 
     /**
-     * Make a new converter.
+     * Make a new empty converter.
      */
-    public SatConstraintsConverter() {
+    public ConstraintsConverter() {
         java2json = new HashMap<>();
         json2java = new HashMap<>();
+    }
 
+    /**
+     * Make a new {@code ConstraintsConverter} and fulfill it
+     * using a default converter for each supported constraint.
+     *
+     * @return a fulfilled converter.
+     */
+    public static ConstraintsConverter newBundle() {
         //The default converters
-        register(new AmongConverter());
-        register(new BanConverter());
-        register(new CumulatedResourceCapacityConverter());
-        register(new CumulatedRunningCapacityConverter());
-        register(new FenceConverter());
-        register(new GatherConverter());
-        register(new KilledConverter());
-        register(new LonelyConverter());
-        register(new OfflineConverter());
-        register(new OnlineConverter());
-        register(new OverbookConverter());
-        register(new PreserveConverter());
-        register(new QuarantineConverter());
-        register(new ReadyConverter());
-        register(new RootConverter());
-        register(new RunningConverter());
-        register(new SequentialVMTransitionsConverter());
-        register(new SingleResourceCapacityConverter());
-        register(new SingleRunningCapacityConverter());
-        register(new SleepingConverter());
-        register(new SplitAmongConverter());
-        register(new SplitConverter());
-        register(new SpreadConverter());
+        ConstraintsConverter conv = new ConstraintsConverter();
+        conv.register(new AmongConverter());
+        conv.register(new BanConverter());
+        conv.register(new CumulatedResourceCapacityConverter());
+        conv.register(new CumulatedRunningCapacityConverter());
+        conv.register(new FenceConverter());
+        conv.register(new GatherConverter());
+        conv.register(new KilledConverter());
+        conv.register(new LonelyConverter());
+        conv.register(new OfflineConverter());
+        conv.register(new OnlineConverter());
+        conv.register(new OverbookConverter());
+        conv.register(new PreserveConverter());
+        conv.register(new QuarantineConverter());
+        conv.register(new ReadyConverter());
+        conv.register(new RootConverter());
+        conv.register(new RunningConverter());
+        conv.register(new SequentialVMTransitionsConverter());
+        conv.register(new SingleResourceCapacityConverter());
+        conv.register(new SingleRunningCapacityConverter());
+        conv.register(new SleepingConverter());
+        conv.register(new SplitAmongConverter());
+        conv.register(new SplitConverter());
+        conv.register(new SpreadConverter());
 
-        register(new MinMTTRConverter());
+        conv.register(new MinMTTRConverter());
+        return conv;
     }
 
     /**
@@ -82,7 +92,7 @@ public class SatConstraintsConverter extends AbstractJSONObjectConverter<Constra
      * @return the container that was previously registered for a constraint. {@code null} if there was
      *         no registered converter
      */
-    public SatConstraintConverter register(SatConstraintConverter<? extends Constraint> c) {
+    public ConstraintConverter register(ConstraintConverter<? extends Constraint> c) {
         java2json.put(c.getSupportedConstraint(), c);
         return json2java.put(c.getJSONId(), c);
 
@@ -91,7 +101,7 @@ public class SatConstraintsConverter extends AbstractJSONObjectConverter<Constra
     /**
      * Get the Java constraints that are supported by the converter.
      *
-     * @return a set of classes derived from {@link SatConstraint} that may be empty
+     * @return a set of classes derived from {@link Constraint} that may be empty
      */
     public Set<Class<? extends Constraint>> getSupportedJavaConstraints() {
         return java2json.keySet();
@@ -112,7 +122,7 @@ public class SatConstraintsConverter extends AbstractJSONObjectConverter<Constra
         if (id == null) {
             throw new JSONConverterException("No 'id' key in the object to choose the converter to use");
         }
-        SatConstraintConverter<? extends Constraint> c = json2java.get(id.toString());
+        ConstraintConverter<? extends Constraint> c = json2java.get(id.toString());
         if (c == null) {
             throw new JSONConverterException("No converter available for a constraint having id '" + id + "'");
         }
@@ -122,7 +132,7 @@ public class SatConstraintsConverter extends AbstractJSONObjectConverter<Constra
 
     @Override
     public JSONObject toJSON(Constraint o) throws JSONConverterException {
-        SatConstraintConverter c = java2json.get(o.getClass());
+        ConstraintConverter c = java2json.get(o.getClass());
         if (c == null) {
             throw new JSONConverterException("No converter available for a constraint with the '" + o.getClass() + "' classname");
         }

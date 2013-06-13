@@ -26,7 +26,7 @@ import net.minidev.json.JSONObject;
  *
  * @author Fabien Hermenier
  */
-public class RunningConverter extends SatConstraintConverter<Running> {
+public class RunningConverter extends ConstraintConverter<Running> {
 
 
     @Override

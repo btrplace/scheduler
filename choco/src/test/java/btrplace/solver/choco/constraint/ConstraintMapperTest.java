@@ -42,7 +42,7 @@ public class ConstraintMapperTest {
 
     @Test
     public void testInstantiate() {
-        ConstraintMapper map = new ConstraintMapper();
+        ConstraintMapper map = ConstraintMapper.newBundle();
 
         //Only check if the default mapper are here
         Assert.assertTrue(map.isRegistered(Spread.class));
@@ -51,7 +51,7 @@ public class ConstraintMapperTest {
 
     @Test(dependsOnMethods = {"testInstantiate"})
     public void testGetBuilder() {
-        ConstraintMapper map = new ConstraintMapper();
+        ConstraintMapper map = ConstraintMapper.newBundle();
         ChocoConstraintBuilder b = map.getBuilder(Spread.class);
         Assert.assertEquals(b.getClass(), CSpread.Builder.class);
 
@@ -76,7 +76,7 @@ public class ConstraintMapperTest {
     @Test(dependsOnMethods = {"testInstantiate", "testUnregister", "testRegister"})
     public void testMap() {
         Model mo = new DefaultModel();
-        ConstraintMapper map = new ConstraintMapper();
+        ConstraintMapper map = ConstraintMapper.newBundle();
         Spread s = new Spread(Collections.singleton(mo.newVM()));
         ChocoConstraint c = map.map(s);
         Assert.assertTrue(c.getClass().equals(CSpread.class));

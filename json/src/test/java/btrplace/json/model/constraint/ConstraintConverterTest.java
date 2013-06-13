@@ -22,13 +22,13 @@ import net.minidev.json.JSONObject;
 import org.testng.annotations.Test;
 
 /**
- * Unit tests for {@link SatConstraintConverter}.
+ * Unit tests for {@link ConstraintConverter}.
  *
  * @author Fabien Hermenier
  */
-public class SatConstraintConverterTest {
+public class ConstraintConverterTest {
 
-    private class Mock extends SatConstraintConverter {
+    private class Mock extends ConstraintConverter {
 
         private String id;
 
@@ -59,7 +59,7 @@ public class SatConstraintConverterTest {
 
     @Test
     public void testCheckId() throws JSONConverterException {
-        SatConstraintConverter c = new Mock("foo");
+        ConstraintConverter c = new Mock("foo");
         JSONObject o = new JSONObject();
         o.put("id", "foo");
         c.checkId(o);
@@ -67,14 +67,14 @@ public class SatConstraintConverterTest {
 
     @Test(expectedExceptions = {JSONConverterException.class})
     public void testBadCheckIdNoId() throws JSONConverterException {
-        SatConstraintConverter c = new Mock("foo");
+        ConstraintConverter c = new Mock("foo");
         JSONObject o = new JSONObject();
         c.checkId(o);
     }
 
     @Test(expectedExceptions = {JSONConverterException.class})
     public void testBadCheckIdBadId() throws JSONConverterException {
-        SatConstraintConverter c = new Mock("foo");
+        ConstraintConverter c = new Mock("foo");
         JSONObject o = new JSONObject();
         o.put("id", "bar");
         c.checkId(o);

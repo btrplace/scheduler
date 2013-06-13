@@ -65,7 +65,7 @@ public class RelocatableVMModelTest {
         map.addOnlineNode(n2);
         map.addRunningVM(vm1, n1);
 
-        DurationEvaluators dev = new DurationEvaluators();
+        DurationEvaluators dev = DurationEvaluators.newBundle();
         dev.register(MigrateVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
@@ -118,7 +118,7 @@ public class RelocatableVMModelTest {
         map.addOnlineNode(n2);
         map.addRunningVM(vm1, n1);
 
-        DurationEvaluators dev = new DurationEvaluators();
+        DurationEvaluators dev = DurationEvaluators.newBundle();
         dev.register(MigrateVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
@@ -196,7 +196,7 @@ public class RelocatableVMModelTest {
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm1, n1);
-        DurationEvaluators dev = new DurationEvaluators();
+        DurationEvaluators dev = DurationEvaluators.newBundle();
         dev.register(MigrateVM.class, new ConstantActionDuration(2));
 
         mo.getAttributes().put(vm1, "template", "small");
@@ -228,7 +228,7 @@ public class RelocatableVMModelTest {
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
-        DurationEvaluators dev = new DurationEvaluators();
+        DurationEvaluators dev = DurationEvaluators.newBundle();
         dev.register(MigrateVM.class, new ConstantActionDuration(20));
         dev.register(ForgeVM.class, new ConstantActionDuration(3));
         dev.register(BootVM.class, new ConstantActionDuration(2));
@@ -275,7 +275,7 @@ public class RelocatableVMModelTest {
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
-        DurationEvaluators dev = new DurationEvaluators();
+        DurationEvaluators dev = DurationEvaluators.newBundle();
         dev.register(MigrateVM.class, new ConstantActionDuration(2));
         dev.register(ForgeVM.class, new ConstantActionDuration(3));
         dev.register(BootVM.class, new ConstantActionDuration(2));
@@ -316,7 +316,7 @@ public class RelocatableVMModelTest {
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
-        DurationEvaluators dev = new DurationEvaluators();
+        DurationEvaluators dev = DurationEvaluators.newBundle();
         dev.register(MigrateVM.class, new ConstantActionDuration(20));
         dev.register(ForgeVM.class, new ConstantActionDuration(3));
         dev.register(BootVM.class, new ConstantActionDuration(2));
@@ -358,7 +358,7 @@ public class RelocatableVMModelTest {
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
-        DurationEvaluators dev = new DurationEvaluators();
+        DurationEvaluators dev = DurationEvaluators.newBundle();
         dev.register(MigrateVM.class, new ConstantActionDuration(20));
         dev.register(ForgeVM.class, new ConstantActionDuration(3));
         dev.register(BootVM.class, new ConstantActionDuration(2));

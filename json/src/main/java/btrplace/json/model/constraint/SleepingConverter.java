@@ -26,7 +26,7 @@ import net.minidev.json.JSONObject;
  *
  * @author Fabien Hermenier
  */
-public class SleepingConverter extends SatConstraintConverter<Sleeping> {
+public class SleepingConverter extends ConstraintConverter<Sleeping> {
 
 
     @Override

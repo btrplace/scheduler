@@ -39,23 +39,35 @@ public class DurationEvaluators {
 
     private Map<Class<? extends Action>, ActionDurationEvaluator> durations;
 
+
+    /**
+     * Make a new {@code DurationEvaluators} and fulfill it
+     * using default a default evaluator for each action.
+     *
+     * @return a fulfilled evaluators.
+     */
+    public static DurationEvaluators newBundle() {
+        DurationEvaluators dev = new DurationEvaluators();
+
+        //Default constructors
+        dev.register(MigrateVM.class, new ActionDurationFromOptionalAttribute<>("migrate", new ConstantActionDuration<>(1)));
+        dev.register(BootVM.class, new ActionDurationFromOptionalAttribute<>("boot", new ConstantActionDuration<>(1)));
+        dev.register(ShutdownVM.class, new ActionDurationFromOptionalAttribute<>("shutdown", new ConstantActionDuration<>(1)));
+        dev.register(SuspendVM.class, new ActionDurationFromOptionalAttribute<>("suspend", new ConstantActionDuration<>(1)));
+        dev.register(ResumeVM.class, new ActionDurationFromOptionalAttribute<>("resume", new ConstantActionDuration<>(1)));
+        dev.register(ForgeVM.class, new ActionDurationFromOptionalAttribute<>("forge", new ConstantActionDuration<>(1)));
+        dev.register(ShutdownNode.class, new ActionDurationFromOptionalAttribute<>("shutdown", new ConstantActionDuration<>(1)));
+        dev.register(BootNode.class, new ActionDurationFromOptionalAttribute<>("boot", new ConstantActionDuration<>(1)));
+        dev.register(KillVM.class, new ActionDurationFromOptionalAttribute<>("kill", new ConstantActionDuration<>(1)));
+        dev.register(Allocate.class, new ActionDurationFromOptionalAttribute<>("allocate", new ConstantActionDuration<>(1)));
+        return dev;
+    }
+
     /**
      * Make a new mapper.
      */
     public DurationEvaluators() {
         durations = new HashMap<>();
-
-        //Default constructors
-        durations.put(MigrateVM.class, new ActionDurationFromOptionalAttribute<>("migrate", new ConstantActionDuration<>(1)));
-        durations.put(BootVM.class, new ActionDurationFromOptionalAttribute<>("boot", new ConstantActionDuration<>(1)));
-        durations.put(ShutdownVM.class, new ActionDurationFromOptionalAttribute<>("shutdown", new ConstantActionDuration<>(1)));
-        durations.put(SuspendVM.class, new ActionDurationFromOptionalAttribute<>("suspend", new ConstantActionDuration<>(1)));
-        durations.put(ResumeVM.class, new ActionDurationFromOptionalAttribute<>("resume", new ConstantActionDuration<>(1)));
-        durations.put(ForgeVM.class, new ActionDurationFromOptionalAttribute<>("forge", new ConstantActionDuration<>(1)));
-        durations.put(ShutdownNode.class, new ActionDurationFromOptionalAttribute<>("shutdown", new ConstantActionDuration<>(1)));
-        durations.put(BootNode.class, new ActionDurationFromOptionalAttribute<>("boot", new ConstantActionDuration<>(1)));
-        durations.put(KillVM.class, new ActionDurationFromOptionalAttribute<>("kill", new ConstantActionDuration<>(1)));
-        durations.put(Allocate.class, new ActionDurationFromOptionalAttribute<>("allocate", new ConstantActionDuration<>(1)));
     }
 
     /**

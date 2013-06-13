@@ -26,7 +26,7 @@ import net.minidev.json.JSONObject;
  *
  * @author Fabien Hermenier
  */
-public class SpreadConverter extends SatConstraintConverter<Spread> {
+public class SpreadConverter extends ConstraintConverter<Spread> {
 
     @Override
     public Class<Spread> getSupportedConstraint() {

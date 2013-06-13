@@ -24,7 +24,7 @@ import net.minidev.json.JSONObject;
 /**
  * @author Fabien Hermenier
  */
-public class MinMTTRConverter extends SatConstraintConverter<MinMTTR> {
+public class MinMTTRConverter extends ConstraintConverter<MinMTTR> {
 
     @Override
     public Class<MinMTTR> getSupportedConstraint() {

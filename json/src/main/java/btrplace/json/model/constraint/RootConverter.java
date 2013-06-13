@@ -26,7 +26,7 @@ import net.minidev.json.JSONObject;
  *
  * @author Fabien Hermenier
  */
-public class RootConverter extends SatConstraintConverter<Root> {
+public class RootConverter extends ConstraintConverter<Root> {
 
 
     @Override

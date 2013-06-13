@@ -40,14 +40,23 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
     private Map<String, ModelViewConverter<? extends ModelView>> json2java;
 
     /**
-     * Make a new converter.
+     * Make a new empty converter.
      */
     public ModelViewsConverter() {
         java2json = new HashMap<>();
         json2java = new HashMap<>();
+    }
 
-        //The default converters
-        register(new ShareableResourceConverter());
+    /**
+     * Make a new {@code ModelViewsConverter} and fulfill it
+     * using a default converter for each supported view.
+     *
+     * @return a fulfilled converter.
+     */
+    public static ModelViewsConverter newBundle() {
+        ModelViewsConverter conv = new ModelViewsConverter();
+        conv.register(new ShareableResourceConverter());
+        return conv;
     }
 
     /**

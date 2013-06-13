@@ -26,7 +26,7 @@ import net.minidev.json.JSONObject;
  *
  * @author Fabien Hermenier
  */
-public class PreserveConverter extends SatConstraintConverter<Preserve> {
+public class PreserveConverter extends ConstraintConverter<Preserve> {
 
     @Override
     public Class<Preserve> getSupportedConstraint() {

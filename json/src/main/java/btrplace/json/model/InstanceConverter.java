@@ -19,7 +19,7 @@ package btrplace.json.model;
 
 import btrplace.json.AbstractJSONObjectConverter;
 import btrplace.json.JSONConverterException;
-import btrplace.json.model.constraint.SatConstraintsConverter;
+import btrplace.json.model.constraint.ConstraintsConverter;
 import btrplace.model.Instance;
 import btrplace.model.Model;
 import btrplace.model.constraint.OptConstraint;
@@ -37,7 +37,7 @@ public class InstanceConverter extends AbstractJSONObjectConverter<Instance> {
     @Override
     public Instance fromJSON(JSONObject in) throws JSONConverterException {
         ModelConverter moc = new ModelConverter();
-        SatConstraintsConverter cstrc = new SatConstraintsConverter();
+        ConstraintsConverter cstrc = ConstraintsConverter.newBundle();
 
         Model mo = moc.fromJSON((JSONObject) in.get("model"));
         cstrc.setModel(mo);
@@ -48,7 +48,7 @@ public class InstanceConverter extends AbstractJSONObjectConverter<Instance> {
     @Override
     public JSONObject toJSON(Instance instance) throws JSONConverterException {
         ModelConverter moc = new ModelConverter();
-        SatConstraintsConverter cstrc = new SatConstraintsConverter();
+        ConstraintsConverter cstrc = ConstraintsConverter.newBundle();
         JSONObject ob = new JSONObject();
         ob.put("model", moc.toJSON(instance.getModel()));
         ob.put("constraints", cstrc.toJSON(instance.getConstraints()));
