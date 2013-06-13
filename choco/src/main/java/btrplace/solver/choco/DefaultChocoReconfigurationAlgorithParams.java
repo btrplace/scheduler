@@ -51,9 +51,9 @@ public class DefaultChocoReconfigurationAlgorithParams implements ChocoReconfigu
      * New set of parameters.
      */
     public DefaultChocoReconfigurationAlgorithParams() {
-        cstrMapper = new ConstraintMapper();
-        durationEvaluators = new DurationEvaluators();
-        viewMapper = new ModelViewMapper();
+        cstrMapper = ConstraintMapper.newBundle();
+        durationEvaluators = DurationEvaluators.newBundle();
+        viewMapper = ModelViewMapper.newBundle();
     }
 
     @Override

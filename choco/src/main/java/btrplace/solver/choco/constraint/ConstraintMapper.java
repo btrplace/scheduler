@@ -18,7 +18,6 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.constraint.Constraint;
-import btrplace.model.constraint.OptimizationConstraint;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.choco.constraint.minMTTR.CMinMTTR;
 
