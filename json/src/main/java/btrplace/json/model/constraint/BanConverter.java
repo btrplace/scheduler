@@ -26,7 +26,7 @@ import net.minidev.json.JSONObject;
  *
  * @author Fabien Hermenier
  */
-public class BanConverter extends SatConstraintConverter<Ban> {
+public class BanConverter extends ConstraintConverter<Ban> {
 
     @Override
     public Class<Ban> getSupportedConstraint() {

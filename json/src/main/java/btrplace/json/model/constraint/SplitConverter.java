@@ -33,7 +33,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class SplitConverter extends SatConstraintConverter<Split> {
+public class SplitConverter extends ConstraintConverter<Split> {
 
     @Override
     public Class<Split> getSupportedConstraint() {

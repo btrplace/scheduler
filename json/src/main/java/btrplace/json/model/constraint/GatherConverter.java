@@ -26,7 +26,7 @@ import net.minidev.json.JSONObject;
  *
  * @author Fabien Hermenier
  */
-public class GatherConverter extends SatConstraintConverter<Gather> {
+public class GatherConverter extends ConstraintConverter<Gather> {
 
     @Override
     public Class<Gather> getSupportedConstraint() {

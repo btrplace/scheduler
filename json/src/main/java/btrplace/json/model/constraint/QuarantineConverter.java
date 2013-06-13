@@ -26,7 +26,7 @@ import net.minidev.json.JSONObject;
  *
  * @author Fabien Hermenier
  */
-public class QuarantineConverter extends SatConstraintConverter<Quarantine> {
+public class QuarantineConverter extends ConstraintConverter<Quarantine> {
 
 
     @Override

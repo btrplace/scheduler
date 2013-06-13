@@ -27,7 +27,7 @@ import net.minidev.json.JSONObject;
  *
  * @author Fabien Hermenier
  */
-public class KilledConverter extends SatConstraintConverter<Killed> {
+public class KilledConverter extends ConstraintConverter<Killed> {
 
     @Override
     public Class<Killed> getSupportedConstraint() {

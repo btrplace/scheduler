@@ -33,7 +33,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class AmongConverter extends SatConstraintConverter<Among> {
+public class AmongConverter extends ConstraintConverter<Among> {
 
     @Override
     public Class<Among> getSupportedConstraint() {

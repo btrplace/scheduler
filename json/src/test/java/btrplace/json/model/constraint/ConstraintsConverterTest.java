@@ -33,11 +33,11 @@ import java.util.List;
 
 
 /**
- * Unit tests for {@link btrplace.json.model.constraint.SatConstraintsConverter}.
+ * Unit tests for {@link ConstraintsConverter}.
  *
  * @author Fabien Hermenier
  */
-public class SatConstraintsConverterTest {
+public class ConstraintsConverterTest {
 
     public static class MockSatConstraint extends SatConstraint {
 
@@ -55,7 +55,7 @@ public class SatConstraintsConverterTest {
         }
     }
 
-    public static class MockSatConstraintConverter extends SatConstraintConverter<MockSatConstraint> {
+    public static class MockConstraintConverter extends ConstraintConverter<MockSatConstraint> {
 
         @Override
         public Class getSupportedConstraint() {
@@ -83,16 +83,16 @@ public class SatConstraintsConverterTest {
 
     @Test
     public void testRegister() {
-        SatConstraintsConverter c = new SatConstraintsConverter();
-        Assert.assertNull(c.register(new MockSatConstraintConverter()));
+        ConstraintsConverter c = new ConstraintsConverter();
+        Assert.assertNull(c.register(new MockConstraintConverter()));
         Assert.assertTrue(c.getSupportedJavaConstraints().contains(MockSatConstraint.class));
         Assert.assertTrue(c.getSupportedJSONConstraints().contains("mock"));
     }
 
     @Test(dependsOnMethods = {"testRegister"})
     public void testWithExistingConverter() throws JSONConverterException {
-        SatConstraintsConverter c = new SatConstraintsConverter();
-        Assert.assertNull(c.register(new MockSatConstraintConverter()));
+        ConstraintsConverter c = new ConstraintsConverter();
+        Assert.assertNull(c.register(new MockConstraintConverter()));
         MockSatConstraint m = new MockSatConstraint("bar");
         JSONObject o = c.toJSON(m);
         MockSatConstraint m2 = (MockSatConstraint) c.fromJSON(o);
@@ -101,7 +101,7 @@ public class SatConstraintsConverterTest {
 
     @Test(dependsOnMethods = {"testRegister"}, expectedExceptions = {JSONConverterException.class})
     public void testToJSonWithNoConverters() throws JSONConverterException {
-        SatConstraintsConverter c = new SatConstraintsConverter();
+        ConstraintsConverter c = new ConstraintsConverter();
         MockSatConstraint m = new MockSatConstraint("bar");
         c.toJSON(m);
     }
@@ -111,7 +111,7 @@ public class SatConstraintsConverterTest {
         JSONObject ob = new JSONObject();
         ob.put("id", "mock");
         ob.put("value", "val");
-        SatConstraintsConverter c = new SatConstraintsConverter();
+        ConstraintsConverter c = new ConstraintsConverter();
         c.fromJSON(ob);
     }
 
@@ -119,15 +119,15 @@ public class SatConstraintsConverterTest {
     public void testFromJSONWithoutID() throws JSONConverterException {
         JSONObject ob = new JSONObject();
         ob.put("value", "val");
-        SatConstraintsConverter c = new SatConstraintsConverter();
-        Assert.assertNull(c.register(new MockSatConstraintConverter()));
+        ConstraintsConverter c = new ConstraintsConverter();
+        Assert.assertNull(c.register(new MockConstraintConverter()));
         c.fromJSON(ob);
     }
 
     @Test
     public void testWithMultipleViews() throws JSONConverterException, IOException {
-        SatConstraintsConverter c = new SatConstraintsConverter();
-        org.testng.Assert.assertNull(c.register(new MockSatConstraintConverter()));
+        ConstraintsConverter c = new ConstraintsConverter();
+        org.testng.Assert.assertNull(c.register(new MockConstraintConverter()));
         List<SatConstraint> l = new ArrayList<>();
         l.add(new MockSatConstraint("foo"));
         l.add(new MockSatConstraint("bar"));

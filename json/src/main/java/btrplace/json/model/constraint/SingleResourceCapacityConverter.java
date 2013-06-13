@@ -26,7 +26,7 @@ import net.minidev.json.JSONObject;
  *
  * @author Fabien Hermenier
  */
-public class SingleResourceCapacityConverter extends SatConstraintConverter<SingleResourceCapacity> {
+public class SingleResourceCapacityConverter extends ConstraintConverter<SingleResourceCapacity> {
 
     @Override
     public Class<SingleResourceCapacity> getSupportedConstraint() {
