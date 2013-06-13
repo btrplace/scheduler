@@ -18,7 +18,6 @@
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
 import btrplace.model.Instance;
-import btrplace.model.Mapping;
 import btrplace.model.VM;
 import btrplace.model.constraint.Gather;
 
@@ -27,13 +26,14 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * Splitter for {@link btrplace.model.constraint.Gather} constraints.
+ * <p/>
+ * When the constraint focuses VMs among different partitions,
+ * then it is sure the problem has no solutions.
+ *
  * @author Fabien Hermenier
  */
 public class GatherSplitter implements ConstraintSplitter<Gather> {
-
-    public GatherSplitter() {
-        super();    //To change body of overridden methods use File | Settings | File Templates.
-    }
 
     @Override
     public Class<Gather> getKey() {
@@ -44,13 +44,13 @@ public class GatherSplitter implements ConstraintSplitter<Gather> {
     public boolean split(Gather cstr, List<Instance> partitions) {
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
         for (Instance i : partitions) {
-            Mapping m = i.getModel().getMapping();
-            Set<VM> in = Splitters.extractInside(vms, m.getAllVMs());
+            Set<VM> in = Splitters.extractInside(vms, i.getModel().getVMs());
             if (!in.isEmpty()) {
-                i.getConstraints().add(new Gather(in));
-            }
-            if (vms.isEmpty()) {
-                break;
+                i.getConstraints().add(new Gather(in, cstr.isContinuous()));
+                if (!vms.isEmpty()) {
+                    //Gather cannot be splitted
+                    return false;
+                }
             }
         }
         return true;

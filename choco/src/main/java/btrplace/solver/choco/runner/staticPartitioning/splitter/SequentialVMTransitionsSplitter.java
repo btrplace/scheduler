@@ -18,42 +18,41 @@
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
 import btrplace.model.Instance;
-import btrplace.model.Mapping;
 import btrplace.model.VM;
-import btrplace.model.constraint.Lonely;
+import btrplace.model.constraint.SequentialVMTransitions;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /**
- * Splitter for {@link btrplace.model.constraint.Lonely} constraints.
- * When the constraint focuses VMs among different partitions,
- * the constraint is splitted.
+ * Splitter for {@link btrplace.model.constraint.SequentialVMTransitions} constraints.
+ * <p/>
+ * The splitting process is supported iff all the VMs belong to the same partitions.
+ * If not, a {@link UnsupportedOperationException} is thrown.
  * <p/>
  * This operation is conservative wrt. the constraint semantic.
  *
  * @author Fabien Hermenier
  */
-public class LonelySplitter implements ConstraintSplitter<Lonely> {
+public class SequentialVMTransitionsSplitter implements ConstraintSplitter<SequentialVMTransitions> {
 
-    public LonelySplitter() {
-        super();    //To change body of overridden methods use File | Settings | File Templates.
+    @Override
+    public Class<SequentialVMTransitions> getKey() {
+        return SequentialVMTransitions.class;
     }
 
     @Override
-    public Class<Lonely> getKey() {
-        return Lonely.class;
-    }
-
-    @Override
-    public boolean split(Lonely cstr, List<Instance> partitions) {
+    public boolean split(SequentialVMTransitions cstr, List<Instance> partitions) {
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
         for (Instance i : partitions) {
-            Mapping m = i.getModel().getMapping();
-            Set<VM> in = Splitters.extractInside(vms, m.getAllVMs());
+            Set<VM> in = Splitters.extractInside(vms, i.getModel().getVMs());
             if (!in.isEmpty()) {
-                i.getConstraints().add(new Lonely(in, cstr.isContinuous()));
+                if (in.size() == vms.size()) {
+                    i.getConstraints().add(new SequentialVMTransitions(cstr.getInvolvedVMs()));
+                } else {
+                    throw new UnsupportedOperationException("Splitting a SequentialVMTransitions over multiple partitions is not supported");
+                }
             }
             if (vms.isEmpty()) {
                 break;

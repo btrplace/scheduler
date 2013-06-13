@@ -18,44 +18,40 @@
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
 import btrplace.model.Instance;
-import btrplace.model.Mapping;
-import btrplace.model.VM;
-import btrplace.model.constraint.Lonely;
+import btrplace.model.Node;
+import btrplace.model.constraint.SingleRunningCapacity;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /**
- * Splitter for {@link btrplace.model.constraint.Lonely} constraints.
- * When the constraint focuses VMs among different partitions,
+ * Splitter for {@link btrplace.model.constraint.SingleRunningCapacity} constraints.
+ * <p/>
+ * When the constraint focuses nodes among different partitions,
  * the constraint is splitted.
  * <p/>
  * This operation is conservative wrt. the constraint semantic.
  *
  * @author Fabien Hermenier
  */
-public class LonelySplitter implements ConstraintSplitter<Lonely> {
+public class SingleRunningCapacitySplitter implements ConstraintSplitter<SingleRunningCapacity> {
 
-    public LonelySplitter() {
-        super();    //To change body of overridden methods use File | Settings | File Templates.
+    @Override
+    public Class<SingleRunningCapacity> getKey() {
+        return SingleRunningCapacity.class;
     }
 
     @Override
-    public Class<Lonely> getKey() {
-        return Lonely.class;
-    }
-
-    @Override
-    public boolean split(Lonely cstr, List<Instance> partitions) {
-        Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
+    public boolean split(SingleRunningCapacity cstr, List<Instance> partitions) {
+        Set<Node> nodes = new HashSet<>(cstr.getInvolvedNodes());
         for (Instance i : partitions) {
-            Mapping m = i.getModel().getMapping();
-            Set<VM> in = Splitters.extractInside(vms, m.getAllVMs());
+            Set<Node> all = i.getModel().getNodes();
+            Set<Node> in = Splitters.extractInside(nodes, all);
             if (!in.isEmpty()) {
-                i.getConstraints().add(new Lonely(in, cstr.isContinuous()));
+                i.getConstraints().add(new SingleRunningCapacity(in, cstr.getAmount(), cstr.isContinuous()));
             }
-            if (vms.isEmpty()) {
+            if (nodes.isEmpty()) {
                 break;
             }
         }

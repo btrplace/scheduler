@@ -22,13 +22,27 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
+ * Tools to ease splitting.
+ *
  * @author Fabien Hermenier
  */
 public final class Splitters {
 
+    /**
+     * No instantiation.
+     */
     private Splitters() {
     }
 
+    /**
+     * Extract from a given set {@code s} the elements present in {@code in}.
+     * This elements are removed for {@code s}
+     *
+     * @param s   the set to browse
+     * @param in  the elements to search inside {@code s}
+     * @param <T> the element type
+     * @return the elements in {@code s} that was in {@code in}
+     */
     public static <T> Set<T> extractInside(Set<T> s, Set<T> in) {
         Set<T> res = new HashSet<>();
         for (Iterator<T> ite = s.iterator(); ite.hasNext(); ) {

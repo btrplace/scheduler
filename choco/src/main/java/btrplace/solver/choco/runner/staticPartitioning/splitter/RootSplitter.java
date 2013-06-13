@@ -18,16 +18,15 @@
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
 import btrplace.model.Instance;
-import btrplace.model.Mapping;
 import btrplace.model.VM;
-import btrplace.model.constraint.Lonely;
+import btrplace.model.constraint.Root;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /**
- * Splitter for {@link btrplace.model.constraint.Lonely} constraints.
+ * Splitter for {@link btrplace.model.constraint.Root} constraints.
  * When the constraint focuses VMs among different partitions,
  * the constraint is splitted.
  * <p/>
@@ -35,25 +34,20 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class LonelySplitter implements ConstraintSplitter<Lonely> {
+public class RootSplitter implements ConstraintSplitter<Root> {
 
-    public LonelySplitter() {
-        super();    //To change body of overridden methods use File | Settings | File Templates.
+    @Override
+    public Class<Root> getKey() {
+        return Root.class;
     }
 
     @Override
-    public Class<Lonely> getKey() {
-        return Lonely.class;
-    }
-
-    @Override
-    public boolean split(Lonely cstr, List<Instance> partitions) {
+    public boolean split(Root cstr, List<Instance> partitions) {
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
         for (Instance i : partitions) {
-            Mapping m = i.getModel().getMapping();
-            Set<VM> in = Splitters.extractInside(vms, m.getAllVMs());
+            Set<VM> in = Splitters.extractInside(vms, i.getModel().getVMs());
             if (!in.isEmpty()) {
-                i.getConstraints().add(new Lonely(in, cstr.isContinuous()));
+                i.getConstraints().add(new Root(in));
             }
             if (vms.isEmpty()) {
                 break;

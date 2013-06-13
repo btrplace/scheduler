@@ -18,7 +18,6 @@
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
 import btrplace.model.Instance;
-import btrplace.model.Mapping;
 import btrplace.model.VM;
 import btrplace.model.constraint.Ready;
 
@@ -44,8 +43,7 @@ public class ReadySplitter implements ConstraintSplitter<Ready> {
     public boolean split(Ready cstr, List<Instance> partitions) {
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
         for (Instance i : partitions) {
-            Mapping m = i.getModel().getMapping();
-            Set<VM> in = Splitters.extractInside(vms, m.getAllVMs());
+            Set<VM> in = Splitters.extractInside(vms, i.getModel().getVMs());
             if (!in.isEmpty()) {
                 i.getConstraints().add(new Ready(in));
             }

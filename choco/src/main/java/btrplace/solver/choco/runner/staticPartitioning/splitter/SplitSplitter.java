@@ -18,16 +18,13 @@
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
 import btrplace.model.Instance;
-import btrplace.model.Mapping;
 import btrplace.model.VM;
-import btrplace.model.constraint.Lonely;
+import btrplace.model.constraint.Split;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
- * Splitter for {@link btrplace.model.constraint.Lonely} constraints.
+ * Splitter for {@link btrplace.model.constraint.Split} constraints.
  * When the constraint focuses VMs among different partitions,
  * the constraint is splitted.
  * <p/>
@@ -35,27 +32,38 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class LonelySplitter implements ConstraintSplitter<Lonely> {
+public class SplitSplitter implements ConstraintSplitter<Split> {
 
-    public LonelySplitter() {
-        super();    //To change body of overridden methods use File | Settings | File Templates.
+    @Override
+    public Class<Split> getKey() {
+        return Split.class;
     }
 
     @Override
-    public Class<Lonely> getKey() {
-        return Lonely.class;
-    }
-
-    @Override
-    public boolean split(Lonely cstr, List<Instance> partitions) {
-        Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
+    public boolean split(Split cstr, List<Instance> partitions) {
+        List<Set<VM>> vms = new ArrayList<>();
+        for (Collection<VM> s : cstr.getSets()) {
+            vms.add(new HashSet<>(s));
+        }
         for (Instance i : partitions) {
-            Mapping m = i.getModel().getMapping();
-            Set<VM> in = Splitters.extractInside(vms, m.getAllVMs());
-            if (!in.isEmpty()) {
-                i.getConstraints().add(new Lonely(in, cstr.isContinuous()));
+            Collection<Collection<VM>> subSplit = new ArrayList<>();
+            for (Set<VM> s : vms) {
+                Set<VM> in = Splitters.extractInside(s, i.getModel().getVMs());
+                if (!in.isEmpty()) {
+                    subSplit.add(in);
+                }
             }
-            if (vms.isEmpty()) {
+            if (!subSplit.isEmpty()) {
+                i.getConstraints().add(new Split(subSplit, cstr.isContinuous()));
+            }
+            boolean allEmpties = true;
+            for (Set<VM> s : vms) {
+                if (!s.isEmpty()) {
+                    allEmpties = false;
+                    break;
+                }
+            }
+            if (allEmpties) {
                 break;
             }
         }

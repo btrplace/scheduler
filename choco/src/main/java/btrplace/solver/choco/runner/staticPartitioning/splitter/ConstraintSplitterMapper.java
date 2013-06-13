@@ -25,24 +25,51 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * A customizable bridge to indicate which {@link ConstraintSplitter} to use
+ * for a given constraint.
+ *
  * @author Fabien Hermenier
  */
 public class ConstraintSplitterMapper {
 
     private Map<Class<? extends Constraint>, ConstraintSplitter> builders;
 
+    /**
+     * Make a new bridge.
+     */
     public ConstraintSplitterMapper() {
         builders = new HashMap<>();
-        register(new ReadySplitter());
-        register(new RunningSplitter());
-        register(new OnlineSplitter());
-        register(new OfflineSplitter());
-        register(new GatherSplitter());
-        register(new SpreadSplitter());
-        register(new KilledSplitter());
-        register(new SleepingSplitter());
-        register(new LonelySplitter());
-        register(new QuarantineSplitter());
+    }
+
+    /**
+     * Make a new bridge and register
+     * every splitters supported by default.
+     *
+     * @return the fulfilled bridge.
+     */
+    public static ConstraintSplitterMapper newBundle() {
+        ConstraintSplitterMapper mapper = new ConstraintSplitterMapper();
+
+        mapper.register(new GatherSplitter());
+        mapper.register(new KilledSplitter());
+        mapper.register(new LonelySplitter());
+        mapper.register(new OfflineSplitter());
+        mapper.register(new OnlineSplitter());
+        mapper.register(new OverbookSplitter());
+        mapper.register(new PreserveSplitter());
+        mapper.register(new QuarantineSplitter());
+        mapper.register(new ReadySplitter());
+        mapper.register(new RootSplitter());
+        mapper.register(new RunningSplitter());
+        mapper.register(new SequentialVMTransitionsSplitter());
+        mapper.register(new SingleResourceCapacitySplitter());
+        mapper.register(new SingleRunningCapacitySplitter());
+        mapper.register(new SleepingSplitter());
+        mapper.register(new SplitSplitter());
+        mapper.register(new SpreadSplitter());
+
+
+        return mapper;
     }
 
     /**
@@ -56,7 +83,7 @@ public class ConstraintSplitterMapper {
     }
 
     /**
-     * Un-register the splitter associated to a given {@link Constraint}.
+     * Un-register the splitter associated to a given {@link Constraint} if exists.
      *
      * @param c the class of the {@link Constraint} to un-register
      * @return {@code true} if a builder was registered
@@ -89,7 +116,7 @@ public class ConstraintSplitterMapper {
      * Split a given {@link Constraint} using the associated splitter, if exists.
      *
      * @param c the constraint to map
-     * @return {@code true} iff the constraint fits a single partition.
+     * @return {@code false} iff this leads to a problem without solutions.
      */
     public boolean split(Constraint c, List<Instance> partitions) {
         ConstraintSplitter splitter = builders.get(c.getClass());

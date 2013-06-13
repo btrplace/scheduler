@@ -18,7 +18,6 @@
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
 import btrplace.model.Instance;
-import btrplace.model.Mapping;
 import btrplace.model.Node;
 import btrplace.model.constraint.Offline;
 
@@ -27,13 +26,16 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * Splitter for {@link btrplace.model.constraint.Offline} constraints.
+ * <p/>
+ * When the constraint focuses nodes among different partitions,
+ * the constraint is splitted.
+ * <p/>
+ * This operation is conservative wrt. the constraint semantic.
+ *
  * @author Fabien Hermenier
  */
 public class OfflineSplitter implements ConstraintSplitter<Offline> {
-
-    public OfflineSplitter() {
-        super();    //To change body of overridden methods use File | Settings | File Templates.
-    }
 
     @Override
     public Class<Offline> getKey() {
@@ -44,8 +46,7 @@ public class OfflineSplitter implements ConstraintSplitter<Offline> {
     public boolean split(Offline cstr, List<Instance> partitions) {
         Set<Node> nodes = new HashSet<>(cstr.getInvolvedNodes());
         for (Instance i : partitions) {
-            Mapping m = i.getModel().getMapping();
-            Set<Node> all = m.getAllNodes();
+            Set<Node> all = i.getModel().getNodes();
             Set<Node> in = Splitters.extractInside(nodes, all);
             if (!in.isEmpty()) {
                 i.getConstraints().add(new Offline(in));

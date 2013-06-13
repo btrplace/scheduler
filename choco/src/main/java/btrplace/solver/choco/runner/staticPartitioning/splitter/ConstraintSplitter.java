@@ -23,9 +23,12 @@ import btrplace.model.constraint.Constraint;
 import java.util.List;
 
 /**
- * Interface to specify a splitter for a constraint.
- * With a set of given infrastructure partition,
- * the splitter may split the constraint, if necessary, to make it fit in one unique partition.
+ * Interface to specify a method that makes a constraint
+ * compatible with multiple partitions.
+ * <p/>
+ * In practice, the splitter ensures the given constraint
+ * does not spread over multiple partitions.
+ * This may require to split the constraint.
  *
  * @author Fabien Hermenier
  */
@@ -45,7 +48,7 @@ public interface ConstraintSplitter<C extends Constraint> {
      *
      * @param cstr       the model constraint
      * @param partitions the possible partitions
-     * @return {@code true} iff the constraint fits a single partition.
+     * @return {@code false} iff this leads to a problem without solutions.
      */
     boolean split(C cstr, List<Instance> partitions);
 

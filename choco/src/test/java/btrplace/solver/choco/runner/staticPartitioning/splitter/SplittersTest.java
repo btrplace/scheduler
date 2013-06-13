@@ -17,36 +17,31 @@
 
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
-import btrplace.model.Instance;
-import btrplace.model.VM;
-import btrplace.model.constraint.Running;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
+ * Unit tests for {@link Splitters}.
+ *
  * @author Fabien Hermenier
  */
-public class RunningSplitter implements ConstraintSplitter<Running> {
+public class SplittersTest {
 
-    @Override
-    public Class<Running> getKey() {
-        return Running.class;
-    }
+    @Test
+    public void testExtractIn() {
+        Set<Integer> s = new HashSet<>(Arrays.asList(1, 2, 3, 4, 5));
+        Set<Integer> in = new HashSet<>(Arrays.asList(3, 5, 8, 10));
+        Set<Integer> removed = Splitters.extractInside(s, in);
+        Assert.assertEquals(removed, new HashSet<>(Arrays.asList(3, 5)));
+        Assert.assertEquals(s.size(), 3);
+        Assert.assertFalse(s.contains(3));
+        Assert.assertFalse(s.contains(5));
 
-    @Override
-    public boolean split(Running cstr, List<Instance> partitions) {
-        Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
-        for (Instance i : partitions) {
-            Set<VM> in = Splitters.extractInside(vms, i.getModel().getVMs());
-            if (!in.isEmpty()) {
-                i.getConstraints().add(new Running(in));
-            }
-            if (vms.isEmpty()) {
-                break;
-            }
-        }
-        return true;
+        removed = Splitters.extractInside(s, in);
+        Assert.assertEquals(removed.size(), 0);
     }
 }

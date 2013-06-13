@@ -18,7 +18,6 @@
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
 import btrplace.model.Instance;
-import btrplace.model.Mapping;
 import btrplace.model.VM;
 import btrplace.model.constraint.Spread;
 
@@ -27,13 +26,15 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * Splitter for {@link Spread} constraints.
+ * When the constraint focuses VMs among different partitions,
+ * the constraint is  splitted.
+ * <p/>
+ * This operation is conservative wrt. the constraint semantic.
+ *
  * @author Fabien Hermenier
  */
 public class SpreadSplitter implements ConstraintSplitter<Spread> {
-
-    public SpreadSplitter() {
-        super();    //To change body of overridden methods use File | Settings | File Templates.
-    }
 
     @Override
     public Class<Spread> getKey() {
@@ -44,10 +45,9 @@ public class SpreadSplitter implements ConstraintSplitter<Spread> {
     public boolean split(Spread cstr, List<Instance> partitions) {
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
         for (Instance i : partitions) {
-            Mapping m = i.getModel().getMapping();
-            Set<VM> in = Splitters.extractInside(vms, m.getAllVMs());
+            Set<VM> in = Splitters.extractInside(vms, i.getModel().getVMs());
             if (!in.isEmpty()) {
-                i.getConstraints().add(new Spread(in));
+                i.getConstraints().add(new Spread(in, cstr.isContinuous()));
             }
             if (vms.isEmpty()) {
                 break;
