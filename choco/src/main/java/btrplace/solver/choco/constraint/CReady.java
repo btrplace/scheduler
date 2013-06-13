@@ -22,7 +22,6 @@ import btrplace.model.Model;
 import btrplace.model.VM;
 import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Ready;
-import btrplace.model.constraint.Sleeping;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 
@@ -80,7 +79,7 @@ public class CReady implements ChocoConstraint {
     public static class Builder implements ChocoConstraintBuilder {
         @Override
         public Class<? extends Constraint> getKey() {
-            return Sleeping.class;
+            return Ready.class;
         }
 
         @Override

@@ -17,7 +17,9 @@
 
 package btrplace.solver.choco.constraint;
 
-import btrplace.model.constraint.*;
+import btrplace.model.constraint.Constraint;
+import btrplace.model.constraint.OptimizationConstraint;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.choco.constraint.minMTTR.CMinMTTR;
 
 import java.util.HashMap;
@@ -33,36 +35,47 @@ public class ConstraintMapper {
     private Map<Class<? extends Constraint>, ChocoConstraintBuilder> builders;
 
     /**
-     * Make a new mapper.
+     * Make a new empty mapper.
      */
     public ConstraintMapper() {
         builders = new HashMap<>();
 
-        builders.put(Spread.class, new CSpread.Builder());
-        builders.put(Split.class, new CSplit.Builder());
-        builders.put(SplitAmong.class, new CSplitAmong.Builder());
-        builders.put(Among.class, new CAmong.Builder());
-        builders.put(Quarantine.class, new CQuarantine.Builder());
-        builders.put(Ban.class, new CBan.Builder());
-        builders.put(Fence.class, new CFence.Builder());
-        builders.put(Online.class, new COnline.Builder());
-        builders.put(Offline.class, new COffline.Builder());
-        builders.put(SingleRunningCapacity.class, new CSingleRunningCapacity.Builder());
-        builders.put(CumulatedRunningCapacity.class, new CCumulatedRunningCapacity.Builder());
-        builders.put(SingleResourceCapacity.class, new CSingleResourceCapacity.Builder());
-        builders.put(CumulatedResourceCapacity.class, new CCumulatedResourceCapacity.Builder());
-        builders.put(Preserve.class, new CPreserve.Builder());
-        builders.put(Overbook.class, new COverbook.Builder());
-        builders.put(Root.class, new CRoot.Builder());
-        builders.put(Ready.class, new CReady.Builder());
-        builders.put(Running.class, new CRunning.Builder());
-        builders.put(Sleeping.class, new CSleeping.Builder());
-        builders.put(Killed.class, new CKilled.Builder());
-        builders.put(Gather.class, new CGather.Builder());
-        builders.put(Lonely.class, new CLonely.Builder());
-        builders.put(SequentialVMTransitions.class, new CSequentialVMTransitions.Builder());
+    }
 
-        builders.put(MinMTTR.class, new CMinMTTR.Builder());
+    /**
+     * Make a new {@code ConstraintMapper} and fulfill it
+     * using a default mapper for each bundled constraint.
+     *
+     * @return a fulfilled mapper.
+     */
+    public static ConstraintMapper newBundle() {
+        ConstraintMapper map = new ConstraintMapper();
+        map.register(new CSpread.Builder());
+        map.register(new CSplit.Builder());
+        map.register(new CSplitAmong.Builder());
+        map.register(new CAmong.Builder());
+        map.register(new CQuarantine.Builder());
+        map.register(new CBan.Builder());
+        map.register(new CFence.Builder());
+        map.register(new COnline.Builder());
+        map.register(new COffline.Builder());
+        map.register(new CSingleRunningCapacity.Builder());
+        map.register(new CCumulatedRunningCapacity.Builder());
+        map.register(new CSingleResourceCapacity.Builder());
+        map.register(new CCumulatedResourceCapacity.Builder());
+        map.register(new CPreserve.Builder());
+        map.register(new COverbook.Builder());
+        map.register(new CRoot.Builder());
+        map.register(new CReady.Builder());
+        map.register(new CRunning.Builder());
+        map.register(new CSleeping.Builder());
+        map.register(new CKilled.Builder());
+        map.register(new CGather.Builder());
+        map.register(new CLonely.Builder());
+        map.register(new CSequentialVMTransitions.Builder());
+
+        map.register(new CMinMTTR.Builder());
+        return map;
     }
 
     /**

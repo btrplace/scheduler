@@ -151,7 +151,7 @@ public class DefaultReconfigurationProblemTest {
         toRun.add(vm4);
         toRun.add(vm1);
         mo.getAttributes().put(vm7, "template", "small");
-        DurationEvaluators dEval = new DurationEvaluators();
+        DurationEvaluators dEval = DurationEvaluators.newBundle();
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(toWait, toRun, Collections.singleton(vm3), Collections.singleton(vm2))
                 .setDurationEvaluatators(dEval).build();
@@ -787,7 +787,7 @@ public class DefaultReconfigurationProblemTest {
         mo.getAttributes().put(vm4, "template", "small");
         mo.attach(rc);
 
-        ReconfigurationProblem rp = new DefaultReconfigurationProblem(mo, new DurationEvaluators(), new ModelViewMapper(),
+        ReconfigurationProblem rp = new DefaultReconfigurationProblem(mo, DurationEvaluators.newBundle(), new ModelViewMapper(),
                 Collections.singleton(vm4),
                 Collections.singleton(vm5),
                 Collections.singleton(vm1),

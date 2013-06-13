@@ -52,7 +52,7 @@ public class SuspendVMModelTest {
         map.addOnlineNode(n1);
         map.addRunningVM(vm1, n1);
 
-        DurationEvaluators dev = new DurationEvaluators();
+        DurationEvaluators dev = DurationEvaluators.newBundle();
         dev.register(SuspendVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
@@ -91,7 +91,7 @@ public class SuspendVMModelTest {
         map.addRunningVM(vm1, n1);
         map.addRunningVM(vm2, n1);
 
-        DurationEvaluators dev = new DurationEvaluators();
+        DurationEvaluators dev = DurationEvaluators.newBundle();
         dev.register(SuspendVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)

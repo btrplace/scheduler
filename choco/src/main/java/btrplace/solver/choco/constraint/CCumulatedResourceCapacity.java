@@ -23,7 +23,6 @@ import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.CumulatedResourceCapacity;
-import btrplace.model.constraint.CumulatedRunningCapacity;
 import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -137,7 +136,7 @@ public class CCumulatedResourceCapacity implements ChocoConstraint {
     public static class Builder implements ChocoConstraintBuilder {
         @Override
         public Class<? extends Constraint> getKey() {
-            return CumulatedRunningCapacity.class;
+            return CumulatedResourceCapacity.class;
         }
 
         @Override

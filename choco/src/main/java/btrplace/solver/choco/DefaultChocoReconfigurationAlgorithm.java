@@ -82,9 +82,9 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
      */
     public DefaultChocoReconfigurationAlgorithm() {
 
-        cstrMapper = new ConstraintMapper();
-        durationEvaluators = new DurationEvaluators();
-        viewMapper = new ModelViewMapper();
+        cstrMapper = ConstraintMapper.newBundle();
+        durationEvaluators = DurationEvaluators.newBundle();
+        viewMapper = ModelViewMapper.newBundle();
 
         //Default objective
         obj = new CMinMTTR();
