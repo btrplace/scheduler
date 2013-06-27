@@ -20,9 +20,9 @@ package btrplace.solver.choco.runner.staticPartitioning.splitter;
 import btrplace.model.DefaultModel;
 import btrplace.model.Instance;
 import btrplace.model.Model;
-import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.MinMTTR;
-import btrplace.model.constraint.Offline;
+import btrplace.model.constraint.Ready;
 import btrplace.model.constraint.SatConstraint;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -33,42 +33,44 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Unit test for {@link btrplace.solver.choco.runner.staticPartitioning.splitter.OfflineSplitter}.
+ * Unit tests for {@link btrplace.solver.choco.runner.staticPartitioning.splitter.ReadySplitter}.
  *
  * @author Fabien Hermenier
  */
-public class OfflineSplitterTest {
+public class ReadySplitterTest {
 
     @Test
     public void simpleTest() {
-        OfflineSplitter splitter = new OfflineSplitter();
+        ReadySplitter splitter = new ReadySplitter();
 
         List<Instance> instances = new ArrayList<>();
         Model m0 = new DefaultModel();
-        m0.getMapping().addOfflineNode(m0.newNode(0));
-        m0.getMapping().addOfflineNode(m0.newNode(1));
-
+        m0.getMapping().addReadyVM(m0.newVM(1));
+        m0.getMapping().addRunningVM(m0.newVM(2), m0.newNode(1));
         Model m1 = new DefaultModel();
-        m1.getMapping().addOfflineNode(m1.newNode(2));
-        m1.getMapping().addOfflineNode(m1.newNode(3));
+        m1.getMapping().addReadyVM(m1.newVM(3));
+        m1.getMapping().addSleepingVM(m1.newVM(4), m1.newNode(2));
+        m1.getMapping().addRunningVM(m1.newVM(5), m1.newNode(3));
+
 
         instances.add(new Instance(m0, new ArrayList<SatConstraint>(), new MinMTTR()));
         instances.add(new Instance(m1, new ArrayList<SatConstraint>(), new MinMTTR()));
 
-        Set<Node> all = new HashSet<>(m0.getNodes());
-        all.addAll(m1.getNodes());
+        Set<VM> all = new HashSet<>(m0.getMapping().getAllVMs());
+        all.addAll(m1.getMapping().getAllVMs());
 
-        //Only nodes in m0
-        Offline oSimple = new Offline(m0.getMapping().getAllNodes());
-        Assert.assertTrue(splitter.split(oSimple, null, instances));
-        Assert.assertTrue(instances.get(0).getConstraints().contains(oSimple));
-        Assert.assertFalse(instances.get(1).getConstraints().contains(oSimple));
 
-        //All the nodes, test the split
-        Offline oAmong = new Offline(all);
+        //Only VMs in m0
+        Ready single = new Ready(m0.getMapping().getAllVMs());
+        Assert.assertTrue(splitter.split(single, null, instances));
+        Assert.assertTrue(instances.get(0).getConstraints().contains(single));
+        Assert.assertFalse(instances.get(1).getConstraints().contains(single));
 
-        Assert.assertTrue(splitter.split(oAmong, null, instances));
-        Assert.assertTrue(instances.get(0).getConstraints().contains(new Offline(m0.getMapping().getAllNodes())));
-        Assert.assertTrue(instances.get(1).getConstraints().contains(new Offline(m1.getMapping().getAllNodes())));
+        //All the VMs, test the split
+        Ready among = new Ready(all);
+
+        Assert.assertTrue(splitter.split(among, null, instances));
+        Assert.assertTrue(instances.get(0).getConstraints().contains(new Ready(m0.getMapping().getAllVMs())));
+        Assert.assertTrue(instances.get(1).getConstraints().contains(new Ready(m1.getMapping().getAllVMs())));
     }
 }

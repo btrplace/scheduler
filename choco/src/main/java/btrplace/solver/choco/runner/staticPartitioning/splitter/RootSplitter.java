@@ -42,7 +42,7 @@ public class RootSplitter implements ConstraintSplitter<Root> {
     }
 
     @Override
-    public boolean split(Root cstr, List<Instance> partitions) {
+    public boolean split(Root cstr, Instance origin, List<Instance> partitions) {
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
         for (Instance i : partitions) {
             Set<VM> in = Splitters.extractInside(vms, i.getModel().getVMs());

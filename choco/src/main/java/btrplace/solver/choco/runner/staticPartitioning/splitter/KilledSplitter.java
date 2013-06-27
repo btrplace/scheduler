@@ -43,7 +43,7 @@ public class KilledSplitter implements ConstraintSplitter<Killed> {
     }
 
     @Override
-    public boolean split(Killed cstr, List<Instance> partitions) {
+    public boolean split(Killed cstr, Instance origin, List<Instance> partitions) {
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
         for (Instance i : partitions) {
             Set<VM> in = Splitters.extractInside(vms, i.getModel().getVMs());

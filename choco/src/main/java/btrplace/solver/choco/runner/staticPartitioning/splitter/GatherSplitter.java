@@ -41,7 +41,7 @@ public class GatherSplitter implements ConstraintSplitter<Gather> {
     }
 
     @Override
-    public boolean split(Gather cstr, List<Instance> partitions) {
+    public boolean split(Gather cstr, Instance origin, List<Instance> partitions) {
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
         for (Instance i : partitions) {
             Set<VM> in = Splitters.extractInside(vms, i.getModel().getVMs());

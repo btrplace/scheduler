@@ -43,7 +43,7 @@ public class QuarantineSplitter implements ConstraintSplitter<Quarantine> {
     }
 
     @Override
-    public boolean split(Quarantine cstr, List<Instance> partitions) {
+    public boolean split(Quarantine cstr, Instance origin, List<Instance> partitions) {
         Set<Node> nodes = new HashSet<>(cstr.getInvolvedNodes());
         for (Instance i : partitions) {
             Set<Node> all = i.getModel().getNodes();

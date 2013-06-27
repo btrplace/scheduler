@@ -17,12 +17,9 @@
 
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Instance;
-import btrplace.model.Model;
-import btrplace.model.VM;
-import btrplace.model.constraint.Gather;
+import btrplace.model.*;
 import btrplace.model.constraint.MinMTTR;
+import btrplace.model.constraint.Running;
 import btrplace.model.constraint.SatConstraint;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -33,25 +30,53 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Unit tests for {@link btrplace.solver.choco.runner.staticPartitioning.splitter.GatherSplitter}.
+ * Unit tests for {@link RunningSplitter}.
  *
  * @author Fabien Hermenier
  */
-public class GatherSplitterTest {
+public class RunningSplitterTest {
 
     @Test
     public void simpleTest() {
-        GatherSplitter splitter = new GatherSplitter();
+        RunningSplitter splitter = new RunningSplitter();
 
         List<Instance> instances = new ArrayList<>();
-        Model m0 = new DefaultModel();
-        m0.getMapping().addReadyVM(m0.newVM(1));
-        m0.getMapping().addRunningVM(m0.newVM(2), m0.newNode(1));
-        Model m1 = new DefaultModel();
-        m1.getMapping().addReadyVM(m1.newVM(3));
-        m1.getMapping().addSleepingVM(m1.newVM(4), m1.newNode(2));
-        m1.getMapping().addRunningVM(m1.newVM(5), m1.newNode(3));
+        Model origin = new DefaultModel();
+        Node n1 = origin.newNode();
+        Node n2 = origin.newNode();
+        VM vm1 = origin.newVM();
+        VM vm2 = origin.newVM();
+        VM vm3 = origin.newVM();
+        VM vm4 = origin.newVM();
 
+        /**
+         * READY: vm1
+         * n1 vm2
+         * n2 (vm3) vm4
+         */
+        origin.getMapping().addOnlineNode(n1);
+        origin.getMapping().addReadyVM(vm1);
+        origin.getMapping().addRunningVM(vm2, n1);
+        origin.getMapping().addOnlineNode(n2);
+        origin.getMapping().addSleepingVM(vm3, n2);
+        origin.getMapping().addRunningVM(vm4, n2);
+
+
+        Model m0 = new DefaultModel();
+        m0.newNode(n1.id());
+        m0.newVM(vm1.id());
+        m0.newVM(vm2.id());
+        m0.getMapping().addOnlineNode(n1);
+        m0.getMapping().addReadyVM(vm1);
+        m0.getMapping().addRunningVM(vm2, n1);
+
+        Model m1 = new DefaultModel();
+        m1.newNode(n2.id());
+        m1.newVM(vm3.id());
+        m1.newVM(vm4.id());
+        m1.getMapping().addOnlineNode(n2);
+        m1.getMapping().addSleepingVM(vm3, n2);
+        m1.getMapping().addRunningVM(vm4, n2);
 
         instances.add(new Instance(m0, new ArrayList<SatConstraint>(), new MinMTTR()));
         instances.add(new Instance(m1, new ArrayList<SatConstraint>(), new MinMTTR()));
@@ -60,14 +85,16 @@ public class GatherSplitterTest {
         all.addAll(m1.getMapping().getAllVMs());
 
         //Only VMs in m0
-        Gather single = new Gather(m0.getMapping().getAllVMs());
+        Running single = new Running(m0.getMapping().getAllVMs());
         Assert.assertTrue(splitter.split(single, null, instances));
         Assert.assertTrue(instances.get(0).getConstraints().contains(single));
         Assert.assertFalse(instances.get(1).getConstraints().contains(single));
 
-        //All the VMs, test the unfeasibility
-        Gather among = new Gather(all, false);
+        //All the VMs, test the split
+        Running among = new Running(all);
 
-        Assert.assertFalse(splitter.split(among, null, instances));
+        Assert.assertTrue(splitter.split(among, null, instances));
+        Assert.assertTrue(instances.get(0).getConstraints().contains(new Running(m0.getMapping().getAllVMs())));
+        Assert.assertTrue(instances.get(1).getConstraints().contains(new Running(m1.getMapping().getAllVMs())));
     }
 }

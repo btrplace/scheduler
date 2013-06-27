@@ -104,7 +104,7 @@ public class FixedPartitionSize extends StaticPartitioning {
             }
         }
         for (SatConstraint cstr : i.getConstraints()) {
-            cstrMapper.split(cstr, parts);
+            cstrMapper.split(cstr, i, parts);
         }
         //TODO: deal with ready VMs to run and state-oriented constraints
         return parts;

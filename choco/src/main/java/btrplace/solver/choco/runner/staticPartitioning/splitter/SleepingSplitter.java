@@ -42,7 +42,7 @@ public class SleepingSplitter implements ConstraintSplitter<Sleeping> {
     }
 
     @Override
-    public boolean split(Sleeping cstr, List<Instance> partitions) {
+    public boolean split(Sleeping cstr, Instance origin, List<Instance> partitions) {
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
         for (Instance i : partitions) {
             Set<VM> in = Splitters.extractInside(vms, i.getModel().getVMs());

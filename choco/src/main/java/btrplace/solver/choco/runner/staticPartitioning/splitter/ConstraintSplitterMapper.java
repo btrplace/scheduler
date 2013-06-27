@@ -115,11 +115,13 @@ public class ConstraintSplitterMapper {
     /**
      * Split a given {@link Constraint} using the associated splitter, if exists.
      *
-     * @param c the constraint to map
+     * @param c          the constraint to map
+     * @param i          the original instance to split
+     * @param partitions the partitions splitting the original instance
      * @return {@code false} iff this leads to a problem without solutions.
      */
-    public boolean split(Constraint c, List<Instance> partitions) {
+    public boolean split(Constraint c, Instance i, List<Instance> partitions) {
         ConstraintSplitter splitter = builders.get(c.getClass());
-        return splitter != null && splitter.split(c, partitions);
+        return splitter != null && splitter.split(c, i, partitions);
     }
 }

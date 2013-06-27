@@ -43,7 +43,7 @@ public class OfflineSplitter implements ConstraintSplitter<Offline> {
     }
 
     @Override
-    public boolean split(Offline cstr, List<Instance> partitions) {
+    public boolean split(Offline cstr, Instance origin, List<Instance> partitions) {
         Set<Node> nodes = new HashSet<>(cstr.getInvolvedNodes());
         for (Instance i : partitions) {
             Set<Node> all = i.getModel().getNodes();

@@ -43,7 +43,7 @@ public class PreserveSplitter implements ConstraintSplitter<Preserve> {
     }
 
     @Override
-    public boolean split(Preserve cstr, List<Instance> partitions) {
+    public boolean split(Preserve cstr, Instance origin, List<Instance> partitions) {
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
         for (Instance i : partitions) {
             Set<VM> in = Splitters.extractInside(vms, i.getModel().getVMs());

@@ -40,7 +40,7 @@ public class SplitSplitter implements ConstraintSplitter<Split> {
     }
 
     @Override
-    public boolean split(Split cstr, List<Instance> partitions) {
+    public boolean split(Split cstr, Instance origin, List<Instance> partitions) {
         List<Set<VM>> vms = new ArrayList<>();
         for (Collection<VM> s : cstr.getSets()) {
             vms.add(new HashSet<>(s));

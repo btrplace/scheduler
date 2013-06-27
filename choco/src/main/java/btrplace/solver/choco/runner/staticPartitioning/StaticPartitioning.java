@@ -123,6 +123,7 @@ public abstract class StaticPartitioning implements InstanceSolver {
     }
 
     private void merge(InstanceResult merged, Collection<InstanceResult> results) throws SolverException {
+        //TODO: a possible merge issue when there is VM creation is multiple partitions, there will be ids conflict.
         ReconfigurationPlan plan = merged.getPlan();
         for (InstanceResult result : results) {
             for (Action a : result.getPlan()) {

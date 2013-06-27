@@ -60,14 +60,14 @@ public class OnlineSplitterTest {
 
         //Only nodes in m0
         Online oSimple = new Online(m0.getMapping().getAllNodes());
-        Assert.assertTrue(splitter.split(oSimple, instances));
+        Assert.assertTrue(splitter.split(oSimple, null, instances));
         Assert.assertTrue(instances.get(0).getConstraints().contains(oSimple));
         Assert.assertFalse(instances.get(1).getConstraints().contains(oSimple));
 
         //All the nodes, test the split
         Online oAmong = new Online(all);
 
-        Assert.assertTrue(splitter.split(oAmong, instances));
+        Assert.assertTrue(splitter.split(oAmong, null, instances));
         Assert.assertTrue(instances.get(0).getConstraints().contains(new Online(m0.getMapping().getAllNodes())));
         Assert.assertTrue(instances.get(1).getConstraints().contains(new Online(m1.getMapping().getAllNodes())));
     }

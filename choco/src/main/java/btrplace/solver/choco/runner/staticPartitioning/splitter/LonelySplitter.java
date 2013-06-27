@@ -50,7 +50,7 @@ public class LonelySplitter implements ConstraintSplitter<Lonely> {
     }
 
     @Override
-    public boolean split(Lonely cstr, List<Instance> partitions) {
+    public boolean split(Lonely cstr, Instance origin, List<Instance> partitions) {
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
         for (Instance i : partitions) {
             Mapping m = i.getModel().getMapping();

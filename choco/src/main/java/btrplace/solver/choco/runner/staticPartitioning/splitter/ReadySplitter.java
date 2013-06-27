@@ -49,7 +49,7 @@ public class ReadySplitter implements ConstraintSplitter<Ready> {
     }
 
     @Override
-    public boolean split(Ready cstr, List<Instance> partitions) {
+    public boolean split(Ready cstr, Instance origin, List<Instance> partitions) {
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
         for (Instance i : partitions) {
             Set<VM> in = Splitters.extractInside(vms, i.getModel().getVMs());

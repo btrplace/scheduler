@@ -47,9 +47,9 @@ public interface ConstraintSplitter<C extends Constraint> {
      * <b>this call inserts the constrain (or its subdivisions) inside their respective instances</b>
      *
      * @param cstr       the model constraint
-     * @param partitions the possible partitions
-     * @return {@code false} iff this leads to a problem without solutions.
+     * @param origin     the original instance to split
+     * @param partitions the possible partitions  @return {@code false} iff this leads to a problem without solutions.
      */
-    boolean split(C cstr, List<Instance> partitions);
+    boolean split(C cstr, Instance origin, List<Instance> partitions);
 
 }

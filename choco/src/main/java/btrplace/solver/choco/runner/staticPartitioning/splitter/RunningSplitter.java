@@ -26,6 +26,12 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * Splitter for the {@link btrplace.model.constraint.Running} constraints.
+ * When the constraint focuses VMs among different partitions,
+ * the constraint is splitted.
+ * <p/>
+ * The split process is conservative wrt. the constraint semantic.
+ *
  * @author Fabien Hermenier
  */
 public class RunningSplitter implements ConstraintSplitter<Running> {
@@ -36,7 +42,7 @@ public class RunningSplitter implements ConstraintSplitter<Running> {
     }
 
     @Override
-    public boolean split(Running cstr, List<Instance> partitions) {
+    public boolean split(Running cstr, Instance origin, List<Instance> partitions) {
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
         for (Instance i : partitions) {
             Set<VM> in = Splitters.extractInside(vms, i.getModel().getVMs());

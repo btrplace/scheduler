@@ -43,7 +43,7 @@ public class SingleResourceCapacitySplitter implements ConstraintSplitter<Single
     }
 
     @Override
-    public boolean split(SingleResourceCapacity cstr, List<Instance> partitions) {
+    public boolean split(SingleResourceCapacity cstr, Instance origin, List<Instance> partitions) {
         Set<Node> nodes = new HashSet<>(cstr.getInvolvedNodes());
         for (Instance i : partitions) {
             Set<Node> all = i.getModel().getNodes();

@@ -42,7 +42,7 @@ public class SpreadSplitter implements ConstraintSplitter<Spread> {
     }
 
     @Override
-    public boolean split(Spread cstr, List<Instance> partitions) {
+    public boolean split(Spread cstr, Instance origin, List<Instance> partitions) {
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
         for (Instance i : partitions) {
             Set<VM> in = Splitters.extractInside(vms, i.getModel().getVMs());

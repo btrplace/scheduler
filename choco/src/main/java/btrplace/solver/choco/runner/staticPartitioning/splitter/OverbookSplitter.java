@@ -43,7 +43,7 @@ public class OverbookSplitter implements ConstraintSplitter<Overbook> {
     }
 
     @Override
-    public boolean split(Overbook cstr, List<Instance> partitions) {
+    public boolean split(Overbook cstr, Instance origin, List<Instance> partitions) {
         Set<Node> nodes = new HashSet<>(cstr.getInvolvedNodes());
         for (Instance i : partitions) {
             Set<Node> all = i.getModel().getNodes();
