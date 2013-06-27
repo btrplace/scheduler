@@ -149,4 +149,30 @@ public class DefaultModelTest {
         i.setAttributes(attrs);
         Assert.assertEquals(i.getAttributes(), attrs);
     }
+
+    @Test
+    public void testVMRegistration() {
+        Model mo = new DefaultModel();
+        VM v = mo.newVM();
+        VM vX = mo.newVM();
+        Assert.assertNotEquals(v, vX);
+        Assert.assertTrue(mo.getVMs().contains(v));
+        Assert.assertNull(mo.newVM(v.id()));
+
+        int nextId = v.id() + 1000;
+        VM v2 = mo.newVM(nextId);
+        Assert.assertTrue(mo.getVMs().contains(v2));
+    }
+
+    @Test
+    public void testNodeRegistration() {
+        Model mo = new DefaultModel();
+        Node n = mo.newNode();
+        Assert.assertTrue(mo.getNodes().contains(n));
+        Assert.assertNull(mo.newNode(n.id()));
+
+        int nextId = n.id() + 1000;
+        Node n2 = mo.newNode(nextId);
+        Assert.assertTrue(mo.getNodes().contains(n2));
+    }
 }
