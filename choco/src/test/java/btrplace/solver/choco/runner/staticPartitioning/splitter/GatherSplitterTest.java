@@ -21,9 +21,9 @@ import btrplace.model.DefaultModel;
 import btrplace.model.Instance;
 import btrplace.model.Model;
 import btrplace.model.VM;
+import btrplace.model.constraint.Gather;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.SatConstraint;
-import btrplace.model.constraint.Spread;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -33,15 +33,15 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Unit tests for {@link SpreadSplitter}.
+ * Unit tests for {@link btrplace.solver.choco.runner.staticPartitioning.splitter.GatherSplitter}.
  *
  * @author Fabien Hermenier
  */
-public class SpreadSplitterTest {
+public class GatherSplitterTest {
 
     @Test
     public void simpleTest() {
-        SpreadSplitter splitter = new SpreadSplitter();
+        GatherSplitter splitter = new GatherSplitter();
 
         List<Instance> instances = new ArrayList<>();
         Model m0 = new DefaultModel();
@@ -59,18 +59,15 @@ public class SpreadSplitterTest {
         Set<VM> all = new HashSet<>(m0.getMapping().getAllVMs());
         all.addAll(m1.getMapping().getAllVMs());
 
-
         //Only VMs in m0
-        Spread spreadSingle = new Spread(m0.getMapping().getAllVMs());
-        Assert.assertTrue(splitter.split(spreadSingle, instances));
-        Assert.assertTrue(instances.get(0).getConstraints().contains(spreadSingle));
-        Assert.assertFalse(instances.get(1).getConstraints().contains(spreadSingle));
+        Gather single = new Gather(m0.getMapping().getAllVMs());
+        Assert.assertTrue(splitter.split(single, instances));
+        Assert.assertTrue(instances.get(0).getConstraints().contains(single));
+        Assert.assertFalse(instances.get(1).getConstraints().contains(single));
 
-        //All the VMs, test the split
-        Spread spreadAmong = new Spread(all, false);
+        //All the VMs, test the unfeasibility
+        Gather among = new Gather(all, false);
 
-        Assert.assertTrue(splitter.split(spreadAmong, instances));
-        Assert.assertTrue(instances.get(0).getConstraints().contains(new Spread(m0.getMapping().getAllVMs(), false)));
-        Assert.assertTrue(instances.get(1).getConstraints().contains(new Spread(m1.getMapping().getAllVMs(), false)));
+        Assert.assertFalse(splitter.split(among, instances));
     }
 }

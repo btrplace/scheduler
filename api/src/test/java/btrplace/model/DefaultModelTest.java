@@ -154,10 +154,12 @@ public class DefaultModelTest {
     public void testVMRegistration() {
         Model mo = new DefaultModel();
         VM v = mo.newVM();
+        VM vX = mo.newVM();
+        Assert.assertNotEquals(v, vX);
         Assert.assertTrue(mo.getVMs().contains(v));
         Assert.assertNull(mo.newVM(v.id()));
 
-        int nextId = v.id() + 1;
+        int nextId = v.id() + 1000;
         VM v2 = mo.newVM(nextId);
         Assert.assertTrue(mo.getVMs().contains(v2));
     }
@@ -169,7 +171,7 @@ public class DefaultModelTest {
         Assert.assertTrue(mo.getNodes().contains(n));
         Assert.assertNull(mo.newNode(n.id()));
 
-        int nextId = n.id() + 1;
+        int nextId = n.id() + 1000;
         Node n2 = mo.newNode(nextId);
         Assert.assertTrue(mo.getNodes().contains(n2));
     }

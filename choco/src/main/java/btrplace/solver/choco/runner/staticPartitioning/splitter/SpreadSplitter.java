@@ -28,7 +28,7 @@ import java.util.Set;
 /**
  * Splitter for {@link Spread} constraints.
  * When the constraint focuses VMs among different partitions,
- * the constraint is  splitted.
+ * the constraint is splitted.
  * <p/>
  * This operation is conservative wrt. the constraint semantic.
  *
