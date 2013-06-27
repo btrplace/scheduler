@@ -80,29 +80,25 @@ public class FixedPartitionSize extends StaticPartitioning {
         List<Instance> parts = new ArrayList<>(nbPartitions);
         for (Set<Node> s : partOfNodes) {
             Model partModel = new DefaultModel();
+            //Book every node and VMs id, we will re-use them in practice
+            for (Node n : i.getModel().getNodes()) {
+                partModel.newNode(n.id());
+            }
+            for (VM vm : i.getModel().getVMs()) {
+                partModel.newVM(vm.id());
+            }
+
             parts.add(new Instance(partModel, new HashSet<SatConstraint>(), i.getOptimizationConstraint()));
             for (Node n : s) {
-                Node n2 = partModel.newNode(n.id());
-                if (n2 == null) {
-                    throw new SolverException(partModel, "Unable to make a node '" + n + "' on the partition");
-                }
                 if (map.getOfflineNodes().contains(n)) {
-                    partModel.getMapping().addOfflineNode(n2);
+                    partModel.getMapping().addOfflineNode(n);
                 } else {
-                    partModel.getMapping().addOnlineNode(n2);
+                    partModel.getMapping().addOnlineNode(n);
                     for (VM v : map.getRunningVMs(n)) {
-                        VM v2 = partModel.newVM(v.id());
-                        if (v2 == null) {
-                            throw new SolverException(partModel, "Unable to make a VM '" + v + "' on the partition");
-                        }
-                        partModel.getMapping().addRunningVM(v2, n2);
+                        partModel.getMapping().addRunningVM(v, n);
                     }
                     for (VM v : map.getSleepingVMs(n)) {
-                        VM v2 = partModel.newVM(v.id());
-                        if (v2 == null) {
-                            throw new SolverException(partModel, "Unable to make a VM '" + v + "' on the partition");
-                        }
-                        partModel.getMapping().addRunningVM(v2, n2);
+                        partModel.getMapping().addRunningVM(v, n);
                     }
                 }
             }
@@ -110,7 +106,6 @@ public class FixedPartitionSize extends StaticPartitioning {
         for (SatConstraint cstr : i.getConstraints()) {
             cstrMapper.split(cstr, parts);
         }
-        //TODO: support re-instantiation by reserving every vm and node ID among the partitions
         //TODO: deal with ready VMs to run and state-oriented constraints
         return parts;
     }
