@@ -27,6 +27,8 @@ import btrplace.solver.choco.runner.InstanceResult;
 import btrplace.solver.choco.runner.InstanceSolver;
 import btrplace.solver.choco.runner.SolvingStatistics;
 import btrplace.solver.choco.runner.single.InstanceSolverRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,6 +47,8 @@ import java.util.concurrent.*;
 public abstract class StaticPartitioning implements InstanceSolver {
 
     private int workersCount;
+
+    static final Logger logger = LoggerFactory.getLogger("StaticPartitioning");
 
     /**
      * Get the number of workers that are used to solve instances.
@@ -128,7 +132,7 @@ public abstract class StaticPartitioning implements InstanceSolver {
         for (InstanceResult result : results) {
             for (Action a : result.getPlan()) {
                 if (!plan.add(a)) {
-                    throw new SolverException(result.getPlan().getOrigin(), "Unable to add action " + a);
+                    logger.error("Unable to add action {} while merging the results", a);
                 }
             }
             SolvingStatistics st = result.getStatistics();
