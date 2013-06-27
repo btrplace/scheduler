@@ -41,14 +41,14 @@ public class SpreadSplitterTest {
 
     @Test
     public void simpleTest() {
-        List<Instance> instances = new ArrayList();
+        List<Instance> instances = new ArrayList<>();
         Model m0 = new DefaultModel();
         m0.getMapping().addReadyVM(m0.newVM(1));
         m0.getMapping().addRunningVM(m0.newVM(2), m0.newNode(1));
         Model m1 = new DefaultModel();
-        m1.getMapping().addReadyVM(m0.newVM(3));
-        m1.getMapping().addSleepingVM(m0.newVM(4), m0.newNode(2));
-        m1.getMapping().addRunningVM(m0.newVM(5), m0.newNode(3));
+        m1.getMapping().addReadyVM(m1.newVM(3));
+        m1.getMapping().addSleepingVM(m1.newVM(4), m1.newNode(2));
+        m1.getMapping().addRunningVM(m1.newVM(5), m1.newNode(3));
         Spread spreadSingle = new Spread(m0.getMapping().getAllVMs());
 
         Set<VM> all = new HashSet<>(m0.getMapping().getAllVMs());

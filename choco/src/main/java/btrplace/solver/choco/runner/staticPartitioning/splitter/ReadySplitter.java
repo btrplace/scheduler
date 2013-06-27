@@ -26,12 +26,21 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * Splitter for the {@link btrplace.model.constraint.Ready} constraints.
+ * When the constraint focuses VMs among different partitions,
+ * the constraint is splitted.
+ * <p/>
+ * This operation is conservative wrt. the constraint semantic.
+ *
  * @author Fabien Hermenier
  */
 public class ReadySplitter implements ConstraintSplitter<Ready> {
 
+    /**
+     * Make a new splitter.
+     */
     public ReadySplitter() {
-        super();    //To change body of overridden methods use File | Settings | File Templates.
+        super();
     }
 
     @Override

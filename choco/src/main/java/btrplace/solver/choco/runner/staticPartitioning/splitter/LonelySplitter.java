@@ -37,8 +37,11 @@ import java.util.Set;
  */
 public class LonelySplitter implements ConstraintSplitter<Lonely> {
 
+    /**
+     * Make a new splitter.
+     */
     public LonelySplitter() {
-        super();    //To change body of overridden methods use File | Settings | File Templates.
+        super();
     }
 
     @Override
