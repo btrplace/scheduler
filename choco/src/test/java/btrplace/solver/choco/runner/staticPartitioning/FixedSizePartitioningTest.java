@@ -32,15 +32,15 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Unit tests for {@link FixedPartitionSize}.
+ * Unit tests for {@link FixedSizePartitioning}.
  *
  * @author Fabien Hermenier
  */
-public class FixedPartitionSizeTest {
+public class FixedSizePartitioningTest {
 
     @Test
     public void basicTesting() {
-        FixedPartitionSize f = new FixedPartitionSize(1000);
+        FixedSizePartitioning f = new FixedSizePartitioning(1000);
         f.setWorkersCount(5);
         Assert.assertEquals(f.getWorkersCount(), 5);
         Assert.assertEquals(f.getSize(), 1000);
@@ -51,7 +51,7 @@ public class FixedPartitionSizeTest {
 
     @Test
     public void testSplit() throws SolverException {
-        FixedPartitionSize f = new FixedPartitionSize(5);
+        FixedSizePartitioning f = new FixedSizePartitioning(5);
         Model mo = new DefaultModel();
         for (int i = 0; i < 13; i++) {
             Node n = mo.newNode();
@@ -86,7 +86,7 @@ public class FixedPartitionSizeTest {
 
     @Test
     public void testParallelSolving() throws SolverException {
-        FixedPartitionSize f = new FixedPartitionSize(50);
+        FixedSizePartitioning f = new FixedSizePartitioning(50);
         f.setWorkersCount(2);
         Model mo = new DefaultModel();
         for (int i = 0; i < 150; i++) {

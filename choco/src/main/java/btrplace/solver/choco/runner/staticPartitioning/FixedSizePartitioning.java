@@ -17,16 +17,14 @@
 
 package btrplace.solver.choco.runner.staticPartitioning;
 
-import btrplace.model.*;
-import btrplace.model.constraint.SatConstraint;
+import btrplace.model.Instance;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
+import btrplace.model.Node;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
-import btrplace.solver.choco.runner.staticPartitioning.splitter.ConstraintSplitterMapper;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A partitioning algorithm that create partitions having a fixed number of nodes.
@@ -36,20 +34,18 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class FixedPartitionSize extends StaticPartitioning {
+public class FixedSizePartitioning extends FixedNodeSetsPartitioning {
 
     private int partSize;
-
-    private ConstraintSplitterMapper cstrMapper;
 
     /**
      * Make a new partitioning algorithm.
      *
      * @param partSize the maximum partition size
      */
-    public FixedPartitionSize(int partSize) {
+    public FixedSizePartitioning(int partSize) {
+        super(Collections.<Set<Node>>singleton(new HashSet<Node>()));
         this.partSize = partSize;
-        cstrMapper = new ConstraintSplitterMapper();
     }
 
     /**
@@ -59,6 +55,10 @@ public class FixedPartitionSize extends StaticPartitioning {
      */
     public int getSize() {
         return partSize;
+    }
+
+    public void setSize(int s) {
+        this.partSize = s;
     }
 
     @Override
@@ -77,36 +77,7 @@ public class FixedPartitionSize extends StaticPartitioning {
             curPartition.add(node);
         }
 
-        List<Instance> parts = new ArrayList<>(nbPartitions);
-        for (Set<Node> s : partOfNodes) {
-            Model partModel = new DefaultModel();
-            //Book every node and VMs id, we will re-use them in practice
-            for (Node n : i.getModel().getNodes()) {
-                partModel.newNode(n.id());
-            }
-            for (VM vm : i.getModel().getVMs()) {
-                partModel.newVM(vm.id());
-            }
-
-            parts.add(new Instance(partModel, new HashSet<SatConstraint>(), i.getOptimizationConstraint()));
-            for (Node n : s) {
-                if (map.getOfflineNodes().contains(n)) {
-                    partModel.getMapping().addOfflineNode(n);
-                } else {
-                    partModel.getMapping().addOnlineNode(n);
-                    for (VM v : map.getRunningVMs(n)) {
-                        partModel.getMapping().addRunningVM(v, n);
-                    }
-                    for (VM v : map.getSleepingVMs(n)) {
-                        partModel.getMapping().addRunningVM(v, n);
-                    }
-                }
-            }
-        }
-        for (SatConstraint cstr : i.getConstraints()) {
-            cstrMapper.split(cstr, i, parts);
-        }
-        //TODO: deal with ready VMs to run and state-oriented constraints
-        return parts;
+        setPartitions(partOfNodes);
+        return super.split(ps, i);
     }
 }

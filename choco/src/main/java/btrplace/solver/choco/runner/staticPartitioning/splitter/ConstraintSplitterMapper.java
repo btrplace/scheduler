@@ -67,7 +67,8 @@ public class ConstraintSplitterMapper {
         mapper.register(new SleepingSplitter());
         mapper.register(new SplitSplitter());
         mapper.register(new SpreadSplitter());
-
+        mapper.register(new FenceSplitter());
+        mapper.register(new BanSplitter());
 
         return mapper;
     }
