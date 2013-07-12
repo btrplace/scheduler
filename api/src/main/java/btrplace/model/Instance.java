@@ -20,10 +20,7 @@ package btrplace.model;
 import btrplace.model.constraint.OptConstraint;
 import btrplace.model.constraint.SatConstraint;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * An instance aggregates a model and a list of constraints.
@@ -49,6 +46,16 @@ public class Instance {
         cstrs = new ArrayList<>(cs);
         this.mo = mo;
         this.opt = o;
+    }
+
+    /**
+     * Make a new instance.
+     *
+     * @param mo the model to use
+     * @param o  the optimization constraint
+     */
+    public Instance(Model mo, OptConstraint o) {
+        this(mo, Collections.<SatConstraint>emptyList(), o);
     }
 
     /**

@@ -17,6 +17,10 @@
 
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
+import btrplace.model.Instance;
+import btrplace.model.Node;
+import btrplace.model.VM;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -52,6 +56,31 @@ public final class Splitters {
                 res.add(v);
             }
         }
+        return res;
+    }
+
+    public static <T>void extractInside(Set<T> s, Set<T> base, Set<T> res) {
+        for (Iterator<T> ite = s.iterator(); ite.hasNext(); ) {
+            T v = ite.next();
+            if (base.contains(v)) {
+                ite.remove();
+                res.add(v);
+            }
+        }
+    }
+
+    public static Set<Node> extractNodesIn(Instance i, Set<Node> base) {
+        Set<Node> res = new HashSet<>();
+        extractInside(i.getModel().getMapping().getOfflineNodes(), base, res);
+        extractInside(i.getModel().getMapping().getOnlineNodes(), base, res);
+        return res;
+    }
+
+    public static Set<VM> extractVMsIn(Instance i, Set<VM> base) {
+        Set<VM> res = new HashSet<>();
+        extractInside(i.getModel().getMapping().getRunningVMs(), base, res);
+        extractInside(i.getModel().getMapping().getSleepingVMs(), base, res);
+        extractInside(i.getModel().getMapping().getReadyVMs(), base, res);
         return res;
     }
 }

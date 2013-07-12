@@ -30,11 +30,11 @@ import java.util.*;
  */
 public class FixedNodeSetsPartitioning extends StaticPartitioning {
 
-    private Collection<Set<Node>> partitions;
+    private Collection<Collection<Node>> partitions;
 
     private ConstraintSplitterMapper cstrMapper;
 
-    public FixedNodeSetsPartitioning(Collection<Set<Node>> parts) {
+    public FixedNodeSetsPartitioning(Collection<Collection<Node>> parts) {
 
         if (!isDisjoint(parts)) {
             throw new IllegalArgumentException("The constraint expects disjoint sets of nodes");
@@ -52,11 +52,11 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
         this.cstrMapper = cstrMapper;
     }
 
-    public Collection<Set<Node>> getPartitions() {
+    public Collection<Collection<Node>> getPartitions() {
         return partitions;
     }
 
-    public boolean setPartitions(Collection<Set<Node>> parts) {
+    public boolean setPartitions(Collection<Collection<Node>> parts) {
         if (!isDisjoint(parts)) {
             return false;
         }
@@ -70,7 +70,7 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
         Mapping map = mo.getMapping();
 
         List<Instance> parts = new ArrayList<>(partitions.size());
-        for (Set<Node> s : partitions) {
+        for (Collection<Node> s : partitions) {
             Model partModel = new DefaultModel();
             //Book every node and VMs id, we will re-use them in practice
             for (Node n : i.getModel().getNodes()) {
@@ -102,7 +102,7 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
         return parts;
     }
 
-    private static boolean isDisjoint(Collection<Set<Node>> p) {
+    private static boolean isDisjoint(Collection<Collection<Node>> p) {
         int cnt = 0;
         Set<Node> all = new HashSet<>();
         for (Collection<Node> s : p) {

@@ -20,41 +20,55 @@ package btrplace.solver.choco.runner.staticPartitioning.splitter;
 import btrplace.model.Instance;
 import btrplace.model.Node;
 import btrplace.model.VM;
+import btrplace.model.constraint.Among;
 import btrplace.model.constraint.Ban;
+import btrplace.model.constraint.Split;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
- * Splitter for {@link btrplace.model.constraint.Ban} constraints.
+ * Splitter for {@link btrplace.model.constraint.Among} constraints.
  * <p/>
- * When the constraint focuses VMs or nodes among different partitions,
+ * When the constraint focuses VMs among different partitions,
  * the constraint is splitted accordingly.
+ * If the nodes groups are also splitted among different partitions,
+ * this leads to a un-solvable problem as it is not possible to
+ * synchronize the sub-among constraints to make them choose the same nodes group.
  *
  * @author Fabien Hermenier
  */
-public class BanSplitter implements ConstraintSplitter<Ban> {
+public class AmongSplitter implements ConstraintSplitter<Among> {
 
     @Override
-    public Class<Ban> getKey() {
-        return Ban.class;
+    public Class<Among> getKey() {
+        return Among.class;
     }
 
     @Override
-    public boolean split(Ban cstr, Instance origin, List<Instance> partitions) {
+    public boolean split(Among cstr, Instance origin, List<Instance> partitions) {
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
-        Set<Node> nodes = new HashSet<>(cstr.getInvolvedNodes());
+        List<Set<Node>> parts = new ArrayList<>();
+        for (Collection<Node> s : cstr.getGroupsOfNodes()) {
+            parts.add(new HashSet<>(s));
+        }
+
         for (Instance i : partitions) {
             Set<VM> vmsIn = Splitters.extractInside(vms, i.getModel().getMapping().getAllVMs());
+
             if (!vmsIn.isEmpty()) {
-                Set<Node> nodesIn = Splitters.extractInside(nodes, i.getModel().getMapping().getAllNodes());
-                if (!nodesIn.isEmpty()) {
-                    i.getConstraints().add(new Ban(vmsIn, nodesIn));
+                Collection<Collection<Node>> subSplit = new ArrayList<>();
+                for (Set<Node> s : parts) {
+                    Set<Node> in = Splitters.extractNodesIn(i, s);
+                    if (!in.isEmpty()) {
+                        subSplit.add(in);
+                    }
                 }
-                if (vms.isEmpty()) {
-                    break;
+                if (!subSplit.isEmpty()) {
+                    i.getConstraints().add(new Among(vmsIn, subSplit, cstr.isContinuous()));
                 }
+            }
+            if (vms.isEmpty()) {
+                break;
             }
         }
         return true;

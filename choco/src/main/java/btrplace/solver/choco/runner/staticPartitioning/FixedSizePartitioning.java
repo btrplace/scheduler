@@ -38,14 +38,17 @@ public class FixedSizePartitioning extends FixedNodeSetsPartitioning {
 
     private int partSize;
 
+    private boolean random;
+
     /**
      * Make a new partitioning algorithm.
      *
      * @param partSize the maximum partition size
      */
     public FixedSizePartitioning(int partSize) {
-        super(Collections.<Set<Node>>singleton(new HashSet<Node>()));
+        super(Collections.<Collection<Node>>singleton(new HashSet<Node>()));
         this.partSize = partSize;
+        random = false;
     }
 
     /**
@@ -65,8 +68,7 @@ public class FixedSizePartitioning extends FixedNodeSetsPartitioning {
     public List<Instance> split(ChocoReconfigurationAlgorithmParams ps, Instance i) throws SolverException {
         Model mo = i.getModel();
         Mapping map = mo.getMapping();
-        int nbPartitions = (int) Math.ceil(1.0 * map.getAllNodes().size() / partSize);
-        List<Set<Node>> partOfNodes = new ArrayList<>();
+        List<Collection<Node>> partOfNodes = new ArrayList<>();
         Set<Node> curPartition = new HashSet<>(partSize);
         partOfNodes.add(curPartition);
         for (Node node : map.getAllNodes()) {
@@ -79,5 +81,13 @@ public class FixedSizePartitioning extends FixedNodeSetsPartitioning {
 
         setPartitions(partOfNodes);
         return super.split(ps, i);
+    }
+
+    public void randomPickUp(boolean b) {
+        this.random = b;
+    }
+
+    public boolean randomPickUp() {
+        return this.random;
     }
 }
