@@ -91,4 +91,8 @@ public class AmongSplitterTest {
             System.out.println(i.getConstraints());
         }
     }
+
+    public void testUnSplittable() throws SolverException {
+
+    }
 }
