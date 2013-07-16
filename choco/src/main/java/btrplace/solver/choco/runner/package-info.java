@@ -15,26 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.runner.single;
-
-import btrplace.model.Instance;
-import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
-import btrplace.solver.choco.runner.InstanceResult;
-import btrplace.solver.choco.runner.InstanceSolver;
-
 /**
- * A simple runner that solve in one stage a whole instance.
- *
- * @author Fabien Hermenier
+ * A package dedicated to the different solving methods.
  */
-public class SingleRunner implements InstanceSolver {
-
-    @Override
-    public InstanceResult solve(ChocoReconfigurationAlgorithmParams cra,
-                                Instance i) throws SolverException {
-        InstanceSolverRunner r = new InstanceSolverRunner(cra, i);
-        return r.call();
-
-    }
-}
+package btrplace.solver.choco.runner;
