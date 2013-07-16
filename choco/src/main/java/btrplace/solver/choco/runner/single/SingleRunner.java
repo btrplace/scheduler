@@ -15,19 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.model.constraint;
+package btrplace.solver.choco.runner.single;
+
+import btrplace.model.Instance;
+import btrplace.solver.SolverException;
+import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.runner.InstanceResult;
+import btrplace.solver.choco.runner.InstanceSolver;
 
 /**
- * An optimization constraint that minimizes the time to repair a non-viable model.
- * In practice it minimizes the sum of the ending moment for each actions.
+ * A simple runner that solve in one stage a whole problem.
  *
  * @author Fabien Hermenier
  */
-public class MinMTTR extends OptConstraint {
+public class SingleRunner implements InstanceSolver {
 
+    /**
+     * Make a new runner.
+     */
+    public SingleRunner() {
+        super();    //To change body of overridden methods use File | Settings | File Templates.
+    }
 
     @Override
-    public String id() {
-        return "minimizeMTTR";
+    public InstanceResult solve(ChocoReconfigurationAlgorithmParams cra,
+                                Instance i) throws SolverException {
+        InstanceSolverRunner r = new InstanceSolverRunner(cra, i);
+        return r.call();
+
     }
 }

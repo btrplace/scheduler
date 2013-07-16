@@ -25,6 +25,7 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.ActionModelUtils;
 import btrplace.solver.choco.constraint.ChocoConstraint;
 import btrplace.solver.choco.constraint.ChocoConstraintBuilder;
+import btrplace.solver.choco.runner.SolvingStatistics;
 import btrplace.solver.choco.view.ModelViewMapper;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.AtMostNValue;
@@ -86,15 +87,9 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         cra.doOptimize(true);
         cra.setTimeLimit(0);
 
+        Assert.assertNull(cra.getStatistics());
 
-        SolvingStatistics st = cra.getSolvingStatistics();
-        Assert.assertEquals(st.getNbBacktracks(), 0);
-        Assert.assertEquals(st.getNbSearchNodes(), 0);
-        Assert.assertEquals(st.getSolvingDuration(), 0);
-        Assert.assertTrue(st.getSolutions().isEmpty());
-        Assert.assertFalse(st.isTimeout());
-
-        class Foo extends OptimizationConstraint {
+        class Foo extends OptConstraint {
             @Override
             public String id() {
                 return "foo";
@@ -131,7 +126,7 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>emptyList(), new Foo());
         Mapping res = p.getResult().getMapping();
         Assert.assertEquals(MappingUtils.usedNodes(res, EnumSet.of(MappingUtils.State.Runnings)).size(), 1);
-        st = cra.getSolvingStatistics();
+        SolvingStatistics st = cra.getStatistics();
         Assert.assertEquals(st.getSolutions().size(), 10);
     }
 
@@ -160,7 +155,7 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         mo = new DefaultModel();
         new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5).get();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        class Foo extends OptimizationConstraint {
+        class Foo extends OptConstraint {
             @Override
             public String id() {
                 return "foo";
@@ -191,7 +186,7 @@ public class DefaultChocoReconfigurationAlgorithmTest {
 
         //Solve a problem with the repair mode
         Assert.assertNotNull(cra.solve(mo, cstrs, new Foo()));
-        SolvingStatistics st = cra.getSolvingStatistics();
+        SolvingStatistics st = cra.getStatistics();
         Assert.assertEquals(st.getNbManagedVMs(), 2); //vm2, vm3.
     }
 

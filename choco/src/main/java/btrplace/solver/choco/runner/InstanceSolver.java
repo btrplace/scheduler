@@ -15,31 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.constraint;
+package btrplace.solver.choco.runner;
 
-import btrplace.model.constraint.Constraint;
+import btrplace.model.Instance;
+import btrplace.solver.SolverException;
+import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
 
 /**
- * Interface to specify a builder that create a {@link ChocoConstraint} from
- * a specific {@link btrplace.model.constraint.Constraint}.
+ * Interface to specify an instance solver.
  *
  * @author Fabien Hermenier
  */
-public interface ChocoConstraintBuilder {
+public interface InstanceSolver {
 
     /**
-     * Get the class of the Constraint associated to the builder.
+     * Solve an instance.
      *
-     * @return a Class derived from {@link Constraint}
+     * @param ps the parameters to consider
+     * @param i  the instance to solve
+     * @return the result of the solving process
+     * @throws SolverException if an error prevent from running a solving process
      */
-    Class<? extends Constraint> getKey();
-
-    /**
-     * Build the ChocoConstraint associated to the {@link Constraint}
-     * identified as key.
-     *
-     * @param cstr the model constraint
-     * @return the associated ChocoConstraint or {@code null} if an error occurred
-     */
-    ChocoConstraint build(Constraint cstr);
+    InstanceResult solve(ChocoReconfigurationAlgorithmParams ps,
+                         Instance i) throws SolverException;
 }

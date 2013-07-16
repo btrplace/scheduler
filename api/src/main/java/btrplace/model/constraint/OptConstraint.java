@@ -15,31 +15,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.constraint;
-
-import btrplace.model.constraint.Constraint;
+package btrplace.model.constraint;
 
 /**
- * Interface to specify a builder that create a {@link ChocoConstraint} from
- * a specific {@link btrplace.model.constraint.Constraint}.
+ * Optimization oriented constraint.
+ * Such a constraint cannot be violated. It just asks to minimize or minimize
+ * a value.
  *
  * @author Fabien Hermenier
  */
-public interface ChocoConstraintBuilder {
+public abstract class OptConstraint implements Constraint {
 
     /**
-     * Get the class of the Constraint associated to the builder.
+     * Get the constraint identifier.
      *
-     * @return a Class derived from {@link Constraint}
+     * @return a non-empty String
      */
-    Class<? extends Constraint> getKey();
+    public abstract String id();
 
-    /**
-     * Build the ChocoConstraint associated to the {@link Constraint}
-     * identified as key.
-     *
-     * @param cstr the model constraint
-     * @return the associated ChocoConstraint or {@code null} if an error occurred
-     */
-    ChocoConstraint build(Constraint cstr);
+    @Override
+    public int hashCode() {
+        return id().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return (obj != null && this.getClass().equals(obj.getClass()));
+    }
+
+    @Override
+    public String toString() {
+        return id();
+    }
 }

@@ -15,31 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.constraint;
-
-import btrplace.model.constraint.Constraint;
+package btrplace.solver.choco;
 
 /**
- * Interface to specify a builder that create a {@link ChocoConstraint} from
- * a specific {@link btrplace.model.constraint.Constraint}.
- *
  * @author Fabien Hermenier
  */
-public interface ChocoConstraintBuilder {
-
-    /**
-     * Get the class of the Constraint associated to the builder.
-     *
-     * @return a Class derived from {@link Constraint}
-     */
-    Class<? extends Constraint> getKey();
-
-    /**
-     * Build the ChocoConstraint associated to the {@link Constraint}
-     * identified as key.
-     *
-     * @param cstr the model constraint
-     * @return the associated ChocoConstraint or {@code null} if an error occurred
-     */
-    ChocoConstraint build(Constraint cstr);
+public interface ChocoInstanceSolver {
 }

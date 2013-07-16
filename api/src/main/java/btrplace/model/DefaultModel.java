@@ -177,7 +177,6 @@ public class DefaultModel implements Model, Cloneable {
         Node n = new Node(nextNode++);
         while (!usedNodeIds.add(n)) {
             n = new Node(nextNode++);
-
         }
         return n;
     }
