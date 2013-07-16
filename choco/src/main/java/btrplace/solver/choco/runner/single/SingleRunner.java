@@ -24,18 +24,11 @@ import btrplace.solver.choco.runner.InstanceResult;
 import btrplace.solver.choco.runner.InstanceSolver;
 
 /**
- * A simple runner that solve in one stage a whole problem.
+ * A simple runner that solve in one stage a whole instance.
  *
  * @author Fabien Hermenier
  */
 public class SingleRunner implements InstanceSolver {
-
-    /**
-     * Make a new runner.
-     */
-    public SingleRunner() {
-        super();    //To change body of overridden methods use File | Settings | File Templates.
-    }
 
     @Override
     public InstanceResult solve(ChocoReconfigurationAlgorithmParams cra,

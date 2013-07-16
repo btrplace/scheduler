@@ -46,6 +46,8 @@ public class InstanceTest {
         Assert.assertEquals(i.getModel(), mo);
         Assert.assertEquals(i.getConstraints(), l);
         Assert.assertEquals(i.getOptimizationConstraint(), o);
+        i = new Instance(mo, o);
+        Assert.assertEquals(i.getConstraints().size(), 0);
     }
 
     @Test
