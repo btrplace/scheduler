@@ -21,7 +21,7 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
-import btrplace.model.constraint.SatConstraint;
+import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.SingleRunningCapacity;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -42,7 +42,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class CSingleRunningCapacity implements ChocoSatConstraint {
+public class CSingleRunningCapacity implements ChocoConstraint {
 
     private SingleRunningCapacity cstr;
 
@@ -96,14 +96,14 @@ public class CSingleRunningCapacity implements ChocoSatConstraint {
     /**
      * The builder associated to that constraint.
      */
-    public static class Builder implements ChocoSatConstraintBuilder {
+    public static class Builder implements ChocoConstraintBuilder {
         @Override
-        public Class<? extends SatConstraint> getKey() {
+        public Class<? extends Constraint> getKey() {
             return SingleRunningCapacity.class;
         }
 
         @Override
-        public CSingleRunningCapacity build(SatConstraint cstr) {
+        public CSingleRunningCapacity build(Constraint cstr) {
             return new CSingleRunningCapacity((SingleRunningCapacity) cstr);
         }
     }

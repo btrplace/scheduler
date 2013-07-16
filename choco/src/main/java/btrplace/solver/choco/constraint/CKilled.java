@@ -20,8 +20,8 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.VM;
+import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Killed;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 
@@ -36,7 +36,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class CKilled implements ChocoSatConstraint {
+public class CKilled implements ChocoConstraint {
 
     private Killed cstr;
 
@@ -74,14 +74,14 @@ public class CKilled implements ChocoSatConstraint {
     /**
      * Builder associated to the constraint.
      */
-    public static class Builder implements ChocoSatConstraintBuilder {
+    public static class Builder implements ChocoConstraintBuilder {
         @Override
-        public Class<? extends SatConstraint> getKey() {
+        public Class<? extends Constraint> getKey() {
             return Killed.class;
         }
 
         @Override
-        public CKilled build(SatConstraint cstr) {
+        public CKilled build(Constraint cstr) {
             return new CKilled((Killed) cstr);
         }
     }

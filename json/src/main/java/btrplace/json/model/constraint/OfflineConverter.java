@@ -26,7 +26,7 @@ import net.minidev.json.JSONObject;
  *
  * @author Fabien Hermenier
  */
-public class OfflineConverter extends SatConstraintConverter<Offline> {
+public class OfflineConverter extends ConstraintConverter<Offline> {
 
 
     @Override

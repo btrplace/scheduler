@@ -45,7 +45,7 @@ public class ModelConverter extends AbstractJSONObjectConverter<Model> {
     public ModelConverter() {
         cfgParser = new MappingConverter();
         attrsParser = new AttributesConverter();
-        viewsConverter = new ModelViewsConverter();
+        viewsConverter = ModelViewsConverter.newBundle();
     }
 
     /**

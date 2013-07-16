@@ -22,8 +22,8 @@ import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.Among;
+import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Fence;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.chocoUtil.MyElement;
@@ -37,7 +37,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class CAmong implements ChocoSatConstraint {
+public class CAmong implements ChocoConstraint {
 
     private Among cstr;
 
@@ -182,14 +182,14 @@ public class CAmong implements ChocoSatConstraint {
     /**
      * Builder associated to the constraint.
      */
-    public static class Builder implements ChocoSatConstraintBuilder {
+    public static class Builder implements ChocoConstraintBuilder {
         @Override
-        public Class<? extends SatConstraint> getKey() {
+        public Class<? extends Constraint> getKey() {
             return Among.class;
         }
 
         @Override
-        public CAmong build(SatConstraint cstr) {
+        public CAmong build(Constraint cstr) {
             return new CAmong((Among) cstr);
         }
     }

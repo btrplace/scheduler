@@ -34,7 +34,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class SplitAmongConverter extends SatConstraintConverter<SplitAmong> {
+public class SplitAmongConverter extends ConstraintConverter<SplitAmong> {
 
     @Override
     public Class<SplitAmong> getSupportedConstraint() {

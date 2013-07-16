@@ -32,7 +32,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class SequentialVMTransitionsConverter extends SatConstraintConverter<SequentialVMTransitions> {
+public class SequentialVMTransitionsConverter extends ConstraintConverter<SequentialVMTransitions> {
 
     @Override
     public Class<SequentialVMTransitions> getSupportedConstraint() {

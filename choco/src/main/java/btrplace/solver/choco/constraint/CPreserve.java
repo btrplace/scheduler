@@ -19,8 +19,8 @@ package btrplace.solver.choco.constraint;
 
 import btrplace.model.Model;
 import btrplace.model.VM;
+import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Preserve;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -37,7 +37,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class CPreserve implements ChocoSatConstraint {
+public class CPreserve implements ChocoConstraint {
 
     private Preserve cstr;
 
@@ -98,14 +98,14 @@ public class CPreserve implements ChocoSatConstraint {
     /**
      * The builder associated to that constraint.
      */
-    public static class Builder implements ChocoSatConstraintBuilder {
+    public static class Builder implements ChocoConstraintBuilder {
         @Override
-        public Class<? extends SatConstraint> getKey() {
+        public Class<? extends Constraint> getKey() {
             return Preserve.class;
         }
 
         @Override
-        public CPreserve build(SatConstraint cstr) {
+        public CPreserve build(Constraint cstr) {
             return new CPreserve((Preserve) cstr);
         }
     }

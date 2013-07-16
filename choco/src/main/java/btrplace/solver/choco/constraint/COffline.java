@@ -21,6 +21,7 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
+import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Offline;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
@@ -37,7 +38,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class COffline implements ChocoSatConstraint {
+public class COffline implements ChocoConstraint {
 
     private Offline cstr;
 
@@ -81,14 +82,14 @@ public class COffline implements ChocoSatConstraint {
     /**
      * Builder associated to the constraint.
      */
-    public static class Builder implements ChocoSatConstraintBuilder {
+    public static class Builder implements ChocoConstraintBuilder {
         @Override
-        public Class<? extends SatConstraint> getKey() {
+        public Class<? extends Constraint> getKey() {
             return Offline.class;
         }
 
         @Override
-        public COffline build(SatConstraint cstr) {
+        public COffline build(Constraint cstr) {
             return new COffline((Offline) cstr);
         }
     }

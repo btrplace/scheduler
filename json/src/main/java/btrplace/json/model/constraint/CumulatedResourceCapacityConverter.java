@@ -26,7 +26,7 @@ import net.minidev.json.JSONObject;
  *
  * @author Fabien Hermenier
  */
-public class CumulatedResourceCapacityConverter extends SatConstraintConverter<CumulatedResourceCapacity> {
+public class CumulatedResourceCapacityConverter extends ConstraintConverter<CumulatedResourceCapacity> {
 
     @Override
     public Class<CumulatedResourceCapacity> getSupportedConstraint() {

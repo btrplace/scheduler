@@ -57,7 +57,7 @@ public class ResumeVMModelTest {
         map.addOnlineNode(n2);
         map.addSleepingVM(vm1, n1);
 
-        DurationEvaluators dev = new DurationEvaluators();
+        DurationEvaluators dev = DurationEvaluators.newBundle();
         dev.register(ResumeVM.class, new ConstantActionDuration(10));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
@@ -105,7 +105,7 @@ public class ResumeVMModelTest {
         map.addSleepingVM(vm1, n1);
         map.addSleepingVM(vm2, n2);
 
-        DurationEvaluators dev = new DurationEvaluators();
+        DurationEvaluators dev = DurationEvaluators.newBundle();
         dev.register(ResumeVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)

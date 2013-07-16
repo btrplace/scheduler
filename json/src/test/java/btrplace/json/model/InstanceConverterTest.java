@@ -19,6 +19,7 @@ package btrplace.json.model;
 
 import btrplace.json.JSONConverterException;
 import btrplace.model.*;
+import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.Running;
 import btrplace.model.constraint.SatConstraint;
@@ -50,10 +51,11 @@ public class InstanceConverterTest {
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Online(ma.getAllNodes()));
         cstrs.add(new Running(Collections.singleton(vm1)));
-        Instance i = new Instance(mo, cstrs);
+        Instance i = new Instance(mo, cstrs, new MinMTTR());
 
         InstanceConverter conv = new InstanceConverter();
         String o = conv.toJSONString(i);
+        System.out.println(o);
         Instance res = conv.fromJSON(o);
         Assert.assertEquals(i, res);
     }

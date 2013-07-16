@@ -26,7 +26,7 @@ import net.minidev.json.JSONObject;
  *
  * @author Fabien Hermenier
  */
-public class OverbookConverter extends SatConstraintConverter<Overbook> {
+public class OverbookConverter extends ConstraintConverter<Overbook> {
 
     @Override
     public Class<Overbook> getSupportedConstraint() {

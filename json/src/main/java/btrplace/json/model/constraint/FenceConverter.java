@@ -26,7 +26,7 @@ import net.minidev.json.JSONObject;
  *
  * @author Fabien Hermenier
  */
-public class FenceConverter extends SatConstraintConverter<Fence> {
+public class FenceConverter extends ConstraintConverter<Fence> {
 
     @Override
     public Class<Fence> getSupportedConstraint() {

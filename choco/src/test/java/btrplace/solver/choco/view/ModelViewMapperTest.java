@@ -36,7 +36,7 @@ public class ModelViewMapperTest {
 
     @Test
     public void testInstantiate() {
-        ModelViewMapper map = new ModelViewMapper();
+        ModelViewMapper map = ModelViewMapper.newBundle();
         Assert.assertTrue(map.isRegistered(ShareableResource.class));
         Assert.assertTrue(map.getBuilder(ShareableResource.class) instanceof CShareableResource.Builder);
     }

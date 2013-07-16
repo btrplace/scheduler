@@ -177,7 +177,6 @@ public class DefaultModel implements Model, Cloneable {
         Node n = new Node(nextNode++);
         while (!usedNodeIds.add(n)) {
             n = new Node(nextNode++);
-
         }
         return n;
     }
@@ -185,7 +184,7 @@ public class DefaultModel implements Model, Cloneable {
     @Override
     public VM newVM(int id) {
         VM v = new VM(id);
-        if (usedVMIds.contains(v)) {
+        if (!usedVMIds.add(v)) {
             return null;
         }
         return v;
@@ -194,7 +193,7 @@ public class DefaultModel implements Model, Cloneable {
     @Override
     public Node newNode(int id) {
         Node n = new Node(id);
-        if (usedNodeIds.contains(n)) {
+        if (!usedNodeIds.add(n)) {
             return null;
         }
         return n;
