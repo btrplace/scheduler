@@ -282,9 +282,9 @@ public class Issues {
                 .run(n3, vm5, vm6)
                 .get();
 
-        Set<SatConstraint> ctrsC = new HashSet<SatConstraint>();
-        Set<VM> vms1 = new HashSet<VM>(Arrays.asList(vm1, vm3, vm5));
-        Set<VM> vms2 = new HashSet<VM>(Arrays.asList(vm2, vm4, vm6));
+        Set<SatConstraint> ctrsC = new HashSet<>();
+        Set<VM> vms1 = new HashSet<>(Arrays.asList(vm1, vm3, vm5));
+        Set<VM> vms2 = new HashSet<>(Arrays.asList(vm2, vm4, vm6));
 
         ctrsC.add(new Spread(vms1));
         ctrsC.add(new Spread(vms2));

@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.runner;
 
-import btrplace.solver.choco.runner.SolutionStatistics;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

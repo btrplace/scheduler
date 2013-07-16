@@ -62,7 +62,7 @@ public class SliceSchedulerBuilder {
     /**
      * Ids of non-overlapping slices.
      */
-    private HashMap<VM, int[]> non;
+    private Map<VM, int[]> non;
 
     /**
      * Make a new builder.

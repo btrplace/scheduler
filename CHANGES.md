@@ -6,6 +6,10 @@ Release notes
 - Bugs fix
 - Optimization constraint is now a part of a reconfiguration algorithm
   at the API level
+- It is possible to specify a dedicated solving method using InstanceSolver.
+  This will be used later to integrate the parallel resolution of partitioned
+  instances.
+
 
 version 0.30 - 04 Jun 2013
 ----------------------

@@ -40,28 +40,28 @@ public interface SolvingStatistics {
      *
      * @return a duration in milliseconds
      */
-    public long getSolvingDuration();
+    long getSolvingDuration();
 
     /**
      * Get the time that was necessary to build the core-RP.
      *
      * @return a duration in milliseconds
      */
-    public long getCoreRPBuildDuration();
+    long getCoreRPBuildDuration();
 
     /**
      * Get the time that was necessary to specialize the core-CP.
      *
      * @return a duration in milliseconds
      */
-    public long getSpeRPDuration();
+    long getSpeRPDuration();
 
     /**
      * Get the moment the computation starts.
      *
      * @return a time period in the epoch format
      */
-    public long getStart();
+    long getStart();
 
     /**
      * Get the number of opened nodes.
@@ -96,21 +96,21 @@ public interface SolvingStatistics {
      *
      * @return a positive integer
      */
-    public int getNbVMs();
+    int getNbVMs();
 
     /**
      * Get the number of nodes in the model.
      *
      * @return a positive integer
      */
-    public int getNbNodes();
+    int getNbNodes();
 
     /**
      * Get the number of VMs managed by the algorithm.
      *
      * @return a positive number
      */
-    public int getNbManagedVMs();
+    int getNbManagedVMs();
 
     /**
      * Get the parameters of the reconfiguration algorithm.
