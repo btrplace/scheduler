@@ -28,7 +28,6 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
 import btrplace.solver.choco.chocoUtil.AliasedCumulatives;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import btrplace.solver.choco.objective.ObjectiveAlterer;
 import btrplace.solver.choco.view.ChocoModelView;
 import btrplace.solver.choco.view.ModelViewMapper;
 import choco.cp.solver.CPSolver;
@@ -331,14 +330,15 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         views = new HashMap<>(model.getViews().size());
         for (ModelView rc : model.getViews()) {
             ChocoModelView vv = viewMapper.map(this, rc);
-            if (vv == null) {
-                throw new SolverException(model, "No implementation available for the view '" + rc.getIdentifier() + "'");
-            }
-            ChocoModelView in = views.put(vv.getIdentifier(), vv);
-            if (in != null) {
-                throw new SolverException(model, "Cannot use the implementation '" + vv.getIdentifier() +
-                        "' implementation for '" + rc.getIdentifier() + "'."
-                        + "The '" + in.getIdentifier() + "' implementation is already used");
+            if (vv != null) {
+                ChocoModelView in = views.put(vv.getIdentifier(), vv);
+                if (in != null) {
+                    throw new SolverException(model, "Cannot use the implementation '" + vv.getIdentifier() +
+                            "' implementation for '" + rc.getIdentifier() + "'."
+                            + "The '" + in.getIdentifier() + "' implementation is already used");
+                }
+            } else {
+                logger.debug("No implementation available for the view '{}'", rc.getIdentifier());
             }
         }
     }

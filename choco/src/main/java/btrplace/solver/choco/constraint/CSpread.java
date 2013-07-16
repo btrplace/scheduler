@@ -21,7 +21,7 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
-import btrplace.model.constraint.SatConstraint;
+import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Spread;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
@@ -39,7 +39,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class CSpread implements ChocoSatConstraint {
+public class CSpread implements ChocoConstraint {
 
     private Spread cstr;
 
@@ -155,14 +155,14 @@ public class CSpread implements ChocoSatConstraint {
     /**
      * The builder associated to the constraint.
      */
-    public static class Builder implements ChocoSatConstraintBuilder {
+    public static class Builder implements ChocoConstraintBuilder {
         @Override
-        public Class<? extends SatConstraint> getKey() {
+        public Class<? extends Constraint> getKey() {
             return Spread.class;
         }
 
         @Override
-        public CSpread build(SatConstraint cstr) {
+        public CSpread build(Constraint cstr) {
             return new CSpread((Spread) cstr);
         }
     }

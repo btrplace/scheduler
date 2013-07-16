@@ -57,7 +57,7 @@ public class BootVMModelTest {
         map.addOnlineNode(n2);
         map.addReadyVM(vm1);
 
-        DurationEvaluators dev = new DurationEvaluators();
+        DurationEvaluators dev = DurationEvaluators.newBundle();
         dev.register(BootVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)
@@ -103,7 +103,7 @@ public class BootVMModelTest {
         map.addReadyVM(vm1);
         map.addReadyVM(vm2);
 
-        DurationEvaluators dev = new DurationEvaluators();
+        DurationEvaluators dev = DurationEvaluators.newBundle();
         dev.register(BootVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setDurationEvaluatators(dev)

@@ -39,7 +39,7 @@ public class DurationEvaluatorsTest {
 
     @Test
     public void testInstantiateAndIsRegistered() throws SolverException {
-        DurationEvaluators d = new DurationEvaluators();
+        DurationEvaluators d = DurationEvaluators.newBundle();
 
         //Juste check an evaluator is registered for every possible action.
         mo.getAttributes().put(vm1, "boot", 2);
@@ -67,7 +67,7 @@ public class DurationEvaluatorsTest {
 
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered"})
     public void testUnregister() {
-        DurationEvaluators d = new DurationEvaluators();
+        DurationEvaluators d = DurationEvaluators.newBundle();
         Assert.assertTrue(d.unregister(btrplace.plan.event.MigrateVM.class));
         Assert.assertFalse(d.isRegistered(btrplace.plan.event.MigrateVM.class));
         Assert.assertFalse(d.unregister(btrplace.plan.event.MigrateVM.class));
@@ -76,7 +76,6 @@ public class DurationEvaluatorsTest {
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testUnregister"})
     public void testRegister() {
         DurationEvaluators d = new DurationEvaluators();
-        d.unregister(btrplace.plan.event.MigrateVM.class);
         Assert.assertTrue(d.register(btrplace.plan.event.MigrateVM.class, new ConstantActionDuration(7)));
         Assert.assertFalse(d.register(btrplace.plan.event.MigrateVM.class, new ConstantActionDuration(3)));
     }
@@ -84,7 +83,6 @@ public class DurationEvaluatorsTest {
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testUnregister", "testRegister"})
     public void testGetEvaluator() {
         DurationEvaluators d = new DurationEvaluators();
-        d.unregister(btrplace.plan.event.MigrateVM.class);
         ActionDurationEvaluator ev = new ConstantActionDuration(7);
         d.register(btrplace.plan.event.MigrateVM.class, ev);
         Assert.assertEquals(d.getEvaluator(btrplace.plan.event.MigrateVM.class), ev);
@@ -102,7 +100,6 @@ public class DurationEvaluatorsTest {
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testUnregister"}, expectedExceptions = {SolverException.class})
     public void testEvaluateUnregisteredAction() throws SolverException {
         DurationEvaluators d = new DurationEvaluators();
-        d.unregister(btrplace.plan.event.MigrateVM.class);
         d.evaluate(mo, btrplace.plan.event.MigrateVM.class, vm1);
     }
 

@@ -26,7 +26,7 @@ import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.chocoUtil.ChocoUtils;
-import btrplace.solver.choco.objective.minMTTR.MinMTTR;
+import btrplace.solver.choco.constraint.minMTTR.CMinMTTR;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.ElementV;
 import choco.kernel.common.logging.ChocoLogging;
@@ -246,7 +246,7 @@ public class Issues {
         // idle should be less than Amount for MaxSN (0, in this case)
         solver.post(solver.eq(Sidle, 0));
         System.err.flush();
-        MinMTTR obj = new MinMTTR();
+        CMinMTTR obj = new CMinMTTR();
         obj.inject(rp);
         //System.err.println(solver.pretty());
         ChocoLogging.setLoggingMaxDepth(100);
@@ -282,9 +282,9 @@ public class Issues {
                 .run(n3, vm5, vm6)
                 .get();
 
-        Set<SatConstraint> ctrsC = new HashSet<SatConstraint>();
-        Set<VM> vms1 = new HashSet<VM>(Arrays.asList(vm1, vm3, vm5));
-        Set<VM> vms2 = new HashSet<VM>(Arrays.asList(vm2, vm4, vm6));
+        Set<SatConstraint> ctrsC = new HashSet<>();
+        Set<VM> vms1 = new HashSet<>(Arrays.asList(vm1, vm3, vm5));
+        Set<VM> vms2 = new HashSet<>(Arrays.asList(vm2, vm4, vm6));
 
         ctrsC.add(new Spread(vms1));
         ctrsC.add(new Spread(vms2));

@@ -21,7 +21,7 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
-import btrplace.model.constraint.SatConstraint;
+import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.SingleResourceCapacity;
 import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
@@ -40,7 +40,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class CSingleResourceCapacity implements ChocoSatConstraint {
+public class CSingleResourceCapacity implements ChocoConstraint {
 
     private SingleResourceCapacity cstr;
 
@@ -112,14 +112,14 @@ public class CSingleResourceCapacity implements ChocoSatConstraint {
     /**
      * The builder associated to that constraint.
      */
-    public static class Builder implements ChocoSatConstraintBuilder {
+    public static class Builder implements ChocoConstraintBuilder {
         @Override
-        public Class<? extends SatConstraint> getKey() {
+        public Class<? extends Constraint> getKey() {
             return SingleResourceCapacity.class;
         }
 
         @Override
-        public CSingleResourceCapacity build(SatConstraint cstr) {
+        public CSingleResourceCapacity build(Constraint cstr) {
             return new CSingleResourceCapacity((SingleResourceCapacity) cstr);
         }
     }

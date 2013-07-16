@@ -146,10 +146,10 @@ public class DefaultReconfigurationProblemBuilder {
             over = Collections.emptySet();
         }
         if (dEval == null) {
-            dEval = new DurationEvaluators();
+            dEval = DurationEvaluators.newBundle();
         }
         if (viewMapper == null) {
-            viewMapper = new ModelViewMapper();
+            viewMapper = ModelViewMapper.newBundle();
         }
         if (manageable == null) {
             manageable = new HashSet<>();

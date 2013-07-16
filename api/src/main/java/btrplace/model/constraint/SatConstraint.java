@@ -41,7 +41,7 @@ import java.util.Objects;
  *
  * @author Fabien Hermenier
  */
-public abstract class SatConstraint {
+public abstract class SatConstraint implements Constraint {
 
     private boolean continuous;
 

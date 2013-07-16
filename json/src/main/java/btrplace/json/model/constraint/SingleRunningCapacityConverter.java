@@ -27,7 +27,7 @@ import net.minidev.json.JSONObject;
  *
  * @author Fabien Hermenier
  */
-public class SingleRunningCapacityConverter extends SatConstraintConverter<SingleRunningCapacity> {
+public class SingleRunningCapacityConverter extends ConstraintConverter<SingleRunningCapacity> {
 
     @Override
     public Class<SingleRunningCapacity> getSupportedConstraint() {

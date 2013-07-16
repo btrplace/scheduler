@@ -71,7 +71,7 @@ public class COverbookTest {
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.labelVariables(true);
         //cra.setVerbosity(1);
-        cra.getSatConstraintMapper().register(new COverbook.Builder());
+        cra.getConstraintMapper().register(new COverbook.Builder());
         ReconfigurationPlan p = cra.solve(mo, c);
         Assert.assertNotNull(p);
     }

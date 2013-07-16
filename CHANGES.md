@@ -1,9 +1,18 @@
 Release notes
 ======================
 
+0.31 - 16 Jul 2013
+----------------------
+- Bugs fix
+- Optimization constraint is now a part of a reconfiguration algorithm
+  at the API level
+- It is possible to specify a dedicated solving method using InstanceSolver.
+  This will be used later to integrate the parallel resolution of partitioned
+  instances.
+
+
 version 0.30 - 04 Jun 2013
 ----------------------
-
 - Bugs fix
 - Close #16, #18, #19
 - MAJOR API change: Type system for elements. No more UUIDS.

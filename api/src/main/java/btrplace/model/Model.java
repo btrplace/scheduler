@@ -101,6 +101,7 @@ public interface Model extends Cloneable {
 
     /**
      * Generate a new VM for this model.
+     * The VM will not be included in the mapping associated to the model.
      *
      * @return {@code null} if no identifiers are available for the VM.
      */
@@ -108,6 +109,7 @@ public interface Model extends Cloneable {
 
     /**
      * Generate a new VM for this model.
+     * The VM will not be included in the mapping associated to the model.
      *
      * @param id the identifier to use for that VM
      * @return a VM or {@code null} if the identifier is already used
@@ -116,6 +118,7 @@ public interface Model extends Cloneable {
 
     /**
      * Generate a new Node for this model.
+     * The node will not be included in the mapping associated to the model.
      *
      * @return {@code null} if no identifiers are available for the Node.
      */
@@ -123,6 +126,7 @@ public interface Model extends Cloneable {
 
     /**
      * Generate a new node for this model.
+     * The node will not be included in the mapping associated to the model.
      *
      * @param id the identifier to use for that node
      * @return a Node or {@code null} if the identifier is already used

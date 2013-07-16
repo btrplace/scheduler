@@ -35,12 +35,8 @@ import java.util.List;
  */
 public class TimeBasedPlanApplierTest {
 
-    static Model mo = new DefaultModel();
-    static List<VM> vms = Util.newVMs(mo, 10);
-    static List<Node> ns = Util.newNodes(mo, 10);
 
-
-    private static ReconfigurationPlan makePlan() {
+    private static ReconfigurationPlan makePlan(Model mo, List<Node> ns, List<VM> vms) {
         Mapping map = mo.getMapping();
         map.addOnlineNode(ns.get(0));
         map.addOnlineNode(ns.get(1));
@@ -74,8 +70,11 @@ public class TimeBasedPlanApplierTest {
 
     @Test
     public void testApply() {
-        ReconfigurationPlan plan = makePlan();
-        Model mo = plan.getOrigin();
+        Model mo = new DefaultModel();
+        List<VM> vms = Util.newVMs(mo, 10);
+        List<Node> ns = Util.newNodes(mo, 10);
+
+        ReconfigurationPlan plan = makePlan(mo, ns, vms);
         Model res = new DependencyBasedPlanApplier().apply(plan);
         Mapping resMapping = res.getMapping();
         Assert.assertTrue(resMapping.getOfflineNodes().contains(ns.get(0)));
@@ -89,7 +88,10 @@ public class TimeBasedPlanApplierTest {
 
     @Test
     public void testToString() {
-        ReconfigurationPlan plan = makePlan();
+        Model mo = new DefaultModel();
+        List<VM> vms = Util.newVMs(mo, 10);
+        List<Node> ns = Util.newNodes(mo, 10);
+        ReconfigurationPlan plan = makePlan(mo, ns, vms);
         Assert.assertFalse(new DependencyBasedPlanApplier().toString(plan).contains("null"));
     }
 }

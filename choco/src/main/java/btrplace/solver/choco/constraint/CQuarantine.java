@@ -22,9 +22,9 @@ import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.Ban;
+import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Quarantine;
 import btrplace.model.constraint.Root;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 
@@ -38,7 +38,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class CQuarantine implements ChocoSatConstraint {
+public class CQuarantine implements ChocoConstraint {
 
     private Quarantine cstr;
 
@@ -88,14 +88,14 @@ public class CQuarantine implements ChocoSatConstraint {
     /**
      * Builder associated to the constraint.
      */
-    public static class Builder implements ChocoSatConstraintBuilder {
+    public static class Builder implements ChocoConstraintBuilder {
         @Override
-        public Class<? extends SatConstraint> getKey() {
+        public Class<? extends Constraint> getKey() {
             return Quarantine.class;
         }
 
         @Override
-        public CQuarantine build(SatConstraint cstr) {
+        public CQuarantine build(Constraint cstr) {
             return new CQuarantine((Quarantine) cstr);
         }
     }

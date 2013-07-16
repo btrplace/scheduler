@@ -94,7 +94,7 @@ public class SolverTuning implements Example {
             ReconfigurationPlan p = cra.solve(model, constraints);
             if (p != null) {
                 System.out.println("--- Solving using repair : " + cra.doRepair());
-                System.out.println(cra.getSolvingStatistics());
+                System.out.println(cra.getStatistics());
             }
         } catch (SolverException e) {
             System.err.println("--- Solving using repair : " + cra.doRepair() + "; Error: " + e.getMessage());
@@ -102,7 +102,7 @@ public class SolverTuning implements Example {
     }
 
     /**
-     * A default model with 100 nodes hosting 6,00 VMs.
+     * A default model with 100 nodes hosting 600 VMs.
      * 6 VMs per node
      * Each node has a 10GB network interface and 32 GB RAM
      * Each VM consumes 1GB Bandwidth and between 1 to 5 GB RAM

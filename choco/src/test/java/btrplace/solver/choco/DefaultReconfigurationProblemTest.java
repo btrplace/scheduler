@@ -24,7 +24,6 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import btrplace.solver.choco.objective.ObjectiveAlterer;
 import btrplace.solver.choco.view.CShareableResource;
 import btrplace.solver.choco.view.ChocoModelView;
 import btrplace.solver.choco.view.ChocoModelViewBuilder;
@@ -152,7 +151,7 @@ public class DefaultReconfigurationProblemTest {
         toRun.add(vm4);
         toRun.add(vm1);
         mo.getAttributes().put(vm7, "template", "small");
-        DurationEvaluators dEval = new DurationEvaluators();
+        DurationEvaluators dEval = DurationEvaluators.newBundle();
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(toWait, toRun, Collections.singleton(vm3), Collections.singleton(vm2))
                 .setDurationEvaluatators(dEval).build();
@@ -684,7 +683,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertTrue(rp.getView("cmock") instanceof MockCViewModel);
     }
 
-    @Test(expectedExceptions = {SolverException.class})
+    @Test
     public void testNoViewImplementation() throws SolverException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
@@ -712,7 +711,8 @@ public class DefaultReconfigurationProblemTest {
         MockView v = new MockView();
         mo.attach(v);
 
-        new DefaultReconfigurationProblemBuilder(mo).build();
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
+        Assert.assertNull(rp.getView("mock"));
     }
 
     /**
@@ -787,7 +787,7 @@ public class DefaultReconfigurationProblemTest {
         mo.getAttributes().put(vm4, "template", "small");
         mo.attach(rc);
 
-        ReconfigurationProblem rp = new DefaultReconfigurationProblem(mo, new DurationEvaluators(), new ModelViewMapper(),
+        ReconfigurationProblem rp = new DefaultReconfigurationProblem(mo, DurationEvaluators.newBundle(), new ModelViewMapper(),
                 Collections.singleton(vm4),
                 Collections.singleton(vm5),
                 Collections.singleton(vm1),

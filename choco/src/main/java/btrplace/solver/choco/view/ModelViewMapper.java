@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,7 +18,6 @@
 package btrplace.solver.choco.view;
 
 import btrplace.model.view.ModelView;
-import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 
@@ -36,11 +34,22 @@ public class ModelViewMapper {
     private Map<Class<? extends ModelView>, ChocoModelViewBuilder> builders;
 
     /**
-     * Make a new mapper.
+     * Make a new empty mapper.
      */
     public ModelViewMapper() {
         builders = new HashMap<>();
-        builders.put(ShareableResource.class, new CShareableResource.Builder());
+    }
+
+    /**
+     * Make a new {@code ModelViewMapper} and fulfill it
+     * using a default mapper for each bundled view.
+     *
+     * @return a fulfilled mapper.
+     */
+    public static ModelViewMapper newBundle() {
+        ModelViewMapper map = new ModelViewMapper();
+        map.register(new CShareableResource.Builder());
+        return map;
     }
 
     /**

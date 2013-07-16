@@ -26,7 +26,7 @@ import net.minidev.json.JSONObject;
  *
  * @author Fabien Hermenier
  */
-public class ReadyConverter extends SatConstraintConverter<Ready> {
+public class ReadyConverter extends ConstraintConverter<Ready> {
 
 
     @Override
