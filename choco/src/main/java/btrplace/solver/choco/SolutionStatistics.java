@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -46,18 +45,6 @@ public class SolutionStatistics {
     private int optValue;
 
     private boolean hasObjective = true;
-
-    /**
-     * Make a new statistics.
-     *
-     * @param nbN the number of opened nodes
-     * @param nbB the number of backtracks
-     * @param t   the time in milliseconds
-     */
-    public SolutionStatistics(int nbN, int nbB, int t) {
-        this(nbN, nbB, t, -1);
-        hasObjective = false;
-    }
 
     /**
      * Make a new statistics.
