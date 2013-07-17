@@ -1,7 +1,7 @@
 Release notes
 ======================
 
-0.31 - 16 Jul 2013
+version 0.31 - 16 Jul 2013
 ----------------------
 - Bugs fix
 - Optimization constraint is now a part of a reconfiguration algorithm
