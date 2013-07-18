@@ -54,7 +54,7 @@ public class LonelySplitter implements ConstraintSplitter<Lonely> {
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
         for (Instance i : partitions) {
             Mapping m = i.getModel().getMapping();
-            Set<VM> in = Splitters.extractInside(vms, m.getAllVMs());
+            Set<VM> in = Splitters.extractVMsIn(vms, m);
             if (!in.isEmpty()) {
                 i.getConstraints().add(new Lonely(in, cstr.isContinuous()));
             }

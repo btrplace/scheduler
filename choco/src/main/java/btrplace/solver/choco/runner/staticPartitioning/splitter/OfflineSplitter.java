@@ -46,8 +46,7 @@ public class OfflineSplitter implements ConstraintSplitter<Offline> {
     public boolean split(Offline cstr, Instance origin, List<Instance> partitions) {
         Set<Node> nodes = new HashSet<>(cstr.getInvolvedNodes());
         for (Instance i : partitions) {
-            Set<Node> all = i.getModel().getNodes();
-            Set<Node> in = Splitters.extractInside(nodes, all);
+            Set<Node> in = Splitters.extractNodesIn(nodes, i.getModel().getMapping());
             if (!in.isEmpty()) {
                 i.getConstraints().add(new Offline(in));
             }

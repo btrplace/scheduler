@@ -46,9 +46,9 @@ public class BanSplitter implements ConstraintSplitter<Ban> {
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
         Set<Node> nodes = new HashSet<>(cstr.getInvolvedNodes());
         for (Instance i : partitions) {
-            Set<VM> vmsIn = Splitters.extractInside(vms, i.getModel().getMapping().getAllVMs());
+            Set<VM> vmsIn = Splitters.extractVMsIn(vms, i.getModel().getMapping());
             if (!vmsIn.isEmpty()) {
-                Set<Node> nodesIn = Splitters.extractInside(nodes, i.getModel().getMapping().getAllNodes());
+                Set<Node> nodesIn = Splitters.extractNodesIn(nodes, i.getModel().getMapping());
                 if (!nodesIn.isEmpty()) {
                     i.getConstraints().add(new Ban(vmsIn, nodesIn));
                 }

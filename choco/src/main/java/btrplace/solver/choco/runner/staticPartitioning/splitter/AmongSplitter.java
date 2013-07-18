@@ -51,7 +51,7 @@ public class AmongSplitter implements ConstraintSplitter<Among> {
         }
 
         for (Instance i : partitions) {
-            Set<VM> vmsIn = Splitters.extractInside(vms, i.getModel().getMapping().getAllVMs());
+            Set<VM> vmsIn = Splitters.extractVMsIn(vms, i.getModel().getMapping());
 
             if (!vmsIn.isEmpty()) {
                 Collection<Collection<Node>> subSplit = new ArrayList<>();

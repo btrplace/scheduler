@@ -46,8 +46,7 @@ public class SingleResourceCapacitySplitter implements ConstraintSplitter<Single
     public boolean split(SingleResourceCapacity cstr, Instance origin, List<Instance> partitions) {
         Set<Node> nodes = new HashSet<>(cstr.getInvolvedNodes());
         for (Instance i : partitions) {
-            Set<Node> all = i.getModel().getNodes();
-            Set<Node> in = Splitters.extractInside(nodes, all);
+            Set<Node> in = Splitters.extractNodesIn(nodes, i.getModel().getMapping());
             if (!in.isEmpty()) {
                 i.getConstraints().add(new SingleResourceCapacity(in, cstr.getResource(), cstr.getAmount(), cstr.isContinuous()));
             }

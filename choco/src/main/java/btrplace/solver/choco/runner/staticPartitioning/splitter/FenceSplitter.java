@@ -46,9 +46,9 @@ public class FenceSplitter implements ConstraintSplitter<Fence> {
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
         Set<Node> nodes = new HashSet<>(cstr.getInvolvedNodes());
         for (Instance i : partitions) {
-            Set<VM> vmsIn = Splitters.extractInside(vms, i.getModel().getVMs());
+            Set<VM> vmsIn = Splitters.extractVMsIn(vms, i.getModel().getMapping());
             if (!vmsIn.isEmpty()) {
-                Set<Node> nodesIn = Splitters.extractInside(nodes, i.getModel().getNodes());
+                Set<Node> nodesIn = Splitters.extractNodesIn(nodes, i.getModel().getMapping());
                 if (!nodesIn.isEmpty()) {
                     i.getConstraints().add(new Fence(vmsIn, nodesIn));
                 }

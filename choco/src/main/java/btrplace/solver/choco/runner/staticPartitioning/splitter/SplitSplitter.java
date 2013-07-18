@@ -48,7 +48,7 @@ public class SplitSplitter implements ConstraintSplitter<Split> {
         for (Instance i : partitions) {
             Collection<Collection<VM>> subSplit = new ArrayList<>();
             for (Set<VM> s : vms) {
-                Set<VM> in = Splitters.extractInside(s, i.getModel().getVMs());
+                Set<VM> in = Splitters.extractVMsIn(s, i.getModel().getMapping());
                 if (!in.isEmpty()) {
                     subSplit.add(in);
                 }
