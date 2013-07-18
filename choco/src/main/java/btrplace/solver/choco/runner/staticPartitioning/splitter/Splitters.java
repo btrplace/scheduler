@@ -17,16 +17,17 @@
 
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
-import btrplace.model.Instance;
+import btrplace.model.Mapping;
 import btrplace.model.Node;
 import btrplace.model.VM;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
 /**
- * Tools to ease splitting.
+ * Utility class to ease set splitting.
  *
  * @author Fabien Hermenier
  */
@@ -47,19 +48,21 @@ public final class Splitters {
      * @param <T> the element type
      * @return the elements in {@code s} that was in {@code in}
      */
-    public static <T> Set<T> extractInside(Set<T> s, Set<T> in) {
+    public static <T> Set<T> extractInside(Collection<T> s, Collection<T> in) {
         Set<T> res = new HashSet<>();
-        for (Iterator<T> ite = s.iterator(); ite.hasNext(); ) {
-            T v = ite.next();
-            if (in.contains(v)) {
-                ite.remove();
-                res.add(v);
-            }
-        }
+        extractInside(s, in, res);
         return res;
     }
 
-    public static <T>void extractInside(Set<T> s, Set<T> base, Set<T> res) {
+    /**
+     * Extract some elements from a given set.
+     *
+     * @param s    the set to browse
+     * @param base the elements to extract from {@code s}
+     * @param res  the set where extracted elements while be putted
+     * @param <T>  the element type
+     */
+    public static <T> void extractInside(Collection<T> s, Collection<T> base, Set<T> res) {
         for (Iterator<T> ite = s.iterator(); ite.hasNext(); ) {
             T v = ite.next();
             if (base.contains(v)) {
@@ -69,18 +72,34 @@ public final class Splitters {
         }
     }
 
-    public static Set<Node> extractNodesIn(Instance i, Set<Node> base) {
+    /**
+     * Extract from a set of nodes, all nodes that are online or offline in a mapping.
+     *
+     * @param base the set of nodes to browse
+     * @param m    the mapping that contains the nodes to extract from {@code base}
+     * @return the extracted nodes.
+     */
+    public static Set<Node> extractNodesIn(Collection<Node> base, Mapping m) {
         Set<Node> res = new HashSet<>();
-        extractInside(i.getModel().getMapping().getOfflineNodes(), base, res);
-        extractInside(i.getModel().getMapping().getOnlineNodes(), base, res);
+        //Cheaper that extracting from m.getAllNodes()
+        extractInside(base, m.getOfflineNodes(), res);
+        extractInside(base, m.getOnlineNodes(), res);
         return res;
     }
 
-    public static Set<VM> extractVMsIn(Instance i, Set<VM> base) {
+    /**
+     * Extract from a set of VMs, all VMs that are running, sleeping ,or ready in a mapping.
+     *
+     * @param base the set of VMs to browse
+     * @param m    the mapping that contains the VMs to extract from {@code base}
+     * @return the extracted VMs.
+     */
+    public static Set<VM> extractVMsIn(Collection<VM> base, Mapping m) {
         Set<VM> res = new HashSet<>();
-        extractInside(i.getModel().getMapping().getRunningVMs(), base, res);
-        extractInside(i.getModel().getMapping().getSleepingVMs(), base, res);
-        extractInside(i.getModel().getMapping().getReadyVMs(), base, res);
+        //Cheaper that extracting from m.getAllVMs();
+        extractInside(base, m.getRunningVMs(), res);
+        extractInside(base, m.getSleepingVMs(), res);
+        extractInside(base, m.getReadyVMs(), res);
         return res;
     }
 }

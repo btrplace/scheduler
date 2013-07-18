@@ -27,8 +27,6 @@ import btrplace.solver.choco.runner.InstanceResult;
 import btrplace.solver.choco.runner.InstanceSolver;
 import btrplace.solver.choco.runner.SolvingStatistics;
 import btrplace.solver.choco.runner.single.InstanceSolverRunner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,7 +34,7 @@ import java.util.List;
 import java.util.concurrent.*;
 
 /**
- * An abstract solver that decompose an instance into multiple disjoint models.
+ * An abstract solver that decomposes an instance into multiple disjoint models.
  * The method to split the instances must be developed. The computed partitions will
  * be solved in parallel with a controlled amount of simultaneous workers.
  * <p/>
@@ -47,8 +45,6 @@ import java.util.concurrent.*;
 public abstract class StaticPartitioning implements InstanceSolver {
 
     private int workersCount;
-
-    static final Logger logger = LoggerFactory.getLogger("StaticPartitioning");
 
     /**
      * Get the number of workers that are used to solve instances.
@@ -105,7 +101,7 @@ public abstract class StaticPartitioning implements InstanceSolver {
                     throw new SolverException(null, "", cause);
                 }
             } catch (InterruptedException e) {
-                System.err.println(e);
+                throw new SolverException(orig.getModel(), e.getMessage(), e);
             }
         }
         duration += System.currentTimeMillis();
@@ -127,7 +123,6 @@ public abstract class StaticPartitioning implements InstanceSolver {
     }
 
     private void merge(InstanceResult merged, Collection<InstanceResult> results) throws SolverException {
-        //TODO: a possible merge issue when there is VM creation is multiple partitions, there will be ids conflict.
         ReconfigurationPlan plan = merged.getPlan();
         for (InstanceResult result : results) {
             for (Action a : result.getPlan()) {
@@ -137,7 +132,6 @@ public abstract class StaticPartitioning implements InstanceSolver {
             }
             SolvingStatistics st = result.getStatistics();
             ((StaticPartitioningStatistics) merged.getStatistics()).addPartitionStatistics(st);
-
         }
     }
 

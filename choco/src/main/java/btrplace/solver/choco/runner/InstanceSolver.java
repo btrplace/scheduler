@@ -20,6 +20,8 @@ package btrplace.solver.choco.runner;
 import btrplace.model.Instance;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Interface to specify an instance solver.
@@ -27,6 +29,8 @@ import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
  * @author Fabien Hermenier
  */
 public interface InstanceSolver {
+
+    final Logger logger = LoggerFactory.getLogger("StaticPartitioning");
 
     /**
      * Solve an instance.

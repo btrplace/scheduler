@@ -17,12 +17,14 @@
 
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
+import btrplace.model.DefaultModel;
+import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Unit tests for {@link Splitters}.
@@ -32,7 +34,7 @@ import java.util.Set;
 public class SplittersTest {
 
     @Test
-    public void testExtractIn() {
+    public void testExtractInside() {
         Set<Integer> s = new HashSet<>(Arrays.asList(1, 2, 3, 4, 5));
         Set<Integer> in = new HashSet<>(Arrays.asList(3, 5, 8, 10));
         Set<Integer> removed = Splitters.extractInside(s, in);
@@ -43,5 +45,45 @@ public class SplittersTest {
 
         removed = Splitters.extractInside(s, in);
         Assert.assertEquals(removed.size(), 0);
+    }
+
+    @Test
+    public void testExtractNodesIn() {
+        Model mo = new DefaultModel();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        Node n4 = mo.newNode();
+        mo.getMapping().addOnlineNode(n1);
+        mo.getMapping().addOnlineNode(n4);
+        mo.getMapping().addOfflineNode(n2);
+        List<Node> root = new ArrayList<>(Arrays.asList(n1, n2, n3));
+        Set<Node> res = Splitters.extractNodesIn(root, mo.getMapping());
+        Assert.assertTrue(res.containsAll(Arrays.asList(n1, n2)));
+        Assert.assertEquals(mo.getMapping().getAllNodes().size(), 3);
+        Assert.assertEquals(root.size(), 1);
+        Assert.assertTrue(root.contains(n3));
+    }
+
+    @Test
+    public void testExtractVMsIn() {
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        VM vm4 = mo.newVM();
+        Node n1 = mo.newNode();
+        mo.getMapping().addOnlineNode(n1);
+        mo.getMapping().addReadyVM(vm1);
+        mo.getMapping().addRunningVM(vm2, n1);
+        mo.getMapping().addSleepingVM(vm3, n1);
+        mo.getMapping().addSleepingVM(mo.newVM(), n1);
+        List<VM> root = new ArrayList<>(Arrays.asList(vm1, vm2, vm3, vm4));
+        Set<VM> res = Splitters.extractVMsIn(root, mo.getMapping());
+        Assert.assertTrue(res.containsAll(Arrays.asList(vm1, vm2, vm3)));
+        Assert.assertEquals(mo.getMapping().getAllVMs().size(), 4);
+        Assert.assertEquals(root.size(), 1);
+        Assert.assertTrue(root.contains(vm4));
+
     }
 }

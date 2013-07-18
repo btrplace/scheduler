@@ -21,8 +21,6 @@ import btrplace.model.Instance;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.Among;
-import btrplace.model.constraint.Ban;
-import btrplace.model.constraint.Split;
 
 import java.util.*;
 
@@ -58,7 +56,7 @@ public class AmongSplitter implements ConstraintSplitter<Among> {
             if (!vmsIn.isEmpty()) {
                 Collection<Collection<Node>> subSplit = new ArrayList<>();
                 for (Set<Node> s : parts) {
-                    Set<Node> in = Splitters.extractNodesIn(i, s);
+                    Set<Node> in = Splitters.extractNodesIn(s, i.getModel().getMapping());
                     if (!in.isEmpty()) {
                         subSplit.add(in);
                     }
