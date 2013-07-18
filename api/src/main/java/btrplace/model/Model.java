@@ -20,7 +20,6 @@ package btrplace.model;
 import btrplace.model.view.ModelView;
 
 import java.util.Collection;
-import java.util.Set;
 
 /**
  * A model depicts a consistent snapshot of an infrastructure.
@@ -32,7 +31,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public interface Model extends Cloneable {
+public interface Model extends Cloneable, ElementBuilder {
 
     /**
      * Get a view already attached to the model
@@ -98,52 +97,4 @@ public interface Model extends Cloneable {
      * @return a new model
      */
     Model clone();
-
-    /**
-     * Generate a new VM for this model.
-     * The VM will not be included in the mapping associated to the model.
-     *
-     * @return {@code null} if no identifiers are available for the VM.
-     */
-    VM newVM();
-
-    /**
-     * Generate a new VM for this model.
-     * The VM will not be included in the mapping associated to the model.
-     *
-     * @param id the identifier to use for that VM
-     * @return a VM or {@code null} if the identifier is already used
-     */
-    VM newVM(int id);
-
-    /**
-     * Generate a new Node for this model.
-     * The node will not be included in the mapping associated to the model.
-     *
-     * @return {@code null} if no identifiers are available for the Node.
-     */
-    Node newNode();
-
-    /**
-     * Generate a new node for this model.
-     * The node will not be included in the mapping associated to the model.
-     *
-     * @param id the identifier to use for that node
-     * @return a Node or {@code null} if the identifier is already used
-     */
-    Node newNode(int id);
-
-    /**
-     * Get all the registered nodes.
-     *
-     * @return a set of nodes, may be empty
-     */
-    Set<Node> getNodes();
-
-    /**
-     * Get all the registered VMs.
-     *
-     * @return a set of VMs, may be empty
-     */
-    Set<VM> getVMs();
 }

@@ -19,6 +19,7 @@ package btrplace.solver.choco.runner.staticPartitioning;
 
 import btrplace.model.*;
 import btrplace.model.constraint.SatConstraint;
+import btrplace.model.view.ModelView;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
 import btrplace.solver.choco.runner.staticPartitioning.splitter.ConstraintSplitterMapper;
@@ -69,16 +70,11 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
         Model mo = i.getModel();
         Mapping map = mo.getMapping();
 
+        SynchronizedElementBuilder eb = new SynchronizedElementBuilder(mo.getVMs(), mo.getNodes());
+
         List<Instance> parts = new ArrayList<>(partitions.size());
         for (Collection<Node> s : partitions) {
-            Model partModel = new DefaultModel();
-            //Book every node and VMs id, we will re-use them in practice
-            for (Node n : i.getModel().getNodes()) {
-                partModel.newNode(n.id());
-            }
-            for (VM vm : i.getModel().getVMs()) {
-                partModel.newVM(vm.id());
-            }
+            Model partModel = makeSubModel(mo, eb);
 
             parts.add(new Instance(partModel, new HashSet<SatConstraint>(), i.getOptimizationConstraint()));
             for (Node n : s) {
@@ -100,6 +96,16 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
         }
         //TODO: deal with ready VMs to run
         return parts;
+    }
+
+    private Model makeSubModel(Model src, SynchronizedElementBuilder p) {
+        Model mo = new DefaultModel(p);
+        //Copy the attributes and the views
+        for (ModelView v : src.getViews()) {
+            mo.attach(v);
+        }
+        mo.setAttributes(src.getAttributes());
+        return mo;
     }
 
     private static boolean isDisjoint(Collection<Collection<Node>> p) {
