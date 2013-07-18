@@ -30,7 +30,6 @@ import java.util.*;
  * A partitioning algorithm that create partitions having a fixed number of nodes.
  * VMs to run are distributed among the partitions.
  * <p/>
- * The partitioning does not consider constraints other that state-oriented constraints.
  *
  * @author Fabien Hermenier
  */
@@ -60,6 +59,11 @@ public class FixedSizePartitioning extends FixedNodeSetsPartitioning {
         return partSize;
     }
 
+    /**
+     * Set the maximum partition size in terms of number of nodes.
+     *
+     * @param s a value > 0
+     */
     public void setSize(int s) {
         this.partSize = s;
     }
@@ -83,10 +87,20 @@ public class FixedSizePartitioning extends FixedNodeSetsPartitioning {
         return super.split(ps, i);
     }
 
+    /**
+     * Ask to select the nodes to put into distinct partitions randomly or not.
+     *
+     * @param b {@code true} for a random pick up
+     */
     public void randomPickUp(boolean b) {
         this.random = b;
     }
 
+    /**
+     * Indicate if the nodes are picked up randomly.
+     *
+     * @return {@code true} for a random pickup
+     */
     public boolean randomPickUp() {
         return this.random;
     }

@@ -27,6 +27,9 @@ import btrplace.solver.choco.runner.staticPartitioning.splitter.ConstraintSplitt
 import java.util.*;
 
 /**
+ * A partitioning algorithm that part an instance
+ * wrt. predefined partition of nodes.
+ *
  * @author Fabien Hermenier
  */
 public class FixedNodeSetsPartitioning extends StaticPartitioning {
@@ -35,6 +38,13 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
 
     private ConstraintSplitterMapper cstrMapper;
 
+    /**
+     * Make a new partitioning algorithm.
+     * By default, the partition algorithm use the {@link ConstraintSplitterMapper}
+     * returned by {@link btrplace.solver.choco.runner.staticPartitioning.splitter.ConstraintSplitterMapper#newBundle()}.
+     *
+     * @param parts the node partitions to rely on
+     */
     public FixedNodeSetsPartitioning(Collection<Collection<Node>> parts) {
 
         if (!isDisjoint(parts)) {
@@ -45,18 +55,40 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
         cstrMapper = ConstraintSplitterMapper.newBundle();
     }
 
+    /**
+     * Get the mapper that is used to split the constraints.
+     *
+     * @return a mapper
+     */
     public ConstraintSplitterMapper getSplitterMapper() {
         return cstrMapper;
     }
 
+    /**
+     * Set the mapper to use to split constraints.
+     *
+     * @param cstrMapper the mapper
+     */
     public void setSplitterMapper(ConstraintSplitterMapper cstrMapper) {
         this.cstrMapper = cstrMapper;
     }
 
+    /**
+     * Get the node partitions.
+     *
+     * @return multiple collections of nodes
+     */
     public Collection<Collection<Node>> getPartitions() {
         return partitions;
     }
 
+    /**
+     * Set the node partitions
+     *
+     * @param parts disjoint set of nodes
+     * @return {@code true} iff the partitions have been set. {@code false} if the
+     *         sets were not disjoint
+     */
     public boolean setPartitions(Collection<Collection<Node>> parts) {
         if (!isDisjoint(parts)) {
             return false;
