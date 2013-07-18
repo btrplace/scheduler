@@ -118,7 +118,7 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
                         partModel.getMapping().addRunningVM(v, n);
                     }
                     for (VM v : map.getSleepingVMs(n)) {
-                        partModel.getMapping().addRunningVM(v, n);
+                        partModel.getMapping().addSleepingVM(v, n);
                     }
                 }
             }
