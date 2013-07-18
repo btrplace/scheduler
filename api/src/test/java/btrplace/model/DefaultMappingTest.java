@@ -534,4 +534,29 @@ public class DefaultMappingTest {
         nodes.add(ns.get(2));
         Assert.assertTrue(m.getRunningVMs(nodes).isEmpty());
     }
+                   /*
+    @Test
+    public void testBig() {
+        int nbNodes = 1000000;
+        int nbVMs = nbNodes * 10;
+        List<Node> nodes = new ArrayList<>(nbNodes);
+        Model mo = new DefaultModel();
+
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < nbNodes; i++) {
+            Node n = mo.newNode();
+            nodes.add(n);
+            mo.getMapping().addOnlineNode(n);
+        }
+
+        //Random VM Placement
+        Random rnd = new Random();
+        for (int i = 0; i < nbVMs; i++) {
+            VM v = mo.newVM();
+            Node n = nodes.get(rnd.nextInt(nbNodes));
+            mo.getMapping().addRunningVM(v, n);
+        }
+        System.err.println(System.currentTimeMillis() - start + " ms");
+        Assert.fail();
+    }        */
 }
