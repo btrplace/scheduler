@@ -18,11 +18,13 @@
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
 import btrplace.model.Instance;
+import btrplace.model.VM;
 import btrplace.model.constraint.Constraint;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A customizable bridge to indicate which {@link ConstraintSplitter} to use
@@ -121,7 +123,7 @@ public class ConstraintSplitterMapper {
      * @param partitions the partitions splitting the original instance
      * @return {@code false} iff this leads to a problem without solutions.
      */
-    public boolean split(Constraint c, Instance i, List<Instance> partitions) {
+    public boolean split(Constraint c, Instance i, List<Instance> partitions, Set<VM> myVMs) {
         ConstraintSplitter splitter = builders.get(c.getClass());
         return splitter != null && splitter.split(c, i, partitions);
     }

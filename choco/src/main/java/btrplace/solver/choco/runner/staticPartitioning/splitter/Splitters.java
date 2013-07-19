@@ -20,6 +20,7 @@ package btrplace.solver.choco.runner.staticPartitioning.splitter;
 import btrplace.model.Mapping;
 import btrplace.model.Node;
 import btrplace.model.VM;
+import gnu.trove.set.hash.THashSet;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -95,11 +96,14 @@ public final class Splitters {
      * @return the extracted VMs.
      */
     public static Set<VM> extractVMsIn(Collection<VM> base, Mapping m) {
-        Set<VM> res = new HashSet<>();
+        Set<VM> res = new THashSet<>();
         //Cheaper that extracting from m.getAllVMs();
         extractInside(base, m.getRunningVMs(), res);
         extractInside(base, m.getSleepingVMs(), res);
         extractInside(base, m.getReadyVMs(), res);
+        c++;
         return res;
     }
+
+    public static int c = 0;
 }

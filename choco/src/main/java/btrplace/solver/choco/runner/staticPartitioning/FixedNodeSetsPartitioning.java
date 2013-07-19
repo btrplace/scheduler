@@ -100,42 +100,49 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
     @Override
     public List<Instance> split(ChocoReconfigurationAlgorithmParams ps, Instance i) throws SolverException {
         Model mo = i.getModel();
-        Mapping map = mo.getMapping();
 
         SynchronizedElementBuilder eb = new SynchronizedElementBuilder(mo.getVMs(), mo.getNodes());
 
         List<Instance> parts = new ArrayList<>(partitions.size());
-        for (Collection<Node> s : partitions) {
-            Model partModel = makeSubModel(mo, eb);
+        Map<Instance, Set<VM>> hisVMs = new HashMap<>(parts.size());
 
-            parts.add(new Instance(partModel, new HashSet<SatConstraint>(), i.getOptimizationConstraint()));
-            for (Node n : s) {
-                if (map.getOfflineNodes().contains(n)) {
-                    partModel.getMapping().addOfflineNode(n);
-                } else {
-                    partModel.getMapping().addOnlineNode(n);
-                    for (VM v : map.getRunningVMs(n)) {
-                        partModel.getMapping().addRunningVM(v, n);
-                    }
-                    for (VM v : map.getSleepingVMs(n)) {
-                        partModel.getMapping().addSleepingVM(v, n);
-                    }
-                }
-            }
+        for (Collection<Node> s : partitions) {
+            Model partModel = new SubModel(mo, eb, s);
+            //Model partModel = makeSubModel(mo, eb, s);
+            Instance i2 = new Instance(partModel, new HashSet<SatConstraint>(), i.getOptimizationConstraint());
+            parts.add(i2);
+            hisVMs.put(i2, partModel.getMapping().getAllVMs());
         }
         for (SatConstraint cstr : i.getConstraints()) {
-            cstrMapper.split(cstr, i, parts);
+            cstrMapper.split(cstr, i, parts, hisVMs.get(i));
         }
         //TODO: deal with ready VMs to run
         return parts;
     }
 
-    private Model makeSubModel(Model src, SynchronizedElementBuilder p) {
+    private void makeMapping(Mapping src, Mapping dst, Collection<Node> s) {
+        for (Node n : s) {
+            if (src.getOfflineNodes().contains(n)) {
+                dst.addOfflineNode(n);
+            } else {
+                dst.addOnlineNode(n);
+                for (VM v : src.getRunningVMs(n)) {
+                    dst.addRunningVM(v, n);
+                }
+                for (VM v : src.getSleepingVMs(n)) {
+                    dst.addSleepingVM(v, n);
+                }
+            }
+        }
+    }
+
+    private Model makeSubModel(Model src, SynchronizedElementBuilder p, Collection<Node> s) {
         Model mo = new DefaultModel(p);
         //Copy the attributes and the views
         for (ModelView v : src.getViews()) {
             mo.attach(v);
         }
+        makeMapping(src.getMapping(), mo.getMapping(), s);
         mo.setAttributes(src.getAttributes());
         return mo;
     }

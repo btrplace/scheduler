@@ -534,7 +534,8 @@ public class DefaultMappingTest {
         nodes.add(ns.get(2));
         Assert.assertTrue(m.getRunningVMs(nodes).isEmpty());
     }
-                   /*
+
+/*
     @Test
     public void testBig() {
         int nbNodes = 1000000;
@@ -558,5 +559,6 @@ public class DefaultMappingTest {
         }
         System.err.println(System.currentTimeMillis() - start + " ms");
         Assert.fail();
-    }        */
+    }
+    */
 }

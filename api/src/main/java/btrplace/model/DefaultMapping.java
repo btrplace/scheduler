@@ -20,7 +20,10 @@ package btrplace.model;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.set.hash.THashSet;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Default implementation of {@link Mapping}.
@@ -283,7 +286,7 @@ public class DefaultMapping implements Mapping, Cloneable {
 
     @Override
     public Set<VM> getAllVMs() {
-        Set<VM> vms = new HashSet<>(
+        Set<VM> vms = new THashSet<>(
                 vmState[READY_STATE].size() +
                         vmState[SLEEPING_STATE].size() +
                         vmState[RUNNING_STATE].size());
@@ -295,7 +298,7 @@ public class DefaultMapping implements Mapping, Cloneable {
 
     @Override
     public Set<Node> getAllNodes() {
-        Set<Node> ns = new HashSet<>(
+        Set<Node> ns = new THashSet<>(
                 nodeState[OFFLINE_STATE].size() +
                         nodeState[ONLINE_STATE].size());
         ns.addAll(nodeState[OFFLINE_STATE]);
@@ -310,7 +313,7 @@ public class DefaultMapping implements Mapping, Cloneable {
 
     @Override
     public Set<VM> getRunningVMs(Collection<Node> ns) {
-        Set<VM> vms = new HashSet<>();
+        Set<VM> vms = new THashSet<>();
         for (Node n : ns) {
             vms.addAll(getRunningVMs(n));
         }

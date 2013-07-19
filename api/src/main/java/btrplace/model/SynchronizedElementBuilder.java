@@ -17,9 +17,10 @@
 
 package btrplace.model;
 
+import gnu.trove.set.hash.THashSet;
+
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -47,8 +48,8 @@ public class SynchronizedElementBuilder implements ElementBuilder {
     public SynchronizedElementBuilder(Collection<VM> usedVMs, Collection<Node> usedNodes) {
         int maxVMId = 0;
         int maxNodeId = 0;
-        this.usedVMs = Collections.synchronizedSet(new HashSet<VM>(usedVMs.size()));
-        this.usedNodes = Collections.synchronizedSet(new HashSet<Node>(usedNodes.size()));
+        this.usedVMs = Collections.synchronizedSet(new THashSet<VM>(usedVMs.size()));
+        this.usedNodes = Collections.synchronizedSet(new THashSet<Node>(usedNodes.size()));
         for (VM v : usedVMs) {
             int i = v.id();
             if (i > maxVMId) {

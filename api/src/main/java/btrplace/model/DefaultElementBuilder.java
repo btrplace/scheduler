@@ -19,7 +19,6 @@ package btrplace.model;
 
 import gnu.trove.set.hash.THashSet;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -110,8 +109,8 @@ public class DefaultElementBuilder implements ElementBuilder {
         DefaultElementBuilder c = new DefaultElementBuilder();
         c.nextNode = nextNode;
         c.nextVM = nextVM;
-        c.usedNodeIds = new HashSet<>(usedNodeIds);
-        c.usedVMIds = new HashSet<>(usedVMIds);
+        c.usedNodeIds = new THashSet<>(usedNodeIds);
+        c.usedVMIds = new THashSet<>(usedVMIds);
         return c;
     }
 }
