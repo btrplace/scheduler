@@ -24,6 +24,7 @@ import btrplace.model.Node;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.Overbook;
 import btrplace.model.constraint.SatConstraint;
+import gnu.trove.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -60,14 +61,14 @@ public class OverbookSplitterTest {
 
         //Only nodes in m0
         Overbook oSimple = new Overbook(m0.getMapping().getAllNodes(), "cpu", 2);
-        Assert.assertTrue(splitter.split(oSimple, null, instances));
+        Assert.assertTrue(splitter.split(oSimple, null, instances, new TIntIntHashMap()));
         Assert.assertTrue(instances.get(0).getConstraints().contains(oSimple));
         Assert.assertFalse(instances.get(1).getConstraints().contains(oSimple));
 
         //All the nodes, test the split
         Overbook oAmong = new Overbook(all, "cpu", 2);
 
-        Assert.assertTrue(splitter.split(oAmong, null, instances));
+        Assert.assertTrue(splitter.split(oAmong, null, instances, new TIntIntHashMap()));
         Assert.assertTrue(instances.get(0).getConstraints().contains(new Overbook(m0.getMapping().getAllNodes(), "cpu", 2)));
         Assert.assertTrue(instances.get(1).getConstraints().contains(new Overbook(m1.getMapping().getAllNodes(), "cpu", 2)));
     }

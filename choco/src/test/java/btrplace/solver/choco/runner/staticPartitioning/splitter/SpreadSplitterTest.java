@@ -24,6 +24,7 @@ import btrplace.model.VM;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Spread;
+import gnu.trove.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -62,14 +63,14 @@ public class SpreadSplitterTest {
 
         //Only VMs in m0
         Spread spreadSingle = new Spread(m0.getMapping().getAllVMs());
-        Assert.assertTrue(splitter.split(spreadSingle, null, instances));
+        Assert.assertTrue(splitter.split(spreadSingle, null, instances, new TIntIntHashMap()));
         Assert.assertTrue(instances.get(0).getConstraints().contains(spreadSingle));
         Assert.assertFalse(instances.get(1).getConstraints().contains(spreadSingle));
 
         //All the VMs, test the split
         Spread spreadAmong = new Spread(all, false);
 
-        Assert.assertTrue(splitter.split(spreadAmong, null, instances));
+        Assert.assertTrue(splitter.split(spreadAmong, null, instances, new TIntIntHashMap()));
         Assert.assertTrue(instances.get(0).getConstraints().contains(new Spread(m0.getMapping().getAllVMs(), false)));
         Assert.assertTrue(instances.get(1).getConstraints().contains(new Spread(m1.getMapping().getAllVMs(), false)));
     }

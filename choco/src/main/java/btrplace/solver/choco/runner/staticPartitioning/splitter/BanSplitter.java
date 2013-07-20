@@ -21,6 +21,7 @@ import btrplace.model.Instance;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.Ban;
+import gnu.trove.TIntIntHashMap;
 
 import java.util.HashSet;
 import java.util.List;
@@ -42,7 +43,7 @@ public class BanSplitter implements ConstraintSplitter<Ban> {
     }
 
     @Override
-    public boolean split(Ban cstr, Instance origin, List<Instance> partitions) {
+    public boolean split(Ban cstr, Instance origin, List<Instance> partitions, TIntIntHashMap vmsPosition) {
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
         Set<Node> nodes = new HashSet<>(cstr.getInvolvedNodes());
         for (Instance i : partitions) {

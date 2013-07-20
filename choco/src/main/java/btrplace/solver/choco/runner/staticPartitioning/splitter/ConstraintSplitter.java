@@ -19,6 +19,7 @@ package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
 import btrplace.model.Instance;
 import btrplace.model.constraint.Constraint;
+import gnu.trove.TIntIntHashMap;
 
 import java.util.List;
 
@@ -49,7 +50,8 @@ public interface ConstraintSplitter<C extends Constraint> {
      * @param cstr       the model constraint
      * @param origin     the original instance to split
      * @param partitions the possible partitions  @return {@code false} iff this leads to a problem without solutions.
+     * @param vmsPosition
      */
-    boolean split(C cstr, Instance origin, List<Instance> partitions);
+    boolean split(C cstr, Instance origin, List<Instance> partitions, TIntIntHashMap vmsPosition);
 
 }

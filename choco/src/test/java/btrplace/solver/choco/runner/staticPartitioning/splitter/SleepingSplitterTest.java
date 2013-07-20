@@ -21,6 +21,7 @@ import btrplace.model.*;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Sleeping;
+import gnu.trove.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -86,14 +87,14 @@ public class SleepingSplitterTest {
 
         //Only VMs in m0
         Sleeping single = new Sleeping(m0.getMapping().getAllVMs());
-        Assert.assertTrue(splitter.split(single, null, instances));
+        Assert.assertTrue(splitter.split(single, null, instances, new TIntIntHashMap()));
         Assert.assertTrue(instances.get(0).getConstraints().contains(single));
         Assert.assertFalse(instances.get(1).getConstraints().contains(single));
 
         //All the VMs, test the split
         Sleeping among = new Sleeping(all);
 
-        Assert.assertTrue(splitter.split(among, null, instances));
+        Assert.assertTrue(splitter.split(among, null, instances, new TIntIntHashMap()));
         Assert.assertTrue(instances.get(0).getConstraints().contains(new Sleeping(m0.getMapping().getAllVMs())));
         Assert.assertTrue(instances.get(1).getConstraints().contains(new Sleeping(m1.getMapping().getAllVMs())));
     }

@@ -19,9 +19,7 @@ package btrplace.model;
 
 import gnu.trove.set.hash.THashSet;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A sub-mapping that is a limited version of a parent mapping.
@@ -156,14 +154,18 @@ public class SubMapping implements Mapping {
         return parent.getReadyVMs();
     }
 
+    private Set<VM> all = null;
+
     @Override
     public Set<VM> getAllVMs() {
-        Set<VM> res = new THashSet<>();
-        for (Node n : scope) {
-            res.addAll(getRunningVMs());
-            res.addAll(getSleepingVMs());
+        if (all == null) {
+            all = new THashSet<>();
+            for (Node n : scope) {
+                all.addAll(getRunningVMs(n));
+                all.addAll(getSleepingVMs(n));
+            }
         }
-        return res;
+        return all;
     }
 
     @Override
@@ -234,6 +236,35 @@ public class SubMapping implements Mapping {
 
     @Override
     public void clearAllVMs() {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean isIn(VM v) {
+        Node n = parent.getVMLocation(v);
+        return scope.contains(n);
+    }
+
+    public List<VM> myVMs() {
+        List <VM>l = new ArrayList<>();
+        for (Node n : scope) {
+            l.addAll(parent.getRunningVMs(n));
+            l.addAll(parent.getSleepingVMs(n));
+        }
+        return l;
+    }
+
+    @Override
+    public boolean isRunning(VM v) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isSleeping(VM v) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isReady(VM v) {
         throw new UnsupportedOperationException();
     }
 }

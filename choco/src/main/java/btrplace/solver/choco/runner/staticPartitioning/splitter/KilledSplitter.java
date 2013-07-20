@@ -20,6 +20,7 @@ package btrplace.solver.choco.runner.staticPartitioning.splitter;
 import btrplace.model.Instance;
 import btrplace.model.VM;
 import btrplace.model.constraint.Killed;
+import gnu.trove.TIntIntHashMap;
 
 import java.util.HashSet;
 import java.util.List;
@@ -43,7 +44,7 @@ public class KilledSplitter implements ConstraintSplitter<Killed> {
     }
 
     @Override
-    public boolean split(Killed cstr, Instance origin, List<Instance> partitions) {
+    public boolean split(Killed cstr, Instance origin, List<Instance> partitions, TIntIntHashMap vmsPosition) {
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
         for (Instance i : partitions) {
             Set<VM> in = Splitters.extractVMsIn(vms, i.getModel().getMapping());

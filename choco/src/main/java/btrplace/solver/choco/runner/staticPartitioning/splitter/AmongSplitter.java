@@ -21,6 +21,7 @@ import btrplace.model.Instance;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.Among;
+import gnu.trove.TIntIntHashMap;
 
 import java.util.*;
 
@@ -43,7 +44,7 @@ public class AmongSplitter implements ConstraintSplitter<Among> {
     }
 
     @Override
-    public boolean split(Among cstr, Instance origin, List<Instance> partitions) {
+    public boolean split(Among cstr, Instance origin, List<Instance> partitions, TIntIntHashMap vmsPosition) {
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
         List<Set<Node>> parts = new ArrayList<>();
         for (Collection<Node> s : cstr.getGroupsOfNodes()) {

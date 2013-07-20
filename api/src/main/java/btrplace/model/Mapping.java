@@ -110,6 +110,12 @@ public interface Mapping extends Cloneable {
      */
     Set<VM> getRunningVMs();
 
+    boolean isRunning(VM v);
+
+    boolean isSleeping(VM v);
+
+    boolean isReady(VM v);
+
     /**
      * Get the VMs that are sleeping.
      *

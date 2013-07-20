@@ -23,6 +23,7 @@ import btrplace.model.view.ModelView;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
 import btrplace.solver.choco.runner.staticPartitioning.splitter.ConstraintSplitterMapper;
+import gnu.trove.TIntIntHashMap;
 
 import java.util.*;
 
@@ -104,17 +105,22 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
         SynchronizedElementBuilder eb = new SynchronizedElementBuilder(mo.getVMs(), mo.getNodes());
 
         List<Instance> parts = new ArrayList<>(partitions.size());
-        Map<Instance, Set<VM>> hisVMs = new HashMap<>(parts.size());
 
+        TIntIntHashMap vmPosition = new TIntIntHashMap(mo.getVMs().size());
+        int partNumber = 0;
         for (Collection<Node> s : partitions) {
-            Model partModel = new SubModel(mo, eb, s);
-            //Model partModel = makeSubModel(mo, eb, s);
+            SubModel partModel = new SubModel(mo, eb, s);
+
             Instance i2 = new Instance(partModel, new HashSet<SatConstraint>(), i.getOptimizationConstraint());
             parts.add(i2);
-            hisVMs.put(i2, partModel.getMapping().getAllVMs());
+
+            for (VM v : partModel.getMapping().myVMs()) {
+                vmPosition.put(v.id(), partNumber);
+            }
+            partNumber++;
         }
         for (SatConstraint cstr : i.getConstraints()) {
-            cstrMapper.split(cstr, i, parts, hisVMs.get(i));
+            cstrMapper.split(cstr, i, parts, vmPosition);
         }
         //TODO: deal with ready VMs to run
         return parts;

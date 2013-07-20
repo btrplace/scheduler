@@ -24,6 +24,7 @@ import btrplace.model.Node;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.SingleRunningCapacity;
+import gnu.trove.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -67,14 +68,14 @@ public class SingleRunningCapacitySplitterTest {
 
         //Only VMs in m0
         SingleRunningCapacity single = new SingleRunningCapacity(m0.getMapping().getAllNodes(), 3);
-        Assert.assertTrue(splitter.split(single, null, instances));
+        Assert.assertTrue(splitter.split(single, null, instances, new TIntIntHashMap()));
         Assert.assertTrue(instances.get(0).getConstraints().contains(single));
         Assert.assertFalse(instances.get(1).getConstraints().contains(single));
 
         //All the VMs, test the split
         SingleRunningCapacity among = new SingleRunningCapacity(all, 2);
 
-        Assert.assertTrue(splitter.split(among, null, instances));
+        Assert.assertTrue(splitter.split(among, null, instances, new TIntIntHashMap()));
         Assert.assertTrue(instances.get(0).getConstraints().contains(new SingleRunningCapacity(m0.getMapping().getAllNodes(), 2)));
         Assert.assertTrue(instances.get(1).getConstraints().contains(new SingleRunningCapacity(m1.getMapping().getAllNodes(), 2)));
     }

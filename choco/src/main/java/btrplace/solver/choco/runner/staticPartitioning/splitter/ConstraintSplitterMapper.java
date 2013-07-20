@@ -20,6 +20,7 @@ package btrplace.solver.choco.runner.staticPartitioning.splitter;
 import btrplace.model.Instance;
 import btrplace.model.VM;
 import btrplace.model.constraint.Constraint;
+import gnu.trove.TIntIntHashMap;
 
 import java.util.HashMap;
 import java.util.List;
@@ -123,8 +124,8 @@ public class ConstraintSplitterMapper {
      * @param partitions the partitions splitting the original instance
      * @return {@code false} iff this leads to a problem without solutions.
      */
-    public boolean split(Constraint c, Instance i, List<Instance> partitions, Set<VM> myVMs) {
+    public boolean split(Constraint c, Instance i, List<Instance> partitions, TIntIntHashMap vmPartition) {
         ConstraintSplitter splitter = builders.get(c.getClass());
-        return splitter != null && splitter.split(c, i, partitions);
+        return splitter != null && splitter.split(c, i, partitions, vmPartition);
     }
 }

@@ -24,6 +24,7 @@ import btrplace.model.VM;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.Ready;
 import btrplace.model.constraint.SatConstraint;
+import gnu.trove.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -62,14 +63,14 @@ public class ReadySplitterTest {
 
         //Only VMs in m0
         Ready single = new Ready(m0.getMapping().getAllVMs());
-        Assert.assertTrue(splitter.split(single, null, instances));
+        Assert.assertTrue(splitter.split(single, null, instances, new TIntIntHashMap()));
         Assert.assertTrue(instances.get(0).getConstraints().contains(single));
         Assert.assertFalse(instances.get(1).getConstraints().contains(single));
 
         //All the VMs, test the split
         Ready among = new Ready(all);
 
-        Assert.assertTrue(splitter.split(among, null, instances));
+        Assert.assertTrue(splitter.split(among, null, instances, new TIntIntHashMap()));
         Assert.assertTrue(instances.get(0).getConstraints().contains(new Ready(m0.getMapping().getAllVMs())));
         Assert.assertTrue(instances.get(1).getConstraints().contains(new Ready(m1.getMapping().getAllVMs())));
     }

@@ -20,6 +20,7 @@ package btrplace.solver.choco.runner.staticPartitioning.splitter;
 import btrplace.model.Instance;
 import btrplace.model.Node;
 import btrplace.model.constraint.SingleRunningCapacity;
+import gnu.trove.TIntIntHashMap;
 
 import java.util.HashSet;
 import java.util.List;
@@ -43,7 +44,7 @@ public class SingleRunningCapacitySplitter implements ConstraintSplitter<SingleR
     }
 
     @Override
-    public boolean split(SingleRunningCapacity cstr, Instance origin, List<Instance> partitions) {
+    public boolean split(SingleRunningCapacity cstr, Instance origin, List<Instance> partitions, TIntIntHashMap vmsPosition) {
         Set<Node> nodes = new HashSet<>(cstr.getInvolvedNodes());
         for (Instance i : partitions) {
             Set<Node> in = Splitters.extractNodesIn(nodes, i.getModel().getMapping());

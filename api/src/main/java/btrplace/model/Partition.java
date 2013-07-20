@@ -24,31 +24,37 @@ import java.util.Set;
 /**
  * @author Fabien Hermenier
  */
-public class SubSet<T> implements Set<T> {
+public class Partition<T> implements Set<T> {
 
-    private Set<T> parent;
+    private int pos;
 
-    private Set<T> scope;
+    private Partitions<T> parent;
 
-    public SubSet(Set<T> parent, Set<T> scope) {
+    public Partition(Partitions<T> parent, int pos) {
         this.parent = parent;
-        this.scope = scope;
+        this.pos = pos;
     }
 
     @Override
     public int size() {
-        throw new UnsupportedOperationException();
+        return parent.getSize(pos);
     }
 
     @Override
     public boolean isEmpty() {
-        //Both sets are disjoints
-        throw new UnsupportedOperationException();
+        return parent.getSize(pos) == 0;
     }
 
     @Override
     public boolean contains(Object o) {
-        return (parent.contains(o) && scope.contains(o));
+        try {
+            if (parent.getPosition((T)o) == pos) {
+                return true;
+            }
+        } catch (ClassCastException ex) {
+            return false;
+        }
+        return false;
     }
 
     @Override
@@ -78,7 +84,12 @@ public class SubSet<T> implements Set<T> {
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return scope.containsAll(c) && parent.containsAll(c);
+        for (Object o : c) {
+            if (!contains(o)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

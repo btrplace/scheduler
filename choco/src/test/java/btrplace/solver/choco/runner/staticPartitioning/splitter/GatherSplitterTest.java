@@ -24,6 +24,7 @@ import btrplace.model.VM;
 import btrplace.model.constraint.Gather;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.SatConstraint;
+import gnu.trove.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -61,13 +62,13 @@ public class GatherSplitterTest {
 
         //Only VMs in m0
         Gather single = new Gather(m0.getMapping().getAllVMs());
-        Assert.assertTrue(splitter.split(single, null, instances));
+        Assert.assertTrue(splitter.split(single, null, instances, new TIntIntHashMap()));
         Assert.assertTrue(instances.get(0).getConstraints().contains(single));
         Assert.assertFalse(instances.get(1).getConstraints().contains(single));
 
         //All the VMs, test the unfeasibility
         Gather among = new Gather(all, false);
 
-        Assert.assertFalse(splitter.split(among, null, instances));
+        Assert.assertFalse(splitter.split(among, null, instances, new TIntIntHashMap()));
     }
 }
