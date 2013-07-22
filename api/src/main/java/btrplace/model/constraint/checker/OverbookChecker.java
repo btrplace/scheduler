@@ -55,7 +55,7 @@ public class OverbookChecker extends AllowAllConstraintChecker<Overbook> {
             return false;
         }
         for (Node nId : getNodes()) {
-            if (cfg.getOnlineNodes().contains(nId)) {
+            if (cfg.isOnline(nId)) {
                 //Server capacity with the ratio
                 double capa = rc.getCapacity(nId) * ratio;
                 //Minus the VMs usage

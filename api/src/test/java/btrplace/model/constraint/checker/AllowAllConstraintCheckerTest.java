@@ -89,7 +89,13 @@ public class AllowAllConstraintCheckerTest {
         //while earlier, the mock was needed for the verify()
         c = new AllowAllConstraintChecker(cstr) {
         };
-        c.track(mo.getVMs());
+        Set<VM> allVMs = new HashSet<>();
+        for (Node n : mo.getMapping().getOnlineNodes()) {
+            allVMs.addAll(mo.getMapping().getRunningVMs(n));
+            allVMs.addAll(mo.getMapping().getSleepingVMs(n));
+        }
+        allVMs.addAll(mo.getMapping().getReadyVMs());
+        c.track(allVMs);
         SuspendVM s = new SuspendVM(vms.get(0), ns.get(0), ns.get(1), 0, 3);
         Assert.assertTrue(c.start(s));
 

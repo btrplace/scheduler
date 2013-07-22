@@ -92,7 +92,6 @@ public class ModelConverter extends AbstractJSONObjectConverter<Model> {
         cfgParser.setModel(i);
         cfgParser.fromJSON((JSONObject) o.get("mapping"));
 
-        //MappingUtils.fill(cfg, i.getMapping());
         if (o.containsKey("attributes")) {
             attrsParser.setModel(i);
             i.setAttributes(attrsParser.fromJSON((JSONObject) o.get("attributes")));

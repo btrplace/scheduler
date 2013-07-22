@@ -59,7 +59,7 @@ public class CReady implements ChocoConstraint {
         Set<VM> bad = new HashSet<>();
         Mapping map = m.getMapping();
         for (VM vm : cstr.getInvolvedVMs()) {
-            if (!map.getReadyVMs().contains(vm)) {
+            if (!map.isReady(vm)) {
                 bad.add(vm);
             }
         }

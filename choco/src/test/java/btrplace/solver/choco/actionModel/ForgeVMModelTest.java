@@ -107,7 +107,7 @@ public class ForgeVMModelTest {
         for (Action a : p) {
             if (a instanceof ForgeVM) {
                 ForgeVM action = (ForgeVM) p.getActions().iterator().next();
-                Assert.assertTrue(p.getResult().getMapping().getReadyVMs().contains(vm1));
+                Assert.assertTrue(p.getResult().getMapping().isReady(vm1));
                 Assert.assertEquals(action.getVM(), vm1);
                 Assert.assertEquals(action.getEnd(), 7);
                 Assert.assertEquals(action.getStart(), 0);

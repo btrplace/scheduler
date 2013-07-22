@@ -33,7 +33,7 @@ public class VM implements Element {
      *
      * @param id the VM identifier.
      */
-    VM(int id) {
+    public VM(int id) {
         this.id = id;
     }
 

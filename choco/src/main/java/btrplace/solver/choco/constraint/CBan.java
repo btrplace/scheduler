@@ -84,7 +84,7 @@ public class CBan implements ChocoConstraint {
 
         Set<VM> bad = new HashSet<>();
         for (VM vm : ban.getInvolvedVMs()) {
-            if (map.getRunningVMs().contains(vm) && ban.getInvolvedNodes().contains(map.getVMLocation(vm))) {
+            if (map.isRunning(vm) && ban.getInvolvedNodes().contains(map.getVMLocation(vm))) {
                 bad.add(vm);
             }
         }

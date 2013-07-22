@@ -82,15 +82,17 @@ public class CLonely implements ChocoConstraint {
             List<IntDomainVar> otherEnds = new ArrayList<>();
             List<IntDomainVar> mineEnds = new ArrayList<>();
             Mapping map = rp.getSourceModel().getMapping();
-            for (VM vm : map.getRunningVMs()) {
-                if (!vms.contains(vm)) {
-                    otherPos.add(rp.getNode(map.getVMLocation(vm)));
-                    VMActionModel a = rp.getVMAction(vm);
-                    otherEnds.add(a.getCSlice().getEnd());
-                } else {
-                    minePos.add(rp.getNode(map.getVMLocation(vm)));
-                    VMActionModel a = rp.getVMAction(vm);
-                    mineEnds.add(a.getCSlice().getEnd());
+            for (Node n : map.getOnlineNodes()) {
+                for (VM vm : map.getRunningVMs(n)) {
+                    if (!vms.contains(vm)) {
+                        otherPos.add(rp.getNode(map.getVMLocation(vm)));
+                        VMActionModel a = rp.getVMAction(vm);
+                        otherEnds.add(a.getCSlice().getEnd());
+                    } else {
+                        minePos.add(rp.getNode(map.getVMLocation(vm)));
+                        VMActionModel a = rp.getVMAction(vm);
+                        mineEnds.add(a.getCSlice().getEnd());
+                    }
                 }
             }
             for (VM vm : vms) {
@@ -122,7 +124,7 @@ public class CLonely implements ChocoConstraint {
         Collection<VM> vms = cstr.getInvolvedVMs();
         Mapping map = m.getMapping();
         for (VM vm : vms) {
-            if (map.getRunningVMs().contains(vm)) {
+            if (map.isRunning(vm)) {
                 hosters.add(map.getVMLocation(vm));
             }
         }

@@ -116,7 +116,7 @@ public class CSplitAmong implements ChocoConstraint {
         for (Collection<VM> vms : cstr.getGroupsOfVMs()) {
             int grp = -1;
             for (VM vm : vms) {
-                if (map.getRunningVMs().contains(vm)) {
+                if (map.isRunning(vm)) {
                     Node n = map.getVMLocation(vm);
                     int g = getPGroup(n);
                     if (g == -1) {

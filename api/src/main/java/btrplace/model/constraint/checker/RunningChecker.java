@@ -55,7 +55,7 @@ public class RunningChecker extends DenyMyVMsActions<Running> {
     public boolean endsWith(Model mo) {
         Mapping c = mo.getMapping();
         for (VM vm : getVMs()) {
-            if (!c.getRunningVMs().contains(vm)) {
+            if (!c.isRunning(vm)) {
                 return false;
             }
         }

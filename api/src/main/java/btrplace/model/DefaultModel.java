@@ -19,10 +19,13 @@ package btrplace.model;
 
 import btrplace.model.view.ModelView;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
- * Default implementation for {@link Model}.
+ * Default implementation for a {@link Model}.
  *
  * @author Fabien Hermenier
  */
@@ -34,24 +37,25 @@ public class DefaultModel implements Model, Cloneable {
 
     private Attributes attrs;
 
-    private int nextVM;
-
-    private int nextNode;
-
-    private Set<VM> usedVMIds;
-    private Set<Node> usedNodeIds;
+    private ElementBuilder elemBuilder;
 
     /**
-     * Make a new instance.
+     * Make a new instance that rely on a {@link DefaultElementBuilder}.
      */
     public DefaultModel() {
-        usedNodeIds = new HashSet<>();
-        usedVMIds = new HashSet<>();
+        this(new DefaultElementBuilder());
+    }
+
+    /**
+     * Make a new instance relying on a given element builders.
+     *
+     * @param eb the builder to use
+     */
+    public DefaultModel(ElementBuilder eb) {
         this.resources = new HashMap<>();
         attrs = new DefaultAttributes();
         cfg = new DefaultMapping();
-        nextVM = 0;
-        nextNode = 0;
+        elemBuilder = eb;
     }
 
     @Override
@@ -127,7 +131,7 @@ public class DefaultModel implements Model, Cloneable {
 
     @Override
     public Model clone() {
-        DefaultModel m = new DefaultModel();
+        DefaultModel m = new DefaultModel(elemBuilder.clone());
         MappingUtils.fill(cfg, m.cfg);
         for (ModelView rc : resources.values()) {
             m.attach(rc.clone());
@@ -153,59 +157,31 @@ public class DefaultModel implements Model, Cloneable {
 
     @Override
     public VM newVM() {
-        if (usedVMIds.size() == Integer.MAX_VALUE) {
-            //No more ids left
-            return null;
-        }
-        //Find the first free id.
-        VM v = new VM(nextVM++);
-        while (!usedVMIds.add(v)) {
-            v = new VM(nextVM++);
-
-        }
-        return v;
-    }
-
-    @Override
-    public Node newNode() {
-        if (usedNodeIds.size() == Integer.MAX_VALUE) {
-            //No more ids left
-            return null;
-        }
-
-        //Find the first free id.
-        Node n = new Node(nextNode++);
-        while (!usedNodeIds.add(n)) {
-            n = new Node(nextNode++);
-        }
-        return n;
+        return elemBuilder.newVM();
     }
 
     @Override
     public VM newVM(int id) {
-        VM v = new VM(id);
-        if (!usedVMIds.add(v)) {
-            return null;
-        }
-        return v;
+        return elemBuilder.newVM(id);
+    }
+
+    @Override
+    public Node newNode() {
+        return elemBuilder.newNode();
     }
 
     @Override
     public Node newNode(int id) {
-        Node n = new Node(id);
-        if (!usedNodeIds.add(n)) {
-            return null;
-        }
-        return n;
+        return elemBuilder.newNode(id);
     }
 
     @Override
-    public Set<Node> getNodes() {
-        return usedNodeIds;
+    public boolean contains(VM v) {
+        return elemBuilder.contains(v);
     }
 
     @Override
-    public Set<VM> getVMs() {
-        return usedVMIds;
+    public boolean contains(Node n) {
+        return elemBuilder.contains(n);
     }
 }

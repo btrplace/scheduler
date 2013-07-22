@@ -76,7 +76,7 @@ public class PreserveChecker extends AllowAllConstraintChecker<Preserve> {
             return false;
         }
         for (VM vmId : getVMs()) {
-            if (mo.getMapping().getRunningVMs().contains(vmId)) {
+            if (mo.getMapping().isRunning(vmId)) {
                 int v = r.getConsumption(vmId);
                 if (v < amount) {
                     return false;

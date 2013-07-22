@@ -83,7 +83,7 @@ public class BootableNodeModelTest {
 
 
         Model res = p.getResult();
-        Assert.assertTrue(res.getMapping().getOnlineNodes().contains(n1));
+        Assert.assertTrue(res.getMapping().isOnline(n1));
     }
 
     @Test

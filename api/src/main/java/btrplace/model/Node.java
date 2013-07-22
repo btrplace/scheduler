@@ -33,7 +33,7 @@ public class Node implements Element {
      *
      * @param id the node identifier.
      */
-    Node(int id) {
+    public Node(int id) {
         this.id = id;
     }
 

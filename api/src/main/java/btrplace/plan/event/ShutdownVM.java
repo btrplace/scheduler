@@ -60,8 +60,8 @@ public class ShutdownVM extends Action implements VMStateTransition {
     @Override
     public boolean applyAction(Model m) {
         Mapping map = m.getMapping();
-        if (map.getOnlineNodes().contains(node) &&
-                map.getRunningVMs().contains(vm) &&
+        if (map.isOnline(node) &&
+                map.isRunning(vm) &&
                 map.getVMLocation(vm) == node) {
             map.addReadyVM(vm);
             return true;

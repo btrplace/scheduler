@@ -219,7 +219,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertTrue(manageable.containsAll(Arrays.asList(vm6, vm5, vm1, vm2)));
         //Check the action model that has been used for each of the VM.
         for (VM vm : map.getAllVMs()) {
-            if (map.getRunningVMs().contains(vm) && rp.getFutureRunningVMs().contains(vm)) {
+            if (map.isRunning(vm) && rp.getFutureRunningVMs().contains(vm)) {
                 if (!manageable.contains(vm)) {
                     Assert.assertEquals(rp.getVMAction(vm).getClass(), StayRunningVMModel.class);
                 } else {

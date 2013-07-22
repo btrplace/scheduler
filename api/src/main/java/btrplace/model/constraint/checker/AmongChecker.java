@@ -53,7 +53,7 @@ public class AmongChecker extends AllowAllConstraintChecker<Among> {
         if (getConstraint().isContinuous()) {
             Mapping map = mo.getMapping();
             for (VM vm : getVMs()) {
-                if (map.getRunningVMs().contains(vm)) {
+                if (map.isRunning(vm)) {
                     Collection<Node> nodes = getConstraint().getAssociatedPGroup((map.getVMLocation(vm)));
                     if (nodes == null) {
                         return false;
@@ -92,7 +92,7 @@ public class AmongChecker extends AllowAllConstraintChecker<Among> {
         Mapping map = i.getMapping();
         Collection<Node> grp = null;
         for (VM vm : getVMs()) {
-            if (map.getRunningVMs().contains(vm)) {
+            if (map.isRunning(vm)) {
                 Collection<Node> nodes = getConstraint().getAssociatedPGroup((map.getVMLocation(vm)));
                 if (nodes == null) {
                     return false;

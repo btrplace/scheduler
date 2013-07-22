@@ -156,23 +156,44 @@ public class DefaultModelTest {
         VM v = mo.newVM();
         VM vX = mo.newVM();
         Assert.assertNotEquals(v, vX);
-        Assert.assertTrue(mo.getVMs().contains(v));
+        Assert.assertTrue(mo.contains(v));
         Assert.assertNull(mo.newVM(v.id()));
 
         int nextId = v.id() + 1000;
         VM v2 = mo.newVM(nextId);
-        Assert.assertTrue(mo.getVMs().contains(v2));
+        Assert.assertTrue(mo.contains(v2));
     }
 
     @Test
     public void testNodeRegistration() {
         Model mo = new DefaultModel();
         Node n = mo.newNode();
-        Assert.assertTrue(mo.getNodes().contains(n));
+        Assert.assertTrue(mo.contains(n));
         Assert.assertNull(mo.newNode(n.id()));
 
         int nextId = n.id() + 1000;
         Node n2 = mo.newNode(nextId);
-        Assert.assertTrue(mo.getNodes().contains(n2));
+        Assert.assertTrue(mo.contains(n2));
     }
+
+    /*@Test
+    public void testBig() {
+        int nbNodes = 1000000;
+        int ratio = 10;
+
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        for (int i = 0; i < nbNodes; i++) {
+            Node n = mo.newNode();
+            map.addOnlineNode(n);
+            for (int j = 0; j < ratio; j++) {
+                VM v = mo.newVM();
+                map.addRunningVM(v, n);
+            }
+        }
+        for (int i = 0; i < ratio; i++) {
+            VM v = mo.newVM();
+            map.addReadyVM(v);
+        }
+    }       */
 }

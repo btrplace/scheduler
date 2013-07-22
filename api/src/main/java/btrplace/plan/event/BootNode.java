@@ -92,7 +92,7 @@ public class BootNode extends Action implements NodeEvent {
      */
     @Override
     public boolean applyAction(Model c) {
-        if (c.getMapping().getOfflineNodes().contains(node)) {
+        if (c.getMapping().isOffline(node)) {
             c.getMapping().addOnlineNode(node);
             return true;
         }

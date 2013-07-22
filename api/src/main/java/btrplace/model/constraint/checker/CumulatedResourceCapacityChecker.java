@@ -136,7 +136,7 @@ public class CumulatedResourceCapacityChecker extends AllowAllConstraintChecker<
 
         int remainder = getConstraint().getAmount();
         for (Node id : getNodes()) {
-            if (i.getMapping().getOnlineNodes().contains(id)) {
+            if (i.getMapping().isOnline(id)) {
                 remainder -= r.sumConsumptions(i.getMapping().getRunningVMs(id), true);
                 if (remainder < 0) {
                     return false;

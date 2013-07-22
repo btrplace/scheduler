@@ -114,7 +114,7 @@ public class CSplit implements ChocoConstraint {
                 for (int i = 0; i < vmGroups.size(); i++) {
                     List<VM> grp = vmGroups.get(i);
                     for (VM vm : grp) {
-                        if (map.getRunningVMs().contains(vm)) {
+                        if (map.isRunning(vm)) {
                             int myPos = rp.getNode(map.getVMLocation(vm));
                             IntDomainVar myEnd = rp.getVMAction(vm).getCSlice().getEnd();
 
@@ -159,7 +159,7 @@ public class CSplit implements ChocoConstraint {
         Set<VM> bad = new HashSet<>();
         for (Collection<VM> grp : groups) {
             for (VM vm : grp) {
-                if (map.getRunningVMs().contains(vm)) {
+                if (map.isRunning(vm)) {
                     Node n = map.getVMLocation(vm);
                     Set<VM> allOnN = map.getRunningVMs(n);
                     for (VM vmOnN : allOnN) {
