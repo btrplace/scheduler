@@ -75,7 +75,7 @@ public class KillVM extends Action implements VMStateTransition {
             return true;
         } else if (o.getClass() == this.getClass()) {
             KillVM that = (KillVM) o;
-            return this.id == that.id &&
+            return this.id.equals(that.id) &&
                     ((host == null && that.host == null) || (host != null && host.equals(that.host))) &&
                     this.getStart() == that.getStart() &&
                     this.getEnd() == that.getEnd();
