@@ -18,8 +18,6 @@
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
 import btrplace.model.Instance;
-import btrplace.model.Partition;
-import btrplace.model.Partitions;
 import btrplace.model.VM;
 import btrplace.model.constraint.Spread;
 import gnu.trove.TIntIntHashMap;
@@ -27,8 +25,6 @@ import gnu.trove.map.hash.TIntObjectHashMap;
 import gnu.trove.procedure.TIntObjectProcedure;
 import gnu.trove.set.hash.THashSet;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -51,22 +47,7 @@ public class SpreadSplitter implements ConstraintSplitter<Spread> {
     @Override
     public boolean split(final Spread cstr, Instance origin, final List<Instance> partitions, final TIntIntHashMap vmsPosition) {
 
-        /*
-        Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
-        Partitions<VM> ps = new Partitions<>((Set<VM>)cstr.getInvolvedVMs(), partitions.size());
-        Partition<VM>[] parts = ps.getPartitions();
-        for (VM v : cstr.getInvolvedVMs()) {
-            int pos = vmsPosition.get(v.id());
-            ps.putIn(v, pos);
-        }
-
-        for (int i = 0; i < parts.length; i++) {
-            if (!parts[i].isEmpty()) {
-                partitions.get(i).getConstraints().add(new Spread(parts[i], cstr.isContinuous()));
-            }
-        }                            */
-
-        TIntObjectHashMap<Set<VM>> map = new TIntObjectHashMap<>();
+        TIntObjectHashMap<Set<VM>> map = new TIntObjectHashMap<>((cstr.getInvolvedVMs().size() + 1) / 2);
         for (VM v : cstr.getInvolvedVMs()) {
             int pos = vmsPosition.get(v.id());
             Set<VM> s = map.get(pos);
