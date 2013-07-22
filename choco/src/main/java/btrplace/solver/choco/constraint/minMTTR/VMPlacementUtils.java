@@ -61,7 +61,7 @@ public final class VMPlacementUtils {
      */
     public static boolean canStay(ReconfigurationProblem rp, VM vm) {
         Mapping m = rp.getSourceModel().getMapping();
-        if (m.getRunningVMs().contains(vm)) {
+        if (m.isRunning(vm)) {
             int curPos = rp.getNode(m.getVMLocation(vm));
             return rp.getVMAction(vm).getDSlice().getHoster().canBeInstantiatedTo(curPos);
         }

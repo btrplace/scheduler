@@ -56,8 +56,8 @@ public class OfflineSplitterTest {
         instances.add(new Instance(m0, new ArrayList<SatConstraint>(), new MinMTTR()));
         instances.add(new Instance(m1, new ArrayList<SatConstraint>(), new MinMTTR()));
 
-        Set<Node> all = new HashSet<>(m0.getNodes());
-        all.addAll(m1.getNodes());
+        Set<Node> all = new HashSet<>(m0.getMapping().getAllNodes());
+        all.addAll(m1.getMapping().getAllNodes());
 
         //Only nodes in m0
         Offline oSimple = new Offline(m0.getMapping().getAllNodes());

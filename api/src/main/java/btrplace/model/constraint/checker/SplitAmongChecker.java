@@ -56,7 +56,7 @@ public class SplitAmongChecker extends AllowAllConstraintChecker<SplitAmong> {
             Collection<Node> choosedGroup = null;
             //Check every running VM in a single vgroup are running in the same pgroup
             for (VM vmId : vgrp) {
-                if (m.getRunningVMs().contains(vmId)) {
+                if (m.isRunning(vmId)) {
                     if (choosedGroup == null) {
                         choosedGroup = getConstraint().getAssociatedPGroup(m.getVMLocation(vmId));
                         if (choosedGroup == null) {

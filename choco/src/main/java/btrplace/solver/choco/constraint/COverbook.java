@@ -93,7 +93,7 @@ public class COverbook implements ChocoConstraint {
                 for (VM vmId : m.getMapping().getRunningVMs(n)) {
                     overCapa -= rc.getConsumption(vmId);
                     if (overCapa < 0) {
-                        bads.addAll(m.getMapping().getRunningVMs());
+                        bads.addAll(m.getMapping().getRunningVMs(n));
                         break;
                     }
                 }

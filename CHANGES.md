@@ -1,7 +1,12 @@
 Release notes
 ======================
 
-0.31 - 16 Jul 2013
+version ?????????
+----------------------
+- Bugs fix.
+- Reduce the memory footprint of classes in the model package. Augment the API of Mapping
+
+version 0.31 - 16 Jul 2013
 ----------------------
 - Bugs fix
 - Optimization constraint is now a part of a reconfiguration algorithm

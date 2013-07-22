@@ -95,7 +95,7 @@ public class CAmong implements ChocoConstraint {
                 }
             }
 
-            if (src.getRunningVMs().contains(vm) && cstr.isContinuous()) {
+            if (src.isRunning(vm) && cstr.isContinuous()) {
                 //The VM is already running, so we get its current group
                 Node curNode = src.getVMLocation(vm);
                 int g = getGroup(curNode);

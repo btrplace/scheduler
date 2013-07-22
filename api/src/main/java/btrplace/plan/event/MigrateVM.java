@@ -80,9 +80,9 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
     @Override
     public boolean applyAction(Model i) {
         Mapping c = i.getMapping();
-        if (c.getOnlineNodes().contains(src)
-                && c.getOnlineNodes().contains(dst)
-                && c.getRunningVMs().contains(vm)
+        if (c.isOnline(src)
+                && c.isOnline(dst)
+                && c.isRunning(vm)
                 && c.getVMLocation(vm).equals(src)
                 && !src.equals(dst)) {
             c.addRunningVM(vm, dst);

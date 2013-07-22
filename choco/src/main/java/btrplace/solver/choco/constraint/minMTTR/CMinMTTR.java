@@ -19,6 +19,7 @@ package btrplace.solver.choco.constraint.minMTTR;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.MinMTTR;
@@ -115,7 +116,10 @@ public class CMinMTTR implements ChocoConstraint {
             }
         }
 
-        Set<VM> onGoodNodes = new HashSet<>(map.getRunningVMs());
+        Set<VM> onGoodNodes = new HashSet<>();
+        for (Node n : map.getOnlineNodes()) {
+            onGoodNodes.addAll(map.getRunningVMs(n));
+        }
         onGoodNodes.removeAll(onBadNodes);
 
         List<VMActionModel> goodActions = new ArrayList<>();
@@ -133,7 +137,7 @@ public class CMinMTTR implements ChocoConstraint {
         Set<VM> vmsToExclude = new HashSet<>(rp.getManageableVMs());
         for (Iterator<VM> ite = vmsToExclude.iterator(); ite.hasNext(); ) {
             VM vm = ite.next();
-            if (!(map.getRunningVMs().contains(vm) && rp.getFutureRunningVMs().contains(vm))) {
+            if (!(map.isRunning(vm) && rp.getFutureRunningVMs().contains(vm))) {
                 ite.remove();
             }
         }

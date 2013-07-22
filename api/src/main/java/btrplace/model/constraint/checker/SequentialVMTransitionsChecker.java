@@ -18,6 +18,7 @@
 package btrplace.model.constraint.checker;
 
 import btrplace.model.Model;
+import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.SequentialVMTransitions;
 import btrplace.plan.event.*;
@@ -54,7 +55,10 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<Se
 
     @Override
     public boolean startsWith(Model mo) {
-        runnings = new HashSet<>(mo.getMapping().getRunningVMs());
+        runnings = new HashSet<>();
+        for (Node n : mo.getMapping().getOnlineNodes()) {
+            runnings.addAll(mo.getMapping().getRunningVMs(n));
+        }
         track(runnings);
         return true;
     }

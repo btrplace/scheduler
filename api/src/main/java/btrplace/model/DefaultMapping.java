@@ -26,6 +26,11 @@ import java.util.*;
 
 /**
  * Default implementation of {@link Mapping}.
+ * <p/>
+ * Methods {@link #getRunningVMs()}, {@link #getSleepingVMs()}, {@link #getAllVMs()}, {@link #getAllNodes()},
+ * {@link #getRunningVMs(Collection)}, {@link #getSleepingVMs(java.util.Collection)} have a O(n) complexity.
+ * <p/>
+ * Methods {@code is*()} have a O(1) complexity.
  *
  * @author Fabien Hermenier
  */
@@ -93,6 +98,16 @@ public class DefaultMapping implements Mapping, Cloneable {
         return st.get(v.id()) == READY_STATE;
     }
 
+    @Override
+    public boolean isOnline(Node n) {
+        return nodeState[ONLINE_STATE].contains(n);
+    }
+
+    @Override
+    public boolean isOffline(Node n) {
+        return nodeState[OFFLINE_STATE].contains(n);
+    }
+
     /**
      * Make a new mapping from an existing one.
      *
@@ -118,66 +133,87 @@ public class DefaultMapping implements Mapping, Cloneable {
     }
 
     @Override
-    public boolean addRunningVM(VM vm, Node nId) {
-        if (!nodeState[ONLINE_STATE].contains(nId)) {
+    public boolean addRunningVM(VM vm, Node n) {
+        if (!nodeState[ONLINE_STATE].contains(n)) {
             return false;
         }
         Node old;
-        switch (st.get(vm.id())) {
+
+        int vmId = vm.id();
+        int nId = n.id();
+        Set<VM> on = host[RUNNING_STATE].get(nId);
+        if (on == null) {
+            on = new THashSet<>();
+            host[RUNNING_STATE].put(nId, on);
+        }
+        switch (st.get(vmId)) {
             case RUNNING_STATE:
-                old = place.put(vm.id(), nId);
-                if (!old.equals(nId)) {
+                old = place.put(vmId, n);
+                if (!old.equals(n)) {
                     host[RUNNING_STATE].get(old.id()).remove(vm);
-                    host[RUNNING_STATE].get(nId.id()).add(vm);
+                    on.add(vm);
                 }
                 break;
             case SLEEPING_STATE:
-                old = place.put(vm.id(), nId);
+                old = place.put(vmId, n);
                 host[SLEEPING_STATE].get(old.id()).remove(vm);
-                host[RUNNING_STATE].get(nId.id()).add(vm);
-                st.put(vm.id(), RUNNING_STATE);
+                on.add(vm);
+                st.put(vmId, RUNNING_STATE);
                 break;
             case READY_STATE:
-                place.put(vm.id(), nId);
-                host[RUNNING_STATE].get(nId.id()).add(vm);
+                place.put(vmId, n);
+                on.add(vm);
                 vmReady.remove(vm);
-                st.put(vm.id(), RUNNING_STATE);
+                st.put(vmId, RUNNING_STATE);
                 break;
             default:
-                place.put(vm.id(), nId);
-                host[RUNNING_STATE].get(nId.id()).add(vm);
-                st.put(vm.id(), RUNNING_STATE);
+                place.put(vmId, n);
+                on.add(vm);
+                st.put(vmId, RUNNING_STATE);
         }
         return true;
     }
 
     @Override
-    public boolean addSleepingVM(VM vm, Node nId) {
-        if (!nodeState[ONLINE_STATE].contains(nId)) {
+    public boolean addSleepingVM(VM vm, Node n) {
+        if (!nodeState[ONLINE_STATE].contains(n)) {
             return false;
         }
-        if (st.get(vm.id()) == RUNNING_STATE) {
-            //If was running, sync the state
-            Node old = place.put(vm.id(), nId);
-            host[RUNNING_STATE].get(old.id()).remove(vm);
-            host[SLEEPING_STATE].get(nId.id()).add(vm);
+        int nId = n.id();
+        int vmId = vm.id();
+        Set<VM> on = host[SLEEPING_STATE].get(nId);
+        if (on == null) {
+            on = new THashSet<>();
+            host[SLEEPING_STATE].put(nId, on);
         }
-        else if (st.get(vm.id()) == SLEEPING_STATE) {
-            //If was sleeping, sync the state
-            Node old = place.put(vm.id(), nId);
-            if (!old.equals(nId)) {
-                host[SLEEPING_STATE].get(old.id()).remove(vm);
-                host[SLEEPING_STATE].get(nId.id()).add(vm);
-            }
-        }
-        else if (st.get(vm.id()) == READY_STATE) {
-            place.put(vm.id(), nId);
-            host[SLEEPING_STATE].get(nId.id()).add(vm);
-            vmReady.remove(vm);
-        } else {
-            //it's a new VM
-            place.put(vm.id(), nId);
-            host[SLEEPING_STATE].get(nId.id()).add(vm);
+        Node old;
+        switch (st.get(vmId)) {
+            case RUNNING_STATE:
+                //If was running, sync the state
+                old = place.put(vmId, n);
+                host[RUNNING_STATE].get(old.id()).remove(vm);
+                host[SLEEPING_STATE].get(nId).add(vm);
+                st.put(vmId, SLEEPING_STATE);
+                break;
+            case SLEEPING_STATE:
+                //If was sleeping, sync the state
+                old = place.put(vmId, n);
+                if (!old.equals(n)) {
+                    host[SLEEPING_STATE].get(old.id()).remove(vm);
+                    host[SLEEPING_STATE].get(nId).add(vm);
+                }
+                break;
+            case READY_STATE:
+                place.put(vmId, n);
+                host[SLEEPING_STATE].get(nId).add(vm);
+                vmReady.remove(vm);
+                st.put(vmId, SLEEPING_STATE);
+                break;
+            default:
+                //it's a new VM
+                place.put(vmId, n);
+                host[SLEEPING_STATE].get(nId).add(vm);
+                st.put(vmId, SLEEPING_STATE);
         }
         st.put(vm.id(), SLEEPING_STATE);
         return true;
@@ -207,14 +243,12 @@ public class DefaultMapping implements Mapping, Cloneable {
             //The VM exists and is already placed
             if (st.get(vm.id()) == RUNNING_STATE) {
                 host[RUNNING_STATE].get(n.id()).remove(vm);
-            }
-            else if (st.get(vm.id()) == SLEEPING_STATE) {
+            } else if (st.get(vm.id()) == SLEEPING_STATE) {
                 host[SLEEPING_STATE].get(n.id()).remove(vm);
             }
             st.remove(vm.id());
             return true;
-        } //else if (vmState[READY_STATE].remove(vm)) {
-        else if (st.get(vm.id()) == READY_STATE) {
+        } else if (st.get(vm.id()) == READY_STATE) {
             vmReady.remove(vm);
             return true;
         }
@@ -224,11 +258,22 @@ public class DefaultMapping implements Mapping, Cloneable {
     @Override
     public boolean remove(Node n) {
         if (nodeState[ONLINE_STATE].contains(n)) {
-            if (!host[RUNNING_STATE].get(n.id()).isEmpty() || !host[SLEEPING_STATE].get(n.id()).isEmpty()) {
-                return false;
+            int nId = n.id();
+            Set<VM> on = host[RUNNING_STATE].get(nId);
+            if (on != null) {
+                if (!on.isEmpty()) {
+                    return false;
+                }
+                host[RUNNING_STATE].remove(nId);
             }
-            host[RUNNING_STATE].remove(n.id());
-            host[SLEEPING_STATE].remove(n.id());
+
+            on = host[SLEEPING_STATE].get(nId);
+            if (on != null) {
+                if (!on.isEmpty()) {
+                    return false;
+                }
+                host[SLEEPING_STATE].remove(nId);
+            }
             return nodeState[ONLINE_STATE].remove(n);
         }
         return nodeState[OFFLINE_STATE].remove(n);
@@ -238,20 +283,21 @@ public class DefaultMapping implements Mapping, Cloneable {
     public void addOnlineNode(Node n) {
         nodeState[OFFLINE_STATE].remove(n);
         nodeState[ONLINE_STATE].add(n);
-        host[RUNNING_STATE].put(n.id(), new THashSet<VM>());
-        host[SLEEPING_STATE].put(n.id(), new THashSet<VM>());
     }
 
     @Override
     public boolean addOfflineNode(Node n) {
-
+        int nId = n.id();
         if (nodeState[ONLINE_STATE].contains(n)) {
-            if (!host[RUNNING_STATE].get(n.id()).isEmpty() || !host[SLEEPING_STATE].get(n.id()).isEmpty()) {
-                //It already host VMs, not possible
+            Set<VM> on = host[SLEEPING_STATE].get(nId);
+            if (on != null && !on.isEmpty()) {
                 return false;
-            } else {
-                nodeState[ONLINE_STATE].remove(n);
             }
+            on = host[RUNNING_STATE].get(nId);
+            if (on != null && !on.isEmpty()) {
+                return false;
+            }
+            nodeState[ONLINE_STATE].remove(n);
         }
         nodeState[OFFLINE_STATE].add(n);
         return true;
@@ -369,8 +415,8 @@ public class DefaultMapping implements Mapping, Cloneable {
 
     @Override
     public void clear() {
-        for (Set<Node> st : nodeState) {
-            st.clear();
+        for (Set<Node> s : nodeState) {
+            s.clear();
         }
         st.clear();
         vmReady.clear();
@@ -397,9 +443,6 @@ public class DefaultMapping implements Mapping, Cloneable {
 
     @Override
     public void clearAllVMs() {
-        /*for (Set<VM> st : vmState) {
-            st.clear();
-        } */
         place.clear();
         st.clear();
         vmReady.clear();

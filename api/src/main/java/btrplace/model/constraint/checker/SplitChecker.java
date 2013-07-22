@@ -73,7 +73,7 @@ public class SplitChecker extends AllowAllConstraintChecker<Split> {
     private boolean checkModel() {
         for (Collection<VM> vGroup : vGroups) {
             for (VM vmId : vGroup) {
-                if (mockModel.getMapping().getRunningVMs().contains(vmId)) {
+                if (mockModel.getMapping().isRunning(vmId)) {
                     //Get the hosting server
                     //Check if only hosts VMs in its group
                     Node nId = mockModel.getMapping().getVMLocation(vmId);

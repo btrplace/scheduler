@@ -149,4 +149,25 @@ public class DefaultModelTest {
         i.setAttributes(attrs);
         Assert.assertEquals(i.getAttributes(), attrs);
     }
+
+    /*@Test
+    public void testBig() {
+        int nbNodes = 1000000;
+        int ratio = 10;
+
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        for (int i = 0; i < nbNodes; i++) {
+            Node n = mo.newNode();
+            map.addOnlineNode(n);
+            for (int j = 0; j < ratio; j++) {
+                VM v = mo.newVM();
+                map.addRunningVM(v, n);
+            }
+        }
+        for (int i = 0; i < ratio; i++) {
+            VM v = mo.newVM();
+            map.addReadyVM(v);
+        }
+    }       */
 }

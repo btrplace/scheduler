@@ -79,7 +79,7 @@ public class DefaultMappingTest {
         Assert.assertEquals(c.getAllNodes().size(), 1);
         Assert.assertTrue(c.getAllNodes().contains(ns.get(0)));
         Assert.assertEquals(c.getOnlineNodes().size(), 1);
-        Assert.assertTrue(c.getOnlineNodes().contains(ns.get(0)));
+        Assert.assertTrue(c.isOnline(ns.get(0)));
         Assert.assertTrue(c.getOfflineNodes().isEmpty());
 
         //Nothing is on the node
@@ -107,7 +107,7 @@ public class DefaultMappingTest {
         Assert.assertTrue(c.getAllNodes().contains(ns.get(1)));
         Assert.assertEquals(1, c.getOfflineNodes().size());
         Assert.assertTrue(c.getOnlineNodes().isEmpty());
-        Assert.assertTrue(c.getOfflineNodes().contains(ns.get(1)));
+        Assert.assertTrue(c.isOffline(ns.get(1)));
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testRunningVM", "testSleeping", "testOnlineNode", "testOfflineNode"})
@@ -133,7 +133,7 @@ public class DefaultMappingTest {
         Assert.assertEquals(c.getAllNodes().size(), 1);
         Assert.assertTrue(c.getAllNodes().contains(ns.get(0)));
         Assert.assertEquals(c.getOnlineNodes().size(), 1);
-        Assert.assertTrue(c.getOnlineNodes().contains(ns.get(0)));
+        Assert.assertTrue(c.isOnline(ns.get(0)));
 
         //Remove a node with a sleeping VM on it. Must fail
         c.addOnlineNode(ns.get(1));
@@ -142,7 +142,7 @@ public class DefaultMappingTest {
         Assert.assertEquals(c.getAllNodes().size(), 2);
         Assert.assertTrue(c.getAllNodes().contains(ns.get(1)));
         Assert.assertEquals(c.getOnlineNodes().size(), 2);
-        Assert.assertTrue(c.getOnlineNodes().contains(ns.get(1)));
+        Assert.assertTrue(c.isOnline(ns.get(1)));
     }
 
     /**
@@ -155,7 +155,7 @@ public class DefaultMappingTest {
         c.addOfflineNode(ns.get(1));
 
         Assert.assertTrue(c.addRunningVM(vms.get(0), ns.get(0)));
-        Assert.assertTrue(c.getRunningVMs().size() == 1 && c.getRunningVMs().contains(vms.get(0)));
+        Assert.assertTrue(c.getRunningVMs().size() == 1 && c.isRunning(vms.get(0)));
         Assert.assertTrue(c.getRunningVMs(ns.get(0)).size() == 1 && c.getRunningVMs(ns.get(0)).contains(vms.get(0)));
         Assert.assertTrue(c.getAllVMs().size() == 1 && c.getAllVMs().contains(vms.get(0)));
         Assert.assertTrue(c.getSleepingVMs().isEmpty() && c.getReadyVMs().isEmpty());
@@ -193,7 +193,7 @@ public class DefaultMappingTest {
         c.addOfflineNode(ns.get(1));
 
         Assert.assertTrue(c.addSleepingVM(vms.get(0), ns.get(0)));
-        Assert.assertTrue(c.getSleepingVMs().size() == 1 && c.getSleepingVMs().contains(vms.get(0)));
+        Assert.assertTrue(c.getSleepingVMs().size() == 1 && c.isSleeping(vms.get(0)));
         Assert.assertTrue(c.getSleepingVMs(ns.get(0)).size() == 1 && c.getSleepingVMs(ns.get(0)).contains(vms.get(0)));
         Assert.assertTrue(c.getAllVMs().size() == 1 && c.getAllVMs().contains(vms.get(0)));
         Assert.assertTrue(c.getRunningVMs().isEmpty() && c.getReadyVMs().isEmpty());
@@ -218,7 +218,7 @@ public class DefaultMappingTest {
         Mapping c = new DefaultMapping();
         c.addReadyVM(vms.get(0));
         Assert.assertTrue(c.getAllVMs().size() == 1 && c.getAllVMs().contains(vms.get(0)));
-        Assert.assertTrue(c.getReadyVMs().size() == 1 && c.getReadyVMs().contains(vms.get(0)));
+        Assert.assertTrue(c.getReadyVMs().size() == 1 && c.isReady(vms.get(0)));
         Assert.assertTrue(c.getRunningVMs().isEmpty() && c.getSleepingVMs().isEmpty());
         Assert.assertNull(c.getVMLocation(vms.get(0)));
 
@@ -234,14 +234,14 @@ public class DefaultMappingTest {
         //Set online then offline then online. Everything is ok
         c.addOnlineNode(ns.get(0));
         Assert.assertTrue(c.addOfflineNode(ns.get(0)));
-        Assert.assertTrue(c.getAllNodes().size() == 1 && c.getOfflineNodes().contains(ns.get(0)) && c.getOnlineNodes().isEmpty());
+        Assert.assertTrue(c.getAllNodes().size() == 1 && c.isOffline(ns.get(0)) && c.getOnlineNodes().isEmpty());
         c.addOnlineNode(ns.get(0));
-        Assert.assertTrue(c.getAllNodes().size() == 1 && c.getOnlineNodes().contains(ns.get(0)) && c.getOfflineNodes().isEmpty());
+        Assert.assertTrue(c.getAllNodes().size() == 1 && c.isOnline(ns.get(0)) && c.getOfflineNodes().isEmpty());
 
         //A VM is running on the node, no way it can be turned off
         c.addRunningVM(vms.get(0), ns.get(0));
         Assert.assertFalse(c.addOfflineNode(ns.get(0)));
-        Assert.assertTrue(c.getAllNodes().size() == 1 && c.getOnlineNodes().contains(ns.get(0)) && c.getOfflineNodes().isEmpty());
+        Assert.assertTrue(c.getAllNodes().size() == 1 && c.isOnline(ns.get(0)) && c.getOfflineNodes().isEmpty());
 
 
         //The same but with a sleeping VM
@@ -249,7 +249,7 @@ public class DefaultMappingTest {
         c.addSleepingVM(vms.get(0), ns.get(1));
 
         Assert.assertFalse(c.addOfflineNode(ns.get(1)));
-        Assert.assertTrue(c.getAllNodes().size() == 2 && c.getOnlineNodes().contains(ns.get(1)) && c.getOfflineNodes().isEmpty());
+        Assert.assertTrue(c.getAllNodes().size() == 2 && c.isOnline(ns.get(1)) && c.getOfflineNodes().isEmpty());
 
     }
 
@@ -291,7 +291,7 @@ public class DefaultMappingTest {
         c.addRunningVM(vms.get(0), ns.get(1));
         c.addReadyVM(vms.get(0));
         Assert.assertEquals(1, c.getAllVMs().size());
-        Assert.assertTrue(c.getRunningVMs(ns.get(1)).isEmpty() && c.getVMLocation(vms.get(0)) == null && c.getReadyVMs().contains(vms.get(0)));
+        Assert.assertTrue(c.getRunningVMs(ns.get(1)).isEmpty() && c.getVMLocation(vms.get(0)) == null && c.isReady(vms.get(0)));
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testSleeping"})
@@ -328,7 +328,7 @@ public class DefaultMappingTest {
         Assert.assertEquals(c.getAllVMs().size(), 1);
         Assert.assertTrue(c.getSleepingVMs(ns.get(0)).isEmpty());
         Assert.assertTrue(c.getSleepingVMs(ns.get(1)).contains(vms.get(0)));
-        Assert.assertTrue(c.getSleepingVMs().contains(vms.get(0)));
+        Assert.assertTrue(c.isSleeping(vms.get(0)));
         Assert.assertEquals(c.getVMLocation(vms.get(0)), ns.get(1));
 
 

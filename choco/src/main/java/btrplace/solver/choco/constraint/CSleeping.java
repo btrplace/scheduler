@@ -59,7 +59,7 @@ public class CSleeping implements ChocoConstraint {
         Set<VM> bad = new HashSet<>();
         Mapping map = m.getMapping();
         for (VM vm : cstr.getInvolvedVMs()) {
-            if (!map.getSleepingVMs().contains(vm)) {
+            if (!map.isSleeping(vm)) {
                 bad.add(vm);
             }
         }

@@ -56,8 +56,8 @@ public class OnlineSplitterTest {
         instances.add(new Instance(m0, new ArrayList<SatConstraint>(), new MinMTTR()));
         instances.add(new Instance(m1, new ArrayList<SatConstraint>(), new MinMTTR()));
 
-        Set<Node> all = new HashSet<>(m0.getNodes());
-        all.addAll(m1.getNodes());
+        Set<Node> all = new HashSet<>(m0.getMapping().getAllNodes());
+        all.addAll(m1.getMapping().getAllNodes());
 
         //Only nodes in m0
         Online oSimple = new Online(m0.getMapping().getAllNodes());

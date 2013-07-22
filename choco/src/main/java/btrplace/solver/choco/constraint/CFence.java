@@ -94,7 +94,7 @@ public class CFence implements ChocoConstraint {
         Mapping map = m.getMapping();
         Set<VM> bad = new HashSet<>();
         for (VM vm : cstr.getInvolvedVMs()) {
-            if (map.getRunningVMs().contains(vm) && !cstr.getInvolvedNodes().contains(map.getVMLocation(vm))) {
+            if (map.isRunning(vm) && !cstr.getInvolvedNodes().contains(map.getVMLocation(vm))) {
                 bad.add(vm);
             }
         }

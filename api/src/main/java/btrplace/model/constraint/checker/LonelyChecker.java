@@ -79,7 +79,7 @@ public class LonelyChecker extends AllowAllConstraintChecker<Lonely> {
     private boolean discreteCheck(Model mo) {
         Mapping map = mo.getMapping();
         for (VM vm : getVMs()) {
-            if (map.getRunningVMs().contains(vm)) {
+            if (map.isRunning(vm)) {
                 Node host = map.getVMLocation(vm);
                 Set<VM> on = map.getRunningVMs(host);
                 //Check for other VMs on the node. If they are not in the constraint
@@ -111,7 +111,7 @@ public class LonelyChecker extends AllowAllConstraintChecker<Lonely> {
             if (ret) {
                 Mapping map = mo.getMapping();
                 for (VM vm : getVMs()) {
-                    if (map.getRunningVMs().contains(vm)) {
+                    if (map.isRunning(vm)) {
                         privateNodes.add(map.getVMLocation(vm));
                     }
                 }

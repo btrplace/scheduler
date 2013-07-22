@@ -33,23 +33,24 @@ public class DefaultElementBuilderTest {
         VM v = eb.newVM();
         VM vX = eb.newVM();
         Assert.assertNotEquals(v, vX);
-        Assert.assertTrue(eb.getVMs().contains(v));
+        Assert.assertTrue(eb.contains(v));
+        Assert.assertTrue(eb.contains(vX));
         Assert.assertNull(eb.newVM(v.id()));
 
         int nextId = v.id() + 1000;
         VM v2 = eb.newVM(nextId);
-        Assert.assertTrue(eb.getVMs().contains(v2));
+        Assert.assertTrue(eb.contains(v2));
     }
 
     @Test
     public void testNodeRegistration() {
         ElementBuilder eb = new DefaultElementBuilder();
         Node n = eb.newNode();
-        Assert.assertTrue(eb.getNodes().contains(n));
+        Assert.assertTrue(eb.contains(n));
         Assert.assertNull(eb.newNode(n.id()));
 
         int nextId = n.id() + 1000;
         Node n2 = eb.newNode(nextId);
-        Assert.assertTrue(eb.getNodes().contains(n2));
+        Assert.assertTrue(eb.contains(n2));
     }
 }

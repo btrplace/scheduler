@@ -102,11 +102,11 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
     public List<Instance> split(ChocoReconfigurationAlgorithmParams ps, Instance i) throws SolverException {
         Model mo = i.getModel();
 
-        SynchronizedElementBuilder eb = new SynchronizedElementBuilder(mo.getVMs(), mo.getNodes());
+        SynchronizedElementBuilder eb = new SynchronizedElementBuilder(mo);
 
         List<Instance> parts = new ArrayList<>(partitions.size());
 
-        TIntIntHashMap vmPosition = new TIntIntHashMap(mo.getVMs().size());
+        TIntIntHashMap vmPosition = new TIntIntHashMap();
         int partNumber = 0;
         for (Collection<Node> s : partitions) {
             SubModel partModel = new SubModel(mo, eb, s);

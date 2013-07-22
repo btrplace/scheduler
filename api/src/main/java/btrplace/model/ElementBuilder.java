@@ -17,8 +17,6 @@
 
 package btrplace.model;
 
-import java.util.Set;
-
 /**
  * Interface to specify a builder to create node or VMs.
  * Each created element is guarantee for being unique wrt. all the
@@ -61,18 +59,20 @@ public interface ElementBuilder {
     Node newNode(int id);
 
     /**
-     * Get all the registered nodes.
+     * Check if a given VM has been defined for this model.
      *
-     * @return a set of nodes, may be empty
+     * @param v the VM to check
+     * @return {@code true} iff the VM is already defined
      */
-    Set<Node> getNodes();
+    boolean contains(VM v);
 
     /**
-     * Get all the registered VMs.
+     * Check if a given node has been defined for this model.
      *
-     * @return a set of VMs, may be empty
+     * @param n the node to check
+     * @return {@code true} iff the VM is booked
      */
-    Set<VM> getVMs();
+    boolean contains(Node n);
 
     /**
      * Clone the builder.

@@ -17,119 +17,73 @@
 
 package btrplace.model;
 
-import gnu.trove.set.hash.THashSet;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-
 /**
- * Thread-safe implementation of {@link ElementBuilder}.
+ * A wrapper for an {@link ElementBuilder} that makes it thread-safe.
  *
  * @author Fabien Hermenier
  */
 public class SynchronizedElementBuilder implements ElementBuilder {
 
-    private AtomicInteger nextVMId;
+    private ElementBuilder base;
 
-    private AtomicInteger nextNodeId;
-
-    private Set<VM> usedVMs;
-
-    private Set<Node> usedNodes;
+    private final Object vmLock, nodeLock;
 
     /**
      * Make a new builder.
      *
-     * @param usedVMs   VMs that are already registered
-     * @param usedNodes Nodes that are already registered
+     * @param base the builder to wrap
      */
-    public SynchronizedElementBuilder(Collection<VM> usedVMs, Collection<Node> usedNodes) {
-        int maxVMId = 0;
-        int maxNodeId = 0;
-        this.usedVMs = Collections.synchronizedSet(new THashSet<VM>(usedVMs.size()));
-        this.usedNodes = Collections.synchronizedSet(new THashSet<Node>(usedNodes.size()));
-        for (VM v : usedVMs) {
-            int i = v.id();
-            if (i > maxVMId) {
-                maxVMId = i + 1;
-            }
-            this.usedVMs.add(v);
-        }
-        for (Node n : usedNodes) {
-            int i = n.id();
-            if (i > maxNodeId) {
-                maxNodeId = i + 1;
-            }
-            this.usedNodes.add(n);
-        }
-        nextVMId = new AtomicInteger(maxVMId);
-        nextNodeId = new AtomicInteger(maxNodeId);
-    }
-
-    /**
-     * Make a new builder.
-     */
-    public SynchronizedElementBuilder() {
-        this(Collections.<VM>emptySet(), Collections.<Node>emptySet());
-    }
-
-    @Override
-    public Node newNode() {
-        Node n;
-        do {
-            int i = nextNodeId.getAndIncrement();
-            n = i < 0 ? null : new Node(i);
-        } while (n == null || !usedNodes.add(n));
-        return n;
+    public SynchronizedElementBuilder(ElementBuilder base) {
+        this.base = base;
+        vmLock = new Object();
+        nodeLock = new Object();
     }
 
     @Override
     public VM newVM() {
-        VM v;
-        do {
-            int i = nextVMId.getAndIncrement();
-            v = i < 0 ? null : new VM(i);
-        } while (v == null || !usedVMs.add(v));
-        return v;
+        synchronized (vmLock) {
+            return base.newVM();
+        }
     }
 
     @Override
     public VM newVM(int id) {
-        VM v = new VM(id);
-        if (!usedVMs.add(v)) {
-            return null;
+        synchronized (vmLock) {
+            return base.newVM(id);
         }
-        return v;
+    }
+
+    @Override
+    public Node newNode() {
+        synchronized (nodeLock) {
+            return base.newNode();
+        }
     }
 
     @Override
     public Node newNode(int id) {
-        Node n = new Node(id);
-        if (!usedNodes.add(n)) {
-            return null;
+        synchronized (nodeLock) {
+            return base.newNode(id);
         }
-        return n;
+
     }
 
     @Override
-    public Set<Node> getNodes() {
-        return usedNodes;
+    public boolean contains(VM v) {
+        synchronized (vmLock) {
+            return base.contains(v);
+        }
     }
 
     @Override
-    public Set<VM> getVMs() {
-        return usedVMs;
+    public boolean contains(Node n) {
+        synchronized (nodeLock) {
+            return base.contains(n);
+        }
     }
 
     @Override
     public ElementBuilder clone() {
-        SynchronizedElementBuilder c = new SynchronizedElementBuilder();
-        c.nextNodeId.set(nextNodeId.get());
-        c.nextVMId.set(nextVMId.get());
-        c.usedNodes.addAll(usedNodes);
-        c.usedVMs.addAll(usedVMs);
-        return c;
+        return new SynchronizedElementBuilder(base);
     }
 }

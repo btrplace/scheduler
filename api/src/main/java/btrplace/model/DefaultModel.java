@@ -19,7 +19,10 @@ package btrplace.model;
 
 import btrplace.model.view.ModelView;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Default implementation for a {@link Model}.
@@ -173,12 +176,12 @@ public class DefaultModel implements Model, Cloneable {
     }
 
     @Override
-    public Set<Node> getNodes() {
-        return elemBuilder.getNodes();
+    public boolean contains(VM v) {
+        return elemBuilder.contains(v);
     }
 
     @Override
-    public Set<VM> getVMs() {
-        return elemBuilder.getVMs();
+    public boolean contains(Node n) {
+        return elemBuilder.contains(n);
     }
 }

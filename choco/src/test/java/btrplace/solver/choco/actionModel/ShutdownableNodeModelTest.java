@@ -93,7 +93,7 @@ public class ShutdownableNodeModelTest {
 
         Assert.assertEquals(p.getSize(), 1);
         Model res = p.getResult();
-        Assert.assertTrue(res.getMapping().getOnlineNodes().contains(n1));
+        Assert.assertTrue(res.getMapping().isOnline(n1));
     }
 
     @Test
@@ -309,8 +309,8 @@ public class ShutdownableNodeModelTest {
         Assert.assertEquals(bn.getHostingEnd().getVal(), 16);
         Assert.assertEquals(p.getSize(), 2);
         Model res = p.getResult();
-        Assert.assertTrue(res.getMapping().getOnlineNodes().contains(n1));
-        Assert.assertTrue(res.getMapping().getOnlineNodes().contains(n3));
+        Assert.assertTrue(res.getMapping().isOnline(n1));
+        Assert.assertTrue(res.getMapping().isOnline(n3));
         Assert.assertTrue(res.getMapping().getOfflineNodes().contains(n2));
     }
 
@@ -398,7 +398,7 @@ public class ShutdownableNodeModelTest {
         Assert.assertEquals(sn4.getHostingEnd().getVal(), 7);
         Assert.assertEquals(p.getSize(), 1);
         Model res = p.getResult();
-        Assert.assertTrue(res.getMapping().getOnlineNodes().contains(n4));
+        Assert.assertTrue(res.getMapping().isOnline(n4));
         Assert.assertTrue(res.getMapping().getOfflineNodes().contains(n1));
     }
 }

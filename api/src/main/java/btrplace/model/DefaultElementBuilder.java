@@ -17,9 +17,7 @@
 
 package btrplace.model;
 
-import gnu.trove.set.hash.THashSet;
-
-import java.util.Set;
+import java.util.BitSet;
 
 /**
  * Default implementation of {@link ElementBuilder}.
@@ -29,88 +27,81 @@ import java.util.Set;
  */
 public class DefaultElementBuilder implements ElementBuilder {
 
-    private int nextVM;
+    private BitSet usedVMIds;
 
-    private int nextNode;
+    private BitSet usedNodeIds;
 
-    private Set<VM> usedVMIds;
-    private Set<Node> usedNodeIds;
+    private int nextNodeId;
+
+    private int nextVMId;
 
     /**
      * New builder.
      */
     public DefaultElementBuilder() {
-        usedNodeIds = new THashSet<>();
-        usedVMIds = new THashSet<>();
-        nextVM = 0;
-        nextNode = 0;
+        usedNodeIds = new BitSet();
+        usedVMIds = new BitSet();
     }
 
     @Override
     public VM newVM() {
-        if (usedVMIds.size() == Integer.MAX_VALUE) {
-            //No more ids left
-            return null;
+        int id = nextVMId++;
+        if (id < 0) {
+            //We look for holes in the bitset
+            id = usedVMIds.nextClearBit(0);
         }
-        //Find the first free id.
-        VM v = new VM(nextVM++);
-        while (!usedVMIds.add(v)) {
-            v = new VM(nextVM++);
-
-        }
-        return v;
+        usedVMIds.set(id);
+        return new VM(id);
     }
 
     @Override
     public Node newNode() {
-        if (usedNodeIds.size() == Integer.MAX_VALUE) {
-            //No more ids left
-            return null;
+        int id = nextNodeId++;
+        if (id < 0) {
+            //We look for holes in the bitset
+            id = usedNodeIds.nextClearBit(0);
         }
-
-        //Find the first free id.
-        Node n = new Node(nextNode++);
-        while (!usedNodeIds.add(n)) {
-            n = new Node(nextNode++);
-        }
-        return n;
+        usedNodeIds.set(id);
+        return new Node(id);
     }
 
     @Override
     public VM newVM(int id) {
-        VM v = new VM(id);
-        if (!usedVMIds.add(v)) {
-            return null;
+        if (!usedVMIds.get(id)) {
+            usedVMIds.set(id);
+            nextVMId = Math.max(nextVMId, id + 1);
+            return new VM(id);
         }
-        return v;
+        return null;
     }
 
     @Override
     public Node newNode(int id) {
-        Node n = new Node(id);
-        if (!usedNodeIds.add(n)) {
-            return null;
+        if (!usedNodeIds.get(id)) {
+            usedNodeIds.set(id);
+            nextVMId = Math.max(nextVMId, id + 1);
+            return new Node(id);
         }
-        return n;
-    }
-
-    @Override
-    public Set<Node> getNodes() {
-        return usedNodeIds;
-    }
-
-    @Override
-    public Set<VM> getVMs() {
-        return usedVMIds;
+        return null;
     }
 
     @Override
     public ElementBuilder clone() {
         DefaultElementBuilder c = new DefaultElementBuilder();
-        c.nextNode = nextNode;
-        c.nextVM = nextVM;
-        c.usedNodeIds = new THashSet<>(usedNodeIds);
-        c.usedVMIds = new THashSet<>(usedVMIds);
+        c.nextVMId = nextVMId;
+        c.nextNodeId = nextNodeId;
+        c.usedVMIds = (BitSet) usedVMIds.clone();
+        c.usedNodeIds = (BitSet) usedNodeIds.clone();
         return c;
+    }
+
+    @Override
+    public boolean contains(VM v) {
+        return usedVMIds.get(v.id());
+    }
+
+    @Override
+    public boolean contains(Node n) {
+        return usedNodeIds.get(n.id());
     }
 }

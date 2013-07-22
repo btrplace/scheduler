@@ -64,7 +64,7 @@ public class ResumeVMTest {
         ResumeVM a = new ResumeVM(vms.get(0), ns.get(0), ns.get(1), 3, 5);
         Assert.assertTrue(a.apply(m));
         Assert.assertEquals(map.getVMLocation(vms.get(0)), ns.get(1));
-        Assert.assertTrue(map.getRunningVMs().contains(vms.get(0)));
+        Assert.assertTrue(map.isRunning(vms.get(0)));
 
         Assert.assertFalse(a.apply(m));
         Assert.assertEquals(map.getVMLocation(vms.get(0)), ns.get(1));

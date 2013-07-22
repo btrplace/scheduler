@@ -394,16 +394,16 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         for (int i = 0; i < vms.length; i++) {
             VM vmId = vms[i];
             if (runnings.contains(vmId)) {
-                if (map.getSleepingVMs().contains(vmId)) {
+                if (map.isSleeping(vmId)) {
                     vmActions[i] = new ResumeVMModel(this, vmId);
                     manageable.add(vmId);
-                } else if (map.getRunningVMs().contains(vmId)) {
+                } else if (map.isRunning(vmId)) {
                     if (manageable.contains(vmId)) {
                         vmActions[i] = new RelocatableVMModel(this, vmId);
                     } else {
                         vmActions[i] = new StayRunningVMModel(this, vmId);
                     }
-                } else if (map.getReadyVMs().contains(vmId)) {
+                } else if (map.isReady(vmId)) {
                     vmActions[i] = new BootVMModel(this, vmId);
                     manageable.add(vmId);
                 } else {
@@ -416,9 +416,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 } else if (!map.getAllVMs().contains(vmId)) {
                     vmActions[i] = new ForgeVMModel(this, vmId);
                     manageable.add(vmId);
-                } else if (map.getReadyVMs().contains(vmId)) {
+                } else if (map.isReady(vmId)) {
                     vmActions[i] = new StayAwayVMModel(this, vmId);
-                } else if (map.getRunningVMs().contains(vmId)) {
+                } else if (map.isRunning(vmId)) {
                     vmActions[i] = new ShutdownVMModel(this, vmId);
                     manageable.add(vmId);
                 } else {
@@ -428,10 +428,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             if (sleepings.contains(vmId)) {
                 if (vmActions[i] != null) {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
-                } else if (map.getRunningVMs().contains(vmId)) {
+                } else if (map.isRunning(vmId)) {
                     vmActions[i] = new SuspendVMModel(this, vmId);
                     manageable.add(vmId);
-                } else if (map.getSleepingVMs().contains(vmId)) {
+                } else if (map.isSleeping(vmId)) {
                     vmActions[i] = new StayAwayVMModel(this, vmId);
                 } else {
                     throw new SolverException(model, "Unable to set VM '" + vmId + "' sleeping: should be running");
@@ -450,17 +450,17 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             if (vmActions[i] == null) {
                 //Next state is undefined, keep the current state
                 //Need to update runnings, sleeping and waitings accordingly
-                if (map.getRunningVMs().contains(vmId)) {
+                if (map.isRunning(vmId)) {
                     runnings.add(vmId);
                     if (manageable.contains(vmId)) {
                         vmActions[i] = new RelocatableVMModel(this, vmId);
                     } else {
                         vmActions[i] = new StayRunningVMModel(this, vmId);
                     }
-                } else if (map.getReadyVMs().contains(vmId)) {
+                } else if (map.isReady(vmId)) {
                     ready.add(vmId);
                     vmActions[i] = new StayAwayVMModel(this, vmId);
-                } else if (map.getSleepingVMs().contains(vmId)) {
+                } else if (map.isSleeping(vmId)) {
                     sleepings.add(vmId);
                     vmActions[i] = new StayAwayVMModel(this, vmId);
                 } else {
@@ -479,7 +479,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             if (m.getOfflineNodes().contains(nId)) {
                 nodeActions[i] = new BootableNodeModel(this, nId);
             }
-            if (m.getOnlineNodes().contains(nId)) {
+            if (m.isOnline(nId)) {
                 if (nodeActions[i] != null) {
                     throw new SolverException(model, "Next state for node '" + nId + "' is ambiguous");
                 }

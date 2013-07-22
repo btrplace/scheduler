@@ -245,7 +245,7 @@ public class SubMapping implements Mapping {
     }
 
     public List<VM> myVMs() {
-        List <VM>l = new ArrayList<>();
+        List<VM> l = new ArrayList<>();
         for (Node n : scope) {
             l.addAll(parent.getRunningVMs(n));
             l.addAll(parent.getSleepingVMs(n));
@@ -266,5 +266,33 @@ public class SubMapping implements Mapping {
     @Override
     public boolean isReady(VM v) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isOnline(Node n) {
+        if (scope.contains(n)) {
+            return parent.isOnline(n);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isOffline(Node n) {
+        if (scope.contains(n)) {
+            return parent.isOffline(n);
+        }
+        return false;
+    }
+
+    @Override
+    public Set<VM> getSleepingVMs(Collection<Node> ns) {
+        Set<VM> res = new THashSet<>();
+        for (Node n : ns) {
+            if (scope.contains(n)) {
+                res.addAll(parent.getSleepingVMs(n));
+            }
+        }
+        return res;
+
     }
 }

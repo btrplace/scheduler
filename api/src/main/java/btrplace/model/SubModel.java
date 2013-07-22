@@ -20,7 +20,6 @@ package btrplace.model;
 import btrplace.model.view.ModelView;
 
 import java.util.Collection;
-import java.util.Set;
 
 /**
  * Define a model that is a sub-model of a bigger one.
@@ -165,13 +164,13 @@ public class SubModel implements Model {
     }
 
     @Override
-    public Set<Node> getNodes() {
-        return eb.getNodes();
+    public boolean contains(VM v) {
+        return parent.contains(v);
     }
 
     @Override
-    public Set<VM> getVMs() {
-        return eb.getVMs();
+    public boolean contains(Node n) {
+        return parent.contains(n);
     }
 }
 

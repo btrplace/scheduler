@@ -56,17 +56,14 @@ public final class MappingUtils {
     public static Set<Node> usedNodes(Mapping cfg, EnumSet<State> wrt) {
         Set<Node> ns = new HashSet<>();
 
-        if (wrt.contains(State.Runnings)) {
-            for (VM vm : cfg.getRunningVMs()) {
-                ns.add(cfg.getVMLocation(vm));
+        for (Node n : cfg.getOnlineNodes()) {
+            if (wrt.contains(State.Runnings) && !cfg.getRunningVMs(n).isEmpty()) {
+                ns.add(n);
+            }
+            if (wrt.contains(State.Sleepings) && !cfg.getSleepingVMs(n).isEmpty()) {
+                ns.add(n);
             }
         }
-        if (wrt.contains(State.Sleepings)) {
-            for (VM vm : cfg.getSleepingVMs()) {
-                ns.add(cfg.getVMLocation(vm));
-            }
-        }
-
         return ns;
     }
 
@@ -101,7 +98,7 @@ public final class MappingUtils {
     public static Mapping subMapping(Mapping cfg, Set<Node> nodes) {
         Mapping d = new DefaultMapping();
         for (Node n : nodes) {
-            if (cfg.getOnlineNodes().contains(n)) {
+            if (cfg.isOnline(n)) {
                 d.addOnlineNode(n);
                 for (VM vm : cfg.getRunningVMs(n)) {
                     d.addRunningVM(vm, n);
@@ -109,7 +106,7 @@ public final class MappingUtils {
                 for (VM vm : cfg.getSleepingVMs(n)) {
                     d.addSleepingVM(vm, n);
                 }
-            } else if (cfg.getOfflineNodes().contains(n)) {
+            } else if (cfg.isOffline(n)) {
                 d.addOfflineNode(n);
             } else {
                 return null;
@@ -131,9 +128,9 @@ public final class MappingUtils {
 
         //Copy the nodes, unknown nodes lead to an error
         for (Node n : nodes) {
-            if (cfg.getOnlineNodes().contains(n)) {
+            if (cfg.isOnline(n)) {
                 d.addOnlineNode(n);
-            } else if (cfg.getOfflineNodes().contains(n)) {
+            } else if (cfg.isOffline(n)) {
                 d.addOfflineNode(n);
             } else {
                 return null;
@@ -142,11 +139,11 @@ public final class MappingUtils {
         //Copy the VMs, unknown VMs lead to an error
         //If the VMs in on a node in cfg, this node must already be online in d
         for (VM vm : vms) {
-            if (cfg.getReadyVMs().contains(vm)) {
+            if (cfg.isReady(vm)) {
                 d.addReadyVM(vm);
-            } else if (cfg.getRunningVMs().contains(vm) && d.getOnlineNodes().contains(cfg.getVMLocation(vm))) {
+            } else if (cfg.isRunning(vm) && d.isOnline(cfg.getVMLocation(vm))) {
                 d.addRunningVM(vm, cfg.getVMLocation(vm));
-            } else if (cfg.getSleepingVMs().contains(vm) && d.getOnlineNodes().contains(cfg.getVMLocation(vm))) {
+            } else if (cfg.isSleeping(vm) && d.isOnline(cfg.getVMLocation(vm))) {
                 d.addSleepingVM(vm, cfg.getVMLocation(vm));
             }
         }
