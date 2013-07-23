@@ -46,6 +46,13 @@ public class SubModel implements Model {
 
     private ElementBuilder eb;
 
+    /**
+     * Make a new submodel.
+     *
+     * @param parent the parent model
+     * @param eb     the element builder to rely on
+     * @param scope  the node to restrict the model on.
+     */
     public SubModel(Model parent, ElementBuilder eb, Collection<Node> scope) {
         this.scope = scope;
         this.parent = parent;

@@ -411,6 +411,7 @@ public class DefaultMapping implements Mapping, Cloneable {
         return vms;
     }
 
+    @Override
     public Set<VM> getSleepingVMs(Collection<Node> ns) {
         Set<VM> vms = new THashSet<>();
         for (Node n : ns) {
