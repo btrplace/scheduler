@@ -24,6 +24,7 @@ import btrplace.model.VM;
 import btrplace.model.constraint.Killed;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.SatConstraint;
+import btrplace.solver.choco.runner.staticPartitioning.SplittableIndexTest;
 import gnu.trove.map.hash.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -57,20 +58,22 @@ public class KilledSplitterTest {
         instances.add(new Instance(m0, new ArrayList<SatConstraint>(), new MinMTTR()));
         instances.add(new Instance(m1, new ArrayList<SatConstraint>(), new MinMTTR()));
 
+        TIntIntHashMap index = SplittableIndexTest.makeIndex(instances);
+
         Set<VM> all = new HashSet<>(m0.getMapping().getAllVMs());
         all.addAll(m1.getMapping().getAllVMs());
 
 
         //Only VMs in m0
         Killed single = new Killed(m0.getMapping().getAllVMs());
-        Assert.assertTrue(splitter.split(single, null, instances, new TIntIntHashMap()));
+        Assert.assertTrue(splitter.split(single, null, instances, index));
         Assert.assertTrue(instances.get(0).getConstraints().contains(single));
         Assert.assertFalse(instances.get(1).getConstraints().contains(single));
 
         //All the VMs, test the split
         Killed among = new Killed(all);
 
-        Assert.assertTrue(splitter.split(among, null, instances, new TIntIntHashMap()));
+        Assert.assertTrue(splitter.split(among, null, instances, index));
         Assert.assertTrue(instances.get(0).getConstraints().contains(new Killed(m0.getMapping().getAllVMs())));
         Assert.assertTrue(instances.get(1).getConstraints().contains(new Killed(m1.getMapping().getAllVMs())));
     }

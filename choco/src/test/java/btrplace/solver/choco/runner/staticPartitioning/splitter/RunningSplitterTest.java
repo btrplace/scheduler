@@ -21,6 +21,7 @@ import btrplace.model.*;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.Running;
 import btrplace.model.constraint.SatConstraint;
+import btrplace.solver.choco.runner.staticPartitioning.SplittableIndexTest;
 import gnu.trove.map.hash.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -85,16 +86,17 @@ public class RunningSplitterTest {
         Set<VM> all = new HashSet<>(m0.getMapping().getAllVMs());
         all.addAll(m1.getMapping().getAllVMs());
 
+        TIntIntHashMap index = SplittableIndexTest.makeIndex(instances);
         //Only VMs in m0
         Running single = new Running(m0.getMapping().getAllVMs());
-        Assert.assertTrue(splitter.split(single, null, instances, new TIntIntHashMap()));
+        Assert.assertTrue(splitter.split(single, null, instances, index));
         Assert.assertTrue(instances.get(0).getConstraints().contains(single));
         Assert.assertFalse(instances.get(1).getConstraints().contains(single));
 
         //All the VMs, test the split
         Running among = new Running(all);
 
-        Assert.assertTrue(splitter.split(among, null, instances, new TIntIntHashMap()));
+        Assert.assertTrue(splitter.split(among, null, instances, index));
         Assert.assertTrue(instances.get(0).getConstraints().contains(new Running(m0.getMapping().getAllVMs())));
         Assert.assertTrue(instances.get(1).getConstraints().contains(new Running(m1.getMapping().getAllVMs())));
     }

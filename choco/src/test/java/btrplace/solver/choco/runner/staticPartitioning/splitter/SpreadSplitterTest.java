@@ -21,11 +21,15 @@ import btrplace.model.*;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Spread;
+import btrplace.solver.choco.runner.staticPartitioning.SplittableIndexTest;
 import gnu.trove.map.hash.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Unit tests for {@link SpreadSplitter}.
@@ -59,7 +63,7 @@ public class SpreadSplitterTest {
         Set<VM> all = new HashSet<>(m0.getMapping().getAllVMs());
         all.addAll(m1.getMapping().getAllVMs());
 
-        TIntIntHashMap index = makeIndex(instances);
+        TIntIntHashMap index = SplittableIndexTest.makeIndex(instances);
 
         //Only VMs in m0
         Spread spreadSingle = new Spread(m0.getMapping().getAllVMs());
@@ -73,26 +77,5 @@ public class SpreadSplitterTest {
         Assert.assertTrue(splitter.split(spreadAmong, null, instances, index));
         Assert.assertTrue(instances.get(0).getConstraints().contains(new Spread(m0.getMapping().getAllVMs(), false)));
         Assert.assertTrue(instances.get(1).getConstraints().contains(new Spread(m1.getMapping().getAllVMs(), false)));
-    }
-
-    public static TIntIntHashMap makeIndex(Collection<Instance> instances) {
-        TIntIntHashMap index = new TIntIntHashMap();
-        int p = 0;
-        for (Instance i : instances) {
-            Mapping m = i.getModel().getMapping();
-            for (Node n : m.getOnlineNodes()) {
-                for (VM v : m.getRunningVMs(n)) {
-                    index.put(v.id(), p);
-                }
-                for (VM v : m.getSleepingVMs(n)) {
-                    index.put(v.id(), p);
-                }
-            }
-            for (VM v : m.getReadyVMs()) {
-                index.put(v.id(), p);
-            }
-            p++;
-        }
-        return index;
     }
 }

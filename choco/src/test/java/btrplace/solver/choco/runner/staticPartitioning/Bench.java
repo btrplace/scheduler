@@ -27,7 +27,6 @@ import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithParams;
 import gnu.trove.set.hash.THashSet;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +53,7 @@ public class Bench {
                 };
     }
 
-    @Test(dataProvider = "getPartData")
+    //@Test(dataProvider = "getPartData")
     public void simpleBench(Integer nbNodes, Integer ratio, Integer partSize) throws SolverException {
 
         List<Node> nodes = new ArrayList<>();

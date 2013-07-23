@@ -18,14 +18,14 @@
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
 import btrplace.model.Instance;
-import btrplace.model.Mapping;
 import btrplace.model.VM;
 import btrplace.model.constraint.Lonely;
+import btrplace.solver.choco.runner.staticPartitioning.IndexEntry;
+import btrplace.solver.choco.runner.staticPartitioning.IndexEntryProcedure;
+import btrplace.solver.choco.runner.staticPartitioning.SplittableIndex;
 import gnu.trove.map.hash.TIntIntHashMap;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Splitter for {@link btrplace.model.constraint.Lonely} constraints.
@@ -51,18 +51,17 @@ public class LonelySplitter implements ConstraintSplitter<Lonely> {
     }
 
     @Override
-    public boolean split(Lonely cstr, Instance origin, List<Instance> partitions, TIntIntHashMap vmsPosition) {
-        Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
-        for (Instance i : partitions) {
-            Mapping m = i.getModel().getMapping();
-            Set<VM> in = Splitters.extractVMsIn(vms, m);
-            if (!in.isEmpty()) {
-                i.getConstraints().add(new Lonely(in, cstr.isContinuous()));
-            }
-            if (vms.isEmpty()) {
-                break;
-            }
-        }
+    public boolean split(Lonely cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition) {
+        final boolean c = cstr.isContinuous();
+        SplittableIndex.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
+                forEachIndexEntry(new IndexEntryProcedure<VM>() {
+                    @Override
+                    public void extract(SplittableIndex<VM> index, int idx, int from, int to) {
+                        if (to != from) {
+                            partitions.get(idx).getConstraints().add(new Lonely(new IndexEntry<VM>(index, idx, from, to), c));
+                        }
+                    }
+                });
         return true;
     }
 }

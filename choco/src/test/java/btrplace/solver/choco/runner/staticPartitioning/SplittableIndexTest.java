@@ -17,14 +17,13 @@
 
 package btrplace.solver.choco.runner.staticPartitioning;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Model;
-import btrplace.model.VM;
+import btrplace.model.*;
 import gnu.trove.map.hash.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -63,5 +62,26 @@ public class SplittableIndexTest {
                         }
                     }
                 });
+    }
+
+    public static TIntIntHashMap makeIndex(Collection<Instance> instances) {
+        TIntIntHashMap index = new TIntIntHashMap();
+        int p = 0;
+        for (Instance i : instances) {
+            Mapping m = i.getModel().getMapping();
+            for (Node n : m.getOnlineNodes()) {
+                for (VM v : m.getRunningVMs(n)) {
+                    index.put(v.id(), p);
+                }
+                for (VM v : m.getSleepingVMs(n)) {
+                    index.put(v.id(), p);
+                }
+            }
+            for (VM v : m.getReadyVMs()) {
+                index.put(v.id(), p);
+            }
+            p++;
+        }
+        return index;
     }
 }
