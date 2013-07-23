@@ -24,6 +24,7 @@ import btrplace.model.Node;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.SingleResourceCapacity;
+import btrplace.solver.choco.runner.staticPartitioning.SplittableIndexTest;
 import gnu.trove.map.hash.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -61,20 +62,21 @@ public class SingleResourceCapacitySplitterTest {
         instances.add(new Instance(m0, new ArrayList<SatConstraint>(), new MinMTTR()));
         instances.add(new Instance(m1, new ArrayList<SatConstraint>(), new MinMTTR()));
 
+        TIntIntHashMap nodeIndex = SplittableIndexTest.makeNodeIndex(instances);
         Set<Node> all = new HashSet<>(m0.getMapping().getAllNodes());
         all.addAll(m1.getMapping().getAllNodes());
 
 
         //Only VMs in m0
         SingleResourceCapacity single = new SingleResourceCapacity(m0.getMapping().getAllNodes(), "foo", 3);
-        Assert.assertTrue(splitter.split(single, null, instances, new TIntIntHashMap(), new TIntIntHashMap()));
+        Assert.assertTrue(splitter.split(single, null, instances, new TIntIntHashMap(), nodeIndex));
         Assert.assertTrue(instances.get(0).getConstraints().contains(single));
         Assert.assertFalse(instances.get(1).getConstraints().contains(single));
 
         //All the VMs, test the split
         SingleResourceCapacity among = new SingleResourceCapacity(all, "foo", 2);
 
-        Assert.assertTrue(splitter.split(among, null, instances, new TIntIntHashMap(), new TIntIntHashMap()));
+        Assert.assertTrue(splitter.split(among, null, instances, new TIntIntHashMap(), nodeIndex));
         Assert.assertTrue(instances.get(0).getConstraints().contains(new SingleResourceCapacity(m0.getMapping().getAllNodes(), "foo", 2)));
         Assert.assertTrue(instances.get(1).getConstraints().contains(new SingleResourceCapacity(m1.getMapping().getAllNodes(), "foo", 2)));
     }
