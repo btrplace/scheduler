@@ -21,9 +21,11 @@ import btrplace.model.Instance;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.Ban;
+import btrplace.solver.choco.runner.staticPartitioning.IndexEntry;
+import btrplace.solver.choco.runner.staticPartitioning.IndexEntryProcedure;
+import btrplace.solver.choco.runner.staticPartitioning.SplittableIndex;
 import gnu.trove.map.hash.TIntIntHashMap;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -43,21 +45,21 @@ public class BanSplitter implements ConstraintSplitter<Ban> {
     }
 
     @Override
-    public boolean split(Ban cstr, Instance origin, List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
-        Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
-        Set<Node> nodes = new HashSet<>(cstr.getInvolvedNodes());
-        for (Instance i : partitions) {
-            Set<VM> vmsIn = Splitters.extractVMsIn(vms, i.getModel().getMapping());
-            if (!vmsIn.isEmpty()) {
-                Set<Node> nodesIn = Splitters.extractNodesIn(nodes, i.getModel().getMapping());
-                if (!nodesIn.isEmpty()) {
-                    i.getConstraints().add(new Ban(vmsIn, nodesIn));
-                }
-                if (vms.isEmpty()) {
-                    break;
-                }
-            }
-        }
-        return true;
+    public boolean split(Ban cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
+        final SplittableIndex<Node> nodeIndex = SplittableIndex.newNodeIndex(cstr.getInvolvedNodes(), nodePosition);
+        return SplittableIndex.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
+                forEachIndexEntry(new IndexEntryProcedure<VM>() {
+                    @Override
+                    public boolean extract(SplittableIndex<VM> index, int idx, int from, int to) {
+                        if (to != from) {
+                            Set<VM> vms = new IndexEntry<>(index, idx, from, to);
+                            Set<Node> ns = nodeIndex.makeIndexEntry(idx);
+                            if (!ns.isEmpty()) {
+                                partitions.get(idx).getConstraints().add(new Ban(vms, ns));
+                            }
+                        }
+                        return true;
+                    }
+                });
     }
 }

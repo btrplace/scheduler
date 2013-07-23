@@ -117,6 +117,30 @@ public class SplittableIndex<E extends Element> implements Comparator<E> {
         return p.extract(this, curIdx, from, to);
     }
 
+    /**
+     * Make an entry for a given index key
+     *
+     * @param k the index key
+     * @return the resulting entry.
+     */
+    public IndexEntry<E> makeIndexEntry(int k) {
+        int from = -1;
+        //TODO: very bad. Bounds such be memorized
+        for (int x = 0; x < values.length; x++) {
+            int cIdx = index.get(values[x].id());
+            if (cIdx == k && from == -1) {
+                from = x;
+            }
+            if (cIdx > k) {
+                return new IndexEntry<>(this, k, from, x);
+            }
+        }
+        if (from >= 0) {
+            return new IndexEntry<>(this, k, from, values.length);
+        }
+        return null;
+    }
+
     @Override
     public int compare(E o1, E o2) {
         return index.get(o1.id()) - index.get(o2.id());
