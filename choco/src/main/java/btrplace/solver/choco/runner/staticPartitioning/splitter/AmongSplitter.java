@@ -74,38 +74,10 @@ public class AmongSplitter implements ConstraintSplitter<Among> {
                                     }
                                 });
                             }
-                            partitions.get(idx).getConstraints().add(new Among(vms, subParams));
+                            partitions.get(idx).getConstraints().add(new Among(vms, subParams, c));
                         }
                         return true;
                     }
                 });
-
-        /*
-        Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
-        List<Set<Node>> parts = new ArrayList<>();
-        for (Collection<Node> s : cstr.getGroupsOfNodes()) {
-            parts.add(new HashSet<>(s));
-        }
-
-        for (Instance i : partitions) {
-            Set<VM> vmsIn = Splitters.extractVMsIn(vms, i.getModel().getMapping());
-
-            if (!vmsIn.isEmpty()) {
-                Collection<Collection<Node>> subSplit = new ArrayList<>();
-                for (Set<Node> s : parts) {
-                    Set<Node> in = Splitters.extractNodesIn(s, i.getModel().getMapping());
-                    if (!in.isEmpty()) {
-                        subSplit.add(in);
-                    }
-                }
-                if (!subSplit.isEmpty()) {
-                    i.getConstraints().add(new Among(vmsIn, subSplit, cstr.isContinuous()));
-                }
-            }
-            if (vms.isEmpty()) {
-                break;
-            }
-        }
-        return true;  */
     }
 }
