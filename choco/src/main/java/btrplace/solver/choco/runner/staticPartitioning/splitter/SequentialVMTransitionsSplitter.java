@@ -20,11 +20,11 @@ package btrplace.solver.choco.runner.staticPartitioning.splitter;
 import btrplace.model.Instance;
 import btrplace.model.VM;
 import btrplace.model.constraint.SequentialVMTransitions;
+import btrplace.solver.choco.runner.staticPartitioning.IndexEntryProcedure;
+import btrplace.solver.choco.runner.staticPartitioning.SplittableIndex;
 import gnu.trove.map.hash.TIntIntHashMap;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Splitter for {@link btrplace.model.constraint.SequentialVMTransitions} constraints.
@@ -44,21 +44,25 @@ public class SequentialVMTransitionsSplitter implements ConstraintSplitter<Seque
     }
 
     @Override
-    public boolean split(SequentialVMTransitions cstr, Instance origin, List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
-        Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
-        for (Instance i : partitions) {
-            Set<VM> in = Splitters.extractVMsIn(vms, i.getModel().getMapping());
-            if (!in.isEmpty()) {
-                if (in.size() == vms.size()) {
-                    i.getConstraints().add(new SequentialVMTransitions(cstr.getInvolvedVMs()));
-                } else {
-                    throw new UnsupportedOperationException("Splitting a SequentialVMTransitions over multiple partitions is not supported");
-                }
-            }
-            if (vms.isEmpty()) {
-                break;
-            }
-        }
-        return true;
+    public boolean split(SequentialVMTransitions cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
+        final List<VM> seq = cstr.getInvolvedVMs();
+        return SplittableIndex.newVMIndex(seq, vmsPosition).
+                forEachIndexEntry(new IndexEntryProcedure<VM>() {
+
+                    private boolean first = true;
+
+                    @Override
+                    public boolean extract(SplittableIndex<VM> index, int idx, int from, int to) {
+                        int size = to - from;
+                        if (!first) {
+                            throw new UnsupportedOperationException("Splitting a SequentialVMTransitions over multiple partitions is not supported");
+                        }
+                        if (size == seq.size()) {
+                            partitions.get(idx).getConstraints().add(new SequentialVMTransitions(seq));
+                            first = false;
+                        }
+                        return true;
+                    }
+                });
     }
 }
