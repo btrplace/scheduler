@@ -31,9 +31,9 @@ public interface IndexEntryProcedure<E extends Element> {
      * The method to execute.
      *
      * @param index the splittable index to rely on
-     * @param idx   the common index value
+     * @param key   the index key
      * @param from  the value lower bound
      * @param to    the value upper bound (exclusive)
      */
-    void extract(SplittableIndex<E> index, int idx, int from, int to);
+    void extract(SplittableIndex<E> index, int key, int from, int to);
 }

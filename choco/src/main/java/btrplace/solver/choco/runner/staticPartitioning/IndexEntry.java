@@ -75,7 +75,7 @@ public class IndexEntry<E> implements Set<E> {
 
     @Override
     public Iterator iterator() {
-        throw new UnsupportedOperationException();
+        return new IndexEntryIterator(index.getValues(), from, to);
     }
 
     @Override
@@ -136,5 +136,48 @@ public class IndexEntry<E> implements Set<E> {
             b.append(", ").append(index.getValues()[i]);
         }
         return b.append('}').toString();
+    }
+
+    /**
+     * The iterator associated to an {@link IndexEntry}.
+     *
+     * @author Fabien Hermenier
+     */
+    public static class IndexEntryIterator<E> implements Iterator<E> {
+
+        private E[] values;
+
+        private int to;
+
+        private int cursor;
+
+        /**
+         * Make a new iterator.
+         *
+         * @param values the values to iterator over
+         * @param from   the initial index.
+         * @param to     the last index (exclusive)
+         */
+        public IndexEntryIterator(E[] values, int from, int to) {
+            this.values = values;
+            this.to = to;
+            this.cursor = from;
+
+        }
+
+        @Override
+        public boolean hasNext() {
+            return cursor != to;
+        }
+
+        @Override
+        public E next() {
+            return values[cursor++];
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
     }
 }

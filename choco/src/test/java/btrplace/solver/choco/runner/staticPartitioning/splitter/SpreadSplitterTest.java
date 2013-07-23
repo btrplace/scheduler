@@ -17,10 +17,7 @@
 
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Instance;
-import btrplace.model.Model;
-import btrplace.model.VM;
+import btrplace.model.*;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Spread;
@@ -28,10 +25,7 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Unit tests for {@link SpreadSplitter}.
@@ -47,12 +41,17 @@ public class SpreadSplitterTest {
         List<Instance> instances = new ArrayList<>();
         Model m0 = new DefaultModel();
         m0.getMapping().addReadyVM(m0.newVM(1));
-        m0.getMapping().addRunningVM(m0.newVM(2), m0.newNode(1));
+        Node n1 = m0.newNode();
+        m0.getMapping().addOnlineNode(n1);
+        m0.getMapping().addRunningVM(m0.newVM(2), n1);
         Model m1 = new DefaultModel();
         m1.getMapping().addReadyVM(m1.newVM(3));
-        m1.getMapping().addSleepingVM(m1.newVM(4), m1.newNode(2));
-        m1.getMapping().addRunningVM(m1.newVM(5), m1.newNode(3));
-
+        Node n2 = m1.newNode();
+        Node n3 = m1.newNode();
+        m1.getMapping().addOnlineNode(n2);
+        m1.getMapping().addOnlineNode(n3);
+        m1.getMapping().addSleepingVM(m1.newVM(4), n2);
+        m1.getMapping().addRunningVM(m1.newVM(5), n3);
 
         instances.add(new Instance(m0, new ArrayList<SatConstraint>(), new MinMTTR()));
         instances.add(new Instance(m1, new ArrayList<SatConstraint>(), new MinMTTR()));
@@ -60,18 +59,40 @@ public class SpreadSplitterTest {
         Set<VM> all = new HashSet<>(m0.getMapping().getAllVMs());
         all.addAll(m1.getMapping().getAllVMs());
 
+        TIntIntHashMap index = makeIndex(instances);
 
         //Only VMs in m0
         Spread spreadSingle = new Spread(m0.getMapping().getAllVMs());
-        Assert.assertTrue(splitter.split(spreadSingle, null, instances, new TIntIntHashMap()));
+        Assert.assertTrue(splitter.split(spreadSingle, null, instances, index));
         Assert.assertTrue(instances.get(0).getConstraints().contains(spreadSingle));
         Assert.assertFalse(instances.get(1).getConstraints().contains(spreadSingle));
 
         //All the VMs, test the split
         Spread spreadAmong = new Spread(all, false);
 
-        Assert.assertTrue(splitter.split(spreadAmong, null, instances, new TIntIntHashMap()));
+        Assert.assertTrue(splitter.split(spreadAmong, null, instances, index));
         Assert.assertTrue(instances.get(0).getConstraints().contains(new Spread(m0.getMapping().getAllVMs(), false)));
         Assert.assertTrue(instances.get(1).getConstraints().contains(new Spread(m1.getMapping().getAllVMs(), false)));
+    }
+
+    public static TIntIntHashMap makeIndex(Collection<Instance> instances) {
+        TIntIntHashMap index = new TIntIntHashMap();
+        int p = 0;
+        for (Instance i : instances) {
+            Mapping m = i.getModel().getMapping();
+            for (Node n : m.getOnlineNodes()) {
+                for (VM v : m.getRunningVMs(n)) {
+                    index.put(v.id(), p);
+                }
+                for (VM v : m.getSleepingVMs(n)) {
+                    index.put(v.id(), p);
+                }
+            }
+            for (VM v : m.getReadyVMs()) {
+                index.put(v.id(), p);
+            }
+            p++;
+        }
+        return index;
     }
 }
