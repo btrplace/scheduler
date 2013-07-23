@@ -20,9 +20,14 @@ package btrplace.solver.choco.runner.staticPartitioning.splitter;
 import btrplace.model.Instance;
 import btrplace.model.VM;
 import btrplace.model.constraint.Split;
+import btrplace.solver.choco.runner.staticPartitioning.IndexEntry;
+import btrplace.solver.choco.runner.staticPartitioning.IndexEntryProcedure;
+import btrplace.solver.choco.runner.staticPartitioning.SplittableIndex;
 import gnu.trove.map.hash.TIntIntHashMap;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Splitter for {@link btrplace.model.constraint.Split} constraints.
@@ -41,33 +46,31 @@ public class SplitSplitter implements ConstraintSplitter<Split> {
     }
 
     @Override
-    public boolean split(Split cstr, Instance origin, List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
-        List<Set<VM>> vms = new ArrayList<>();
-        for (Collection<VM> s : cstr.getSets()) {
-            vms.add(new HashSet<>(s));
-        }
-        for (Instance i : partitions) {
-            Collection<Collection<VM>> subSplit = new ArrayList<>();
-            for (Set<VM> s : vms) {
-                Set<VM> in = Splitters.extractVMsIn(s, i.getModel().getMapping());
-                if (!in.isEmpty()) {
-                    subSplit.add(in);
-                }
-            }
-            if (!subSplit.isEmpty()) {
-                i.getConstraints().add(new Split(subSplit, cstr.isContinuous()));
-            }
-            boolean allEmpties = true;
-            for (Set<VM> s : vms) {
-                if (!s.isEmpty()) {
-                    allEmpties = false;
-                    break;
-                }
-            }
-            if (allEmpties) {
-                break;
-            }
-        }
-        return true;
+    public boolean split(final Split cstr, Instance origin, final List<Instance> partitions, final TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
+
+        final boolean c = cstr.isContinuous();
+        return SplittableIndex.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
+                forEachIndexEntry(new IndexEntryProcedure<VM>() {
+                    @Override
+                    public boolean extract(SplittableIndex<VM> index, int idx, int from, int to) {
+                        if (to - from >= 2) {
+                            //More than 1 VM involved in a split constraint for this partition
+                            //if these VMs belong to at least 2 groups, we must post a split constraints
+                            //for the VMs on these groups
+                            Collection<Collection<VM>> sets = new ArrayList<>();
+                            for (Collection<VM> vms : cstr.getSets()) {
+                                SplittableIndex<VM> subSplit = SplittableIndex.newVMIndex(vms, vmsPosition);
+                                IndexEntry<VM> s = subSplit.makeIndexEntry(idx);
+                                if (!s.isEmpty()) {
+                                    sets.add(s);
+                                }
+                            }
+                            if (sets.size() > 1) {
+                                partitions.get(idx).getConstraints().add(new Split(sets, c));
+                            }
+                        }
+                        return true;
+                    }
+                });
     }
 }

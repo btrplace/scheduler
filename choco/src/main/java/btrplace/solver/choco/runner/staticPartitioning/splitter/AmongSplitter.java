@@ -64,15 +64,10 @@ public class AmongSplitter implements ConstraintSplitter<Among> {
                             final Collection<Collection<Node>> subParams = new ArrayList<>();
                             for (Collection<Node> ns : cstr.getGroupsOfNodes()) {
                                 SplittableIndex<Node> nodeIndex = SplittableIndex.newNodeIndex(ns, nodePosition);
-                                nodeIndex.forEachIndexEntry(new IndexEntryProcedure<Node>() {
-                                    @Override
-                                    public boolean extract(SplittableIndex<Node> index, int key, int from, int to) {
-                                        if (from != to) {
-                                            subParams.add(new IndexEntry<Node>(index, key, from, to));
-                                        }
-                                        return true;
-                                    }
-                                });
+                                IndexEntry<Node> s = nodeIndex.makeIndexEntry(idx);
+                                if (s != null && !s.isEmpty()) {
+                                    subParams.add(s);
+                                }
                             }
                             partitions.get(idx).getConstraints().add(new Among(vms, subParams, c));
                         }
