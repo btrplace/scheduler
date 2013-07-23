@@ -43,7 +43,7 @@ public class FenceSplitter implements ConstraintSplitter<Fence> {
     }
 
     @Override
-    public boolean split(Fence cstr, Instance origin, List<Instance> partitions, TIntIntHashMap vmsPosition) {
+    public boolean split(Fence cstr, Instance origin, List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
         Set<Node> nodes = new HashSet<>(cstr.getInvolvedNodes());
         for (Instance i : partitions) {

@@ -41,7 +41,7 @@ public class SplitSplitter implements ConstraintSplitter<Split> {
     }
 
     @Override
-    public boolean split(Split cstr, Instance origin, List<Instance> partitions, TIntIntHashMap vmsPosition) {
+    public boolean split(Split cstr, Instance origin, List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
         List<Set<VM>> vms = new ArrayList<>();
         for (Collection<VM> s : cstr.getSets()) {
             vms.add(new HashSet<>(s));

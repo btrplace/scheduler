@@ -87,14 +87,14 @@ public class BanSplitterTest {
 
         //Only VMs & nodes in m0
         Ban single = new Ban(m0.getMapping().getAllVMs(), m0.getMapping().getAllNodes());
-        Assert.assertTrue(splitter.split(single, null, instances, new TIntIntHashMap()));
+        Assert.assertTrue(splitter.split(single, null, instances, new TIntIntHashMap(), new TIntIntHashMap()));
         Assert.assertTrue(instances.get(0).getConstraints().contains(single));
         Assert.assertFalse(instances.get(1).getConstraints().contains(single));
 
         //All the VMs, nodes in m1.
         Ban among = new Ban(all, m1.getMapping().getAllNodes());
 
-        Assert.assertTrue(splitter.split(among, null, instances, new TIntIntHashMap()));
+        Assert.assertTrue(splitter.split(among, null, instances, new TIntIntHashMap(), new TIntIntHashMap()));
         Assert.assertTrue(instances.get(0).getConstraints().contains(new Ban(m0.getMapping().getAllVMs(), m0.getMapping().getAllNodes())));
         Assert.assertTrue(instances.get(1).getConstraints().contains(new Ban(m1.getMapping().getAllVMs(), m1.getMapping().getAllNodes())));
     }

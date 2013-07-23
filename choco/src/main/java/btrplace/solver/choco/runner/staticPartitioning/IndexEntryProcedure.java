@@ -35,5 +35,5 @@ public interface IndexEntryProcedure<E extends Element> {
      * @param from  the value lower bound
      * @param to    the value upper bound (exclusive)
      */
-    void extract(SplittableIndex<E> index, int key, int from, int to);
+    boolean extract(SplittableIndex<E> index, int key, int from, int to);
 }

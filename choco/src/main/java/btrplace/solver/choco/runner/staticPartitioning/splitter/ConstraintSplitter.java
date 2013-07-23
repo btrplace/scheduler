@@ -47,11 +47,12 @@ public interface ConstraintSplitter<C extends Constraint> {
      * If necessary, the constraint may have be splitted.
      * <b>this call inserts the constrain (or its subdivisions) inside their respective instances</b>
      *
-     * @param cstr        the model constraint
-     * @param origin      the original instance to split
-     * @param partitions  the possible partitions  @return {@code false} iff this leads to a problem without solutions.
-     * @param vmsPosition
+     * @param cstr         the model constraint
+     * @param origin       the original instance to split
+     * @param partitions   the possible partitions  @return {@code false} iff this leads to a problem without solutions.
+     * @param vmsPosition  the partition associated to each VM
+     * @param nodePosition the partition associated to each node
      */
-    boolean split(C cstr, Instance origin, List<Instance> partitions, TIntIntHashMap vmsPosition);
+    boolean split(C cstr, Instance origin, List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition);
 
 }

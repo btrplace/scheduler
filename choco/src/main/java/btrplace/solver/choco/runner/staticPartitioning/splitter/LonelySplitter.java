@@ -51,17 +51,17 @@ public class LonelySplitter implements ConstraintSplitter<Lonely> {
     }
 
     @Override
-    public boolean split(Lonely cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition) {
+    public boolean split(Lonely cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
         final boolean c = cstr.isContinuous();
-        SplittableIndex.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
+        return SplittableIndex.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
                 forEachIndexEntry(new IndexEntryProcedure<VM>() {
                     @Override
-                    public void extract(SplittableIndex<VM> index, int idx, int from, int to) {
+                    public boolean extract(SplittableIndex<VM> index, int idx, int from, int to) {
                         if (to != from) {
                             partitions.get(idx).getConstraints().add(new Lonely(new IndexEntry<VM>(index, idx, from, to), c));
                         }
+                        return true;
                     }
                 });
-        return true;
     }
 }

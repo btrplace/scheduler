@@ -84,12 +84,13 @@ public class SplittableIndex<E extends Element> implements Comparator<E> {
         final StringBuilder b = new StringBuilder("");
         forEachIndexEntry(new IndexEntryProcedure<E>() {
             @Override
-            public void extract(SplittableIndex<E> index, int idx, int from, int to) {
+            public boolean extract(SplittableIndex<E> index, int idx, int from, int to) {
                 b.append("SplittableIndex ").append(idx).append(':');
                 for (int i = from; i < to; i++) {
                     b.append(' ').append(values[i]);
                 }
                 b.append('\n');
+                return true;
             }
         });
         return b.toString();
@@ -100,18 +101,20 @@ public class SplittableIndex<E extends Element> implements Comparator<E> {
      *
      * @param p the procedure to execute
      */
-    public void forEachIndexEntry(IndexEntryProcedure<E> p) {
+    public boolean forEachIndexEntry(IndexEntryProcedure<E> p) {
         int curIdx = index.get(values[0].id());
         int from, to;
         for (from = 0, to = 0; to < values.length; to++) {
             int cIdx = index.get(values[to].id());
             if (curIdx != cIdx) {
-                p.extract(this, curIdx, from, to);
+                if (!p.extract(this, curIdx, from, to)) {
+                    return false;
+                }
                 from = to;
                 curIdx = cIdx;
             }
         }
-        p.extract(this, curIdx, from, to);
+        return p.extract(this, curIdx, from, to);
     }
 
     @Override

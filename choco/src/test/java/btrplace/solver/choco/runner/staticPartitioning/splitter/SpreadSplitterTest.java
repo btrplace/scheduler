@@ -63,18 +63,18 @@ public class SpreadSplitterTest {
         Set<VM> all = new HashSet<>(m0.getMapping().getAllVMs());
         all.addAll(m1.getMapping().getAllVMs());
 
-        TIntIntHashMap index = SplittableIndexTest.makeIndex(instances);
+        TIntIntHashMap index = SplittableIndexTest.makeVMIndex(instances);
 
         //Only VMs in m0
         Spread spreadSingle = new Spread(m0.getMapping().getAllVMs());
-        Assert.assertTrue(splitter.split(spreadSingle, null, instances, index));
+        Assert.assertTrue(splitter.split(spreadSingle, null, instances, index, new TIntIntHashMap()));
         Assert.assertTrue(instances.get(0).getConstraints().contains(spreadSingle));
         Assert.assertFalse(instances.get(1).getConstraints().contains(spreadSingle));
 
         //All the VMs, test the split
         Spread spreadAmong = new Spread(all, false);
 
-        Assert.assertTrue(splitter.split(spreadAmong, null, instances, index));
+        Assert.assertTrue(splitter.split(spreadAmong, null, instances, index, new TIntIntHashMap()));
         Assert.assertTrue(instances.get(0).getConstraints().contains(new Spread(m0.getMapping().getAllVMs(), false)));
         Assert.assertTrue(instances.get(1).getConstraints().contains(new Spread(m1.getMapping().getAllVMs(), false)));
     }

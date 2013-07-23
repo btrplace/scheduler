@@ -47,7 +47,7 @@ public class SplittableIndexTest {
         SplittableIndex.newVMIndex(l, index).
                 forEachIndexEntry(new IndexEntryProcedure<VM>() {
                     @Override
-                    public void extract(SplittableIndex<VM> index, int key, int from, int to) {
+                    public boolean extract(SplittableIndex<VM> index, int key, int from, int to) {
                         TIntIntHashMap idx = index.getRespectiveIndex();
                         VM[] values = index.getValues();
                         for (int i = 0; i < values.length; i++) {
@@ -60,11 +60,12 @@ public class SplittableIndexTest {
                                 Assert.assertEquals(idx.get(v.id()), key);
                             }
                         }
+                        return true;
                     }
                 });
     }
 
-    public static TIntIntHashMap makeIndex(Collection<Instance> instances) {
+    public static TIntIntHashMap makeVMIndex(Collection<Instance> instances) {
         TIntIntHashMap index = new TIntIntHashMap();
         int p = 0;
         for (Instance i : instances) {
@@ -84,4 +85,21 @@ public class SplittableIndexTest {
         }
         return index;
     }
+
+    public static TIntIntHashMap makeNodeIndex(Collection<Instance> instances) {
+        TIntIntHashMap index = new TIntIntHashMap();
+        int p = 0;
+        for (Instance i : instances) {
+            Mapping m = i.getModel().getMapping();
+            for (Node n : m.getOfflineNodes()) {
+                index.put(n.id(), p);
+            }
+            for (Node n : m.getOnlineNodes()) {
+                index.put(n.id(), p);
+            }
+            p++;
+        }
+        return index;
+    }
+
 }

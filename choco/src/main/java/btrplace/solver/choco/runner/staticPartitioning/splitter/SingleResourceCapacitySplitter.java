@@ -20,11 +20,12 @@ package btrplace.solver.choco.runner.staticPartitioning.splitter;
 import btrplace.model.Instance;
 import btrplace.model.Node;
 import btrplace.model.constraint.SingleResourceCapacity;
+import btrplace.solver.choco.runner.staticPartitioning.IndexEntry;
+import btrplace.solver.choco.runner.staticPartitioning.IndexEntryProcedure;
+import btrplace.solver.choco.runner.staticPartitioning.SplittableIndex;
 import gnu.trove.map.hash.TIntIntHashMap;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Splitter for {@link btrplace.model.constraint.SingleResourceCapacity} constraints.
@@ -44,17 +45,19 @@ public class SingleResourceCapacitySplitter implements ConstraintSplitter<Single
     }
 
     @Override
-    public boolean split(SingleResourceCapacity cstr, Instance origin, List<Instance> partitions, TIntIntHashMap vmsPosition) {
-        Set<Node> nodes = new HashSet<>(cstr.getInvolvedNodes());
-        for (Instance i : partitions) {
-            Set<Node> in = Splitters.extractNodesIn(nodes, i.getModel().getMapping());
-            if (!in.isEmpty()) {
-                i.getConstraints().add(new SingleResourceCapacity(in, cstr.getResource(), cstr.getAmount(), cstr.isContinuous()));
-            }
-            if (nodes.isEmpty()) {
-                break;
-            }
-        }
-        return true;
+    public boolean split(SingleResourceCapacity cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
+        final boolean c = cstr.isContinuous();
+        final String rc = cstr.getResource();
+        final int qty = cstr.getAmount();
+        return SplittableIndex.newNodeIndex(cstr.getInvolvedNodes(), nodePosition).
+                forEachIndexEntry(new IndexEntryProcedure<Node>() {
+                    @Override
+                    public boolean extract(SplittableIndex<Node> index, int idx, int from, int to) {
+                        if (to != from) {
+                            partitions.get(idx).getConstraints().add(new SingleResourceCapacity(new IndexEntry<Node>(index, idx, from, to), rc, qty, c));
+                        }
+                        return true;
+                    }
+                });
     }
 }

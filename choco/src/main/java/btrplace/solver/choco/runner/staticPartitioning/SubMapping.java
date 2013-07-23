@@ -252,7 +252,7 @@ public class SubMapping implements Mapping {
      * @param index the index to fill
      * @param p     the index value to use for each VM in the mapping
      */
-    public void fillIndex(TIntIntHashMap index, int p) {
+    public void fillVMIndex(TIntIntHashMap index, int p) {
         for (Node n : scope) {
             for (VM v : parent.getRunningVMs(n)) {
                 index.put(v.id(), p);

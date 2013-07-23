@@ -111,21 +111,30 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
 
         //nb of VMs
         int nbVMs = i.getModel().getMapping().getReadyVMs().size();
+        int nbNodes = i.getModel().getMapping().getOnlineNodes().size() + i.getModel().getMapping().getOfflineNodes().size();
         for (Node n : i.getModel().getMapping().getOnlineNodes()) {
             nbVMs += i.getModel().getMapping().getRunningVMs(n).size();
             nbVMs += i.getModel().getMapping().getSleepingVMs(n).size();
         }
         TIntIntHashMap vmPosition = new TIntIntHashMap(nbVMs);
+        TIntIntHashMap nodePosition = new TIntIntHashMap(nbNodes);
+
         int partNumber = 0;
         for (Collection<Node> s : partitions) {
             SubModel partModel = new SubModel(mo, eb, s);
 
             parts.add(new Instance(partModel, new THashSet<SatConstraint>(), i.getOptimizationConstraint()));
 
-            partModel.getMapping().fillIndex(vmPosition, partNumber++);
+            //VM Index
+            partModel.getMapping().fillVMIndex(vmPosition, partNumber);
+            //Node index
+            for (Node n : s) {
+                nodePosition.put(n.id(), partNumber);
+            }
+            partNumber++;
         }
         for (SatConstraint cstr : i.getConstraints()) {
-            cstrMapper.split(cstr, i, parts, vmPosition);
+            cstrMapper.split(cstr, i, parts, vmPosition, nodePosition);
         }
         //TODO: deal with ready VMs to run
         return parts;

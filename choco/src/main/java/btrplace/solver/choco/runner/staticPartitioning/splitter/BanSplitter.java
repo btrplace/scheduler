@@ -43,7 +43,7 @@ public class BanSplitter implements ConstraintSplitter<Ban> {
     }
 
     @Override
-    public boolean split(Ban cstr, Instance origin, List<Instance> partitions, TIntIntHashMap vmsPosition) {
+    public boolean split(Ban cstr, Instance origin, List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
         Set<Node> nodes = new HashSet<>(cstr.getInvolvedNodes());
         for (Instance i : partitions) {

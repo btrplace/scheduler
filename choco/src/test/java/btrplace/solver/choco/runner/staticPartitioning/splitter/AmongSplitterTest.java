@@ -84,7 +84,7 @@ public class AmongSplitterTest {
         partitionner.setPartitions(parts);
         List<Instance> instances = partitionner.split(new DefaultChocoReconfigurationAlgorithParams(),
                 new Instance(mo, Collections.<SatConstraint>emptyList(), new MinMTTR()));
-        splitter.split(single, new Instance(mo, new MinMTTR()), instances, new TIntIntHashMap());
+        splitter.split(single, new Instance(mo, new MinMTTR()), instances, new TIntIntHashMap(), new TIntIntHashMap());
         Among a = (Among) instances.get(0).getConstraints().iterator().next();
         Assert.assertEquals(a.getGroupsOfNodes().size(), 1);
         Assert.assertEquals(a.getInvolvedNodes(), Arrays.asList(n1, n2));

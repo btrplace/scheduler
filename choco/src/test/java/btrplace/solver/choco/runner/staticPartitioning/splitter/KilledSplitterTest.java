@@ -58,7 +58,7 @@ public class KilledSplitterTest {
         instances.add(new Instance(m0, new ArrayList<SatConstraint>(), new MinMTTR()));
         instances.add(new Instance(m1, new ArrayList<SatConstraint>(), new MinMTTR()));
 
-        TIntIntHashMap index = SplittableIndexTest.makeIndex(instances);
+        TIntIntHashMap index = SplittableIndexTest.makeVMIndex(instances);
 
         Set<VM> all = new HashSet<>(m0.getMapping().getAllVMs());
         all.addAll(m1.getMapping().getAllVMs());
@@ -66,14 +66,14 @@ public class KilledSplitterTest {
 
         //Only VMs in m0
         Killed single = new Killed(m0.getMapping().getAllVMs());
-        Assert.assertTrue(splitter.split(single, null, instances, index));
+        Assert.assertTrue(splitter.split(single, null, instances, index, new TIntIntHashMap()));
         Assert.assertTrue(instances.get(0).getConstraints().contains(single));
         Assert.assertFalse(instances.get(1).getConstraints().contains(single));
 
         //All the VMs, test the split
         Killed among = new Killed(all);
 
-        Assert.assertTrue(splitter.split(among, null, instances, index));
+        Assert.assertTrue(splitter.split(among, null, instances, index, new TIntIntHashMap()));
         Assert.assertTrue(instances.get(0).getConstraints().contains(new Killed(m0.getMapping().getAllVMs())));
         Assert.assertTrue(instances.get(1).getConstraints().contains(new Killed(m1.getMapping().getAllVMs())));
     }

@@ -20,11 +20,12 @@ package btrplace.solver.choco.runner.staticPartitioning.splitter;
 import btrplace.model.Instance;
 import btrplace.model.VM;
 import btrplace.model.constraint.Gather;
+import btrplace.solver.choco.runner.staticPartitioning.IndexEntry;
+import btrplace.solver.choco.runner.staticPartitioning.IndexEntryProcedure;
+import btrplace.solver.choco.runner.staticPartitioning.SplittableIndex;
 import gnu.trove.map.hash.TIntIntHashMap;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Splitter for {@link btrplace.model.constraint.Gather} constraints.
@@ -42,18 +43,24 @@ public class GatherSplitter implements ConstraintSplitter<Gather> {
     }
 
     @Override
-    public boolean split(Gather cstr, Instance origin, List<Instance> partitions, TIntIntHashMap vmsPosition) {
-        Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
-        for (Instance i : partitions) {
-            Set<VM> in = Splitters.extractVMsIn(vms, i.getModel().getMapping());
-            if (!in.isEmpty()) {
-                i.getConstraints().add(new Gather(in, cstr.isContinuous()));
-                if (!vms.isEmpty()) {
-                    //Gather cannot be splitted
-                    return false;
-                }
-            }
-        }
-        return true;
+    public boolean split(Gather cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
+        final boolean c = cstr.isContinuous();
+        return SplittableIndex.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
+                forEachIndexEntry(new IndexEntryProcedure<VM>() {
+
+                    private boolean first = true;
+
+                    @Override
+                    public boolean extract(SplittableIndex<VM> index, int idx, int from, int to) {
+                        if (!first) {
+                            return false;
+                        }
+                        if (to - from >= 2) {
+                            partitions.get(idx).getConstraints().add(new Gather(new IndexEntry<VM>(index, idx, from, to), c));
+                            first = false;
+                        }
+                        return true;
+                    }
+                });
     }
 }

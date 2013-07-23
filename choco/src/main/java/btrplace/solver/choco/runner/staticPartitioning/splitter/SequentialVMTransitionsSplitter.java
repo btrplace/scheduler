@@ -44,7 +44,7 @@ public class SequentialVMTransitionsSplitter implements ConstraintSplitter<Seque
     }
 
     @Override
-    public boolean split(SequentialVMTransitions cstr, Instance origin, List<Instance> partitions, TIntIntHashMap vmsPosition) {
+    public boolean split(SequentialVMTransitions cstr, Instance origin, List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
         for (Instance i : partitions) {
             Set<VM> in = Splitters.extractVMsIn(vms, i.getModel().getMapping());

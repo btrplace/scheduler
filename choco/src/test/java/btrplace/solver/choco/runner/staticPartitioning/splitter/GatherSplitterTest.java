@@ -17,13 +17,11 @@
 
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Instance;
-import btrplace.model.Model;
-import btrplace.model.VM;
+import btrplace.model.*;
 import btrplace.model.constraint.Gather;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.SatConstraint;
+import btrplace.solver.choco.runner.staticPartitioning.SplittableIndexTest;
 import gnu.trove.map.hash.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -47,11 +45,17 @@ public class GatherSplitterTest {
         List<Instance> instances = new ArrayList<>();
         Model m0 = new DefaultModel();
         m0.getMapping().addReadyVM(m0.newVM(1));
-        m0.getMapping().addRunningVM(m0.newVM(2), m0.newNode(1));
+        Node n1 = m0.newNode();
+        m0.getMapping().addOnlineNode(n1);
+        m0.getMapping().addRunningVM(m0.newVM(2), n1);
         Model m1 = new DefaultModel();
+        Node n2 = m1.newNode();
+        Node n3 = m1.newNode();
+        m1.getMapping().addOnlineNode(n2);
+        m1.getMapping().addOnlineNode(n3);
         m1.getMapping().addReadyVM(m1.newVM(3));
-        m1.getMapping().addSleepingVM(m1.newVM(4), m1.newNode(2));
-        m1.getMapping().addRunningVM(m1.newVM(5), m1.newNode(3));
+        m1.getMapping().addSleepingVM(m1.newVM(4), n2);
+        m1.getMapping().addRunningVM(m1.newVM(5), n3);
 
 
         instances.add(new Instance(m0, new ArrayList<SatConstraint>(), new MinMTTR()));
@@ -60,15 +64,16 @@ public class GatherSplitterTest {
         Set<VM> all = new HashSet<>(m0.getMapping().getAllVMs());
         all.addAll(m1.getMapping().getAllVMs());
 
+        TIntIntHashMap vmIndex = SplittableIndexTest.makeVMIndex(instances);
         //Only VMs in m0
         Gather single = new Gather(m0.getMapping().getAllVMs());
-        Assert.assertTrue(splitter.split(single, null, instances, new TIntIntHashMap()));
+        Assert.assertTrue(splitter.split(single, null, instances, vmIndex, new TIntIntHashMap()));
         Assert.assertTrue(instances.get(0).getConstraints().contains(single));
         Assert.assertFalse(instances.get(1).getConstraints().contains(single));
 
         //All the VMs, test the unfeasibility
         Gather among = new Gather(all, false);
 
-        Assert.assertFalse(splitter.split(among, null, instances, new TIntIntHashMap()));
+        Assert.assertFalse(splitter.split(among, null, instances, vmIndex, new TIntIntHashMap()));
     }
 }

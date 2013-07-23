@@ -44,16 +44,16 @@ public class RunningSplitter implements ConstraintSplitter<Running> {
     }
 
     @Override
-    public boolean split(Running cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition) {
-        SplittableIndex.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
+    public boolean split(Running cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
+        return SplittableIndex.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
                 forEachIndexEntry(new IndexEntryProcedure<VM>() {
                     @Override
-                    public void extract(SplittableIndex<VM> index, int idx, int from, int to) {
+                    public boolean extract(SplittableIndex<VM> index, int idx, int from, int to) {
                         if (to != from) {
                             partitions.get(idx).getConstraints().add(new Running(new IndexEntry<VM>(index, idx, from, to)));
                         }
+                        return true;
                     }
                 });
-        return true;
     }
 }

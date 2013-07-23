@@ -58,7 +58,7 @@ public class LonelySplitterTest {
         instances.add(new Instance(m0, new ArrayList<SatConstraint>(), new MinMTTR()));
         instances.add(new Instance(m1, new ArrayList<SatConstraint>(), new MinMTTR()));
 
-        TIntIntHashMap index = SplittableIndexTest.makeIndex(instances);
+        TIntIntHashMap index = SplittableIndexTest.makeVMIndex(instances);
 
         Set<VM> all = new HashSet<>(m0.getMapping().getAllVMs());
         all.addAll(m1.getMapping().getAllVMs());
@@ -66,14 +66,14 @@ public class LonelySplitterTest {
 
         //Only VMs in m0
         Lonely single = new Lonely(m0.getMapping().getAllVMs());
-        Assert.assertTrue(splitter.split(single, null, instances, index));
+        Assert.assertTrue(splitter.split(single, null, instances, index, new TIntIntHashMap()));
         Assert.assertTrue(instances.get(0).getConstraints().contains(single));
         Assert.assertFalse(instances.get(1).getConstraints().contains(single));
 
         //All the VMs, test the split
         Lonely among = new Lonely(all, false);
 
-        Assert.assertTrue(splitter.split(among, null, instances, index));
+        Assert.assertTrue(splitter.split(among, null, instances, index, new TIntIntHashMap()));
         Assert.assertTrue(instances.get(0).getConstraints().contains(new Lonely(m0.getMapping().getAllVMs(), false)));
         Assert.assertTrue(instances.get(1).getConstraints().contains(new Lonely(m1.getMapping().getAllVMs(), false)));
     }

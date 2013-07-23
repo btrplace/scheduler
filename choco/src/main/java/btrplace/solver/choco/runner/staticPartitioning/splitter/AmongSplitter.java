@@ -44,7 +44,7 @@ public class AmongSplitter implements ConstraintSplitter<Among> {
     }
 
     @Override
-    public boolean split(Among cstr, Instance origin, List<Instance> partitions, TIntIntHashMap vmsPosition) {
+    public boolean split(Among cstr, Instance origin, List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
         List<Set<Node>> parts = new ArrayList<>();
         for (Collection<Node> s : cstr.getGroupsOfNodes()) {

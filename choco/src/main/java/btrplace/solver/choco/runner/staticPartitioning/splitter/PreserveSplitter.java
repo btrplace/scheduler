@@ -45,18 +45,18 @@ public class PreserveSplitter implements ConstraintSplitter<Preserve> {
     }
 
     @Override
-    public boolean split(Preserve cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition) {
+    public boolean split(Preserve cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
         final int qty = cstr.getAmount();
         final String rcId = cstr.getResource();
-        SplittableIndex.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
+        return SplittableIndex.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
                 forEachIndexEntry(new IndexEntryProcedure<VM>() {
                     @Override
-                    public void extract(SplittableIndex<VM> index, int idx, int from, int to) {
+                    public boolean extract(SplittableIndex<VM> index, int idx, int from, int to) {
                         if (to != from) {
                             partitions.get(idx).getConstraints().add(new Preserve(new IndexEntry<VM>(index, idx, from, to), rcId, qty));
                         }
+                        return true;
                     }
                 });
-        return true;
     }
 }
