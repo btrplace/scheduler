@@ -131,7 +131,7 @@ public class SplittableIndex<E extends Element> implements Comparator<E> {
             if (cIdx == k && from == -1) {
                 from = x;
             }
-            if (cIdx > k) {
+            if (from >= 0 && cIdx > k) {
                 return new IndexEntry<>(this, k, from, x);
             }
         }

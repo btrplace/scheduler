@@ -131,7 +131,13 @@ public class SubModel implements Model {
      */
     @Override
     public Model clone() {
-        throw new UnsupportedOperationException();
+        DefaultModel m = new DefaultModel(eb.clone());
+        MappingUtils.fill(sm, m.getMapping());
+        for (ModelView rc : parent.getViews()) {
+            m.attach(rc.clone());
+        }
+        m.setAttributes(this.getAttributes().clone());
+        return m;
     }
 
     @Override

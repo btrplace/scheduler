@@ -69,6 +69,7 @@ public class AmongSplitter implements ConstraintSplitter<Among> {
                                     subParams.add(s);
                                 }
                             }
+                            System.err.println(subParams);
                             partitions.get(idx).getConstraints().add(new Among(vms, subParams, c));
                         }
                         return true;

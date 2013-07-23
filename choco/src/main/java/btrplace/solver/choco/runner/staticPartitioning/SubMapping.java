@@ -265,7 +265,7 @@ public class SubMapping implements Mapping {
 
     @Override
     public boolean isRunning(VM v) {
-        throw new UnsupportedOperationException();
+        return scope.contains(parent.getVMLocation(v)) && parent.isRunning(v);
     }
 
     @Override

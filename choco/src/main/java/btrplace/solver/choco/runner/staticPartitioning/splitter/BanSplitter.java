@@ -54,7 +54,7 @@ public class BanSplitter implements ConstraintSplitter<Ban> {
                         if (to != from) {
                             Set<VM> vms = new IndexEntry<>(index, idx, from, to);
                             Set<Node> ns = nodeIndex.makeIndexEntry(idx);
-                            if (!ns.isEmpty()) {
+                            if (ns != null && !ns.isEmpty()) {
                                 partitions.get(idx).getConstraints().add(new Ban(vms, ns));
                             }
                         }
