@@ -21,9 +21,14 @@ import btrplace.model.Instance;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.Among;
+import btrplace.solver.choco.runner.staticPartitioning.IndexEntry;
+import btrplace.solver.choco.runner.staticPartitioning.IndexEntryProcedure;
+import btrplace.solver.choco.runner.staticPartitioning.SplittableIndex;
 import gnu.trove.map.hash.TIntIntHashMap;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Splitter for {@link btrplace.model.constraint.Among} constraints.
@@ -44,7 +49,38 @@ public class AmongSplitter implements ConstraintSplitter<Among> {
     }
 
     @Override
-    public boolean split(Among cstr, Instance origin, List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
+    public boolean split(final Among cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition, final TIntIntHashMap nodePosition) {
+
+        final boolean c = cstr.isContinuous();
+        return SplittableIndex.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
+                forEachIndexEntry(new IndexEntryProcedure<VM>() {
+                    @Override
+                    public boolean extract(SplittableIndex<VM> index, int idx, int from, int to) {
+                        if (to - from >= 2) {
+                            IndexEntry<VM> vms = new IndexEntry<>(index, idx, from, to);
+                            //Get the servers on the partition
+
+                            //Filter out the other nodes in the original constraint
+                            final Collection<Collection<Node>> subParams = new ArrayList<>();
+                            for (Collection<Node> ns : cstr.getGroupsOfNodes()) {
+                                SplittableIndex<Node> nodeIndex = SplittableIndex.newNodeIndex(ns, nodePosition);
+                                nodeIndex.forEachIndexEntry(new IndexEntryProcedure<Node>() {
+                                    @Override
+                                    public boolean extract(SplittableIndex<Node> index, int key, int from, int to) {
+                                        if (from != to) {
+                                            subParams.add(new IndexEntry<Node>(index, key, from, to));
+                                        }
+                                        return true;
+                                    }
+                                });
+                            }
+                            partitions.get(idx).getConstraints().add(new Among(vms, subParams));
+                        }
+                        return true;
+                    }
+                });
+
+        /*
         Set<VM> vms = new HashSet<>(cstr.getInvolvedVMs());
         List<Set<Node>> parts = new ArrayList<>();
         for (Collection<Node> s : cstr.getGroupsOfNodes()) {
@@ -70,6 +106,6 @@ public class AmongSplitter implements ConstraintSplitter<Among> {
                 break;
             }
         }
-        return true;
+        return true;  */
     }
 }
