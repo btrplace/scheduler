@@ -19,7 +19,6 @@ package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
 import btrplace.model.Mapping;
 import btrplace.model.Node;
-import btrplace.model.SubSet;
 import btrplace.model.VM;
 import gnu.trove.set.hash.THashSet;
 
@@ -54,7 +53,8 @@ public final class Splitters {
         /*Set<T> res = new HashSet<>();
         extractInside(s, in, res);*/
         System.err.println(s.size() + " restricted to " + in.size());
-        return new SubSet<T>((Set<T>)s, (Set<T>)in);
+        //return new IndexEntry<T>((Set<T>)s, (Set<T>)in);
+        return null;
         //return res;
     }
 

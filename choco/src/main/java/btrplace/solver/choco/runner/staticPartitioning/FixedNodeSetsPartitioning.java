@@ -17,13 +17,16 @@
 
 package btrplace.solver.choco.runner.staticPartitioning;
 
-import btrplace.model.*;
+import btrplace.model.Instance;
+import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.SynchronizedElementBuilder;
 import btrplace.model.constraint.SatConstraint;
-import btrplace.model.view.ModelView;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
 import btrplace.solver.choco.runner.staticPartitioning.splitter.ConstraintSplitterMapper;
-import gnu.trove.TIntIntHashMap;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.set.hash.THashSet;
 
 import java.util.*;
 
@@ -106,51 +109,26 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
 
         List<Instance> parts = new ArrayList<>(partitions.size());
 
-        TIntIntHashMap vmPosition = new TIntIntHashMap();
+        //nb of VMs
+        int nbVMs = i.getModel().getMapping().getReadyVMs().size();
+        for (Node n : i.getModel().getMapping().getOnlineNodes()) {
+            nbVMs += i.getModel().getMapping().getRunningVMs(n).size();
+            nbVMs += i.getModel().getMapping().getSleepingVMs(n).size();
+        }
+        TIntIntHashMap vmPosition = new TIntIntHashMap(nbVMs);
         int partNumber = 0;
         for (Collection<Node> s : partitions) {
             SubModel partModel = new SubModel(mo, eb, s);
 
-            Instance i2 = new Instance(partModel, new HashSet<SatConstraint>(), i.getOptimizationConstraint());
-            parts.add(i2);
+            parts.add(new Instance(partModel, new THashSet<SatConstraint>(), i.getOptimizationConstraint()));
 
-            for (VM v : partModel.getMapping().myVMs()) {
-                vmPosition.put(v.id(), partNumber);
-            }
-            partNumber++;
+            partModel.getMapping().fillIndex(vmPosition, partNumber++);
         }
         for (SatConstraint cstr : i.getConstraints()) {
             cstrMapper.split(cstr, i, parts, vmPosition);
         }
         //TODO: deal with ready VMs to run
         return parts;
-    }
-
-    private void makeMapping(Mapping src, Mapping dst, Collection<Node> s) {
-        for (Node n : s) {
-            if (src.getOfflineNodes().contains(n)) {
-                dst.addOfflineNode(n);
-            } else {
-                dst.addOnlineNode(n);
-                for (VM v : src.getRunningVMs(n)) {
-                    dst.addRunningVM(v, n);
-                }
-                for (VM v : src.getSleepingVMs(n)) {
-                    dst.addSleepingVM(v, n);
-                }
-            }
-        }
-    }
-
-    private Model makeSubModel(Model src, SynchronizedElementBuilder p, Collection<Node> s) {
-        Model mo = new DefaultModel(p);
-        //Copy the attributes and the views
-        for (ModelView v : src.getViews()) {
-            mo.attach(v);
-        }
-        makeMapping(src.getMapping(), mo.getMapping(), s);
-        mo.setAttributes(src.getAttributes());
-        return mo;
     }
 
     private static boolean isDisjoint(Collection<Collection<Node>> p) {

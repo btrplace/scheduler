@@ -51,6 +51,9 @@ public class DefaultMapping implements Mapping, Cloneable {
      */
     private Set<Node>[] nodeState;
 
+    /**
+     * The state of each VM.
+     */
     private TIntIntHashMap st;
 
     /**
@@ -58,11 +61,19 @@ public class DefaultMapping implements Mapping, Cloneable {
      */
     private TIntObjectHashMap<Node> place;
 
+    /**
+     * The VMs that are in the ready state.
+     */
     private Set<VM> vmReady;
+
     /**
      * The VMs hosted by each node, by state (running or sleeping)
      */
     private TIntObjectHashMap<Set<VM>>[] host;
+
+    private int nbNodes;
+
+    private int nbVMs;
 
     /**
      * Create a new mapping.
@@ -81,6 +92,8 @@ public class DefaultMapping implements Mapping, Cloneable {
         host[SLEEPING_STATE] = new TIntObjectHashMap<>();
 
         st = new TIntIntHashMap(100, 0.5f, -1, -1);
+        nbNodes = 0;
+        nbVMs = 0;
     }
 
     @Override
@@ -167,6 +180,7 @@ public class DefaultMapping implements Mapping, Cloneable {
                 st.put(vmId, RUNNING_STATE);
                 break;
             default:
+                nbVMs++;
                 place.put(vmId, n);
                 on.add(vm);
                 st.put(vmId, RUNNING_STATE);
@@ -192,7 +206,7 @@ public class DefaultMapping implements Mapping, Cloneable {
                 //If was running, sync the state
                 old = place.put(vmId, n);
                 host[RUNNING_STATE].get(old.id()).remove(vm);
-                host[SLEEPING_STATE].get(nId).add(vm);
+                on.add(vm);
                 st.put(vmId, SLEEPING_STATE);
                 break;
             case SLEEPING_STATE:
@@ -200,12 +214,12 @@ public class DefaultMapping implements Mapping, Cloneable {
                 old = place.put(vmId, n);
                 if (!old.equals(n)) {
                     host[SLEEPING_STATE].get(old.id()).remove(vm);
-                    host[SLEEPING_STATE].get(nId).add(vm);
+                    on.add(vm);
                 }
                 break;
             case READY_STATE:
                 place.put(vmId, n);
-                host[SLEEPING_STATE].get(nId).add(vm);
+                on.add(vm);
                 vmReady.remove(vm);
                 st.put(vmId, SLEEPING_STATE);
                 break;
@@ -214,6 +228,7 @@ public class DefaultMapping implements Mapping, Cloneable {
                 place.put(vmId, n);
                 host[SLEEPING_STATE].get(nId).add(vm);
                 st.put(vmId, SLEEPING_STATE);
+                nbVMs++;
         }
         st.put(vm.id(), SLEEPING_STATE);
         return true;
@@ -222,16 +237,20 @@ public class DefaultMapping implements Mapping, Cloneable {
     @Override
     public void addReadyVM(VM vm) {
 
-        if (st.get(vm.id()) == RUNNING_STATE) {
-            //If was running, sync the state
-            Node n = place.remove(vm.id());
-            host[RUNNING_STATE].get(n.id()).remove(vm);
+        Node n = place.remove(vm.id());
+        switch (st.get(vm.id())) {
+            case RUNNING_STATE:
+                //If was running, sync the state
+                host[RUNNING_STATE].get(n.id()).remove(vm);
+                break;
+            case SLEEPING_STATE:
+                //If was sleeping, sync the state
+                host[SLEEPING_STATE].get(n.id()).remove(vm);
+                break;
+            default:
+                nbVMs++;
         }
-        if (st.get(vm.id()) == SLEEPING_STATE) {
-            //If was sleeping, sync the state
-            Node n = place.remove(vm.id());
-            host[SLEEPING_STATE].get(n.id()).remove(vm);
-        }
+
         st.put(vm.id(), READY_STATE);
         vmReady.add(vm);
     }
@@ -239,6 +258,7 @@ public class DefaultMapping implements Mapping, Cloneable {
     @Override
     public boolean remove(VM vm) {
         if (place.containsKey(vm.id())) {
+            nbVMs--;
             Node n = this.place.remove(vm.id());
             //The VM exists and is already placed
             if (st.get(vm.id()) == RUNNING_STATE) {
@@ -249,6 +269,7 @@ public class DefaultMapping implements Mapping, Cloneable {
             st.remove(vm.id());
             return true;
         } else if (st.get(vm.id()) == READY_STATE) {
+            nbVMs--;
             vmReady.remove(vm);
             return true;
         }

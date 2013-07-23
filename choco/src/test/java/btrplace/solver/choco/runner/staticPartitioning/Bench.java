@@ -24,14 +24,15 @@ import btrplace.model.constraint.Spread;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithParams;
-import btrplace.solver.choco.runner.staticPartitioning.splitter.Splitters;
-import btrplace.solver.choco.runner.staticPartitioning.splitter.SpreadSplitter;
 import gnu.trove.set.hash.THashSet;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 /**
  * @author Fabien Hermenier
@@ -52,10 +53,11 @@ public class Bench {
                         {nbNodes, 10, partSize}
                 };
     }
+
     @Test(dataProvider = "getPartData")
     public void simpleBench(Integer nbNodes, Integer ratio, Integer partSize) throws SolverException {
 
-        List<Node> nodes  = new ArrayList<>();
+        List<Node> nodes = new ArrayList<>();
         Model mo = new DefaultModel();
         for (int i = 0; i < nbNodes; i++) {
             Node n = mo.newNode();
@@ -76,21 +78,20 @@ public class Bench {
         List<SatConstraint> cstrs = new ArrayList<>();
         Set<VM> s = new THashSet<>();
         for (Node n : mo.getMapping().getOnlineNodes()) {
-        for (VM v : mo.getMapping().getRunningVMs(n)) {
-            s.add(v);
-            if (rnd.nextInt(6) == 0 && s.size() > 1) {
-                cstrs.add(new Spread(s, true));
-                s = new THashSet<>();
+            for (VM v : mo.getMapping().getRunningVMs(n)) {
+                s.add(v);
+                if (rnd.nextInt(6) == 0 && s.size() > 1) {
+                    cstrs.add(new Spread(s, true));
+                    s = new THashSet<>();
+                }
             }
         }
-        }
-        StaticPartitioning partitioner  = new FixedSizePartitioning(partSize);
+        StaticPartitioning partitioner = new FixedSizePartitioning(partSize);
         ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithParams();
         long st = System.currentTimeMillis();
         List<Instance> parts = partitioner.split(ps, new Instance(mo, cstrs, new MinMTTR()));
-        System.err.println(nbNodes + " nodes; " + nbVMs + " vms; " + parts.size() +  "x" + partSize + " nodes; " + cstrs.size() + " constraints; " + (System.currentTimeMillis() - st) + "ms");
+        System.err.println(nbNodes + " nodes; " + nbVMs + " vms; " + parts.size() + "x" + partSize + " nodes; " + cstrs.size() + " constraints; " + (System.currentTimeMillis() - st) + "ms");
         Assert.assertEquals(parts.size(), nbNodes / partSize);
-        System.err.println(SpreadSplitter.c);
         Assert.fail();
     }
 }

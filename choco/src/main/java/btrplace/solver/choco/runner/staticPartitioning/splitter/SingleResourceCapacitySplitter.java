@@ -20,7 +20,7 @@ package btrplace.solver.choco.runner.staticPartitioning.splitter;
 import btrplace.model.Instance;
 import btrplace.model.Node;
 import btrplace.model.constraint.SingleResourceCapacity;
-import gnu.trove.TIntIntHashMap;
+import gnu.trove.map.hash.TIntIntHashMap;
 
 import java.util.HashSet;
 import java.util.List;

@@ -20,13 +20,12 @@ package btrplace.solver.choco.runner.staticPartitioning.splitter;
 import btrplace.model.Instance;
 import btrplace.model.VM;
 import btrplace.model.constraint.Spread;
-import gnu.trove.TIntIntHashMap;
-import gnu.trove.map.hash.TIntObjectHashMap;
-import gnu.trove.procedure.TIntObjectProcedure;
-import gnu.trove.set.hash.THashSet;
+import btrplace.solver.choco.runner.staticPartitioning.IndexEntry;
+import btrplace.solver.choco.runner.staticPartitioning.IndexEntryProcedure;
+import btrplace.solver.choco.runner.staticPartitioning.SplittableIndex;
+import gnu.trove.map.hash.TIntIntHashMap;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Splitter for {@link Spread} constraints.
@@ -46,45 +45,16 @@ public class SpreadSplitter implements ConstraintSplitter<Spread> {
 
     @Override
     public boolean split(final Spread cstr, Instance origin, final List<Instance> partitions, final TIntIntHashMap vmsPosition) {
-
-        TIntObjectHashMap<Set<VM>> map = new TIntObjectHashMap<>((cstr.getInvolvedVMs().size() + 1) / 2);
-        for (VM v : cstr.getInvolvedVMs()) {
-            int pos = vmsPosition.get(v.id());
-            Set<VM> s = map.get(pos);
-            if (s == null) {
-                s = new THashSet<>(2);
-                map.put(pos, s);
-            }
-            s.add(v);
-        }
-        map.forEachEntry(new TIntObjectProcedure<Set<VM>>() {
-            @Override
-            public boolean execute(int a, Set<VM> b) {
-                if (b.size() >= 2) {
-                    partitions.get(a).getConstraints().add(new Spread(b, cstr.isContinuous()));
-                    c++;
-                }
-                return true;
-            }
-        });
-/*        for (Map.Entry<Integer, Spread> e = map.entr)
-        for (int i = 0; i < parts.length; i++) {
-            if (!parts[i].isEmpty()) {
-                partitions.get(i).getConstraints().add(new Spread(parts[i], cstr.isContinuous()));
-            }
-        }*/
-        /*for (Instance i : partitions) {
-            //Set<VM> in = Splitters.extractVMsIn(vms, i.getModel().getMapping());
-            Set<VM> in = Splitters.extractInside(vms, i.getModel().getMapping().getAllVMs());
-            if (!in.isEmpty()) {
-                i.getConstraints().add(new Spread(in, cstr.isContinuous()));
-            }
-            if (vms.isEmpty()) {
-                break;
-            }
-        }                                                 */
+        final boolean c = cstr.isContinuous();
+        SplittableIndex.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
+                forEachIndexEntry(new IndexEntryProcedure<VM>() {
+                    @Override
+                    public void extract(SplittableIndex<VM> index, int idx, int from, int to) {
+                        if (to - from >= 2) {
+                            partitions.get(idx).getConstraints().add(new Spread(new IndexEntry<VM>(index, idx, from, to), c));
+                        }
+                    }
+                });
         return true;
     }
-
-    public static int c = 0;
 }

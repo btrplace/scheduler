@@ -15,59 +15,82 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.model;
+package btrplace.solver.choco.runner.staticPartitioning;
 
+import btrplace.model.Element;
+
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
 /**
+ * A set of elements that have the same index key.
+ * This set is considered as immutable.
+ *
  * @author Fabien Hermenier
  */
-public class SubSet<T> implements Set<T> {
+public class IndexEntry<E> implements Set<E> {
 
-    private Set<T> parent;
+    private int from, to;
 
-    private Set<T> scope;
+    private int curIdx;
 
-    public SubSet(Set<T> parent, Set<T> scope) {
-        this.parent = parent;
-        this.scope = scope;
+    private SplittableIndex index;
+
+    /**
+     * Make a new entry.
+     *
+     * @param index the index to rely on
+     * @param key   the current index key
+     * @param from  the lower bound in the backend array where elements start to have the given index key
+     * @param to    the upper bound in the backend array where elements ends to have the given index key (exclusive)
+     */
+    public IndexEntry(SplittableIndex index, int key, int from, int to) {
+        this.index = index;
+        this.curIdx = key;
+        this.from = from;
+        this.to = to;
     }
 
     @Override
     public int size() {
-        throw new UnsupportedOperationException();
+        return to - from;
     }
 
     @Override
     public boolean isEmpty() {
-        //Both sets are disjoints
-        throw new UnsupportedOperationException();
+        return to == from;
     }
 
     @Override
     public boolean contains(Object o) {
-        return (parent.contains(o) && scope.contains(o));
+        try {
+            Element x = (Element) o;
+            return index.getRespectiveIndex().get(x.id()) == curIdx;
+        } catch (ClassCastException ex) {
+            return false;
+        }
     }
 
     @Override
-    public Iterator<T> iterator() {
+    public Iterator iterator() {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public Object[] toArray() {
-        throw new UnsupportedOperationException();
+        return Arrays.copyOfRange(index.getValues(), from, to);
     }
 
     @Override
-    public <T1> T1[] toArray(T1[] a) {
-        throw new UnsupportedOperationException();
+    public Object[] toArray(Object[] a) {
+        Arrays.copyOfRange(a, from, to);
+        return a;
     }
 
     @Override
-    public boolean add(T t) {
+    public boolean add(Object o) {
         throw new UnsupportedOperationException();
     }
 
@@ -78,11 +101,16 @@ public class SubSet<T> implements Set<T> {
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return scope.containsAll(c) && parent.containsAll(c);
+        for (Object o : c) {
+            if (!contains(o)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
-    public boolean addAll(Collection<? extends T> c) {
+    public boolean addAll(Collection c) {
         throw new UnsupportedOperationException();
     }
 
@@ -99,5 +127,14 @@ public class SubSet<T> implements Set<T> {
     @Override
     public void clear() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder b = new StringBuilder("{").append(index.getValues()[from]);
+        for (int i = from + 1; i < to; i++) {
+            b.append(", ").append(index.getValues()[i]);
+        }
+        return b.append('}').toString();
     }
 }

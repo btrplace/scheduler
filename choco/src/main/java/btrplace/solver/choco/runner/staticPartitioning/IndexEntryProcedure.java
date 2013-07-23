@@ -15,30 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.model;
+package btrplace.solver.choco.runner.staticPartitioning;
 
-import gnu.trove.set.hash.TIntHashSet;
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
-import java.util.HashSet;
-import java.util.Set;
+import btrplace.model.Element;
 
 /**
+ * A procedure to use on a set of contiguous values that
+ * share the same index value.
+ *
  * @author Fabien Hermenier
  */
-public class PartitionsTest {
+public interface IndexEntryProcedure<E extends Element> {
 
-    @Test
-    public void test() {
-        Set<Integer> s = new HashSet<Integer>();
-        for (int i = 0; i < 10; i++) {
-            s.add(i);
-        }
-        Partitions<Integer> partitions = new Partitions<Integer>(s, 3);
-        System.err.println(partitions.toString());
-        partitions.putIn(5,1);
-        System.err.println(partitions.toString());
-        Assert.fail();
-    }
+    /**
+     * The method to execute.
+     *
+     * @param index the splittable index to rely on
+     * @param idx   the common index value
+     * @param from  the value lower bound
+     * @param to    the value upper bound (exclusive)
+     */
+    void extract(SplittableIndex<E> index, int idx, int from, int to);
 }

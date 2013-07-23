@@ -24,7 +24,7 @@ import btrplace.model.Node;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.SingleRunningCapacity;
-import gnu.trove.TIntIntHashMap;
+import gnu.trove.map.hash.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -49,7 +49,6 @@ public class SingleRunningCapacitySplitterTest {
         m0.getMapping().addReadyVM(m0.newVM(1));
         Node n1 = m0.newNode();
         m0.getMapping().addOnlineNode(n1);
-        m0.getMapping().addReadyVM(m0.newVM(1));
         m0.getMapping().addRunningVM(m0.newVM(2), n1);
         Model m1 = new DefaultModel();
         Node n2 = m1.newNode(2);

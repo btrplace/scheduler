@@ -15,11 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.model;
+package btrplace.solver.choco.runner.staticPartitioning;
 
+import btrplace.model.DefaultMapping;
+import btrplace.model.Mapping;
+import btrplace.model.Node;
+import btrplace.model.VM;
+import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.set.hash.THashSet;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * A sub-mapping that is a limited version of a parent mapping.
@@ -239,18 +246,21 @@ public class SubMapping implements Mapping {
         throw new UnsupportedOperationException();
     }
 
-    public boolean isIn(VM v) {
-        Node n = parent.getVMLocation(v);
-        return scope.contains(n);
-    }
-
-    public List<VM> myVMs() {
-        List<VM> l = new ArrayList<>();
+    /**
+     * Fill an index with the VM presents in this mapping
+     *
+     * @param index the index to fill
+     * @param p     the index value to use for each VM in the mapping
+     */
+    public void fillIndex(TIntIntHashMap index, int p) {
         for (Node n : scope) {
-            l.addAll(parent.getRunningVMs(n));
-            l.addAll(parent.getSleepingVMs(n));
+            for (VM v : parent.getRunningVMs(n)) {
+                index.put(v.id(), p);
+            }
+            for (VM v : parent.getSleepingVMs(n)) {
+                index.put(v.id(), p);
+            }
         }
-        return l;
     }
 
     @Override
