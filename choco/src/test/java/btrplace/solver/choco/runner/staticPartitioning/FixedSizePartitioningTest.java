@@ -75,13 +75,15 @@ public class FixedSizePartitioningTest {
         }
 
         //Check the VMs are the nodes IDs are all registered to be substitution proof
-        /*Assert.assertEquals(partitions.get(0).getModel().getVMs().size(), 39);
-        Assert.assertEquals(partitions.get(0).getModel().getVMs(), partitions.get(1).getModel().getVMs());
-        Assert.assertEquals(partitions.get(0).getModel().getVMs(), partitions.get(2).getModel().getVMs());
+        for (int i = 0; i < 39; i++) {
+            if (i < 13) {
+                Assert.assertTrue(partitions.get(0).getModel().contains(new Node(i)));
+                Assert.assertTrue(partitions.get(1).getModel().contains(new Node(i)));
+            }
+            Assert.assertTrue(partitions.get(0).getModel().contains(new VM(i)));
+            Assert.assertTrue(partitions.get(1).getModel().contains(new VM(i)));
 
-        Assert.assertEquals(partitions.get(0).getModel().getNodes().size(), 13);
-        Assert.assertEquals(partitions.get(0).getModel().getNodes(), partitions.get(1).getModel().getNodes());
-        Assert.assertEquals(partitions.get(0).getModel().getNodes(), partitions.get(2).getModel().getNodes());*/
+        }
     }
 
     @Test

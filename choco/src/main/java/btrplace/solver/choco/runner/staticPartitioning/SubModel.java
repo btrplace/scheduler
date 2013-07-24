@@ -127,7 +127,9 @@ public class SubModel implements Model {
     }
 
     /**
-     * Unsupported.
+     * Clone this model using a {@link DefaultModel}.
+     *
+     * @return a mutable clone
      */
     @Override
     public Model clone() {

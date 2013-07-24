@@ -201,6 +201,11 @@ public class SubMapping implements Mapping {
         return res;
     }
 
+    /**
+     * Clone this mapping using a {@link DefaultMapping}.
+     *
+     * @return a mutable clone
+     */
     @Override
     public DefaultMapping clone() {
         DefaultMapping c = new DefaultMapping();

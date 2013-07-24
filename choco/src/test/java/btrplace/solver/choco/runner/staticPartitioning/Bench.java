@@ -18,79 +18,153 @@
 package btrplace.solver.choco.runner.staticPartitioning;
 
 import btrplace.model.*;
+import btrplace.model.constraint.Among;
 import btrplace.model.constraint.MinMTTR;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Spread;
+import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithParams;
-import gnu.trove.set.hash.THashSet;
+import gnu.trove.map.hash.TIntIntHashMap;
 import org.testng.Assert;
-import org.testng.annotations.DataProvider;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 /**
+ * Generate models and bench the partitioning algorithm.
+ *
  * @author Fabien Hermenier
  */
 public class Bench {
 
-    @DataProvider
-    public Object[][] getPartData() {
-        int nbNodes = 1000000;
-        int partSize = 2500;
-        return new Integer[][]
-                {
-                       /* {nbNodes, 5, partSize},
-                        {nbNodes, 6, partSize},
-                        {nbNodes, 7, partSize},
-                        {nbNodes, 8, partSize},
-                        {nbNodes, 9, partSize},       */
-                        {nbNodes, 10, partSize}
-                };
+    private static Random rnd = new Random();
+
+    private static Set<VM> makeVMSet(Model mo, int nb) {
+        Set<VM> s = new HashSet<>(nb);
+        for (int i = 0; i < nb; i++) {
+            s.add(mo.newVM());
+        }
+        return s;
     }
 
-    //@Test(dataProvider = "getPartData")
-    public void simpleBench(Integer nbNodes, Integer ratio, Integer partSize) throws SolverException {
 
-        List<Node> nodes = new ArrayList<>();
-        Model mo = new DefaultModel();
-        for (int i = 0; i < nbNodes; i++) {
+    private static List<Node> makeNodeList(Model mo, int nb) {
+        List<Node> l = new ArrayList<>(nb);
+        for (int i = 0; i < nb; i++) {
             Node n = mo.newNode();
-            nodes.add(n);
             mo.getMapping().addOnlineNode(n);
+            l.add(n);
         }
+        return l;
+    }
 
-        //Random VM Placement
-        int nbVMs = nbNodes * ratio;
-        Random rnd = new Random();
-        for (int i = 0; i < nbVMs; i++) {
-            VM v = mo.newVM();
-            Node n = nodes.get(rnd.nextInt(nbNodes));
+    private static int makeApp(Instance i, int remainder, List<Collection<Node>> edges) {
+
+        int curMax = Math.min(remainder, 30);
+        if (remainder <= 30) {
+            curMax = remainder;
+        } else if (remainder - 30 < 6) {
+            curMax = remainder / 2;
+        } else {
+            curMax = Math.min(curMax, rnd.nextInt(30 - 6) + 6);
+        }
+        int nbT1 = curMax == 6 ? 2 : rnd.nextInt(curMax - 4 - 2) + 2; //at least 2 VMs, at most max - 4 (2 per tiers)
+        curMax -= nbT1;
+        int nbT2 = curMax == 4 ? 2 : rnd.nextInt(curMax - 2 - 2) + 2;
+        int nbT3 = curMax - nbT2;
+        int nbVMs = nbT1 + nbT2 + nbT3;
+
+        Model mo = i.getModel();
+        Set<VM> t1 = makeVMSet(mo, nbT1);
+        Set<VM> t2 = makeVMSet(mo, nbT2);
+        Set<VM> t3 = makeVMSet(mo, nbT3);
+
+        //Make the constraints
+        i.getConstraints().add(new Spread(t1, true));
+        i.getConstraints().add(new Spread(t2, true));
+        i.getConstraints().add(new Spread(t3, true));
+        i.getConstraints().add(new Among(t3, edges, false));
+
+        //Place the VMs
+        //Pick a random edge, and place every VMs on it
+        int myEdge = rnd.nextInt(edges.size());
+        Collection<Node> nodes = edges.get(myEdge);
+        Node n = nodes.iterator().next();
+        for (VM v : t1) {
+            mo.getMapping().addRunningVM(v, n);
+        }
+        for (VM v : t2) {
+            mo.getMapping().addRunningVM(v, n);
+        }
+        for (VM v : t3) {
             mo.getMapping().addRunningVM(v, n);
         }
 
-        //Bunch of spread constraints
-        List<SatConstraint> cstrs = new ArrayList<>();
-        Set<VM> s = new THashSet<>();
-        for (Node n : mo.getMapping().getOnlineNodes()) {
-            for (VM v : mo.getMapping().getRunningVMs(n)) {
-                s.add(v);
-                if (rnd.nextInt(6) == 0 && s.size() > 1) {
-                    cstrs.add(new Spread(s, true));
-                    s = new THashSet<>();
-                }
+        return nbVMs;
+    }
+
+    private static List<Collection<Node>> makeEdges(List<Node> l, int switchSize) {
+        TIntIntHashMap parts = new TIntIntHashMap();
+        int curPart = 0;
+        int i = 0;
+        for (Node n : l) {
+            i = (i + 1) % switchSize;
+            if ((i + 1) % switchSize == 0) {
+                curPart++;
             }
+            parts.put(n.id(), curPart);
         }
-        StaticPartitioning partitioner = new FixedSizePartitioning(partSize);
-        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithParams();
-        long st = System.currentTimeMillis();
-        List<Instance> parts = partitioner.split(ps, new Instance(mo, cstrs, new MinMTTR()));
-        System.err.println(nbNodes + " nodes; " + nbVMs + " vms; " + parts.size() + "x" + partSize + " nodes; " + cstrs.size() + " constraints; " + (System.currentTimeMillis() - st) + "ms");
-        Assert.assertEquals(parts.size(), nbNodes / partSize);
-        Assert.fail();
+        SplittableIndex<Node> sp = SplittableIndex.newNodeIndex(l, parts);
+        final List<Collection<Node>> splits = new ArrayList<>();
+        sp.forEachIndexEntry(new IndexEntryProcedure<Node>() {
+            @Override
+            public boolean extract(SplittableIndex<Node> index, int key, int from, int to) {
+                return splits.add(new IndexEntry<Node>(index, key, from, to));
+            }
+        });
+        return splits;
+    }
+
+    //@Test(dataProvider = "getInputs")
+    public static void benchHA(int nbSamples, Integer partSize, Integer ratio, Integer nbParts) {
+        Model mo = new DefaultModel();
+        Instance inst = new Instance(mo, new MinMTTR());
+        int nbNodes = partSize * nbParts;
+        int nbVMs = ratio * nbNodes;
+
+        //Make the infrastructure
+        List<Node> l = makeNodeList(mo, nbNodes);
+        ShareableResource rcCpu = new ShareableResource("cpu", 20, 0);
+        ShareableResource rcMem = new ShareableResource("mem", 16/*GB*/, 0);
+        List<Collection<Node>> edges = makeEdges(l, 250);
+        mo.attach(rcCpu);
+        mo.attach(rcMem);
+
+        while (nbVMs != 0) {
+            nbVMs -= makeApp(inst, nbVMs, edges);
+        }
+
+        FixedSizePartitioning partitioner = new FixedSizePartitioning(partSize);
+        try {
+            for (int x = 0; x < nbSamples; x++) {
+                long start = System.currentTimeMillis();
+                List<Instance> instances = partitioner.split(new DefaultChocoReconfigurationAlgorithParams(), inst);
+                long end = System.currentTimeMillis();
+                System.err.println(instances.size() + " " + nbNodes + " " + nbNodes * ratio + " " + inst.getConstraints().size() + " " + (end - start));
+            }
+        } catch (SolverException ex) {
+            Assert.fail(ex.getMessage(), ex);
+        }
+        mo = null;
+    }
+
+    public static void main(String[] args) {
+        int partSize = 2500;
+        int ratio = 6;
+
+        int nbSamples = 100;
+        benchHA(nbSamples, partSize, ratio, 1);
+        for (int i = 25; i <= 1000; i += 25) {
+            benchHA(nbSamples, partSize, ratio, i);
+        }
     }
 }

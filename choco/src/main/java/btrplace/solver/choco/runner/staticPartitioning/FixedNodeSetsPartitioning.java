@@ -17,10 +17,8 @@
 
 package btrplace.solver.choco.runner.staticPartitioning;
 
-import btrplace.model.Instance;
-import btrplace.model.Model;
-import btrplace.model.Node;
-import btrplace.model.SynchronizedElementBuilder;
+import btrplace.model.*;
+import btrplace.model.constraint.Running;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
@@ -133,10 +131,24 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
             }
             partNumber++;
         }
+        //Extract the VMs to launch
+        List<VM> toLaunch = new ArrayList<>();
         for (SatConstraint cstr : i.getConstraints()) {
             cstrMapper.split(cstr, i, parts, vmPosition, nodePosition);
+            if (cstr instanceof Running) {
+                for (VM v : cstr.getInvolvedVMs()) {
+                    if (i.getModel().getMapping().isReady(v)) {
+                        toLaunch.add(v);
+                    }
+                }
+
+            }
         }
-        //TODO: deal with ready VMs to run
+        //Round-robin for the VMs to launch
+        int p = 0;
+        for (VM v : toLaunch) {
+            parts.get(p++ % parts.size()).getModel().getMapping().addReadyVM(v);
+        }
         return parts;
     }
 
