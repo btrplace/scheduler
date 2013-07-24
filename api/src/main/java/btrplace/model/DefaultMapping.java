@@ -235,7 +235,7 @@ public class DefaultMapping implements Mapping, Cloneable {
     }
 
     @Override
-    public void addReadyVM(VM vm) {
+    public boolean addReadyVM(VM vm) {
 
         Node n = place.remove(vm.id());
         switch (st.get(vm.id())) {
@@ -253,6 +253,7 @@ public class DefaultMapping implements Mapping, Cloneable {
 
         st.put(vm.id(), READY_STATE);
         vmReady.add(vm);
+        return true;
     }
 
     @Override
@@ -301,9 +302,10 @@ public class DefaultMapping implements Mapping, Cloneable {
     }
 
     @Override
-    public void addOnlineNode(Node n) {
+    public boolean addOnlineNode(Node n) {
         nodeState[OFFLINE_STATE].remove(n);
         nodeState[ONLINE_STATE].add(n);
+        return true;
     }
 
     @Override

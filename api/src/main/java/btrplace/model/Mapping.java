@@ -54,8 +54,9 @@ public interface Mapping extends Cloneable {
      * If the VM is already in a other location or state in the mapping, its state is updated
      *
      * @param vm the VM
+     * @return {@code true} iff the VM is now in the running state
      */
-    void addReadyVM(VM vm);
+    boolean addReadyVM(VM vm);
 
     /**
      * Remove a VM.
@@ -84,8 +85,9 @@ public interface Mapping extends Cloneable {
      * Set a node online. If the node is already in the mapping but in an another state, it is updated.
      *
      * @param node the node.
+     * @return {@code true} iff the node is now in the online state
      */
-    void addOnlineNode(Node node);
+    boolean addOnlineNode(Node node);
 
     /**
      * Set a node offline. If the node is already in the mapping but in an another state, it is updated.

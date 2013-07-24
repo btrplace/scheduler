@@ -30,8 +30,11 @@ import java.util.Set;
 
 /**
  * A sub-mapping that is a limited version of a parent mapping.
- * The scope is defined as a collection of nodes.
- * The mapping is considered as immutable.
+ * The scope is defined as a collection of nodes that <b>is supposed</b> to belong to the parent mapping.
+ * The same for the ready VMs.
+ * <p/>
+ * Modifications made on the mapping are automatically reported on the parent mapping.
+ * However, it is not allowed to remove a node or a VM.
  *
  * @author Fabien Hermenier
  */
@@ -41,13 +44,20 @@ public class SubMapping implements Mapping {
 
     private Set<Node> scope;
 
-    private Set<VM> myRunnings = null;
+    private Set<VM> ready;
 
-    private Set<VM> mySleepings = null;
-
-    private Set<Node> myOnlines = null;
-
-    private Set<Node> myOfflines = null;
+    /**
+     * Make a new mapping.
+     *
+     * @param parent   the parent mapping
+     * @param scope    the nodes that limit the scope of the new mapping. These nodes must all belong to the original mapping
+     * @param subReady the subset of ready VMs to include in this mapping. These VMs must all belong to the original mapping
+     */
+    public SubMapping(Mapping parent, Collection<Node> scope, Set<VM> subReady) {
+        this.parent = parent;
+        this.scope = new THashSet<>(scope);
+        this.ready = subReady;
+    }
 
     /**
      * Make a new mapping.
@@ -56,23 +66,27 @@ public class SubMapping implements Mapping {
      * @param scope  the nodes that limit the scope of the new mapping. These nodes must all belong to the original mapping
      */
     public SubMapping(Mapping parent, Collection<Node> scope) {
-        this.parent = parent;
-        this.scope = new THashSet<>(scope);
+        this(parent, scope, Collections.<VM>emptySet());
     }
 
     @Override
-    public boolean addRunningVM(VM vm, Node node) {
-        throw new UnsupportedOperationException();
+    public boolean addRunningVM(VM vm, Node n) {
+        return !containsElsewhere(vm) && scope.contains(n) && parent.addRunningVM(vm, n);
     }
 
     @Override
-    public boolean addSleepingVM(VM vm, Node node) {
-        throw new UnsupportedOperationException();
+    public boolean addSleepingVM(VM vm, Node n) {
+        return !containsElsewhere(vm) && scope.contains(n) && parent.addSleepingVM(vm, n);
     }
 
     @Override
-    public void addReadyVM(VM vm) {
-        throw new UnsupportedOperationException();
+    public boolean addReadyVM(VM vm) {
+        if (!containsElsewhere(vm)) {
+            ready.add(vm);
+            parent.addReadyVM(vm);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -87,28 +101,22 @@ public class SubMapping implements Mapping {
 
     @Override
     public Set<Node> getOnlineNodes() {
-        if (myOnlines == null) {
-            myOnlines = onlyMyNodes(parent.getOnlineNodes());
-        }
-        return myOnlines;
+        return onlyMyNodes(parent.getOnlineNodes());
     }
 
     @Override
-    public void addOnlineNode(Node node) {
-        throw new UnsupportedOperationException();
+    public boolean addOnlineNode(Node n) {
+        return !containsElsewhere(n) && parent.addOnlineNode(n);
     }
 
     @Override
-    public boolean addOfflineNode(Node node) {
-        throw new UnsupportedOperationException();
+    public boolean addOfflineNode(Node n) {
+        return !containsElsewhere(n) && parent.addOfflineNode(n);
     }
 
     @Override
     public Set<Node> getOfflineNodes() {
-        if (myOfflines == null) {
-            myOfflines = onlyMyNodes(parent.getOfflineNodes());
-        }
-        return myOfflines;
+        return onlyMyNodes(parent.getOfflineNodes());
     }
 
     private Set<Node> onlyMyNodes(Set<Node> ns) {
@@ -123,21 +131,12 @@ public class SubMapping implements Mapping {
 
     @Override
     public Set<VM> getRunningVMs() {
-        if (myRunnings == null) {
-            myRunnings = parent.getRunningVMs(scope);
-        }
-        return myRunnings;
+        return parent.getRunningVMs(scope);
     }
 
     @Override
     public Set<VM> getSleepingVMs() {
-        if (mySleepings == null) {
-            mySleepings = new THashSet<>();
-            for (Node n : scope) {
-                mySleepings.addAll(parent.getSleepingVMs(n));
-            }
-        }
-        return mySleepings;
+        return parent.getSleepingVMs(scope);
     }
 
     @Override
@@ -158,7 +157,7 @@ public class SubMapping implements Mapping {
 
     @Override
     public Set<VM> getReadyVMs() {
-        return parent.getReadyVMs();
+        return ready;
     }
 
     private Set<VM> all = null;
@@ -168,8 +167,9 @@ public class SubMapping implements Mapping {
         if (all == null) {
             all = new THashSet<>();
             for (Node n : scope) {
-                all.addAll(getRunningVMs(n));
-                all.addAll(getSleepingVMs(n));
+                all.addAll(parent.getRunningVMs(n));
+                all.addAll(parent.getSleepingVMs(n));
+                all.addAll(ready);
             }
         }
         return all;
@@ -223,17 +223,29 @@ public class SubMapping implements Mapping {
                 c.addOfflineNode(n);
             }
         }
+        for (VM v : ready) {
+            c.addReadyVM(v);
+        }
         return c;
     }
 
     @Override
     public boolean contains(VM vm) {
-        throw new UnsupportedOperationException();
+        return ready.contains(vm) || scope.contains(parent.getVMLocation(vm));
+    }
+
+    private boolean containsElsewhere(VM vm) {
+        //In parent, not in my (node || ready) scope
+        return parent.contains(vm) && !ready.contains(vm) && !scope.contains(parent.getVMLocation(vm));
+    }
+
+    private boolean containsElsewhere(Node n) {
+        return parent.contains(n) && !contains(n);
     }
 
     @Override
-    public boolean contains(Node node) {
-        throw new UnsupportedOperationException();
+    public boolean contains(Node n) {
+        return scope.contains(n) && (parent.isOnline(n) || parent.isOffline(n));
     }
 
     @Override
@@ -275,28 +287,22 @@ public class SubMapping implements Mapping {
 
     @Override
     public boolean isSleeping(VM v) {
-        throw new UnsupportedOperationException();
+        return scope.contains(parent.getVMLocation(v)) && parent.isSleeping(v);
     }
 
     @Override
     public boolean isReady(VM v) {
-        throw new UnsupportedOperationException();
+        return ready.contains(v);
     }
 
     @Override
     public boolean isOnline(Node n) {
-        if (scope.contains(n)) {
-            return parent.isOnline(n);
-        }
-        return false;
+        return scope.contains(n) && parent.isOnline(n);
     }
 
     @Override
     public boolean isOffline(Node n) {
-        if (scope.contains(n)) {
-            return parent.isOffline(n);
-        }
-        return false;
+        return scope.contains(n) && parent.isOffline(n);
     }
 
     @Override
@@ -308,6 +314,45 @@ public class SubMapping implements Mapping {
             }
         }
         return res;
+    }
 
+    /**
+     * Get the parent mapping.
+     *
+     * @return a non-null mapping
+     */
+    public Mapping getParent() {
+        return parent;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder buf = new StringBuilder();
+
+        for (Node n : scope) {
+            if (parent.isOnline(n)) {
+                buf.append(n);
+                buf.append(':');
+                if (this.getRunningVMs(n).isEmpty() && this.getSleepingVMs(n).isEmpty()) {
+                    buf.append(" - ");
+                }
+                for (VM vm : this.getRunningVMs(n)) {
+                    buf.append(' ').append(vm);
+                }
+                for (VM vm : this.getSleepingVMs(n)) {
+                    buf.append(" (").append(vm).append(')');
+                }
+                buf.append('\n');
+            } else if (parent.isOffline(n)) {
+                buf.append('(').append(n).append(")\n");
+            }
+        }
+        buf.append("READY");
+
+        for (VM vm : ready) {
+            buf.append(' ').append(vm);
+        }
+
+        return buf.append('\n').toString();
     }
 }

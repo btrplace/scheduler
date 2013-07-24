@@ -19,6 +19,7 @@ package btrplace.solver.choco.runner.staticPartitioning;
 
 import btrplace.model.*;
 import btrplace.model.constraint.MinMTTR;
+import btrplace.model.constraint.Running;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
@@ -82,7 +83,30 @@ public class FixedSizePartitioningTest {
             }
             Assert.assertTrue(partitions.get(0).getModel().contains(new VM(i)));
             Assert.assertTrue(partitions.get(1).getModel().contains(new VM(i)));
+        }
+    }
 
+    @Test
+    public void testSplitVMsToLaunch() throws SolverException {
+        FixedSizePartitioning f = new FixedSizePartitioning(5);
+        Model mo = new DefaultModel();
+        for (int i = 0; i < 20; i++) {
+            Node n = mo.newNode();
+            mo.getMapping().addOnlineNode(n);
+            VM v = mo.newVM();
+            mo.getMapping().addRunningVM(v, n); //1 VM per node is already running
+        }
+        //30 VMs to launch
+        for (int i = 0; i < 30; i++) {
+            VM v = mo.newVM();
+            mo.getMapping().addReadyVM(v);
+        }
+        Instance origin = new Instance(mo, new MinMTTR());
+        origin.getConstraints().add(new Running(mo.getMapping().getAllVMs()));
+        List<Instance> subs = f.split(new DefaultChocoReconfigurationAlgorithParams(), origin);
+        for (Instance i : subs) {
+            System.err.println(i.getModel().getMapping());
+            System.err.println("--");
         }
     }
 

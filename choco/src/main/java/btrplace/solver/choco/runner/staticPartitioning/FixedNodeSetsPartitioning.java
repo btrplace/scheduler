@@ -118,6 +118,19 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
         TIntIntHashMap nodePosition = new TIntIntHashMap(nbNodes);
 
         int partNumber = 0;
+
+        List<VM> toLaunch = new ArrayList<>();
+        for (SatConstraint cstr : i.getConstraints()) {
+            //Extract the VMs to launch
+            if (cstr instanceof Running) {
+                for (VM v : cstr.getInvolvedVMs()) {
+                    if (i.getModel().getMapping().isReady(v)) {
+                        toLaunch.add(v);
+                    }
+                }
+            }
+        }
+
         for (Collection<Node> s : partitions) {
             SubModel partModel = new SubModel(mo, eb, s);
 
@@ -131,19 +144,12 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
             }
             partNumber++;
         }
-        //Extract the VMs to launch
-        List<VM> toLaunch = new ArrayList<>();
+
+        //Split the constraints
         for (SatConstraint cstr : i.getConstraints()) {
             cstrMapper.split(cstr, i, parts, vmPosition, nodePosition);
-            if (cstr instanceof Running) {
-                for (VM v : cstr.getInvolvedVMs()) {
-                    if (i.getModel().getMapping().isReady(v)) {
-                        toLaunch.add(v);
-                    }
-                }
-
-            }
         }
+
         //Round-robin for the VMs to launch
         int p = 0;
         for (VM v : toLaunch) {
