@@ -272,6 +272,7 @@ public class DefaultMapping implements Mapping, Cloneable {
         } else if (st.get(vm.id()) == READY_STATE) {
             nbVMs--;
             vmReady.remove(vm);
+            st.remove(vm.id());
             return true;
         }
         return false;

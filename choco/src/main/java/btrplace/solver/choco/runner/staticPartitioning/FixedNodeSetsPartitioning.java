@@ -119,20 +119,20 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
 
         int partNumber = 0;
 
-        List<VM> toLaunch = new ArrayList<>();
+        Set<VM> toLaunch = new THashSet<>();
         for (SatConstraint cstr : i.getConstraints()) {
             //Extract the VMs to launch
             if (cstr instanceof Running) {
                 for (VM v : cstr.getInvolvedVMs()) {
                     if (i.getModel().getMapping().isReady(v)) {
+                        i.getModel().getMapping().remove(v);
                         toLaunch.add(v);
                     }
                 }
             }
         }
-
         for (Collection<Node> s : partitions) {
-            SubModel partModel = new SubModel(mo, eb, s);
+            SubModel partModel = new SubModel(mo, eb, s, new HashSet<VM>(toLaunch.size() / partitions.size()));
 
             parts.add(new Instance(partModel, new THashSet<SatConstraint>(), i.getOptimizationConstraint()));
 
@@ -150,10 +150,14 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
             cstrMapper.split(cstr, i, parts, vmPosition, nodePosition);
         }
 
-        //Round-robin for the VMs to launch
+        //Round-robin placement for the VMs to launch
         int p = 0;
         for (VM v : toLaunch) {
-            parts.get(p++ % parts.size()).getModel().getMapping().addReadyVM(v);
+
+            if (!parts.get(p).getModel().getMapping().addReadyVM(v)) {
+                throw new SolverException(parts.get(p).getModel(), "Unable to dispatch the VM to launch '" + v + "'");
+            }
+            p = ((p + 1) % parts.size());
         }
         return parts;
     }

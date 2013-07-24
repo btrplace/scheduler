@@ -91,7 +91,11 @@ public class SubMapping implements Mapping {
 
     @Override
     public boolean remove(VM vm) {
-        throw new UnsupportedOperationException();
+        if (contains(vm)) {
+            ready.remove(vm);
+            return parent.remove(vm);
+        }
+        return false;
     }
 
     @Override
@@ -277,6 +281,9 @@ public class SubMapping implements Mapping {
             for (VM v : parent.getSleepingVMs(n)) {
                 index.put(v.id(), p);
             }
+        }
+        for (VM v : ready) {
+            index.put(v.id(), p);
         }
     }
 

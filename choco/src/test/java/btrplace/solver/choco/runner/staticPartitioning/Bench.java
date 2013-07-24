@@ -124,7 +124,6 @@ public class Bench {
         return splits;
     }
 
-    //@Test(dataProvider = "getInputs")
     public static void benchHA(int nbSamples, Integer partSize, Integer ratio, Integer nbParts) {
         Model mo = new DefaultModel();
         Instance inst = new Instance(mo, new MinMTTR());

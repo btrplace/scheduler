@@ -21,6 +21,8 @@ import btrplace.model.*;
 import btrplace.model.view.ModelView;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Define a model that is a sub-model of a bigger one.
@@ -54,10 +56,14 @@ public class SubModel implements Model {
      * @param scope  the node to restrict the model on.
      */
     public SubModel(Model parent, ElementBuilder eb, Collection<Node> scope) {
-        this.scope = scope;
+        this(parent, eb, scope, Collections.<VM>emptySet());
+    }
+
+    public SubModel(Model parent, ElementBuilder eb, Collection<Node> nodeScope, Set<VM> readyVMScope) {
+        this.scope = nodeScope;
         this.parent = parent;
         this.eb = eb;
-        sm = new SubMapping(parent.getMapping(), scope);
+        sm = new SubMapping(parent.getMapping(), scope, readyVMScope);
     }
 
     /**

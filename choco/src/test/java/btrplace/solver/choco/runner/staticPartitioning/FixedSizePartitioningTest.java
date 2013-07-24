@@ -108,6 +108,7 @@ public class FixedSizePartitioningTest {
             System.err.println(i.getModel().getMapping());
             System.err.println("--");
         }
+        Assert.fail();
     }
 
     @Test
