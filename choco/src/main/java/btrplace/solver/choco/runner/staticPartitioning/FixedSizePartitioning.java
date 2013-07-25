@@ -26,9 +26,8 @@ import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
 import java.util.*;
 
 /**
- * A partitioning algorithm that create partitions having a fixed number of nodes.
- * VMs to run are distributed among the partitions.
- * <p/>
+ * An extension of {@link FixedNodeSetsPartitioning} where
+ * the partitions of nodes have a given maximum size.
  *
  * @author Fabien Hermenier
  */

@@ -36,11 +36,14 @@ import java.util.List;
 import java.util.concurrent.*;
 
 /**
- * An abstract solver that decomposes an instance into multiple disjoint models.
- * The method to split the instances must be developed. The computed partitions will
- * be solved in parallel with a controlled amount of simultaneous workers.
- * <p/>
- * By default, the number of workers equals the number of available cores.
+ * An abstract instance solver that relies on a static decomposition
+ * of the instance and a parallel resolution of the sub-instances.
+ * The reconfiguration plan is composed by all the sub reconfiguration plans.
+ * Each sub-instance must then have a solution.
+ *
+ *
+ * The solving process relies on a master/worker paradigm with a number
+ * of workers equals to the number of available cores by default.
  *
  * @author Fabien Hermenier
  */
