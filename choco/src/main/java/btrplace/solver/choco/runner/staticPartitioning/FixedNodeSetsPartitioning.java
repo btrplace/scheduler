@@ -25,6 +25,7 @@ import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
 import btrplace.solver.choco.runner.staticPartitioning.splitter.ConstraintSplitterMapper;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.set.hash.THashSet;
+import gnu.trove.set.hash.TIntHashSet;
 
 import java.util.*;
 
@@ -167,13 +168,12 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
     }
 
     private static boolean isDisjoint(Collection<Collection<Node>> p) {
-        int cnt = 0;
-        Set<Node> all = new HashSet<>();
+        TIntHashSet all = new TIntHashSet();
         for (Collection<Node> s : p) {
-            cnt += s.size();
-            all.addAll(s);
-            if (cnt != all.size()) {
-                return false;
+            for (Node n : s) {
+                if (!all.add(n.id())) {
+                    return false;
+                }
             }
         }
         return true;

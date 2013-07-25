@@ -23,7 +23,6 @@ import btrplace.model.constraint.Running;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithmParams;
 import org.testng.Assert;
@@ -103,9 +102,9 @@ public class FixedNodeSetsPartitioningTest {
         Assert.assertEquals(allReady.size(), 30);
 
         //Quick solve
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.setInstanceSolver(f);
-        ReconfigurationPlan plan = cra.solve(origin.getModel(), origin.getConstraints(), origin.getOptimizationConstraint());
+        ReconfigurationPlan plan = cra.solve(origin);
         Assert.assertEquals(plan.getSize(), 30); //all the VMs to launch have been booted
         System.out.println(cra.getStatistics());
         System.out.flush();
