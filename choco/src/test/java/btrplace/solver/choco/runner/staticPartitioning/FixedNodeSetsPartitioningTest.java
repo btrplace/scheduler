@@ -20,6 +20,7 @@ package btrplace.solver.choco.runner.staticPartitioning;
 import btrplace.model.*;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.Running;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
@@ -52,9 +53,7 @@ public class FixedNodeSetsPartitioningTest {
         return partOfNodes;
     }
 
-    @Test
-    public void testSplit() throws SolverException {
-
+    private Instance makeInstance() {
         Model mo = new DefaultModel();
         for (int i = 0; i < 20; i++) {
             Node n = mo.newNode();
@@ -67,13 +66,34 @@ public class FixedNodeSetsPartitioningTest {
             VM v = mo.newVM();
             mo.getMapping().addReadyVM(v);
         }
-        Instance origin = new Instance(mo, new MinMTTR());
+        return new Instance(mo, Collections.<SatConstraint>singleton(new Running(mo.getMapping().getAllVMs())), new MinMTTR());
+    }
 
-        List<Collection<Node>> parts = splitIn(mo.getMapping().getAllNodes(), 3);
+    @Test
+    public void testInstantiation() throws SolverException {
+        Instance origin = makeInstance();
+
+        List<Collection<Node>> parts = splitIn(origin.getModel().getMapping().getAllNodes(), 3);
+        FixedNodeSetsPartitioning f = new FixedNodeSetsPartitioning(parts);
+        Assert.assertEquals(f.getPartitions(), parts);
+        parts = splitIn(origin.getModel().getMapping().getAllNodes(), 5);
+        Assert.assertTrue(f.setPartitions(parts));
+        Assert.assertEquals(f.getPartitions(), parts);
+
+        //Make the set not disjoint
+        parts.get(1).addAll(parts.get(0));
+        Assert.assertFalse(f.setPartitions(parts));
+    }
+
+    @Test
+    public void testSplit() throws SolverException {
+
+        Instance origin = makeInstance();
+
+        List<Collection<Node>> parts = splitIn(origin.getModel().getMapping().getAllNodes(), 3);
         FixedNodeSetsPartitioning f = new FixedNodeSetsPartitioning(parts);
         f.setWorkersCount(3);
 
-        origin.getConstraints().add(new Running(mo.getMapping().getAllVMs()));
         List<Instance> subs = f.split(new DefaultChocoReconfigurationAlgorithmParams(), origin);
         //Check disjoint set of ready VMs
         Set<VM> allReady = new HashSet<>();
