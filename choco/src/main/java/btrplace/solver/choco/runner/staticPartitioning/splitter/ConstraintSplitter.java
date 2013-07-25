@@ -44,7 +44,7 @@ public interface ConstraintSplitter<C extends Constraint> {
 
     /**
      * Ensure a given constraint fit into a single partition.
-     * If necessary, the constraint may have be splitted.
+     * If necessary, the constraint may have be split.
      * <b>this call inserts the constrain (or its subdivisions) inside their respective instances</b>
      *
      * @param cstr         the model constraint

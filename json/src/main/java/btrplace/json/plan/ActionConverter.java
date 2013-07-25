@@ -412,7 +412,7 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     }
 
     @Override
-    public List<Action> listFromJSON(Reader r) throws IOException, JSONConverterException {
+    public List<Action> listFromJSON(Reader r) throws JSONConverterException {
         try {
             JSONParser p = new JSONParser(JSONParser.MODE_RFC4627);
             Object o = p.parse(r);

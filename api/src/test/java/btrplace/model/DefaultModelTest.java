@@ -21,8 +21,7 @@ import btrplace.model.view.ModelView;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link btrplace.model.DefaultModel}.
@@ -150,6 +149,27 @@ public class DefaultModelTest {
         Assert.assertEquals(i.getAttributes(), attrs);
     }
 
+    @Test
+    public void testElementCreation() {
+        ElementBuilder eb = mock(ElementBuilder.class);
+        Model mo = new DefaultModel(eb);
+        mo.newVM();
+        verify(eb).newVM();
+        mo.newVM(5);
+        verify(eb).newVM(5);
+
+        mo.newNode();
+        verify(eb).newNode();
+        mo.newNode(5);
+        verify(eb).newNode(5);
+
+        mo.contains(new VM(1));
+        verify(eb).contains(new VM(1));
+
+        mo.contains(new Node(7));
+        verify(eb).contains(new Node(7));
+
+    }
     /*@Test
     public void testBig() {
         int nbNodes = 1000000;

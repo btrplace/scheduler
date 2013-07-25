@@ -31,7 +31,7 @@ import java.util.List;
  * Splitter for {@link Killed} constraints.
  * <p/>
  * When the constraint focuses VMs among different partitions,
- * the constraint is splitted.
+ * the constraint is split.
  * <p/>
  * This operation is conservative wrt. the constraint semantic.
  *
@@ -51,7 +51,7 @@ public class KilledSplitter implements ConstraintSplitter<Killed> {
                     @Override
                     public boolean extract(SplittableIndex<VM> index, int idx, int from, int to) {
                         if (to != from) {
-                            partitions.get(idx).getConstraints().add(new Killed(new IndexEntry<VM>(index, idx, from, to)));
+                            partitions.get(idx).getConstraints().add(new Killed(new IndexEntry<>(index, idx, from, to)));
                         }
                         return true;
                     }

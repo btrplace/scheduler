@@ -119,18 +119,8 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
 
         int partNumber = 0;
 
-        Set<VM> toLaunch = new THashSet<>();
-        for (SatConstraint cstr : i.getConstraints()) {
-            //Extract the VMs to launch
-            if (cstr instanceof Running) {
-                for (VM v : cstr.getInvolvedVMs()) {
-                    if (i.getModel().getMapping().isReady(v)) {
-                        i.getModel().getMapping().remove(v);
-                        toLaunch.add(v);
-                    }
-                }
-            }
-        }
+        Set<VM> toLaunch = getVMsToLaunch(i);
+
         for (Collection<Node> s : partitions) {
             SubModel partModel = new SubModel(mo, eb, s, new HashSet<VM>(toLaunch.size() / partitions.size()));
 
@@ -148,7 +138,6 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
         //Round-robin placement for the VMs to launch
         int p = 0;
         for (VM v : toLaunch) {
-
             if (!parts.get(p).getModel().getMapping().addReadyVM(v)) {
                 throw new SolverException(parts.get(p).getModel(), "Unable to dispatch the VM to launch '" + v + "'");
             }
@@ -163,6 +152,23 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
 
 
         return parts;
+    }
+
+    private Set<VM> getVMsToLaunch(Instance i) {
+        Mapping m = i.getModel().getMapping();
+        Set<VM> toLaunch = new THashSet<>();
+        for (SatConstraint cstr : i.getConstraints()) {
+            //Extract the VMs to launch
+            if (cstr instanceof Running) {
+                for (VM v : cstr.getInvolvedVMs()) {
+                    if (m.isReady(v)) {
+                        m.remove(v);
+                        toLaunch.add(v);
+                    }
+                }
+            }
+        }
+        return toLaunch;
     }
 
     private static boolean isDisjoint(Collection<Collection<Node>> p) {

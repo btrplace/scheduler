@@ -21,7 +21,10 @@ import btrplace.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 /**
  * Unit tests for {@link ShareableResource}.
@@ -57,22 +60,35 @@ public class ShareableResourceTest {
         rc.setConsumption(vms.get(0), 3);
         Assert.assertTrue(rc.consumptionDefined(vms.get(0)));
         Assert.assertEquals(rc.getConsumption(vms.get(0)), 3);
+
+        Assert.assertFalse(rc.capacityDefined(nodes.get(0)));
+        Assert.assertEquals(rc.getCapacity(nodes.get(0)), rc.getDefaultCapacity());
+
+        rc.setCapacity(nodes.get(0), 3);
+        Assert.assertTrue(rc.capacityDefined(nodes.get(0)));
+        Assert.assertEquals(rc.getCapacity(nodes.get(0)), 3);
+
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
     public void testGets() {
-        Model mo = new DefaultModel();
         ShareableResource rc = new ShareableResource("foo");
-        List<Node> ids = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
-            Node id = mo.newNode();
-            ids.add(id);
-            rc.setCapacity(id, i);
+            rc.setCapacity(nodes.get(i), i);
         }
-        List<Integer> values = rc.getCapacities(ids);
+        List<Integer> values = rc.getCapacities(nodes);
         for (int i = 0; i < 10; i++) {
             Assert.assertEquals(values.get(i), (Integer) i);
         }
+
+        for (int i = 0; i < 10; i++) {
+            rc.setConsumption(vms.get(i), i);
+        }
+        values = rc.getConsumptions(vms);
+        for (int i = 0; i < 10; i++) {
+            Assert.assertEquals(values.get(i), (Integer) i);
+        }
+
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
@@ -118,6 +134,11 @@ public class ShareableResourceTest {
         x.clear();
         x.add(vms.get(2));
         Assert.assertEquals(0, rc.sumConsumptions(x, false));
+
+        rc.setCapacity(nodes.get(0), 3);
+        rc.setCapacity(nodes.get(1), 6);
+        Assert.assertEquals(9, rc.sumCapacities(rc.getDefinedNodes(), false));
+
     }
 
     @Test(dependsOnMethods = {"testInstantiation", "testDefinition"})
@@ -151,18 +172,25 @@ public class ShareableResourceTest {
         ShareableResource rc1 = new ShareableResource("foo", -1, -1);
         rc1.setConsumption(vms.get(0), 3);
         rc1.setConsumption(vms.get(1), 5);
+        rc1.setCapacity(nodes.get(0), 10);
+        rc1.setCapacity(nodes.get(1), 20);
         ShareableResource rc2 = rc1.clone();
         Assert.assertEquals(rc1, rc2);
         Assert.assertEquals(rc1.hashCode(), rc2.hashCode());
 
         rc1.setConsumption(vms.get(0), -5);
         Assert.assertNotEquals(rc1, rc2);
-
+        rc1.unset(vms.get(0));
+        Assert.assertNotEquals(rc1, rc2);
         rc1.setConsumption(vms.get(0), 3);
         Assert.assertEquals(rc1, rc2);
 
-        rc2.unset(vms.get(1));
+        rc1.setCapacity(nodes.get(0), -5);
         Assert.assertNotEquals(rc1, rc2);
+        rc1.unset(nodes.get(0));
+        Assert.assertNotEquals(rc1, rc2);
+        rc1.setCapacity(nodes.get(0), 10);
+        Assert.assertEquals(rc1, rc2);
     }
 
     @Test

@@ -71,14 +71,12 @@ public class DefaultMapping implements Mapping, Cloneable {
      */
     private TIntObjectHashMap<Set<VM>>[] host;
 
-    private int nbNodes;
-
-    private int nbVMs;
-
     /**
      * Create a new mapping.
      */
+    @SuppressWarnings("unchecked")
     public DefaultMapping() {
+
         nodeState = new Set[2];
         nodeState[ONLINE_STATE] = new THashSet<>();
         nodeState[OFFLINE_STATE] = new THashSet<>();
@@ -92,8 +90,6 @@ public class DefaultMapping implements Mapping, Cloneable {
         host[SLEEPING_STATE] = new TIntObjectHashMap<>();
 
         st = new TIntIntHashMap(100, 0.5f, -1, -1);
-        nbNodes = 0;
-        nbVMs = 0;
     }
 
     @Override
@@ -128,21 +124,7 @@ public class DefaultMapping implements Mapping, Cloneable {
      */
     public DefaultMapping(Mapping m) {
         this();
-        for (Node off : m.getOfflineNodes()) {
-            addOfflineNode(off);
-        }
-        for (VM r : m.getReadyVMs()) {
-            addReadyVM(r);
-        }
-        for (Node on : m.getOnlineNodes()) {
-            addOnlineNode(on);
-            for (VM r : m.getRunningVMs(on)) {
-                addRunningVM(r, on);
-            }
-            for (VM s : m.getSleepingVMs(on)) {
-                addSleepingVM(s, on);
-            }
-        }
+        MappingUtils.fill(m, this);
     }
 
     @Override
@@ -180,7 +162,6 @@ public class DefaultMapping implements Mapping, Cloneable {
                 st.put(vmId, RUNNING_STATE);
                 break;
             default:
-                nbVMs++;
                 place.put(vmId, n);
                 on.add(vm);
                 st.put(vmId, RUNNING_STATE);
@@ -228,7 +209,6 @@ public class DefaultMapping implements Mapping, Cloneable {
                 place.put(vmId, n);
                 host[SLEEPING_STATE].get(nId).add(vm);
                 st.put(vmId, SLEEPING_STATE);
-                nbVMs++;
         }
         st.put(vm.id(), SLEEPING_STATE);
         return true;
@@ -247,8 +227,6 @@ public class DefaultMapping implements Mapping, Cloneable {
                 //If was sleeping, sync the state
                 host[SLEEPING_STATE].get(n.id()).remove(vm);
                 break;
-            default:
-                nbVMs++;
         }
 
         st.put(vm.id(), READY_STATE);
@@ -259,7 +237,6 @@ public class DefaultMapping implements Mapping, Cloneable {
     @Override
     public boolean remove(VM vm) {
         if (place.containsKey(vm.id())) {
-            nbVMs--;
             Node n = this.place.remove(vm.id());
             //The VM exists and is already placed
             if (st.get(vm.id()) == RUNNING_STATE) {
@@ -270,7 +247,7 @@ public class DefaultMapping implements Mapping, Cloneable {
             st.remove(vm.id());
             return true;
         } else if (st.get(vm.id()) == READY_STATE) {
-            nbVMs--;
+
             vmReady.remove(vm);
             st.remove(vm.id());
             return true;
@@ -299,12 +276,13 @@ public class DefaultMapping implements Mapping, Cloneable {
             }
             return nodeState[ONLINE_STATE].remove(n);
         }
+
         return nodeState[OFFLINE_STATE].remove(n);
     }
 
     @Override
     public boolean addOnlineNode(Node n) {
-        nodeState[OFFLINE_STATE].remove(n);
+        boolean wasOffline = nodeState[OFFLINE_STATE].remove(n);
         nodeState[ONLINE_STATE].add(n);
         return true;
     }
@@ -541,5 +519,15 @@ public class DefaultMapping implements Mapping, Cloneable {
         }
 
         return buf.append('\n').toString();
+    }
+
+    @Override
+    public int getNbNodes() {
+        return nodeState[ONLINE_STATE].size() + nodeState[OFFLINE_STATE].size();
+    }
+
+    @Override
+    public int getNbVMs() {
+        return st.size();
     }
 }

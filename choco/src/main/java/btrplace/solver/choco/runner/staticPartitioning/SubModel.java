@@ -49,7 +49,7 @@ public class SubModel implements Model {
     private ElementBuilder eb;
 
     /**
-     * Make a new submodel.
+     * Make a new sub-model with an empty scope for ready VMs.
      *
      * @param parent the parent model
      * @param eb     the element builder to rely on
@@ -59,11 +59,19 @@ public class SubModel implements Model {
         this(parent, eb, scope, Collections.<VM>emptySet());
     }
 
-    public SubModel(Model parent, ElementBuilder eb, Collection<Node> nodeScope, Set<VM> readyVMScope) {
+    /**
+     * Make a new sub-model.
+     *
+     * @param parent    the parent model
+     * @param eb        the element builder to rely on
+     * @param nodeScope the node to restrict the model on.
+     * @param vmReady   the scope of VMs that are ready in the parent model.
+     */
+    public SubModel(Model parent, ElementBuilder eb, Collection<Node> nodeScope, Set<VM> vmReady) {
         this.scope = nodeScope;
         this.parent = parent;
         this.eb = eb;
-        sm = new SubMapping(parent.getMapping(), scope, readyVMScope);
+        sm = new SubMapping(parent.getMapping(), scope, vmReady);
     }
 
     /**

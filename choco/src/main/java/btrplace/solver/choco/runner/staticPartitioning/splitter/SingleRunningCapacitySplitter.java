@@ -31,7 +31,7 @@ import java.util.List;
  * Splitter for {@link btrplace.model.constraint.SingleRunningCapacity} constraints.
  * <p/>
  * When the constraint focuses nodes among different partitions,
- * the constraint is splitted.
+ * the constraint is split.
  * <p/>
  * This operation is conservative wrt. the constraint semantic.
  *
@@ -53,7 +53,7 @@ public class SingleRunningCapacitySplitter implements ConstraintSplitter<SingleR
                     @Override
                     public boolean extract(SplittableIndex<Node> index, int idx, int from, int to) {
                         if (to != from) {
-                            partitions.get(idx).getConstraints().add(new SingleRunningCapacity(new IndexEntry<Node>(index, idx, from, to), qty, c));
+                            partitions.get(idx).getConstraints().add(new SingleRunningCapacity(new IndexEntry<>(index, idx, from, to), qty, c));
                         }
                         return true;
                     }

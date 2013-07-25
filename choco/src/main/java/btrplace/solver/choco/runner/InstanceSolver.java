@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 public interface InstanceSolver {
 
-    Logger logger = LoggerFactory.getLogger("StaticPartitioning");
+    Logger LOGGER = LoggerFactory.getLogger("StaticPartitioning");
 
     /**
      * Solve an instance.

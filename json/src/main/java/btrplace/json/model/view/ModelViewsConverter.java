@@ -150,7 +150,7 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
     }
 
     @Override
-    public List<ModelView> listFromJSON(Reader r) throws IOException, JSONConverterException {
+    public List<ModelView> listFromJSON(Reader r) throws JSONConverterException {
         try {
             JSONParser p = new JSONParser(JSONParser.MODE_RFC4627);
             Object o = p.parse(r);

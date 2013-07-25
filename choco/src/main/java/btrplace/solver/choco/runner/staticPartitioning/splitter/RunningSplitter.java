@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * Splitter for the {@link btrplace.model.constraint.Running} constraints.
  * When the constraint focuses VMs among different partitions,
- * the constraint is splitted.
+ * the constraint is split.
  * <p/>
  * The split process is conservative wrt. the constraint semantic.
  *
@@ -50,7 +50,7 @@ public class RunningSplitter implements ConstraintSplitter<Running> {
                     @Override
                     public boolean extract(SplittableIndex<VM> index, int idx, int from, int to) {
                         if (to != from) {
-                            partitions.get(idx).getConstraints().add(new Running(new IndexEntry<VM>(index, idx, from, to)));
+                            partitions.get(idx).getConstraints().add(new Running(new IndexEntry<>(index, idx, from, to)));
                         }
                         return true;
                     }

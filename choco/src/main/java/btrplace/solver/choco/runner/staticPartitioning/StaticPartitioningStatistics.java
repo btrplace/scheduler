@@ -132,7 +132,8 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
             return solutions;
         }
         for (SolvingStatistics st : partResults) {
-            if (st.getSolutions().isEmpty()) { //At least 1 partition does not have a result.
+            if (st.getSolutions().isEmpty()) {
+                //At least 1 partition does not have a result, so the problem is not totally solved
                 return solutions;
             } else {
                 SolutionStatistics first = st.getSolutions().get(0);

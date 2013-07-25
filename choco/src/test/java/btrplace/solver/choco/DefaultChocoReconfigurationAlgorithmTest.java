@@ -35,7 +35,10 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -125,7 +128,13 @@ public class DefaultChocoReconfigurationAlgorithmTest {
 
         ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>emptyList(), new Foo());
         Mapping res = p.getResult().getMapping();
-        Assert.assertEquals(MappingUtils.usedNodes(res, EnumSet.of(MappingUtils.State.Runnings)).size(), 1);
+        int nbRunning = 0;
+        for (Node n : res.getOnlineNodes()) {
+            if (!res.getRunningVMs(n).isEmpty()) {
+                nbRunning++;
+            }
+        }
+        Assert.assertEquals(nbRunning, 1);
         SolvingStatistics st = cra.getStatistics();
         Assert.assertEquals(st.getSolutions().size(), 10);
     }

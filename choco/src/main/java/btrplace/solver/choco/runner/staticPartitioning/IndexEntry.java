@@ -30,13 +30,13 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class IndexEntry<E> implements Set<E> {
+public class IndexEntry<E extends Element> implements Set<E> {
 
     private int from, to;
 
     private int curIdx;
 
-    private SplittableIndex index;
+    private SplittableIndex<E> index;
 
     /**
      * Make a new entry.
@@ -46,7 +46,7 @@ public class IndexEntry<E> implements Set<E> {
      * @param from  the lower bound in the backend array where elements start to have the given index key
      * @param to    the upper bound in the backend array where elements ends to have the given index key (exclusive)
      */
-    public IndexEntry(SplittableIndex index, int key, int from, int to) {
+    public IndexEntry(SplittableIndex<E> index, int key, int from, int to) {
         this.index = index;
         this.curIdx = key;
         this.from = from;
@@ -74,8 +74,8 @@ public class IndexEntry<E> implements Set<E> {
     }
 
     @Override
-    public Iterator iterator() {
-        return new IndexEntryIterator(index.getValues(), from, to);
+    public Iterator<E> iterator() {
+        return new IndexEntryIterator<>(index.getValues(), from, to);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class IndexEntry<E> implements Set<E> {
     }
 
     @Override
-    public boolean add(Object o) {
+    public boolean add(E o) {
         throw new UnsupportedOperationException();
     }
 

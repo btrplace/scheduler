@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * Splitter for {@link btrplace.model.constraint.Lonely} constraints.
  * When the constraint focuses VMs among different partitions,
- * the constraint is splitted.
+ * the constraint is split.
  * <p/>
  * This operation is conservative wrt. the constraint semantic.
  *
@@ -58,7 +58,7 @@ public class LonelySplitter implements ConstraintSplitter<Lonely> {
                     @Override
                     public boolean extract(SplittableIndex<VM> index, int idx, int from, int to) {
                         if (to != from) {
-                            partitions.get(idx).getConstraints().add(new Lonely(new IndexEntry<VM>(index, idx, from, to), c));
+                            partitions.get(idx).getConstraints().add(new Lonely(new IndexEntry<>(index, idx, from, to), c));
                         }
                         return true;
                     }

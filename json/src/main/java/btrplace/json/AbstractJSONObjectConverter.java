@@ -120,7 +120,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     }
 
     /**
-     * Convert a collecion nodes to an array of nodes identifiers.
+     * Convert a collection nodes to an array of nodes identifiers.
      *
      * @param s the VMs
      * @return a json formatted array of integers
@@ -303,7 +303,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     }
 
     @Override
-    public E fromJSON(Reader r) throws IOException, JSONConverterException {
+    public E fromJSON(Reader r) throws JSONConverterException {
         try {
             JSONParser p = new JSONParser(JSONParser.MODE_RFC4627);
             Object o = p.parse(r);

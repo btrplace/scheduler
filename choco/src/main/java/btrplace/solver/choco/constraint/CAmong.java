@@ -102,7 +102,7 @@ public class CAmong implements ChocoConstraint {
                 if (curGrp == -1) {
                     curGrp = g;
                 } else if (curGrp != g) {
-                    rp.getLogger().error("The VMs in '{}' are already spreaded over multiple group of nodes", cstr.getInvolvedVMs());
+                    rp.getLogger().error("The VMs in '{}' are already spread over multiple group of nodes", cstr.getInvolvedVMs());
                     return false;
                 }
             }

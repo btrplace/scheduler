@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * Splitter for {@link Spread} constraints.
  * When the constraint focuses VMs among different partitions,
- * the constraint is splitted.
+ * the constraint is split.
  * <p/>
  * This operation is conservative wrt. the constraint semantic.
  *
@@ -51,7 +51,7 @@ public class SpreadSplitter implements ConstraintSplitter<Spread> {
                     @Override
                     public boolean extract(SplittableIndex<VM> index, int idx, int from, int to) {
                         if (to - from >= 2) {
-                            partitions.get(idx).getConstraints().add(new Spread(new IndexEntry<VM>(index, idx, from, to), c));
+                            partitions.get(idx).getConstraints().add(new Spread(new IndexEntry<>(index, idx, from, to), c));
                         }
                         return true;
                     }

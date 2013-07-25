@@ -34,8 +34,8 @@ import java.util.List;
  * Splitter for {@link btrplace.model.constraint.Among} constraints.
  * <p/>
  * When the constraint focuses VMs among different partitions,
- * the constraint is splitted accordingly.
- * If the nodes groups are also splitted among different partitions,
+ * the constraint is split accordingly.
+ * If the nodes groups are also split among different partitions,
  * this leads to a un-solvable problem as it is not possible to
  * synchronize the sub-among constraints to make them choose the same nodes group.
  *
@@ -69,7 +69,6 @@ public class AmongSplitter implements ConstraintSplitter<Among> {
                                     subParams.add(s);
                                 }
                             }
-                            System.err.println(subParams);
                             partitions.get(idx).getConstraints().add(new Among(vms, subParams, c));
                         }
                         return true;

@@ -362,4 +362,14 @@ public class SubMapping implements Mapping {
 
         return buf.append('\n').toString();
     }
+
+    @Override
+    public int getNbNodes() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getNbVMs() {
+        throw new UnsupportedOperationException();
+    }
 }

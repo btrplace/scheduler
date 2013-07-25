@@ -106,7 +106,7 @@ public abstract class StaticPartitioning implements InstanceSolver {
             } catch (ExecutionException ignore) {
                 Throwable cause = ignore.getCause();
                 if (cause != null) {
-                    throw new SolverException(null, "", cause);
+                    throw new SolverException(null, "", ignore);
                 }
             } catch (InterruptedException e) {
                 throw new SolverException(orig.getModel(), e.getMessage(), e);
@@ -135,7 +135,7 @@ public abstract class StaticPartitioning implements InstanceSolver {
         for (InstanceResult result : results) {
             for (Action a : result.getPlan()) {
                 if (!plan.add(a)) {
-                    logger.error("Unable to add action {} while merging the results", a);
+                    LOGGER.error("Unable to add action {} while merging the results", a);
                 }
             }
             SolvingStatistics st = result.getStatistics();

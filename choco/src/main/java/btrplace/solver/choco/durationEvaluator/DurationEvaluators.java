@@ -37,7 +37,7 @@ import java.util.Map;
  */
 public class DurationEvaluators {
 
-    private Map<Class<? extends Action>, ActionDurationEvaluator> durations;
+    private Map<Class<? extends Action>, ActionDurationEvaluator<Element>> durations;
 
 
     /**
@@ -121,7 +121,7 @@ public class DurationEvaluators {
      * @return a positive number if the evaluation succeeded. A negative number otherwise
      */
     public int evaluate(Model mo, Class<? extends Action> a, Element e) throws SolverException {
-        ActionDurationEvaluator ev = durations.get(a);
+        ActionDurationEvaluator<Element> ev = durations.get(a);
         if (ev == null) {
             throw new SolverException(null, "Unable to estimate the action duration related to '" + e + "'");
         }

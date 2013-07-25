@@ -31,7 +31,7 @@ import java.util.Comparator;
  * Element sharing a key will be accessible through {@link IndexEntry}
  * that might be created from {@link #forEachIndexEntry(IndexEntryProcedure)}.
  * <p/>
- * This approach is useful when a set of elements must be splitted into
+ * This approach is useful when a set of elements must be split into
  * multiple subsets as the elements are available into an {@link IndexEntry}
  * without any data duplication.
  *

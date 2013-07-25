@@ -59,7 +59,7 @@ import java.util.*;
  */
 public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
-    private static final Logger logger = LoggerFactory.getLogger("ChocoRP");
+    private static final Logger LOGGER = LoggerFactory.getLogger("ChocoRP");
 
     private boolean useLabels = false;
 
@@ -338,7 +338,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                             + "The '" + in.getIdentifier() + "' implementation is already used");
                 }
             } else {
-                logger.debug("No implementation available for the view '{}'", rc.getIdentifier());
+                LOGGER.debug("No implementation available for the view '{}'", rc.getIdentifier());
             }
         }
     }
@@ -500,7 +500,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private boolean checkConsistency(ReconfigurationPlan p) {
         if (p.getDuration() != end.getVal()) {
-            logger.error("The plan effective duration ({}) and the computed duration ({}) mismatch", p.getDuration(), end.getVal());
+            LOGGER.error("The plan effective duration ({}) and the computed duration ({}) mismatch", p.getDuration(), end.getVal());
             return false;
         }
         return true;
@@ -632,7 +632,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public Logger getLogger() {
-        return logger;
+        return LOGGER;
     }
 
     @Override

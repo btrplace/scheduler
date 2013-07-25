@@ -33,7 +33,7 @@ import java.util.Set;
  * Splitter for {@link btrplace.model.constraint.Ban} constraints.
  * <p/>
  * When the constraint focuses VMs or nodes among different partitions,
- * the constraint is splitted accordingly.
+ * the constraint is split accordingly.
  *
  * @author Fabien Hermenier
  */

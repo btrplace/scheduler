@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * Splitter for the {@link btrplace.model.constraint.Sleeping} constraints.
  * When the constraint focuses VMs among different partitions,
- * the constraint is splitted.
+ * the constraint is split.
  * <p/>
  * This operation is conservative wrt. the constraint semantic.
  *
@@ -50,7 +50,7 @@ public class SleepingSplitter implements ConstraintSplitter<Sleeping> {
                     @Override
                     public boolean extract(SplittableIndex<VM> index, int idx, int from, int to) {
                         if (to != from) {
-                            partitions.get(idx).getConstraints().add(new Sleeping(new IndexEntry<VM>(index, idx, from, to)));
+                            partitions.get(idx).getConstraints().add(new Sleeping(new IndexEntry<>(index, idx, from, to)));
                         }
                         return true;
                     }

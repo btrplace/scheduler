@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * Splitter for {@link btrplace.model.constraint.Split} constraints.
  * When the constraint focuses VMs among different partitions,
- * the constraint is splitted.
+ * the constraint is split.
  * <p/>
  * This operation is conservative wrt. the constraint semantic.
  *

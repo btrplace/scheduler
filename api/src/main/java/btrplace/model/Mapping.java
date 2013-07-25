@@ -260,4 +260,18 @@ public interface Mapping extends Cloneable {
      * Remove all the VMs in the mapping
      */
     void clearAllVMs();
+
+    /**
+     * Get the number of nodes in the mapping
+     *
+     * @return a positive integer
+     */
+    int getNbNodes();
+
+    /**
+     * Get the number of VMs in the mapping.
+     *
+     * @return a positive integer
+     */
+    int getNbVMs();
 }

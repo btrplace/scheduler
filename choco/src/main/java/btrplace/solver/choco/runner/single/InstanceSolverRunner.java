@@ -129,16 +129,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         }
 
         //Make the optimization constraint
-        ChocoConstraintBuilder ccstrb = params.getConstraintMapper().getBuilder(obj.getClass());
-        if (ccstrb == null) {
-            throw new SolverException(origin, "Unable to map constraint '" + obj.getClass().getSimpleName() + "'");
-        }
-        ChocoConstraint cObj = ccstrb.build(obj);
-        if (cObj == null) {
-            throw new SolverException(origin, "Error while mapping the constraint '"
-                    + obj.getClass().getSimpleName() + "'");
-        }
-
+        ChocoConstraint cObj = buildOptConstraint();
 
         //Make the core-RP
         DefaultReconfigurationProblemBuilder rpb = new DefaultReconfigurationProblemBuilder(origin)
@@ -192,6 +183,22 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         }
         checkSatisfaction2(p, cstrs);
         return new InstanceResult(p, makeStatistics());
+    }
+
+    /**
+     * Make the optimization constraint
+     */
+    private ChocoConstraint buildOptConstraint() throws SolverException {
+        ChocoConstraintBuilder ccstrb = params.getConstraintMapper().getBuilder(obj.getClass());
+        if (ccstrb == null) {
+            throw new SolverException(origin, "Unable to map constraint '" + obj.getClass().getSimpleName() + "'");
+        }
+        ChocoConstraint cObj = ccstrb.build(obj);
+        if (cObj == null) {
+            throw new SolverException(origin, "Error while mapping the constraint '"
+                    + obj.getClass().getSimpleName() + "'");
+        }
+        return cObj;
     }
 
     private void stateVerbosity() {

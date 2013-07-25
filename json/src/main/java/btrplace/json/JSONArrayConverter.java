@@ -76,10 +76,9 @@ public interface JSONArrayConverter<E> {
      *
      * @param r the stream to read
      * @return the resulting collection
-     * @throws IOException            if an error occurred while reading the stream
      * @throws JSONConverterException if the stream cannot be parsed
      */
-    List<E> listFromJSON(Reader r) throws IOException, JSONConverterException;
+    List<E> listFromJSON(Reader r) throws JSONConverterException;
 
     /**
      * Serialize a collection to a string.
