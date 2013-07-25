@@ -30,7 +30,9 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Unit tests for {@link FixedSizePartitioning}.
@@ -89,6 +91,7 @@ public class FixedSizePartitioningTest {
     @Test
     public void testSplitVMsToLaunch() throws SolverException {
         FixedSizePartitioning f = new FixedSizePartitioning(5);
+        f.setWorkersCount(2);
         Model mo = new DefaultModel();
         for (int i = 0; i < 20; i++) {
             Node n = mo.newNode();
@@ -104,15 +107,25 @@ public class FixedSizePartitioningTest {
         Instance origin = new Instance(mo, new MinMTTR());
         origin.getConstraints().add(new Running(mo.getMapping().getAllVMs()));
         List<Instance> subs = f.split(new DefaultChocoReconfigurationAlgorithParams(), origin);
+        //Check disjoint set of ready VMs
+        Set<VM> allReady = new HashSet<>();
         for (Instance i : subs) {
-            System.err.println(i.getModel().getMapping());
-            System.err.println("--");
+            allReady.addAll(i.getModel().getMapping().getReadyVMs());
         }
-        Assert.fail();
+        Assert.assertEquals(allReady.size(), 30);
+
+        //Quick solve
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.setInstanceSolver(f);
+        ReconfigurationPlan plan = cra.solve(origin.getModel(), origin.getConstraints(), origin.getOptimizationConstraint());
+        Assert.assertEquals(plan.getSize(), 30); //all the VMs to launch have been booted
+        System.out.println(cra.getStatistics());
+        System.out.flush();
+
     }
 
     @Test
-    public void testParallelSolving() throws SolverException {
+    public void testParallelSolvingWoConstraints() throws SolverException {
         FixedSizePartitioning f = new FixedSizePartitioning(50);
         f.setWorkersCount(2);
         Model mo = new DefaultModel();

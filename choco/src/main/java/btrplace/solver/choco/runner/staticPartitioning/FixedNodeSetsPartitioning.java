@@ -145,11 +145,6 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
             partNumber++;
         }
 
-        //Split the constraints
-        for (SatConstraint cstr : i.getConstraints()) {
-            cstrMapper.split(cstr, i, parts, vmPosition, nodePosition);
-        }
-
         //Round-robin placement for the VMs to launch
         int p = 0;
         for (VM v : toLaunch) {
@@ -157,8 +152,16 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
             if (!parts.get(p).getModel().getMapping().addReadyVM(v)) {
                 throw new SolverException(parts.get(p).getModel(), "Unable to dispatch the VM to launch '" + v + "'");
             }
+            vmPosition.put(v.id(), p);
             p = ((p + 1) % parts.size());
         }
+
+        //Split the constraints
+        for (SatConstraint cstr : i.getConstraints()) {
+            cstrMapper.split(cstr, i, parts, vmPosition, nodePosition);
+        }
+
+
         return parts;
     }
 
