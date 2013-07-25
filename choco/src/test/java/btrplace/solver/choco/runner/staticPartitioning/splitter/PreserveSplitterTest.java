@@ -66,14 +66,14 @@ public class PreserveSplitterTest {
         //Only VMs in m0
         Preserve single = new Preserve(m0.getMapping().getAllVMs(), "foo", 3);
         Assert.assertTrue(splitter.split(single, null, instances, index, new TIntIntHashMap()));
-        Assert.assertTrue(instances.get(0).getConstraints().contains(single));
-        Assert.assertFalse(instances.get(1).getConstraints().contains(single));
+        Assert.assertTrue(instances.get(0).getSatConstraints().contains(single));
+        Assert.assertFalse(instances.get(1).getSatConstraints().contains(single));
 
         //All the VMs, test the split
         Preserve among = new Preserve(all, "foo", 2);
 
         Assert.assertTrue(splitter.split(among, null, instances, index, new TIntIntHashMap()));
-        Assert.assertTrue(instances.get(0).getConstraints().contains(new Preserve(m0.getMapping().getAllVMs(), "foo", 2)));
-        Assert.assertTrue(instances.get(1).getConstraints().contains(new Preserve(m1.getMapping().getAllVMs(), "foo", 2)));
+        Assert.assertTrue(instances.get(0).getSatConstraints().contains(new Preserve(m0.getMapping().getAllVMs(), "foo", 2)));
+        Assert.assertTrue(instances.get(1).getSatConstraints().contains(new Preserve(m1.getMapping().getAllVMs(), "foo", 2)));
     }
 }

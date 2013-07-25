@@ -67,14 +67,14 @@ public class ReadySplitterTest {
         //Only VMs in m0
         Ready single = new Ready(m0.getMapping().getAllVMs());
         Assert.assertTrue(splitter.split(single, null, instances, index, new TIntIntHashMap()));
-        Assert.assertTrue(instances.get(0).getConstraints().contains(single));
-        Assert.assertFalse(instances.get(1).getConstraints().contains(single));
+        Assert.assertTrue(instances.get(0).getSatConstraints().contains(single));
+        Assert.assertFalse(instances.get(1).getSatConstraints().contains(single));
 
         //All the VMs, test the split
         Ready among = new Ready(all);
 
         Assert.assertTrue(splitter.split(among, null, instances, index, new TIntIntHashMap()));
-        Assert.assertTrue(instances.get(0).getConstraints().contains(new Ready(m0.getMapping().getAllVMs())));
-        Assert.assertTrue(instances.get(1).getConstraints().contains(new Ready(m1.getMapping().getAllVMs())));
+        Assert.assertTrue(instances.get(0).getSatConstraints().contains(new Ready(m0.getMapping().getAllVMs())));
+        Assert.assertTrue(instances.get(1).getSatConstraints().contains(new Ready(m1.getMapping().getAllVMs())));
     }
 }

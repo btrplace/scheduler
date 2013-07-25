@@ -89,11 +89,11 @@ public class AmongSplitterTest {
         TIntIntHashMap vmIndex = SplittableIndexTest.makeVMIndex(instances);
         TIntIntHashMap nodeIndex = SplittableIndexTest.makeNodeIndex(instances);
         splitter.split(single, new Instance(mo, new MinMTTR()), instances, vmIndex, nodeIndex);
-        Among a = (Among) instances.get(0).getConstraints().iterator().next();
+        Among a = (Among) instances.get(0).getSatConstraints().iterator().next();
         Assert.assertEquals(a.getGroupsOfNodes().size(), 1);
         Assert.assertEquals(a.getInvolvedNodes(), Arrays.asList(n1, n2));
         for (Instance i : instances) {
-            System.out.println(i.getConstraints());
+            System.out.println(i.getSatConstraints());
         }
     }
 }

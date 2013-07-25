@@ -53,7 +53,7 @@ public class SingleRunningCapacitySplitter implements ConstraintSplitter<SingleR
                     @Override
                     public boolean extract(SplittableIndex<Node> index, int idx, int from, int to) {
                         if (to != from) {
-                            partitions.get(idx).getConstraints().add(new SingleRunningCapacity(new IndexEntry<>(index, idx, from, to), qty, c));
+                            partitions.get(idx).getSatConstraints().add(new SingleRunningCapacity(new IndexEntry<>(index, idx, from, to), qty, c));
                         }
                         return true;
                     }

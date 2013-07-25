@@ -55,7 +55,7 @@ public class FenceSplitter implements ConstraintSplitter<Fence> {
                             Set<VM> vms = new IndexEntry<>(index, idx, from, to);
                             Set<Node> ns = nodeIndex.makeIndexEntry(idx);
                             if (!ns.isEmpty()) {
-                                partitions.get(idx).getConstraints().add(new Fence(vms, ns));
+                                partitions.get(idx).getSatConstraints().add(new Fence(vms, ns));
                             } else {
                                 return false;
                             }

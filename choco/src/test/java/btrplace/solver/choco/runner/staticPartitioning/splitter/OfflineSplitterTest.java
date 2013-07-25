@@ -65,14 +65,14 @@ public class OfflineSplitterTest {
         //Only nodes in m0
         Offline oSimple = new Offline(m0.getMapping().getAllNodes());
         Assert.assertTrue(splitter.split(oSimple, null, instances, new TIntIntHashMap(), nodeIndex));
-        Assert.assertTrue(instances.get(0).getConstraints().contains(oSimple));
-        Assert.assertFalse(instances.get(1).getConstraints().contains(oSimple));
+        Assert.assertTrue(instances.get(0).getSatConstraints().contains(oSimple));
+        Assert.assertFalse(instances.get(1).getSatConstraints().contains(oSimple));
 
         //All the nodes, test the split
         Offline oAmong = new Offline(all);
 
         Assert.assertTrue(splitter.split(oAmong, null, instances, new TIntIntHashMap(), nodeIndex));
-        Assert.assertTrue(instances.get(0).getConstraints().contains(new Offline(m0.getMapping().getAllNodes())));
-        Assert.assertTrue(instances.get(1).getConstraints().contains(new Offline(m1.getMapping().getAllNodes())));
+        Assert.assertTrue(instances.get(0).getSatConstraints().contains(new Offline(m0.getMapping().getAllNodes())));
+        Assert.assertTrue(instances.get(1).getSatConstraints().contains(new Offline(m1.getMapping().getAllNodes())));
     }
 }

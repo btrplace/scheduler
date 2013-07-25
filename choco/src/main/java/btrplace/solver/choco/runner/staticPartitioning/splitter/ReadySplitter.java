@@ -57,7 +57,7 @@ public class ReadySplitter implements ConstraintSplitter<Ready> {
                     @Override
                     public boolean extract(SplittableIndex<VM> index, int idx, int from, int to) {
                         if (to != from) {
-                            partitions.get(idx).getConstraints().add(new Ready(new IndexEntry<>(index, idx, from, to)));
+                            partitions.get(idx).getSatConstraints().add(new Ready(new IndexEntry<>(index, idx, from, to)));
                         }
                         return true;
                     }

@@ -58,7 +58,7 @@ public class LonelySplitter implements ConstraintSplitter<Lonely> {
                     @Override
                     public boolean extract(SplittableIndex<VM> index, int idx, int from, int to) {
                         if (to != from) {
-                            partitions.get(idx).getConstraints().add(new Lonely(new IndexEntry<>(index, idx, from, to), c));
+                            partitions.get(idx).getSatConstraints().add(new Lonely(new IndexEntry<>(index, idx, from, to), c));
                         }
                         return true;
                     }

@@ -73,8 +73,8 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
      * @param i  the instance to solve
      */
     public InstanceSolverRunner(ChocoReconfigurationAlgorithmParams ps, Instance i) {
-        cstrs = i.getConstraints();
-        obj = i.getOptimizationConstraint();
+        cstrs = i.getSatConstraints();
+        obj = i.getOptConstraint();
         origin = i.getModel();
         params = ps;
     }

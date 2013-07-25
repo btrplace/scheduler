@@ -68,8 +68,8 @@ public class GatherSplitterTest {
         //Only VMs in m0
         Gather single = new Gather(m0.getMapping().getAllVMs());
         Assert.assertTrue(splitter.split(single, null, instances, vmIndex, new TIntIntHashMap()));
-        Assert.assertTrue(instances.get(0).getConstraints().contains(single));
-        Assert.assertFalse(instances.get(1).getConstraints().contains(single));
+        Assert.assertTrue(instances.get(0).getSatConstraints().contains(single));
+        Assert.assertFalse(instances.get(1).getSatConstraints().contains(single));
 
         //All the VMs, test the unfeasibility
         Gather among = new Gather(all, false);

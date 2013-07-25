@@ -56,7 +56,7 @@ public class GatherSplitter implements ConstraintSplitter<Gather> {
                             return false;
                         }
                         if (to - from >= 2) {
-                            partitions.get(idx).getConstraints().add(new Gather(new IndexEntry<>(index, idx, from, to), c));
+                            partitions.get(idx).getSatConstraints().add(new Gather(new IndexEntry<>(index, idx, from, to), c));
                             first = false;
                         }
                         return true;

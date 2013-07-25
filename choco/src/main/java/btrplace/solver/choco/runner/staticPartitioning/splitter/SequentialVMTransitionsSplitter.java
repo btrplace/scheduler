@@ -58,7 +58,7 @@ public class SequentialVMTransitionsSplitter implements ConstraintSplitter<Seque
                             throw new UnsupportedOperationException("Splitting a SequentialVMTransitions over multiple partitions is not supported");
                         }
                         if (size == seq.size()) {
-                            partitions.get(idx).getConstraints().add(new SequentialVMTransitions(seq));
+                            partitions.get(idx).getSatConstraints().add(new SequentialVMTransitions(seq));
                             first = false;
                         }
                         return true;

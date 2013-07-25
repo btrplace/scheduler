@@ -90,14 +90,14 @@ public class RunningSplitterTest {
         //Only VMs in m0
         Running single = new Running(m0.getMapping().getAllVMs());
         Assert.assertTrue(splitter.split(single, null, instances, index, new TIntIntHashMap()));
-        Assert.assertTrue(instances.get(0).getConstraints().contains(single));
-        Assert.assertFalse(instances.get(1).getConstraints().contains(single));
+        Assert.assertTrue(instances.get(0).getSatConstraints().contains(single));
+        Assert.assertFalse(instances.get(1).getSatConstraints().contains(single));
 
         //All the VMs, test the split
         Running among = new Running(all);
 
         Assert.assertTrue(splitter.split(among, null, instances, index, new TIntIntHashMap()));
-        Assert.assertTrue(instances.get(0).getConstraints().contains(new Running(m0.getMapping().getAllVMs())));
-        Assert.assertTrue(instances.get(1).getConstraints().contains(new Running(m1.getMapping().getAllVMs())));
+        Assert.assertTrue(instances.get(0).getSatConstraints().contains(new Running(m0.getMapping().getAllVMs())));
+        Assert.assertTrue(instances.get(1).getSatConstraints().contains(new Running(m1.getMapping().getAllVMs())));
     }
 }

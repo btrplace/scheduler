@@ -54,7 +54,7 @@ public class SingleResourceCapacitySplitter implements ConstraintSplitter<Single
                     @Override
                     public boolean extract(SplittableIndex<Node> index, int idx, int from, int to) {
                         if (to != from) {
-                            partitions.get(idx).getConstraints().add(new SingleResourceCapacity(new IndexEntry<>(index, idx, from, to), rc, qty, c));
+                            partitions.get(idx).getSatConstraints().add(new SingleResourceCapacity(new IndexEntry<>(index, idx, from, to), rc, qty, c));
                         }
                         return true;
                     }

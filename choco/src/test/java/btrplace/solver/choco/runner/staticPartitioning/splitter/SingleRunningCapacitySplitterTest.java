@@ -69,14 +69,14 @@ public class SingleRunningCapacitySplitterTest {
         //Only VMs in m0
         SingleRunningCapacity single = new SingleRunningCapacity(m0.getMapping().getAllNodes(), 3);
         Assert.assertTrue(splitter.split(single, null, instances, new TIntIntHashMap(), nodeIndex));
-        Assert.assertTrue(instances.get(0).getConstraints().contains(single));
-        Assert.assertFalse(instances.get(1).getConstraints().contains(single));
+        Assert.assertTrue(instances.get(0).getSatConstraints().contains(single));
+        Assert.assertFalse(instances.get(1).getSatConstraints().contains(single));
 
         //All the VMs, test the split
         SingleRunningCapacity among = new SingleRunningCapacity(all, 2);
 
         Assert.assertTrue(splitter.split(among, null, instances, new TIntIntHashMap(), nodeIndex));
-        Assert.assertTrue(instances.get(0).getConstraints().contains(new SingleRunningCapacity(m0.getMapping().getAllNodes(), 2)));
-        Assert.assertTrue(instances.get(1).getConstraints().contains(new SingleRunningCapacity(m1.getMapping().getAllNodes(), 2)));
+        Assert.assertTrue(instances.get(0).getSatConstraints().contains(new SingleRunningCapacity(m0.getMapping().getAllNodes(), 2)));
+        Assert.assertTrue(instances.get(1).getSatConstraints().contains(new SingleRunningCapacity(m1.getMapping().getAllNodes(), 2)));
     }
 }

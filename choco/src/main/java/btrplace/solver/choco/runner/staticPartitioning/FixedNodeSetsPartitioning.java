@@ -121,7 +121,7 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
         for (Collection<Node> s : partitions) {
             SubModel partModel = new SubModel(mo, eb, s, new HashSet<VM>(toLaunch.size() / partitions.size()));
 
-            parts.add(new Instance(partModel, new THashSet<SatConstraint>(), i.getOptimizationConstraint()));
+            parts.add(new Instance(partModel, new THashSet<SatConstraint>(), i.getOptConstraint()));
 
             //VM Index
             partModel.getMapping().fillVMIndex(vmPosition, partNumber);
@@ -143,7 +143,7 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
         }
 
         //Split the constraints
-        for (SatConstraint cstr : i.getConstraints()) {
+        for (SatConstraint cstr : i.getSatConstraints()) {
             cstrMapper.split(cstr, i, parts, vmPosition, nodePosition);
         }
 
@@ -153,7 +153,7 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
     private Set<VM> getVMsToLaunch(Instance i) {
         Mapping m = i.getModel().getMapping();
         Set<VM> toLaunch = new THashSet<>();
-        for (SatConstraint cstr : i.getConstraints()) {
+        for (SatConstraint cstr : i.getSatConstraints()) {
             //Extract the VMs to launch
             if (cstr instanceof Running) {
                 for (VM v : cstr.getInvolvedVMs()) {

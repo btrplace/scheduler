@@ -51,7 +51,7 @@ public class OnlineSplitter implements ConstraintSplitter<Online> {
                     @Override
                     public boolean extract(SplittableIndex<Node> index, int idx, int from, int to) {
                         if (to != from) {
-                            partitions.get(idx).getConstraints().add(new Online(new IndexEntry<>(index, idx, from, to)));
+                            partitions.get(idx).getSatConstraints().add(new Online(new IndexEntry<>(index, idx, from, to)));
                         }
                         return true;
                     }

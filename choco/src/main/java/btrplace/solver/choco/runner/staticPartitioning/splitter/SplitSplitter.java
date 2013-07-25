@@ -66,7 +66,7 @@ public class SplitSplitter implements ConstraintSplitter<Split> {
                                 }
                             }
                             if (sets.size() > 1) {
-                                partitions.get(idx).getConstraints().add(new Split(sets, c));
+                                partitions.get(idx).getSatConstraints().add(new Split(sets, c));
                             }
                         }
                         return true;

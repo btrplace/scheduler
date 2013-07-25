@@ -39,7 +39,7 @@ public class Instance {
      * Make a new instance.
      *
      * @param mo the model to use
-     * @param cs the list of constraints
+     * @param cs the list of satisfaction oriented constraints to consider
      * @param o  the optimization constraint
      */
     public Instance(Model mo, Collection<SatConstraint> cs, OptConstraint o) {
@@ -70,18 +70,18 @@ public class Instance {
     /**
      * Get the declared constraints.
      *
-     * @return a collection of constraints that may be empty
+     * @return a collection of satisfaction oriented constraints that may be empty
      */
-    public Collection<SatConstraint> getConstraints() {
+    public Collection<SatConstraint> getSatConstraints() {
         return cstrs;
     }
 
     /**
      * Get the declared optimization constraint.
      *
-     * @return the optimization constraint to consider
+     * @return the optimization constraint to consider (not null)
      */
-    public OptConstraint getOptimizationConstraint() {
+    public OptConstraint getOptConstraint() {
         return opt;
     }
 

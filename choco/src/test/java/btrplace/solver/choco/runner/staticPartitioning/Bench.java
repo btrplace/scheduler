@@ -79,10 +79,10 @@ public class Bench {
         Set<VM> t3 = makeVMSet(mo, nbT3);
 
         //Make the constraints
-        i.getConstraints().add(new Spread(t1, true));
-        i.getConstraints().add(new Spread(t2, true));
-        i.getConstraints().add(new Spread(t3, true));
-        i.getConstraints().add(new Among(t3, edges, false));
+        i.getSatConstraints().add(new Spread(t1, true));
+        i.getSatConstraints().add(new Spread(t2, true));
+        i.getSatConstraints().add(new Spread(t3, true));
+        i.getSatConstraints().add(new Among(t3, edges, false));
 
         //Place the VMs
         //Pick a random edge, and place every VMs on it
@@ -148,7 +148,7 @@ public class Bench {
                 long start = System.currentTimeMillis();
                 List<Instance> instances = partitioner.split(new DefaultChocoReconfigurationAlgorithmParams(), inst);
                 long end = System.currentTimeMillis();
-                System.err.println(instances.size() + " " + nbNodes + " " + nbNodes * ratio + " " + inst.getConstraints().size() + " " + (end - start));
+                System.err.println(instances.size() + " " + nbNodes + " " + nbNodes * ratio + " " + inst.getSatConstraints().size() + " " + (end - start));
             }
         } catch (SolverException ex) {
             Assert.fail(ex.getMessage(), ex);

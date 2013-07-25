@@ -93,7 +93,7 @@ public abstract class StaticPartitioning implements InstanceSolver {
         }
         nbVMs += origMapping.getReadyVMs().size();
         int nbNodes = origMapping.getOnlineNodes().size() + origMapping.getOfflineNodes().size();
-        int nbConstraints = orig.getConstraints().size();
+        int nbConstraints = orig.getSatConstraints().size();
 
         long duration = -System.currentTimeMillis();
         for (Instance partition : partitions) {

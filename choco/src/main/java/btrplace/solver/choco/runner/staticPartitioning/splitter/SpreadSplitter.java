@@ -51,7 +51,7 @@ public class SpreadSplitter implements ConstraintSplitter<Spread> {
                     @Override
                     public boolean extract(SplittableIndex<VM> index, int idx, int from, int to) {
                         if (to - from >= 2) {
-                            partitions.get(idx).getConstraints().add(new Spread(new IndexEntry<>(index, idx, from, to), c));
+                            partitions.get(idx).getSatConstraints().add(new Spread(new IndexEntry<>(index, idx, from, to), c));
                         }
                         return true;
                     }

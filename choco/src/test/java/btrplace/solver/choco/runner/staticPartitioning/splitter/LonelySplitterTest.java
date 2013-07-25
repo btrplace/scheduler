@@ -67,14 +67,14 @@ public class LonelySplitterTest {
         //Only VMs in m0
         Lonely single = new Lonely(m0.getMapping().getAllVMs());
         Assert.assertTrue(splitter.split(single, null, instances, index, new TIntIntHashMap()));
-        Assert.assertTrue(instances.get(0).getConstraints().contains(single));
-        Assert.assertFalse(instances.get(1).getConstraints().contains(single));
+        Assert.assertTrue(instances.get(0).getSatConstraints().contains(single));
+        Assert.assertFalse(instances.get(1).getSatConstraints().contains(single));
 
         //All the VMs, test the split
         Lonely among = new Lonely(all, false);
 
         Assert.assertTrue(splitter.split(among, null, instances, index, new TIntIntHashMap()));
-        Assert.assertTrue(instances.get(0).getConstraints().contains(new Lonely(m0.getMapping().getAllVMs(), false)));
-        Assert.assertTrue(instances.get(1).getConstraints().contains(new Lonely(m1.getMapping().getAllVMs(), false)));
+        Assert.assertTrue(instances.get(0).getSatConstraints().contains(new Lonely(m0.getMapping().getAllVMs(), false)));
+        Assert.assertTrue(instances.get(1).getSatConstraints().contains(new Lonely(m1.getMapping().getAllVMs(), false)));
     }
 }

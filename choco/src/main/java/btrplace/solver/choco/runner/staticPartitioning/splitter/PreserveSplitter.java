@@ -53,7 +53,7 @@ public class PreserveSplitter implements ConstraintSplitter<Preserve> {
                     @Override
                     public boolean extract(SplittableIndex<VM> index, int idx, int from, int to) {
                         if (to != from) {
-                            partitions.get(idx).getConstraints().add(new Preserve(new IndexEntry<>(index, idx, from, to), rcId, qty));
+                            partitions.get(idx).getSatConstraints().add(new Preserve(new IndexEntry<>(index, idx, from, to), rcId, qty));
                         }
                         return true;
                     }

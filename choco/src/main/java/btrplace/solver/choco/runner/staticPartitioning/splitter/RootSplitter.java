@@ -50,7 +50,7 @@ public class RootSplitter implements ConstraintSplitter<Root> {
                     @Override
                     public boolean extract(SplittableIndex<VM> index, int idx, int from, int to) {
                         if (to != from) {
-                            partitions.get(idx).getConstraints().add(new Root(new IndexEntry<>(index, idx, from, to)));
+                            partitions.get(idx).getSatConstraints().add(new Root(new IndexEntry<>(index, idx, from, to)));
                         }
                         return true;
                     }
