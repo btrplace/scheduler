@@ -22,7 +22,7 @@ import btrplace.model.constraint.Among;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithParams;
+import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithmParams;
 import btrplace.solver.choco.MappingFiller;
 import btrplace.solver.choco.runner.staticPartitioning.FixedNodeSetsPartitioning;
 import btrplace.solver.choco.runner.staticPartitioning.SplittableIndexTest;
@@ -83,7 +83,7 @@ public class AmongSplitterTest {
          */
         FixedNodeSetsPartitioning partitionner = new FixedNodeSetsPartitioning(parts);
         partitionner.setPartitions(parts);
-        List<Instance> instances = partitionner.split(new DefaultChocoReconfigurationAlgorithParams(),
+        List<Instance> instances = partitionner.split(new DefaultChocoReconfigurationAlgorithmParams(),
                 new Instance(mo, Collections.<SatConstraint>emptyList(), new MinMTTR()));
 
         TIntIntHashMap vmIndex = SplittableIndexTest.makeVMIndex(instances);
@@ -95,9 +95,5 @@ public class AmongSplitterTest {
         for (Instance i : instances) {
             System.out.println(i.getConstraints());
         }
-    }
-
-    public void testUnSplittable() throws SolverException {
-
     }
 }

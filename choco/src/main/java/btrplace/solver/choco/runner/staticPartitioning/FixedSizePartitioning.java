@@ -19,7 +19,6 @@ package btrplace.solver.choco.runner.staticPartitioning;
 
 import btrplace.model.Instance;
 import btrplace.model.Mapping;
-import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
@@ -70,11 +69,19 @@ public class FixedSizePartitioning extends FixedNodeSetsPartitioning {
 
     @Override
     public List<Instance> split(ChocoReconfigurationAlgorithmParams ps, Instance i) throws SolverException {
-        Model mo = i.getModel();
-        Mapping map = mo.getMapping();
+        Mapping map = i.getModel().getMapping();
+
+        setPartitions(random ? randomPartitions(map) : linearPartitions(map));
+        return super.split(ps, i);
+    }
+
+    private static Random rnd = new Random();
+
+    private List<Collection<Node>> linearPartitions(Mapping map) {
         List<Collection<Node>> partOfNodes = new ArrayList<>();
         Set<Node> curPartition = new HashSet<>(partSize);
         partOfNodes.add(curPartition);
+
         for (Node node : map.getAllNodes()) {
             if (curPartition.size() == partSize) {
                 curPartition = new HashSet<>(partSize);
@@ -82,9 +89,27 @@ public class FixedSizePartitioning extends FixedNodeSetsPartitioning {
             }
             curPartition.add(node);
         }
+        return partOfNodes;
+    }
 
-        setPartitions(partOfNodes);
-        return super.split(ps, i);
+    private List<Collection<Node>> randomPartitions(Mapping map) {
+        List<Node> unselectedNodes = new ArrayList<>(map.getNbNodes());
+        unselectedNodes.addAll(map.getOnlineNodes());
+        unselectedNodes.addAll(map.getOfflineNodes());
+
+        List<Collection<Node>> partOfNodes = new ArrayList<>();
+        Set<Node> curPartition = new HashSet<>(partSize);
+        partOfNodes.add(curPartition);
+        while (!unselectedNodes.isEmpty()) {
+            Node n = unselectedNodes.remove(rnd.nextInt(unselectedNodes.size()));
+            if (curPartition.size() == partSize) {
+                curPartition = new HashSet<>(partSize);
+                partOfNodes.add(curPartition);
+            }
+            curPartition.add(n);
+        }
+
+        return partOfNodes;
     }
 
     /**
