@@ -282,7 +282,7 @@ public class DefaultMapping implements Mapping, Cloneable {
 
     @Override
     public boolean addOnlineNode(Node n) {
-        boolean wasOffline = nodeState[OFFLINE_STATE].remove(n);
+        nodeState[OFFLINE_STATE].remove(n);
         nodeState[ONLINE_STATE].add(n);
         return true;
     }

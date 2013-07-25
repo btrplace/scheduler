@@ -350,7 +350,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         vmsCountOnNodes = new IntDomainVar[nodes.length];
         int nbVMs = vms.length;
         for (int i = 0; i < vmsCountOnNodes.length; i++) {
-            vmsCountOnNodes[i] = solver.createBoundIntVar(makeVarLabel("nbVMsOn('", getNode(i), "')"), 0, nbVMs);
+            vmsCountOnNodes[i] = solver.createBoundIntVar(makeVarLabel("nbVMsOn('", nodes[i], "')"), 0, nbVMs);
         }
     }
 
