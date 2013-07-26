@@ -17,13 +17,8 @@
 
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
-import btrplace.model.Instance;
-import btrplace.model.Node;
-import btrplace.model.VM;
+import btrplace.model.*;
 import btrplace.model.constraint.Among;
-import btrplace.solver.choco.runner.staticPartitioning.IndexEntry;
-import btrplace.solver.choco.runner.staticPartitioning.IndexEntryProcedure;
-import btrplace.solver.choco.runner.staticPartitioning.SplittableIndex;
 import gnu.trove.map.hash.TIntIntHashMap;
 
 import java.util.ArrayList;
@@ -52,19 +47,19 @@ public class AmongSplitter implements ConstraintSplitter<Among> {
     public boolean split(final Among cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition, final TIntIntHashMap nodePosition) {
 
         final boolean c = cstr.isContinuous();
-        return SplittableIndex.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
-                forEachIndexEntry(new IndexEntryProcedure<VM>() {
+        return SplittableElementSet.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
+                forEachPartition(new IterateProcedure<VM>() {
                     @Override
-                    public boolean extract(SplittableIndex<VM> index, int idx, int from, int to) {
+                    public boolean extract(SplittableElementSet<VM> index, int idx, int from, int to) {
                         if (to - from >= 2) {
-                            IndexEntry<VM> vms = new IndexEntry<>(index, idx, from, to);
+                            ElementSubSet<VM> vms = new ElementSubSet<>(index, idx, from, to);
                             //Get the servers on the partition
 
                             //Filter out the other nodes in the original constraint
                             final Collection<Collection<Node>> subParams = new ArrayList<>();
                             for (Collection<Node> ns : cstr.getGroupsOfNodes()) {
-                                SplittableIndex<Node> nodeIndex = SplittableIndex.newNodeIndex(ns, nodePosition);
-                                IndexEntry<Node> s = nodeIndex.makeIndexEntry(idx);
+                                SplittableElementSet<Node> nodeIndex = SplittableElementSet.newNodeIndex(ns, nodePosition);
+                                ElementSubSet<Node> s = nodeIndex.getSubset(idx);
                                 if (s != null && !s.isEmpty()) {
                                     subParams.add(s);
                                 }

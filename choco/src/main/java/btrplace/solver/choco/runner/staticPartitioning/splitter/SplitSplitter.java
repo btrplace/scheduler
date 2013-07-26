@@ -17,12 +17,8 @@
 
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
-import btrplace.model.Instance;
-import btrplace.model.VM;
+import btrplace.model.*;
 import btrplace.model.constraint.Split;
-import btrplace.solver.choco.runner.staticPartitioning.IndexEntry;
-import btrplace.solver.choco.runner.staticPartitioning.IndexEntryProcedure;
-import btrplace.solver.choco.runner.staticPartitioning.SplittableIndex;
 import gnu.trove.map.hash.TIntIntHashMap;
 
 import java.util.ArrayList;
@@ -49,18 +45,18 @@ public class SplitSplitter implements ConstraintSplitter<Split> {
     public boolean split(final Split cstr, Instance origin, final List<Instance> partitions, final TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
 
         final boolean c = cstr.isContinuous();
-        return SplittableIndex.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
-                forEachIndexEntry(new IndexEntryProcedure<VM>() {
+        return SplittableElementSet.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
+                forEachPartition(new IterateProcedure<VM>() {
                     @Override
-                    public boolean extract(SplittableIndex<VM> index, int idx, int from, int to) {
+                    public boolean extract(SplittableElementSet<VM> index, int idx, int from, int to) {
                         if (to - from >= 2) {
                             //More than 1 VM involved in a split constraint for this partition
                             //if these VMs belong to at least 2 groups, we must post a split constraints
                             //for the VMs on these groups
                             Collection<Collection<VM>> sets = new ArrayList<>();
                             for (Collection<VM> vms : cstr.getSets()) {
-                                SplittableIndex<VM> subSplit = SplittableIndex.newVMIndex(vms, vmsPosition);
-                                IndexEntry<VM> s = subSplit.makeIndexEntry(idx);
+                                SplittableElementSet<VM> subSplit = SplittableElementSet.newVMIndex(vms, vmsPosition);
+                                ElementSubSet<VM> s = subSplit.getSubset(idx);
                                 if (!s.isEmpty()) {
                                     sets.add(s);
                                 }

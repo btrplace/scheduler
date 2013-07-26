@@ -15,25 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.runner.staticPartitioning;
-
-import btrplace.model.Element;
+package btrplace.model;
 
 /**
- * A procedure to use on a set of contiguous values that
- * share the same index value.
+ * A procedure to use on a set of contiguous elements that
+ * belong to the same partition.
  *
  * @author Fabien Hermenier
  */
-public interface IndexEntryProcedure<E extends Element> {
+public interface IterateProcedure<E extends Element> {
 
     /**
      * The method to execute.
      *
-     * @param index the splittable index to rely on
-     * @param key   the index key
+     * @param index the splittable set to rely on
+     * @param key   the partition key
      * @param from  the value lower bound
      * @param to    the value upper bound (exclusive)
      */
-    boolean extract(SplittableIndex<E> index, int key, int from, int to);
+    boolean extract(SplittableElementSet<E> index, int key, int from, int to);
 }

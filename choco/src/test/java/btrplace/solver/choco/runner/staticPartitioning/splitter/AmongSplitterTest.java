@@ -25,7 +25,7 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithmParams;
 import btrplace.solver.choco.MappingFiller;
 import btrplace.solver.choco.runner.staticPartitioning.FixedNodeSetsPartitioning;
-import btrplace.solver.choco.runner.staticPartitioning.SplittableIndexTest;
+import btrplace.solver.choco.runner.staticPartitioning.Instances;
 import gnu.trove.map.hash.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -86,8 +86,8 @@ public class AmongSplitterTest {
         List<Instance> instances = partitionner.split(new DefaultChocoReconfigurationAlgorithmParams(),
                 new Instance(mo, Collections.<SatConstraint>emptyList(), new MinMTTR()));
 
-        TIntIntHashMap vmIndex = SplittableIndexTest.makeVMIndex(instances);
-        TIntIntHashMap nodeIndex = SplittableIndexTest.makeNodeIndex(instances);
+        TIntIntHashMap vmIndex = Instances.makeVMIndex(instances);
+        TIntIntHashMap nodeIndex = Instances.makeNodeIndex(instances);
         splitter.split(single, new Instance(mo, new MinMTTR()), instances, vmIndex, nodeIndex);
         Among a = (Among) instances.get(0).getSatConstraints().iterator().next();
         Assert.assertEquals(a.getGroupsOfNodes().size(), 1);

@@ -17,12 +17,8 @@
 
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
-import btrplace.model.Instance;
-import btrplace.model.Node;
+import btrplace.model.*;
 import btrplace.model.constraint.SingleResourceCapacity;
-import btrplace.solver.choco.runner.staticPartitioning.IndexEntry;
-import btrplace.solver.choco.runner.staticPartitioning.IndexEntryProcedure;
-import btrplace.solver.choco.runner.staticPartitioning.SplittableIndex;
 import gnu.trove.map.hash.TIntIntHashMap;
 
 import java.util.List;
@@ -49,12 +45,12 @@ public class SingleResourceCapacitySplitter implements ConstraintSplitter<Single
         final boolean c = cstr.isContinuous();
         final String rc = cstr.getResource();
         final int qty = cstr.getAmount();
-        return SplittableIndex.newNodeIndex(cstr.getInvolvedNodes(), nodePosition).
-                forEachIndexEntry(new IndexEntryProcedure<Node>() {
+        return SplittableElementSet.newNodeIndex(cstr.getInvolvedNodes(), nodePosition).
+                forEachPartition(new IterateProcedure<Node>() {
                     @Override
-                    public boolean extract(SplittableIndex<Node> index, int idx, int from, int to) {
+                    public boolean extract(SplittableElementSet<Node> index, int idx, int from, int to) {
                         if (to != from) {
-                            partitions.get(idx).getSatConstraints().add(new SingleResourceCapacity(new IndexEntry<>(index, idx, from, to), rc, qty, c));
+                            partitions.get(idx).getSatConstraints().add(new SingleResourceCapacity(new ElementSubSet<>(index, idx, from, to), rc, qty, c));
                         }
                         return true;
                     }

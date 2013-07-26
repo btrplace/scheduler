@@ -16,8 +16,8 @@
  */
 
 /**
- * A package dedicated to a solver that split an instance into
- * disjoint sub-instances to solve them in parallel using a master/worker
- * paradigm.
+ * A package dedicated to a solver that splits an instance into
+ * disjoint sub-instances then solve them in parallel
+ * using a master/worker paradigm.
  */
 package btrplace.solver.choco.runner.staticPartitioning;

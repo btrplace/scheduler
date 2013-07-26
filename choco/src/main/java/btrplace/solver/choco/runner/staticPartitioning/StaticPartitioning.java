@@ -36,12 +36,12 @@ import java.util.List;
 import java.util.concurrent.*;
 
 /**
- * An abstract instance solver that relies on a static decomposition
- * of the instance and a parallel resolution of the sub-instances.
- * The reconfiguration plan is composed by all the sub reconfiguration plans.
- * Each sub-instance must then have a solution.
- *
- *
+ * An abstract solver that decompose statically an instance
+ * into multiple disjoint sub-instances than are solved in parallel.
+ * <p/>
+ * The resulting reconfiguration plan is composed by all the sub
+ * reconfiguration plans. Each sub-instance must then have a solution.
+ * <p/>
  * The solving process relies on a master/worker paradigm with a number
  * of workers equals to the number of available cores by default.
  *
@@ -70,7 +70,7 @@ public abstract class StaticPartitioning implements InstanceSolver {
     }
 
     /**
-     * Make a new partitioner.
+     * Make a new partitioning algorithm.
      * The number of workers is set to the number of available cores.
      */
     public StaticPartitioning() {

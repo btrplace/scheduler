@@ -15,12 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.runner.staticPartitioning;
+package btrplace.model;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.Mapping;
-import btrplace.model.Node;
-import btrplace.model.VM;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.set.hash.THashSet;
 

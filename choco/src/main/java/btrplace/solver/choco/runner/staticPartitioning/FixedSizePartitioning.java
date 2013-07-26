@@ -27,7 +27,8 @@ import java.util.*;
 
 /**
  * An extension of {@link FixedNodeSetsPartitioning} where
- * the partitions of nodes have a given maximum size.
+ * the partitions of nodes are computed by provided their
+ * size in terms of number of nodes.
  *
  * @author Fabien Hermenier
  */

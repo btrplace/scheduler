@@ -24,7 +24,7 @@ import btrplace.model.Node;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.SingleResourceCapacity;
-import btrplace.solver.choco.runner.staticPartitioning.SplittableIndexTest;
+import btrplace.solver.choco.runner.staticPartitioning.Instances;
 import gnu.trove.map.hash.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -62,7 +62,7 @@ public class SingleResourceCapacitySplitterTest {
         instances.add(new Instance(m0, new ArrayList<SatConstraint>(), new MinMTTR()));
         instances.add(new Instance(m1, new ArrayList<SatConstraint>(), new MinMTTR()));
 
-        TIntIntHashMap nodeIndex = SplittableIndexTest.makeNodeIndex(instances);
+        TIntIntHashMap nodeIndex = Instances.makeNodeIndex(instances);
         Set<Node> all = new HashSet<>(m0.getMapping().getAllNodes());
         all.addAll(m1.getMapping().getAllNodes());
 

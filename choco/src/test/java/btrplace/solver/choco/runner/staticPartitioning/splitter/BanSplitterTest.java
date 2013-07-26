@@ -21,7 +21,7 @@ import btrplace.model.*;
 import btrplace.model.constraint.Ban;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.SatConstraint;
-import btrplace.solver.choco.runner.staticPartitioning.SplittableIndexTest;
+import btrplace.solver.choco.runner.staticPartitioning.Instances;
 import gnu.trove.map.hash.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -86,8 +86,8 @@ public class BanSplitterTest {
         Set<VM> all = new HashSet<>(m0.getMapping().getAllVMs());
         all.addAll(m1.getMapping().getAllVMs());
 
-        TIntIntHashMap vmIndex = SplittableIndexTest.makeVMIndex(instances);
-        TIntIntHashMap nodeIndex = SplittableIndexTest.makeNodeIndex(instances);
+        TIntIntHashMap vmIndex = Instances.makeVMIndex(instances);
+        TIntIntHashMap nodeIndex = Instances.makeNodeIndex(instances);
 
         //Only VMs & nodes in m0
         Ban single = new Ban(m0.getMapping().getAllVMs(), m0.getMapping().getAllNodes());

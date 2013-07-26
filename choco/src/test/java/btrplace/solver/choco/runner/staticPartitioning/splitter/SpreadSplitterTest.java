@@ -21,7 +21,7 @@ import btrplace.model.*;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.Spread;
-import btrplace.solver.choco.runner.staticPartitioning.SplittableIndexTest;
+import btrplace.solver.choco.runner.staticPartitioning.Instances;
 import gnu.trove.map.hash.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -63,7 +63,7 @@ public class SpreadSplitterTest {
         Set<VM> all = new HashSet<>(m0.getMapping().getAllVMs());
         all.addAll(m1.getMapping().getAllVMs());
 
-        TIntIntHashMap index = SplittableIndexTest.makeVMIndex(instances);
+        TIntIntHashMap index = Instances.makeVMIndex(instances);
 
         //Only VMs in m0
         Spread spreadSingle = new Spread(m0.getMapping().getAllVMs());

@@ -15,12 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.runner.staticPartitioning;
+package btrplace.model;
 
-import btrplace.model.DefaultMapping;
-import btrplace.model.Mapping;
-import btrplace.model.Node;
-import btrplace.model.VM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -108,6 +104,7 @@ public class SubMappingTest {
         Assert.assertTrue(sm.isReady(new VM(1000)));
         Assert.assertTrue(sm.isSleeping(new VM(504)));
         Assert.assertFalse(sm.isRunning(new VM(201)));
+        System.err.println(sm);
     }
 
     @Test
@@ -132,4 +129,5 @@ public class SubMappingTest {
         Assert.assertTrue(sm.addReadyVM(new VM(300))); //in my scope, it's ok
         Assert.assertTrue(sm.addReadyVM(new VM(678))); //new VM, it's ok
     }
+
 }

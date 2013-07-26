@@ -18,10 +18,10 @@
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
 import btrplace.model.Instance;
+import btrplace.model.IterateProcedure;
+import btrplace.model.SplittableElementSet;
 import btrplace.model.VM;
 import btrplace.model.constraint.SequentialVMTransitions;
-import btrplace.solver.choco.runner.staticPartitioning.IndexEntryProcedure;
-import btrplace.solver.choco.runner.staticPartitioning.SplittableIndex;
 import gnu.trove.map.hash.TIntIntHashMap;
 
 import java.util.List;
@@ -46,13 +46,13 @@ public class SequentialVMTransitionsSplitter implements ConstraintSplitter<Seque
     @Override
     public boolean split(SequentialVMTransitions cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
         final List<VM> seq = cstr.getInvolvedVMs();
-        return SplittableIndex.newVMIndex(seq, vmsPosition).
-                forEachIndexEntry(new IndexEntryProcedure<VM>() {
+        return SplittableElementSet.newVMIndex(seq, vmsPosition).
+                forEachPartition(new IterateProcedure<VM>() {
 
                     private boolean first = true;
 
                     @Override
-                    public boolean extract(SplittableIndex<VM> index, int idx, int from, int to) {
+                    public boolean extract(SplittableElementSet<VM> index, int idx, int from, int to) {
                         int size = to - from;
                         if (!first) {
                             throw new UnsupportedOperationException("Splitting a SequentialVMTransitions over multiple partitions is not supported");

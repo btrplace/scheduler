@@ -24,7 +24,7 @@ import btrplace.model.VM;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.Ready;
 import btrplace.model.constraint.SatConstraint;
-import btrplace.solver.choco.runner.staticPartitioning.SplittableIndexTest;
+import btrplace.solver.choco.runner.staticPartitioning.Instances;
 import gnu.trove.map.hash.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -62,7 +62,7 @@ public class ReadySplitterTest {
         all.addAll(m1.getMapping().getAllVMs());
 
 
-        TIntIntHashMap index = SplittableIndexTest.makeVMIndex(instances);
+        TIntIntHashMap index = Instances.makeVMIndex(instances);
 
         //Only VMs in m0
         Ready single = new Ready(m0.getMapping().getAllVMs());

@@ -17,13 +17,8 @@
 
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
-import btrplace.model.Instance;
-import btrplace.model.Node;
-import btrplace.model.VM;
+import btrplace.model.*;
 import btrplace.model.constraint.Ban;
-import btrplace.solver.choco.runner.staticPartitioning.IndexEntry;
-import btrplace.solver.choco.runner.staticPartitioning.IndexEntryProcedure;
-import btrplace.solver.choco.runner.staticPartitioning.SplittableIndex;
 import gnu.trove.map.hash.TIntIntHashMap;
 
 import java.util.List;
@@ -46,14 +41,14 @@ public class BanSplitter implements ConstraintSplitter<Ban> {
 
     @Override
     public boolean split(Ban cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
-        final SplittableIndex<Node> nodeIndex = SplittableIndex.newNodeIndex(cstr.getInvolvedNodes(), nodePosition);
-        return SplittableIndex.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
-                forEachIndexEntry(new IndexEntryProcedure<VM>() {
+        final SplittableElementSet<Node> nodeIndex = SplittableElementSet.newNodeIndex(cstr.getInvolvedNodes(), nodePosition);
+        return SplittableElementSet.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
+                forEachPartition(new IterateProcedure<VM>() {
                     @Override
-                    public boolean extract(SplittableIndex<VM> index, int idx, int from, int to) {
+                    public boolean extract(SplittableElementSet<VM> index, int idx, int from, int to) {
                         if (to != from) {
-                            Set<VM> vms = new IndexEntry<>(index, idx, from, to);
-                            Set<Node> ns = nodeIndex.makeIndexEntry(idx);
+                            Set<VM> vms = new ElementSubSet<>(index, idx, from, to);
+                            Set<Node> ns = nodeIndex.getSubset(idx);
                             if (ns != null && !ns.isEmpty()) {
                                 partitions.get(idx).getSatConstraints().add(new Ban(vms, ns));
                             }

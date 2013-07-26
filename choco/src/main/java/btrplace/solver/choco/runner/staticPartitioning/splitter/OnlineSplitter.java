@@ -17,12 +17,8 @@
 
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
-import btrplace.model.Instance;
-import btrplace.model.Node;
+import btrplace.model.*;
 import btrplace.model.constraint.Online;
-import btrplace.solver.choco.runner.staticPartitioning.IndexEntry;
-import btrplace.solver.choco.runner.staticPartitioning.IndexEntryProcedure;
-import btrplace.solver.choco.runner.staticPartitioning.SplittableIndex;
 import gnu.trove.map.hash.TIntIntHashMap;
 
 import java.util.List;
@@ -46,12 +42,12 @@ public class OnlineSplitter implements ConstraintSplitter<Online> {
 
     @Override
     public boolean split(Online cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
-        return SplittableIndex.newNodeIndex(cstr.getInvolvedNodes(), nodePosition).
-                forEachIndexEntry(new IndexEntryProcedure<Node>() {
+        return SplittableElementSet.newNodeIndex(cstr.getInvolvedNodes(), nodePosition).
+                forEachPartition(new IterateProcedure<Node>() {
                     @Override
-                    public boolean extract(SplittableIndex<Node> index, int idx, int from, int to) {
+                    public boolean extract(SplittableElementSet<Node> index, int idx, int from, int to) {
                         if (to != from) {
-                            partitions.get(idx).getSatConstraints().add(new Online(new IndexEntry<>(index, idx, from, to)));
+                            partitions.get(idx).getSatConstraints().add(new Online(new ElementSubSet<>(index, idx, from, to)));
                         }
                         return true;
                     }

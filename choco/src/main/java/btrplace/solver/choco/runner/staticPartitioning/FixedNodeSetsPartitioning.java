@@ -30,16 +30,17 @@ import gnu.trove.set.hash.TIntHashSet;
 import java.util.*;
 
 /**
- * A partitioning algorithm that parts an instance
+ * A partitioning algorithm to split an instance
  * into multiple disjoint sub-instances from a
- * given node partitioning.
- *
- * The {@link SatConstraint} are split using pre-defined
- * {@link ConstraintSplitter}s available through the {@link ConstraintSplitterMapper}.
- * The {@link btrplace.model.constraint.OptConstraint} is cloned
- * and used for a each sub-instance.
- *
- * The VMs to launch are distributed evenly on the sub-instances.
+ * specific node partitioning.
+ * Running and sleeping VMs are spread on the sub-instances
+ * depending on their current location while ready VMs are spread
+ * evenly.
+ * <p/>
+ * The {@link SatConstraint}s are split when necessary using
+ * splitters available through the {@link ConstraintSplitterMapper}.
+ * The {@link btrplace.model.constraint.OptConstraint} is re-used
+ * for each sub-instance.
  *
  * @author Fabien Hermenier
  */

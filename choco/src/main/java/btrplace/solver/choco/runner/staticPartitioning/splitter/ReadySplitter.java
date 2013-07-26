@@ -17,12 +17,8 @@
 
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
-import btrplace.model.Instance;
-import btrplace.model.VM;
+import btrplace.model.*;
 import btrplace.model.constraint.Ready;
-import btrplace.solver.choco.runner.staticPartitioning.IndexEntry;
-import btrplace.solver.choco.runner.staticPartitioning.IndexEntryProcedure;
-import btrplace.solver.choco.runner.staticPartitioning.SplittableIndex;
 import gnu.trove.map.hash.TIntIntHashMap;
 
 import java.util.List;
@@ -52,12 +48,12 @@ public class ReadySplitter implements ConstraintSplitter<Ready> {
 
     @Override
     public boolean split(Ready cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
-        return SplittableIndex.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
-                forEachIndexEntry(new IndexEntryProcedure<VM>() {
+        return SplittableElementSet.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
+                forEachPartition(new IterateProcedure<VM>() {
                     @Override
-                    public boolean extract(SplittableIndex<VM> index, int idx, int from, int to) {
+                    public boolean extract(SplittableElementSet<VM> index, int idx, int from, int to) {
                         if (to != from) {
-                            partitions.get(idx).getSatConstraints().add(new Ready(new IndexEntry<>(index, idx, from, to)));
+                            partitions.get(idx).getSatConstraints().add(new Ready(new ElementSubSet<>(index, idx, from, to)));
                         }
                         return true;
                     }

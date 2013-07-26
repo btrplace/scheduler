@@ -113,12 +113,12 @@ public class Bench {
             }
             parts.put(n.id(), curPart);
         }
-        SplittableIndex<Node> sp = SplittableIndex.newNodeIndex(l, parts);
+        SplittableElementSet<Node> sp = SplittableElementSet.newNodeIndex(l, parts);
         final List<Collection<Node>> splits = new ArrayList<>();
-        sp.forEachIndexEntry(new IndexEntryProcedure<Node>() {
+        sp.forEachPartition(new IterateProcedure<Node>() {
             @Override
-            public boolean extract(SplittableIndex<Node> index, int key, int from, int to) {
-                return splits.add(new IndexEntry<Node>(index, key, from, to));
+            public boolean extract(SplittableElementSet<Node> index, int key, int from, int to) {
+                return splits.add(new ElementSubSet<Node>(index, key, from, to));
             }
         });
         return splits;

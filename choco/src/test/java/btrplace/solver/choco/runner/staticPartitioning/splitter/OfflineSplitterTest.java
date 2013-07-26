@@ -24,7 +24,7 @@ import btrplace.model.Node;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.Offline;
 import btrplace.model.constraint.SatConstraint;
-import btrplace.solver.choco.runner.staticPartitioning.SplittableIndexTest;
+import btrplace.solver.choco.runner.staticPartitioning.Instances;
 import gnu.trove.map.hash.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -60,7 +60,7 @@ public class OfflineSplitterTest {
         Set<Node> all = new HashSet<>(m0.getMapping().getAllNodes());
         all.addAll(m1.getMapping().getAllNodes());
 
-        TIntIntHashMap nodeIndex = SplittableIndexTest.makeNodeIndex(instances);
+        TIntIntHashMap nodeIndex = Instances.makeNodeIndex(instances);
 
         //Only nodes in m0
         Offline oSimple = new Offline(m0.getMapping().getAllNodes());

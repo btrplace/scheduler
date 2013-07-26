@@ -17,12 +17,8 @@
 
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
-import btrplace.model.Instance;
-import btrplace.model.VM;
+import btrplace.model.*;
 import btrplace.model.constraint.Spread;
-import btrplace.solver.choco.runner.staticPartitioning.IndexEntry;
-import btrplace.solver.choco.runner.staticPartitioning.IndexEntryProcedure;
-import btrplace.solver.choco.runner.staticPartitioning.SplittableIndex;
 import gnu.trove.map.hash.TIntIntHashMap;
 
 import java.util.List;
@@ -46,12 +42,12 @@ public class SpreadSplitter implements ConstraintSplitter<Spread> {
     @Override
     public boolean split(final Spread cstr, Instance origin, final List<Instance> partitions, final TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
         final boolean c = cstr.isContinuous();
-        return SplittableIndex.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
-                forEachIndexEntry(new IndexEntryProcedure<VM>() {
+        return SplittableElementSet.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
+                forEachPartition(new IterateProcedure<VM>() {
                     @Override
-                    public boolean extract(SplittableIndex<VM> index, int idx, int from, int to) {
+                    public boolean extract(SplittableElementSet<VM> index, int idx, int from, int to) {
                         if (to - from >= 2) {
-                            partitions.get(idx).getSatConstraints().add(new Spread(new IndexEntry<>(index, idx, from, to), c));
+                            partitions.get(idx).getSatConstraints().add(new Spread(new ElementSubSet<>(index, idx, from, to), c));
                         }
                         return true;
                     }

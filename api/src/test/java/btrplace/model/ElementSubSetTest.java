@@ -15,11 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.runner.staticPartitioning;
+package btrplace.model;
 
-import btrplace.model.DefaultModel;
-import btrplace.model.Model;
-import btrplace.model.VM;
 import gnu.trove.map.hash.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -28,11 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Unit tests for {@link IndexEntry}.
+ * Unit tests for {@link btrplace.model.ElementSubSet}.
  *
  * @author Fabien Hermenier
  */
-public class IndexEntryTest {
+public class ElementSubSetTest {
 
     @Test
     public void test() {
@@ -45,10 +42,10 @@ public class IndexEntryTest {
             index.put(i, i % 2);
         }
 
-        SplittableIndex<VM> si = SplittableIndex.newVMIndex(l, index);
+        SplittableElementSet<VM> si = SplittableElementSet.newVMIndex(l, index);
         VM[] values = si.getValues();
         System.err.println(si);
-        IndexEntry<VM> p1 = new IndexEntry<>(si, 0, 0, 5);
+        ElementSubSet<VM> p1 = new ElementSubSet<>(si, 0, 0, 5);
         //test contains()
         Assert.assertTrue(p1.contains(values[0]));
         Assert.assertFalse(p1.contains(values[5]));

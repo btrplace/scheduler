@@ -24,7 +24,7 @@ import btrplace.model.VM;
 import btrplace.model.constraint.Lonely;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.SatConstraint;
-import btrplace.solver.choco.runner.staticPartitioning.SplittableIndexTest;
+import btrplace.solver.choco.runner.staticPartitioning.Instances;
 import gnu.trove.map.hash.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -58,7 +58,7 @@ public class LonelySplitterTest {
         instances.add(new Instance(m0, new ArrayList<SatConstraint>(), new MinMTTR()));
         instances.add(new Instance(m1, new ArrayList<SatConstraint>(), new MinMTTR()));
 
-        TIntIntHashMap index = SplittableIndexTest.makeVMIndex(instances);
+        TIntIntHashMap index = Instances.makeVMIndex(instances);
 
         Set<VM> all = new HashSet<>(m0.getMapping().getAllVMs());
         all.addAll(m1.getMapping().getAllVMs());

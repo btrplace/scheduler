@@ -15,9 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.runner.staticPartitioning;
-
-import btrplace.model.Element;
+package btrplace.model;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,13 +28,13 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class IndexEntry<E extends Element> implements Set<E> {
+public class ElementSubSet<E extends Element> implements Set<E> {
 
     private int from, to;
 
     private int curIdx;
 
-    private SplittableIndex<E> index;
+    private SplittableElementSet<E> index;
 
     /**
      * Make a new entry.
@@ -46,7 +44,7 @@ public class IndexEntry<E extends Element> implements Set<E> {
      * @param from  the lower bound in the backend array where elements start to have the given index key
      * @param to    the upper bound in the backend array where elements ends to have the given index key (exclusive)
      */
-    public IndexEntry(SplittableIndex<E> index, int key, int from, int to) {
+    public ElementSubSet(SplittableElementSet<E> index, int key, int from, int to) {
         this.index = index;
         this.curIdx = key;
         this.from = from;
@@ -139,7 +137,7 @@ public class IndexEntry<E extends Element> implements Set<E> {
     }
 
     /**
-     * The iterator associated to an {@link IndexEntry}.
+     * The iterator associated to an {@link ElementSubSet}.
      *
      * @author Fabien Hermenier
      */

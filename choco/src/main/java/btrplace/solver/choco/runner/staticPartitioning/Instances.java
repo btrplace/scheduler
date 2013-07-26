@@ -17,54 +17,28 @@
 
 package btrplace.solver.choco.runner.staticPartitioning;
 
-import btrplace.model.*;
+import btrplace.model.Instance;
+import btrplace.model.Mapping;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import gnu.trove.map.hash.TIntIntHashMap;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.Random;
 
 /**
- * Unit tests for {@link SplittableIndex}.
+ * Utility class to manipulate multiple instances.
  *
  * @author Fabien Hermenier
  */
-public class SplittableIndexTest {
+public class Instances {
 
-    @Test
-    public void test() {
-        Model mo = new DefaultModel();
-        List<VM> l = new ArrayList<>();
-        final TIntIntHashMap index = new TIntIntHashMap();
-        Random rnd = new Random();
-        for (int i = 0; i < 10; i++) {
-            l.add(mo.newVM());
-            index.put(i, rnd.nextInt(3));
-        }
-        SplittableIndex.newVMIndex(l, index).
-                forEachIndexEntry(new IndexEntryProcedure<VM>() {
-                    @Override
-                    public boolean extract(SplittableIndex<VM> index, int key, int from, int to) {
-                        TIntIntHashMap idx = index.getRespectiveIndex();
-                        VM[] values = index.getValues();
-                        for (int i = 0; i < values.length; i++) {
-                            VM v = values[i];
-                            if (i < from) {
-                                Assert.assertTrue(idx.get(v.id()) < key);
-                            } else if (i >= to) {
-                                Assert.assertTrue(idx.get(v.id()) > key);
-                            } else {
-                                Assert.assertEquals(idx.get(v.id()), key);
-                            }
-                        }
-                        return true;
-                    }
-                });
-    }
-
+    /**
+     * Make an index revealing the position of each VM in a collection
+     * of disjoint instances
+     *
+     * @param instances the collection to browse. Instances are supposed to be disjoint
+     * @return the index of every VM. Format {@code VM#id() -> position}
+     */
     public static TIntIntHashMap makeVMIndex(Collection<Instance> instances) {
         TIntIntHashMap index = new TIntIntHashMap();
         int p = 0;
@@ -86,6 +60,13 @@ public class SplittableIndexTest {
         return index;
     }
 
+    /**
+     * Make an index revealing the position of each node in a collection
+     * of disjoint instances
+     *
+     * @param instances the collection to browse. Instances are supposed to be disjoint
+     * @return the index of every node. Format {@code Node#id() -> position}
+     */
     public static TIntIntHashMap makeNodeIndex(Collection<Instance> instances) {
         TIntIntHashMap index = new TIntIntHashMap();
         int p = 0;
@@ -101,5 +82,4 @@ public class SplittableIndexTest {
         }
         return index;
     }
-
 }

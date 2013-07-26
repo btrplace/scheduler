@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.runner.staticPartitioning;
+package btrplace.model;
 
-import btrplace.model.*;
 import btrplace.model.view.ModelView;
 
 import java.util.Collection;

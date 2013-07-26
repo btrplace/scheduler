@@ -279,22 +279,6 @@ public class CShareableResource implements ChocoModelView {
     }
 
     /**
-     * Builder associated to the constraint.
-     */
-    public static class Builder implements ChocoModelViewBuilder {
-        @Override
-        public Class<? extends ModelView> getKey() {
-            return ShareableResource.class;
-        }
-
-        @Override
-        public ChocoModelView build(ReconfigurationProblem rp, ModelView v) throws SolverException {
-            ShareableResource rc = (ShareableResource) v;
-            return new CShareableResource(rp, rc);
-        }
-    }
-
-    /**
      * Set the resource usage for each of the VM.
      * If the LB is < 0 , the previous consumption is used to maintain the resource usage.
      * Otherwise, the usage is set to the variable lower bound.
@@ -466,5 +450,21 @@ public class CShareableResource implements ChocoModelView {
         this.references.put(clone, vm);
         this.clones.put(vm, clone);
         return true;
+    }
+
+    /**
+     * Builder associated to the constraint.
+     */
+    public static class Builder implements ChocoModelViewBuilder {
+        @Override
+        public Class<? extends ModelView> getKey() {
+            return ShareableResource.class;
+        }
+
+        @Override
+        public ChocoModelView build(ReconfigurationProblem rp, ModelView v) throws SolverException {
+            ShareableResource rc = (ShareableResource) v;
+            return new CShareableResource(rp, rc);
+        }
     }
 }
