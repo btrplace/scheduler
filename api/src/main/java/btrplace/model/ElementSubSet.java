@@ -40,14 +40,14 @@ public class ElementSubSet<E extends Element> implements Set<E> {
      *
      * @param parent the splittable parent set
      * @param key    the current partition identifier
-     * @param from   the lower bound in the backend array where elements start to have the given key
-     * @param to     the upper bound in the backend array where elements ends to have the given key (exclusive)
+     * @param lb     the lower bound in the backend array where elements start to have the given key
+     * @param ub     the upper bound in the backend array where elements ends to have the given key (exclusive)
      */
-    public ElementSubSet(SplittableElementSet<E> parent, int key, int from, int to) {
+    public ElementSubSet(SplittableElementSet<E> parent, int key, int lb, int ub) {
         this.index = parent;
         this.curIdx = key;
-        this.from = from;
-        this.to = to;
+        this.from = lb;
+        this.to = ub;
     }
 
     @Override
@@ -82,8 +82,19 @@ public class ElementSubSet<E extends Element> implements Set<E> {
 
     @Override
     public Object[] toArray(Object[] a) {
-        Arrays.copyOfRange(a, from, to);
-        return a;
+
+        Object[] r = a.length >= to - from ? a : (E[]) java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), to - from);
+        Iterator<E> it = iterator();
+
+        for (int i = 0; i < r.length; i++) {
+            if (!it.hasNext()) {
+                // fewer elements than expected, null-terminate
+                r[i] = null;
+                return r;
+            }
+            r[i] = (E) it.next();
+        }
+        return r;
     }
 
     @Override
@@ -151,14 +162,14 @@ public class ElementSubSet<E extends Element> implements Set<E> {
         /**
          * Make a new iterator.
          *
-         * @param values the values to iterate on
-         * @param from   the initial index.
-         * @param to     the last index (exclusive)
+         * @param v  the values to iterate on
+         * @param lb the initial index.
+         * @param ub the last index (exclusive)
          */
-        public IndexEntryIterator(E[] values, int from, int to) {
-            this.values = values;
-            this.to = to;
-            this.cursor = from;
+        public IndexEntryIterator(E[] v, int lb, int ub) {
+            this.values = v;
+            this.to = ub;
+            this.cursor = lb;
 
         }
 

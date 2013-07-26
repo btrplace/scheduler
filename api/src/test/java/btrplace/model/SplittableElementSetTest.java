@@ -21,10 +21,7 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Unit tests for {@link SplittableElementSet}.
@@ -110,7 +107,7 @@ public class SplittableElementSetTest {
         final TIntIntHashMap index = new TIntIntHashMap();
         for (int i = 0; i < 10; i++) {
             l.add(new VM(i));
-            index.put(i, i % 2);   //key 0 for
+            index.put(i, i % 2);
         }
         SplittableElementSet<VM> s = SplittableElementSet.newVMIndex(l, index);
         s.forEachPartition(new IterateProcedure<VM>() {
@@ -135,5 +132,27 @@ public class SplittableElementSetTest {
                 return first;
             }
         });
+    }
+
+    @Test
+    public void testGetSubSet() {
+        List<VM> l = new ArrayList<>();
+        final TIntIntHashMap index = new TIntIntHashMap();
+        for (int i = 0; i < 12; i++) {
+            l.add(new VM(i));
+            index.put(i, i % 3);
+        }
+        SplittableElementSet<VM> s = SplittableElementSet.newVMIndex(l, index);
+
+        for (int i : new int[]{0, 1, 2}) {
+            Set<VM> ss = s.getSubSet(i);
+            Assert.assertEquals(ss.size(), 4);
+            for (VM v : ss) {
+                Assert.assertEquals(index.get(v.id()), i);
+            }
+        }
+
+        //Unknown set
+        Assert.assertTrue(s.getSubSet(-1).isEmpty());
     }
 }

@@ -162,7 +162,6 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
             }
         }
         for (int b = 0; b < nbBins; b++) {
-            //for (int d = 0; d < nbDims; d++) {
             for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
                 int loadPos = iSizes[0].length + d * nbBins + b;
                 if (tuple[loadPos] != l[d][b]) {
@@ -275,18 +274,10 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
     public void propagate() throws ContradictionException {
         recomputeLoadSums();
         for (int d = 0; d < nbDims; d++) {
-            //for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
             if (sumISizes[d] > sumLoadSup[d].get() || sumISizes[d] < sumLoadInf[d].get()) {
                 fail();
             }
         }
-
-            /*for (int b = 0; b < nbBins; b++) {
-                for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
-                    filterLoadInf(d, b, Math.max(bRLoads[d][b].get(), (int) sumISizes[d] - sumLoadSup[d].get() + loads[d][b].getSup()));
-                    filterLoadSup(d, b, Math.min(bTLoads[d][b].get(), (int) sumISizes[d] - sumLoadInf[d].get() + loads[d][b].getInf()));
-                }
-            } */
         assert checkLoadConsistency();
     }
 
@@ -359,12 +350,6 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
         try {
             while (deltaDomain.hasNext()) {
                 int b = deltaDomain.next();
-                /*int r = candidates[b].decrement();
-                if (r == 0) {
-                    for (int d = 0; d < nbDims; d++) {
-                        loads[d][b].instantiate(loads[d][b].getInf(), this, false);
-                    }
-                } */
                 removeItem(iIdx, b);
             }
 
@@ -392,7 +377,6 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      *          on the load[bin] variable
      */
     private void assignItem(int item, int bin) throws ContradictionException {
-        //for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
         for (int d = 0; d < nbDims; d++) {
             int r = bRLoads[d][bin].add(iSizes[d][item]);
             filterLoadInf(d, bin, r);
@@ -534,8 +518,8 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
                 }
                 ChocoLogging.getBranchingLogger().severe(name[d] + ": " + "Sum Load LB = " + this.sumLoadInf[d].get() + " (" + sumLoadInf[d] + ")");
                 ChocoLogging.getBranchingLogger().severe(name[d] + ": " + "Sum Load UB = " + this.sumLoadSup[d].get() + " (" + sumLoadSup[d] + ")");
-                for (int i = 0; i < bins.length; i++) {
-                    ChocoLogging.getBranchingLogger().info(bins[i].pretty());
+                for (IntDomainVar v : bins) {
+                    ChocoLogging.getBranchingLogger().info(v.pretty());
                 }
             }
         }

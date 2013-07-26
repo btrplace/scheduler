@@ -103,13 +103,18 @@ public abstract class StaticPartitioning implements InstanceSolver {
             completionService.submit(new InstanceSolverRunner(cra, partition));
         }
 
+        boolean solved = true;
         for (int i = 0; i < partitions.size(); i++) {
             try {
-                results.add(completionService.take().get());
+                InstanceResult res = completionService.take().get();
+                if (res.getPlan() == null) {
+                    solved = false;
+                }
+                results.add(res);
             } catch (ExecutionException ignore) {
                 Throwable cause = ignore.getCause();
                 if (cause != null) {
-                    throw new SolverException(null, "", ignore);
+                    throw new SolverException(null, cause.getMessage(), cause);
                 }
             } catch (InterruptedException e) {
                 throw new SolverException(orig.getModel(), e.getMessage(), e);
@@ -128,18 +133,21 @@ public abstract class StaticPartitioning implements InstanceSolver {
 
         exe.shutdown();
 
-        InstanceResult res = new InstanceResult(new DefaultReconfigurationPlan(orig.getModel()), stats);
+        InstanceResult res = new InstanceResult(solved ? new DefaultReconfigurationPlan(orig.getModel()) : null, stats);
         merge(res, results);
         return res;
     }
 
     private void merge(InstanceResult merged, Collection<InstanceResult> results) throws SolverException {
         ReconfigurationPlan plan = merged.getPlan();
+        //Only if there is a solution
         for (InstanceResult result : results) {
-            for (Action a : result.getPlan()) {
-                if (!plan.add(a)) {
-                    throw new SolverException(merged.getPlan().getOrigin(),
-                            "Unable to add action '" + a + "' while merging the sub-plans");
+            if (result.getPlan() != null && plan != null) {
+                for (Action a : result.getPlan()) {
+                    if (!plan.add(a)) {
+                        throw new SolverException(merged.getPlan().getOrigin(),
+                                "Unable to add action '" + a + "' while merging the sub-plans");
+                    }
                 }
             }
             SolvingStatistics st = result.getStatistics();

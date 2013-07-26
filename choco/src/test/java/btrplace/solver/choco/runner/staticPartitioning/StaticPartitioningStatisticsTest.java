@@ -54,7 +54,6 @@ public class StaticPartitioningStatisticsTest {
         stats.addPartitionStatistics(statsP2);
         Assert.assertFalse(stats.hitTimeout());
         Assert.assertEquals(stats.getSolutions().size(), 0);
-
         stats.addPartitionStatistics(statsP3);
 
         Assert.assertTrue(stats.hitTimeout());
@@ -67,7 +66,6 @@ public class StaticPartitioningStatisticsTest {
         statsP1.addSolution(new SolutionStatistics(1, 2, 3, 5));
         statsP2.addSolution(new SolutionStatistics(6, 7, 8, 9));
         Assert.assertEquals(stats.getSolutions().size(), 0);
-
         statsP3.addSolution(new SolutionStatistics(10, 11, 12, 13));
         Assert.assertEquals(stats.getSolutions().size(), 1);
         SolutionStatistics sol = stats.getSolutions().get(0);

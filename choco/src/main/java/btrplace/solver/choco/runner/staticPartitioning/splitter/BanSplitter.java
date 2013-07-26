@@ -48,7 +48,7 @@ public class BanSplitter implements ConstraintSplitter<Ban> {
                     public boolean extract(SplittableElementSet<VM> index, int idx, int from, int to) {
                         if (to != from) {
                             Set<VM> vms = new ElementSubSet<>(index, idx, from, to);
-                            Set<Node> ns = nodeIndex.getSubset(idx);
+                            Set<Node> ns = nodeIndex.getSubSet(idx);
                             if (ns != null && !ns.isEmpty()) {
                                 partitions.get(idx).getSatConstraints().add(new Ban(vms, ns));
                             }

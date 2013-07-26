@@ -249,10 +249,7 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
             return;
         }
 
-        SatConstraint c = checkModel(p.getOrigin(), true);
-        if (c != null) {
-            throw new ReconfigurationPlanCheckerException(c, p.getOrigin(), true);
-        }
+        checkModel(p.getOrigin(), true);
 
         if (!p.getActions().isEmpty()) {
             PriorityQueue<Action> starts = new PriorityQueue<>(p.getActions().size(), STARTS_CMP);
@@ -267,16 +264,8 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
                 while (a != null && a.getEnd() == curMoment) {
                     ends.remove();
                     startingEvent = false;
-                    c = (SatConstraint) a.visit(this);
-                    if (c != null) {
-                        throw new ReconfigurationPlanCheckerException(c, a);
-                    }
-                    for (Event e : a.getEvents(Action.Hook.post)) {
-                        c = (SatConstraint) e.visit(this);
-                        if (c != null) {
-                            throw new ReconfigurationPlanCheckerException(c, a);
-                        }
-                    }
+                    visitAndThrowOnViolation(a);
+                    visitEvents(a, Action.Hook.post);
                     a = ends.peek();
                 }
                 a = starts.peek();
@@ -284,16 +273,8 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
                 while (a != null && a.getStart() == curMoment) {
                     starts.remove();
                     startingEvent = true;
-                    for (Event e : a.getEvents(Action.Hook.pre)) {
-                        c = (SatConstraint) e.visit(this);
-                        if (c != null) {
-                            throw new ReconfigurationPlanCheckerException(c, a);
-                        }
-                    }
-                    c = (SatConstraint) a.visit(this);
-                    if (c != null) {
-                        throw new ReconfigurationPlanCheckerException(c, a);
-                    }
+                    visitEvents(a, Action.Hook.pre);
+                    visitAndThrowOnViolation(a);
                     a = starts.peek();
                 }
                 int nextEnd = ends.isEmpty() ? Integer.MAX_VALUE : ends.peek().getEnd();
@@ -302,11 +283,24 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
             }
         }
         Model mo = p.getResult();
-        c = checkModel(mo, false);
-        if (c != null) {
-            throw new ReconfigurationPlanCheckerException(c, mo, false);
-        }
+        checkModel(mo, false);
+    }
 
+    private void visitAndThrowOnViolation(Action a) throws ReconfigurationPlanCheckerException {
+        SatConstraint c = (SatConstraint) a.visit(this);
+        if (c != null) {
+            throw new ReconfigurationPlanCheckerException(c, a);
+        }
+    }
+
+    private void visitEvents(Action a, Action.Hook k) throws ReconfigurationPlanCheckerException {
+        SatConstraint c;
+        for (Event e : a.getEvents(k)) {
+            c = (SatConstraint) e.visit(this);
+            if (c != null) {
+                throw new ReconfigurationPlanCheckerException(c, a);
+            }
+        }
     }
 
     /**
@@ -315,16 +309,22 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
      * @param mo    the model to check
      * @param start {@code true} iff the model corresponds to the origin model. Otherwise it is considered
      *              to be the resulting model
-     * @return the first violated constraint or {@code null} if no constraint is violated
+     * @throws ReconfigurationPlanCheckerException
+     *          if at least one constraint is violated.
      */
-    public SatConstraint checkModel(Model mo, boolean start) {
+    private void checkModel(Model mo, boolean start) throws ReconfigurationPlanCheckerException {
         for (SatConstraintChecker c : checkers) {
             if (start && !c.startsWith(mo)) {
-                return c.getConstraint();
+                SatConstraint cs = c.getConstraint();
+                if (cs != null) {
+                    throw new ReconfigurationPlanCheckerException(c.getConstraint(), mo, start);
+                }
             } else if (!start && !c.endsWith(mo)) {
-                return c.getConstraint();
+                SatConstraint cs = c.getConstraint();
+                if (cs != null) {
+                    throw new ReconfigurationPlanCheckerException(c.getConstraint(), mo, start);
+                }
             }
         }
-        return null;
     }
 }

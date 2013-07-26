@@ -17,13 +17,17 @@
 
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
-import btrplace.model.*;
+import btrplace.model.Instance;
+import btrplace.model.IterateProcedure;
+import btrplace.model.SplittableElementSet;
+import btrplace.model.VM;
 import btrplace.model.constraint.Split;
 import gnu.trove.map.hash.TIntIntHashMap;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Splitter for {@link btrplace.model.constraint.Split} constraints.
@@ -56,7 +60,7 @@ public class SplitSplitter implements ConstraintSplitter<Split> {
                             Collection<Collection<VM>> sets = new ArrayList<>();
                             for (Collection<VM> vms : cstr.getSets()) {
                                 SplittableElementSet<VM> subSplit = SplittableElementSet.newVMIndex(vms, vmsPosition);
-                                ElementSubSet<VM> s = subSplit.getSubset(idx);
+                                Set<VM> s = subSplit.getSubSet(idx);
                                 if (!s.isEmpty()) {
                                     sets.add(s);
                                 }

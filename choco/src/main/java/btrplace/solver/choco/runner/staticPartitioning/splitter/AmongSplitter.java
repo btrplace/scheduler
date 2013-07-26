@@ -24,6 +24,7 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Splitter for {@link btrplace.model.constraint.Among} constraints.
@@ -59,7 +60,7 @@ public class AmongSplitter implements ConstraintSplitter<Among> {
                             final Collection<Collection<Node>> subParams = new ArrayList<>();
                             for (Collection<Node> ns : cstr.getGroupsOfNodes()) {
                                 SplittableElementSet<Node> nodeIndex = SplittableElementSet.newNodeIndex(ns, nodePosition);
-                                ElementSubSet<Node> s = nodeIndex.getSubset(idx);
+                                Set<Node> s = nodeIndex.getSubSet(idx);
                                 if (s != null && !s.isEmpty()) {
                                     subParams.add(s);
                                 }

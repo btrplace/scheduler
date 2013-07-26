@@ -44,14 +44,32 @@ public class ElementSubSetTest {
 
         SplittableElementSet<VM> si = SplittableElementSet.newVMIndex(l, index);
         VM[] values = si.getValues();
-        System.err.println(si);
+
         ElementSubSet<VM> p1 = new ElementSubSet<>(si, 0, 0, 5);
         //test contains()
         Assert.assertTrue(p1.contains(values[0]));
         Assert.assertFalse(p1.contains(values[5]));
 
+        //test containsAll()
+        Assert.assertFalse(p1.containsAll(l));
+
         //test size()
         Assert.assertEquals(p1.size(), 5);
+        Assert.assertFalse(p1.isEmpty());
+
+        //toArray()
+        Object[] objects = p1.toArray();
+        Assert.assertEquals(objects.length, 5);
+        for (int i = 0; i < 5; i++) {
+            VM v = (VM) objects[i];
+            Assert.assertEquals(v.id() % 2, 0);
+        }
+
+        VM[] vms = (VM[]) p1.toArray(new VM[5]);
+        for (VM v : vms) {
+            Assert.assertEquals(v.id() % 2, 0);
+        }
+
         System.out.println(p1);
         //test iterator
         for (VM v : p1) {

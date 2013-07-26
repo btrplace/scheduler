@@ -115,7 +115,18 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
                 throw new JSONConverterException(("Unsupported type of action '" + id + "'"));
         }
 
-        //Decorate with the events
+        attachEvents(a, in);
+        return a;
+    }
+
+    /**
+     * Decorate the action with optional events
+     *
+     * @param a  the action to decorate
+     * @param in the JSON message containing the event at the "hook" key
+     * @throws JSONConverterException in case of error
+     */
+    private void attachEvents(Action a, JSONObject in) throws JSONConverterException {
         if (in.containsKey("hooks")) {
             JSONObject hooks = (JSONObject) in.get("hooks");
             for (String k : hooks.keySet()) {
@@ -129,7 +140,6 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
                 }
             }
         }
-        return a;
     }
 
     private Event eventFromJSON(JSONObject o) throws JSONConverterException {

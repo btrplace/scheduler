@@ -101,21 +101,41 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
         }
         int defCapacity = (Integer) o.get(DEFAULT_CAPACITY);
 
-
         ShareableResource rc = new ShareableResource(rcId, defCapacity, defConsumption);
-        JSONObject values = (JSONObject) o.get("vms");
-        for (String k : values.keySet()) {
-            VM u = getOrMakeVM(Integer.parseInt(k));
-            int v = Integer.parseInt(values.get(k).toString());
-            rc.setConsumption(u, v);
-        }
-        values = (JSONObject) o.get("nodes");
-        for (String k : values.keySet()) {
-            Node u = getOrMakeNode(Integer.parseInt(k));
-            int v = Integer.parseInt(values.get(k).toString());
-            rc.setCapacity(u, v);
-        }
+
+        parseVMs(rc, o.get("vms"));
+        parseNodes(rc, o.get("nodes"));
 
         return rc;
+    }
+
+    private void parseVMs(ShareableResource rc, Object o) throws JSONConverterException {
+        if (o != null) {
+            try {
+                JSONObject values = (JSONObject) o;
+                for (String k : values.keySet()) {
+                    VM u = getOrMakeVM(Integer.parseInt(k));
+                    int v = Integer.parseInt(values.get(k).toString());
+                    rc.setConsumption(u, v);
+                }
+            } catch (ClassCastException cc) {
+                throw new JSONConverterException("Unable to read the VMs at key 'vms'. Expect a JSONObject but got a '" + o.getClass().getName() + "'");
+            }
+        }
+    }
+
+    private void parseNodes(ShareableResource rc, Object o) throws JSONConverterException {
+        if (o != null) {
+            try {
+                JSONObject values = (JSONObject) o;
+                for (String k : values.keySet()) {
+                    Node u = getOrMakeNode(Integer.parseInt(k));
+                    int v = Integer.parseInt(values.get(k).toString());
+                    rc.setCapacity(u, v);
+                }
+            } catch (ClassCastException cc) {
+                throw new JSONConverterException("Unable to read the nodes at key 'nodes'. Expect a JSONObject but got a '" + o.getClass().getName() + "'");
+            }
+        }
     }
 }

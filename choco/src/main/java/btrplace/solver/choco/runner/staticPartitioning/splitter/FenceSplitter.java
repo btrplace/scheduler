@@ -48,7 +48,7 @@ public class FenceSplitter implements ConstraintSplitter<Fence> {
                     public boolean extract(SplittableElementSet<VM> index, int idx, int from, int to) {
                         if (to != from) {
                             Set<VM> vms = new ElementSubSet<>(index, idx, from, to);
-                            Set<Node> ns = nodeIndex.getSubset(idx);
+                            Set<Node> ns = nodeIndex.getSubSet(idx);
                             if (!ns.isEmpty()) {
                                 partitions.get(idx).getSatConstraints().add(new Fence(vms, ns));
                             } else {

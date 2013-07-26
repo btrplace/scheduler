@@ -170,8 +170,8 @@ public class SubMapping implements Mapping {
             for (Node n : scope) {
                 all.addAll(parent.getRunningVMs(n));
                 all.addAll(parent.getSleepingVMs(n));
-                all.addAll(ready);
             }
+            all.addAll(ready);
         }
         return all;
     }

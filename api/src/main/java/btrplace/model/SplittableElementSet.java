@@ -42,12 +42,12 @@ public class SplittableElementSet<E extends Element> implements Comparator<E> {
     /**
      * Make a new splittable set.
      *
-     * @param c     the elements, no duplicates are supposed
-     * @param index the partition associated to each element. Format {@link btrplace.model.Element#id()} -> key
+     * @param c   the elements, no duplicates are supposed
+     * @param idx the partition associated to each element. Format {@link btrplace.model.Element#id()} -> key
      */
-    public SplittableElementSet(E[] c, TIntIntHashMap index) {
+    public SplittableElementSet(E[] c, TIntIntHashMap idx) {
         values = c;
-        this.index = index;
+        this.index = idx;
         Arrays.sort(values, this);
     }
 
@@ -55,24 +55,24 @@ public class SplittableElementSet<E extends Element> implements Comparator<E> {
      * Make a new splittable set from a collection of VM.
      * We consider the collection does not have duplicated elements.
      *
-     * @param c     the collection to wrap
-     * @param index the partition for each VM
+     * @param c   the collection to wrap
+     * @param idx the partition for each VM
      * @return the resulting set
      */
-    public static SplittableElementSet<VM> newVMIndex(Collection<VM> c, TIntIntHashMap index) {
-        return new SplittableElementSet<>(c.toArray(new VM[c.size()]), index);
+    public static SplittableElementSet<VM> newVMIndex(Collection<VM> c, TIntIntHashMap idx) {
+        return new SplittableElementSet<>(c.toArray(new VM[c.size()]), idx);
     }
 
     /**
      * Make a new splittable set from a collection of nodes.
      * We consider the collection does not have duplicated elements.
      *
-     * @param c     the collection to wrap
-     * @param index the partition for each node
+     * @param c   the collection to wrap
+     * @param idx the partition for each node
      * @return the resulting set
      */
-    public static SplittableElementSet<Node> newNodeIndex(Collection<Node> c, TIntIntHashMap index) {
-        return new SplittableElementSet<>(c.toArray(new Node[c.size()]), index);
+    public static SplittableElementSet<Node> newNodeIndex(Collection<Node> c, TIntIntHashMap idx) {
+        return new SplittableElementSet<>(c.toArray(new Node[c.size()]), idx);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class SplittableElementSet<E extends Element> implements Comparator<E> {
         final StringBuilder b = new StringBuilder("{");
         forEachPartition(new IterateProcedure<E>() {
             @Override
-            public boolean extract(SplittableElementSet<E> index, int idx, int from, int to) {
+            public boolean extract(SplittableElementSet<E> idx, int k, int from, int to) {
                 b.append('{');
                 b.append(values[from]);
                 for (int i = from + 1; i < to; i++) {
@@ -119,9 +119,9 @@ public class SplittableElementSet<E extends Element> implements Comparator<E> {
      * Get a subset for the given partition.
      *
      * @param k the partition key
-     * @return the resulting subset
+     * @return the resulting subset. Empty if no elements belong to the given partition.
      */
-    public ElementSubSet<E> getSubset(int k) {
+    public Set<E> getSubSet(int k) {
         int from = -1;
         //TODO: very bad. Bounds such be memorized
         for (int x = 0; x < values.length; x++) {
@@ -136,7 +136,7 @@ public class SplittableElementSet<E extends Element> implements Comparator<E> {
         if (from >= 0) {
             return new ElementSubSet<>(this, k, from, values.length);
         }
-        return null;
+        return Collections.emptySet();
     }
 
     @Override
@@ -171,7 +171,7 @@ public class SplittableElementSet<E extends Element> implements Comparator<E> {
         final List<ElementSubSet<E>> partitions = new ArrayList<>();
         forEachPartition(new IterateProcedure<E>() {
             @Override
-            public boolean extract(SplittableElementSet<E> index, int key, int from, int to) {
+            public boolean extract(SplittableElementSet<E> idx, int key, int from, int to) {
                 partitions.add(new ElementSubSet<>(SplittableElementSet.this, key, from, to));
                 return true;
             }
