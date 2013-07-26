@@ -62,7 +62,7 @@ public class ConstraintMapperTest {
     public void testUnregister() {
         ConstraintMapper map = new ConstraintMapper();
         Assert.assertNull(map.getBuilder(MockSatConstraint.class));
-        Assert.assertFalse(map.unregister(MockSatConstraint.class));
+        Assert.assertFalse(map.unRegister(MockSatConstraint.class));
     }
 
     @Test(dependsOnMethods = {"testInstantiate", "testGetBuilder"})
@@ -81,7 +81,7 @@ public class ConstraintMapperTest {
         ChocoConstraint c = map.map(s);
         Assert.assertTrue(c.getClass().equals(CSpread.class));
 
-        map.unregister(Spread.class);
+        map.unRegister(Spread.class);
         CSpread.Builder cb = new CSpread.Builder();
         map.register(cb);
         c = map.map(s);

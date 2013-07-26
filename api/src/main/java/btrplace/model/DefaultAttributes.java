@@ -241,12 +241,12 @@ public class DefaultAttributes implements Attributes, Cloneable {
         }
         try {
             return put(e, k, Integer.parseInt(x));
-        } catch (NumberFormatException ex) {
+        } catch (NumberFormatException ignored) {
         }
 
         try {
             return put(e, k, Double.parseDouble(x));
-        } catch (NumberFormatException ex) {
+        } catch (NumberFormatException ignored) {
         }
 
         return put(e, k, v);

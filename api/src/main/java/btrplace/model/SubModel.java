@@ -21,6 +21,7 @@ import btrplace.model.view.ModelView;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -200,6 +201,50 @@ public class SubModel implements Model {
     @Override
     public boolean contains(Node n) {
         return parent.contains(n);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+        b.append("Mapping:\n");
+        b.append(getMapping());
+        b.append("\nAttributes:\n");
+        b.append(getAttributes());
+        b.append("\nViews:\n");
+        for (ModelView entry : parent.getViews()) {
+            b.append(entry.getIdentifier()).append(": ");
+            b.append(entry.toString()).append("\n");
+        }
+        return b.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Model that = (Model) o;
+
+        if (!sm.equals(that.getMapping())) {
+            return false;
+        }
+
+        //TODO: excessive, we should only focus on my attributes
+        if (!parent.getAttributes().equals(that.getAttributes())) {
+            return false;
+        }
+
+        Collection<ModelView> thatRrcs = that.getViews();
+        return getViews().equals(thatRrcs);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sm, parent.getViews(), parent.getAttributes());
     }
 }
 

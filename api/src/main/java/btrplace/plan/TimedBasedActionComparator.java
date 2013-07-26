@@ -48,11 +48,13 @@ public class TimedBasedActionComparator implements Comparator<Action> {
     /**
      * New comparator.
      *
-     * @param diffSimultaneous {@code true} to differentiate simultaneous actions.
+     * @param onStart         to compare the actions using their start moment. Otherwise, the comparison
+     *                        is made wrt. the ending moment
+     * @param diffSamePeriods {@code true} to differentiate simultaneous actions.
      */
-    public TimedBasedActionComparator(boolean startBased, boolean diffSimultaneous) {
-        this.diffSimultaneous = diffSimultaneous;
-        this.startBased = startBased;
+    public TimedBasedActionComparator(boolean onStart, boolean diffSamePeriods) {
+        this.diffSimultaneous = diffSamePeriods;
+        this.startBased = onStart;
     }
 
     @Override

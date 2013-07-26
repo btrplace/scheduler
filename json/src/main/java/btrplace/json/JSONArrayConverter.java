@@ -65,7 +65,6 @@ public interface JSONArrayConverter<E> {
      *
      * @param buf the string to parse
      * @return the resulting collection
-     * @throws IOException            if an error occurred while reading the stream
      * @throws JSONConverterException if the stream cannot be parsed
      */
     List<E> listFromJSON(String buf) throws IOException, JSONConverterException;

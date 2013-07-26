@@ -60,7 +60,7 @@ public class ResumeVMModelTest {
         DurationEvaluators dev = DurationEvaluators.newBundle();
         dev.register(ResumeVM.class, new ConstantActionDuration(10));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .setNextVMsStates(new HashSet<VM>(), map.getAllVMs(), new HashSet<VM>(), new HashSet<VM>())
                 .build();
@@ -108,7 +108,7 @@ public class ResumeVMModelTest {
         DurationEvaluators dev = DurationEvaluators.newBundle();
         dev.register(ResumeVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .setNextVMsStates(new HashSet<VM>(), map.getAllVMs(), new HashSet<VM>(), new HashSet<VM>())
                 .build();

@@ -68,9 +68,9 @@ public class DurationEvaluatorsTest {
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered"})
     public void testUnregister() {
         DurationEvaluators d = DurationEvaluators.newBundle();
-        Assert.assertTrue(d.unregister(btrplace.plan.event.MigrateVM.class));
+        Assert.assertTrue(d.unRegister(btrplace.plan.event.MigrateVM.class));
         Assert.assertFalse(d.isRegistered(btrplace.plan.event.MigrateVM.class));
-        Assert.assertFalse(d.unregister(btrplace.plan.event.MigrateVM.class));
+        Assert.assertFalse(d.unRegister(btrplace.plan.event.MigrateVM.class));
     }
 
     @Test(dependsOnMethods = {"testInstantiateAndIsRegistered", "testUnregister"})

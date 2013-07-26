@@ -23,7 +23,6 @@ import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Offline;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.actionModel.ActionModel;
@@ -45,7 +44,7 @@ public class COffline implements ChocoConstraint {
     /**
      * Make a new constraint.
      *
-     * @param o the {@link SatConstraint} to rely on
+     * @param o the {@link Offline} constraint to rely on
      */
     public COffline(Offline o) {
         this.cstr = o;

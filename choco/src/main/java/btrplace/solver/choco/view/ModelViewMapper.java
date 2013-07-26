@@ -68,7 +68,7 @@ public class ModelViewMapper {
      * @param id the view identifier
      * @return {@code true} if a builder was registered
      */
-    public boolean unregister(Class<? extends ModelView> id) {
+    public boolean unRegister(Class<? extends ModelView> id) {
         return builders.remove(id) != null;
     }
 

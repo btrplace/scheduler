@@ -88,7 +88,7 @@ public class DurationEvaluators {
      * @param a the action class
      * @return {@code true} if a {@link ActionDurationEvaluator} was associated to the action.
      */
-    public boolean unregister(Class<? extends Action> a) {
+    public boolean unRegister(Class<? extends Action> a) {
         return durations.remove(a) != null;
     }
 

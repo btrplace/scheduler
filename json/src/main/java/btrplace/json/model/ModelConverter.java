@@ -27,7 +27,7 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
 /**
- * Class to serialize/unserialize a model using the JSON format.
+ * Class to serialize/unSerialize a model using the JSON format.
  *
  * @author Fabien Hermenier
  */

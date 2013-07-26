@@ -17,13 +17,12 @@
 
 package btrplace.model;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
- * A set of elements that have the same index key.
+ * A set of elements in a {@link SplittableElementSet}
+ * that are in the same partition.
+ * <p/>
  * This set is considered as immutable.
  *
  * @author Fabien Hermenier
@@ -37,15 +36,15 @@ public class ElementSubSet<E extends Element> implements Set<E> {
     private SplittableElementSet<E> index;
 
     /**
-     * Make a new entry.
+     * Make a new subset.
      *
-     * @param index the index to rely on
-     * @param key   the current index key
-     * @param from  the lower bound in the backend array where elements start to have the given index key
-     * @param to    the upper bound in the backend array where elements ends to have the given index key (exclusive)
+     * @param parent the splittable parent set
+     * @param key    the current partition identifier
+     * @param from   the lower bound in the backend array where elements start to have the given key
+     * @param to     the upper bound in the backend array where elements ends to have the given key (exclusive)
      */
-    public ElementSubSet(SplittableElementSet<E> index, int key, int from, int to) {
-        this.index = index;
+    public ElementSubSet(SplittableElementSet<E> parent, int key, int from, int to) {
+        this.index = parent;
         this.curIdx = key;
         this.from = from;
         this.to = to;
@@ -152,7 +151,7 @@ public class ElementSubSet<E extends Element> implements Set<E> {
         /**
          * Make a new iterator.
          *
-         * @param values the values to iterator over
+         * @param values the values to iterate on
          * @param from   the initial index.
          * @param to     the last index (exclusive)
          */
@@ -170,6 +169,9 @@ public class ElementSubSet<E extends Element> implements Set<E> {
 
         @Override
         public E next() {
+            if (cursor == to) {
+                throw new NoSuchElementException();
+            }
             return values[cursor++];
         }
 

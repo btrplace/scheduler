@@ -100,7 +100,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
             //as they are not forced to be a part of the initial model
             //(when they will be forged)
             if (!(cstrs instanceof Ready)) {
-                checkUnkownVMsInMapping(origin, cstr.getInvolvedVMs());
+                checkUnknownVMsInMapping(origin, cstr.getInvolvedVMs());
             }
 
             if (cstr instanceof Running) {
@@ -108,10 +108,10 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
             } else if (cstr instanceof Sleeping) {
                 toSleep.addAll(cstr.getInvolvedVMs());
             } else if (cstr instanceof Ready) {
-                checkUnkownVMsInMapping(origin, cstr.getInvolvedVMs());
+                checkUnknownVMsInMapping(origin, cstr.getInvolvedVMs());
                 toForge.addAll(cstr.getInvolvedVMs());
             } else if (cstr instanceof Killed) {
-                checkUnkownVMsInMapping(origin, cstr.getInvolvedVMs());
+                checkUnknownVMsInMapping(origin, cstr.getInvolvedVMs());
                 toKill.addAll(cstr.getInvolvedVMs());
             }
 
@@ -135,7 +135,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         DefaultReconfigurationProblemBuilder rpb = new DefaultReconfigurationProblemBuilder(origin)
                 .setNextVMsStates(toForge, toRun, toSleep, toKill)
                 .setViewMapper(params.getViewMapper())
-                .setDurationEvaluatators(params.getDurationEvaluators());
+                .setDurationEvaluators(params.getDurationEvaluators());
         if (params.doRepair()) {
             Set<VM> toManage = new HashSet<>();
             for (ChocoConstraint cstr : cConstraints) {
@@ -229,7 +229,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         }
     }
 
-    private void checkUnkownVMsInMapping(Model m, Collection<VM> vms) throws SolverException {
+    private void checkUnknownVMsInMapping(Model m, Collection<VM> vms) throws SolverException {
         if (!m.getMapping().getAllVMs().containsAll(vms)) {
             Set<VM> unknown = new HashSet<>(vms);
             unknown.removeAll(m.getMapping().getAllVMs());

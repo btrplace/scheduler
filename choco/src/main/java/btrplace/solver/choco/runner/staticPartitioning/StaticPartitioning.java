@@ -138,7 +138,8 @@ public abstract class StaticPartitioning implements InstanceSolver {
         for (InstanceResult result : results) {
             for (Action a : result.getPlan()) {
                 if (!plan.add(a)) {
-                    LOGGER.error("Unable to add action {} while merging the results", a);
+                    throw new SolverException(merged.getPlan().getOrigin(),
+                            "Unable to add action '" + a + "' while merging the sub-plans");
                 }
             }
             SolvingStatistics st = result.getStatistics();

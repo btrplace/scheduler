@@ -108,7 +108,7 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
     public JSONObject toJSON(ModelView o) throws JSONConverterException {
         ModelViewConverter c = java2json.get(o.getClass());
         if (c == null) {
-            throw new JSONConverterException("No converter available for a view with the '" + o.getClass() + "' classname");
+            throw new JSONConverterException("No converter available for a view with the '" + o.getClass() + "' className");
         }
         return c.toJSON(o);
     }

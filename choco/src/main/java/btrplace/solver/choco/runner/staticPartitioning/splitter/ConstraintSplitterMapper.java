@@ -90,7 +90,7 @@ public class ConstraintSplitterMapper {
      * @param c the class of the {@link Constraint} to un-register
      * @return {@code true} if a builder was registered
      */
-    public boolean unregister(Class<? extends Constraint> c) {
+    public boolean unRegister(Class<? extends Constraint> c) {
         return builders.remove(c) != null;
     }
 

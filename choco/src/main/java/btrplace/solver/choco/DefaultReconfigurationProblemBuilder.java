@@ -82,7 +82,7 @@ public class DefaultReconfigurationProblemBuilder {
      * @param d the evaluator to use
      * @return the current builder
      */
-    public DefaultReconfigurationProblemBuilder setDurationEvaluatators(DurationEvaluators d) {
+    public DefaultReconfigurationProblemBuilder setDurationEvaluators(DurationEvaluators d) {
         dEval = d;
         return this;
     }

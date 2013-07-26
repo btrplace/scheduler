@@ -119,12 +119,13 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
         if (in.containsKey("hooks")) {
             JSONObject hooks = (JSONObject) in.get("hooks");
             for (String k : hooks.keySet()) {
-                Action.Hook h = Action.Hook.valueOf(k);
-                if (h == null) {
-                    throw new JSONConverterException(("Unsupported hook type '" + k + "'"));
-                }
-                for (Object o : (JSONArray) hooks.get(k)) {
-                    a.addEvent(h, eventFromJSON((JSONObject) o));
+                try {
+                    Action.Hook h = Action.Hook.valueOf(k);
+                    for (Object o : (JSONArray) hooks.get(k)) {
+                        a.addEvent(h, eventFromJSON((JSONObject) o));
+                    }
+                } catch (IllegalArgumentException ex) {
+                    throw new JSONConverterException("Unsupported hook type '" + k + "'", ex);
                 }
             }
         }
@@ -390,8 +391,8 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     @Override
     public JSONArray toJSON(Collection<Action> e) throws JSONConverterException {
         JSONArray arr = new JSONArray();
-        for (Action cstr : e) {
-            arr.add(toJSON(cstr));
+        for (Action a : e) {
+            arr.add(toJSON(a));
         }
         return arr;
     }

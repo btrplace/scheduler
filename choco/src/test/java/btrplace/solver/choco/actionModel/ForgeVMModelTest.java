@@ -51,7 +51,7 @@ public class ForgeVMModelTest {
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(ForgeVM.class, new ConstantActionDuration(7));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .build();
         ForgeVMModel ma = (ForgeVMModel) rp.getVMAction(vm1);
@@ -74,7 +74,7 @@ public class ForgeVMModelTest {
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(ForgeVM.class, new ConstantActionDuration(7));
         new DefaultReconfigurationProblemBuilder(mo)
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .build();
 
@@ -93,7 +93,7 @@ public class ForgeVMModelTest {
         dev.register(ForgeVM.class, new ConstantActionDuration(7));
         dev.register(ShutdownNode.class, new ConstantActionDuration(20));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .labelVariables()
                 .build();

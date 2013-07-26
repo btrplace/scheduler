@@ -59,7 +59,7 @@ public interface ReconfigurationPlan extends Iterable<Action> {
     /**
      * Return the theoretical duration of a reconfiguration plan.
      *
-     * @return the end moment of the last exectuted action
+     * @return the end moment of the last executed action
      */
     int getDuration();
 

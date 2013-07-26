@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -502,7 +501,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
             int sls = 0;
             for (int b = 0; b < rs[d].length; b++) {
                 if (rs[d][b] != bRLoads[d][b].get()) {
-                    ChocoLogging.getBranchingLogger().warning(name[d] + ": " + loads[d][b].pretty() + " required=" + bRLoads[d][b].get() + " expected=" + rs[b]);
+                    ChocoLogging.getBranchingLogger().warning(name[d] + ": " + loads[d][b].pretty() + " required=" + bRLoads[d][b].get() + " expected=" + Arrays.toString(rs[b]));
                     check = false;
                 }
                 if (rs[d][b] + cs[d][b] != bTLoads[d][b].get()) {

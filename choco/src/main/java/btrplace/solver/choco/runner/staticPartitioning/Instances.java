@@ -30,7 +30,13 @@ import java.util.Collection;
  *
  * @author Fabien Hermenier
  */
-public class Instances {
+public final class Instances {
+
+    /**
+     * Utility class, no instantiation.
+     */
+    private Instances() {
+    }
 
     /**
      * Make an index revealing the position of each VM in a collection

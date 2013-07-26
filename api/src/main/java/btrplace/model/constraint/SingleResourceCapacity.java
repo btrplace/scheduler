@@ -61,7 +61,7 @@ public class SingleResourceCapacity extends SatConstraint {
      *
      * @param nodes      the involved nodes.
      * @param rc         the resource identifier
-     * @param amount     the maximum amount of resources to share among the hosted VMs on each ndoe. >= 0
+     * @param amount     the maximum amount of resources to share among the hosted VMs on each node. >= 0
      * @param continuous {@code true} for a continuous restriction
      */
     public SingleResourceCapacity(Collection<Node> nodes, String rc, int amount, boolean continuous) {

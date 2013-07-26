@@ -69,7 +69,7 @@ public class RelocatableVMModelTest {
         dev.register(MigrateVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .build();
         rp.getNodeActions()[0].getState().setVal(1);
@@ -122,7 +122,7 @@ public class RelocatableVMModelTest {
         dev.register(MigrateVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .build();
         rp.getNodeActions()[0].getState().setVal(1);
         rp.getNodeActions()[1].getState().setVal(1);
@@ -203,7 +203,7 @@ public class RelocatableVMModelTest {
         mo.getAttributes().put(vm1, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .build();
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm1);
@@ -238,7 +238,7 @@ public class RelocatableVMModelTest {
         mo.getAttributes().put(vm10, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .setManageableVMs(map.getAllVMs())
                 .build();
@@ -285,7 +285,7 @@ public class RelocatableVMModelTest {
         mo.getAttributes().put(vm10, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .setManageableVMs(map.getAllVMs())
                 .build();
@@ -326,7 +326,7 @@ public class RelocatableVMModelTest {
         mo.getAttributes().put(vm10, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .setManageableVMs(map.getAllVMs())
                 .build();
@@ -368,7 +368,7 @@ public class RelocatableVMModelTest {
         mo.getAttributes().put(vm10, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .setManageableVMs(map.getAllVMs())
                 .build();

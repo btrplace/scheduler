@@ -41,7 +41,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * The relocation can be performed through a live-migration or a re-instantiation.
  * The re-instantiation consists in forging a new VM having the same characteristics
  * and launching it on the destination node. Once this new VM has been launched, the
- * original VM is shutted down. Such a relocation method may be faster than a migration-based
+ * original VM is shut down. Such a relocation method may be faster than a migration-based
  * method while being less aggressive for the network. However, the VM must be able to
  * be cloned from a template.
  * <p/>
@@ -75,7 +75,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
     private Node src;
 
     /**
-     * The choosed relocation method. 0 for migration, 1 for relocation.
+     * The relocation method. 0 for migration, 1 for relocation.
      */
     private IntDomainVar method;
 

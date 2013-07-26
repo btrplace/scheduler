@@ -53,7 +53,7 @@ public class ModelViewMapperTest {
     public void testUnregister() {
         ModelViewMapper map = new ModelViewMapper();
         Assert.assertNull(map.getBuilder(MockModelView.class));
-        Assert.assertFalse(map.unregister(MockModelView.class));
+        Assert.assertFalse(map.unRegister(MockModelView.class));
     }
 
     @Test(dependsOnMethods = {"testInstantiate", "testUnregister", "testRegister"})
@@ -64,7 +64,7 @@ public class ModelViewMapperTest {
         ChocoModelView cv = map.map(null, v);
         Assert.assertTrue(cv.getClass().equals(CMockModelView.class));
 
-        map.unregister(MockModelView.class);
+        map.unRegister(MockModelView.class);
         Assert.assertNull(map.map(null, v));
     }
 

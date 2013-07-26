@@ -157,7 +157,7 @@ public class DefaultReconfigurationProblemTest {
         DurationEvaluators dEval = DurationEvaluators.newBundle();
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(toWait, toRun, Collections.singleton(vm3), Collections.singleton(vm2))
-                .setDurationEvaluatators(dEval).build();
+                .setDurationEvaluators(dEval).build();
 
         Assert.assertEquals(dEval, rp.getDurationEvaluators());
         Assert.assertNotNull(rp.getViewMapper());

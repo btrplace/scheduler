@@ -68,7 +68,7 @@ public class BootableNodeModelTest {
         dev.register(BootNode.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .labelVariables()
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .build();
         BootableNodeModel na = (BootableNodeModel) rp.getNodeAction(n1);
         na.getState().setVal(1);
@@ -97,7 +97,7 @@ public class BootableNodeModelTest {
         dev.register(BootNode.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .labelVariables()
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .build();
         BootableNodeModel na = (BootableNodeModel) rp.getNodeAction(n1);
         na.getState().setVal(0);
@@ -131,7 +131,7 @@ public class BootableNodeModelTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .labelVariables()
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .build();
 
         BootableNodeModel na = (BootableNodeModel) rp.getNodeAction(n1);
@@ -156,7 +156,7 @@ public class BootableNodeModelTest {
         dev.register(BootNode.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .labelVariables()
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .build();
         BootableNodeModel na1 = (BootableNodeModel) rp.getNodeAction(n1);
         BootableNodeModel na2 = (BootableNodeModel) rp.getNodeAction(n2);
@@ -177,7 +177,7 @@ public class BootableNodeModelTest {
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(BootNode.class, new ConstantActionDuration(2));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .build();
         BootableNodeModel ma2 = (BootableNodeModel) rp.getNodeAction(n2);
@@ -206,7 +206,7 @@ public class BootableNodeModelTest {
         dev.register(ShutdownNode.class, new ConstantActionDuration(5));
         dev.register(BootNode.class, new ConstantActionDuration(3));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .build();
 
