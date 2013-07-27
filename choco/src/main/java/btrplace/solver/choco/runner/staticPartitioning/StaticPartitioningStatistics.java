@@ -239,6 +239,47 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
+
+        List<SolutionStatistics> stats = getSolutions();
+
+        buildHeader(b, stats);
+
+        if (!stats.isEmpty()) {
+            if (!partResults.isEmpty()) {
+                b.append(" [");
+                b.append(partResults.get(0).getSolutions().size());
+                for (int i = 1; i < partResults.size(); i++) {
+                    b.append(", ").append(partResults.get(i).getSolutions().size());
+                }
+                b.append(']');
+            }
+            b.append(":\n");
+
+            int i = 1;
+            for (SolutionStatistics st : stats) {
+                b.append("\t").append(i).append(')')
+                        .append(" at ").append(st.getTime()).append("ms: ")
+                        .append(st.getNbNodes()).append(" node(s), ")
+                        .append(st.getNbBacktracks()).append(" backtrack(s)");
+                if (st.hasObjective()) {
+                    b.append(", objective: ").append(st.getOptValue());
+                }
+                b.append('\n');
+                i++;
+            }
+        } else {
+            int nbSolved = 0;
+            for (SolvingStatistics x : partResults) {
+                if (!x.getSolutions().isEmpty()) {
+                    nbSolved++;
+                }
+            }
+            b.append(": ").append(nbSolved).append('/').append(nbPartitions).append(" solved partition(s)");
+        }
+        return b.toString();
+    }
+
+    private void buildHeader(StringBuilder b, List<SolutionStatistics> stats) {
         b.append(nbNodes).append(" node(s)")
                 .append("; ").append(nbVMs).append(" VM(s)");
         if (getNbManagedVMs() != nbVMs) {
@@ -253,51 +294,18 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
         if (params.getTimeLimit() > 0) {
             b.append("; timeout: ").append(params.getTimeLimit()).append("s");
         }
-        b.append("\nmax. building duration: ").append(getCoreRPBuildDuration()).append("ms (core-RP) + ").append(getSpeRPDuration()).append("ms (specialization)");
+        b.append("\nmax. building duration: ").append(getCoreRPBuildDuration()).append("ms (core-RP) + ")
+                .append(getSpeRPDuration()).append("ms (specialization)");
         b.append("\nAfter ").append(getSolvingDuration()).append("ms of search");
         if (hitTimeout()) {
             b.append(" (timeout)");
         } else {
             b.append(" (terminated)");
         }
-
-        List<SolutionStatistics> stats = getSolutions();
-
         b.append(": ")
                 .append(nbSearchNodes).append(" opened search node(s), ")
                 .append(nbBacktracks).append(" backtrack(s), ")
                 .append(stats.size()).append(" solution(s)");
-        if (!stats.isEmpty()) {
-            if (!partResults.isEmpty()) {
-                b.append(" [");
-                b.append(partResults.get(0).getSolutions().size());
-                for (int i = 1; i < partResults.size(); i++) {
-                    b.append(", ").append(partResults.get(i).getSolutions().size());
-                }
-                b.append(']');
-            }
-            b.append(":\n");
-        } else {
-            int nbSolved = 0;
-            for (SolvingStatistics x : partResults) {
-                if (!x.getSolutions().isEmpty()) {
-                    nbSolved++;
-                }
-            }
-            b.append(": ").append(nbSolved).append('/').append(nbPartitions).append(" solved partition(s)");
-        }
-        int i = 1;
-        for (SolutionStatistics st : stats) {
-            b.append("\t").append(i).append(')')
-                    .append(" at ").append(st.getTime()).append("ms: ")
-                    .append(st.getNbNodes()).append(" node(s), ")
-                    .append(st.getNbBacktracks()).append(" backtrack(s)");
-            if (st.hasObjective()) {
-                b.append(", objective: ").append(st.getOptValue());
-            }
-            b.append('\n');
-            i++;
-        }
-        return b.toString();
+
     }
 }

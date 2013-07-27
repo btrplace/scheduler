@@ -103,20 +103,21 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
     /**
      * constructor of the FastBinPacking global constraint
      *
+     * @param labels      the label describing each dimension
      * @param environment the solver environment
-     * @param loads       array of nbBins variables, each figuring the total size of the items assigned to it, usually initialized to [0, capacity]
-     * @param sizes       array of nbItems variables, each figuring the item size. Only the LB will be considered!
-     * @param bins        array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
+     * @param l           array of nbBins variables, each figuring the total size of the items assigned to it, usually initialized to [0, capacity]
+     * @param s           array of nbItems variables, each figuring the item size. Only the LB will be considered!
+     * @param b           array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
      */
-    public LightBinPacking(String[] name, IEnvironment environment, IntDomainVar[][] loads, int[][] sizes, IntDomainVar[] bins) {
-        super(ArrayUtils.append(bins, ArrayUtils.flatten(loads)));
-        this.name = name;
+    public LightBinPacking(String[] labels, IEnvironment environment, IntDomainVar[][] l, int[][] s, IntDomainVar[] b) {
+        super(ArrayUtils.append(b, ArrayUtils.flatten(l)));
+        this.name = labels;
         this.env = environment;
-        this.loads = loads;
-        this.nbBins = loads[0].length;
-        this.nbDims = loads.length;
-        this.bins = bins;
-        this.iSizes = sizes;
+        this.loads = l;
+        this.nbBins = l[0].length;
+        this.nbDims = l.length;
+        this.bins = b;
+        this.iSizes = s;
         this.bTLoads = new IStateInt[nbDims][nbBins];
         this.bRLoads = new IStateInt[nbDims][nbBins];
     }
@@ -185,13 +186,8 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
         sumISizes = new long[nbDims];
         notEntailedDims = env.makeBitSet(nbDims);
         notEntailedDims.clear(0, 3);
-        for (int d = 0; d < nbDims; d++) {
-            long sum = 0;
-            for (int i = 0; i < iSizes[d].length; i++) {
-                sum += iSizes[d][i];
-            }
-            this.sumISizes[d] = sum;
-        }
+
+        computeSums();
 
         int[][] rLoads = new int[nbDims][nbBins];
         int[][] cLoads = new int[nbDims][nbBins];
@@ -246,6 +242,21 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
 
         this.loadsHaveChanged = env.makeBool(false);
 
+        detectEntailedDimensions(nbUnassigned);
+
+        assert checkLoadConsistency();
+        ChocoLogging.getBranchingLogger().finest("BinPacking: " + Arrays.toString(name) + " notEntailed dimensions: " + notEntailedDims);
+        propagate();
+    }
+
+    /**
+     * Detect entailed dimensions
+     * A dimension is entailed if for every bin, the free load (diff between the UB and the LB) is
+     * >= the un-assigned height for that dimension
+     *
+     * @param nbUnassigned the un-assigned height for each dimension.
+     */
+    private void detectEntailedDimensions(int[] nbUnassigned) {
         for (int d = 0; d < nbDims; d++) {
             for (int b = 0; b < nbBins; b++) {
                 if (!loads[d][b].isInstantiated() && loads[d][b].getSup() - loads[d][b].getInf() < nbUnassigned[d]) {
@@ -254,9 +265,21 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
                 }
             }
         }
-        assert checkLoadConsistency();
-        ChocoLogging.getBranchingLogger().finest("BinPacking: " + Arrays.toString(name) + " notEntailed dimensions: " + notEntailedDims);
-        propagate();
+
+    }
+
+    /**
+     * Compute the sum of the demand for each dimension.
+     */
+    private void computeSums() {
+        for (int d = 0; d < nbDims; d++) {
+            long sum = 0;
+            for (int i = 0; i < iSizes[d].length; i++) {
+                sum += iSizes[d][i];
+            }
+            this.sumISizes[d] = sum;
+        }
+
     }
 
     @Override
@@ -479,7 +502,6 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
             }
         }
 
-        //for (int d = 0; d < nbDims; d++) {
         for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
             int sli = 0;
             int sls = 0;
