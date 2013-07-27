@@ -72,14 +72,17 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
 
     public static final String VM_DESTINATION_LABEL = "to";
 
+    /** Key to indicate a resource identifier.*/
+    public static final String RC_LABEL = "rc";
+
+    /** Key to indicate a resource amount.*/
+    public static final String RC_AMOUNT_LABEL = "amount";
+
     @Override
     public Action fromJSON(JSONObject in) throws JSONConverterException {
-        String id = in.get(ACTION_ID_LABEL).toString();
-        if (id == null) {
-            throw new JSONConverterException("The action identifier is expected on the key 'id'");
-        }
-
+        String id = requiredString(in, ACTION_ID_LABEL);
         Action a;
+
         switch (id) {
             case "bootVM":
                 a = bootVMFromJSON(in);
@@ -112,7 +115,7 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
                 a = allocateFromJSON(in);
                 break;
             default:
-                throw new JSONConverterException(("Unsupported type of action '" + id + "'"));
+                throw new JSONConverterException("Unsupported action '" + id + "'");
         }
 
         attachEvents(a, in);
@@ -143,10 +146,8 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     }
 
     private Event eventFromJSON(JSONObject o) throws JSONConverterException {
-        String id = o.get(ACTION_ID_LABEL).toString();
-        if (id == null) {
-            throw new JSONConverterException("The action identifier is expected on the key 'id'");
-        }
+        String id = requiredString(o, ACTION_ID_LABEL);
+
         switch (id) {
             case "allocate":
                 return allocateEventFromJSON(o);
@@ -310,8 +311,8 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
         JSONObject o = makeActionSkeleton(a);
         o.put(ACTION_ID_LABEL, "allocate");
         o.put(VM_LABEL, toJSON(a.getVM()));
-        o.put("rc", a.getResourceId());
-        o.put("amount", a.getAmount());
+        o.put(RC_LABEL, a.getResourceId());
+        o.put(RC_AMOUNT_LABEL, a.getAmount());
         o.put(ON_LABEL, toJSON(a.getHost()));
         return o;
     }
@@ -319,8 +320,8 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     private Allocate allocateFromJSON(JSONObject in) throws JSONConverterException {
         return new Allocate(requiredVM(in, VM_LABEL),
                 requiredNode(in, ON_LABEL),
-                requiredString(in, "rc"),
-                requiredInt(in, "amount"),
+                requiredString(in, RC_LABEL),
+                requiredInt(in, RC_AMOUNT_LABEL),
                 requiredInt(in, START_LABEL),
                 requiredInt(in, END_LABEL));
     }
@@ -329,16 +330,16 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     public Object visit(AllocateEvent a) {
         JSONObject o = new JSONObject();
         o.put(ACTION_ID_LABEL, "allocate");
-        o.put("rc", a.getResourceId());
+        o.put(RC_LABEL, a.getResourceId());
         o.put(VM_LABEL, toJSON(a.getVM()));
-        o.put("amount", a.getAmount());
+        o.put(RC_AMOUNT_LABEL, a.getAmount());
         return o;
     }
 
     private AllocateEvent allocateEventFromJSON(JSONObject o) throws JSONConverterException {
         return new AllocateEvent(requiredVM(o, VM_LABEL),
-                requiredString(o, "rc"),
-                requiredInt(o, "amount"));
+                requiredString(o, RC_LABEL),
+                requiredInt(o, RC_AMOUNT_LABEL));
     }
 
     @Override
