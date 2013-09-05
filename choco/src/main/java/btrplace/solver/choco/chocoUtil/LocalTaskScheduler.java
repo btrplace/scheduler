@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -202,8 +201,8 @@ public class LocalTaskScheduler {
             if (t < lastInf) {
                 lastInf = t;
             }
-
-            if (associatedToDSliceOnCurrentNode(j) && increase(j, revAssociations[j])) {
+            boolean increasing = associatedToDSliceOnCurrentNode(j) && increase(j, revAssociations[j]);
+            if (increasing) {
                 if (me == DEBUG || DEBUG == -2) {
                     ChocoLogging.getBranchingLogger().finest(me + " " + cEnds[j].pretty() + " increasing");
                 }
@@ -225,7 +224,7 @@ public class LocalTaskScheduler {
             if (t > lastSup) {
                 lastSup = t;
             }
-            if (associatedToDSliceOnCurrentNode(j) && increase(j, revAssociations[j])) {
+            if (increasing) {
                 for (int i = 0; i < nbDims; i++) {
                     profilesMin[i].put(t, profilesMin[i].get(t) - cUsages[i][j]);
                 }
