@@ -7,6 +7,7 @@ version ?????????
 - Reduce the memory footprint of classes in the model package.
 - Introduce a static partitioning algorithm that split a problem from disjoint set of nodes
 - API changes in Model, Instance, Mapping
+- new constraint: MaxOnlines
 
 version 0.31 - 16 Jul 2013
 ----------------------
