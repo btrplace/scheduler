@@ -365,7 +365,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private void fillElements() {
 
-        Set<VM> allVMs = new HashSet<>(model.getMapping().getAllVMs());
+        Set<VM> allVMs = new HashSet<>();
+        allVMs.addAll(model.getMapping().getSleepingVMs());
+        allVMs.addAll(model.getMapping().getRunningVMs());
+        allVMs.addAll(model.getMapping().getReadyVMs());
         //We have to integrate VMs in the ready state: the only VMs that may not appear in the mapping
         allVMs.addAll(ready);
 
@@ -379,12 +382,16 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             revVMs.put(vm, i++);
         }
 
-        nodes = new Node[model.getMapping().getAllNodes().size()];
+        nodes = new Node[model.getMapping().getOnlineNodes().size() + model.getMapping().getOfflineNodes().size()];
         revNodes = new TObjectIntHashMap<>(nodes.length, 0.5f, -1);
         i = 0;
-        for (Node nId : model.getMapping().getAllNodes()) {
-            nodes[i] = nId;
-            revNodes.put(nId, i++);
+        for (Node n : model.getMapping().getOnlineNodes()) {
+            nodes[i] = n;
+            revNodes.put(n, i++);
+        }
+        for (Node n : model.getMapping().getOfflineNodes()) {
+            nodes[i] = n;
+            revNodes.put(n, i++);
         }
     }
 
@@ -413,7 +420,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             if (ready.contains(vmId)) {
                 if (vmActions[i] != null) {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
-                } else if (!map.getAllVMs().contains(vmId)) {
+                } else if (!map.contains(vmId)) {
                     vmActions[i] = new ForgeVMModel(this, vmId);
                     manageable.add(vmId);
                 } else if (map.isReady(vmId)) {

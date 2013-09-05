@@ -246,7 +246,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
      */
     private void checkNodesExistence(Model mo, Collection<Node> ns) throws SolverException {
         for (Node node : ns) {
-            if (!mo.getMapping().getAllNodes().contains(node)) {
+            if (!mo.getMapping().contains(node)) {
                 throw new SolverException(mo, "Unknown node '" + node + "'");
             }
         }

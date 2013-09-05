@@ -158,7 +158,9 @@ public class DefaultReconfigurationProblemBuilder {
         }
         if (manageable == null) {
             manageable = new HashSet<>();
-            manageable.addAll(model.getMapping().getAllVMs());
+            manageable.addAll(model.getMapping().getSleepingVMs());
+            manageable.addAll(model.getMapping().getRunningVMs());
+            manageable.addAll(model.getMapping().getReadyVMs());
         }
         return new DefaultReconfigurationProblem(model, dEval, viewMapper, waits, runs, sleep, over, manageable, labelVars);
     }
