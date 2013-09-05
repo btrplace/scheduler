@@ -71,7 +71,7 @@ public class ConstraintMapper {
         map.register(new CGather.Builder());
         map.register(new CLonely.Builder());
         map.register(new CSequentialVMTransitions.Builder());
-
+        map.register(new CMaxOnlines.Builder());
         map.register(new CMinMTTR.Builder());
         return map;
     }
