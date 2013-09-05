@@ -1,3 +1,20 @@
+/*
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ *
+ * This file is part of btrplace.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.Model;
@@ -16,6 +33,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -39,7 +57,16 @@ public class CMaxOnlines implements ChocoConstraint {
 
     @Override
     public Set<VM> getMisPlacedVMs(Model model) {
-        return model.getMapping().getRunningVMs(constraint.getInvolvedNodes());
+        int on = 0;
+        for (Node n : constraint.getInvolvedNodes()) {
+            if (model.getMapping().isOnline(n)) {
+                on++;
+            }
+        }
+        if (on > constraint.getAmount()) {
+            return model.getMapping().getRunningVMs(constraint.getInvolvedNodes());
+        }
+        return Collections.emptySet();
     }
 
     @Override
