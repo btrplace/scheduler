@@ -39,7 +39,9 @@ import java.util.Set;
 
 
 /**
- * Choco implementation for the {@link MaxOnline} constraints.
+ * Choco implementation for the {@link MaxOnlines} constraints.
+ *
+ * @author Tu Huynh Dang
  */
 public class CMaxOnlines implements ChocoConstraint {
 
@@ -48,7 +50,7 @@ public class CMaxOnlines implements ChocoConstraint {
     /**
      * Make a new constraint
      *
-     * @param maxOn is maxOnlines constraint to rely on
+     * @param maxOn the constraint to rely on
      */
     public CMaxOnlines(MaxOnline maxOn) {
         super();
@@ -131,7 +133,7 @@ public class CMaxOnlines implements ChocoConstraint {
     }
 
     /**
-     * The builder associated to this constraint
+     * The builder associated to this constraint.
      *
      * @author Tu Huynh Dang
      */
