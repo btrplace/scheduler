@@ -26,10 +26,8 @@ import btrplace.plan.event.ShutdownNode;
 
 /**
  * Checker associated to the {@link MaxOnline} constraint.
- * <p/>
- * User: TU HUYNH DANG
- * Date: 5/16/13
- * Time: 2:46 PM
+ *
+ * @author TU HUYNH DANG
  */
 public class MaxOnlineChecker extends AllowAllConstraintChecker<MaxOnline> {
 

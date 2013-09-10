@@ -32,9 +32,8 @@ import java.util.Set;
 
 /**
  * Unit tests for {@link MaxOnline}.
- * User: TU HUYNH DANG
- * Date: 5/24/13
- * Time: 9:22 AM
+ *
+ * @author TU HUYNH DANG
  */
 public class MaxOnlineConverterTest {
 
