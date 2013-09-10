@@ -47,7 +47,7 @@ public class MaxOnlineChecker extends AllowAllConstraintChecker<MaxOnline> {
         Mapping map = mo.getMapping();
         currentOnline = 0;
         for (Node n : getConstraint().getInvolvedNodes()) {
-            if (mo.getMapping().isOnline(n)) {
+            if (map.isOnline(n)) {
                 currentOnline++;
             }
         }
@@ -56,20 +56,24 @@ public class MaxOnlineChecker extends AllowAllConstraintChecker<MaxOnline> {
 
     @Override
     public boolean start(BootNode a) {
-        if (getConstraint().isContinuous() && getNodes().contains(a.getNode()))
+        if (getConstraint().isContinuous() && getNodes().contains(a.getNode())) {
             return (currentOnline < getConstraint().getAmount());
-
+        }
         return true;
     }
 
     @Override
     public void end(BootNode a) {
-        if (getNodes().contains(a.getNode())) currentOnline++;
+        if (getNodes().contains(a.getNode())) {
+            currentOnline++;
+        }
     }
 
     @Override
     public void end(ShutdownNode a) {
-        if (getNodes().contains(a.getNode())) currentOnline--;
+        if (getNodes().contains(a.getNode())) {
+            currentOnline--;
+        }
     }
 
     @Override
@@ -77,7 +81,7 @@ public class MaxOnlineChecker extends AllowAllConstraintChecker<MaxOnline> {
         Mapping map = mo.getMapping();
         int on = 0;
         for (Node n : getConstraint().getInvolvedNodes()) {
-            if (mo.getMapping().isOnline(n)) {
+            if (map.isOnline(n)) {
                 on++;
             }
         }
