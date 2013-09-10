@@ -80,7 +80,7 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
         conv.register(new SplitAmongConverter());
         conv.register(new SplitConverter());
         conv.register(new SpreadConverter());
-        conv.register(new MaxOnlinesConverter());
+        conv.register(new MaxOnlineConverter());
         conv.register(new MinMTTRConverter());
         return conv;
     }

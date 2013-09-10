@@ -178,6 +178,8 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
 
         //The actual solving process
         ReconfigurationPlan p = rp.solve(params.getTimeLimit(), params.doOptimize());
+
+        //No solutions, but still some statistics
         if (p == null) {
             return new InstanceResult(null, makeStatistics());
         }
