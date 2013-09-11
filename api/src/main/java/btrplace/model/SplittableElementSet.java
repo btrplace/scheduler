@@ -123,7 +123,7 @@ public class SplittableElementSet<E extends Element> implements Comparator<E> {
      */
     public Set<E> getSubSet(int k) {
         int from = -1;
-        //TODO: very bad. Bounds such be memorized
+        //TODO: very bad. Bounds should be memorized
         for (int x = 0; x < values.length; x++) {
             int cIdx = index.get(values[x].id());
             if (cIdx == k && from == -1) {

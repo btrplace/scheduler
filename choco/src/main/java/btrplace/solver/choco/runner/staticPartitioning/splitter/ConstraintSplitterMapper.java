@@ -70,6 +70,7 @@ public class ConstraintSplitterMapper {
         mapper.register(new SpreadSplitter());
         mapper.register(new FenceSplitter());
         mapper.register(new BanSplitter());
+        mapper.register(new AmongSplitter());
 
         return mapper;
     }

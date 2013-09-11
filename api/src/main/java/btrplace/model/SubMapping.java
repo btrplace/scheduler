@@ -43,27 +43,29 @@ public class SubMapping implements Mapping {
 
     private Set<VM> ready;
 
+    private Set<VM> all = null;
+
     /**
      * Make a new mapping.
      *
-     * @param parent   the parent mapping
-     * @param scope    the nodes that limit the scope of the new mapping. These nodes must all belong to the original mapping
+     * @param p        the parent mapping
+     * @param sc       the nodes that limit the scope of the new mapping. These nodes must all belong to the original mapping
      * @param subReady the subset of ready VMs to include in this mapping. These VMs must all belong to the original mapping
      */
-    public SubMapping(Mapping parent, Collection<Node> scope, Set<VM> subReady) {
-        this.parent = parent;
-        this.scope = new THashSet<>(scope);
+    public SubMapping(Mapping p, Collection<Node> sc, Set<VM> subReady) {
+        this.parent = p;
+        this.scope = new THashSet<>(sc);
         this.ready = subReady;
     }
 
     /**
      * Make a new mapping.
      *
-     * @param parent the parent mapping
-     * @param scope  the nodes that limit the scope of the new mapping. These nodes must all belong to the original mapping
+     * @param p  the parent mapping
+     * @param sc the nodes that limit the scope of the new mapping. These nodes must all belong to the original mapping
      */
-    public SubMapping(Mapping parent, Collection<Node> scope) {
-        this(parent, scope, Collections.<VM>emptySet());
+    public SubMapping(Mapping p, Collection<Node> sc) {
+        this(p, sc, Collections.<VM>emptySet());
     }
 
     @Override
@@ -160,8 +162,6 @@ public class SubMapping implements Mapping {
     public Set<VM> getReadyVMs() {
         return ready;
     }
-
-    private Set<VM> all = null;
 
     @Override
     public Set<VM> getAllVMs() {

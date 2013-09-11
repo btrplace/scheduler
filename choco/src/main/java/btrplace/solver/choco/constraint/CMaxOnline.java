@@ -84,9 +84,9 @@ public class CMaxOnline implements ChocoConstraint {
                 }
             }
 
-            int NUMBER_OF_TASK = constraint.getInvolvedNodes().size();
+            int numberOfTasks = constraint.getInvolvedNodes().size();
             int i = 0;
-            int[] nodeIdx = new int[NUMBER_OF_TASK];
+            int[] nodeIdx = new int[numberOfTasks];
             for (Node n : constraint.getInvolvedNodes()) {
                 nodeIdx[i++] = rp.getNode(n);
             }
@@ -94,11 +94,11 @@ public class CMaxOnline implements ChocoConstraint {
             IntDomainVar consumption = solver.createBoundIntVar("consum", 0, constraint.getAmount());//minimum consumption
             // of the resource
             IntDomainVar uppBound = rp.getEnd();                    // All tasks must be scheduled before this time
-            IntDomainVar[] heights = new IntDomainVar[NUMBER_OF_TASK];   // The state of the node
-            IntDomainVar[] starts = new IntDomainVar[NUMBER_OF_TASK];
-            IntDomainVar[] ends = new IntDomainVar[NUMBER_OF_TASK];
-            IntDomainVar[] durations = new IntDomainVar[NUMBER_OF_TASK];  // Online duration
-            TaskVar[] taskVars = new TaskVar[NUMBER_OF_TASK];  // Online duration is modeled as a task
+            IntDomainVar[] heights = new IntDomainVar[numberOfTasks];   // The state of the node
+            IntDomainVar[] starts = new IntDomainVar[numberOfTasks];
+            IntDomainVar[] ends = new IntDomainVar[numberOfTasks];
+            IntDomainVar[] durations = new IntDomainVar[numberOfTasks];  // Online duration
+            TaskVar[] taskVars = new TaskVar[numberOfTasks];  // Online duration is modeled as a task
 
             for (int idx = 0; idx < nodeIdx.length; idx++) {
                 Node n = rp.getNode(nodeIdx[idx]);

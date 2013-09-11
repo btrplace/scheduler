@@ -44,14 +44,17 @@ public class MaxOnlineChecker extends AllowAllConstraintChecker<MaxOnline> {
 
     @Override
     public boolean startsWith(Model mo) {
-        Mapping map = mo.getMapping();
-        currentOnline = 0;
-        for (Node n : getConstraint().getInvolvedNodes()) {
-            if (map.isOnline(n)) {
-                currentOnline++;
+        if (getConstraint().isContinuous()) {
+            Mapping map = mo.getMapping();
+            currentOnline = 0;
+            for (Node n : getConstraint().getInvolvedNodes()) {
+                if (map.isOnline(n)) {
+                    currentOnline++;
+                }
             }
+            return currentOnline <= getConstraint().getAmount();
         }
-        return currentOnline <= getConstraint().getAmount();
+        return true;
     }
 
     @Override
