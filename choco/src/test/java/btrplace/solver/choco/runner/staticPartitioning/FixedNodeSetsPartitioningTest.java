@@ -18,6 +18,7 @@
 package btrplace.solver.choco.runner.staticPartitioning;
 
 import btrplace.model.*;
+import btrplace.model.constraint.MaxOnline;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.Running;
 import btrplace.model.constraint.SatConstraint;
@@ -108,6 +109,14 @@ public class FixedNodeSetsPartitioningTest {
         Assert.assertEquals(plan.getSize(), 30); //all the VMs to launch have been booted
         System.out.println(cra.getStatistics());
         System.out.flush();
+    }
 
+    @Test(expectedExceptions = {SolverException.class})
+    public void testSplitWithUnsplittableConstraint() throws SolverException {
+        Instance orig = makeInstance();
+        orig.getSatConstraints().add(new MaxOnline(orig.getModel().getMapping().getAllNodes(), 5));
+        List<Collection<Node>> parts = splitIn(orig.getModel().getMapping().getAllNodes(), 3);
+        FixedNodeSetsPartitioning f = new FixedNodeSetsPartitioning(parts);
+        f.split(new DefaultChocoReconfigurationAlgorithmParams(), orig);
     }
 }

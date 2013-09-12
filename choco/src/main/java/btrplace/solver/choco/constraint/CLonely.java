@@ -23,7 +23,6 @@ import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Lonely;
-import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.chocoUtil.Disjoint;
@@ -53,7 +52,7 @@ public class CLonely implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) {
         //Remove non future-running VMs
         List<IntDomainVar> myHosts = new ArrayList<>();
         List<IntDomainVar> otherHosts = new ArrayList<>();

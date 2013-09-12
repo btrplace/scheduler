@@ -51,6 +51,9 @@ public class ConstraintSplitterMapper {
     public static ConstraintSplitterMapper newBundle() {
         ConstraintSplitterMapper mapper = new ConstraintSplitterMapper();
 
+        mapper.register(new AmongSplitter());
+        mapper.register(new BanSplitter());
+        mapper.register(new FenceSplitter());
         mapper.register(new GatherSplitter());
         mapper.register(new KilledSplitter());
         mapper.register(new LonelySplitter());
@@ -68,9 +71,6 @@ public class ConstraintSplitterMapper {
         mapper.register(new SleepingSplitter());
         mapper.register(new SplitSplitter());
         mapper.register(new SpreadSplitter());
-        mapper.register(new FenceSplitter());
-        mapper.register(new BanSplitter());
-        mapper.register(new AmongSplitter());
 
         return mapper;
     }

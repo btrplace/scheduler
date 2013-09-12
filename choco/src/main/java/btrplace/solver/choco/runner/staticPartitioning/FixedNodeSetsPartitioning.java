@@ -153,7 +153,9 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
 
         //Split the constraints
         for (SatConstraint cstr : i.getSatConstraints()) {
-            cstrMapper.split(cstr, i, parts, vmPosition, nodePosition);
+            if (!cstrMapper.split(cstr, i, parts, vmPosition, nodePosition)) {
+                throw new SolverException(i.getModel(), "Unable to split " + cstr);
+            }
         }
 
         return parts;

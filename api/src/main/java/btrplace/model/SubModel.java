@@ -62,16 +62,16 @@ public class SubModel implements Model {
     /**
      * Make a new sub-model.
      *
-     * @param parent    the parent model
-     * @param eb        the element builder to rely on
+     * @param p         the parent model
+     * @param b         the element builder to rely on
      * @param nodeScope the node to restrict the model on.
      * @param vmReady   the scope of VMs that are ready in the parent model.
      */
-    public SubModel(Model parent, ElementBuilder eb, Collection<Node> nodeScope, Set<VM> vmReady) {
+    public SubModel(Model p, ElementBuilder b, Collection<Node> nodeScope, Set<VM> vmReady) {
         this.scope = nodeScope;
-        this.parent = parent;
-        this.eb = eb;
-        sm = new SubMapping(parent.getMapping(), scope, vmReady);
+        this.parent = p;
+        this.eb = b;
+        sm = new SubMapping(p.getMapping(), scope, vmReady);
     }
 
     /**
