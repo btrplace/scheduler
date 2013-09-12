@@ -1,7 +1,7 @@
 Release notes
 ======================
 
-version ?????????
+version 0.32 - 12 Sep 2013
 ----------------------
 - Bugs fix.
 - Reduce the memory footprint of classes in the model package.
