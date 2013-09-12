@@ -56,22 +56,22 @@ public class ShutdownVMModel implements VMActionModel {
     /**
      * Make a new model.
      *
-     * @param rp the RP to use as a basis.
-     * @param e  the VM managed by the action
+     * @param p the RP to use as a basis.
+     * @param e the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public ShutdownVMModel(ReconfigurationProblem rp, VM e) throws SolverException {
-        this.rp = rp;
+    public ShutdownVMModel(ReconfigurationProblem p, VM e) throws SolverException {
+        this.rp = p;
         this.vm = e;
 
-        int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), ShutdownVM.class, e);
+        int d = p.getDurationEvaluators().evaluate(p.getSourceModel(), ShutdownVM.class, e);
         assert d > 0;
-        duration = rp.makeDuration(d, d, "shutdownVM(", e, ").duration");
-        this.cSlice = new SliceBuilder(rp, e, "shutdownVM(" + e + ").cSlice").setHoster(rp.getCurrentVMLocation(rp.getVM(e)))
-                .setEnd(rp.makeDuration(rp.getEnd().getSup(), d, "shutdownVM(", e, ").cSlice_end"))
+        duration = p.makeDuration(d, d, "shutdownVM(", e, ").duration");
+        this.cSlice = new SliceBuilder(p, e, "shutdownVM(" + e + ").cSlice").setHoster(p.getCurrentVMLocation(p.getVM(e)))
+                .setEnd(p.makeDuration(p.getEnd().getSup(), d, "shutdownVM(", e, ").cSlice_end"))
                 .build();
-        start = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel("shutdownVM(", e, ").start"), cSlice.getEnd(), -d);
-        state = rp.getSolver().makeConstantIntVar(0);
+        start = new IntDomainVarAddCste(p.getSolver(), p.makeVarLabel("shutdownVM(", e, ").start"), cSlice.getEnd(), -d);
+        state = p.getSolver().makeConstantIntVar(0);
     }
 
     @Override

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -46,10 +45,10 @@ public class BinPackingBuilder {
     /**
      * Make a new builder.
      *
-     * @param rp the associated problem
+     * @param p the associated problem
      */
-    public BinPackingBuilder(ReconfigurationProblem rp) {
-        this.rp = rp;
+    public BinPackingBuilder(ReconfigurationProblem p) {
+        this.rp = p;
         loads = new ArrayList<>();
         bins = new ArrayList<>();
         sizes = new ArrayList<>();
@@ -60,14 +59,14 @@ public class BinPackingBuilder {
     /**
      * Add a dimension.
      *
-     * @param loads the resource capacity of each of the nodes
-     * @param sizes the resource usage of each of the cSlices
-     * @param bins  the resource usage of each of the dSlices
+     * @param l the resource capacity of each of the nodes
+     * @param s the resource usage of each of the cSlices
+     * @param b the resource usage of each of the dSlices
      */
-    public void add(String name, IntDomainVar[] loads, IntDomainVar[] sizes, IntDomainVar[] bins) {
-        this.loads.add(loads);
-        this.sizes.add(sizes);
-        this.bins.add(bins);
+    public void add(String name, IntDomainVar[] l, IntDomainVar[] s, IntDomainVar[] b) {
+        this.loads.add(l);
+        this.sizes.add(s);
+        this.bins.add(b);
         this.names.add(name);
     }
 

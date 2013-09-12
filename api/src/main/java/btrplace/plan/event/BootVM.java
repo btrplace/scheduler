@@ -39,14 +39,14 @@ public class BootVM extends Action implements VMStateTransition, RunningVMPlacem
     /**
      * Make a new action.
      *
-     * @param vm    the VM to run
+     * @param v     the VM to run
      * @param to    the destination node
      * @param start the moment the action starts.
      * @param end   the moment the action finish
      */
-    public BootVM(VM vm, Node to, int start, int end) {
+    public BootVM(VM v, Node to, int start, int end) {
         super(start, end);
-        this.vm = vm;
+        this.vm = v;
         this.node = to;
     }
 
@@ -71,7 +71,7 @@ public class BootVM extends Action implements VMStateTransition, RunningVMPlacem
 
     @Override
     public boolean applyAction(Model c) {
-        return (c.getMapping().getReadyVMs().contains(vm) && c.getMapping().addRunningVM(vm, node));
+        return (c.getMapping().isReady(vm) && c.getMapping().addRunningVM(vm, node));
     }
 
     /**

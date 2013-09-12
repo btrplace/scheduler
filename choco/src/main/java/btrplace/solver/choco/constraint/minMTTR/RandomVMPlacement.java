@@ -54,28 +54,28 @@ public class RandomVMPlacement implements ValSelector<IntDomainVar> {
      * Make a new heuristic.
      *
      * @param dbgLbl      the debug label
-     * @param rp          the problem to rely on
+     * @param p           the problem to rely on
      * @param pVarMapping a map to indicate the VM associated to each of the placement variable
      * @param stayFirst   {@code true} to force an already VM to stay on its current node if possible
      */
-    public RandomVMPlacement(String dbgLbl, ReconfigurationProblem rp, Map<IntDomainVar, VM> pVarMapping, boolean stayFirst) {
-        this(rp, pVarMapping, null, stayFirst);
+    public RandomVMPlacement(String dbgLbl, ReconfigurationProblem p, Map<IntDomainVar, VM> pVarMapping, boolean stayFirst) {
+        this(p, pVarMapping, null, stayFirst);
     }
 
     /**
      * Make a new heuristic.
      *
-     * @param rp          the problem to rely on
+     * @param p           the problem to rely on
      * @param pVarMapping a map to indicate the VM associated to each of the placement variable
-     * @param ranks       a list of favorites servers. Servers in rank i will be favored wrt. servers in rank i + 1
+     * @param priorities  a list of favorites servers. Servers in rank i will be favored wrt. servers in rank i + 1
      * @param stayFirst   {@code true} to force an already VM to stay on its current node if possible
      */
-    public RandomVMPlacement(ReconfigurationProblem rp, Map<IntDomainVar, VM> pVarMapping, TIntHashSet[] ranks, boolean stayFirst) {
+    public RandomVMPlacement(ReconfigurationProblem p, Map<IntDomainVar, VM> pVarMapping, TIntHashSet[] priorities, boolean stayFirst) {
         stay = stayFirst;
-        this.rp = rp;
+        this.rp = p;
         rnd = new Random();
         vmPlacement = pVarMapping;
-        this.ranks = ranks;
+        this.ranks = priorities;
     }
 
     /**

@@ -53,12 +53,12 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
     /**
      * Make a new checker.
      *
-     * @param cstr the constraint associated to the checker.
+     * @param c the constraint associated to the checker.
      */
-    public AllowAllConstraintChecker(C cstr) {
-        this.vms = new HashSet<>(cstr.getInvolvedVMs());
-        this.nodes = new HashSet<>(cstr.getInvolvedNodes());
-        this.cstr = cstr;
+    public AllowAllConstraintChecker(C c) {
+        this.vms = new HashSet<>(c.getInvolvedVMs());
+        this.nodes = new HashSet<>(c.getInvolvedNodes());
+        this.cstr = c;
         tracked = new ArrayList<>();
     }
 
@@ -209,7 +209,6 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
         if (vms.remove(e.getVM())) {
             vms.add(e.getNewVM());
         }
-        //return !vms.remove(e.getVM()) || vms.add(e.getNewVM());
         return true;
     }
 

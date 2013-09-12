@@ -36,13 +36,13 @@ public class BootNode extends Action implements NodeEvent {
     /**
      * Create a new action on an offline node.
      *
-     * @param node  The node to boot
+     * @param n     The node to boot
      * @param start the moment the action starts
      * @param end   the moment the action is finished
      */
-    public BootNode(Node node, int start, int end) {
+    public BootNode(Node n, int start, int end) {
         super(start, end);
-        this.node = node;
+        this.node = n;
     }
 
     /**
@@ -92,7 +92,7 @@ public class BootNode extends Action implements NodeEvent {
      */
     @Override
     public boolean applyAction(Model c) {
-        if (c.getMapping().getOfflineNodes().contains(node)) {
+        if (c.getMapping().isOffline(node)) {
             c.getMapping().addOnlineNode(node);
             return true;
         }

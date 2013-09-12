@@ -169,7 +169,7 @@ public class DependenciesExtractor implements ActionVisitor {
             Set<Action> allActions = getFreeings(n);
             Set<Action> pre = new HashSet<>();
             for (Action action : allActions) {
-                if (action != a && a.getStart() >= action.getEnd()) {
+                if (!action.equals(a) && a.getStart() >= action.getEnd()) {
                     pre.add(action);
                 }
             }

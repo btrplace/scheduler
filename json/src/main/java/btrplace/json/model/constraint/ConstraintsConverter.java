@@ -80,7 +80,7 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
         conv.register(new SplitAmongConverter());
         conv.register(new SplitConverter());
         conv.register(new SpreadConverter());
-
+        conv.register(new MaxOnlineConverter());
         conv.register(new MinMTTRConverter());
         return conv;
     }
@@ -176,7 +176,7 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
     }
 
     @Override
-    public List<SatConstraint> listFromJSON(Reader r) throws IOException, JSONConverterException {
+    public List<SatConstraint> listFromJSON(Reader r) throws JSONConverterException {
         try {
             JSONParser p = new JSONParser(JSONParser.MODE_RFC4627);
             Object o = p.parse(r);

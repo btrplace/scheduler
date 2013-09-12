@@ -55,7 +55,7 @@ public class BootNodeTest {
         map.addOfflineNode(ns.get(0));
         BootNode b = new BootNode(ns.get(0), 3, 5);
         Assert.assertTrue(b.apply(m));
-        Assert.assertTrue(map.getOnlineNodes().contains(ns.get(0)));
+        Assert.assertTrue(map.isOnline(ns.get(0)));
 
         Assert.assertFalse(b.apply(m));
     }

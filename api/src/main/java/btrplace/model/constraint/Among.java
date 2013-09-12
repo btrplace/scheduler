@@ -65,16 +65,21 @@ public class Among extends SatConstraint {
      */
     public Among(Collection<VM> vms, Collection<Collection<Node>> parts, boolean continuous) {
         super(vms, null, continuous);
+        assert checkDisjoint(parts) : "The constraint expects disjoint sets of nodes";
+        this.pGrps = parts;
+    }
+
+    private static boolean checkDisjoint(Collection<Collection<Node>> parts) {
         Set<Node> all = new HashSet<>();
         int cnt = 0;
         for (Collection<Node> s : parts) {
             cnt += s.size();
             all.addAll(s);
             if (cnt != all.size()) {
-                throw new IllegalArgumentException("The constraint expects disjoint sets of nodes");
+                return false;
             }
         }
-        this.pGrps = parts;
+        return true;
     }
 
     /**

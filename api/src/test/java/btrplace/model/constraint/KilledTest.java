@@ -44,6 +44,7 @@ public class KilledTest {
         Assert.assertTrue(s.getInvolvedNodes().isEmpty());
         Assert.assertNotNull(s.toString());
         System.out.println(s);
+        Assert.assertFalse(s.setContinuous(true));
     }
 
     @Test
@@ -59,6 +60,7 @@ public class KilledTest {
         Assert.assertEquals(new Killed(x).hashCode(), s.hashCode());
         x = new HashSet<>(Arrays.asList(vms.get(2)));
         Assert.assertFalse(new Killed(x).equals(s));
+        Assert.assertFalse(new Killed(x).equals(new Object()));
     }
 
     @Test

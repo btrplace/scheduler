@@ -58,7 +58,7 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
     private BitSet[] ins;
 
 
-    private CMinMTTR obj;
+    private CObjective obj;
 
     private IStateInt firstFree;
 
@@ -68,11 +68,12 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
      * @param lbl     the heuristic label (for debugging purpose)
      * @param rp      the problem to rely on
      * @param actions the actions to consider.
+     * @param o       the objective to rely on
      */
-    public OnStableNodeFirst(String lbl, ReconfigurationProblem rp, List<ActionModel> actions, CMinMTTR obj) {
+    public OnStableNodeFirst(String lbl, ReconfigurationProblem rp, List<ActionModel> actions, CObjective o) {
         super(rp.getSolver(), ActionModelUtils.getStarts(actions.toArray(new ActionModel[actions.size()])));
         firstFree = rp.getSolver().getEnvironment().makeInt(0);
-        this.obj = obj;
+        this.obj = o;
         Mapping cfg = rp.getSourceModel().getMapping();
 
         VMActionModel[] vmActions = rp.getVMActions();
@@ -125,15 +126,12 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
         move = null;
     }
 
-    @Override
-    public IntDomainVar selectVar() {
-
-        for (BitSet in : ins) {
-            in.clear();
-        }
-
-        //At this moment, all the hosters of the demanding slices are computed.
-        //for each node, we compute the number of incoming and outgoing
+    /**
+     * For each node, we fill ins to indicate the VMs
+     * that go on this node. We also fulfill stays and move
+     * TODO: stays and move seems redundant !
+     */
+    private void makeIncomings() {
         if (stays == null && move == null) {
             stays = new BitSet();
             move = new BitSet();
@@ -150,21 +148,37 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
                 }
             }
         }
+    }
 
+    @Override
+    public IntDomainVar selectVar() {
 
-        //VMs going on nodes with no outgoing actions, so actions that can consume with no delay
-        for (int x = 0; x < outs.length; x++) {
-            if (outs[x].cardinality() == 0) {
-                //no outgoing VMs, can be launched directly.
-                BitSet in = ins[x];
-                for (int i = in.nextSetBit(0); i >= 0; i = in.nextSetBit(i + 1)) {
-                    if (starts[i] != null && !starts[i].isInstantiated()) {
-                        return starts[i];
-                    }
-                }
-            }
+        for (BitSet in : ins) {
+            in.clear();
         }
 
+        makeIncomings();
+
+        IntDomainVar v = getVMtoLeafNode();
+        if (v != null) {
+            return null;
+        }
+
+        v = getMovingVM();
+        if (v != null) {
+            return v;
+        }
+
+        IntDomainVar early = getEarlyVar();
+        return early != null ? early : minInf();
+    }
+
+    /**
+     * Get the start moment for a VM that moves
+     *
+     * @return a start moment, or {@code null} if all the moments  are already instantiated
+     */
+    private IntDomainVar getMovingVM() {
         //VMs that are moving
         for (int i = move.nextSetBit(0); i >= 0; i = move.nextSetBit(i + 1)) {
             if (starts[i] != null && !starts[i].isInstantiated()) {
@@ -173,24 +187,7 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
                 }
             }
         }
-
-        IntDomainVar earlyVar = null;
-        for (int i = stays.nextSetBit(0); i >= 0; i = stays.nextSetBit(i + 1)) {
-            if (starts[i] != null && !starts[i].isInstantiated()) {
-                if (earlyVar == null) {
-                    earlyVar = starts[i];
-                } else {
-                    if (earlyVar.getInf() > starts[i].getInf()) {
-                        earlyVar = starts[i];
-                    }
-                }
-            }
-        }
-        if (earlyVar != null) {
-            return earlyVar;
-        }
-
-        return minInf();
+        return null;
     }
 
     private IntDomainVar minInf() {
@@ -218,5 +215,48 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
             obj.postCostConstraints();
         }
         return best;
+    }
+
+    /**
+     * Get the earliest un-instantiated start moment
+     *
+     * @return the variable, or {@code null} if all the start moments are already instantiated
+     */
+    private IntDomainVar getEarlyVar() {
+        IntDomainVar earlyVar = null;
+        for (int i = stays.nextSetBit(0); i >= 0; i = stays.nextSetBit(i + 1)) {
+            if (starts[i] != null && !starts[i].isInstantiated()) {
+                if (earlyVar == null) {
+                    earlyVar = starts[i];
+                } else {
+                    if (earlyVar.getInf() > starts[i].getInf()) {
+                        earlyVar = starts[i];
+                    }
+                }
+            }
+        }
+        return earlyVar;
+    }
+
+    /**
+     * Get the start moment for a VM that move to
+     * a node where no VM will leave this node.
+     * This way, we are pretty sure the action can be scheduled at 0.
+     *
+     * @return a start moment, or {@code null} if there is no more un-schedule actions to leaf nodes
+     */
+    private IntDomainVar getVMtoLeafNode() {
+        for (int x = 0; x < outs.length; x++) {
+            if (outs[x].cardinality() == 0) {
+                //no outgoing VMs, can be launched directly.
+                BitSet in = ins[x];
+                for (int i = in.nextSetBit(0); i >= 0; i = in.nextSetBit(i + 1)) {
+                    if (starts[i] != null && !starts[i].isInstantiated()) {
+                        return starts[i];
+                    }
+                }
+            }
+        }
+        return null;
     }
 }

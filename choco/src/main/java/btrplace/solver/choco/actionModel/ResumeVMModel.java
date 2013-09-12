@@ -60,25 +60,25 @@ public class ResumeVMModel implements VMActionModel {
     /**
      * Make a new model.
      *
-     * @param rp the RP to use as a basis.
-     * @param e  the VM managed by the action
+     * @param p the RP to use as a basis.
+     * @param e the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public ResumeVMModel(ReconfigurationProblem rp, VM e) throws SolverException {
-        this.rp = rp;
+    public ResumeVMModel(ReconfigurationProblem p, VM e) throws SolverException {
+        this.rp = p;
         this.vm = e;
 
-        int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), ResumeVM.class, e);
+        int d = p.getDurationEvaluators().evaluate(p.getSourceModel(), ResumeVM.class, e);
 
-        start = rp.makeDuration(rp.getEnd().getSup() - d, 0, "resumeVM(", e, ").start");
-        end = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel("resumeVM(", e, ").end"), start, d);
-        duration = rp.makeDuration(d, d, "resumeVM(", e, ").duration");
-        dSlice = new SliceBuilder(rp, e, "resumeVM(" + e + ").dSlice").setStart(start)
-                .setDuration(rp.makeDuration(rp.getEnd().getSup(), d, "resumeVM(", e, ").dSlice_duration"))
+        start = p.makeDuration(p.getEnd().getSup() - d, 0, "resumeVM(", e, ").start");
+        end = new IntDomainVarAddCste(p.getSolver(), p.makeVarLabel("resumeVM(", e, ").end"), start, d);
+        duration = p.makeDuration(d, d, "resumeVM(", e, ").duration");
+        dSlice = new SliceBuilder(p, e, "resumeVM(" + e + ").dSlice").setStart(start)
+                .setDuration(p.makeDuration(p.getEnd().getSup(), d, "resumeVM(", e, ").dSlice_duration"))
                 .build();
 
-        CPSolver s = rp.getSolver();
-        s.post(s.leq(end, rp.getEnd()));
+        CPSolver s = p.getSolver();
+        s.post(s.leq(end, p.getEnd()));
         state = s.makeConstantIntVar(1);
     }
 

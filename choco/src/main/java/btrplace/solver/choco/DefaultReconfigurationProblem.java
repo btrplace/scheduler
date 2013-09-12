@@ -59,7 +59,7 @@ import java.util.*;
  */
 public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
-    private final Logger logger = LoggerFactory.getLogger("ChocoRP");
+    private static final Logger LOGGER = LoggerFactory.getLogger("ChocoRP");
 
     private boolean useLabels = false;
 
@@ -338,7 +338,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                             + "The '" + in.getIdentifier() + "' implementation is already used");
                 }
             } else {
-                logger.debug("No implementation available for the view '{}'", rc.getIdentifier());
+                LOGGER.debug("No implementation available for the view '{}'", rc.getIdentifier());
             }
         }
     }
@@ -350,7 +350,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         vmsCountOnNodes = new IntDomainVar[nodes.length];
         int nbVMs = vms.length;
         for (int i = 0; i < vmsCountOnNodes.length; i++) {
-            vmsCountOnNodes[i] = solver.createBoundIntVar(makeVarLabel("nbVMsOn('", getNode(i), "')"), 0, nbVMs);
+            vmsCountOnNodes[i] = solver.createBoundIntVar(makeVarLabel("nbVMsOn('", nodes[i], "')"), 0, nbVMs);
         }
     }
 
@@ -365,7 +365,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private void fillElements() {
 
-        Set<VM> allVMs = new HashSet<>(model.getMapping().getAllVMs());
+        Set<VM> allVMs = new HashSet<>();
+        allVMs.addAll(model.getMapping().getSleepingVMs());
+        allVMs.addAll(model.getMapping().getRunningVMs());
+        allVMs.addAll(model.getMapping().getReadyVMs());
         //We have to integrate VMs in the ready state: the only VMs that may not appear in the mapping
         allVMs.addAll(ready);
 
@@ -379,12 +382,16 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             revVMs.put(vm, i++);
         }
 
-        nodes = new Node[model.getMapping().getAllNodes().size()];
+        nodes = new Node[model.getMapping().getOnlineNodes().size() + model.getMapping().getOfflineNodes().size()];
         revNodes = new TObjectIntHashMap<>(nodes.length, 0.5f, -1);
         i = 0;
-        for (Node nId : model.getMapping().getAllNodes()) {
-            nodes[i] = nId;
-            revNodes.put(nId, i++);
+        for (Node n : model.getMapping().getOnlineNodes()) {
+            nodes[i] = n;
+            revNodes.put(n, i++);
+        }
+        for (Node n : model.getMapping().getOfflineNodes()) {
+            nodes[i] = n;
+            revNodes.put(n, i++);
         }
     }
 
@@ -394,16 +401,16 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         for (int i = 0; i < vms.length; i++) {
             VM vmId = vms[i];
             if (runnings.contains(vmId)) {
-                if (map.getSleepingVMs().contains(vmId)) {
+                if (map.isSleeping(vmId)) {
                     vmActions[i] = new ResumeVMModel(this, vmId);
                     manageable.add(vmId);
-                } else if (map.getRunningVMs().contains(vmId)) {
+                } else if (map.isRunning(vmId)) {
                     if (manageable.contains(vmId)) {
                         vmActions[i] = new RelocatableVMModel(this, vmId);
                     } else {
                         vmActions[i] = new StayRunningVMModel(this, vmId);
                     }
-                } else if (map.getReadyVMs().contains(vmId)) {
+                } else if (map.isReady(vmId)) {
                     vmActions[i] = new BootVMModel(this, vmId);
                     manageable.add(vmId);
                 } else {
@@ -413,12 +420,12 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             if (ready.contains(vmId)) {
                 if (vmActions[i] != null) {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
-                } else if (!map.getAllVMs().contains(vmId)) {
+                } else if (!map.contains(vmId)) {
                     vmActions[i] = new ForgeVMModel(this, vmId);
                     manageable.add(vmId);
-                } else if (map.getReadyVMs().contains(vmId)) {
+                } else if (map.isReady(vmId)) {
                     vmActions[i] = new StayAwayVMModel(this, vmId);
-                } else if (map.getRunningVMs().contains(vmId)) {
+                } else if (map.isRunning(vmId)) {
                     vmActions[i] = new ShutdownVMModel(this, vmId);
                     manageable.add(vmId);
                 } else {
@@ -428,10 +435,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             if (sleepings.contains(vmId)) {
                 if (vmActions[i] != null) {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
-                } else if (map.getRunningVMs().contains(vmId)) {
+                } else if (map.isRunning(vmId)) {
                     vmActions[i] = new SuspendVMModel(this, vmId);
                     manageable.add(vmId);
-                } else if (map.getSleepingVMs().contains(vmId)) {
+                } else if (map.isSleeping(vmId)) {
                     vmActions[i] = new StayAwayVMModel(this, vmId);
                 } else {
                     throw new SolverException(model, "Unable to set VM '" + vmId + "' sleeping: should be running");
@@ -450,17 +457,17 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             if (vmActions[i] == null) {
                 //Next state is undefined, keep the current state
                 //Need to update runnings, sleeping and waitings accordingly
-                if (map.getRunningVMs().contains(vmId)) {
+                if (map.isRunning(vmId)) {
                     runnings.add(vmId);
                     if (manageable.contains(vmId)) {
                         vmActions[i] = new RelocatableVMModel(this, vmId);
                     } else {
                         vmActions[i] = new StayRunningVMModel(this, vmId);
                     }
-                } else if (map.getReadyVMs().contains(vmId)) {
+                } else if (map.isReady(vmId)) {
                     ready.add(vmId);
                     vmActions[i] = new StayAwayVMModel(this, vmId);
-                } else if (map.getSleepingVMs().contains(vmId)) {
+                } else if (map.isSleeping(vmId)) {
                     sleepings.add(vmId);
                     vmActions[i] = new StayAwayVMModel(this, vmId);
                 } else {
@@ -479,7 +486,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             if (m.getOfflineNodes().contains(nId)) {
                 nodeActions[i] = new BootableNodeModel(this, nId);
             }
-            if (m.getOnlineNodes().contains(nId)) {
+            if (m.isOnline(nId)) {
                 if (nodeActions[i] != null) {
                     throw new SolverException(model, "Next state for node '" + nId + "' is ambiguous");
                 }
@@ -500,7 +507,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private boolean checkConsistency(ReconfigurationPlan p) {
         if (p.getDuration() != end.getVal()) {
-            logger.error("The plan effective duration ({}) and the computed duration ({}) mismatch", p.getDuration(), end.getVal());
+            LOGGER.error("The plan effective duration ({}) and the computed duration ({}) mismatch", p.getDuration(), end.getVal());
             return false;
         }
         return true;
@@ -632,7 +639,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public Logger getLogger() {
-        return logger;
+        return LOGGER;
     }
 
     @Override

@@ -33,7 +33,7 @@ import btrplace.plan.event.*;
  * <p/>
  * Actions notifications are propagated with regards to their starting
  * and ending moment. If an action ends at the same moment another action
- * starts, the notification for the ending action is sended first.
+ * starts, the notification for the ending action is send first.
  *
  * @author Fabien Hermenier
  * @see btrplace.plan.ReconfigurationPlanChecker

@@ -72,7 +72,7 @@ public class ShutdownableNodeModelTest {
         dev.register(ShutdownNode.class, new ConstantActionDuration(5));
         dev.register(BootNode.class, new ConstantActionDuration(10));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .build();
         ShutdownableNodeModel ma = (ShutdownableNodeModel) rp.getNodeAction(n1);
@@ -93,7 +93,7 @@ public class ShutdownableNodeModelTest {
 
         Assert.assertEquals(p.getSize(), 1);
         Model res = p.getResult();
-        Assert.assertTrue(res.getMapping().getOnlineNodes().contains(n1));
+        Assert.assertTrue(res.getMapping().isOnline(n1));
     }
 
     @Test
@@ -107,7 +107,7 @@ public class ShutdownableNodeModelTest {
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(ShutdownNode.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .build();
         ShutdownableNodeModel ma = (ShutdownableNodeModel) rp.getNodeAction(n1);
@@ -139,7 +139,7 @@ public class ShutdownableNodeModelTest {
         dev.register(ShutdownVM.class, new ConstantActionDuration(2));
         dev.register(ShutdownNode.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .build();
@@ -180,7 +180,7 @@ public class ShutdownableNodeModelTest {
         dev.register(ShutdownVM.class, new ConstantActionDuration(2));
         dev.register(ShutdownNode.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .build();
         ShutdownableNodeModel ma1 = (ShutdownableNodeModel) rp.getNodeAction(n1);
@@ -214,7 +214,7 @@ public class ShutdownableNodeModelTest {
         dev.register(ShutdownNode.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .build();
         ShutdownableNodeModel ma1 = (ShutdownableNodeModel) rp.getNodeAction(n1);
@@ -239,7 +239,7 @@ public class ShutdownableNodeModelTest {
         dev.register(BootNode.class, new ConstantActionDuration(2));
         dev.register(ShutdownNode.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .build();
         ShutdownableNodeModel ma1 = (ShutdownableNodeModel) rp.getNodeAction(n1);
@@ -276,7 +276,7 @@ public class ShutdownableNodeModelTest {
         dev.register(ShutdownNode.class, new ConstantActionDuration(5));
         dev.register(BootNode.class, new ConstantActionDuration(10));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .build();
         ShutdownableNodeModel shd = (ShutdownableNodeModel) rp.getNodeAction(n1);
@@ -309,8 +309,8 @@ public class ShutdownableNodeModelTest {
         Assert.assertEquals(bn.getHostingEnd().getVal(), 16);
         Assert.assertEquals(p.getSize(), 2);
         Model res = p.getResult();
-        Assert.assertTrue(res.getMapping().getOnlineNodes().contains(n1));
-        Assert.assertTrue(res.getMapping().getOnlineNodes().contains(n3));
+        Assert.assertTrue(res.getMapping().isOnline(n1));
+        Assert.assertTrue(res.getMapping().isOnline(n3));
         Assert.assertTrue(res.getMapping().getOfflineNodes().contains(n2));
     }
 
@@ -329,7 +329,7 @@ public class ShutdownableNodeModelTest {
         dev.register(ShutdownNode.class, new ConstantActionDuration(5));
         dev.register(BootNode.class, new ConstantActionDuration(3));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .build();
 
@@ -367,7 +367,7 @@ public class ShutdownableNodeModelTest {
         dev.register(ShutdownNode.class, new ConstantActionDuration(5));
         dev.register(BootNode.class, new ConstantActionDuration(3));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .build();
 
@@ -398,7 +398,7 @@ public class ShutdownableNodeModelTest {
         Assert.assertEquals(sn4.getHostingEnd().getVal(), 7);
         Assert.assertEquals(p.getSize(), 1);
         Model res = p.getResult();
-        Assert.assertTrue(res.getMapping().getOnlineNodes().contains(n4));
+        Assert.assertTrue(res.getMapping().isOnline(n4));
         Assert.assertTrue(res.getMapping().getOfflineNodes().contains(n1));
     }
 }

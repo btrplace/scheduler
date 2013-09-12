@@ -79,11 +79,11 @@ public class COverbook implements ChocoConstraint {
     @Override
     public Set<VM> getMisPlacedVMs(Model m) {
         ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
-        Set<VM> bads = new HashSet<>();
+        Set<VM> bad = new HashSet<>();
         if (rc == null) {
             //No resource given, all the VMs are considered as misplaced
             for (Node n : cstr.getInvolvedNodes()) {
-                bads.addAll(m.getMapping().getRunningVMs(n));
+                bad.addAll(m.getMapping().getRunningVMs(n));
             }
         } else {
             //Check if the node is saturated
@@ -93,14 +93,14 @@ public class COverbook implements ChocoConstraint {
                 for (VM vmId : m.getMapping().getRunningVMs(n)) {
                     overCapa -= rc.getConsumption(vmId);
                     if (overCapa < 0) {
-                        bads.addAll(m.getMapping().getRunningVMs());
+                        bad.addAll(m.getMapping().getRunningVMs(n));
                         break;
                     }
                 }
 
             }
         }
-        return bads;
+        return bad;
     }
 
     @Override

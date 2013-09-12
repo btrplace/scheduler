@@ -55,7 +55,7 @@ public class ShutdownVMModelTest {
         DurationEvaluators dev = DurationEvaluators.newBundle();
         dev.register(ShutdownVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .setNextVMsStates(map.getAllVMs(), new HashSet<VM>(), new HashSet<VM>(), new HashSet<VM>())
                 .build();
@@ -94,7 +94,7 @@ public class ShutdownVMModelTest {
         DurationEvaluators dev = DurationEvaluators.newBundle();
         dev.register(ShutdownVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .setNextVMsStates(map.getAllVMs(), new HashSet<VM>(), new HashSet<VM>(), new HashSet<VM>())
                 .build();

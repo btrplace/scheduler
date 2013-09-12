@@ -17,13 +17,11 @@
 
 package btrplace.model.constraint;
 
-import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.checker.ReadyChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * A constraint to force a set of VMs at being ready for running.
@@ -34,7 +32,7 @@ import java.util.Collections;
  *
  * @author Fabien Hermenier
  */
-public class Ready extends SatConstraint {
+public class Ready extends VMStateConstraint {
 
     /**
      * Make a new constraint.
@@ -42,37 +40,7 @@ public class Ready extends SatConstraint {
      * @param vms the VMs to make ready
      */
     public Ready(Collection<VM> vms) {
-        super(vms, Collections.<Node>emptySet(), false);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Ready that = (Ready) o;
-        return getInvolvedVMs().equals(that.getInvolvedVMs());
-    }
-
-    @Override
-    public int hashCode() {
-        return getInvolvedVMs().hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return new StringBuilder("ready(")
-                .append("vms=").append(getInvolvedVMs())
-                .append(", discrete")
-                .append(")").toString();
-    }
-
-    @Override
-    public boolean setContinuous(boolean b) {
-        return !b;
+        super("ready", vms);
     }
 
     @Override

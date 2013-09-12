@@ -53,7 +53,7 @@ public class ForgeVM extends Action implements VMStateTransition {
     public boolean applyAction(Model m) {
         Mapping map = m.getMapping();
 
-        if (!map.getAllVMs().contains(id)) {
+        if (!map.contains(id)) {
             map.addReadyVM(id);
             return true;
         }

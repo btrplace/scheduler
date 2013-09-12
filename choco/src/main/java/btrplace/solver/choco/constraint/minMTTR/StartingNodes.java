@@ -38,15 +38,15 @@ public class StartingNodes extends AbstractIntVarSelector {
     /**
      * Make a new heuristic.
      *
-     * @param lbl         the heuristic label (for debugging purpose)
-     * @param rp          the problem to consider
+     * @param l           the heuristic label (for debugging purpose)
+     * @param p           the problem to consider
      * @param nodeActions the actions to consider
      */
-    public StartingNodes(String lbl, ReconfigurationProblem rp, NodeActionModel[] nodeActions) {
-        super(rp.getSolver());
+    public StartingNodes(String l, ReconfigurationProblem p, NodeActionModel[] nodeActions) {
+        super(p.getSolver());
         actions = nodeActions;
-        this.lbl = lbl;
-        this.rp = rp;
+        this.lbl = l;
+        this.rp = p;
     }
 
     @Override

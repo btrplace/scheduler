@@ -59,7 +59,7 @@ public class ShutdownVMTest {
         map.addOnlineNode(ns.get(0));
         map.addRunningVM(vms.get(0), ns.get(0));
         Assert.assertTrue(a.apply(m));
-        Assert.assertTrue(map.getReadyVMs().contains(vms.get(0)));
+        Assert.assertTrue(map.isReady(vms.get(0)));
 
         Assert.assertFalse(a.apply(m));
 

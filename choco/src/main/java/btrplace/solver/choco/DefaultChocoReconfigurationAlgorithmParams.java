@@ -22,6 +22,8 @@ import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import btrplace.solver.choco.view.ModelViewMapper;
 
 /**
+ * Default implementation of {@link ChocoReconfigurationAlgorithmParams}.
+ *
  * @author Fabien Hermenier
  */
 public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfigurationAlgorithmParams {

@@ -22,7 +22,6 @@ import btrplace.model.Model;
 import btrplace.model.VM;
 import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Ready;
-import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 
 import java.util.HashSet;
@@ -50,7 +49,7 @@ public class CReady implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) {
         return true;
     }
 
@@ -59,7 +58,7 @@ public class CReady implements ChocoConstraint {
         Set<VM> bad = new HashSet<>();
         Mapping map = m.getMapping();
         for (VM vm : cstr.getInvolvedVMs()) {
-            if (!map.getReadyVMs().contains(vm)) {
+            if (!map.isReady(vm)) {
                 bad.add(vm);
             }
         }

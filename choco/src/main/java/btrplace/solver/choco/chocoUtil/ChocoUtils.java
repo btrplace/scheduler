@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -134,10 +133,10 @@ public final class ChocoUtils {
     }
 
     /**
-     * make a constraint, left*right==product
+     * make a constraint, x * y = z
      */
-    public static void mult(Solver s, IntDomainVar left, IntDomainVar right, IntDomainVar product) {
-        s.post(new TimesXYZ(left, right, product));
+    public static void mult(Solver s, IntDomainVar x, IntDomainVar y, IntDomainVar z) {
+        s.post(new TimesXYZ(x, y, z));
     }
 
     public static IntDomainVar mult(Solver s, IntDomainVar left, IntDomainVar right) {

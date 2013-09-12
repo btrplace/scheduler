@@ -198,13 +198,13 @@ public interface ReconfigurationProblem {
     /**
      * Solve the RP and return a solution if exists.
      *
-     * @param timelimit the timeout in second. Must be superior to 0 to be considered
+     * @param timeLimit the timeout in second. Must be superior to 0 to be considered
      * @param optimize  {@code true} to make the solver try to improve the first computed solution.
      * @return a plan if the solving process succeeded, {@code null} if the solver was not able to compute
      *         a solution.
      * @throws SolverException if an error occurs
      */
-    ReconfigurationPlan solve(int timelimit, boolean optimize) throws SolverException;
+    ReconfigurationPlan solve(int timeLimit, boolean optimize) throws SolverException;
 
     /**
      * Get the CPSolver used to model this problem.

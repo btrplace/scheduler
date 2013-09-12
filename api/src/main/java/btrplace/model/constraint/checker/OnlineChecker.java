@@ -49,7 +49,7 @@ public class OnlineChecker extends AllowAllConstraintChecker<Online> {
     public boolean endsWith(Model mo) {
         Mapping c = mo.getMapping();
         for (Node n : getNodes()) {
-            if (!c.getOnlineNodes().contains(n)) {
+            if (!c.isOnline(n)) {
                 return false;
             }
         }

@@ -49,7 +49,7 @@ public class OfflineChecker extends AllowAllConstraintChecker<Offline> {
     public boolean endsWith(Model mo) {
         Mapping c = mo.getMapping();
         for (Node n : getNodes()) {
-            if (!c.getOfflineNodes().contains(n)) {
+            if (!c.isOffline(n)) {
                 return false;
             }
         }

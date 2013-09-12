@@ -19,6 +19,7 @@ package btrplace.solver.choco;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
+import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
@@ -81,7 +82,7 @@ public class DefaultReconfigurationProblemBuilder {
      * @param d the evaluator to use
      * @return the current builder
      */
-    public DefaultReconfigurationProblemBuilder setDurationEvaluatators(DurationEvaluators d) {
+    public DefaultReconfigurationProblemBuilder setDurationEvaluators(DurationEvaluators d) {
         dEval = d;
         return this;
     }
@@ -140,9 +141,13 @@ public class DefaultReconfigurationProblemBuilder {
         if (runs == null) {
             //The others are supposed to be null too as they are set using the same method
             Mapping map = model.getMapping();
-            runs = map.getRunningVMs();
+            runs = new HashSet<>();
+            sleep = new HashSet<>();
+            for (Node n : map.getOnlineNodes()) {
+                runs.addAll(map.getRunningVMs(n));
+                sleep.addAll(map.getSleepingVMs(n));
+            }
             waits = map.getReadyVMs();
-            sleep = map.getSleepingVMs();
             over = Collections.emptySet();
         }
         if (dEval == null) {
@@ -153,7 +158,9 @@ public class DefaultReconfigurationProblemBuilder {
         }
         if (manageable == null) {
             manageable = new HashSet<>();
-            manageable.addAll(model.getMapping().getAllVMs());
+            manageable.addAll(model.getMapping().getSleepingVMs());
+            manageable.addAll(model.getMapping().getRunningVMs());
+            manageable.addAll(model.getMapping().getReadyVMs());
         }
         return new DefaultReconfigurationProblem(model, dEval, viewMapper, waits, runs, sleep, over, manageable, labelVars);
     }

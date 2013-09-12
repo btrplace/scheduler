@@ -18,14 +18,12 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.constraint.Constraint;
-import btrplace.model.constraint.SatConstraint;
-import btrplace.solver.choco.constraint.minMTTR.CMinMTTR;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Mapper that allow to convert {@link SatConstraint} and {@link btrplace.model.constraint.OptConstraint} to {@link ChocoConstraint}.
+ * Mapper that allow to convert {@link btrplace.model.constraint.SatConstraint} and {@link btrplace.model.constraint.OptConstraint} to {@link ChocoConstraint}.
  *
  * @author Fabien Hermenier
  */
@@ -72,8 +70,8 @@ public class ConstraintMapper {
         map.register(new CGather.Builder());
         map.register(new CLonely.Builder());
         map.register(new CSequentialVMTransitions.Builder());
-
-        map.register(new CMinMTTR.Builder());
+        map.register(new CMaxOnline.Builder());
+        map.register(new btrplace.solver.choco.constraint.minMTTR.CObjective.Builder());
         return map;
     }
 
@@ -93,7 +91,7 @@ public class ConstraintMapper {
      * @param c the class of the {@link Constraint} to un-register
      * @return {@code true} if a builder was registered
      */
-    public boolean unregister(Class<? extends Constraint> c) {
+    public boolean unRegister(Class<? extends Constraint> c) {
         return builders.remove(c) != null;
     }
 

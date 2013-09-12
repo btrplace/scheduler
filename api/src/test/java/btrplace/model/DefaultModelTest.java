@@ -21,8 +21,7 @@ import btrplace.model.view.ModelView;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link btrplace.model.DefaultModel}.
@@ -151,28 +150,44 @@ public class DefaultModelTest {
     }
 
     @Test
-    public void testVMRegistration() {
-        Model mo = new DefaultModel();
-        VM v = mo.newVM();
-        VM vX = mo.newVM();
-        Assert.assertNotEquals(v, vX);
-        Assert.assertTrue(mo.getVMs().contains(v));
-        Assert.assertNull(mo.newVM(v.id()));
+    public void testElementCreation() {
+        ElementBuilder eb = mock(ElementBuilder.class);
+        Model mo = new DefaultModel(eb);
+        mo.newVM();
+        verify(eb).newVM();
+        mo.newVM(5);
+        verify(eb).newVM(5);
 
-        int nextId = v.id() + 1000;
-        VM v2 = mo.newVM(nextId);
-        Assert.assertTrue(mo.getVMs().contains(v2));
+        mo.newNode();
+        verify(eb).newNode();
+        mo.newNode(5);
+        verify(eb).newNode(5);
+
+        mo.contains(new VM(1));
+        verify(eb).contains(new VM(1));
+
+        mo.contains(new Node(7));
+        verify(eb).contains(new Node(7));
+
     }
+    /*@Test
+    public void testBig() {
+        int nbNodes = 1000000;
+        int ratio = 10;
 
-    @Test
-    public void testNodeRegistration() {
         Model mo = new DefaultModel();
-        Node n = mo.newNode();
-        Assert.assertTrue(mo.getNodes().contains(n));
-        Assert.assertNull(mo.newNode(n.id()));
-
-        int nextId = n.id() + 1000;
-        Node n2 = mo.newNode(nextId);
-        Assert.assertTrue(mo.getNodes().contains(n2));
-    }
+        Mapping map = mo.getMapping();
+        for (int i = 0; i < nbNodes; i++) {
+            Node n = mo.newNode();
+            map.addOnlineNode(n);
+            for (int j = 0; j < ratio; j++) {
+                VM v = mo.newVM();
+                map.addRunningVM(v, n);
+            }
+        }
+        for (int i = 0; i < ratio; i++) {
+            VM v = mo.newVM();
+            map.addReadyVM(v);
+        }
+    }       */
 }

@@ -39,15 +39,15 @@ public class SuspendVM extends Action implements VMStateTransition {
     /**
      * Make a new suspend action.
      *
-     * @param vm    the virtual machine to suspend
+     * @param v     the virtual machine to suspend
      * @param from  The node that host the virtual machine
      * @param to    the destination node.
      * @param start the moment the action starts.
      * @param end   the moment the action finish
      */
-    public SuspendVM(VM vm, Node from, Node to, int start, int end) {
+    public SuspendVM(VM v, Node from, Node to, int start, int end) {
         super(start, end);
-        this.vm = vm;
+        this.vm = v;
         this.src = from;
         this.dst = to;
 
@@ -71,9 +71,9 @@ public class SuspendVM extends Action implements VMStateTransition {
     @Override
     public boolean applyAction(Model m) {
         Mapping map = m.getMapping();
-        return (map.getOnlineNodes().contains(src) &&
-                map.getOnlineNodes().contains(dst) &&
-                map.getRunningVMs().contains(vm) &&
+        return (map.isOnline(src) &&
+                map.isOnline(dst) &&
+                map.isRunning(vm) &&
                 map.getVMLocation(vm) == src &&
                 map.addSleepingVM(vm, dst)
         );

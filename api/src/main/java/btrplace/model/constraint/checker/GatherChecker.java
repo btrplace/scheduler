@@ -49,7 +49,7 @@ public class GatherChecker extends AllowAllConstraintChecker<Gather> {
         if (getConstraint().isContinuous()) {
             Mapping map = mo.getMapping();
             for (VM vm : getVMs()) {
-                if (map.getRunningVMs().contains(vm)) {
+                if (map.isRunning(vm)) {
                     if (usedInContinuous == null) {
                         usedInContinuous = map.getVMLocation(vm);
                     } else if (usedInContinuous != map.getVMLocation(vm)) {
@@ -78,7 +78,7 @@ public class GatherChecker extends AllowAllConstraintChecker<Gather> {
         Node used = null;
         Mapping map = mo.getMapping();
         for (VM vm : getVMs()) {
-            if (map.getRunningVMs().contains(vm)) {
+            if (map.isRunning(vm)) {
                 if (used == null) {
                     used = map.getVMLocation(vm);
                 } else if (used != map.getVMLocation(vm)) {

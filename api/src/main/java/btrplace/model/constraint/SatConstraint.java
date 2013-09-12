@@ -58,13 +58,13 @@ public abstract class SatConstraint implements Constraint {
     /**
      * Make a new constraint.
      *
-     * @param vms   the involved VMs
-     * @param nodes the involved nodes
-     * @param c     {@code true} to indicate a continuous restriction
+     * @param v the involved VMs
+     * @param n the involved nodes
+     * @param c {@code true} to indicate a continuous restriction
      */
-    public SatConstraint(Collection<VM> vms, Collection<Node> nodes, boolean c) {
-        this.vms = vms;
-        this.nodes = nodes;
+    public SatConstraint(Collection<VM> v, Collection<Node> n, boolean c) {
+        this.vms = v;
+        this.nodes = n;
         this.continuous = c;
     }
 

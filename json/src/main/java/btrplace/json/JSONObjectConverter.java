@@ -74,10 +74,9 @@ public interface JSONObjectConverter<E> {
      *
      * @param r the stream to read
      * @return the resulting object
-     * @throws IOException            if an error occurred while reading the stream
      * @throws JSONConverterException if the stream cannot be parsed
      */
-    E fromJSON(Reader r) throws IOException, JSONConverterException;
+    E fromJSON(Reader r) throws JSONConverterException;
 
     /**
      * Serialize an object to a string.

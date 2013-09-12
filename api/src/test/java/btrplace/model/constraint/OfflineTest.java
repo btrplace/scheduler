@@ -46,6 +46,7 @@ public class OfflineTest {
         Assert.assertEquals(o.getInvolvedNodes(), s);
         Assert.assertTrue(o.getInvolvedVMs().isEmpty());
         Assert.assertNotNull(o.toString());
+        Assert.assertFalse(o.setContinuous(true));
         System.out.println(o);
     }
 

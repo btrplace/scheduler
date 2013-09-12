@@ -26,7 +26,7 @@ import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.chocoUtil.ChocoUtils;
-import btrplace.solver.choco.constraint.minMTTR.CMinMTTR;
+import btrplace.solver.choco.constraint.minMTTR.CObjective;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.ElementV;
 import choco.kernel.common.logging.ChocoLogging;
@@ -246,7 +246,7 @@ public class Issues {
         // idle should be less than Amount for MaxSN (0, in this case)
         solver.post(solver.eq(Sidle, 0));
         System.err.flush();
-        CMinMTTR obj = new CMinMTTR();
+        CObjective obj = new CObjective();
         obj.inject(rp);
         //System.err.println(solver.pretty());
         ChocoLogging.setLoggingMaxDepth(100);
