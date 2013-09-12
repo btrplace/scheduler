@@ -52,6 +52,7 @@ public interface ConstraintSplitter<C extends Constraint> {
      * @param partitions   the possible partitions  @return {@code false} iff this leads to a problem without solutions.
      * @param vmsPosition  the partition associated to each VM
      * @param nodePosition the partition associated to each node
+     * @return {@code true} iff the split was successful. {@code false} otherwise
      */
     boolean split(C cstr, Instance origin, List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition);
 
