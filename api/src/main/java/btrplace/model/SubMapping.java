@@ -362,7 +362,7 @@ public class SubMapping implements Mapping {
 
     @Override
     public int getNbNodes() {
-        throw new UnsupportedOperationException();
+        return scope.size();
     }
 
     @Override
