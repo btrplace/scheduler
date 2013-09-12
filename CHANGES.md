@@ -5,10 +5,10 @@ version ?????????
 ----------------------
 - Bugs fix.
 - Reduce the memory footprint of classes in the model package.
-- StaticPartitioning: an experimental partitioning algorithm that splits
-  a problem from disjoint set of nodes
+- [StaticPartitioning](http://btrp.inria.fr/apidocs/releases/btrplace/solver/last/index.html?btrplace/solver/choco/runner/staticPartitioning/StaticPartitioning.html):
+   an experimental partitioning algorithm that splits problem from disjoint set of nodes
 - API changes in Model, Instance, Mapping
-- new constraint: MaxOnline
+- new constraint: [MaxOnline](http://btrp.inria.fr/apidocs/releases/btrplace/solver/last/index.html?btrplace/model/constraint/MaxOnline.html)
 
 version 0.31 - 16 Jul 2013
 ----------------------
