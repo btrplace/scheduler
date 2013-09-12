@@ -54,8 +54,9 @@ public interface Mapping extends Cloneable {
      * If the VM is already in a other location or state in the mapping, its state is updated
      *
      * @param vm the VM
+     * @return {@code true} iff the VM is now in the running state
      */
-    void addReadyVM(VM vm);
+    boolean addReadyVM(VM vm);
 
     /**
      * Remove a VM.
@@ -84,8 +85,9 @@ public interface Mapping extends Cloneable {
      * Set a node online. If the node is already in the mapping but in an another state, it is updated.
      *
      * @param node the node.
+     * @return {@code true} iff the node is now in the online state
      */
-    void addOnlineNode(Node node);
+    boolean addOnlineNode(Node node);
 
     /**
      * Set a node offline. If the node is already in the mapping but in an another state, it is updated.
@@ -109,6 +111,46 @@ public interface Mapping extends Cloneable {
      * @return a set of VMs, may be empty
      */
     Set<VM> getRunningVMs();
+
+    /**
+     * Check if a VM is in the running state.
+     *
+     * @param v the VM to check
+     * @return {@code true} iff the VM is running on a node
+     */
+    boolean isRunning(VM v);
+
+    /**
+     * Check if a VM is in the sleeping state.
+     *
+     * @param v the VM to check
+     * @return {@code true} iff the VM is sleeping on a node
+     */
+    boolean isSleeping(VM v);
+
+    /**
+     * Check if a VM is in the ready state.
+     *
+     * @param v the VM to check
+     * @return {@code true} iff the VM is ready
+     */
+    boolean isReady(VM v);
+
+    /**
+     * Check if a node is in the online state.
+     *
+     * @param n the node to check
+     * @return {@code true} iff the node is online
+     */
+    boolean isOnline(Node n);
+
+    /**
+     * Check if a node is in the offline state.
+     *
+     * @param n the node to check
+     * @return {@code true} iff the node is offline
+     */
+    boolean isOffline(Node n);
 
     /**
      * Get the VMs that are sleeping.
@@ -172,6 +214,14 @@ public interface Mapping extends Cloneable {
     Set<VM> getRunningVMs(Collection<Node> ns);
 
     /**
+     * Get all the VMs sleeping on a collection of nodes.
+     *
+     * @param ns a set of nodes
+     * @return a set of VMs
+     */
+    Set<VM> getSleepingVMs(Collection<Node> ns);
+
+    /**
      * Copy a mapping.
      *
      * @return the resulting copy
@@ -210,4 +260,18 @@ public interface Mapping extends Cloneable {
      * Remove all the VMs in the mapping
      */
     void clearAllVMs();
+
+    /**
+     * Get the number of nodes in the mapping
+     *
+     * @return a positive integer
+     */
+    int getNbNodes();
+
+    /**
+     * Get the number of VMs in the mapping.
+     *
+     * @return a positive integer
+     */
+    int getNbVMs();
 }

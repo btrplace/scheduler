@@ -31,10 +31,10 @@ public class VM implements Element {
     /**
      * Make a new VM.
      *
-     * @param id the VM identifier.
+     * @param i the VM identifier.
      */
-    VM(int id) {
-        this.id = id;
+    public VM(int i) {
+        this.id = i;
     }
 
     @Override

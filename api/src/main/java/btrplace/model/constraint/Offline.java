@@ -18,12 +18,10 @@
 package btrplace.model.constraint;
 
 import btrplace.model.Node;
-import btrplace.model.VM;
 import btrplace.model.constraint.checker.OfflineChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * A constraint to force a set of nodes at being offline.
@@ -34,7 +32,7 @@ import java.util.Collections;
  *
  * @author Fabien Hermenier
  */
-public class Offline extends SatConstraint {
+public class Offline extends NodeStateConstraint {
 
     /**
      * Make a new constraint.
@@ -42,38 +40,7 @@ public class Offline extends SatConstraint {
      * @param nodes the nodes to set offline
      */
     public Offline(Collection<Node> nodes) {
-        super(Collections.<VM>emptyList(), nodes, false);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Offline that = (Offline) o;
-        return getInvolvedNodes().equals(that.getInvolvedNodes());
-    }
-
-    @Override
-    public int hashCode() {
-        return getInvolvedNodes().hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return new StringBuilder("offline(nodes=")
-                .append(getInvolvedNodes())
-                .append(", discrete")
-                .append(")").toString();
-    }
-
-    @Override
-    public boolean setContinuous(boolean b) {
-        return !b;
+        super("offline", nodes);
     }
 
     @Override

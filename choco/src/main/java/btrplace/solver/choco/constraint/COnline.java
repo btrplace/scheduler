@@ -22,7 +22,6 @@ import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Online;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.actionModel.ActionModel;
@@ -44,7 +43,7 @@ public class COnline implements ChocoConstraint {
     /**
      * Make a new constraint.
      *
-     * @param o the {@link SatConstraint} to rely on
+     * @param o the {@link Online} to rely on
      */
     public COnline(Online o) {
         this.cstr = o;

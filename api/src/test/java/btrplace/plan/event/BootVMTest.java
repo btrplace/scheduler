@@ -59,14 +59,14 @@ public class BootVMTest {
         map.addOnlineNode(ns.get(0));
         map.addReadyVM(vms.get(0));
         Assert.assertTrue(a.apply(m));
-        Assert.assertTrue(map.getRunningVMs().contains(vms.get(0)));
+        Assert.assertTrue(map.isRunning(vms.get(0)));
         Assert.assertEquals(map.getVMLocation(vms.get(0)), ns.get(0));
 
         Assert.assertFalse(a.apply(m));
 
         map.addSleepingVM(vms.get(0), ns.get(0));
         Assert.assertFalse(a.apply(m));
-        Assert.assertTrue(map.getSleepingVMs().contains(vms.get(0)));
+        Assert.assertTrue(map.isSleeping(vms.get(0)));
 
         map.remove(vms.get(0));
         Assert.assertFalse(a.apply(m));

@@ -31,10 +31,10 @@ public class Node implements Element {
     /**
      * Make a new node.
      *
-     * @param id the node identifier.
+     * @param i the node identifier.
      */
-    Node(int id) {
-        this.id = id;
+    public Node(int i) {
+        this.id = i;
     }
 
     @Override

@@ -131,7 +131,7 @@ public class CSpread implements ChocoConstraint {
         Mapping map = m.getMapping();
         for (VM vm : cstr.getInvolvedVMs()) {
             Node h = map.getVMLocation(vm);
-            if (map.getRunningVMs().contains(vm)) {
+            if (map.isRunning(vm)) {
                 if (!spots.containsKey(h)) {
                     spots.put(h, new HashSet<VM>());
                 }

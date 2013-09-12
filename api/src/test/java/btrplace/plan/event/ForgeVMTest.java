@@ -56,17 +56,17 @@ public class ForgeVMTest {
         Mapping map = m.getMapping();
         ForgeVM a = new ForgeVM(vms.get(0), 3, 5);
         Assert.assertTrue(a.apply(m));
-        Assert.assertTrue(map.getReadyVMs().contains(vms.get(0)));
+        Assert.assertTrue(map.isReady(vms.get(0)));
         Assert.assertFalse(a.apply(m));
 
         map.addOnlineNode(ns.get(0));
         map.addRunningVM(vms.get(0), ns.get(0));
         Assert.assertFalse(a.apply(m));
-        Assert.assertTrue(map.getRunningVMs().contains(vms.get(0)));
+        Assert.assertTrue(map.isRunning(vms.get(0)));
 
         map.addSleepingVM(vms.get(0), ns.get(0));
         Assert.assertFalse(a.apply(m));
-        Assert.assertTrue(map.getSleepingVMs().contains(vms.get(0)));
+        Assert.assertTrue(map.isSleeping(vms.get(0)));
 
     }
 

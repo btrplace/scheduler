@@ -40,15 +40,15 @@ public class ResumeVM extends Action implements VMStateTransition, RunningVMPlac
     /**
      * Make a new resume action.
      *
-     * @param vm    the virtual machine to resume
+     * @param v     the virtual machine to resume
      * @param from  the source node
      * @param to    the destination node
      * @param start the moment the action starts.
      * @param end   the moment the action finish
      */
-    public ResumeVM(VM vm, Node from, Node to, int start, int end) {
+    public ResumeVM(VM v, Node from, Node to, int start, int end) {
         super(start, end);
-        this.vm = vm;
+        this.vm = v;
         this.src = from;
         this.dst = to;
     }
@@ -85,9 +85,9 @@ public class ResumeVM extends Action implements VMStateTransition, RunningVMPlac
     @Override
     public boolean applyAction(Model m) {
         Mapping map = m.getMapping();
-        return (map.getOnlineNodes().contains(src)
-                && map.getOnlineNodes().contains(dst)
-                && map.getSleepingVMs().contains(vm)
+        return (map.isOnline(src)
+                && map.isOnline(dst)
+                && map.isSleeping(vm)
                 && map.getVMLocation(vm) == src
                 && map.addRunningVM(vm, dst));
     }

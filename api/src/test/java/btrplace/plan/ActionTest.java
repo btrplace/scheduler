@@ -19,13 +19,13 @@ package btrplace.plan;
 
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
-import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.plan.event.Action;
-import btrplace.plan.event.ActionVisitor;
 import btrplace.plan.event.Event;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link btrplace.plan.event.Action}.
@@ -34,33 +34,9 @@ import org.testng.annotations.Test;
  */
 public class ActionTest {
 
-    static Model mo = new DefaultModel();
-    VM vm = mo.newVM();
-    Node n = mo.newNode();
-
-    public static class MockEvent implements Event {
-
-        int count = 0;
-
-        @Override
-        public boolean apply(Model m) {
-            count++;
-            return true;
-        }
-
-        public String toString() {
-            return "event()";
-        }
-
-        @Override
-        public Object visit(ActionVisitor v) {
-            throw new UnsupportedOperationException();
-        }
-    }
-
     @Test
     public void testBasics() {
-        Action a1 = new MockAction(vm, 1, 3);
+        Action a1 = new MockAction(new VM(1), 1, 3);
         Assert.assertEquals(1, a1.getStart());
         Assert.assertEquals(3, a1.getEnd());
         Assert.assertTrue(a1.getEvents(Action.Hook.pre).isEmpty());
@@ -69,24 +45,27 @@ public class ActionTest {
 
     @Test
     public void testEvents() {
-        Action a1 = new MockAction(vm, 1, 3);
-        MockEvent m = new MockEvent();
-        a1.addEvent(Action.Hook.pre, m);
+        Action a1 = new MockAction(new VM(1), 1, 3);
+        Event e = mock(Event.class);
+        a1.addEvent(Action.Hook.pre, e);
         Assert.assertEquals(1, a1.getEvents(Action.Hook.pre).size());
-        a1.addEvent(Action.Hook.post, m);
+        a1.addEvent(Action.Hook.post, e);
         Assert.assertEquals(1, a1.getEvents(Action.Hook.post).size());
-        //System.out.println(a1);
     }
 
     @Test
     public void testApply() {
-        MockAction a1 = new MockAction(vm, 1, 3);
-        MockEvent m = new MockEvent();
-        a1.addEvent(Action.Hook.pre, m);
-        a1.addEvent(Action.Hook.post, m);
         Model mo = new DefaultModel();
+
+        MockAction a1 = new MockAction(new VM(1), 1, 3);
+        Event e = mock(Event.class);
+        when(e.apply(mo)).thenReturn(true);
+        a1.addEvent(Action.Hook.pre, e);
+        a1.addEvent(Action.Hook.post, e);
+
         a1.apply(mo);
-        Assert.assertEquals(m.count, 2);
+
+        verify(e, times(2)).apply(mo);
         Assert.assertEquals(a1.count, 1);
     }
 }

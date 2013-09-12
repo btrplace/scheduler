@@ -36,13 +36,13 @@ public class ShutdownNode extends Action implements NodeEvent {
     /**
      * Create a new shutdown action on an online node.
      *
-     * @param node  The node to stop
+     * @param n     The node to stop
      * @param start the moment the action starts
      * @param end   the moment the action is finished
      */
-    public ShutdownNode(Node node, int start, int end) {
+    public ShutdownNode(Node n, int start, int end) {
         super(start, end);
-        this.node = node;
+        this.node = n;
     }
 
     @Override
@@ -95,7 +95,7 @@ public class ShutdownNode extends Action implements NodeEvent {
     @Override
     public boolean applyAction(Model c) {
         Mapping map = c.getMapping();
-        return (!map.getOfflineNodes().contains(node) && map.addOfflineNode(node));
+        return (!map.isOffline(node) && map.addOfflineNode(node));
     }
 
     @Override

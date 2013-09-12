@@ -65,7 +65,7 @@ public class CGather implements ChocoConstraint {
             Mapping map = rp.getSourceModel().getMapping();
             Node loc = null;
             for (VM vm : cstr.getInvolvedVMs()) {
-                if (map.getRunningVMs().contains(vm)) {
+                if (map.isRunning(vm)) {
                     Node node = map.getVMLocation(vm);
                     if (loc == null) {
                         loc = node;

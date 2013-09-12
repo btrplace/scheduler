@@ -60,25 +60,25 @@ public class BootVMModel implements VMActionModel {
     /**
      * Make a new model.
      *
-     * @param rp the RP to use as a basis.
-     * @param e  the VM managed by the action
+     * @param p the RP to use as a basis.
+     * @param e the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public BootVMModel(ReconfigurationProblem rp, VM e) throws SolverException {
+    public BootVMModel(ReconfigurationProblem p, VM e) throws SolverException {
         vm = e;
 
-        int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), BootVM.class, e);
-        this.rp = rp;
-        start = rp.makeDuration(rp.getEnd().getSup() - d, 0, "bootVM(", e, ").start");
-        end = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel("bootVM(", e, ").end"), start, d);
-        duration = rp.makeDuration(d, d, "bootVM.duration(", e, ')');
-        dSlice = new SliceBuilder(rp, e, new StringBuilder("bootVM(").append(e).append(").dSlice").toString()).setStart(start)
-                .setDuration(rp.makeDuration(rp.getEnd().getSup(), d, "bootVM(", e, ").dSlice_duration"))
+        int d = p.getDurationEvaluators().evaluate(p.getSourceModel(), BootVM.class, e);
+        this.rp = p;
+        start = p.makeDuration(p.getEnd().getSup() - d, 0, "bootVM(", e, ").start");
+        end = new IntDomainVarAddCste(p.getSolver(), p.makeVarLabel("bootVM(", e, ").end"), start, d);
+        duration = p.makeDuration(d, d, "bootVM.duration(", e, ')');
+        dSlice = new SliceBuilder(p, e, new StringBuilder("bootVM(").append(e).append(").dSlice").toString()).setStart(start)
+                .setDuration(p.makeDuration(p.getEnd().getSup(), d, "bootVM(", e, ").dSlice_duration"))
                 .build();
-        CPSolver s = rp.getSolver();
-        s.post(s.leq(start, rp.getEnd()));
-        s.post(s.leq(duration, rp.getEnd()));
-        s.post(s.leq(end, rp.getEnd()));
+        CPSolver s = p.getSolver();
+        s.post(s.leq(start, p.getEnd()));
+        s.post(s.leq(duration, p.getEnd()));
+        s.post(s.leq(end, p.getEnd()));
 
         state = s.makeConstantIntVar(1);
     }

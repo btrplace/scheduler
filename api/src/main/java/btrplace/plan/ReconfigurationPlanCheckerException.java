@@ -1,3 +1,20 @@
+/*
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ *
+ * This file is part of btrplace.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.plan;
 
 import btrplace.model.Model;
@@ -22,24 +39,24 @@ public class ReconfigurationPlanCheckerException extends Exception {
     /**
      * Declare a violation caused by an action.
      *
-     * @param cstr the violated constraint
-     * @param a    the action provoking the violation
+     * @param c the violated constraint
+     * @param a the action provoking the violation
      */
-    public ReconfigurationPlanCheckerException(SatConstraint cstr, Action a) {
-        this.cstr = cstr;
+    public ReconfigurationPlanCheckerException(SatConstraint c, Action a) {
+        this.cstr = c;
         this.action = a;
     }
 
     /**
      * Declare a violation caused by a model.
      *
-     * @param cstr  the violated constraint
+     * @param c     the violated constraint
      * @param model the model provoking the violation
      * @param o     {@code true} to indicate the model is the model at the origin of the plan. {@code false}
      *              to indicate the model that is reached once all the actions have been applied
      */
-    public ReconfigurationPlanCheckerException(SatConstraint cstr, Model model, boolean o) {
-        this.cstr = cstr;
+    public ReconfigurationPlanCheckerException(SatConstraint c, Model model, boolean o) {
+        this.cstr = c;
         this.mo = model;
         this.origin = o;
     }

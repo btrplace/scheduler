@@ -33,7 +33,7 @@ import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.constraint.minMTTR.CMinMTTR;
+import btrplace.solver.choco.constraint.minMTTR.CObjective;
 import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import choco.cp.solver.CPSolver;
@@ -69,7 +69,7 @@ public class RelocatableVMModelTest {
         dev.register(MigrateVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .build();
         rp.getNodeActions()[0].getState().setVal(1);
@@ -122,7 +122,7 @@ public class RelocatableVMModelTest {
         dev.register(MigrateVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .build();
         rp.getNodeActions()[0].getState().setVal(1);
         rp.getNodeActions()[1].getState().setVal(1);
@@ -203,7 +203,7 @@ public class RelocatableVMModelTest {
         mo.getAttributes().put(vm1, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .build();
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm1);
@@ -238,13 +238,13 @@ public class RelocatableVMModelTest {
         mo.getAttributes().put(vm10, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .setManageableVMs(map.getAllVMs())
                 .build();
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
         am.getDSlice().getHoster().setVal(rp.getNode(n2));
-        new CMinMTTR().inject(rp);
+        new CObjective().inject(rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);
@@ -285,13 +285,13 @@ public class RelocatableVMModelTest {
         mo.getAttributes().put(vm10, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .setManageableVMs(map.getAllVMs())
                 .build();
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
         am.getDSlice().getHoster().setVal(rp.getNode(n2));
-        new CMinMTTR().inject(rp);
+        new CObjective().inject(rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);
@@ -326,14 +326,14 @@ public class RelocatableVMModelTest {
         mo.getAttributes().put(vm10, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .setManageableVMs(map.getAllVMs())
                 .build();
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
         am.getRelocationMethod().setVal(1);
         am.getDSlice().getHoster().setVal(rp.getNode(n2));
-        new CMinMTTR().inject(rp);
+        new CObjective().inject(rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);
@@ -368,14 +368,14 @@ public class RelocatableVMModelTest {
         mo.getAttributes().put(vm10, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
-                .setDurationEvaluatators(dev)
+                .setDurationEvaluators(dev)
                 .labelVariables()
                 .setManageableVMs(map.getAllVMs())
                 .build();
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
         am.getRelocationMethod().setVal(0);
         am.getDSlice().getHoster().setVal(rp.getNode(n2));
-        new CMinMTTR().inject(rp);
+        new CObjective().inject(rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);

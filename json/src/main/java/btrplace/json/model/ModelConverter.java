@@ -27,7 +27,7 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
 /**
- * Class to serialize/unserialize a model using the JSON format.
+ * Class to serialize/unSerialize a model using the JSON format.
  *
  * @author Fabien Hermenier
  */
@@ -92,7 +92,6 @@ public class ModelConverter extends AbstractJSONObjectConverter<Model> {
         cfgParser.setModel(i);
         cfgParser.fromJSON((JSONObject) o.get("mapping"));
 
-        //MappingUtils.fill(cfg, i.getMapping());
         if (o.containsKey("attributes")) {
             attrsParser.setModel(i);
             i.setAttributes(attrsParser.fromJSON((JSONObject) o.get("attributes")));

@@ -63,7 +63,11 @@ public class CCumulatedRunningCapacity implements ChocoConstraint {
                 for (Node n : cstr.getInvolvedNodes()) {
                     alias[i++] = rp.getNode(n);
                 }
-                int[] cUse = new int[rp.getSourceModel().getMapping().getRunningVMs().size()];
+                int nbRunnings = 0;
+                for (Node n : rp.getSourceModel().getMapping().getOnlineNodes()) {
+                    nbRunnings += rp.getSourceModel().getMapping().getRunningVMs(n).size();
+                }
+                int[] cUse = new int[nbRunnings];
                 IntDomainVar[] dUse = new IntDomainVar[rp.getFutureRunningVMs().size()];
                 Arrays.fill(cUse, 1);
                 Arrays.fill(dUse, s.makeConstantIntVar(1));

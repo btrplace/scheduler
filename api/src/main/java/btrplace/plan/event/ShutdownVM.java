@@ -39,14 +39,14 @@ public class ShutdownVM extends Action implements VMStateTransition {
     /**
      * Make a new action.
      *
-     * @param vm    the virtual machine to stop
+     * @param v     the virtual machine to stop
      * @param on    the hosting node
      * @param start the moment the action starts
      * @param end   the moment the action finish
      */
-    public ShutdownVM(VM vm, Node on, int start, int end) {
+    public ShutdownVM(VM v, Node on, int start, int end) {
         super(start, end);
-        this.vm = vm;
+        this.vm = v;
         this.node = on;
     }
 
@@ -60,8 +60,8 @@ public class ShutdownVM extends Action implements VMStateTransition {
     @Override
     public boolean applyAction(Model m) {
         Mapping map = m.getMapping();
-        if (map.getOnlineNodes().contains(node) &&
-                map.getRunningVMs().contains(vm) &&
+        if (map.isOnline(node) &&
+                map.isRunning(vm) &&
                 map.getVMLocation(vm) == node) {
             map.addReadyVM(vm);
             return true;

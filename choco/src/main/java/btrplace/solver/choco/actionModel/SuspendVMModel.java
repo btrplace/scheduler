@@ -57,22 +57,22 @@ public class SuspendVMModel implements VMActionModel {
     /**
      * Make a new model.
      *
-     * @param rp the RP to use as a basis.
-     * @param e  the VM managed by the action
+     * @param p the RP to use as a basis.
+     * @param e the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public SuspendVMModel(ReconfigurationProblem rp, VM e) throws SolverException {
-        this.rp = rp;
+    public SuspendVMModel(ReconfigurationProblem p, VM e) throws SolverException {
+        this.rp = p;
         this.vm = e;
 
-        int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), SuspendVM.class, e);
+        int d = p.getDurationEvaluators().evaluate(p.getSourceModel(), SuspendVM.class, e);
 
-        duration = rp.makeDuration(d, d, "suspendVM(", e, ").duration");
-        this.cSlice = new SliceBuilder(rp, e, "suspendVM(" + e + ").cSlice").setHoster(rp.getCurrentVMLocation(rp.getVM(e)))
-                .setEnd(rp.makeDuration(rp.getEnd().getSup(), d, "suspendVM(", e, ").cSlice_end"))
+        duration = p.makeDuration(d, d, "suspendVM(", e, ").duration");
+        this.cSlice = new SliceBuilder(p, e, "suspendVM(" + e + ").cSlice").setHoster(p.getCurrentVMLocation(p.getVM(e)))
+                .setEnd(p.makeDuration(p.getEnd().getSup(), d, "suspendVM(", e, ").cSlice_end"))
                 .build();
-        start = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel("suspendVM(" + e + ").start"), cSlice.getEnd(), -d);
-        state = rp.getSolver().makeConstantIntVar(0);
+        start = new IntDomainVarAddCste(p.getSolver(), p.makeVarLabel("suspendVM(" + e + ").start"), cSlice.getEnd(), -d);
+        state = p.getSolver().makeConstantIntVar(0);
     }
 
     @Override

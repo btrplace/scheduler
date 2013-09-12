@@ -104,6 +104,11 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     @Override
+    public ReconfigurationPlan solve(Instance i) throws SolverException {
+        return solve(i.getModel(), i.getSatConstraints(), i.getOptConstraint());
+    }
+
+    @Override
     public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs, OptConstraint opt) throws SolverException {
         stats = null;
         InstanceResult res = runner.solve(params, new Instance(i, cstrs, opt));

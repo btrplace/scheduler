@@ -1,7 +1,17 @@
 Release notes
 ======================
 
-0.31 - 16 Jul 2013
+version 0.32 - 12 Sep 2013
+----------------------
+- Bugs fix.
+- Reduce the memory footprint of classes in the model package.
+- [StaticPartitioning](http://btrp.inria.fr/apidocs/releases/btrplace/solver/last/index.html?btrplace/solver/choco/runner/staticPartitioning/StaticPartitioning.html):
+   an experimental partitioning algorithm that splits problem from disjoint set of nodes
+- API changes in Model, Instance, Mapping
+- new constraint: [MaxOnline](http://btrp.inria.fr/apidocs/releases/btrplace/solver/last/index.html?btrplace/model/constraint/MaxOnline.html)
+- API changes due to spell checking
+
+version 0.31 - 16 Jul 2013
 ----------------------
 - Bugs fix
 - Optimization constraint is now a part of a reconfiguration algorithm

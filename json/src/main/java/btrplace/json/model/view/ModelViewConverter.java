@@ -28,7 +28,7 @@ import btrplace.model.view.ModelView;
 public abstract class ModelViewConverter<E extends ModelView> extends AbstractJSONObjectConverter<E> {
 
     /**
-     * Get the classname of the view that is supported by the converter.
+     * Get the className of the view that is supported by the converter.
      *
      * @return The view class
      */

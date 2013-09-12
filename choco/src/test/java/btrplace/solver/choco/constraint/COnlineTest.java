@@ -63,6 +63,6 @@ public class COnlineTest {
         ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Online(Collections.singleton(n1))));
         Assert.assertNotNull(plan);
         Model res = plan.getResult();
-        Assert.assertTrue(res.getMapping().getOnlineNodes().contains(n1));
+        Assert.assertTrue(res.getMapping().isOnline(n1));
     }
 }

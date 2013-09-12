@@ -54,13 +54,14 @@ public class MovingVMs extends AbstractIntVarSelector {
      * Make a new heuristic.
      * By default, the heuristic doesn't touch the scheduling constraints.
      *
+     * @param l   the label to use for debugging purpose
      * @param s   the solver to use to extract the assignment variables
      * @param m   the initial configuration
      * @param vms the VMs to consider
      */
-    public MovingVMs(String label, ReconfigurationProblem s, Mapping m, Set<VM> vms) {
+    public MovingVMs(String l, ReconfigurationProblem s, Mapping m, Set<VM> vms) {
         super(s.getSolver());
-        this.label = label;
+        this.label = l;
         map = m;
 
         this.rp = s;

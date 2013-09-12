@@ -95,14 +95,14 @@ public class CAmong implements ChocoConstraint {
                 }
             }
 
-            if (src.getRunningVMs().contains(vm) && cstr.isContinuous()) {
+            if (src.isRunning(vm) && cstr.isContinuous()) {
                 //The VM is already running, so we get its current group
                 Node curNode = src.getVMLocation(vm);
                 int g = getGroup(curNode);
                 if (curGrp == -1) {
                     curGrp = g;
                 } else if (curGrp != g) {
-                    rp.getLogger().error("The VMs in '{}' are already spreaded over multiple group of nodes", cstr.getInvolvedVMs());
+                    rp.getLogger().error("The VMs in '{}' are already spread over multiple group of nodes", cstr.getInvolvedVMs());
                     return false;
                 }
             }
@@ -189,8 +189,8 @@ public class CAmong implements ChocoConstraint {
         }
 
         @Override
-        public CAmong build(Constraint cstr) {
-            return new CAmong((Among) cstr);
+        public CAmong build(Constraint c) {
+            return new CAmong((Among) c);
         }
     }
 }

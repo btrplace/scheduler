@@ -22,7 +22,6 @@ import btrplace.model.Model;
 import btrplace.model.VM;
 import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Killed;
-import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 
 import java.util.HashSet;
@@ -50,7 +49,7 @@ public class CKilled implements ChocoConstraint {
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SolverException {
+    public boolean inject(ReconfigurationProblem rp) {
         return true;
     }
 

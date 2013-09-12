@@ -73,8 +73,8 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
      * @param i  the instance to solve
      */
     public InstanceSolverRunner(ChocoReconfigurationAlgorithmParams ps, Instance i) {
-        cstrs = i.getConstraints();
-        obj = i.getOptimizationConstraint();
+        cstrs = i.getSatConstraints();
+        obj = i.getOptConstraint();
         origin = i.getModel();
         params = ps;
     }
@@ -100,7 +100,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
             //as they are not forced to be a part of the initial model
             //(when they will be forged)
             if (!(cstrs instanceof Ready)) {
-                checkUnkownVMsInMapping(origin, cstr.getInvolvedVMs());
+                checkUnknownVMsInMapping(origin, cstr.getInvolvedVMs());
             }
 
             if (cstr instanceof Running) {
@@ -108,10 +108,10 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
             } else if (cstr instanceof Sleeping) {
                 toSleep.addAll(cstr.getInvolvedVMs());
             } else if (cstr instanceof Ready) {
-                checkUnkownVMsInMapping(origin, cstr.getInvolvedVMs());
+                checkUnknownVMsInMapping(origin, cstr.getInvolvedVMs());
                 toForge.addAll(cstr.getInvolvedVMs());
             } else if (cstr instanceof Killed) {
-                checkUnkownVMsInMapping(origin, cstr.getInvolvedVMs());
+                checkUnknownVMsInMapping(origin, cstr.getInvolvedVMs());
                 toKill.addAll(cstr.getInvolvedVMs());
             }
 
@@ -129,22 +129,13 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         }
 
         //Make the optimization constraint
-        ChocoConstraintBuilder ccstrb = params.getConstraintMapper().getBuilder(obj.getClass());
-        if (ccstrb == null) {
-            throw new SolverException(origin, "Unable to map constraint '" + obj.getClass().getSimpleName() + "'");
-        }
-        ChocoConstraint cObj = ccstrb.build(obj);
-        if (cObj == null) {
-            throw new SolverException(origin, "Error while mapping the constraint '"
-                    + obj.getClass().getSimpleName() + "'");
-        }
-
+        ChocoConstraint cObj = buildOptConstraint();
 
         //Make the core-RP
         DefaultReconfigurationProblemBuilder rpb = new DefaultReconfigurationProblemBuilder(origin)
                 .setNextVMsStates(toForge, toRun, toSleep, toKill)
                 .setViewMapper(params.getViewMapper())
-                .setDurationEvaluatators(params.getDurationEvaluators());
+                .setDurationEvaluators(params.getDurationEvaluators());
         if (params.doRepair()) {
             Set<VM> toManage = new HashSet<>();
             for (ChocoConstraint cstr : cConstraints) {
@@ -187,11 +178,29 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
 
         //The actual solving process
         ReconfigurationPlan p = rp.solve(params.getTimeLimit(), params.doOptimize());
+
+        //No solutions, but still some statistics
         if (p == null) {
             return new InstanceResult(null, makeStatistics());
         }
         checkSatisfaction2(p, cstrs);
         return new InstanceResult(p, makeStatistics());
+    }
+
+    /**
+     * Make the optimization constraint
+     */
+    private ChocoConstraint buildOptConstraint() throws SolverException {
+        ChocoConstraintBuilder ccstrb = params.getConstraintMapper().getBuilder(obj.getClass());
+        if (ccstrb == null) {
+            throw new SolverException(origin, "Unable to map constraint '" + obj.getClass().getSimpleName() + "'");
+        }
+        ChocoConstraint cObj = ccstrb.build(obj);
+        if (cObj == null) {
+            throw new SolverException(origin, "Error while mapping the constraint '"
+                    + obj.getClass().getSimpleName() + "'");
+        }
+        return cObj;
     }
 
     private void stateVerbosity() {
@@ -210,9 +219,9 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         }
     }
 
-    private void checkSatisfaction2(ReconfigurationPlan p, Collection<SatConstraint> cstrs) throws SolverException {
+    private void checkSatisfaction2(ReconfigurationPlan p, Collection<SatConstraint> cs) throws SolverException {
         ReconfigurationPlanChecker chk = new ReconfigurationPlanChecker();
-        for (SatConstraint c : cstrs) {
+        for (SatConstraint c : cs) {
             chk.addChecker(c.getChecker());
         }
         try {
@@ -222,7 +231,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         }
     }
 
-    private void checkUnkownVMsInMapping(Model m, Collection<VM> vms) throws SolverException {
+    private void checkUnknownVMsInMapping(Model m, Collection<VM> vms) throws SolverException {
         if (!m.getMapping().getAllVMs().containsAll(vms)) {
             Set<VM> unknown = new HashSet<>(vms);
             unknown.removeAll(m.getMapping().getAllVMs());
@@ -239,7 +248,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
      */
     private void checkNodesExistence(Model mo, Collection<Node> ns) throws SolverException {
         for (Node node : ns) {
-            if (!mo.getMapping().getAllNodes().contains(node)) {
+            if (!mo.getMapping().contains(node)) {
                 throw new SolverException(mo, "Unknown node '" + node + "'");
             }
         }

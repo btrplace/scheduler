@@ -45,11 +45,11 @@ public abstract class ObjectiveAlterer {
      * Make a new alterer on a given problem.
      * The objective variable must have been declared.
      *
-     * @param rp the reconfiguration problem to consider
+     * @param p the reconfiguration problem to consider
      */
-    public ObjectiveAlterer(ReconfigurationProblem rp) {
-        this.rp = rp;
-        obj = rp.getSolver().getObjective();
+    public ObjectiveAlterer(ReconfigurationProblem p) {
+        this.rp = p;
+        obj = p.getSolver().getObjective();
     }
 
     /**

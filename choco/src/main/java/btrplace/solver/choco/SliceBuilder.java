@@ -41,20 +41,20 @@ public class SliceBuilder {
 
     private IntDomainVar hoster = null;
 
-    private VM e;
+    private VM vm;
 
     private String lblPrefix;
 
     /**
      * Make a new Builder.
      *
-     * @param rp     the problem to customize
-     * @param e      the VM associated to the slice
+     * @param p      the problem to customize
+     * @param v      the VM associated to the slice
      * @param prefix the label prefix for the variables
      */
-    public SliceBuilder(ReconfigurationProblem rp, VM e, String prefix) {
-        this.rp = rp;
-        this.e = e;
+    public SliceBuilder(ReconfigurationProblem p, VM v, String prefix) {
+        this.rp = p;
+        this.vm = v;
         lblPrefix = prefix;
     }
 
@@ -75,42 +75,59 @@ public class SliceBuilder {
             end = rp.getEnd();
         }
         if (duration == null) {
-            if (start.isInstantiated() && end.isInstantiated()) {
-                int d = end.getVal() - start.getVal();
-                duration = rp.makeDuration(d, d, lblPrefix, "_duration");
-            } else if (start.isInstantiated()) {
-                if (start.isInstantiatedTo(0)) {
-                    duration = end;
-                } else {
-                    duration = new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel(lblPrefix, "_duration"), end, -start.getVal());
-                }
-            } else {
-                int inf = end.getInf() - start.getSup();
-                if (inf < 0) {
-                    inf = 0;
-                }
-                int sup = end.getSup() - start.getInf();
-                duration = rp.makeDuration(sup, inf, lblPrefix, "_duration");
-                rp.getSolver().post(rp.getSolver().eq(end, rp.getSolver().plus(start, duration)));
-            }
+            duration = makeDuration();
         }
 
-        if (start != rp.getEnd() && start.getSup() > rp.getEnd().getInf()) {
-            rp.getSolver().post(rp.getSolver().leq(start, rp.getEnd()));
-        }
-        if (end != rp.getEnd() && end.getSup() > rp.getEnd().getInf()) {
-            rp.getSolver().post(rp.getSolver().leq(end, rp.getEnd()));
-        }
-        if (duration != rp.getEnd() && duration.getSup() > rp.getEnd().getInf()) {
-            rp.getSolver().post(rp.getSolver().leq(duration, rp.getEnd()));
-        }
         CPSolver s = rp.getSolver();
-        if (start.isInstantiatedTo(0)) {
-            s.post(s.eq(duration, end));
-        } else {
+
+        //UB for the time variables
+        ticksSooner(s, start, end);
+        ticksSooner(s, end, end);
+        ticksSooner(s, duration, end);
+
+        if (!start.isInstantiatedTo(0)) {
+            //TODO redundancy with makeDuration() ?
             s.post(s.eq(end, s.plus(start, duration)));
         }
-        return new Slice(e, start, end, duration, hoster);
+        return new Slice(vm, start, end, duration, hoster);
+    }
+
+    /**
+     * Ensure the time variable t1 ticks before or at moment t2
+     *
+     * @param s  the solver
+     * @param t1
+     * @param t2
+     */
+    private void ticksSooner(CPSolver s, IntDomainVar t1, IntDomainVar t2) {
+        if (!t1.equals(t2) && t1.getSup() > t2.getInf()) {
+            s.post(s.leq(t1, t2));
+        }
+    }
+
+    /**
+     * Make the duration variable depending on the others.
+     */
+    private IntDomainVar makeDuration() throws SolverException {
+        if (start.isInstantiated() && end.isInstantiated()) {
+            int d = end.getVal() - start.getVal();
+            return rp.makeDuration(d, d, lblPrefix, "_duration");
+        } else if (start.isInstantiated()) {
+            if (start.isInstantiatedTo(0)) {
+                return end;
+            } else {
+                return new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel(lblPrefix, "_duration"), end, -start.getVal());
+            }
+        } else {
+            int inf = end.getInf() - start.getSup();
+            if (inf < 0) {
+                inf = 0;
+            }
+            int sup = end.getSup() - start.getInf();
+            IntDomainVar d = rp.makeDuration(sup, inf, lblPrefix, "_duration");
+            rp.getSolver().post(rp.getSolver().eq(end, rp.getSolver().plus(start, d)));
+            return d;
+        }
     }
 
     /**
@@ -127,33 +144,33 @@ public class SliceBuilder {
     /**
      * Set the moment the slice ends.
      *
-     * @param end the variable to use
+     * @param e the variable to use
      * @return the current builder
      */
-    public SliceBuilder setEnd(IntDomainVar end) {
-        this.end = end;
+    public SliceBuilder setEnd(IntDomainVar e) {
+        this.end = e;
         return this;
     }
 
     /**
      * Set the duration of the slice.
      *
-     * @param duration the variable to use
+     * @param d the variable to use
      * @return the current builder
      */
-    public SliceBuilder setDuration(IntDomainVar duration) {
-        this.duration = duration;
+    public SliceBuilder setDuration(IntDomainVar d) {
+        this.duration = d;
         return this;
     }
 
     /**
      * Set the hoster.
      *
-     * @param hoster the variable to use
+     * @param h the variable to use
      * @return the current builder
      */
-    public SliceBuilder setHoster(IntDomainVar hoster) {
-        this.hoster = hoster;
+    public SliceBuilder setHoster(IntDomainVar h) {
+        this.hoster = h;
         return this;
     }
 
@@ -164,7 +181,7 @@ public class SliceBuilder {
      * @return the current builder
      */
     public SliceBuilder setHoster(int v) {
-        this.hoster = rp.getSolver().createIntegerConstant(rp.makeVarLabel(lblPrefix, "_hoster(", e, ")"), v);
+        this.hoster = rp.getSolver().createIntegerConstant(rp.makeVarLabel(lblPrefix, "_hoster(", vm, ")"), v);
         return this;
     }
 }

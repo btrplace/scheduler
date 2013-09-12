@@ -37,7 +37,7 @@ public class AmongChecker extends AllowAllConstraintChecker<Among> {
     /**
      * Current group (for the continuous restriction). {@code null} if no group has been selected.
      */
-    private Collection<Node> choosedGroup = null;
+    private Collection<Node> selectedGroup = null;
 
     /**
      * Make a new checker.
@@ -53,13 +53,13 @@ public class AmongChecker extends AllowAllConstraintChecker<Among> {
         if (getConstraint().isContinuous()) {
             Mapping map = mo.getMapping();
             for (VM vm : getVMs()) {
-                if (map.getRunningVMs().contains(vm)) {
+                if (map.isRunning(vm)) {
                     Collection<Node> nodes = getConstraint().getAssociatedPGroup((map.getVMLocation(vm)));
                     if (nodes == null) {
                         return false;
-                    } else if (choosedGroup == null) {
-                        choosedGroup = nodes;
-                    } else if (!choosedGroup.equals(nodes)) {
+                    } else if (selectedGroup == null) {
+                        selectedGroup = nodes;
+                    } else if (!selectedGroup.equals(nodes)) {
                         return false;
                     }
                 }
@@ -71,14 +71,14 @@ public class AmongChecker extends AllowAllConstraintChecker<Among> {
     @Override
     public boolean startRunningVMPlacement(RunningVMPlacement a) {
         if (getConstraint().isContinuous() && getVMs().contains(a.getVM())) {
-            if (choosedGroup == null) {
-                choosedGroup = getConstraint().getAssociatedPGroup(a.getDestinationNode());
-                if (choosedGroup == null) {
+            if (selectedGroup == null) {
+                selectedGroup = getConstraint().getAssociatedPGroup(a.getDestinationNode());
+                if (selectedGroup == null) {
                     //disallowed group
                     return false;
                 }
             } else {
-                if (!choosedGroup.contains(a.getDestinationNode())) {
+                if (!selectedGroup.contains(a.getDestinationNode())) {
                     //Not the right group
                     return false;
                 }
@@ -92,7 +92,7 @@ public class AmongChecker extends AllowAllConstraintChecker<Among> {
         Mapping map = i.getMapping();
         Collection<Node> grp = null;
         for (VM vm : getVMs()) {
-            if (map.getRunningVMs().contains(vm)) {
+            if (map.isRunning(vm)) {
                 Collection<Node> nodes = getConstraint().getAssociatedPGroup((map.getVMLocation(vm)));
                 if (nodes == null) {
                     return false;

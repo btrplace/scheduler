@@ -51,8 +51,8 @@ public class InstanceConverter extends AbstractJSONObjectConverter<Instance> {
         ConstraintsConverter cstrc = ConstraintsConverter.newBundle();
         JSONObject ob = new JSONObject();
         ob.put("model", moc.toJSON(instance.getModel()));
-        ob.put("constraints", cstrc.toJSON(instance.getConstraints()));
-        ob.put("objective", cstrc.toJSON(instance.getOptimizationConstraint()));
+        ob.put("constraints", cstrc.toJSON(instance.getSatConstraints()));
+        ob.put("objective", cstrc.toJSON(instance.getOptConstraint()));
         return ob;
     }
 }

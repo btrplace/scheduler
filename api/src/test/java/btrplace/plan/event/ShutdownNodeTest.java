@@ -54,7 +54,7 @@ public class ShutdownNodeTest {
         ShutdownNode a = new ShutdownNode(ns.get(0), 3, 5);
         map.addOnlineNode(ns.get(0));
         Assert.assertTrue(a.apply(m));
-        Assert.assertTrue(map.getOfflineNodes().contains(ns.get(0)));
+        Assert.assertTrue(map.isOffline(ns.get(0)));
 
         Assert.assertFalse(a.apply(m));
 

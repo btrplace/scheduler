@@ -44,10 +44,10 @@ public class InstanceTest {
         MinMTTR o = new MinMTTR();
         Instance i = new Instance(mo, l, o);
         Assert.assertEquals(i.getModel(), mo);
-        Assert.assertEquals(i.getConstraints(), l);
-        Assert.assertEquals(i.getOptimizationConstraint(), o);
+        Assert.assertEquals(i.getSatConstraints(), l);
+        Assert.assertEquals(i.getOptConstraint(), o);
         i = new Instance(mo, o);
-        Assert.assertEquals(i.getConstraints().size(), 0);
+        Assert.assertEquals(i.getSatConstraints().size(), 0);
     }
 
     @Test

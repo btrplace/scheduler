@@ -50,10 +50,10 @@ public class DefaultReconfigurationPlanMonitor implements ReconfigurationPlanMon
     /**
      * Make a new monitor.
      *
-     * @param plan the plan to execute
+     * @param p the plan to execute
      */
-    public DefaultReconfigurationPlanMonitor(ReconfigurationPlan plan) {
-        this.plan = plan;
+    public DefaultReconfigurationPlanMonitor(ReconfigurationPlan p) {
+        this.plan = p;
 
         pre = new HashMap<>();
         dependencies = new HashMap<>();

@@ -38,15 +38,15 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
     /**
      * Make a new action.
      *
-     * @param vm    the VM to migrate
+     * @param v     the VM to migrate
      * @param from  the node the VM is currently running on
      * @param to    the node where to place the VM
      * @param start the moment the action will consume
      * @param end   the moment the action will stop
      */
-    public MigrateVM(VM vm, Node from, Node to, int start, int end) {
+    public MigrateVM(VM v, Node from, Node to, int start, int end) {
         super(start, end);
-        this.vm = vm;
+        this.vm = v;
         this.src = from;
         this.dst = to;
     }
@@ -80,9 +80,9 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
     @Override
     public boolean applyAction(Model i) {
         Mapping c = i.getMapping();
-        if (c.getOnlineNodes().contains(src)
-                && c.getOnlineNodes().contains(dst)
-                && c.getRunningVMs().contains(vm)
+        if (c.isOnline(src)
+                && c.isOnline(dst)
+                && c.isRunning(vm)
                 && c.getVMLocation(vm).equals(src)
                 && !src.equals(dst)) {
             c.addRunningVM(vm, dst);

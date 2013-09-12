@@ -55,7 +55,7 @@ public class ReadyChecker extends DenyMyVMsActions<Ready> {
     public boolean endsWith(Model mo) {
         Mapping c = mo.getMapping();
         for (VM vm : getVMs()) {
-            if (!c.getReadyVMs().contains(vm)) {
+            if (!c.isReady(vm)) {
                 return false;
             }
         }

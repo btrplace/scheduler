@@ -38,7 +38,10 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Unit tests for {@link DefaultReconfigurationProblem}.
@@ -154,7 +157,7 @@ public class DefaultReconfigurationProblemTest {
         DurationEvaluators dEval = DurationEvaluators.newBundle();
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(toWait, toRun, Collections.singleton(vm3), Collections.singleton(vm2))
-                .setDurationEvaluatators(dEval).build();
+                .setDurationEvaluators(dEval).build();
 
         Assert.assertEquals(dEval, rp.getDurationEvaluators());
         Assert.assertNotNull(rp.getViewMapper());
@@ -219,7 +222,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertTrue(manageable.containsAll(Arrays.asList(vm6, vm5, vm1, vm2)));
         //Check the action model that has been used for each of the VM.
         for (VM vm : map.getAllVMs()) {
-            if (map.getRunningVMs().contains(vm) && rp.getFutureRunningVMs().contains(vm)) {
+            if (map.isRunning(vm) && rp.getFutureRunningVMs().contains(vm)) {
                 if (!manageable.contains(vm)) {
                     Assert.assertEquals(rp.getVMAction(vm).getClass(), StayRunningVMModel.class);
                 } else {
@@ -828,7 +831,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertNotNull(plan);
         Assert.assertEquals(s.getNbSolutions(), 10);
         Mapping dst = plan.getResult().getMapping();
-        Assert.assertEquals(MappingUtils.usedNodes(dst, EnumSet.of(MappingUtils.State.Runnings)).size(), 1);
+        Assert.assertEquals(usedNodes(dst), 1);
     }
 
     /**
@@ -868,7 +871,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertNotNull(plan);
         Assert.assertEquals(s.getNbSolutions(), 4);
         Mapping dst = plan.getResult().getMapping();
-        Assert.assertEquals(MappingUtils.usedNodes(dst, EnumSet.of(MappingUtils.State.Runnings)).size(), 1);
+        Assert.assertEquals(usedNodes(dst), 1);
     }
 
     /**
@@ -900,7 +903,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertNotNull(plan);
         Mapping dst = plan.getResult().getMapping();
         Assert.assertEquals(s.getNbSolutions(), 10);
-        Assert.assertEquals(MappingUtils.usedNodes(dst, EnumSet.of(MappingUtils.State.Runnings)).size(), 10);
+        Assert.assertEquals(usedNodes(dst), 10);
     }
 
     /**
@@ -941,7 +944,7 @@ public class DefaultReconfigurationProblemTest {
         ReconfigurationPlan plan = rp.solve(0, true);
         Assert.assertNotNull(plan);
         Mapping dst = plan.getResult().getMapping();
-        Assert.assertEquals(MappingUtils.usedNodes(dst, EnumSet.of(MappingUtils.State.Runnings)).size(), 8);
+        Assert.assertEquals(usedNodes(dst), 8);
         //Note: the optimal value would be 10 but we loose the completeness due to the alterer
         Assert.assertEquals(s.getNbSolutions(), 4);
 
@@ -991,5 +994,15 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertTrue(rp.addView(view));
         Assert.assertEquals(rp.getView(view.getIdentifier()), view);
         Assert.assertFalse(rp.addView(view));
+    }
+
+    private int usedNodes(Mapping m) {
+        int nb = 0;
+        for (Node n : m.getOnlineNodes()) {
+            if (!m.getRunningVMs(n).isEmpty()) {
+                nb++;
+            }
+        }
+        return nb;
     }
 }

@@ -33,48 +33,47 @@ import net.minidev.json.JSONObject;
  */
 public class AttributesConverter extends AbstractJSONObjectConverter<Attributes> {
 
+    private void putAttributes(Attributes attrs, Element e, JSONObject entries) throws JSONConverterException {
+        for (String key : entries.keySet()) {
+            Object value = entries.get(key);
+            if (value.getClass().equals(Boolean.class)) {
+                attrs.put(e, key, (Boolean) value);
+            } else if (value.getClass().equals(String.class)) {
+                attrs.put(e, key, (String) value);
+            } else if (value.getClass().equals(Double.class)) {
+                attrs.put(e, key, (Double) value);
+            } else if (value.getClass().equals(Integer.class)) {
+                attrs.put(e, key, (Integer) value);
+            } else {
+                throw new ClassCastException(value.toString() + " is not a primitive (" + value.getClass() + ")");
+            }
+        }
+    }
+
     @Override
     public Attributes fromJSON(JSONObject o) throws JSONConverterException {
         Attributes attrs = new DefaultAttributes();
-        JSONObject vms = (JSONObject) o.get("vms");
-        JSONObject nodes = (JSONObject) o.get("nodes");
+        try {
 
-        for (String el : vms.keySet()) {
-            VM vm = getOrMakeVM(Integer.parseInt(el));
-            JSONObject entries = (JSONObject) vms.get(el);
-            for (String key : entries.keySet()) {
-                Object value = entries.get(key);
-                if (value.getClass().equals(Boolean.class)) {
-                    attrs.put(vm, key, (Boolean) value);
-                } else if (value.getClass().equals(String.class)) {
-                    attrs.put(vm, key, (String) value);
-                } else if (value.getClass().equals(Double.class)) {
-                    attrs.put(vm, key, (Double) value);
-                } else if (value.getClass().equals(Integer.class)) {
-                    attrs.put(vm, key, (Integer) value);
-                } else {
-                    throw new ClassCastException(value.toString() + " is not a basic type (" + value.getClass() + ")");
+            JSONObject vms = (JSONObject) o.get("vms");
+            if (vms != null) {
+                for (String el : vms.keySet()) {
+                    VM vm = getOrMakeVM(Integer.parseInt(el));
+                    JSONObject entries = (JSONObject) vms.get(el);
+                    putAttributes(attrs, vm, entries);
                 }
             }
-        }
 
-        for (String el : nodes.keySet()) {
-            Node n = getOrMakeNode(Integer.parseInt(el));
-            JSONObject entries = (JSONObject) nodes.get(el);
-            for (String key : entries.keySet()) {
-                Object value = entries.get(key);
-                if (value.getClass().equals(Boolean.class)) {
-                    attrs.put(n, key, (Boolean) value);
-                } else if (value.getClass().equals(String.class)) {
-                    attrs.put(n, key, (String) value);
-                } else if (value.getClass().equals(Double.class)) {
-                    attrs.put(n, key, (Double) value);
-                } else if (value.getClass().equals(Integer.class)) {
-                    attrs.put(n, key, (Integer) value);
-                } else {
-                    throw new ClassCastException(value.toString() + " is not a basic type (" + value.getClass() + ")");
+            JSONObject nodes = (JSONObject) o.get("nodes");
+            if (nodes != null) {
+                for (String el : nodes.keySet()) {
+                    Node n = getOrMakeNode(Integer.parseInt(el));
+                    JSONObject entries = (JSONObject) nodes.get(el);
+                    putAttributes(attrs, n, entries);
                 }
             }
+        } catch (ClassCastException ex) {
+            throw new JSONConverterException(ex);
         }
         return attrs;
     }

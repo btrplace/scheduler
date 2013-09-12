@@ -72,7 +72,7 @@ public class CSplitAmong implements ChocoConstraint {
         for (Collection<VM> vms : vGrps) {
 
             Among a = new Among(vms, pGrps);
-            //If the constraint is continuous, there is no way a group of VMs already binded to a group of
+            //If the constraint is continuous, there is no way a group of VMs already bound to a group of
             //nodes can move to another group. It also means the group of VMs will never overlap
             a.setContinuous(cstr.isContinuous());
             CAmong ca = new CAmong(a);
@@ -116,7 +116,7 @@ public class CSplitAmong implements ChocoConstraint {
         for (Collection<VM> vms : cstr.getGroupsOfVMs()) {
             int grp = -1;
             for (VM vm : vms) {
-                if (map.getRunningVMs().contains(vm)) {
+                if (map.isRunning(vm)) {
                     Node n = map.getVMLocation(vm);
                     int g = getPGroup(n);
                     if (g == -1) {

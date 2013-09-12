@@ -22,7 +22,7 @@ import btrplace.model.Model;
 
 
 /**
- * Interface to specify the duration evaluator for a possible action on an elemnt.
+ * Interface to specify the duration evaluator for a possible action on an element.
  *
  * @author Fabien Hermenier
  */
