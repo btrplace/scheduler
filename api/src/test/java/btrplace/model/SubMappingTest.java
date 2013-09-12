@@ -130,4 +130,49 @@ public class SubMappingTest {
         Assert.assertTrue(sm.addReadyVM(new VM(678))); //new VM, it's ok
     }
 
+    @Test
+    public void testGetVMLocation() {
+        SubMapping sm = make();
+        System.err.println(sm.getParent());
+        //Get a location of a VM in the sub-mapping
+        Assert.assertNotNull(sm.getVMLocation(new VM(100))); //VM located on node#0
+        //Get a location of a VM out of the sub-mapping
+        Assert.assertNull(sm.getVMLocation(new VM(200))); //VM located on node#1
+        System.err.println(sm);
+    }
+
+    @Test
+    public void testGetRunningVMs() {
+        SubMapping sm = make();
+        //Get all the VMs on the sub-mapping by querying
+        //using all the nodes in the parent mapping.
+        //Must return only the VMs in the sub-mapping
+        Assert.assertEquals(sm.getRunningVMs(sm.getParent().getAllNodes()), sm.getRunningVMs());
+    }
+
+    @Test
+    public void testGetSleepingVMs() {
+        SubMapping sm = make();
+        //Get all the VMs on the sub-mapping by querying
+        //using all the nodes in the parent mapping.
+        //Must return only the VMs in the sub-mapping
+        Assert.assertEquals(sm.getSleepingVMs(sm.getParent().getAllNodes()), sm.getSleepingVMs());
+    }
+
+    @Test
+    public void testRemoveVMs() {
+        SubMapping sm = make();
+        Mapping parent = sm.getParent();
+        //Remove a VM in the sub. Should be removed in the parent too
+        VM v = new VM(100);
+        Assert.assertTrue(sm.remove(v));
+        Assert.assertFalse(sm.contains(v));
+        Assert.assertFalse(parent.contains(v));
+
+        //Remove a VM out of the sub. Failure
+        VM v2 = new VM(200);
+        Assert.assertFalse(sm.remove(v2));
+        Assert.assertFalse(sm.contains(v2));
+        Assert.assertTrue(parent.contains(v2));
+    }
 }
