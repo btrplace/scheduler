@@ -87,18 +87,17 @@ public class FixedSizePartitioningTest {
 
     @Test
     public void testRandomSplit() throws SolverException {
-        for (int z = 0; z < 1000; z++) {
-            Instance origin = makeInstance();
-            FixedSizePartitioning f = new FixedSizePartitioning(5);
-            f.randomPickUp(true);
-            Assert.assertEquals(f.randomPickUp(), true);
-            List<Instance> l1 = f.split(params, origin);
-            Assert.assertEquals(l1.size(), 3);
-            checkCorrectness(l1);
+        Instance origin = makeInstance();
+        FixedSizePartitioning f = new FixedSizePartitioning(5);
+        f.randomPickUp(true);
+        Assert.assertEquals(f.randomPickUp(), true);
+        List<Instance> l1 = f.split(params, origin);
+        Assert.assertEquals(l1.size(), 3);
+        checkCorrectness(l1);
 
-            List<Instance> l2 = f.split(params, origin);
-            Assert.assertEquals(l2.size(), 3);
-            checkCorrectness(l2);
+        List<Instance> l2 = f.split(params, origin);
+        Assert.assertEquals(l2.size(), 3);
+        checkCorrectness(l2);
 
 /*      //Just check the list of nodes are different
         for (int i = 0; i < l1.size(); i++) {
@@ -108,10 +107,9 @@ public class FixedSizePartitioningTest {
                                                                         + " l2:" + l2.get(i).getModel().getMapping().getAllNodes());
             }
         }*/
-            //Get a solution, the ready VMs must have been launched
-            InstanceResult res = f.solve(params, origin);
-            Assert.assertEquals(res.getPlan().getSize(), 5);
-        }
+        //Get a solution, the ready VMs must have been launched
+        InstanceResult res = f.solve(params, origin);
+        Assert.assertEquals(res.getPlan().getSize(), 5);
 
     }
 
