@@ -119,7 +119,7 @@ public class Split extends SatConstraint {
 
     @Override
     public int hashCode() {
-        return sets.hashCode();
+        return Objects.hash(sets, isContinuous());
     }
 
     @Override

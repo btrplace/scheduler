@@ -22,16 +22,13 @@ import btrplace.solver.choco.actionModel.ActionModelUtils;
 import btrplace.solver.choco.actionModel.KeepRunningVMModel;
 import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
-import btrplace.solver.choco.chocoUtil.LocalTaskScheduler;
 import btrplace.solver.choco.chocoUtil.TaskScheduler;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Builder to create a unique slices scheduler that aggregates
@@ -39,30 +36,9 @@ import java.util.Map;
  *
  * @author Fabien Hermenier
  */
-public class SliceSchedulerBuilder {
-
-    private ReconfigurationProblem rp;
+public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
 
     private List<IntDomainVar[]> capacities;
-
-    private List<int[]> cUsages;
-
-    private List<IntDomainVar[]> dUsages;
-
-    private int[] associations;
-
-    private IntDomainVar[] cEnds;
-
-    private IntDomainVar[] cHosters;
-
-    private IntDomainVar[] dHosters;
-
-    private IntDomainVar[] dStarts;
-
-    /**
-     * Ids of non-overlapping slices.
-     */
-    private Map<VM, int[]> non;
 
     /**
      * Make a new builder.
@@ -70,68 +46,8 @@ public class SliceSchedulerBuilder {
      * @param p the associated problem
      */
     public SliceSchedulerBuilder(ReconfigurationProblem p) {
-        this.rp = p;
+        super(p);
         capacities = new ArrayList<>();
-        cUsages = new ArrayList<>();
-        dUsages = new ArrayList<>();
-
-        List<Slice> dS = new ArrayList<>();
-        List<Slice> cS = new ArrayList<>();
-
-
-        non = new HashMap<>();
-
-        int dIdx = 0, cIdx = 0;
-
-        for (VMActionModel a : p.getVMActions()) {
-            Slice c = a.getCSlice();
-            Slice d = a.getDSlice();
-
-            if (d != null && c != null) {
-                non.put(a.getVM(), new int[]{dIdx, cIdx});
-            }
-            if (d != null) {
-                dS.add(dIdx, d);
-                dIdx++;
-            }
-
-            if (c != null) {
-                cS.add(cIdx, c);
-                cIdx++;
-            }
-        }
-
-
-        int i = 0;
-        cHosters = new IntDomainVar[cS.size()];
-        cEnds = new IntDomainVar[cS.size()];
-        for (Slice s : cS) {
-            cHosters[i] = s.getHoster();
-            cEnds[i] = s.getEnd();
-            i++;
-
-        }
-
-        i = 0;
-        dStarts = new IntDomainVar[dS.size()];
-        dHosters = new IntDomainVar[dS.size()];
-
-        for (Slice s : dS) {
-            dHosters[i] = s.getHoster();
-            dStarts[i] = s.getStart();
-            i++;
-        }
-
-
-        associations = new int[dHosters.length];
-        //No associations task by default, then we create the associations.
-        for (i = 0; i < associations.length; i++) {
-            associations[i] = LocalTaskScheduler.NO_ASSOCIATIONS;
-        }
-        for (Map.Entry<VM, int[]> e : non.entrySet()) {
-            int[] assoc = e.getValue();
-            associations[assoc[0]] = assoc[1];
-        }
     }
 
     /**

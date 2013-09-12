@@ -17,9 +17,7 @@
 
 package btrplace.solver.choco;
 
-import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.chocoUtil.AliasedCumulatives;
-import btrplace.solver.choco.chocoUtil.LocalTaskScheduler;
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.list.array.TIntArrayList;
@@ -38,25 +36,9 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class AliasedCumulativesBuilder {
-
-    private ReconfigurationProblem rp;
-
-    private int[] associations;
-
-    private IntDomainVar[] cEnds;
-
-    private IntDomainVar[] cHosters;
-
-    private IntDomainVar[] dHosters;
-
-    private IntDomainVar[] dStarts;
+public class AliasedCumulativesBuilder extends SchedulingConstraintBuilder {
 
     private TIntArrayList capacities;
-
-    private List<int[]> cUsages;
-
-    private List<IntDomainVar[]> dUsages;
 
     private List<int[]> aliases;
 
@@ -66,67 +48,10 @@ public class AliasedCumulativesBuilder {
      * @param p the associated problem
      */
     public AliasedCumulativesBuilder(ReconfigurationProblem p) {
-        this.rp = p;
-
-        List<Slice> dS = new ArrayList<>();
-        List<Slice> cS = new ArrayList<>();
-
-        cUsages = new ArrayList<>();
-        dUsages = new ArrayList<>();
-        aliases = new ArrayList<>();
+        super(p);
         capacities = new TIntArrayList();
-        List<int[]> linked = new ArrayList<>();
-        int dIdx = 0, cIdx = 0;
+        aliases = new ArrayList<>();
 
-        for (VMActionModel a : p.getVMActions()) {
-            Slice c = a.getCSlice();
-            Slice d = a.getDSlice();
-
-            if (d != null && c != null) {
-                linked.add(new int[]{dIdx, cIdx});
-            }
-            if (d != null) {
-                dS.add(dIdx, d);
-                dIdx++;
-            }
-
-            if (c != null) {
-                cS.add(cIdx, c);
-                cIdx++;
-            }
-        }
-
-
-        int i = 0;
-        cHosters = new IntDomainVar[cS.size()];
-        cEnds = new IntDomainVar[cS.size()];
-        for (Slice s : cS) {
-            cHosters[i] = s.getHoster();
-            cEnds[i] = s.getEnd();
-            i++;
-
-        }
-
-        i = 0;
-        dStarts = new IntDomainVar[dS.size()];
-        dHosters = new IntDomainVar[dS.size()];
-
-        for (Slice s : dS) {
-            dHosters[i] = s.getHoster();
-            dStarts[i] = s.getStart();
-            i++;
-        }
-
-
-        associations = new int[dHosters.length];
-        //No associations task by default, then we set the right associations
-        for (i = 0; i < associations.length; i++) {
-            associations[i] = LocalTaskScheduler.NO_ASSOCIATIONS;
-        }
-        for (i = 0; i < linked.size(); i++) {
-            int[] assoc = linked.get(i);
-            associations[assoc[0]] = assoc[1];
-        }
     }
 
     /**

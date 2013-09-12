@@ -23,6 +23,7 @@ import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.model.constraint.checker.SpreadChecker;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -84,7 +85,7 @@ public class Spread extends SatConstraint {
 
     @Override
     public int hashCode() {
-        return getInvolvedVMs().hashCode();
+        return Objects.hash(getInvolvedNodes(), isContinuous());
     }
 
     @Override

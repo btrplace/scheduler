@@ -9,6 +9,7 @@ version ?????????
    an experimental partitioning algorithm that splits problem from disjoint set of nodes
 - API changes in Model, Instance, Mapping
 - new constraint: [MaxOnline](http://btrp.inria.fr/apidocs/releases/btrplace/solver/last/index.html?btrplace/model/constraint/MaxOnline.html)
+- API changes due to spell checking
 
 version 0.31 - 16 Jul 2013
 ----------------------
