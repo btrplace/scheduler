@@ -18,7 +18,6 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.constraint.Constraint;
-import btrplace.solver.choco.constraint.minMTTR.CMinMTTR;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -72,7 +71,7 @@ public class ConstraintMapper {
         map.register(new CLonely.Builder());
         map.register(new CSequentialVMTransitions.Builder());
         map.register(new CMaxOnline.Builder());
-        map.register(new CMinMTTR.Builder());
+        map.register(new btrplace.solver.choco.constraint.minMTTR.CObjective.Builder());
         return map;
     }
 

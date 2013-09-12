@@ -51,12 +51,12 @@ public class SubModel implements Model {
     /**
      * Make a new sub-model with an empty scope for ready VMs.
      *
-     * @param parent the parent model
-     * @param eb     the element builder to rely on
-     * @param scope  the node to restrict the model on.
+     * @param p  the parent model
+     * @param b  the element builder to rely on
+     * @param ns the node to restrict the model on.
      */
-    public SubModel(Model parent, ElementBuilder eb, Collection<Node> scope) {
-        this(parent, eb, scope, Collections.<VM>emptySet());
+    public SubModel(Model p, ElementBuilder b, Collection<Node> ns) {
+        this(p, b, ns, Collections.<VM>emptySet());
     }
 
     /**

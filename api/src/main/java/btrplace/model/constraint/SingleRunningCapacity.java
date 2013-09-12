@@ -46,26 +46,26 @@ public class SingleRunningCapacity extends SatConstraint {
     /**
      * Make a new constraint having a discrete restriction.
      *
-     * @param nodes  the involved nodes.
-     * @param amount the maximum amount of running VMs on each node
+     * @param nodes the involved nodes.
+     * @param q     the maximum amount of running VMs on each node
      */
-    public SingleRunningCapacity(Collection<Node> nodes, int amount) {
-        this(nodes, amount, false);
+    public SingleRunningCapacity(Collection<Node> nodes, int q) {
+        this(nodes, q, false);
     }
 
     /**
      * Make a new constraint.
      *
      * @param nodes      the involved nodes.
-     * @param amount     the maximum amount of running VMs on each node
+     * @param q          the maximum amount of running VMs on each node
      * @param continuous {@code true} for a continuous restriction
      */
-    public SingleRunningCapacity(Collection<Node> nodes, int amount, boolean continuous) {
+    public SingleRunningCapacity(Collection<Node> nodes, int q, boolean continuous) {
         super(Collections.<VM>emptySet(), nodes, continuous);
-        if (amount < 0) {
+        if (q < 0) {
             throw new IllegalArgumentException("The amount of VMs must be >= 0");
         }
-        this.amount = amount;
+        this.amount = q;
     }
 
 

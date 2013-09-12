@@ -119,7 +119,7 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
                     rc.setConsumption(u, v);
                 }
             } catch (ClassCastException cc) {
-                throw new JSONConverterException("Unable to read the VMs at key 'vms'. Expect a JSONObject but got a '" + o.getClass().getName() + "'");
+                throw new JSONConverterException("Unable to read the VMs at key 'vms'. Expect a JSONObject but got a '" + o.getClass().getName() + "'", cc);
             }
         }
     }
@@ -134,7 +134,7 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
                     rc.setCapacity(u, v);
                 }
             } catch (ClassCastException cc) {
-                throw new JSONConverterException("Unable to read the nodes at key 'nodes'. Expect a JSONObject but got a '" + o.getClass().getName() + "'");
+                throw new JSONConverterException("Unable to read the nodes at key 'nodes'. Expect a JSONObject but got a '" + o.getClass().getName() + "'", cc);
             }
         }
     }

@@ -48,12 +48,12 @@ public class SingleResourceCapacity extends SatConstraint {
     /**
      * Make a new constraint with a discrete restriction.
      *
-     * @param nodes  the involved nodes.
-     * @param rc     the resource identifier
-     * @param amount the maximum amount of resources to share among the hosted VMs on each node. >= 0
+     * @param nodes the involved nodes.
+     * @param rc    the resource identifier
+     * @param q     the maximum amount of resources to share among the hosted VMs on each node. >= 0
      */
-    public SingleResourceCapacity(Collection<Node> nodes, String rc, int amount) {
-        this(nodes, rc, amount, false);
+    public SingleResourceCapacity(Collection<Node> nodes, String rc, int q) {
+        this(nodes, rc, q, false);
     }
 
     /**
@@ -61,16 +61,16 @@ public class SingleResourceCapacity extends SatConstraint {
      *
      * @param nodes      the involved nodes.
      * @param rc         the resource identifier
-     * @param amount     the maximum amount of resources to share among the hosted VMs on each node. >= 0
+     * @param q          the maximum amount of resources to share among the hosted VMs on each node. >= 0
      * @param continuous {@code true} for a continuous restriction
      */
-    public SingleResourceCapacity(Collection<Node> nodes, String rc, int amount, boolean continuous) {
+    public SingleResourceCapacity(Collection<Node> nodes, String rc, int q, boolean continuous) {
         super(Collections.<VM>emptySet(), nodes, continuous);
-        if (amount < 0) {
+        if (q < 0) {
             throw new IllegalArgumentException("The amount of resources must be >= 0");
         }
         this.rcId = rc;
-        this.amount = amount;
+        this.amount = q;
     }
 
     /**

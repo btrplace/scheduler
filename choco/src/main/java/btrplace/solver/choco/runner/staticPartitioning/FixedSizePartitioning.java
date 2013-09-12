@@ -41,11 +41,11 @@ public class FixedSizePartitioning extends FixedNodeSetsPartitioning {
     /**
      * Make a new partitioning algorithm.
      *
-     * @param partSize the maximum partition size
+     * @param s the maximum partition size
      */
-    public FixedSizePartitioning(int partSize) {
+    public FixedSizePartitioning(int s) {
         super(Collections.<Collection<Node>>singleton(new HashSet<Node>()));
-        this.partSize = partSize;
+        this.partSize = s;
         random = false;
     }
 

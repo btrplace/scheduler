@@ -67,10 +67,10 @@ public class SliceSchedulerBuilder {
     /**
      * Make a new builder.
      *
-     * @param rp the associated problem
+     * @param p the associated problem
      */
-    public SliceSchedulerBuilder(ReconfigurationProblem rp) {
-        this.rp = rp;
+    public SliceSchedulerBuilder(ReconfigurationProblem p) {
+        this.rp = p;
         capacities = new ArrayList<>();
         cUsages = new ArrayList<>();
         dUsages = new ArrayList<>();
@@ -83,7 +83,7 @@ public class SliceSchedulerBuilder {
 
         int dIdx = 0, cIdx = 0;
 
-        for (VMActionModel a : rp.getVMActions()) {
+        for (VMActionModel a : p.getVMActions()) {
             Slice c = a.getCSlice();
             Slice d = a.getDSlice();
 

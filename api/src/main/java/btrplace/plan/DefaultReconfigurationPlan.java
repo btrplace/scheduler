@@ -43,12 +43,12 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
     /**
      * Make a new plan that starts from a given model.
      *
-     * @param src the source model
+     * @param m the source model
      */
-    public DefaultReconfigurationPlan(Model src) {
-        this.src = src;
+    public DefaultReconfigurationPlan(Model m) {
+        this.src = m;
         this.actions = new TreeSet<>(startFirstComparator);
-        this.depsExtractor = new DependenciesExtractor(src);
+        this.depsExtractor = new DependenciesExtractor(m);
     }
 
     @Override

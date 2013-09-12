@@ -130,19 +130,19 @@ public class BinPacking extends AbstractLargeIntSConstraint {
      * constructor of the FastBinPacking global constraint
      *
      * @param environment the solver environment
-     * @param loads       array of nbBins variables, each figuring the total size of the items assigned to it, usually initialized to [0, capacity]
-     * @param sizes       array of nbItems variables, each figuring the item size. Only the LB will be considered!
-     * @param bins        array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
+     * @param l           array of nbBins variables, each figuring the total size of the items assigned to it, usually initialized to [0, capacity]
+     * @param s           array of nbItems variables, each figuring the item size. Only the LB will be considered!
+     * @param b           array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
      */
-    public BinPacking(IEnvironment environment, IntDomainVar[] loads, IntDomainVar[] sizes, IntDomainVar[] bins) {
-        super(ArrayUtils.append(bins, loads));
+    public BinPacking(IEnvironment environment, IntDomainVar[] l, IntDomainVar[] s, IntDomainVar[] b) {
+        super(ArrayUtils.append(b, l));
 
         this.env = environment;
-        this.loads = loads;
-        this.nbBins = loads.length;
-        this.bins = bins;
-        this.iSizes = new int[sizes.length];
-        this.sizes = sizes;
+        this.loads = l;
+        this.nbBins = l.length;
+        this.bins = b;
+        this.iSizes = new int[s.length];
+        this.sizes = s;
 
         this.bTLoads = new IStateInt[nbBins];
         this.bRLoads = new IStateInt[nbBins];

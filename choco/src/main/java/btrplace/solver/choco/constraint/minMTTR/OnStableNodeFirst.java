@@ -58,10 +58,9 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
     private BitSet[] ins;
 
 
-    private CMinMTTR obj;
+    private CObjective obj;
 
     private IStateInt firstFree;
-    private IntDomainVar VMtoLeafNode;
 
     /**
      * Make a new heuristics
@@ -69,11 +68,12 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
      * @param lbl     the heuristic label (for debugging purpose)
      * @param rp      the problem to rely on
      * @param actions the actions to consider.
+     * @param o       the objective to rely on
      */
-    public OnStableNodeFirst(String lbl, ReconfigurationProblem rp, List<ActionModel> actions, CMinMTTR obj) {
+    public OnStableNodeFirst(String lbl, ReconfigurationProblem rp, List<ActionModel> actions, CObjective o) {
         super(rp.getSolver(), ActionModelUtils.getStarts(actions.toArray(new ActionModel[actions.size()])));
         firstFree = rp.getSolver().getEnvironment().makeInt(0);
-        this.obj = obj;
+        this.obj = o;
         Mapping cfg = rp.getSourceModel().getMapping();
 
         VMActionModel[] vmActions = rp.getVMActions();
@@ -128,7 +128,7 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
 
     /**
      * For each node, we fill ins to indicate the VMs
-     * that go on this node. We also fullfil stays and move
+     * that go on this node. We also fulfill stays and move
      * TODO: stays and move seems redundant !
      */
     private void makeIncomings() {

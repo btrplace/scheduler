@@ -219,9 +219,9 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         }
     }
 
-    private void checkSatisfaction2(ReconfigurationPlan p, Collection<SatConstraint> cstrs) throws SolverException {
+    private void checkSatisfaction2(ReconfigurationPlan p, Collection<SatConstraint> cs) throws SolverException {
         ReconfigurationPlanChecker chk = new ReconfigurationPlanChecker();
-        for (SatConstraint c : cstrs) {
+        for (SatConstraint c : cs) {
             chk.addChecker(c.getChecker());
         }
         try {

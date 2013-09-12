@@ -45,23 +45,23 @@ public class StayRunningVMModel implements KeepRunningVMModel {
     /**
      * Make a new model.
      *
-     * @param rp the RP to use as a basis.
-     * @param e  the VM managed by the action
+     * @param p the RP to use as a basis.
+     * @param e the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public StayRunningVMModel(ReconfigurationProblem rp, VM e) throws SolverException {
+    public StayRunningVMModel(ReconfigurationProblem p, VM e) throws SolverException {
         this.vm = e;
-        this.rp = rp;
-        IntDomainVar host = rp.makeCurrentHost("stayRunningVM(" + e + ").host", e);
-        cSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").cSlice")
+        this.rp = p;
+        IntDomainVar host = p.makeCurrentHost("stayRunningVM(" + e + ").host", e);
+        cSlice = new SliceBuilder(p, e, "stayRunningVM(" + e + ").cSlice")
                 .setHoster(host)
-                .setEnd(rp.makeUnboundedDuration("stayRunningVM(", e, ").cSlice_end"))
+                .setEnd(p.makeUnboundedDuration("stayRunningVM(", e, ").cSlice_end"))
                 .build();
-        dSlice = new SliceBuilder(rp, e, "stayRunningVM(" + e + ").dSlice")
+        dSlice = new SliceBuilder(p, e, "stayRunningVM(" + e + ").dSlice")
                 .setHoster(host)
                 .setStart(cSlice.getEnd())
                 .build();
-        CPSolver s = rp.getSolver();
+        CPSolver s = p.getSolver();
 
         stay = s.makeConstantIntVar(1);
     }

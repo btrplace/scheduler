@@ -31,10 +31,10 @@ public class SynchronizedElementBuilder implements ElementBuilder {
     /**
      * Make a new builder.
      *
-     * @param base the builder to wrap
+     * @param b the builder to wrap
      */
-    public SynchronizedElementBuilder(ElementBuilder base) {
-        this.base = base;
+    public SynchronizedElementBuilder(ElementBuilder b) {
+        this.base = b;
         vmLock = new Object();
         nodeLock = new Object();
     }

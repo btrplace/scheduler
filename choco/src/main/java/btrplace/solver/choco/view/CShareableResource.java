@@ -80,53 +80,53 @@ public class CShareableResource implements ChocoModelView {
     /**
      * Make a new mapping.
      *
-     * @param rp the problem to rely on
-     * @param rc the resource to consider
+     * @param p the problem to rely on
+     * @param r the resource to consider
      */
-    public CShareableResource(ReconfigurationProblem rp, ShareableResource rc) {
-        this.rc = rc;
-        this.rp = rp;
+    public CShareableResource(ReconfigurationProblem p, ShareableResource r) {
+        this.rc = r;
+        this.rp = p;
         this.references = new HashMap<>();
         this.clones = new HashMap<>();
-        solver = rp.getSolver();
-        this.source = rp.getSourceModel();
-        Node[] nodes = rp.getNodes();
+        solver = p.getSolver();
+        this.source = p.getSourceModel();
+        Node[] nodes = p.getNodes();
         phyRcUsage = new IntDomainVar[nodes.length];
         virtRcUsage = new IntDomainVar[nodes.length];
         this.ratios = new RealVar[nodes.length];
-        id = ShareableResource.VIEW_ID_BASE + rc.getResourceIdentifier();
+        id = ShareableResource.VIEW_ID_BASE + r.getResourceIdentifier();
         for (int i = 0; i < nodes.length; i++) {
-            Node nId = rp.getNode(i);
-            phyRcUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("phyRcUsage('", rc.getResourceIdentifier(), "', '", nId, "')"), 0, rc.getCapacity(nodes[i]));
-            virtRcUsage[i] = rp.getSolver().createBoundIntVar(rp.makeVarLabel("virtRcUsage('", rc.getResourceIdentifier(), "', '", nId, "')"), 0, Choco.MAX_UPPER_BOUND);
-            ratios[i] = rp.getSolver().createRealVal(rp.makeVarLabel("overbook('", rc.getResourceIdentifier(), "', '", nId, "')"), 1, UNCHECKED_RATIO);
+            Node nId = p.getNode(i);
+            phyRcUsage[i] = p.getSolver().createBoundIntVar(p.makeVarLabel("phyRcUsage('", r.getResourceIdentifier(), "', '", nId, "')"), 0, r.getCapacity(nodes[i]));
+            virtRcUsage[i] = p.getSolver().createBoundIntVar(p.makeVarLabel("virtRcUsage('", r.getResourceIdentifier(), "', '", nId, "')"), 0, Choco.MAX_UPPER_BOUND);
+            ratios[i] = p.getSolver().createRealVal(p.makeVarLabel("overbook('", r.getResourceIdentifier(), "', '", nId, "')"), 1, UNCHECKED_RATIO);
         }
 
 
         //Bin packing for the node vmAllocation
-        CPSolver s = rp.getSolver();
+        CPSolver s = p.getSolver();
         List<IntDomainVar> notNullUsage = new ArrayList<>();
         List<IntDomainVar> hosters = new ArrayList<>();
 
-        vmAllocation = new IntDomainVar[rp.getVMs().length];
+        vmAllocation = new IntDomainVar[p.getVMs().length];
         for (int i = 0; i < vmAllocation.length; i++) {
-            VM vmId = rp.getVM(i);
-            VMActionModel a = rp.getVMAction(vmId);
+            VM vmId = p.getVM(i);
+            VMActionModel a = p.getVMAction(vmId);
             Slice slice = a.getDSlice();
             if (slice == null) {
                 //The VMs will not be running, so its consumption is set to 0
-                vmAllocation[i] = s.makeConstantIntVar(rp.makeVarLabel("vmAllocation('", rc.getResourceIdentifier(), "', '", vmId, "'"), 0);
+                vmAllocation[i] = s.makeConstantIntVar(p.makeVarLabel("vmAllocation('", r.getResourceIdentifier(), "', '", vmId, "'"), 0);
             } else {
                 //We don't know about the next VM usage for the moment, -1 is used by default to allow to detect an
                 //non-updated value.
-                vmAllocation[i] = s.createBoundIntVar(rp.makeVarLabel("vmAllocation('", rc.getResourceIdentifier(), "', '", vmId, "')"), -1, Choco.MAX_UPPER_BOUND);
+                vmAllocation[i] = s.createBoundIntVar(p.makeVarLabel("vmAllocation('", r.getResourceIdentifier(), "', '", vmId, "')"), -1, Choco.MAX_UPPER_BOUND);
                 notNullUsage.add(vmAllocation[i]);
                 hosters.add(slice.getHoster());
             }
 
         }
         //We create a BP with only the VMs requiring a not null amount of resources
-        rp.getBinPackingBuilder().add(rc.getResourceIdentifier(),
+        p.getBinPackingBuilder().add(r.getResourceIdentifier(),
                 virtRcUsage,
                 notNullUsage.toArray(new IntDomainVar[notNullUsage.size()]),
                 hosters.toArray(new IntDomainVar[hosters.size()]));
@@ -286,16 +286,16 @@ public class CShareableResource implements ChocoModelView {
      * @return false if an operation leads to a problem without solution
      */
     @Override
-    public boolean beforeSolve(ReconfigurationProblem rp) {
+    public boolean beforeSolve(ReconfigurationProblem p) {
         for (VM vm : source.getMapping().getAllVMs()) {
-            int vmId = rp.getVM(vm);
+            int vmId = p.getVM(vm);
             IntDomainVar v = vmAllocation[vmId];
             if (v.getInf() < 0) {
                 int prevUsage = rc.getConsumption(vm);
                 try {
                     v.setInf(prevUsage);
                 } catch (ContradictionException e) {
-                    rp.getLogger().error("Unable to set the minimal '{}' usage for '{}' to its current usage ({})",
+                    p.getLogger().error("Unable to set the minimal '{}' usage for '{}' to its current usage ({})",
                             rc.getResourceIdentifier(), vm, prevUsage);
                     return false;
                 }
@@ -303,7 +303,7 @@ public class CShareableResource implements ChocoModelView {
                 try {
                     v.setVal(v.getInf());
                 } catch (ContradictionException e) {
-                    rp.getLogger().error("Unable to set the VM '{}' consumption to '{}'", rc.getResourceIdentifier(), v.getInf());
+                    p.getLogger().error("Unable to set the VM '{}' consumption to '{}'", rc.getResourceIdentifier(), v.getInf());
                     return false;
                 }
             }
@@ -312,12 +312,12 @@ public class CShareableResource implements ChocoModelView {
     }
 
     @Override
-    public boolean insertActions(ReconfigurationProblem rp, ReconfigurationPlan p) {
-        Mapping srcMapping = rp.getSourceModel().getMapping();
+    public boolean insertActions(ReconfigurationProblem r, ReconfigurationPlan p) {
+        Mapping srcMapping = r.getSourceModel().getMapping();
 
-        for (VM vm : rp.getFutureRunningVMs()) {
-            Slice dSlice = rp.getVMAction(vm).getDSlice();
-            Node destNode = rp.getNode(dSlice.getHoster().getVal());
+        for (VM vm : r.getFutureRunningVMs()) {
+            Slice dSlice = r.getVMAction(vm).getDSlice();
+            Node destNode = r.getNode(dSlice.getHoster().getVal());
 
             if (srcMapping.isRunning(vm) && destNode == srcMapping.getVMLocation(vm)) {
                 //Was running and stay on the same node

@@ -79,10 +79,10 @@ public class FixedNodeSetsPartitioning extends StaticPartitioning {
     /**
      * Set the mapper to use to split constraints.
      *
-     * @param cstrMapper the mapper
+     * @param m the mapper
      */
-    public void setSplitterMapper(ConstraintSplitterMapper cstrMapper) {
-        this.cstrMapper = cstrMapper;
+    public void setSplitterMapper(ConstraintSplitterMapper m) {
+        this.cstrMapper = m;
     }
 
     /**

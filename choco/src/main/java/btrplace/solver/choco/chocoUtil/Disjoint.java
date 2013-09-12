@@ -65,17 +65,17 @@ public class Disjoint extends AbstractLargeIntSConstraint {
      * @param environment solver environment
      * @param x           first set of variables (group 0)
      * @param y           second set of variables (group 1)
-     * @param nbValues    max variable value + 1
+     * @param c           max variable value + 1
      */
-    public Disjoint(IEnvironment environment, IntDomainVar[] x, IntDomainVar[] y, int nbValues) {
+    public Disjoint(IEnvironment environment, IntDomainVar[] x, IntDomainVar[] y, int c) {
         super(ArrayUtils.append(x, y));
         this.nbX = x.length;
-        this.nbValues = nbValues;
-        candidates = new IStateInt[2][nbValues];
+        this.nbValues = c;
+        candidates = new IStateInt[2][c];
         required = new IStateBitSet[2];
-        required[0] = environment.makeBitSet(nbValues);
-        required[1] = environment.makeBitSet(nbValues);
-        for (int v = 0; v < nbValues; v++) {
+        required[0] = environment.makeBitSet(c);
+        required[1] = environment.makeBitSet(c);
+        for (int v = 0; v < c; v++) {
             candidates[0][v] = environment.makeInt(0);
             candidates[1][v] = environment.makeInt(0);
         }

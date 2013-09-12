@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -64,10 +63,10 @@ public class AliasedCumulativesBuilder {
     /**
      * Make a new builder.
      *
-     * @param rp the associated problem
+     * @param p the associated problem
      */
-    public AliasedCumulativesBuilder(ReconfigurationProblem rp) {
-        this.rp = rp;
+    public AliasedCumulativesBuilder(ReconfigurationProblem p) {
+        this.rp = p;
 
         List<Slice> dS = new ArrayList<>();
         List<Slice> cS = new ArrayList<>();
@@ -79,7 +78,7 @@ public class AliasedCumulativesBuilder {
         List<int[]> linked = new ArrayList<>();
         int dIdx = 0, cIdx = 0;
 
-        for (VMActionModel a : rp.getVMActions()) {
+        for (VMActionModel a : p.getVMActions()) {
             Slice c = a.getCSlice();
             Slice d = a.getDSlice();
 

@@ -100,7 +100,7 @@ public class SliceBuilder {
      * @param t2
      */
     private void ticksSooner(CPSolver s, IntDomainVar t1, IntDomainVar t2) {
-        if (t1 != t2 && t1.getSup() > t2.getInf()) {
+        if (!t1.equals(t2) && t1.getSup() > t2.getInf()) {
             s.post(s.leq(t1, t2));
         }
     }

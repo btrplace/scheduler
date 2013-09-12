@@ -28,7 +28,6 @@ import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.actionModel.ActionModel;
 import btrplace.solver.choco.actionModel.ActionModelUtils;
 import btrplace.solver.choco.actionModel.VMActionModel;
-import btrplace.solver.choco.constraint.ChocoConstraint;
 import btrplace.solver.choco.constraint.ChocoConstraintBuilder;
 import choco.Choco;
 import choco.cp.solver.CPSolver;
@@ -50,7 +49,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class CMinMTTR implements ChocoConstraint {
+public class CObjective implements btrplace.solver.choco.constraint.CObjective {
 
     private List<SConstraint> costConstraints;
 
@@ -61,24 +60,24 @@ public class CMinMTTR implements ChocoConstraint {
     /**
      * Make a new objective.
      */
-    public CMinMTTR() {
+    public CObjective() {
         costConstraints = new ArrayList<>();
     }
 
     @Override
-    public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        this.rp = rp;
+    public boolean inject(ReconfigurationProblem p) throws SolverException {
+        this.rp = p;
         costActivated = false;
         List<IntDomainVar> mttrs = new ArrayList<>();
-        for (ActionModel m : rp.getVMActions()) {
+        for (ActionModel m : p.getVMActions()) {
             mttrs.add(m.getEnd());
         }
-        for (ActionModel m : rp.getNodeActions()) {
+        for (ActionModel m : p.getNodeActions()) {
             mttrs.add(m.getEnd());
         }
         IntDomainVar[] costs = mttrs.toArray(new IntDomainVar[mttrs.size()]);
-        CPSolver s = rp.getSolver();
-        IntDomainVar cost = s.createBoundIntVar(rp.makeVarLabel("globalCost"), 0, Choco.MAX_UPPER_BOUND);
+        CPSolver s = p.getSolver();
+        IntDomainVar cost = s.createBoundIntVar(p.makeVarLabel("globalCost"), 0, Choco.MAX_UPPER_BOUND);
 
         SConstraint costConstraint = s.eq(cost, CPSolver.sum(costs));
         costConstraints.clear();
@@ -90,28 +89,28 @@ public class CMinMTTR implements ChocoConstraint {
         //as the risk of cyclic dependencies increase and their is no solution for the moment to detect cycle
         //in the scheduling part
         //Restart limit = 2 * number of VMs in the DC.
-        if (rp.getVMs().length > 0) {
-            s.setGeometricRestart(rp.getVMs().length * 2, 1.5d);
+        if (p.getVMs().length > 0) {
+            s.setGeometricRestart(p.getVMs().length * 2, 1.5d);
             s.setRestart(true);
         }
-        injectPlacementHeuristic(rp, cost);
+        injectPlacementHeuristic(p, cost);
         return true;
     }
 
-    private void injectPlacementHeuristic(ReconfigurationProblem rp, IntDomainVar cost) {
+    private void injectPlacementHeuristic(ReconfigurationProblem p, IntDomainVar cost) {
 
-        Model mo = rp.getSourceModel();
+        Model mo = p.getSourceModel();
         Mapping map = mo.getMapping();
 
         List<ActionModel> actions = new ArrayList<>();
-        Collections.addAll(actions, rp.getVMActions());
-        OnStableNodeFirst schedHeuristic = new OnStableNodeFirst("stableNodeFirst", rp, actions, this);
+        Collections.addAll(actions, p.getVMActions());
+        OnStableNodeFirst schedHeuristic = new OnStableNodeFirst("stableNodeFirst", p, actions, this);
 
         //Get the VMs to move
-        Set<VM> onBadNodes = rp.getManageableVMs();
+        Set<VM> onBadNodes = p.getManageableVMs();
 
         for (VM vm : map.getSleepingVMs()) {
-            if (rp.getFutureRunningVMs().contains(vm)) {
+            if (p.getFutureRunningVMs().contains(vm)) {
                 onBadNodes.add(vm);
             }
         }
@@ -124,51 +123,51 @@ public class CMinMTTR implements ChocoConstraint {
 
         List<VMActionModel> goodActions = new ArrayList<>();
         for (VM vm : onGoodNodes) {
-            goodActions.add(rp.getVMAction(vm));
+            goodActions.add(p.getVMAction(vm));
         }
         List<VMActionModel> badActions = new ArrayList<>();
         for (VM vm : onBadNodes) {
-            badActions.add(rp.getVMAction(vm));
+            badActions.add(p.getVMAction(vm));
         }
 
-        CPSolver s = rp.getSolver();
+        CPSolver s = p.getSolver();
 
         //Get the VMs to move for exclusion issue
-        Set<VM> vmsToExclude = new HashSet<>(rp.getManageableVMs());
+        Set<VM> vmsToExclude = new HashSet<>(p.getManageableVMs());
         for (Iterator<VM> ite = vmsToExclude.iterator(); ite.hasNext(); ) {
             VM vm = ite.next();
-            if (!(map.isRunning(vm) && rp.getFutureRunningVMs().contains(vm))) {
+            if (!(map.isRunning(vm) && p.getFutureRunningVMs().contains(vm))) {
                 ite.remove();
             }
         }
-        Map<IntDomainVar, VM> pla = VMPlacementUtils.makePlacementMap(rp);
+        Map<IntDomainVar, VM> pla = VMPlacementUtils.makePlacementMap(p);
 
-        s.addGoal(new AssignVar(new MovingVMs("movingVMs", rp, map, vmsToExclude), new RandomVMPlacement("movingVMs", rp, pla, true)));
-        HostingVariableSelector selectForBads = new HostingVariableSelector("selectForBads", rp, ActionModelUtils.getDSlices(badActions), schedHeuristic);
-        s.addGoal(new AssignVar(selectForBads, new RandomVMPlacement("selectForBads", rp, pla, true)));
+        s.addGoal(new AssignVar(new MovingVMs("movingVMs", p, map, vmsToExclude), new RandomVMPlacement("movingVMs", p, pla, true)));
+        HostingVariableSelector selectForBads = new HostingVariableSelector("selectForBads", p, ActionModelUtils.getDSlices(badActions), schedHeuristic);
+        s.addGoal(new AssignVar(selectForBads, new RandomVMPlacement("selectForBads", p, pla, true)));
 
 
-        HostingVariableSelector selectForGoods = new HostingVariableSelector("selectForGoods", rp, ActionModelUtils.getDSlices(goodActions), schedHeuristic);
-        s.addGoal(new AssignVar(selectForGoods, new RandomVMPlacement("selectForGoods", rp, pla, true)));
+        HostingVariableSelector selectForGoods = new HostingVariableSelector("selectForGoods", p, ActionModelUtils.getDSlices(goodActions), schedHeuristic);
+        s.addGoal(new AssignVar(selectForGoods, new RandomVMPlacement("selectForGoods", p, pla, true)));
 
         //VMs to run
         Set<VM> vmsToRun = new HashSet<>(map.getReadyVMs());
-        vmsToRun.removeAll(rp.getFutureReadyVMs());
+        vmsToRun.removeAll(p.getFutureReadyVMs());
 
         VMActionModel[] runActions = new VMActionModel[vmsToRun.size()];
         int i = 0;
         for (VM vm : vmsToRun) {
-            runActions[i++] = rp.getVMAction(vm);
+            runActions[i++] = p.getVMAction(vm);
         }
-        HostingVariableSelector selectForRuns = new HostingVariableSelector("selectForRuns", rp, ActionModelUtils.getDSlices(runActions), schedHeuristic);
-        s.addGoal(new AssignVar(selectForRuns, new RandomVMPlacement("selectForRuns", rp, pla, true)));
+        HostingVariableSelector selectForRuns = new HostingVariableSelector("selectForRuns", p, ActionModelUtils.getDSlices(runActions), schedHeuristic);
+        s.addGoal(new AssignVar(selectForRuns, new RandomVMPlacement("selectForRuns", p, pla, true)));
 
-        s.addGoal(new AssignVar(new StartingNodes("startingNodes", rp, rp.getNodeActions()), new MinVal()));
+        s.addGoal(new AssignVar(new StartingNodes("startingNodes", p, p.getNodeActions()), new MinVal()));
         ///SCHEDULING PROBLEM
         s.addGoal(new AssignOrForbidIntVarVal(schedHeuristic, new MinVal()));
 
         //At this stage only it matters to plug the cost constraints
-        s.addGoal(new AssignVar(new StaticVarOrder(rp.getSolver(), new IntDomainVar[]{rp.getEnd(), cost}), new MinVal()));
+        s.addGoal(new AssignVar(new StaticVarOrder(p.getSolver(), new IntDomainVar[]{p.getEnd(), cost}), new MinVal()));
     }
 
     @Override
@@ -179,6 +178,7 @@ public class CMinMTTR implements ChocoConstraint {
     /**
      * Post the constraints related to the objective.
      */
+    @Override
     public void postCostConstraints() {
         if (!costActivated) {
             rp.getLogger().debug("Post the cost-oriented constraints");
@@ -206,8 +206,8 @@ public class CMinMTTR implements ChocoConstraint {
         }
 
         @Override
-        public CMinMTTR build(Constraint cstr) {
-            return new CMinMTTR();
+        public CObjective build(Constraint cstr) {
+            return new CObjective();
         }
     }
 }

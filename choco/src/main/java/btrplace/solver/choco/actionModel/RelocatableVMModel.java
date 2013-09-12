@@ -82,49 +82,49 @@ public class RelocatableVMModel implements KeepRunningVMModel {
     /**
      * Make a new model.
      *
-     * @param rp the RP to use as a basis.
-     * @param e  the VM managed by the action
+     * @param p the RP to use as a basis.
+     * @param e the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public RelocatableVMModel(ReconfigurationProblem rp, VM e) throws SolverException {
+    public RelocatableVMModel(ReconfigurationProblem p, VM e) throws SolverException {
         this.vm = e;
-        this.rp = rp;
+        this.rp = p;
 
-        src = rp.getSourceModel().getMapping().getVMLocation(e);
+        src = p.getSourceModel().getMapping().getVMLocation(e);
 
 
         prepareRelocationMethod();
 
-        CPSolver s = rp.getSolver();
+        CPSolver s = p.getSolver();
 
-        cSlice = new SliceBuilder(rp, e, "relocatable(" + e + ").cSlice")
-                .setHoster(rp.getNode(rp.getSourceModel().getMapping().getVMLocation(e)))
-                .setEnd(rp.makeUnboundedDuration("relocatable(" + e + ").cSlice_end"))
+        cSlice = new SliceBuilder(p, e, "relocatable(" + e + ").cSlice")
+                .setHoster(p.getNode(p.getSourceModel().getMapping().getVMLocation(e)))
+                .setEnd(p.makeUnboundedDuration("relocatable(" + e + ").cSlice_end"))
                 .build();
 
-        dSlice = new SliceBuilder(rp, vm, "relocatable(" + vm + ").dSlice")
-                .setStart(rp.makeUnboundedDuration("relocatable(", vm, ").dSlice_start"))
+        dSlice = new SliceBuilder(p, vm, "relocatable(" + vm + ").dSlice")
+                .setStart(p.makeUnboundedDuration("relocatable(", vm, ").dSlice_start"))
                 .build();
 
-        IntDomainVar move = s.createBooleanVar(rp.makeVarLabel("relocatable(", vm, ").move"));
+        IntDomainVar move = s.createBooleanVar(p.makeVarLabel("relocatable(", vm, ").move"));
         s.post(ReifiedFactory.builder(move, s.neq(cSlice.getHoster(), dSlice.getHoster()), s));
 
-        stay = new BoolVarNot(s, rp.makeVarLabel("relocatable(", e, ").stay"), (BooleanVarImpl) move);
+        stay = new BoolVarNot(s, p.makeVarLabel("relocatable(", e, ").stay"), (BooleanVarImpl) move);
 
         s.post(s.leq(duration, cSlice.getDuration()));
         s.post(s.leq(duration, dSlice.getDuration()));
         s.post(s.eq(cSlice.getEnd(), s.plus(dSlice.getStart(), duration)));
 
-        s.post(s.leq(cSlice.getDuration(), rp.getEnd()));
-        s.post(s.leq(dSlice.getDuration(), rp.getEnd()));
-        s.post(s.leq(dSlice.getEnd(), rp.getEnd()));
+        s.post(s.leq(cSlice.getDuration(), p.getEnd()));
+        s.post(s.leq(dSlice.getDuration(), p.getEnd()));
+        s.post(s.leq(dSlice.getEnd(), p.getEnd()));
 
         //If we allow re-instantiate, then the dSlice duration will consume necessarily after the forgeDuration
         s.post(new BooleanChanneling(stay, duration, 0));
 
         if (!getRelocationMethod().isInstantiated()) {
             //TODO: not very compliant with the ForgeActionModel but forge is useless for the moment
-            int forgeD = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), ForgeVM.class, vm);
+            int forgeD = p.getDurationEvaluators().evaluate(p.getSourceModel(), ForgeVM.class, vm);
             s.post(s.geq(this.dSlice.getStart(), ChocoUtils.mult(s, method, forgeD)));
 
             s.post(new BooleanChanneling(method, duration, reInstantiateDuration));

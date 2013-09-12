@@ -49,6 +49,7 @@ public class AttributesConverter extends AbstractJSONObjectConverter<Attributes>
             }
         }
     }
+
     @Override
     public Attributes fromJSON(JSONObject o) throws JSONConverterException {
         Attributes attrs = new DefaultAttributes();
@@ -72,7 +73,7 @@ public class AttributesConverter extends AbstractJSONObjectConverter<Attributes>
                 }
             }
         } catch (ClassCastException ex) {
-            throw new JSONConverterException(ex.getMessage());
+            throw new JSONConverterException(ex);
         }
         return attrs;
     }

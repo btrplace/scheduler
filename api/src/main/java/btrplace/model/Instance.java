@@ -38,24 +38,24 @@ public class Instance {
     /**
      * Make a new instance.
      *
-     * @param mo the model to use
+     * @param m  the model to use
      * @param cs the list of satisfaction oriented constraints to consider
      * @param o  the optimization constraint
      */
-    public Instance(Model mo, Collection<SatConstraint> cs, OptConstraint o) {
+    public Instance(Model m, Collection<SatConstraint> cs, OptConstraint o) {
         cstrs = new ArrayList<>(cs);
-        this.mo = mo;
+        this.mo = m;
         this.opt = o;
     }
 
     /**
      * Make a new instance.
      *
-     * @param mo the model to use
-     * @param o  the optimization constraint
+     * @param m the model to use
+     * @param o the optimization constraint
      */
-    public Instance(Model mo, OptConstraint o) {
-        this(mo, Collections.<SatConstraint>emptyList(), o);
+    public Instance(Model m, OptConstraint o) {
+        this(m, Collections.<SatConstraint>emptyList(), o);
     }
 
     /**

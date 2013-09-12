@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -74,7 +73,7 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
     /**
      * Make a new constraint.
      *
-     * @param env         the solver environment
+     * @param e           the solver environment
      * @param earlyStarts a variable for each resource to indicate the earliest moment a task can arrive on the resource
      * @param lastEnds    a variable for each resource to indicate the latest moment a task can stay on the resource
      * @param capas       for each dimension, the capacity of each resource
@@ -86,7 +85,7 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
      * @param dStarts     the moment each dTask starts
      * @param assocs      indicate association between cTasks and dTasks. Associated tasks cannot overlap on a same resource
      */
-    public TaskScheduler(IEnvironment env,
+    public TaskScheduler(IEnvironment e,
                          IntDomainVar[] earlyStarts,
                          IntDomainVar[] lastEnds,
                          int[][] capas,
@@ -100,7 +99,7 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
 
         super(ArrayUtils.append(dHosters, cHosters, cEnds, dStarts, earlyStarts, lastEnds));
 
-        this.env = env;
+        this.env = e;
         this.cHosters = cHosters;
         this.dHosters = dHosters;
         this.cEnds = cEnds;
@@ -143,8 +142,8 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
 
         this.vIns = new IStateIntVector[scheds.length];
         for (int i = 0; i < scheds.length; i++) {
-            vIns[i] = env.makeIntVector();
-            scheds[i] = new LocalTaskScheduler(i, env,
+            vIns[i] = e.makeIntVector();
+            scheds[i] = new LocalTaskScheduler(i, e,
                     earlyStarts[i],
                     lastEnds[i],
                     capacities,
