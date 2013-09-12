@@ -24,23 +24,23 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Abstract class for constraints restricting the type of a set of VMs.
+ * Abstract class for constraints restricting the type of a set of nodes.
  * The constraint is necessarily discrete.
  *
  * @author Fabien Hermenier
  */
-public abstract class VMStateConstraint extends SatConstraint {
+public abstract class NodeStateConstraint extends SatConstraint {
 
     private String ref;
 
     /**
      * Make a new constraint.
      *
-     * @param id  the constraint identifier for {@link #toString()}
-     * @param vms the VMs to control
+     * @param id the constraint identifier for {@link #toString()}
+     * @param ns the nodes to control
      */
-    public VMStateConstraint(String id, Collection<VM> vms) {
-        super(vms, Collections.<Node>emptySet(), false);
+    public NodeStateConstraint(String id, Collection<Node> ns) {
+        super(Collections.<VM>emptySet(), ns, false);
         this.ref = id;
     }
 
@@ -53,18 +53,18 @@ public abstract class VMStateConstraint extends SatConstraint {
             return false;
         }
 
-        return getInvolvedVMs().equals(((VMStateConstraint) o).getInvolvedVMs());
+        return getInvolvedNodes().equals(((NodeStateConstraint) o).getInvolvedNodes());
     }
 
     @Override
     public int hashCode() {
-        return getInvolvedVMs().hashCode();
+        return getInvolvedNodes().hashCode();
     }
 
     @Override
     public String toString() {
         return new StringBuilder(ref).append('(')
-                .append("vms=").append(getInvolvedVMs())
+                .append("nodes=").append(getInvolvedVMs())
                 .append(", discrete")
                 .append(')').toString();
     }

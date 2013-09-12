@@ -18,12 +18,10 @@
 package btrplace.model.constraint;
 
 import btrplace.model.Node;
-import btrplace.model.VM;
 import btrplace.model.constraint.checker.OnlineChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * A constraint to force a set of nodes at being online.
@@ -34,7 +32,7 @@ import java.util.Collections;
  *
  * @author Fabien Hermenier
  */
-public class Online extends SatConstraint {
+public class Online extends NodeStateConstraint {
 
     /**
      * Make a new constraint.
@@ -42,38 +40,7 @@ public class Online extends SatConstraint {
      * @param nodes the nodes to set online
      */
     public Online(Collection<Node> nodes) {
-        super(Collections.<VM>emptySet(), nodes, false);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Online that = (Online) o;
-        return getInvolvedNodes().equals(that.getInvolvedNodes());
-    }
-
-    @Override
-    public int hashCode() {
-        return getInvolvedNodes().hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return new StringBuilder("online(nodes=")
-                .append(getInvolvedNodes())
-                .append(", discrete")
-                .append(")").toString();
-    }
-
-    @Override
-    public boolean setContinuous(boolean b) {
-        return !b;
+        super("online", nodes);
     }
 
     @Override
