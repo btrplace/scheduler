@@ -7,7 +7,7 @@ import java.util.Iterator;
 /**
  * @author Fabien Hermenier
  */
-public class And extends BinaryProp {
+public class And extends NaryProp {
 
     @Override
     public String toString() {
