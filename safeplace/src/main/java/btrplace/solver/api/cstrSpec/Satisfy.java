@@ -1,11 +1,17 @@
 package btrplace.solver.api.cstrSpec;
 
 import btrplace.solver.api.cstrSpec.func.Function;
+import btrplace.solver.api.cstrSpec.type.Primitives;
+import btrplace.solver.api.cstrSpec.type.SetType;
 import btrplace.solver.api.cstrSpec.type.Type;
-import btrplace.solver.api.cstrSpec.type.Types;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.NotNull;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.io.FileInputStream;
 import java.util.*;
 
 /**
@@ -21,14 +27,16 @@ public class Satisfy extends CstrSpecBaseListener {
 
     private SymbolsTable syms;
 
-    private Types types;
+    private Primitives primitives;
+
+    private Variable curVar;
 
     public Satisfy() {
         stack = new ArrayDeque<>();
         propositions = new ArrayDeque<>();
         funcs = new Functions(this);
         syms = new SymbolsTable();
-        types = new Types();
+        primitives = new Primitives();
     }
     @Override
     public void exitFunc(@NotNull CstrSpecParser.FuncContext ctx) {
@@ -41,18 +49,44 @@ public class Satisfy extends CstrSpecBaseListener {
     public void enterTerm(@NotNull CstrSpecParser.TermContext ctx) {
     }
 
+    private boolean inBinder = false;
+
+    @Override
+    public void enterBinder(@NotNull CstrSpecParser.BinderContext ctx) {
+        inBinder = true;
+    }
+
     @Override
     public void exitTerm(@NotNull CstrSpecParser.TermContext ctx) {
         if (ctx.ID() != null) {
-            //Variable or value
-            if (!syms.isDeclared(ctx.ID().getText())) {
-                Type t = types.getTypeFromValue(ctx.ID().getText());
-                Value v = t.newValue(ctx.ID().getText());
-                push(v);
+            String lbl = ctx.ID().getText();
+            if (inBinder) {
+                Variable var = syms.get(lbl);
+                if (var == null) {
+                    Type t = primitives.fromValue(lbl);
+                    if (t == null) {
+                        throw new RuntimeException("Undefined type for literal '" + lbl + "'");
+                    }
+                    System.err.println(t);
+                    Value v = t.newValue(lbl);
+                    push(v);
+                } else {
+                    //System.err.println("push" + curVar);
+                    push(var);
+                }
             } else {
-                push(syms.get(ctx.ID().getText()));
+                //System.err.println("re-use a term");
+                //Variable or value
+                Variable var = syms.get(lbl);
+                if (var == null) {
+                    //System.err.println("Value ? " + lbl);
+                    Type t = primitives.fromValue(lbl);
+                    Value v = t.newValue(lbl);
+                    push(v);
+                } else {
+                    push(var);
+                }
             }
-
         } else if (ctx.NAT() != null) {
             push(new Nat(Integer.parseInt(ctx.NAT().getText())));
         }
@@ -60,10 +94,10 @@ public class Satisfy extends CstrSpecBaseListener {
 
     @Override
     public void exitTypedef(@NotNull CstrSpecParser.TypedefContext ctx) {
-        String op = ctx.getChild(1).getText();
-        if (!syms.def(ctx.ID(0).getText(), types.getTypeFromLabel(ctx.ID(1).getText()))) {
-            throw new RuntimeException("Unable to declare " + ctx.ID());
-        }
+        Type t = primitives.type(ctx.ID(1).getText());
+        String id = ctx.ID(0).getText();
+
+        syms.newVariable(id, ctx.getChild(1).getText(), t);
     }
 
     public void push(Term t) {
@@ -96,6 +130,22 @@ public class Satisfy extends CstrSpecBaseListener {
         } else if (ctx.getChild(1) == ctx.NOT_EQ()) {
             NEq p =  new NEq(pop(), pop());
             propositions.add(p);
+        } else if (ctx.getChild(1) == ctx.NOT_IN()) {
+            Term t2 = pop();
+            NIn p =  new NIn(pop(), t2);
+            propositions.add(p);
+        } else if (ctx.getChild(1) == ctx.IN()) {
+            Term t2 = pop();
+            In p =  new In(pop(), t2);
+            propositions.add(p);
+        } else if (ctx.getChild(1) == ctx.INCL()) {
+            Term t2 = pop();
+            Inc p =  new Inc(pop(), t2);
+            propositions.add(p);
+        } else if (ctx.getChild(1) == ctx.NOT_INCL()) {
+            Term t2 = pop();
+            NInc p =  new NInc(pop(), t2);
+            propositions.add(p);
         }
     }
 
@@ -107,26 +157,39 @@ public class Satisfy extends CstrSpecBaseListener {
             if (tn == null) {
                 break;
             }
+            Type t;
             String n = tn.getText();
-            Type t = null;
-            if (syms.isDeclared(right)) { //It's a variable
-                t = syms.get(right).getType();
+            if (syms.get(right) != null) { //It's a variable
+                t = syms.get(right).type();
             } else {     //It's a regular type
-                t = types.getTypeFromLabel(right);
-            }
-            if (!syms.def(n, t)) {
-                throw new RuntimeException(n + " is already defined");
+                t = curVar.type();
             }
 
+            //The new type depends on the operator:
+            Variable v = syms.newVariable(n, ctx.getChild(ctx.getChildCount() - 4).getText(), t);
+            //System.err.println("New variable " + n + " type=" + t);
+
+            //t.newValue(n);
+            v.type().newValue(n);
         }
+        inBinder = false;
     }
 
     @Override
     public void exitSpec(@NotNull CstrSpecParser.SpecContext ctx) {
+        System.err.println(syms);
     }
 
-    public Proposition getInvariant() {
-        //System.err.println(propositions);
+    public Proposition getInvariant(String path) throws Exception {
+        ANTLRInputStream in = new ANTLRInputStream(new FileInputStream(path));
+        CstrSpecLexer lexer = new CstrSpecLexer(in);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        CstrSpecParser parser = new CstrSpecParser(tokens);
+        ParseTree tree = parser.spec();
+        ParseTreeWalker walker = new ParseTreeWalker();
+        walker.walk(this, tree);
+
         return propositions.getFirst();
     }
+
 }

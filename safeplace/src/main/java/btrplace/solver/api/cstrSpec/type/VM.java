@@ -24,7 +24,7 @@ public class VM implements Type {
     }
 
     @Override
-    public Set getPossibleValues() {
+    public Set domain() {
         return Collections.emptySet();
     }
 
@@ -43,11 +43,13 @@ public class VM implements Type {
         return "VM";
     }
 
+    int nb = 1;
     @Override
     public Value newValue(String n) {
-        Value v = new Value(n, this);
+        Value v = new Value("VM" + (nb++), this);
         if (values.add(v)) {
-            Node.getInstance().newValue("node4" + n);
+            //System.err.println("New VM " + v);
+            Node.getInstance().newValue(n);
             return v;
         }
         return null;

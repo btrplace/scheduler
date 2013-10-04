@@ -1,2 +1,2 @@
-cstr spread(i : VM, j : VM) ::
-	/*!(i,j : VM).*/ vmState(i) = running & vmState(j) = running --> host(j) /= host(i)
+cstr spread(vs <: VM) ::
+	!(i,j : vs). vmState(i) = running & vmState(j) = running --> host(j) /= host(i)

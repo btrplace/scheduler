@@ -16,6 +16,9 @@ public class Node implements Type {
     private Set<Value> values;
     private Node() {
         values = new HashSet<>();
+        values.add(new Value("N" + (nb++),this));
+        values.add(new Value("N" + (nb++),this));
+        values.add(new Value("N" + (nb++),this));
     }
 
     public static Node getInstance() {
@@ -23,7 +26,7 @@ public class Node implements Type {
     }
 
     @Override
-    public Set getPossibleValues() {
+    public Set domain() {
         return values;
     }
 
@@ -42,10 +45,13 @@ public class Node implements Type {
         return "node";
     }
 
+    int nb = 1;
+
     @Override
     public Value newValue(String n) {
-        Value v = new Value(n, this);
+        Value v = new Value("N" + (nb++), this);
         if (values.add(v)) {
+            //System.err.println("New node " + v);
             return v;
         }
         return null;

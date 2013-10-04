@@ -20,15 +20,19 @@ public class Variable implements Term {
 
     @Override
     public Set domain() {
-        return t.getPossibleValues();
+        return t.domain();
     }
 
     @Override
     public String toString() {
-        return n;
+        return label();
     }
 
-    public Type getType() {
+    public Type type() {
         return t;
+    }
+
+    public String label() {
+        return n;
     }
 }

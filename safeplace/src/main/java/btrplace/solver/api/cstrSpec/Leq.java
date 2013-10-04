@@ -1,5 +1,6 @@
 package btrplace.solver.api.cstrSpec;
 
+import btrplace.solver.api.cstrSpec.type.Nat;
 /**
  * @author Fabien Hermenier
  */
@@ -21,7 +22,34 @@ public class Leq extends AtomicProp {
 
     @Override
     public Or expand() {
-        throw new UnsupportedOperationException();
+        //Expect nat type with a constant
+        Or or = new Or();
+        if (!a.type().equals(Nat.getInstance()) || !b.type().equals(Nat.getInstance())) {
+            throw new RuntimeException("Expect " + Nat.getInstance() + " <= " + Nat.getInstance() +
+                    ". Got " + a.type() + " <= " + b.type());
+        }
+        /*
+            {1,2,3} <= {1,2,4,5}
+            1 <= 1
+            1 <= 2
+            1 <= 4
+            1 <= 5
+            2 <= 2
+            2 <= 4
+            2 <= 5
+            3 <= 4
+            3 <= 5
+        */
+        for (Value vA : a.domain()) {
+            for (Value vB : b.domain()) {
+                int x = (Integer)vA.value();
+                int y = (Integer)vB.value();
+                if (x <= y) {
+                    or.add(new Eq(a, vB));
+                }
+            }
+        }
+        return or;
     }
 
 }

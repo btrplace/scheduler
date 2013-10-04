@@ -2,10 +2,7 @@ package btrplace.solver.api.cstrSpec.func;
 
 import btrplace.solver.api.cstrSpec.Term;
 import btrplace.solver.api.cstrSpec.type.NodeStateType;
-import btrplace.solver.api.cstrSpec.type.Type;
-import btrplace.solver.api.cstrSpec.type.VMStateType;
 
-import java.util.EnumSet;
 import java.util.Set;
 
 /**
@@ -30,7 +27,7 @@ public class NodeState implements Function {
 
     @Override
     public Set domain() {
-        return NodeStateType.getInstance().getPossibleValues();
+        return NodeStateType.getInstance().domain();
     }
 
     @Override

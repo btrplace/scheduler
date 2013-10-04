@@ -40,19 +40,5 @@ public class Eq extends AtomicProp {
         }
         System.err.println(this + " => " + or);
         return or;
-        /*Function f = a instanceof Function ? (Function) a : (Function) b;
-        Set<Value> avoid = a instanceof Function ? b.domain() : a.domain();
-        Or o = new Or();
-        if (avoid.size() == 1) {
-            Value v = avoid.iterator().next();
-            for (Value allowed : f.domain()) {
-                if (!allowed.equals(v)) {
-                    o.add(new Eq(f, allowed));
-                }
-            }
-        } else {
-            o.add(this);
-        }
-        return o;   */
     }
 }

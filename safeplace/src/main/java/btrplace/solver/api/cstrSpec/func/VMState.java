@@ -2,7 +2,6 @@ package btrplace.solver.api.cstrSpec.func;
 
 import btrplace.solver.api.cstrSpec.Term;
 import btrplace.solver.api.cstrSpec.Value;
-import btrplace.solver.api.cstrSpec.type.Type;
 import btrplace.solver.api.cstrSpec.type.VMStateType;
 
 import java.util.HashSet;
@@ -25,10 +24,10 @@ public class VMState implements Function {
     }
 
     @Override
-    public Set domain() {
+    public Set<Value> domain() {
         Set<Value> res = new HashSet<>();
-        for (Value t : VMStateType.getInstance().getPossibleValues()) {
-            Value v = new Value(t.getValue(), VMStateType.getInstance());
+        for (Value t : VMStateType.getInstance().domain()) {
+            Value v = new Value(t.value(), VMStateType.getInstance());
             res.add(v);
         }
         return res;

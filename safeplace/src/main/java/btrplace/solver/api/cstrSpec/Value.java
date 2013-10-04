@@ -19,12 +19,16 @@ public class Value implements Term{
         this.o = o;
     }
 
+    public Type type() {
+        return t;
+    }
+
     @Override
     public Set<Value> domain() {
         return Collections.singleton(this);
     }
 
-    public Object getValue() {
+    public Object value() {
         return o;
     }
     @Override

@@ -1,0 +1,3 @@
+cstr ban(vs <: VM, ns <: node ) ::
+	!(i : vs). vmState(i) = running --> host(i) /: ns
+	/* vmState(i) /= running | host(i) /: ns */

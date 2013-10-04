@@ -1,0 +1,2 @@
+cstr nodeState(n : node, st : nodeState) ::
+	nodeState(n) = st

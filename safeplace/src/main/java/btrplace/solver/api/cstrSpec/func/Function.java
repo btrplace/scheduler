@@ -11,5 +11,4 @@ public interface Function<E extends Type> extends Term {
 
     void eval();
 
-    Type type();
 }

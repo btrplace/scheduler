@@ -17,25 +17,56 @@ public class TestParse {
 
     @Test
     public void testParseSpread() throws Exception {
-        ANTLRInputStream in = new ANTLRInputStream(new FileInputStream("src/test/resources/spread.cspec"));
-        CstrSpecLexer lexer = new CstrSpecLexer(in);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        CstrSpecParser parser = new CstrSpecParser(tokens);
-        ParseTree tree = parser.spec();
-        ParseTreeWalker walker = new ParseTreeWalker();
         Satisfy sat = new Satisfy();
-        walker.walk(sat, tree);
-        Proposition p = sat.getInvariant();
+        Proposition p = sat.getInvariant("src/test/resources/spread.cspec");
         System.err.println("P= " + p);
         System.err.println("P.expand()= " + p.expand());
-        StateExtractor ex = new StateExtractor();
-
-        /*Or states = new StateExtractor().extract(p);
-        System.err.println(states.size() + " states");
-        Assert.assertEquals(states.size(), 32);
-        for (Proposition p : states) {
-            System.err.println(p);
-        }                             */
         Assert.fail();
     }
+
+    @Test
+    public void testParseBan() throws Exception {
+        Satisfy sat = new Satisfy();
+        Proposition p = sat.getInvariant("src/test/resources/ban.cspec");
+        System.err.println("P= " + p);
+        System.err.println("P.expand()= " + p.expand());
+        Assert.fail();
+    }
+
+    @Test
+    public void testParseMaxOnline() throws Exception {
+        Satisfy sat = new Satisfy();
+        Proposition p = sat.getInvariant("src/test/resources/maxOnline.cspec");
+        System.err.println("P= " + p);
+        System.err.println("P.expand()= " + p.expand());
+        Assert.fail();
+    }
+
+    @Test
+    public void testParseNodeState() throws Exception {
+        Satisfy sat = new Satisfy();
+        Proposition p = sat.getInvariant("src/test/resources/nodeState.cspec");
+        System.err.println("P= " + p);
+        System.err.println("P.expand()= " + p.expand());
+        Assert.fail();
+    }
+
+    @Test
+    public void testParseHost() throws Exception {
+        Satisfy sat = new Satisfy();
+        Proposition p = sat.getInvariant("src/test/resources/host.cspec");
+        System.err.println("P= " + p);
+        System.err.println("P.expand()= " + p.expand());
+        Assert.fail();
+    }
+
+    @Test
+    public void testParseNoVMOnOfflineNode() throws Exception {
+        Satisfy sat = new Satisfy();
+        Proposition p = sat.getInvariant("src/test/resources/noVMOnOfflineNode.cspec");
+        System.err.println("P= " + p);
+        System.err.println("P.expand()= " + p.expand());
+        Assert.fail();
+    }
+
 }

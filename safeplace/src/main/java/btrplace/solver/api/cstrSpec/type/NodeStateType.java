@@ -22,7 +22,7 @@ public class NodeStateType implements Type {
     }
 
     @Override
-    public Set getPossibleValues() {
+    public Set domain() {
         Set s = new HashSet();
         for (Type t : Type.values()) {
             s.add(new Value(t, this));

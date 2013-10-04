@@ -9,7 +9,7 @@ import java.util.Set;
  */
 public interface Type {
 
-    Set getPossibleValues();
+    Set<Value> domain();
 
     String label();
 

@@ -20,7 +20,7 @@ public class Nat implements Type {
     }
 
     @Override
-    public Set getPossibleValues() {
+    public Set domain() {
         Set<Integer> s = new HashSet<>();
         for (int i = inf; i <= sup; i++) {
             s.add(i);
@@ -55,6 +55,7 @@ public class Nat implements Type {
 
     @Override
     public Value newValue(String n) {
+        //throw new RuntimeException();
         return new Value(Integer.parseInt(n), this);
     }
 }

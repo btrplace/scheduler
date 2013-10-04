@@ -23,7 +23,7 @@ NOT_INCL:'/<:';
 PLUS:'+';
 MINUS:'-';
 ALL:'!';
-EXISTS:'#';
+EXISTS:'?';
 NAT: '-'?[1..9][0..9]*;
 ID: [a-zA-Z_][a-zA-Z0-9_]*;
 INTER: '\\/';
@@ -36,7 +36,7 @@ LPARA :'(';
 RPARA:')';
 DEF_CONTENT: '::';
 IMPLIES:'-->';
-IFF: '<->';
+IFF: '<-->';
 LT:'<';
 LEQ:'<=';
 GT:'>';
@@ -62,7 +62,7 @@ set: LACC (term (COMMA term)*)? RACC /* definition in extension */
 
 typedef: ID (IN|NOT_IN|INCL|NOT_INCL) ID;
 formula: 
-       |formula (IMPLIES|OR|AND) formula
+       |formula (IMPLIES|OR|AND|IFF) formula
        |term (EQ | NOT_EQ| LT | LEQ | GT | GEQ | IN | NOT_IN | INCL | NOT_INCL) term        
        |NOT formula              
        |binder formula
@@ -71,7 +71,7 @@ formula:
        
 func: ID LPARA term (COMMA term)* RPARA;
 
-constraint: 'cstr' ID LPARA typedef (COMMA typedef)* RPARA DEF_CONTENT formula;
+constraint: 'native'? 'cstr' ID LPARA (typedef (COMMA typedef)*)? RPARA DEF_CONTENT formula;
 func_def: 'func' ID LPARA ID (COMMA ID)* RPARA ID; 
 require: 'require' '"' ID '"';
 spec: require * (func_def|constraint)+;        

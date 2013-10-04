@@ -22,7 +22,7 @@ public class VMStateType implements Type {
     }
 
     @Override
-    public Set<Value> getPossibleValues() {
+    public Set<Value> domain() {
         Set s = new HashSet();
         for (Type t : Type.values()) {
             s.add(new Value(t, this));

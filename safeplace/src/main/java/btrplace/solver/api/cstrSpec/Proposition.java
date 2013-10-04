@@ -18,4 +18,5 @@ public interface Proposition {
     boolean inject(Model mo);
 
     Proposition expand();
+
 }
