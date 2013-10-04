@@ -1,6 +1,7 @@
 package btrplace.solver.api.cstrSpec;
 
 import btrplace.solver.api.cstrSpec.func.Function;
+import btrplace.solver.api.cstrSpec.type.Nat;
 import btrplace.solver.api.cstrSpec.type.Primitives;
 import btrplace.solver.api.cstrSpec.type.SetType;
 import btrplace.solver.api.cstrSpec.type.Type;
@@ -88,7 +89,7 @@ public class Satisfy extends CstrSpecBaseListener {
                 }
             }
         } else if (ctx.NAT() != null) {
-            push(new Nat(Integer.parseInt(ctx.NAT().getText())));
+            push(new Value(Integer.parseInt(ctx.NAT().getText()), Nat.getInstance()));
         }
     }
 
