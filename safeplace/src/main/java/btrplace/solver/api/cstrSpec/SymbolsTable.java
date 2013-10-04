@@ -15,6 +15,9 @@ public class SymbolsTable {
 
     public SymbolsTable() {
         table = new HashMap<>();
+
+        //Predefined variables
+
     }
 
     public Variable getVariable(String n) {
@@ -33,7 +36,7 @@ public class SymbolsTable {
     }
 
     public Variable newVariable(String lbl, String op, Type t) {
-        System.err.println("new variable '" + lbl + "' " + op + " " + t);
+        //System.err.println("new variable '" + lbl + "' " + op + " " + t);
         if (table.containsKey(lbl)) {
             return null;
         }
