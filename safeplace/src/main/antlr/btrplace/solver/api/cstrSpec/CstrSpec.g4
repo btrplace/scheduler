@@ -24,7 +24,7 @@ PLUS:'+';
 MINUS:'-';
 ALL:'!';
 EXISTS:'?';
-NAT: '-'?[1..9][0..9]*;
+NAT: '0' | '-'?[1..9][0..9]*;
 ID: [a-zA-Z_][a-zA-Z0-9_]*;
 INTER: '\\/';
 UNION: '/\\';
@@ -57,7 +57,7 @@ term: term (INTER|UNION|PLUS|MINUS) term
     ;
 
 set: LACC (term (COMMA term)*)? RACC /* definition in extension */
-   | LACC ID DOT formula RACC /* definition in comprehension */
+   | LACC binder* formula RACC /* definition in comprehension */
    ;
 
 typedef: ID (IN|NOT_IN|INCL|NOT_INCL) ID;

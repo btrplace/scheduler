@@ -1,7 +1,7 @@
 package btrplace.solver.api.cstrSpec.func;
 
 import btrplace.solver.api.cstrSpec.Term;
-import btrplace.solver.api.cstrSpec.type.VM;
+import btrplace.solver.api.cstrSpec.type.VMType;
 
 import java.util.Set;
 
@@ -23,11 +23,11 @@ public class Colocated implements Function {
 
     @Override
     public Set domain() {
-        return VM.getInstance().domain();
+        return VMType.getInstance().domain();
     }
 
     @Override
-    public VM type() {
-        return VM.getInstance();
+    public VMType type() {
+        return VMType.getInstance();
     }
 }

@@ -18,7 +18,9 @@ public class Functions {
             case "nodeState": return new NodeState(sat.pop());
             case "colocated": return new Colocated(sat.pop());
             case "host": return new Host(sat.pop());
-            default: throw new RuntimeException("Unsupported function '" + id + "'");
+            case "card": return new Card(sat.pop());
+            case "hosted" : return new Hoster(sat.pop());
+            default: throw new RuntimeException("Cannot resolve function '" + id + "'");
         }
     }
 }

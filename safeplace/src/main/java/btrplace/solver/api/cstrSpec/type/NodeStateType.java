@@ -2,7 +2,7 @@ package btrplace.solver.api.cstrSpec.type;
 
 import btrplace.solver.api.cstrSpec.Value;
 
-import java.util.EnumSet;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,19 +15,23 @@ public class NodeStateType implements Type {
 
     private static NodeStateType instance = new NodeStateType();
 
-    private NodeStateType() {}
+    private Set<Value> vals;
+
+    private NodeStateType() {
+        Set<Value> s = new HashSet<>();
+        for (Type t : Type.values()) {
+            s.add(new Value(t, this));
+        }
+        vals = Collections.unmodifiableSet(s);
+    }
 
     public static NodeStateType getInstance() {
         return instance;
     }
 
     @Override
-    public Set domain() {
-        Set s = new HashSet();
-        for (Type t : Type.values()) {
-            s.add(new Value(t, this));
-        }
-        return s;
+    public Set<Value> domain() {
+        return vals;
     }
 
     @Override
@@ -36,9 +40,9 @@ public class NodeStateType implements Type {
     }
 
     @Override
-    public boolean isIn(String n) {
+    public boolean match(String n) {
         try {
-            Type t = Type.valueOf(n);
+            Type.valueOf(n);
             return true;
         } catch (Exception e) {
 

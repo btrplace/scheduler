@@ -19,7 +19,7 @@ public class Variable implements Term {
     }
 
     @Override
-    public Set domain() {
+    public Set<Value> domain() {
         return t.domain();
     }
 

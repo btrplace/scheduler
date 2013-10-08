@@ -2,7 +2,7 @@ package btrplace.solver.api.cstrSpec.type;
 
 import btrplace.solver.api.cstrSpec.Value;
 
-import java.util.EnumSet;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,23 +11,22 @@ import java.util.Set;
  */
 public class VMStateType implements Type {
 
-    private static enum Type { running, ready, sleeping, waiting}
+    private static enum Type {running, ready, sleeping, waiting}
 
     private static VMStateType instance = new VMStateType();
 
-    private VMStateType() {}
+    private Set<Value> vals;
 
-    public static VMStateType getInstance() {
-        return instance;
-    }
-
-    @Override
-    public Set<Value> domain() {
-        Set s = new HashSet();
+    private VMStateType() {
+        Set<Value> s = new HashSet<>();
         for (Type t : Type.values()) {
             s.add(new Value(t, this));
         }
-        return s;
+        vals = Collections.unmodifiableSet(s);
+    }
+
+    public static VMStateType getInstance() {
+        return instance;
     }
 
     @Override
@@ -36,7 +35,7 @@ public class VMStateType implements Type {
     }
 
     @Override
-    public boolean isIn(String n) {
+    public boolean match(String n) {
         try {
             Type t = Type.valueOf(n);
             return true;
@@ -51,11 +50,15 @@ public class VMStateType implements Type {
         return "vmState";
     }
 
+
+    @Override
+    public Set<Value> domain() {
+        return vals;
+    }
+
     @Override
     public Value newValue(String n) {
         return new Value(Type.valueOf(n), this);
     }
-
-
 
 }

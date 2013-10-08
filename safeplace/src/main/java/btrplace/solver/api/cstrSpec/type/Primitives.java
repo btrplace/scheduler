@@ -1,9 +1,6 @@
 package btrplace.solver.api.cstrSpec.type;
 
-import org.antlr.v4.runtime.tree.TerminalNode;
-
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,9 +13,9 @@ public class Primitives {
     public Primitives() {
         types = new HashMap<>();
         //The primitive type
-        register(VM.getInstance());
-        register(Node.getInstance());
-        register(Nat.getInstance());
+        register(VMType.getInstance());
+        register(NodeType.getInstance());
+        register(NatType.getInstance());
         register(VMStateType.getInstance());
         register(NodeStateType.getInstance());
     }
@@ -38,7 +35,7 @@ public class Primitives {
     public Type fromValue(String n) {
         for (Map.Entry<String, Type> e : types.entrySet()) {
             Type t = e.getValue();
-            if (t.isIn(n)) {
+            if (t.match(n)) {
                 return t;
             }
         }

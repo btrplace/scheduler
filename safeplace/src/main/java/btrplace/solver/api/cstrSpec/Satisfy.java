@@ -1,9 +1,8 @@
 package btrplace.solver.api.cstrSpec;
 
 import btrplace.solver.api.cstrSpec.func.Function;
-import btrplace.solver.api.cstrSpec.type.Nat;
+import btrplace.solver.api.cstrSpec.type.NatType;
 import btrplace.solver.api.cstrSpec.type.Primitives;
-import btrplace.solver.api.cstrSpec.type.SetType;
 import btrplace.solver.api.cstrSpec.type.Type;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -30,8 +29,6 @@ public class Satisfy extends CstrSpecBaseListener {
 
     private Primitives primitives;
 
-    private Variable curVar;
-
     public Satisfy() {
         stack = new ArrayDeque<>();
         propositions = new ArrayDeque<>();
@@ -42,12 +39,24 @@ public class Satisfy extends CstrSpecBaseListener {
     @Override
     public void exitFunc(@NotNull CstrSpecParser.FuncContext ctx) {
         //get function name
-        Function f = funcs.get(ctx.ID().getText());
+        String id = ctx.ID().getText();
+        Function f = funcs.get(id);
         push(f);
     }
 
     @Override
     public void enterTerm(@NotNull CstrSpecParser.TermContext ctx) {
+
+    }
+
+    @Override
+    public void enterSet(@NotNull CstrSpecParser.SetContext ctx) {
+
+    }
+
+    @Override
+    public void exitSet(@NotNull CstrSpecParser.SetContext ctx) {
+
     }
 
     private boolean inBinder = false;
@@ -61,41 +70,26 @@ public class Satisfy extends CstrSpecBaseListener {
     public void exitTerm(@NotNull CstrSpecParser.TermContext ctx) {
         if (ctx.ID() != null) {
             String lbl = ctx.ID().getText();
-            if (inBinder) {
-                Variable var = syms.get(lbl);
-                if (var == null) {
-                    Type t = primitives.fromValue(lbl);
-                    if (t == null) {
-                        throw new RuntimeException("Undefined type for literal '" + lbl + "'");
-                    }
-                    System.err.println(t);
-                    Value v = t.newValue(lbl);
-                    push(v);
-                } else {
-                    //System.err.println("push" + curVar);
-                    push(var);
-                }
+            Variable var = syms.get(lbl);
+            if (var != null) {
+                push(var);
             } else {
-                //System.err.println("re-use a term");
-                //Variable or value
-                Variable var = syms.get(lbl);
-                if (var == null) {
-                    //System.err.println("Value ? " + lbl);
-                    Type t = primitives.fromValue(lbl);
-                    Value v = t.newValue(lbl);
-                    push(v);
-                } else {
-                    push(var);
+                Type t = primitives.fromValue(lbl);
+                if (t == null) {
+                    throw new RuntimeException("Cannot resolve symbol '" + lbl + "'");
                 }
+                Value v = t.newValue(lbl);
+                push(v);
             }
         } else if (ctx.NAT() != null) {
-            push(new Value(Integer.parseInt(ctx.NAT().getText()), Nat.getInstance()));
+            push(NatType.getInstance().newValue(ctx.NAT().getText()));
         }
     }
 
     @Override
     public void exitTypedef(@NotNull CstrSpecParser.TypedefContext ctx) {
-        Type t = primitives.type(ctx.ID(1).getText());
+        Variable v = syms.get(ctx.ID(1).getText());
+        Type t = v.type();
         String id = ctx.ID(0).getText();
 
         syms.newVariable(id, ctx.getChild(1).getText(), t);
@@ -147,6 +141,12 @@ public class Satisfy extends CstrSpecBaseListener {
             Term t2 = pop();
             NInc p =  new NInc(pop(), t2);
             propositions.add(p);
+        } else if (ctx.getChild(1) == ctx.IFF()) {
+            Proposition b = propositions.pop();
+            Proposition a = propositions.pop();
+            And a1 = new And().add(a).add(b);
+            And a2 = new And().add(a.not()).add(b.not());
+            propositions.add(new Or().add(a1).add(a2));
         }
     }
 
@@ -162,23 +162,24 @@ public class Satisfy extends CstrSpecBaseListener {
             String n = tn.getText();
             if (syms.get(right) != null) { //It's a variable
                 t = syms.get(right).type();
-            } else {     //It's a regular type
-                t = curVar.type();
+            } else {
+                t = primitives.fromValue(right);
+                if (t == null) {
+                    throw new RuntimeException("Cannot resolve symbol '" + right + "'");
+                }
+                Value v = t.newValue(right);
+                push(v);
             }
 
             //The new type depends on the operator:
             Variable v = syms.newVariable(n, ctx.getChild(ctx.getChildCount() - 4).getText(), t);
-            //System.err.println("New variable " + n + " type=" + t);
-
-            //t.newValue(n);
-            v.type().newValue(n);
         }
         inBinder = false;
     }
 
     @Override
     public void exitSpec(@NotNull CstrSpecParser.SpecContext ctx) {
-        System.err.println(syms);
+
     }
 
     public Proposition getInvariant(String path) throws Exception {

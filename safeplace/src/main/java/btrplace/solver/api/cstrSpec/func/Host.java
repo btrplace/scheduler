@@ -2,7 +2,7 @@ package btrplace.solver.api.cstrSpec.func;
 
 import btrplace.solver.api.cstrSpec.Term;
 import btrplace.solver.api.cstrSpec.Value;
-import btrplace.solver.api.cstrSpec.type.Node;
+import btrplace.solver.api.cstrSpec.type.NodeType;
 
 import java.util.Set;
 
@@ -29,11 +29,11 @@ public class Host implements Function {
 
     @Override
     public Set<Value> domain() {
-        return Node.getInstance().domain();
+        return NodeType.getInstance().domain();
     }
 
     @Override
-    public Node type() {
-        return Node.getInstance();
+    public NodeType type() {
+        return NodeType.getInstance();
     }
 }

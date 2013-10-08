@@ -38,7 +38,6 @@ public class Eq extends AtomicProp {
         } else {
             or.add(this);
         }
-        System.err.println(this + " => " + or);
         return or;
     }
 }

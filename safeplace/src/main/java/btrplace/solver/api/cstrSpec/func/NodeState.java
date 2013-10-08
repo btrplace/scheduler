@@ -1,6 +1,7 @@
 package btrplace.solver.api.cstrSpec.func;
 
 import btrplace.solver.api.cstrSpec.Term;
+import btrplace.solver.api.cstrSpec.Value;
 import btrplace.solver.api.cstrSpec.type.NodeStateType;
 
 import java.util.Set;
@@ -26,7 +27,7 @@ public class NodeState implements Function {
     }
 
     @Override
-    public Set domain() {
+    public Set<Value> domain() {
         return NodeStateType.getInstance().domain();
     }
 

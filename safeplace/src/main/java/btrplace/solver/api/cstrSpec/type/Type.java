@@ -13,7 +13,7 @@ public interface Type {
 
     String label();
 
-    boolean isIn(String n);
+    boolean match(String n);
 
     Value newValue(String n);
 }

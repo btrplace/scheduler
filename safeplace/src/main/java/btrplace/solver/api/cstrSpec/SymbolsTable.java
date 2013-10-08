@@ -1,7 +1,6 @@
 package btrplace.solver.api.cstrSpec;
 
-import btrplace.solver.api.cstrSpec.type.SetType;
-import btrplace.solver.api.cstrSpec.type.Type;
+import btrplace.solver.api.cstrSpec.type.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +16,12 @@ public class SymbolsTable {
         table = new HashMap<>();
 
         //Predefined variables
+        table.put(VMType.getInstance().label(), new Variable(VMType.getInstance().label(), VMType.getInstance()));
+        table.put(NodeType.getInstance().label(), new Variable(NodeType.getInstance().label(), NodeType.getInstance()));
+        table.put(NatType.getInstance().label(), new Variable(NatType.getInstance().label(), NatType.getInstance()));
+        /*register(NatType.getInstance());
+        register(VMStateType.getInstance());
+        register(NodeStateType.getInstance());*/
 
     }
 
@@ -36,13 +41,20 @@ public class SymbolsTable {
     }
 
     public Variable newVariable(String lbl, String op, Type t) {
-        System.err.println("new variable '" + lbl + "' " + op + " " + t);
+        //System.err.println("new variable '" + lbl + "' " + op + " " + t);
         if (table.containsKey(lbl)) {
             return null;
         }
         Type newType;
         switch (op) {
-            case ":": newType = ((SetType)t).subType(); break;
+            case ":":
+                if (t instanceof  SetType) {
+                    newType = ((SetType)t).subType(); break;
+                } else {
+                    //It will be a primitive type
+                    newType = t;
+                }
+
             case "<:": newType = new SetType(t); break;
             default:
                 throw new RuntimeException("Unsupported type in declaration: " + op);

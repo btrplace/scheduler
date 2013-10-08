@@ -20,7 +20,6 @@ public class SetType implements Type {
     @Override
     public Set<Value> domain() {
         //All possible subsets or t. Ouch
-        //throw new UnsupportedOperationException();
         Value[] values = type.domain().toArray(new Value[type.domain().size()]);
         int nbElements = (int) Math.pow(2, values.length);
         //System.err.println(nbElements);
@@ -29,9 +28,9 @@ public class SetType implements Type {
             Set<Value> sub = new HashSet<>();
             long x = i;
             //decompose x bit per bit
-            for (int idx = 0; idx < values.length; idx++) {
-                if (x%2 == 0) {
-                    sub.add(values[idx]);
+            for (Value value : values) {
+                if (x % 2 == 0) {
+                    sub.add(value);
                 }
                 x = x >>> 1;
             }
@@ -48,15 +47,15 @@ public class SetType implements Type {
     }
 
     @Override
-    public boolean isIn(String n) {
+    public boolean match(String n) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public Value newValue(String n) {
         //Add a value inside the set
-        return type.newValue(n);
-        //throw new UnsupportedOperationException();
+        //return type.newValue(n);
+        throw new UnsupportedOperationException();
     }
 
     @Override

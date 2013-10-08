@@ -1,6 +1,7 @@
 package btrplace.solver.api.cstrSpec;
 
-import btrplace.solver.api.cstrSpec.type.Nat;
+import btrplace.solver.api.cstrSpec.type.NatType;
+
 /**
  * @author Fabien Hermenier
  */
@@ -24,8 +25,8 @@ public class Leq extends AtomicProp {
     public Or expand() {
         //Expect nat type with a constant
         Or or = new Or();
-        if (!a.type().equals(Nat.getInstance()) || !b.type().equals(Nat.getInstance())) {
-            throw new RuntimeException("Expect " + Nat.getInstance() + " <= " + Nat.getInstance() +
+        if (!a.type().equals(NatType.getInstance()) || !b.type().equals(NatType.getInstance())) {
+            throw new RuntimeException("Expect " + NatType.getInstance() + " <= " + NatType.getInstance() +
                     ". Got " + a.type() + " <= " + b.type());
         }
         /*
