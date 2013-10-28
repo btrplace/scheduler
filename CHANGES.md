@@ -1,6 +1,11 @@
 Release notes
 ======================
 
+version 0.33 - 28 Oct 2013
+----------------------
+- Bug fix in the json un-marshalling
+- API change: ModelViewConverter.getSupportedConstraint() becomes ModelViewConverter.getSupportedView()
+
 version 0.32 - 12 Sep 2013
 ----------------------
 - Bugs fix.

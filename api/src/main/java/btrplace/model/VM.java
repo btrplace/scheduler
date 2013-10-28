@@ -22,7 +22,7 @@ package btrplace.model;
  * VM should not be instantiated directly. Use {@link Model#newVM()} instead.
  *
  * @author Fabien Hermenier
- * @see {@link Model#newVM()}
+ * @see Model#newVM()
  */
 public class VM implements Element {
 

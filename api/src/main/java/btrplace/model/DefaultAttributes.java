@@ -251,4 +251,13 @@ public class DefaultAttributes implements Attributes, Cloneable {
 
         return put(e, k, v);
     }
+
+    @Override
+    public void clear(Element e) {
+        if (e instanceof VM) {
+            this.vmAttrs.remove(e);
+        } else if (e instanceof Node) {
+            this.nodeAttrs.remove(e);
+        }
+    }
 }

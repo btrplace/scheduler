@@ -67,7 +67,7 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
      *         no registered converter
      */
     public ModelViewConverter register(ModelViewConverter<? extends ModelView> c) {
-        java2json.put(c.getSupportedConstraint(), c);
+        java2json.put(c.getSupportedView(), c);
         return json2java.put(c.getJSONId(), c);
 
     }

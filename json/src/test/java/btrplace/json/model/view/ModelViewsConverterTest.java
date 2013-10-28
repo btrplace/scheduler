@@ -63,7 +63,7 @@ public class ModelViewsConverterTest {
     public static class MockModelViewConverter extends ModelViewConverter<MockModelView> {
 
         @Override
-        public Class<MockModelView> getSupportedConstraint() {
+        public Class<MockModelView> getSupportedView() {
             return MockModelView.class;
         }
 

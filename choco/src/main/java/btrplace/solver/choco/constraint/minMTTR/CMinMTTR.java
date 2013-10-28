@@ -49,7 +49,7 @@ import java.util.*;
  *
  * @author Fabien Hermenier
  */
-public class CObjective implements btrplace.solver.choco.constraint.CObjective {
+public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
 
     private List<SConstraint> costConstraints;
 
@@ -60,7 +60,7 @@ public class CObjective implements btrplace.solver.choco.constraint.CObjective {
     /**
      * Make a new objective.
      */
-    public CObjective() {
+    public CMinMTTR() {
         costConstraints = new ArrayList<>();
     }
 
@@ -206,8 +206,8 @@ public class CObjective implements btrplace.solver.choco.constraint.CObjective {
         }
 
         @Override
-        public CObjective build(Constraint cstr) {
-            return new CObjective();
+        public CMinMTTR build(Constraint cstr) {
+            return new CMinMTTR();
         }
     }
 }

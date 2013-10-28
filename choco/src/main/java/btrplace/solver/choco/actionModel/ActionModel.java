@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -23,9 +22,10 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
  * Model an action.
+ * See {@link ActionModelUtils} to extract components of a collection of ActionModel.
  *
  * @author Fabien Hermenier
- * @see {@link ActionModelUtils} a utility class to extract components of ActionModels.
+ * @see ActionModelUtils
  */
 public interface ActionModel {
 

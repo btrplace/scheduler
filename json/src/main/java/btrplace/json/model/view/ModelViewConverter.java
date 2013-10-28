@@ -32,7 +32,7 @@ public abstract class ModelViewConverter<E extends ModelView> extends AbstractJS
      *
      * @return The view class
      */
-    public abstract Class<E> getSupportedConstraint();
+    public abstract Class<E> getSupportedView();
 
     /**
      * Get the JSON identifier for the view.

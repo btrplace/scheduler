@@ -34,7 +34,7 @@ import java.util.*;
  * Tutorial about the basic tuning of a model.
  *
  * @author Fabien Hermenier
- * @see <a href="https://github.com/fhermeni/btrplace-solver/wiki/Customizing-a-model">btrplace website</a>.
+ * @see <a href="https://github.com/fhermeni/btrplace-solver/wiki/Customizing-a-model">btrplace website</a>
  */
 public class ModelCustomization implements Example {
 
