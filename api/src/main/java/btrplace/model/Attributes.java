@@ -169,4 +169,11 @@ public interface Attributes extends Cloneable {
      * Remove all the attributes.
      */
     void clear();
+
+    /**
+     * Remove all the attributes of a given element.
+     *
+     * @param e the element
+     */
+    void clear(Element e);
 }
