@@ -44,7 +44,7 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
     public static final String DEFAULT_CAPACITY = "defCapacity";
 
     @Override
-    public Class<ShareableResource> getSupportedConstraint() {
+    public Class<ShareableResource> getSupportedView() {
         return ShareableResource.class;
     }
 

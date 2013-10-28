@@ -64,5 +64,7 @@ public class ModelConverterTest {
         System.out.println(jo);
         Model res = conv.fromJSON(jo);
         Assert.assertEquals(res, mo);
+        Assert.assertTrue(res.contains(n1));
+        Assert.assertTrue(res.contains(vm1));
     }
 }

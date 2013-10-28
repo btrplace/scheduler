@@ -22,9 +22,10 @@ import btrplace.model.Model;
 
 /**
  * A event to apply on a model to modify it.
+ * See the {@link Action} class for a time-bounded event.
  *
  * @author Fabien Hermenier
- * @see {@link Action} for a time-bounded event.
+ * @see Action
  */
 public interface Event<E extends Element> {
 

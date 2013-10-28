@@ -58,7 +58,7 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
     private BitSet[] ins;
 
 
-    private CObjective obj;
+    private CMinMTTR obj;
 
     private IStateInt firstFree;
 
@@ -70,7 +70,7 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
      * @param actions the actions to consider.
      * @param o       the objective to rely on
      */
-    public OnStableNodeFirst(String lbl, ReconfigurationProblem rp, List<ActionModel> actions, CObjective o) {
+    public OnStableNodeFirst(String lbl, ReconfigurationProblem rp, List<ActionModel> actions, CMinMTTR o) {
         super(rp.getSolver(), ActionModelUtils.getStarts(actions.toArray(new ActionModel[actions.size()])));
         firstFree = rp.getSolver().getEnvironment().makeInt(0);
         this.obj = o;

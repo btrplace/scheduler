@@ -33,7 +33,7 @@ import java.util.*;
  * Simple tutorial about the usage of Btrplace.
  *
  * @author Fabien Hermenier
- * @see <a href="https://github.com/fhermeni/btrplace-solver/wiki/GettingStarted">btrplace website</a>.
+ * @see <a href="https://github.com/fhermeni/btrplace-solver/wiki/GettingStarted">btrplace website</a>
  */
 public class GettingStarted implements Example {
 

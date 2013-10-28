@@ -169,7 +169,7 @@ public interface ChocoReconfigurationAlgorithmParams {
      * Get the verbosity level of the solver.
      *
      * @return the verbosity level.
-     * @see {@link #setVerbosity(int)} for more informations about the available levels
+     * @see #setVerbosity(int)
      */
     int getVerbosity();
 }
