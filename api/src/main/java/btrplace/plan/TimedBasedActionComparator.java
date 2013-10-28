@@ -37,6 +37,7 @@ public class TimedBasedActionComparator implements Comparator<Action> {
 
     private boolean startBased = true;
 
+
     /**
      * New comparator that does not differentiate
      * simultaneous actions.

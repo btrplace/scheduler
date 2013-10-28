@@ -33,7 +33,7 @@ import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.constraint.minMTTR.CObjective;
+import btrplace.solver.choco.constraint.minMTTR.CMinMTTR;
 import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import choco.cp.solver.CPSolver;
@@ -244,7 +244,7 @@ public class RelocatableVMModelTest {
                 .build();
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
         am.getDSlice().getHoster().setVal(rp.getNode(n2));
-        new CObjective().inject(rp);
+        new CMinMTTR().inject(rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);
@@ -291,7 +291,7 @@ public class RelocatableVMModelTest {
                 .build();
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
         am.getDSlice().getHoster().setVal(rp.getNode(n2));
-        new CObjective().inject(rp);
+        new CMinMTTR().inject(rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);
@@ -333,7 +333,7 @@ public class RelocatableVMModelTest {
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
         am.getRelocationMethod().setVal(1);
         am.getDSlice().getHoster().setVal(rp.getNode(n2));
-        new CObjective().inject(rp);
+        new CMinMTTR().inject(rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);
@@ -375,7 +375,7 @@ public class RelocatableVMModelTest {
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
         am.getRelocationMethod().setVal(0);
         am.getDSlice().getHoster().setVal(rp.getNode(n2));
-        new CObjective().inject(rp);
+        new CMinMTTR().inject(rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);

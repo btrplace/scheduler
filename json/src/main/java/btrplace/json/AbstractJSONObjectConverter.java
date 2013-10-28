@@ -329,9 +329,8 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         if (mo == null) {
             throw new JSONConverterException("Unable to extract VMs without a model to use as a reference");
         }
-        VM v = new VM(vmID);
         mo.newVM(vmID);
-        return v;
+        return new VM(vmID);
     }
 
     /**
@@ -348,8 +347,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
             throw new JSONConverterException("Unable to extract VMs without a model to use as a reference");
         }
         mo.newNode(nodeID);
-        Node n = new Node(nodeID);
-        return n;
+        return new Node(nodeID);
     }
 
     @Override
