@@ -17,6 +17,6 @@
 
 /**
  * Tutorials.
- * @see <a href="https://github.com/fhermeni/btrplace-solver/wiki/Tutorials">btrplace website</a>.
+ * @see <a href="https://github.com/fhermeni/btrplace-solver/wiki/Tutorials">btrplace website</a>
  */
 package btrplace.examples;

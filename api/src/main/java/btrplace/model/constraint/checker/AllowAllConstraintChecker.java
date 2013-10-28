@@ -93,9 +93,9 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
 
     /**
      * {@inheritDoc}
+     * Executes {@code endRunningVMPlacement(a)}
      *
      * @param a the executed that will be executed
-     * @return {@code endRunningVMPlacement(a)}
      */
     @Override
     public void end(MigrateVM a) {
@@ -115,9 +115,9 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
 
     /**
      * {@inheritDoc}
+     * Executes {@code endRunningVMPlacement(a)}
      *
      * @param a the executed that will be executed
-     * @return {@code endRunningVMPlacement(a)}
      */
     @Override
     public void end(BootVM a) {

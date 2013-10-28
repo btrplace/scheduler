@@ -22,7 +22,7 @@ package btrplace.model;
  * A node should not be instantiated directly. Use {@link Model#newNode()} instead.
  *
  * @author Fabien Hermenier
- * @see {@link Model#newNode()}
+ * @see Model#newNode()
  */
 public class Node implements Element {
 

@@ -24,9 +24,11 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 /**
  * Model a period where an element is hosted on a node.
  * {@link SliceBuilder} may be used to ease the creation of Slices.
+ * <p/>
+ * See {@link SliceUtils} to extract components of Slices.
  *
  * @author Fabien Hermenier
- * @see {@link SliceUtils} to extract components of Slices.
+ * @see SliceUtils
  */
 public class Slice {
 
