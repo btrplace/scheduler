@@ -11,16 +11,16 @@ import java.util.Set;
  */
 public class VMStateType implements Type {
 
-    private static enum Type {running, ready, sleeping, waiting}
+    public static enum Type {running, ready, sleeping, waiting}
 
     private static VMStateType instance = new VMStateType();
 
-    private Set<Value> vals;
+    private Set<Object> vals;
 
     private VMStateType() {
-        Set<Value> s = new HashSet<>();
+        Set<Object> s = new HashSet<>();
         for (Type t : Type.values()) {
-            s.add(new Value(t, this));
+            s.add(t);
         }
         vals = Collections.unmodifiableSet(s);
     }
@@ -52,7 +52,7 @@ public class VMStateType implements Type {
 
 
     @Override
-    public Set<Value> domain() {
+    public Set<Object> domain() {
         return vals;
     }
 

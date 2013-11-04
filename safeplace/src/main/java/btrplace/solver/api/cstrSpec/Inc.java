@@ -1,5 +1,9 @@
 package btrplace.solver.api.cstrSpec;
 
+import btrplace.model.Model;
+
+import java.util.Collection;
+
 /**
  * @author Fabien Hermenier
  */
@@ -19,9 +23,19 @@ public class Inc extends AtomicProp {
         return new NInc(a, b);
     }
 
-    @Override
+    //@Override
     public Or expand() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Boolean evaluate(Model m) {
+        Object o = a.getValue(m);
+        Collection c = (Collection) b.getValue(m);
+        if (o != null && c != null) {
+            return c.contains(o);
+        }
+        return null;
     }
 
 }

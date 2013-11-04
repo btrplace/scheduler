@@ -67,17 +67,30 @@ public class And extends NaryProp {
         return l;
     }
 
-    @Override
+    /*@Override
     public And expand() {
         And and = new And();
         for (Proposition p : this.props) {
             and.add(p.expand());
         }
         return and;
-    }
+    }        */
 
     @Override
     public boolean inject(Model mo) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Boolean evaluate(Model m) {
+        boolean ret = true;
+        for (Proposition p : this) {
+            Boolean r = p.evaluate(m);
+            if (r == null) {
+                return null;
+            }
+            ret &= r;
+        }
+        return ret;
     }
 }

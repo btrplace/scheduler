@@ -1,5 +1,6 @@
 package btrplace.solver.api.cstrSpec;
 
+import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.type.Type;
 
 import java.util.Collections;
@@ -9,11 +10,12 @@ import java.util.Set;
 /**
  * @author Fabien Hermenier
  */
-public class Value implements Term{
+public class Value implements Term {
 
     private Type t;
 
     private Object o;
+
     public Value(Object o, Type t) {
         this.t = t;
         this.o = o;
@@ -23,14 +25,11 @@ public class Value implements Term{
         return t;
     }
 
-    @Override
+    //@Override
     public Set<Value> domain() {
         return Collections.singleton(this);
     }
 
-    public Object value() {
-        return o;
-    }
     @Override
     public String toString() {
         return o.toString();
@@ -52,5 +51,10 @@ public class Value implements Term{
     @Override
     public int hashCode() {
         return Objects.hash(t, o);
+    }
+
+    @Override
+    public Object getValue(Model mo) {
+        return o;
     }
 }

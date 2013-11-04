@@ -1,7 +1,5 @@
 package btrplace.solver.api.cstrSpec.type;
 
-import btrplace.solver.api.cstrSpec.And;
-import btrplace.solver.api.cstrSpec.Or;
 import btrplace.solver.api.cstrSpec.Value;
 
 import java.util.HashSet;
@@ -18,17 +16,17 @@ public class SetType implements Type {
         type = t;
     }
     @Override
-    public Set<Value> domain() {
+    public Set domain() {
         //All possible subsets or t. Ouch
-        Value[] values = type.domain().toArray(new Value[type.domain().size()]);
+        Object[] values = type.domain().toArray(new Value[type.domain().size()]);
         int nbElements = (int) Math.pow(2, values.length);
         //System.err.println(nbElements);
         Set<Value> res = new HashSet<>();
         for (int i = 0; i < nbElements; i++) {
-            Set<Value> sub = new HashSet<>();
+            Set sub = new HashSet<>();
             long x = i;
             //decompose x bit per bit
-            for (Value value : values) {
+            for (Object value : values) {
                 if (x % 2 == 0) {
                     sub.add(value);
                 }

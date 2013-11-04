@@ -50,12 +50,25 @@ public class Or extends NaryProp {
         throw new UnsupportedOperationException();
     }
 
-    @Override
+    /*@Override
     public Or expand() {
         Or or = new Or();
         for (Proposition p : this.props) {
             or.add(p.expand());
         }
         return or;
+    } */
+
+    @Override
+    public Boolean evaluate(Model m) {
+        boolean ret = false;
+        for (Proposition p : this) {
+            Boolean r = p.evaluate(m);
+            if (r == null) {
+                return null;
+            }
+            ret |= r;
+        }
+        return ret;
     }
 }

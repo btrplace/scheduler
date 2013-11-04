@@ -23,12 +23,17 @@
         <dependency>
             <groupId>btrplace</groupId>
             <artifactId>solver-api</artifactId>
-            <version>0.32</version>
+            <version>0.33</version>
         </dependency>
         <dependency>
             <groupId>btrplace</groupId>
             <artifactId>solver-json</artifactId>
-            <version>0.32</version>
+            <version>0.33</version>
+        </dependency>
+        <dependency>
+            <groupId>net.minidev</groupId>
+            <artifactId>json-smart</artifactId>
+            <version>1.2</version>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>

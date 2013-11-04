@@ -1,8 +1,8 @@
 package btrplace.solver.api.cstrSpec;
 
-import btrplace.solver.api.cstrSpec.type.SetType;
+import btrplace.model.Model;
 
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * @author Fabien Hermenier
@@ -24,8 +24,17 @@ public class NIn extends AtomicProp {
     }
 
     @Override
+    public Boolean evaluate(Model m) {
+        Object o = a.getValue(m);
+        Collection c = (Collection) b.getValue(m);
+        if (o != null && c != null) {
+            return !c.contains(o);
+        }
+        return null;
+    }
+
+    /*@Override
     public Or expand() {
-        /* host(i) /: ns */
         Or or = new Or();
         if (!a.type().equals(((SetType)b.type()).subType())) {
             throw new RuntimeException();
@@ -60,6 +69,6 @@ public class NIn extends AtomicProp {
             or.add(this);
         }
         return or;
-    }
+    }         */
 
 }

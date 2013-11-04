@@ -1,3 +1,7 @@
-cstr ban(vs <: VM, ns <: node ) ::
-	!(i : vs). vmState(i) = running --> host(i) /: ns
-	/* vmState(i) /= running | host(i) /: ns */
+/**
+* Single parameters to simplify the code
+*
+*/
+@marshalling {"id":"ban", "vms":[@v], "nodes":[@n]}
+cstr ban(v : VM, n : node ) ::=
+	vmState(v) = running --> host(v) /= n

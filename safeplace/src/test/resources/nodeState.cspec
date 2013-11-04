@@ -1,2 +1,2 @@
-cstr nodeState(n : node, st : nodeState) ::
+cstr nodeState(n : node, st : nodeState) ::=
 	nodeState(n) = st

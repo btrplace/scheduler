@@ -2,8 +2,6 @@ package btrplace.solver.api.cstrSpec;
 
 import btrplace.model.Model;
 
-import java.util.List;
-
 /**
  * A logical proposition.
  *
@@ -17,6 +15,7 @@ public interface Proposition {
 
     boolean inject(Model mo);
 
-    Proposition expand();
+    //Proposition expand();
 
+    Boolean evaluate(Model m);
 }

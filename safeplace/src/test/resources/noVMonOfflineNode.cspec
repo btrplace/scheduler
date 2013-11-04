@@ -1,2 +1,2 @@
-native cstr noVMonOfflineNode() ::
+native cstr noVMonOfflineNode() ::=
 	!(n : node). nodeState(n) = offline --> card(hosted(n)) = 0

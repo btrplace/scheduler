@@ -2,24 +2,21 @@ package btrplace.solver.api.cstrSpec;
 
 import btrplace.solver.api.cstrSpec.func.*;
 
+import java.util.Deque;
+
 /**
  * @author Fabien Hermenier
  */
 public class Functions {
 
-    private Satisfy sat;
-    public Functions(Satisfy st) {
-        this.sat = st;
-    }
-
-    public Function get(String id) {
+   public Function get(String id, Deque<Term> stack) {
         switch(id) {
-            case "vmState": return new VMState(sat.pop());
-            case "nodeState": return new NodeState(sat.pop());
-            case "colocated": return new Colocated(sat.pop());
-            case "host": return new Host(sat.pop());
-            case "card": return new Card(sat.pop());
-            case "hosted" : return new Hoster(sat.pop());
+            case "vmState": return new VMState(stack);
+            case "nodeState": return new NodeState(stack);
+            case "colocated": return new Colocated(stack);
+            case "host": return new Host(stack);
+            case "card": return new Card(stack);
+            case "hosted" : return new Hosted(stack);
             default: throw new RuntimeException("Cannot resolve function '" + id + "'");
         }
     }

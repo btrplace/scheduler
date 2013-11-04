@@ -1,23 +1,19 @@
 package btrplace.solver.api.cstrSpec;
 
+import btrplace.solver.api.cstrSpec.func.Forall;
 import btrplace.solver.api.cstrSpec.func.Function;
 import btrplace.solver.api.cstrSpec.type.NatType;
 import btrplace.solver.api.cstrSpec.type.Primitives;
 import btrplace.solver.api.cstrSpec.type.Type;
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.NotNull;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import java.io.FileInputStream;
 import java.util.*;
 
 /**
  * @author Fabien Hermenier
  */
-public class Satisfy extends CstrSpecBaseListener {
+public class MyListener extends CstrSpecBaseListener {
 
     private Functions funcs;
 
@@ -31,10 +27,14 @@ public class Satisfy extends CstrSpecBaseListener {
 
     private List<Variable> params;
 
-    public Satisfy() {
+    private String cstrName;
+
+    private List<Forall> binders;
+
+    public MyListener(StatesExtractor ex) {
         stack = new ArrayDeque<>();
         propositions = new ArrayDeque<>();
-        funcs = new Functions();
+        funcs = ex.getFunctions();
         syms = new SymbolsTable();
         primitives = new Primitives();
     }
@@ -42,29 +42,79 @@ public class Satisfy extends CstrSpecBaseListener {
     @Override
     public void enterConstraint(@NotNull CstrSpecParser.ConstraintContext ctx) {
         params = new ArrayList<>();
+        cstrName = ctx.ID().getText();
+        binders = new ArrayList<>();
     }
 
-    @Override
-    public void exitConstraint(@NotNull CstrSpecParser.ConstraintContext ctx) {
-        String name = ctx.ID().getText();
-        Variable [] vars = params.toArray(new Variable[params.size()]);
-        List<Type> types = new ArrayList<>();
-        for (Variable var : vars) {
-            types.add(var.type());
+    public List<Variable> getVariables() {
+        return params;
+    }
+
+    /*public List<List<Value>> expandParameters() {
+        Value [][] doms = new Value[params.size()][];
+        int [] indexes = new int[params.size()];
+        int i = 0;
+        int nbStates = 1;
+        List<List<Value>> all = new ArrayList<>();
+        for (Variable v : params) {
+            indexes[i] = 0;
+            Set<Object> sDom = v.domain();
+            doms[i] = sDom.toArray(new Value[sDom.size()]);
+            nbStates *= doms[i].length;
+            i++;
         }
-        for (int i = 0; i < vars.length; i++) {
-            for (Object v : vars[i].domain()) {
-                for (Type t : types) {
-                    System.err.println(t.label() + ": " + t.domain());
-                }
-                System.err.println("\t" + name + " (" + v + ")");
+        for (int k = 0; k < nbStates; k++) {
+            List<Value> entries = new ArrayList<>();
+            for (int x = 0; x < params.size(); x++) {
+                entries.add(doms[x][indexes[x]]);
             }
+            for (int x = 0; x < params.size(); x++) {
+                indexes[x]++;
+                if (indexes[x] < doms[x].length) {
+                    break;
+                }
+                indexes[x] = 0;
+            }
+            all.add(entries);
         }
+        return all;
+    }       */
 
-        //Every combination of parameters :/
-
-
+    public String getConstraintName() {
+        return cstrName;
     }
+
+/*    @Override
+    public void exitConstraint(@NotNull CstrSpecParser.ConstraintContext ctx) {
+
+
+        Variable [] vars = params.toArray(new Variable[params.size()]);
+        Value [][] doms = new Value[vars.length][];
+        int [] indexes = new int[vars.length];
+        int i = 0;
+        int nbStates = 1;
+        for (Variable v : vars) {
+            indexes[i] = 0;
+            Set<Value> sDom = v.domain();
+            doms[i] = sDom.toArray(new Value[sDom.size()]);
+            nbStates *= doms[i].length;
+            i++;
+        }
+        for (int k = 0; k < nbStates; k++) {
+            List<Value> entries = new ArrayList<>();
+            for (int x = 0; x < vars.length; x++) {
+                entries.add(doms[x][indexes[x]]);
+            }
+            for (int x = 0; x < vars.length; x++) {
+                indexes[x]++;
+                if (indexes[x] < vars[x].domain().size()) {
+                    break;
+                }
+                indexes[x] = 0;
+            }
+            System.err.println(name + "(" + entries + ")");
+        }
+    }      */
 
     @Override
     public void exitFunc(@NotNull CstrSpecParser.FuncContext ctx) {
@@ -203,6 +253,10 @@ public class Satisfy extends CstrSpecBaseListener {
 
             //The new type depends on the operator:
             Variable v = syms.newVariable(n, ctx.getChild(ctx.getChildCount() - 4).getText(), t);
+            if (ctx.ALL() != null) {
+                Forall f = new Forall(v);
+                binders.add(f);
+            }
         }
         inBinder = false;
     }
@@ -212,16 +266,13 @@ public class Satisfy extends CstrSpecBaseListener {
 
     }
 
-    public Proposition getInvariant(String path) throws Exception {
-        ANTLRInputStream in = new ANTLRInputStream(new FileInputStream(path));
-        CstrSpecLexer lexer = new CstrSpecLexer(in);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        CstrSpecParser parser = new CstrSpecParser(tokens);
-        ParseTree tree = parser.spec();
-        ParseTreeWalker walker = new ParseTreeWalker();
-        walker.walk(this, tree);
-
+    public Proposition getStates() throws Exception {
         return propositions.getFirst();
+/*        System.err.println(propositions.getFirst());
+        System.err.println(propositions.getFirst().expand());*/
     }
 
+    public List<Forall> getBinders() {
+        return binders;
+    }
 }

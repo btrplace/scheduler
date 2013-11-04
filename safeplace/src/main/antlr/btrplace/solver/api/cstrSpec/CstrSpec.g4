@@ -34,7 +34,7 @@ EQ:'=';
 NOT_EQ:'/=';
 LPARA :'(';
 RPARA:')';
-DEF_CONTENT: '::';
+DEF_CONTENT: '::=';
 IMPLIES:'-->';
 IFF: '<-->';
 LT:'<';

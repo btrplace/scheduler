@@ -1,6 +1,6 @@
 package btrplace.solver.api.cstrSpec;
 
-import btrplace.solver.api.cstrSpec.type.NatType;
+import btrplace.model.Model;
 
 /**
  * @author Fabien Hermenier
@@ -21,7 +21,7 @@ public class Leq extends AtomicProp {
         return new Leq(b, a);
     }
 
-    @Override
+   /* @Override
     public Or expand() {
         //Expect nat type with a constant
         Or or = new Or();
@@ -29,18 +29,6 @@ public class Leq extends AtomicProp {
             throw new RuntimeException("Expect " + NatType.getInstance() + " <= " + NatType.getInstance() +
                     ". Got " + a.type() + " <= " + b.type());
         }
-        /*
-            {1,2,3} <= {1,2,4,5}
-            1 <= 1
-            1 <= 2
-            1 <= 4
-            1 <= 5
-            2 <= 2
-            2 <= 4
-            2 <= 5
-            3 <= 4
-            3 <= 5
-        */
         for (Value vA : a.domain()) {
             for (Value vB : b.domain()) {
                 int x = (Integer)vA.value();
@@ -51,6 +39,16 @@ public class Leq extends AtomicProp {
             }
         }
         return or;
+    } */
+
+    @Override
+    public Boolean evaluate(Model m) {
+        Integer iA = (Integer) a.getValue(m);
+        Integer iB = (Integer) b.getValue(m);
+        if (iA == null || iB == null) {
+            return null;
+        }
+        return iA <= iB;
     }
 
 }

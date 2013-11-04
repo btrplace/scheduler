@@ -49,12 +49,12 @@ public class SymbolsTable {
         switch (op) {
             case ":":
                 if (t instanceof  SetType) {
-                    newType = ((SetType)t).subType(); break;
+                    newType = ((SetType)t).subType();
                 } else {
                     //It will be a primitive type
                     newType = t;
                 }
-
+                break;
             case "<:": newType = new SetType(t); break;
             default:
                 throw new RuntimeException("Unsupported type in declaration: " + op);

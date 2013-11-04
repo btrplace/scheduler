@@ -1,6 +1,9 @@
 package btrplace.solver.api.cstrSpec;
 
-import btrplace.solver.api.cstrSpec.type.NatType;
+import btrplace.model.Model;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Fabien Hermenier
@@ -21,7 +24,7 @@ public class Lt extends AtomicProp {
         return new Lt(b, a);
     }
 
-    @Override
+    /*@Override
     public Or expand() {
         //Expect nat type with a constant
         Or or = new Or();
@@ -39,6 +42,15 @@ public class Lt extends AtomicProp {
             }
         }
         return or;
-    }
+    }    */
 
+    @Override
+    public Boolean evaluate(Model m) {
+        Integer iA = (Integer) a.getValue(m);
+        Integer iB = (Integer) b.getValue(m);
+        if (iA == null || iB == null) {
+            return null;
+        }
+        return iA < iB;
+    }
 }

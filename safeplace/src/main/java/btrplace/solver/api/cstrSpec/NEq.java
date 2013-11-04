@@ -1,8 +1,6 @@
 package btrplace.solver.api.cstrSpec;
 
-import btrplace.solver.api.cstrSpec.func.Function;
-
-import java.util.Set;
+import btrplace.model.Model;
 
 /**
  * @author Fabien Hermenier
@@ -23,7 +21,7 @@ public class NEq extends AtomicProp {
         return new Eq(a, b);
     }
 
-    @Override
+    /*@Override
     public Or expand() {
         Or or = new Or();
         if (a.domain().size() > 1 && b.domain().size() > 1) {
@@ -53,6 +51,19 @@ public class NEq extends AtomicProp {
             or.add(this);
         }
         return or;
+    }      */
+
+    @Override
+    public Boolean evaluate(Model mo) {
+        Object vA = a.getValue(mo);
+        Object vB = b.getValue(mo);
+        if ((vA == null && vB != null) || (vA != null && vB == null)) {
+            return true;
+        }
+        if (vA == null && vB == null) {
+            return true;
+        }
+        return !vA.equals(vB);
     }
 
 }

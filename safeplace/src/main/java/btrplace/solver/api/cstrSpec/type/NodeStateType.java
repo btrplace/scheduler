@@ -11,7 +11,7 @@ import java.util.Set;
  */
 public class NodeStateType implements Type {
 
-    private static enum Type {online, offline}
+    public static enum Type {online, offline}
 
     private static NodeStateType instance = new NodeStateType();
 

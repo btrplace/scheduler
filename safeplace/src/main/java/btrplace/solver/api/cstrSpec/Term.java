@@ -1,8 +1,6 @@
 package btrplace.solver.api.cstrSpec;
 
-import btrplace.solver.api.cstrSpec.type.Type;
-
-import java.util.Set;
+import btrplace.model.Model;
 
 /**
  * @author Fabien Hermenier
@@ -10,7 +8,9 @@ import java.util.Set;
 public interface Term {
 
 
-    Set<Value> domain();
+/*    Set<Value> domain();
 
-    Type type();
+    Type type();*/
+
+    Object getValue(Model mo);
 }

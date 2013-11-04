@@ -1,2 +1,2 @@
-cstr maxOnline(ns <: node, nb : nat) ::
-	card({!(i : ns). nodeState(i) = online}) <= nb
+cstr maxOnline(ns <: node, nb : nat) ::=
+	card({i : ns. nodeState(i) = online}) <= nb
