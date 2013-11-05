@@ -76,6 +76,8 @@ public class TestUnit {
             return new TestResult(mo, cstr, isConsistent, rc, ri);
         } catch (Exception ex) {
             return new TestResult(mo, cstr, isConsistent, rc, ri, ex.getMessage());
+        } catch (Error err) {
+            return new TestResult(mo, cstr, isConsistent, rc, ri, err.getMessage());
         }
     }
 
