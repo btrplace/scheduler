@@ -1,0 +1,7 @@
+/**
+* Single parameters to simplify the code
+*
+*/
+cstr fence(v : VM, n : node ) ::=
+    """ {"id":"fence", "vms":[@v], "nodes":[@n]} """
+	vmState(v) = running --> host(v) = n

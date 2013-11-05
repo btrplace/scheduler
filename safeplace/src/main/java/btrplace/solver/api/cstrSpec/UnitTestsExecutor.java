@@ -1,23 +1,47 @@
 package btrplace.solver.api.cstrSpec;
 
-import net.minidev.json.JSONObject;
-import net.minidev.json.parser.JSONParser;
-import net.minidev.json.parser.ParseException;
-
-import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Fabien Hermenier
  */
 public class UnitTestsExecutor {
 
-    private Constraint cstr;
+   private List<TestResult> ok;
 
-    public UnitTestsExecutor(Reader in) throws ParseException {
-        JSONParser p = new JSONParser(JSONParser.MODE_RFC4627);
-        JSONObject o = (JSONObject) p.parse(in);
+   private List<TestResult> ko;
+
+    public UnitTestsExecutor() {
+        ok = new ArrayList<>();
+        ko = new ArrayList<>();
     }
 
+    public void execute(TestUnit tu) {
+       TestResult res = tu.verify();
+       if (!res.succeeded()) {
+           ko.add(res);
+       } else {
+           ok.add(res);
+       }
+    }
 
+    public void execute(List<TestUnit> tus){
+        for (TestUnit tu : tus) {
+            execute(tu);
+        }
+    }
 
+    public List<TestResult> getSucceeded() {
+        return ok;
+    }
+
+    public List<TestResult> getFailures() {
+        return ko;
+    }
+
+    @Override
+    public String toString() {
+        return "success: " + ok.size() + "\t failures: " + ko.size();
+    }
 }

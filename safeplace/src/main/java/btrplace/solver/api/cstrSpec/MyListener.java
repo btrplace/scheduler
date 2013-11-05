@@ -46,8 +46,10 @@ public class MyListener extends CstrSpecBaseListener {
         params = new ArrayList<>();
         cstrName = ctx.ID().getText();
         binders = new ArrayList<>();
-        String m = ctx.STRING().getText();
-        marshal = m.substring(3, m.length() - 3).trim();
+        if (ctx.STRING() != null) {
+            String m = ctx.STRING().getText();
+            marshal = m.substring(3, m.length() - 3).trim();
+        }
     }
 
     public List<Variable> getVariables() {

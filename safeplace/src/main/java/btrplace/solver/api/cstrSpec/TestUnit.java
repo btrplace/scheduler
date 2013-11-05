@@ -181,6 +181,10 @@ class TestResult {
         return ri;
     }
 
+    public boolean succeeded() {
+        return ri == ErrorType.succeed && rc == ErrorType.succeed;
+    }
+
     @Override
     public String toString() {
         if (rc == ErrorType.succeed && ri == ErrorType.succeed && errMsg == null) {
