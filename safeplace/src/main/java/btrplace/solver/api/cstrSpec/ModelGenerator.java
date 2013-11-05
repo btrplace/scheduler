@@ -6,6 +6,7 @@ import btrplace.model.Node;
 import btrplace.model.VM;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -31,6 +32,7 @@ public class ModelGenerator {
         List<Model> res = new ArrayList<>();
         int nbVMStates = (int) Math.pow(1 + base.getMapping().getOnlineNodes().size() * 2, vms.size());
         int [] vmIndexes = new int[vms.size()];
+        Node [] ons = base.getMapping().getOnlineNodes().toArray(new Node[base.getMapping().getOnlineNodes().size()]);
         for (int k = 0; k < nbVMStates; k++) {
             int z = 0;
             Model m = base.clone();
@@ -41,25 +43,34 @@ public class ModelGenerator {
                 int v = vmIndexes[z++];
                 //System.err.println(Arrays.toString(vmIndexes));
                 if (v == 0) {
-                    m.getMapping().addReadyVM(vm);
-                } else if (v < m.getMapping().getOnlineNodes().size() + 1) {
-                    Node n = nodes.get(v - 1);
-                    m.getMapping().addRunningVM(vm, n);
+                    if (!m.getMapping().addReadyVM(vm)) {
+                        System.err.println(Arrays.toString(vmIndexes));
+                        System.err.println("Unable to make '" + vm + "' ready:\n" + m);
+                    }
+                } else if (v < ons.length + 1) {
+                    Node n = ons[v - 1];
+                    if (!m.getMapping().addRunningVM(vm, n)) {
+                        System.err.println(Arrays.toString(vmIndexes));
+                        System.err.println("Unable to make '" + vm + "' running on " + n + ":\n" + m);
+                    }
                 } else {
-                    Node n = nodes.get(v - 1 - m.getMapping().getOnlineNodes().size());
-                    m.getMapping().addSleepingVM(vm, n);
+                    Node n = ons[v - 1 - ons.length];
+                    if (!m.getMapping().addSleepingVM(vm, n)) {
+                        System.err.println(Arrays.toString(vmIndexes));
+                        System.err.println("Unable to make '" + vm + "' sleeping on " + n + ":\n" + m);
+                    }
                 }
                 for (int w = 0; w < vms.size(); w++) {
                     vmIndexes[w]++;
-                    if (vmIndexes[w] < m.getMapping().getOnlineNodes().size() * 2 + 1 ) {
+                    if (vmIndexes[w] < ons.length * 2 + 1 ) {
                         break;
                     }
                     vmIndexes[w] = 0;
                 }
             }
-            if (m.getMapping().getAllVMs().size() != 3 || m.getMapping().getAllNodes().size() != 3) {
-                throw new RuntimeException();
-            }
+            /*if (m.getMapping().getAllVMs().size() != 3 || m.getMapping().getAllNodes().size() != 3) {
+                throw new RuntimeException(m.toString());
+            } */
             res.add(m);
         }
         return res;
