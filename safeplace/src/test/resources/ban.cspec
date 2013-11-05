@@ -2,6 +2,6 @@
 * Single parameters to simplify the code
 *
 */
-@marshalling {"id":"ban", "vms":[@v], "nodes":[@n]}
 cstr ban(v : VM, n : node ) ::=
+    """ {"id":"ban", "vms":[@v], "nodes":[@n]} """
 	vmState(v) = running --> host(v) /= n

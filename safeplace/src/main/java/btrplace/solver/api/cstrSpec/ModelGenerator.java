@@ -57,6 +57,9 @@ public class ModelGenerator {
                     vmIndexes[w] = 0;
                 }
             }
+            if (m.getMapping().getAllVMs().size() != 3 || m.getMapping().getAllNodes().size() != 3) {
+                throw new RuntimeException();
+            }
             res.add(m);
         }
         return res;

@@ -31,6 +31,8 @@ public class MyListener extends CstrSpecBaseListener {
 
     private List<Forall> binders;
 
+    private String marshal = null;
+
     public MyListener(StatesExtractor ex) {
         stack = new ArrayDeque<>();
         propositions = new ArrayDeque<>();
@@ -44,6 +46,8 @@ public class MyListener extends CstrSpecBaseListener {
         params = new ArrayList<>();
         cstrName = ctx.ID().getText();
         binders = new ArrayList<>();
+        String m = ctx.STRING().getText();
+        marshal = m.substring(3, m.length() - 3).trim();
     }
 
     public List<Variable> getVariables() {
@@ -274,5 +278,9 @@ public class MyListener extends CstrSpecBaseListener {
 
     public List<Forall> getBinders() {
         return binders;
+    }
+
+    public String getMarshal() {
+        return marshal;
     }
 }

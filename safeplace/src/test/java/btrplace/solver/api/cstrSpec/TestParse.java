@@ -1,10 +1,11 @@
 package btrplace.solver.api.cstrSpec;
 
+import btrplace.json.JSONConverterException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.IOException;
 
 /**
  * @author Fabien Hermenier
@@ -20,13 +21,28 @@ public class TestParse {
     }
 
     @Test
-    public void testParseBan() throws Exception {
-        Constraint c = ex.extract(new File("src/test/resources/ban.cspec"));
-        //System.out.println(c.toJSON());
+    public void testParseBan() {
+        Constraint c = null;
+        try {
+            c = ex.extract(new File("src/test/resources/ban.cspec"));
+        } catch (Exception e) {
+            Assert.fail(e.getMessage(), e);
+        }
         UnitTestsGenerator gen = new UnitTestsGenerator();
-        FileWriter out = new FileWriter("ban.tests");
+        /* FileWriter out = new FileWriter("ban.tests");
         gen.generate(c, out);
-        out.close();
+        out.close();*/
+
+        try {
+            for (TestUnit t : gen.generate(c)) {
+                TestResult res = t.verify();
+                System.out.println(res);
+            }
+        } catch (JSONConverterException ex) {
+            Assert.fail(ex.getMessage(), ex);
+        } catch (IOException ex) {
+            Assert.fail(ex.getMessage(), ex);
+        }
         /*ModelGenerator gen = new ModelGenerator();
         List<Model> models = gen.all(VMType.getInstance().domain().size(), VMType.getInstance().domain().size());
         Proposition good = inv.getProposition();
@@ -54,7 +70,7 @@ public class TestParse {
             }
 
         }*/
-        Assert.fail();
+        //Assert.fail();
     }
 
     @Test

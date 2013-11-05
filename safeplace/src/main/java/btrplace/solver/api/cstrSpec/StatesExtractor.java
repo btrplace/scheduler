@@ -48,7 +48,7 @@ public class StatesExtractor extends CstrSpecBaseListener {
         MyListener l = new MyListener(this);
         walker.walk(l, tree);
         Proposition p = l.getStates();
-        return new Constraint(l.getConstraintName(), p, l.getVariables());
+        return new Constraint(l.getConstraintName(), l.getMarshal(), p, l.getVariables());
     }
 
     /*private void evaluate(String id, List<Value> params, List<Forall> binders, Proposition prop) {

@@ -2,6 +2,7 @@ package btrplace.solver.api.cstrSpec;
 
 import net.minidev.json.JSONObject;
 
+import java.io.Reader;
 import java.util.*;
 
 /**
@@ -17,10 +18,16 @@ public class Constraint {
 
     private String cstrName;
 
-    public Constraint(String n, Proposition p, List<Variable> params) {
+    private String marshal;
+
+    public Constraint(Reader in) {
+
+    }
+    public Constraint(String n, String m, Proposition p, List<Variable> params) {
         this.p = p;
         this.cstrName = n;
         this.params = params;
+        this.marshal = m;
         vars = new HashMap<>(params.size());
         for (Variable v : params) {
             vars.put(v.label(), v);
@@ -79,6 +86,10 @@ public class Constraint {
 
     public String getConstraintName() {
         return cstrName;
+    }
+
+    public String getMarshal() {
+        return marshal;
     }
 
     public JSONObject toJSON() {
