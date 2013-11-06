@@ -58,6 +58,7 @@
         <version>4.1</version>
         <configuration>
             <sourceDirectory>src/main/antlr</sourceDirectory>
+            <visitor>true</visitor>
         </configuration>
         <executions>
             <execution>

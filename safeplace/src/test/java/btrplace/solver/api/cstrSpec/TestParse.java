@@ -10,7 +10,8 @@ import java.io.File;
  */
 public class TestParse {
 
-    StatesExtractor ex = new StatesExtractor();
+    //StatesExtractor ex = new StatesExtractor();
+    StatesExtractor2 ex = new StatesExtractor2();
 
     private void go(String path) throws Exception {
         Constraint c =ex.extract(new File(path));

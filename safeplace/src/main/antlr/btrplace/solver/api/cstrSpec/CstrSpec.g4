@@ -22,6 +22,8 @@ INCL:'<:';
 NOT_INCL:'/<:';
 PLUS:'+';
 MINUS:'-';
+MULT:'*';
+DIV:'/';
 ALL:'!';
 EXISTS:'?';
 NAT: '0' | '-'?[1..9][0..9]*;
@@ -47,28 +49,29 @@ NOT:'~';
 NEXT: 'next';
 STRING : '"""' ( '\\"\\"\\"' | . )*? '"""' ;
 
-binder: (ALL|EXISTS) LPARA ID (COMMA ID)* (IN|NOT_IN|INCL|NOT_INCL) term RPARA DOT;
+binder: type=(ALL|EXISTS) LPARA ID (COMMA ID)* op=(IN|NOT_IN|INCL|NOT_INCL) t=term RPARA DOT formula;
 
-term: term (INTER|UNION|PLUS|MINUS) term
-    | LPARA term RPARA
-    | func
-    | NEXT term
-    | (ID|NAT)    
-    | set
+term: t1=term op=(INTER|UNION|PLUS|MINUS|MULT|DIV) t2=term         #termOp
+    | LPARA term RPARA                              #protectedTerm
+    | func                                          #termFunc
+    | NEXT term                                     #nextTerm
+    | ID                                            #idTerm
+    | NAT                                           #natTerm
+    | set                                           #setTerm
     ;
 
-set: LACC (term (COMMA term)*)? RACC /* definition in extension */
-   | LACC binder* formula RACC /* definition in comprehension */
+set: LACC (term (COMMA term)*)? RACC /* definition in extension */ #extensionSet
+   | LACC binder* formula RACC /* definition in comprehension */ #comprehensionSet
    ;
 
-typedef: ID (IN|NOT_IN|INCL|NOT_INCL) ID;
-formula: 
-       | LPARA formula RPARA
-       |formula (IMPLIES|OR|AND|IFF) formula
-       |term (EQ | NOT_EQ| LT | LEQ | GT | GEQ | IN | NOT_IN | INCL | NOT_INCL) term        
-       |NOT formula              
-       |binder formula
-       |(TRUE|FALSE)
+typedef: i1=ID op=(IN|NOT_IN|INCL|NOT_INCL) i2=ID;
+formula: LPARA formula RPARA   #protectedFormula
+       |f1=formula op=(IMPLIES|OR|AND|IFF) f2=formula              #formulaOp
+       |t1=term op=(EQ | NOT_EQ| LT | LEQ | GT | GEQ | IN | NOT_IN | INCL | NOT_INCL) t2=term  #termComparison
+       |NOT formula     #not
+       |binder  #binderFormula
+       |TRUE        #trueFormula
+       |FALSE       #falseFormula
        ;
        
 func: ID LPARA term (COMMA term)* RPARA;

@@ -6,16 +6,16 @@ import btrplace.solver.api.cstrSpec.type.NatType;
 import btrplace.solver.api.cstrSpec.type.Type;
 
 import java.util.Collection;
-import java.util.Deque;
+import java.util.List;
 
 /**
  * @author Fabien Hermenier
  */
-public class Card implements Function {
+public class Card extends Function {
 
     private Term set;
-    public Card(Deque<Term> stack) {
-        set = stack.pop();
+    public Card(List<Term> stack) {
+        this.set = stack.get(0);
     }
 
     /*@Override

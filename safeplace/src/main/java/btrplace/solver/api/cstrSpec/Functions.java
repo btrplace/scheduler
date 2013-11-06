@@ -2,14 +2,14 @@ package btrplace.solver.api.cstrSpec;
 
 import btrplace.solver.api.cstrSpec.func.*;
 
-import java.util.Deque;
+import java.util.List;
 
 /**
  * @author Fabien Hermenier
  */
 public class Functions {
 
-   public Function get(String id, Deque<Term> stack) {
+   public Function get(String id, List<Term> stack) {
         switch(id) {
             case "vmState": return new VMState(stack);
             case "nodeState": return new NodeState(stack);

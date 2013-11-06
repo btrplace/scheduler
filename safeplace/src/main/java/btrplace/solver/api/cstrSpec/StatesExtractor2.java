@@ -4,7 +4,6 @@ import btrplace.solver.api.cstrSpec.type.Primitives;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.io.File;
 import java.io.FileReader;
@@ -14,13 +13,13 @@ import java.io.StringReader;
 /**
  * @author Fabien Hermenier
  */
-public class StatesExtractor extends CstrSpecBaseListener {
+public class StatesExtractor2 {
 
     private Functions funcs;
 
     private Primitives primitives;
 
-    public StatesExtractor() {
+    public StatesExtractor2() {
         funcs = new Functions();
         primitives = new Primitives();
     }
@@ -43,13 +42,8 @@ public class StatesExtractor extends CstrSpecBaseListener {
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         CstrSpecParser parser = new CstrSpecParser(tokens);
         ParseTree tree = parser.constraint();
-        ParseTreeWalker walker = new ParseTreeWalker();
-        /*
-        MyListener l = new MyListener(this);
-        walker.walk(l, tree);
-        Proposition p = l.getStates();
-        return new Constraint(l.getConstraintName(), l.getMarshal(), p, l.getVariables());*/
-        return null;
+        MyCstrSpecVisitor v = new MyCstrSpecVisitor(this);
+        return v.getConstraint(tree);
     }
 
     /*private void evaluate(String id, List<Value> params, List<Forall> binders, Proposition prop) {

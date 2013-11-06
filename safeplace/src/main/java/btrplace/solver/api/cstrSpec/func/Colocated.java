@@ -6,18 +6,18 @@ import btrplace.model.VM;
 import btrplace.solver.api.cstrSpec.Term;
 import btrplace.solver.api.cstrSpec.type.VMType;
 
-import java.util.Deque;
+import java.util.List;
 import java.util.Set;
 
 /**
  * @author Fabien Hermenier
  */
-public class Colocated implements Function {
+public class Colocated extends Function {
 
     private Term t;
 
-    public Colocated(Deque<Term> stack) {
-        this.t = stack.pop();
+    public Colocated(List<Term> stack) {
+        this.t = stack.get(0);
     }
 
     //@Override

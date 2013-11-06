@@ -16,4 +16,38 @@ public interface Proposition {
     //Proposition expand();
 
     Boolean evaluate(Model m);
+
+    static final Proposition False = new Proposition() {
+        @Override
+        public Proposition not() {
+            return True;
+        }
+
+        @Override
+        public int size() {
+            return 1;
+        }
+
+        @Override
+        public Boolean evaluate(Model m) {
+            return Boolean.FALSE;
+        }
+    };
+
+    static final Proposition True = new Proposition() {
+        @Override
+        public Proposition not() {
+            return False;
+        }
+
+        @Override
+        public int size() {
+            return 1;
+        }
+
+        @Override
+        public Boolean evaluate(Model m) {
+            return Boolean.TRUE;
+        }
+    };
 }

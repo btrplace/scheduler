@@ -1,5 +1,7 @@
 package btrplace.solver.api.cstrSpec.type;
 
+import btrplace.solver.api.cstrSpec.Value;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,5 +42,13 @@ public class Primitives {
             }
         }
         return null;
+    }
+
+    public Value value(String n) {
+        Type t = fromValue(n);
+        if (t == null) {
+            return null;
+        }
+        return t.newValue(n);
     }
 }

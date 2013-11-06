@@ -6,18 +6,18 @@ import btrplace.solver.api.cstrSpec.Term;
 import btrplace.solver.api.cstrSpec.Value;
 import btrplace.solver.api.cstrSpec.type.NodeStateType;
 
-import java.util.Deque;
+import java.util.List;
 import java.util.Set;
 
 /**
  * @author Fabien Hermenier
  */
-public class NodeState implements Function {
+public class NodeState extends Function {
 
     private Term t;
 
-    public NodeState(Deque<Term> stack) {
-        this.t = stack.pop();
+    public NodeState(List<Term> stack) {
+        this.t = stack.get(0);
     }
 
     public String toString() {

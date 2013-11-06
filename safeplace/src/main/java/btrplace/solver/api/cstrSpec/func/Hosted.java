@@ -5,18 +5,18 @@ import btrplace.model.Node;
 import btrplace.solver.api.cstrSpec.Term;
 import btrplace.solver.api.cstrSpec.type.VMType;
 
-import java.util.Deque;
+import java.util.List;
 import java.util.Set;
 
 /**
  * @author Fabien Hermenier
  */
-public class Hosted implements Function {
+public class Hosted extends Function {
 
     private Term t;
 
-    public Hosted(Deque<Term> stack) {
-        this.t = stack.pop();
+    public Hosted(List<Term> stack) {
+        this.t = stack.get(0);
     }
 
     //@Override

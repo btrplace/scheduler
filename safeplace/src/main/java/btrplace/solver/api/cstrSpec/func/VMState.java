@@ -5,17 +5,17 @@ import btrplace.model.VM;
 import btrplace.solver.api.cstrSpec.Term;
 import btrplace.solver.api.cstrSpec.type.VMStateType;
 
-import java.util.Deque;
+import java.util.List;
 
 /**
  * @author Fabien Hermenier
  */
-public class VMState implements Function {
+public class VMState extends Function {
 
     private Term t;
 
-    public VMState(Deque<Term> stack) {
-        this.t = stack.pop();
+    public VMState(List<Term> stack) {
+        this.t = stack.get(0);
     }
 
     //@Override
