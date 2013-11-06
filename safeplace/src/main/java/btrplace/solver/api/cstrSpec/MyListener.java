@@ -106,7 +106,9 @@ public class MyListener extends CstrSpecBaseListener {
             }
         } else if (ctx.NAT() != null) {
             push(NatType.getInstance().newValue(ctx.NAT().getText()));
-        }
+        } /*else if (ctx.MINUS() != null) {
+            push(new Minus(ctx.term(0), ctx.term(1));
+        }   */
     }
 
     @Override

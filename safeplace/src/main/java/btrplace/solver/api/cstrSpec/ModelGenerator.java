@@ -14,6 +14,7 @@ import java.util.List;
  */
 public class ModelGenerator {
 
+
     private Model makeNodeModel(List<Node> nodes, int id) {
         Model m = new DefaultModel();
         for (Node n : nodes) {
@@ -68,9 +69,6 @@ public class ModelGenerator {
                     vmIndexes[w] = 0;
                 }
             }
-            /*if (m.getMapping().getAllVMs().size() != 3 || m.getMapping().getAllNodes().size() != 3) {
-                throw new RuntimeException(m.toString());
-            } */
             res.add(m);
         }
         return res;

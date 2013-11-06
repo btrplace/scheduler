@@ -30,12 +30,12 @@ public class NInc extends AtomicProp {
 
     @Override
     public Boolean evaluate(Model m) {
-        Collection cA = (Collection) a.getValue(m);
+        Object cA =  a.getValue(m);
         Collection cB = (Collection) b.getValue(m);
-        if (cA == null || cB == null) {
+        if (cB == null) {
             return null;
         }
-
-        return !cB.containsAll(cA);
+        //System.err.println(cA + " /<:" + cB + ": " + !cB.contains(cA));
+        return !cB.contains(cA);
     }
 }

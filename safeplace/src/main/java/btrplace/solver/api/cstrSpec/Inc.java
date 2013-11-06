@@ -32,6 +32,7 @@ public class Inc extends AtomicProp {
     public Boolean evaluate(Model m) {
         Object o = a.getValue(m);
         Collection c = (Collection) b.getValue(m);
+        //System.err.println(o + " <:" + c + ": " + c.contains(o));
         if (o != null && c != null) {
             return c.contains(o);
         }

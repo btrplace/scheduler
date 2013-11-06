@@ -33,6 +33,12 @@ public class TestParse {
     }
 
     @Test
+    public void testParseLonely() throws Exception {
+        go("src/test/resources/lonely.cspec");
+    }
+
+
+    @Test
     public void testParseFence() throws Exception {
             go("src/test/resources/fence.cspec");
     }
