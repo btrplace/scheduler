@@ -199,7 +199,7 @@ public class MyListener extends CstrSpecBaseListener {
             }
 
             //The new type depends on the operator:
-            Variable v = syms.newVariable(n, ctx.getChild(ctx.getChildCount() - 4).getText(), t);
+                Variable v = syms.newVariable(n, ctx.getChild(ctx.getChildCount() - 4).getText(), t);
             if (ctx.ALL() != null) {
                 ForAll f = new ForAll(v, syms.get(right), null);
                 binders.add(f);

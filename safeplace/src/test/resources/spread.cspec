@@ -1,3 +1,7 @@
-cstr spread(a : VM, b : VM) ::=
-    """ {"id":"spread",  "vms":[@a,@b], "continuous": false} """
-	(a /= b & vmState(a) = running & vmState(b) = running) --> host(a) /= host(b)
+/**
+* Spread constraint.
+* No running VMs in vs can be co-located.
+*/
+cstr spread(vs <: VM) ::=
+    """ {"id":"spread",  "vms":[@vs], "continuous": false} """
+     !(x,y : vs). x /= y & vmState(x) = running & vmState(y) = running --> host(x) /= host(y)
