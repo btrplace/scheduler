@@ -122,9 +122,19 @@ public class Constraint {
         }
         b.append(cstrName).append(" ");
         if (!nativeCstr) {
-            b.append(params);
+            b.append(pretty(params));
         }
         b.append(" ::= ").append(p);
         return b.toString();
+    }
+
+    private String pretty(List<Variable> ps) {
+        StringBuilder b = new StringBuilder("(");
+        Iterator<Variable> ite = ps.iterator();
+        b.append(ite.next().label());
+        while (ite.hasNext()) {
+            b.append(", ").append(ite.next().label());
+        }
+        return b.append(")").toString();
     }
 }

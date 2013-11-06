@@ -180,30 +180,35 @@ public class MyListener extends CstrSpecBaseListener {
     @Override
     public void exitBinder(@NotNull CstrSpecParser.BinderContext ctx) {
         String right = ctx.term().getText();
+        List<Variable> vars = new ArrayList<>();
+        String op = ctx.getChild(ctx.getChildCount() - 4).getText();
+        Type t;
+        if (syms.get(right) != null) { //It's a variable
+            t = syms.get(right).type();
+        } else {
+            t = primitives.fromValue(right);
+            if (t == null) {
+                throw new RuntimeException("Cannot resolve symbol '" + right + "'");
+            }
+            Value v = t.newValue(right);
+            push(v);
+        }
+
+        //Get the right value
         for (int i = 0; i < ctx.getChildCount(); i++) {
             TerminalNode tn = ctx.ID(i);
             if (tn == null) {
                 break;
             }
-            Type t;
-            String n = tn.getText();
-            if (syms.get(right) != null) { //It's a variable
-                t = syms.get(right).type();
-            } else {
-                t = primitives.fromValue(right);
-                if (t == null) {
-                    throw new RuntimeException("Cannot resolve symbol '" + right + "'");
-                }
-                Value v = t.newValue(right);
-                push(v);
-            }
 
+            String n = tn.getText();
             //The new type depends on the operator:
-                Variable v = syms.newVariable(n, ctx.getChild(ctx.getChildCount() - 4).getText(), t);
-            if (ctx.ALL() != null) {
-                ForAll f = new ForAll(v, syms.get(right), null);
-                binders.add(f);
-            }
+            Variable v = syms.newVariable(n, op, t);
+            vars.add(v);
+        }
+        if (ctx.ALL() != null) {
+            ForAll f = new ForAll(vars, syms.get(right), null);
+            binders.add(f);
         }
         inBinder = false;
     }

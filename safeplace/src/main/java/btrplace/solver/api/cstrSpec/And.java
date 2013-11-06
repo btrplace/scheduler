@@ -77,11 +77,6 @@ public class And extends NaryProp {
     }        */
 
     @Override
-    public boolean inject(Model mo) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public Boolean evaluate(Model m) {
         boolean ret = true;
         for (Proposition p : this) {

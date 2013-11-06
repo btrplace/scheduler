@@ -13,8 +13,6 @@ public interface Proposition {
 
     int size();
 
-    boolean inject(Model mo);
-
     //Proposition expand();
 
     Boolean evaluate(Model m);

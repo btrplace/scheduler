@@ -1,31 +1,24 @@
 package btrplace.solver.api.cstrSpec;
 
 import btrplace.model.Model;
-import btrplace.solver.api.cstrSpec.type.Type;
 
-import java.util.Set;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Fabien Hermenier
  */
 public class Exists implements Proposition {
 
-    private Variable v;
+    private List<Variable> vars;
 
     private Proposition prop;
 
-    public Exists(Variable iterator, Proposition p) {
-        this.v = iterator;
+    private Variable from;
+    public Exists(List<Variable> iterator, Variable from, Proposition p) {
+        this.vars = iterator;
         prop = p;
-    }
-
-    public Variable getVariable(){
-        return v;
-    }
-
-    //@Override
-    public Type type() {
-        throw new UnsupportedOperationException();
+        this.from = from;
     }
 
     @Override
@@ -40,23 +33,17 @@ public class Exists implements Proposition {
     }
 
     @Override
-    public boolean inject(Model mo) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public Boolean evaluate(Model m) {
-        boolean ret = false;
-        Set<Object> dom = v.domain();
-            for (Object val : dom) {
-            v.set(val);
+        boolean ret = true;
+        for (Object val : (Collection) from.getValue(m)) {
+            vars.get(0).set(val);
             Boolean r = prop.evaluate(m);
             if (r == null) {
                 return null;
             }
             ret |= r;
         }
-        v.unset();
+        vars.get(0).unset();
         return ret;
     }
 
@@ -65,6 +52,7 @@ public class Exists implements Proposition {
     }
 
     public String toString() {
-        return "!(" + v.label() + " : " + v.type() + "). " + prop.toString();
+        /*return "!(" + v + " : " + v.type() + "). " + prop.toString();*/
+        return "";
     }
 }

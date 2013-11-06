@@ -45,11 +45,6 @@ public class Or extends NaryProp {
         return this;
     }
 
-    @Override
-    public boolean inject(Model mo) {
-        throw new UnsupportedOperationException();
-    }
-
     /*@Override
     public Or expand() {
         Or or = new Or();
