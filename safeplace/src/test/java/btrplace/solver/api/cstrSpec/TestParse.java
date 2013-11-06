@@ -12,58 +12,35 @@ public class TestParse {
 
     StatesExtractor ex = new StatesExtractor();
 
-    @Test
-    public void testParseSpread() throws Exception {
-        ex.extract(new File("src/test/resources/spread.cspec"));
-        Assert.fail();
-    }
-
-    @Test
-    public void testParseFence() {
-        Constraint c = null;
-        try {
-            c = ex.extract(new File("src/test/resources/fence.cspec"));
-        } catch (Exception e) {
-            Assert.fail(e.getMessage(), e);
-        }
+    private void go(String path) throws Exception {
+        Constraint c =ex.extract(new File(path));
+        System.out.println(c);
         UnitTestsGenerator gen = new UnitTestsGenerator();
         UnitTestsExecutor exe  = new UnitTestsExecutor();
-        try {
             exe.execute(gen.generate(c));
-            System.out.println(exe);
             if (!exe.getFailures().isEmpty()) {
                 for (TestResult r : exe.getFailures()) {
                     System.out.println(r);
                 }
-                Assert.fail();
+                Assert.fail(exe.toString());
             }
-        } catch (Exception ex) {
-            Assert.fail(ex.getMessage(), ex);
-        }
+            System.out.println(exe);
     }
 
     @Test
-    public void testParseBan() {
-        Constraint c = null;
-        try {
-            c = ex.extract(new File("src/test/resources/ban.cspec"));
-        } catch (Exception e) {
-            Assert.fail(e.getMessage(), e);
-        }
-        UnitTestsGenerator gen = new UnitTestsGenerator();
-        UnitTestsExecutor exe = new UnitTestsExecutor();
-        try {
-            exe.execute(gen.generate(c));
-            System.out.println(exe);
-            if (!exe.getFailures().isEmpty()) {
-                for (TestResult r : exe.getFailures()) {
-                    System.out.println(r);
-                }
-                Assert.fail();
-            }
-        } catch (Exception ex) {
-            Assert.fail(ex.getMessage(), ex);
-        }
+    public void testParseSpread() throws Exception {
+        go("src/test/resources/spread.cspec");
+    }
+
+    @Test
+    public void testParseFence() throws Exception {
+            go("src/test/resources/fence.cspec");
+    }
+
+    @Test
+    public void testParseBan() throws Exception {
+        go("src/test/resources/ban.cspec");
+
     }
 
     @Test
@@ -86,21 +63,7 @@ public class TestParse {
 
     @Test
     public void testParseNoVMOnOfflineNode() throws Exception {
-        Constraint c = null;
-        try {
-            c = ex.extract(new File("src/test/resources/noVMOnOfflineNode.cspec"));
-            System.err.println(c);
-        } catch (Exception e) {
-            Assert.fail(e.getMessage(), e);
-        }
-        UnitTestsGenerator gen = new UnitTestsGenerator();
-        UnitTestsExecutor exe = new UnitTestsExecutor();
-        try {
-            exe.execute(gen.generate(c));
-            System.out.println(exe);
-        } catch (Exception ex) {
-            Assert.fail(ex.getMessage(), ex);
-        }
+        go("src/test/resources/noVMOnOfflineNode.cspec");
     }
 
 }

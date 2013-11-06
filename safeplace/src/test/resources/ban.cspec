@@ -1,7 +1,7 @@
-/**
-* Single parameters to simplify the code
-*
 */
-cstr ban(v : VM, n : node ) ::=
-    """ {"id":"ban", "vms":[@v], "nodes":[@n]} """
-	vmState(v) = running --> host(v) /= n
+/**
+* Complete version.
+*/
+cstr ban(vs <: VM, ns <: node ) ::=
+    """ {"id":"ban", "vms":[@vs], "nodes":[@ns]} """
+    !(v : vs). vmState(v) = running --> host(v) /: ns

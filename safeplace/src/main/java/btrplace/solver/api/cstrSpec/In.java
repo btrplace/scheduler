@@ -25,10 +25,10 @@ public class In extends AtomicProp {
 
     @Override
     public Boolean evaluate(Model m) {
-        Collection o = (Collection) a.getValue(m);
+        Object o =  a.getValue(m);
         Collection c = (Collection) b.getValue(m);
-        if (o != null && c != null) {
-            return c.containsAll(o);
+        if (c != null) {
+            return c.contains(o);
         }
         return null;
     }

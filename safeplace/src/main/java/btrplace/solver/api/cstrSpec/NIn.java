@@ -27,10 +27,10 @@ public class NIn extends AtomicProp {
     public Boolean evaluate(Model m) {
         Object o = a.getValue(m);
         Collection c = (Collection) b.getValue(m);
-        if (o != null && c != null) {
-            return !c.contains(o);
+        if (c == null) {
+            return null;
         }
-        return null;
+        return !c.contains(o);
     }
 
     /*@Override

@@ -77,25 +77,31 @@ public class TestUnit {
         } catch (Exception ex) {
             return new TestResult(mo, cstr, isConsistent, rc, ri, ex.getMessage());
         } catch (Error err) {
+            //err.printStackTrace();
             return new TestResult(mo, cstr, isConsistent, rc, ri, err.getMessage());
         }
     }
 
     public TestResult.ErrorType verifyChecker() {
-        if (cstr.getChecker().endsWith(this.mo) == isConsistent) {
-            return TestResult.ErrorType.succeed;
+        if (cstr != null) {
+            if (cstr.getChecker().endsWith(this.mo) == isConsistent) {
+                return TestResult.ErrorType.succeed;
+            }
+            if (isConsistent) {
+                return TestResult.ErrorType.falseNegative;
+            }
+            return TestResult.ErrorType.falsePositive;
+        } else {
+            //Checker for native cstr ? Possible ?
+            return TestResult.ErrorType.bug;
         }
-        if (isConsistent) {
-            return TestResult.ErrorType.falseNegative;
-
-        }
-        return TestResult.ErrorType.falsePositive;
     }
 
     public TestResult.ErrorType verifyImpl() throws SolverException {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         //ROOt every VM
         List<SatConstraint> cstrs = new ArrayList<>();
+
         cstrs.add(cstr);
         cstrs.add(new Root(mo.getMapping().getRunningVMs()));
         if (mo.getMapping().getOnlineNodes().size() > 0) {
@@ -105,7 +111,7 @@ public class TestUnit {
             cstrs.add(new Offline(mo.getMapping().getOfflineNodes()));
         }
             cra.doOptimize(true);
-            ReconfigurationPlan p = cra.solve(mo, Collections.singletonList(cstr));
+            ReconfigurationPlan p = cra.solve(mo, cstr != null ? Collections.singletonList(cstr) : Collections.<SatConstraint>emptyList());
             if (isConsistent) {
                 if (p != null && p.getSize() == 0) {
                     return TestResult.ErrorType.succeed;
@@ -190,7 +196,7 @@ class TestResult {
         if (rc == ErrorType.succeed && ri == ErrorType.succeed && errMsg == null) {
             return "checker: " + rc + "\timpl: " + ri;
         } else {
-            return "checker: " + rc + "\timpl: " + ri + "(" + errMsg + ")\n" + c + "\n" + mo.getMapping();
+            return "checker: " + rc + "\timpl: " + ri + "\n" + "cstr: " + c + "\n" + "Mapping:\n" + mo.getMapping() + "\n" + "Error: " + errMsg;
         }
     }
 }

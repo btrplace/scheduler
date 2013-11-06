@@ -1,2 +1,9 @@
-native cstr noVMonOfflineNode() ::=
-	!(n : node). nodeState(n) = offline --> card(hosted(n)) = 0
+/**
+* A node cannot be turn off if it host any VM.
+*/
+/*native cstr noVMonOfflineNode() ::=
+	!(n : node). nodeState(n) = offline --> card(hosted(n)) = 0*/
+
+cstr offline(n : node) ::=
+    """ {"id":"offline",  "nodes":[@n]} """
+    nodeState(n) = offline --> card(hosted(n)) = 0

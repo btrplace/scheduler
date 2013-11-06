@@ -33,6 +33,16 @@ public class UnitTestsGenerator {
             Object s = e.getValue().toString();
             if (v instanceof Element) {
                 s = ((Element)v).id();
+            } else if (v instanceof Collection) {
+                String str = "";
+                for (Iterator<Object> ite = ((Collection)v).iterator(); ite.hasNext();) {
+                    Object o = ite.next();
+                    str += Integer.toString(((Element)o).id());
+                    if (ite.hasNext()) {
+                        str += ", ";
+                    }
+                }
+                s = str;
             }
             json = json.replaceAll("@" + e.getKey(), s.toString());
         }
@@ -107,14 +117,14 @@ public class UnitTestsGenerator {
                 Boolean gr = good.evaluate(mo);
                 Boolean ngr = noGood.evaluate(mo);
                 if (gr == null || ngr == null) {
-                    throw new RuntimeException(mo.toString());
+                    throw new RuntimeException("Both null !\ngood:" + good + "\nnotGood: " + noGood + "\n" + mo.getMapping().toString());
                 }
                 if (!(gr||ngr)) {
-                    throw new RuntimeException("Nor good or bad !\n" + mo.toString());
+                    throw new RuntimeException("Nor good or bad !\ngood:" + good + "\nnotGood: " + noGood + "\n" + mo.getMapping().toString());
                 }
-                if (gr && ngr) {
-                    throw new RuntimeException("Good and bad !\n" + mo.toString());
-                }
+                /*if (gr && ngr) {
+                    throw new RuntimeException("good and bad !\ngood:" + good + "\nnotGood: " + noGood + "\n" + mo.getMapping().toString());
+                } */
                 c.reset();
                 TestUnit tu = new TestUnit(mo, cstr, gr);
                 tests.add(tu);

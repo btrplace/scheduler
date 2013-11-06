@@ -1,6 +1,5 @@
 package btrplace.solver.api.cstrSpec;
 
-import btrplace.solver.api.cstrSpec.func.Forall;
 import btrplace.solver.api.cstrSpec.func.Function;
 import btrplace.solver.api.cstrSpec.type.NatType;
 import btrplace.solver.api.cstrSpec.type.Primitives;
@@ -29,7 +28,7 @@ public class MyListener extends CstrSpecBaseListener {
 
     private String cstrName;
 
-    private List<Forall> binders;
+    private List<ForAll> binders;
 
     private String marshal = null;
 
@@ -56,71 +55,9 @@ public class MyListener extends CstrSpecBaseListener {
         return params;
     }
 
-    /*public List<List<Value>> expandParameters() {
-        Value [][] doms = new Value[params.size()][];
-        int [] indexes = new int[params.size()];
-        int i = 0;
-        int nbStates = 1;
-        List<List<Value>> all = new ArrayList<>();
-        for (Variable v : params) {
-            indexes[i] = 0;
-            Set<Object> sDom = v.domain();
-            doms[i] = sDom.toArray(new Value[sDom.size()]);
-            nbStates *= doms[i].length;
-            i++;
-        }
-        for (int k = 0; k < nbStates; k++) {
-            List<Value> entries = new ArrayList<>();
-            for (int x = 0; x < params.size(); x++) {
-                entries.add(doms[x][indexes[x]]);
-            }
-            for (int x = 0; x < params.size(); x++) {
-                indexes[x]++;
-                if (indexes[x] < doms[x].length) {
-                    break;
-                }
-                indexes[x] = 0;
-            }
-            all.add(entries);
-        }
-        return all;
-    }       */
-
     public String getConstraintName() {
         return cstrName;
     }
-
-/*    @Override
-    public void exitConstraint(@NotNull CstrSpecParser.ConstraintContext ctx) {
-
-
-        Variable [] vars = params.toArray(new Variable[params.size()]);
-        Value [][] doms = new Value[vars.length][];
-        int [] indexes = new int[vars.length];
-        int i = 0;
-        int nbStates = 1;
-        for (Variable v : vars) {
-            indexes[i] = 0;
-            Set<Value> sDom = v.domain();
-            doms[i] = sDom.toArray(new Value[sDom.size()]);
-            nbStates *= doms[i].length;
-            i++;
-        }
-        for (int k = 0; k < nbStates; k++) {
-            List<Value> entries = new ArrayList<>();
-            for (int x = 0; x < vars.length; x++) {
-                entries.add(doms[x][indexes[x]]);
-            }
-            for (int x = 0; x < vars.length; x++) {
-                indexes[x]++;
-                if (indexes[x] < vars[x].domain().size()) {
-                    break;
-                }
-                indexes[x] = 0;
-            }
-            System.err.println(name + "(" + entries + ")");
-        }
-    }      */
 
     @Override
     public void exitFunc(@NotNull CstrSpecParser.FuncContext ctx) {
@@ -233,6 +170,10 @@ public class MyListener extends CstrSpecBaseListener {
             And a1 = new And().add(a).add(b);
             And a2 = new And().add(a.not()).add(b.not());
             propositions.add(new Or().add(a1).add(a2));
+        } else if (!binders.isEmpty()) {
+            ForAll f = (ForAll) binders.remove(0);
+            f.associate(propositions.pop());
+            propositions.push(f);
         }
     }
 
@@ -260,7 +201,7 @@ public class MyListener extends CstrSpecBaseListener {
             //The new type depends on the operator:
             Variable v = syms.newVariable(n, ctx.getChild(ctx.getChildCount() - 4).getText(), t);
             if (ctx.ALL() != null) {
-                Forall f = new Forall(v);
+                ForAll f = new ForAll(v, syms.get(right), null);
                 binders.add(f);
             }
         }
@@ -278,7 +219,7 @@ public class MyListener extends CstrSpecBaseListener {
         System.err.println(propositions.getFirst().expand());*/
     }
 
-    public List<Forall> getBinders() {
+    public List<ForAll> getBinders() {
         return binders;
     }
 

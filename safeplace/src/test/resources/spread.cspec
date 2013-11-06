@@ -1,2 +1,3 @@
-cstr spread(vs <: VM) ::=
-	!(i,j : vs). i /= j & vmState(i) = running & vmState(j) = running --> host(j) /= host(i)
+cstr spread(a : VM, b : VM) ::=
+    """ {"id":"spread",  "vms":[@a,@b], "continuous": false} """
+	(a /= b & vmState(a) = running & vmState(b) = running) --> host(a) /= host(b)

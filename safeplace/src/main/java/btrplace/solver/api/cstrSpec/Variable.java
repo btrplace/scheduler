@@ -3,6 +3,7 @@ package btrplace.solver.api.cstrSpec;
 import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.type.Type;
 
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -25,7 +26,7 @@ public class Variable implements Term {
         if (val == null) {
             return t.domain();
         }
-        return null;
+        return Collections.singleton(val);
     }
 
     @Override

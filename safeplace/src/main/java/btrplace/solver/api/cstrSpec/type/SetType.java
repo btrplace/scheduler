@@ -18,10 +18,10 @@ public class SetType implements Type {
     @Override
     public Set domain() {
         //All possible subsets or t. Ouch
-        Object[] values = type.domain().toArray(new Value[type.domain().size()]);
+        Object[] values = type.domain().toArray(new Object[type.domain().size()]);
         int nbElements = (int) Math.pow(2, values.length);
         //System.err.println(nbElements);
-        Set<Value> res = new HashSet<>();
+        Set<Object> res = new HashSet<>();
         for (int i = 0; i < nbElements; i++) {
             Set sub = new HashSet<>();
             long x = i;
@@ -33,7 +33,7 @@ public class SetType implements Type {
                 x = x >>> 1;
             }
             if (!sub.isEmpty()) {
-                res.add(new Value(sub, type));
+                res.add(sub/*new Value(sub, type)*/);
             }
         }
         return res;

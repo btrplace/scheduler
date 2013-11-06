@@ -63,6 +63,7 @@ set: LACC (term (COMMA term)*)? RACC /* definition in extension */
 
 typedef: ID (IN|NOT_IN|INCL|NOT_INCL) ID;
 formula: 
+       | LPARA formula RPARA
        |formula (IMPLIES|OR|AND|IFF) formula
        |term (EQ | NOT_EQ| LT | LEQ | GT | GEQ | IN | NOT_IN | INCL | NOT_INCL) term        
        |NOT formula              
