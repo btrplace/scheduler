@@ -1,6 +1,7 @@
 package btrplace.solver.api.cstrSpec;
 
 import btrplace.model.Model;
+import btrplace.solver.api.cstrSpec.type.Type;
 
 /**
  * @author Fabien Hermenier
@@ -14,15 +15,5 @@ public interface Term {
 
     Object getValue(Model mo);
 
-    Term plus(Term t2);
-
-    Term minus(Term t2);
-
-    Term mult(Term t2);
-
-    Term div(Term t2);
-
-    Term inter(Term t2);
-
-    Term union(Term t2);
+    Type type();
 }

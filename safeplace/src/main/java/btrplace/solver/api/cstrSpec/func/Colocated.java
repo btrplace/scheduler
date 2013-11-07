@@ -42,4 +42,9 @@ public class Colocated extends Function {
         }
         return mo.getMapping().getRunningVMs(n); //TODO: what about sleeping VMs
     }
+
+    @Override
+    public String toString() {
+        return new StringBuilder("colocated(").append(t).append(')').toString();
+    }
 }
