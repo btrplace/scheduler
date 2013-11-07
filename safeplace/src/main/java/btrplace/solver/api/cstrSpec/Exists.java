@@ -2,7 +2,9 @@ package btrplace.solver.api.cstrSpec;
 
 import btrplace.model.Model;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -35,15 +37,23 @@ public class Exists implements Proposition {
     @Override
     public Boolean evaluate(Model m) {
         boolean ret = true;
-        for (Object val : (Collection) from.getValue(m)) {
-            vars.get(0).set(val);
+        List<List<Object>> values = new ArrayList<>(vars.size());
+        for (int i = 0; i < vars.size(); i++) {
+            values.add(new ArrayList<>((Collection<Object>)from.getValue(m)));
+        }
+        for(List<Object> tuple : Collections.allTuples(values)) {
+            for (int i = 0; i < tuple.size(); i++) {
+                vars.get(i).set(tuple.get(i));
+            }
             Boolean r = prop.evaluate(m);
             if (r == null) {
                 return null;
             }
             ret |= r;
         }
-        vars.get(0).unset();
+        for (Variable v : vars) {
+            v.unset();
+        }
         return ret;
     }
 
@@ -52,7 +62,16 @@ public class Exists implements Proposition {
     }
 
     public String toString() {
-        /*return "!(" + v + " : " + v.type() + "). " + prop.toString();*/
-        return "";
+        return new StringBuilder("#(").append(enumerate()).append(" : ").append(from.label()).append("). ")
+                .append(prop).toString();
     }
-}
+
+    private String enumerate() {
+        Iterator<Variable> ite = vars.iterator();
+        StringBuilder b = new StringBuilder(ite.next().label());
+        while (ite.hasNext()) {
+            b.append(",");
+            b.append(ite.next().label());
+        }
+        return b.toString();
+    }}
