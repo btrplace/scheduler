@@ -4,4 +4,4 @@
 */
 cstr gather(vs <: VM) ::=
     """ {"id":"gather",  "vms":[@vs], "continuous": false} """
-    !(x,y : vs). x /= y & ((vmState(x) = running & vmState(y) = running) --> host(x) = host(y))
+    !(x,y : vs).  (x /= y & vmState(x) = running & vmState(y) = running) --> host(x) = host(y)

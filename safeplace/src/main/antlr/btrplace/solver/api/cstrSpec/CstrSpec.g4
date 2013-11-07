@@ -47,7 +47,7 @@ TRUE:'true';
 FALSE:'false';
 NOT:'~';
 NEXT: 'next';
-STRING : '"""' ( '\\"\\"\\"' | . )*? '"""' ;
+MARSHAL : '"""' ( '\\"\\"\\"' | . )*? '"""' ;
 
 binder: type=(ALL|EXISTS) LPARA ID (COMMA ID)* op=(IN|NOT_IN|INCL|NOT_INCL) t=term RPARA DOT formula;
 
@@ -76,7 +76,7 @@ formula: LPARA formula RPARA   #protectedFormula
        
 func: ID LPARA term (COMMA term)* RPARA;
 
-constraint: 'native'? 'cstr' ID LPARA (typedef (COMMA typedef)*)? RPARA DEF_CONTENT STRING? formula;
+constraint: 'cstr' ID LPARA (typedef (COMMA typedef)*)? RPARA DEF_CONTENT MARSHAL formula;
 func_def: 'func' ID LPARA ID (COMMA ID)* RPARA ID; 
 require: 'require' '"' ID '"';
 spec: require * (func_def|constraint)+;        

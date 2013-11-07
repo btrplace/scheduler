@@ -74,6 +74,7 @@ public class TestUnit {
             ri = verifyImpl();
             return new TestResult(mo, cstr, isConsistent, rc, ri);
         } catch (Exception ex) {
+            ex.printStackTrace();
             return new TestResult(mo, cstr, isConsistent, rc, ri, ex.getMessage());
         } catch (Error err) {
             //err.printStackTrace();

@@ -109,10 +109,7 @@ public class UnitTestsGenerator {
         for (Model mo : models) {
             cstrC.setModel(mo);
             for (Map<String, Object> vals : expandParameters(c)) {
-                SatConstraint cstr = null;
-                if (!c.isNative()) {
-                    cstr = (SatConstraint) cstrC.fromJSON(marshal(c.getMarshal(), vals));
-                }
+                SatConstraint cstr = (SatConstraint) cstrC.fromJSON(marshal(c.getMarshal(), vals));
                 c.instantiate(vals);
                 Boolean gr = good.evaluate(mo);
                 Boolean ngr = noGood.evaluate(mo);

@@ -20,8 +20,6 @@ public class Constraint {
 
     private String marshal;
 
-    private boolean nativeCstr = false;
-
     public Constraint(Reader in) {
 
     }
@@ -30,9 +28,6 @@ public class Constraint {
         this.cstrName = n;
         this.params = params;
         this.marshal = m;
-        if (m == null) {
-            nativeCstr = true;
-        }
         vars = new HashMap<>(params.size());
         for (Variable v : params) {
             vars.put(v.label(), v);
@@ -97,15 +92,10 @@ public class Constraint {
         return marshal;
     }
 
-    public boolean isNative() {
-        return nativeCstr;
-    }
-
     public JSONObject toJSON() {
         JSONObject o = new JSONObject();
         o.put("id", cstrName);
         o.put("proposition", p.toString());
-        o.put("native", isNative());
         JSONObject jps = new JSONObject();
         for (Variable v : params) {
             jps.put(v.label(), v.type().toString());
@@ -117,13 +107,7 @@ public class Constraint {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        if (nativeCstr) {
-            b.append("native ");
-        }
         b.append(cstrName).append(" ");
-        if (!nativeCstr) {
-            b.append(pretty(params));
-        }
         b.append(" ::= ").append(p);
         return b.toString();
     }
