@@ -15,7 +15,6 @@ import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import net.minidev.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -111,7 +110,7 @@ public class TestUnit {
             cstrs.add(new Offline(mo.getMapping().getOfflineNodes()));
         }
             cra.doOptimize(true);
-            ReconfigurationPlan p = cra.solve(mo, cstr != null ? Collections.singletonList(cstr) : Collections.<SatConstraint>emptyList());
+            ReconfigurationPlan p = cra.solve(mo, /*cstr != null ? Collections.singletonList(cstr) : Collections.<SatConstraint>emptyList()*/ cstrs);
             if (isConsistent) {
                 if (p != null && p.getSize() == 0) {
                     return TestResult.ErrorType.succeed;

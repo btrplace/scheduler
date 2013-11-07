@@ -10,7 +10,6 @@ import java.io.File;
  */
 public class TestParse {
 
-    //StatesExtractor ex = new StatesExtractor();
     StatesExtractor2 ex = new StatesExtractor2();
 
     private void go(String path) throws Exception {
@@ -69,12 +68,6 @@ public class TestParse {
     @Test
     public void testParseNodeState() throws Exception {
         ex.extract(new File("src/test/resources/nodeState.cspec"));
-        Assert.fail();
-    }
-
-    @Test
-    public void testParseHost() throws Exception {
-        ex.extract(new File("src/test/resources/host.cspec"));
         Assert.fail();
     }
 
