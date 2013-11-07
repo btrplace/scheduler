@@ -88,4 +88,16 @@ public class Value implements Term {
         throw new UnsupportedOperationException();
     }
 
+    public Value lt(Value b) {
+        throw new UnsupportedOperationException();
+    }
+
+    public Value eq(Value b) {
+        throw new UnsupportedOperationException();
+    }
+
+    public Value leq(Value b) {
+        throw new UnsupportedOperationException();
+    }
+
 }

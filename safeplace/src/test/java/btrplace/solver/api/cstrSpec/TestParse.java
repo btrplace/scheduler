@@ -34,6 +34,16 @@ public class TestParse {
     }
 
     @Test
+    public void testSingleRunningCapacity() throws Exception {
+        go("src/test/resources/singleRunningCapacity.cspec");
+    }
+
+    @Test
+    public void testParseGather() throws Exception {
+        go("src/test/resources/gather.cspec");
+    }
+
+    @Test
     public void testParseLonely() throws Exception {
         go("src/test/resources/lonely.cspec");
     }

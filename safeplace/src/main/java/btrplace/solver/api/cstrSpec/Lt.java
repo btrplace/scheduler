@@ -2,9 +2,6 @@ package btrplace.solver.api.cstrSpec;
 
 import btrplace.model.Model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author Fabien Hermenier
  */
@@ -46,11 +43,11 @@ public class Lt extends AtomicProp {
 
     @Override
     public Boolean evaluate(Model m) {
-        Integer iA = (Integer) a.getValue(m);
-        Integer iB = (Integer) b.getValue(m);
-        if (iA == null || iB == null) {
+        Integer vA = (Integer)a.getValue(m);
+        Integer vB = (Integer)b.getValue(m);
+        if (vA == null || vB == null) {
             return null;
         }
-        return iA < iB;
+        return vA < vB;
     }
 }

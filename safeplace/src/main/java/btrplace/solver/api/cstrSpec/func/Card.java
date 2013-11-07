@@ -39,7 +39,7 @@ public class Card extends Function {
     }
 
     @Override
-    public Object getValue(Model mo) {
+    public Integer getValue(Model mo) {
         Collection c = (Collection) set.getValue(mo);
         if (c == null) {
             return null;

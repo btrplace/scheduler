@@ -20,10 +20,10 @@ public class NatType implements Type {
     }
 
     @Override
-    public Set<Value> domain() {
-        Set<Value> s = new HashSet<>();
+    public Set<Integer> domain() {
+        Set<Integer> s = new HashSet<>();
         for (int i = inf; i <= sup; i++) {
-            s.add(new Value(i, this));
+            s.add(i);
         }
         return s;
     }
