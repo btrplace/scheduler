@@ -34,12 +34,12 @@ public class UnitTestsGenerator {
             if (v instanceof Element) {
                 s = ((Element)v).id();
             } else if (v instanceof Collection) {
-                String str = "";
+                StringBuilder str = new StringBuilder();
                 for (Iterator<Object> ite = ((Collection)v).iterator(); ite.hasNext();) {
                     Object o = ite.next();
-                    str += Integer.toString(((Element)o).id());
+                    str.append(((Element)o).id());
                     if (ite.hasNext()) {
-                        str += ", ";
+                        str.append(", ");
                     }
                 }
                 s = str;

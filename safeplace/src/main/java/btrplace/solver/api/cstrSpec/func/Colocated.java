@@ -6,6 +6,8 @@ import btrplace.model.VM;
 import btrplace.solver.api.cstrSpec.Term;
 import btrplace.solver.api.cstrSpec.type.VMType;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -36,11 +38,16 @@ public class Colocated extends Function {
         if (v == null) {
             return null;
         }
+        if (mo.getMapping().isReady(v)) {
+            return Collections.emptyList();
+        }
         Node n = mo.getMapping().getVMLocation(v);
         if (n == null) {
             return null;
         }
-        return mo.getMapping().getRunningVMs(n); //TODO: what about sleeping VMs
+        Set<VM> s = new HashSet<>(mo.getMapping().getRunningVMs(n));
+        s.addAll(mo.getMapping().getSleepingVMs(n));
+        return s;
     }
 
     @Override
