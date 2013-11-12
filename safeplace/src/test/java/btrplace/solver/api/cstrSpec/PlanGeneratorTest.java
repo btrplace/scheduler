@@ -8,6 +8,7 @@ import btrplace.plan.ReconfigurationPlan;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,8 +16,7 @@ import java.util.List;
  */
 public class PlanGeneratorTest {
 
-    @Test
-    public void test(){
+    public static Model makeModel() {
         Model m  = new DefaultModel();
         Node n1 = m.newNode();
         Node n2 = m.newNode();
@@ -30,20 +30,51 @@ public class PlanGeneratorTest {
         m.getMapping().addReadyVM(vm1);
         m.getMapping().addRunningVM(vm2, n1);
         m.getMapping().addSleepingVM(vm3, n2);
+        return m;
+    }
+    @Test
+    public void testActionsGenerator(){
         PlanGenerator pg = new PlanGenerator();
-        List<ReconfigurationPlan> plans = pg.plansWithNodeActions(m);
-        Assert.assertEquals(plans.size(), (int)Math.pow(2, m.getMapping().getNbNodes()));
+        Model mo = makeModel();
+        List<ReconfigurationPlan> plans = pg.anyAction(mo);
+        Assert.assertEquals(plans.size(), (int)Math.pow(2, mo.getMapping().getNbNodes()) * 40);
+    }
+
+    @Test
+    public void testAnyDurations() {
+        Model mo = makeModel();
+        PlanGenerator pg = new PlanGenerator();
+        for (ReconfigurationPlan p : pg.anyAction(mo)) {
+            Assert.assertEquals(pg.anyDuration(p, 1, 3).size(), (int)Math.pow(3, p.getSize()));
+        }
+    }
+
+   @Test
+   public void gogogo() {
+       ModelGenerator mg = new ModelGenerator();
+       PlanGenerator pg = new PlanGenerator();
+       List<ReconfigurationPlan> all = new ArrayList<>();
+       for (Model mo : mg.all(2, 2)) {
+           for (ReconfigurationPlan p : pg.anyAction(mo)) {
+               for (ReconfigurationPlan p2 : pg.anyDuration(p, 1, 3)) {
+                   all.addAll(pg.anyDelay(p2));
+                   System.err.println(all.size());
+               }
+           }
+       }
+   }
+/*
         for (ReconfigurationPlan p : plans) {
             System.err.println(m.getMapping());
             Assert.assertEquals(pg.planWithVMs(p).size(), 40);
-            /*for (ReconfigurationPlan p4 : pg.planWithVMs(p)) {
+            for (ReconfigurationPlan p4 : pg.planWithVMs(p)) {
                 System.err.println(p4);
-            } */
+            }
             //Assert.fail();
             System.err.println(p);
-            List<ReconfigurationPlan> variations = pg.allDurations(p, 1, 3);
+            List<ReconfigurationPlan> variations = pg.anyDuration(p, 1, 3);
             Assert.assertEquals(variations.size(), (int)Math.pow(3, p.getSize()));
-            for (ReconfigurationPlan p2 : pg.allDurations(p, 1, 3)) {
+            for (ReconfigurationPlan p2 : pg.anyDuration(p, 1, 3)) {
                 System.err.println("Derivative:" + p2);
                 List<ReconfigurationPlan> delayed = pg.anyDelay(p2);
                 for (ReconfigurationPlan p3 : pg.anyDelay(p2)) {
@@ -51,6 +82,5 @@ public class PlanGeneratorTest {
                 }
             }
         }
-        Assert.fail();
-    }
+        Assert.fail();*/
 }

@@ -18,6 +18,13 @@ import java.util.Set;
  */
 public class PlanGenerator {
 
+    public List<ReconfigurationPlan> anyAction(Model src) {
+        List<ReconfigurationPlan> l = new ArrayList<>();
+        for (ReconfigurationPlan p : plansWithNodeActions(src)) {
+            l.addAll(planWithVMs(p));
+        }
+        return l;
+    }
     public List<ReconfigurationPlan> plansWithNodeActions(Model src) {
         Mapping m = src.getMapping();
         int nbStates = (int) Math.pow(2, m.getNbNodes());
@@ -90,7 +97,7 @@ public class PlanGenerator {
     }
 
 
-    public List<ReconfigurationPlan> allDurations(ReconfigurationPlan p, int lb, int ub) {
+    public List<ReconfigurationPlan> anyDuration(ReconfigurationPlan p, int lb, int ub) {
         List<ReconfigurationPlan> plans = new ArrayList<>();
         List<List<Action>> possibleDurations = new ArrayList<>();
         for (Action a : p) {
