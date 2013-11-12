@@ -103,7 +103,6 @@ public class UnitTestsGenerator {
         Proposition good = c.getProposition();
         Proposition noGood = good.not();
         ConstraintsConverter cstrC = ConstraintsConverter.newBundle();
-
         //System.err.println("good: " + good);
         //System.err.println("noGood: " + noGood);
         for (Model mo : models) {

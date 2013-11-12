@@ -71,9 +71,37 @@ public class TestParse {
         Assert.fail();
     }*/
 
-    @Test
+    /*@Test
     public void testParseNoVMOnOfflineNode() throws Exception {
         go("src/test/resources/noVMOnOfflineNode.cspec");
+    } */
+
+    @Test
+    public void testFoo() {
+        for (int i = 1; i <= 5; i++) {
+            int nbNodes = i;
+            int nbVMs = i;
+            long nbModels = 0;
+            for (int q = 0; q <= nbNodes; q++) {
+                long vmp = (long)Math.pow(2*q + 1, nbVMs);
+                long np = C(nbNodes, q);
+                long r = vmp * np;
+                nbModels += r;
+            }
+            System.err.println("Nb of models having " + nbNodes + " nodes and " + nbVMs + " VMs: " + nbModels);
+        }
+        Assert.fail();
     }
 
+    public static long C(int n, int k) {
+        return facto(n) / (facto(k)*facto(n - k));
+    }
+
+    public static long facto(int n) {
+        long r = 1;
+        while (n > 1) {
+            r *= n--;
+        }
+        return r;
+    }
 }
