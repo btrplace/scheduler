@@ -1,7 +1,7 @@
 package btrplace.solver.api.cstrSpec;
 
 import btrplace.model.Model;
-import btrplace.solver.api.cstrSpec.generator.Collections;
+import btrplace.solver.api.cstrSpec.generator.TupleGenerator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,9 +42,10 @@ public class ForAll implements Proposition {
         for (int i = 0; i < vars.size(); i++) {
             values.add(new ArrayList<>((Collection<Object>)from.getValue(m)));
         }
-        for(List<Object> tuple : Collections.allTuples(values)) {
-            for (int i = 0; i < tuple.size(); i++) {
-                vars.get(i).set(tuple.get(i));
+        TupleGenerator<Object> tg = new TupleGenerator<>(Object.class, values);
+        for(Object [] tuple : tg) {
+            for (int i = 0; i < tuple.length; i++) {
+                vars.get(i).set(tuple[i]);
             }
             Boolean r = prop.evaluate(m);
             if (r == null) {

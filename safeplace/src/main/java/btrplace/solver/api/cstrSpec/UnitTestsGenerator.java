@@ -6,7 +6,8 @@ import btrplace.json.model.constraint.ConstraintsConverter;
 import btrplace.model.Element;
 import btrplace.model.Model;
 import btrplace.model.constraint.SatConstraint;
-import btrplace.solver.api.cstrSpec.generator.ModelGenerator;
+import btrplace.solver.api.cstrSpec.generator.ModelsGenerator;
+import btrplace.solver.api.cstrSpec.type.NodeType;
 import btrplace.solver.api.cstrSpec.type.VMType;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -51,8 +52,8 @@ public class UnitTestsGenerator {
     }
 
     public void generate(Constraint c, Writer w) throws IOException, JSONConverterException {
-        ModelGenerator gen = new ModelGenerator();
-        List<Model> models = gen.all(VMType.getInstance().domain().size(), VMType.getInstance().domain().size());
+        ModelsGenerator gen = new ModelsGenerator(NodeType.getInstance().domain().size(), VMType.getInstance().domain().size());
+        //List<Model> models = gen.all(VMType.getInstance().domain().size(), VMType.getInstance().domain().size());
         Proposition good = c.getProposition();
         Proposition noGood = good.not();
         JSONObject o = new JSONObject();
@@ -61,7 +62,7 @@ public class UnitTestsGenerator {
         ModelConverter mc = new ModelConverter();
         ConstraintsConverter cstrC = ConstraintsConverter.newBundle();
 
-        for (Model mo : models) {
+        for (Model mo : gen) {
             JSONObject jsonModel = mc.toJSON(mo);
             JSONObject scenario = new JSONObject();
             scenario.put("model", jsonModel);
@@ -99,14 +100,14 @@ public class UnitTestsGenerator {
 
     public List<TestUnit> generate(Constraint c) throws JSONConverterException, IOException {
         List<TestUnit> tests = new ArrayList<>();
-        ModelGenerator gen = new ModelGenerator();
-        List<Model> models = gen.all(VMType.getInstance().domain().size(), VMType.getInstance().domain().size());
+        ModelsGenerator gen = new ModelsGenerator(NodeType.getInstance().domain().size(), VMType.getInstance().domain().size());
+        //List<Model> models = gen.all(VMType.getInstance().domain().size(), VMType.getInstance().domain().size());
         Proposition good = c.getProposition();
         Proposition noGood = good.not();
         ConstraintsConverter cstrC = ConstraintsConverter.newBundle();
         //System.err.println("good: " + good);
         //System.err.println("noGood: " + noGood);
-        for (Model mo : models) {
+        for (Model mo : gen) {
             cstrC.setModel(mo);
             for (Map<String, Object> vals : expandParameters(c)) {
                 SatConstraint cstr = (SatConstraint) cstrC.fromJSON(marshal(c.getMarshal(), vals));
