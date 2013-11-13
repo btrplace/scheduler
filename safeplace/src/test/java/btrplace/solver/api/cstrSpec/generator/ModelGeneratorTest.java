@@ -1,8 +1,6 @@
-package btrplace.solver.api.cstrSpec;
+package btrplace.solver.api.cstrSpec.generator;
 
 import btrplace.model.Model;
-import btrplace.solver.api.cstrSpec.generator.ModelGenerator;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -15,11 +13,14 @@ public class ModelGeneratorTest {
     @Test
     public void testAll() {
         ModelGenerator gen = new ModelGenerator();
-        List<Model> all = gen.all(2, 2);
+        List<Model> all = gen.all(5, 5);
+        System.err.println(all.size());
+        /*int nb = 0;
         //Assert.assertEquals(all.size(), (int)Math.pow(2, 3));
         for (Model m : all) {
+            nb++;
             System.out.println(m.getMapping());
         }
-        Assert.fail();
+        Assert.fail();*/
     }
 }

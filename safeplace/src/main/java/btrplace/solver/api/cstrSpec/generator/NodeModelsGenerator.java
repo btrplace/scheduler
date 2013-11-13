@@ -15,13 +15,22 @@ public class NodeModelsGenerator implements Iterable<Model>, Iterator<Model> {
 
     private int k;
 
-    public NodeModelsGenerator(ElementBuilder eb, int nbNodes) {
-        this.nodes = new Node[nbNodes];
-        nbStates = (int) Math.pow(2, nbNodes);
-        for (int i = 0; i < nbNodes; i++) {
-            this.nodes[i] = eb.newNode();
+    public NodeModelsGenerator(Node [] ns) {
+        this.nodes = ns;
+        nbStates = (int)Math.pow(2, ns.length);
+    }
+
+    public static Node [] makeNodes(ElementBuilder eb, int nb) {
+        Node [] nodes = new Node[nb];
+        for (int i = 0; i < nb; i++) {
+            nodes[i] = eb.newNode();
         }
 
+        return nodes;
+    }
+
+    public NodeModelsGenerator(ElementBuilder eb, int nbNodes) {
+        this(makeNodes(eb, nbNodes));
     }
 
     @Override
@@ -51,6 +60,9 @@ public class NodeModelsGenerator implements Iterable<Model>, Iterator<Model> {
         return this;
     }
 
+    public void reset() {
+        k = 0;
+    }
     @Override
     public void remove() {
         throw new UnsupportedOperationException();

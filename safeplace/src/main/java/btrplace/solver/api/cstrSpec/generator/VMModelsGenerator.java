@@ -21,20 +21,30 @@ public class VMModelsGenerator implements Iterable<Model>, Iterator<Model> {
 
     private TupleGenerator<Integer> tg;
 
-    public VMModelsGenerator(Model mo, int nbVMs) {
-        this.base = mo;
-        this.vms = new VM[nbVMs];
-        nodes = mo.getMapping().getAllNodes().toArray(new Node[mo.getMapping().getNbNodes()]);
+    public static VM [] makeVMs(Model mo, int nbVMs) {
+        VM [] vms = new VM[nbVMs];
         for (int i = 0; i < nbVMs; i++) {
-            this.vms[i] = mo.newVM();
+            vms[i] = mo.newVM();
         }
+        return vms;
+    }
+    public VMModelsGenerator(Model mo, int nbVMs) {
+        this(mo, makeVMs(mo, nbVMs));
+    }
 
+
+    public VMModelsGenerator(Model mo, VM [] vms) {
+        this.base = mo;
+        this.vms = vms;
+
+        this.nodes = mo.getMapping().getOnlineNodes().toArray(new Node[mo.getMapping().getOnlineNodes().size()]);
         List<List<Integer>> states = new ArrayList<>();
         List<Integer> st = new ArrayList<>();
-        for (int i = 0; i < 2 * mo.getMapping().getOnlineNodes().size() + 1; i++) {
+        int nbOns = mo.getMapping().getOnlineNodes().size();
+        for (int i = 0; i < 2 * nbOns + 1; i++) {
             st.add(i);
         }
-        for (int i = 0; i < nbVMs; i++) {
+        for (int i = 0; i < vms.length; i++) {
             states.add(st);
         }
         tg = new TupleGenerator<>(Integer.class, states);
@@ -56,13 +66,13 @@ public class VMModelsGenerator implements Iterable<Model>, Iterator<Model> {
                 if (!m.getMapping().addReadyVM(v)) {
                     throw new UnsupportedOperationException();
                 }
-            } else if (st < vms.length + 1) {
+            } else if (st < nodes.length + 1) {
                 Node n = nodes[st - 1];
                 if (!m.getMapping().addRunningVM(v, n)) {
                     throw new UnsupportedOperationException();
                 }
             } else {
-                Node n = nodes[st - 1 - vms.length];
+                Node n = nodes[st - 1 - nodes.length];
                 if (!m.getMapping().addSleepingVM(v, n)) {
                     throw new UnsupportedOperationException();
                 }
