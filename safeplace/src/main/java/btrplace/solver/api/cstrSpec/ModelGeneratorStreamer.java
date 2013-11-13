@@ -12,15 +12,27 @@ import java.util.List;
  */
 public class ModelGeneratorStreamer implements Iterator<Model> {
 
-    private int nbNodes;
-    private int nbVMs;
+    private Node [] nodes;
+    private VM [] vms;
 
     private ElementBuilder eb;
 
+    private int nbStates;
+
+    private int k;
+
+    private List<List<Integer>> states;
+
     public ModelGeneratorStreamer(int nbNodes, int nbVMs) {
-        this.nbNodes = nbNodes;
-        this.nbVMs = nbVMs;
+        this.nodes = new Node[nbNodes];
+        this.vms = new VM[nbVMs];
         this.eb = new DefaultElementBuilder();
+        for (int i = 0; i < nbNodes; i++) {
+            this.nodes[i] = eb.newNode();
+        }
+        for (int i = 0; i < nbVMs; i++) {
+            this.vms[i] = eb.newVM();
+        }
     }
 
     @Override
@@ -38,7 +50,7 @@ public class ModelGeneratorStreamer implements Iterator<Model> {
         throw new UnsupportedOperationException();
     }
 
-    private Model makeNodeModel(List<Node> nodes, int id) {
+    private Model makeNodeModel(Node [] nodes, int id) {
         Model m = new DefaultModel();
         for (Node n : nodes) {
             Node nn = m.newNode(n.id());
@@ -52,10 +64,10 @@ public class ModelGeneratorStreamer implements Iterator<Model> {
         return m;
     }
 
-    private List<Model> fillWithVMs(Model base, List<VM> vms, List<Node> nodes) {
+    private List<Model> fillWithVMs(Model base, VM [] vms, Node [] nodes) {
         List<Model> res = new ArrayList<>();
-        int nbVMStates = (int) Math.pow(1 + base.getMapping().getOnlineNodes().size() * 2, vms.size());
-        int [] vmIndexes = new int[vms.size()];
+        int nbVMStates = (int) Math.pow(1 + base.getMapping().getOnlineNodes().size() * 2, vms.length);
+        int [] vmIndexes = new int[vms.length];
         Node [] ons = base.getMapping().getOnlineNodes().toArray(new Node[base.getMapping().getOnlineNodes().size()]);
         for (int k = 0; k < nbVMStates; k++) {
             int z = 0;
@@ -84,7 +96,7 @@ public class ModelGeneratorStreamer implements Iterator<Model> {
                         System.err.println("Unable to make '" + vm + "' sleeping on " + n + ":\n" + m);
                     }
                 }
-                for (int w = 0; w < vms.size(); w++) {
+                for (int w = 0; w < vms.length; w++) {
                     vmIndexes[w]++;
                     if (vmIndexes[w] < ons.length * 2 + 1 ) {
                         break;
@@ -98,16 +110,7 @@ public class ModelGeneratorStreamer implements Iterator<Model> {
     }
 
     public List<Model> all(int nbVMs, int nbNodes) {
-        List<VM> vms = new ArrayList<>(nbVMs);
-        List<Node> nodes = new ArrayList<>(nbNodes);
         List<Model> res = new ArrayList<>();
-        Model mo = new DefaultModel();
-        for (int i = 0; i < nbVMs; i++) {
-            vms.add(mo.newVM());
-        }
-        for (int i = 0; i < nbNodes; i++) {
-            nodes.add(mo.newNode());
-        }
 
         //Every node state: 2**nbNodes models
         for (int i = 0; i < Math.pow(2, nbNodes); i++) {
