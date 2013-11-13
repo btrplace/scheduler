@@ -1,5 +1,7 @@
 package btrplace.solver.api.cstrSpec;
 
+import btrplace.solver.api.cstrSpec.generator.Collections;
+import btrplace.solver.api.cstrSpec.generator.TupleGenerator;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

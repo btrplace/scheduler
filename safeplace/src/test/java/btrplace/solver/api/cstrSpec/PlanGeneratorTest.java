@@ -5,6 +5,8 @@ import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.solver.api.cstrSpec.generator.ModelGenerator;
+import btrplace.solver.api.cstrSpec.generator.PlanGenerator;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

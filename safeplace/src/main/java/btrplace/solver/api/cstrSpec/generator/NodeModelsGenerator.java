@@ -1,4 +1,4 @@
-package btrplace.solver.api.cstrSpec;
+package btrplace.solver.api.cstrSpec.generator;
 
 import btrplace.model.*;
 
@@ -7,7 +7,7 @@ import java.util.Iterator;
 /**
  * @author Fabien Hermenier
  */
-public class NodeModelGenerator implements Iterable<Model>, Iterator<Model> {
+public class NodeModelsGenerator implements Iterable<Model>, Iterator<Model> {
 
     private Node[] nodes;
 
@@ -15,7 +15,7 @@ public class NodeModelGenerator implements Iterable<Model>, Iterator<Model> {
 
     private int k;
 
-    public NodeModelGenerator(ElementBuilder eb, int nbNodes) {
+    public NodeModelsGenerator(ElementBuilder eb, int nbNodes) {
         this.nodes = new Node[nbNodes];
         nbStates = (int) Math.pow(2, nbNodes);
         for (int i = 0; i < nbNodes; i++) {

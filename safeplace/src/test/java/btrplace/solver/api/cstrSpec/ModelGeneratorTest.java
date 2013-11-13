@@ -1,6 +1,7 @@
 package btrplace.solver.api.cstrSpec;
 
 import btrplace.model.Model;
+import btrplace.solver.api.cstrSpec.generator.ModelGenerator;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

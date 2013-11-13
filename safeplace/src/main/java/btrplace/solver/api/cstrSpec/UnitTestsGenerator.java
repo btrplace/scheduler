@@ -6,6 +6,7 @@ import btrplace.json.model.constraint.ConstraintsConverter;
 import btrplace.model.Element;
 import btrplace.model.Model;
 import btrplace.model.constraint.SatConstraint;
+import btrplace.solver.api.cstrSpec.generator.ModelGenerator;
 import btrplace.solver.api.cstrSpec.type.VMType;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;

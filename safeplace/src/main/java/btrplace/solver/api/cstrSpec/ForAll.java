@@ -1,6 +1,7 @@
 package btrplace.solver.api.cstrSpec;
 
 import btrplace.model.Model;
+import btrplace.solver.api.cstrSpec.generator.Collections;
 
 import java.util.ArrayList;
 import java.util.Collection;

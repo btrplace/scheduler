@@ -1,4 +1,4 @@
-package btrplace.solver.api.cstrSpec;
+package btrplace.solver.api.cstrSpec.generator;
 
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
