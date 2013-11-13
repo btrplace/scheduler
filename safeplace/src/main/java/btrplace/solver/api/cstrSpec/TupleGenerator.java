@@ -1,13 +1,13 @@
 package btrplace.solver.api.cstrSpec;
 
-import java.util.ArrayList;
+import java.lang.reflect.Array;
 import java.util.Iterator;
 import java.util.List;
 
 /**
  * @author Fabien Hermenier
  */
-public class TupleGenerator<T> implements Iterator<List<T>> {
+public class TupleGenerator<T> implements Iterator<T []> {
 
     private T [][] doms;
 
@@ -17,11 +17,13 @@ public class TupleGenerator<T> implements Iterator<List<T>> {
 
     private int k;
 
-    public TupleGenerator(List<List<T>> domains) {
+    private Class<T> cl;
+    public TupleGenerator(Class<T> cl, List<List<T>> domains) {
         doms = (T[][]) new Object[domains.size()][];
         indexes = new int[domains.size()];
         int i = 0;
         nbStates = 1;
+        this.cl = cl;
         for (List<T> v : domains) {
             indexes[i] = 0;
             doms[i] = v.toArray((T[])new Object[v.size()]);
@@ -36,10 +38,10 @@ public class TupleGenerator<T> implements Iterator<List<T>> {
     }
 
     @Override
-    public List<T> next() {
-        List<T> tuple = new ArrayList<>(doms.length);
+    public T [] next() {
+        T [] tuple = (T[]) Array.newInstance(cl, doms.length);
         for (int x = 0; x < doms.length; x++) {
-            tuple.add(doms[x][indexes[x]]);
+            tuple[x] = doms[x][indexes[x]];
         }
         for (int x = 0; x < doms.length; x++) {
             indexes[x]++;

@@ -15,16 +15,16 @@ public class TupleGeneratorTest {
     public void test() {
         List<List<Integer>> l = new ArrayList<>();
         List<Integer> cnt = new ArrayList<>();
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 300; i++) {
             cnt.add(i);
         }
         l.add(cnt);
         l.add(cnt);
         l.add(cnt);
-        TupleGenerator<Integer> tg = new TupleGenerator<>(l);
+        TupleGenerator<Integer> tg = new TupleGenerator<>(Integer.class, l);
         int nb = 0;
         while(tg.hasNext()) {
-            List<Integer>t = tg.next();
+            Integer [] t = tg.next();
             //System.out.println(t);
             nb++;
         }
