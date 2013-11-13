@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
-public class TupleGenerator<T> implements Iterator<T []> {
+public class TupleGenerator<T> implements Iterator<T []>, Iterable<T[]> {
 
     private T [][] doms;
 
@@ -30,6 +30,10 @@ public class TupleGenerator<T> implements Iterator<T []> {
             nbStates *= doms[i].length;
             i++;
         }
+    }
+
+    public void reset() {
+        k = 0;
     }
 
     @Override
@@ -57,5 +61,10 @@ public class TupleGenerator<T> implements Iterator<T []> {
     @Override
     public void remove() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Iterator<T[]> iterator() {
+        return this;
     }
 }

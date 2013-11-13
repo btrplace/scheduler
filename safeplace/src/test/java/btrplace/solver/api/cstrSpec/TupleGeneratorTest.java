@@ -21,10 +21,9 @@ public class TupleGeneratorTest {
         l.add(cnt);
         l.add(cnt);
         l.add(cnt);
-        TupleGenerator<Integer> tg = new TupleGenerator<>(Integer.class, l);
         int nb = 0;
-        while(tg.hasNext()) {
-            Integer [] t = tg.next();
+        TupleGenerator<Integer> tg = new TupleGenerator<>(Integer.class, l);
+        for(Integer [] t : tg) {
             //System.out.println(t);
             nb++;
         }
