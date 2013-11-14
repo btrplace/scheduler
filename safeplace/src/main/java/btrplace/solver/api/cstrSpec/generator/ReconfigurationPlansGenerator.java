@@ -22,7 +22,7 @@ public class ReconfigurationPlansGenerator extends DefaultGenerator<Reconfigurat
 
     public ReconfigurationPlansGenerator(Model src) {
         List<List<Action>> possibles = makePossibleActions(src);
-        tg = new TuplesGenerator<>(Action.class, possibles);
+        tg = new AllTuplesGenerator<>(Action.class, possibles);
         this.src = src;
     }
 

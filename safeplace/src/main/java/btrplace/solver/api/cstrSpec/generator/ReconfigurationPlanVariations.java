@@ -11,7 +11,7 @@ import java.util.Iterator;
  */
 public abstract class ReconfigurationPlanVariations implements Generator<ReconfigurationPlan> {
 
-    protected TuplesGenerator<Action> tg;
+    protected AllTuplesGenerator<Action> tg;
 
     private ReconfigurationPlan src;
 

@@ -21,7 +21,7 @@ public class NodeModelsGenerator extends DefaultGenerator<Model> {
         for (int i = 0; i < ns.length; i++) {
             domains.add(state);
         }
-        tg = new TuplesGenerator<>(Integer.class, domains);
+        tg = new AllTuplesGenerator<>(Integer.class, domains);
     }
 
     public static Node[] makeNodes(ElementBuilder eb, int nb) {

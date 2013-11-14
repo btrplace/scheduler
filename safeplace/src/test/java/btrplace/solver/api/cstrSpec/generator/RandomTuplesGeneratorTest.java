@@ -1,15 +1,15 @@
 package btrplace.solver.api.cstrSpec.generator;
 
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * @author Fabien Hermenier
  */
-public class TupleGeneratorTest {
+public class RandomTuplesGeneratorTest {
 
     @Test
     public void test() {
@@ -21,12 +21,10 @@ public class TupleGeneratorTest {
         l.add(cnt);
         l.add(cnt);
         l.add(cnt);
-        int nb = 0;
-        TuplesGenerator<Integer> tg = new TuplesGenerator<>(Integer.class, l);
-        for (Integer[] t : tg) {
-            //System.out.println(t);
-            nb++;
+
+        RandomTuplesGenerator<Integer> tg = new RandomTuplesGenerator<Integer>(Integer.class, l);
+        for (int i = 0; i < 100; i++) {
+            System.out.println(Arrays.toString(tg.next()));
         }
-        Assert.assertEquals(nb, Math.pow(cnt.size(), l.size()));
     }
 }

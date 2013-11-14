@@ -3,11 +3,12 @@ package btrplace.solver.api.cstrSpec.generator;
 import java.lang.reflect.Array;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 /**
  * @author Fabien Hermenier
  */
-public class TuplesGenerator<T> implements Generator<T[]> {
+public class RandomTuplesGenerator<T> implements Generator<T[]> {
 
     private T[][] doms;
 
@@ -19,7 +20,7 @@ public class TuplesGenerator<T> implements Generator<T[]> {
 
     private Class<T> cl;
 
-    public TuplesGenerator(Class<T> cl, List<List<T>> domains) {
+    public RandomTuplesGenerator(Class<T> cl, List<List<T>> domains) {
         doms = (T[][]) new Object[domains.size()][];
         indexes = new int[domains.size()];
         int i = 0;
@@ -47,21 +48,20 @@ public class TuplesGenerator<T> implements Generator<T[]> {
 
     @Override
     public boolean hasNext() {
-        return k < nbStates;
+        return k < nbStates; //TODO: ensure completeness
+    }
+
+    private static final Random rnd = new Random();
+
+    private T randomIn(T[] vals) {
+        return vals[rnd.nextInt(vals.length)];
     }
 
     @Override
     public T[] next() {
         T[] tuple = (T[]) Array.newInstance(cl, doms.length);
         for (int x = 0; x < doms.length; x++) {
-            tuple[x] = doms[x][indexes[x]];
-        }
-        for (int x = 0; x < doms.length; x++) {
-            indexes[x]++;
-            if (indexes[x] < doms[x].length) {
-                break;
-            }
-            indexes[x] = 0;
+            tuple[x] = randomIn(doms[x]);
         }
         k++;
         return tuple;

@@ -8,6 +8,7 @@ import java.util.List;
 
 /**
  * Generate all the possible reconfiguration plans.
+ *
  * @author Fabien Hermenier
  */
 public class DurationsGenerator extends ReconfigurationPlanVariations {
@@ -15,7 +16,7 @@ public class DurationsGenerator extends ReconfigurationPlanVariations {
     public DurationsGenerator(ReconfigurationPlan src, int lb, int ub) {
         super(src);
         List<List<Action>> possibles = makePossibleDurations(src, lb, ub);
-        tg = new TuplesGenerator<>(Action.class, possibles);
+        tg = new AllTuplesGenerator<>(Action.class, possibles);
     }
 
     private List<List<Action>> makePossibleDurations(ReconfigurationPlan src, int lb, int ub) {

@@ -45,7 +45,7 @@ public class VMModelsGenerator extends DefaultGenerator<Model> {
         for (int i = 0; i < vms.length; i++) {
             states.add(st);
         }
-        tg = new TuplesGenerator<>(Integer.class, states);
+        tg = new AllTuplesGenerator<>(Integer.class, states);
     }
 
     @Override

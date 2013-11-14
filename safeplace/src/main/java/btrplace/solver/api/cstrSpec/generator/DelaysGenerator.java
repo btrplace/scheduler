@@ -8,6 +8,7 @@ import java.util.List;
 
 /**
  * Generate all the possible reconfiguration plans.
+ *
  * @author Fabien Hermenier
  */
 public class DelaysGenerator extends ReconfigurationPlanVariations {
@@ -16,7 +17,7 @@ public class DelaysGenerator extends ReconfigurationPlanVariations {
     public DelaysGenerator(ReconfigurationPlan src) {
         super(src);
         List<List<Action>> possibles = makePossibleDelays(src);
-        tg = new TuplesGenerator<>(Action.class, possibles);
+        tg = new AllTuplesGenerator<>(Action.class, possibles);
     }
 
     private List<List<Action>> makePossibleDelays(ReconfigurationPlan src) {
