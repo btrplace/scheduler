@@ -5,35 +5,33 @@ import btrplace.model.Node;
 import btrplace.model.VM;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * @author Fabien Hermenier
  */
-public class VMModelsGenerator implements Iterable<Model>, Iterator<Model> {
+public class VMModelsGenerator extends DefaultGenerator<Model> {
 
-    private VM [] vms;
+    private VM[] vms;
 
-    private Node [] nodes;
+    private Node[] nodes;
 
     private Model base;
 
-    private TuplesGenerator<Integer> tg;
-
-    public static VM [] makeVMs(Model mo, int nbVMs) {
-        VM [] vms = new VM[nbVMs];
+    public static VM[] makeVMs(Model mo, int nbVMs) {
+        VM[] vms = new VM[nbVMs];
         for (int i = 0; i < nbVMs; i++) {
             vms[i] = mo.newVM();
         }
         return vms;
     }
+
     public VMModelsGenerator(Model mo, int nbVMs) {
         this(mo, makeVMs(mo, nbVMs));
     }
 
 
-    public VMModelsGenerator(Model mo, VM [] vms) {
+    public VMModelsGenerator(Model mo, VM[] vms) {
         this.base = mo;
         this.vms = vms;
 
@@ -51,13 +49,8 @@ public class VMModelsGenerator implements Iterable<Model>, Iterator<Model> {
     }
 
     @Override
-    public boolean hasNext() {
-        return tg.hasNext();
-    }
-
-    @Override
     public Model next() {
-        Integer [] values = tg.next();
+        Integer[] values = (Integer[]) tg.next();
         Model m = base.clone();
         for (int i = 0; i < values.length; i++) {
             int st = values[i];
@@ -79,15 +72,5 @@ public class VMModelsGenerator implements Iterable<Model>, Iterator<Model> {
             }
         }
         return m;
-    }
-
-    @Override
-    public void remove() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Iterator<Model> iterator() {
-        return this;
     }
 }

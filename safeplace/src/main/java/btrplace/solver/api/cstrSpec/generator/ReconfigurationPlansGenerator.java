@@ -9,16 +9,14 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.*;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * Generate all the possible reconfiguration plans.
+ *
  * @author Fabien Hermenier
  */
-public class ReconfigurationPlansGenerator implements Iterable<ReconfigurationPlan>, Iterator<ReconfigurationPlan> {
-
-    private TuplesGenerator<Action> tg;
+public class ReconfigurationPlansGenerator extends DefaultGenerator<ReconfigurationPlan> {
 
     private Model src;
 
@@ -32,10 +30,10 @@ public class ReconfigurationPlansGenerator implements Iterable<ReconfigurationPl
         List<List<Action>> l = new ArrayList<>();
         Mapping m = src.getMapping();
         for (Node n : m.getOnlineNodes()) {
-             List<Action> as = new ArrayList<>(2);
-             as.add(null);
-             as.add(new ShutdownNode(n, 0, 3));
-             l.add(as);
+            List<Action> as = new ArrayList<>(2);
+            as.add(null);
+            as.add(new ShutdownNode(n, 0, 3));
+            l.add(as);
         }
         for (Node n : m.getOfflineNodes()) {
             List<Action> as = new ArrayList<>(2);
@@ -78,32 +76,13 @@ public class ReconfigurationPlansGenerator implements Iterable<ReconfigurationPl
     }
 
     @Override
-    public void remove() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public ReconfigurationPlan next() {
         ReconfigurationPlan p = new DefaultReconfigurationPlan(src);
-        for (Action a : tg.next()) {
+        for (Action a : (Action[]) tg.next()) {
             if (a != null) {
                 p.add(a);
             }
         }
         return p;
-    }
-
-    @Override
-    public boolean hasNext() {
-        return tg.hasNext();
-    }
-
-    public void reset() {
-        tg.reset();
-    }
-
-    @Override
-    public Iterator<ReconfigurationPlan> iterator() {
-        return this;
     }
 }

@@ -9,7 +9,7 @@ import java.util.Iterator;
 /**
  * @author Fabien Hermenier
  */
-public abstract class ReconfigurationPlanVariations implements Iterable<ReconfigurationPlan>, Iterator<ReconfigurationPlan> {
+public abstract class ReconfigurationPlanVariations implements Generator<ReconfigurationPlan> {
 
     protected TuplesGenerator<Action> tg;
 
@@ -45,5 +45,15 @@ public abstract class ReconfigurationPlanVariations implements Iterable<Reconfig
     @Override
     public Iterator<ReconfigurationPlan> iterator() {
         return this;
+    }
+
+    @Override
+    public int count() {
+        return tg.count();
+    }
+
+    @Override
+    public int done() {
+        return tg.done();
     }
 }

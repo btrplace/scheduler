@@ -7,17 +7,18 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
-public class TuplesGenerator<T> implements Iterator<T []>, Iterable<T[]> {
+public class TuplesGenerator<T> implements Generator<T[]> {
 
-    private T [][] doms;
+    private T[][] doms;
 
-    private int [] indexes;
+    private int[] indexes;
 
     private int nbStates;
 
     private int k;
 
     private Class<T> cl;
+
     public TuplesGenerator(Class<T> cl, List<List<T>> domains) {
         doms = (T[][]) new Object[domains.size()][];
         indexes = new int[domains.size()];
@@ -26,7 +27,7 @@ public class TuplesGenerator<T> implements Iterator<T []>, Iterable<T[]> {
         this.cl = cl;
         for (List<T> v : domains) {
             indexes[i] = 0;
-            doms[i] = v.toArray((T[])new Object[v.size()]);
+            doms[i] = v.toArray((T[]) new Object[v.size()]);
             nbStates *= doms[i].length;
             i++;
         }
@@ -40,7 +41,7 @@ public class TuplesGenerator<T> implements Iterator<T []>, Iterable<T[]> {
         return nbStates;
     }
 
-    public int passed() {
+    public int done() {
         return k;
     }
 
@@ -50,8 +51,8 @@ public class TuplesGenerator<T> implements Iterator<T []>, Iterable<T[]> {
     }
 
     @Override
-    public T [] next() {
-        T [] tuple = (T[]) Array.newInstance(cl, doms.length);
+    public T[] next() {
+        T[] tuple = (T[]) Array.newInstance(cl, doms.length);
         for (int x = 0; x < doms.length; x++) {
             tuple[x] = doms[x][indexes[x]];
         }

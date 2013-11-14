@@ -1,6 +1,5 @@
-package btrplace.solver.api.cstrSpec;
+package btrplace.solver.api.cstrSpec.generator;
 
-import btrplace.solver.api.cstrSpec.generator.TuplesGenerator;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -24,7 +23,7 @@ public class TupleGeneratorTest {
         l.add(cnt);
         int nb = 0;
         TuplesGenerator<Integer> tg = new TuplesGenerator<>(Integer.class, l);
-        for(Integer [] t : tg) {
+        for (Integer[] t : tg) {
             //System.out.println(t);
             nb++;
         }
