@@ -51,23 +51,32 @@
     </dependencies>
 
     <build>
-    <plugins>
-    <plugin>
-        <groupId>org.antlr</groupId>
-        <artifactId>antlr4-maven-plugin</artifactId>
-        <version>4.1</version>
-        <configuration>
-            <sourceDirectory>src/main/antlr</sourceDirectory>
-            <visitor>true</visitor>
-        </configuration>
-        <executions>
-            <execution>
-                <goals>
-                    <goal>antlr4</goal>
-                </goals>
-            </execution>
-        </executions>
-    </plugin>
-    </plugins>
+        <plugins>
+            <plugin>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-maven-plugin</artifactId>
+                <version>4.1</version>
+                <configuration>
+                    <sourceDirectory>src/main/antlr</sourceDirectory>
+                    <visitor>true</visitor>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 </project>
