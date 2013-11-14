@@ -2,7 +2,9 @@ package btrplace.solver.api.cstrSpec.generator;
 
 import btrplace.model.*;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Fabien Hermenier
@@ -11,13 +13,18 @@ public class NodeModelsGenerator implements Iterable<Model>, Iterator<Model> {
 
     private Node[] nodes;
 
-    private int nbStates;
-
-    private int k;
+    private TuplesGenerator<Integer> tg;
 
     public NodeModelsGenerator(Node [] ns) {
         this.nodes = ns;
-        nbStates = (int)Math.pow(2, ns.length);
+        List<Integer> state = new ArrayList<>(2);
+        state.add(0);
+        state.add(1);
+        List<List<Integer>> domains = new ArrayList<>();
+        for (int i = 0; i  < ns.length; i++) {
+            domains.add(state);
+        }
+        tg = new TuplesGenerator<>(Integer.class, domains);
     }
 
     public static Node [] makeNodes(ElementBuilder eb, int nb) {
@@ -35,23 +42,22 @@ public class NodeModelsGenerator implements Iterable<Model>, Iterator<Model> {
 
     @Override
     public boolean hasNext() {
-        return k < nbStates;
+        return tg.hasNext();
     }
 
     @Override
     public Model next() {
-        int st = k;
         Model mo = new DefaultModel();
         Mapping m = mo.getMapping();
-        for (Node n : nodes) {
-            if (st % 2 == 0) {
-                m.addOnlineNode(n);
+        Integer [] st = tg.next();
+        for (int i = 0; i < st.length; i++) {
+            int v = st[i];
+            if (v == 0) {
+                m.addOnlineNode(nodes[i]);
             } else {
-                m.addOfflineNode(n);
+                m.addOfflineNode(nodes[i]);
             }
-            st = st >> 1;
         }
-        k++;
         return mo;
     }
 
@@ -61,8 +67,17 @@ public class NodeModelsGenerator implements Iterable<Model>, Iterator<Model> {
     }
 
     public void reset() {
-        k = 0;
+        tg.reset();
     }
+
+    public int count() {
+        return tg.count();
+    }
+
+    public int passed() {
+        return tg.passed();
+    }
+
     @Override
     public void remove() {
         throw new UnsupportedOperationException();

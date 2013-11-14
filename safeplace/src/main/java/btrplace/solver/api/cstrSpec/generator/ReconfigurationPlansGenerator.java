@@ -18,13 +18,13 @@ import java.util.List;
  */
 public class ReconfigurationPlansGenerator implements Iterable<ReconfigurationPlan>, Iterator<ReconfigurationPlan> {
 
-    private TupleGenerator<Action> tg;
+    private TuplesGenerator<Action> tg;
 
     private Model src;
 
     public ReconfigurationPlansGenerator(Model src) {
         List<List<Action>> possibles = makePossibleActions(src);
-        tg = new TupleGenerator<>(Action.class, possibles);
+        tg = new TuplesGenerator<>(Action.class, possibles);
         this.src = src;
     }
 

@@ -1,7 +1,7 @@
 package btrplace.solver.api.cstrSpec;
 
 import btrplace.model.Model;
-import btrplace.solver.api.cstrSpec.generator.TupleGenerator;
+import btrplace.solver.api.cstrSpec.generator.TuplesGenerator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,7 +42,7 @@ public class Exists implements Proposition {
         for (int i = 0; i < vars.size(); i++) {
             values.add(new ArrayList<>((Collection<Object>)from.getValue(m)));
         }
-        TupleGenerator<Object> tg = new TupleGenerator<>(Object.class, values);
+        TuplesGenerator<Object> tg = new TuplesGenerator<>(Object.class, values);
         for(Object [] tuple : tg) {
             for (int i = 0; i < tuple.length; i++) {
                 vars.get(i).set(tuple[i]);

@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
-public class TupleGenerator<T> implements Iterator<T []>, Iterable<T[]> {
+public class TuplesGenerator<T> implements Iterator<T []>, Iterable<T[]> {
 
     private T [][] doms;
 
@@ -18,7 +18,7 @@ public class TupleGenerator<T> implements Iterator<T []>, Iterable<T[]> {
     private int k;
 
     private Class<T> cl;
-    public TupleGenerator(Class<T> cl, List<List<T>> domains) {
+    public TuplesGenerator(Class<T> cl, List<List<T>> domains) {
         doms = (T[][]) new Object[domains.size()][];
         indexes = new int[domains.size()];
         int i = 0;
@@ -34,6 +34,14 @@ public class TupleGenerator<T> implements Iterator<T []>, Iterable<T[]> {
 
     public void reset() {
         k = 0;
+    }
+
+    public int count() {
+        return nbStates;
+    }
+
+    public int passed() {
+        return k;
     }
 
     @Override

@@ -19,7 +19,7 @@ public class VMModelsGenerator implements Iterable<Model>, Iterator<Model> {
 
     private Model base;
 
-    private TupleGenerator<Integer> tg;
+    private TuplesGenerator<Integer> tg;
 
     public static VM [] makeVMs(Model mo, int nbVMs) {
         VM [] vms = new VM[nbVMs];
@@ -47,7 +47,7 @@ public class VMModelsGenerator implements Iterable<Model>, Iterator<Model> {
         for (int i = 0; i < vms.length; i++) {
             states.add(st);
         }
-        tg = new TupleGenerator<>(Integer.class, states);
+        tg = new TuplesGenerator<>(Integer.class, states);
     }
 
     @Override

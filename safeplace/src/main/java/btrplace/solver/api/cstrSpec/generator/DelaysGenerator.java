@@ -1,27 +1,22 @@
 package btrplace.solver.api.cstrSpec.generator;
 
-import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
  * Generate all the possible reconfiguration plans.
  * @author Fabien Hermenier
  */
-public class DelaysGenerator implements Iterable<ReconfigurationPlan>, Iterator<ReconfigurationPlan> {
+public class DelaysGenerator extends ReconfigurationPlanVariations {
 
-    private TupleGenerator<Action> tg;
-
-    private ReconfigurationPlan src;
 
     public DelaysGenerator(ReconfigurationPlan src) {
-        this.src = src;
+        super(src);
         List<List<Action>> possibles = makePossibleDelays(src);
-        tg = new TupleGenerator<>(Action.class, possibles);
+        tg = new TuplesGenerator<>(Action.class, possibles);
     }
 
     private List<List<Action>> makePossibleDelays(ReconfigurationPlan src) {
@@ -40,34 +35,5 @@ public class DelaysGenerator implements Iterable<ReconfigurationPlan>, Iterator<
             delays.add(dom);
         }
         return delays;
-    }
-
-
-    @Override
-    public void remove() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public ReconfigurationPlan next() {
-        ReconfigurationPlan p = new DefaultReconfigurationPlan(src.getOrigin());
-        for (Action a : tg.next()) {
-            p.add(a);
-        }
-        return p;
-    }
-
-    @Override
-    public boolean hasNext() {
-        return tg.hasNext();
-    }
-
-    public void reset() {
-        tg.reset();
-    }
-
-    @Override
-    public Iterator<ReconfigurationPlan> iterator() {
-        return this;
     }
 }
