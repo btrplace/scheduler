@@ -15,6 +15,7 @@ import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import net.minidev.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -28,7 +29,7 @@ public class TestUnit {
 
     private boolean isConsistent;
 
-    public TestUnit(Model mo, SatConstraint cstr,  boolean c) {
+    public TestUnit(Model mo, SatConstraint cstr, boolean c) {
         this.mo = mo;
         this.cstr = cstr;
         this.isConsistent = c;
@@ -110,24 +111,24 @@ public class TestUnit {
         if (mo.getMapping().getOfflineNodes().size() > 0) {
             cstrs.add(new Offline(mo.getMapping().getOfflineNodes()));
         }
-            cra.doOptimize(true);
-            ReconfigurationPlan p = cra.solve(mo, /*cstr != null ? Collections.singletonList(cstr) : Collections.<SatConstraint>emptyList()*/ cstrs);
-            if (isConsistent) {
-                if (p != null && p.getSize() == 0) {
-                    return TestResult.ErrorType.succeed;
-                } else if (p == null) {
-                    return TestResult.ErrorType.falseNegative;
-                }
-                return TestResult.ErrorType.falseNegative;
-            } else {
-                if (p == null) {
-                    return TestResult.ErrorType.succeed;
-                } else if (p.getSize() == 0) {
-                    return TestResult.ErrorType.falsePositive;
-                }
+        cra.doOptimize(true);
+        ReconfigurationPlan p = cra.solve(mo, cstr != null ? Collections.singletonList(cstr) : Collections.<SatConstraint>emptyList());
+        if (isConsistent) {
+            if (p != null && p.getSize() == 0) {
                 return TestResult.ErrorType.succeed;
+            } else if (p == null) {
+                return TestResult.ErrorType.falseNegative;
             }
-            //Need to root everything ?
+            return TestResult.ErrorType.falseNegative;
+        } else {
+            if (p == null) {
+                return TestResult.ErrorType.succeed;
+            } else if (p.getSize() == 0) {
+                return TestResult.ErrorType.falsePositive;
+            }
+            return TestResult.ErrorType.succeed;
+        }
+        //Need to root everything ?
     }
 
     @Override

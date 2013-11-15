@@ -10,60 +10,45 @@ import java.util.Random;
  */
 public class RandomTuplesGenerator<T> implements Generator<T[]> {
 
-    private T[][] doms;
-
-    private int[] indexes;
-
-    private int nbStates;
-
-    private int k;
+    private List<List<T>> doms;
 
     private Class<T> cl;
 
     public RandomTuplesGenerator(Class<T> cl, List<List<T>> domains) {
-        doms = (T[][]) new Object[domains.size()][];
-        indexes = new int[domains.size()];
-        int i = 0;
-        nbStates = 1;
+        this.doms = domains;
         this.cl = cl;
-        for (List<T> v : domains) {
-            indexes[i] = 0;
-            doms[i] = v.toArray((T[]) new Object[v.size()]);
-            nbStates *= doms[i].length;
-            i++;
-        }
     }
 
     public void reset() {
-        k = 0;
+
     }
 
     public int count() {
-        return nbStates;
+        return Integer.MAX_VALUE;
     }
 
     public int done() {
-        return k;
+        return 0;
     }
 
     @Override
     public boolean hasNext() {
-        return k < nbStates; //TODO: ensure completeness
+        return true; //Beware to infinite loop
     }
 
     private static final Random rnd = new Random();
 
-    private T randomIn(T[] vals) {
-        return vals[rnd.nextInt(vals.length)];
+    private T randomIn(List<T> vals) {
+        return vals.get(rnd.nextInt(vals.size()));
     }
 
     @Override
     public T[] next() {
-        T[] tuple = (T[]) Array.newInstance(cl, doms.length);
-        for (int x = 0; x < doms.length; x++) {
-            tuple[x] = randomIn(doms[x]);
+        int s = doms.size();
+        T[] tuple = (T[]) Array.newInstance(cl, s);
+        for (int x = 0; x < s; x++) {
+            tuple[x] = randomIn(doms.get(x));
         }
-        k++;
         return tuple;
     }
 

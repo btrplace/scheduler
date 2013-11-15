@@ -14,9 +14,17 @@ import java.util.List;
 public class DurationsGenerator extends ReconfigurationPlanVariations {
 
     public DurationsGenerator(ReconfigurationPlan src, int lb, int ub) {
+        this(src, lb, ub, true);
+    }
+
+    public DurationsGenerator(ReconfigurationPlan src, int lb, int ub, boolean seq) {
         super(src);
         List<List<Action>> possibles = makePossibleDurations(src, lb, ub);
-        tg = new AllTuplesGenerator<>(Action.class, possibles);
+        if (seq) {
+            tg = new AllTuplesGenerator<>(Action.class, possibles);
+        } else {
+            tg = new RandomTuplesGenerator<>(Action.class, possibles);
+        }
     }
 
     private List<List<Action>> makePossibleDurations(ReconfigurationPlan src, int lb, int ub) {
