@@ -14,26 +14,43 @@ public class RandomTuplesGenerator<T> implements Generator<T[]> {
 
     private Class<T> cl;
 
+    private int k;
+
+    private int max;
+
+    private static <T> int nbCombinations(List<List<T>> d) {
+        int x = 2;
+        for (List l : d) {
+            x *= l.size();
+        }
+        return x;
+    }
+
     public RandomTuplesGenerator(Class<T> cl, List<List<T>> domains) {
+        this(cl, domains, nbCombinations(domains));
+    }
+
+    public RandomTuplesGenerator(Class<T> cl, List<List<T>> domains, int max) {
         this.doms = domains;
         this.cl = cl;
+        this.max = max;
     }
 
     public void reset() {
-
+        k = 0;
     }
 
     public int count() {
-        return Integer.MAX_VALUE;
+        return max;
     }
 
     public int done() {
-        return 0;
+        return k;
     }
 
     @Override
     public boolean hasNext() {
-        return true; //Beware to infinite loop
+        return k < max;
     }
 
     private static final Random rnd = new Random();
@@ -49,6 +66,7 @@ public class RandomTuplesGenerator<T> implements Generator<T[]> {
         for (int x = 0; x < s; x++) {
             tuple[x] = randomIn(doms.get(x));
         }
+        k++;
         return tuple;
     }
 

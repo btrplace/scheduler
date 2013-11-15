@@ -1,9 +1,13 @@
 package btrplace.solver.api.cstrSpec;
 
+import btrplace.model.Model;
+import btrplace.plan.ReconfigurationPlan;
 import net.minidev.json.JSONObject;
 
-import java.io.Reader;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Fabien Hermenier
@@ -12,6 +16,7 @@ public class Constraint {
 
     private Proposition p;
 
+    private Proposition not;
     private List<Variable> params;
 
     private Map<String, Variable> vars;
@@ -20,11 +25,9 @@ public class Constraint {
 
     private String marshal;
 
-    public Constraint(Reader in) {
-
-    }
     public Constraint(String n, String m, Proposition p, List<Variable> params) {
         this.p = p;
+        this.not = p.not();
         this.cstrName = n;
         this.params = params;
         this.marshal = m;
@@ -33,6 +36,7 @@ public class Constraint {
             vars.put(v.label(), v);
         }
     }
+
     public Proposition getProposition() {
         return p;
     }
@@ -41,47 +45,31 @@ public class Constraint {
         return params;
     }
 
-    public void instantiate(Map<String, Object> values) {
+    public Boolean instantiate(Map<String, Object> values, ReconfigurationPlan p) {
         for (Map.Entry<String, Object> val : values.entrySet()) {
             Variable var = vars.get(val.getKey());
             var.set(val.getValue());
         }
+        Model res = p.getResult();
+        Boolean bOk = this.p.evaluate(res);
+        Boolean bKO = this.not.evaluate(res);
+
+        if (bOk == null || bKO == null) {
+            throw new RuntimeException("Both null !\ngood:" + bOk + "\nnotGood: " + bKO + "\n" + p.getOrigin().getMapping().toString());
+        }
+        if (bOk && bKO) {
+            throw new RuntimeException("good and bad !\ngood:" + bOk + "\nnotGood: " + bKO + "\n" + res.getMapping().toString());
+        } else if (!(bOk || bKO)) {
+            throw new RuntimeException("Nor good or bad !\ngood:" + bOk + "\nnotGood: " + bKO + "\n" + p.getOrigin().getMapping().toString());
+        }
+        this.reset();
+        return bOk;
     }
 
     public void reset() {
         for (Variable var : params) {
             var.unset();
         }
-    }
-
-    public List<Map<String,Object>> expandParameters() {
-        Object [][] doms = new Object[params.size()][];
-        int [] indexes = new int[params.size()];
-        int i = 0;
-        int nbStates = 1;
-        List<Map<String, Object>> all = new ArrayList<>();
-        for (Variable v : params) {
-            indexes[i] = 0;
-            Set<Object> sDom = v.domain();
-            doms[i] = sDom.toArray(new Object[sDom.size()]);
-            nbStates *= doms[i].length;
-            i++;
-        }
-        for (int k = 0; k < nbStates; k++) {
-            Map<String, Object> entries = new HashMap<>(params.size());
-            for (int x = 0; x < params.size(); x++) {
-                entries.put(params.get(x).label(), doms[x][indexes[x]]);
-            }
-            for (int x = 0; x < params.size(); x++) {
-                indexes[x]++;
-                if (indexes[x] < doms[x].length) {
-                    break;
-                }
-                indexes[x] = 0;
-            }
-            all.add(entries);
-        }
-        return all;
     }
 
     public String getConstraintName() {

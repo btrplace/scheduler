@@ -1,7 +1,6 @@
 package btrplace.solver.api.cstrSpec;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.model.ModelConverter;
 import btrplace.json.model.constraint.ConstraintsConverter;
 import btrplace.model.Element;
 import btrplace.model.Model;
@@ -9,11 +8,9 @@ import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.api.cstrSpec.generator.ModelsGenerator;
 import btrplace.solver.api.cstrSpec.type.NodeType;
 import btrplace.solver.api.cstrSpec.type.VMType;
-import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.util.*;
 
 /**
@@ -30,16 +27,16 @@ public class UnitTestsGenerator {
     }
 
     public String marshal(String json, Map<String, Object> params) {
-        for (Map.Entry<String, Object>  e : params.entrySet()) {
+        for (Map.Entry<String, Object> e : params.entrySet()) {
             Object v = e.getValue();
             Object s = e.getValue().toString();
             if (v instanceof Element) {
-                s = ((Element)v).id();
+                s = ((Element) v).id();
             } else if (v instanceof Collection) {
                 StringBuilder str = new StringBuilder();
-                for (Iterator<Object> ite = ((Collection)v).iterator(); ite.hasNext();) {
+                for (Iterator<Object> ite = ((Collection) v).iterator(); ite.hasNext(); ) {
                     Object o = ite.next();
-                    str.append(((Element)o).id());
+                    str.append(((Element) o).id());
                     if (ite.hasNext()) {
                         str.append(", ");
                     }
@@ -51,7 +48,7 @@ public class UnitTestsGenerator {
         return json;
     }
 
-    public void generate(Constraint c, Writer w) throws IOException, JSONConverterException {
+    /*public void generate(Constraint c, Writer w) throws IOException, JSONConverterException {
         ModelsGenerator gen = new ModelsGenerator(NodeType.getInstance().domain().size(), VMType.getInstance().domain().size());
         //List<Model> models = gen.all(VMType.getInstance().domain().size(), VMType.getInstance().domain().size());
         Proposition good = c.getProposition();
@@ -96,7 +93,7 @@ public class UnitTestsGenerator {
         }
         o.put("scenarios", scenarios);
         o.writeJSONString(w);
-    }
+    }                   */
 
     public List<TestUnit> generate(Constraint c) throws JSONConverterException, IOException {
         List<TestUnit> tests = new ArrayList<>();
@@ -111,13 +108,13 @@ public class UnitTestsGenerator {
             cstrC.setModel(mo);
             for (Map<String, Object> vals : expandParameters(c)) {
                 SatConstraint cstr = (SatConstraint) cstrC.fromJSON(marshal(c.getMarshal(), vals));
-                c.instantiate(vals);
+                //c.instantiate(vals);
                 Boolean gr = good.evaluate(mo);
                 Boolean ngr = noGood.evaluate(mo);
                 if (gr == null || ngr == null) {
                     throw new RuntimeException("Both null !\ngood:" + good + "\nnotGood: " + noGood + "\n" + mo.getMapping().toString());
                 }
-                if (!(gr||ngr)) {
+                if (!(gr || ngr)) {
                     throw new RuntimeException("Nor good or bad !\ngood:" + good + "\nnotGood: " + noGood + "\n" + mo.getMapping().toString());
                 }
                 /*if (gr && ngr) {
@@ -132,10 +129,10 @@ public class UnitTestsGenerator {
         return tests;
     }
 
-    private List<Map<String,Object>> expandParameters(Constraint c) {
+    private List<Map<String, Object>> expandParameters(Constraint c) {
         List<Variable> params = c.getParameters();
-        Object [][] doms = new Object[params.size()][];
-        int [] indexes = new int[params.size()];
+        Object[][] doms = new Object[params.size()][];
+        int[] indexes = new int[params.size()];
         int i = 0;
         int nbStates = 1;
         List<Map<String, Object>> all = new ArrayList<>();

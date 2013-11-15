@@ -1,9 +1,15 @@
 package btrplace.solver.api.cstrSpec;
 
+import btrplace.json.model.constraint.ConstraintsConverter;
+import btrplace.model.Model;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.solver.api.cstrSpec.generator.ModelsGenerator;
+import btrplace.solver.api.cstrSpec.generator.ReconfigurationPlansGenerator;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.util.Map;
 
 /**
  * @author Fabien Hermenier
@@ -13,18 +19,41 @@ public class TestParse {
     StatesExtractor2 ex = new StatesExtractor2();
 
     private void go(String path) throws Exception {
-        Constraint c =ex.extract(new File(path));
+
+        Constraint c = ex.extract(new File(path));
         System.out.println(c);
-        UnitTestsGenerator gen = new UnitTestsGenerator();
-        UnitTestsExecutor exe  = new UnitTestsExecutor();
-            exe.execute(gen.generate(c));
-            if (!exe.getFailures().isEmpty()) {
-                for (TestResult r : exe.getFailures()) {
-                    System.out.println(r);
+
+        ConstraintInputGenerator cg = new ConstraintInputGenerator(c, true);
+        ModelsGenerator mg = new ModelsGenerator(3, 3);
+        ConstraintsConverter cstrC = ConstraintsConverter.newBundle();
+        for (Model mo : mg) {
+            System.out.print("-- Model " + mg.done() + "/" + mg.count());
+            ReconfigurationPlansGenerator pg = new ReconfigurationPlansGenerator(mo, 1, 3);
+            System.out.println(" " + pg.count() + " plan(s) --");
+            int k = 0;
+            for (ReconfigurationPlan p : pg) {
+                System.out.print(".");
+                //System.out.println(cg.done() + "/" + cg.count());
+                for (Map<String, Object> in : cg) {
+                    /*Boolean consistent = c.instantiate(in, p);
+                    cstrC.setModel(p.getOrigin());
+                    SatConstraint satCstr = (SatConstraint) cstrC.fromJSON(JSONs.marshal(c.getMarshal(), in));
+                    TestCase tc = new TestCase(p, satCstr,  consistent);*/
+                    /*TestResult tr = tc.verify();               */
+
+                    /*if (!tr.succeeded()) {
+                        System.out.println(tr);
+                        Assert.fail();
+                    } */
                 }
-                Assert.fail(exe.toString());
+                cg.reset();
+                if (k++ == 80) {
+                    System.out.println();
+                    k = 0;
+                }
             }
-            System.out.println(exe);
+            System.out.println();
+        }
     }
 
     @Test
@@ -50,7 +79,7 @@ public class TestParse {
 
     @Test
     public void testParseFence() throws Exception {
-            go("src/test/resources/fence.cspec");
+        go("src/test/resources/fence.cspec");
     }
 
     @Test
@@ -83,7 +112,7 @@ public class TestParse {
             int nbVMs = i;
             long nbModels = 0;
             for (int q = 0; q <= nbNodes; q++) {
-                long vmp = (long)Math.pow(2*q + 1, nbVMs);
+                long vmp = (long) Math.pow(2 * q + 1, nbVMs);
                 long np = C(nbNodes, q);
                 long r = vmp * np;
                 nbModels += r;
@@ -94,7 +123,7 @@ public class TestParse {
     }
 
     public static long C(int n, int k) {
-        return facto(n) / (facto(k)*facto(n - k));
+        return facto(n) / (facto(k) * facto(n - k));
     }
 
     public static long facto(int n) {

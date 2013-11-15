@@ -5,7 +5,9 @@ import btrplace.json.model.constraint.ConstraintsConverter;
 import btrplace.model.Element;
 import btrplace.model.Model;
 import btrplace.model.constraint.SatConstraint;
+import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.generator.ModelsGenerator;
+import btrplace.solver.api.cstrSpec.generator.ReconfigurationPlansGenerator;
 import btrplace.solver.api.cstrSpec.type.NodeType;
 import btrplace.solver.api.cstrSpec.type.VMType;
 
@@ -39,34 +41,37 @@ public class TestCasesGenerator {
         return json;
     }
 
-    public List<TestUnit> generate(Constraint c) throws JSONConverterException, IOException {
-        List<TestUnit> tests = new ArrayList<>();
-        ModelsGenerator gen = new ModelsGenerator(NodeType.getInstance().domain().size(), VMType.getInstance().domain().size());
-        //List<Model> models = gen.all(VMType.getInstance().domain().size(), VMType.getInstance().domain().size());
+    public List<TestCase> generate(Constraint c) throws JSONConverterException, IOException {
+        List<TestCase> tests = new ArrayList<>();
         Proposition good = c.getProposition();
         Proposition noGood = good.not();
         ConstraintsConverter cstrC = ConstraintsConverter.newBundle();
-        //System.err.println("good: " + good);
-        //System.err.println("noGood: " + noGood);
+
+
+        ModelsGenerator gen = new ModelsGenerator(NodeType.getInstance().domain().size(), VMType.getInstance().domain().size());
         for (Model mo : gen) {
             cstrC.setModel(mo);
-            for (Map<String, Object> vals : expandParameters(c)) {
-                SatConstraint cstr = (SatConstraint) cstrC.fromJSON(marshal(c.getMarshal(), vals));
-                c.instantiate(vals);
-                Boolean gr = good.evaluate(mo);
-                Boolean ngr = noGood.evaluate(mo);
-                if (gr == null || ngr == null) {
-                    throw new RuntimeException("Both null !\ngood:" + good + "\nnotGood: " + noGood + "\n" + mo.getMapping().toString());
+
+            ReconfigurationPlansGenerator pg = new ReconfigurationPlansGenerator(mo);
+            for (ReconfigurationPlan p : pg) {
+                for (Map<String, Object> vals : expandParameters(c)) {
+                    SatConstraint cstr = (SatConstraint) cstrC.fromJSON(marshal(c.getMarshal(), vals));
+                    //c.instantiate(vals);
+                    Boolean gr = good.evaluate(mo);
+                    Boolean ngr = noGood.evaluate(mo);
+                    if (gr == null || ngr == null) {
+                        throw new RuntimeException("Both null !\ngood:" + good + "\nnotGood: " + noGood + "\n" + mo.getMapping().toString());
+                    }
+                    if (!(gr || ngr)) {
+                        throw new RuntimeException("Nor good or bad !\ngood:" + good + "\nnotGood: " + noGood + "\n" + mo.getMapping().toString());
+                    }
+                    /*if (gr && ngr) {
+                        throw new RuntimeException("good and bad !\ngood:" + good + "\nnotGood: " + noGood + "\n" + mo.getMapping().toString());
+                    } */
+                    c.reset();
+                    TestCase tu = new TestCase(p, cstr, gr);
+                    tests.add(tu);
                 }
-                if (!(gr || ngr)) {
-                    throw new RuntimeException("Nor good or bad !\ngood:" + good + "\nnotGood: " + noGood + "\n" + mo.getMapping().toString());
-                }
-                /*if (gr && ngr) {
-                    throw new RuntimeException("good and bad !\ngood:" + good + "\nnotGood: " + noGood + "\n" + mo.getMapping().toString());
-                } */
-                c.reset();
-                TestUnit tu = new TestUnit(mo, cstr, gr);
-                tests.add(tu);
             }
 
         }

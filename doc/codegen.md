@@ -161,7 +161,7 @@ fa
 ## Generate all the possible resulting plans
 
 * If we considers only the nodes
-  * Each node may have its state changed or node: $2^n$ plans
+  * Each node may have its state changed or not: $2^n$ plans
   * For each VM:
      * if running: $n$ placement if stay running + 1 (ready) + 1 (sleeping): $n + 2$
      * if sleeping: 1 (stay sleeping) + 1 (running) =$2$

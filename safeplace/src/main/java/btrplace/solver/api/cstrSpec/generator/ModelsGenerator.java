@@ -1,11 +1,14 @@
 package btrplace.solver.api.cstrSpec.generator;
 
 import btrplace.model.*;
+import btrplace.solver.api.cstrSpec.Maths;
+
+import java.util.Iterator;
 
 /**
  * @author Fabien Hermenier
  */
-public class ModelsGenerator extends DefaultGenerator<Model> {
+public class ModelsGenerator implements Generator<Model> {
 
     private NodeModelsGenerator ng;
 
@@ -13,7 +16,18 @@ public class ModelsGenerator extends DefaultGenerator<Model> {
 
     private VM[] vms;
 
+    private int k, nbStates;
+
     public ModelsGenerator(int nbNodes, int nbVMs) {
+        k = 0;
+        nbStates = 0;
+        for (int q = 0; q <= nbNodes; q++) {
+            long vmp = (long) Math.pow(2 * q + 1, nbVMs);
+            long np = Maths.C(nbNodes, q);
+            long r = vmp * np;
+            nbStates += r;
+        }
+
         Node[] ns = new Node[nbNodes];
         vms = new VM[nbVMs];
         ElementBuilder eb = new DefaultElementBuilder();
@@ -28,7 +42,7 @@ public class ModelsGenerator extends DefaultGenerator<Model> {
 
     @Override
     public boolean hasNext() {
-        return ng.hasNext() || (vg == null || vg.hasNext());
+        return k < nbStates;
     }
 
     @Override
@@ -36,6 +50,7 @@ public class ModelsGenerator extends DefaultGenerator<Model> {
         if (vg == null || !vg.hasNext()) {
             vg = new VMModelsGenerator(ng.next(), vms);
         }
+        k++;
         return vg.next();
     }
 
@@ -43,5 +58,25 @@ public class ModelsGenerator extends DefaultGenerator<Model> {
     public void reset() {
         vg = null;
         ng.reset();
+    }
+
+    @Override
+    public int done() {
+        return k;
+    }
+
+    @Override
+    public int count() {
+        return nbStates;
+    }
+
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Iterator<Model> iterator() {
+        return this;
     }
 }

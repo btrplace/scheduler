@@ -73,13 +73,13 @@ public class TestUnit {
         try {
             rc = verifyChecker();
             ri = verifyImpl();
-            return new TestResult(mo, cstr, isConsistent, rc, ri);
+            return new TestResult(null/*mo*/, cstr, isConsistent, rc, ri);
         } catch (Exception ex) {
             ex.printStackTrace();
-            return new TestResult(mo, cstr, isConsistent, rc, ri, ex.getMessage());
+            return new TestResult(null/*mo*/, cstr, isConsistent, rc, ri, ex.getMessage());
         } catch (Error err) {
             //err.printStackTrace();
-            return new TestResult(mo, cstr, isConsistent, rc, ri, err.getMessage());
+            return new TestResult(null/*mo*/, cstr, isConsistent, rc, ri, err.getMessage());
         }
     }
 
@@ -141,63 +141,3 @@ public class TestUnit {
     }
 }
 
-class TestResult {
-
-    private Model mo;
-    private SatConstraint c;
-    private boolean isConsistent;
-    private String errMsg;
-    private ErrorType rc, ri;
-
-    public static enum ErrorType {succeed, falseNegative, falsePositive, bug}
-
-    public TestResult(Model mo, SatConstraint cstr, boolean isConsistent, ErrorType rc, ErrorType ri) {
-        this(mo, cstr, isConsistent, rc, ri, null);
-    }
-
-    public TestResult(Model mo, SatConstraint cstr, boolean isConsistent, ErrorType rc, ErrorType ri, String errMsg) {
-        this.mo = mo;
-        this.c = cstr;
-        this.isConsistent = isConsistent;
-        this.errMsg = errMsg;
-        this.rc = rc;
-        this.ri = ri;
-    }
-
-    public Model getModel() {
-        return mo;
-    }
-
-    public SatConstraint getConstraint() {
-        return c;
-    }
-
-    public boolean isConsistent() {
-        return isConsistent;
-    }
-
-    public String getErrorMessage() {
-        return errMsg;
-    }
-
-    public ErrorType getCheckerError() {
-        return rc;
-    }
-
-    public ErrorType getImplError() {
-        return ri;
-    }
-
-    public boolean succeeded() {
-        return ri == ErrorType.succeed && rc == ErrorType.succeed;
-    }
-
-    @Override
-    public String toString() {
-        if (rc == ErrorType.succeed && ri == ErrorType.succeed && errMsg == null) {
-            return "checker: " + rc + "\timpl: " + ri;
-        } else {
-            return "checker: " + rc + "\timpl: " + ri + "\n" + "cstr: " + c + "\n" + "Mapping:\n" + mo.getMapping() + "\n" + "Error: " + errMsg;
-        }
-    }
-}

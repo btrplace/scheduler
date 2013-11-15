@@ -8,26 +8,27 @@ import java.util.List;
  */
 public class UnitTestsExecutor {
 
-   private List<TestResult> ok;
+    private List<TestResult> ok;
 
-   private List<TestResult> ko;
+    private List<TestResult> ko;
 
     public UnitTestsExecutor() {
         ok = new ArrayList<>();
         ko = new ArrayList<>();
     }
 
-    public void execute(TestUnit tu) {
-       TestResult res = tu.verify();
-       if (!res.succeeded()) {
+    public TestResult execute(TestCase tu) {
+        TestResult res = tu.verify();
+       /*if (!res.succeeded()) {
            ko.add(res);
        } else {
            ok.add(res);
-       }
+       } */
+        return res;
     }
 
-    public void execute(List<TestUnit> tus){
-        for (TestUnit tu : tus) {
+    public void execute(List<TestCase> tus) {
+        for (TestCase tu : tus) {
             execute(tu);
         }
     }
