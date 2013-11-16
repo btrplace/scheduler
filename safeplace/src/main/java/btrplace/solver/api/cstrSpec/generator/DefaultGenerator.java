@@ -7,7 +7,7 @@ import java.util.Iterator;
  */
 public abstract class DefaultGenerator<T> implements Generator<T> {
 
-    protected AllTuplesGenerator tg;
+    protected Generator tg;
 
     @Override
     public boolean hasNext() {

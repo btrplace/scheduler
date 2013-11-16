@@ -20,18 +20,10 @@ public class ReconfigurationPlansGenerator extends DefaultGenerator<Reconfigurat
 
     private Model src;
 
-    private int lb, ub;
-
     public ReconfigurationPlansGenerator(Model src) {
-        this(src, 1, 3);
-    }
-
-    public ReconfigurationPlansGenerator(Model src, int lb, int ub) {
         List<List<Action>> possibles = makePossibleActions(src);
         tg = new AllTuplesGenerator<>(Action.class, possibles);
         this.src = src;
-        this.lb = lb;
-        this.ub = ub;
     }
 
     private List<List<Action>> makePossibleActions(Model src) {

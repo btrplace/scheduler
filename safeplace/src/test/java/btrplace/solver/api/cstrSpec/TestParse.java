@@ -3,6 +3,8 @@ package btrplace.solver.api.cstrSpec;
 import btrplace.json.model.constraint.ConstraintsConverter;
 import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.solver.api.cstrSpec.generator.DelaysGenerator;
+import btrplace.solver.api.cstrSpec.generator.DurationsGenerator;
 import btrplace.solver.api.cstrSpec.generator.ModelsGenerator;
 import btrplace.solver.api.cstrSpec.generator.ReconfigurationPlansGenerator;
 import org.testng.Assert;
@@ -28,10 +30,11 @@ public class TestParse {
         ConstraintsConverter cstrC = ConstraintsConverter.newBundle();
         for (Model mo : mg) {
             System.out.print("-- Model " + mg.done() + "/" + mg.count());
-            ReconfigurationPlansGenerator pg = new ReconfigurationPlansGenerator(mo, 1, 3);
+            ReconfigurationPlansGenerator pg = new ReconfigurationPlansGenerator(mo);
             System.out.println(" " + pg.count() + " plan(s) --");
             int k = 0;
             for (ReconfigurationPlan p : pg) {
+                ReconfigurationPlan p2 = new DelaysGenerator(new DurationsGenerator(p, 1, 3).next()).next();
                 System.out.print(".");
                 //System.out.println(cg.done() + "/" + cg.count());
                 for (Map<String, Object> in : cg) {
