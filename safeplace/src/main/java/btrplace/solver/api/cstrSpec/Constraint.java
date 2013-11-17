@@ -51,16 +51,19 @@ public class Constraint {
             var.set(val.getValue());
         }
         Model res = p.getResult();
+        if (res == null) {     //TODO: flaw ?
+            return false;
+        }
         Boolean bOk = this.p.evaluate(res);
         Boolean bKO = this.not.evaluate(res);
 
         if (bOk == null || bKO == null) {
-            throw new RuntimeException("Both null !\ngood:" + bOk + "\nnotGood: " + bKO + "\n" + p.getOrigin().getMapping().toString());
+            throw new RuntimeException("Both null !\ngood:" + this.p + "\nnotGood: " + not + "\n" + p.getOrigin().getMapping().toString());
         }
         if (bOk && bKO) {
-            throw new RuntimeException("good and bad !\ngood:" + bOk + "\nnotGood: " + bKO + "\n" + res.getMapping().toString());
+            throw new RuntimeException(values + " good and bad !\ngood:" + this.p + "\nnotGood: " + not + "\n" + res.getMapping().toString());
         } else if (!(bOk || bKO)) {
-            throw new RuntimeException("Nor good or bad !\ngood:" + bOk + "\nnotGood: " + bKO + "\n" + p.getOrigin().getMapping().toString());
+            throw new RuntimeException("Nor good or bad !\ngood:" + this.p + "\nnotGood: " + not + "\n" + p.getOrigin().getMapping().toString());
         }
         this.reset();
         return bOk;

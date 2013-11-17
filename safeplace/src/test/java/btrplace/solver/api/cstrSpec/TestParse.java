@@ -2,11 +2,16 @@ package btrplace.solver.api.cstrSpec;
 
 import btrplace.json.model.constraint.ConstraintsConverter;
 import btrplace.model.Model;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.generator.DelaysGenerator;
 import btrplace.solver.api.cstrSpec.generator.DurationsGenerator;
 import btrplace.solver.api.cstrSpec.generator.ModelsGenerator;
 import btrplace.solver.api.cstrSpec.generator.ReconfigurationPlansGenerator;
+import btrplace.solver.api.cstrSpec.verification.ImplVerifier;
+import btrplace.solver.api.cstrSpec.verification.TestCase;
+import btrplace.solver.api.cstrSpec.verification.TestResult;
+import btrplace.solver.api.cstrSpec.verification.Verifier;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -23,40 +28,41 @@ public class TestParse {
     private void go(String path) throws Exception {
 
         Constraint c = ex.extract(new File(path));
-        System.out.println(c);
 
         ConstraintInputGenerator cg = new ConstraintInputGenerator(c, true);
+        System.out.println(c + "\n" + cg.count() + " signature(s)\n");
         ModelsGenerator mg = new ModelsGenerator(3, 3);
         ConstraintsConverter cstrC = ConstraintsConverter.newBundle();
+        Verifier verifChk = new ImplVerifier();
+        int num = 0, failures = 0;
         for (Model mo : mg) {
             System.out.print("-- Model " + mg.done() + "/" + mg.count());
             ReconfigurationPlansGenerator pg = new ReconfigurationPlansGenerator(mo);
             System.out.println(" " + pg.count() + " plan(s) --");
             int k = 0;
             for (ReconfigurationPlan p : pg) {
-                ReconfigurationPlan p2 = new DelaysGenerator(new DurationsGenerator(p, 1, 3).next()).next();
+                ReconfigurationPlan p2 = new DelaysGenerator(new DurationsGenerator(p, 1, 3, true).next(), true).next();
                 System.out.print(".");
-                //System.out.println(cg.done() + "/" + cg.count());
                 for (Map<String, Object> in : cg) {
-                    /*Boolean consistent = c.instantiate(in, p);
-                    cstrC.setModel(p.getOrigin());
+                    cstrC.setModel(p2.getOrigin());
                     SatConstraint satCstr = (SatConstraint) cstrC.fromJSON(JSONs.marshal(c.getMarshal(), in));
-                    TestCase tc = new TestCase(p, satCstr,  consistent);*/
-                    /*TestResult tr = tc.verify();               */
-
-                    /*if (!tr.succeeded()) {
-                        System.out.println(tr);
-                        Assert.fail();
-                    } */
+                    TestResult res = verifChk.verify(new TestCase(num, p2, satCstr, c.instantiate(in, p)));
+                    if (!res.succeeded()) {
+                        failures++;
+                        System.out.println("\n" + res);
+                        //Assert.fail();
+                    }
+                    num++;
                 }
                 cg.reset();
-                if (k++ == 80) {
+                if (++k % 80 == 0) {
                     System.out.println();
-                    k = 0;
                 }
             }
             System.out.println();
         }
+        System.out.println("\n" + num + " verification(s) performed: " + failures + " failures");
+        Assert.fail();
     }
 
     @Test

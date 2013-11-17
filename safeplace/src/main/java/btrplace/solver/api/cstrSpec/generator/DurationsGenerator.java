@@ -17,10 +17,10 @@ public class DurationsGenerator extends ReconfigurationPlanVariations {
         this(src, lb, ub, true);
     }
 
-    public DurationsGenerator(ReconfigurationPlan src, int lb, int ub, boolean seq) {
+    public DurationsGenerator(ReconfigurationPlan src, int lb, int ub, boolean fuzz) {
         super(src);
         List<List<Action>> possibles = makePossibleDurations(src, lb, ub);
-        if (seq) {
+        if (!fuzz) {
             tg = new AllTuplesGenerator<>(Action.class, possibles);
         } else {
             tg = new RandomTuplesGenerator<>(Action.class, possibles);

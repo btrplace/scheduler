@@ -38,7 +38,7 @@ public class Exists implements Proposition {
 
     @Override
     public Boolean evaluate(Model m) {
-        boolean ret = true;
+        boolean ret = false;
         List<List<Object>> values = new ArrayList<>(vars.size());
         for (int i = 0; i < vars.size(); i++) {
             values.add(new ArrayList<>((Collection<Object>) from.getValue(m)));

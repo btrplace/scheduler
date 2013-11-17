@@ -14,21 +14,20 @@ public class JSONs {
     public static String marshal(String json, Map<String, Object> params) {
         for (Map.Entry<String, Object> e : params.entrySet()) {
             Object v = e.getValue();
-            Object s = e.getValue().toString();
+            String s = e.getValue().toString();
             if (v instanceof Element) {
-                s = ((Element) v).id();
+                s = Integer.toString(((Element) v).id());
             } else if (v instanceof Collection) {
                 StringBuilder str = new StringBuilder();
-                for (Iterator<Object> ite = ((Collection) v).iterator(); ite.hasNext(); ) {
-                    Object o = ite.next();
-                    str.append(((Element) o).id());
-                    if (ite.hasNext()) {
-                        str.append(", ");
-                    }
+                Iterator<Object> ite = ((Collection) v).iterator();
+                str.append(((Element) ite.next()).id());
+                while (ite.hasNext()) {
+                    str.append(", ");
+                    str.append(((Element) ite.next()).id());
                 }
-                s = str;
+                s = str.toString();
             }
-            json = json.replaceAll("@" + e.getKey(), s.toString());
+            json = json.replaceAll("@" + e.getKey(), s);
         }
         return json;
     }

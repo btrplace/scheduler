@@ -13,10 +13,10 @@ import java.util.List;
  */
 public class DelaysGenerator extends ReconfigurationPlanVariations {
 
-    public DelaysGenerator(ReconfigurationPlan src, boolean seq) {
+    public DelaysGenerator(ReconfigurationPlan src, boolean fuzz) {
         super(src);
         List<List<Action>> possibles = makePossibleDelays(src);
-        if (seq) {
+        if (!fuzz) {
             tg = new AllTuplesGenerator<>(Action.class, possibles);
         } else {
             tg = new RandomTuplesGenerator<>(Action.class, possibles);
