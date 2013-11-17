@@ -57,19 +57,21 @@ public class ImplVerifier implements Verifier {
     private List<SatConstraint> actionsToConstraints(ReconfigurationPlan p) {
         List<SatConstraint> cstrs = new ArrayList<>();
         Set<Node> notSwitching = new HashSet<>(p.getOrigin().getMapping().getAllNodes());
+        Set<VM> rooted = new HashSet<>(p.getOrigin().getMapping().getRunningVMs());
         for (Action a : p) {
             if (a instanceof MigrateVM) {
                 MigrateVM m = (MigrateVM) a;
                 cstrs.add(new Running(Collections.singleton(m.getVM())));
                 cstrs.add(on(m.getVM(), m.getDestinationNode()));
-                //TODO: force the node to be online or let that be infered by BtrPlace ?
+                rooted.remove(m.getVM());
             } else if (a instanceof SuspendVM) {
                 SuspendVM s = (SuspendVM) a;
                 cstrs.add(new Sleeping(Collections.singleton(s.getVM())));
                 cstrs.add(on(s.getVM(), s.getDestinationNode()));
+                rooted.remove(s.getVM());
             } else if (a instanceof ResumeVM) {
                 ResumeVM s = (ResumeVM) a;
-                cstrs.add(new Sleeping(Collections.singleton(s.getVM())));
+                cstrs.add(new Running(Collections.singleton(s.getVM())));
                 cstrs.add(on(s.getVM(), s.getDestinationNode()));
             } else if (a instanceof BootVM) {
                 BootVM s = (BootVM) a;
@@ -91,7 +93,7 @@ public class ImplVerifier implements Verifier {
             }
 
         }
-
+        cstrs.add(new Root(rooted));
         Mapping map = p.getOrigin().getMapping();
         for (Node n : notSwitching) {
             if (map.isOnline(n)) {
