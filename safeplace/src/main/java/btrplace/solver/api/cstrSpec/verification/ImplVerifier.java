@@ -108,7 +108,9 @@ public class ImplVerifier implements Verifier {
             }
 
         }
-        cstrs.add(new Root(rooted));
+        if (!rooted.isEmpty()) {
+            cstrs.add(new Root(rooted));
+        }
         Mapping map = p.getOrigin().getMapping();
         for (Node n : notSwitching) {
             if (map.isOnline(n)) {

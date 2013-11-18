@@ -26,7 +26,13 @@ public class CSchedule implements ChocoConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        ActionModel am = rp.getVMAction(cstr.getVM());
+        ActionModel am = null;
+
+        if (cstr.getVM() != null) {
+            am = rp.getVMAction(cstr.getVM());
+        } else {
+            am = rp.getNodeAction(cstr.getNode());
+        }
         if (am == null) {
             return false;
         }
@@ -34,8 +40,7 @@ public class CSchedule implements ChocoConstraint {
             am.getStart().setVal(cstr.getStart());
             am.getEnd().setVal(cstr.getEnd());
         } catch (ContradictionException ex) {
-            //ex.printStackTrace();
-            System.err.flush();
+            ex.printStackTrace();
             rp.getLogger().error("Unable to force the schedule of " + am + " to " + cstr + ": " + ex.getMessage());
             return false;
         }
