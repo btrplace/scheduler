@@ -143,6 +143,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         model = m;
         durEval = dEval;
         this.viewMapper = vMapper;
+        //Properties props = DefaultConfiguration.defaultProperties();
+        //Configuration cfg = new Configuration(props);
+
         solver = new CPSolver();
         //Precision for the real values
         solver.getConfiguration().putDouble(Configuration.REAL_PRECISION, REAL_VALUE_PRECISION);
