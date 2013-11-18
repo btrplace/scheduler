@@ -1,13 +1,12 @@
 package btrplace.solver.api.cstrSpec.verification;
 
-import btrplace.model.Mapping;
-import btrplace.model.Node;
-import btrplace.model.VM;
+import btrplace.model.*;
 import btrplace.model.constraint.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.*;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import choco.kernel.common.logging.ChocoLogging;
 
 import java.util.*;
 
@@ -21,14 +20,16 @@ public class ImplVerifier implements Verifier {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.getConstraintMapper().register(new CSchedule.Builder());
         List<SatConstraint> cstrs = actionsToConstraints(c.getPlan());
-
+        setDurationEstimators(c.getPlan());
         cstrs.add(c.getSatConstraint());
         try {
+            //cra.setVerbosity(3);
             cra.doOptimize(false);
             ReconfigurationPlan p = cra.solve(c.getPlan().getOrigin(), cstrs);
             if (c.isConsistent()) {
                 if (p == null) {
-                    return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), TestResult.ErrorType.falseNegative, new Exception("No solution for that problem"));
+                    ChocoLogging.flushLogs();
+                    return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), TestResult.ErrorType.falseNegative, new Exception("No solution for that problem:\n" + prettyList(cstrs)));
                 }
                 if (!p.equals(c.getPlan())) {
                     return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), TestResult.ErrorType.bug, new Exception("The test case and the solution differ:\n Test Case:\n" + c.getPlan() + "\n Solution:\n" + p));
@@ -44,7 +45,7 @@ public class ImplVerifier implements Verifier {
                 return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), TestResult.ErrorType.falsePositive, new Exception("WTF:\n" + p));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             if (!c.isConsistent()) {
                 return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), TestResult.ErrorType.succeed, e);
             }
@@ -119,4 +120,38 @@ public class ImplVerifier implements Verifier {
 
         return cstrs;
     }
+
+    private void setDurationEstimators(ReconfigurationPlan rp) {
+        Model mo = rp.getOrigin();
+        Attributes attrs = mo.getAttributes();
+        for (Action a : rp) {
+            int d = a.getEnd() - a.getStart();
+            if (a instanceof MigrateVM) {
+                attrs.put(((MigrateVM) a).getVM(), "migrate", d);
+            } else if (a instanceof BootVM) {
+                attrs.put(((BootVM) a).getVM(), "boot", d);
+            } else if (a instanceof ShutdownVM) {
+                attrs.put(((ShutdownVM) a).getVM(), "shutdown", d);
+            } else if (a instanceof SuspendVM) {
+                attrs.put(((SuspendVM) a).getVM(), "suspend", d);
+            } else if (a instanceof ResumeVM) {
+                attrs.put(((ResumeVM) a).getVM(), "resume", d);
+            } else if (a instanceof BootNode) {
+                attrs.put(((BootNode) a).getNode(), "boot", d);
+            } else if (a instanceof ShutdownNode) {
+                attrs.put(((ShutdownNode) a).getNode(), "shutdown", d);
+            } else {
+                throw new UnsupportedOperationException(a.toString());
+            }
+        }
+    }
+
+    private String prettyList(Collection c) {
+        StringBuilder b = new StringBuilder();
+        for (Object o : c) {
+            b.append("\t").append(o).append("\n");
+        }
+        return b.toString();
+    }
+
 }

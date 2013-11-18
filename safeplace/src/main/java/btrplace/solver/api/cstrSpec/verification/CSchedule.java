@@ -34,7 +34,9 @@ public class CSchedule implements ChocoConstraint {
             am.getStart().setVal(cstr.getStart());
             am.getEnd().setVal(cstr.getEnd());
         } catch (ContradictionException ex) {
-            rp.getLogger().error("Unable to force the schedule of " + am + " to " + cstr);
+            //ex.printStackTrace();
+            System.err.flush();
+            rp.getLogger().error("Unable to force the schedule of " + am + " to " + cstr + ": " + ex.getMessage());
             return false;
         }
         return true;
