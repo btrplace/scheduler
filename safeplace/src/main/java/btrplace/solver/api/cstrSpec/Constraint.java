@@ -2,6 +2,8 @@ package btrplace.solver.api.cstrSpec;
 
 import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.solver.api.cstrSpec.invariant.Proposition;
+import btrplace.solver.api.cstrSpec.invariant.Variable;
 import net.minidev.json.JSONObject;
 
 import java.util.HashMap;

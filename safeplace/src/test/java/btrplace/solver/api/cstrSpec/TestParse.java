@@ -8,6 +8,7 @@ import btrplace.solver.api.cstrSpec.generator.DelaysGenerator;
 import btrplace.solver.api.cstrSpec.generator.DurationsGenerator;
 import btrplace.solver.api.cstrSpec.generator.ModelsGenerator;
 import btrplace.solver.api.cstrSpec.generator.ReconfigurationPlansGenerator;
+import btrplace.solver.api.cstrSpec.invariant.StatesExtractor2;
 import btrplace.solver.api.cstrSpec.verification.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.TestResult;
@@ -29,9 +30,7 @@ public class TestParse {
 
         Constraint c = ex.extract(new File(path));
 
-        ConstraintInputGenerator cg = new ConstraintInputGenerator(c, true);
-        System.out.println(c + "\n" + cg.count() + " signature(s)\n");
-        ModelsGenerator mg = new ModelsGenerator(3, 3);
+        ModelsGenerator mg = new ModelsGenerator(2, 2);
         ConstraintsConverter cstrC = ConstraintsConverter.newBundle();
         Verifier verifChk = new ImplVerifier();
         int num = 0, failures = 0;
@@ -43,6 +42,8 @@ public class TestParse {
             for (ReconfigurationPlan p : pg) {
                 ReconfigurationPlan p2 = new DelaysGenerator(new DurationsGenerator(p, 1, 3, true).next(), true).next();
                 System.out.print(".");
+                ConstraintInputGenerator cg = new ConstraintInputGenerator(c, p.getOrigin(), true);
+                //System.out.println(c + "\n" + cg.count() + " signature(s)\n");
                 for (Map<String, Object> in : cg) {
                     cstrC.setModel(p2.getOrigin());
                     SatConstraint satCstr = (SatConstraint) cstrC.fromJSON(JSONs.marshal(c.getMarshal(), in));

@@ -1,0 +1,50 @@
+package btrplace.solver.api.cstrSpec.invariant.type;
+
+import btrplace.model.Model;
+import btrplace.model.VM;
+import btrplace.solver.api.cstrSpec.invariant.Value;
+
+import java.util.Set;
+
+/**
+ * @author Fabien Hermenier
+ */
+public class VMType implements Type {
+
+    private static VMType instance = new VMType();
+
+    private VMType() {
+
+    }
+
+    public static VMType getInstance() {
+        return instance;
+    }
+
+    @Override
+    public Set<VM> domain(Model mo) {
+        return mo.getMapping().getAllVMs();
+    }
+
+    @Override
+    public String toString() {
+        return label();
+    }
+
+    @Override
+    public boolean match(String n) {
+        return false;
+    }
+
+    @Override
+    public String label() {
+        return "VM";
+    }
+
+
+    @Override
+    public Value newValue(String n) {
+        throw new RuntimeException();
+    }
+
+}

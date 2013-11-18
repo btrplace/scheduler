@@ -1,8 +1,10 @@
 package btrplace.solver.api.cstrSpec;
 
+import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.generator.AllTuplesGenerator;
 import btrplace.solver.api.cstrSpec.generator.Generator;
 import btrplace.solver.api.cstrSpec.generator.RandomTuplesGenerator;
+import btrplace.solver.api.cstrSpec.invariant.Variable;
 
 import java.util.*;
 
@@ -11,21 +13,24 @@ import java.util.*;
  */
 public class ConstraintInputGenerator implements Generator<Map<String, Object>> {
 
-    private Constraint cstr;
 
     private String[] ids;
     private Generator<Object[]> tg;
 
-    public ConstraintInputGenerator(Constraint cstr, boolean seq) {
-        this.cstr = cstr;
+    public ConstraintInputGenerator(Constraint cstr, Model mo, boolean seq) {
 
         List<Variable> params = cstr.getParameters();
         List<List<Object>> values = new ArrayList<>(params.size());
         ids = new String[params.size()];
         for (int i = 0; i < params.size(); i++) {
             Variable v = params.get(i);
+            Object o = v.getValue(null);
+            if (o != null) {
+                values.add(Collections.singletonList(o));
+            } else {
+                values.add(new ArrayList<Object>(v.type().domain(mo)));
+            }
             ids[i] = v.label();
-            values.add(new ArrayList<>(v.domain()));
         }
 
         if (seq) {
