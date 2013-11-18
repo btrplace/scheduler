@@ -19,30 +19,38 @@ public class ImplVerifier implements Verifier {
     @Override
     public TestResult verify(TestCase c) {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-
+        cra.getConstraintMapper().register(new CSchedule.Builder());
         List<SatConstraint> cstrs = actionsToConstraints(c.getPlan());
 
         cstrs.add(c.getSatConstraint());
         try {
-            cra.doOptimize(true);
+            cra.doOptimize(false);
             ReconfigurationPlan p = cra.solve(c.getPlan().getOrigin(), cstrs);
             if (c.isConsistent()) {
                 if (p == null) {
-                    return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), TestResult.ErrorType.falseNegative);
+                    return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), TestResult.ErrorType.falseNegative, new Exception("No solution for that problem"));
+                }
+                if (!p.equals(c.getPlan())) {
+                    return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), TestResult.ErrorType.bug, new Exception("The test case and the solution differ:\n Test Case:\n" + c.getPlan() + "\n Solution:\n" + p));
                 }
                 return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), TestResult.ErrorType.succeed);
             } else {
                 if (p == null) {
                     return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), TestResult.ErrorType.succeed);
                 }
+                if (!p.equals(c.getPlan())) {
+                    return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), TestResult.ErrorType.bug, new Exception("The test case and the solution differ:\n Test Case:\n" + c.getPlan() + "\n Solution:\n" + p));
+                }
                 return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), TestResult.ErrorType.falsePositive, new Exception("WTF:\n" + p));
             }
         } catch (Exception e) {
+            e.printStackTrace();
             if (!c.isConsistent()) {
                 return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), TestResult.ErrorType.succeed, e);
             }
             return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), TestResult.ErrorType.falseNegative, e);
         } catch (Error e) {
+            e.printStackTrace();
             if (!c.isConsistent()) {
                 return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), TestResult.ErrorType.succeed, new Exception(e));
             }
@@ -92,6 +100,12 @@ public class ImplVerifier implements Verifier {
                 throw new UnsupportedOperationException(a.toString());
             }
 
+            if (a instanceof VMEvent) {
+                cstrs.add(new Schedule(((VMEvent) a).getVM(), a.getStart(), a.getEnd()));
+            } else if (a instanceof NodeEvent) {
+                cstrs.add(new Schedule(((NodeEvent) a).getNode(), a.getStart(), a.getEnd()));
+            }
+
         }
         cstrs.add(new Root(rooted));
         Mapping map = p.getOrigin().getMapping();
@@ -102,6 +116,7 @@ public class ImplVerifier implements Verifier {
                 cstrs.add(new Offline(Collections.singleton(n)));
             }
         }
+
         return cstrs;
     }
 }
