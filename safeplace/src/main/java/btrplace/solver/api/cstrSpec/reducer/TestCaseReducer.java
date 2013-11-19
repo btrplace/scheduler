@@ -8,6 +8,8 @@ import btrplace.solver.api.cstrSpec.verification.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.TestResult;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,20 +19,28 @@ public class TestCaseReducer {
 
     private ImplVerifier verif;
 
+    private List<TestCase> mins;
+
     public TestCaseReducer() {
         verif = new ImplVerifier();
     }
 
-    public boolean reduce(int lvl, TestCase t, Constraint cstr, Map<String, Object> in) {
+    public List<TestCase> reduce(TestCase c, Constraint cstr, Map<String, Object> in) {
+        mins = new ArrayList<>();
+        reduce(0, c, cstr, in);
+        return mins;
+    }
+
+    private boolean reduce(int lvl, TestCase t, btrplace.solver.api.cstrSpec.Constraint cstr, Map<String, Object> in) {
         System.out.println(indent(lvl) + "Reduce " + t.getPlan().getActions());
-        TestResult res = verif.verify(t);
+        TestResult res = verif.verify(t, false);
         if (res.succeeded()) {
-            System.out.println(indent(lvl) + "-> Succeed. Throw away");
+            System.out.println(indent(lvl) + "-> Succeeded. Throw away");
             return true;
         }
         if (t.getPlan().getSize() <= 1) {
-            System.out.println(indent(lvl) + "-> Minimal stop:" + res.errorMessage().getMessage());
-            //System.out.println(indent(lvl) + " " + res + "\n----");
+            System.out.println(indent(lvl) + "-> Minimal");
+            mins.add(t);
             return false;
         } else {
             System.out.println(indent(lvl) + "-> Splittable");

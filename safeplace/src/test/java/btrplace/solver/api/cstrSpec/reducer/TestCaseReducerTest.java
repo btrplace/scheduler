@@ -69,7 +69,8 @@ public class TestCaseReducerTest {
         //TestCaseReducer r = new TestCaseReducer();
         //r.reduce(0, tc, cstr, in);
 
-        List<TestCase> reduced = verif.reduce(tc, cstr, in);
+        TestCaseReducer tcr = new TestCaseReducer();
+        List<TestCase> reduced = tcr.reduce(tc, cstr, in);
 
         System.out.println("------------\nReduced Test Cases\n-----------");
         for (TestCase t : reduced) {
