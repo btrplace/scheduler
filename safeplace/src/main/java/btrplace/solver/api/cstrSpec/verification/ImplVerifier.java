@@ -8,7 +8,10 @@ import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import choco.kernel.common.logging.ChocoLogging;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Fabien Hermenier
@@ -19,53 +22,68 @@ public class ImplVerifier implements Verifier {
     public TestResult verify(TestCase c) {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.getConstraintMapper().register(new CSchedule.Builder());
-        List<SatConstraint> cstrs = actionsToConstraints(c.getPlan());
-        setDurationEstimators(c.getPlan());
+        Set<SatConstraint> cstrs = new HashSet<>();
         cstrs.add(c.getSatConstraint());
+        cstrs.addAll(actionsToConstraints(c.getPlan(), c.getSatConstraint()));
+
+        setDurationEstimators(c.getPlan());
+
+        //System.out.println(cstrs);
         try {
+            cra.labelVariables(true);
             //cra.setVerbosity(3);
             cra.doOptimize(false);
             ReconfigurationPlan p = cra.solve(c.getPlan().getOrigin(), cstrs);
             if (c.isConsistent()) {
                 if (p == null) {
                     ChocoLogging.flushLogs();
-                    return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), TestResult.ErrorType.falseNegative, new Exception("No solution for that problem:\n" + prettyList(cstrs)));
+                    return makeResult(c, TestResult.ErrorType.falseNegative, new Exception("No solution for that problem:\n" + prettyList(cstrs)));
                 }
                 if (!p.equals(c.getPlan())) {
-                    return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), TestResult.ErrorType.bug, new Exception("The test case and the solution differ:\n Test Case:\n" + c.getPlan() + "\n Solution:\n" + p));
+                    return makeResult(c, TestResult.ErrorType.bug,
+                            new Exception("The test case and the solution differ:\n Test Case:\n" + c.getPlan() + "\n Solution:\n" + p));
                 }
-                return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), TestResult.ErrorType.succeed);
+                return makeResult(c, TestResult.ErrorType.succeed, null);
             } else {
                 if (p == null) {
-                    return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), TestResult.ErrorType.succeed);
+                    return makeResult(c, TestResult.ErrorType.succeed, null);
                 }
                 if (!p.equals(c.getPlan())) {
-                    return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), TestResult.ErrorType.bug, new Exception("The test case and the solution differ:\n Test Case:\n" + c.getPlan() + "\n Solution:\n" + p));
+                    return makeResult(c, TestResult.ErrorType.bug, new Exception("The test case and the solution differ:\n Test Case:\n" + c.getPlan() + "\n Solution:\n" + p));
                 }
-                return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), TestResult.ErrorType.falsePositive, new Exception("WTF:\n" + p));
+                return makeResult(c, TestResult.ErrorType.falsePositive, new Exception("Should not pass"));
             }
         } catch (Exception e) {
-            //e.printStackTrace();
+            e.printStackTrace();
             if (!c.isConsistent()) {
-                return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), TestResult.ErrorType.succeed, e);
+                return makeResult(c, TestResult.ErrorType.succeed, e);
             }
-            return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), TestResult.ErrorType.falseNegative, e);
+            return makeResult(c, TestResult.ErrorType.falseNegative, e);
         } catch (Error e) {
             e.printStackTrace();
             if (!c.isConsistent()) {
-                return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), TestResult.ErrorType.succeed, new Exception(e));
+                return makeResult(c, TestResult.ErrorType.succeed, new Exception(e));
             }
-            return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), TestResult.ErrorType.falseNegative, new Exception(e));
+            return makeResult(c, TestResult.ErrorType.falseNegative, new Exception(e));
         }
+    }
+
+    private TestResult makeResult(TestCase c, TestResult.ErrorType err, Exception ex) {
+        return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), err, ex);
     }
 
     private static SatConstraint on(VM v, Node n) {
         return new Fence(Collections.singleton(v), Collections.singleton(n));
     }
 
-    private List<SatConstraint> actionsToConstraints(ReconfigurationPlan p) {
-        List<SatConstraint> cstrs = new ArrayList<>();
+    private Set<SatConstraint> actionsToConstraints(ReconfigurationPlan p, SatConstraint toTest) {
         Set<Node> notSwitching = new HashSet<>(p.getOrigin().getMapping().getAllNodes());
+        Set<SatConstraint> cstrs = new HashSet<>();
+        if (toTest instanceof Online || toTest instanceof Offline) {
+            //System.out.println("Ignore state unchange for " + toTest);
+            notSwitching.removeAll(toTest.getInvolvedNodes());
+        }
+
         Set<VM> rooted = new HashSet<>(p.getOrigin().getMapping().getRunningVMs());
         for (Action a : p) {
             if (a instanceof MigrateVM) {
@@ -156,4 +174,8 @@ public class ImplVerifier implements Verifier {
         return b.toString();
     }
 
+
+    /*public List<TestCase> reduce() {
+
+    } */
 }
