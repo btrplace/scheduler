@@ -1,9 +1,14 @@
 /**
 * A node cannot be turn off if it host any VM.
 */
-/*native cstr noVMonOfflineNode() ::=
-	!(n : node). nodeState(n) = offline --> card(hosted(n)) = 0*/
-
 cstr offline(n : node) ::=
     """ {"id":"offline",  "nodes":[@n]} """
     nodeState(n) = offline --> card(hosted(n)) = 0
+
+/*
+nodeState(n) = offline & place(vm1, n)   x
+nodeState(n) = offline & place(vm1, n) & (vmstate(vm1) == running || vmstate(vm1) == sleeping) x
+
+nodeState(n) = offline & place(vm1, n) & vmstate(vm1) == running ok
+nodeState(n) = offline & place(vm1, n) & vmstate(vm1) == sleeping ko
+*/
