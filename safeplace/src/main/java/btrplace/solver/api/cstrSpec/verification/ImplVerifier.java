@@ -2,28 +2,33 @@ package btrplace.solver.api.cstrSpec.verification;
 
 import btrplace.model.*;
 import btrplace.model.constraint.*;
+import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.*;
+import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import choco.kernel.common.logging.ChocoLogging;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Fabien Hermenier
  */
 public class ImplVerifier implements Verifier {
 
-    @Override
+
     public TestResult verify(TestCase c) {
+        return verify(c, true);
+    }
+
+    public TestResult verify(TestCase c, boolean inclSat) {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.getConstraintMapper().register(new CSchedule.Builder());
         Set<SatConstraint> cstrs = new HashSet<>();
-        cstrs.add(c.getSatConstraint());
+        if (inclSat) {
+            cstrs.add(c.getSatConstraint());
+        }
         cstrs.addAll(actionsToConstraints(c.getPlan(), c.getSatConstraint()));
 
         setDurationEstimators(c.getPlan());
@@ -67,6 +72,7 @@ public class ImplVerifier implements Verifier {
             return makeResult(c, TestResult.ErrorType.falseNegative, new Exception(e));
         }
     }
+
 
     private TestResult makeResult(TestCase c, TestResult.ErrorType err, Exception ex) {
         return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), err, ex);
@@ -175,7 +181,64 @@ public class ImplVerifier implements Verifier {
     }
 
 
-    /*public List<TestCase> reduce() {
+    private List<TestCase> mins = new ArrayList<>();
 
-    } */
+    public List<TestCase> reduce(TestCase c, Constraint cstr, Map<String, Object> in) {
+        reduce(0, c, cstr, in);
+        return mins;
+    }
+
+    private boolean reduce(int lvl, TestCase t, btrplace.solver.api.cstrSpec.Constraint cstr, Map<String, Object> in) {
+        System.out.println(indent(lvl) + "Reduce " + t.getPlan().getActions());
+        TestResult res = this.verify(t, false);
+        if (res.succeeded()) {
+            System.out.println(indent(lvl) + "-> Succeeded. Throw away");
+            return true;
+        }
+        if (t.getPlan().getSize() <= 1) {
+            System.out.println(indent(lvl) + "-> Minimal");
+            mins.add(t);
+            return false;
+        } else {
+            System.out.println(indent(lvl) + "-> Splittable");
+            int middle = t.getPlan().getSize() / 2;
+            int sep = middle;
+            int max = t.getPlan().getSize();
+
+            boolean decidable = false;
+            while (!decidable) {
+                ReconfigurationPlan p1 = new DefaultReconfigurationPlan(t.getPlan().getOrigin());
+                ReconfigurationPlan p2 = new DefaultReconfigurationPlan(t.getPlan().getOrigin());
+                int i = 0;
+                for (Action a : t.getPlan()) {
+                    if (i++ < sep) {
+                        p1.add(a);
+                    } else {
+                        p2.add(a);
+                    }
+                }
+                System.out.println(indent(lvl) + "split 1: " + p1.getActions());
+                System.out.println(indent(lvl) + "split 2: " + p2.getActions());
+                TestCase c1 = new TestCase(t.num(), p1, t.getSatConstraint(), cstr.instantiate(in, p1));
+                TestCase c2 = new TestCase(t.num(), p2, t.getSatConstraint(), cstr.instantiate(in, p2));
+                decidable = reduce(lvl + 1, c1, cstr, in);
+                decidable &= reduce(lvl + 1, c2, cstr, in);
+                decidable = !decidable;
+                sep = (sep + 1) % max;
+                if (sep == middle) {
+                    System.out.println(indent(lvl) + "unable to make a valuable split");
+                    break;
+                }
+            }
+        }
+        return false;
+    }
+
+    private String indent(int l) {
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < l; i++) {
+            b.append("\t");
+        }
+        return b.toString();
+    }
 }

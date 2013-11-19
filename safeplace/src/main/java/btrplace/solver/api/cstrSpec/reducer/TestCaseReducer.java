@@ -29,8 +29,8 @@ public class TestCaseReducer {
             return true;
         }
         if (t.getPlan().getSize() <= 1) {
-            System.out.println(indent(lvl) + "-> Minimal stop:");
-            System.out.println(indent(lvl) + " " + res + "\n----");
+            System.out.println(indent(lvl) + "-> Minimal stop:" + res.errorMessage().getMessage());
+            //System.out.println(indent(lvl) + " " + res + "\n----");
             return false;
         } else {
             System.out.println(indent(lvl) + "-> Splittable");

@@ -13,13 +13,13 @@ import btrplace.solver.api.cstrSpec.invariant.StatesExtractor2;
 import btrplace.solver.api.cstrSpec.verification.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.TestResult;
-import btrplace.solver.api.cstrSpec.verification.Verifier;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -58,15 +58,25 @@ public class TestCaseReducerTest {
         StatesExtractor2 ex = new StatesExtractor2();
         Constraint cstr = ex.extract(new File("src/test/resources/noVMonOfflineNode.cspec"));
 
-        Verifier verif = new ImplVerifier();
-        System.out.println(p.getOrigin().getMapping());
+        ImplVerifier verif = new ImplVerifier();
+        //System.out.println(p.getOrigin().getMapping());
         Map<String, Object> in = new HashMap<>();
         in.put("n", n1);
         TestCase tc = new TestCase(0, p, new Offline(Collections.singleton(n2)), cstr.instantiate(in, p));
+        System.out.println(cstr.getProposition());
         TestResult tr = verif.verify(tc);
         System.out.println(tr);
-        TestCaseReducer r = new TestCaseReducer();
-        r.reduce(0, tc, cstr, in);
+        //TestCaseReducer r = new TestCaseReducer();
+        //r.reduce(0, tc, cstr, in);
+
+        List<TestCase> reduced = verif.reduce(tc, cstr, in);
+
+        System.out.println("------------\nReduced Test Cases\n-----------");
+        for (TestCase t : reduced) {
+            System.out.println(t);
+            System.out.println(verif.verify(t));
+            System.out.println("---");
+        }
         Assert.fail();
     }
 }
