@@ -62,6 +62,8 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
 
     private IStateInt firstFree;
 
+    private ReconfigurationProblem rp;
+
     /**
      * Make a new heuristics
      *
@@ -72,6 +74,7 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
      */
     public OnStableNodeFirst(String lbl, ReconfigurationProblem rp, List<ActionModel> actions, CMinMTTR o) {
         super(rp.getSolver(), ActionModelUtils.getStarts(actions.toArray(new ActionModel[actions.size()])));
+        this.rp = rp;
         firstFree = rp.getSolver().getEnvironment().makeInt(0);
         this.obj = o;
         Mapping cfg = rp.getSourceModel().getMapping();
@@ -133,6 +136,9 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
      */
     private void makeIncomings() {
         if (stays == null && move == null) {
+            for (BitSet in : ins) {
+                in.clear();
+            }
             stays = new BitSet();
             move = new BitSet();
             for (int i = 0; i < hoster.length; i++) {
@@ -153,23 +159,25 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
     @Override
     public IntDomainVar selectVar() {
 
-        for (BitSet in : ins) {
-            in.clear();
-        }
-
         makeIncomings();
-
+        /*for (BitSet b : ins) {
+            System.out.println(b);
+        } */
         IntDomainVar v = getVMtoLeafNode();
-        if (v != null) {
+        if (v == null) {
             return null;
         }
 
         v = getMovingVM();
         if (v != null) {
+            obj.postCostConstraints();
             return v;
         }
 
         IntDomainVar early = getEarlyVar();
+        if (early == null) {
+            System.out.println("Null");
+        }
         return early != null ? early : minInf();
     }
 
@@ -247,13 +255,19 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
      */
     private IntDomainVar getVMtoLeafNode() {
         for (int x = 0; x < outs.length; x++) {
+            //System.out.println("Leaf node ? " + rp.getNode(x) + " " + outs[x]);
             if (outs[x].cardinality() == 0) {
                 //no outgoing VMs, can be launched directly.
                 BitSet in = ins[x];
+                //System.out.println("\tindeed. Incoming: " + in);
                 for (int i = in.nextSetBit(0); i >= 0; i = in.nextSetBit(i + 1)) {
                     if (starts[i] != null && !starts[i].isInstantiated()) {
+                        //System.out.println(starts[i].pretty());
                         return starts[i];
                     }
+                    /*else {
+                        System.out.println(starts[i].pretty());
+                    } */
                 }
             }
         }

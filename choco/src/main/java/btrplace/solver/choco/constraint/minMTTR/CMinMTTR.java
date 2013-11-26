@@ -162,10 +162,10 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         HostingVariableSelector selectForRuns = new HostingVariableSelector("selectForRuns", p, ActionModelUtils.getDSlices(runActions), schedHeuristic);
         s.addGoal(new AssignVar(selectForRuns, new RandomVMPlacement("selectForRuns", p, pla, true)));
 
-        s.addGoal(new AssignVar(new StartingNodes("startingNodes", p, p.getNodeActions()), new MinVal()));
         ///SCHEDULING PROBLEM
         s.addGoal(new AssignOrForbidIntVarVal(schedHeuristic, new MinVal()));
 
+        s.addGoal(new AssignVar(new StartingNodes("startingNodes", p, p.getNodeActions()), new MinVal()));
         //At this stage only it matters to plug the cost constraints
         s.addGoal(new AssignVar(new StaticVarOrder(p.getSolver(), new IntDomainVar[]{p.getEnd(), cost}), new MinVal()));
     }
