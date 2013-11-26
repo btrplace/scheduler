@@ -1,6 +1,12 @@
 Release notes
 ======================
 
+version ?????????????
+----------------------
+- Update dependencies
+- Bug fix in NodeStateConstraint.toString()
+- Additional getters to tune the JSON serialisation of ReconfigurationPlan
+
 version 0.33 - 28 Oct 2013
 ----------------------
 - Bug fix in the json un-marshalling
