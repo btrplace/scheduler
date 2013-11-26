@@ -1,7 +1,7 @@
 Release notes
 ======================
 
-version ?????????????
+version 0.34 - 26 Nov 2013
 ----------------------
 - Update dependencies
 - Bug fix in NodeStateConstraint.toString()
