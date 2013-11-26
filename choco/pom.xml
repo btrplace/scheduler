@@ -22,7 +22,7 @@
     <parent>
         <groupId>btrplace</groupId>
         <artifactId>solver</artifactId>
-        <version>0.33</version>
+        <version>0.34</version>
     </parent>
     <artifactId>solver-choco</artifactId>
     <name>solver-choco</name>
