@@ -1,6 +1,10 @@
 Release notes
 ======================
 
+version ?????????????
+----------------------
+- performance improvement in the action scheduling
+
 version 0.34 - 26 Nov 2013
 ----------------------
 - Update dependencies
