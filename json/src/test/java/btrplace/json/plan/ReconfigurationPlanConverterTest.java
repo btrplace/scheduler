@@ -18,6 +18,7 @@
 package btrplace.json.plan;
 
 import btrplace.json.JSONConverterException;
+import btrplace.json.model.ModelConverter;
 import btrplace.model.*;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
@@ -36,6 +37,13 @@ import java.io.IOException;
  * @author Fabien Hermenier
  */
 public class ReconfigurationPlanConverterTest {
+
+    @Test
+    public void testAccessors() {
+        ModelConverter mc = new ModelConverter();
+        ReconfigurationPlanConverter rcp = new ReconfigurationPlanConverter(mc);
+        Assert.assertEquals(rcp.getModelConverter(), mc);
+    }
 
     @Test
     public void testConversion() throws JSONConverterException, IOException {

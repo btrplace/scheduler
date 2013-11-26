@@ -34,6 +34,15 @@ import net.minidev.json.JSONObject;
  */
 public class ReconfigurationPlanConverter extends AbstractJSONObjectConverter<ReconfigurationPlan> {
 
+    private ModelConverter mc;
+
+    public ReconfigurationPlanConverter(ModelConverter mc) {
+        this.mc = mc;
+    }
+
+    public ReconfigurationPlanConverter() {
+        this(new ModelConverter());
+    }
 
     @Override
     public ReconfigurationPlan fromJSON(JSONObject ob) throws JSONConverterException {
@@ -46,9 +55,8 @@ public class ReconfigurationPlanConverter extends AbstractJSONObjectConverter<Re
             throw new JSONConverterException("Key 'actions' is expected to extract the list of actions from the plan");
         }
 
-        ModelConverter c = new ModelConverter();
         ActionConverter ac = new ActionConverter();
-        Model m = c.fromJSON((JSONObject) ob.get("origin"));
+        Model m = mc.fromJSON((JSONObject) ob.get("origin"));
         ac.setModel(m);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(m);
         for (Action a : ac.listFromJSON((JSONArray) ob.get("actions"))) {
@@ -57,14 +65,17 @@ public class ReconfigurationPlanConverter extends AbstractJSONObjectConverter<Re
         return plan;
     }
 
+    public ModelConverter getModelConverter() {
+        return mc;
+    }
+
     @Override
     public JSONObject toJSON(ReconfigurationPlan plan) throws JSONConverterException {
         setModel(plan.getOrigin());
         JSONObject ob = new JSONObject();
-        ModelConverter c = new ModelConverter();
         ActionConverter ac = new ActionConverter();
         Model src = plan.getOrigin();
-        ob.put("origin", c.toJSON(src));
+        ob.put("origin", mc.toJSON(src));
 
         JSONArray actions = new JSONArray();
         for (Action a : plan.getActions()) {
