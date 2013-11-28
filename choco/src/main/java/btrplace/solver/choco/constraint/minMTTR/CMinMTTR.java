@@ -183,8 +183,7 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
     @Override
     public void postCostConstraints() {
         if (!costActivated) {
-            //rp.getLogger().debug("Post the cost-oriented constraints");
-            System.out.println("Post the cost-oriented constraints");
+            rp.getLogger().debug("Post the cost-oriented constraints");
             costActivated = true;
             CPSolver s = rp.getSolver();
             for (SConstraint c : costConstraints) {
