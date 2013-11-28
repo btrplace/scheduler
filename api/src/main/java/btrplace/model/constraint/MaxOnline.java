@@ -104,7 +104,7 @@ public class MaxOnline extends SatConstraint {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        b.append("maxOnlines(").append("nodes=").append(getInvolvedNodes()).append(", amount=")
+        b.append("maxOnline(").append("nodes=").append(getInvolvedNodes()).append(", amount=")
                 .append(qty);
 
         if (isContinuous()) {

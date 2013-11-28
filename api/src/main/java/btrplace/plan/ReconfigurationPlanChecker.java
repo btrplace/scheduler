@@ -245,6 +245,7 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
      *          if a violation is detected
      */
     public void check(ReconfigurationPlan p) throws ReconfigurationPlanCheckerException {
+        System.err.println(p);
         if (checkers.isEmpty()) {
             return;
         }

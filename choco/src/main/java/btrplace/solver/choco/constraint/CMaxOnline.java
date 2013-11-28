@@ -90,10 +90,11 @@ public class CMaxOnline implements ChocoConstraint {
             for (Node n : constraint.getInvolvedNodes()) {
                 nodeIdx[i++] = rp.getNode(n);
             }
-            IntDomainVar capacity = solver.createIntegerConstant("capacity", constraint.getAmount());
+            IntDomainVar capacity = solver.createBoundIntVar("capacity", 0, constraint.getAmount());//solver.createIntegerConstant("capacity", constraint.getAmount());
             IntDomainVar consumption = solver.createBoundIntVar("consum", 0, constraint.getAmount());//minimum consumption
             // of the resource
-            IntDomainVar uppBound = rp.getEnd();                    // All tasks must be scheduled before this time
+            IntDomainVar uppBound = rp.getEnd();//rp.makeUnboundedDuration("maxOnline_horizon");
+            //solver.post(solver.leq(uppBound, rp.getEnd()));                    // All tasks must be scheduled before this time
             IntDomainVar[] heights = new IntDomainVar[numberOfTasks];   // The state of the node
             IntDomainVar[] starts = new IntDomainVar[numberOfTasks];
             IntDomainVar[] ends = new IntDomainVar[numberOfTasks];
@@ -108,10 +109,10 @@ public class CMaxOnline implements ChocoConstraint {
                 ends[idx] = view.getPowerEnd(rp.getNode(n));
                 // ------------------------------------------------------------------------
 
-                durations[idx] = rp.makeUnboundedDuration("Dur(", n, ")");
+                durations[idx] = rp.makeUnboundedDuration(rp.makeVarLabel("Dur(", n, ")"));
                 solver.post(solver.leq(durations[idx], rp.getEnd()));
                 heights[idx] = solver.makeConstantIntVar(1);         // All tasks have to be scheduled
-                taskVars[idx] = solver.createTaskVar("Task_" + n, starts[idx], ends[idx], durations[idx]);
+                taskVars[idx] = solver.createTaskVar(rp.makeVarLabel("onlinePeriod(", n, ")"), starts[idx], ends[idx], durations[idx]);
                 solver.post(solver.eq(ends[idx], solver.plus(starts[idx], durations[idx])));
             }
             Cumulative cumulative = new Cumulative(solver, "Cumulative", taskVars,

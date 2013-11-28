@@ -1,9 +1,7 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.*;
-import btrplace.model.constraint.MaxOnline;
-import btrplace.model.constraint.Online;
-import btrplace.model.constraint.SatConstraint;
+import btrplace.model.constraint.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
@@ -161,5 +159,38 @@ public class CMaxOnlineTest {
         Assert.assertNotNull(plan);
         Assert.assertTrue(maxOn.isSatisfied(plan));
         System.out.println(plan);
+    }
+
+    @Test
+    public void testDecommissionning() throws SolverException {
+        Model mo = new DefaultModel();
+        Node n0 = mo.newNode();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        mo.getMapping().addOnlineNode(n0);
+        mo.getMapping().addOnlineNode(n1);
+        mo.getMapping().addOfflineNode(n2);
+        mo.getMapping().addOfflineNode(n3);
+        VM v1 = mo.newVM();
+        VM v0 = mo.newVM();
+        mo.getMapping().addRunningVM(v0, n0);
+        mo.getMapping().addRunningVM(v1, n1);
+
+        List<SatConstraint> cstrs = new ArrayList<>();
+        MaxOnline max = new MaxOnline(mo.getMapping().getAllNodes(), 3);
+        max.setContinuous(true);
+        cstrs.add(max);
+        cstrs.add(new Fence(Collections.singleton(v0), Collections.singleton(n2)));
+        cstrs.add(new Fence(Collections.singleton(v1), Collections.singleton(n3)));
+        cstrs.add(new Offline(Collections.singleton(n1)));
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.labelVariables(true);
+        cra.setMaxEnd(10);
+        cra.setVerbosity(2);
+        ReconfigurationPlan p = cra.solve(mo, cstrs);
+        Assert.assertNotNull(p);
+        System.out.println(p);
+        //System.out.println(p.getResult());
     }
 }

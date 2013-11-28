@@ -172,11 +172,15 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
                 vIns[nIdx].add(i);
             }
         }
+        //System.out.println("awake");
+        propagate();
     }
 
     @Override
     public void propagate() throws ContradictionException {
+        //System.out.println("propagate");
         if (isFull2()) {
+            //System.out.println("Propagate !");
             for (int i = 0; i < scheds.length; i++) {
                 if (!scheds[i].propagate()) {
                     fail();
