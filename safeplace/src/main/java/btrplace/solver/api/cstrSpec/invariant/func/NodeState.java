@@ -20,7 +20,7 @@ public class NodeState extends Function {
 
     @Override
     public String toString() {
-        return "nodeState(" + t.toString() + ")";
+        return (currentValue() ? "$" : "") + "nodeState(" + t.toString() + ")";
     }
 
     @Override

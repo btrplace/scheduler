@@ -1,7 +1,3 @@
-/**
-*  No VM in vs can run on a node hosting any VM not in vs.
-* TODO: Incorrect
-*/
-cstr lonely(vs <: VM) ::=
+cstr lonely (vs : VM) ::=
     """ {"id":"lonely", "vms":[@vs], "continuous" : false} """
 	!(i : vs). vmState(i) = running --> (colocated(i) - {i}) /<: vs

@@ -7,4 +7,17 @@ import btrplace.solver.api.cstrSpec.invariant.Term;
  */
 public abstract class Function implements Term {
 
+    private boolean cur;
+
+    public Function() {
+        cur = false;
+    }
+
+    public void currentValue(boolean b) {
+        this.cur = b;
+    }
+
+    public boolean currentValue() {
+        return cur;
+    }
 }

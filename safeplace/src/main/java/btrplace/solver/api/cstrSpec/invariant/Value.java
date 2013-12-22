@@ -3,9 +3,7 @@ package btrplace.solver.api.cstrSpec.invariant;
 import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.invariant.type.Type;
 
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Fabien Hermenier
@@ -32,6 +30,18 @@ public class Value implements Term {
 
     @Override
     public String toString() {
+        if (o instanceof Collection) {
+            StringBuilder b = new StringBuilder("{");
+            Iterator ite = ((Collection) o).iterator();
+            if (ite.hasNext()) {
+                b.append(ite.next().toString());
+            }
+            while (ite.hasNext()) {
+                b.append(", ").append(ite.next());
+            }
+            b.append('}');
+            return b.toString();
+        }
         return o.toString();
     }
 

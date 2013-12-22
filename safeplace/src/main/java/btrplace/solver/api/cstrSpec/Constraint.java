@@ -1,15 +1,14 @@
 package btrplace.solver.api.cstrSpec;
 
 import btrplace.model.Model;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.invariant.Proposition;
 import btrplace.solver.api.cstrSpec.invariant.Variable;
 import net.minidev.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Fabien Hermenier
@@ -47,6 +46,20 @@ public class Constraint {
         return params;
     }
 
+    private Set<Node> getInvolvedNodes(Map<String, Object> values, ReconfigurationPlan p) {
+        return Collections.emptySet();
+    }
+
+    private Set<VM> getInvolvedVMs(Map<String, Object> values, ReconfigurationPlan p) {
+        for (Map.Entry<String, Object> val : values.entrySet()) {
+            Variable var = vars.get(val.getKey());
+            var.set(val.getValue());
+        }
+
+        return Collections.emptySet();
+    }
+
+
     public Boolean instantiate(Map<String, Object> values, ReconfigurationPlan p) {
         for (Map.Entry<String, Object> val : values.entrySet()) {
             Variable var = vars.get(val.getKey());
@@ -54,6 +67,7 @@ public class Constraint {
         }
         Model res = p.getResult();
         if (res == null) {     //TODO: flaw ?
+            //throw new RuntimeException("Unable to apply the plan");
             return false;
         }
         Boolean bOk = this.p.evaluate(res);

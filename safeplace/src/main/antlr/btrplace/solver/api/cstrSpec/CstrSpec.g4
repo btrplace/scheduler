@@ -74,7 +74,7 @@ formula: LPARA formula RPARA   #protectedFormula
        |FALSE       #falseFormula
        ;
        
-func: ID LPARA term (COMMA term)* RPARA;
+func: cur='$'? ID LPARA term (COMMA term)* RPARA;
 
 constraint: 'cstr' ID LPARA (typedef (COMMA typedef)*)? RPARA DEF_CONTENT MARSHAL formula;
 func_def: 'func' ID LPARA ID (COMMA ID)* RPARA ID; 

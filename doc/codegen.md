@@ -194,4 +194,55 @@ transitions VM {
 }
 ```
 
+#Genralize a test case
+
+This fail
+
+nodeState(node#0) /= offline | card(hoster(node#0)) = 0
+
+Test 0 result:
+-------------
+consistent: false, result: falsePositive
+constraint: offline(nodes=[node#1], discrete)
+error: java.lang.Exception: Should not pass
+origin:
+node#1: (vm#2)
+node#0: vm#0
+(node#2)
+READY vm#1
+
+plan:
+0:3 {action=shutdown(node=node#1)}
+
+
+Looking for similar causes leading to the same bug.
+- get the highest-level description that lead to this bug
+  
+	- what hangs ?
+	
+	- hangs when the VM is running ?
+	
+	- hangs when there is no VM ?
+	
+	- hangs when there is more VM ?
+	
+	- VM running, relocated elsewhere ?
+		
+		- before, during, after ?
+	
+- second, to guide more efficiently to the root cause
+			
+- first to generate bugs and test the fix
+
+- third to report _other bugs_
+
+- How to reduce the initial model ?
+
+-> generative formula
+on(n0) & on(n1) & off(n2) & run(v0) & ready(v1) & sleeping(n2) & place(v0, n0) & place(v2, n1) & shutdown(n1, 0, 3)
+
+-> bug generative formula
+!(n : node). #(v : VM) ^online(n) & sleeping(v) & place(v, n) & offline(n)
+
+
 	 

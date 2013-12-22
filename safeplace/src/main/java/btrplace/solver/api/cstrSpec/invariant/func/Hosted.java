@@ -27,7 +27,7 @@ public class Hosted extends Function {
 
     @Override
     public String toString() {
-        return new StringBuilder("hoster(").append(t).append(")").toString();
+        return (currentValue() ? "$" : "") + new StringBuilder("hoster(").append(t).append(")").toString();
     }
 
     @Override

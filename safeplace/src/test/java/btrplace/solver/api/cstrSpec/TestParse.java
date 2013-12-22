@@ -83,7 +83,7 @@ public class TestParse {
 
     @Test
     public void testParseLonely() throws Exception {
-        go("src/test/resources/lonely.cspec");
+        System.out.println(ex.extract(new File("src/test/resources/lonely.cspec")));
     }
 
 
@@ -103,6 +103,14 @@ public class TestParse {
         ex.extract(new File("src/test/resources/maxOnline.cspec"));
         Assert.fail();
     }
+
+    @Test
+    public void testParseRoot() throws Exception {
+        Constraint cstr = ex.extract(new File("src/test/resources/root.cspec"));
+        System.out.println(cstr.toString());
+        Assert.fail();
+    }
+
 
 /*    @Test
     public void testParseNodeState() throws Exception {

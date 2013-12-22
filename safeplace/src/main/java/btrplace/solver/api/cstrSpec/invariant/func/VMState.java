@@ -20,7 +20,7 @@ public class VMState extends Function {
 
     @Override
     public String toString() {
-        return "vmState(" + t + ")";
+        return (currentValue() ? "$" : "") + "vmState(" + t + ")";
     }
 
     @Override

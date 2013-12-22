@@ -20,7 +20,7 @@ public class Host extends Function {
 
     @Override
     public String toString() {
-        return "host(" + t + ")";
+        return (currentValue() ? "$" : "") + "host(" + t + ")";
     }
 
     @Override
