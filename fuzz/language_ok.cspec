@@ -1,0 +1,89 @@
+//Constraints that are OK 
+/**
+* Ban constraint.
+* No running VMs in `vs` is allowed to be hosted on any node of `ns`
+*/
+cstr ban(vs <: VM, ns <: node ) ::=
+    """ {"id":"ban", "vms":[@vs], "nodes":[@ns]} """
+    !(v : vs). vmState(v) = running --> host(v) /: ns
+
+/**
+* Fence constraint.
+* Every running VMs in `vs` is hosted on a node in `ns`
+*/
+cstr fence(vs <: VM, ns <: node ) ::=
+    """ {"id":"fence", "vms":[@vs], "nodes":[@ns]} """
+    !(v : vs). vmState(v) = running --> host(v) : ns
+
+/**
+* Gather constraint.
+* All the running VMs in vs must be co-located
+*/
+cstr gather(vs <: VM) ::=
+    """ {"id":"gather",  "vms":[@vs], "continuous": false} """
+    !(x,y : vs).  (x /= y & vmState(x) = running & vmState(y) = running) --> host(x) = host(y)
+
+/**
+* Spread constraint.
+* No running VMs in vs can be co-located.
+*/
+cstr spread(vs <: VM) ::=
+    """ {"id":"spread",  "vms":[@vs], "continuous": false} """
+     !(x,y : vs). (x /= y &  vmState(x) = running & vmState(y) = running) --> host(x) /= host(y)
+
+/**
+* A node cannot be turn off if it host any VM.
+*/
+cstr offline(n : node) ::=
+    """ {"id":"offline",  "nodes":[@n]} """
+    nodeState(n) = offline --> card(hosted(n)) = 0
+
+cstr root (vs <: VM) {
+	""" {"id":"root", "vms":[@vs], "continuous" : true} """
+	!(v : vs). state(v) = running -> $host(v) = host(v)
+}
+
+/**
+*  No VM in vs can run on a node hosting any VM not in vs.
+*/
+cstr lonely(vs <: VM) ::=
+    """ {"id":"lonely", "vms":[@vs], "continuous" : false} """
+	!(i : vs). vmState(i) = running --> (colocated(i) - {i}) /<: vs
+
+cstr singleRunningCapacity(ns <: node, nb : NAT) {
+	!(n : ns). card(hosted(n)) <= nb
+}
+
+
+//Not parseable
+
+cstr maxOnline(ns <: node, nb : nat) ::=
+    """ {"id":"maxOnline","nodes":[@ns],"amount":@nb,"continuous":false} """
+	card({i : ns. nodeState(i) = online}) <= nb
+
+
+cstr cumulatedRunningCapacity(ns <: node, nb : NAT) {
+	card({i : ns. hosted(i)}) <= nb	
+}
+
+constraint among (vs <: VMS, groups <: P(NODES)) {	
+/*V1 */	on := {host(i) | i : vs && state(i) = running}
+		exists(on :< g) | g : groups
+
+/* V2 */
+		on := vs[state = running]
+}
+
+constraint split(groups <: P(VMS)) {
+
+/*V1*/	{ {host(i) | i : g && state(i) = running} | g : groups} <: P(NODES)		
+/*V2*/	{ {host(i) | g[state=runing]} | g : groups} <: P(NODES)		
+}
+
+constraint splitAmong(vgroups <: P(VMS), pgroups <: P(NODES)) {	
+	(all(vgroup : group). among(vgroup, pgroups)) && split(vgroups)
+}
+
+constraint quarantine(ns <: NODES) {
+...
+}

@@ -73,7 +73,7 @@ public class TestParse {
 
     @Test
     public void testSingleRunningCapacity() throws Exception {
-        go("src/test/resources/singleRunningCapacity.cspec");
+        System.out.println(ex.extract(new File("src/test/resources/singleRunningCapacity.cspec")));
     }
 
     @Test
@@ -100,7 +100,7 @@ public class TestParse {
 
     @Test
     public void testParseMaxOnline() throws Exception {
-        ex.extract(new File("src/test/resources/maxOnline.cspec"));
+        System.out.println(ex.extract(new File("src/test/resources/maxOnline.cspec")));
         Assert.fail();
     }
 

@@ -1,0 +1,3 @@
+cstr singleRunningCapacity(ns <: node, nb : nat) ::=
+    """{"id":"cumulatedRunningCapacity","nodes":[@ns],"continuous":false,"amount":@nb} """
+	card({i : ns. hosted(i)}) <= nb
