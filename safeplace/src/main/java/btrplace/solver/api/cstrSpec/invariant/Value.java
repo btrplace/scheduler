@@ -1,6 +1,7 @@
 package btrplace.solver.api.cstrSpec.invariant;
 
 import btrplace.model.Model;
+import btrplace.solver.api.cstrSpec.ComprehensionSet;
 import btrplace.solver.api.cstrSpec.invariant.type.Type;
 
 import java.util.*;
@@ -65,6 +66,9 @@ public class Value implements Term {
 
     @Override
     public Object getValue(Model mo) {
+        if (o instanceof ComprehensionSet) {
+            return ((ComprehensionSet) o).expand(mo);
+        }
         return o;
     }
 }

@@ -60,8 +60,8 @@ term: t1=term op=(INTER|UNION|PLUS|MINUS|MULT|DIV) t2=term         #termOp
     | set                                           #setTerm
     ;
 
-set: LACC (term (COMMA term)*)? RACC /* definition in extension */ #extensionSet
-   | LACC binder* formula RACC /* definition in comprehension */ #comprehensionSet
+set: LACC (term (COMMA term)*)? RACC #extensionSet
+   | LACC typedef DOT formula RACC #comprehensionSet
    ;
 
 typedef: i1=ID op=(IN|NOT_IN|INCL|NOT_INCL) i2=ID;
