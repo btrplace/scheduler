@@ -5,6 +5,7 @@ import btrplace.model.Model;
 import java.util.Iterator;
 
 /**
+ * Logical and between several propositions.
  * @author Fabien Hermenier
  */
 public class And extends NaryProp {
