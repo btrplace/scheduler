@@ -114,7 +114,18 @@ public class Constraint {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        b.append(cstrName).append(" ");
+        b.append(cstrName).append("(");
+        Iterator<Variable> ite = params.iterator();
+        if (ite.hasNext()) {
+            Variable v = ite.next();
+            b.append(v.label()).append(" : ").append(v.type());
+        }
+        while (ite.hasNext()) {
+            Variable v = ite.next();
+            b.append(", ").append(v.label()).append(" : ").append(v.type());
+
+        }
+        b.append(")");
         b.append(" ::= ").append(p);
         return b.toString();
     }
