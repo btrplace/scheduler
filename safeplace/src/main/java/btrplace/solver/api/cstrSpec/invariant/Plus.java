@@ -15,6 +15,9 @@ public class Plus implements Term {
     private Term a, b;
 
     public Plus(Term t1, Term t2) {
+        if (!t1.type().equals(t2.type())) {
+            throw new RuntimeException("Unconsistent addition " + t1.type() + " + " + t2.type());
+        }
         this.a = t1;
         this.b = t2;
     }
@@ -35,7 +38,7 @@ public class Plus implements Term {
             l.addAll(c2);
             return l;
         }
-        throw new RuntimeException("Unsupported operation on '" + o1.getClass().getSimpleName() + "'");
+        throw new RuntimeException("Unsupported operation on '" + a.type() + "'");
     }
 
     @Override

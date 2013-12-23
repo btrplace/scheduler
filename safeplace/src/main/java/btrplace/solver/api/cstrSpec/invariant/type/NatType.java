@@ -59,4 +59,8 @@ public class NatType implements Type {
     public Value newValue(String n) {
         return new Value(Integer.parseInt(n), this);
     }
+
+    public Value newValue(int i) {
+        return new Value(i, this);
+    }
 }

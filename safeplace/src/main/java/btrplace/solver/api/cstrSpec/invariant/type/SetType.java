@@ -18,6 +18,20 @@ public class SetType implements Type {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SetType setType = (SetType) o;
+        return type.equals(setType.type);
+    }
+
+    @Override
+    public int hashCode() {
+        return type.hashCode();
+    }
+
+    @Override
     public Set domain(Model mo) {
         //All possible subsets of t. Ouch
         Object[] values = type.domain(mo).toArray(new Object[type.domain(mo).size()]);
