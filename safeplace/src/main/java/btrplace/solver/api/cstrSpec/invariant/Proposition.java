@@ -13,8 +13,6 @@ public interface Proposition {
 
     int size();
 
-    //Proposition expand();
-
     Boolean evaluate(Model m);
 
     static final Proposition False = new Proposition() {
@@ -31,6 +29,11 @@ public interface Proposition {
         @Override
         public Boolean evaluate(Model m) {
             return Boolean.FALSE;
+        }
+
+        @Override
+        public String toString() {
+            return "false";
         }
     };
 
@@ -49,5 +52,11 @@ public interface Proposition {
         public Boolean evaluate(Model m) {
             return Boolean.TRUE;
         }
+
+        @Override
+        public String toString() {
+            return "true";
+        }
+
     };
 }

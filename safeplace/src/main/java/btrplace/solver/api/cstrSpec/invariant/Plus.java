@@ -33,7 +33,7 @@ public class Plus implements Term {
             Collection c2 = (Collection) o2;
             Set l = new HashSet(c1);
             l.addAll(c2);
-            return new Value(l, a.type());
+            return l;
         }
         throw new RuntimeException("Unsupported operation on '" + o1.getClass().getSimpleName() + "'");
     }

@@ -37,7 +37,7 @@ public class Minus implements Term {
                     l.add(o);
                 }
             }
-            return new Value(l, a.type());
+            return l;
         }
         throw new RuntimeException("Unsupported operation on '" + o1.getClass().getSimpleName() + "'");
     }

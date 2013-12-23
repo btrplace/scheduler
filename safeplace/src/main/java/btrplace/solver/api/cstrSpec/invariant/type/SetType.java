@@ -19,7 +19,7 @@ public class SetType implements Type {
 
     @Override
     public Set domain(Model mo) {
-        //All possible subsets or t. Ouch
+        //All possible subsets of t. Ouch
         Object[] values = type.domain(mo).toArray(new Object[type.domain(mo).size()]);
         int nbElements = (int) Math.pow(2, values.length);
         //System.err.println(nbElements);
