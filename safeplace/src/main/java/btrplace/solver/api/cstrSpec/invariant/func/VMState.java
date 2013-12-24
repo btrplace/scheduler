@@ -29,8 +29,8 @@ public class VMState extends Function {
     }
 
     @Override
-    public Object getValue(Model mo) {
-        VM v = (VM) t.getValue(mo);
+    public Object eval(Model mo) {
+        VM v = (VM) t.eval(mo);
         if (v == null) {
             throw new UnsupportedOperationException();
         }

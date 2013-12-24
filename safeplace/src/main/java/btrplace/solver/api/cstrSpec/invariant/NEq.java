@@ -55,8 +55,8 @@ public class NEq extends AtomicProp {
 
     @Override
     public Boolean evaluate(Model mo) {
-        Object vA = a.getValue(mo);
-        Object vB = b.getValue(mo);
+        Object vA = a.eval(mo);
+        Object vB = b.eval(mo);
         if ((vA == null && vB != null) || (vA != null && vB == null)) {
             return true;
         }

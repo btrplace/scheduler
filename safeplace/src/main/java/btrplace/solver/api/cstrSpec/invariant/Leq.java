@@ -43,8 +43,8 @@ public class Leq extends AtomicProp {
 
     @Override
     public Boolean evaluate(Model m) {
-        Integer iA = (Integer) a.getValue(m);
-        Integer iB = (Integer) b.getValue(m);
+        Integer iA = (Integer) a.eval(m);
+        Integer iB = (Integer) b.eval(m);
         if (iA == null || iB == null) {
             return null;
         }

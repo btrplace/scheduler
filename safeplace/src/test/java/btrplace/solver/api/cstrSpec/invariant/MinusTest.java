@@ -18,7 +18,7 @@ public class MinusTest {
     @Test
     public void testInts() {
         Minus p = new Minus(NatType.getInstance().newValue(5), NatType.getInstance().newValue(7));
-        Assert.assertEquals(p.getValue(new DefaultModel()), -2);
+        Assert.assertEquals(p.eval(new DefaultModel()), -2);
         Assert.assertEquals(p.type(), NatType.getInstance());
     }
 
@@ -27,7 +27,7 @@ public class MinusTest {
         Value v1 = new Value(Arrays.asList(1, 2), new SetType(NatType.getInstance()));
         Value v2 = new Value(Arrays.asList(2, 5), new SetType(NatType.getInstance()));
         Minus p = new Minus(v1, v2);
-        Set s = (Set) p.getValue(new DefaultModel());
+        Set s = (Set) p.eval(new DefaultModel());
         Assert.assertEquals(s.size(), 1);
         Assert.assertEquals(p.type(), new SetType(NatType.getInstance()));
     }
@@ -44,7 +44,7 @@ public class MinusTest {
         Minus p1 = new Minus(NatType.getInstance().newValue(5), NatType.getInstance().newValue(7));
         Minus p2 = new Minus(NatType.getInstance().newValue(1), NatType.getInstance().newValue(2));
         Minus p3 = new Minus(p1, p2);
-        Assert.assertEquals(p3.getValue(new DefaultModel()), -1);
+        Assert.assertEquals(p3.eval(new DefaultModel()), -1);
     }
 
 }

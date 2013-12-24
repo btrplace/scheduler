@@ -43,8 +43,8 @@ public class Lt extends AtomicProp {
 
     @Override
     public Boolean evaluate(Model m) {
-        Integer vA = (Integer) a.getValue(m);
-        Integer vB = (Integer) b.getValue(m);
+        Integer vA = (Integer) a.eval(m);
+        Integer vB = (Integer) b.eval(m);
         if (vA == null || vB == null) {
             return null;
         }

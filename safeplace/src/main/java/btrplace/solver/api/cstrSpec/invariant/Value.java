@@ -65,7 +65,7 @@ public class Value implements Term {
     }
 
     @Override
-    public Object getValue(Model mo) {
+    public Object eval(Model mo) {
         if (o instanceof LazySet) {
             return ((LazySet) o).expand(mo);
         }

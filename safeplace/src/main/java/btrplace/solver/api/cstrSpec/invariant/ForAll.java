@@ -40,7 +40,7 @@ public class ForAll implements Proposition {
         boolean ret = true;
         List<List<Object>> values = new ArrayList<>(vars.size());
         for (int i = 0; i < vars.size(); i++) {
-            values.add(new ArrayList<>((Collection<Object>) from.getValue(m)));
+            values.add(new ArrayList<>((Collection<Object>) from.eval(m)));
         }
         AllTuplesGenerator<Object> tg = new AllTuplesGenerator<>(Object.class, values);
         for (Object[] tuple : tg) {

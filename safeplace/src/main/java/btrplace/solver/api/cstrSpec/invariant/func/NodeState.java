@@ -29,8 +29,8 @@ public class NodeState extends Function {
     }
 
     @Override
-    public Object getValue(Model mo) {
-        Node n = (Node) t.getValue(mo);
+    public Object eval(Model mo) {
+        Node n = (Node) t.eval(mo);
         if (n == null) {
             return null;
         }

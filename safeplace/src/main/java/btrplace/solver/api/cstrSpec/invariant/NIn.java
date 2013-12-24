@@ -25,8 +25,8 @@ public class NIn extends AtomicProp {
 
     @Override
     public Boolean evaluate(Model m) {
-        Object o = a.getValue(m);
-        Collection c = (Collection) b.getValue(m);
+        Object o = a.eval(m);
+        Collection c = (Collection) b.eval(m);
         if (c == null) {
             return null;
         }

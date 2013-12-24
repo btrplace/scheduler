@@ -24,7 +24,7 @@ public class ConstraintInputGenerator implements Generator<Map<String, Object>> 
         ids = new String[params.size()];
         for (int i = 0; i < params.size(); i++) {
             Variable v = params.get(i);
-            Object o = v.getValue(null);
+            Object o = v.eval(null);
             if (o != null) {
                 values.add(Collections.singletonList(o));
             } else {

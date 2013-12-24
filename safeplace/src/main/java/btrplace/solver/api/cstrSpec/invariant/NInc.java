@@ -30,8 +30,8 @@ public class NInc extends AtomicProp {
 
     @Override
     public Boolean evaluate(Model m) {
-        Object cA = a.getValue(m);
-        Collection cB = (Collection) b.getValue(m);
+        Object cA = a.eval(m);
+        Collection cB = (Collection) b.eval(m);
         if (cB == null) {
             return null;
         }

@@ -6,9 +6,9 @@ import btrplace.solver.api.cstrSpec.invariant.type.Type;
 /**
  * @author Fabien Hermenier
  */
-public interface Term {
+public interface Term<T> {
 
-    Object getValue(Model mo);
+    T eval(Model mo);
 
     Type type();
 }

@@ -23,9 +23,9 @@ public class Minus implements Term {
     }
 
     @Override
-    public Object getValue(Model mo) {
-        Object o1 = a.getValue(mo);
-        Object o2 = b.getValue(mo);
+    public Object eval(Model mo) {
+        Object o1 = a.eval(mo);
+        Object o2 = b.eval(mo);
         if (o1 == null || o2 == null) {
             return null;
         }

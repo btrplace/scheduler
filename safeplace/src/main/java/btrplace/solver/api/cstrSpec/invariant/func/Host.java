@@ -40,8 +40,8 @@ public class Host extends Function {
     }       */
 
     @Override
-    public Object getValue(Model mo) {
-        VM vm = (VM) t.getValue(mo); //It's a vmId;
+    public Object eval(Model mo) {
+        VM vm = (VM) t.eval(mo); //It's a vmId;
         if (vm == null) {
             throw new UnsupportedOperationException();
         }

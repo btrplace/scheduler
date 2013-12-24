@@ -56,7 +56,7 @@ public class Variable implements Term {
     }
 
     @Override
-    public Object getValue(Model mo) {
+    public Object eval(Model mo) {
         return val;
     }
 }

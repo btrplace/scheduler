@@ -30,8 +30,8 @@ public class Card extends Function {
     }
 
     @Override
-    public Integer getValue(Model mo) {
-        Collection c = (Collection) set.getValue(mo);
+    public Integer eval(Model mo) {
+        Collection c = (Collection) set.eval(mo);
         if (c == null) {
             return null;
         }
