@@ -29,8 +29,8 @@ NAT: '0' | '-'?[1..9][0..9]*;
 ID: [a-zA-Z_][a-zA-Z0-9_]*;
 INTER: '\\/';
 UNION: '/\\';
-AND:'&&';
-OR:'||';
+AND:'&';
+OR:'|';
 EQ:'=';
 NOT_EQ:'/=';
 LPARA :'(';
@@ -65,15 +65,13 @@ set: LACC (term (COMMA term)*)? RACC #extensionSet
    ;
 
 comparison: t1=term op=(EQ | NOT_EQ| LT | LEQ | GT | GEQ | IN | NOT_IN | INCL | NOT_INCL) t2=term;
-forall: ALL LPARA ID (COMMA ID)* op=(IN|NOT_IN|INCL|NOT_INCL) t=term RPARA formula;
-itExists: EXISTS LPARA ID (COMMA ID)* op=(IN|NOT_IN|INCL|NOT_INCL) t=term RPARA SUCH_AS formula;
-typedef: i1=ID op=(IN|NOT_IN|INCL|NOT_INCL) i2=term;
+typedef: ID (COMMA ID)* op=(IN|NOT_IN|INCL|NOT_INCL) i2=term;
 formula: LPARA formula RPARA   #protectedFormula
        |f1=formula op=(IMPLIES|OR|AND|IFF) f2=formula              #formulaOp
        |comparison #termComparison
        |NOT formula     #not
-       |forall #all       
-       |itExists #exists
+       |ALL LPARA typedef RPARA formula #all       
+       |EXISTS LPARA typedef RPARA SUCH_AS formula #exists
        |TRUE        #trueFormula
        |FALSE       #falseFormula
        ;

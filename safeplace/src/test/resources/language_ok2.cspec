@@ -1,0 +1,60 @@
+//Constraints that are OK 
+cstr ban(vs <: vm, ns <: node ) ::=
+    """ {"id":"ban", "vms":@vs, "nodes":@ns} """    
+    !(v : vs[vmState = running]) host(v) /: ns    
+
+cstr fence(vs <: vm, ns <: node ) ::=
+    """ {"id":"fence", "vms":@vs, "nodes":@ns} """    
+    !(v : vs[vmState = running]) host(v) : ns
+
+cstr gather(vs <: vm) ::=
+    """ {"id":"gather",  "vms":@vs, "continuous": false} """
+    !(x,y : vs[vmState(me) = running]) x /= y --> host(x) = host(y)
+
+cstr spread(vs <: vm) ::=
+    """ {"id":"spread",  "vms":@vs, "continuous": false} """
+     !(x,y : vs[vmState = running]) x /= y --> host(x) /= host(y)
+
+cstr offline(ns <: node) ::=
+    """ {"id":"offline",  "nodes" : @ns} """    
+    !(n : ns[nodeState = offline]) card(hosted(n))  = 0    
+
+cstr root (vs <: vm) ::=
+	""" {"id":"root", "vms":@vs, "continuous" : true} """	
+    !(v : vs[vmState = running]) $host(v) = host(v)
+
+cstr lonely(vs <: vm) ::=
+    """ {"id":"lonely", "vms":@vs, "continuous" : false} """	
+    !(i : vs[vmState = running]) colocated(i) - {i} /<: vs
+
+cstr singleRunningCapacity(ns <: node, nb : nat) ::=
+    """ {"id":"singleRunningCapacity", "nodes":@ns, "amount": @nb, "continuous" : false} """
+	!(n : ns) card(hosted(n)) <= nb
+
+cstr maxOnline(ns <: node, nb : nat) ::=
+    """ {"id":"maxOnline","nodes":@ns,"amount":@nb,"continuous":false} """
+    card(ns[nodeState = online]) <= nb
+
+cstr cumulatedRunningCapacity(ns <: node, nb : nat) ::=
+    """ {"id":"cumulatedRunningCapacity", "nodes":@ns, "amount": @nb, "continuous" : false} """
+    card({hosted(n). n : ns}) <= nb
+
+cstr among (vs <: vm, groups <: P(node)) ::=
+    """ {"id":"among", "nodes":@ns, "continuous" : false} """
+    ?(g : groups). {host(i). i : vs[vmState = running]} : g
+
+/*
+cstr split(parts <: P(VMS)) {
+
+	{ {host(i) | i : p && state(i) = running} | p : parts} <: P(NODES)
+		{ {host(i) | p[state=running]} | p : parts} <: P(NODES)
+}
+
+constraint splitAmong(vgroups <: P(VMS), pgroups <: P(NODES)) {	
+	(all(vgroup : group). among(vgroup, pgroups)) && split(vgroups)
+}
+
+constraint quarantine(ns <: NODES) {
+...
+}
+     */
