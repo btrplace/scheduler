@@ -23,6 +23,9 @@ cstr root(v : vm) ::
 cstr singleRunningCapacity(ns <: NODES, nb : NAT) ::
 	!(n : ns). card(hosted(n)) <= nb
 
+cstr cumulatedRunningCapacity(ns <: NODES, nb : NAT) ::
+	!(n : ns). card(hosted(n)) <= nb
+
 cstr resourceCapacity(ns <: NODES, rc : RES, nb : NAT) ::	
 	sum({cons(rc, i) . i : hosted(ns)}) <= nb			
 
