@@ -1,3 +1,9 @@
-cstr singleRunningCapacity(ns <: node, nb : nat) ::=
+cstr cumulatedRunningCapacity(ns <: node, nb : nat) ::=
     """{"id":"cumulatedRunningCapacity","nodes":[@ns],"continuous":false,"amount":@nb} """
-	card({i : ns. hosted(i)}) <= nb
+	card({i : ns. hosted(i) }) <= nb
+
+	  card(union({hosted(n). n : ns})) <= nb
+
+
+	ns == {n1, n2, n3}
+	hosted(n1) + hosted(n2) + hosted(n3)

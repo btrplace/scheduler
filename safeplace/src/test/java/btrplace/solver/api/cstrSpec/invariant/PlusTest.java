@@ -25,8 +25,8 @@ public class PlusTest {
 
     @Test
     public void testCollections() {
-        Value v1 = new Value(new HashSet(Arrays.asList(1, 2)), new SetType(NatType.getInstance()));
-        Value v2 = new Value(new HashSet(Arrays.asList(4, 5)), new SetType(NatType.getInstance()));
+        Constant v1 = new Constant(new HashSet(Arrays.asList(1, 2)), new SetType(NatType.getInstance()));
+        Constant v2 = new Constant(new HashSet(Arrays.asList(4, 5)), new SetType(NatType.getInstance()));
         Plus p = new SetPlus(v1, v2);
         Set s = (Set) p.eval(new DefaultModel());
         Assert.assertEquals(s.size(), 4);
@@ -35,8 +35,8 @@ public class PlusTest {
 
     @Test(expectedExceptions = {RuntimeException.class})
     public void testBadCollections() throws RuntimeException {
-        Value v1 = new Value(new HashSet(Arrays.asList(1, 2)), new SetType(NatType.getInstance()));
-        Value v2 = new Value(new HashSet(Arrays.asList(VMStateType.getInstance().newValue("running"))), new SetType(VMStateType.getInstance()));
+        Constant v1 = new Constant(new HashSet(Arrays.asList(1, 2)), new SetType(NatType.getInstance()));
+        Constant v2 = new Constant(new HashSet(Arrays.asList(VMStateType.getInstance().newValue("running"))), new SetType(VMStateType.getInstance()));
         new SetPlus(v1, v2);
     }
 

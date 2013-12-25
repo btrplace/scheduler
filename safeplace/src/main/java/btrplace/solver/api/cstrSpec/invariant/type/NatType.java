@@ -1,7 +1,7 @@
 package btrplace.solver.api.cstrSpec.invariant.type;
 
 import btrplace.model.Model;
-import btrplace.solver.api.cstrSpec.invariant.Value;
+import btrplace.solver.api.cstrSpec.invariant.Constant;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -56,11 +56,11 @@ public class NatType implements Type {
     }
 
     @Override
-    public Value newValue(String n) {
-        return new Value(Integer.parseInt(n), this);
+    public Constant newValue(String n) {
+        return new Constant(Integer.parseInt(n), NatType.getInstance());
     }
 
-    public Value newValue(int i) {
-        return new Value(i, this);
+    public Constant newValue(int i) {
+        return new Constant(i, NatType.getInstance());
     }
 }

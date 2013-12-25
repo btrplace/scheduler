@@ -24,8 +24,8 @@ public class MinusTest {
 
     @Test
     public void testCollections() {
-        Value v1 = new Value(Arrays.asList(1, 2), new SetType(NatType.getInstance()));
-        Value v2 = new Value(Arrays.asList(2, 5), new SetType(NatType.getInstance()));
+        Constant v1 = new Constant(Arrays.asList(1, 2), new SetType(NatType.getInstance()));
+        Constant v2 = new Constant(Arrays.asList(2, 5), new SetType(NatType.getInstance()));
         Minus p = new Minus(v1, v2);
         Set s = (Set) p.eval(new DefaultModel());
         Assert.assertEquals(s.size(), 1);
@@ -34,8 +34,8 @@ public class MinusTest {
 
     @Test(expectedExceptions = {RuntimeException.class})
     public void testBadCollections() throws RuntimeException {
-        Value v1 = new Value(Arrays.asList(1, 2), new SetType(NatType.getInstance()));
-        Value v2 = new Value(Arrays.asList(VMStateType.getInstance().newValue("running")), new SetType(VMStateType.getInstance()));
+        Constant v1 = new Constant(Arrays.asList(1, 2), new SetType(NatType.getInstance()));
+        Constant v2 = new Constant(Arrays.asList(VMStateType.getInstance().newValue("running")), new SetType(VMStateType.getInstance()));
         new Minus(v1, v2);
     }
 

@@ -1,7 +1,7 @@
 package btrplace.solver.api.cstrSpec.invariant.type;
 
 import btrplace.model.Model;
-import btrplace.solver.api.cstrSpec.invariant.Value;
+import btrplace.solver.api.cstrSpec.invariant.Constant;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -16,12 +16,12 @@ public class NodeStateType implements Type {
 
     private static NodeStateType instance = new NodeStateType();
 
-    private Set<Value> vals;
+    private Set<Constant> vals;
 
     private NodeStateType() {
-        Set<Value> s = new HashSet<>();
+        Set<Constant> s = new HashSet<>();
         for (Type t : Type.values()) {
-            s.add(new Value(t, this));
+            s.add(new Constant(t, this));
         }
         vals = Collections.unmodifiableSet(s);
     }
@@ -31,7 +31,7 @@ public class NodeStateType implements Type {
     }
 
     @Override
-    public Set<Value> domain(Model mo) {
+    public Set<Constant> domain(Model mo) {
         return vals;
     }
 
@@ -57,8 +57,8 @@ public class NodeStateType implements Type {
     }
 
     @Override
-    public Value newValue(String n) {
-        return new Value(Type.valueOf(n), this);
+    public Constant newValue(String n) {
+        return new Constant(Type.valueOf(n), this);
     }
 
 }

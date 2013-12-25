@@ -2,7 +2,7 @@ package btrplace.solver.api.cstrSpec.invariant.type;
 
 import btrplace.model.Model;
 import btrplace.model.VM;
-import btrplace.solver.api.cstrSpec.invariant.Value;
+import btrplace.solver.api.cstrSpec.invariant.Constant;
 
 import java.util.Set;
 
@@ -43,7 +43,7 @@ public class VMType implements Type {
 
 
     @Override
-    public Value newValue(String n) {
+    public Constant newValue(String n) {
         throw new RuntimeException();
     }
 

@@ -36,8 +36,8 @@ public class Eq extends AtomicProp {
         Or or = new Or();
         if (a.domain().size() > 1 && b.domain().size() > 1) {
             // {1,2} ={1,2} == {1} = {1} | {2} = {2}
-            for (Value i : a.domain()) {
-                for (Value j : b.domain()) {
+            for (Constant i : a.domain()) {
+                for (Constant j : b.domain()) {
                     if (i.equals(j)) {
                         or.add(new Eq(a, j));//.add(new Eq(b, i));
                     }

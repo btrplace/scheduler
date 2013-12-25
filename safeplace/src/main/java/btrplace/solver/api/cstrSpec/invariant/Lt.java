@@ -29,8 +29,8 @@ public class Lt extends AtomicProp {
             throw new RuntimeException("Expect " + NatType.getInstance() + " < " + NatType.getInstance() +
                     ". Got " + a.type() + " <=" + b.type());
         }
-        for (Value vA : a.domain()) {
-            for (Value vB : b.domain()) {
+        for (Constant vA : a.domain()) {
+            for (Constant vB : b.domain()) {
                 int x = (Integer)vA.value();
                 int y = (Integer)vB.value();
                 if (x < y) {

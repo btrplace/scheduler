@@ -1,7 +1,7 @@
 package btrplace.solver.api.cstrSpec.invariant.type;
 
 import btrplace.model.Model;
-import btrplace.solver.api.cstrSpec.invariant.Value;
+import btrplace.solver.api.cstrSpec.invariant.Constant;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -58,8 +58,8 @@ public class VMStateType implements Type {
     }
 
     @Override
-    public Value newValue(String n) {
-        return new Value(Type.valueOf(n), this);
+    public Constant newValue(String n) {
+        return new Constant(Type.valueOf(n), this);
     }
 
 }

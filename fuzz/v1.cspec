@@ -1,52 +1,30 @@
-require "core"
-
-cstr foo(a : VMs) ::
-	x <: Y & b < 5
-	
-func cons(rc,vm) nat
-func capa(rc,node) nat
-
-
 //Working constraints
 cstr ban(vs <: VMS, ns <: NODES ) ::
 	!(i : vs). state(i) = running --> host(i) /: ns
-	/* state(i) /= running | host(i /: ns) */
 
 cstr fence(vs <: VMS, ns <: NODES ) ::
 	!(i : vs). state(i) = running --> host(i) : ns
-	/* state(i) /= running | host(i : ns) */
-
 
 cstr spread(vs <: VMS) ::
 	!(i,j : vs). state(i) = running & state(j) = running --> host(j) /= host(i) 
 
 cstr gather(vs <: VMS) ::
 	!(i, j : vs). state(i) = running & state(j) = running --> host(i) = host(j)
-	/* state(i) /= running | host(i : ns) */
-
+	
 cstr lonely(vs <: VMS) ::
-	!(i : vs). state(i) = running --> colocated(i) - {i} /<: vs
-	/*state(i) /= running | (colocated(i) - {i} /<: vs) */
+	!(i : vs). state(i) = running --> colocated(i) - {i} /<: vs	
 
 cstr maxOnline(ns <: NODES, nb : NAT) ::
 	card({i. i : ns & state(i) = online}) <= nb 		
 
-/*cstr quarantine(ns <: NODES) ::
-	!(n : ns). !(v : hosted(n)). 
-
-
-	root(v) & ban(VMS - {v. v : hosted(n)}, ns)
-	*/
-
 cstr root(v : vm) ::
 	state(v)  /= running | prev host(v) = host(v)
 
-	cstr runningCapacity(ns <: NODES, nb : NAT) ::
+cstr singleRunningCapacity(ns <: NODES, nb : NAT) ::
 	!(n : ns). card(hosted(n)) <= nb
 
 cstr resourceCapacity(ns <: NODES, rc : RES, nb : NAT) ::	
-	sum({cons(rc, i) . i : hosted(ns)}) <= nb		
-	/*sum({i : hosted(ns)| cons(rc,i) })*/
+	sum({cons(rc, i) . i : hosted(ns)}) <= nb			
 
 cstr preserve(v : VMS, rc : RES, nb : NAT) ::
 	state(v) /= running |

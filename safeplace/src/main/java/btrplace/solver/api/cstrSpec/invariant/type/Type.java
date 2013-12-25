@@ -1,7 +1,7 @@
 package btrplace.solver.api.cstrSpec.invariant.type;
 
 import btrplace.model.Model;
-import btrplace.solver.api.cstrSpec.invariant.Value;
+import btrplace.solver.api.cstrSpec.invariant.Constant;
 
 import java.util.Set;
 
@@ -16,5 +16,5 @@ public interface Type {
 
     boolean match(String n);
 
-    Value newValue(String n);
+    Constant newValue(String n);
 }

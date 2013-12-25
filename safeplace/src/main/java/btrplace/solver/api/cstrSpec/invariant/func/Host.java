@@ -30,8 +30,8 @@ public class Host extends Function {
 
     /*public Or eq(Term t) {
         Or o = new Or();
-        Set<Value> dom = domain();
-        for (Value v : t.domain()) {
+        Set<Constant> dom = domain();
+        for (Constant v : t.domain()) {
             if (dom.contains(v)) {
                 o.add(new Eq(this, t));
             }

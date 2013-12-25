@@ -9,13 +9,13 @@ import java.util.*;
 /**
  * @author Fabien Hermenier
  */
-public class Value implements Term {
+public class Constant implements Term {
 
     private Type t;
 
     private Object o;
 
-    public Value(Object o, Type t) {
+    public Constant(Object o, Type t) {
         this.t = t;
         this.o = o;
     }
@@ -25,7 +25,7 @@ public class Value implements Term {
     }
 
     //@Override
-    public Set<Value> domain() {
+    public Set<Constant> domain() {
         return Collections.singleton(this);
     }
 
@@ -49,9 +49,9 @@ public class Value implements Term {
     @Override
     public boolean equals(Object o1) {
         if (this == o1) return true;
-        if (!(o1 instanceof Value)) return false;
+        if (!(o1 instanceof Constant)) return false;
 
-        Value value = (Value) o1;
+        Constant value = (Constant) o1;
 
         if (!o.equals(value.o)) return false;
         if (!t.equals(value.t)) return false;

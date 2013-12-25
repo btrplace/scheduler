@@ -19,7 +19,7 @@ public class LazySetTest {
     @Test
     public void testSimple() {
         Variable i = new Variable("i", NodeType.getInstance());
-        Proposition p = new Eq(new NodeState(Collections.<Term>singletonList(i)), new Value(NodeStateType.Type.online, NodeStateType.getInstance()));
+        Proposition p = new Eq(new NodeState(Collections.<Term>singletonList(i)), new Constant(NodeStateType.Type.online, NodeStateType.getInstance()));
         LazySet cs = new LazySet(i, p);
         Model mo = new DefaultModel();
         mo.getMapping().addOnlineNode(mo.newNode());

@@ -1,7 +1,7 @@
 package btrplace.solver.api.cstrSpec.invariant.type;
 
 import btrplace.model.Model;
-import btrplace.solver.api.cstrSpec.invariant.Value;
+import btrplace.solver.api.cstrSpec.invariant.Constant;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -49,7 +49,7 @@ public class SetType implements Type {
                 x = x >>> 1;
             }
             if (!sub.isEmpty()) {
-                res.add(sub/*new Value(sub, type)*/);
+                res.add(sub/*new Constant(sub, type)*/);
             }
         }
         return res;
@@ -66,7 +66,7 @@ public class SetType implements Type {
     }
 
     @Override
-    public Value newValue(String n) {
+    public Constant newValue(String n) {
         //Add a value inside the set
         //return type.newValue(n);
         throw new UnsupportedOperationException();
