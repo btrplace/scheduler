@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * @author Fabien Hermenier
  */
-public class NodeType implements Type {
+public class NodeType extends Atomic {
 
     private static NodeType instance = new NodeType();
 

@@ -77,7 +77,13 @@ public class SetType implements Type {
         return label();
     }
 
-    public Type subType() {
+    @Override
+    public Type inside() {
         return type;
+    }
+
+    @Override
+    public Type include() {
+        return this;
     }
 }

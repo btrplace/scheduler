@@ -17,4 +17,8 @@ public interface Type {
     boolean match(String n);
 
     Constant newValue(String n);
+
+    Type inside();
+
+    Type include();
 }

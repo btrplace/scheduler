@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * @author Fabien Hermenier
  */
-public class VMType implements Type {
+public class VMType extends Atomic {
 
     private static VMType instance = new VMType();
 

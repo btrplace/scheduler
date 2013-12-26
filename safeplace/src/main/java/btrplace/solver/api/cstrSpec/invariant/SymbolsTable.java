@@ -1,6 +1,9 @@
 package btrplace.solver.api.cstrSpec.invariant;
 
-import btrplace.solver.api.cstrSpec.invariant.type.*;
+import btrplace.solver.api.cstrSpec.invariant.type.NatType;
+import btrplace.solver.api.cstrSpec.invariant.type.NodeType;
+import btrplace.solver.api.cstrSpec.invariant.type.Type;
+import btrplace.solver.api.cstrSpec.invariant.type.VMType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +18,7 @@ public class SymbolsTable {
     public SymbolsTable() {
         table = new HashMap<>();
 
-        //Predefined variables
+        //Predefined symbols
         table.put(VMType.getInstance().label(), new Variable(VMType.getInstance().label(), VMType.getInstance()));
         table.put(NodeType.getInstance().label(), new Variable(NodeType.getInstance().label(), NodeType.getInstance()));
         table.put(NatType.getInstance().label(), new Variable(NatType.getInstance().label(), NatType.getInstance()));
@@ -23,10 +26,6 @@ public class SymbolsTable {
         register(VMStateType.getInstance());
         register(NodeStateType.getInstance());*/
 
-    }
-
-    public Variable getVariable(String n) {
-        return table.get(n);
     }
 
     @Override
@@ -40,29 +39,11 @@ public class SymbolsTable {
         return b.toString();
     }
 
-    public Variable newVariable(String lbl, String op, Type t) {
-        //System.err.println("new variable '" + lbl + "' " + op + " " + t);
+    public Variable declare(String lbl, Type t) {
         if (table.containsKey(lbl)) {
             return null;
         }
-        Type newType;
-        switch (op) {
-            case ":":
-                if (t instanceof SetType) {
-                    newType = ((SetType) t).subType();
-                } else {
-                    //It will be a primitive type
-                    newType = t;
-                }
-                break;
-            case "<:":
-                newType = new SetType(t);
-                break;
-            default:
-                throw new RuntimeException("Unsupported type in declaration: " + op);
-        }
-        Variable v = new Variable(lbl, newType);
-        //System.err.println("\tinferred type: " + newType);
+        Variable v = new Variable(lbl, t);
         table.put(v.label(), v);
         return v;
     }

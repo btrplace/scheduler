@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * @author Fabien Hermenier
  */
-public class NatType implements Type {
+public class NatType extends Atomic {
 
     private int inf, sup;
 

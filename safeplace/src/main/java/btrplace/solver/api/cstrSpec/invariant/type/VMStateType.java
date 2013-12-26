@@ -10,7 +10,7 @@ import java.util.Set;
 /**
  * @author Fabien Hermenier
  */
-public class VMStateType implements Type {
+public class VMStateType extends Atomic {
 
     public static enum Type {running, ready, sleeping, waiting}
 
@@ -50,7 +50,6 @@ public class VMStateType implements Type {
     public String label() {
         return "vmState";
     }
-
 
     @Override
     public Set<Object> domain(Model mo) {

@@ -10,7 +10,7 @@ import java.util.Set;
 /**
  * @author Fabien Hermenier
  */
-public class NodeStateType implements Type {
+public class NodeStateType extends Atomic {
 
     public static enum Type {online, offline}
 
