@@ -1,9 +1,6 @@
 package btrplace.solver.api.cstrSpec.invariant;
 
-import btrplace.solver.api.cstrSpec.invariant.type.NatType;
-import btrplace.solver.api.cstrSpec.invariant.type.NodeType;
-import btrplace.solver.api.cstrSpec.invariant.type.Type;
-import btrplace.solver.api.cstrSpec.invariant.type.VMType;
+import btrplace.solver.api.cstrSpec.invariant.type.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,9 +16,9 @@ public class SymbolsTable {
         table = new HashMap<>();
 
         //Predefined symbols
-        table.put(VMType.getInstance().label(), new Variable(VMType.getInstance().label(), VMType.getInstance()));
-        table.put(NodeType.getInstance().label(), new Variable(NodeType.getInstance().label(), NodeType.getInstance()));
-        table.put(NatType.getInstance().label(), new Variable(NatType.getInstance().label(), NatType.getInstance()));
+        table.put(VMType.getInstance().label(), new Variable(VMType.getInstance().label(), new SetType(VMType.getInstance())));
+        table.put(NodeType.getInstance().label(), new Variable(NodeType.getInstance().label(), new SetType(NodeType.getInstance())));
+        table.put(NatType.getInstance().label(), new Variable(NatType.getInstance().label(), new SetType(NatType.getInstance())));
         /*register(NatType.getInstance());
         register(VMStateType.getInstance());
         register(NodeStateType.getInstance());*/

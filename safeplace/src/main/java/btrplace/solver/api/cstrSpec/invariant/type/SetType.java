@@ -49,7 +49,7 @@ public class SetType implements Type {
                 x = x >>> 1;
             }
             if (!sub.isEmpty()) {
-                res.add(sub/*new Constant(sub, type)*/);
+                res.add(sub);
             }
         }
         return res;
@@ -79,6 +79,10 @@ public class SetType implements Type {
 
     @Override
     public Type inside() {
+        return type;
+    }
+
+    public Type enclosingType() {
         return type;
     }
 

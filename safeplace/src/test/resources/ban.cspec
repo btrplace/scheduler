@@ -4,4 +4,4 @@
 */
 cstr ban(vs <: VM, ns <: node ) ::=
     """ {"id":"ban", "vms":[@vs], "nodes":[@ns]} """
-    !(v : vs). vmState(v) = running --> host(v) /: ns
+    !(v : vs) vmState(v) = running --> host(v) /: ns

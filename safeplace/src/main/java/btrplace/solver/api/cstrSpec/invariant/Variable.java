@@ -39,6 +39,16 @@ public class Variable implements Term {
         return t;
     }
 
+    public void setDomain(Variable v) {
+        this.dom = v;
+    }
+
+    private Variable dom;
+
+    public Variable domain() {
+        return dom;
+    }
+
     public String label() {
         //if (val == null) {
         return n;

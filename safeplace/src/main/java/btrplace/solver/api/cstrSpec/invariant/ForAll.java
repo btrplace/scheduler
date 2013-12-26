@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
+ *
  * @author Fabien Hermenier
  */
 public class ForAll implements Proposition {
@@ -20,6 +21,7 @@ public class ForAll implements Proposition {
     private Proposition prop;
 
     public ForAll(List<Variable> vars, Variable from, Proposition p) {
+        System.out.println(vars);
         this.vars = vars;
         this.from = from;
         prop = p;
