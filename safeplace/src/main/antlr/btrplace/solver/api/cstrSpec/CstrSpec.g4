@@ -45,7 +45,6 @@ GEQ:'>=';
 TRUE:'true';
 FALSE:'false';
 NOT:'~';
-SUCH_AS: '.';
 LBRACK: '[';
 RBRACK: ']';
 MARSHAL : '"""' ( '\\"\\"\\"' | . )*? '"""' ;
@@ -54,15 +53,14 @@ CURRENT: '$';
 filter: LBRACK comparison (AND|OR comparison)* RBRACK;
 term: t1=term op=(INTER|UNION|PLUS|MINUS|MULT|DIV) t2=term         #termOp
     | LPARA term RPARA                              #protectedTerm
-    | func                                          #termFunc
-    | ID filter?                                     #idTerm
-    | set filter?                                   #setTerm
+    | func filter?                                         #termFunc
+    | ID filter?                                   #idTerm
+    | set filter?                                    #setTerm
     | NAT                                           #natTerm
     ;
 
-set: LACC (term (COMMA term)*)? RACC #extensionSet
-   | LACC term SUCH_AS formula RACC #comprehensionSet
-   ;
+set: LACC term '.' formula RACC #setInComprehension
+   | LACC term (COMMA term)* RACC #setInExtension;
 
 comparison: t1=term op=(EQ | NOT_EQ| LT | LEQ | GT | GEQ | IN | NOT_IN | INCL | NOT_INCL) t2=term;
 typedef: ID (COMMA ID)* op=(IN|NOT_IN|INCL|NOT_INCL) i2=term;
@@ -71,7 +69,7 @@ formula: LPARA formula RPARA   #protectedFormula
        |comparison #termComparison
        |NOT formula     #not
        |ALL LPARA typedef RPARA formula #all       
-       |EXISTS LPARA typedef RPARA SUCH_AS formula #exists
+       |EXISTS LPARA typedef RPARA formula #exists
        |TRUE        #trueFormula
        |FALSE       #falseFormula
        ;
