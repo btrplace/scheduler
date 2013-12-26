@@ -5,26 +5,18 @@ import btrplace.model.Model;
 /**
  * @author Fabien Hermenier
  */
-public class Implies implements Proposition {
+public class Implies extends BinaryProp {
 
     private Or o;
 
-    private Proposition p1, p2;
-
     public Implies(Proposition p1, Proposition p2) {
-        this.p1 = p1;
-        this.p2 = p2;
-        o = new Or().add(p1.not()).add(p2);
+        super(p1, p2);
+        o = new Or(p1.not(), p2);
     }
 
     @Override
-    public String toString() {
-        return new StringBuilder(p1.toString()).append(" --> ").append(p2.toString()).toString();
-    }
-
-    @Override
-    public int size() {
-        return 2;
+    public String operator() {
+        return " --> ";
     }
 
     @Override

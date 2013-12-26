@@ -39,7 +39,7 @@ public class ImpliesTest {
     public void testNot() {
         Implies p = new Implies(True, False); //not(or(not(a),b)) -> and(a, not(b))
         And a = p.not();
-        Assert.assertEquals(a.get(0), True);
-        Assert.assertEquals(a.get(1), True);
+        Assert.assertEquals(a.first(), True);
+        Assert.assertEquals(a.second(), True);
     }
 }

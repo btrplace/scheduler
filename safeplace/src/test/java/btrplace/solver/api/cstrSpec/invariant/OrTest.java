@@ -15,10 +15,10 @@ public class OrTest {
 
     @Test
     public void testInstantiation() {
-        Or a = new Or().add(False).add(Proposition.True);
+        Or a = new Or(False, True);
         Assert.assertEquals(a.size(), 2);
-        Assert.assertEquals(a.get(0), False);
-        Assert.assertEquals(a.get(1), True);
+        Assert.assertEquals(a.first(), False);
+        Assert.assertEquals(a.second(), True);
     }
 
     @DataProvider(name = "input")
@@ -33,15 +33,15 @@ public class OrTest {
 
     @Test(dataProvider = "input")
     public void testTruthTable(Proposition a, Proposition b, Boolean r) {
-        Or p = new Or().add(a).add(b);
+        Or p = new Or(a, b);
         Assert.assertEquals(p.evaluate(new DefaultModel()), r);
     }
 
     @Test
     public void testNot() {
-        Or or = new Or().add(True).add(False);
+        Or or = new Or(True, False);
         And o = or.not();
-        Assert.assertEquals(o.get(0), False);
-        Assert.assertEquals(o.get(1), True);
+        Assert.assertEquals(o.first(), False);
+        Assert.assertEquals(o.second(), True);
     }
 }

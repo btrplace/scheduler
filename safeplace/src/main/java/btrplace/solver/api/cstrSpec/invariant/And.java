@@ -2,46 +2,27 @@ package btrplace.solver.api.cstrSpec.invariant;
 
 import btrplace.model.Model;
 
-import java.util.Iterator;
-
 /**
  * Logical and between several propositions.
  * @author Fabien Hermenier
  */
-public class And extends NaryProp {
+public class And extends BinaryProp {
+
+    public And(Proposition p1, Proposition p2) {
+        super(p1, p2);
+    }
 
     @Override
-    public String toString() {
-        StringBuilder b = new StringBuilder();
-        for (Iterator<Proposition> ite = this.iterator(); ite.hasNext(); ) {
-            Proposition n = ite.next();
-            if (n.size() > 1) {
-                b.append('(').append(n).append(')');
-            } else {
-                b.append(n);
-            }
-            if (ite.hasNext()) {
-                b.append(" & ");
-            }
-        }
-        return b.toString();
+    public String operator() {
+        return " & ";
     }
 
     @Override
     public Or not() {
-        Or o = new Or();
-        for (Proposition p : this) {
-            o.add(p.not());
-        }
-        return o;
+        return new Or(p1.not(), p2.not());
     }
 
-    public And add(Proposition p) {
-        props.add(p);
-        return this;
-    }
-
-    public Or develop() {
+/*    public Or develop() {
         Or l = new Or();
         int[] indexes = new int[size()];
         int i = 0;
@@ -66,7 +47,7 @@ public class And extends NaryProp {
             }
         }
         return l;
-    }
+    }       */
 
     /*@Override
     public And expand() {
@@ -79,14 +60,15 @@ public class And extends NaryProp {
 
     @Override
     public Boolean evaluate(Model m) {
-        boolean ret = true;
-        for (Proposition p : this) {
-            Boolean r = p.evaluate(m);
-            if (r == null) {
-                return null;
-            }
-            ret &= r;
+
+        Boolean r1 = p1.evaluate(m);
+        if (r1 == null) {
+            return null;
         }
-        return ret;
+        Boolean r2 = p2.evaluate(m);
+        if (r2 == null) {
+            return null;
+        }
+        return r1 && r2;
     }
 }
