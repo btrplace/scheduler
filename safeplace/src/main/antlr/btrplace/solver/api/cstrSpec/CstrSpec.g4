@@ -63,7 +63,7 @@ set: LACC term '.' formula RACC #setInComprehension
    | LACC term (COMMA term)* RACC #setInExtension;
 
 comparison: t1=term op=(EQ | NOT_EQ| LT | LEQ | GT | GEQ | IN | NOT_IN | INCL | NOT_INCL) t2=term;
-typedef: ID (COMMA ID)* op=(IN|NOT_IN|INCL|NOT_INCL) i2=term;
+typedef: ID (COMMA ID)* op=(IN|INCL) i2=term;
 formula: LPARA formula RPARA   #protectedFormula
        |f1=formula op=(IMPLIES|OR|AND|IFF) f2=formula              #formulaOp
        |comparison #termComparison

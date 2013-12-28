@@ -2,6 +2,6 @@
 * Gather constraint.
 * All the running VMs in vs must be co-located
 */
-cstr gather(vs <: VM) ::=
+cstr gather(vs <: vm) ::=
     """ {"id":"gather",  "vms":[@vs], "continuous": false} """
     !(x,y : vs)  (x /= y & vmState(x) = running & vmState(y) = running) --> host(x) = host(y)

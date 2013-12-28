@@ -2,6 +2,6 @@
 * Ban constraint.
 * No running VMs in `vs` is allowed to be hosted on any node of `ns`
 */
-cstr ban(vs <: VM, ns <: node ) ::=
+cstr ban(vs <: vm, ns <: node ) ::=
     """ {"id":"ban", "vms":[@vs], "nodes":[@ns]} """
     !(v : vs) vmState(v) = running --> host(v) /: ns

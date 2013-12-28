@@ -13,16 +13,16 @@ import java.util.List;
  */
 public class Exists implements Proposition {
 
-    private List<Variable> vars;
+    private List<UserVariable> vars;
 
     private Proposition prop;
 
-    private Variable from;
+    private Var from;
 
-    public Exists(List<Variable> iterator, Variable from, Proposition p) {
+    public Exists(List<UserVariable> iterator, Proposition p) {
         this.vars = iterator;
         prop = p;
-        this.from = from;
+        this.from = vars.get(0).getBackend();
     }
 
     @Override
@@ -54,7 +54,7 @@ public class Exists implements Proposition {
             }
             ret |= r;
         }
-        for (Variable v : vars) {
+        for (Var v : vars) {
             v.unset();
         }
         return ret;
@@ -70,7 +70,7 @@ public class Exists implements Proposition {
     }
 
     private String enumerate() {
-        Iterator<Variable> ite = vars.iterator();
+        Iterator<UserVariable> ite = vars.iterator();
         StringBuilder b = new StringBuilder(ite.next().label());
         while (ite.hasNext()) {
             b.append(",");

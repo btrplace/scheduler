@@ -9,27 +9,27 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- *
  * @author Fabien Hermenier
  */
 public class ForAll implements Proposition {
 
-    private List<Variable> vars;
+    private List<UserVariable> vars;
 
-    private Variable from;
+    private Var from;
 
     private Proposition prop;
 
-    public ForAll(List<Variable> vars, Variable from, Proposition p) {
+    public ForAll(List<UserVariable> vars, Proposition p) {
         System.out.println(vars);
         this.vars = vars;
-        this.from = from;
+        this.from = vars.get(0).getBackend();
         prop = p;
     }
 
     @Override
     public Proposition not() {
-        return new Exists(vars, from, prop.not());
+        return new Exists(vars, prop.not());
+        //throw new UnsupportedOperationException();
     }
 
     @Override
@@ -55,7 +55,7 @@ public class ForAll implements Proposition {
             }
             ret &= r;
         }
-        for (Variable v : vars) {
+        for (Var v : vars) {
             v.unset();
         }
         return ret;
@@ -67,7 +67,7 @@ public class ForAll implements Proposition {
     }
 
     private String enumerate() {
-        Iterator<Variable> ite = vars.iterator();
+        Iterator<UserVariable> ite = vars.iterator();
         StringBuilder b = new StringBuilder(ite.next().label());
         while (ite.hasNext()) {
             b.append(",");
