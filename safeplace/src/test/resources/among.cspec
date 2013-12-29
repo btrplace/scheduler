@@ -1,0 +1,3 @@
+cstr among (vs <: vm, groups <: P(node)) ::=
+    """ {"id":"among", "nodes":@ns, "continuous" : false} """
+    ?(g : groups) {host(i). i : vs[vmState = running]} : g

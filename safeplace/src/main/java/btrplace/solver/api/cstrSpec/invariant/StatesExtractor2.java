@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.List;
 
 /**
  * @author Fabien Hermenier
@@ -34,6 +35,22 @@ public class StatesExtractor2 {
         try (FileReader r = new FileReader(f)) {
             return extract(r);
         }
+    }
+
+    public List<Constraint> extractConstraints(File f) throws Exception {
+        try (FileReader r = new FileReader(f)) {
+            return extractConstraints(r);
+        }
+    }
+
+    public List<Constraint> extractConstraints(Reader in) throws Exception {
+        ANTLRInputStream is = new ANTLRInputStream(in);
+        CstrSpecLexer lexer = new CstrSpecLexer(is);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        CstrSpecParser parser = new CstrSpecParser(tokens);
+        ParseTree tree = parser.spec();
+        MyCstrSpecVisitor v = new MyCstrSpecVisitor(this);
+        return v.getConstraints(tree);
     }
 
     public Constraint extract(Reader in) throws Exception {

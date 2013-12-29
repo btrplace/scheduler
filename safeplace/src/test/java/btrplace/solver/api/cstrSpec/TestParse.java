@@ -18,6 +18,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -80,7 +81,6 @@ public class TestParse {
     @Test
     public void testCumulatedRunningCapacity() throws Exception {
         System.out.println(ex.extract(new File("src/test/resources/cumulatedRunningCapacity.cspec")));
-        Assert.fail();
     }
 
 
@@ -115,6 +115,13 @@ public class TestParse {
     @Test
     public void testParseRoot() throws Exception {
         Constraint cstr = ex.extract(new File("src/test/resources/root.cspec"));
+        System.out.println(cstr.toString());
+
+    }
+
+    @Test
+    public void testParseAmong() throws Exception {
+        Constraint cstr = ex.extract(new File("src/test/resources/among.cspec"));
         System.out.println(cstr.toString());
 
     }
@@ -179,5 +186,14 @@ public class TestParse {
         Constraint cstr = ex.extract(new File(path));
         System.out.println(cstr);
         System.out.flush();
+    }
+
+    @Test
+    public void testAll() throws Exception {
+        List<Constraint> cstrs = ex.extractConstraints(new File("src/test/resources/language_ok2.cspec"));
+        for (Constraint cstr : cstrs) {
+            System.out.println(cstr);
+        }
+
     }
 }
