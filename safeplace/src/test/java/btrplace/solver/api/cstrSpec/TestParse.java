@@ -80,6 +80,7 @@ public class TestParse {
     @Test
     public void testCumulatedRunningCapacity() throws Exception {
         System.out.println(ex.extract(new File("src/test/resources/cumulatedRunningCapacity.cspec")));
+        Assert.fail();
     }
 
 
