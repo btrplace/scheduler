@@ -14,7 +14,6 @@ import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.TestResult;
 import btrplace.solver.api.cstrSpec.verification.Verifier;
 import org.testng.Assert;
-import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -68,7 +67,7 @@ public class TestParse {
         Assert.fail();
     }
 
-    @Test
+    /*@Test
     public void testParseSpread() throws Exception {
         ex.extract(new File("src/test/resources/spread.cspec"));
     }
@@ -126,7 +125,7 @@ public class TestParse {
 
     }
 
-
+             */
 /*    @Test
     public void testParseNodeState() throws Exception {
         ex.extract(new File("src/test/resources/nodeState.cspec"));
@@ -166,7 +165,7 @@ public class TestParse {
         return r;
     }
 
-    @DataProvider(name = "specs")
+    /*@DataProvider(name = "specs")
     public Object[][] getSpecs() {
         return new String[][]{
                 {"src/test/resources/ban.cspec"},
@@ -187,13 +186,14 @@ public class TestParse {
         System.out.println(cstr);
         System.out.flush();
     }
-
+                 */
     @Test
-    public void testAll() throws Exception {
-        List<Constraint> cstrs = ex.extractConstraints(new File("src/test/resources/language_ok2.cspec"));
+    public void testV1() throws Exception {
+        List<Constraint> cstrs = ex.extractConstraints(new File("src/test/resources/v1.cspec"));
         for (Constraint cstr : cstrs) {
             System.out.println(cstr);
         }
-
+        System.out.flush();
+        Assert.assertEquals(cstrs.size(), 9);
     }
 }

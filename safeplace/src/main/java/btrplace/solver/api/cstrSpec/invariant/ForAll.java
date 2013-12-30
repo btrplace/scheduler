@@ -20,7 +20,6 @@ public class ForAll implements Proposition {
     private Proposition prop;
 
     public ForAll(List<UserVariable> vars, Proposition p) {
-        System.out.println(vars);
         this.vars = vars;
         this.from = vars.get(0).getBackend();
         prop = p;

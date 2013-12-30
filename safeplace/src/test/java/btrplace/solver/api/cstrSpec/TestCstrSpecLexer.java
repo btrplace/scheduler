@@ -15,7 +15,7 @@ public class TestCstrSpecLexer {
 
     @Test
     public void split() throws Exception {
-        String path = "src/test/resources/language_ok2.cspec";
+        String path = "src/test/resources/v2.cspec";
         ANTLRInputStream is = new ANTLRInputStream(new FileReader(new File(path)));
         CstrSpecLexer lexer = new CstrSpecLexer(is);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
