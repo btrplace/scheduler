@@ -6,7 +6,7 @@ import btrplace.solver.api.cstrSpec.invariant.type.Type;
 /**
  * @author Fabien Hermenier
  */
-public class Mult implements Term {
+public class Mult extends Term {
 
     private Term a, b;
 

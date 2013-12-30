@@ -17,7 +17,7 @@ public class Exists implements Proposition {
 
     private Proposition prop;
 
-    private Var from;
+    private Term from;
 
     public Exists(List<UserVariable> iterator, Proposition p) {
         this.vars = iterator;
@@ -65,7 +65,7 @@ public class Exists implements Proposition {
     }
 
     public String toString() {
-        return new StringBuilder("#(").append(enumerate()).append(" : ").append(from.label()).append("). ")
+        return new StringBuilder("#(").append(enumerate()).append(" : ").append(from).append(") ")
                 .append(prop).toString();
     }
 

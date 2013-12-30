@@ -15,7 +15,7 @@ public class ForAll implements Proposition {
 
     private List<UserVariable> vars;
 
-    private Var from;
+    private Term from;
 
     private Proposition prop;
 
@@ -61,7 +61,7 @@ public class ForAll implements Proposition {
     }
 
     public String toString() {
-        return new StringBuilder("!(").append(enumerate()).append(" : ").append(from.label()).append("). ")
+        return new StringBuilder("!(").append(enumerate()).append(" : ").append(from).append(") ")
                 .append(prop).toString();
     }
 

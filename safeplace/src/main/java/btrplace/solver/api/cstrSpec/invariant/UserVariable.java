@@ -10,13 +10,13 @@ import java.util.Set;
  */
 public class UserVariable<T> extends Var<T> {
 
-    private Var<Set> backend;
+    private Term<Set> backend;
 
     private boolean incl;
 
     private T val;
 
-    public UserVariable(String lbl, boolean incl, Var<Set> backend) {
+    public UserVariable(String lbl, boolean incl, Term<Set> backend) {
         super(lbl);
         this.incl = incl;
         this.backend = backend;
@@ -29,10 +29,10 @@ public class UserVariable<T> extends Var<T> {
 
     @Override
     public String pretty() {
-        return new StringBuilder(label()).append(incl ? " : " : " <: ").append(backend.label()).toString();
+        return new StringBuilder(label()).append(incl ? " : " : " <: ").append(backend).toString();
     }
 
-    public Var getBackend() {
+    public Term getBackend() {
         return backend;
     }
 

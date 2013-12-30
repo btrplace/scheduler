@@ -9,7 +9,7 @@ import java.util.*;
 /**
  * @author Fabien Hermenier
  */
-public class Constant implements Term {
+public class Constant extends Term {
 
     private Type t;
 

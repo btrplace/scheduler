@@ -6,7 +6,7 @@ import btrplace.solver.api.cstrSpec.invariant.type.Type;
 /**
  * @author Fabien Hermenier
  */
-public class Variable implements Term {
+public class Variable extends Term {
 
     private Type t;
 

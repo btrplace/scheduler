@@ -5,7 +5,7 @@ import btrplace.solver.api.cstrSpec.invariant.Term;
 /**
  * @author Fabien Hermenier
  */
-public abstract class Function implements Term {
+public abstract class Function extends Term {
 
     private boolean cur;
 

@@ -5,7 +5,7 @@ import btrplace.solver.api.cstrSpec.invariant.type.Type;
 /**
  * @author Fabien Hermenier
  */
-public abstract class Minus<T> implements Term<T> {
+public abstract class Minus<T> extends Term<T> {
 
     protected Term<T> a, b;
 

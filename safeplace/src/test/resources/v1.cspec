@@ -46,4 +46,4 @@ cstr spread(vs <: vm) ::=
 cstr quarantine(ns <: node) ::=
     """ {"id":"quarantine",  "ns":@ns, "continuous": false} """
      /*running VMs inside the zone*/ !(n : ns) !(v : hosted(n)) vmState(v) = running --> n = host(v) &
-     /*no incomers */ !(n2 /: ns) !(v : hosted(n)) vmState(v) = running --> host(v) /: ns
+     /*no incomers */ !(n2 /: ns) !(v2 : hosted(n)) vmState(v2) = running --> host(v2) /: ns
