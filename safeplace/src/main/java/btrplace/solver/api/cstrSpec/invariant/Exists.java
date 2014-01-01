@@ -65,10 +65,19 @@ public class Exists implements Proposition {
     }
 
     public String toString() {
-        return new StringBuilder("#(").append(enumerate()).append(" : ").append(from).append(") ")
-                .append(prop).toString();
+        StringBuilder b = new StringBuilder("?(");
+        Iterator<UserVariable> ite = vars.iterator();
+        while (ite.hasNext()) {
+            Var v = ite.next();
+            if (ite.hasNext()) {
+                b.append(v.label());
+                b.append(",");
+            } else {
+                b.append(v.pretty());
+            }
+        }
+        return b.append(") ").append(prop).toString();
     }
-
     private String enumerate() {
         Iterator<UserVariable> ite = vars.iterator();
         StringBuilder b = new StringBuilder(ite.next().label());

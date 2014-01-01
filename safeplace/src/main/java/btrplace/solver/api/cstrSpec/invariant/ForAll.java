@@ -61,17 +61,17 @@ public class ForAll implements Proposition {
     }
 
     public String toString() {
-        return new StringBuilder("!(").append(enumerate()).append(" : ").append(from).append(") ")
-                .append(prop).toString();
-    }
-
-    private String enumerate() {
+        StringBuilder b = new StringBuilder("!(");
         Iterator<UserVariable> ite = vars.iterator();
-        StringBuilder b = new StringBuilder(ite.next().label());
         while (ite.hasNext()) {
-            b.append(",");
-            b.append(ite.next().label());
+            Var v = ite.next();
+            if (ite.hasNext()) {
+                b.append(v.label());
+                b.append(",");
+            } else {
+                b.append(v.pretty());
+            }
         }
-        return b.toString();
+        return b.append(") ").append(prop).toString();
     }
 }

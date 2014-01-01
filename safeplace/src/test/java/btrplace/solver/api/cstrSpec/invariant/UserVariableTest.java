@@ -21,7 +21,7 @@ public class UserVariableTest {
         mo.getMapping().addReadyVM(v);
         mo.getMapping().addReadyVM(mo.newVM());
 
-        Var vs = p1.newInclusive("vs");
+        Var vs = p1.newInclusive("vs", true);
         System.out.println(vs.pretty());
 
         Assert.assertFalse(vs.set(mo.newVM()));

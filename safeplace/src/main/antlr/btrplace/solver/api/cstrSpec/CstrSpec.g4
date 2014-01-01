@@ -68,7 +68,7 @@ formula: LPARA formula RPARA   #protectedFormula
        |f1=formula op=(IMPLIES|OR|AND|IFF) f2=formula              #formulaOp
        |comparison #termComparison
        |NOT formula     #not
-       |ALL LPARA typedef RPARA formula #all       
+       |ALL LPARA typedef RPARA formula #all
        |EXISTS LPARA typedef RPARA formula #exists
        |TRUE        #trueFormula
        |FALSE       #falseFormula

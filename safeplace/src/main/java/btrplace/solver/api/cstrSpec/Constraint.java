@@ -5,6 +5,7 @@ import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.invariant.Proposition;
+import btrplace.solver.api.cstrSpec.invariant.Var;
 import btrplace.solver.api.cstrSpec.invariant.Variable;
 import net.minidev.json.JSONObject;
 
@@ -18,22 +19,22 @@ public class Constraint {
     private Proposition p;
 
     private Proposition not;
-    private List<Variable> params;
+    private List<Var> params;
 
-    private Map<String, Variable> vars;
+    private Map<String, Var> vars;
 
     private String cstrName;
 
     private String marshal;
 
-    public Constraint(String n, String m, Proposition p, List<Variable> params) {
+    public Constraint(String n, String m, Proposition p, List<Var> params) {
         this.p = p;
         this.not = p.not();
         this.cstrName = n;
         this.params = params;
         this.marshal = m;
         vars = new HashMap<>(params.size());
-        for (Variable v : params) {
+        for (Var v : params) {
             vars.put(v.label(), v);
         }
     }
@@ -42,7 +43,7 @@ public class Constraint {
         return p;
     }
 
-    public List<Variable> getParameters() {
+    public List<Var> getParameters() {
         return params;
     }
 
@@ -52,7 +53,7 @@ public class Constraint {
 
     private Set<VM> getInvolvedVMs(Map<String, Object> values, ReconfigurationPlan p) {
         for (Map.Entry<String, Object> val : values.entrySet()) {
-            Variable var = vars.get(val.getKey());
+            Var var = vars.get(val.getKey());
             var.set(val.getValue());
         }
 
@@ -62,7 +63,7 @@ public class Constraint {
 
     public Boolean instantiate(Map<String, Object> values, ReconfigurationPlan p) {
         for (Map.Entry<String, Object> val : values.entrySet()) {
-            Variable var = vars.get(val.getKey());
+            Var var = vars.get(val.getKey());
             var.set(val.getValue());
         }
         Model res = p.getResult();
@@ -86,7 +87,7 @@ public class Constraint {
     }
 
     public void reset() {
-        for (Variable var : params) {
+        for (Var var : params) {
             var.unset();
         }
     }
@@ -104,7 +105,7 @@ public class Constraint {
         o.put("id", cstrName);
         o.put("proposition", p.toString());
         JSONObject jps = new JSONObject();
-        for (Variable v : params) {
+        for (Var v : params) {
             jps.put(v.label(), v.type().toString());
         }
         o.put("parameters", jps);
@@ -115,15 +116,14 @@ public class Constraint {
     public String toString() {
         StringBuilder b = new StringBuilder();
         b.append(cstrName).append("(");
-        Iterator<Variable> ite = params.iterator();
+        Iterator<Var> ite = params.iterator();
         if (ite.hasNext()) {
-            Variable v = ite.next();
-            b.append(v.label()).append(" : ").append(v.type());
+            Var v = ite.next();
+            b.append(v.pretty());
         }
         while (ite.hasNext()) {
-            Variable v = ite.next();
-            b.append(", ").append(v.label()).append(" : ").append(v.type());
-
+            Var v = ite.next();
+            b.append(", ").append(v.pretty());
         }
         b.append(")");
         b.append(" ::= ").append(p);

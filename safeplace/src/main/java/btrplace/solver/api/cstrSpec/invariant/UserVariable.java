@@ -16,10 +16,13 @@ public class UserVariable<T> extends Var<T> {
 
     private T val;
 
-    public UserVariable(String lbl, boolean incl, Term<Set> backend) {
+    private boolean not;
+
+    public UserVariable(String lbl, boolean incl, boolean not, Term<Set> backend) {
         super(lbl);
         this.incl = incl;
         this.backend = backend;
+        this.not = not;
     }
 
     @Override
@@ -27,9 +30,13 @@ public class UserVariable<T> extends Var<T> {
         return incl ? backend.type().inside() : backend.type();
     }
 
+    public boolean notBackend() {
+        return not;
+    }
+
     @Override
     public String pretty() {
-        return new StringBuilder(label()).append(incl ? " : " : " <: ").append(backend).toString();
+        return new StringBuilder(label()).append(not ? " /" : " ").append(incl ? ": " : "<: ").append(backend).toString();
     }
 
     public Term getBackend() {
