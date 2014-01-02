@@ -22,7 +22,7 @@ public class StatesExtractor2 {
     private Functions funcs;
 
     public StatesExtractor2() {
-        funcs = new Functions();
+        funcs = Functions.newBundle();
     }
 
     public Constraint extract(String buf) throws Exception {

@@ -3,7 +3,9 @@ package btrplace.solver.api.cstrSpec.invariant.func;
 import btrplace.model.Model;
 import btrplace.model.VM;
 import btrplace.solver.api.cstrSpec.invariant.Term;
+import btrplace.solver.api.cstrSpec.invariant.type.Type;
 import btrplace.solver.api.cstrSpec.invariant.type.VMStateType;
+import btrplace.solver.api.cstrSpec.invariant.type.VMType;
 
 import java.util.List;
 
@@ -12,15 +14,17 @@ import java.util.List;
  */
 public class VMState extends Function {
 
-    private Term t;
+    private Term<VM> t;
 
-    public VMState(List<Term> stack) {
-        this.t = stack.get(0);
+    public static final String ID = "vmState";
+
+    public VMState(Term<VM> vm) {
+        this.t = vm;
     }
 
     @Override
     public String toString() {
-        return (currentValue() ? "$" : "") + "vmState(" + t + ")";
+        return (currentValue() ? "$" : "") + ID + "(" + t + ")";
     }
 
     @Override
@@ -43,4 +47,22 @@ public class VMState extends Function {
         }
         return null;
     }
+
+    public static class Builder extends FunctionBuilder {
+        @Override
+        public VMState build(List<Term> args) {
+            return new VMState(asVM(args.get(0)));
+        }
+
+        @Override
+        public String id() {
+            return VMState.ID;
+        }
+
+        @Override
+        public Type[] signature() {
+            return new Type[]{VMType.getInstance()};
+        }
+    }
+
 }

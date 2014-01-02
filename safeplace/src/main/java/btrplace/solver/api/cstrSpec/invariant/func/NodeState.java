@@ -4,6 +4,8 @@ import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.solver.api.cstrSpec.invariant.Term;
 import btrplace.solver.api.cstrSpec.invariant.type.NodeStateType;
+import btrplace.solver.api.cstrSpec.invariant.type.NodeType;
+import btrplace.solver.api.cstrSpec.invariant.type.Type;
 
 import java.util.List;
 
@@ -12,10 +14,12 @@ import java.util.List;
  */
 public class NodeState extends Function {
 
-    private Term t;
+    private Term<Node> t;
 
-    public NodeState(List<Term> stack) {
-        this.t = stack.get(0);
+    public static final String ID = "nodeState";
+
+    public NodeState(Term<Node> stack) {
+        this.t = stack;
     }
 
     @Override
@@ -40,6 +44,23 @@ public class NodeState extends Function {
             return NodeStateType.Type.online;
         } else {
             return null;
+        }
+    }
+
+    public static class Builder extends FunctionBuilder {
+        @Override
+        public NodeState build(List<Term> args) {
+            return new NodeState(asNode(args.get(0)));
+        }
+
+        @Override
+        public String id() {
+            return NodeState.ID;
+        }
+
+        @Override
+        public Type[] signature() {
+            return new Type[]{NodeType.getInstance()};
         }
     }
 }

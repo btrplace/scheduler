@@ -2,10 +2,10 @@ cstr ban(vs <: vm, ns <: node ) ::=
     """ {"id":"ban", "vms":[@vs], "nodes":[@ns]} """
     !(v : vs) vmState(v) = running --> host(v) /: ns
 
-cstr cumulatedRunningcapa(ns <: node, nb : nat) ::=
+/*cstr cumulatedRunningcapa(ns <: node, nb : nat) ::=
         """{"id":"cumulatedRunningcapa","nodes":@ns,"continuous":false,"amount":@nb} """
     	card({hosted(i). i : ns}) <= nb
-
+*/
 cstr fence(vs <: vm, ns <: node ) ::=
     """ {"id":"fence", "vms":[@vs], "nodes":[@ns]} """
     !(v : vs) vmState(v) = running --> host(v) : ns
