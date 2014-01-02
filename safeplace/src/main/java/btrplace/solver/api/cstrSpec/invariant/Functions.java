@@ -23,6 +23,10 @@ public class Functions {
                 return new Card(stack);
             case "hosted":
                 return new Hosted(stack);
+            case "cons":
+                return new Cons(stack);
+            case "capa":
+                return new Capa(stack);
             default:
                 throw new RuntimeException("Cannot resolve function '" + id + "'");
         }
