@@ -7,6 +7,7 @@ OK set in comprehension
 - error reporting
 - validate every constraint
 - discrete & continuous constraints (an operator for current && end status)
+- simplify type system
 
 ## Test case generator
 - Quantify the quality of the fuzzer ?

@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public class VMStateType extends Atomic {
 
-    public static enum Type {running, ready, sleeping, waiting}
+    public static enum Type {running, ready, sleeping, waiting, terminated}
 
     private static VMStateType instance = new VMStateType();
 

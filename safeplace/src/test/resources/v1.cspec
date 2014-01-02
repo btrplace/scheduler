@@ -18,18 +18,29 @@ cstr lonely (vs <: vm) ::=
     """ {"id":"lonely", "vms":@vs, "continuous" : false} """
 	!(i : vs) vmState(i) = running --> (colocated(i) - {i}) /<: vs
 
-/*cstr maxOnline(ns <: node, nb : nat) ::=
-    """ {"id":"maxOnline","nodes":[@ns],"amount":@nb,"continuous":false} """
-	card({i. i : ns. nodeState(i) = online}) <= nb*/
-
-/*cstr among (vs <: vm, groups <: P(node)) ::=
-    """ {"id":"among", "nodes":@ns, "continuous" : false} """
-    ?(g : groups) {host(i). i : vs[vmState = running]} : g*/
-
-
 cstr offline(ns <: node) ::=
     """ {"id":"offline",  "nodes":@n} """
     !(n : ns) nodeState(n) = offline --> card(hosted(n)) = 0
+
+cstr online(ns <: node) ::=
+    """ {"id": "online", "nodes": @n} """
+    !(n : ns) nodeState(n) = online
+
+cstr running(vs <: vm) ::=
+    """ {"id": "running", "vms": @vs} """
+    !(v : vs) vmState(v) = running --> (host(v) : node & nodeState(host(v)) = online)
+
+cstr ready(vs <: vm) ::=
+    """ {"id": "ready", "vms": @vs} """
+    !(v : vs) vmState(v) = ready --> host(v) /: node
+
+cstr sleeping(vs <: vm) ::= 
+    """ {"id": "sleeping", "vms": @vs} """
+    !(v : vs) vmState(v) = sleeping --> (host(v) : node & nodeState(host(v)) = online)
+
+cstr terminated(vs <: vm) ::=
+    """ {"id": "terminated", "vms": @vs} """
+    !(v : vs) vmState(v) = terminated --> host(v) /: node
 
 cstr root (vs <: vm) ::=
     """ {"id":"root", "vms":@vs} """
@@ -43,7 +54,31 @@ cstr spread(vs <: vm) ::=
     """ {"id":"spread",  "vms":@vs, "continuous": false} """
      !(x,y : vs) (x /= y &  vmState(x) = running & vmState(y) = running) --> host(x) /= host(y)
 
+/*cstr maxOnline(ns <: node, nb : nat) ::=
+    """ {"id":"maxOnline","nodes":[@ns],"amount":@nb,"continuous":false} """
+	card({i. i : ns. nodeState(i) = online}) <= nb
+
+cstr among (vs <: vm, groups <: P(node)) ::=
+    """ {"id":"among", "nodes":@ns, "continuous" : false} """
+    ?(g : groups) {host(i). i : vs & vmState(i) = running} : g
+
 cstr quarantine(ns <: node) ::=
     """ {"id":"quarantine",  "ns":@ns, "continuous": false} """
-     /*running VMs inside the zone*/ !(n : ns) !(v : hosted(n)) vmState(v) = running --> n = host(v) &
-     /*no incomers */ !(n2 /: ns) !(v2 : hosted(n)) vmState(v2) = running --> host(v2) /: ns
+     !(n : ns) !(v : hosted(n)) root(v) = true & ban({hosted(n2). n2 /: ns}, ns)
+
+cstr split(vs <: P(vm)) ::=
+
+cstr splitAmong(vs <: P(vm), ns <: P(node)) ::=
+
+cstr preserve(vs <: vm, id : string, qty: nat) ::=
+    """ {"id": "preserve", "vms": @vs, "rc":@id, "amount":@nat} """
+
+cstr overbook(ns <: node, id : string, qty: real) ::=
+    """ {"id": "overbook", "nodes": @ns, "rc":@id, "amount":@nat} """
+
+cstr singleResourceCapacity(ns <: node, id : string, qty: nat) ::=
+    """ {"id": "singleResourceCapacity", "nodes": @ns, "rc":@id, "amount":@nat} """
+
+cstr cumulatedResourceCapacity(ns <: node, id : string, qty: nat) ::=
+    """ {"id": "cumulatedResourceCapacity", "nodes": @ns, "rc":@id, "amount":@nat} """
+*/

@@ -125,8 +125,9 @@ public class Constraint {
             Var v = ite.next();
             b.append(", ").append(v.pretty());
         }
-        b.append(")");
-        b.append(" ::= ").append(p);
+        b.append(") ::=\n");
+        b.append('\t').append(marshal).append('\n');
+        b.append('\t').append(p);
         return b.toString();
     }
 
