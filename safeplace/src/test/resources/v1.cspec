@@ -69,15 +69,19 @@ cstr quarantine(ns <: node) ::=
 cstr split(vs <: P(vm)) ::=
 
 cstr splitAmong(vs <: P(vm), ns <: P(node)) ::=
-
+*/
 cstr preserve(vs <: vm, id : string, qty: nat) ::=
     """ {"id": "preserve", "vms": @vs, "rc":@id, "amount":@nat} """
-
-cstr overbook(ns <: node, id : string, qty: real) ::=
-    """ {"id": "overbook", "nodes": @ns, "rc":@id, "amount":@nat} """
+    !(v : vs) vmState(v) = running --> consumption(v, id) <= qty
 
 cstr singleResourceCapacity(ns <: node, id : string, qty: nat) ::=
     """ {"id": "singleResourceCapacity", "nodes": @ns, "rc":@id, "amount":@nat} """
+    !(n : ns) nodeState(n) = online --> capacity(n, id) <= qty
+
+/*
+cstr overbook(ns <: node, id : string, qty: real) ::=
+    """ {"id": "overbook", "nodes": @ns, "rc":@id, "amount":@nat} """
+
 
 cstr cumulatedResourceCapacity(ns <: node, id : string, qty: nat) ::=
     """ {"id": "cumulatedResourceCapacity", "nodes": @ns, "rc":@id, "amount":@nat} """

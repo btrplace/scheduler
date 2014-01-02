@@ -48,6 +48,7 @@ NOT:'~';
 LBRACK: '[';
 RBRACK: ']';
 MARSHAL : '"""' ( '\\"\\"\\"' | . )*? '"""' ;
+STRING: '"' (~('\\'|'"'))* '"';
 CURRENT: '$';
 
 filter: LBRACK comparison (AND|OR comparison)* RBRACK;
@@ -57,6 +58,7 @@ term: t1=term op=(INTER|UNION|PLUS|MINUS|MULT|DIV) t2=term         #termOp
     | ID filter?                                   #idTerm
     | set filter?                                    #setTerm
     | NAT                                           #natTerm
+    | STRING #stringTerm
     ;
 
 set: LACC term '.' typedef RACC #setInComprehension
