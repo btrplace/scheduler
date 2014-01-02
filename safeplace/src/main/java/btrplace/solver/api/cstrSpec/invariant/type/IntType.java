@@ -9,13 +9,13 @@ import java.util.Set;
 /**
  * @author Fabien Hermenier
  */
-public class NatType extends Atomic {
+public class IntType extends Atomic {
 
     private int inf, sup;
 
-    private static final NatType instance = new NatType(0, 5);
+    private static final IntType instance = new IntType(0, 5);
 
-    private NatType(int lb, int ub) {
+    private IntType(int lb, int ub) {
         this.inf = lb;
         this.sup = ub;
     }
@@ -29,7 +29,7 @@ public class NatType extends Atomic {
         return s;
     }
 
-    public static NatType getInstance() {
+    public static IntType getInstance() {
         return instance;
     }
 
@@ -52,15 +52,15 @@ public class NatType extends Atomic {
 
     @Override
     public String label() {
-        return "nat";
+        return "int";
     }
 
     @Override
     public Constant newValue(String n) {
-        return new Constant(Integer.parseInt(n), NatType.getInstance());
+        return new Constant(Integer.parseInt(n), IntType.getInstance());
     }
 
     public Constant newValue(int i) {
-        return new Constant(i, NatType.getInstance());
+        return new Constant(i, IntType.getInstance());
     }
 }

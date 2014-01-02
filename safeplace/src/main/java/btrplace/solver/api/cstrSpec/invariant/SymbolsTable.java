@@ -27,7 +27,7 @@ public class SymbolsTable {
         syms.declare(new Primitive("node", NodeType.getInstance()));
         syms.declare(new Primitive("vmState", VMStateType.getInstance(), VMStateType.getInstance().domain(null)));
         syms.declare(new Primitive("nodeState", NodeStateType.getInstance(), NodeStateType.getInstance().domain(null)));
-        syms.declare(new Primitive("nat", NatType.getInstance()));
+        syms.declare(new Primitive("nat", IntType.getInstance()));
         syms.declare(new Primitive("string", StringType.getInstance()));
         return syms;
     }

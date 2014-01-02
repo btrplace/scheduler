@@ -1,7 +1,7 @@
 package btrplace.solver.api.cstrSpec.invariant;
 
 import btrplace.model.DefaultModel;
-import btrplace.solver.api.cstrSpec.invariant.type.NatType;
+import btrplace.solver.api.cstrSpec.invariant.type.IntType;
 import btrplace.solver.api.cstrSpec.invariant.type.SetType;
 import btrplace.solver.api.cstrSpec.invariant.type.VMStateType;
 import org.testng.Assert;
@@ -18,32 +18,32 @@ public class PlusTest {
 
     @Test
     public void testInts() {
-        Plus p = new IntPlus(NatType.getInstance().newValue(5), NatType.getInstance().newValue(7));
+        Plus p = new IntPlus(IntType.getInstance().newValue(5), IntType.getInstance().newValue(7));
         Assert.assertEquals(p.eval(new DefaultModel()), 12);
-        Assert.assertEquals(p.type(), NatType.getInstance());
+        Assert.assertEquals(p.type(), IntType.getInstance());
     }
 
     @Test
     public void testCollections() {
-        Constant v1 = new Constant(new HashSet(Arrays.asList(1, 2)), new SetType(NatType.getInstance()));
-        Constant v2 = new Constant(new HashSet(Arrays.asList(4, 5)), new SetType(NatType.getInstance()));
+        Constant v1 = new Constant(new HashSet(Arrays.asList(1, 2)), new SetType(IntType.getInstance()));
+        Constant v2 = new Constant(new HashSet(Arrays.asList(4, 5)), new SetType(IntType.getInstance()));
         Plus p = new SetPlus(v1, v2);
         Set s = (Set) p.eval(new DefaultModel());
         Assert.assertEquals(s.size(), 4);
-        Assert.assertEquals(p.type(), new SetType(NatType.getInstance()));
+        Assert.assertEquals(p.type(), new SetType(IntType.getInstance()));
     }
 
     @Test(expectedExceptions = {RuntimeException.class})
     public void testBadCollections() throws RuntimeException {
-        Constant v1 = new Constant(new HashSet(Arrays.asList(1, 2)), new SetType(NatType.getInstance()));
+        Constant v1 = new Constant(new HashSet(Arrays.asList(1, 2)), new SetType(IntType.getInstance()));
         Constant v2 = new Constant(new HashSet(Arrays.asList(VMStateType.getInstance().newValue("running"))), new SetType(VMStateType.getInstance()));
         new SetPlus(v1, v2);
     }
 
     @Test
     public void testPlusPlus() {
-        Plus p1 = new IntPlus(NatType.getInstance().newValue(5), NatType.getInstance().newValue(7));
-        Plus p2 = new IntPlus(NatType.getInstance().newValue(1), NatType.getInstance().newValue(2));
+        Plus p1 = new IntPlus(IntType.getInstance().newValue(5), IntType.getInstance().newValue(7));
+        Plus p2 = new IntPlus(IntType.getInstance().newValue(1), IntType.getInstance().newValue(2));
         Plus p3 = new IntPlus(p1, p2);
         Assert.assertEquals(p3.eval(new DefaultModel()), 15);
     }

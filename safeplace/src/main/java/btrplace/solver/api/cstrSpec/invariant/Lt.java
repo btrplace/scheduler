@@ -25,8 +25,8 @@ public class Lt extends AtomicProp {
     public Or expand() {
         //Expect nat type with a constant
         Or or = new Or();
-        if (!a.type().equals(NatType.getInstance()) || !b.type().equals(NatType.getInstance())) {
-            throw new RuntimeException("Expect " + NatType.getInstance() + " < " + NatType.getInstance() +
+        if (!a.type().equals(IntType.getInstance()) || !b.type().equals(IntType.getInstance())) {
+            throw new RuntimeException("Expect " + IntType.getInstance() + " < " + IntType.getInstance() +
                     ". Got " + a.type() + " <=" + b.type());
         }
         for (Constant vA : a.domain()) {

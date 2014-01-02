@@ -10,9 +10,9 @@ public class SetTypeTest {
 
     @Test
     public void testSimple() {
-        SetType t = new SetType(NatType.getInstance());
+        SetType t = new SetType(IntType.getInstance());
         System.out.println(t);
-        Assert.assertEquals(t.enclosingType(), NatType.getInstance());
+        Assert.assertEquals(t.enclosingType(), IntType.getInstance());
         SetType t2 = new SetType(t);
         Assert.assertEquals(t2.enclosingType(), t);
         System.out.println(t2);

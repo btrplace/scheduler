@@ -4,7 +4,7 @@ import btrplace.model.Model;
 import btrplace.model.VM;
 import btrplace.model.view.ShareableResource;
 import btrplace.solver.api.cstrSpec.invariant.Term;
-import btrplace.solver.api.cstrSpec.invariant.type.NatType;
+import btrplace.solver.api.cstrSpec.invariant.type.IntType;
 import btrplace.solver.api.cstrSpec.invariant.type.Type;
 
 import java.util.List;
@@ -40,6 +40,6 @@ public class Cons extends Function {
 
     @Override
     public Type type() {
-        return NatType.getInstance();
+        return IntType.getInstance();
     }
 }

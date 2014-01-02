@@ -25,7 +25,7 @@ MULT:'*';
 DIV:'/';
 ALL:'!';
 EXISTS:'?';
-NAT: '0' | '-'?[1..9][0..9]*;
+INT: '0' | '-'?[1..9][0..9]*;
 ID: [a-zA-Z_][a-zA-Z0-9_]*;
 INTER: '\\/';
 UNION: '/\\';
@@ -57,7 +57,7 @@ term: t1=term op=(INTER|UNION|PLUS|MINUS|MULT|DIV) t2=term         #termOp
     | func filter?                                         #termFunc
     | ID filter?                                   #idTerm
     | set filter?                                    #setTerm
-    | NAT                                           #natTerm
+    | INT                                           #intTerm
     | STRING #stringTerm
     ;
 

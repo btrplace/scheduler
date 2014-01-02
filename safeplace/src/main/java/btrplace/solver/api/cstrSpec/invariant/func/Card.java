@@ -2,7 +2,7 @@ package btrplace.solver.api.cstrSpec.invariant.func;
 
 import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.invariant.Term;
-import btrplace.solver.api.cstrSpec.invariant.type.NatType;
+import btrplace.solver.api.cstrSpec.invariant.type.IntType;
 import btrplace.solver.api.cstrSpec.invariant.type.Type;
 
 import java.util.Collection;
@@ -21,7 +21,7 @@ public class Card extends Function {
 
     @Override
     public Type type() {
-        return NatType.getInstance();
+        return IntType.getInstance();
     }
 
     @Override
