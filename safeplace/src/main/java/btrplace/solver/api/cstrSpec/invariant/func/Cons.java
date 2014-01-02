@@ -5,7 +5,9 @@ import btrplace.model.VM;
 import btrplace.model.view.ShareableResource;
 import btrplace.solver.api.cstrSpec.invariant.Term;
 import btrplace.solver.api.cstrSpec.invariant.type.IntType;
+import btrplace.solver.api.cstrSpec.invariant.type.StringType;
 import btrplace.solver.api.cstrSpec.invariant.type.Type;
+import btrplace.solver.api.cstrSpec.invariant.type.VMType;
 
 import java.util.List;
 
@@ -18,14 +20,16 @@ public class Cons extends Function {
 
     private Term id;
 
-    public Cons(List<Term> stack) {
-        this.vm = stack.get(0);
-        this.id = stack.get(1);
+    public static final String ID = "cons";
+
+    public Cons(Term vm, Term rcId) {
+        this.vm = vm;
+        this.id = rcId;
     }
 
     @Override
     public String toString() {
-        return (currentValue() ? "$" : "") + "cons(" + vm + "," + id + ")";
+        return (currentValue() ? "$" : "") + ID + "(" + vm + "," + id + ")";
     }
 
     @Override
@@ -41,5 +45,22 @@ public class Cons extends Function {
     @Override
     public Type type() {
         return IntType.getInstance();
+    }
+
+    public static class Builder extends FunctionBuilder {
+        @Override
+        public Cons build(List<Term> args) {
+            return new Cons(asVM(args.get(0)), asString(args.get(1)));
+        }
+
+        @Override
+        public String id() {
+            return Cons.ID;
+        }
+
+        @Override
+        public Type[] signature() {
+            return new Type[]{VMType.getInstance(), StringType.getInstance()};
+        }
     }
 }

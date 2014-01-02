@@ -19,11 +19,6 @@ public class StringType extends Atomic {
     }
 
     @Override
-    public String label() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public boolean match(String n) {
         return n.startsWith("\"") && n.endsWith("\"");
     }
@@ -34,6 +29,16 @@ public class StringType extends Atomic {
             return new Constant(n, this);
         }
         return null;
+    }
+
+    @Override
+    public String label() {
+        return "string";
+    }
+
+    @Override
+    public String toString() {
+        return label();
     }
 
     public static StringType getInstance() {

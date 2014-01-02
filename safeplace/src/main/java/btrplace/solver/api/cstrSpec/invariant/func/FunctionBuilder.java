@@ -3,10 +3,7 @@ package btrplace.solver.api.cstrSpec.invariant.func;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.solver.api.cstrSpec.invariant.Term;
-import btrplace.solver.api.cstrSpec.invariant.type.NodeType;
-import btrplace.solver.api.cstrSpec.invariant.type.SetType;
-import btrplace.solver.api.cstrSpec.invariant.type.Type;
-import btrplace.solver.api.cstrSpec.invariant.type.VMType;
+import btrplace.solver.api.cstrSpec.invariant.type.*;
 
 import java.util.List;
 import java.util.Set;
@@ -33,6 +30,21 @@ public abstract class FunctionBuilder {
         }
         throw new IllegalArgumentException("Expected '" + NodeType.getInstance() + "' got '" + t.type() + "'");
     }
+
+    public Term<Integer> asInt(Term t) {
+        if (t.type().equals(IntType.getInstance())) {
+            return t;
+        }
+        throw new IllegalArgumentException("Expected '" + IntType.getInstance() + "' got '" + t.type() + "'");
+    }
+
+    public Term<String> asString(Term t) {
+        if (t.type().equals(StringType.getInstance())) {
+            return t;
+        }
+        throw new IllegalArgumentException("Expected '" + StringType.getInstance() + "' got '" + t.type() + "'");
+    }
+
 
     public Term<Set> asSet(Term t) {
         if (t.type() instanceof SetType) {

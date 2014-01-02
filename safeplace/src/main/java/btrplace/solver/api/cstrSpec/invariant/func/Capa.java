@@ -5,6 +5,8 @@ import btrplace.model.Node;
 import btrplace.model.view.ShareableResource;
 import btrplace.solver.api.cstrSpec.invariant.Term;
 import btrplace.solver.api.cstrSpec.invariant.type.IntType;
+import btrplace.solver.api.cstrSpec.invariant.type.NodeType;
+import btrplace.solver.api.cstrSpec.invariant.type.StringType;
 import btrplace.solver.api.cstrSpec.invariant.type.Type;
 
 import java.util.List;
@@ -18,14 +20,16 @@ public class Capa extends Function {
 
     private Term id;
 
-    public Capa(List<Term> stack) {
-        this.node = stack.get(0);
-        this.id = stack.get(1);
+    public static final String ID = "capa";
+
+    public Capa(Term node, Term id) {
+        this.node = node;
+        this.id = id;
     }
 
     @Override
     public String toString() {
-        return (currentValue() ? "$" : "") + "capa(" + node + "," + id + ")";
+        return (currentValue() ? "$" : "") + ID + "(" + node + "," + id + ")";
     }
 
     @Override
@@ -41,5 +45,22 @@ public class Capa extends Function {
     @Override
     public Type type() {
         return IntType.getInstance();
+    }
+
+    public static class Builder extends FunctionBuilder {
+        @Override
+        public Capa build(List<Term> args) {
+            return new Capa(asNode(args.get(0)), asString(args.get(1)));
+        }
+
+        @Override
+        public String id() {
+            return Capa.ID;
+        }
+
+        @Override
+        public Type[] signature() {
+            return new Type[]{NodeType.getInstance(), StringType.getInstance()};
+        }
     }
 }

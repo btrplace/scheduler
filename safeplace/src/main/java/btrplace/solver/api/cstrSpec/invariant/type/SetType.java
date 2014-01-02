@@ -17,12 +17,19 @@ public class SetType implements Type {
         type = t;
     }
 
+    public SetType() {
+        this(null);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         SetType setType = (SetType) o;
+        if (type == null) {
+            return true;
+        }
         return type.equals(setType.type);
     }
 

@@ -28,6 +28,8 @@ public class Functions {
         fc.declare(new NodeState.Builder());
         fc.declare(new Colocated.Builder());
         fc.declare(new Card.Builder());
+        fc.declare(new Cons.Builder());
+        fc.declare(new Capa.Builder());
         return fc;
     }
 

@@ -5,7 +5,6 @@ import btrplace.solver.api.cstrSpec.invariant.Term;
 import btrplace.solver.api.cstrSpec.invariant.type.IntType;
 import btrplace.solver.api.cstrSpec.invariant.type.SetType;
 import btrplace.solver.api.cstrSpec.invariant.type.Type;
-import btrplace.solver.api.cstrSpec.invariant.type.VMType;
 
 import java.util.Collection;
 import java.util.List;
@@ -36,7 +35,7 @@ public class Card extends Function {
 
     @Override
     public Integer eval(Model mo) {
-        Collection c = (Collection) set.eval(mo);
+        Collection c = set.eval(mo);
         if (c == null) {
             return null;
         }
@@ -56,7 +55,7 @@ public class Card extends Function {
 
         @Override
         public Type[] signature() {
-            return new Type[]{new SetType(VMType.getInstance())};
+            return new Type[]{new SetType(null)};
         }
     }
 }

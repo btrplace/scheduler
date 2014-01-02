@@ -5,6 +5,7 @@ import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.solver.api.cstrSpec.invariant.Term;
 import btrplace.solver.api.cstrSpec.invariant.type.NodeType;
+import btrplace.solver.api.cstrSpec.invariant.type.SetType;
 import btrplace.solver.api.cstrSpec.invariant.type.Type;
 import btrplace.solver.api.cstrSpec.invariant.type.VMType;
 
@@ -25,8 +26,8 @@ public class Hosted extends Function {
     }
 
     @Override
-    public VMType type() {
-        return VMType.getInstance();
+    public SetType type() {
+        return new SetType(VMType.getInstance());
     }
 
     @Override
