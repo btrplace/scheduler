@@ -60,24 +60,18 @@ public class FunctionCall<T> extends Term<T> {
     private static void check(Function2 f, List<Term> args) {
         Type[] expected = f.signature();
         if (expected.length != args.size()) {
-            throw new IllegalArgumentException(formatError(f, args));
+            throw new IllegalArgumentException(toString(f.id(), args) + " cannot match " + f);
         }
         for (int i = 0; i < expected.length; i++) {
             if (!expected[i].equals(args.get(i).type())) {
-                throw new IllegalArgumentException(formatError(f, args));
+                throw new IllegalArgumentException(toString(f.id(), args) + " cannot match " + f);
             }
         }
     }
 
-    private static String formatError(Function2 b, List<Term> args) {
-        StringBuilder x = new StringBuilder(b.id());
-        x.append(toString(args)).append(" cannot match ").append(b);
-        return x.toString();
-    }
-
-    private static String toString(List<Term> args) {
-        StringBuilder b = new StringBuilder();
-        b.append("(");
+    private static String toString(String id, List<Term> args) {
+        StringBuilder b = new StringBuilder(id);
+        b.append('(');
         Iterator<Term> ite = args.iterator();
         while (ite.hasNext()) {
             b.append(ite.next().type());

@@ -43,7 +43,7 @@ public class StatesExtractor2 {
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         CstrSpecParser parser = new CstrSpecParser(tokens);
         ParseTree tree = parser.spec();
-        MyCstrSpecVisitor v = new MyCstrSpecVisitor(this);
+        MyCstrSpecVisitor v = new MyCstrSpecVisitor();
         return v.getConstraints(tree);
     }
 
@@ -53,7 +53,7 @@ public class StatesExtractor2 {
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         CstrSpecParser parser = new CstrSpecParser(tokens);
         ParseTree tree = parser.constraint();
-        MyCstrSpecVisitor v = new MyCstrSpecVisitor(this);
+        MyCstrSpecVisitor v = new MyCstrSpecVisitor();
         return v.getConstraint(tree);
     }
 }
