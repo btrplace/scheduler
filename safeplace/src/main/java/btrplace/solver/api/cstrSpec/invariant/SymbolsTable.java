@@ -45,6 +45,7 @@ public class SymbolsTable {
         syms.put(new VMState());
         syms.put(new NodeState());
         syms.put(new Card());
+        syms.put(new Sum());
         return syms;
     }
 
@@ -63,6 +64,7 @@ public class SymbolsTable {
         syms.put(new VMState());
         syms.put(new NodeState());
         syms.put(new Card());
+        syms.put(new Sum());
     }
 
 

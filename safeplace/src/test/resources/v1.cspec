@@ -78,11 +78,12 @@ cstr singleResourcecapacity(ns <: node, id : string, qty: nat) ::=
     """ {"id": "singleResourcecapacity", "nodes": @ns, "rc":@id, "amount":@qty} """
     !(n : ns) nodeState(n) = online --> capa(n, id) <= qty
 
+cstr cumulatedResourcecapacity(ns <: node, id : string, qty: nat) ::=
+    """ {"id": "cumulatedResourcecapacity", "nodes": @ns, "rc":@id, "amount":@qty} """
+    sum({capa(i, id). i : ns}) <= qty
 /*
 cstr overbook(ns <: node, id : string, qty: real) ::=
     """ {"id": "overbook", "nodes": @ns, "rc":@id, "amount":@qty} """
 
 
-cstr cumulatedResourcecapacity(ns <: node, id : string, qty: nat) ::=
-    """ {"id": "cumulatedResourcecapacity", "nodes": @ns, "rc":@id, "amount":@qty} """
 */
