@@ -42,7 +42,7 @@ public class ConstraintCall implements Proposition {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        b.append(c.getConstraintName()).append('(');
+        b.append(c.id()).append('(');
         Iterator<Term> ite = args.iterator();
         while (ite.hasNext()) {
             b.append(ite.next().toString());

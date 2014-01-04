@@ -19,12 +19,6 @@ import java.util.List;
  */
 public class StatesExtractor2 {
 
-    private Functions funcs;
-
-    public StatesExtractor2() {
-        funcs = Functions.newBundle();
-    }
-
     public Constraint extract(String buf) throws Exception {
         try (StringReader r = new StringReader(buf)) {
             return extract(r);
@@ -61,9 +55,5 @@ public class StatesExtractor2 {
         ParseTree tree = parser.constraint();
         MyCstrSpecVisitor v = new MyCstrSpecVisitor(this);
         return v.getConstraint(tree);
-    }
-
-    public Functions getFunctions() {
-        return funcs;
     }
 }

@@ -1,6 +1,7 @@
 package btrplace.solver.api.cstrSpec.invariant;
 
 import btrplace.solver.api.cstrSpec.Constraint;
+import btrplace.solver.api.cstrSpec.invariant.func.*;
 import btrplace.solver.api.cstrSpec.invariant.type.*;
 
 import java.util.ArrayList;
@@ -19,10 +20,13 @@ public class SymbolsTable {
 
     private List<Primitive> primitives;
 
+    private Map<String, Function2> funcs;
+
     public SymbolsTable() {
         table = new HashMap<>();
         this.primitives = new ArrayList<>();
         this.cstrs = new HashMap<>();
+        this.funcs = new HashMap<>();
     }
 
     public static SymbolsTable newBundle() {
@@ -33,6 +37,14 @@ public class SymbolsTable {
         syms.declare(new Primitive("nodeState", NodeStateType.getInstance(), NodeStateType.getInstance().domain(null)));
         syms.declare(new Primitive("nat", IntType.getInstance()));
         syms.declare(new Primitive("string", StringType.getInstance()));
+        syms.put(new Host());
+        syms.put(new Hosted());
+        syms.put(new Cons());
+        syms.put(new Capa());
+        syms.put(new Colocated());
+        syms.put(new VMState());
+        syms.put(new NodeState());
+        syms.put(new Card());
         return syms;
     }
 
@@ -43,6 +55,14 @@ public class SymbolsTable {
         syms.declare(new Primitive("nodeState", NodeStateType.getInstance(), NodeStateType.getInstance().domain(null)));
         syms.declare(new Primitive("nat", IntType.getInstance()));
         syms.declare(new Primitive("string", StringType.getInstance()));
+        syms.put(new Host());
+        syms.put(new Hosted());
+        syms.put(new Cons());
+        syms.put(new Capa());
+        syms.put(new Colocated());
+        syms.put(new VMState());
+        syms.put(new NodeState());
+        syms.put(new Card());
     }
 
 
@@ -65,6 +85,18 @@ public class SymbolsTable {
 
     public List<Primitive> getPrimitives() {
         return primitives;
+    }
+
+    public boolean put(Function2 f) {
+        if (funcs.containsKey(f.id())) {
+            return false;
+        }
+        funcs.put(f.id(), f);
+        return true;
+    }
+
+    public Function2 getFunction(String id) {
+        return funcs.get(id);
     }
 
     public boolean declare(Primitive v) {
@@ -92,7 +124,7 @@ public class SymbolsTable {
     }
 
     public void declare(Constraint cstr) {
-        cstrs.put(cstr.getConstraintName(), cstr);
+        cstrs.put(cstr.id(), cstr);
     }
 
     public Constraint getConstraint(String id) {

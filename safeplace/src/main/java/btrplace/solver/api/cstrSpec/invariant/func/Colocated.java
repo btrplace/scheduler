@@ -3,7 +3,6 @@ package btrplace.solver.api.cstrSpec.invariant.func;
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
-import btrplace.solver.api.cstrSpec.invariant.Term;
 import btrplace.solver.api.cstrSpec.invariant.type.Type;
 import btrplace.solver.api.cstrSpec.invariant.type.VMType;
 
@@ -15,16 +14,7 @@ import java.util.Set;
 /**
  * @author Fabien Hermenier
  */
-public class Colocated extends Function {
-
-    private Term<VM> t;
-
-    public static final String ID = "colocated";
-
-    public Colocated(Term<VM> stack) {
-        this.t = stack;
-    }
-
+public class Colocated extends Function2<Set<VM>> {
 
     @Override
     public VMType type() {
@@ -32,13 +22,13 @@ public class Colocated extends Function {
     }
 
     @Override
-    public Object eval(Model mo) {
-        VM v = t.eval(mo);
+    public Set<VM> eval(Model mo, List<Object> args) {
+        VM v = (VM) args.get(0);
         if (v == null) {
             return null;
         }
         if (mo.getMapping().isReady(v)) {
-            return Collections.emptyList();
+            return Collections.emptySet();
         }
         Node n = mo.getMapping().getVMLocation(v);
         if (n == null) {
@@ -50,24 +40,12 @@ public class Colocated extends Function {
     }
 
     @Override
-    public String toString() {
-        return new StringBuilder(ID).append(")").append(t).append(')').toString();
+    public String id() {
+        return "colocated";
     }
 
-    public static class Builder extends FunctionBuilder {
-        @Override
-        public Colocated build(List<Term> args) {
-            return new Colocated(asVM(args.get(0)));
-        }
-
-        @Override
-        public String id() {
-            return Colocated.ID;
-        }
-
-        @Override
-        public Type[] signature() {
-            return new Type[]{VMType.getInstance()};
-        }
+    @Override
+    public Type[] signature() {
+        return new Type[]{VMType.getInstance()};
     }
 }

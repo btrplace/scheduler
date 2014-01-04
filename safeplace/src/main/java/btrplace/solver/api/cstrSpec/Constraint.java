@@ -91,7 +91,7 @@ public class Constraint {
         }
     }
 
-    public String getConstraintName() {
+    public String id() {
         return cstrName;
     }
 
