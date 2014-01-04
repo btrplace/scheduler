@@ -64,7 +64,13 @@ public class SetType implements Type {
 
     @Override
     public String label() {
-        return new StringBuilder("set<").append(type.label()).append(">").toString();
+        StringBuilder b = new StringBuilder("set<");
+        if (type == null) {
+            b.append('?');
+        } else {
+            b.append(type.label());
+        }
+        return b.append('>').toString();
     }
 
     @Override

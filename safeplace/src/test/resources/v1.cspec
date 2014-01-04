@@ -56,7 +56,7 @@ cstr spread(vs <: vm) ::=
 
 cstr quarantine(ns <: node) ::=
     """ {"id":"quarantine",  "ns":@ns, "continuous": false} """
-     !(n : ns) !(v : hosted(n)) root(v) & ban({hosted(n2). n2 /: ns}, ns)
+     !(n : ns) !(v : hosted(n)) root(v) & ban({hosted(n2). n2 /: ns})
 
 cstr preserve(vs <: vm, id : string, qty: int) ::=
     """ {"id": "preserve", "vms": @vs, "rc":@id, "amount":@qty} """
@@ -74,7 +74,6 @@ cstr overbook(ns <: node, id : string, qty: real) ::=
     """ {"id": "overbook", "nodes": @ns, "rc":@id, "amount":@qty} """
     !(n : ns) sum({cons(v, id). v : hosted(n) & vmState(v) = running}) * qty < capa(n, id)
 
-
 cstr maxOnline(ns <: node, nb : int) ::=
     """ {"id":"maxOnline","nodes":@ns,"amount":@nb,"continuous":false} """
    	card({i. i : ns & nodeState(i) = online}) <= nb
@@ -82,8 +81,14 @@ cstr maxOnline(ns <: node, nb : int) ::=
 cstr among (vs <: vm, groups <: P(node)) ::=
     """ {"id":"among", "nodes":@ns, "continuous" : false} """
     ?(g : groups) {host(i). i : vs & vmState(i) = running} : g
-/*
-cstr split(vs <: P(vm)) ::=
 
-cstr splitAmong(vs <: P(vm), ns <: P(node)) ::=
-*/
+cstr split(part <: P(vm)) ::=
+    """ {"id":"split", "vms":@vs, "continuous" : true} """
+    ?(p: part) {host(i). i : p & vmState(i) = running} : P(node)
+
+    !(p : part) card(v) > 0
+
+cstr splitAmong(vs <: P(vm), part <: P(node)) ::=
+    """ {"id":"splitAmong", "vms":@vs, "nodes":@ns, "continuous" : true} """
+    !(p : part) among(vs, p) & split(vs)
+

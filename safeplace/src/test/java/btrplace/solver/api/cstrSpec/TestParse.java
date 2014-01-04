@@ -196,7 +196,7 @@ public class TestParse {
     public void testV1() throws Exception {
         List<Constraint> cstrs = ex.extractConstraints(new File("src/test/resources/v1.cspec"));
         for (Constraint cstr : cstrs) {
-            System.out.println(cstr);
+            System.out.println(cstr.pretty());
         }
         System.out.flush();
         Assert.assertEquals(cstrs.size(), 21);

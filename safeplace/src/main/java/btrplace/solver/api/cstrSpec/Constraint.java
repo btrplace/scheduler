@@ -95,8 +95,7 @@ public class Constraint extends Function<Boolean> {
         return marshal;
     }
 
-    @Override
-    public String toString() {
+    public String pretty() {
         StringBuilder b = new StringBuilder();
         b.append(cstrName).append("(");
         Iterator<Var> ite = params.iterator();
@@ -111,6 +110,23 @@ public class Constraint extends Function<Boolean> {
         b.append(") ::=\n");
         b.append("\t\"\"\"").append(marshal).append("\"\"\"\n");
         b.append('\t').append(p);
+        return b.toString();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+        b.append(cstrName).append("(");
+        Iterator<Var> ite = params.iterator();
+        if (ite.hasNext()) {
+            Var v = ite.next();
+            b.append(v.pretty());
+        }
+        while (ite.hasNext()) {
+            Var v = ite.next();
+            b.append(", ").append(v.pretty());
+        }
+        b.append(")");
         return b.toString();
     }
 }

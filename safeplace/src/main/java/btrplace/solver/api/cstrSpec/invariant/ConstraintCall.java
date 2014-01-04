@@ -2,6 +2,8 @@ package btrplace.solver.api.cstrSpec.invariant;
 
 import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.Constraint;
+import btrplace.solver.api.cstrSpec.invariant.func.Function;
+import btrplace.solver.api.cstrSpec.invariant.type.Type;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,6 +21,7 @@ public class ConstraintCall implements Proposition {
     public ConstraintCall(Constraint c, List<Term> args) {
         this.c = c;
         this.args = args;
+        //TODO: check(c, args);
     }
 
     @Override
@@ -34,6 +37,31 @@ public class ConstraintCall implements Proposition {
             ins.add(args.get(i).eval(m));
         }
         return c.eval(m, ins);
+    }
+
+    private static void check(Function f, List<Term> args) {
+        Type[] expected = f.signature();
+        if (expected.length != args.size()) {
+            throw new IllegalArgumentException(toString(f.id(), args) + " cannot match " + f);
+        }
+        for (int i = 0; i < expected.length; i++) {
+            if (!expected[i].equals(args.get(i).type())) {
+                throw new IllegalArgumentException(toString(f.id(), args) + " cannot match " + f);
+            }
+        }
+    }
+
+    private static String toString(String id, List<Term> args) {
+        StringBuilder b = new StringBuilder(id);
+        b.append('(');
+        Iterator<Term> ite = args.iterator();
+        while (ite.hasNext()) {
+            b.append(ite.next().type());
+            if (ite.hasNext()) {
+                b.append(", ");
+            }
+        }
+        return b.append(')').toString();
     }
 
     @Override

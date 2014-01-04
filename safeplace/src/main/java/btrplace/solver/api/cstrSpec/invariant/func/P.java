@@ -15,7 +15,7 @@ public class P extends Function<Set> {
 
     @Override
     public Type type() {
-        return new SetType(null);
+        return new SetType(new SetType(null));
     }
 
     @Override
