@@ -1,15 +1,14 @@
 package btrplace.solver.api.cstrSpec;
 
 import btrplace.model.Model;
-import btrplace.model.Node;
-import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.invariant.Proposition;
 import btrplace.solver.api.cstrSpec.invariant.Var;
 import btrplace.solver.api.cstrSpec.invariant.func.Function;
 import btrplace.solver.api.cstrSpec.invariant.type.BoolType;
 import btrplace.solver.api.cstrSpec.invariant.type.Type;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Fabien Hermenier
@@ -57,20 +56,6 @@ public class Constraint extends Function<Boolean> {
     public List<Var> getParameters() {
         return params;
     }
-
-    private Set<Node> getInvolvedNodes(Map<String, Object> values, ReconfigurationPlan p) {
-        return Collections.emptySet();
-    }
-
-    /*private Set<VM> getInvolvedVMs(Map<String, Object> values, ReconfigurationPlan p) {
-        for (Map.Entry<String, Object> val : values.entrySet()) {
-            Var var = vars.get(val.getKey());
-            var.set(val.getValue());
-        }
-
-        return Collections.emptySet();
-    } */
-
 
     public Boolean eval(Model res, List<Object> values) {
         for (int i = 0; i < values.size(); i++) {

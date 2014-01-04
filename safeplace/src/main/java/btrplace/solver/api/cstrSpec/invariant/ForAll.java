@@ -28,7 +28,6 @@ public class ForAll implements Proposition {
     @Override
     public Proposition not() {
         return new Exists(vars, prop.not());
-        //throw new UnsupportedOperationException();
     }
 
     @Override

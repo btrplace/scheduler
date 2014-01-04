@@ -31,23 +31,7 @@ public class SymbolsTable {
 
     public static SymbolsTable newBundle() {
         SymbolsTable syms = new SymbolsTable();
-        syms.put(new Primitive("vm", VMType.getInstance()));
-        syms.put(new Primitive("node", NodeType.getInstance()));
-        syms.put(new Primitive("vmState", VMStateType.getInstance(), VMStateType.getInstance().domain(null)));
-        syms.put(new Primitive("nodeState", NodeStateType.getInstance(), NodeStateType.getInstance().domain(null)));
-        syms.put(new Primitive("int", IntType.getInstance()));
-        syms.put(new Primitive("bool", BoolType.getInstance()));
-        syms.put(new Primitive("real", RealType.getInstance()));
-        syms.put(new Primitive("string", StringType.getInstance()));
-        syms.put(new Host());
-        syms.put(new Hosted());
-        syms.put(new Cons());
-        syms.put(new Capa());
-        syms.put(new Colocated());
-        syms.put(new VMState());
-        syms.put(new NodeState());
-        syms.put(new Card());
-        syms.put(new Sum());
+        newBundle(syms);
         return syms;
     }
 
@@ -69,6 +53,7 @@ public class SymbolsTable {
         syms.put(new NodeState());
         syms.put(new Card());
         syms.put(new Sum());
+        syms.put(new P());
     }
 
 

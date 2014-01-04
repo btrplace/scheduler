@@ -1,5 +1,5 @@
 cstr ban(vs <: vm, ns <: node ) ::=
-    """ {"id":"ban", "vms":[@vs], "nodes":[@ns]} """
+    """ {"id":"ban", "vms":@vs, "nodes":@ns} """
     !(v : vs) vmState(v) = running --> host(v) /: ns
 
 cstr cumulatedRunningCapacity(ns <: node, nb : int) ::=
@@ -7,11 +7,11 @@ cstr cumulatedRunningCapacity(ns <: node, nb : int) ::=
     	card({hosted(i). i : ns}) <= nb
 
 cstr fence(vs <: vm, ns <: node ) ::=
-    """ {"id":"fence", "vms":[@vs], "nodes":[@ns]} """
+    """ {"id":"fence", "vms":@vs, "nodes":@ns} """
     !(v : vs) vmState(v) = running --> host(v) : ns
 
 cstr gather(vs <: vm) ::=
-    """ {"id":"gather",  "vms":[@vs], "continuous": false} """
+    """ {"id":"gather",  "vms":@vs, "continuous": false} """
     !(x,y : vs)  (x /= y & vmState(x) = running & vmState(y) = running) --> host(x) = host(y)
 
 cstr lonely (vs <: vm) ::=
@@ -72,10 +72,9 @@ cstr cumulatedResourcecapacity(ns <: node, id : string, qty: int) ::=
 
 cstr overbook(ns <: node, id : string, qty: real) ::=
     """ {"id": "overbook", "nodes": @ns, "rc":@id, "amount":@qty} """
-    /* FIXME: only consider running VMs */
-    !(n : ns) sum({cons(v, id). v : hosted(n)}) * qty < capa(n, id)
+    !(n : ns) sum({cons(v, id). v : hosted(n) & vmState(v) = running}) * qty < capa(n, id)
 
-/*
+
 cstr maxOnline(ns <: node, nb : int) ::=
     """ {"id":"maxOnline","nodes":@ns,"amount":@nb,"continuous":false} """
    	card({i. i : ns & nodeState(i) = online}) <= nb
@@ -83,7 +82,7 @@ cstr maxOnline(ns <: node, nb : int) ::=
 cstr among (vs <: vm, groups <: P(node)) ::=
     """ {"id":"among", "nodes":@ns, "continuous" : false} """
     ?(g : groups) {host(i). i : vs & vmState(i) = running} : g
-
+/*
 cstr split(vs <: P(vm)) ::=
 
 cstr splitAmong(vs <: P(vm), ns <: P(node)) ::=

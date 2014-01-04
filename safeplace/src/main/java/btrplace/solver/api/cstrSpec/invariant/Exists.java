@@ -27,7 +27,7 @@ public class Exists implements Proposition {
 
     @Override
     public Proposition not() {
-        throw new UnsupportedOperationException();
+        return new ForAll(vars, prop.not());
     }
 
     @Override
