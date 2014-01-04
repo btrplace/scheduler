@@ -48,7 +48,7 @@ public class TestParse {
                 for (Map<String, Object> in : cg) {
                     cstrC.setModel(p2.getOrigin());
                     SatConstraint satCstr = (SatConstraint) cstrC.fromJSON(JSONs.unMarshal(c.getMarshal(), in));
-                    TestResult res = verifChk.verify(new TestCase(num, p2, satCstr, c.instantiate(in, p)));
+                    TestResult res = verifChk.verify(new TestCase(num, p2, satCstr, c.instantiate(in, p.getResult())));
                     if (!res.succeeded()) {
                         failures++;
                         System.out.println("\n" + res);
@@ -194,6 +194,6 @@ public class TestParse {
             System.out.println(cstr);
         }
         System.out.flush();
-        Assert.assertEquals(cstrs.size(), 16);
+        Assert.assertEquals(cstrs.size(), 17);
     }
 }

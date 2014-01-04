@@ -62,8 +62,8 @@ public class TestCaseReducer {
                 }
                 //System.out.println(indent(lvl) + "split 1: " + p1.getActions());
                 //System.out.println(indent(lvl) + "split 2: " + p2.getActions());
-                TestCase c1 = new TestCase(t.num(), p1, t.getSatConstraint(), cstr.instantiate(in, p1));
-                TestCase c2 = new TestCase(t.num(), p2, t.getSatConstraint(), cstr.instantiate(in, p2));
+                TestCase c1 = new TestCase(t.num(), p1, t.getSatConstraint(), cstr.instantiate(in, p1.getResult()));
+                TestCase c2 = new TestCase(t.num(), p2, t.getSatConstraint(), cstr.instantiate(in, p2.getResult()));
                 decidable = reducePlan(lvl + 1, c1, cstr, in);
                 decidable &= reducePlan(lvl + 1, c2, cstr, in);
                 decidable = !decidable;

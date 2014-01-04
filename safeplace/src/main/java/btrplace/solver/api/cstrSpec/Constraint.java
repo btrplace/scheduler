@@ -61,12 +61,11 @@ public class Constraint {
     }
 
 
-    public Boolean instantiate(Map<String, Object> values, ReconfigurationPlan p) {
+    public Boolean instantiate(Map<String, Object> values, Model res) {
         for (Map.Entry<String, Object> val : values.entrySet()) {
             Var var = vars.get(val.getKey());
             var.set(val.getValue());
         }
-        Model res = p.getResult();
         if (res == null) {     //TODO: flaw ?
             //throw new RuntimeException("Unable to apply the plan");
             return false;
@@ -75,12 +74,12 @@ public class Constraint {
         Boolean bKO = this.not.evaluate(res);
 
         if (bOk == null || bKO == null) {
-            throw new RuntimeException("Both null !\ngood:" + this.p + "\nnotGood: " + not + "\n" + p.getOrigin().getMapping().toString());
+            throw new RuntimeException("Both null !\ngood:" + this.p + "\nnotGood: " + not + "\n" + res.getMapping().toString());
         }
         if (bOk && bKO) {
             throw new RuntimeException(values + " good and bad !\ngood:" + this.p + "\nnotGood: " + not + "\n" + res.getMapping().toString());
         } else if (!(bOk || bKO)) {
-            throw new RuntimeException("Nor good or bad !\ngood:" + this.p + "\nnotGood: " + not + "\n" + p.getOrigin().getMapping().toString());
+            throw new RuntimeException("Nor good or bad !\ngood:" + this.p + "\nnotGood: " + not + "\n" + res.getMapping().toString());
         }
         this.reset();
         return bOk;

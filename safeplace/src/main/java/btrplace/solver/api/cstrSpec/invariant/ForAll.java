@@ -32,11 +32,6 @@ public class ForAll implements Proposition {
     }
 
     @Override
-    public int size() {
-        return 1;
-    }
-
-    @Override
     public Boolean evaluate(Model m) {
         boolean ret = true;
         List<List<Object>> values = new ArrayList<>(vars.size());

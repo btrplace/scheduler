@@ -46,13 +46,17 @@ cstr root (vs <: vm) ::=
     """ {"id":"root", "vms":@vs} """
     !(v : vs) vmState(v) = running --> $host(v) = host(v)
 
-cstr singleRunningcapa(ns <: node, nb : nat) ::=
+cstr singleRunningcapacity(ns <: node, nb : nat) ::=
     """{"id":"singleRunningcapa","nodes":@ns,"continuous":false,"amount":@nb} """
 	!(n : ns) card(hosted(n)) <= nb
 
 cstr spread(vs <: vm) ::=
     """ {"id":"spread",  "vms":@vs, "continuous": false} """
      !(x,y : vs) (x /= y &  vmState(x) = running & vmState(y) = running) --> host(x) /= host(y)
+
+cstr quarantine(ns <: node) ::=
+    """ {"id":"quarantine",  "ns":@ns, "continuous": false} """
+     !(n : ns) !(v : hosted(n)) root(v) & ban({hosted(n2). n2 /: ns}, ns)
 
 /*cstr maxOnline(ns <: node, nb : nat) ::=
     """ {"id":"maxOnline","nodes":[@ns],"amount":@nb,"continuous":false} """
@@ -62,27 +66,23 @@ cstr among (vs <: vm, groups <: P(node)) ::=
     """ {"id":"among", "nodes":@ns, "continuous" : false} """
     ?(g : groups) {host(i). i : vs & vmState(i) = running} : g
 
-cstr quarantine(ns <: node) ::=
-    """ {"id":"quarantine",  "ns":@ns, "continuous": false} """
-     !(n : ns) !(v : hosted(n)) root(v) = true & ban({hosted(n2). n2 /: ns}, ns)
-
 cstr split(vs <: P(vm)) ::=
 
 cstr splitAmong(vs <: P(vm), ns <: P(node)) ::=
 */
 cstr preserve(vs <: vm, id : string, qty: nat) ::=
-    """ {"id": "preserve", "vms": @vs, "rc":@id, "amount":@nat} """
+    """ {"id": "preserve", "vms": @vs, "rc":@id, "amount":@qty} """
     !(v : vs) vmState(v) = running --> cons(v, id) <= qty
 
 cstr singleResourcecapacity(ns <: node, id : string, qty: nat) ::=
-    """ {"id": "singleResourcecapacity", "nodes": @ns, "rc":@id, "amount":@nat} """
+    """ {"id": "singleResourcecapacity", "nodes": @ns, "rc":@id, "amount":@qty} """
     !(n : ns) nodeState(n) = online --> capa(n, id) <= qty
 
 /*
 cstr overbook(ns <: node, id : string, qty: real) ::=
-    """ {"id": "overbook", "nodes": @ns, "rc":@id, "amount":@nat} """
+    """ {"id": "overbook", "nodes": @ns, "rc":@id, "amount":@qty} """
 
 
 cstr cumulatedResourcecapacity(ns <: node, id : string, qty: nat) ::=
-    """ {"id": "cumulatedResourcecapacity", "nodes": @ns, "rc":@id, "amount":@nat} """
+    """ {"id": "cumulatedResourcecapacity", "nodes": @ns, "rc":@id, "amount":@qty} """
 */

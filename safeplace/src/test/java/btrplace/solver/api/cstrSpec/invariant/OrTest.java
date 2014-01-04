@@ -16,7 +16,6 @@ public class OrTest {
     @Test
     public void testInstantiation() {
         Or a = new Or(False, True);
-        Assert.assertEquals(a.size(), 2);
         Assert.assertEquals(a.first(), False);
         Assert.assertEquals(a.second(), True);
     }

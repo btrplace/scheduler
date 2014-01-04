@@ -1,5 +1,6 @@
 package btrplace.solver.api.cstrSpec.invariant;
 
+import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.invariant.type.*;
 
 import java.util.ArrayList;
@@ -14,11 +15,14 @@ public class SymbolsTable {
 
     private Map<String, Var> table;
 
+    private Map<String, Constraint> cstrs;
+
     private List<Primitive> primitives;
 
     public SymbolsTable() {
         table = new HashMap<>();
         this.primitives = new ArrayList<>();
+        this.cstrs = new HashMap<>();
     }
 
     public static SymbolsTable newBundle() {
@@ -30,6 +34,22 @@ public class SymbolsTable {
         syms.declare(new Primitive("nat", IntType.getInstance()));
         syms.declare(new Primitive("string", StringType.getInstance()));
         return syms;
+    }
+
+    public static void newBundle(SymbolsTable syms) {
+        syms.declare(new Primitive("vm", VMType.getInstance()));
+        syms.declare(new Primitive("node", NodeType.getInstance()));
+        syms.declare(new Primitive("vmState", VMStateType.getInstance(), VMStateType.getInstance().domain(null)));
+        syms.declare(new Primitive("nodeState", NodeStateType.getInstance(), NodeStateType.getInstance().domain(null)));
+        syms.declare(new Primitive("nat", IntType.getInstance()));
+        syms.declare(new Primitive("string", StringType.getInstance()));
+    }
+
+
+    public void resetLocal() {
+        this.table.clear();
+        this.primitives.clear();
+        newBundle(this);
     }
 
     @Override
@@ -70,4 +90,13 @@ public class SymbolsTable {
     public Var get(String n) {
         return table.get(n);
     }
+
+    public void declare(Constraint cstr) {
+        cstrs.put(cstr.getConstraintName(), cstr);
+    }
+
+    public Constraint getConstraint(String id) {
+        return cstrs.get(id);
+    }
+
 }

@@ -13,12 +13,6 @@ import static btrplace.solver.api.cstrSpec.invariant.Proposition.True;
  */
 public class ImpliesTest {
 
-    @Test
-    public void testInstantiation() {
-        Implies i = new Implies(True, False);
-        Assert.assertEquals(i.size(), 2);
-    }
-
     @DataProvider(name = "input")
     public Object[][] getInputs() {
         return new Object[][]{

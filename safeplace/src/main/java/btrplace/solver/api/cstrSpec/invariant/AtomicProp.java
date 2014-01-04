@@ -11,9 +11,4 @@ public abstract class AtomicProp implements Proposition {
         this.a = a;
         this.b = b;
     }
-
-    @Override
-    public int size() {
-        return 1;
-    }
 }

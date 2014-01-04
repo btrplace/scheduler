@@ -54,7 +54,7 @@ CURRENT: '$';
 filter: LBRACK comparison (AND|OR comparison)* RBRACK;
 term: t1=term op=(INTER|UNION|PLUS|MINUS|MULT|DIV) t2=term         #termOp
     | LPARA term RPARA                              #protectedTerm
-    | func filter?                                         #termFunc
+    | call filter?                                         #termFunc
     | ID filter?                                   #idTerm
     | set filter?                                    #setTerm
     | INT                                           #intTerm
@@ -74,9 +74,10 @@ formula: LPARA formula RPARA   #protectedFormula
        |EXISTS LPARA typedef RPARA formula #exists
        |TRUE        #trueFormula
        |FALSE       #falseFormula
+       |call        #cstrCall
        ;
        
-func: cur=CURRENT? ID LPARA term (COMMA term)* RPARA;
+call: cur=CURRENT? ID LPARA term (COMMA term)* RPARA;
 
 constraint: 'cstr' ID LPARA (typedef (COMMA typedef)*)? RPARA DEF_CONTENT MARSHAL formula;
 spec: constraint+;        

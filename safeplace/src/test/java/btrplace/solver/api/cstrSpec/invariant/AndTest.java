@@ -16,7 +16,6 @@ public class AndTest {
     @Test
     public void testInstantiation() {
         And a = new And(False, True);
-        Assert.assertEquals(a.size(), 2);
         Assert.assertEquals(a.first(), False);
         Assert.assertEquals(a.second(), True);
     }

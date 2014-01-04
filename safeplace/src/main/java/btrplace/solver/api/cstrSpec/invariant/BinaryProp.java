@@ -22,11 +22,6 @@ public abstract class BinaryProp implements Proposition {
 
     public abstract String operator();
 
-    @Override
-    public int size() {
-        return 2;
-    }
-
     public Proposition first() {
         return p1;
     }

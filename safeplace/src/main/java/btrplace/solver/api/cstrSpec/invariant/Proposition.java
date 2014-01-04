@@ -11,19 +11,12 @@ public interface Proposition {
 
     Proposition not();
 
-    int size();
-
     Boolean evaluate(Model m);
 
     static final Proposition False = new Proposition() {
         @Override
         public Proposition not() {
             return True;
-        }
-
-        @Override
-        public int size() {
-            return 1;
         }
 
         @Override
@@ -41,11 +34,6 @@ public interface Proposition {
         @Override
         public Proposition not() {
             return False;
-        }
-
-        @Override
-        public int size() {
-            return 1;
         }
 
         @Override

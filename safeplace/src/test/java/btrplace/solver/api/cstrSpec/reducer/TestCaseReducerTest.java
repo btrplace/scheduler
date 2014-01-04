@@ -62,7 +62,7 @@ public class TestCaseReducerTest {
         //System.out.println(p.getOrigin().getMapping());
         Map<String, Object> in = new HashMap<>();
         in.put("n", n1);
-        TestCase tc = new TestCase(0, p, new Offline(Collections.singleton(n2)), cstr.instantiate(in, p));
+        TestCase tc = new TestCase(0, p, new Offline(Collections.singleton(n2)), cstr.instantiate(in, p.getResult()));
         System.out.println(cstr.getProposition());
         TestResult tr = verif.verify(tc);
         System.out.println(tr);

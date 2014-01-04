@@ -30,12 +30,6 @@ public class Exists implements Proposition {
         throw new UnsupportedOperationException();
     }
 
-
-    @Override
-    public int size() {
-        return 1;
-    }
-
     @Override
     public Boolean evaluate(Model m) {
         boolean ret = false;
@@ -78,6 +72,7 @@ public class Exists implements Proposition {
         }
         return b.append(") ").append(prop).toString();
     }
+
     private String enumerate() {
         Iterator<UserVariable> ite = vars.iterator();
         StringBuilder b = new StringBuilder(ite.next().label());
