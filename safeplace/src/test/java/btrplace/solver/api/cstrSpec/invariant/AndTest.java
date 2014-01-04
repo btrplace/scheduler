@@ -33,7 +33,7 @@ public class AndTest {
     @Test(dataProvider = "input")
     public void testTruthTable(Proposition a, Proposition b, Boolean r) {
         And p = new And(a, b);
-        Assert.assertEquals(p.evaluate(new DefaultModel()), r);
+        Assert.assertEquals(p.eval(new DefaultModel()), r);
     }
 
     @Test

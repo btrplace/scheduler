@@ -29,7 +29,7 @@ public class Inc extends AtomicProp {
     }
 
     @Override
-    public Boolean evaluate(Model m) {
+    public Boolean eval(Model m) {
         Object o = a.eval(m);
         Collection c = (Collection) b.eval(m);
         //System.err.println(o + " <:" + c + ": " + c.contains(o));

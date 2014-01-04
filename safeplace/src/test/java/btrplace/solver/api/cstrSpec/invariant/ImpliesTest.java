@@ -26,7 +26,7 @@ public class ImpliesTest {
     @Test(dataProvider = "input")
     public void testTruthTable(Proposition a, Proposition b, Boolean r) {
         Implies p = new Implies(a, b);
-        Assert.assertEquals(p.evaluate(new DefaultModel()), r);
+        Assert.assertEquals(p.eval(new DefaultModel()), r);
     }
 
     @Test

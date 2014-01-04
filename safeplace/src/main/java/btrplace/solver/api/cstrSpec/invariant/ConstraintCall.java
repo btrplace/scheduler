@@ -3,10 +3,9 @@ package btrplace.solver.api.cstrSpec.invariant;
 import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.Constraint;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Fabien Hermenier
@@ -28,15 +27,13 @@ public class ConstraintCall implements Proposition {
     }
 
     @Override
-    public Boolean evaluate(Model m) {
+    public Boolean eval(Model m) {
         List<Var> ps = c.getParameters();
-        Map<String, Object> ins = new HashMap<>();
+        List<Object> ins = new ArrayList<>(ps.size());
         for (int i = 0; i < args.size(); i++) {
-            String lbl = ps.get(i).label();
-            Object val = args.get(i).eval(m);
-            ins.put(lbl, val);
+            ins.add(args.get(i).eval(m));
         }
-        return c.instantiate(ins, m);
+        return c.eval(m, ins);
     }
 
     @Override

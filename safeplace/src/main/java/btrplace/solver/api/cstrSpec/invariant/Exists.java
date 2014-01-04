@@ -31,7 +31,7 @@ public class Exists implements Proposition {
     }
 
     @Override
-    public Boolean evaluate(Model m) {
+    public Boolean eval(Model m) {
         boolean ret = false;
         List<List<Object>> values = new ArrayList<>(vars.size());
         for (int i = 0; i < vars.size(); i++) {
@@ -42,7 +42,7 @@ public class Exists implements Proposition {
             for (int i = 0; i < tuple.length; i++) {
                 vars.get(i).set(tuple[i]);
             }
-            Boolean r = prop.evaluate(m);
+            Boolean r = prop.eval(m);
             if (r == null) {
                 return null;
             }

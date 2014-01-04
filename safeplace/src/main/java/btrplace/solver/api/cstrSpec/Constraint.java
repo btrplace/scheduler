@@ -2,11 +2,9 @@ package btrplace.solver.api.cstrSpec;
 
 import btrplace.model.Model;
 import btrplace.model.Node;
-import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.invariant.Proposition;
 import btrplace.solver.api.cstrSpec.invariant.Var;
-import btrplace.solver.api.cstrSpec.invariant.Variable;
 import net.minidev.json.JSONObject;
 
 import java.util.*;
@@ -21,7 +19,6 @@ public class Constraint {
     private Proposition not;
     private List<Var> params;
 
-    private Map<String, Var> vars;
 
     private String cstrName;
 
@@ -33,10 +30,6 @@ public class Constraint {
         this.cstrName = n;
         this.params = params;
         this.marshal = m;
-        vars = new HashMap<>(params.size());
-        for (Var v : params) {
-            vars.put(v.label(), v);
-        }
     }
 
     public Proposition getProposition() {
@@ -51,27 +44,27 @@ public class Constraint {
         return Collections.emptySet();
     }
 
-    private Set<VM> getInvolvedVMs(Map<String, Object> values, ReconfigurationPlan p) {
+    /*private Set<VM> getInvolvedVMs(Map<String, Object> values, ReconfigurationPlan p) {
         for (Map.Entry<String, Object> val : values.entrySet()) {
             Var var = vars.get(val.getKey());
             var.set(val.getValue());
         }
 
         return Collections.emptySet();
-    }
+    } */
 
 
-    public Boolean instantiate(Map<String, Object> values, Model res) {
-        for (Map.Entry<String, Object> val : values.entrySet()) {
-            Var var = vars.get(val.getKey());
-            var.set(val.getValue());
+    public Boolean eval(Model res, List<Object> values) {
+        for (int i = 0; i < values.size(); i++) {
+            Var var = params.get(i);
+            var.set(values.get(i));
         }
         if (res == null) {     //TODO: flaw ?
             //throw new RuntimeException("Unable to apply the plan");
             return false;
         }
-        Boolean bOk = this.p.evaluate(res);
-        Boolean bKO = this.not.evaluate(res);
+        Boolean bOk = this.p.eval(res);
+        Boolean bKO = this.not.eval(res);
 
         if (bOk == null || bKO == null) {
             throw new RuntimeException("Both null !\ngood:" + this.p + "\nnotGood: " + not + "\n" + res.getMapping().toString());
@@ -128,15 +121,5 @@ public class Constraint {
         b.append("\t\"\"\"").append(marshal).append("\"\"\"\n");
         b.append('\t').append(p);
         return b.toString();
-    }
-
-    private String pretty(List<Variable> ps) {
-        StringBuilder b = new StringBuilder("(");
-        Iterator<Variable> ite = ps.iterator();
-        b.append(ite.next().label());
-        while (ite.hasNext()) {
-            b.append(", ").append(ite.next().label());
-        }
-        return b.append(")").toString();
     }
 }

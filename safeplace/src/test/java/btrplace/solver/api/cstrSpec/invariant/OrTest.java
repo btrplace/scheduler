@@ -33,7 +33,7 @@ public class OrTest {
     @Test(dataProvider = "input")
     public void testTruthTable(Proposition a, Proposition b, Boolean r) {
         Or p = new Or(a, b);
-        Assert.assertEquals(p.evaluate(new DefaultModel()), r);
+        Assert.assertEquals(p.eval(new DefaultModel()), r);
     }
 
     @Test

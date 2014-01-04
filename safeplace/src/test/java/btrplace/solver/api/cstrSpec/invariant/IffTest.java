@@ -26,6 +26,6 @@ public class IffTest {
     @Test(dataProvider = "input")
     public void testTruthTable(Proposition a, Proposition b, Boolean r) {
         Iff p = new Iff(a, b);
-        Assert.assertEquals(p.evaluate(new DefaultModel()), r);
+        Assert.assertEquals(p.eval(new DefaultModel()), r);
     }
 }

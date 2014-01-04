@@ -17,10 +17,9 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Fabien Hermenier
@@ -60,9 +59,9 @@ public class TestCaseReducerTest {
 
         ImplVerifier verif = new ImplVerifier();
         //System.out.println(p.getOrigin().getMapping());
-        Map<String, Object> in = new HashMap<>();
-        in.put("n", n1);
-        TestCase tc = new TestCase(0, p, new Offline(Collections.singleton(n2)), cstr.instantiate(in, p.getResult()));
+        List<Object> in = new ArrayList<>();
+        in.add(n1);
+        TestCase tc = new TestCase(0, p, new Offline(Collections.singleton(n2)), cstr.eval(p.getResult(), in));
         System.out.println(cstr.getProposition());
         TestResult tr = verif.verify(tc);
         System.out.println(tr);

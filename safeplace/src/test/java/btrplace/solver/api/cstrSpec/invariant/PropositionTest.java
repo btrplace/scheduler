@@ -13,7 +13,7 @@ public class PropositionTest {
     public void testTrue() {
         Proposition t = Proposition.True;
         Assert.assertEquals(t.not(), Proposition.False);
-        Assert.assertEquals(t.evaluate(new DefaultModel()), Boolean.TRUE);
+        Assert.assertEquals(t.eval(new DefaultModel()), Boolean.TRUE);
         Assert.assertEquals(t.toString(), "true");
     }
 
@@ -22,6 +22,6 @@ public class PropositionTest {
         Proposition t = Proposition.False;
         Assert.assertEquals(t.toString(), "false");
         Assert.assertEquals(t.not(), Proposition.True);
-        Assert.assertEquals(t.evaluate(new DefaultModel()), Boolean.FALSE);
+        Assert.assertEquals(t.eval(new DefaultModel()), Boolean.FALSE);
     }
 }

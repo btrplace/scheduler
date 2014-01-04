@@ -31,12 +31,12 @@ public class Or extends BinaryProp {
     } */
 
     @Override
-    public Boolean evaluate(Model m) {
-        Boolean r1 = p1.evaluate(m);
+    public Boolean eval(Model m) {
+        Boolean r1 = p1.eval(m);
         if (r1 == null) {
             return null;
         }
-        Boolean r2 = p2.evaluate(m);
+        Boolean r2 = p2.eval(m);
         if (r2 == null) {
             return null;
         }

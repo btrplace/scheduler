@@ -19,8 +19,8 @@ public class Not implements Proposition {
     }
 
     @Override
-    public Boolean evaluate(Model m) {
-        return !p.evaluate(m);
+    public Boolean eval(Model m) {
+        return !p.eval(m);
     }
 
     @Override

@@ -11,7 +11,7 @@ public interface Proposition {
 
     Proposition not();
 
-    Boolean evaluate(Model m);
+    Boolean eval(Model m);
 
     static final Proposition False = new Proposition() {
         @Override
@@ -20,7 +20,7 @@ public interface Proposition {
         }
 
         @Override
-        public Boolean evaluate(Model m) {
+        public Boolean eval(Model m) {
             return Boolean.FALSE;
         }
 
@@ -37,7 +37,7 @@ public interface Proposition {
         }
 
         @Override
-        public Boolean evaluate(Model m) {
+        public Boolean eval(Model m) {
             return Boolean.TRUE;
         }
 

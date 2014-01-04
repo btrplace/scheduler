@@ -17,6 +17,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,10 +46,14 @@ public class TestParse {
                 System.out.print(".");
                 ConstraintInputGenerator cg = new ConstraintInputGenerator(c, p.getOrigin(), true);
                 //System.out.println(c + "\n" + cg.count() + " signature(s)\n");
-                for (Map<String, Object> in : cg) {
+                for (List<Object> in : cg) {
                     cstrC.setModel(p2.getOrigin());
-                    SatConstraint satCstr = (SatConstraint) cstrC.fromJSON(JSONs.unMarshal(c.getMarshal(), in));
-                    TestResult res = verifChk.verify(new TestCase(num, p2, satCstr, c.instantiate(in, p.getResult())));
+                    Map<String, Object> vals = new HashMap<>();
+                    for (int i = 0; i < in.size(); i++) {
+                        vals.put(c.getParameters().get(i).label(), vals.get(i));
+                    }
+                    SatConstraint satCstr = (SatConstraint) cstrC.fromJSON(JSONs.unMarshal(c.getMarshal(), vals));
+                    TestResult res = verifChk.verify(new TestCase(num, p2, satCstr, c.eval(p.getResult(), in)));
                     if (!res.succeeded()) {
                         failures++;
                         System.out.println("\n" + res);

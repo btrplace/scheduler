@@ -10,7 +10,6 @@ import btrplace.solver.api.cstrSpec.verification.TestResult;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Fabien Hermenier
@@ -25,13 +24,13 @@ public class TestCaseReducer {
         verif = new ImplVerifier();
     }
 
-    public List<TestCase> reducePlan(TestCase c, Constraint cstr, Map<String, Object> in) {
+    public List<TestCase> reducePlan(TestCase c, Constraint cstr, List<Object> in) {
         mins = new ArrayList<>();
         reducePlan(0, c, cstr, in);
         return mins;
     }
 
-    private boolean reducePlan(int lvl, TestCase t, btrplace.solver.api.cstrSpec.Constraint cstr, Map<String, Object> in) {
+    private boolean reducePlan(int lvl, TestCase t, btrplace.solver.api.cstrSpec.Constraint cstr, List<Object> in) {
         //System.out.println(indent(lvl) + "Reduce " + t.getPlan().getActions());
         TestResult res = verif.verify(t, false);
         if (res.succeeded()) {
@@ -62,8 +61,8 @@ public class TestCaseReducer {
                 }
                 //System.out.println(indent(lvl) + "split 1: " + p1.getActions());
                 //System.out.println(indent(lvl) + "split 2: " + p2.getActions());
-                TestCase c1 = new TestCase(t.num(), p1, t.getSatConstraint(), cstr.instantiate(in, p1.getResult()));
-                TestCase c2 = new TestCase(t.num(), p2, t.getSatConstraint(), cstr.instantiate(in, p2.getResult()));
+                TestCase c1 = new TestCase(t.num(), p1, t.getSatConstraint(), cstr.eval(p1.getResult(), in));
+                TestCase c2 = new TestCase(t.num(), p2, t.getSatConstraint(), cstr.eval(p2.getResult(), in));
                 decidable = reducePlan(lvl + 1, c1, cstr, in);
                 decidable &= reducePlan(lvl + 1, c2, cstr, in);
                 decidable = !decidable;

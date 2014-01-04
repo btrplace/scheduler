@@ -24,7 +24,7 @@ public class In extends AtomicProp {
     }
 
     @Override
-    public Boolean evaluate(Model m) {
+    public Boolean eval(Model m) {
         Object o = a.eval(m);
         Collection c = (Collection) b.eval(m);
         if (c != null) {

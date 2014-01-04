@@ -6,12 +6,15 @@ import btrplace.solver.api.cstrSpec.generator.Generator;
 import btrplace.solver.api.cstrSpec.generator.RandomTuplesGenerator;
 import btrplace.solver.api.cstrSpec.invariant.Var;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Fabien Hermenier
  */
-public class ConstraintInputGenerator implements Generator<Map<String, Object>> {
+public class ConstraintInputGenerator implements Generator<List<Object>> {
 
 
     private String[] ids;
@@ -46,11 +49,11 @@ public class ConstraintInputGenerator implements Generator<Map<String, Object>> 
     }
 
     @Override
-    public Map<String, Object> next() {
+    public List<Object> next() {
         Object[] tuple = tg.next();
-        Map<String, Object> m = new HashMap<>(tuple.length);
+        List<Object> m = new ArrayList<>(tuple.length);
         for (int i = 0; i < tuple.length; i++) {
-            m.put(ids[i], tuple[i]);
+            m.add(tuple[i]);
         }
         return m;
     }
@@ -61,7 +64,7 @@ public class ConstraintInputGenerator implements Generator<Map<String, Object>> 
     }
 
     @Override
-    public Iterator<Map<String, Object>> iterator() {
+    public Iterator<List<Object>> iterator() {
         return this;
     }
 

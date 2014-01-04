@@ -34,7 +34,7 @@ public class Implies extends BinaryProp {
     } */
 
     @Override
-    public Boolean evaluate(Model m) {
-        return o.evaluate(m);
+    public Boolean eval(Model m) {
+        return o.eval(m);
     }
 }

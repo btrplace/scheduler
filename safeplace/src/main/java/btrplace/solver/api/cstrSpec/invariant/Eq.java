@@ -22,7 +22,7 @@ public class Eq extends AtomicProp {
     }
 
     @Override
-    public Boolean evaluate(Model m) {
+    public Boolean eval(Model m) {
         Object vA = a.eval(m);
         Object vB = b.eval(m);
         if (vA == null && vB == null) {
