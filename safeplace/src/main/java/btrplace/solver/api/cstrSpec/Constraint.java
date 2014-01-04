@@ -5,24 +5,28 @@ import btrplace.model.Node;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.invariant.Proposition;
 import btrplace.solver.api.cstrSpec.invariant.Var;
-import net.minidev.json.JSONObject;
+import btrplace.solver.api.cstrSpec.invariant.func.Function;
+import btrplace.solver.api.cstrSpec.invariant.type.BoolType;
+import btrplace.solver.api.cstrSpec.invariant.type.Type;
 
 import java.util.*;
 
 /**
  * @author Fabien Hermenier
  */
-public class Constraint {
+public class Constraint extends Function<Boolean> {
 
     private Proposition p;
 
     private Proposition not;
-    private List<Var> params;
 
+    private List<Var> params;
 
     private String cstrName;
 
     private String marshal;
+
+    private Type[] types;
 
     public Constraint(String n, String m, Proposition p, List<Var> params) {
         this.p = p;
@@ -30,6 +34,20 @@ public class Constraint {
         this.cstrName = n;
         this.params = params;
         this.marshal = m;
+        types = new Type[params.size()];
+        for (int i = 0; i < params.size(); i++) {
+            types[i] = params.get(i).type();
+        }
+    }
+
+    @Override
+    public BoolType type() {
+        return BoolType.getInstance();
+    }
+
+    @Override
+    public Type[] signature() {
+        return types;
     }
 
     public Proposition getProposition() {
@@ -90,18 +108,6 @@ public class Constraint {
 
     public String getMarshal() {
         return marshal;
-    }
-
-    public JSONObject toJSON() {
-        JSONObject o = new JSONObject();
-        o.put("id", cstrName);
-        o.put("proposition", p.toString());
-        JSONObject jps = new JSONObject();
-        for (Var v : params) {
-            jps.put(v.label(), v.type().toString());
-        }
-        o.put("parameters", jps);
-        return o;
     }
 
     @Override

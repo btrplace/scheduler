@@ -36,6 +36,7 @@ public class SymbolsTable {
         syms.put(new Primitive("vmState", VMStateType.getInstance(), VMStateType.getInstance().domain(null)));
         syms.put(new Primitive("nodeState", NodeStateType.getInstance(), NodeStateType.getInstance().domain(null)));
         syms.put(new Primitive("int", IntType.getInstance()));
+        syms.put(new Primitive("bool", BoolType.getInstance()));
         syms.put(new Primitive("real", RealType.getInstance()));
         syms.put(new Primitive("string", StringType.getInstance()));
         syms.put(new Host());
@@ -56,6 +57,7 @@ public class SymbolsTable {
         syms.put(new Primitive("vmState", VMStateType.getInstance(), VMStateType.getInstance().domain(null)));
         syms.put(new Primitive("nodeState", NodeStateType.getInstance(), NodeStateType.getInstance().domain(null)));
         syms.put(new Primitive("int", IntType.getInstance()));
+        syms.put(new Primitive("bool", BoolType.getInstance()));
         syms.put(new Primitive("real", RealType.getInstance()));
         syms.put(new Primitive("string", StringType.getInstance()));
         syms.put(new Host());
