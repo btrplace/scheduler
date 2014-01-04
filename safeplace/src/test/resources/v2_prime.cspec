@@ -1,0 +1,85 @@
+cstr ban(vs <: vm, ns <: node ) ::=
+    """ {"id":"ban", "vms":[@vs], "nodes":[@ns]} """
+    !(v : vs[vmState = running]) host(v) /: ns
+
+cstr cumulatedRunningCapacity(ns <: node, nb : nat) ::=
+        """{"id":"cumulatedRunningCapacity","nodes":@ns,"continuous":false,"amount":@nb} """
+    	card({hosted(i). i : ns}) <= nb
+
+cstr fence(vs <: vm, ns <: node ) ::=
+    """ {"id":"fence", "vms":[@vs], "nodes":[@ns]} """
+    !(v : vs[vmState = running]) host(v) : ns
+
+cstr gather(vs <: vm) ::=
+    """ {"id":"gather",  "vms":[@vs], "continuous": false} """
+    !(x,y : vs[vmState = running]) x /= y --> host(x) = host(y)
+
+cstr lonely (vs <: vm) ::=
+    """ {"id":"lonely", "vms":@vs, "continuous" : false} """
+	!(i : vs[vmState = running])  colocated(i) - {i} /<: vs
+
+cstr maxOnline(ns <: node, nb : nat) ::=
+    """ {"id":"maxOnline","nodes":[@ns],"amount":@nb,"continuous":false} """
+	card({i. i : ns[nodeState = online]}) <= nb
+
+cstr among (vs <: vm, groups <: P(node)) ::=
+    """ {"id":"among", "nodes":@ns, "continuous" : false} """
+    ?(g : groups) {host(i). i : vs[vmState = running]} : g
+
+cstr offline(ns <: node) ::=
+    """ {"id":"offline",  "nodes":@n} """
+    !(n : ns[nodeState = offline]) card(hosted(n)) = 0
+
+cstr online(ns <: node) ::=
+    """ {"id": "online", "nodes": @n} """
+    !(n : ns) nodeState(n) = online
+
+cstr running(vs <: vm) ::=
+    """ {"id": "running", "vms": @vs} """
+    !(v : vs) vmState(v) = running & host(v) : node & nodeState(host(v)) = online
+
+cstr ready(vs <: vm) ::=
+    """ {"id": "ready", "vms": @vs} """
+    !(v : vs) vmState(v) = ready & host(v) /: node
+
+cstr sleeping(vs <: vm) ::= 
+    """ {"id": "sleeping", "vms": @vs} """
+    !(v : vs) vmState(v) = sleeping & host(v) : node & nodeState(host(v)) = online)
+
+cstr terminated(vs <: vm) ::=
+    """ {"id": "terminated", "vms": @vs} """
+    !(v : vs) vmState(v) = terminated & host(v) /: node
+
+cstr root (vs <: vm) ::=
+    """ {"id":"root", "vms":@vs} """
+    !(v : vs[vmState = running]) $host(v) = host(v)
+
+cstr singleRunningCapacity(ns <: node, nb : nat) ::=
+    """{"id":"singleRunningCapacity","nodes":@ns,"continuous":false,"amount":@nb} """
+	!(n : ns) card(hosted(n)) <= nb
+
+cstr spread(vs <: vm) ::=
+    """ {"id":"spread",  "vms":@vs, "continuous": false} """
+     !(x,y : vs[vmState = running]) x /= y --> host(x) /= host(y)
+
+cstr quarantine(ns <: node) ::=
+    """ {"id":"quarantine",  "ns":@ns, "continuous": false} """
+     !(n : ns) !(v : hosted(n)) !(v2 : hosted(n)) root(v) & vmState(v2) = running --> host(v2) /: ns
+
+
+cstr split(vs <: P(vm)) ::=
+
+cstr splitAmong(vs <: P(vm), ns <: P(node)) ::=
+
+cstr preserve(vs <: vm, id : string, qty: nat) ::=
+    """ {"id": "preserve", "vms": @vs, "rc":@id, "amount":@nat} """
+
+cstr overbook(ns <: node, id : string, qty: real) ::=
+    """ {"id": "overbook", "nodes": @ns, "rc":@id, "amount":@nat} """
+
+cstr singleResourceCapacity(ns <: node, id : string, qty: nat) ::=
+    """ {"id": "singleResourceCapacity", "nodes": @ns, "rc":@id, "amount":@nat} """
+
+cstr cumulatedResourceCapacity(ns <: node, id : string, qty: nat) ::=
+    """ {"id": "cumulatedResourceCapacity", "nodes": @ns, "rc":@id, "amount":@nat} """
+

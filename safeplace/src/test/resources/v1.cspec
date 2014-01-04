@@ -4,7 +4,7 @@ cstr ban(vs <: vm, ns <: node ) ::=
 
 cstr cumulatedRunningCapacity(ns <: node, nb : int) ::=
         """{"id":"cumulatedRunningCapacity","nodes":@ns,"continuous":false,"amount":@nb} """
-    	card({hosted(i). i : ns}) <= nb
+        sum({card({v. v : hosted(n) & vmState(v) = running}). n : ns}) <= nb
 
 cstr fence(vs <: vm, ns <: node ) ::=
     """ {"id":"fence", "vms":@vs, "nodes":@ns} """
@@ -48,7 +48,7 @@ cstr root (vs <: vm) ::=
 
 cstr singleRunningCapacity(ns <: node, nb : int) ::=
     """{"id":"singleRunningCapacity","nodes":@ns,"continuous":false,"amount":@nb} """
-	!(n : ns) card(hosted(n)) <= nb
+	!(n : ns) card({v. v : hosted(n) & vmState(v) = running}) <= nb
 
 cstr spread(vs <: vm) ::=
     """ {"id":"spread",  "vms":@vs, "continuous": false} """
