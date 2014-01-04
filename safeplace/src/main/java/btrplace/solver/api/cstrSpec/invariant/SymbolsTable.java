@@ -31,13 +31,13 @@ public class SymbolsTable {
 
     public static SymbolsTable newBundle() {
         SymbolsTable syms = new SymbolsTable();
-        syms.declare(new Primitive("vm", VMType.getInstance()));
-        syms.declare(new Primitive("node", NodeType.getInstance()));
-        syms.declare(new Primitive("vmState", VMStateType.getInstance(), VMStateType.getInstance().domain(null)));
-        syms.declare(new Primitive("nodeState", NodeStateType.getInstance(), NodeStateType.getInstance().domain(null)));
-        syms.declare(new Primitive("int", IntType.getInstance()));
-        syms.declare(new Primitive("real", RealType.getInstance()));
-        syms.declare(new Primitive("string", StringType.getInstance()));
+        syms.put(new Primitive("vm", VMType.getInstance()));
+        syms.put(new Primitive("node", NodeType.getInstance()));
+        syms.put(new Primitive("vmState", VMStateType.getInstance(), VMStateType.getInstance().domain(null)));
+        syms.put(new Primitive("nodeState", NodeStateType.getInstance(), NodeStateType.getInstance().domain(null)));
+        syms.put(new Primitive("int", IntType.getInstance()));
+        syms.put(new Primitive("real", RealType.getInstance()));
+        syms.put(new Primitive("string", StringType.getInstance()));
         syms.put(new Host());
         syms.put(new Hosted());
         syms.put(new Cons());
@@ -51,13 +51,13 @@ public class SymbolsTable {
     }
 
     public static void newBundle(SymbolsTable syms) {
-        syms.declare(new Primitive("vm", VMType.getInstance()));
-        syms.declare(new Primitive("node", NodeType.getInstance()));
-        syms.declare(new Primitive("vmState", VMStateType.getInstance(), VMStateType.getInstance().domain(null)));
-        syms.declare(new Primitive("nodeState", NodeStateType.getInstance(), NodeStateType.getInstance().domain(null)));
-        syms.declare(new Primitive("int", IntType.getInstance()));
-        syms.declare(new Primitive("real", RealType.getInstance()));
-        syms.declare(new Primitive("string", StringType.getInstance()));
+        syms.put(new Primitive("vm", VMType.getInstance()));
+        syms.put(new Primitive("node", NodeType.getInstance()));
+        syms.put(new Primitive("vmState", VMStateType.getInstance(), VMStateType.getInstance().domain(null)));
+        syms.put(new Primitive("nodeState", NodeStateType.getInstance(), NodeStateType.getInstance().domain(null)));
+        syms.put(new Primitive("int", IntType.getInstance()));
+        syms.put(new Primitive("real", RealType.getInstance()));
+        syms.put(new Primitive("string", StringType.getInstance()));
         syms.put(new Host());
         syms.put(new Hosted());
         syms.put(new Cons());
@@ -87,10 +87,6 @@ public class SymbolsTable {
         return b.toString();
     }
 
-    public List<Primitive> getPrimitives() {
-        return primitives;
-    }
-
     public boolean put(Function2 f) {
         if (funcs.containsKey(f.id())) {
             return false;
@@ -103,7 +99,7 @@ public class SymbolsTable {
         return funcs.get(id);
     }
 
-    public boolean declare(Primitive v) {
+    public boolean put(Primitive v) {
         if (add(v)) {
             primitives.add(v);
             return true;
@@ -119,15 +115,15 @@ public class SymbolsTable {
         return true;
     }
 
-    public boolean declare(UserVariable v) {
+    public boolean put(UserVariable v) {
         return add(v);
     }
 
-    public Var get(String n) {
+    public Var getVar(String n) {
         return table.get(n);
     }
 
-    public void declare(Constraint cstr) {
+    public void put(Constraint cstr) {
         cstrs.put(cstr.id(), cstr);
     }
 

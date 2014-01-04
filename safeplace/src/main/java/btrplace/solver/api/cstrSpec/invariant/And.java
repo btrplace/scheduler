@@ -4,6 +4,7 @@ import btrplace.model.Model;
 
 /**
  * Logical and between several propositions.
+ *
  * @author Fabien Hermenier
  */
 public class And extends BinaryProp {
@@ -35,12 +36,12 @@ public class And extends BinaryProp {
         for (int k = 0; k < nbStates; k++) {
             And and = new And();
             for (int x = 0; x < size(); x++) {
-                and.add(((Or) get(x)).get(indexes[x]));
+                and.add(((Or) getVar(x)).getVar(indexes[x]));
             }
             l.add(and);
             for (int x = 0; x < size(); x++) {
                 indexes[x]++;
-                if (indexes[x] < get(x).size()) {
+                if (indexes[x] < getVar(x).size()) {
                     break;
                 }
                 indexes[x] = 0;
