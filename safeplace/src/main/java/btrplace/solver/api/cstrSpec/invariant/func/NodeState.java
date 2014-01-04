@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
-public class NodeState extends Function2<NodeStateType.Type> {
+public class NodeState extends Function<NodeStateType.Type> {
 
     @Override
     public NodeStateType type() {

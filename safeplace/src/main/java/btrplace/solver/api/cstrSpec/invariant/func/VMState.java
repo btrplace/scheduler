@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
-public class VMState extends Function2<VMStateType.Type> {
+public class VMState extends Function<VMStateType.Type> {
 
     @Override
     public VMStateType type() {

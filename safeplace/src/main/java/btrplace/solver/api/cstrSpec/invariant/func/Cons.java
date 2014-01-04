@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
-public class Cons extends Function2<Integer> {
+public class Cons extends Function<Integer> {
 
     @Override
     public Integer eval(Model mo, List<Object> args) {

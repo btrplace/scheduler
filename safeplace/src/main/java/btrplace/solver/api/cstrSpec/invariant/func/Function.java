@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
-public abstract class Function2<T> {
+public abstract class Function<T> {
 
     public abstract String id();
 

@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
-public class Sum extends Function2<Integer> {
+public class Sum extends Function<Integer> {
 
     @Override
     public Type type() {

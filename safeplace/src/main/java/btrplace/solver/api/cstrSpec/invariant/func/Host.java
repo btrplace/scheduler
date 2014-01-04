@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
-public class Host extends Function2<Node> {
+public class Host extends Function<Node> {
 
     @Override
     public String id() {

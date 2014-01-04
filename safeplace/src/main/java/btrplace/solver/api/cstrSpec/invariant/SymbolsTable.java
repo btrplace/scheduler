@@ -20,7 +20,7 @@ public class SymbolsTable {
 
     private List<Primitive> primitives;
 
-    private Map<String, Function2> funcs;
+    private Map<String, Function> funcs;
 
     public SymbolsTable() {
         table = new HashMap<>();
@@ -87,7 +87,7 @@ public class SymbolsTable {
         return b.toString();
     }
 
-    public boolean put(Function2 f) {
+    public boolean put(Function f) {
         if (funcs.containsKey(f.id())) {
             return false;
         }
@@ -95,7 +95,7 @@ public class SymbolsTable {
         return true;
     }
 
-    public Function2 getFunction(String id) {
+    public Function getFunction(String id) {
         return funcs.get(id);
     }
 

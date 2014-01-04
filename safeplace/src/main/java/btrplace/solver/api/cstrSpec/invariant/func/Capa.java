@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
-public class Capa extends Function2<Integer> {
+public class Capa extends Function<Integer> {
 
     @Override
     public String id() {

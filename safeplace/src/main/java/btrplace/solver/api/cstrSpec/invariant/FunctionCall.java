@@ -1,7 +1,7 @@
 package btrplace.solver.api.cstrSpec.invariant;
 
 import btrplace.model.Model;
-import btrplace.solver.api.cstrSpec.invariant.func.Function2;
+import btrplace.solver.api.cstrSpec.invariant.func.Function;
 import btrplace.solver.api.cstrSpec.invariant.type.Type;
 
 import java.util.ArrayList;
@@ -13,13 +13,13 @@ import java.util.List;
  */
 public class FunctionCall<T> extends Term<T> {
 
-    private Function2<T> c;
+    private Function<T> c;
 
     private List<Term> args;
 
     private boolean current;
 
-    public FunctionCall(Function2<T> c, List<Term> args, boolean current) {
+    public FunctionCall(Function<T> c, List<Term> args, boolean current) {
         check(c, args);
         this.c = c;
         this.args = args;
@@ -57,7 +57,7 @@ public class FunctionCall<T> extends Term<T> {
         return b.append(')').toString();
     }
 
-    private static void check(Function2 f, List<Term> args) {
+    private static void check(Function f, List<Term> args) {
         Type[] expected = f.signature();
         if (expected.length != args.size()) {
             throw new IllegalArgumentException(toString(f.id(), args) + " cannot match " + f);

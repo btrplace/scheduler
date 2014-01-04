@@ -15,7 +15,7 @@ import java.util.Set;
 /**
  * @author Fabien Hermenier
  */
-public class Hosted extends Function2<Set<VM>> {
+public class Hosted extends Function<Set<VM>> {
 
     @Override
     public SetType type() {

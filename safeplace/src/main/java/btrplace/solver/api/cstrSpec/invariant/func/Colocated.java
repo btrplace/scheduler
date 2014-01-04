@@ -14,7 +14,7 @@ import java.util.Set;
 /**
  * @author Fabien Hermenier
  */
-public class Colocated extends Function2<Set<VM>> {
+public class Colocated extends Function<Set<VM>> {
 
     @Override
     public VMType type() {
