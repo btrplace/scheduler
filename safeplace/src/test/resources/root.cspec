@@ -1,3 +1,0 @@
-cstr root (vs <: vm) ::=
-    """ {"id":"root", "vms":@vs} """
-    !(v : vs) vmState(v) = running --> $host(v) = host(v)

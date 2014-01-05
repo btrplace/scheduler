@@ -1,3 +1,0 @@
-cstr maxOnline(ns <: node, nb : nat) ::=
-    """ {"id":"maxOnline","nodes":[@ns],"amount":@nb,"continuous":false} """
-	card({i : ns. nodeState(i) = online}) <= nb

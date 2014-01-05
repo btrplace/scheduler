@@ -1,7 +1,0 @@
-/**
-* Ban constraint.
-* Every running VMs in `vs` is hosted on a node in `ns`
-*/
-cstr fence(vs <: vm, ns <: node ) ::=
-    """ {"id":"fence", "vms":[@vs], "nodes":[@ns]} """
-    !(v : vs) vmState(v) = running --> host(v) : ns

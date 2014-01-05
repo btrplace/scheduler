@@ -1,3 +1,0 @@
-cstr singleRunningCapacity(ns <: node, nb : nat) ::=
-    """{"id":"singleRunningCapacity","nodes":[@ns],"continuous":false,"amount":@nb} """
-	!(n : ns) card(hosted(n)) <= nb

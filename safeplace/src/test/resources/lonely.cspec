@@ -1,3 +1,0 @@
-cstr lonely (vs <: vm) ::=
-    """ {"id":"lonely", "vms":@vs, "continuous" : false} """
-	!(i : vs) vmState(i) = running --> (colocated(i) - {i}) /<: vs

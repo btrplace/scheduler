@@ -1,2 +1,0 @@
-native cstr hostedVMs() ::=
-	!(v : vm). ?(n : node). vmState(v) = running | vmState(v) = sleeping <--> host(v) = n
