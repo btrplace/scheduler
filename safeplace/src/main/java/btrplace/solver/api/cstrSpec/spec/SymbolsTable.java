@@ -40,8 +40,8 @@ public class SymbolsTable {
     }
 
     public static void newBundle(SymbolsTable syms) {
-        syms.put(new Primitive("vm", VMType.getInstance()));
-        syms.put(new Primitive("node", NodeType.getInstance()));
+        syms.put(new Primitive("vms", VMType.getInstance()));
+        syms.put(new Primitive("nodes", NodeType.getInstance()));
         syms.put(new Primitive("vmState", VMStateType.getInstance(), VMStateType.getInstance().domain(null)));
         syms.put(new Primitive("nodeState", NodeStateType.getInstance(), NodeStateType.getInstance().domain(null)));
         syms.put(new Primitive("int", IntType.getInstance()));
