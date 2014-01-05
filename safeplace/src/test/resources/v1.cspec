@@ -80,7 +80,7 @@ cstr maxOnline(ns <: node, nb : int) ::=
 
 cstr among (vs <: vm, groups : P(node)) ::=
     """ {"id":"among", "nodes":@ns, "continuous" : false} """
-    ?(g : groups) {host(i). i : vs & vmState(i) = running} : g
+    ?(g : groups) {host(i). i : vs & vmState(i) = running} <: g
 
 cstr split(part : P(vm)) ::=
     """ {"id":"split", "vms":@vs, "continuous" : true} """

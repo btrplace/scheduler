@@ -3,6 +3,7 @@ package btrplace.solver.api.cstrSpec.spec.term.func;
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
+import btrplace.solver.api.cstrSpec.spec.type.SetType;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
 import btrplace.solver.api.cstrSpec.spec.type.VMType;
 
@@ -17,8 +18,8 @@ import java.util.Set;
 public class Colocated extends Function<Set<VM>> {
 
     @Override
-    public VMType type() {
-        return VMType.getInstance();
+    public SetType type() {
+        return new SetType(VMType.getInstance());
     }
 
     @Override

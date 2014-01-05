@@ -14,6 +14,4 @@ public abstract class Atomic implements Type {
     public Type include() {
         throw new UnsupportedOperationException(this + " is an atomic type");
     }
-
-
 }
