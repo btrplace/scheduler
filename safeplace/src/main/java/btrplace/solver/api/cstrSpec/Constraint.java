@@ -96,18 +96,7 @@ public class Constraint extends Function<Boolean> {
     }
 
     public String pretty() {
-        StringBuilder b = new StringBuilder();
-        b.append(cstrName).append("(");
-        Iterator<Var> ite = params.iterator();
-        if (ite.hasNext()) {
-            Var v = ite.next();
-            b.append(v.pretty());
-        }
-        while (ite.hasNext()) {
-            Var v = ite.next();
-            b.append(", ").append(v.pretty());
-        }
-        b.append(") ::=\n");
+        StringBuilder b = new StringBuilder(toString()).append(" ::=\n");
         b.append("\t\"\"\"").append(marshal).append("\"\"\"\n");
         b.append('\t').append(p);
         return b.toString();
