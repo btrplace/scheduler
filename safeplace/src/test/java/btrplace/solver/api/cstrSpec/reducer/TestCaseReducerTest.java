@@ -9,7 +9,7 @@ import btrplace.plan.event.BootVM;
 import btrplace.plan.event.MigrateVM;
 import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.api.cstrSpec.Constraint;
-import btrplace.solver.api.cstrSpec.invariant.StatesExtractor2;
+import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.verification.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.TestResult;
@@ -54,8 +54,8 @@ public class TestCaseReducerTest {
         p.add(new BootNode(n3, 0, 3));
         p.add(new MigrateVM(vm1, n1, n3, 4, 10));
 
-        StatesExtractor2 ex = new StatesExtractor2();
-        Constraint cstr = ex.extract(new File("src/test/resources/noVMonOfflineNode.cspec"));
+        SpecReader ex = new SpecReader();
+        Constraint cstr = ex.extractConstraints(new File("src/test/resources/noVMonOfflineNode.cspec")).get(0);
 
         ImplVerifier verif = new ImplVerifier();
         //System.out.println(p.getOrigin().getMapping());

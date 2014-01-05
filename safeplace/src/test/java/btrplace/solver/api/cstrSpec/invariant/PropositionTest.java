@@ -1,6 +1,7 @@
 package btrplace.solver.api.cstrSpec.invariant;
 
 import btrplace.model.DefaultModel;
+import btrplace.solver.api.cstrSpec.spec.prop.Proposition;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

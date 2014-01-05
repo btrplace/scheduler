@@ -4,7 +4,7 @@ import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.generator.AllTuplesGenerator;
 import btrplace.solver.api.cstrSpec.generator.Generator;
 import btrplace.solver.api.cstrSpec.generator.RandomTuplesGenerator;
-import btrplace.solver.api.cstrSpec.invariant.Var;
+import btrplace.solver.api.cstrSpec.spec.term.Var;
 
 import java.util.ArrayList;
 import java.util.Collections;

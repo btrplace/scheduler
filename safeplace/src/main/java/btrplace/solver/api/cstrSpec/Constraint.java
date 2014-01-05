@@ -1,11 +1,11 @@
 package btrplace.solver.api.cstrSpec;
 
 import btrplace.model.Model;
-import btrplace.solver.api.cstrSpec.invariant.Proposition;
-import btrplace.solver.api.cstrSpec.invariant.Var;
-import btrplace.solver.api.cstrSpec.invariant.func.Function;
-import btrplace.solver.api.cstrSpec.invariant.type.BoolType;
-import btrplace.solver.api.cstrSpec.invariant.type.Type;
+import btrplace.solver.api.cstrSpec.spec.prop.Proposition;
+import btrplace.solver.api.cstrSpec.spec.term.Var;
+import btrplace.solver.api.cstrSpec.spec.term.func.Function;
+import btrplace.solver.api.cstrSpec.spec.type.BoolType;
+import btrplace.solver.api.cstrSpec.spec.type.Type;
 
 import java.util.Iterator;
 import java.util.List;

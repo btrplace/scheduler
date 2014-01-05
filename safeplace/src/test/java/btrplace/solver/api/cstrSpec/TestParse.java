@@ -1,34 +1,20 @@
 package btrplace.solver.api.cstrSpec;
 
-import btrplace.json.model.constraint.ConstraintsConverter;
-import btrplace.model.Model;
-import btrplace.model.constraint.SatConstraint;
-import btrplace.plan.ReconfigurationPlan;
-import btrplace.solver.api.cstrSpec.generator.DelaysGenerator;
-import btrplace.solver.api.cstrSpec.generator.DurationsGenerator;
-import btrplace.solver.api.cstrSpec.generator.ModelsGenerator;
-import btrplace.solver.api.cstrSpec.generator.ReconfigurationPlansGenerator;
-import btrplace.solver.api.cstrSpec.invariant.StatesExtractor2;
-import btrplace.solver.api.cstrSpec.verification.ImplVerifier;
-import btrplace.solver.api.cstrSpec.verification.TestCase;
-import btrplace.solver.api.cstrSpec.verification.TestResult;
-import btrplace.solver.api.cstrSpec.verification.Verifier;
+import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Fabien Hermenier
  */
 public class TestParse {
 
-    StatesExtractor2 ex = new StatesExtractor2();
+    SpecReader ex = new SpecReader();
 
-    private void go(String path) throws Exception {
+    /*private void go(String path) throws Exception {
 
         Constraint c = ex.extract(new File(path));
 
@@ -70,7 +56,7 @@ public class TestParse {
         }
         System.out.println("\n" + num + " verification(s) performed: " + failures + " failures");
         Assert.fail();
-    }
+    }         */
 
     /*@Test
     public void testParseSpread() throws Exception {

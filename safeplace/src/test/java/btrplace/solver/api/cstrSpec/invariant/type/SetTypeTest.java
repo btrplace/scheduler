@@ -1,5 +1,7 @@
 package btrplace.solver.api.cstrSpec.invariant.type;
 
+import btrplace.solver.api.cstrSpec.spec.type.IntType;
+import btrplace.solver.api.cstrSpec.spec.type.SetType;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

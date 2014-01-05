@@ -1,12 +1,15 @@
 package btrplace.solver.api.cstrSpec.invariant;
 
 import btrplace.model.DefaultModel;
+import btrplace.solver.api.cstrSpec.spec.prop.And;
+import btrplace.solver.api.cstrSpec.spec.prop.Or;
+import btrplace.solver.api.cstrSpec.spec.prop.Proposition;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import static btrplace.solver.api.cstrSpec.invariant.Proposition.False;
-import static btrplace.solver.api.cstrSpec.invariant.Proposition.True;
+import static btrplace.solver.api.cstrSpec.spec.prop.Proposition.False;
+import static btrplace.solver.api.cstrSpec.spec.prop.Proposition.True;
 
 /**
  * @author Fabien Hermenier

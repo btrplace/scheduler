@@ -1,9 +1,13 @@
 package btrplace.solver.api.cstrSpec.invariant;
 
 import btrplace.model.DefaultModel;
-import btrplace.solver.api.cstrSpec.invariant.type.IntType;
-import btrplace.solver.api.cstrSpec.invariant.type.SetType;
-import btrplace.solver.api.cstrSpec.invariant.type.VMStateType;
+import btrplace.solver.api.cstrSpec.spec.term.Constant;
+import btrplace.solver.api.cstrSpec.spec.term.IntMinus;
+import btrplace.solver.api.cstrSpec.spec.term.Minus;
+import btrplace.solver.api.cstrSpec.spec.term.SetMinus;
+import btrplace.solver.api.cstrSpec.spec.type.IntType;
+import btrplace.solver.api.cstrSpec.spec.type.SetType;
+import btrplace.solver.api.cstrSpec.spec.type.VMStateType;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
