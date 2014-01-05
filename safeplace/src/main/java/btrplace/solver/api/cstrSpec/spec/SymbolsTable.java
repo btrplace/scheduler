@@ -7,9 +7,7 @@ import btrplace.solver.api.cstrSpec.spec.term.Var;
 import btrplace.solver.api.cstrSpec.spec.term.func.*;
 import btrplace.solver.api.cstrSpec.spec.type.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,15 +19,19 @@ public class SymbolsTable {
 
     private Map<String, Constraint> cstrs;
 
-    private List<Primitive> primitives;
-
     private Map<String, Function> funcs;
 
+    private SymbolsTable parent;
+
     public SymbolsTable() {
+        this(null);
+    }
+
+    public SymbolsTable(SymbolsTable p) {
         table = new HashMap<>();
-        this.primitives = new ArrayList<>();
         this.cstrs = new HashMap<>();
         this.funcs = new HashMap<>();
+        parent = p;
     }
 
     public static SymbolsTable newBundle() {
@@ -63,20 +65,20 @@ public class SymbolsTable {
     }
 
 
-    public void resetLocal() {
-        this.table.clear();
-        this.primitives.clear();
-        newBundle(this);
+    public SymbolsTable enterScope() {
+        return new SymbolsTable(this);
+    }
+
+    public SymbolsTable leaveScope() {
+        return parent;
     }
 
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        for (Map.Entry<String, Var> e : table.entrySet()) {
-            Var v = e.getValue();
-            b.append(v.label()).append(": ").append(v.type());
-            b.append("\n");
-        }
+        b.append("Variables:\n").append(table.toString()).append('\n');
+        b.append("Functions:\n").append(funcs.toString()).append('\n');
+        b.append("Constraints:\n").append(cstrs.toString()).append('\n');
         return b.toString();
     }
 
@@ -89,12 +91,17 @@ public class SymbolsTable {
     }
 
     public Function getFunction(String id) {
-        return funcs.get(id);
+        if (funcs.containsKey(id)) {
+            return funcs.get(id);
+        }
+        if (parent != null) {
+            return parent.getFunction(id);
+        }
+        return null;
     }
 
     public boolean put(Primitive v) {
         if (add(v)) {
-            primitives.add(v);
             return true;
         }
         return false;
@@ -113,7 +120,13 @@ public class SymbolsTable {
     }
 
     public Var getVar(String n) {
-        return table.get(n);
+        if (table.containsKey(n)) {
+            return table.get(n);
+        }
+        if (parent != null) {
+            return parent.getVar(n);
+        }
+        return null;
     }
 
     public void put(Constraint cstr) {
@@ -121,7 +134,10 @@ public class SymbolsTable {
     }
 
     public Constraint getConstraint(String id) {
-        return cstrs.get(id);
+        if (cstrs.containsKey(id)) {
+            return cstrs.get(id);
+        }
+        return parent == null ? null : parent.getConstraint(id);
     }
 
 }
