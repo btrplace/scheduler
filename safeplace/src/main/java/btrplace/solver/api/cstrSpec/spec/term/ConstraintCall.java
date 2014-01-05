@@ -5,6 +5,7 @@ import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.prop.Not;
 import btrplace.solver.api.cstrSpec.spec.prop.Proposition;
 import btrplace.solver.api.cstrSpec.spec.term.func.Function;
+import btrplace.solver.api.cstrSpec.spec.term.func.FunctionCall;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
 
 import java.util.ArrayList;
@@ -44,26 +45,13 @@ public class ConstraintCall implements Proposition {
     private static void check(Function f, List<Term> args) {
         Type[] expected = f.signature(args);
         if (expected.length != args.size()) {
-            throw new IllegalArgumentException(toString(f.id(), args) + " cannot match " + f);
+            throw new IllegalArgumentException(FunctionCall.toString(f.id(), args) + " cannot match " + f);
         }
         for (int i = 0; i < expected.length; i++) {
             if (!expected[i].equals(args.get(i).type())) {
-                throw new IllegalArgumentException(toString(f.id(), args) + " cannot match " + f);
+                throw new IllegalArgumentException(FunctionCall.toString(f.id(), args) + " cannot match " + f);
             }
         }
-    }
-
-    private static String toString(String id, List<Term> args) {
-        StringBuilder b = new StringBuilder(id);
-        b.append('(');
-        Iterator<Term> ite = args.iterator();
-        while (ite.hasNext()) {
-            b.append(ite.next().type());
-            if (ite.hasNext()) {
-                b.append(", ");
-            }
-        }
-        return b.append(')').toString();
     }
 
     @Override

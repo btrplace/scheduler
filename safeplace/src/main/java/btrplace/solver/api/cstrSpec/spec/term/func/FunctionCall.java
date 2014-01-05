@@ -70,7 +70,7 @@ public class FunctionCall<T> extends Term<T> {
         }
     }
 
-    private static String toString(String id, List<Term> args) {
+    public static String toString(String id, List<Term> args) {
         StringBuilder b = new StringBuilder(id);
         b.append('(');
         Iterator<Term> ite = args.iterator();
