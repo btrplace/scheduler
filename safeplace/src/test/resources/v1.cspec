@@ -78,15 +78,15 @@ cstr maxOnline(ns <: node, nb : int) ::=
     """ {"id":"maxOnline","nodes":@ns,"amount":@nb,"continuous":false} """
    	card({i. i : ns & nodeState(i) = online}) <= nb
 
-cstr among (vs <: vm, groups <: P(node)) ::=
+cstr among (vs <: vm, groups : P(node)) ::=
     """ {"id":"among", "nodes":@ns, "continuous" : false} """
     ?(g : groups) {host(i). i : vs & vmState(i) = running} : g
 
-/*cstr split(part <: P(vm)) ::=
+cstr split(part : P(vm)) ::=
     """ {"id":"split", "vms":@vs, "continuous" : true} """
+    { {host(v). v : p & vmState(v) = running}. p : part} : P(node)
 
-*/
-cstr splitAmong(vs <: P(vm), part <: P(node)) ::=
+cstr splitAmong(vs : P(vm), part : P(node)) ::=
     """ {"id":"splitAmong", "vms":@vs, "nodes":@ns, "continuous" : true} """
     !(p : part) among(vs, p) & split(vs)
 

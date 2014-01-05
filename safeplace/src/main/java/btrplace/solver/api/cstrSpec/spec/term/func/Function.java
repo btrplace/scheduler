@@ -1,6 +1,7 @@
 package btrplace.solver.api.cstrSpec.spec.term.func;
 
 import btrplace.model.Model;
+import btrplace.solver.api.cstrSpec.spec.term.Term;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
 
 import java.util.List;
@@ -14,7 +15,15 @@ public abstract class Function<T> {
 
     public abstract Type type();
 
+    public Type type(List<Term> args) {
+        return type();
+    }
+
     public abstract Type[] signature();
+
+    public Type[] signature(List<Term> args) {
+        return signature();
+    }
 
     public abstract T eval(Model mo, List<Object> args);
 

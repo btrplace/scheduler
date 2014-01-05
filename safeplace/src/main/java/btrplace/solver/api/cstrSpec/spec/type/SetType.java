@@ -17,10 +17,6 @@ public class SetType implements Type {
         type = t;
     }
 
-    public SetType() {
-        this(null);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

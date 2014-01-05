@@ -42,7 +42,7 @@ public class ConstraintCall implements Proposition {
     }
 
     private static void check(Function f, List<Term> args) {
-        Type[] expected = f.signature();
+        Type[] expected = f.signature(args);
         if (expected.length != args.size()) {
             throw new IllegalArgumentException(toString(f.id(), args) + " cannot match " + f);
         }

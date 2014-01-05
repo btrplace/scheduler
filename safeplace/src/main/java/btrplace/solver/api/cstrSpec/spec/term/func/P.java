@@ -1,6 +1,7 @@
 package btrplace.solver.api.cstrSpec.spec.term.func;
 
 import btrplace.model.Model;
+import btrplace.solver.api.cstrSpec.spec.term.Term;
 import btrplace.solver.api.cstrSpec.spec.type.SetType;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
 
@@ -33,5 +34,15 @@ public class P extends Function<Set> {
     @Override
     public Type[] signature() {
         return new Type[]{new SetType(null)};
+    }
+
+    /*@Override
+    public Type[] signature(List<Term> args) {
+        return new Type[]{new SetType((args.get(0).type()))};
+    } */
+
+    @Override
+    public Type type(List<Term> args) {
+        return new SetType(new SetType(args.get(0).type()));
     }
 }

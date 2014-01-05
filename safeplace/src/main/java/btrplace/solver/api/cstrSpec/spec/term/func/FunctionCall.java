@@ -28,7 +28,7 @@ public class FunctionCall<T> extends Term<T> {
 
     @Override
     public Type type() {
-        return c.type();
+        return c.type(args);
     }
 
     @Override
@@ -58,12 +58,13 @@ public class FunctionCall<T> extends Term<T> {
     }
 
     private static void check(Function f, List<Term> args) {
-        Type[] expected = f.signature();
+        Type[] expected = f.signature(args);
         if (expected.length != args.size()) {
             throw new IllegalArgumentException(toString(f.id(), args) + " cannot match " + f);
         }
         for (int i = 0; i < expected.length; i++) {
             if (!expected[i].equals(args.get(i).type())) {
+                System.out.println("for " + f.id() + " expected=" + expected[i] + " got=" + args.get(i).type());
                 throw new IllegalArgumentException(toString(f.id(), args) + " cannot match " + f);
             }
         }

@@ -185,6 +185,6 @@ public class TestParse {
             System.out.println(cstr.pretty());
         }
         System.out.flush();
-        Assert.assertEquals(cstrs.size(), 21);
+        Assert.assertEquals(cstrs.size(), 23);
     }
 }
