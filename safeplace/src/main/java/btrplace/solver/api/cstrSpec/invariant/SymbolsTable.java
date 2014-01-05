@@ -46,6 +46,9 @@ public class SymbolsTable {
         syms.put(new Primitive("string", StringType.getInstance()));
         syms.put(new Host());
         syms.put(new Hosted());
+        syms.put(new Running());
+        syms.put(new Ready());
+        syms.put(new Sleeping());
         syms.put(new Cons());
         syms.put(new Capa());
         syms.put(new Colocated());

@@ -4,7 +4,7 @@ cstr ban(vs <: vm, ns <: node ) ::=
 
 cstr cumulatedRunningCapacity(ns <: node, nb : int) ::=
         """{"id":"cumulatedRunningCapacity","nodes":@ns,"continuous":false,"amount":@nb} """
-        sum({card({v. v : hosted(n) & vmState(v) = running}). n : ns}) <= nb
+        sum({card(running(n)). n : ns}) <= nb
 
 cstr fence(vs <: vm, ns <: node ) ::=
     """ {"id":"fence", "vms":@vs, "nodes":@ns} """
@@ -48,7 +48,7 @@ cstr root (vs <: vm) ::=
 
 cstr singleRunningCapacity(ns <: node, nb : int) ::=
     """{"id":"singleRunningCapacity","nodes":@ns,"continuous":false,"amount":@nb} """
-	!(n : ns) card({v. v : hosted(n) & vmState(v) = running}) <= nb
+	!(n : ns) card(running(n)) <= nb
 
 cstr spread(vs <: vm) ::=
     """ {"id":"spread",  "vms":@vs, "continuous": false} """
@@ -72,7 +72,7 @@ cstr cumulatedResourcecapacity(ns <: node, id : string, qty: int) ::=
 
 cstr overbook(ns <: node, id : string, qty: real) ::=
     """ {"id": "overbook", "nodes": @ns, "rc":@id, "amount":@qty} """
-    !(n : ns) sum({cons(v, id). v : hosted(n) & vmState(v) = running}) * qty < capa(n, id)
+    !(n : ns) sum({cons(v, id). v : running(n)}) * qty < capa(n, id)
 
 cstr maxOnline(ns <: node, nb : int) ::=
     """ {"id":"maxOnline","nodes":@ns,"amount":@nb,"continuous":false} """
@@ -82,12 +82,10 @@ cstr among (vs <: vm, groups <: P(node)) ::=
     """ {"id":"among", "nodes":@ns, "continuous" : false} """
     ?(g : groups) {host(i). i : vs & vmState(i) = running} : g
 
-cstr split(part <: P(vm)) ::=
+/*cstr split(part <: P(vm)) ::=
     """ {"id":"split", "vms":@vs, "continuous" : true} """
-    ?(p: part) {host(i). i : p & vmState(i) = running} : P(node)
 
-    !(p : part) card(v) > 0
-
+*/
 cstr splitAmong(vs <: P(vm), part <: P(node)) ::=
     """ {"id":"splitAmong", "vms":@vs, "nodes":@ns, "continuous" : true} """
     !(p : part) among(vs, p) & split(vs)
