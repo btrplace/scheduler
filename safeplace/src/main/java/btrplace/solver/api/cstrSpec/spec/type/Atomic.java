@@ -9,9 +9,4 @@ public abstract class Atomic implements Type {
     public Type inside() {
         throw new UnsupportedOperationException(this + " is an atomic type");
     }
-
-    @Override
-    public Type include() {
-        throw new UnsupportedOperationException(this + " is an atomic type");
-    }
 }

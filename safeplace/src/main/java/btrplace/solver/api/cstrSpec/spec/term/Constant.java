@@ -53,10 +53,7 @@ public class Constant extends Term {
 
         Constant value = (Constant) o1;
 
-        if (!o.equals(value.o)) return false;
-        if (!t.equals(value.t)) return false;
-
-        return true;
+        return (o.equals(value.o) && t.equals(value.t));
     }
 
     @Override

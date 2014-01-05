@@ -52,9 +52,7 @@ public class ConstraintInputGenerator implements Generator<List<Object>> {
     public List<Object> next() {
         Object[] tuple = tg.next();
         List<Object> m = new ArrayList<>(tuple.length);
-        for (int i = 0; i < tuple.length; i++) {
-            m.add(tuple[i]);
-        }
+        Collections.addAll(m, tuple);
         return m;
     }
 

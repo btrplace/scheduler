@@ -30,10 +30,6 @@ public class UserVar<T> extends Var<T> {
         return incl ? backend.type().inside() : backend.type();
     }
 
-    public boolean notBackend() {
-        return not;
-    }
-
     @Override
     public String pretty() {
         return new StringBuilder(label()).append(not ? " /" : " ").append(incl ? ": " : "<: ").append(backend).toString();

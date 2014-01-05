@@ -20,9 +20,7 @@ public class VMStateType extends Atomic {
 
     private VMStateType() {
         Set<Object> s = new HashSet<>();
-        for (Type t : Type.values()) {
-            s.add(t);
-        }
+        Collections.addAll(s, Type.values());
         vals = Collections.unmodifiableSet(s);
     }
 
@@ -38,7 +36,7 @@ public class VMStateType extends Atomic {
     @Override
     public boolean match(String n) {
         try {
-            Type t = Type.valueOf(n);
+            Type.valueOf(n);
             return true;
         } catch (Exception e) {
 

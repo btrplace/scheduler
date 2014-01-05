@@ -19,6 +19,4 @@ public interface Type {
     Constant newValue(String n);
 
     Type inside();
-
-    Type include();
 }

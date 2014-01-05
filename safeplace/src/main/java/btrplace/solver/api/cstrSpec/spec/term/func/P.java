@@ -21,7 +21,6 @@ public class P extends Function<Set> {
 
     @Override
     public Set eval(Model mo, List<Object> args) {
-        Set c = (Set) args.get(0);
         Set<Set> res = new HashSet();
         return res;
     }

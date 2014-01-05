@@ -5,7 +5,7 @@ OK set in comprehension
 OK constraints as function
 OK error reporting
 OK simplify type system
-- validate every constraint
+OK validate every constraint
 - discrete & continuous constraints (an operator for current && end status ?): problem with marshalling
 - predicates
 

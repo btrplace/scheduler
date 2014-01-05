@@ -94,9 +94,4 @@ public class SetType implements Type {
     public Type enclosingType() {
         return type;
     }
-
-    @Override
-    public Type include() {
-        return this;
-    }
 }

@@ -2,7 +2,6 @@ package btrplace.solver.api.cstrSpec.spec;
 
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.term.Primitive;
-import btrplace.solver.api.cstrSpec.spec.term.UserVar;
 import btrplace.solver.api.cstrSpec.spec.term.Var;
 import btrplace.solver.api.cstrSpec.spec.term.func.*;
 import btrplace.solver.api.cstrSpec.spec.type.*;
@@ -100,23 +99,13 @@ public class SymbolsTable {
         return null;
     }
 
-    public boolean put(Primitive v) {
-        if (add(v)) {
-            return true;
-        }
-        return false;
-    }
 
-    private boolean add(Var v) {
+    public boolean put(Var v) {
         if (table.containsKey(v.label())) {
             return false;
         }
         table.put(v.label(), v);
         return true;
-    }
-
-    public boolean put(UserVar v) {
-        return add(v);
     }
 
     public Var getVar(String n) {
