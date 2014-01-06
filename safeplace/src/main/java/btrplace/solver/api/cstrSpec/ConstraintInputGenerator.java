@@ -1,10 +1,10 @@
 package btrplace.solver.api.cstrSpec;
 
 import btrplace.model.Model;
-import btrplace.solver.api.cstrSpec.generator.Generator;
-import btrplace.solver.api.cstrSpec.generator.RandomTuplesGenerator;
+import btrplace.solver.api.cstrSpec.fuzzer.RandomTuplesGenerator;
 import btrplace.solver.api.cstrSpec.spec.term.Var;
 import btrplace.solver.api.cstrSpec.util.AllTuplesGenerator;
+import btrplace.solver.api.cstrSpec.util.Generator;
 
 import java.util.ArrayList;
 import java.util.Collections;

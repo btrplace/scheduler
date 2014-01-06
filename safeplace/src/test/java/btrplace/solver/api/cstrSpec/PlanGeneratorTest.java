@@ -2,10 +2,10 @@ package btrplace.solver.api.cstrSpec;
 
 import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.solver.api.cstrSpec.generator.DelaysGenerator;
-import btrplace.solver.api.cstrSpec.generator.DurationsGenerator;
-import btrplace.solver.api.cstrSpec.generator.ModelsGenerator;
-import btrplace.solver.api.cstrSpec.generator.ReconfigurationPlansGenerator;
+import btrplace.solver.api.cstrSpec.fuzzer.DelaysGenerator;
+import btrplace.solver.api.cstrSpec.fuzzer.DurationsGenerator;
+import btrplace.solver.api.cstrSpec.fuzzer.ModelsGenerator;
+import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlansGenerator;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -33,6 +33,6 @@ public class PlanGeneratorTest {
                 }
             }
         }
-        Assert.fail(""+nb);
+        Assert.fail("" + nb);
     }
 }

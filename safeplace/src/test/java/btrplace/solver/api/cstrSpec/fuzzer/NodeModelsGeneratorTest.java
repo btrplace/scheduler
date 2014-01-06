@@ -1,8 +1,7 @@
-package btrplace.solver.api.cstrSpec.generator;
+package btrplace.solver.api.cstrSpec.fuzzer;
 
 import btrplace.model.DefaultElementBuilder;
 import btrplace.model.Model;
-import btrplace.solver.api.cstrSpec.generator.NodeModelsGenerator;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -21,6 +20,6 @@ public class NodeModelsGeneratorTest {
         for (Model m : ng) {
             Assert.assertTrue(s.add(m));
         }
-        Assert.assertEquals(s.size(), (int)Math.pow(2, 4));
+        Assert.assertEquals(s.size(), (int) Math.pow(2, 4));
     }
 }

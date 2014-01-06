@@ -1,7 +1,5 @@
 package btrplace.solver.api.cstrSpec.util;
 
-import btrplace.solver.api.cstrSpec.generator.Generator;
-
 import java.lang.reflect.Array;
 import java.util.Iterator;
 import java.util.List;

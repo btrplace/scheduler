@@ -1,4 +1,4 @@
-package btrplace.solver.api.cstrSpec.generator;
+package btrplace.solver.api.cstrSpec.fuzzer;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;

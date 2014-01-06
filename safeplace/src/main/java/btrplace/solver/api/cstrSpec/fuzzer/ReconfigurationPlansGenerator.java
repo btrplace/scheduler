@@ -1,4 +1,4 @@
-package btrplace.solver.api.cstrSpec.generator;
+package btrplace.solver.api.cstrSpec.fuzzer;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
@@ -8,6 +8,7 @@ import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.*;
 import btrplace.solver.api.cstrSpec.util.AllTuplesGenerator;
+import btrplace.solver.api.cstrSpec.util.DefaultGenerator;
 
 import java.util.ArrayList;
 import java.util.List;

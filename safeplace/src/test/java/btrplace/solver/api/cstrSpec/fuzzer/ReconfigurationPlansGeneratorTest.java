@@ -1,4 +1,4 @@
-package btrplace.solver.api.cstrSpec.generator;
+package btrplace.solver.api.cstrSpec.fuzzer;
 
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
@@ -34,6 +34,6 @@ public class ReconfigurationPlansGeneratorTest {
         for (ReconfigurationPlan rp : pg) {
             Assert.assertTrue(s.add(rp));
         }
-        Assert.assertEquals(s.size(), (int)Math.pow(2, m.getMapping().getNbNodes()) * 40);
+        Assert.assertEquals(s.size(), (int) Math.pow(2, m.getMapping().getNbNodes()) * 40);
     }
 }

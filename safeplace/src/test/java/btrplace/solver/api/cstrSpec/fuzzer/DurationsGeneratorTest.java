@@ -1,4 +1,4 @@
-package btrplace.solver.api.cstrSpec.generator;
+package btrplace.solver.api.cstrSpec.fuzzer;
 
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
@@ -13,7 +13,7 @@ import java.util.Set;
 /**
  * @author Fabien Hermenier
  */
-public class DelaysGeneratorTest {
+public class DurationsGeneratorTest {
 
     @Test
     public void test() {
@@ -31,11 +31,11 @@ public class DelaysGeneratorTest {
 
         ReconfigurationPlansGenerator pg = new ReconfigurationPlansGenerator(m);
         ReconfigurationPlan rp = pg.next(); //I am lazy
-        DelaysGenerator dg = new DelaysGenerator(rp);
+        DurationsGenerator dg = new DurationsGenerator(rp, 1, 3);
         Set<ReconfigurationPlan> s = new HashSet<>();
         for (ReconfigurationPlan p : dg) {
             Assert.assertTrue(s.add(p));
         }
-        Assert.assertEquals(s.size(), 16);
+        Assert.assertEquals(s.size(), (int) Math.pow(3, rp.getSize()));
     }
 }

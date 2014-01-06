@@ -1,6 +1,7 @@
-package btrplace.solver.api.cstrSpec.generator;
+package btrplace.solver.api.cstrSpec.fuzzer;
 
 import btrplace.model.*;
+import btrplace.solver.api.cstrSpec.util.Generator;
 import btrplace.solver.api.cstrSpec.util.Maths;
 
 import java.util.Iterator;

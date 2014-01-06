@@ -1,8 +1,9 @@
-package btrplace.solver.api.cstrSpec.generator;
+package btrplace.solver.api.cstrSpec.fuzzer;
 
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
+import btrplace.solver.api.cstrSpec.util.Generator;
 
 import java.util.Iterator;
 

@@ -1,4 +1,4 @@
-package btrplace.solver.api.cstrSpec.generator;
+package btrplace.solver.api.cstrSpec.fuzzer;
 
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.Configuration;
