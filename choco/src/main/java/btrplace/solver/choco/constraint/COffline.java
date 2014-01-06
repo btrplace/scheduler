@@ -25,7 +25,9 @@ import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Offline;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.actionModel.ActionModel;
+import btrplace.solver.choco.actionModel.VMActionModel;
 import choco.kernel.solver.ContradictionException;
 
 import java.util.HashSet;
@@ -53,9 +55,16 @@ public class COffline implements ChocoConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
         for (Node nId : cstr.getInvolvedNodes()) {
+            int id = rp.getNode(nId);
             ActionModel m = rp.getNodeAction(nId);
             try {
                 m.getState().setVal(0);
+                for (VMActionModel am : rp.getVMActions()) {
+                    Slice s = am.getDSlice();
+                    if (s != null) {
+                        rp.getSolver().post(rp.getSolver().neq(s.getHoster(), id));
+                    }
+                }
             } catch (ContradictionException e) {
                 rp.getLogger().error("Unable to force node '{}' at being offline: {}", nId, e.getMessage());
                 return false;

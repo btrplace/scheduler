@@ -94,6 +94,7 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
             s.setRestart(true);
         }
         injectPlacementHeuristic(p, cost);
+        //postCostConstraints();
         return true;
     }
 
@@ -163,6 +164,7 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         s.addGoal(new AssignVar(selectForRuns, new RandomVMPlacement("selectForRuns", p, pla, true)));
 
         s.addGoal(new AssignVar(new StartingNodes("startingNodes", p, p.getNodeActions()), new MinVal()));
+
         ///SCHEDULING PROBLEM
         s.addGoal(new AssignOrForbidIntVarVal(schedHeuristic, new MinVal()));
 

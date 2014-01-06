@@ -56,7 +56,7 @@ public class LocalTaskScheduler {
 
     private int[] startupFree;
 
-    public static final int DEBUG = -5;
+    public static final int DEBUG = -2;
 
     private int[] associations;
 
@@ -154,6 +154,13 @@ public class LocalTaskScheduler {
 
     public boolean propagate() throws ContradictionException {
         computeProfiles();
+
+        last.setInf(lastCendInf.get());
+/*        if (me == DEBUG || DEBUG == -2) {
+            ChocoLogging.getBranchingLogger().info(me + " last: " + last.pretty() + "; early: " + early.pretty() + " lastInf:" + lastCendInf + " " + lastCendSup);
+        }*/
+
+
         if (!checkInvariant()) {
             return false;
         }
@@ -362,7 +369,7 @@ public class LocalTaskScheduler {
         for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
             if (cEnds[i].getInf() > last.getSup()) {
                 if (me == DEBUG || DEBUG == -2) {
-                    ChocoLogging.getBranchingLogger().info("(" + me + ") The cSlice " + i + " has to end too late (last expected=" + last.getSup() + ")");
+                    ChocoLogging.getBranchingLogger().info("(" + me + ") The cSlice " + i + " ends too late (" + cEnds[i].pretty() + ") (last expected=" + last.pretty() + ")");
                     ChocoLogging.flushLogs();
                 }
                 return false;
@@ -396,8 +403,10 @@ public class LocalTaskScheduler {
                         break;
                     }
                 }
+                //System.out.println(lastT + " " + early.getInf() + " " + Math.max(lastT, early.getInf()));
                 dStarts[i].setInf(Math.max(lastT, early.getInf()));
             }
+            //early.setSup(dStarts[i].getInf());
         }
     }
 
@@ -446,8 +455,10 @@ public class LocalTaskScheduler {
                 } else {
                     cEnds[i].setSup(last.getSup());
                 }
-
             }
+            //System.out.println(me + " " + last.pretty() + " lastInf.inf = " + cEnds[i].getSup());
+            //last.setInf(cEnds[i].getInf());
+
         }
     }
 

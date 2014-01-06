@@ -1,9 +1,24 @@
+/*
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ *
+ * This file is part of btrplace.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.*;
-import btrplace.model.constraint.MaxOnline;
-import btrplace.model.constraint.Online;
-import btrplace.model.constraint.SatConstraint;
+import btrplace.model.constraint.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
@@ -161,5 +176,35 @@ public class CMaxOnlineTest {
         Assert.assertNotNull(plan);
         Assert.assertTrue(maxOn.isSatisfied(plan));
         System.out.println(plan);
+    }
+
+    @Test
+    public void testDecommissionning() throws SolverException {
+        Model mo = new DefaultModel();
+        Node n0 = mo.newNode();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        Node n3 = mo.newNode();
+        mo.getMapping().addOnlineNode(n0);
+        mo.getMapping().addOnlineNode(n1);
+        mo.getMapping().addOfflineNode(n2);
+        mo.getMapping().addOfflineNode(n3);
+        VM v1 = mo.newVM();
+        VM v0 = mo.newVM();
+        mo.getMapping().addRunningVM(v0, n0);
+        mo.getMapping().addRunningVM(v1, n1);
+
+        List<SatConstraint> cstrs = new ArrayList<>();
+        MaxOnline max = new MaxOnline(mo.getMapping().getAllNodes(), 3);
+        max.setContinuous(true);
+        cstrs.add(max);
+        cstrs.add(new Fence(Collections.singleton(v0), Collections.singleton(n2)));
+        cstrs.add(new Fence(Collections.singleton(v1), Collections.singleton(n3)));
+        cstrs.add(new Offline(Collections.singleton(n1)));
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.labelVariables(true);
+        ReconfigurationPlan p = cra.solve(mo, cstrs);
+        Assert.assertNotNull(p);
+        System.out.println(p);
     }
 }

@@ -17,10 +17,7 @@
 
 package btrplace;
 
-import btrplace.examples.Example;
-import btrplace.examples.GettingStarted;
-import btrplace.examples.ModelCustomization;
-import btrplace.examples.SolverTuning;
+import btrplace.examples.*;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
 
@@ -46,6 +43,12 @@ public class ExamplesIntegration {
     @Test
     public void testModelCustomization() throws Exception {
         Example ex = new ModelCustomization();
+        Assert.assertTrue("Example " + ex.toString() + " failed", ex.run());
+    }
+
+    //@Test
+    public void testDecommissionning() throws Exception {
+        Example ex = new Decommissionning();
         Assert.assertTrue("Example " + ex.toString() + " failed", ex.run());
     }
 

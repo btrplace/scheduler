@@ -210,9 +210,9 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         } else {
             params.labelVariables(true);
             ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+            ChocoLogging.setLoggingMaxDepth(Integer.MAX_VALUE);
             if (params.getVerbosity() == 2) {
                 ChocoLogging.setVerbosity(Verbosity.SEARCH);
-                ChocoLogging.setLoggingMaxDepth(Integer.MAX_VALUE);
             } else if (params.getVerbosity() > 2) {
                 ChocoLogging.setVerbosity(Verbosity.FINEST);
             }

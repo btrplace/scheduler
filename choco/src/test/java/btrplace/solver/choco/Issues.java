@@ -305,4 +305,5 @@ public class Issues {
         m.attach(cpu);
         Assert.assertEquals(cpu.sumCapacities(Arrays.asList(n, n2), true), 8);
     }
+
 }

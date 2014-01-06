@@ -13,7 +13,7 @@ The last version of the standalone application is available on the following URL
 The archive contains the solver bundle and the tutorial sources. `README.txt` details
 how to use the application.
 
-* http://btrp.inria.fr/repos/snapshot-releases/btrplace/solver-examples/0.33-SNAPSHOT/
+* http://btrp.inria.fr/repos/snapshot-releases/btrplace/solver-examples/0.34-SNAPSHOT/
 
 ## Building from sources ##
 

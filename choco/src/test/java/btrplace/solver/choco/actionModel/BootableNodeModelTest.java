@@ -29,6 +29,7 @@ import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -128,6 +129,7 @@ public class BootableNodeModelTest {
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(BootNode.class, new ConstantActionDuration(5));
         dev.register(BootVM.class, new ConstantActionDuration(2));
+        ChocoLogging.setVerbosity(Verbosity.FINEST);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .labelVariables()

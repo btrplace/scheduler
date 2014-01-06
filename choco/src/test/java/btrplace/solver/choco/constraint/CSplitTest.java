@@ -151,7 +151,8 @@ public class CSplitTest {
         s.setContinuous(true);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
+        //cra.labelVariables(true);
+        //cra.setVerbosity(3);
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(s);
         //What is running on n1 goes to n3, so VMs vm3, vm4, vm5 which does not belong to vm1, vm2 must
