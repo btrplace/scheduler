@@ -1,7 +1,7 @@
 package btrplace.solver.api.cstrSpec.generator;
 
 import btrplace.model.*;
-import btrplace.solver.api.cstrSpec.Maths;
+import btrplace.solver.api.cstrSpec.util.Maths;
 
 import java.util.Iterator;
 

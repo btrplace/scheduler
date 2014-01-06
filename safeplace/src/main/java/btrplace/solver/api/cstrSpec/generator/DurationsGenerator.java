@@ -2,6 +2,7 @@ package btrplace.solver.api.cstrSpec.generator;
 
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
+import btrplace.solver.api.cstrSpec.util.AllTuplesGenerator;
 
 import java.util.ArrayList;
 import java.util.List;

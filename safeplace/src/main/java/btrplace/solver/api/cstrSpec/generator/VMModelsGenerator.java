@@ -3,6 +3,7 @@ package btrplace.solver.api.cstrSpec.generator;
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
+import btrplace.solver.api.cstrSpec.util.AllTuplesGenerator;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,10 +1,10 @@
 package btrplace.solver.api.cstrSpec.spec.prop;
 
 import btrplace.model.Model;
-import btrplace.solver.api.cstrSpec.generator.AllTuplesGenerator;
 import btrplace.solver.api.cstrSpec.spec.term.Term;
 import btrplace.solver.api.cstrSpec.spec.term.UserVar;
 import btrplace.solver.api.cstrSpec.spec.term.Var;
+import btrplace.solver.api.cstrSpec.util.AllTuplesGenerator;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -7,6 +7,7 @@ import btrplace.model.VM;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.*;
+import btrplace.solver.api.cstrSpec.util.AllTuplesGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
