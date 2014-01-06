@@ -1,3 +1,32 @@
+/*
+* Specification of constraints in BtrPlace.
+*
+* Built-in functions:
+* - vmState(vm) -> vm
+*   get the state of a vm (running, sleeping, ready, terminated)
+* - nodeState(node) -> node
+*   get the state of a node (online, offline)
+* - host(vm) -> node
+*   get the node that is currently hosting the given vm
+* - running(node) -> set<vm>
+*   get the VMs running on the given node
+* - sleeping(node) -> set<vm>
+*   get the VMs sleeping on the given node
+* - hosted(node) -> set<vm>
+*   get all the VMs on the given node (i.e) running() + sleeping()
+* - colocated(vm) -> set<vm>
+*   get all the VMs running on the same node than the given vm (include)
+* - card(set<?>) -> int
+*   get the number of elements in the given set
+* - sum(set<int>) -> int
+*   returns the sum
+* - P(set<?>) -> set<set<set<?>>>
+*   return every possible disjoint subsets (every partitions but without necessarily a complete covering)
+*
+* '$' before a function call indicates we want the initial value of the function (before the reconfiguration starts)
+* the weird string below the signature is the constraint marshalling. Ignored by the parser but necessary to instantiate
+* the constraint in BtrPlace from its JSON serialisation.
+*/
 cstr ban(vs <: vms, ns <: nodes, cont: bool) ::=
     """ {"id":"ban", "vms":@vs, "nodes":@ns, "continuous": @cont} """
     !(v : vs) vmState(v) = running --> host(v) /: ns
