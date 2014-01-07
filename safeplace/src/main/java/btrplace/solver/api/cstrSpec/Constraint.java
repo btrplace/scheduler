@@ -2,6 +2,8 @@ package btrplace.solver.api.cstrSpec;
 
 import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.spec.prop.Proposition;
+import btrplace.solver.api.cstrSpec.spec.term.Primitive;
+import btrplace.solver.api.cstrSpec.spec.term.UserVar;
 import btrplace.solver.api.cstrSpec.spec.term.Var;
 import btrplace.solver.api.cstrSpec.spec.term.func.Function;
 import btrplace.solver.api.cstrSpec.spec.type.BoolType;
@@ -19,24 +21,21 @@ public class Constraint extends Function<Boolean> {
 
     private Proposition not;
 
-    private List<Var> params;
+    private List<UserVar> params;
+
+    private List<Primitive> primitives;
 
     private String cstrName;
 
     private String marshal;
 
-    private Type[] types;
-
-    public Constraint(String n, String m, Proposition p, List<Var> params) {
+    public Constraint(String n, String m, Proposition p, List<Primitive> primitives, List<UserVar> params) {
         this.p = p;
         this.not = p.not();
         this.cstrName = n;
         this.params = params;
         this.marshal = m;
-        types = new Type[params.size()];
-        for (int i = 0; i < params.size(); i++) {
-            types[i] = params.get(i).type();
-        }
+        this.primitives = primitives;
     }
 
     @Override
@@ -46,6 +45,10 @@ public class Constraint extends Function<Boolean> {
 
     @Override
     public Type[] signature() {
+        Type[] types = new Type[params.size()];
+        for (int i = 0; i < params.size(); i++) {
+            types[i] = params.get(i).type();
+        }
         return types;
     }
 
@@ -53,17 +56,19 @@ public class Constraint extends Function<Boolean> {
         return p;
     }
 
-    public List<Var> getParameters() {
+    public List<UserVar> getParameters() {
         return params;
     }
 
     public Boolean eval(Model res, List<Object> values) {
+
         for (int i = 0; i < values.size(); i++) {
-            Var var = params.get(i);
-            var.set(values.get(i));
+            UserVar var = params.get(i);
+            if (!var.set(values.get(i))) {
+                throw new IllegalArgumentException("Unable to set '" + var.label() + "' (type '" + var.type() + "') to '" + values.get(i) + "'");
+            }
         }
         if (res == null) {     //TODO: flaw ?
-            //throw new RuntimeException("Unable to apply the plan");
             return false;
         }
         Boolean bOk = this.p.eval(res);
@@ -82,7 +87,7 @@ public class Constraint extends Function<Boolean> {
     }
 
     public void reset() {
-        for (Var var : params) {
+        for (UserVar var : params) {
             var.unset();
         }
     }
@@ -106,7 +111,7 @@ public class Constraint extends Function<Boolean> {
     public String toString() {
         StringBuilder b = new StringBuilder();
         b.append(cstrName).append("(");
-        Iterator<Var> ite = params.iterator();
+        Iterator<UserVar> ite = params.iterator();
         if (ite.hasNext()) {
             Var v = ite.next();
             b.append(v.pretty());

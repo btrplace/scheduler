@@ -19,10 +19,6 @@ public abstract class Var<T> extends Term<T> {
         return toString();
     }
 
-    public abstract boolean set(T o);
-
-    public abstract void unset();
-
     @Override
     public String toString() {
         return label();

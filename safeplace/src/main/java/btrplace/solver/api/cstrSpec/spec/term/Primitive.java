@@ -13,32 +13,16 @@ public class Primitive extends Var<Set> {
 
     private Type type;
 
-    private Set cnt;
+    protected Set cnt;
 
     public Primitive(String name, Type enclosingType) {
-        this(name, enclosingType, null);
-    }
-
-    public Primitive(String name, Type enclosingType, Set values) {
         super(name);
-        this.type = new SetType(enclosingType);
-        this.cnt = values;
-    }
-
-    @Override
-    public boolean set(Set o) {
-        cnt = o;
-        return true;
-    }
-
-    @Override
-    public void unset() {
-        cnt = null;
+        type = new SetType(enclosingType);
     }
 
     @Override
     public Set eval(Model m) {
-        return cnt;
+        return cnt = type.domain(m);
     }
 
     @Override

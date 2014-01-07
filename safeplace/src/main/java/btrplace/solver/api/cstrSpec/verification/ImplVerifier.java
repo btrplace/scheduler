@@ -60,13 +60,13 @@ public class ImplVerifier implements Verifier {
                 return makeResult(c, TestResult.ErrorType.falsePositive, new Exception("Should not pass"));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
             if (!c.isConsistent()) {
                 return makeResult(c, TestResult.ErrorType.succeed, e);
             }
             return makeResult(c, TestResult.ErrorType.falseNegative, e);
         } catch (Error e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
             if (!c.isConsistent()) {
                 return makeResult(c, TestResult.ErrorType.succeed, new Exception(e));
             }

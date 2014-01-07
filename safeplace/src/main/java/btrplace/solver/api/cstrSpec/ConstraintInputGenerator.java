@@ -2,6 +2,7 @@ package btrplace.solver.api.cstrSpec;
 
 import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.fuzzer.RandomTuplesGenerator;
+import btrplace.solver.api.cstrSpec.spec.term.UserVar;
 import btrplace.solver.api.cstrSpec.spec.term.Var;
 import btrplace.solver.api.cstrSpec.util.AllTuplesGenerator;
 import btrplace.solver.api.cstrSpec.util.Generator;
@@ -22,7 +23,7 @@ public class ConstraintInputGenerator implements Generator<List<Object>> {
 
     public ConstraintInputGenerator(Constraint cstr, Model mo, boolean seq) {
 
-        List<Var> params = cstr.getParameters();
+        List<UserVar> params = cstr.getParameters();
         List<List<Object>> values = new ArrayList<>(params.size());
         ids = new String[params.size()];
         for (int i = 0; i < params.size(); i++) {

@@ -6,10 +6,7 @@ import btrplace.solver.api.cstrSpec.spec.term.UserVar;
 import btrplace.solver.api.cstrSpec.spec.term.Var;
 import btrplace.solver.api.cstrSpec.util.AllTuplesGenerator;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Fabien Hermenier
@@ -18,7 +15,7 @@ public class ForAll implements Proposition {
 
     private List<UserVar> vars;
 
-    private Term from;
+    private Term<Set> from;
 
     private Proposition prop;
 
@@ -38,7 +35,11 @@ public class ForAll implements Proposition {
         boolean ret = true;
         List<List<Object>> values = new ArrayList<>(vars.size());
         for (int i = 0; i < vars.size(); i++) {
-            values.add(new ArrayList<>((Collection<Object>) from.eval(m)));
+            Collection<Object> o = from.eval(m);
+            if (o == null) {
+                return null;
+            }
+            values.add(new ArrayList<>(o));
         }
         AllTuplesGenerator<Object> tg = new AllTuplesGenerator<>(Object.class, values);
         for (Object[] tuple : tg) {
@@ -51,7 +52,7 @@ public class ForAll implements Proposition {
             }
             ret &= r;
         }
-        for (Var v : vars) {
+        for (UserVar v : vars) {
             v.unset();
         }
         return ret;

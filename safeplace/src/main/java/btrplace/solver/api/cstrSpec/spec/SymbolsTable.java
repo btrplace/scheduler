@@ -2,11 +2,14 @@ package btrplace.solver.api.cstrSpec.spec;
 
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.term.Primitive;
+import btrplace.solver.api.cstrSpec.spec.term.UserVar;
 import btrplace.solver.api.cstrSpec.spec.term.Var;
 import btrplace.solver.api.cstrSpec.spec.term.func.*;
 import btrplace.solver.api.cstrSpec.spec.type.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,6 +25,8 @@ public class SymbolsTable {
 
     private SymbolsTable parent;
 
+    private List<Primitive> primitives;
+
     public SymbolsTable() {
         this(null);
     }
@@ -31,38 +36,42 @@ public class SymbolsTable {
         this.cstrs = new HashMap<>();
         this.funcs = new HashMap<>();
         parent = p;
+        primitives = new ArrayList<>();
     }
+
 
     public static SymbolsTable newBundle() {
-        SymbolsTable syms = new SymbolsTable();
-        newBundle(syms);
-        return syms;
+        SymbolsTable root = new SymbolsTable();
+        //Core functions
+        root.put(new Host());
+        root.put(new Hosted());
+        root.put(new Running());
+        root.put(new Ready());
+        root.put(new Sleeping());
+        root.put(new Cons());
+        root.put(new Capa());
+        root.put(new Colocated());
+        root.put(new VMState());
+        root.put(new NodeState());
+        root.put(new Card());
+        root.put(new Sum());
+        root.put(new P());
+        return root;
     }
 
-    public static void newBundle(SymbolsTable syms) {
+    public SymbolsTable enterSpec() {
+        SymbolsTable syms = new SymbolsTable(this);
+        //Copy the primitives
         syms.put(new Primitive("vms", VMType.getInstance()));
         syms.put(new Primitive("nodes", NodeType.getInstance()));
-        syms.put(new Primitive("vmState", VMStateType.getInstance(), VMStateType.getInstance().domain(null)));
-        syms.put(new Primitive("nodeState", NodeStateType.getInstance(), NodeStateType.getInstance().domain(null)));
+        syms.put(new Primitive("vmState", VMStateType.getInstance()));
+        syms.put(new Primitive("nodeState", NodeStateType.getInstance()));
         syms.put(new Primitive("int", IntType.getInstance()));
-        syms.put(new Primitive("bool", BoolType.getInstance(), BoolType.getInstance().domain(null)));
+        syms.put(new Primitive("bool", BoolType.getInstance()));
         syms.put(new Primitive("real", RealType.getInstance()));
         syms.put(new Primitive("string", StringType.getInstance()));
-        syms.put(new Host());
-        syms.put(new Hosted());
-        syms.put(new Running());
-        syms.put(new Ready());
-        syms.put(new Sleeping());
-        syms.put(new Cons());
-        syms.put(new Capa());
-        syms.put(new Colocated());
-        syms.put(new VMState());
-        syms.put(new NodeState());
-        syms.put(new Card());
-        syms.put(new Sum());
-        syms.put(new P());
+        return syms;
     }
-
 
     public SymbolsTable enterScope() {
         return new SymbolsTable(this);
@@ -75,9 +84,19 @@ public class SymbolsTable {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        b.append("Variables:\n").append(table.toString()).append('\n');
-        b.append("Functions:\n").append(funcs.toString()).append('\n');
-        b.append("Constraints:\n").append(cstrs.toString()).append('\n');
+        if (parent != null) {
+            b.append(parent.toString());
+            b.append("--------------\n");
+        }
+        for (Map.Entry<String, Var> e : table.entrySet()) {
+            b.append("var \t").append(e.getKey()).append("\t").append(e.getValue().type()).append("\n");
+        }
+        for (Map.Entry<String, Function> e : funcs.entrySet()) {
+            b.append("func\t").append(e.getValue()).append("\t").append(e.getValue().type()).append("\n");
+        }
+        for (Map.Entry<String, Constraint> e : cstrs.entrySet()) {
+            b.append("cstr\t").append(e.getValue()).append("\n");
+        }
         return b.toString();
     }
 
@@ -100,7 +119,7 @@ public class SymbolsTable {
     }
 
 
-    public boolean put(Var v) {
+    private boolean putVar(Var v) {
         if (table.containsKey(v.label())) {
             return false;
         }
@@ -118,6 +137,16 @@ public class SymbolsTable {
         return null;
     }
 
+    public void put(Primitive p) {
+        if (putVar(p)) {
+            primitives.add(p);
+        }
+    }
+
+    public boolean put(UserVar v) {
+        return putVar(v);
+    }
+
     public void put(Constraint cstr) {
         cstrs.put(cstr.id(), cstr);
     }
@@ -127,6 +156,10 @@ public class SymbolsTable {
             return cstrs.get(id);
         }
         return parent == null ? null : parent.getConstraint(id);
+    }
+
+    public List<Primitive> getPrimitives() {
+        return primitives;
     }
 
 }

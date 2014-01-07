@@ -27,41 +27,51 @@ import java.util.List;
 public class TestCaseReducerTest {
 
     @Test
-    public void test() throws Exception {
+    public void test() {
         Model mo = new DefaultModel();
+        Node n0 = mo.newNode();
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
-        Node n3 = mo.newNode();
 
+        VM vm0 = mo.newVM();
         VM vm1 = mo.newVM();
         VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
 
         Mapping m = mo.getMapping();
+        m.addOnlineNode(n0);
         m.addOnlineNode(n1);
-        m.addOnlineNode(n2);
-        m.addOfflineNode(n3);
-        m.addRunningVM(vm1, n1);
-        m.addReadyVM(vm2);
-        m.addSleepingVM(vm3, n2);
+        m.addOfflineNode(n2);
+        m.addRunningVM(vm0, n0);
+        m.addReadyVM(vm1);
+        m.addSleepingVM(vm2, n1);
 
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
-        p.add(new ShutdownNode(n2, 0, 3));
-        //p.add(new MigrateVM(vm1, n1, n2, 2, 7));
-        //p.add(new ResumeVM(vm3, n2, n2, 3, 5));
-        p.add(new BootVM(vm2, n1, 2, 7));
-        //p.add(new ShutdownNode(n1, 12, 15));
-        p.add(new BootNode(n3, 0, 3));
-        p.add(new MigrateVM(vm1, n1, n3, 4, 10));
+        p.add(new ShutdownNode(n1, 0, 3));
+        p.add(new BootVM(vm1, n0, 2, 7));
+        p.add(new BootNode(n2, 0, 3));
+        p.add(new MigrateVM(vm0, n0, n2, 4, 10));
 
+        System.out.println("-- Plan --\n" + p.getOrigin().getMapping() + "\n" + p);
         SpecReader ex = new SpecReader();
-        Constraint cstr = ex.extractConstraints(new File("src/test/resources/noVMonOfflineNode.cspec")).get(0);
+        Constraint cstr = null;
+
+        try {
+            for (Constraint x : ex.extractConstraints(new File("src/test/resources/v1.cspec"))) {
+                if (x.id().equals("offline")) {
+                    cstr = x;
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            Assert.fail(e.getMessage(), e);
+        }
 
         ImplVerifier verif = new ImplVerifier();
         //System.out.println(p.getOrigin().getMapping());
         List<Object> in = new ArrayList<>();
-        in.add(n1);
-        TestCase tc = new TestCase(0, p, new Offline(Collections.singleton(n2)), cstr.eval(p.getResult(), in));
+        in.add(Collections.singletonList(n1));
+        TestCase tc = new TestCase(0, p, new Offline(Collections.singleton(n1)), cstr.eval(p.getResult(), in));
+
         System.out.println(cstr.getProposition());
         TestResult tr = verif.verify(tc);
         System.out.println(tr);

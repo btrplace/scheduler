@@ -31,18 +31,14 @@ public class TestCaseReducer {
     }
 
     private boolean reducePlan(int lvl, TestCase t, btrplace.solver.api.cstrSpec.Constraint cstr, List<Object> in) {
-        //System.out.println(indent(lvl) + "Reduce " + t.getPlan().getActions());
         TestResult res = verif.verify(t, false);
         if (res.succeeded()) {
-            //System.out.println(indent(lvl) + "-> Succeeded. Throw away");
             return true;
         }
         if (t.getPlan().getSize() <= 1) {
-            //System.out.println(indent(lvl) + "-> Minimal");
             mins.add(t);
             return false;
         } else {
-            //System.out.println(indent(lvl) + "-> Splittable");
             int middle = t.getPlan().getSize() / 2;
             int sep = middle;
             int max = t.getPlan().getSize();
@@ -59,8 +55,6 @@ public class TestCaseReducer {
                         p2.add(a);
                     }
                 }
-                //System.out.println(indent(lvl) + "split 1: " + p1.getActions());
-                //System.out.println(indent(lvl) + "split 2: " + p2.getActions());
                 TestCase c1 = new TestCase(t.num(), p1, t.getSatConstraint(), cstr.eval(p1.getResult(), in));
                 TestCase c2 = new TestCase(t.num(), p2, t.getSatConstraint(), cstr.eval(p2.getResult(), in));
                 decidable = reducePlan(lvl + 1, c1, cstr, in);
@@ -68,19 +62,10 @@ public class TestCaseReducer {
                 decidable = !decidable;
                 sep = (sep + 1) % max;
                 if (sep == middle) {
-                    //System.out.println(indent(lvl) + "unable to make a valuable split");
                     break;
                 }
             }
         }
         return false;
-    }
-
-    private String indent(int l) {
-        StringBuilder b = new StringBuilder();
-        for (int i = 0; i < l; i++) {
-            b.append("\t");
-        }
-        return b.toString();
     }
 }
