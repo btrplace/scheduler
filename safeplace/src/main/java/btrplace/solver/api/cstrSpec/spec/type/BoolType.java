@@ -1,6 +1,5 @@
 package btrplace.solver.api.cstrSpec.spec.type;
 
-import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 
 import java.util.Arrays;
@@ -19,11 +18,6 @@ public class BoolType extends Atomic {
 
     private BoolType() {
         dom = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Boolean.TRUE, Boolean.FALSE)));
-    }
-
-    @Override
-    public Set<Boolean> domain(Model mo) {
-        return dom;
     }
 
     public static BoolType getInstance() {

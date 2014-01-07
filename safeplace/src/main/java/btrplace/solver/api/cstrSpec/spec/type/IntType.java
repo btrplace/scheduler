@@ -1,10 +1,6 @@
 package btrplace.solver.api.cstrSpec.spec.type;
 
-import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author Fabien Hermenier
@@ -18,15 +14,6 @@ public class IntType extends Atomic {
     private IntType(int lb, int ub) {
         this.inf = lb;
         this.sup = ub;
-    }
-
-    @Override
-    public Set<Integer> domain(Model mo) {
-        Set<Integer> s = new HashSet<>();
-        for (int i = inf; i <= sup; i++) {
-            s.add(i);
-        }
-        return s;
     }
 
     public static IntType getInstance() {

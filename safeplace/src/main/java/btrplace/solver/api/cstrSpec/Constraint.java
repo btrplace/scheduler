@@ -64,7 +64,7 @@ public class Constraint extends Function<Boolean> {
 
         for (int i = 0; i < values.size(); i++) {
             UserVar var = params.get(i);
-            if (!var.set(values.get(i))) {
+            if (!var.set(res, values.get(i))) {
                 throw new IllegalArgumentException("Unable to set '" + var.label() + "' (type '" + var.type() + "') to '" + values.get(i) + "'");
             }
         }

@@ -1,10 +1,6 @@
 package btrplace.solver.api.cstrSpec.spec.type;
 
-import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
-
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * @author Fabien Hermenier
@@ -12,11 +8,6 @@ import java.util.Set;
 public class StringType extends Atomic {
 
     private static StringType instance = new StringType();
-
-    @Override
-    public Set domain(Model mo) {
-        return Collections.emptySet();
-    }
 
     @Override
     public boolean match(String n) {

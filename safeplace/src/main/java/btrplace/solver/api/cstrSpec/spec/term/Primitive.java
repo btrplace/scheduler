@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * @author Fabien Hermenier
  */
-public class Primitive extends Var<Set> {
+public abstract class Primitive extends Var<Set> {
 
     private Type type;
 
@@ -21,9 +21,7 @@ public class Primitive extends Var<Set> {
     }
 
     @Override
-    public Set eval(Model m) {
-        return cnt = type.domain(m);
-    }
+    public abstract Set eval(Model m);
 
     @Override
     public Type type() {

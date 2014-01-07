@@ -44,7 +44,7 @@ public class ForAll implements Proposition {
         AllTuplesGenerator<Object> tg = new AllTuplesGenerator<>(Object.class, values);
         for (Object[] tuple : tg) {
             for (int i = 0; i < tuple.length; i++) {
-                vars.get(i).set(tuple[i]);
+                vars.get(i).set(m, tuple[i]);
             }
             Boolean r = prop.eval(m);
             if (r == null) {

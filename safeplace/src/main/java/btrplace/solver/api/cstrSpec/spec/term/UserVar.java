@@ -3,14 +3,14 @@ package btrplace.solver.api.cstrSpec.spec.term;
 import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
 
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * @author Fabien Hermenier
  */
 public class UserVar<T> extends Var<T> {
 
-    private Term<Set> backend;
+    private Term<Collection> backend;
 
     private boolean incl;
 
@@ -18,7 +18,7 @@ public class UserVar<T> extends Var<T> {
 
     private boolean not;
 
-    public UserVar(String lbl, boolean incl, boolean not, Term<Set> backend) {
+    public UserVar(String lbl, boolean incl, boolean not, Term backend) {
         super(lbl);
         this.incl = incl;
         this.backend = backend;
@@ -35,14 +35,19 @@ public class UserVar<T> extends Var<T> {
         return new StringBuilder(label()).append(not ? " /" : " ").append(incl ? ": " : "<: ").append(backend).toString();
     }
 
-    public Term getBackend() {
+    public Term<Collection> getBackend() {
         return backend;
     }
 
-    public boolean set(T o) {
-        Set s = backend.eval(null);
-        if (s == null || !backend.eval(null).contains(o)) {
-            return false;
+    public boolean set(Model mo, T o) {
+        Collection s = backend.eval(mo);
+        if (s == null) {
+            throw new IllegalArgumentException(o + " not in " + backend + " (" + backend.eval(mo) + ")");
+        }
+        if (incl && !backend.eval(mo).contains(o)) {
+            throw new IllegalArgumentException(o + " not in " + backend + " (" + backend.eval(mo) + ")");
+        } else if (!incl && !backend.eval(mo).containsAll((Collection) o)) {
+            throw new IllegalArgumentException(o + " not in " + backend + " (" + backend.eval(mo) + ")");
         }
         val = o;
         return true;

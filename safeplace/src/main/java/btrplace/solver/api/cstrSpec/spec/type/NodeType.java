@@ -1,10 +1,6 @@
 package btrplace.solver.api.cstrSpec.spec.type;
 
-import btrplace.model.Model;
-import btrplace.model.Node;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
-
-import java.util.Set;
 
 /**
  * @author Fabien Hermenier
@@ -34,11 +30,6 @@ public class NodeType extends Atomic {
     @Override
     public String label() {
         return "node";
-    }
-
-    @Override
-    public Set<Node> domain(Model mo) {
-        return mo.getMapping().getAllNodes();
     }
 
     @Override

@@ -1,10 +1,6 @@
 package btrplace.solver.api.cstrSpec.spec.type;
 
-import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author Fabien Hermenier
@@ -34,8 +30,7 @@ public class SetType implements Type {
         return type.hashCode();
     }
 
-    @Override
-    public Set domain(Model mo) {
+    /*public Set domain(Model mo) {
         //All possible subsets of t. Ouch
         Object[] values = type.domain(mo).toArray(new Object[type.domain(mo).size()]);
         int nbElements = (int) Math.pow(2, values.length);
@@ -56,7 +51,7 @@ public class SetType implements Type {
             }
         }
         return res;
-    }
+    }                */
 
     @Override
     public String label() {

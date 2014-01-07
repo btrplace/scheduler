@@ -1,16 +1,12 @@
 package btrplace.solver.api.cstrSpec.spec;
 
+import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.Constraint;
-import btrplace.solver.api.cstrSpec.spec.term.Primitive;
-import btrplace.solver.api.cstrSpec.spec.term.UserVar;
-import btrplace.solver.api.cstrSpec.spec.term.Var;
+import btrplace.solver.api.cstrSpec.spec.term.*;
 import btrplace.solver.api.cstrSpec.spec.term.func.*;
 import btrplace.solver.api.cstrSpec.spec.type.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Fabien Hermenier
@@ -62,14 +58,37 @@ public class SymbolsTable {
     public SymbolsTable enterSpec() {
         SymbolsTable syms = new SymbolsTable(this);
         //Copy the primitives
-        syms.put(new Primitive("vms", VMType.getInstance()));
-        syms.put(new Primitive("nodes", NodeType.getInstance()));
-        syms.put(new Primitive("vmState", VMStateType.getInstance()));
-        syms.put(new Primitive("nodeState", NodeStateType.getInstance()));
-        syms.put(new Primitive("int", IntType.getInstance()));
-        syms.put(new Primitive("bool", BoolType.getInstance()));
-        syms.put(new Primitive("real", RealType.getInstance()));
-        syms.put(new Primitive("string", StringType.getInstance()));
+        syms.put(new AllVMs());
+
+        syms.put(new AllNodes());
+
+        syms.put(new ConstantSet("vmState", VMStateType.getInstance(), EnumSet.allOf(VMStateType.Type.class)));
+        syms.put(new ConstantSet("nodeState", NodeStateType.getInstance(), EnumSet.allOf(NodeStateType.Type.class)));
+
+        syms.put(new Primitive("int", IntType.getInstance()) {
+            @Override
+            public Set eval(Model m) {
+                return Collections.emptySet();
+            }
+        });
+        syms.put(new Primitive("bool", BoolType.getInstance()) {
+            @Override
+            public Set eval(Model m) {
+                return Collections.emptySet();
+            }
+        });
+        syms.put(new Primitive("real", RealType.getInstance()) {
+            @Override
+            public Set eval(Model m) {
+                return Collections.emptySet();
+            }
+        });
+        syms.put(new Primitive("string", StringType.getInstance()) {
+            @Override
+            public Set eval(Model m) {
+                return Collections.emptySet();
+            }
+        });
         return syms;
     }
 

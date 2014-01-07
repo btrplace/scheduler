@@ -1,6 +1,5 @@
 package btrplace.solver.api.cstrSpec.spec.type;
 
-import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 
 import java.util.Collections;
@@ -50,13 +49,7 @@ public class VMStateType extends Atomic {
     }
 
     @Override
-    public Set<Object> domain(Model mo) {
-        return vals;
-    }
-
-    @Override
     public Constant newValue(String n) {
         return new Constant(Type.valueOf(n), this);
     }
-
 }

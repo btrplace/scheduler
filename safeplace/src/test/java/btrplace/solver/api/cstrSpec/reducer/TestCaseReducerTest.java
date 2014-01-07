@@ -70,7 +70,7 @@ public class TestCaseReducerTest {
         //System.out.println(p.getOrigin().getMapping());
         List<Object> in = new ArrayList<>();
         in.add(Collections.singletonList(n1));
-        TestCase tc = new TestCase(0, p, new Offline(Collections.singleton(n1)), cstr.eval(p.getResult(), in));
+        TestCase tc = new TestCase(0, p, new Offline(Collections.singleton(n1)), cstr.eval(p.getOrigin(), in));
 
         System.out.println(cstr.getProposition());
         TestResult tr = verif.verify(tc);

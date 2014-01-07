@@ -1,6 +1,5 @@
 package btrplace.solver.api.cstrSpec.spec.type;
 
-import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 
 import java.util.Collections;
@@ -28,11 +27,6 @@ public class NodeStateType extends Atomic {
 
     public static NodeStateType getInstance() {
         return instance;
-    }
-
-    @Override
-    public Set<Constant> domain(Model mo) {
-        return vals;
     }
 
     @Override
