@@ -62,6 +62,7 @@ public class Constraint extends Function<Boolean> {
 
     public Boolean eval(Model res, List<Object> values) {
 
+        ConstraintVerifier cVerif = new ConstraintVerifier();
         for (int i = 0; i < values.size(); i++) {
             UserVar var = params.get(i);
             if (!var.set(res, values.get(i))) {

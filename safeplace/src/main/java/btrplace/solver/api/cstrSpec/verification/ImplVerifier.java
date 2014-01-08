@@ -30,6 +30,7 @@ public class ImplVerifier implements Verifier {
         if (inclSat) {
             cstrs.add(c.getSatConstraint());
         }
+        System.out.println("Initial: " + cstrs + " with \n" + c.getPlan());
         cstrs.addAll(actionsToConstraints(c.getPlan(), c.getSatConstraint()));
 
         setDurationEstimators(c.getPlan());
@@ -47,7 +48,7 @@ public class ImplVerifier implements Verifier {
                 }
                 if (!p.equals(c.getPlan())) {
                     return makeResult(c, TestResult.ErrorType.bug,
-                            new Exception("The test case and the solution differ:\n Test Case:\n" + c.getPlan() + "\n Solution:\n" + p));
+                            new Exception("The test case and the solution differ:\n Test Case:\n" + c.getPlan() + "\n Solution:\n" + p + " Constraints: " + cstrs));
                 }
                 return makeResult(c, TestResult.ErrorType.succeed, null);
             } else {
@@ -55,7 +56,7 @@ public class ImplVerifier implements Verifier {
                     return makeResult(c, TestResult.ErrorType.succeed, null);
                 }
                 if (!p.equals(c.getPlan())) {
-                    return makeResult(c, TestResult.ErrorType.bug, new Exception("The test case and the solution differ:\n Test Case:\n" + c.getPlan() + "\n Solution:\n" + p));
+                    return makeResult(c, TestResult.ErrorType.bug, new Exception("The test case and the solution differ:\n Test Case:\n" + c.getPlan() + "\n Solution:\n" + p + " Constraints: " + cstrs));
                 }
                 return makeResult(c, TestResult.ErrorType.falsePositive, new Exception("Should not pass"));
             }
@@ -76,6 +77,7 @@ public class ImplVerifier implements Verifier {
 
 
     private TestResult makeResult(TestCase c, TestResult.ErrorType err, Exception ex) {
+        System.out.println(err + "\n---");
         return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), err, ex);
     }
 

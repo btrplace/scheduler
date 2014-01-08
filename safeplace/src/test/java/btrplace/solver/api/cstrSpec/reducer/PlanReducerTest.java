@@ -9,6 +9,7 @@ import btrplace.plan.event.BootVM;
 import btrplace.plan.event.MigrateVM;
 import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.api.cstrSpec.Constraint;
+import btrplace.solver.api.cstrSpec.ConstraintVerifier;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.verification.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
@@ -24,7 +25,7 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
-public class TestCaseReducerTest {
+public class PlanReducerTest {
 
     @Test
     public void test() {
@@ -51,7 +52,6 @@ public class TestCaseReducerTest {
         p.add(new BootNode(n2, 0, 3));
         p.add(new MigrateVM(vm0, n0, n2, 4, 10));
 
-        System.out.println("-- Plan --\n" + p.getOrigin().getMapping() + "\n" + p);
         SpecReader ex = new SpecReader();
         Constraint cstr = null;
 
@@ -70,21 +70,22 @@ public class TestCaseReducerTest {
         //System.out.println(p.getOrigin().getMapping());
         List<Object> in = new ArrayList<>();
         in.add(Collections.singletonList(n1));
-        TestCase tc = new TestCase(0, p, new Offline(Collections.singleton(n1)), cstr.eval(p.getOrigin(), in));
+        ConstraintVerifier cstrVerif = new ConstraintVerifier();
+        TestCase tc = new TestCase(0, p, new Offline(Collections.singleton(n1)), cstrVerif.eval(cstr, p, in));
 
         System.out.println(cstr.getProposition());
         TestResult tr = verif.verify(tc);
         System.out.println(tr);
-        //TestCaseReducer r = new TestCaseReducer();
-        //r.reducePlan(0, tc, cstr, in);
+        //PlanReducer r = new PlanReducer();
+        //r.reduce(0, tc, cstr, in);
 
-        TestCaseReducer tcr = new TestCaseReducer();
-        List<TestCase> reduced = tcr.reducePlan(tc, cstr, in);
+        PlanReducer tcr = new PlanReducer();
+        List<TestCase> reduced = tcr.reduce(tc, cstr, in);
 
-        System.out.println("------------\nReduced Test Cases\n-----------");
+        System.out.println("----------- " + reduced.size() + " Reduced Test Cases -----------");
         for (TestCase t : reduced) {
             System.out.println(t);
-            System.out.println(verif.verify(t));
+            //System.out.println(verif.verify(t));
             System.out.println("---");
         }
         Assert.fail();
