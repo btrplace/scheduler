@@ -17,21 +17,21 @@
 
 package btrplace.solver.choco.chocoUtil;
 
-import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.tools.ArrayUtils;
-import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.IStateInt;
-import choco.kernel.memory.IStateIntVector;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import gnu.trove.TIntIntHashMap;
-import gnu.trove.TIntObjectHashMap;
+
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import memory.IEnvironment;
+import memory.IStateInt;
+import memory.IStateIntVector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import solver.constraints.IntConstraint;
+import solver.exception.ContradictionException;
+import solver.variables.IntVar;
+import util.tools.ArrayUtils;
 
 import java.util.Arrays;
 import java.util.BitSet;
-import java.util.logging.Level;
 
 /**
  * A constraint to schedule tasks with regards to their resource usages on resources having a finite amount to share.
@@ -42,17 +42,19 @@ import java.util.logging.Level;
  *
  * @author Fabien Hermenier
  */
-public class TaskScheduler extends AbstractLargeIntSConstraint {
+public class TaskScheduler extends IntConstraint<IntVar> {
+
+    private static Logger LOGGER = LoggerFactory.getLogger("solver");
 
     private LocalTaskScheduler[] scheds;
 
-    private IntDomainVar[] cHosters;
+    private IntVar[] cHosters;
 
-    private IntDomainVar[] cEnds;
+    private IntVar[] cEnds;
 
-    private IntDomainVar[] dHosters;
+    private IntVar[] dHosters;
 
-    private IntDomainVar[] dStarts;
+    private IntVar[] dStarts;
 
     private int nbResources;
 
@@ -86,18 +88,18 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
      * @param assocs      indicate association between cTasks and dTasks. Associated tasks cannot overlap on a same resource
      */
     public TaskScheduler(IEnvironment e,
-                         IntDomainVar[] earlyStarts,
-                         IntDomainVar[] lastEnds,
+                         IntVar[] earlyStarts,
+                         IntVar[] lastEnds,
                          int[][] capas,
-                         IntDomainVar[] cHosters,
+                         IntVar[] cHosters,
                          int[][] cUsages,
-                         IntDomainVar[] cEnds,
-                         IntDomainVar[] dHosters,
+                         IntVar[] cEnds,
+                         IntVar[] dHosters,
                          int[][] dUsages,
-                         IntDomainVar[] dStarts,
+                         IntVar[] dStarts,
                          int[] assocs) {
 
-        super(ArrayUtils.append(dHosters, cHosters, cEnds, dStarts, earlyStarts, lastEnds));
+        super(ArrayUtils.<IntVar>append(dHosters, cHosters, cEnds, dStarts, earlyStarts, lastEnds));
 
         this.env = e;
         this.cHosters = cHosters;
@@ -109,9 +111,9 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
         this.cUsages = cUsages;
         this.dUsages = dUsages;
 
-        Arrays.toString(capacities);
+        /*Arrays.toString(capacities);
         Arrays.toString(cUsages);
-        Arrays.toString(dUsages);
+        Arays.toString(dUsages);*/
 
         this.nbResources = capas[0].length;
         this.nbDims = capas.length;
@@ -125,7 +127,7 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
         }
 
         for (int i = 0; i < cHosters.length; i++) {
-            outs[cHosters[i].getVal()].set(i);
+            outs[cHosters[i].getValue()].set(i);
         }
 
 
@@ -166,8 +168,8 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
 
         //Check whether some hosting variable are already instantiated
         for (int i = 0; i < dHosters.length; i++) {
-            if (dHosters[i].isInstantiated()) {
-                int nIdx = dHosters[i].getVal();
+            if (dHosters[i].instantiated()) {
+                int nIdx = dHosters[i].getValue();
                 toInstantiate.add(-1);
                 vIns[nIdx].add(i);
             }
@@ -193,7 +195,7 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
     public void awakeOnInst(int idx) throws ContradictionException {
         if (idx < dHosters.length) {
             toInstantiate.add(-1);
-            int nIdx = vars[idx].getVal();
+            int nIdx = vars[idx].getValue();
             vIns[nIdx].add(idx);
         }
         this.constAwake(false);
@@ -212,7 +214,7 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
     public boolean isSatisfied() {
         int[] vals = new int[vars.length];
         for (int i = 0; i < vals.length; i++) {
-            vals[i] = vars[i].getVal();
+            vals[i] = vars[i].getValue();
         }
         return isSatisfied(vals);
     }
@@ -284,8 +286,8 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
         boolean ok = true;
         for (int j = 0; j < nbResources; j++) {
             TIntObjectHashMap<int[]> myChanges = myChanges(changes, j);
-            ChocoLogging.getBranchingLogger().finest("--- Resource " + j + " isSatisfied() ? ---");
-            ChocoLogging.getBranchingLogger().finest(" before: " + prettyUsages(currentFree, j)
+            LOGGER.debug("--- Resource " + j + " isSatisfied() ? ---");
+            LOGGER.debug(" before: " + prettyUsages(currentFree, j)
                     + "/" + prettyUsages(capacities, j)
                     + " changes: " + prettyChanges(myChanges));
 
@@ -301,21 +303,21 @@ public class TaskScheduler extends AbstractLargeIntSConstraint {
                     }
                 }
                 if (!bad) {
-                    ChocoLogging.getMainLogger().info("/!\\ at " + t + ": free=" + prettyUsages(currentFree, j));
+                    LOGGER.info("/!\\ at " + t + ": free=" + prettyUsages(currentFree, j));
                     ok = false;
                     break;
                 }
             }
 
-            if (ChocoLogging.getBranchingLogger().isLoggable(Level.FINEST)) {
+            if (LOGGER.isDebugEnabled()) {
                 for (int x = 0; x < cHostersVals.length; x++) {
                     if (cHostersVals[x] == j) {
-                        ChocoLogging.getBranchingLogger().finest(cEnds[x].getName() + " ends at " + cEndsVals[x] + " uses:" + prettyUsages(cUsages, x));
+                        LOGGER.debug(cEnds[x].getName() + " ends at " + cEndsVals[x] + " uses:" + prettyUsages(cUsages, x));
                     }
                 }
                 for (int x = 0; x < dHostersVals.length; x++) {
                     if (dHostersVals[x] == j) {
-                        ChocoLogging.getBranchingLogger().finest(dStarts[x].getName() + " starts at " + dStartsVals[x] + " uses:" + prettyUsages(dUsages, x));
+                        LOGGER.debug(dStarts[x].getName() + " starts at " + dStartsVals[x] + " uses:" + prettyUsages(dUsages, x));
                     }
                 }
             }

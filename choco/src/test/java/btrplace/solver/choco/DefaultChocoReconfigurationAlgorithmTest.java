@@ -27,11 +27,6 @@ import btrplace.solver.choco.constraint.ChocoConstraint;
 import btrplace.solver.choco.constraint.ChocoConstraintBuilder;
 import btrplace.solver.choco.runner.SolvingStatistics;
 import btrplace.solver.choco.view.ModelViewMapper;
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.AtMostNValue;
-import choco.kernel.solver.Configuration;
-import choco.kernel.solver.ResolutionPolicy;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -110,9 +105,9 @@ public class DefaultChocoReconfigurationAlgorithmTest {
                 return new ChocoConstraint() {
                     public boolean inject(ReconfigurationProblem rp) throws SolverException {
                         Mapping map = rp.getSourceModel().getMapping();
-                        CPSolver s = rp.getSolver();
-                        IntDomainVar nbNodes = s.createBoundIntVar("nbNodes", 1, map.getOnlineNodes().size());
-                        IntDomainVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
+                        Solver s = rp.getSolver();
+                        IntVar nbNodes = s.createBoundIntVar("nbNodes", 1, map.getOnlineNodes().size());
+                        IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
                         s.post(new AtMostNValue(hosters, nbNodes));
                         s.setObjective(nbNodes);
                         s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);

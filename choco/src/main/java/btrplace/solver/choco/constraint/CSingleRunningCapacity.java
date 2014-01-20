@@ -25,9 +25,6 @@ import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.SingleRunningCapacity;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
-import choco.cp.solver.CPSolver;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -57,9 +54,9 @@ public class CSingleRunningCapacity implements ChocoConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        CPSolver s = rp.getSolver();
+        Solver s = rp.getSolver();
         for (Node u : cstr.getInvolvedNodes()) {
-            IntDomainVar v = rp.getNbRunningVMs()[rp.getNode(u)];
+            IntVar v = rp.getNbRunningVMs()[rp.getNode(u)];
             s.post(s.leq(v, cstr.getAmount()));
 
             //Continuous in practice ?

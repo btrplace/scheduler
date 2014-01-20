@@ -18,7 +18,7 @@
 package btrplace.solver.choco;
 
 import btrplace.model.VM;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.variables.IntVar;
 
 
 /**
@@ -32,13 +32,13 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public class Slice {
 
-    private IntDomainVar hoster;
+    private IntVar hoster;
 
-    private IntDomainVar start;
+    private IntVar start;
 
-    private IntDomainVar end;
+    private IntVar end;
 
-    private IntDomainVar duration;
+    private IntVar duration;
 
     private VM subject;
 
@@ -51,7 +51,7 @@ public class Slice {
      * @param dur the slice duration
      * @param h   the slice host
      */
-    public Slice(VM s, IntDomainVar st, IntDomainVar ed, IntDomainVar dur, IntDomainVar h) {
+    public Slice(VM s, IntVar st, IntVar ed, IntVar dur, IntVar h) {
 
         this.start = st;
         this.end = ed;
@@ -69,11 +69,11 @@ public class Slice {
         return b.append('}').toString();
     }
 
-    private String printValue(IntDomainVar v) {
-        if (v.isInstantiated()) {
-            return Integer.toString(v.getVal());
+    private String printValue(IntVar v) {
+        if (v.instantiated()) {
+            return Integer.toString(v.getValue());
         }
-        return new StringBuilder("[").append(v.getInf()).append(':').append(v.getSup()).append(']').toString();
+        return new StringBuilder("[").append(v.getLB()).append(':').append(v.getUB()).append(']').toString();
     }
 
     /**
@@ -81,7 +81,7 @@ public class Slice {
      *
      * @return a variable denoting the moment
      */
-    public IntDomainVar getStart() {
+    public IntVar getStart() {
         return start;
     }
 
@@ -90,7 +90,7 @@ public class Slice {
      *
      * @return a variable denoting the moment
      */
-    public IntDomainVar getEnd() {
+    public IntVar getEnd() {
         return end;
     }
 
@@ -99,7 +99,7 @@ public class Slice {
      *
      * @return a variable denoting the moment
      */
-    public IntDomainVar getDuration() {
+    public IntVar getDuration() {
         return duration;
     }
 
@@ -108,7 +108,7 @@ public class Slice {
      *
      * @return a variable indicating the node index
      */
-    public IntDomainVar getHoster() {
+    public IntVar getHoster() {
         return hoster;
     }
 

@@ -18,7 +18,8 @@
 package btrplace.solver.choco.actionModel;
 
 import btrplace.plan.ReconfigurationPlan;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.variables.IntVar;
+
 
 /**
  * Model an action.
@@ -34,21 +35,21 @@ public interface ActionModel {
      *
      * @return a variable that must be positive
      */
-    IntDomainVar getStart();
+    IntVar getStart();
 
     /**
      * Get the moment the action ends.
      *
      * @return a variable that must be greater than {@link #getStart()}
      */
-    IntDomainVar getEnd();
+    IntVar getEnd();
 
     /**
      * Get the action duration.
      *
      * @return a duration equals to {@code getEnd() - getStart()}
      */
-    IntDomainVar getDuration();
+    IntVar getDuration();
 
     /**
      * Insert into a plan the actions resulting from the model.
@@ -63,7 +64,7 @@ public interface ActionModel {
      *
      * @return {@code 0} for offline, {@code 1} for online.
      */
-    IntDomainVar getState();
+    IntVar getState();
 
     /**
      * Make a visitor inspect the action model.

@@ -30,7 +30,6 @@ import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.MappingFiller;
 import btrplace.solver.choco.durationEvaluator.LinearToAResourceActionDuration;
-import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

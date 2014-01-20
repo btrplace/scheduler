@@ -20,7 +20,7 @@ package btrplace.solver.choco.constraint.minMTTR;
 import btrplace.model.Mapping;
 import btrplace.model.VM;
 import btrplace.solver.choco.ReconfigurationProblem;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.variables.IntVar;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,10 +43,10 @@ public final class VMPlacementUtils {
      * @param rp the problem
      * @return the resulting map.
      */
-    public static Map<IntDomainVar, VM> makePlacementMap(ReconfigurationProblem rp) {
-        Map<IntDomainVar, VM> m = new HashMap<>();
+    public static Map<IntVar, VM> makePlacementMap(ReconfigurationProblem rp) {
+        Map<IntVar, VM> m = new HashMap<>();
         for (VM vm : rp.getFutureRunningVMs()) {
-            IntDomainVar v = rp.getVMAction(vm).getDSlice().getHoster();
+            IntVar v = rp.getVMAction(vm).getDSlice().getHoster();
             m.put(v, vm);
         }
         return m;

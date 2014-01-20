@@ -18,9 +18,9 @@
 package btrplace.solver.choco;
 
 import btrplace.solver.choco.chocoUtil.LightBinPacking;
-import choco.cp.solver.CPSolver;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.Solver;
+import solver.exception.ContradictionException;
+import solver.variables.IntVar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,11 +34,11 @@ public class BinPackingBuilder {
 
     private ReconfigurationProblem rp;
 
-    private List<IntDomainVar[]> loads;
+    private List<IntVar[]> loads;
 
-    private List<IntDomainVar[]> bins;
+    private List<IntVar[]> bins;
 
-    private List<IntDomainVar[]> sizes;
+    private List<IntVar[]> sizes;
 
     private List<String> names;
 
@@ -63,7 +63,7 @@ public class BinPackingBuilder {
      * @param s the resource usage of each of the cSlices
      * @param b the resource usage of each of the dSlices
      */
-    public void add(String name, IntDomainVar[] l, IntDomainVar[] s, IntDomainVar[] b) {
+    public void add(String name, IntVar[] l, IntVar[] s, IntVar[] b) {
         this.loads.add(l);
         this.sizes.add(s);
         this.bins.add(b);
@@ -74,19 +74,21 @@ public class BinPackingBuilder {
      * Build the constraint.
      */
     public void inject() throws ContradictionException {
-        CPSolver solver = rp.getSolver();
+        Solver solver = rp.getSolver();
         int[][] iSizes = new int[sizes.size()][sizes.get(0).length];
         for (int i = 0; i < sizes.size(); i++) {
-            IntDomainVar[] s = sizes.get(i);
+            IntVar[] s = sizes.get(i);
             int x = 0;
-            for (IntDomainVar ss : s) {
-                iSizes[i][x++] = ss.getInf();
-                ss.setVal(ss.getInf());
+            for (IntVar ss : s) {
+                iSizes[i][x++] = ss.getLB();
+                if (!ss.instantiatedTo(ss.getLB())) {
+                    throw new ContradictionException();
+                }
             }
 
         }
         //TODO: Items must always be in the same order.
-        solver.post(new LightBinPacking(names.toArray(new String[names.size()]), solver.getEnvironment(), loads.toArray(new IntDomainVar[loads.size()][]), iSizes, bins.get(0)));
+        solver.post(new LightBinPacking(names.toArray(new String[names.size()]), solver.getEnvironment(), loads.toArray(new IntVar[loads.size()][]), iSizes, bins.get(0)));
 
     }
 }

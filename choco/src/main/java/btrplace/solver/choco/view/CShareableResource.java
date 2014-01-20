@@ -30,13 +30,12 @@ import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.chocoUtil.RoundedUpDivision;
-import choco.Choco;
-import choco.cp.solver.CPSolver;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.variables.real.RealIntervalConstant;
-import choco.kernel.solver.variables.real.RealVar;
-import gnu.trove.TIntArrayList;
+import gnu.trove.list.array.TIntArrayList;
+import solver.Solver;
+import solver.exception.ContradictionException;
+import solver.variables.IntVar;
+import solver.variables.RealVar;
+import solver.variables.VariableFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,17 +52,17 @@ public class CShareableResource implements ChocoModelView {
 
     private ShareableResource rc;
 
-    private IntDomainVar[] phyRcUsage;
+    private IntVar[] phyRcUsage;
 
-    private IntDomainVar[] virtRcUsage;
+    private IntVar[] virtRcUsage;
 
-    private IntDomainVar[] vmAllocation;
+    private IntVar[] vmAllocation;
 
     private RealVar[] ratios;
 
     private ReconfigurationProblem rp;
 
-    private CPSolver solver;
+    private Solver solver;
 
     private String id;
 
@@ -91,35 +90,35 @@ public class CShareableResource implements ChocoModelView {
         solver = p.getSolver();
         this.source = p.getSourceModel();
         Node[] nodes = p.getNodes();
-        phyRcUsage = new IntDomainVar[nodes.length];
-        virtRcUsage = new IntDomainVar[nodes.length];
+        phyRcUsage = new IntVar[nodes.length];
+        virtRcUsage = new IntVar[nodes.length];
         this.ratios = new RealVar[nodes.length];
         id = ShareableResource.VIEW_ID_BASE + r.getResourceIdentifier();
         for (int i = 0; i < nodes.length; i++) {
             Node nId = p.getNode(i);
-            phyRcUsage[i] = p.getSolver().createBoundIntVar(p.makeVarLabel("phyRcUsage('", r.getResourceIdentifier(), "', '", nId, "')"), 0, r.getCapacity(nodes[i]));
-            virtRcUsage[i] = p.getSolver().createBoundIntVar(p.makeVarLabel("virtRcUsage('", r.getResourceIdentifier(), "', '", nId, "')"), 0, Choco.MAX_UPPER_BOUND);
-            ratios[i] = p.getSolver().createRealVal(p.makeVarLabel("overbook('", r.getResourceIdentifier(), "', '", nId, "')"), 1, UNCHECKED_RATIO);
+            phyRcUsage[i] = VariableFactory.bounded(p.makeVarLabel("phyRcUsage('", r.getResourceIdentifier(), "', '", nId, "')"), 0, r.getCapacity(nodes[i]), p.getSolver());
+            virtRcUsage[i] = VariableFactory.bounded(p.makeVarLabel("virtRcUsage('", r.getResourceIdentifier(), "', '", nId, "')"), 0, Choco.MAX_UPPER_BOUND, p.getSolver());
+            ratios[i] = VariableFactory.real(p.makeVarLabel("overbook('", r.getResourceIdentifier(), "', '", nId, "')"), 1, UNCHECKED_RATIO, 0.01, p.getSolver());
         }
 
 
         //Bin packing for the node vmAllocation
-        CPSolver s = p.getSolver();
-        List<IntDomainVar> notNullUsage = new ArrayList<>();
-        List<IntDomainVar> hosters = new ArrayList<>();
+        Solver s = p.getSolver();
+        List<IntVar> notNullUsage = new ArrayList<>();
+        List<IntVar> hosters = new ArrayList<>();
 
-        vmAllocation = new IntDomainVar[p.getVMs().length];
+        vmAllocation = new IntVar[p.getVMs().length];
         for (int i = 0; i < vmAllocation.length; i++) {
             VM vmId = p.getVM(i);
             VMActionModel a = p.getVMAction(vmId);
             Slice slice = a.getDSlice();
             if (slice == null) {
                 //The VMs will not be running, so its consumption is set to 0
-                vmAllocation[i] = s.makeConstantIntVar(p.makeVarLabel("vmAllocation('", r.getResourceIdentifier(), "', '", vmId, "'"), 0);
+                vmAllocation[i] = VariableFactory.fixed(p.makeVarLabel("vmAllocation('", r.getResourceIdentifier(), "', '", vmId, "'"), 0, s);
             } else {
                 //We don't know about the next VM usage for the moment, -1 is used by default to allow to detect an
                 //non-updated value.
-                vmAllocation[i] = s.createBoundIntVar(p.makeVarLabel("vmAllocation('", r.getResourceIdentifier(), "', '", vmId, "')"), -1, Choco.MAX_UPPER_BOUND);
+                vmAllocation[i] = VariableFactory.bounded(p.makeVarLabel("vmAllocation('", r.getResourceIdentifier(), "', '", vmId, "')"), -1, Choco.MAX_UPPER_BOUND, s);
                 notNullUsage.add(vmAllocation[i]);
                 hosters.add(slice.getHoster());
             }
@@ -128,8 +127,8 @@ public class CShareableResource implements ChocoModelView {
         //We create a BP with only the VMs requiring a not null amount of resources
         p.getBinPackingBuilder().add(r.getResourceIdentifier(),
                 virtRcUsage,
-                notNullUsage.toArray(new IntDomainVar[notNullUsage.size()]),
-                hosters.toArray(new IntDomainVar[hosters.size()]));
+                notNullUsage.toArray(new IntVar[notNullUsage.size()]),
+                hosters.toArray(new IntVar[hosters.size()]));
 
     }
 
@@ -156,7 +155,7 @@ public class CShareableResource implements ChocoModelView {
      *
      * @return an array of variable denoting the resource usage for each node.
      */
-    public IntDomainVar[] getPhysicalUsage() {
+    public IntVar[] getPhysicalUsage() {
         return phyRcUsage;
     }
 
@@ -166,7 +165,7 @@ public class CShareableResource implements ChocoModelView {
      * @param nIdx the node identifier
      * @return the variable denoting the resource usage for the node. {@code null} if the node is unknown
      */
-    public IntDomainVar getPhysicalUsage(int nIdx) {
+    public IntVar getPhysicalUsage(int nIdx) {
         if (nIdx >= 0 && nIdx < rp.getNodes().length) {
             return phyRcUsage[nIdx];
         }
@@ -180,7 +179,7 @@ public class CShareableResource implements ChocoModelView {
      *
      * @return an array of variables denoting each node virtual resource usage.
      */
-    public IntDomainVar[] getVirtualUsage() {
+    public IntVar[] getVirtualUsage() {
         return virtRcUsage;
     }
 
@@ -192,7 +191,7 @@ public class CShareableResource implements ChocoModelView {
      * @param nIdx the node identifier
      * @return the variable denoting the resource usage for the node. {@code null} if the node is unknown
      */
-    public IntDomainVar getVirtualUsage(int nIdx) {
+    public IntVar getVirtualUsage(int nIdx) {
         if (nIdx >= 0 && nIdx < rp.getNodes().length) {
             return virtRcUsage[nIdx];
         }
@@ -206,7 +205,7 @@ public class CShareableResource implements ChocoModelView {
      *
      * @return an array of variables denoting each VM vmAllocation
      */
-    public IntDomainVar[] getVMsAllocation() {
+    public IntVar[] getVMsAllocation() {
         return vmAllocation;
     }
 
@@ -218,7 +217,7 @@ public class CShareableResource implements ChocoModelView {
      * @param vmIdx the VM identifier
      * @return the variable denoting the virtual resources to allocate to the VM. {@code null} if the VM is unknown
      */
-    public IntDomainVar getVMsAllocation(int vmIdx) {
+    public IntVar getVMsAllocation(int vmIdx) {
         if (vmIdx >= 0 && vmIdx < rp.getVMs().length) {
             return vmAllocation[vmIdx];
         }
@@ -259,7 +258,7 @@ public class CShareableResource implements ChocoModelView {
      */
     public boolean addAllocateAction(ReconfigurationPlan plan, VM e, Node node, int st, int ed) {
 
-        int use = vmAllocation[rp.getVM(e)].getInf();
+        int use = vmAllocation[rp.getVM(e)].getLB();
         if (rc.getConsumption(e) != use) {
             //The allocation has changed
             Allocate a = new Allocate(e, node, rc.getIdentifier(), use, st, ed);
@@ -289,8 +288,8 @@ public class CShareableResource implements ChocoModelView {
     public boolean beforeSolve(ReconfigurationProblem p) {
         for (VM vm : source.getMapping().getAllVMs()) {
             int vmId = p.getVM(vm);
-            IntDomainVar v = vmAllocation[vmId];
-            if (v.getInf() < 0) {
+            IntVar v = vmAllocation[vmId];
+            if (v.getLB() < 0) {
                 int prevUsage = rc.getConsumption(vm);
                 try {
                     v.setInf(prevUsage);
@@ -301,9 +300,9 @@ public class CShareableResource implements ChocoModelView {
                 }
             } else {
                 try {
-                    v.setVal(v.getInf());
+                    v.setVal(v.getLB());
                 } catch (ContradictionException e) {
-                    p.getLogger().error("Unable to set the VM '{}' consumption to '{}'", rc.getResourceIdentifier(), v.getInf());
+                    p.getLogger().error("Unable to set the VM '{}' consumption to '{}'", rc.getResourceIdentifier(), v.getLB());
                     return false;
                 }
             }
@@ -317,12 +316,12 @@ public class CShareableResource implements ChocoModelView {
 
         for (VM vm : r.getFutureRunningVMs()) {
             Slice dSlice = r.getVMAction(vm).getDSlice();
-            Node destNode = r.getNode(dSlice.getHoster().getVal());
+            Node destNode = r.getNode(dSlice.getHoster().getValue());
 
             if (srcMapping.isRunning(vm) && destNode == srcMapping.getVMLocation(vm)) {
                 //Was running and stay on the same node
                 //Check if the VM has been cloned
-                insertAllocateAction(p, vm, destNode, dSlice.getStart().getVal());
+                insertAllocateAction(p, vm, destNode, dSlice.getStart().getValue());
             } else {
                 //TODO: not constant time operation. Maybe a big failure
                 VM dVM = clones.containsKey(vm) ? clones.get(vm) : vm;
@@ -354,9 +353,9 @@ public class CShareableResource implements ChocoModelView {
             prev = rc.getConsumption(sVM);
         }
         int now = 0;
-        IntDomainVar nowI = getVMsAllocation(rp.getVM(sVM));
+        IntVar nowI = getVMsAllocation(rp.getVM(sVM));
         if (nowI != null) {
-            now = nowI.getInf();
+            now = nowI.getLB();
         }
         if (prev != now) {
             AllocateEvent ev = new AllocateEvent(vm, getResourceIdentifier(), now);
@@ -367,7 +366,7 @@ public class CShareableResource implements ChocoModelView {
     private boolean insertAllocateAction(ReconfigurationPlan p, VM vm, Node destNode, int st) {
         String rcId = getResourceIdentifier();
         int prev = rc.getConsumption(vm);
-        int now = getVMsAllocation()[rp.getVM(vm)].getVal();
+        int now = getVMsAllocation()[rp.getVM(vm)].getValue();
         if (prev != now) {
             Allocate a = new Allocate(vm, destNode, rcId, now, st, st);
             return p.add(a);
@@ -385,7 +384,7 @@ public class CShareableResource implements ChocoModelView {
         //The slice scheduling constraint that is necessary
         //TODO: a slice on both the real and the raw resource usage ?
         TIntArrayList cUse = new TIntArrayList();
-        List<IntDomainVar> dUse = new ArrayList<>();
+        List<IntVar> dUse = new ArrayList<>();
 
         for (VM vmId : rp.getVMs()) {
             VMActionModel a = rp.getVMAction(vmId);
@@ -399,14 +398,14 @@ public class CShareableResource implements ChocoModelView {
             }
         }
 
-        IntDomainVar[] capa = new IntDomainVar[rp.getNodes().length];
+        IntVar[] capa = new IntVar[rp.getNodes().length];
         System.arraycopy(virtRcUsage, 0, capa, 0, rp.getNodes().length);
-        rp.getTaskSchedulerBuilder().add(capa, cUse.toNativeArray(), dUse.toArray(new IntDomainVar[dUse.size()]));
+        rp.getTaskSchedulerBuilder().add(capa, cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]));
         return true;
     }
 
     private boolean linkVirtualToPhysicalUsage(int nIdx) {
-        double r = ratios[nIdx].getSup();
+        double r = ratios[nIdx].getUB();
         if (r == UNCHECKED_RATIO) {
             //Default overbooking ratio is 1.
             r = 1;
@@ -423,9 +422,9 @@ public class CShareableResource implements ChocoModelView {
         if (r == 1) {
             solver.post(solver.eq(phyRcUsage[nIdx], virtRcUsage[nIdx]));
             try {
-                virtRcUsage[nIdx].setSup(phyRcUsage[nIdx].getSup());
+                virtRcUsage[nIdx].setSup(phyRcUsage[nIdx].getUB());
             } catch (ContradictionException ex) {
-                rp.getLogger().error("Unable to restrict the virtual '{}' capacity of {} to {}: ", rp.getNode(nIdx), phyRcUsage[nIdx].getSup(), ex.getMessage());
+                rp.getLogger().error("Unable to restrict the virtual '{}' capacity of {} to {}: ", rp.getNode(nIdx), phyRcUsage[nIdx].getUB(), ex.getMessage());
                 return false;
             }
         } else {

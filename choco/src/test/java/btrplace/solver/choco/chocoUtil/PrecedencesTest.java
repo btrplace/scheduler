@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,8 +17,7 @@
 
 package btrplace.solver.choco.chocoUtil;
 
-import choco.cp.solver.CPSolver;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -36,9 +34,9 @@ public class PrecedencesTest {
      */
     @Test
     public void dummyTest() {
-        CPSolver s = new CPSolver();
+        Solver s = new Solver();
 
-        IntDomainVar[] ends = new IntDomainVar[5];
+        IntVar[] ends = new IntVar[5];
         int[] others = new int[5];
         others[0] = 0;
         ends[0] = s.makeConstantIntVar(1);
@@ -52,8 +50,8 @@ public class PrecedencesTest {
         ends[4] = s.makeConstantIntVar(5);
 
 
-        IntDomainVar host = s.createEnumIntVar("host", 0, 2);
-        IntDomainVar start = s.createBoundIntVar("start", 0, 5);
+        IntVar host = s.createEnumIntVar("host", 0, 2);
+        IntVar start = s.createBoundIntVar("start", 0, 5);
         /*
            If host == 0, consume = 3,4,5
            If host == 1, consume = 4,5
@@ -73,9 +71,9 @@ public class PrecedencesTest {
      */
     @Test
     public void simpleTest() {
-        CPSolver s = new CPSolver();
+        Solver s = new Solver();
 
-        IntDomainVar[] ends = new IntDomainVar[3];
+        IntVar[] ends = new IntVar[3];
         int[] others = new int[3];
         others[0] = 0;
         ends[0] = s.createBoundIntVar("ends[0]", 1, 2);
@@ -92,8 +90,8 @@ public class PrecedencesTest {
          16 * 9 * 16 + 27 * 4 * 16 + 32 * 4 * 9
          */
 
-        IntDomainVar host = s.createEnumIntVar("host", 0, 0);
-        IntDomainVar start = s.createBoundIntVar("start", 0, 5);
+        IntVar host = s.createEnumIntVar("host", 0, 0);
+        IntVar start = s.createBoundIntVar("start", 0, 5);
         Precedences p = new Precedences(s.getEnvironment(), host, start, others, ends);
         s.post(p);
         Boolean ret = s.solveAll();

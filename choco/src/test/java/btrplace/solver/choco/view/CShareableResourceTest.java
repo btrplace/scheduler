@@ -27,8 +27,6 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.*;
 import btrplace.solver.choco.actionModel.VMActionModel;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -70,21 +68,21 @@ public class CShareableResourceTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         CShareableResource rcm = new CShareableResource(rp, rc);
         Assert.assertEquals(rc.getIdentifier(), rcm.getIdentifier());
-        Assert.assertEquals(-1, rcm.getVMsAllocation()[rp.getVM(vm1)].getInf());
-        Assert.assertEquals(-1, rcm.getVMsAllocation()[rp.getVM(vm2)].getInf());
-        Assert.assertEquals(0, rcm.getVMsAllocation()[rp.getVM(vm3)].getSup()); //Will not be running so 0
-        IntDomainVar pn1 = rcm.getPhysicalUsage()[rp.getNode(n1)];
-        IntDomainVar pn2 = rcm.getPhysicalUsage()[rp.getNode(n2)];
-        Assert.assertTrue(pn1.getInf() == 0 && pn1.getSup() == 4);
-        Assert.assertTrue(pn2.getInf() == 0 && pn2.getSup() == 0);
+        Assert.assertEquals(-1, rcm.getVMsAllocation()[rp.getVM(vm1)].getLB());
+        Assert.assertEquals(-1, rcm.getVMsAllocation()[rp.getVM(vm2)].getLB());
+        Assert.assertEquals(0, rcm.getVMsAllocation()[rp.getVM(vm3)].getUB()); //Will not be running so 0
+        IntVar pn1 = rcm.getPhysicalUsage()[rp.getNode(n1)];
+        IntVar pn2 = rcm.getPhysicalUsage()[rp.getNode(n2)];
+        Assert.assertTrue(pn1.getLB() == 0 && pn1.getUB() == 4);
+        Assert.assertTrue(pn2.getLB() == 0 && pn2.getUB() == 0);
 
         pn1 = rcm.getPhysicalUsage(rp.getNode(n1));
-        Assert.assertTrue(pn1.getInf() == 0 && pn1.getSup() == 4);
+        Assert.assertTrue(pn1.getLB() == 0 && pn1.getUB() == 4);
 
-        IntDomainVar vn1 = rcm.getVirtualUsage()[rp.getNode(n1)];
-        IntDomainVar vn2 = rcm.getVirtualUsage()[rp.getNode(n2)];
-        Assert.assertEquals(vn1.getInf(), 0);
-        Assert.assertEquals(vn2.getInf(), 0);
+        IntVar vn1 = rcm.getVirtualUsage()[rp.getNode(n1)];
+        IntVar vn2 = rcm.getVirtualUsage()[rp.getNode(n2)];
+        Assert.assertEquals(vn1.getLB(), 0);
+        Assert.assertEquals(vn2.getLB(), 0);
 
         Assert.assertEquals(rc, rcm.getSourceResource());
 
@@ -128,8 +126,8 @@ public class CShareableResourceTest {
         rcm.getVMsAllocation()[rp.getVM(vm2)].setInf(3);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
-        Assert.assertTrue(rcm.getVirtualUsage(0).isInstantiatedTo(2));
-        Assert.assertTrue(rcm.getVirtualUsage(1).isInstantiatedTo(3));
+        Assert.assertTrue(rcm.getVirtualUsage(0).instantiatedTo(2));
+        Assert.assertTrue(rcm.getVirtualUsage(1).instantiatedTo(3));
     }
 
     @Test
@@ -161,8 +159,8 @@ public class CShareableResourceTest {
         Assert.assertNotNull(p);
         //Check the amount of allocated resources on the RP
         CShareableResource rcm = (CShareableResource) rp.getView(rc.getIdentifier());
-        Assert.assertEquals(rcm.getVMsAllocation()[rp.getVM(vm1)].getVal(), 5);
-        Assert.assertEquals(rcm.getVMsAllocation()[rp.getVM(vm2)].getVal(), 7);
+        Assert.assertEquals(rcm.getVMsAllocation()[rp.getVM(vm1)].getValue(), 5);
+        Assert.assertEquals(rcm.getVMsAllocation()[rp.getVM(vm2)].getValue(), 7);
 
         //And on the resulting plan.
         Model res = p.getResult();

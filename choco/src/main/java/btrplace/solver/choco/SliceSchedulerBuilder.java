@@ -23,9 +23,9 @@ import btrplace.solver.choco.actionModel.KeepRunningVMModel;
 import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import btrplace.solver.choco.chocoUtil.TaskScheduler;
-import choco.cp.solver.CPSolver;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.Solver;
+import solver.exception.ContradictionException;
+import solver.variables.IntVar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ import java.util.List;
  */
 public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
 
-    private List<IntDomainVar[]> capacities;
+    private List<IntVar[]> capacities;
 
     /**
      * Make a new builder.
@@ -57,7 +57,7 @@ public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
      * @param cUse the resource usage of each of the cSlices
      * @param dUse the resource usage of each of the dSlices
      */
-    public void add(IntDomainVar[] capa, int[] cUse, IntDomainVar[] dUse) {
+    public void add(IntVar[] capa, int[] cUse, IntVar[] dUse) {
         capacities.add(capa);
         cUsages.add(cUse);
         dUsages.add(dUse);
@@ -69,15 +69,15 @@ public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
      * @return the resulting constraint
      */
     public TaskScheduler build() {
-        CPSolver s = rp.getSolver();
+        Solver s = rp.getSolver();
 
         //We get the UB of the node capacity and the LB for the VM usage.
         int[][] capas = new int[capacities.size()][];
         int i = 0;
-        for (IntDomainVar[] capaDim : capacities) {
+        for (IntVar[] capaDim : capacities) {
             capas[i] = new int[capaDim.length];
             for (int j = 0; j < capaDim.length; j++) {
-                capas[i][j] = capaDim[j].getSup();
+                capas[i][j] = capaDim[j].getUB();
             }
             i++;
         }
@@ -91,16 +91,16 @@ public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
         i = 0;
 
         int[][] dUses = new int[dUsages.size()][];
-        for (IntDomainVar[] dUseDim : dUsages) {
+        for (IntVar[] dUseDim : dUsages) {
             dUses[i] = new int[dUseDim.length];
             for (int j = 0; j < dUseDim.length; j++) {
-                dUses[i][j] = dUseDim[j].getInf();
+                dUses[i][j] = dUseDim[j].getLB();
             }
             i++;
         }
         symmetryBreakingForStayingVMs();
-        IntDomainVar[] earlyStarts = ActionModelUtils.getHostingStarts(rp.getNodeActions());
-        IntDomainVar[] lastEnd = ActionModelUtils.getHostingEnds(rp.getNodeActions());
+        IntVar[] earlyStarts = ActionModelUtils.getHostingStarts(rp.getNodeActions());
+        IntVar[] lastEnd = ActionModelUtils.getHostingEnds(rp.getNodeActions());
         return new TaskScheduler(s.getEnvironment(),
                 earlyStarts,
                 lastEnd,
@@ -120,7 +120,7 @@ public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
             Boolean decOrStay = null;
             //Get the resources usage
             for (int d = 0; d < cUsages.size(); d++) {
-                int req = dUsages.get(d)[dIdx].getInf();
+                int req = dUsages.get(d)[dIdx].getLB();
                 int use = cUsages.get(d)[cIdx];
                 if (decOrStay == null) {
                     decOrStay = req <= use;
@@ -148,15 +148,15 @@ public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
             Slice dSlice = a.getDSlice();
             Slice cSlice = a.getCSlice();
             if (dSlice != null && cSlice != null) {
-                IntDomainVar stay = ((KeepRunningVMModel) a).isStaying();
+                IntVar stay = ((KeepRunningVMModel) a).isStaying();
 
                 Boolean ret = strictlyDecreasingOrUnchanged(vm);
                 if (Boolean.TRUE.equals(ret)) {
                     //Else, the resource usage is decreasing, so
                     // we set the cSlice duration to 0 to directly reduces the resource allocation
-                    if (stay.isInstantiatedTo(1)) {
+                    if (stay.instantiatedTo(1)) {
                         try {
-                            cSlice.getDuration().setVal(0);
+                            cSlice.getDuration().instantiateTo(0, aCause);
                         } catch (ContradictionException ex) {
                             rp.getLogger().info("Unable to set the cSlice duration of {} to 0", cSlice.getSubject());
                             return false;
@@ -168,9 +168,9 @@ public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
                     //If the resource usage will be increasing
                     //Then the duration of the dSlice can be set to 0
                     //(the allocation will be performed at the end of the reconfiguration process)
-                    if (stay.isInstantiatedTo(1)) {
+                    if (stay.instantiatedTo(1)) {
                         try {
-                            dSlice.getDuration().setVal(0);
+                            dSlice.getDuration().instantiateTo(0, aCause);
                         } catch (ContradictionException ex) {
                             rp.getLogger().info("Unable to set the dSlice duration of {} to 0", dSlice.getSubject());
                             return false;

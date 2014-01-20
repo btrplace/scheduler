@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,11 +17,11 @@
 
 package btrplace.solver.choco.chocoUtil;
 
-import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.SolverException;
-import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import solver.constraints.IntConstraint;
+import solver.exception.ContradictionException;
+import solver.exception.SolverException;
+import solver.variables.IntVar;
 
 /**
  * A fast implementation for BVAR => VAR = CSTE
@@ -31,11 +30,11 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * @author Charles Prud'homme
  * @since 29/06/11
  */
-public class FastIFFEq extends AbstractBinIntSConstraint {
+public class FastIFFEq extends IntConstraint<IntVar> {
 
     private final int constant;
 
-    public FastIFFEq(IntDomainVar b, IntDomainVar var, int constante) {
+    public FastIFFEq(IntVar b, IntVar var, int constante) {
         super(b, var);
         if (!b.hasBooleanDomain()) {
             throw new SolverException(b.getName() + " is not a boolean variable");
@@ -57,8 +56,8 @@ public class FastIFFEq extends AbstractBinIntSConstraint {
 
     @Override
     public void propagate() throws ContradictionException {
-        if (v0.isInstantiated()) {
-            int val = v0.getVal();
+        if (v0.instantiated()) {
+            int val = v0.getValue();
             if (val == 0) {
                 if (v1.removeVal(constant, this, false)) {
                     this.setEntailed();
@@ -68,7 +67,7 @@ public class FastIFFEq extends AbstractBinIntSConstraint {
                 this.setEntailed();
             }
         }
-        if (v1.isInstantiatedTo(constant)) {
+        if (v1.instantiatedTo(constant)) {
             v0.instantiate(1, this, false);
         } else if (!v1.canBeInstantiatedTo(constant)) {
             v0.instantiate(0, this, false);
@@ -79,7 +78,7 @@ public class FastIFFEq extends AbstractBinIntSConstraint {
     @Override
     public void awakeOnInst(int idx) throws ContradictionException {
         if (idx == 0) {
-            int val = v0.getVal();
+            int val = v0.getValue();
             if (val == 0) {
                 if (v1.removeVal(constant, this, false)) {
                     this.setEntailed();
@@ -88,7 +87,7 @@ public class FastIFFEq extends AbstractBinIntSConstraint {
                 v1.instantiate(constant, this, false);
             }
         } else {
-            if (v1.isInstantiatedTo(constant)) {
+            if (v1.instantiatedTo(constant)) {
                 v0.instantiate(1, this, false);
             } else {
                 v0.instantiate(0, this, false);
@@ -131,9 +130,9 @@ public class FastIFFEq extends AbstractBinIntSConstraint {
 
     @Override
     public boolean isConsistent() {
-        if (vars[0].isInstantiated() || vars[1].isInstantiated()) {
-            return ((vars[0].isInstantiatedTo(0) && !vars[1].isInstantiatedTo(constant))
-                    || (vars[0].isInstantiatedTo(1) && vars[1].isInstantiatedTo(constant)));
+        if (vars[0].instantiated() || vars[1].instantiated()) {
+            return ((vars[0].instantiatedTo(0) && !vars[1].instantiatedTo(constant))
+                    || (vars[0].instantiatedTo(1) && vars[1].instantiatedTo(constant)));
         }
         return true;
     }

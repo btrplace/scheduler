@@ -19,8 +19,6 @@ package btrplace.solver.choco;
 
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
-import choco.cp.solver.CPSolver;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -37,7 +35,7 @@ public class SliceUtilsTest {
 
     private List<Slice> makeSlices() {
         Model mo = new DefaultModel();
-        CPSolver csp = new CPSolver();
+        Solver csp = new Solver();
         List<Slice> l = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             l.add(new Slice(mo.newVM(),
@@ -52,7 +50,7 @@ public class SliceUtilsTest {
 
     @Test
     public void testExtractHosters() {
-        IntDomainVar[] vs = SliceUtils.extractHosters(makeSlices());
+        IntVar[] vs = SliceUtils.extractHosters(makeSlices());
         for (int i = 0; i < vs.length; i++) {
             Assert.assertEquals(vs[i].getName(), "ho " + i);
         }
@@ -60,7 +58,7 @@ public class SliceUtilsTest {
 
     @Test
     public void testExtractStarts() {
-        IntDomainVar[] vs = SliceUtils.extractStarts(makeSlices());
+        IntVar[] vs = SliceUtils.extractStarts(makeSlices());
         for (int i = 0; i < vs.length; i++) {
             Assert.assertEquals(vs[i].getName(), "st " + i);
         }
@@ -68,7 +66,7 @@ public class SliceUtilsTest {
 
     @Test
     public void testExtractEnds() {
-        IntDomainVar[] vs = SliceUtils.extractEnds(makeSlices());
+        IntVar[] vs = SliceUtils.extractEnds(makeSlices());
         for (int i = 0; i < vs.length; i++) {
             Assert.assertEquals(vs[i].getName(), "ed " + i);
         }
@@ -76,7 +74,7 @@ public class SliceUtilsTest {
 
     @Test
     public void testExtractDurations() {
-        IntDomainVar[] vs = SliceUtils.extractDurations(makeSlices());
+        IntVar[] vs = SliceUtils.extractDurations(makeSlices());
         for (int i = 0; i < vs.length; i++) {
             Assert.assertEquals(vs[i].getName(), "du " + i);
         }

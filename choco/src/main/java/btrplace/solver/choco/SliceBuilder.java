@@ -19,9 +19,8 @@ package btrplace.solver.choco;
 
 import btrplace.model.VM;
 import btrplace.solver.SolverException;
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.variables.integer.IntDomainVarAddCste;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.Solver;
+import solver.variables.IntVar;
 
 
 /**
@@ -37,9 +36,9 @@ public class SliceBuilder {
 
     private ReconfigurationProblem rp;
 
-    private IntDomainVar start = null, end = null, duration = null;
+    private IntVar start = null, end = null, duration = null;
 
-    private IntDomainVar hoster = null;
+    private IntVar hoster = null;
 
     private VM vm;
 
@@ -78,14 +77,14 @@ public class SliceBuilder {
             duration = makeDuration();
         }
 
-        CPSolver s = rp.getSolver();
+        Solver s = rp.getSolver();
 
         //UB for the time variables
         ticksSooner(s, start, end);
         ticksSooner(s, end, end);
         ticksSooner(s, duration, end);
 
-        if (!start.isInstantiatedTo(0)) {
+        if (!start.instantiatedTo(0)) {
             //TODO redundancy with makeDuration() ?
             s.post(s.eq(end, s.plus(start, duration)));
         }
@@ -99,8 +98,8 @@ public class SliceBuilder {
      * @param t1
      * @param t2
      */
-    private void ticksSooner(CPSolver s, IntDomainVar t1, IntDomainVar t2) {
-        if (!t1.equals(t2) && t1.getSup() > t2.getInf()) {
+    private void ticksSooner(Solver s, IntVar t1, IntVar t2) {
+        if (!t1.equals(t2) && t1.getUB() > t2.getLB()) {
             s.post(s.leq(t1, t2));
         }
     }
@@ -108,23 +107,23 @@ public class SliceBuilder {
     /**
      * Make the duration variable depending on the others.
      */
-    private IntDomainVar makeDuration() throws SolverException {
-        if (start.isInstantiated() && end.isInstantiated()) {
-            int d = end.getVal() - start.getVal();
+    private IntVar makeDuration() throws SolverException {
+        if (start.instantiated() && end.instantiated()) {
+            int d = end.getValue() - start.getValue();
             return rp.makeDuration(d, d, lblPrefix, "_duration");
-        } else if (start.isInstantiated()) {
-            if (start.isInstantiatedTo(0)) {
+        } else if (start.instantiated()) {
+            if (start.instantiatedTo(0)) {
                 return end;
             } else {
-                return new IntDomainVarAddCste(rp.getSolver(), rp.makeVarLabel(lblPrefix, "_duration"), end, -start.getVal());
+                return new IntVarAddCste(rp.getSolver(), rp.makeVarLabel(lblPrefix, "_duration"), end, -start.getValue());
             }
         } else {
-            int inf = end.getInf() - start.getSup();
+            int inf = end.getLB() - start.getUB();
             if (inf < 0) {
                 inf = 0;
             }
-            int sup = end.getSup() - start.getInf();
-            IntDomainVar d = rp.makeDuration(sup, inf, lblPrefix, "_duration");
+            int sup = end.getUB() - start.getLB();
+            IntVar d = rp.makeDuration(sup, inf, lblPrefix, "_duration");
             rp.getSolver().post(rp.getSolver().eq(end, rp.getSolver().plus(start, d)));
             return d;
         }
@@ -136,7 +135,7 @@ public class SliceBuilder {
      * @param st the variable to use
      * @return the current builder
      */
-    public SliceBuilder setStart(IntDomainVar st) {
+    public SliceBuilder setStart(IntVar st) {
         start = st;
         return this;
     }
@@ -147,7 +146,7 @@ public class SliceBuilder {
      * @param e the variable to use
      * @return the current builder
      */
-    public SliceBuilder setEnd(IntDomainVar e) {
+    public SliceBuilder setEnd(IntVar e) {
         this.end = e;
         return this;
     }
@@ -158,7 +157,7 @@ public class SliceBuilder {
      * @param d the variable to use
      * @return the current builder
      */
-    public SliceBuilder setDuration(IntDomainVar d) {
+    public SliceBuilder setDuration(IntVar d) {
         this.duration = d;
         return this;
     }
@@ -169,7 +168,7 @@ public class SliceBuilder {
      * @param h the variable to use
      * @return the current builder
      */
-    public SliceBuilder setHoster(IntDomainVar h) {
+    public SliceBuilder setHoster(IntVar h) {
         this.hoster = h;
         return this;
     }

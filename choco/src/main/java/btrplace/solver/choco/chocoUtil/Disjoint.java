@@ -17,16 +17,15 @@
 
 package btrplace.solver.choco.chocoUtil;
 
-import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.common.util.tools.ArrayUtils;
-import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.IStateBitSet;
-import choco.kernel.memory.IStateInt;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import memory.IStateBitSet;
+import memory.IStateInt;
+import solver.Solver;
+import solver.constraints.IntConstraint;
+import solver.exception.ContradictionException;
+import solver.variables.IntVar;
+import util.iterators.DisposableIntIterator;
+import util.tools.ArrayUtils;
 
 import java.util.BitSet;
 
@@ -36,7 +35,7 @@ import java.util.BitSet;
  *
  * @author Sophie Demassey
  */
-public class Disjoint extends AbstractLargeIntSConstraint {
+public class Disjoint extends IntConstraint<IntVar> {
 
 
     /**
@@ -62,22 +61,22 @@ public class Disjoint extends AbstractLargeIntSConstraint {
 
 
     /**
-     * @param environment solver environment
-     * @param x           first set of variables (group 0)
-     * @param y           second set of variables (group 1)
-     * @param c           max variable value + 1
+     * @param s solver
+     * @param x first set of variables (group 0)
+     * @param y second set of variables (group 1)
+     * @param c max variable value + 1
      */
-    public Disjoint(IEnvironment environment, IntDomainVar[] x, IntDomainVar[] y, int c) {
-        super(ArrayUtils.append(x, y));
+    public Disjoint(Solver s, IntVar[] x, IntVar[] y, int c) {
+        super(ArrayUtils.append(x, y), s);
         this.nbX = x.length;
         this.nbValues = c;
         candidates = new IStateInt[2][c];
         required = new IStateBitSet[2];
-        required[0] = environment.makeBitSet(c);
-        required[1] = environment.makeBitSet(c);
+        required[0] = s.getEnvironment().makeBitSet(c);
+        required[1] = s.getEnvironment().makeBitSet(c);
         for (int v = 0; v < c; v++) {
-            candidates[0][v] = environment.makeInt(0);
-            candidates[1][v] = environment.makeInt(0);
+            candidates[0][v] = s.getEnvironment().makeInt(0);
+            candidates[1][v] = s.getEnvironment().makeInt(0);
         }
     }
 
@@ -93,9 +92,9 @@ public class Disjoint extends AbstractLargeIntSConstraint {
      * @param var   the variable
      * @param group the group of the variable
      */
-    private void initVar(IntDomainVar var, int group) {
-        if (var.isInstantiated()) {
-            required[group].set(var.getVal());
+    private void initVar(IntVar var, int group) {
+        if (var.instantiated()) {
+            required[group].set(var.getValue());
         } else {
             DisposableIntIterator it = var.getDomain().getIterator();
             try {
@@ -129,8 +128,7 @@ public class Disjoint extends AbstractLargeIntSConstraint {
      * @param val   the new assigned value
      * @param group the group of the new instantiated variable
      * @param other the other group (other = 1-group)
-     * @throws choco.kernel.solver.ContradictionException
-     *          when some variables in both groups are instantiated to the same value
+     * @throws ContradictionException when some variables in both groups are instantiated to the same value
      */
     public void setRequired(int val, int group, int other) throws ContradictionException {
 
@@ -159,7 +157,7 @@ public class Disjoint extends AbstractLargeIntSConstraint {
     @Override
     public void awakeOnInst(int idx) throws ContradictionException {
         int group = (idx < nbX) ? 0 : 1;
-        setRequired(vars[idx].getVal(), group, 1 - group);
+        setRequired(vars[idx].getValue(), group, 1 - group);
         constAwake(false);
     }
 

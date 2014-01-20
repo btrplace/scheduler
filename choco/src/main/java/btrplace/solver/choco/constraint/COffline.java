@@ -28,7 +28,6 @@ import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.actionModel.ActionModel;
 import btrplace.solver.choco.actionModel.VMActionModel;
-import choco.kernel.solver.ContradictionException;
 
 import java.util.HashSet;
 import java.util.Set;

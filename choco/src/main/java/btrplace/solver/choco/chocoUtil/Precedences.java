@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,32 +17,30 @@
 
 package btrplace.solver.choco.chocoUtil;
 
-import choco.Choco;
-import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.common.util.tools.ArrayUtils;
-import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.IStateInt;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import gnu.trove.TIntArrayList;
+
+import gnu.trove.list.array.TIntArrayList;
+import memory.IEnvironment;
+import memory.IStateInt;
+import solver.constraints.IntConstraint;
+import solver.exception.ContradictionException;
+import solver.variables.IntVar;
+import util.iterators.DisposableIntIterator;
+import util.tools.ArrayUtils;
 
 /**
  * Kind of a precedence constraint when there is multiple resources.
  *
  * @author Fabien Hermenier
  */
-public class Precedences extends AbstractLargeIntSConstraint {
+public class Precedences extends IntConstraint<IntVar> {
 
-    private IntDomainVar host;
+    private IntVar host;
 
-    private IntDomainVar start;
+    private IntVar start;
 
     private int[] othersHost;
 
-    private IntDomainVar[] othersEnd;
+    private IntVar[] othersEnd;
 
     private int[][] endsByHost;
 
@@ -68,8 +65,8 @@ public class Precedences extends AbstractLargeIntSConstraint {
      * @param othersHost the host of all the other tasks
      * @param othersEnd  the moment each of the other tasks leave their resource
      */
-    public Precedences(IEnvironment e, IntDomainVar h, IntDomainVar st, int[] othersHost, IntDomainVar[] othersEnd) {
-        super(ArrayUtils.append(new IntDomainVar[]{h, st}, othersEnd));
+    public Precedences(IEnvironment e, IntVar h, IntVar st, int[] othersHost, IntVar[] othersEnd) {
+        super(ArrayUtils.append(new IntVar[]{h, st}, othersEnd));
         this.host = h;
         this.start = st;
         this.othersHost = othersHost;
@@ -80,9 +77,9 @@ public class Precedences extends AbstractLargeIntSConstraint {
     @Override
     public void awake() throws ContradictionException {
         //TODO: reduce the array size, to reduce memory footprint
-        horizonLB = new IStateInt[host.getSup() + 1];
-        horizonUB = new IStateInt[host.getSup() + 1];
-        endsByHost = new int[host.getSup() + 1][];
+        horizonLB = new IStateInt[host.getUB() + 1];
+        horizonUB = new IStateInt[host.getUB() + 1];
+        endsByHost = new int[host.getUB() + 1][];
 
         TIntArrayList[] l = new TIntArrayList[endsByHost.length];
 
@@ -94,8 +91,8 @@ public class Precedences extends AbstractLargeIntSConstraint {
 
         for (int i = 0; i < othersHost.length; i++) {
             int p = othersHost[i];
-            int lb = othersEnd[i].getInf();
-            int ub = othersEnd[i].getSup();
+            int lb = othersEnd[i].getLB();
+            int ub = othersEnd[i].getUB();
             if (p < horizonUB.length) {
                 //The other is on a possible host
                 horizonLB[p].set(Math.max(lb, horizonLB[p].get()));
@@ -104,11 +101,11 @@ public class Precedences extends AbstractLargeIntSConstraint {
             }
         }
         for (int i = 0; i < l.length; i++) {
-            endsByHost[i] = l[i].toNativeArray();
+            endsByHost[i] = l[i].toArray();
         }
 
-        if (host.isInstantiated()) {
-            start.setInf(horizonLB[host.getVal()].get());
+        if (host.instantiated()) {
+            start.setInf(horizonLB[host.getValue()].get());
         }
         propagate();
     }
@@ -129,7 +126,7 @@ public class Precedences extends AbstractLargeIntSConstraint {
             case 1:
                 //The moment the task starts has been instantiated
                 //For each possible host, we update the UB of the other ends to ensure the non-overlapping
-                int st = start.getVal();
+                int st = start.getValue();
                 DisposableIntIterator it = host.getDomain().getIterator();
                 try {
                     while (it.hasNext()) {
@@ -151,7 +148,7 @@ public class Precedences extends AbstractLargeIntSConstraint {
                 recomputeHorizonForHost(h);
                 //We recompute the horizon of the associated host
 
-                if (host.isInstantiatedTo(h)) {
+                if (host.instantiatedTo(h)) {
                     start.setInf(horizonLB[h].get());
                 } else if (host.canBeInstantiatedTo(h)) {
                     //Browse the horizon for each of the possible host to update the LB
@@ -177,9 +174,9 @@ public class Precedences extends AbstractLargeIntSConstraint {
         if (h < horizonUB.length) {
             int lb = 0, ub = 0;
             for (int id : endsByHost[h]) {
-                IntDomainVar end = othersEnd[id];
-                lb = Math.max(end.getInf(), lb);
-                ub = Math.max(end.getSup(), ub);
+                IntVar end = othersEnd[id];
+                lb = Math.max(end.getLB(), lb);
+                ub = Math.max(end.getUB(), ub);
             }
             horizonLB[h].set(lb);
             horizonUB[h].set(ub);
@@ -192,7 +189,7 @@ public class Precedences extends AbstractLargeIntSConstraint {
             int o = idx - 2;
             int h = othersHost[o];
             recomputeHorizonForHost(h);
-            if (host.isInstantiatedTo(h)) {
+            if (host.instantiatedTo(h)) {
                 start.setInf(horizonLB[h].get());
             }
         }
@@ -236,7 +233,7 @@ public class Precedences extends AbstractLargeIntSConstraint {
     }
 
     private void checkHorizonForHost(int h) throws ContradictionException {
-        if (start.getSup() < horizonLB[h].get()) {
+        if (start.getUB() < horizonLB[h].get()) {
             fail();
         }
     }
@@ -259,14 +256,14 @@ public class Precedences extends AbstractLargeIntSConstraint {
         int[] lbs = new int[horizonLB.length];
         int[] ubs = new int[horizonUB.length];
         for (int i = 0; i < othersEnd.length; i++) {
-            IntDomainVar end = othersEnd[i];
+            IntVar end = othersEnd[i];
             int h = othersHost[i];
             //beware of h that can be out of the domain of the watched horizons
-            if (h < lbs.length && end.getInf() > lbs[h]) {
-                lbs[h] = end.getInf();
+            if (h < lbs.length && end.getLB() > lbs[h]) {
+                lbs[h] = end.getLB();
             }
-            if (h < ubs.length && end.getSup() > ubs[h]) {
-                ubs[h] = end.getSup();
+            if (h < ubs.length && end.getUB() > ubs[h]) {
+                ubs[h] = end.getUB();
             }
         }
         for (int i = 0; i < horizonUB.length; i++) {
@@ -285,7 +282,7 @@ public class Precedences extends AbstractLargeIntSConstraint {
     private void printOthers() {
         ChocoLogging.getBranchingLogger().info("--- Others ---");
         for (int i = 0; i < othersEnd.length; i++) {
-            ChocoLogging.getBranchingLogger().info("Task " + i + " on " + othersHost[i] + " ends at " + othersEnd[i].pretty());
+            ChocoLogging.getBranchingLogger().info("Task " + i + " on " + othersHost[i] + " ends at " + othersEnd[i].toString());
         }
     }
 
@@ -295,12 +292,12 @@ public class Precedences extends AbstractLargeIntSConstraint {
             StringBuilder buf = new StringBuilder();
             buf.append("On ").append(i).append(':');
             for (int id : endsByHost[i]) {
-                buf.append(" ").append(othersEnd[id].pretty());
+                buf.append(" ").append(othersEnd[id].toString());
             }
             ChocoLogging.getBranchingLogger().info(buf.append(" lb=").append(horizonLB[i].get()).append(" ub=").append(horizonUB[i].get()).toString());
         }
-        ChocoLogging.getBranchingLogger().info("Mine placed on " + host.pretty());
-        ChocoLogging.getBranchingLogger().info("Mine starts at " + start.pretty());
+        ChocoLogging.getBranchingLogger().info("Mine placed on " + host.toString());
+        ChocoLogging.getBranchingLogger().info("Mine starts at " + start.toString());
     }
 
 }

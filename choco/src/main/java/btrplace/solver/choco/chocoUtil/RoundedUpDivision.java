@@ -17,10 +17,10 @@
 
 package btrplace.solver.choco.chocoUtil;
 
-import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import solver.constraints.IntConstraint;
+import solver.exception.ContradictionException;
+import solver.variables.IntVar;
 
 /**
  * A constraint to enforce {@code a == b / q} where {@code q} is a real and {@code a} and {@code b} are
@@ -35,16 +35,16 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  *
  * @author Fabien Hermenier
  */
-public class RoundedUpDivision extends AbstractBinIntSConstraint {
+public class RoundedUpDivision extends IntConstraint<IntVar> {
 
     private double q;
 
-    private IntDomainVar a, b;
+    private IntVar a, b;
 
     /**
      * Make a new constraint.
      */
-    public RoundedUpDivision(IntDomainVar a, IntDomainVar b, double q) {
+    public RoundedUpDivision(IntVar a, IntVar b, double q) {
         super(a, b);
         this.a = a;
         this.b = b;
@@ -72,8 +72,8 @@ public class RoundedUpDivision extends AbstractBinIntSConstraint {
 
     @Override
     public void propagate() throws ContradictionException {
-        if (a.getInf() != div(b.getInf())
-                || a.getSup() != div(b.getSup())) {
+        if (a.getLB() != div(b.getLB())
+                || a.getUB() != div(b.getUB())) {
             fail();
         }
     }
@@ -81,9 +81,9 @@ public class RoundedUpDivision extends AbstractBinIntSConstraint {
     @Override
     public void awakeOnInf(int i) throws ContradictionException {
         if (i == 1) {
-            a.setInf(div(b.getInf()));
+            a.setInf(div(b.getLB()));
         } else {
-            b.setInf(multLB(a.getInf()));
+            b.setInf(multLB(a.getLB()));
         }
         constAwake(false);
     }
@@ -91,9 +91,9 @@ public class RoundedUpDivision extends AbstractBinIntSConstraint {
     @Override
     public void awakeOnSup(int i) throws ContradictionException {
         if (i == 1) {
-            a.setSup(div(b.getSup()));
+            a.setSup(div(b.getUB()));
         } else {
-            b.setSup((int) Math.floor(q * a.getSup()));
+            b.setSup((int) Math.floor(q * a.getUB()));
         }
         constAwake(false);
     }
@@ -101,10 +101,10 @@ public class RoundedUpDivision extends AbstractBinIntSConstraint {
     @Override
     public void awakeOnInst(int i) throws ContradictionException {
         if (i == 1) {
-            a.setVal(div(b.getVal()));
+            a.setVal(div(b.getValue()));
         } else {
-            b.setInf(multLB(a.getInf()));
-            b.setSup((int) Math.floor(q * a.getSup()));
+            b.setInf(multLB(a.getLB()));
+            b.setSup((int) Math.floor(q * a.getUB()));
         }
         constAwake(false);
     }
@@ -116,7 +116,7 @@ public class RoundedUpDivision extends AbstractBinIntSConstraint {
 
     @Override
     public String pretty() {
-        return new StringBuilder(a.pretty()).append(" = ").append(b.pretty()).append('/').append(q).toString();
+        return new StringBuilder(a.toString()).append(" = ").append(b.toString()).append('/').append(q).toString();
     }
 
     @Override

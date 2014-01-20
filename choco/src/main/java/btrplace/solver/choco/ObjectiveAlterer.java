@@ -17,7 +17,8 @@
 
 package btrplace.solver.choco;
 
-import choco.kernel.solver.variables.Var;
+
+import solver.variables.Variable;
 
 /**
  * A class to provide a method to customize the optimisation process of the solver.
@@ -34,7 +35,7 @@ public abstract class ObjectiveAlterer {
     /**
      * The objective variable.
      */
-    private Var obj;
+    private Variable obj;
 
     /**
      * The reconfiguration problem to consider.
@@ -70,7 +71,7 @@ public abstract class ObjectiveAlterer {
      *
      * @return the objective variable.
      */
-    public Var getObjective() {
+    public Variable getObjective() {
         return obj;
     }
 

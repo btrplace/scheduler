@@ -17,19 +17,19 @@
 
 package btrplace.solver.choco.chocoUtil;
 
-import choco.cp.solver.constraints.integer.Element;
-import choco.cp.solver.constraints.integer.ElementV;
-import choco.cp.solver.constraints.integer.EuclideanDivisionXYZ;
-import choco.cp.solver.constraints.integer.TimesXYZ;
-import choco.cp.solver.constraints.integer.bool.BooleanFactory;
-import choco.cp.solver.constraints.reified.ReifiedFactory;
-import choco.kernel.common.util.tools.ArrayUtils;
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.variables.integer.IntDomain;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import solver.Solver;
+import solver.constraints.Constraint;
+import solver.constraints.IntConstraintFactory;
+import solver.variables.BoolVar;
+import solver.variables.IntVar;
+import solver.variables.VariableFactory;
+import util.tools.ArrayUtils;
 
 import java.util.Arrays;
+
+import static solver.constraints.LogicalConstraintFactory.and;
+import static solver.constraints.LogicalConstraintFactory.or;
 
 /**
  * Utility class to ease the creation of some constraints on Choco.
@@ -49,19 +49,21 @@ public final class ChocoUtils {
      * @param c1 the first constraint
      * @param c2 the second constraint
      */
-    public static void postImplies(Solver s, SConstraint<IntDomainVar> c1, SConstraint<IntDomainVar> c2) {
-        IntDomainVar bC1 = s.createBooleanVar("isSatisfied(" + c1.pretty() + ")");
-        s.post(ReifiedFactory.builder(bC1, c1, s));
+    public static void postImplies(Solver s, Constraint c1, Constraint c2) {
+        BoolVar bC1 = c1.reif();
+        //IntVar bC1 = s.createBooleanVar("isSatisfied(" + c1.toString() + ")");
+        //s.post(ReifiedFactory.builder(bC1, c1, s));
 
-        IntDomainVar bC2 = s.createBooleanVar("isSatisfied(" + c2.pretty() + ")");
-        s.post(ReifiedFactory.builder(bC2, c2, s));
+        //IntVar bC2 = s.createBooleanVar("isSatisfied(" + c2.toString() + ")");
+        //s.post(ReifiedFactory.builder(bC2, c2, s));
+        BoolVar bC2 = c2.reif();
 
-        SConstraint cNotC1 = BooleanFactory.not(bC1);
-        IntDomainVar bNotC1 = s.createBooleanVar("not(" + bC1.getName() + ")");
-        s.post(ReifiedFactory.builder(bNotC1, cNotC1, s));
+        //Constraint cNotC1 = BooleanFactory.not(bC1);
+        //IntVar bNotC1 = s.createBooleanVar("not(" + bC1.getName() + ")");
+        //s.post(ReifiedFactory.builder(bNotC1, cNotC1, s));
+        BoolVar bNotC1 = bC1.not();
 
-
-        s.post(BooleanFactory.or(s.getEnvironment(), bNotC1, bC2));
+        s.post(or(bNotC1, bC2));
     }
 
     /**
@@ -72,15 +74,17 @@ public final class ChocoUtils {
      * @param b1 the first constraint as boolean
      * @param c2 the second constraint
      */
-    public static void postImplies(Solver s, IntDomainVar b1, SConstraint<IntDomainVar> c2) {
+    public static void postImplies(Solver s, BoolVar b1, Constraint c2) {
 
-        IntDomainVar bC2 = s.createBooleanVar("isSatisfied(" + c2.pretty() + ")");
-        s.post(ReifiedFactory.builder(bC2, c2, s));
+        //IntVar bC2 = s.createBooleanVar("isSatisfied(" + c2.toString() + ")");
+        //s.post(ReifiedFactory.builder(bC2, c2, s));
 
-        IntDomainVar notB1 = s.createBooleanVar("not(" + b1.getName() + ")");
-        s.post(s.neq(b1, notB1));
+        BoolVar bC2 = c2.reif();
 
-        s.post(BooleanFactory.or(s.getEnvironment(), notB1, bC2));
+        BoolVar notB1 = VariableFactory.not(b1);//("not(" + b1.getName() + ")", s);
+        s.post(IntConstraintFactory.arithm(b1, "!=", notB1));
+
+        s.post(or(notB1, bC2));
     }
 
     /**
@@ -90,44 +94,46 @@ public final class ChocoUtils {
      * @param b1 the first constraint
      * @param c2 the second constraint
      */
-    public static void postIfOnlyIf(Solver s, IntDomainVar b1, SConstraint c2) {
-        IntDomainVar notBC1 = s.createBooleanVar("not(" + b1.getName() + ")");
-        s.post(s.neq(b1, notBC1));
+    public static void postIfOnlyIf(Solver s, BoolVar b1, Constraint c2) {
+        BoolVar notBC1 = VariableFactory.not(b1);
 
-        IntDomainVar bC2 = s.createBooleanVar("isSatisfied(" + c2.pretty() + ")");
-        s.post(ReifiedFactory.builder(bC2, c2, s));
+        BoolVar bC2 = c2.reif();
+        /*s.createBooleanVar("isSatisfied(" + c2.toString() + ")");
+        s.post(ReifiedFactory.builder(bC2, c2, s));*/
 
-        IntDomainVar notBC2 = s.createBooleanVar("not(" + bC2.getName() + ")");
-        s.post(s.neq(notBC2, bC2));
+        BoolVar notBC2 = bC2.not();
+        //IntVar notBC2 = s.createBooleanVar("not(" + bC2.getName() + ")");
+        //s.post(s.neq(notBC2, bC2));
 
-        IntDomainVar or1 = s.createBooleanVar("or(" + b1.getName() + "," + notBC2.getName() + ")");
-        s.post(ReifiedFactory.builder(or1, BooleanFactory.or(s.getEnvironment(), b1, notBC2), s));
+        //IntVar or1 = s.createBooleanVar("or(" + b1.getName() + "," + notBC2.getName() + ")");
+        //s.post(ReifiedFactory.builder(or1, BooleanFactory.or(s.getEnvironment(), b1, notBC2), s));
 
-        IntDomainVar or2 = s.createBooleanVar("or(" + notBC1.getName() + "," + bC2.getName() + ")");
-        s.post(ReifiedFactory.builder(or2, BooleanFactory.or(s.getEnvironment(), notBC1, bC2), s));
+        //IntVar or2 = s.createBooleanVar("or(" + notBC1.getName() + "," + bC2.getName() + ")");
+        //s.post(ReifiedFactory.builder(or2, BooleanFactory.or(s.getEnvironment(), notBC1, bC2), s));
 
-        s.post(BooleanFactory.and(or1, or2));
+        s.post(or(and(b1, bC2), and(notBC1, notBC2)));//BooleanFactory.and(or1, or2));
     }
 
     /**
      * add a constraint such as array[index]=value
      */
-    public static void nth(Solver s, IntDomainVar index, IntDomainVar[] array, IntDomainVar var) {
+    public static void nth(Solver s, IntVar index, IntVar[] array, IntVar var) {
+
         s.post(new ElementV(ArrayUtils.append(array,
-                new IntDomainVar[]{index, var}), 0, s.getEnvironment()));
+                new IntVar[]{index, var}), 0, s.getEnvironment()));
     }
 
     /**
      * add a constraint such as array[index]=value
      */
-    public static void nth(Solver s, IntDomainVar index, int[] array, IntDomainVar var) {
-        s.post(new Element(index, array, var));
+    public static void nth(Solver s, IntVar index, int[] array, IntVar var) {
+        //s.post(new Element(index, array, var));
+        s.post(IntConstraintFactory.element(index, array, var));
     }
 
-    public static IntDomainVar nth(Solver s, IntDomainVar index, IntDomainVar[] array) {
+    public static IntVar nth(Solver s, IntVar index, IntVar[] array) {
         int[] minmax = getMinMax(array);
-        IntDomainVar ret = s.createBoundIntVar(foldSetNames(array), minmax[0],
-                minmax[1]);
+        IntVar ret = VariableFactory.bounded(foldSetNames(array), minmax[0], minmax[1], s);
         ChocoUtils.nth(s, index, array, ret);
         return ret;
     }
@@ -135,14 +141,15 @@ public final class ChocoUtils {
     /**
      * make a constraint, x * y = z
      */
-    public static void mult(Solver s, IntDomainVar x, IntDomainVar y, IntDomainVar z) {
-        s.post(new TimesXYZ(x, y, z));
+    public static void mult(Solver s, IntVar x, IntVar y, IntVar z) {
+        //s.post(new TimesXYZ(x, y, z));
+        s.post(IntConstraintFactory.times(x, y, z));
     }
 
-    public static IntDomainVar mult(Solver s, IntDomainVar left, IntDomainVar right) {
-        int min = left.getInf() * right.getInf(), max = min;
-        for (int prod : new int[]{left.getInf() * right.getSup(),
-                left.getSup() * right.getSup(), left.getInf() * right.getSup()}) {
+    public static IntVar mult(Solver s, IntVar left, IntVar right) {
+        int min = left.getLB() * right.getLB(), max = min;
+        for (int prod : new int[]{left.getLB() * right.getUB(),
+                left.getUB() * right.getUB(), left.getLB() * right.getUB()}) {
             if (prod < min) {
                 min = prod;
             }
@@ -150,43 +157,42 @@ public final class ChocoUtils {
                 max = prod;
             }
         }
-        IntDomainVar ret = s.createBoundIntVar(
-                "(" + left.getName() + ")*(" + right.getName() + ")", min, max);
+        IntVar ret = VariableFactory.bounded(
+                "(" + left.getName() + ")*(" + right.getName() + ")", min, max, s);
         mult(s, left, right, ret);
         return ret;
     }
 
-    public static IntDomainVar mult(Solver s, IntDomainVar left, int right) {
-        int min = left.getInf() * right, max = min;
-        int prod = left.getSup() * right;
+    public static IntVar mult(Solver s, IntVar left, int right) {
+        int min = left.getLB() * right, max = min;
+        int prod = left.getUB() * right;
         if (prod < min) {
             min = prod;
         }
         if (prod > max) {
             max = prod;
         }
-        IntDomainVar ret = s.createBoundIntVar("(" + left.getName() + ")*" + right, min, max);
-        mult(s, left, s.createIntegerConstant("" + right, right), ret);
+        IntVar ret = VariableFactory.bounded("(" + left.getName() + ")*" + right, min, max, s);
+        mult(s, left, VariableFactory.fixed(right, s), ret);
         return ret;
     }
 
-    public static IntDomainVar div(Solver s, IntDomainVar var, int i) {
-        int a = var.getInf() / i;
-        int b = var.getSup() / i;
+    public static IntVar div(Solver s, IntVar var, int i) {
+        int a = var.getLB() / i;
+        int b = var.getUB() / i;
         int min = Math.min(a, b);
         int max = Math.max(a, b);
-        IntDomainVar ret = s.createBoundIntVar("(" + var.getName() + ")/" + i, min,
-                max);
-        s.post(new EuclideanDivisionXYZ(var, s.createIntegerConstant("" + i, i), ret));
+        IntVar ret = VariableFactory.bounded("(" + var.getName() + ")/" + i, min, max, s);
+        s.post(IntConstraintFactory.eucl_div(var, VariableFactory.fixed(i, s), ret));//new EuclideanDivisionXYZ(var, VariableFactory.fixed(i, s), ret));
         return ret;
     }
 
     /**
-     * print an array of IntDomainVar as {var0, var1, var2, var3}
+     * print an array of IntVar as {var0, var1, var2, var3}
      */
-    public static String foldSetNames(IntDomainVar[] values) {
+    public static String foldSetNames(IntVar[] values) {
         StringBuilder sb = null;
-        for (IntDomainVar idv : values) {
+        for (IntVar idv : values) {
             if (sb == null) {
                 sb = new StringBuilder("{");
             } else {
@@ -199,19 +205,19 @@ public final class ChocoUtils {
 
     /**
      * get the min and max values of the inf and sup ranges of an array of
-     * IntDomainVar
+     * IntVar
      *
      * @param array the table of VarIntDomain
      * @return [min(inf(array)), max(sup(array))]
      */
-    public static int[] getMinMax(IntDomainVar[] array) {
+    public static int[] getMinMax(IntVar[] array) {
         int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
-        for (IntDomainVar idv : array) {
-            if (idv.getInf() < min) {
-                min = idv.getInf();
+        for (IntVar idv : array) {
+            if (idv.getLB() < min) {
+                min = idv.getLB();
             }
-            if (idv.getSup() > max) {
-                max = idv.getSup();
+            if (idv.getUB() > max) {
+                max = idv.getUB();
             }
         }
         return new int[]{min, max};
@@ -224,13 +230,13 @@ public final class ChocoUtils {
      * @param from the initial value to consider.
      * @return an interval of values
      */
-    public static int[] getNextContiguousValues(IntDomainVar v, int from) {
-        IntDomain dom = v.getDomain();
-        int ub = dom.getSup();
-        int lb = dom.getNextValue(from - 1);
+    public static int[] getNextContiguousValues(IntVar v, int from) {
+        ///IntDomain dom = v.getDomain();
+        int ub = v.getUB();
+        int lb = v.nextValue(from - 1);
         //from - 1 to include the 'from' value if needed
         int prev = lb;
-        for (int val = dom.getNextValue(lb); val <= ub; val = dom.getNextValue(val)) {
+        for (int val = v.nextValue(lb); val <= ub; val = v.nextValue(val)) {
             if (val == prev || val == prev + 1) {
                 prev++;
             } else {
@@ -241,10 +247,10 @@ public final class ChocoUtils {
         return new int[]{lb, ub};
     }
 
-    public static String prettyContiguous(IntDomainVar v) {
-        int[] zone = getNextContiguousValues(v, v.getInf());
+    public static String prettyContiguous(IntVar v) {
+        int[] zone = getNextContiguousValues(v, v.getLB());
         StringBuilder buf = new StringBuilder(Arrays.toString(zone));
-        while (zone[1] < v.getSup()) {
+        while (zone[1] < v.getUB()) {
             zone = getNextContiguousValues(v, zone[1] + 1);
             buf.append(' ').append(Arrays.toString(zone));
         }

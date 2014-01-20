@@ -23,12 +23,12 @@ import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.integer.ElementV;
-import choco.cp.solver.constraints.integer.channeling.BooleanChanneling;
-import choco.cp.solver.variables.integer.BoolVarNot;
-import choco.cp.solver.variables.integer.BooleanVarImpl;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.Solver;
+import solver.constraints.IntConstraintFactory;
+import solver.constraints.nary.element.Element;
+import solver.variables.BoolVar;
+import solver.variables.IntVar;
+import solver.variables.VariableFactory;
 
 
 /**
@@ -79,17 +79,17 @@ public class ShutdownableNodeModel implements NodeActionModel {
 
     private Node node;
 
-    private IntDomainVar isOnline, isOffline;
+    private BoolVar isOnline, isOffline;
 
-    private IntDomainVar duration;
+    private IntVar duration;
 
-    private IntDomainVar end;
+    private IntVar end;
 
-    private IntDomainVar hostingStart;
+    private IntVar hostingStart;
 
-    private IntDomainVar hostingEnd;
+    private IntVar hostingEnd;
 
-    private IntDomainVar start;
+    private IntVar start;
 
     /**
      * Make a new model.
@@ -102,14 +102,14 @@ public class ShutdownableNodeModel implements NodeActionModel {
         this.node = e;
 
 
-        CPSolver s = rp.getSolver();
+        Solver s = rp.getSolver();
 
         /*
             - If the node is hosting running VMs, it is necessarily online
             - If the node is offline, it is sure it cannot host any running VMs
         */
-        isOnline = s.createBooleanVar(rp.makeVarLabel("shutdownableNode(", e, ").online"));
-        isOffline = new BoolVarNot(s, rp.makeVarLabel("shutdownableNode(", e, ").offline"), (BooleanVarImpl) isOnline);
+        isOnline = VariableFactory.bool(rp.makeVarLabel("shutdownableNode(", e, ").online"), rp.getSolver());
+        isOffline = VariableFactory.not(isOnline);//new BoolVarNot(s, rp.makeVarLabel("shutdownableNode(", e, ").offline"), (BooleanVarImpl) isOnline);
         s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNode(e)], 0));
 
         /*
@@ -117,7 +117,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
         * D = St * d;
         */
         int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), ShutdownNode.class, e);
-        duration = s.createEnumIntVar(rp.makeVarLabel("shutdownableNode(", e, ").duration"), new int[]{0, d});
+        duration = VariableFactory.enumerated(rp.makeVarLabel("shutdownableNode(", e, ").duration"), new int[]{0, d}, rp.getSolver());
         s.post(new BooleanChanneling(isOnline, duration, 0));
 
         //The moment of shutdown action consume
@@ -126,8 +126,10 @@ public class ShutdownableNodeModel implements NodeActionModel {
         //The moment of shutdown action end
         /* Ae */
         end = rp.makeUnboundedDuration("shutdownableNode(", e, ").end");
-        s.post(s.leq(end, rp.getEnd()));
-        s.post(s.leq(start, rp.getEnd()));
+        //s.post(s.leq(end, rp.getEnd()));
+        s.post(IntConstraintFactory.arithm(end, "<=", rp.getEnd()));
+        //s.post(s.leq(start, rp.getEnd()));
+        s.post(IntConstraintFactory.arithm(start, "<=", rp.getEnd()));
         /* Ae = As + D */
         s.post(s.eq(end, s.plus(start, duration)));
 
@@ -135,20 +137,22 @@ public class ShutdownableNodeModel implements NodeActionModel {
         hostingStart = rp.getStart();
         //The moment the node can no longer host VMs varies depending on its next state
         hostingEnd = rp.makeUnboundedDuration("shutdownableNode(", e, ").hostingEnd");
-        s.post(s.leq(hostingEnd, rp.getEnd()));
+        //s.post(s.leq(hostingEnd, rp.getEnd()));
+        s.post(IntConstraintFactory.arithm(hostingEnd, "<=", rp.getEnd()));
 
         /*
           T = { As, RP.end}
           He = T[St]
          */
-        s.post(new ElementV(new IntDomainVar[]{start, rp.getEnd(), isOnline, hostingEnd}, 0, s.getEnvironment()));
+        //s.post(IntConstraintFactory.element())
+        s.post(new Element(new IntVar[]{start, rp.getEnd(), isOnline, hostingEnd}, 0, s.getEnvironment()));
     }
 
 
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
-        if (isOffline.getVal() == 1) {
-            plan.add(new ShutdownNode(node, hostingEnd.getVal(), end.getVal()));
+        if (isOffline.getValue() == 1) {
+            plan.add(new ShutdownNode(node, hostingEnd.getValue(), end.getValue()));
         }
         return true;
     }
@@ -159,22 +163,22 @@ public class ShutdownableNodeModel implements NodeActionModel {
     }
 
     @Override
-    public IntDomainVar getStart() {
+    public IntVar getStart() {
         return start;
     }
 
     @Override
-    public IntDomainVar getEnd() {
+    public IntVar getEnd() {
         return end;
     }
 
     @Override
-    public IntDomainVar getDuration() {
+    public IntVar getDuration() {
         return duration;
     }
 
     @Override
-    public IntDomainVar getState() {
+    public IntVar getState() {
         return isOnline;
     }
 
@@ -184,12 +188,12 @@ public class ShutdownableNodeModel implements NodeActionModel {
     }
 
     @Override
-    public IntDomainVar getHostingStart() {
+    public IntVar getHostingStart() {
         return hostingStart;
     }
 
     @Override
-    public IntDomainVar getHostingEnd() {
+    public IntVar getHostingEnd() {
         return hostingEnd;
     }
 }

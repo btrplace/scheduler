@@ -27,9 +27,6 @@ import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.view.CShareableResource;
-import choco.cp.solver.CPSolver;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -60,9 +57,9 @@ public class CSingleResourceCapacity implements ChocoConstraint {
             throw new SolverException(rp.getSourceModel(), "Unable to find a resource mapping for resource '" + cstr.getResource() + "'");
         }
         int amount = cstr.getAmount();
-        CPSolver s = rp.getSolver();
+        Solver s = rp.getSolver();
         for (Node n : cstr.getInvolvedNodes()) {
-            IntDomainVar v = rcm.getVirtualUsage()[rp.getNode(n)];
+            IntVar v = rcm.getVirtualUsage()[rp.getNode(n)];
             s.post(s.leq(v, amount));
 
             //Continuous in practice ?

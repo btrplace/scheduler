@@ -26,7 +26,6 @@ import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Fence;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
-import choco.kernel.solver.ContradictionException;
 
 import java.util.Collection;
 import java.util.HashSet;

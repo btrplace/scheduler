@@ -27,9 +27,9 @@ import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import btrplace.solver.choco.view.ChocoModelView;
 import btrplace.solver.choco.view.ModelViewMapper;
-import choco.cp.solver.CPSolver;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.slf4j.Logger;
+import solver.Solver;
+import solver.variables.IntVar;
 
 import java.util.Collection;
 import java.util.Set;
@@ -110,14 +110,14 @@ public interface ReconfigurationProblem {
      *
      * @return a variable equals to 0
      */
-    IntDomainVar getStart();
+    IntVar getStart();
 
     /**
      * Get the end  moment of the reconfiguration
      *
      * @return a variable, should be equals to the last end moment of actions
      */
-    IntDomainVar getEnd();
+    IntVar getEnd();
 
     /**
      * Get the index of a VM
@@ -201,17 +201,17 @@ public interface ReconfigurationProblem {
      * @param timeLimit the timeout in second. Must be superior to 0 to be considered
      * @param optimize  {@code true} to make the solver try to improve the first computed solution.
      * @return a plan if the solving process succeeded, {@code null} if the solver was not able to compute
-     *         a solution.
+     * a solution.
      * @throws SolverException if an error occurs
      */
     ReconfigurationPlan solve(int timeLimit, boolean optimize) throws SolverException;
 
     /**
-     * Get the CPSolver used to model this problem.
+     * Get the Solver used to model this problem.
      *
-     * @return the CPSolver
+     * @return the Solver
      */
-    CPSolver getSolver();
+    Solver getSolver();
 
     /**
      * Create a variable that indicate the placement of an element on a node.
@@ -219,7 +219,7 @@ public interface ReconfigurationProblem {
      * @param n the variable label as a possible concatenation of objects
      * @return a variable
      */
-    IntDomainVar makeHostVariable(Object... n);
+    IntVar makeHostVariable(Object... n);
 
     /**
      * Create a variable that indicate the current placement of a VM.
@@ -230,7 +230,7 @@ public interface ReconfigurationProblem {
      * @return the created variable
      * @throws SolverException if an error occurred while creating the variable
      */
-    IntDomainVar makeCurrentHost(String n, VM vmId) throws SolverException;
+    IntVar makeCurrentHost(String n, VM vmId) throws SolverException;
 
     /**
      * Create a variable that indicate a given node.
@@ -241,7 +241,7 @@ public interface ReconfigurationProblem {
      * @return the created variable
      * @throws SolverException if an error occurred while creating the variable
      */
-    IntDomainVar makeCurrentNode(String n, Node nId) throws SolverException;
+    IntVar makeCurrentNode(String n, Node nId) throws SolverException;
 
     /**
      * Create a variable denoting a duration.
@@ -249,7 +249,7 @@ public interface ReconfigurationProblem {
      * @param n the variable label. The toString() representation of the objects will be used
      * @return the created variable.
      */
-    IntDomainVar makeUnboundedDuration(Object... n);
+    IntVar makeUnboundedDuration(Object... n);
 
     /**
      * Create a variable that indicate a moment.
@@ -257,10 +257,10 @@ public interface ReconfigurationProblem {
      * @param ub the variable upper bound
      * @param lb the variable lower bound
      * @param n  the variable label. The toString() representation of the objects will be used
-     * @return the created variable with a upper-bound necessarily lesser than {@code getEnd().getSup()}
+     * @return the created variable with a upper-bound necessarily lesser than {@code getEnd().getUB()}
      * @throws SolverException if the bounds are not valid
      */
-    IntDomainVar makeDuration(int ub, int lb, Object... n) throws SolverException;
+    IntVar makeDuration(int ub, int lb, Object... n) throws SolverException;
 
     /**
      * Get the view associated to a given identifier.
@@ -300,7 +300,7 @@ public interface ReconfigurationProblem {
      *
      * @return an array of variable counting the number of VMs on each node
      */
-    IntDomainVar[] getNbRunningVMs();
+    IntVar[] getNbRunningVMs();
 
 
     /**

@@ -26,8 +26,6 @@ import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import choco.cp.solver.CPSolver;
-import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -63,9 +61,9 @@ public class SuspendVMModelTest {
         SuspendVMModel m = (SuspendVMModel) rp.getVMActions()[0];
         Assert.assertEquals(vm1, m.getVM());
         Assert.assertNull(m.getDSlice());
-        Assert.assertTrue(m.getDuration().isInstantiatedTo(5));
-        Assert.assertTrue(m.getState().isInstantiatedTo(0));
-        Assert.assertTrue(m.getCSlice().getHoster().isInstantiatedTo(0));
+        Assert.assertTrue(m.getDuration().instantiatedTo(5));
+        Assert.assertTrue(m.getState().instantiatedTo(0));
+        Assert.assertTrue(m.getCSlice().getHoster().instantiatedTo(0));
 
         ReconfigurationPlan p = rp.solve(0, false);
         SuspendVM a = (SuspendVM) p.getActions().iterator().next();
@@ -101,7 +99,7 @@ public class SuspendVMModelTest {
         SuspendVMModel m1 = (SuspendVMModel) rp.getVMActions()[rp.getVM(vm1)];
         SuspendVMModel m2 = (SuspendVMModel) rp.getVMActions()[rp.getVM(vm2)];
         rp.getNodeActions()[0].getState().setVal(1);
-        CPSolver s = rp.getSolver();
+        Solver s = rp.getSolver();
         s.post(s.geq(m2.getStart(), m1.getEnd()));
 
         ReconfigurationPlan p = rp.solve(0, false);

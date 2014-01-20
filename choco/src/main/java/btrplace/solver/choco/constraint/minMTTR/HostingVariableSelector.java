@@ -20,8 +20,8 @@ package btrplace.solver.choco.constraint.minMTTR;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceUtils;
-import choco.kernel.solver.search.integer.AbstractIntVarSelector;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.search.strategy.selectors.VariableSelector;
+import solver.variables.IntVar;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class HostingVariableSelector extends AbstractIntVarSelector {
+public class HostingVariableSelector extends VariableSelector<IntVar> {
 
     private ReconfigurationProblem rp;
 
@@ -55,9 +55,9 @@ public class HostingVariableSelector extends AbstractIntVarSelector {
     }
 
     @Override
-    public IntDomainVar selectVar() {
+    public IntVar selectVar() {
         for (int i = 0; i < vars.length; i++) {
-            if (!vars[i].isInstantiated()) {
+            if (!vars[i].instantiated()) {
                 if (schedHeuristic != null) {
                     schedHeuristic.invalidPlacement();
                 }

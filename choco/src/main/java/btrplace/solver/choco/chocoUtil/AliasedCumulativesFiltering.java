@@ -17,13 +17,15 @@
 
 package btrplace.solver.choco.chocoUtil;
 
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.IStateInt;
-import choco.kernel.memory.IStateIntVector;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import gnu.trove.TIntIntHashMap;
+
+import gnu.trove.map.hash.TIntIntHashMap;
+import memory.IEnvironment;
+import memory.IStateInt;
+import memory.IStateIntVector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import solver.exception.ContradictionException;
+import solver.variables.IntVar;
 
 import java.util.Arrays;
 import java.util.BitSet;
@@ -33,6 +35,8 @@ import java.util.BitSet;
  */
 public class AliasedCumulativesFiltering {
 
+    private static Logger LOGGER = LoggerFactory.getLogger("solver");
+
     /**
      * out[i] = true <=> the consuming slice i will leave me.
      */
@@ -41,14 +45,14 @@ public class AliasedCumulativesFiltering {
     /**
      * The moment the consuming slices ends. Same order as the hosting variables.
      */
-    private IntDomainVar[] cEnds;
+    private IntVar[] cEnds;
 
     private IStateIntVector vIn;
 
     /*
      * The moment the demanding slices ends. Same order as the hosting variables.
      */
-    private IntDomainVar[] dStarts;
+    private IntVar[] dStarts;
 
     private int[] startupFree;
 
@@ -87,10 +91,10 @@ public class AliasedCumulativesFiltering {
     public AliasedCumulativesFiltering(IEnvironment env,
                                        int[] capacities,
                                        int[][] cUsages,
-                                       IntDomainVar[] cEnds,
+                                       IntVar[] cEnds,
                                        BitSet outs,
                                        int[][] dUsages,
-                                       IntDomainVar[] dStarts,
+                                       IntVar[] dStarts,
                                        IStateIntVector vIn,
                                        int[] assocs,
                                        int[] revAssocs) {
@@ -127,8 +131,8 @@ public class AliasedCumulativesFiltering {
                 startupFree[i] -= cUsages[i][j];
             }
 
-            int i = cEnds[j].getInf();
-            int s = cEnds[j].getSup();
+            int i = cEnds[j].getLB();
+            int s = cEnds[j].getUB();
             if (i < lastInf) {
                 lastInf = i;
             }
@@ -185,14 +189,14 @@ public class AliasedCumulativesFiltering {
 
         for (int j = out.nextSetBit(0); j >= 0; j = out.nextSetBit(j + 1)) {
 
-            int t = cEnds[j].getInf();
+            int t = cEnds[j].getLB();
             if (t < lastInf) {
                 lastInf = t;
             }
 
             if (associatedToDSliceOnCurrentNode(j) && increase(j, revAssociations[j])) {
                 if (DEBUG) {
-                    ChocoLogging.getBranchingLogger().finest(cEnds[j].pretty() + " increasing");
+                    LOGGER.debug(cEnds[j].toString() + " increasing");
                 }
                 for (int i = 0; i < nbDims; i++) {
                     profilesMax[i].put(t, profilesMax[i].get(t) - cUsages[i][j]);
@@ -205,7 +209,7 @@ public class AliasedCumulativesFiltering {
 
             }
 
-            t = cEnds[j].getSup();
+            t = cEnds[j].getUB();
             if (t > lastSup) {
                 lastSup = t;
             }
@@ -230,9 +234,9 @@ public class AliasedCumulativesFiltering {
         for (int i = 0; i < nbDims; i++) {
             for (int x = 0; x < vIn.size(); x++) {
                 int j = vIn.get(x);
-                int t = dStarts[j].getSup();
+                int t = dStarts[j].getUB();
                 profilesMin[i].put(t, profilesMin[i].get(t) + dUsages[i][j]);
-                t = dStarts[j].getInf();
+                t = dStarts[j].getLB();
                 profilesMax[i].put(t, profilesMax[i].get(t) + dUsages[i][j]);
             }
         }
@@ -255,22 +259,22 @@ public class AliasedCumulativesFiltering {
         }
 
         if (DEBUG) {
-            ChocoLogging.getBranchingLogger().finest("--- startup=(" + Arrays.toString(startupFree) + ")"
+            LOGGER.debug("--- startup=(" + Arrays.toString(startupFree) + ")"
                     + " capacities=(" + Arrays.toString(capacities) + ") ---");
             for (int x = 0; x < vIn.size(); x++) {
                 int i = vIn.get(x);
-                ChocoLogging.getBranchingLogger().finest((dStarts[i].isInstantiated() ? "!" : "?") + " " + dStarts[i].pretty() + " " + Arrays.toString(dUsages));
+                LOGGER.debug((dStarts[i].instantiated() ? "!" : "?") + " " + dStarts[i].toString() + " " + Arrays.toString(dUsages));
             }
 
             for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
-                ChocoLogging.getBranchingLogger().finest((cEnds[i].isInstantiated() ? "!" : "?") + " " + cEnds[i].pretty() + " " + Arrays.toString(cUsages));
+                LOGGER.debug((cEnds[i].instantiated() ? "!" : "?") + " " + cEnds[i].toString() + " " + Arrays.toString(cUsages));
             }
-            ChocoLogging.getBranchingLogger().finest("---");
+            LOGGER.debug("---");
 
 
             for (int i = 0; i < nbDims; i++) {
-                ChocoLogging.getBranchingLogger().finest("profileMin(dim " + i + ")= " + prettyProfile(sortedMinProfile, profilesMin[i]));
-                ChocoLogging.getBranchingLogger().finest("profileMax(dim " + i + ")= " + prettyProfile(sortedMaxProfile, profilesMax[i]));
+                LOGGER.debug("profileMin(dim " + i + ")= " + prettyProfile(sortedMinProfile, profilesMin[i]));
+                LOGGER.debug("profileMax(dim " + i + ")= " + prettyProfile(sortedMaxProfile, profilesMax[i]));
             }
         }
     }
@@ -327,7 +331,7 @@ public class AliasedCumulativesFiltering {
             for (int i = 0; i < nbDims; i++) {
                 if (profilesMin[i].get(t) > capacities[i]) {
                     if (DEBUG) {
-                        ChocoLogging.getBranchingLogger().finest("Invalid min profile at " + t + " on dimension " + i
+                        LOGGER.debug("Invalid min profile at " + t + " on dimension " + i
                                 + ": " + profilesMin[i].get(t) + " > " + capacities[i]);
                     }
                     return false;
@@ -341,25 +345,25 @@ public class AliasedCumulativesFiltering {
 
         for (int idx = 0; idx < vIn.size(); idx++) {
             int i = vIn.get(idx);
-            if (!dStarts[i].isInstantiated() && !associatedToCSliceOnCurrentNode(i)) {
+            if (!dStarts[i].instantiated() && !associatedToCSliceOnCurrentNode(i)) {
 
                 int[] myUsage = getUsages(dUsages, i);
 
                 int lastT = -1;
                 for (int x = sortedMinProfile.length - 1; x >= 0; x--) {
                     int t = sortedMinProfile[x];
-                    if (t <= dStarts[i].getInf()) {
+                    if (t <= dStarts[i].getLB()) {
                         break;
                     }
                     int prevT = sortedMinProfile[x - 1];
-                    if (t <= dStarts[i].getSup()
+                    if (t <= dStarts[i].getUB()
                             && exceedCapacity(profilesMin, prevT, myUsage)) {
                         lastT = t;
                         break;
                     }
                 }
                 if (lastT != -1) {
-                    dStarts[i].setInf(lastT);
+                    dStarts[i].updateLowerBound(lastT, aCause);
                 }
             }
         }
@@ -381,9 +385,9 @@ public class AliasedCumulativesFiltering {
         if (lastSup != -1) {
             for (int x = 0; x < vIn.size(); x++) {
                 int i = vIn.get(x);
-                if (!dStarts[i].isInstantiated() && !associatedToCSliceOnCurrentNode(i) && dStarts[i].getSup() > lastSup) {
-                    int s = Math.max(dStarts[i].getInf(), lastSup);
-                    dStarts[i].setSup(s);
+                if (!dStarts[i].instantiated() && !associatedToCSliceOnCurrentNode(i) && dStarts[i].getUB() > lastSup) {
+                    int s = Math.max(dStarts[i].getLB(), lastSup);
+                    dStarts[i].updateUpperBound(s, aCause);
                 }
             }
         }
@@ -391,15 +395,15 @@ public class AliasedCumulativesFiltering {
 
     private void updateCEndsSup() throws ContradictionException {
         for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
-            if (!cEnds[i].isInstantiated() && !associatedToDSliceOnCurrentNode(i)) {
+            if (!cEnds[i].instantiated() && !associatedToDSliceOnCurrentNode(i)) {
 
                 int[] myUsage = getUsages(cUsages, i);
                 int lastT = -1;
                 for (int x = 0; x < sortedMinProfile.length; x++) {
                     int t = sortedMinProfile[x];
-                    if (t >= cEnds[i].getSup()) {
+                    if (t >= cEnds[i].getUB()) {
                         break;
-                    } else if (t >= cEnds[i].getInf() &&
+                    } else if (t >= cEnds[i].getLB() &&
                             exceedCapacity(profilesMin, t, myUsage)) {
                         lastT = t;
                         break;
@@ -407,9 +411,9 @@ public class AliasedCumulativesFiltering {
                 }
                 if (lastT != -1) {
                     if (DEBUG) {
-                        ChocoLogging.getBranchingLogger().finest(cEnds[i].pretty() + " cEndsSup =" + lastT);
+                        LOGGER.debug(cEnds[i].toString() + " cEndsSup =" + lastT);
                     }
-                    cEnds[i].setSup(lastT);
+                    cEnds[i].updateUpperBound(lastT, aCause);
                 }
 
             }

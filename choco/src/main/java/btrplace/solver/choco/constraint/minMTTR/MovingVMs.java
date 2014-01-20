@@ -23,8 +23,8 @@ import btrplace.model.VM;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.actionModel.VMActionModel;
-import choco.kernel.solver.search.integer.AbstractIntVarSelector;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.search.strategy.selectors.VariableSelector;
+import solver.variables.IntVar;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -37,7 +37,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class MovingVMs extends AbstractIntVarSelector {
+public class MovingVMs extends VariableSelector<IntVar> {
 
     /**
      * The demanding slices to consider.
@@ -75,9 +75,9 @@ public class MovingVMs extends AbstractIntVarSelector {
     }
 
     @Override
-    public IntDomainVar selectVar() {
+    public IntVar getVar() {
         for (VMActionModel a : actions) {
-            if (!a.getDSlice().getHoster().isInstantiated()) {
+            if (!a.getDSlice().getHoster().instantiated()) {
                 VM vm = a.getVM();
                 Node nId = map.getVMLocation(vm);
                 if (nId != null) {

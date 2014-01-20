@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,14 +17,13 @@
 
 package btrplace.solver.choco.chocoUtil;
 
-import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.common.util.tools.StringUtils;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public final class MyElement extends AbstractBinIntSConstraint {
+import solver.constraints.IntConstraint;
+import solver.exception.ContradictionException;
+import solver.variables.IntVar;
+import util.iterators.DisposableIntIterator;
+
+public final class MyElement extends IntConstraint<IntVar> {
 
     private int[] lval;
 
@@ -58,14 +56,14 @@ public final class MyElement extends AbstractBinIntSConstraint {
      */
     private Sort sortType;
 
-    public MyElement(IntDomainVar index, int[] values, IntDomainVar var, int offset, Sort s) {
+    public MyElement(IntVar index, int[] values, IntVar var, int offset, Sort s) {
         super(index, var);
         this.lval = values;
         this.cste = offset;
         this.sortType = s;
     }
 
-    public MyElement(IntDomainVar index, int[] values, IntDomainVar var) {
+    public MyElement(IntVar index, int[] values, IntVar var) {
         this(index, values, var, 0, Sort.none);
     }
 
@@ -86,8 +84,7 @@ public final class MyElement extends AbstractBinIntSConstraint {
      * <i>Propagation:</i>
      * Propagating the constraint until local consistency is reached.
      *
-     * @throws choco.kernel.solver.ContradictionException
-     *          contradiction exception
+     * @throws choco.kernel.solver.ContradictionException contradiction exception
      */
     @Override
     public void propagate() throws ContradictionException {
@@ -96,16 +93,16 @@ public final class MyElement extends AbstractBinIntSConstraint {
 
     @Override
     public String pretty() {
-        return (this.v1.pretty() + " = nth(" + this.v0.pretty() + ", " + StringUtils.pretty(this.lval) + ")");
+        return (this.v1.toString() + " = nth(" + this.v0.toString() + ", " + StringUtils.pretty(this.lval) + ")");
     }
 
     protected void updateValueFromIndex() throws ContradictionException {
         if (sortType == Sort.descending) {
-            this.v1.updateInf(this.lval[v0.getSup() - cste], this, false);
-            this.v1.updateSup(this.lval[v0.getInf() - cste], this, false);
+            this.v1.updateInf(this.lval[v0.getUB() - cste], this, false);
+            this.v1.updateSup(this.lval[v0.getLB() - cste], this, false);
         } else if (sortType == Sort.ascending) {
-            this.v1.updateInf(this.lval[v0.getInf() - cste], this, false);
-            this.v1.updateSup(this.lval[v0.getSup() - cste], this, false);
+            this.v1.updateInf(this.lval[v0.getLB() - cste], this, false);
+            this.v1.updateSup(this.lval[v0.getUB() - cste], this, false);
 
         } else {
             computeMinMaxValue();
@@ -113,13 +110,13 @@ public final class MyElement extends AbstractBinIntSConstraint {
         // todo : <hcambaza> : why it does not perform AC on the value variable ?
     }
 
-    private void computeMinMaxValue() throws ContradictionException{
+    private void computeMinMaxValue() throws ContradictionException {
         int minVal = Integer.MAX_VALUE;
         int maxVal = Integer.MIN_VALUE;
         DisposableIntIterator iter = this.v0.getDomain().getIterator();
         boolean isDsc = true;
         boolean isAsc = true;
-        int prev = this.lval[v0.getInf() - cste];
+        int prev = this.lval[v0.getLB() - cste];
         try {
             while (iter.hasNext()) {
                 int index = iter.next();
@@ -157,8 +154,8 @@ public final class MyElement extends AbstractBinIntSConstraint {
     }
 
     protected void updateIndexFromValue() throws ContradictionException {
-        int minFeasibleIndex = Math.max(cste, this.v0.getInf());
-        int maxFeasibleIndex = Math.min(this.v0.getSup(), lval.length - 1 + cste);
+        int minFeasibleIndex = Math.max(cste, this.v0.getLB());
+        int maxFeasibleIndex = Math.min(this.v0.getUB(), lval.length - 1 + cste);
 
         if (minFeasibleIndex > maxFeasibleIndex) {
             this.fail();
@@ -197,7 +194,7 @@ public final class MyElement extends AbstractBinIntSConstraint {
     @Override
     public void awakeOnInst(int i) throws ContradictionException {
         if (i == 0) {
-            this.v1.instantiate(this.lval[this.v0.getVal() - this.cste], this, false);
+            this.v1.instantiate(this.lval[this.v0.getValue() - this.cste], this, false);
         }
     }
 
@@ -212,13 +209,13 @@ public final class MyElement extends AbstractBinIntSConstraint {
 
     @Override
     public Boolean isEntailed() {
-        if (this.v1.isInstantiated()) {
+        if (this.v1.instantiated()) {
             boolean allVal = true;
             boolean oneVal = false;
-            for (int val = v0.getInf(); val <= v0.getSup(); val = v0.getNextDomainValue(val)) {
+            for (int val = v0.getLB(); val <= v0.getUB(); val = v0.getNextDomainValue(val)) {
                 boolean b = (val - this.cste) >= 0
                         && (val - this.cste) < this.lval.length
-                        && this.lval[val - this.cste] == this.v1.getVal();
+                        && this.lval[val - this.cste] == this.v1.getValue();
                 allVal &= b;
                 oneVal |= b;
             }
@@ -230,7 +227,7 @@ public final class MyElement extends AbstractBinIntSConstraint {
             }
         } else {
             boolean b = false;
-            for (int val = v0.getInf(); val <= v0.getSup() && !b; val = v0.getNextDomainValue(val)) {
+            for (int val = v0.getLB(); val <= v0.getUB() && !b; val = v0.getNextDomainValue(val)) {
                 if ((val - this.cste) >= 0 &&
                         (val - this.cste) < this.lval.length) {
                     b = this.v1.canBeInstantiatedTo(this.lval[val - this.cste]);

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,14 +17,7 @@
 
 package btrplace.solver.choco.chocoUtil;
 
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.integer.ElementV;
-import choco.cp.solver.search.BranchingFactory;
-import choco.kernel.common.util.tools.ArrayUtils;
-import choco.kernel.solver.Configuration;
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -40,9 +32,9 @@ import java.util.Random;
 public class BinPackingTest {
 
     Solver s;
-    IntDomainVar[] loads;
-    IntDomainVar[] sizes;
-    IntDomainVar[] bins;
+    IntVar[] loads;
+    IntVar[] sizes;
+    IntVar[] bins;
 
 
     public void modelPack(int nBins, int capa, int nItems, int height) {
@@ -60,10 +52,10 @@ public class BinPackingTest {
     public void modelPack(int[] capa, int[] height) {
         int nBins = capa.length;
         int nItems = height.length;
-        s = new CPSolver();
-        loads = new IntDomainVar[nBins];
-        sizes = new IntDomainVar[nItems];
-        bins = new IntDomainVar[nItems];
+        s = new Solver();
+        loads = new IntVar[nBins];
+        sizes = new IntVar[nItems];
+        bins = new IntVar[nItems];
         for (int i = 0; i < nBins; i++) {
             loads[i] = s.createBoundIntVar("l" + i, 0, capa[i]);
         }
@@ -71,7 +63,7 @@ public class BinPackingTest {
             sizes[i] = s.createIntegerConstant("s" + i, height[i]);
             bins[i] = s.createEnumIntVar("b" + i, 0, nBins);
         }
-        SConstraint cPack = new BinPacking(s.getEnvironment(), loads, sizes, bins);
+        Constraint cPack = new BinPacking(s.getEnvironment(), loads, sizes, bins);
         s.post(cPack);
         s.getConfiguration().putFalse(Configuration.STOP_AT_FIRST_SOLUTION);
     }
@@ -91,10 +83,10 @@ public class BinPackingTest {
     public void testWithUnOrderedItems() {
         int nBins = 5;
         int nItems = 25;
-        s = new CPSolver();
-        loads = new IntDomainVar[nBins];
-        sizes = new IntDomainVar[nItems];
-        bins = new IntDomainVar[nItems];
+        s = new Solver();
+        loads = new IntVar[nBins];
+        sizes = new IntVar[nItems];
+        bins = new IntVar[nItems];
         for (int i = 0; i < nBins; i++) {
             loads[i] = s.createBoundIntVar("l" + i, 0, 20);
         }
@@ -103,7 +95,7 @@ public class BinPackingTest {
             sizes[i] = s.createIntegerConstant("s" + i, rnd.nextInt(4) + 1);
             bins[i] = s.createEnumIntVar("b" + i, 0, nBins);
         }
-        SConstraint cPack = new BinPacking(s.getEnvironment(), loads, sizes, bins);
+        Constraint cPack = new BinPacking(s.getEnvironment(), loads, sizes, bins);
         s.post(cPack);
 
         s.getConfiguration().putTrue(Configuration.STOP_AT_FIRST_SOLUTION);
@@ -124,7 +116,7 @@ public class BinPackingTest {
     @Test(sequential = true)
     public void testGuillaume() {
         modelPack(2, 100, 3, 30);
-        IntDomainVar margeLoad = s.createBoundIntVar("margeLoad", 0, 50);
+        IntVar margeLoad = s.createBoundIntVar("margeLoad", 0, 50);
         s.post(nth(bins[0], loads, margeLoad));
         testPack(2);
     }
@@ -132,8 +124,8 @@ public class BinPackingTest {
     /**
      * var = array[index]
      */
-    public SConstraint nth(IntDomainVar index, IntDomainVar[] array, IntDomainVar var) {
-        return new ElementV(ArrayUtils.append(array, new IntDomainVar[]{index, var}), 0, s.getEnvironment());
+    public Constraint nth(IntVar index, IntVar[] array, IntVar var) {
+        return new ElementV(ArrayUtils.append(array, new IntVar[]{index, var}), 0, s.getEnvironment());
     }
 
 }

@@ -29,9 +29,9 @@ import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.view.CShareableResource;
-import choco.cp.solver.CPSolver;
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import gnu.trove.TIntArrayList;
+import gnu.trove.list.array.TIntArrayList;
+import solver.Solver;
+import solver.variables.IntVar;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -77,7 +77,7 @@ public class CCumulatedResourceCapacity implements ChocoConstraint {
                 }
 
                 TIntArrayList cUse = new TIntArrayList();
-                List<IntDomainVar> dUse = new ArrayList<>();
+                List<IntVar> dUse = new ArrayList<>();
 
                 for (VM vmId : rp.getVMs()) {
                     VMActionModel a = rp.getVMAction(vmId);
@@ -90,15 +90,15 @@ public class CCumulatedResourceCapacity implements ChocoConstraint {
                         dUse.add(rcm.getVMsAllocation()[rp.getVM(vmId)]);
                     }
                 }
-                rp.getAliasedCumulativesBuilder().add(cstr.getAmount(), cUse.toNativeArray(), dUse.toArray(new IntDomainVar[dUse.size()]), alias);
+                rp.getAliasedCumulativesBuilder().add(cstr.getAmount(), cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]), alias);
             }
         }
-        List<IntDomainVar> vs = new ArrayList<>();
+        List<IntVar> vs = new ArrayList<>();
         for (Node u : cstr.getInvolvedNodes()) {
             vs.add(rcm.getVirtualUsage()[rp.getNode(u)]);
         }
-        CPSolver s = rp.getSolver();
-        s.post(s.leq(CPSolver.sum(vs.toArray(new IntDomainVar[vs.size()])), cstr.getAmount()));
+        Solver s = rp.getSolver();
+        s.post(s.leq(Solver.sum(vs.toArray(new IntVar[vs.size()])), cstr.getAmount()));
         return true;
     }
 

@@ -25,9 +25,9 @@ import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.CumulatedRunningCapacity;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
-import choco.cp.solver.CPSolver;
-import choco.kernel.solver.constraints.integer.IntExp;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.Solver;
+import solver.variables.IntVar;
+import solver.variables.VariableFactory;
 
 import java.util.*;
 
@@ -51,7 +51,7 @@ public class CCumulatedRunningCapacity implements ChocoConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        CPSolver s = rp.getSolver();
+        Solver s = rp.getSolver();
         if (cstr.isContinuous()) {
             //The constraint must be already satisfied
             if (!cstr.isSatisfied(rp.getSourceModel())) {
@@ -68,20 +68,20 @@ public class CCumulatedRunningCapacity implements ChocoConstraint {
                     nbRunnings += rp.getSourceModel().getMapping().getRunningVMs(n).size();
                 }
                 int[] cUse = new int[nbRunnings];
-                IntDomainVar[] dUse = new IntDomainVar[rp.getFutureRunningVMs().size()];
+                IntVar[] dUse = new IntVar[rp.getFutureRunningVMs().size()];
                 Arrays.fill(cUse, 1);
-                Arrays.fill(dUse, s.makeConstantIntVar(1));
+                Arrays.fill(dUse, VariableFactory.one(rp.getSolver()));
                 rp.getAliasedCumulativesBuilder().add(cstr.getAmount(), cUse, dUse, alias);
             }
         }
-        List<IntDomainVar> vs = new ArrayList<>();
+        List<IntVar> vs = new ArrayList<>();
         for (Node u : cstr.getInvolvedNodes()) {
             vs.add(rp.getNbRunningVMs()[rp.getNode(u)]);
         }
         //Try to get a lower bound
         //basically, we count 1 per VM necessarily in the set of nodes
         //if involved nodes == all the nodes, then sum == nb of running VMs
-        IntExp on = CPSolver.sum(vs.toArray(new IntDomainVar[vs.size()]));
+        IntExp on = Solver.sum(vs.toArray(new IntVar[vs.size()]));
         if (cstr.getInvolvedNodes().equals(rp.getSourceModel().getMapping().getAllNodes())) {
             s.post(s.eq(on, rp.getFutureRunningVMs().size()));
         }

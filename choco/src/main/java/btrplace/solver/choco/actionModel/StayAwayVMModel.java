@@ -21,7 +21,8 @@ import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.variables.IntVar;
+import solver.variables.VariableFactory;
 
 
 /**
@@ -34,7 +35,7 @@ public class StayAwayVMModel implements VMActionModel {
 
     private VM vm;
 
-    private IntDomainVar zero;
+    private IntVar zero;
 
     /**
      * Make a new model.
@@ -44,7 +45,7 @@ public class StayAwayVMModel implements VMActionModel {
      */
     public StayAwayVMModel(ReconfigurationProblem rp, VM e) {
         vm = e;
-        zero = rp.getSolver().makeConstantIntVar(0);
+        zero = VariableFactory.zero(rp.getSolver());
     }
 
     @Override
@@ -58,17 +59,17 @@ public class StayAwayVMModel implements VMActionModel {
     }
 
     @Override
-    public IntDomainVar getStart() {
+    public IntVar getStart() {
         return zero;
     }
 
     @Override
-    public IntDomainVar getEnd() {
+    public IntVar getEnd() {
         return zero;
     }
 
     @Override
-    public IntDomainVar getDuration() {
+    public IntVar getDuration() {
         return zero;
     }
 
@@ -83,7 +84,7 @@ public class StayAwayVMModel implements VMActionModel {
     }
 
     @Override
-    public IntDomainVar getState() {
+    public IntVar getState() {
         return zero;
     }
 

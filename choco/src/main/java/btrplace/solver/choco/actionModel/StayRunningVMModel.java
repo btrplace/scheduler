@@ -23,8 +23,9 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
-import choco.cp.solver.CPSolver;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.Solver;
+import solver.variables.IntVar;
+import solver.variables.VariableFactory;
 
 
 /**
@@ -40,7 +41,7 @@ public class StayRunningVMModel implements KeepRunningVMModel {
 
     private VM vm;
 
-    private IntDomainVar stay;
+    private IntVar stay;
 
     /**
      * Make a new model.
@@ -52,7 +53,7 @@ public class StayRunningVMModel implements KeepRunningVMModel {
     public StayRunningVMModel(ReconfigurationProblem p, VM e) throws SolverException {
         this.vm = e;
         this.rp = p;
-        IntDomainVar host = p.makeCurrentHost("stayRunningVM(" + e + ").host", e);
+        IntVar host = p.makeCurrentHost("stayRunningVM(" + e + ").host", e);
         cSlice = new SliceBuilder(p, e, "stayRunningVM(" + e + ").cSlice")
                 .setHoster(host)
                 .setEnd(p.makeUnboundedDuration("stayRunningVM(", e, ").cSlice_end"))
@@ -61,9 +62,9 @@ public class StayRunningVMModel implements KeepRunningVMModel {
                 .setHoster(host)
                 .setStart(cSlice.getEnd())
                 .build();
-        CPSolver s = p.getSolver();
+        Solver s = p.getSolver();
 
-        stay = s.makeConstantIntVar(1);
+        stay = VariableFactory.one(s);
     }
 
     @Override
@@ -72,17 +73,17 @@ public class StayRunningVMModel implements KeepRunningVMModel {
     }
 
     @Override
-    public IntDomainVar getStart() {
+    public IntVar getStart() {
         return rp.getStart();
     }
 
     @Override
-    public IntDomainVar getEnd() {
+    public IntVar getEnd() {
         return rp.getStart();
     }
 
     @Override
-    public IntDomainVar getDuration() {
+    public IntVar getDuration() {
         return rp.getStart();
     }
 
@@ -97,7 +98,7 @@ public class StayRunningVMModel implements KeepRunningVMModel {
     }
 
     @Override
-    public IntDomainVar getState() {
+    public IntVar getState() {
         return null;
     }
 
@@ -112,7 +113,7 @@ public class StayRunningVMModel implements KeepRunningVMModel {
     }
 
     @Override
-    public IntDomainVar isStaying() {
+    public IntVar isStaying() {
         return stay;
     }
 }

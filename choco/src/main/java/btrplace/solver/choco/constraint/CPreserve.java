@@ -25,8 +25,6 @@ import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.view.CShareableResource;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -60,7 +58,7 @@ public class CPreserve implements ChocoConstraint {
         for (VM vm : cstr.getInvolvedVMs()) {
             if (rp.getFutureRunningVMs().contains(vm)) {
                 int idx = rp.getVM(vm);
-                IntDomainVar v = map.getVMsAllocation()[idx];
+                IntVar v = map.getVMsAllocation()[idx];
                 try {
                     v.setInf(cstr.getAmount());
                 } catch (ContradictionException ex) {

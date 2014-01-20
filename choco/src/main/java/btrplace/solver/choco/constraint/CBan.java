@@ -25,7 +25,7 @@ import btrplace.model.constraint.Ban;
 import btrplace.model.constraint.Constraint;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
-import choco.kernel.solver.ContradictionException;
+import solver.exception.ContradictionException;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -66,7 +66,7 @@ public class CBan implements ChocoConstraint {
                 if (t != null) {
                     for (int x : nodesIdx) {
                         try {
-                            t.getHoster().remVal(x);
+                            t.getHoster().removeValue(x, null);//remVal(x);
                         } catch (ContradictionException e) {
                             rp.getLogger().error("Unable to disallow VM '{}' to be running on '{}': {}", vm, rp.getNode(x), e.getMessage());
                             return false;

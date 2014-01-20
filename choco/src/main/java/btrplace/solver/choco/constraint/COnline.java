@@ -25,7 +25,6 @@ import btrplace.model.constraint.Online;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.actionModel.ActionModel;
-import choco.kernel.solver.ContradictionException;
 
 import java.util.Collections;
 import java.util.Set;

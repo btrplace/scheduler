@@ -26,11 +26,10 @@ import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.view.CPowerView;
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.scheduling.cumulative.Cumulative;
-import choco.kernel.solver.constraints.integer.IntExp;
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.variables.scheduling.TaskVar;
+import solver.Solver;
+import solver.constraints.IntConstraintFactory;
+import solver.variables.IntVar;
+import solver.variables.VariableFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,7 +72,7 @@ public class CMaxOnline implements ChocoConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        CPSolver solver = rp.getSolver();
+        Solver solver = rp.getSolver();
 
         if (constraint.isContinuous()) {
             CPowerView view = (CPowerView) rp.getView(CPowerView.VIEW_ID);
@@ -90,15 +89,15 @@ public class CMaxOnline implements ChocoConstraint {
             for (Node n : constraint.getInvolvedNodes()) {
                 nodeIdx[i++] = rp.getNode(n);
             }
-            IntDomainVar capacity = solver.createBoundIntVar("capacity", 0, constraint.getAmount());//solver.createIntegerConstant("capacity", constraint.getAmount());
-            IntDomainVar consumption = solver.createBoundIntVar("consum", 0, constraint.getAmount());//minimum consumption
+            IntVar capacity = VariableFactory.bounded("capacity", 0, constraint.getAmount(), solver);//solver.createIntegerConstant("capacity", constraint.getAmount());
+            IntVar consumption = VariableFactory.bounded("consum", 0, constraint.getAmount(), solver);//minimum consumption
             // of the resource
-            IntDomainVar uppBound = rp.getEnd();//rp.makeUnboundedDuration("maxOnline_horizon");
+            IntVar uppBound = rp.getEnd();//rp.makeUnboundedDuration("maxOnline_horizon");
             //solver.post(solver.leq(uppBound, rp.getEnd()));                    // All tasks must be scheduled before this time
-            IntDomainVar[] heights = new IntDomainVar[numberOfTasks];   // The state of the node
-            IntDomainVar[] starts = new IntDomainVar[numberOfTasks];
-            IntDomainVar[] ends = new IntDomainVar[numberOfTasks];
-            IntDomainVar[] durations = new IntDomainVar[numberOfTasks];  // Online duration
+            IntVar[] heights = new IntVar[numberOfTasks];   // The state of the node
+            IntVar[] starts = new IntVar[numberOfTasks];
+            IntVar[] ends = new IntVar[numberOfTasks];
+            IntVar[] durations = new IntVar[numberOfTasks];  // Online duration
             TaskVar[] taskVars = new TaskVar[numberOfTasks];  // Online duration is modeled as a task
 
             for (int idx = 0; idx < nodeIdx.length; idx++) {
@@ -110,8 +109,8 @@ public class CMaxOnline implements ChocoConstraint {
                 // ------------------------------------------------------------------------
 
                 durations[idx] = rp.makeUnboundedDuration(rp.makeVarLabel("Dur(", n, ")"));
-                solver.post(solver.leq(durations[idx], rp.getEnd()));
-                heights[idx] = solver.makeConstantIntVar(1);         // All tasks have to be scheduled
+                solver.post(IntConstraintFactory.arithm(durations[idx], "<=", rp.getEnd()));//solver.leq(durations[idx], rp.getEnd()));
+                heights[idx] = VariableFactory.one(solver);//olver.makeConstantIntVar(1);         // All tasks have to be scheduled
                 taskVars[idx] = solver.createTaskVar(rp.makeVarLabel("onlinePeriod(", n, ")"), starts[idx], ends[idx], durations[idx]);
                 solver.post(solver.eq(ends[idx], solver.plus(starts[idx], durations[idx])));
             }
@@ -120,13 +119,13 @@ public class CMaxOnline implements ChocoConstraint {
             solver.post(cumulative);
         }
         // Constraint for discrete model
-        List<IntDomainVar> nodesState = new ArrayList<>(constraint.getInvolvedNodes().size());
+        List<IntVar> nodesState = new ArrayList<>(constraint.getInvolvedNodes().size());
 
         for (Node ni : constraint.getInvolvedNodes()) {
             nodesState.add(rp.getNodeAction(ni).getState());
         }
 
-        IntExp sumOfStates = CPSolver.sum(nodesState.toArray(new IntDomainVar[nodesState.size()]));
+        IntExp sumOfStates = Solver.sum(nodesState.toArray(new IntVar[nodesState.size()]));
         solver.post(solver.leq(sumOfStates, constraint.getAmount()));
 
         return true;

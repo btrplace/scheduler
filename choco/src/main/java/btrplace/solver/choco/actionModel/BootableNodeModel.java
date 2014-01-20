@@ -23,10 +23,11 @@ import btrplace.plan.event.BootNode;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.integer.ElementV;
-import choco.cp.solver.constraints.integer.TimesXYZ;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.Solver;
+import solver.constraints.IntConstraintFactory;
+import solver.variables.BoolVar;
+import solver.variables.IntVar;
+import solver.variables.VariableFactory;
 
 
 /**
@@ -75,17 +76,17 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public class BootableNodeModel implements NodeActionModel {
 
-    private IntDomainVar start;
+    private IntVar start;
 
-    private IntDomainVar end;
+    private IntVar end;
 
-    private IntDomainVar isOnline;
+    private BoolVar isOnline;
 
-    private IntDomainVar hostingStart;
+    private IntVar hostingStart;
 
-    private IntDomainVar hostingEnd;
+    private IntVar hostingEnd;
 
-    private IntDomainVar effectiveDuration;
+    private IntVar effectiveDuration;
 
     private Node node;
 
@@ -100,15 +101,15 @@ public class BootableNodeModel implements NodeActionModel {
         node = nId;
 
         int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), BootNode.class, nId);
-        CPSolver s = rp.getSolver();
+        Solver s = rp.getSolver();
 
         /*
             - If the node is hosting running VMs, it is necessarily online
             - If the node is offline, it is sure it cannot host any running VMs
         */
-        isOnline = s.createBooleanVar(rp.makeVarLabel("bootableNode(", nId, ").online"));
-        IntDomainVar isOffline = s.createBooleanVar(rp.makeVarLabel("bootableNode(", nId, ").offline"));
-        s.post(s.neq(isOffline, isOnline));
+        isOnline = VariableFactory.bool(rp.makeVarLabel("bootableNode(", nId, ").online"), s);
+        IntVar isOffline = VariableFactory.not(isOnline);//VariableFactory.bool(rp.makeVarLabel("bootableNode(", nId, ").offline"), s);
+        //s.post(s.neq(isOffline, isOnline));
         s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNode(nId)], 0));
 
 
@@ -116,17 +117,20 @@ public class BootableNodeModel implements NodeActionModel {
         * D = {0, d}
         * D = St * d;
         */
-        effectiveDuration = s.createEnumIntVar(
+        effectiveDuration = VariableFactory.enumerated(
                 rp.makeVarLabel("bootableNode(", nId, ").effectiveDuration")
-                , new int[]{0, d});
-        s.post(new TimesXYZ(isOnline, s.makeConstantIntVar(d), effectiveDuration));
+                , new int[]{0, d}, s);
+        s.post(IntConstraintFactory.times(isOnline, VariableFactory.fixed(d, s), effectiveDuration));
+        //s.post(new TimesXYZ(isOnline, VariableFactory.fixed(d, s), effectiveDuration));
 
         /* As */
         start = rp.makeUnboundedDuration("bootableNode(", nId, ").start");
         /* Ae */
         end = rp.makeUnboundedDuration("bootableNode(", nId, ").end");
-        s.post(s.leq(start, rp.getEnd()));
-        s.post(s.leq(end, rp.getEnd()));
+
+        s.post(IntConstraintFactory.arithm(start, "<=", rp.getEnd()));//s.leq(start, rp.getEnd()));
+        //s.post(s.leq(end, rp.getEnd()));
+        s.post(IntConstraintFactory.arithm(end, "<=", rp.getEnd()));
         /* Ae = As + D */
         s.post(s.eq(end, s.plus(start, effectiveDuration)));
 
@@ -134,36 +138,37 @@ public class BootableNodeModel implements NodeActionModel {
         /* Hs = Ae */
         hostingStart = end;
         hostingEnd = rp.makeUnboundedDuration("bootableNode(", nId, ").hostingEnd");
-        s.post(s.leq(hostingEnd, rp.getEnd()));
+        //s.post(s.leq(hostingEnd, rp.getEnd()));
+        s.post(IntConstraintFactory.arithm(hostingEnd, "<=", rp.getEnd()));
 
 
         /*
           T = { 0, RP.end}
           He = T[St]
          */
-        s.post(new ElementV(new IntDomainVar[]{s.makeConstantIntVar(0), rp.getEnd(), isOnline, hostingEnd}, 0, s.getEnvironment()));
+        s.post(new ElementV(new IntVar[]{VariableFactory.zero(s), rp.getEnd(), isOnline, hostingEnd}, 0, s.getEnvironment()));
     }
 
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
-        if (getState().getVal() == 1) {
-            plan.add(new BootNode(node, start.getVal(), end.getVal()));
+        if (getState().getValue() == 1) {
+            plan.add(new BootNode(node, start.getValue(), end.getValue()));
         }
         return true;
     }
 
     @Override
-    public IntDomainVar getStart() {
+    public IntVar getStart() {
         return start;
     }
 
     @Override
-    public IntDomainVar getEnd() {
+    public IntVar getEnd() {
         return end;
     }
 
     @Override
-    public IntDomainVar getDuration() {
+    public IntVar getDuration() {
         return effectiveDuration;
     }
 
@@ -173,7 +178,7 @@ public class BootableNodeModel implements NodeActionModel {
     }
 
     @Override
-    public IntDomainVar getState() {
+    public IntVar getState() {
         return isOnline;
     }
 
@@ -183,12 +188,12 @@ public class BootableNodeModel implements NodeActionModel {
     }
 
     @Override
-    public IntDomainVar getHostingStart() {
+    public IntVar getHostingStart() {
         return hostingStart;
     }
 
     @Override
-    public IntDomainVar getHostingEnd() {
+    public IntVar getHostingEnd() {
         return hostingEnd;
     }
 }

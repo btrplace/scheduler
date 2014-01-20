@@ -25,8 +25,8 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
-import choco.cp.solver.variables.integer.IntDomainVarAddCste;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.variables.IntVar;
+import solver.variables.VariableFactory;
 
 
 /**
@@ -44,15 +44,15 @@ public class SuspendVMModel implements VMActionModel {
 
     private Slice cSlice;
 
-    private IntDomainVar start;
+    private IntVar start;
 
-    private IntDomainVar duration;
+    private IntVar duration;
 
     private VM vm;
 
     private ReconfigurationProblem rp;
 
-    private IntDomainVar state;
+    private IntVar state;
 
     /**
      * Make a new model.
@@ -69,31 +69,31 @@ public class SuspendVMModel implements VMActionModel {
 
         duration = p.makeDuration(d, d, "suspendVM(", e, ").duration");
         this.cSlice = new SliceBuilder(p, e, "suspendVM(" + e + ").cSlice").setHoster(p.getCurrentVMLocation(p.getVM(e)))
-                .setEnd(p.makeDuration(p.getEnd().getSup(), d, "suspendVM(", e, ").cSlice_end"))
+                .setEnd(p.makeDuration(p.getEnd().getUB(), d, "suspendVM(", e, ").cSlice_end"))
                 .build();
-        start = new IntDomainVarAddCste(p.getSolver(), p.makeVarLabel("suspendVM(" + e + ").start"), cSlice.getEnd(), -d);
-        state = p.getSolver().makeConstantIntVar(0);
+        start = VariableFactory.offset(cSlice.getEnd(), -d);//, rp.getSolver())new IntVarAddCste(p.getSolver(), p.makeVarLabel("suspendVM(" + e + ").start"), cSlice.getEnd(), -d);
+        state = VariableFactory.zero(rp.getSolver());//p.getSolver().makeConstantIntVar(0);
     }
 
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
-        Node node = rp.getNode(cSlice.getHoster().getVal());
-        plan.add(new SuspendVM(vm, node, node, start.getVal(), getEnd().getVal()));
+        Node node = rp.getNode(cSlice.getHoster().getValue());
+        plan.add(new SuspendVM(vm, node, node, start.getValue(), getEnd().getValue()));
         return true;
     }
 
     @Override
-    public IntDomainVar getStart() {
+    public IntVar getStart() {
         return start;
     }
 
     @Override
-    public IntDomainVar getEnd() {
+    public IntVar getEnd() {
         return cSlice.getEnd();
     }
 
     @Override
-    public IntDomainVar getDuration() {
+    public IntVar getDuration() {
         return duration;
     }
 
@@ -108,7 +108,7 @@ public class SuspendVMModel implements VMActionModel {
     }
 
     @Override
-    public IntDomainVar getState() {
+    public IntVar getState() {
         return state;
     }
 

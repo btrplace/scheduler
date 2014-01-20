@@ -33,11 +33,6 @@ import btrplace.solver.choco.constraint.ChocoConstraint;
 import btrplace.solver.choco.constraint.ChocoConstraintBuilder;
 import btrplace.solver.choco.runner.InstanceResult;
 import btrplace.solver.choco.runner.SolutionStatistics;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solution;
-import choco.kernel.solver.search.measure.IMeasures;
 
 import java.util.*;
 import java.util.concurrent.Callable;

@@ -19,15 +19,16 @@ package btrplace.solver.choco.constraint.minMTTR;
 
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.actionModel.NodeActionModel;
-import choco.kernel.solver.search.integer.AbstractIntVarSelector;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.search.strategy.selectors.VariableSelector;
+import solver.variables.IntVar;
+
 
 /**
  * Very basic variable selector that focus the moment where node actions consume.
  *
  * @author Fabien Hermenier
  */
-public class StartingNodes extends AbstractIntVarSelector {
+public class StartingNodes extends VariableSelector<IntVar> {
 
     private NodeActionModel[] actions;
 
@@ -50,9 +51,9 @@ public class StartingNodes extends AbstractIntVarSelector {
     }
 
     @Override
-    public IntDomainVar selectVar() {
+    public IntVar selectVar() {
         for (NodeActionModel na : actions) {
-            if (!na.getStart().isInstantiated()) {
+            if (!na.getStart().instantiated()) {
                 return na.getStart();
             }
         }

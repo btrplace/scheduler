@@ -24,8 +24,10 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
-import choco.cp.solver.CPSolver;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.Solver;
+import solver.constraints.IntConstraintFactory;
+import solver.variables.IntVar;
+import solver.variables.VariableFactory;
 
 
 /**
@@ -47,9 +49,9 @@ public class ForgeVMModel implements VMActionModel {
 
     private VM vm;
 
-    private IntDomainVar duration;
+    private IntVar duration;
 
-    private IntDomainVar state;
+    private IntVar state;
 
     private Slice dSlice;
 
@@ -68,9 +70,9 @@ public class ForgeVMModel implements VMActionModel {
         if (template == null) {
             throw new SolverException(rp.getSourceModel(), "Unable to forge the VM '" + e + "'. The required attribute 'template' is missing from the model");
         }
-        CPSolver s = rp.getSolver();
-        duration = s.makeConstantIntVar(d);
-        state = s.makeConstantIntVar(0);
+        Solver s = rp.getSolver();
+        duration = VariableFactory.fixed(d, s);
+        state = VariableFactory.zero(s);
         vm = e;
 
         /*
@@ -83,13 +85,14 @@ public class ForgeVMModel implements VMActionModel {
                 .setEnd(rp.makeUnboundedDuration("forge(", e, ").stop"))
                 .setHoster(-1)
                 .build();
-        s.post(s.leq(d, dSlice.getDuration()));
-        s.post(s.leq(dSlice.getEnd(), rp.getEnd()));
+        //s.post(s.leq(d, dSlice.getDuration()));
+        s.post(IntConstraintFactory.arithm(dSlice.getDuration(), ">=", d));
+        s.post(IntConstraintFactory.arithm(dSlice.getEnd(), "<=", rp.getEnd()));//s.leq(dSlice.getEnd(), rp.getEnd()));
     }
 
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
-        ForgeVM a = new ForgeVM(vm, getStart().getVal(), getEnd().getVal());
+        ForgeVM a = new ForgeVM(vm, getStart().getValue(), getEnd().getValue());
         return plan.add(a);
     }
 
@@ -99,17 +102,17 @@ public class ForgeVMModel implements VMActionModel {
     }
 
     @Override
-    public IntDomainVar getStart() {
+    public IntVar getStart() {
         return dSlice.getStart();
     }
 
     @Override
-    public IntDomainVar getEnd() {
+    public IntVar getEnd() {
         return dSlice.getEnd();
     }
 
     @Override
-    public IntDomainVar getDuration() {
+    public IntVar getDuration() {
         return duration;
     }
 
@@ -124,7 +127,7 @@ public class ForgeVMModel implements VMActionModel {
     }
 
     @Override
-    public IntDomainVar getState() {
+    public IntVar getState() {
         return state;
     }
 

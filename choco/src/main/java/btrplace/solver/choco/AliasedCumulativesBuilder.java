@@ -18,9 +18,9 @@
 package btrplace.solver.choco;
 
 import btrplace.solver.choco.chocoUtil.AliasedCumulatives;
-import choco.cp.solver.CPSolver;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.list.array.TIntArrayList;
+import solver.Solver;
+import solver.variables.IntVar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +62,7 @@ public class AliasedCumulativesBuilder extends SchedulingConstraintBuilder {
      * @param dUse  the usage of each of the d-slices
      * @param alias the resource identifiers that compose the alias
      */
-    public void add(int capas, int[] cUse, IntDomainVar[] dUse, int[] alias) {
+    public void add(int capas, int[] cUse, IntVar[] dUse, int[] alias) {
         capacities.add(capas);
         cUsages.add(cUse);
         dUsages.add(dUse);
@@ -75,7 +75,7 @@ public class AliasedCumulativesBuilder extends SchedulingConstraintBuilder {
      * @return a list of constraint that may be empty.
      */
     public List<AliasedCumulatives> getConstraints() {
-        CPSolver s = rp.getSolver();
+        Solver s = rp.getSolver();
         List<AliasedCumulatives> cstrs = new ArrayList<>();
 
 
@@ -84,8 +84,8 @@ public class AliasedCumulativesBuilder extends SchedulingConstraintBuilder {
             int[] alias = aliases.get(i);
             int[] cUse = cUsages.get(i);
             int[] dUses = new int[dUsages.get(i).length];
-            for (IntDomainVar dUseDim : dUsages.get(i)) {
-                dUses[i++] = dUseDim.getInf();
+            for (IntVar dUseDim : dUsages.get(i)) {
+                dUses[i++] = dUseDim.getLB();
             }
             cstrs.add(new AliasedCumulatives(s.getEnvironment(),
                     alias,

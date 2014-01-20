@@ -28,13 +28,6 @@ import btrplace.solver.choco.view.CShareableResource;
 import btrplace.solver.choco.view.ChocoModelView;
 import btrplace.solver.choco.view.ChocoModelViewBuilder;
 import btrplace.solver.choco.view.ModelViewMapper;
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.AtMostNValue;
-import choco.cp.solver.constraints.global.IncreasingNValue;
-import choco.kernel.solver.Configuration;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.ResolutionPolicy;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -169,7 +162,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertEquals(rp.getVMs().length, 7);
         Assert.assertEquals(rp.getNodes().length, 3);
         Assert.assertEquals(rp.getManageableVMs().size(), rp.getVMs().length);
-        Assert.assertTrue(rp.getStart().isInstantiated() && rp.getStart().getVal() == 0);
+        Assert.assertTrue(rp.getStart().instantiated() && rp.getStart().getValue() == 0);
 
         //Test the index values of the nodes and the VMs.
         for (int i = 0; i < rp.getVMs().length; i++) {
@@ -745,7 +738,7 @@ public class DefaultReconfigurationProblemTest {
                 .labelVariables()
                 .build();
 
-        for (IntDomainVar capa : rp.getNbRunningVMs()) {
+        for (IntVar capa : rp.getNbRunningVMs()) {
             capa.setSup(5);
         }
         //Restrict the capacity to 2 at most
@@ -755,11 +748,11 @@ public class DefaultReconfigurationProblemTest {
         int[] counts = new int[map.getAllNodes().size()];
         for (Node n : map.getOnlineNodes()) {
             int nIdx = rp.getNode(n);
-            counts[nIdx] = rp.getNbRunningVMs()[nIdx].getVal();
+            counts[nIdx] = rp.getNbRunningVMs()[nIdx].getValue();
         }
         for (VM vm : rp.getFutureRunningVMs()) {
             VMActionModel vmo = rp.getVMActions()[rp.getVM(vm)];
-            int on = vmo.getDSlice().getHoster().getVal();
+            int on = vmo.getDSlice().getHoster().getValue();
             counts[on]--;
         }
         for (int count : counts) {
@@ -820,9 +813,9 @@ public class DefaultReconfigurationProblemTest {
             map.addRunningVM(vm, n);
         }
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
-        CPSolver s = rp.getSolver();
-        IntDomainVar nbNodes = s.createBoundIntVar("nbNodes", 1, map.getAllNodes().size());
-        IntDomainVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
+        Solver s = rp.getSolver();
+        IntVar nbNodes = s.createBoundIntVar("nbNodes", 1, map.getAllNodes().size());
+        IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
         s.post(new AtMostNValue(hosters, nbNodes));
 
         s.setObjective(nbNodes);
@@ -851,9 +844,9 @@ public class DefaultReconfigurationProblemTest {
             map.addRunningVM(vm, n);
         }
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
-        CPSolver s = rp.getSolver();
-        IntDomainVar nbNodes = s.createBoundIntVar("nbNodes", 1, map.getAllNodes().size());
-        IntDomainVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
+        Solver s = rp.getSolver();
+        IntVar nbNodes = s.createBoundIntVar("nbNodes", 1, map.getAllNodes().size());
+        IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
         s.post(new AtMostNValue(hosters, nbNodes));
         s.setObjective(nbNodes);
         s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
@@ -892,9 +885,9 @@ public class DefaultReconfigurationProblemTest {
             map.addRunningVM(vm, n1);
         }
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
-        CPSolver s = rp.getSolver();
-        IntDomainVar nbNodes = s.createBoundIntVar("nbNodes", 1, map.getOnlineNodes().size());
-        IntDomainVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
+        Solver s = rp.getSolver();
+        IntVar nbNodes = s.createBoundIntVar("nbNodes", 1, map.getOnlineNodes().size());
+        IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
         s.post(new IncreasingNValue(nbNodes, hosters, IncreasingNValue.Mode.ATLEAST));
         s.setObjective(nbNodes);
         s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MAXIMIZE);
@@ -925,9 +918,9 @@ public class DefaultReconfigurationProblemTest {
             map.addRunningVM(vm, n1);
         }
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
-        CPSolver s = rp.getSolver();
-        final IntDomainVar nbNodes = s.createBoundIntVar("nbNodes", 1, map.getOnlineNodes().size());
-        IntDomainVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
+        Solver s = rp.getSolver();
+        final IntVar nbNodes = s.createBoundIntVar("nbNodes", 1, map.getOnlineNodes().size());
+        IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
         s.post(new IncreasingNValue(nbNodes, hosters, IncreasingNValue.Mode.ATLEAST));
         s.setObjective(nbNodes);
         s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MAXIMIZE);
@@ -966,9 +959,9 @@ public class DefaultReconfigurationProblemTest {
             map.addRunningVM(vm, n);
         }
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
-        CPSolver s = rp.getSolver();
-        IntDomainVar nbNodes = s.createBoundIntVar("nbNodes", 0, 0);
-        IntDomainVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
+        Solver s = rp.getSolver();
+        IntVar nbNodes = s.createBoundIntVar("nbNodes", 0, 0);
+        IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
         s.post(new AtMostNValue(hosters, nbNodes));
         s.setObjective(nbNodes);
         s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);

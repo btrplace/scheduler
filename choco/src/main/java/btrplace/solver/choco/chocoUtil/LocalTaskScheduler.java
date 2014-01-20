@@ -17,13 +17,15 @@
 
 package btrplace.solver.choco.chocoUtil;
 
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.IStateInt;
-import choco.kernel.memory.IStateIntVector;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+
 import gnu.trove.map.hash.TIntIntHashMap;
+import memory.IEnvironment;
+import memory.IStateInt;
+import memory.IStateIntVector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import solver.exception.ContradictionException;
+import solver.variables.IntVar;
 
 import java.util.Arrays;
 import java.util.BitSet;
@@ -35,6 +37,8 @@ import java.util.BitSet;
  */
 public class LocalTaskScheduler {
 
+    private static Logger LOGGER = LoggerFactory.getLogger("solver");
+
     private int me;
 
     /**
@@ -45,14 +49,14 @@ public class LocalTaskScheduler {
     /**
      * The moment the consuming slices ends. Same order as the hosting variables.
      */
-    private IntDomainVar[] cEnds;
+    private IntVar[] cEnds;
 
     private IStateIntVector vIn;
 
     /*
      * The moment the demanding slices ends. Same order as the hosting variables.
      */
-    private IntDomainVar[] dStarts;
+    private IntVar[] dStarts;
 
     private int[] startupFree;
 
@@ -88,18 +92,18 @@ public class LocalTaskScheduler {
 
     private int nbDims = 0;
 
-    private IntDomainVar early, last;
+    private IntVar early, last;
 
     public LocalTaskScheduler(int me,
                               IEnvironment env,
-                              IntDomainVar early,
-                              IntDomainVar last,
+                              IntVar early,
+                              IntVar last,
                               int[][] capacities,
                               int[][] cUsages,
-                              IntDomainVar[] cEnds,
+                              IntVar[] cEnds,
                               BitSet outs,
                               int[][] dUsages,
-                              IntDomainVar[] dStarts,
+                              IntVar[] dStarts,
                               IStateIntVector vIn,
                               int[] assocs,
                               int[] revAssocs) {
@@ -139,8 +143,8 @@ public class LocalTaskScheduler {
                 startupFree[i] -= cUsages[i][j];
             }
 
-            int i = cEnds[j].getInf();
-            int s = cEnds[j].getSup();
+            int i = cEnds[j].getLB();
+            int s = cEnds[j].getUB();
             if (i < lastInf) {
                 lastInf = i;
             }
@@ -155,9 +159,9 @@ public class LocalTaskScheduler {
     public boolean propagate() throws ContradictionException {
         computeProfiles();
 
-        last.setInf(lastCendInf.get());
+        last.updateLowerBound(lastCendInf.get(), aCause);
 /*        if (me == DEBUG || DEBUG == -2) {
-            ChocoLogging.getBranchingLogger().info(me + " last: " + last.pretty() + "; early: " + early.pretty() + " lastInf:" + lastCendInf + " " + lastCendSup);
+            LOGGER.debug(me + " last: " + last.toString() + "; early: " + early.toString() + " lastInf:" + lastCendInf + " " + lastCendSup);
         }*/
 
 
@@ -204,14 +208,14 @@ public class LocalTaskScheduler {
 
         for (int j = out.nextSetBit(0); j >= 0; j = out.nextSetBit(j + 1)) {
 
-            int t = cEnds[j].getInf();
+            int t = cEnds[j].getLB();
             if (t < lastInf) {
                 lastInf = t;
             }
             boolean increasing = associatedToDSliceOnCurrentNode(j) && increase(j, revAssociations[j]);
             if (increasing) {
                 if (me == DEBUG || DEBUG == -2) {
-                    ChocoLogging.getBranchingLogger().finest(me + " " + cEnds[j].pretty() + " increasing");
+                    LOGGER.debug(me + " " + cEnds[j].toString() + " increasing");
                 }
                 for (int i = 0; i < nbDims; i++) {
                     profilesMax[i].put(t, profilesMax[i].get(t) - cUsages[i][j]);
@@ -219,7 +223,7 @@ public class LocalTaskScheduler {
 
             } else {
                 if (me == DEBUG || DEBUG == -2) {
-                    ChocoLogging.getBranchingLogger().finest(me + " " + cEnds[j].pretty() + " < or non-associated (" + (revAssociations[j] >= 0 ? dStarts[revAssociations[j]].pretty() : "no rev") + "?)");
+                    LOGGER.debug(me + " " + cEnds[j].toString() + " < or non-associated (" + (revAssociations[j] >= 0 ? dStarts[revAssociations[j]].toString() : "no rev") + "?)");
                 }
                 for (int i = 0; i < nbDims; i++) {
                     profilesMin[i].put(t, profilesMin[i].get(t) - cUsages[i][j]);
@@ -227,7 +231,7 @@ public class LocalTaskScheduler {
 
             }
 
-            t = cEnds[j].getSup();
+            t = cEnds[j].getUB();
             if (t > lastSup) {
                 lastSup = t;
             }
@@ -252,9 +256,9 @@ public class LocalTaskScheduler {
         for (int i = 0; i < nbDims; i++) {
             for (int x = 0; x < vIn.size(); x++) {
                 int j = vIn.get(x);
-                int t = dStarts[j].getSup();
+                int t = dStarts[j].getUB();
                 profilesMin[i].put(t, profilesMin[i].get(t) + dUsages[i][j]);
-                t = dStarts[j].getInf();
+                t = dStarts[j].getLB();
                 profilesMax[i].put(t, profilesMax[i].get(t) + dUsages[i][j]);
             }
         }
@@ -277,23 +281,23 @@ public class LocalTaskScheduler {
         }
 
         if (me == DEBUG || DEBUG == -2) {
-            ChocoLogging.getBranchingLogger().finest("---" + me + "--- startupFree=" + Arrays.toString(startupFree)
-                    + " init=" + Arrays.toString(getUsages(capacities, me)) + "; early=" + early.pretty() + "; last=" + last.pretty());
+            LOGGER.debug("---" + me + "--- startupFree=" + Arrays.toString(startupFree)
+                    + " init=" + Arrays.toString(getUsages(capacities, me)) + "; early=" + early.toString() + "; last=" + last.toString());
             for (int x = 0; x < vIn.size(); x++) {
                 int i = vIn.get(x);
-                ChocoLogging.getBranchingLogger().finest((dStarts[i].isInstantiated() ? "!" : "?") + " " + dStarts[i].pretty() + " " + Arrays.toString(getUsages(dUsages, i)));
+                LOGGER.debug((dStarts[i].instantiated() ? "!" : "?") + " " + dStarts[i].toString() + " " + Arrays.toString(getUsages(dUsages, i)));
             }
 
             for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
-                ChocoLogging.getBranchingLogger().finest((cEnds[i].isInstantiated() ? "!" : "?") + " " + cEnds[i].pretty() + " " + Arrays.toString(getUsages(cUsages, i)));
+                LOGGER.debug((cEnds[i].instantiated() ? "!" : "?") + " " + cEnds[i].toString() + " " + Arrays.toString(getUsages(cUsages, i)));
             }
 
 
             for (int i = 0; i < nbDims; i++) {
-                ChocoLogging.getBranchingLogger().finest("profileMin dim " + i + "=" + prettyProfile(sortedMinProfile, profilesMin[i]));
-                ChocoLogging.getBranchingLogger().finest("profileMax dim " + i + "=" + prettyProfile(sortedMaxProfile, profilesMax[i]));
+                LOGGER.debug("profileMin dim " + i + "=" + prettyProfile(sortedMinProfile, profilesMin[i]));
+                LOGGER.debug("profileMax dim " + i + "=" + prettyProfile(sortedMaxProfile, profilesMax[i]));
             }
-            ChocoLogging.getBranchingLogger().finest("/--- " + me + "---/");
+            LOGGER.debug("/--- " + me + "---/");
         }
     }
 
@@ -345,9 +349,8 @@ public class LocalTaskScheduler {
             for (int i = 0; i < nbDims; i++) {
                 if (profilesMin[i].get(t) > capacities[i][me]) {
                     if (me == DEBUG || DEBUG == -2) {
-                        ChocoLogging.getBranchingLogger().info("(" + me + ") Invalid min profile at " + t + " on dimension " + i
+                        LOGGER.debug("(" + me + ") Invalid min profile at " + t + " on dimension " + i
                                 + ": " + profilesMin[i].get(t) + " > " + capacities[i][me]);
-                        ChocoLogging.flushLogs();
                     }
                     return false;
                 }
@@ -357,20 +360,18 @@ public class LocalTaskScheduler {
         //invariant related to the last and the early.
         for (int idx = 0; idx < vIn.size(); idx++) {
             int i = vIn.get(idx);
-            if (dStarts[i].getSup() < early.getInf()) {
+            if (dStarts[i].getUB() < early.getLB()) {
                 if (me == DEBUG || DEBUG == -2) {
-                    ChocoLogging.getBranchingLogger().info("(" + me + ") The dSlice " + i + " starts too early (" + dStarts[i].pretty() + ") (min expected=" + early.pretty() + ")");
-                    ChocoLogging.flushLogs();
+                    LOGGER.debug("(" + me + ") The dSlice " + i + " starts too early (" + dStarts[i].toString() + ") (min expected=" + early.toString() + ")");
                 }
                 return false;
             }
         }
 
         for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
-            if (cEnds[i].getInf() > last.getSup()) {
+            if (cEnds[i].getLB() > last.getUB()) {
                 if (me == DEBUG || DEBUG == -2) {
-                    ChocoLogging.getBranchingLogger().info("(" + me + ") The cSlice " + i + " ends too late (" + cEnds[i].pretty() + ") (last expected=" + last.pretty() + ")");
-                    ChocoLogging.flushLogs();
+                    LOGGER.debug("(" + me + ") The cSlice " + i + " ends too late (" + cEnds[i].toString() + ") (last expected=" + last.toString() + ")");
                 }
                 return false;
             }
@@ -383,9 +384,9 @@ public class LocalTaskScheduler {
 
         for (int idx = 0; idx < vIn.size(); idx++) {
             int i = vIn.get(idx);
-            if (!dStarts[i].isInstantiated() && !associatedToCSliceOnCurrentNode(i)) {
+            if (!dStarts[i].instantiated() && !associatedToCSliceOnCurrentNode(i)) {
                 if (DEBUG == me || DEBUG == -2) {
-                    ChocoLogging.getBranchingLogger().finest("(" + me + ") - try to update lb of " + dStarts[i]);
+                    LOGGER.debug("(" + me + ") - try to update lb of " + dStarts[i]);
                 }
 
                 int[] myUsage = getUsages(dUsages, i);
@@ -393,20 +394,20 @@ public class LocalTaskScheduler {
                 int lastT = -1;
                 for (int x = sortedMinProfile.length - 1; x >= 0; x--) {
                     int t = sortedMinProfile[x];
-                    if (t <= dStarts[i].getInf()) {
+                    if (t <= dStarts[i].getLB()) {
                         break;
                     }
                     int prevT = sortedMinProfile[x - 1];
-                    if (t <= dStarts[i].getSup()
+                    if (t <= dStarts[i].getUB()
                             && exceedCapacity(profilesMin, prevT, myUsage)) {
                         lastT = t;
                         break;
                     }
                 }
-                //System.out.println(lastT + " " + early.getInf() + " " + Math.max(lastT, early.getInf()));
-                dStarts[i].setInf(Math.max(lastT, early.getInf()));
+                //System.out.println(lastT + " " + early.getLB() + " " + Math.max(lastT, early.getLB()));
+                dStarts[i].updateLowerBound(Math.max(lastT, early.getLB()), aCause);
             }
-            //early.setSup(dStarts[i].getInf());
+            //early.setSup(dStarts[i].getLB());
         }
     }
 
@@ -426,9 +427,9 @@ public class LocalTaskScheduler {
         if (lastSup != -1) {
             for (int x = 0; x < vIn.size(); x++) {
                 int i = vIn.get(x);
-                if (!dStarts[i].isInstantiated() && !associatedToCSliceOnCurrentNode(i)) {
-                    int s = Math.max(dStarts[i].getInf(), lastSup);
-                    dStarts[i].setSup(s);
+                if (!dStarts[i].instantiated() && !associatedToCSliceOnCurrentNode(i)) {
+                    int s = Math.max(dStarts[i].getLB(), lastSup);
+                    dStarts[i].updateUpperBound(s, aCause);
                 }
             }
         }
@@ -436,28 +437,28 @@ public class LocalTaskScheduler {
 
     private void updateCEndsSup() throws ContradictionException {
         for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
-            if (!cEnds[i].isInstantiated() && !associatedToDSliceOnCurrentNode(i)) {
+            if (!cEnds[i].instantiated() && !associatedToDSliceOnCurrentNode(i)) {
 
                 int[] myUsage = getUsages(cUsages, i);
                 int lastT = -1;
                 for (int x = 0; x < sortedMinProfile.length; x++) {
                     int t = sortedMinProfile[x];
-                    if (t >= cEnds[i].getSup()) {
+                    if (t >= cEnds[i].getUB()) {
                         break;
-                    } else if (t >= cEnds[i].getInf() &&
+                    } else if (t >= cEnds[i].getLB() &&
                             exceedCapacity(profilesMin, t, myUsage)) {
                         lastT = t;
                         break;
                     }
                 }
                 if (lastT != -1) {
-                    cEnds[i].setSup(Math.min(lastT, last.getSup()));
+                    cEnds[i].updateUpperBound(Math.min(lastT, last.getUB()), aCause);
                 } else {
-                    cEnds[i].setSup(last.getSup());
+                    cEnds[i].updateUpperBound(last.getUB(), aCause);
                 }
             }
-            //System.out.println(me + " " + last.pretty() + " lastInf.inf = " + cEnds[i].getSup());
-            //last.setInf(cEnds[i].getInf());
+            //System.out.println(me + " " + last.toString() + " lastInf.inf = " + cEnds[i].getUB());
+            //last.setInf(cEnds[i].getLB());
 
         }
     }

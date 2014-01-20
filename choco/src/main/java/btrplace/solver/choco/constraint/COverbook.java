@@ -27,10 +27,6 @@ import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.view.CShareableResource;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.variables.real.RealInterval;
-import choco.kernel.solver.variables.real.RealIntervalConstant;
-import choco.kernel.solver.variables.real.RealVar;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -65,7 +61,7 @@ public class COverbook implements ChocoConstraint {
 
         for (Node u : cstr.getInvolvedNodes()) {
             RealVar v = rcm.getOverbookRatio(rp.getNode(u));
-            RealInterval ric = new RealIntervalConstant(v.getInf(), cstr.getRatio());
+            RealInterval ric = new RealIntervalConstant(v.getLB(), cstr.getRatio());
             try {
                 v.intersect(ric);
             } catch (ContradictionException ex) {

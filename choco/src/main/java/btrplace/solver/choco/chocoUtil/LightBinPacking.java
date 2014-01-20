@@ -17,17 +17,17 @@
 
 package btrplace.solver.choco.chocoUtil;
 
-import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.common.util.tools.ArrayUtils;
-import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.IStateBitSet;
-import choco.kernel.memory.IStateBool;
-import choco.kernel.memory.IStateInt;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import memory.IEnvironment;
+import memory.IStateBitSet;
+import memory.IStateBool;
+import memory.IStateInt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import solver.constraints.IntConstraint;
+import solver.exception.ContradictionException;
+import solver.variables.IntVar;
+import util.iterators.DisposableIntIterator;
 
 import java.util.Arrays;
 
@@ -36,8 +36,9 @@ import java.util.Arrays;
  *
  * @author Fabien Hermenier
  */
-public class LightBinPacking extends AbstractLargeIntSConstraint {
+public class LightBinPacking extends IntConstraint<IntVar> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger("solver");
     /**
      * The solver environment.
      */
@@ -53,7 +54,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
     /**
      * The bin assigned to each item.
      */
-    private final IntDomainVar[] bins;
+    private final IntVar[] bins;
 
     /**
      * The constant size of each item in decreasing order.
@@ -69,7 +70,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
     /**
      * The load of each bin per dimension. [nbDims][nbBins]
      */
-    private final IntDomainVar[][] loads;
+    private final IntVar[][] loads;
 
     /**
      * The total size of the required + candidate items for each bin. [nbDims][nbBins]
@@ -109,7 +110,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      * @param s           array of nbItems variables, each figuring the item size. Only the LB will be considered!
      * @param b           array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
      */
-    public LightBinPacking(String[] labels, IEnvironment environment, IntDomainVar[][] l, int[][] s, IntDomainVar[] b) {
+    public LightBinPacking(String[] labels, IEnvironment environment, IntVar[][] l, int[][] s, IntVar[] b) {
         super(ArrayUtils.append(b, ArrayUtils.flatten(l)));
         this.name = labels;
         this.env = environment;
@@ -126,11 +127,11 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
     public boolean isConsistent() {
         int[][] l = new int[nbDims][nbBins];
         for (int i = 0; i < bins.length; i++) {
-            if (bins[i].isInstantiated()) {
+            if (bins[i].instantiated()) {
                 for (int d = 0; d < nbDims; d++) {
-                    int v = bins[i].getVal();
+                    int v = bins[i].getValue();
                     l[d][v] += iSizes[d][i];
-                    if (l[d][v] > loads[d][v].getSup()) {
+                    if (l[d][v] > loads[d][v].getUB()) {
                         return false;
                     }
                 }
@@ -166,7 +167,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
             for (int d = notEntailedDims.nextSetBit(0); d >= 0; d = notEntailedDims.nextSetBit(d + 1)) {
                 int loadPos = iSizes[0].length + d * nbBins + b;
                 if (tuple[loadPos] != l[d][b]) {
-                    ChocoLogging.getBranchingLogger().warning("Invalid load for bin " + b + " on dimension " + d + ". Was " + tuple[loadPos] + ", expected " + l[d][b]);
+                    LOGGER.warn("Invalid load for bin " + b + " on dimension " + d + ". Was " + tuple[loadPos] + ", expected " + l[d][b]);
                     return false;
                 }
             }
@@ -197,9 +198,9 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
         for (int i = 0; i < bins.length; i++) {
             bins[i].updateInf(0, this, false);
             bins[i].updateSup(nbBins - 1, this, false);
-            if (bins[i].isInstantiated()) {
+            if (bins[i].instantiated()) {
                 for (int d = 0; d < nbDims; d++) {
-                    rLoads[d][bins[i].getVal()] += iSizes[d][i];
+                    rLoads[d][bins[i].getValue()] += iSizes[d][i];
                 }
             } else {
                 for (int d = 0; d < nbDims; d++) {
@@ -228,8 +229,8 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
                 bTLoads[d][b] = env.makeInt(rLoads[d][b] + cLoads[d][b]);
                 loads[d][b].updateInf(rLoads[d][b], this, false);
                 loads[d][b].updateSup(rLoads[d][b] + cLoads[d][b], this, false);
-                slb[d] += loads[d][b].getInf();
-                slu[d] += loads[d][b].getSup();
+                slb[d] += loads[d][b].getLB();
+                slu[d] += loads[d][b].getUB();
             }
         }
 
@@ -245,7 +246,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
         detectEntailedDimensions(nbUnassigned);
 
         assert checkLoadConsistency();
-        ChocoLogging.getBranchingLogger().finest("BinPacking: " + Arrays.toString(name) + " notEntailed dimensions: " + notEntailedDims);
+        LOGGER.trace("BinPacking: " + Arrays.toString(name) + " notEntailed dimensions: " + notEntailedDims);
         propagate();
     }
 
@@ -259,7 +260,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
     private void detectEntailedDimensions(int[] nbUnassigned) {
         for (int d = 0; d < nbDims; d++) {
             for (int b = 0; b < nbBins; b++) {
-                if (!loads[d][b].isInstantiated() && loads[d][b].getSup() - loads[d][b].getInf() < nbUnassigned[d]) {
+                if (!loads[d][b].instantiated() && loads[d][b].getUB() - loads[d][b].getLB() < nbUnassigned[d]) {
                     notEntailedDims.set(d);
                     break;
                 }
@@ -316,8 +317,8 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
             int sli = 0;
             int sls = 0;
             for (int b = 0; b < nbBins; b++) {
-                sli += loads[d][b].getInf();
-                sls += loads[d][b].getSup();
+                sli += loads[d][b].getLB();
+                sls += loads[d][b].getUB();
             }
 
             this.sumLoadInf[d].set(sli);
@@ -365,7 +366,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      * 1) update the candidate and check to decrease the load UB of each removed bins: binLoad <= binTotalLoad
      * 2) if item is assigned: update the required and check to increase the load LB of the bin: binLoad >= binRequiredLoad
      *
-     * @throws choco.kernel.solver.ContradictionException
+     * @throws ContradictionException
      *          on the load variables
      */
     @Override
@@ -379,8 +380,8 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
         } finally {
             deltaDomain.dispose();
         }
-        if (vars[iIdx].getInf() == vars[iIdx].getSup()) {
-            assignItem(iIdx, vars[iIdx].getVal());
+        if (vars[iIdx].getLB() == vars[iIdx].getUB()) {
+            assignItem(iIdx, vars[iIdx].getValue());
         }
         this.constAwake(false);
     }
@@ -396,7 +397,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      *
      * @param item item index in the bin
      * @param bin  bin index
-     * @throws choco.kernel.solver.ContradictionException
+     * @throws ContradictionException
      *          on the load[bin] variable
      */
     private void assignItem(int item, int bin) throws ContradictionException {
@@ -413,7 +414,7 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      *
      * @param item item index in its bin
      * @param bin  bin index
-     * @throws choco.kernel.solver.ContradictionException
+     * @throws ContradictionException
      *          on the load[bin] variable
      */
     private void removeItem(int item, int bin) throws ContradictionException {
@@ -429,11 +430,11 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      * @param bin        bin index
      * @param newLoadInf new LB of the bin load
      * @return {@code true} if LB is increased.
-     * @throws choco.kernel.solver.ContradictionException
+     * @throws ContradictionException
      *          on the load[bin] variable
      */
     private boolean filterLoadInf(int dim, int bin, int newLoadInf) throws ContradictionException {
-        int inc = newLoadInf - loads[dim][bin].getInf();
+        int inc = newLoadInf - loads[dim][bin].getLB();
         if (inc > 0) {
             loads[dim][bin].updateInf(newLoadInf, this, false);
             int r = sumLoadInf[dim].add(inc);
@@ -451,11 +452,11 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
      * @param bin        bin index
      * @param newLoadSup new UB of the bin load
      * @return {@code true} if UB is decreased.
-     * @throws choco.kernel.solver.ContradictionException
+     * @throws ContradictionException
      *          on the load[bin] variable
      */
     private boolean filterLoadSup(int dim, int bin, int newLoadSup) throws ContradictionException {
-        int dec = newLoadSup - loads[dim][bin].getSup();
+        int dec = newLoadSup - loads[dim][bin].getUB();
         if (dec < 0) {
             loads[dim][bin].updateSup(newLoadSup, this, false);
             int r = sumLoadSup[dim].add(dec);
@@ -483,9 +484,9 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
         int[][] rs = new int[nbDims][nbBins];
         int[][] cs = new int[nbDims][nbBins];
         for (int i = 0; i < bins.length; i++) {
-            if (bins[i].isInstantiated()) {
+            if (bins[i].instantiated()) {
                 for (int d = 0; d < nbDims; d++) {
-                    rs[d][bins[i].getVal()] += iSizes[d][i];
+                    rs[d][bins[i].getValue()] += iSizes[d][i];
                 }
             } else {
                 DisposableIntIterator it = bins[i].getDomain().getIterator();
@@ -507,41 +508,40 @@ public class LightBinPacking extends AbstractLargeIntSConstraint {
             int sls = 0;
             for (int b = 0; b < rs[d].length; b++) {
                 if (rs[d][b] != bRLoads[d][b].get()) {
-                    ChocoLogging.getBranchingLogger().warning(name[d] + ": " + loads[d][b].pretty() + " required=" + bRLoads[d][b].get() + " expected=" + Arrays.toString(rs[b]));
+                    LOGGER.warn(name[d] + ": " + loads[d][b].toString() + " required=" + bRLoads[d][b].get() + " expected=" + Arrays.toString(rs[b]));
                     check = false;
                 }
                 if (rs[d][b] + cs[d][b] != bTLoads[d][b].get()) {
-                    ChocoLogging.getBranchingLogger().warning(name[d] + ": " + loads[d][b].pretty() + " total=" + bTLoads[d][b].get() + " expected=" + (rs[d][b] + cs[d][b]));
+                    LOGGER.warn(name[d] + ": " + loads[d][b].toString() + " total=" + bTLoads[d][b].get() + " expected=" + (rs[d][b] + cs[d][b]));
                     check = false;
                 }
-                if (loads[d][b].getInf() < rs[d][b]) {
-                    ChocoLogging.getBranchingLogger().warning(name[d] + ": " + loads[d][b].pretty() + " LB expected >=" + rs[d][b]);
+                if (loads[d][b].getLB() < rs[d][b]) {
+                    LOGGER.warn(name[d] + ": " + loads[d][b].toString() + " LB expected >=" + rs[d][b]);
                     check = false;
                 }
-                if (loads[d][b].getSup() > rs[d][b] + cs[d][b]) {
-                    ChocoLogging.getBranchingLogger().warning(name[d] + ": " + loads[d][b].pretty() + " UB expected <=" + (rs[d][b] + cs[d][b]));
+                if (loads[d][b].getUB() > rs[d][b] + cs[d][b]) {
+                    LOGGER.warn(name[d] + ": " + loads[d][b].toString() + " UB expected <=" + (rs[d][b] + cs[d][b]));
                     check = false;
                 }
-                sli += loads[d][b].getInf();
-                sls += loads[d][b].getSup();
+                sli += loads[d][b].getLB();
+                sls += loads[d][b].getUB();
             }
             if (this.sumLoadInf[d].get() != sli) {
-                ChocoLogging.getBranchingLogger().warning(name[d] + ": " + "Sum Load LB = " + this.sumLoadInf[d].get() + " expected =" + sli);
+                LOGGER.warn(name[d] + ": " + "Sum Load LB = " + this.sumLoadInf[d].get() + " expected =" + sli);
                 check = false;
             }
             if (this.sumLoadSup[d].get() != sls) {
-                ChocoLogging.getBranchingLogger().warning(name[d] + ": " + "Sum Load UB = " + this.sumLoadSup[d].get() + " expected =" + sls);
+                LOGGER.warn(name[d] + ": " + "Sum Load UB = " + this.sumLoadSup[d].get() + " expected =" + sls);
                 check = false;
             }
-            ChocoLogging.flushLogs();
             if (!check) {
                 for (int b = 0; b < rs[d].length; b++) {
-                    ChocoLogging.getBranchingLogger().severe(name[d] + ": " + loads[d][b].pretty() + " required=" + bRLoads[d][b].get() + " (" + rs[d][b] + ") total=" + bTLoads[d][b].get() + " (" + (rs[d][b] + cs[d][b]) + ")");
+                    LOGGER.error(name[d] + ": " + loads[d][b].toString() + " required=" + bRLoads[d][b].get() + " (" + rs[d][b] + ") total=" + bTLoads[d][b].get() + " (" + (rs[d][b] + cs[d][b]) + ")");
                 }
-                ChocoLogging.getBranchingLogger().severe(name[d] + ": " + "Sum Load LB = " + this.sumLoadInf[d].get() + " (" + sumLoadInf[d] + ")");
-                ChocoLogging.getBranchingLogger().severe(name[d] + ": " + "Sum Load UB = " + this.sumLoadSup[d].get() + " (" + sumLoadSup[d] + ")");
-                for (IntDomainVar v : bins) {
-                    ChocoLogging.getBranchingLogger().info(v.pretty());
+                LOGGER.error(name[d] + ": " + "Sum Load LB = " + this.sumLoadInf[d].get() + " (" + sumLoadInf[d] + ")");
+                LOGGER.error(name[d] + ": " + "Sum Load UB = " + this.sumLoadSup[d].get() + " (" + sumLoadSup[d] + ")");
+                for (IntVar v : bins) {
+                    LOGGER.info(v.toString());
                 }
             }
         }

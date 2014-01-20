@@ -27,7 +27,6 @@ import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -57,10 +56,10 @@ public class ForgeVMModelTest {
         ForgeVMModel ma = (ForgeVMModel) rp.getVMAction(vm1);
         Assert.assertEquals(vm1, ma.getVM());
         Assert.assertEquals(ma.getTemplate(), "small");
-        Assert.assertTrue(ma.getDuration().isInstantiatedTo(7));
-        Assert.assertFalse(ma.getStart().isInstantiated());
-        Assert.assertFalse(ma.getEnd().isInstantiated());
-        Assert.assertTrue(ma.getState().isInstantiatedTo(0));
+        Assert.assertTrue(ma.getDuration().instantiatedTo(7));
+        Assert.assertFalse(ma.getStart().instantiated());
+        Assert.assertFalse(ma.getEnd().instantiated());
+        Assert.assertTrue(ma.getState().instantiatedTo(0));
         Assert.assertNull(ma.getCSlice());
         Assert.assertNull(ma.getDSlice());
     }

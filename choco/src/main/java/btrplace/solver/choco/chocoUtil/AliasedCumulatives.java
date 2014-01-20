@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,16 +17,15 @@
 
 package btrplace.solver.choco.chocoUtil;
 
-import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.tools.ArrayUtils;
-import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.IStateInt;
-import choco.kernel.memory.IStateIntVector;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import gnu.trove.TIntHashSet;
-import gnu.trove.TIntIntHashMap;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.set.hash.TIntHashSet;
+import memory.IEnvironment;
+import memory.IStateInt;
+import memory.IStateIntVector;
+import solver.constraints.IntConstraint;
+import solver.exception.ContradictionException;
+import solver.variables.IntVar;
+import util.tools.ArrayUtils;
 
 import java.util.Arrays;
 import java.util.BitSet;
@@ -38,17 +36,17 @@ import java.util.BitSet;
  * @author Fabien Hermenier
  * @see TaskScheduler
  */
-public class AliasedCumulatives extends AbstractLargeIntSConstraint {
+public class AliasedCumulatives extends IntConstraint<IntVar> {
 
     private AliasedCumulativesFiltering resource;
 
-    private IntDomainVar[] cHosters;
+    private IntVar[] cHosters;
 
-    private IntDomainVar[] cEnds;
+    private IntVar[] cEnds;
 
-    private IntDomainVar[] dHosters;
+    private IntVar[] dHosters;
 
-    private IntDomainVar[] dStarts;
+    private IntVar[] dStarts;
 
     private int nbDims;
 
@@ -91,12 +89,12 @@ public class AliasedCumulatives extends AbstractLargeIntSConstraint {
     public AliasedCumulatives(IEnvironment env,
                               int[] alias,
                               int[] capas,
-                              IntDomainVar[] cHosters,
+                              IntVar[] cHosters,
                               int[][] cUsages,
-                              IntDomainVar[] cEnds,
-                              IntDomainVar[] dHosters,
+                              IntVar[] cEnds,
+                              IntVar[] dHosters,
                               int[][] dUsages,
-                              IntDomainVar[] dStarts,
+                              IntVar[] dStarts,
                               int[] assocs) {
 
         super(ArrayUtils.append(dHosters, cHosters, cEnds, dStarts));
@@ -118,7 +116,7 @@ public class AliasedCumulatives extends AbstractLargeIntSConstraint {
         BitSet out = new BitSet(cHosters.length);
 
         for (int i = 0; i < cHosters.length; i++) {
-            int v = cHosters[i].getVal();
+            int v = cHosters[i].getValue();
             if (isIn(v)) {
                 out.set(i);
             }
@@ -160,8 +158,8 @@ public class AliasedCumulatives extends AbstractLargeIntSConstraint {
 
         //Check whether some hosting variable are already instantiated
         for (int i = 0; i < dHosters.length; i++) {
-            if (dHosters[i].isInstantiated()) {
-                int nIdx = dHosters[i].getVal();
+            if (dHosters[i].instantiated()) {
+                int nIdx = dHosters[i].getValue();
                 if (isIn(nIdx)) {
                     toInstantiate.add(-1);
                     vIns.add(i);
@@ -181,7 +179,7 @@ public class AliasedCumulatives extends AbstractLargeIntSConstraint {
     public void awakeOnInst(int idx) throws ContradictionException {
         if (idx < dHosters.length) {
             toInstantiate.add(-1);
-            int nIdx = vars[idx].getVal();
+            int nIdx = vars[idx].getValue();
             if (isIn(nIdx)) {
                 vIns.add(idx);
             }
@@ -202,7 +200,7 @@ public class AliasedCumulatives extends AbstractLargeIntSConstraint {
     public boolean isSatisfied() {
         int[] vals = new int[vars.length];
         for (int i = 0; i < vals.length; i++) {
-            vals[i] = vars[i].getVal();
+            vals[i] = vars[i].getValue();
         }
         return isSatisfied(vals);
     }

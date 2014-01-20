@@ -20,7 +20,7 @@ package btrplace.solver.choco;
 import btrplace.model.VM;
 import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.chocoUtil.LocalTaskScheduler;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.variables.IntVar;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,17 +38,17 @@ public abstract class SchedulingConstraintBuilder {
 
     protected List<int[]> cUsages;
 
-    protected List<IntDomainVar[]> dUsages;
+    protected List<IntVar[]> dUsages;
 
     protected int[] associations;
 
-    protected IntDomainVar[] cEnds;
+    protected IntVar[] cEnds;
 
-    protected IntDomainVar[] cHosters;
+    protected IntVar[] cHosters;
 
-    protected IntDomainVar[] dHosters;
+    protected IntVar[] dHosters;
 
-    protected IntDomainVar[] dStarts;
+    protected IntVar[] dStarts;
 
     /**
      * Ids of non-overlapping slices.
@@ -93,8 +93,8 @@ public abstract class SchedulingConstraintBuilder {
 
 
         int i = 0;
-        cHosters = new IntDomainVar[cS.size()];
-        cEnds = new IntDomainVar[cS.size()];
+        cHosters = new IntVar[cS.size()];
+        cEnds = new IntVar[cS.size()];
         for (Slice s : cS) {
             cHosters[i] = s.getHoster();
             cEnds[i] = s.getEnd();
@@ -103,8 +103,8 @@ public abstract class SchedulingConstraintBuilder {
         }
 
         i = 0;
-        dStarts = new IntDomainVar[dS.size()];
-        dHosters = new IntDomainVar[dS.size()];
+        dStarts = new IntVar[dS.size()];
+        dHosters = new IntVar[dS.size()];
 
         for (Slice s : dS) {
             dHosters[i] = s.getHoster();

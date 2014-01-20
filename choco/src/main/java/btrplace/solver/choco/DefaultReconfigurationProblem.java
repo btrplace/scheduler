@@ -30,23 +30,17 @@ import btrplace.solver.choco.chocoUtil.AliasedCumulatives;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import btrplace.solver.choco.view.ChocoModelView;
 import btrplace.solver.choco.view.ModelViewMapper;
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.search.BranchAndBound;
-import choco.cp.solver.search.integer.branching.AssignVar;
-import choco.cp.solver.search.integer.objective.IntObjectiveManager;
-import choco.cp.solver.search.integer.valselector.MinVal;
-import choco.cp.solver.search.integer.varselector.StaticVarOrder;
-import choco.cp.solver.search.set.StaticSetVarOrder;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.solver.Configuration;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.search.IObjectiveManager;
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.variables.set.SetVar;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import solver.Configuration;
+import solver.Solver;
+import solver.exception.ContradictionException;
+import solver.objective.IntObjectiveManager;
+import solver.variables.IntVar;
+import solver.variables.SetVar;
+import solver.variables.VariableFactory;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -72,7 +66,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private Model model;
 
-    private CPSolver solver;
+    private Solver solver;
 
     private Set<VM> ready;
     private Set<VM> runnings;
@@ -87,8 +81,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private Node[] nodes;
     private TObjectIntHashMap<Node> revNodes;
 
-    private IntDomainVar start;
-    private IntDomainVar end;
+    private IntVar start;
+    private IntVar end;
 
     private VMActionModel[] vmActions;
     private NodeActionModel[] nodeActions;
@@ -97,7 +91,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private Map<String, ChocoModelView> views;
 
-    private IntDomainVar[] vmsCountOnNodes;
+    private IntVar[] vmsCountOnNodes;
 
     private SliceSchedulerBuilder taskSchedBuilder;
 
@@ -143,12 +137,12 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         model = m;
         durEval = dEval;
         this.viewMapper = vMapper;
-        solver = new CPSolver();
+        solver = new Solver();
         //Precision for the real values
         solver.getConfiguration().putDouble(Configuration.REAL_PRECISION, REAL_VALUE_PRECISION);
 
-        start = solver.makeConstantIntVar("RP.start", 0);
-        end = solver.createBoundIntVar("RP.end", 0, DEFAULT_MAX_TIME);
+        start = VariableFactory.fixed("RP.start", 0, solver);
+        end = VariableFactory.bounded("RP.end", 0, DEFAULT_MAX_TIME, solver);
 
         this.views = new HashMap<>();
 
@@ -208,11 +202,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         appendNaiveBranchHeuristic();
 
 
-        int nbIntVars = solver.getNbIntVars();
-        int nbBoolVars = solver.getNbBooleanVars();
-        int nbCstes = solver.getNbConstants();
-        int nbCstrs = solver.getNbConstraints();
-        getLogger().debug("{} constraints; Variables: {} int(s), {} bool(s), {} constant(s).", nbCstrs, nbIntVars, nbBoolVars, nbCstes);
+        int nbIntVars = solver.getNbVars();
+        /*int nbBoolVars = solver.getNbBooleanVars();
+        int nbCstes = solver.getNbConstants();*/
+        int nbCstrs = solver.getNbCstrs();
+        getLogger().debug("{} constraints; {} variables", nbCstrs, nbIntVars, nbCstrs, nbIntVars);
         if (objAlterer == null) {
             solver.launch();
         } else if (optimize) {
@@ -257,7 +251,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * In practice, instantiate each of the variables to its lower-bound
      */
     private void appendNaiveBranchHeuristic() {
-        IntDomainVar[] foo = new IntDomainVar[solver.getNbIntVars()];
+        IntVar[] foo = new IntVar[solver.getNbIntVars()];
         SetVar[] bar = new SetVar[solver.getNbSetVars()];
 
         for (int i = 0; i < foo.length; i++) {
@@ -305,11 +299,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private void addContinuousResourceCapacities() {
         TIntArrayList cUse = new TIntArrayList();
-        List<IntDomainVar> iUse = new ArrayList<>();
+        List<IntVar> iUse = new ArrayList<>();
         for (int j = 0; j < getVMs().length; j++) {
             VMActionModel a = vmActions[j];
             if (a.getDSlice() != null) {
-                iUse.add(solver.makeConstantIntVar(1));
+                iUse.add(VariableFactory.one(solver));
             }
             if (a.getCSlice() != null) {
                 cUse.add(1);
@@ -318,7 +312,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         taskSchedBuilder.add(getNbRunningVMs(),
                 cUse.toArray(),
-                iUse.toArray(new IntDomainVar[iUse.size()]));
+                iUse.toArray(new IntVar[iUse.size()]));
     }
 
     /**
@@ -347,18 +341,18 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * Create the cardinality variables.
      */
     private void makeCardinalyVariables() {
-        vmsCountOnNodes = new IntDomainVar[nodes.length];
+        vmsCountOnNodes = new IntVar[nodes.length];
         int nbVMs = vms.length;
         for (int i = 0; i < vmsCountOnNodes.length; i++) {
-            vmsCountOnNodes[i] = solver.createBoundIntVar(makeVarLabel("nbVMsOn('", nodes[i], "')"), 0, nbVMs);
+            vmsCountOnNodes[i] = VariableFactory.bounded(makeVarLabel("nbVMsOn('", nodes[i], "')"), 0, nbVMs, solver);
         }
     }
 
     private void linkCardinatiesWithSlices() {
-        IntDomainVar[] ds = SliceUtils.extractHosters(ActionModelUtils.getDSlices(vmActions));
-        IntDomainVar[] usages = new IntDomainVar[ds.length];
+        IntVar[] ds = SliceUtils.extractHosters(ActionModelUtils.getDSlices(vmActions));
+        IntVar[] usages = new IntVar[ds.length];
         for (int i = 0; i < ds.length; i++) {
-            usages[i] = solver.makeConstantIntVar(1);
+            usages[i] = VariableFactory.one(solver);
         }
         bpBuilder.add("vmsOnNodes", vmsCountOnNodes, usages, ds);
     }
@@ -506,15 +500,15 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     private boolean checkConsistency(ReconfigurationPlan p) {
-        if (p.getDuration() != end.getVal()) {
-            LOGGER.error("The plan effective duration ({}) and the computed duration ({}) mismatch", p.getDuration(), end.getVal());
+        if (p.getDuration() != end.getValue()) {
+            LOGGER.error("The plan effective duration ({}) and the computed duration ({}) mismatch", p.getDuration(), end.getValue());
             return false;
         }
         return true;
     }
 
     @Override
-    public IntDomainVar[] getNbRunningVMs() {
+    public IntVar[] getNbRunningVMs() {
         return vmsCountOnNodes;
     }
 
@@ -538,7 +532,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public CPSolver getSolver() {
+    public Solver getSolver() {
         return solver;
     }
 
@@ -558,7 +552,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public IntDomainVar makeHostVariable(Object... n) {
+    public IntVar makeHostVariable(Object... n) {
         String str = "";
         if (useLabels) {
             StringBuilder b = new StringBuilder();
@@ -567,11 +561,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             }
             str = b.toString();
         }
-        return solver.createEnumIntVar(str, 0, nodes.length - 1);
+        return VariableFactory.bounded(str, 0, nodes.length - 1, solver);
     }
 
     @Override
-    public IntDomainVar makeCurrentHost(String n, VM vmId) throws SolverException {
+    public IntVar makeCurrentHost(String n, VM vmId) throws SolverException {
         int idx = getVM(vmId);
         if (idx < 0) {
             throw new SolverException(model, "Unknown VM '" + vmId + "'");
@@ -580,16 +574,16 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public IntDomainVar makeCurrentNode(String n, Node nId) throws SolverException {
+    public IntVar makeCurrentNode(String n, Node nId) throws SolverException {
         int idx = getNode(nId);
         if (idx < 0) {
             throw new SolverException(model, "Unknown node '" + nId + "'");
         }
-        return solver.makeConstantIntVar(useLabels ? n : "", idx);
+        return VariableFactory.fixed(useLabels ? n : "", idx, solver);
     }
 
     @Override
-    public IntDomainVar makeUnboundedDuration(Object... n) {
+    public IntVar makeUnboundedDuration(Object... n) {
         String str = "";
         if (useLabels) {
             StringBuilder b = new StringBuilder();
@@ -598,11 +592,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             }
             str = b.toString();
         }
-        return solver.createBoundIntVar(str, 0, end.getSup());
+        return VariableFactory.bounded(str, 0, end.getUB(), solver);
     }
 
     @Override
-    public IntDomainVar makeDuration(int ub, int lb, Object... n) throws SolverException {
+    public IntVar makeDuration(int ub, int lb, Object... n) throws SolverException {
         if (lb < 0 || ub < lb) {
             throw new SolverException(model, "Unable to create duration variable '" + Arrays.toString(n) + "': invalid bounds");
         }
@@ -612,7 +606,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 b.append(o);
             }
         }
-        return solver.createBoundIntVar(b.toString(), lb, ub < end.getSup() ? ub : end.getSup());
+        return VariableFactory.bounded(b.toString(), lb, ub < end.getUB() ? ub : end.getUB(), solver);
     }
 
     @Override
@@ -698,12 +692,12 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public IntDomainVar getStart() {
+    public IntVar getStart() {
         return start;
     }
 
     @Override
-    public IntDomainVar getEnd() {
+    public IntVar getEnd() {
         return end;
     }
 

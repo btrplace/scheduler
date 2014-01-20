@@ -20,8 +20,6 @@ package btrplace.solver.choco;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.model.VM;
-import choco.cp.solver.CPSolver;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -39,11 +37,11 @@ public class SliceTest {
     public void testInstantiation() {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
-        CPSolver s = new CPSolver();
-        IntDomainVar st = s.createIntegerConstant("start", 1);
-        IntDomainVar ed = s.createIntegerConstant("end", 3);
-        IntDomainVar duration = s.createIntegerConstant("duration", 2);
-        IntDomainVar hoster = s.createIntegerConstant("hoster", 4);
+        Solver s = new Solver();
+        IntVar st = s.createIntegerConstant("start", 1);
+        IntVar ed = s.createIntegerConstant("end", 3);
+        IntVar duration = s.createIntegerConstant("duration", 2);
+        IntVar hoster = s.createIntegerConstant("hoster", 4);
         Slice sl = new Slice(vm1, st, ed, duration, hoster);
         Assert.assertEquals(vm1, sl.getSubject());
         Assert.assertEquals(st, sl.getStart());

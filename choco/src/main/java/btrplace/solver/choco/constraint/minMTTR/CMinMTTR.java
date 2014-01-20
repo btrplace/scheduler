@@ -29,18 +29,11 @@ import btrplace.solver.choco.actionModel.ActionModel;
 import btrplace.solver.choco.actionModel.ActionModelUtils;
 import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.constraint.ChocoConstraintBuilder;
-import choco.Choco;
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarVal;
-import choco.cp.solver.search.integer.branching.AssignVar;
-import choco.cp.solver.search.integer.valselector.MinVal;
-import choco.cp.solver.search.integer.varselector.StaticVarOrder;
-import choco.kernel.common.Constant;
-import choco.kernel.solver.Configuration;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.ResolutionPolicy;
-import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.Solver;
+import solver.constraints.IntConstraintFactory;
+import solver.exception.ContradictionException;
+import solver.variables.IntVar;
+import solver.variables.VariableFactory;
 
 import java.util.*;
 
@@ -51,7 +44,7 @@ import java.util.*;
  */
 public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
 
-    private List<SConstraint> costConstraints;
+    private List<Constraint> costConstraints;
 
     private boolean costActivated = false;
 
@@ -68,18 +61,18 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
     public boolean inject(ReconfigurationProblem p) throws SolverException {
         this.rp = p;
         costActivated = false;
-        List<IntDomainVar> mttrs = new ArrayList<>();
+        List<IntVar> mttrs = new ArrayList<>();
         for (ActionModel m : p.getVMActions()) {
             mttrs.add(m.getEnd());
         }
         for (ActionModel m : p.getNodeActions()) {
             mttrs.add(m.getEnd());
         }
-        IntDomainVar[] costs = mttrs.toArray(new IntDomainVar[mttrs.size()]);
-        CPSolver s = p.getSolver();
-        IntDomainVar cost = s.createBoundIntVar(p.makeVarLabel("globalCost"), 0, Choco.MAX_UPPER_BOUND);
+        IntVar[] costs = mttrs.toArray(new IntVar[mttrs.size()]);
+        Solver s = p.getSolver();
+        IntVar cost = VariableFactory.bounded(p.makeVarLabel("globalCost"), 0, Integer.MAX_VALUE / 100, s);
 
-        SConstraint costConstraint = s.eq(cost, CPSolver.sum(costs));
+        Constraint costConstraint = s.eq(cost, Solver.sum(costs));
         costConstraints.clear();
         costConstraints.add(costConstraint);
 
@@ -98,7 +91,7 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         return true;
     }
 
-    private void injectPlacementHeuristic(ReconfigurationProblem p, IntDomainVar cost) {
+    private void injectPlacementHeuristic(ReconfigurationProblem p, IntVar cost) {
 
         Model mo = p.getSourceModel();
         Mapping map = mo.getMapping();
@@ -131,7 +124,7 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
             badActions.add(p.getVMAction(vm));
         }
 
-        CPSolver s = p.getSolver();
+        Solver s = p.getSolver();
 
         //Get the VMs to move for exclusion issue
         Set<VM> vmsToExclude = new HashSet<>(p.getManageableVMs());
@@ -141,7 +134,7 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
                 ite.remove();
             }
         }
-        Map<IntDomainVar, VM> pla = VMPlacementUtils.makePlacementMap(p);
+        Map<IntVar, VM> pla = VMPlacementUtils.makePlacementMap(p);
 
         s.addGoal(new AssignVar(new MovingVMs("movingVMs", p, map, vmsToExclude), new RandomVMPlacement("movingVMs", p, pla, true)));
         HostingVariableSelector selectForBads = new HostingVariableSelector("selectForBads", p, ActionModelUtils.getDSlices(badActions), schedHeuristic);
@@ -169,7 +162,7 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         s.addGoal(new AssignOrForbidIntVarVal(schedHeuristic, new MinVal()));
 
         //At this stage only it matters to plug the cost constraints
-        s.addGoal(new AssignVar(new StaticVarOrder(p.getSolver(), new IntDomainVar[]{p.getEnd(), cost}), new MinVal()));
+        s.addGoal(new AssignVar(new StaticVarOrder(p.getSolver(), new IntVar[]{p.getEnd(), cost}), new MinVal()));
     }
 
     @Override
@@ -185,15 +178,15 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         if (!costActivated) {
             rp.getLogger().debug("Post the cost-oriented constraints");
             costActivated = true;
-            CPSolver s = rp.getSolver();
-            for (SConstraint c : costConstraints) {
+            Solver s = rp.getSolver();
+            for (Constraint c : costConstraints) {
                 s.postCut(c);
             }
             try {
                 s.propagate();
             } catch (ContradictionException e) {
                 s.setFeasible(false);
-                s.post(Constant.FALSE);
+                s.post(IntConstraintFactory.FALSE(s));
             }
         }
     }

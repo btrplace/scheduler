@@ -27,10 +27,6 @@ import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import choco.cp.solver.CPSolver;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
-import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -76,11 +72,11 @@ public class BootableNodeModelTest {
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         System.out.println(p);
-        Assert.assertEquals(na.getDuration().getVal(), 5);
-        Assert.assertEquals(na.getStart().getVal(), 0);
-        Assert.assertEquals(na.getEnd().getVal(), 5);
-        Assert.assertEquals(na.getHostingStart().getVal(), 5);
-        Assert.assertEquals(na.getHostingEnd().getVal(), 5);
+        Assert.assertEquals(na.getDuration().getValue(), 5);
+        Assert.assertEquals(na.getStart().getValue(), 0);
+        Assert.assertEquals(na.getEnd().getValue(), 5);
+        Assert.assertEquals(na.getHostingStart().getValue(), 5);
+        Assert.assertEquals(na.getHostingEnd().getValue(), 5);
 
 
         Model res = p.getResult();
@@ -104,11 +100,11 @@ public class BootableNodeModelTest {
         na.getState().setVal(0);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
-        Assert.assertEquals(na.getDuration().getVal(), 0);
-        Assert.assertEquals(na.getStart().getVal(), 0);
-        Assert.assertEquals(na.getEnd().getVal(), 0);
-        Assert.assertEquals(na.getHostingStart().getVal(), rp.getEnd().getVal());
-        Assert.assertEquals(na.getHostingEnd().getVal(), rp.getEnd().getVal());
+        Assert.assertEquals(na.getDuration().getValue(), 0);
+        Assert.assertEquals(na.getStart().getValue(), 0);
+        Assert.assertEquals(na.getEnd().getValue(), 0);
+        Assert.assertEquals(na.getHostingStart().getValue(), rp.getEnd().getValue());
+        Assert.assertEquals(na.getHostingEnd().getValue(), rp.getEnd().getValue());
 
         Assert.assertNotNull(p);
         Assert.assertEquals(p.getSize(), 0);
@@ -138,10 +134,10 @@ public class BootableNodeModelTest {
 
         BootableNodeModel na = (BootableNodeModel) rp.getNodeAction(n1);
         Assert.assertNotNull(rp.solve(0, false));
-        Assert.assertEquals(na.getStart().getVal(), 0);
-        Assert.assertEquals(na.getEnd().getVal(), 5);
-        Assert.assertEquals(na.getHostingStart().getVal(), 5);
-        Assert.assertEquals(na.getHostingEnd().getVal(), 7);
+        Assert.assertEquals(na.getStart().getValue(), 0);
+        Assert.assertEquals(na.getEnd().getValue(), 5);
+        Assert.assertEquals(na.getHostingStart().getValue(), 5);
+        Assert.assertEquals(na.getHostingEnd().getValue(), 7);
     }
 
     @Test
@@ -164,7 +160,7 @@ public class BootableNodeModelTest {
         BootableNodeModel na2 = (BootableNodeModel) rp.getNodeAction(n2);
         na1.getState().setVal(1);
         na2.getState().setVal(1);
-        CPSolver solver = rp.getSolver();
+        Solver solver = rp.getSolver();
         solver.post(solver.eq(na1.getEnd(), na2.getStart()));
         Assert.assertNotNull(rp.solve(0, false));
     }
@@ -220,11 +216,11 @@ public class BootableNodeModelTest {
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         System.out.println(p);
-        Assert.assertEquals(bn4.getStart().getVal(), 0);
-        Assert.assertEquals(bn4.getDuration().getVal(), 0);
-        Assert.assertEquals(bn4.getEnd().getVal(), 0);
-        Assert.assertEquals(bn4.getHostingStart().getVal(), 0);
-        Assert.assertEquals(bn4.getHostingEnd().getVal(), 0);
+        Assert.assertEquals(bn4.getStart().getValue(), 0);
+        Assert.assertEquals(bn4.getDuration().getValue(), 0);
+        Assert.assertEquals(bn4.getEnd().getValue(), 0);
+        Assert.assertEquals(bn4.getHostingStart().getValue(), 0);
+        Assert.assertEquals(bn4.getHostingEnd().getValue(), 0);
         Assert.assertEquals(p.getSize(), 1);
         Model res = p.getResult();
         Assert.assertTrue(res.getMapping().getOfflineNodes().contains(n1));
