@@ -38,9 +38,13 @@ import solver.Configuration;
 import solver.Solver;
 import solver.exception.ContradictionException;
 import solver.objective.IntObjectiveManager;
+import solver.search.loop.monitors.SMF;
+import solver.search.strategy.selectors.values.InDomainMin;
+import solver.search.strategy.selectors.variables.InputOrder;
+import solver.search.strategy.strategy.Assignment;
 import solver.variables.IntVar;
-import solver.variables.SetVar;
 import solver.variables.VariableFactory;
+import util.ESat;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -188,7 +192,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         //Set the timeout
         if (timeLimit > 0) {
-            solver.setTimeLimit(timeLimit * 1000);
+            SMF.limitTime(solver, timeLimit * 1000);
+            //solver.setTimeLimit(timeLimit * 1000);
         }
 
         if (objAlterer == null) {
@@ -199,31 +204,32 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         solver.getConfiguration().putInt(Configuration.SOLUTION_POOL_CAPACITY, Integer.MAX_VALUE);
         solver.generateSearchStrategy();
 
+
         appendNaiveBranchHeuristic();
 
 
-        int nbIntVars = solver.getNbVars();
-        /*int nbBoolVars = solver.getNbBooleanVars();
-        int nbCstes = solver.getNbConstants();*/
+        int nbIntVars = solver.retrieveIntVars().length;
+        int nbBoolVars = solver.retrieveBoolVars().length;
+        //int nbCstes = solver.retrieveIntVars();*/
         int nbCstrs = solver.getNbCstrs();
-        getLogger().debug("{} constraints; {} variables", nbCstrs, nbIntVars, nbCstrs, nbIntVars);
+        getLogger().debug("{} constraints; Variables: {} ints, {} bools", nbCstrs, nbIntVars, nbBoolVars);
         if (objAlterer == null) {
             solver.launch();
         } else if (optimize) {
             launchWithAlterer();
         }
 
-        ChocoLogging.flushLogs();
         return makeResultingPlan();
     }
 
     private ReconfigurationPlan makeResultingPlan() throws SolverException {
 
         //Check for the solution
-        if (Boolean.FALSE == solver.isFeasible()) {
+        ESat status = solver.isFeasible();
+        if (status == ESat.FALSE) {
             //It is certain the CSP has no solution
             return null;
-        } else if (solver.isFeasible() == null) {
+        } else if (solver.isFeasible() == ESat.UNDEFINED) {
             //We don't know if the CSP has a solution
             throw new SolverException(model, "Unable to state about the problem feasibility.");
         }
@@ -251,19 +257,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * In practice, instantiate each of the variables to its lower-bound
      */
     private void appendNaiveBranchHeuristic() {
-        IntVar[] foo = new IntVar[solver.getNbIntVars()];
-        SetVar[] bar = new SetVar[solver.getNbSetVars()];
-
-        for (int i = 0; i < foo.length; i++) {
-            foo[i] = solver.getIntVarQuick(i);
-        }
-
-        for (int i = 0; i < bar.length; i++) {
-            bar[i] = solver.getSetVarQuick(i);
-        }
-
-        solver.addGoal(new AssignVar(new StaticVarOrder(solver, foo), new MinVal()));
-        solver.addGoal(new AssignVar(new StaticSetVarOrder(solver, bar), new MinVal()));
+        //TODO:
+        /*strats.add(new Assignment(new InputOrder(solver.retrieveIntVars()), new InDomainMin()));
+        strats.add(new Assignment(new InputOrder(solver, solver.retrieveSetVars()), new InDomainMin()));*/
     }
 
     /**
@@ -284,7 +280,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
 
         solver.launch();
-        if (solver.isFeasible() == Boolean.TRUE) {
+        if (solver.isFeasible() == ESat.TRUE) {
             do {
                 int objVal = solver.getObjectiveValue().intValue();
                 int newBound = objAlterer.tryNewValue(objVal);
