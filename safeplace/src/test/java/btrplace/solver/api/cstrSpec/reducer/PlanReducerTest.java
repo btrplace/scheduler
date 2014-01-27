@@ -11,6 +11,9 @@ import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.ConstraintVerifier;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
+import btrplace.solver.api.cstrSpec.spec.term.Constant;
+import btrplace.solver.api.cstrSpec.spec.type.NodeType;
+import btrplace.solver.api.cstrSpec.spec.type.SetType;
 import btrplace.solver.api.cstrSpec.verification.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.TestResult;
@@ -68,8 +71,8 @@ public class PlanReducerTest {
 
         ImplVerifier verif = new ImplVerifier();
         //System.out.println(p.getOrigin().getMapping());
-        List<Object> in = new ArrayList<>();
-        in.add(Collections.singletonList(n1));
+        List<Constant> in = new ArrayList<>();
+        in.add(new Constant(Collections.singletonList(n1), new SetType(NodeType.getInstance())));
         ConstraintVerifier cstrVerif = new ConstraintVerifier();
         TestCase tc = new TestCase(0, p, new Offline(Collections.singleton(n1)), cstrVerif.eval(cstr, p, in));
 

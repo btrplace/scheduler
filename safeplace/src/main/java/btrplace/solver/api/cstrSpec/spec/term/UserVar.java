@@ -42,12 +42,12 @@ public class UserVar<T> extends Var<T> {
     public boolean set(Model mo, T o) {
         Collection s = backend.eval(mo);
         if (s == null) {
-            throw new IllegalArgumentException(o + " not in " + backend + " (" + backend.eval(mo) + ")");
+            throw new IllegalArgumentException("'" + o + "' is outside the domain of  " + backend + " (" + backend.eval(mo) + ")");
         }
         if (incl && !backend.eval(mo).contains(o)) {
-            throw new IllegalArgumentException(o + " not in " + backend + " (" + backend.eval(mo) + ")");
+            throw new IllegalArgumentException("'" + o + "' is outside the domain of  " + backend + " (" + backend.eval(mo) + ")");
         } else if (!incl && !backend.eval(mo).containsAll((Collection) o)) {
-            throw new IllegalArgumentException(o + " not in " + backend + " (" + backend.eval(mo) + ")");
+            throw new IllegalArgumentException("'" + o + "' is outside the domain of  " + backend + " (" + backend.eval(mo) + ")");
         }
         val = o;
         return true;

@@ -5,6 +5,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.ConstraintVerifier;
+import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.TestResult;
@@ -29,13 +30,13 @@ public class PlanReducer implements TestCaseReducer {
     }
 
     @Override
-    public List<TestCase> reduce(TestCase c, Constraint cstr, List<Object> in) {
+    public List<TestCase> reduce(TestCase c, Constraint cstr, List<Constant> in) {
         List<TestCase> mins = new ArrayList<>();
         reduce(0, c, cstr, in, mins);
         return mins;
     }
 
-    private boolean reduce(int lvl, TestCase t, Constraint cstr, List<Object> in, List<TestCase> mins) {
+    private boolean reduce(int lvl, TestCase t, Constraint cstr, List<Constant> in, List<TestCase> mins) {
         TestResult res = verif.verify(t, false);
         if (res.succeeded()) {
             return true;

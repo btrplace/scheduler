@@ -7,6 +7,8 @@ import btrplace.plan.event.ShutdownVM;
 import btrplace.plan.event.SuspendVM;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
+import btrplace.solver.api.cstrSpec.spec.term.Constant;
+import btrplace.solver.api.cstrSpec.spec.type.*;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -20,17 +22,28 @@ import java.util.List;
  */
 public class SignatureReducerTest {
 
-    private ReconfigurationPlan makePlan() {
-        Model mo = new DefaultModel();
-        Node n0 = mo.newNode();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
+    Node n0;
+    Node n1;
+    Node n2;
 
-        VM vm0 = mo.newVM();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
-        VM vm4 = mo.newVM();
+    VM vm0;
+    VM vm1;
+    VM vm2;
+    VM vm3;
+    VM vm4;
+
+    private ReconfigurationPlan makePlan() {
+
+        Model mo = new DefaultModel();
+        n0 = mo.newNode();
+        n1 = mo.newNode();
+        n2 = mo.newNode();
+
+        vm0 = mo.newVM();
+        vm1 = mo.newVM();
+        vm2 = mo.newVM();
+        vm3 = mo.newVM();
+        vm4 = mo.newVM();
 
         Mapping m = mo.getMapping();
         m.addOnlineNode(n0);
@@ -55,7 +68,7 @@ public class SignatureReducerTest {
         SpecReader ex = new SpecReader();
         try {
             for (btrplace.solver.api.cstrSpec.Constraint x : ex.extractConstraints(new File("src/test/resources/v1.cspec"))) {
-                if (x.id().equals("spread")) {
+                if (x.id().equals("preserve")) {
                     cstr = x;
                     return cstr;
                 }
@@ -74,13 +87,17 @@ public class SignatureReducerTest {
         System.out.println(p.getOrigin().getMapping() + "\n" + p);
         System.out.println(c.pretty());
         SignatureReducer red = new SignatureReducer();
-        List<Object> args = new ArrayList<>();
+        List<Constant> args = new ArrayList<>();
         /*args.add(5);
         args.add(Arrays.asList(1, 2, 3, 4));
         args.add("foo");
         args.add(Arrays.asList("a","b","c","d","e"));*/
-        args.add(p.getOrigin().getMapping().getAllVMs());
-
+        args.add(new Constant(p.getOrigin().getMapping().getAllVMs(), new SetType(VMType.getInstance())));
+        args.add(StringType.getInstance().newValue("cpu"));
+        args.add(IntType.getInstance().newValue(5));
+        args.add(BoolType.getInstance().newValue(true));
+        //args.add(Arrays.asList(Arrays.asList(n1, n2), Arrays.asList(n0)));
+        //args.add(Boolean.TRUE);
         red.reduce(tc, c, args);
         Assert.fail();
     }

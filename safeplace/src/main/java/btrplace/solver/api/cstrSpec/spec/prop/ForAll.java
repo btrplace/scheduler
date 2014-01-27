@@ -65,7 +65,7 @@ public class ForAll implements Proposition {
             Var v = ite.next();
             if (ite.hasNext()) {
                 b.append(v.label());
-                b.append(",");
+                b.append(',');
             } else {
                 b.append(v.pretty());
             }

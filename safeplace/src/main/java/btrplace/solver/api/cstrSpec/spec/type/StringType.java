@@ -11,7 +11,7 @@ public class StringType extends Atomic {
 
     @Override
     public boolean match(String n) {
-        return n.startsWith("\"") && n.endsWith("\"");
+        return true;
     }
 
     @Override

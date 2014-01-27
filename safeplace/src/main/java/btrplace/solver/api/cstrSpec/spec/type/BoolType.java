@@ -12,12 +12,11 @@ import java.util.Set;
  */
 public class BoolType extends Atomic {
 
-    private Set<Boolean> dom;
+    public static final Set<Boolean> DOMAIN = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Boolean.TRUE, Boolean.FALSE)));
 
     private static BoolType instance = new BoolType();
 
     private BoolType() {
-        dom = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(Boolean.TRUE, Boolean.FALSE)));
     }
 
     public static BoolType getInstance() {
