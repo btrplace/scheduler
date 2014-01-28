@@ -8,14 +8,16 @@ import btrplace.plan.event.SuspendVM;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
-import btrplace.solver.api.cstrSpec.spec.type.*;
+import btrplace.solver.api.cstrSpec.spec.type.BoolType;
+import btrplace.solver.api.cstrSpec.spec.type.NodeType;
+import btrplace.solver.api.cstrSpec.spec.type.SetType;
+import btrplace.solver.api.cstrSpec.spec.type.VMType;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Fabien Hermenier
@@ -25,6 +27,8 @@ public class SignatureReducerTest {
     Node n0;
     Node n1;
     Node n2;
+    Node n3;
+    Node n4;
 
     VM vm0;
     VM vm1;
@@ -38,6 +42,8 @@ public class SignatureReducerTest {
         n0 = mo.newNode();
         n1 = mo.newNode();
         n2 = mo.newNode();
+        n3 = mo.newNode();
+        n4 = mo.newNode();
 
         vm0 = mo.newVM();
         vm1 = mo.newVM();
@@ -49,6 +55,8 @@ public class SignatureReducerTest {
         m.addOnlineNode(n0);
         m.addOnlineNode(n1);
         m.addOnlineNode(n2);
+        m.addOnlineNode(n3);
+        m.addOnlineNode(n4);
 
         m.addRunningVM(vm0, n1);
         m.addRunningVM(vm1, n2);
@@ -68,7 +76,7 @@ public class SignatureReducerTest {
         SpecReader ex = new SpecReader();
         try {
             for (btrplace.solver.api.cstrSpec.Constraint x : ex.extractConstraints(new File("src/test/resources/v1.cspec"))) {
-                if (x.id().equals("preserve")) {
+                if (x.id().equals("among")) {
                     cstr = x;
                     return cstr;
                 }
@@ -88,16 +96,14 @@ public class SignatureReducerTest {
         System.out.println(c.pretty());
         SignatureReducer red = new SignatureReducer();
         List<Constant> args = new ArrayList<>();
-        /*args.add(5);
-        args.add(Arrays.asList(1, 2, 3, 4));
-        args.add("foo");
-        args.add(Arrays.asList("a","b","c","d","e"));*/
+
         args.add(new Constant(p.getOrigin().getMapping().getAllVMs(), new SetType(VMType.getInstance())));
-        args.add(StringType.getInstance().newValue("cpu"));
-        args.add(IntType.getInstance().newValue(5));
+
+        Set<Set<Node>> ps = new HashSet<>();
+        ps.add(new HashSet<>(Arrays.asList(n0, n1)));
+        ps.add(new HashSet<>(Arrays.asList(n2, n3, n4)));
+        args.add(new Constant(ps, new SetType(new SetType(NodeType.getInstance()))));
         args.add(BoolType.getInstance().newValue(true));
-        //args.add(Arrays.asList(Arrays.asList(n1, n2), Arrays.asList(n0)));
-        //args.add(Boolean.TRUE);
         red.reduce(tc, c, args);
         Assert.fail();
     }

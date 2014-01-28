@@ -44,11 +44,11 @@ public class UserVar<T> extends Var<T> {
         if (s == null) {
             throw new IllegalArgumentException("'" + o + "' is outside the domain of  " + backend + " (" + backend.eval(mo) + ")");
         }
-        if (incl && !backend.eval(mo).contains(o)) {
+        /*if (incl && !backend.eval(mo).contains(o)) {
             throw new IllegalArgumentException("'" + o + "' is outside the domain of  " + backend + " (" + backend.eval(mo) + ")");
         } else if (!incl && !backend.eval(mo).containsAll((Collection) o)) {
             throw new IllegalArgumentException("'" + o + "' is outside the domain of  " + backend + " (" + backend.eval(mo) + ")");
-        }
+        } */
         val = o;
         return true;
     }

@@ -4,12 +4,12 @@ import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.ConstraintVerifier;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.type.SetType;
+import btrplace.solver.api.cstrSpec.verification.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Reduce a constraint signature to the possible.
@@ -18,85 +18,72 @@ import java.util.Set;
  * @author Fabien Hermenier
  */
 public class SignatureReducer implements TestCaseReducer {
-    private ConstraintVerifier cVerif = new ConstraintVerifier();
+
+    private ImplVerifier verif;
+
+    private ConstraintVerifier cVerif;
+
+
+    public SignatureReducer() {
+        verif = new ImplVerifier();
+        cVerif = new ConstraintVerifier();
+    }
 
     @Override
-    public List<TestCase> reduce(TestCase c, Constraint cstr, List<Constant> in) {
-        //Convertit tous les sets en liste, plus maniable
-        List<TestCase> mins = new ArrayList<>();
-        Boolean b = cVerif.eval(cstr, c.getPlan(), in);
-        System.out.println(in + " " + b);
-        reduce(c, cstr, in, mins);
-
-        return mins;
-    }
-
-    private boolean reduce(TestCase c, Constraint cstr, List<Constant> in, List<TestCase> mins) {
-        List<Constant>[] parts = split(in);
-        //System.out.println(Arrays.toString(parts));
-        if (parts.length == 0) {
-            mins.add(c);
-        }
-        for (List<Constant> part : parts) {
-            Boolean b = cVerif.eval(cstr, c.getPlan(), in);
-            System.out.println(part + " " + b);
-            reduce(c, cstr, part, mins);
-        }
-        return true;
-    }
-
-    /**
-     * Split in half the first encountered set.
-     *
-     * @param in
-     * @return
-     */
-    private List<Constant>[] split(List<Constant> in) {
-
-        //System.out.println("To split:" + in);
-        List<Constant>[] res = new List[2];
-        res[0] = new ArrayList<>(in.size());
-        res[1] = new ArrayList<>(in.size());
-        boolean splitted = false;
+    public List<TestCase> reduce(TestCase tc, Constraint cstr, List<Constant> in) {
+        List<TestCase> res = new ArrayList<>();
         for (int i = 0; i < in.size(); i++) {
-            Constant o = in.get(i);
-            if (o.type() instanceof SetType) {
-                List col = (List) o;
-                if (col.size() >= 2) {
-                    splitted = true;
-                    //Keep the previous items
-                    append(in, 0, i, res);
-
-                    Set<Object> l1 = new HashSet<>();
-                    Set<Object> l2 = new HashSet<>();
-                    for (int j = 0; j < col.size(); j++) {
-                        if (j % 2 == 0) {
-                            l1.add(col.get(j));
-                        } else {
-                            l2.add(col.get(j));
-                        }
-                    }
-                    res[0].add(new Constant(l1, o.type()));
-                    res[1].add(new Constant(l2, o.type()));
-                    //res[0].add(l1);
-                    //res[1].add(l2);
-                    //Keep the following items
-                    append(in, i + 1, in.size(), res);
-                    break;
-                }
-            }
-        }
-        if (!splitted) {
-            return new List[0];
+            reduceArg(tc, cstr, in, i, res);
         }
         return res;
     }
 
-    private static void append(List src, int from, int to, List... dst) {
-        for (int x = from; x < to; x++) {
-            for (List d : dst) {
-                d.add(src.get(x));
+    private void reduceArg(TestCase tc, Constraint cstr, List<Constant> in, int i, List<TestCase> res) {
+        Constant c = in.get(i);
+        if (c.type() instanceof SetType) {
+            Collection col = (Collection) c.eval(null);
+            List l = new ArrayList(col);
+            in.set(i, new Constant(l, c.type()));
+            for (int j = 0; j < l.size(); j++) {
+//                for (Object o : col) {
+                if (reduceSetTo(tc, cstr, in, l, j, res)) {
+                    j--;
+                }
+//                }
+
             }
         }
+    }
+
+    private boolean reduceSetTo(TestCase tc, Constraint cstr, List<Constant> in, List col, int i, List<TestCase> res) {
+        if (col.get(i) instanceof Collection) {
+            if (failWithout(tc, cstr, in, col, i)) {
+                return true;
+            }
+            List l = new ArrayList((Collection) col.get(i));
+            col.set(i, l);
+            for (int j = 0; j < l.size(); j++) {
+                if (reduceSetTo(tc, cstr, in, l, j, res)) {
+                    j--;
+                }
+            }
+            return false;
+        } else {
+            return failWithout(tc, cstr, in, col, i);
+        }
+    }
+
+    private boolean failWithout(TestCase tc, Constraint cstr, List<Constant> in, List col, int i) {
+        //System.out.println("Remove '" + col.get(i) + "' from " + col);
+        Object o = col.remove(i);
+        //System.out.println("params: " + in);
+        boolean ret = System.currentTimeMillis() % 2 == 0;
+        if (!ret) {
+            col.add(i, o);
+            //System.out.println("KO Undo: " + in);
+        } /*else {
+            System.out.println("OK: " + in);
+        }   */
+        return ret;
     }
 }
