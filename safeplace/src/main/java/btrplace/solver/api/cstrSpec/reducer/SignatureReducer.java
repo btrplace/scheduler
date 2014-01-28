@@ -1,21 +1,22 @@
 package btrplace.solver.api.cstrSpec.reducer;
 
 import btrplace.json.JSONConverterException;
-import btrplace.json.model.constraint.ConstraintsConverter;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.CstrSpecEvaluator;
 import btrplace.solver.api.cstrSpec.JSONs;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
-import btrplace.solver.api.cstrSpec.spec.term.UserVar;
 import btrplace.solver.api.cstrSpec.spec.type.SetType;
+import btrplace.solver.api.cstrSpec.spec.type.Type;
 import btrplace.solver.api.cstrSpec.verification.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.TestResult;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Reduce a constraint signature to the possible.
@@ -37,34 +38,54 @@ public class SignatureReducer {
     private TestResult.ErrorType compare(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws JSONConverterException, IOException {
         boolean consTh = cVerif.eval(cstr, p, in);
 
-        SatConstraint impl = makeImpl(p, cstr, in);
+        SatConstraint impl = JSONs.unMarshalConstraint(p, cstr, in);
         return verif.verify(new TestCase(0, p, impl, consTh)).errorType();
     }
 
-    private SatConstraint makeImpl(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws JSONConverterException, IOException {
-        ConstraintsConverter conv = ConstraintsConverter.newBundle();
-        String marshal = cstr.getMarshal();
-        List<UserVar> vars = cstr.getParameters();
-        Map<String, Object> ps = new HashMap<>();
-        for (int i = 0; i < vars.size(); i++) {
-            ps.put(vars.get(i).label(), in.get(i).eval(null));
+    private List<Constant> deepCopy(List<Constant> in) {
+        List<Constant> cpy = new ArrayList<>(in.size());
+        for (Constant c : in) {
+            Type t = c.type();
+            Object v = c.eval(null);
+            Object o = v; //Assume immutable if not a collection
+            if (v instanceof Collection) {
+                o = toList((Collection) v);
+                //Deep transformation into lists
+            }
+            cpy.add(new Constant(o, t));
         }
-        conv.setModel(p.getOrigin());
-        return (SatConstraint) conv.fromJSON(JSONs.unMarshal(marshal, ps));
+        return cpy;
     }
 
-    public void reduce(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws IOException, JSONConverterException {
-        TestResult.ErrorType t = compare(p, cstr, in);
-        for (int i = 0; i < in.size(); i++) {
-            reduceArg(t, p, cstr, in, i);
+    private List toList(Collection v) {
+        List l = new ArrayList(v.size());
+        for (Object o : v) {
+            if (o instanceof Collection) {
+                l.add(toList((Collection) o));
+            } else {
+                //Assume immutable
+                l.add(o);
+            }
         }
+        return l;
+    }
+
+    public List<Constant> reduce(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws IOException, JSONConverterException {
+        List<Constant> cpy = deepCopy(in);
+        TestResult.ErrorType t = compare(p, cstr, cpy);
+        if (t == TestResult.ErrorType.succeed) {
+            return cpy;
+        }
+        for (int i = 0; i < cpy.size(); i++) {
+            reduceArg(t, p, cstr, cpy, i);
+        }
+        return cpy;
     }
 
     private void reduceArg(TestResult.ErrorType t, ReconfigurationPlan p, Constraint cstr, List<Constant> in, int i) throws IOException, JSONConverterException {
         Constant c = in.get(i);
         if (c.type() instanceof SetType) {
-            Collection col = (Collection) c.eval(null);
-            List l = new ArrayList(col);
+            List l = (List) c.eval(null);
             in.set(i, new Constant(l, c.type()));
             for (int j = 0; j < l.size(); j++) {
                 if (reduceSetTo(t, p, cstr, in, l, j)) {
@@ -79,7 +100,7 @@ public class SignatureReducer {
             if (failWithout(t, p, cstr, in, col, i)) {
                 return true;
             }
-            List l = new ArrayList((Collection) col.get(i));
+            List l = (List) col.get(i);
             col.set(i, l);
             for (int j = 0; j < l.size(); j++) {
                 if (reduceSetTo(t, p, cstr, in, l, j)) {

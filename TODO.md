@@ -10,9 +10,10 @@ OK discrete & continuous constraints (an operator for current && end status ?): 
 NO predicates
 
 ## Reducer ##
+- Return which action violate which constraint
 OK Reduce plan (less actions)
-- Reduce signature ? (lighter constraints)
-  -> split in half every set in parameters  
+OK Reduce signature ? (lighter constraints)
+   -> O(n) implementation
 - Reduce source ? (less elements, constraints)
   -> remove elements not involved in the constraints signature.
      -> VMs in first

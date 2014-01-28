@@ -39,7 +39,7 @@ public class PlanReducer implements TestCaseReducer {
     private boolean reduce(int lvl, TestCase t, Constraint cstr, List<Constant> in, List<TestCase> mins) {
         TestResult res = verif.verify(t, false);
         if (res.succeeded()) {
-            return true;
+            return true; //On a enlevé qqch qui crééait l'erreur.
         } else if (res.errorType() == TestResult.ErrorType.bug) {
             //Skip, it's because the tested constraint in no longer in the plan and it's a state change
             return false;
@@ -64,6 +64,8 @@ public class PlanReducer implements TestCaseReducer {
                         p2.add(a);
                     }
                 }
+                System.out.println("Split 1:\n" + p1);
+                System.out.println("Split 2:\n" + p2);
                 TestCase c1 = new TestCase(t.num(), p1, t.getSatConstraint(), cVerif.eval(cstr, p1, in));
                 TestCase c2 = new TestCase(t.num(), p2, t.getSatConstraint(), cVerif.eval(cstr, p2, in));
                 decidable = reduce(lvl + 1, c1, cstr, in, mins);
@@ -73,6 +75,7 @@ public class PlanReducer implements TestCaseReducer {
                 if (sep == middle) {
                     break;
                 }
+                System.out.println("Not decidable !");
             }
         }
         return false;

@@ -1,7 +1,6 @@
 package btrplace.solver.api.cstrSpec.reducer;
 
 import btrplace.model.*;
-import btrplace.model.constraint.Offline;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootNode;
@@ -9,14 +8,10 @@ import btrplace.plan.event.BootVM;
 import btrplace.plan.event.MigrateVM;
 import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.api.cstrSpec.Constraint;
-import btrplace.solver.api.cstrSpec.CstrSpecEvaluator;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.type.NodeType;
 import btrplace.solver.api.cstrSpec.spec.type.SetType;
-import btrplace.solver.api.cstrSpec.verification.ImplVerifier;
-import btrplace.solver.api.cstrSpec.verification.TestCase;
-import btrplace.solver.api.cstrSpec.verification.TestResult;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -28,10 +23,25 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
-public class PlanReducerTest {
+public class PlanReducer3Test {
+
+    public Constraint makeConstraint(String id) {
+
+        SpecReader ex = new SpecReader();
+        try {
+            for (Constraint x : ex.extractConstraints(new File("src/test/resources/v1.cspec"))) {
+                if (x.id().equals(id)) {
+                    return x;
+                }
+            }
+        } catch (Exception e) {
+            Assert.fail(e.getMessage(), e);
+        }
+        return null;
+    }
 
     @Test
-    public void test() {
+    public void test() throws Exception {
         Model mo = new DefaultModel();
         Node n0 = mo.newNode();
         Node n1 = mo.newNode();
@@ -51,45 +61,24 @@ public class PlanReducerTest {
 
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
         p.add(new ShutdownNode(n1, 0, 3));
-        p.add(new MigrateVM(vm0, n0, n2, 4, 10));
-        p.add(new BootNode(n2, 0, 3));
         p.add(new BootVM(vm1, n0, 2, 7));
+        p.add(new BootNode(n2, 0, 3));
+        p.add(new MigrateVM(vm0, n0, n2, 4, 10));
 
         SpecReader ex = new SpecReader();
-        Constraint cstr = null;
+        Constraint cstr = makeConstraint("offline");
 
-        try {
-            for (Constraint x : ex.extractConstraints(new File("src/test/resources/v1.cspec"))) {
-                if (x.id().equals("offline")) {
-                    cstr = x;
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            Assert.fail(e.getMessage(), e);
-        }
-
-        ImplVerifier verif = new ImplVerifier();
         List<Constant> in = new ArrayList<>();
         in.add(new Constant(Collections.singletonList(n1), new SetType(NodeType.getInstance())));
-        CstrSpecEvaluator cstrVerif = new CstrSpecEvaluator();
-        TestCase tc = new TestCase(0, p, new Offline(Collections.singleton(n1)), cstrVerif.eval(cstr, p, in));
 
-        System.out.println(cstr.getProposition());
-        TestResult tr = verif.verify(tc);
-        System.out.println(tr);
-        //PlanReducer r = new PlanReducer();
-        //r.reduce(0, tc, cstr, in);
 
-        PlanReducer tcr = new PlanReducer();
-        List<TestCase> reduced = tcr.reduce(tc, cstr, in);
-
-        System.out.println("----------- " + reduced.size() + " Reduced Test Cases -----------");
-        for (TestCase t : reduced) {
-            System.out.println(t);
-            //System.out.println(verif.verify(t));
-            System.out.println("---");
-        }
+        PlanReducer3 tcr = new PlanReducer3();
+        System.out.println(p.getOrigin().getMapping());
+        System.out.println(p);
+        ReconfigurationPlan reduced = tcr.reduce(p, cstr, in);
+        System.out.println(p);
+        System.out.println("Reduced to:");
+        System.out.println(reduced);
         Assert.fail();
     }
 }

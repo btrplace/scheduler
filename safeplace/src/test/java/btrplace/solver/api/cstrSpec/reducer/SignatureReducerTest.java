@@ -10,7 +10,6 @@ import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.type.NodeType;
 import btrplace.solver.api.cstrSpec.spec.type.SetType;
-import btrplace.solver.api.cstrSpec.verification.TestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -69,15 +68,13 @@ public class SignatureReducerTest {
         return p;
     }
 
-    public Constraint makeConstraint() {
-        Constraint cstr = null;
+    public Constraint makeConstraint(String id) {
 
         SpecReader ex = new SpecReader();
         try {
             for (btrplace.solver.api.cstrSpec.Constraint x : ex.extractConstraints(new File("src/test/resources/v1.cspec"))) {
-                if (x.id().equals("offline")) {
-                    cstr = x;
-                    return cstr;
+                if (x.id().equals(id)) {
+                    return x;
                 }
             }
         } catch (Exception e) {
@@ -89,8 +86,7 @@ public class SignatureReducerTest {
     @Test
     public void test() throws Exception {
         ReconfigurationPlan p = makePlan();
-        Constraint c = makeConstraint();
-        TestCase tc = new TestCase(0, p, null, false);
+        Constraint c = makeConstraint("offline");
         System.out.println(p.getOrigin().getMapping() + "\n" + p);
         System.out.println(c.pretty());
         SignatureReducer red = new SignatureReducer();
@@ -103,8 +99,8 @@ public class SignatureReducerTest {
         ps.add(new HashSet<>(Arrays.asList(n2, n3, n4)));
         args.add(new Constant(ps, new SetType(new SetType(NodeType.getInstance()))));
         args.add(BoolType.getInstance().newValue(true));                             */
-        red.reduce(p, c, args);
-        System.out.println(args);
+        List<Constant> r = red.reduce(p, c, args);
+        System.out.println(args + " -> " + r);
         Assert.fail();
     }
 }

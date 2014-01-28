@@ -1,10 +1,15 @@
 package btrplace.solver.api.cstrSpec;
 
+import btrplace.json.JSONConverterException;
+import btrplace.json.model.constraint.ConstraintsConverter;
 import btrplace.model.Element;
+import btrplace.model.constraint.SatConstraint;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.solver.api.cstrSpec.spec.term.Constant;
+import btrplace.solver.api.cstrSpec.spec.term.UserVar;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * @author Fabien Hermenier
@@ -39,5 +44,17 @@ public class JSONs {
             throw new IllegalArgumentException("No serialisation available for value '" + v + "' (" + v.getClass().getSimpleName() + ")");
         }
         return s;
+    }
+
+    public static SatConstraint unMarshalConstraint(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws JSONConverterException, IOException {
+        ConstraintsConverter conv = ConstraintsConverter.newBundle();
+        String marshal = cstr.getMarshal();
+        List<UserVar> vars = cstr.getParameters();
+        Map<String, Object> ps = new HashMap<>();
+        for (int i = 0; i < vars.size(); i++) {
+            ps.put(vars.get(i).label(), in.get(i).eval(null));
+        }
+        conv.setModel(p.getOrigin());
+        return (SatConstraint) conv.fromJSON(unMarshal(marshal, ps));
     }
 }
