@@ -14,11 +14,11 @@ import java.util.*;
 /**
  * @author Fabien Hermenier
  */
-public class ConstraintVerifier {
+public class CstrSpecEvaluator {
 
     private static Comparator<Action> startFirstComparator = new TimedBasedActionComparator();
 
-    public Boolean eval(Constraint cstr, ReconfigurationPlan p, List<Constant> values) {
+    public boolean eval(Constraint cstr, ReconfigurationPlan p, List<Constant> values) {
 
         Model src = p.getOrigin();
 
@@ -63,7 +63,7 @@ public class ConstraintVerifier {
         if (values.size() != c.getParameters().size()) {
             throw new IllegalArgumentException(toString(c.id(), values) + " cannot match " + signatureToString(c));
         }
-        System.out.println(values);
+        //System.out.println(values);
         for (int i = 0; i < values.size(); i++) {
             UserVar var = c.getParameters().get(i);
             Type t = values.get(i).type();

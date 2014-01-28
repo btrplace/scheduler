@@ -52,7 +52,7 @@ public class CSchedule implements ChocoConstraint {
         return Collections.emptySet();
     }
 
-    static class Builder implements ChocoConstraintBuilder {
+    public static class Builder implements ChocoConstraintBuilder {
 
         @Override
         public Class<? extends Constraint> getKey() {

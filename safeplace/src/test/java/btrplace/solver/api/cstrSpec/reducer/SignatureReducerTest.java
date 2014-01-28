@@ -8,16 +8,15 @@ import btrplace.plan.event.SuspendVM;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
-import btrplace.solver.api.cstrSpec.spec.type.BoolType;
 import btrplace.solver.api.cstrSpec.spec.type.NodeType;
 import btrplace.solver.api.cstrSpec.spec.type.SetType;
-import btrplace.solver.api.cstrSpec.spec.type.VMType;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Fabien Hermenier
@@ -76,7 +75,7 @@ public class SignatureReducerTest {
         SpecReader ex = new SpecReader();
         try {
             for (btrplace.solver.api.cstrSpec.Constraint x : ex.extractConstraints(new File("src/test/resources/v1.cspec"))) {
-                if (x.id().equals("among")) {
+                if (x.id().equals("offline")) {
                     cstr = x;
                     return cstr;
                 }
@@ -88,7 +87,7 @@ public class SignatureReducerTest {
     }
 
     @Test
-    public void test() {
+    public void test() throws Exception {
         ReconfigurationPlan p = makePlan();
         Constraint c = makeConstraint();
         TestCase tc = new TestCase(0, p, null, false);
@@ -97,14 +96,15 @@ public class SignatureReducerTest {
         SignatureReducer red = new SignatureReducer();
         List<Constant> args = new ArrayList<>();
 
-        args.add(new Constant(p.getOrigin().getMapping().getAllVMs(), new SetType(VMType.getInstance())));
+        args.add(new Constant(p.getOrigin().getMapping().getAllNodes(), new SetType(NodeType.getInstance())));
 
-        Set<Set<Node>> ps = new HashSet<>();
+        /*Set<Set<Node>> ps = new HashSet<>();
         ps.add(new HashSet<>(Arrays.asList(n0, n1)));
         ps.add(new HashSet<>(Arrays.asList(n2, n3, n4)));
         args.add(new Constant(ps, new SetType(new SetType(NodeType.getInstance()))));
-        args.add(BoolType.getInstance().newValue(true));
-        red.reduce(tc, c, args);
+        args.add(BoolType.getInstance().newValue(true));                             */
+        red.reduce(p, c, args);
+        System.out.println(args);
         Assert.fail();
     }
 }

@@ -23,6 +23,7 @@ public class ImplVerifier implements Verifier {
         return verify(c, true);
     }
 
+
     public TestResult verify(TestCase c, boolean inclSat) {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.getConstraintMapper().register(new CSchedule.Builder());
@@ -30,7 +31,7 @@ public class ImplVerifier implements Verifier {
         if (inclSat) {
             cstrs.add(c.getSatConstraint());
         }
-        System.out.println("Initial: " + cstrs + " with \n" + c.getPlan());
+        //System.out.println("Initial: " + cstrs + " with \n" + c.getPlan());
         cstrs.addAll(actionsToConstraints(c.getPlan(), c.getSatConstraint()));
 
         setDurationEstimators(c.getPlan());
@@ -61,13 +62,13 @@ public class ImplVerifier implements Verifier {
                 return makeResult(c, TestResult.ErrorType.falsePositive, new Exception("Should not pass"));
             }
         } catch (Exception e) {
-            e.printStackTrace(System.out);
+            //e.printStackTrace(System.out);
             if (!c.isConsistent()) {
                 return makeResult(c, TestResult.ErrorType.succeed, e);
             }
             return makeResult(c, TestResult.ErrorType.falseNegative, e);
         } catch (Error e) {
-            e.printStackTrace(System.out);
+            //e.printStackTrace(System.out);
             if (!c.isConsistent()) {
                 return makeResult(c, TestResult.ErrorType.succeed, new Exception(e));
             }
@@ -77,7 +78,7 @@ public class ImplVerifier implements Verifier {
 
 
     private TestResult makeResult(TestCase c, TestResult.ErrorType err, Exception ex) {
-        System.out.println(err + "\n---");
+        //System.out.println(err + "\n---");
         return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), err, ex);
     }
 

@@ -48,11 +48,11 @@ cstr lonely (vs <: vms, cont: bool) ::=
 	!(i : vs) vmState(i) = running --> (colocated(i) - {i}) /<: vs
 
 cstr offline(ns <: nodes) ::=
-    """ {"id":"offline",  "nodes":@n} """
+    """ {"id":"offline",  "nodes":@ns} """
     !(n : ns) nodeState(n) = offline --> card(hosted(n)) = 0
 
 cstr online(ns <: nodes) ::=
-    """ {"id": "online", "nodes": @n} """
+    """ {"id": "online", "nodes": @ns} """
     !(n : ns) nodeState(n) = online
 
 cstr running(vs <: vms) ::=
@@ -108,13 +108,13 @@ cstr maxOnline(ns <: nodes, nb : int, cont: bool) ::=
    	card({i. i : ns & nodeState(i) = online}) <= nb
 
 cstr among (vs <: vms, groups : P(nodes), cont: bool) ::=
-    """ {"id":"among", "nodes":@ns, "continuous" : @cont} """
+    """ {"id":"among", "nodes":@groups, "continuous" : @cont} """
     ?(g : groups) {host(i). i : vs & vmState(i) = running} <: g
 
 cstr split(part : P(vms), cont: bool) ::=
-    """ {"id":"split", "vms":@vs, "continuous" : @cont} """
+    """ {"id":"split", "vms":@part, "continuous" : @cont} """
     { {host(v). v : p & vmState(v) = running}. p : part} : P(nodes)
 
 cstr splitAmong(vs : P(vms), part : P(nodes), cont: bool) ::=
-    """ {"id":"splitAmong", "vms":@vs, "nodes":@ns, "continuous" : @cont} """
+    """ {"id":"splitAmong", "vms":@vs, "nodes":@part, "continuous" : @cont} """
     !(p : part) among(vs, p) & split(vs)

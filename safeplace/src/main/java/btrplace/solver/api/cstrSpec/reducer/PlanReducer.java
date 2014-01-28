@@ -4,7 +4,7 @@ import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
 import btrplace.solver.api.cstrSpec.Constraint;
-import btrplace.solver.api.cstrSpec.ConstraintVerifier;
+import btrplace.solver.api.cstrSpec.CstrSpecEvaluator;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
@@ -22,11 +22,11 @@ public class PlanReducer implements TestCaseReducer {
 
     private ImplVerifier verif;
 
-    private ConstraintVerifier cVerif;
+    private CstrSpecEvaluator cVerif;
 
     public PlanReducer() {
         verif = new ImplVerifier();
-        cVerif = new ConstraintVerifier();
+        cVerif = new CstrSpecEvaluator();
     }
 
     @Override

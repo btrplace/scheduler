@@ -9,7 +9,7 @@ import btrplace.plan.event.BootVM;
 import btrplace.plan.event.MigrateVM;
 import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.api.cstrSpec.Constraint;
-import btrplace.solver.api.cstrSpec.ConstraintVerifier;
+import btrplace.solver.api.cstrSpec.CstrSpecEvaluator;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.type.NodeType;
@@ -70,10 +70,9 @@ public class PlanReducerTest {
         }
 
         ImplVerifier verif = new ImplVerifier();
-        //System.out.println(p.getOrigin().getMapping());
         List<Constant> in = new ArrayList<>();
         in.add(new Constant(Collections.singletonList(n1), new SetType(NodeType.getInstance())));
-        ConstraintVerifier cstrVerif = new ConstraintVerifier();
+        CstrSpecEvaluator cstrVerif = new CstrSpecEvaluator();
         TestCase tc = new TestCase(0, p, new Offline(Collections.singleton(n1)), cstrVerif.eval(cstr, p, in));
 
         System.out.println(cstr.getProposition());

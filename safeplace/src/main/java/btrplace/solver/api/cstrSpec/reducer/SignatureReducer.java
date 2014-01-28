@@ -1,15 +1,21 @@
 package btrplace.solver.api.cstrSpec.reducer;
 
+import btrplace.json.JSONConverterException;
+import btrplace.json.model.constraint.ConstraintsConverter;
+import btrplace.model.constraint.SatConstraint;
+import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.Constraint;
-import btrplace.solver.api.cstrSpec.ConstraintVerifier;
+import btrplace.solver.api.cstrSpec.CstrSpecEvaluator;
+import btrplace.solver.api.cstrSpec.JSONs;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
+import btrplace.solver.api.cstrSpec.spec.term.UserVar;
 import btrplace.solver.api.cstrSpec.spec.type.SetType;
 import btrplace.solver.api.cstrSpec.verification.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
+import btrplace.solver.api.cstrSpec.verification.TestResult;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Reduce a constraint signature to the possible.
@@ -17,73 +23,83 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class SignatureReducer implements TestCaseReducer {
+public class SignatureReducer {
 
     private ImplVerifier verif;
 
-    private ConstraintVerifier cVerif;
-
+    private CstrSpecEvaluator cVerif;
 
     public SignatureReducer() {
         verif = new ImplVerifier();
-        cVerif = new ConstraintVerifier();
+        cVerif = new CstrSpecEvaluator();
     }
 
-    @Override
-    public List<TestCase> reduce(TestCase tc, Constraint cstr, List<Constant> in) {
-        List<TestCase> res = new ArrayList<>();
-        for (int i = 0; i < in.size(); i++) {
-            reduceArg(tc, cstr, in, i, res);
+    private TestResult.ErrorType compare(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws JSONConverterException, IOException {
+        boolean consTh = cVerif.eval(cstr, p, in);
+
+        SatConstraint impl = makeImpl(p, cstr, in);
+        return verif.verify(new TestCase(0, p, impl, consTh)).errorType();
+    }
+
+    private SatConstraint makeImpl(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws JSONConverterException, IOException {
+        ConstraintsConverter conv = ConstraintsConverter.newBundle();
+        String marshal = cstr.getMarshal();
+        List<UserVar> vars = cstr.getParameters();
+        Map<String, Object> ps = new HashMap<>();
+        for (int i = 0; i < vars.size(); i++) {
+            ps.put(vars.get(i).label(), in.get(i).eval(null));
         }
-        return res;
+        conv.setModel(p.getOrigin());
+        return (SatConstraint) conv.fromJSON(JSONs.unMarshal(marshal, ps));
     }
 
-    private void reduceArg(TestCase tc, Constraint cstr, List<Constant> in, int i, List<TestCase> res) {
+    public void reduce(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws IOException, JSONConverterException {
+        TestResult.ErrorType t = compare(p, cstr, in);
+        for (int i = 0; i < in.size(); i++) {
+            reduceArg(t, p, cstr, in, i);
+        }
+    }
+
+    private void reduceArg(TestResult.ErrorType t, ReconfigurationPlan p, Constraint cstr, List<Constant> in, int i) throws IOException, JSONConverterException {
         Constant c = in.get(i);
         if (c.type() instanceof SetType) {
             Collection col = (Collection) c.eval(null);
             List l = new ArrayList(col);
             in.set(i, new Constant(l, c.type()));
             for (int j = 0; j < l.size(); j++) {
-//                for (Object o : col) {
-                if (reduceSetTo(tc, cstr, in, l, j, res)) {
+                if (reduceSetTo(t, p, cstr, in, l, j)) {
                     j--;
                 }
-//                }
-
             }
         }
     }
 
-    private boolean reduceSetTo(TestCase tc, Constraint cstr, List<Constant> in, List col, int i, List<TestCase> res) {
+    private boolean reduceSetTo(TestResult.ErrorType t, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List col, int i) throws IOException, JSONConverterException {
         if (col.get(i) instanceof Collection) {
-            if (failWithout(tc, cstr, in, col, i)) {
+            if (failWithout(t, p, cstr, in, col, i)) {
                 return true;
             }
             List l = new ArrayList((Collection) col.get(i));
             col.set(i, l);
             for (int j = 0; j < l.size(); j++) {
-                if (reduceSetTo(tc, cstr, in, l, j, res)) {
+                if (reduceSetTo(t, p, cstr, in, l, j)) {
                     j--;
                 }
             }
             return false;
         } else {
-            return failWithout(tc, cstr, in, col, i);
+            return failWithout(t, p, cstr, in, col, i);
         }
     }
 
-    private boolean failWithout(TestCase tc, Constraint cstr, List<Constant> in, List col, int i) {
-        //System.out.println("Remove '" + col.get(i) + "' from " + col);
+    private boolean failWithout(TestResult.ErrorType t, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List col, int i) throws IOException, JSONConverterException {
         Object o = col.remove(i);
-        //System.out.println("params: " + in);
-        boolean ret = System.currentTimeMillis() % 2 == 0;
-        if (!ret) {
+
+        TestResult.ErrorType t2 = compare(p, cstr, in);
+        boolean ret = t.equals(t2);
+        if (!ret) { //Not the same error. Component needed
             col.add(i, o);
-            //System.out.println("KO Undo: " + in);
-        } /*else {
-            System.out.println("OK: " + in);
-        }   */
+        }
         return ret;
     }
 }
