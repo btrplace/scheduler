@@ -3,8 +3,7 @@ package btrplace.solver.api.cstrSpec.reducer;
 import btrplace.model.*;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.event.ShutdownVM;
-import btrplace.plan.event.SuspendVM;
+import btrplace.plan.event.*;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
@@ -15,6 +14,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -101,6 +101,42 @@ public class SignatureReducerTest {
         args.add(BoolType.getInstance().newValue(true));                             */
         List<Constant> r = red.reduce(p, c, args);
         System.out.println(args + " -> " + r);
+        Assert.fail();
+    }
+
+    @Test
+    public void test2() throws Exception {
+        Model mo = new DefaultModel();
+        Node n0 = mo.newNode();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+
+        VM vm0 = mo.newVM();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+
+        Mapping m = mo.getMapping();
+        m.addOnlineNode(n0);
+        m.addOnlineNode(n1);
+        m.addOfflineNode(n2);
+        m.addRunningVM(vm0, n0);
+        m.addReadyVM(vm1);
+        m.addSleepingVM(vm2, n1);
+
+        ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
+        p.add(new ShutdownNode(n1, 0, 3));
+        p.add(new BootVM(vm1, n0, 2, 7));
+        p.add(new BootNode(n2, 0, 3));
+        p.add(new MigrateVM(vm0, n0, n2, 4, 10));
+
+        Constraint cstr = makeConstraint("offline");
+
+        List<Constant> in = new ArrayList<>();
+        in.add(new Constant(Collections.singletonList(n1), new SetType(NodeType.getInstance())));
+
+        SignatureReducer sr = new SignatureReducer();
+        List<Constant> red = sr.reduce(p, cstr, in);
+        System.out.println(in + " -> " + red);
         Assert.fail();
     }
 }

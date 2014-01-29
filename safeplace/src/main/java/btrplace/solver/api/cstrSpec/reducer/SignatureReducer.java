@@ -19,9 +19,10 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Reduce a constraint signature to the possible.
- * In practice we reduce the size of the sets
+ * Reduce a constraint signature to the minimum possible.
  *
+ * In practice the sets are reduced one by one by removing values one by one.
+ * A value will stay in the set if its removal lead to a different error.
  * @author Fabien Hermenier
  */
 public class SignatureReducer {
@@ -39,7 +40,7 @@ public class SignatureReducer {
         boolean consTh = cVerif.eval(cstr, p, in);
 
         SatConstraint impl = JSONs.unMarshalConstraint(p, cstr, in);
-        return verif.verify(new TestCase(0, p, impl, consTh)).errorType();
+        return verif.verify(new TestCase(0, p, impl, consTh), false).errorType();
     }
 
     private List<Constant> deepCopy(List<Constant> in) {

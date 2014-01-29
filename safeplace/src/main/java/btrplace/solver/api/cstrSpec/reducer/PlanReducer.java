@@ -18,17 +18,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Reduce the number of actions in the plan to the possibel.
+ * Reduce the number of actions in the plan to the minimum possible.
+ * <p/>
+ * It is a dichotomic approach that split the set of actions into two.
+ * It stops when none of the splits or the two of the splits have a different error
+ * than the original one.
  *
  * @author Fabien Hermenier
  */
-public class PlanReducer3 {
+public class PlanReducer {
 
     private ImplVerifier verif;
 
     private CstrSpecEvaluator cVerif;
 
-    public PlanReducer3() {
+    public PlanReducer() {
         verif = new ImplVerifier();
         cVerif = new CstrSpecEvaluator();
     }
@@ -72,8 +76,8 @@ public class PlanReducer3 {
                         p2.add(a);
                     }
                 }
-                System.out.println("Split 1:\n" + p1);
-                System.out.println("Split 2:\n" + p2);
+                //System.out.println("Split 1:\n" + p1);
+                //System.out.println("Split 2:\n" + p2);
                 e1 = compare(p1, cstr, in);
                 e2 = compare(p2, cstr, in);
                 sep = (sep + 1) % max;
@@ -81,7 +85,7 @@ public class PlanReducer3 {
                     break;
                 }
                 //Only one must have the same error
-                System.out.println("Want " + err + "\tSplit 1:" + e1 + "\tSplit 2: " + e2);
+                //System.out.println("Want " + err + "\tSplit 1:" + e1 + "\tSplit 2: " + e2);
                 if (err.equals(e1) ^ err.equals(e2)) {
                     if (err.equals(e1)) {
                         return reduce(err, p1, cstr, in, mins);

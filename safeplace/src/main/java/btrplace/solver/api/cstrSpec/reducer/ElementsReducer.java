@@ -23,7 +23,11 @@ import java.util.List;
 import java.util.ListIterator;
 
 /**
- * Remove useless nodes or VMs.
+ * Remove supposed useless VMs or nodes.
+ * <p/>
+ * This try to remove one by one VMs or nodes that are not involved
+ * in the constraint. The actions that manipulate these elements are removed too.
+ * An element is maintained in the plan if its removal changes the error
  *
  * @author Fabien Hermenier
  */
@@ -137,6 +141,14 @@ public class ElementsReducer {
                         }
                         ite.add(n);
                     }
+                } else {
+                    //The node must be present, put it back
+                    if (on) {
+                        mo.getMapping().addOnlineNode(n);
+                    } else {
+                        mo.getMapping().addOfflineNode(n);
+                    }
+                    ite.add(n);
                 }
             }
         }

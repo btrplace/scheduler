@@ -61,7 +61,7 @@ term: t1=term op=(INTER|UNION|PLUS|MINUS|MULT|DIV) t2=term         #termOp
     | STRING #stringTerm
     ;
 
-set: LACC term '.' typedef (AND formula)? RACC #setInComprehension
+set: LACC term '.' typedef (COMMA formula)? RACC #setInComprehension
    | LACC term (COMMA term)* RACC #setInExtension;
 
 comparison: t1=term op=(EQ | NOT_EQ| LT | LEQ | GT | GEQ | IN | NOT_IN | INCL | NOT_INCL) t2=term;

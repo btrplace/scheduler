@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
-public class PlanReducer3Test {
+public class PlanReducerTest {
 
     public Constraint makeConstraint(String id) {
 
@@ -72,7 +72,7 @@ public class PlanReducer3Test {
         in.add(new Constant(Collections.singletonList(n1), new SetType(NodeType.getInstance())));
 
 
-        PlanReducer3 tcr = new PlanReducer3();
+        PlanReducer tcr = new PlanReducer();
         System.out.println(p.getOrigin().getMapping());
         System.out.println(p);
         ReconfigurationPlan reduced = tcr.reduce(p, cstr, in);

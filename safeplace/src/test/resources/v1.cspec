@@ -2,9 +2,9 @@
 * Specification of constraints in BtrPlace.
 *
 * Built-in functions:
-* - vmState(vm) -> vm
+* - vmState(vm) -> vmStatz
 *   get the state of a vm (running, sleeping, ready, terminated)
-* - nodeState(node) -> node
+* - nodeState(node) -> nodeState
 *   get the state of a node (online, offline)
 * - host(vm) -> node
 *   get the node that is currently hosting the given vm
@@ -22,6 +22,7 @@
 *   returns the sum
 * - P(set<?>) -> set<set<set<?>>>
 *   return every possible disjoint subsets (every partitions but without necessarily a complete covering)
+*
 *
 * '$' before a function call indicates we want the initial value of the function (before the reconfiguration starts)
 * the weird string below the signature is the constraint marshalling. Ignored by the parser but necessary to instantiate
@@ -99,21 +100,21 @@ cstr cumulatedResourcecapacity(ns <: nodes, id : string, qty: int, cont : bool) 
     """ {"id": "cumulatedResourceCapacity", "nodes": @ns, "rc":@id, "amount":@qty, "continuous": @cont} """
     sum({capa(i, id). i : ns}) <= qty
 
-cstr overbook(ns <: nodes, id : string, qty: real, cont : bool) ::=
+cstr overbook(ns <: nodes, id : string, qty: float, cont : bool) ::=
     """ {"id": "overbook", "nodes": @ns, "rc":@id, "amount":@qty, "continuous": bool} """
     !(n : ns) sum({cons(v, id). v : running(n)}) * qty < capa(n, id)
 
 cstr maxOnline(ns <: nodes, nb : int, cont: bool) ::=
     """ {"id":"maxOnline","nodes":@ns,"amount":@nb,"continuous":@cont} """
-   	card({i. i : ns & nodeState(i) = online}) <= nb
+   	card({i. i : ns , nodeState(i) = online}) <= nb
 
 cstr among (vs <: vms, groups : P(nodes), cont: bool) ::=
     """ {"id":"among", "nodes":@groups, "continuous" : @cont} """
-    ?(g : groups) {host(i). i : vs & vmState(i) = running} <: g
+    ?(g : groups) {host(i). i : vs, vmState(i) = running} <: g
 
 cstr split(part : P(vms), cont: bool) ::=
     """ {"id":"split", "vms":@part, "continuous" : @cont} """
-    { {host(v). v : p & vmState(v) = running}. p : part} : P(nodes)
+    { {host(v). v : p , vmState(v) = running}. p : part} : P(nodes)
 
 cstr splitAmong(vs : P(vms), part : P(nodes), cont: bool) ::=
     """ {"id":"splitAmong", "vms":@vs, "nodes":@part, "continuous" : @cont} """

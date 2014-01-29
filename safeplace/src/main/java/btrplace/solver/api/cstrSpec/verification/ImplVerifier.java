@@ -31,12 +31,14 @@ public class ImplVerifier implements Verifier {
         if (inclSat) {
             cstrs.add(c.getSatConstraint());
         }
-        //System.out.println("Initial: " + cstrs + " with \n" + c.getPlan());
+        System.out.println("Initial: " + cstrs + " with \n" + c.getPlan());
         cstrs.addAll(actionsToConstraints(c.getPlan(), c.getSatConstraint()));
-
         setDurationEstimators(c.getPlan());
 
-        //System.out.println(cstrs);
+        System.out.println("plan2cstrs:\n" + cstrs);
+
+        //Test if the asked constraints belong to the plan
+
         try {
             cra.labelVariables(true);
             //cra.setVerbosity(3);
@@ -134,7 +136,6 @@ public class ImplVerifier implements Verifier {
             } else if (a instanceof NodeEvent) {
                 cstrs.add(new Schedule(((NodeEvent) a).getNode(), a.getStart(), a.getEnd()));
             }
-
         }
         if (!rooted.isEmpty()) {
             cstrs.add(new Root(rooted));

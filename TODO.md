@@ -9,6 +9,9 @@ OK validate every constraint
 OK discrete & continuous constraints (an operator for current && end status ?): problem with marshalling
 NO predicates
 
+## Verifier ##
+- continuous | discrete
+
 ## Reducer ##
 - Return which action violate which constraint
 - Remove any output inside btrplace

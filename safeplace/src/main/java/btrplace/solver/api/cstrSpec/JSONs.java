@@ -30,10 +30,12 @@ public class JSONs {
         } else if (v instanceof Collection) {
             StringBuilder str = new StringBuilder("[");
             Iterator<Object> ite = ((Collection) v).iterator();
-            str.append(unMarshal(ite.next()));
-            while (ite.hasNext()) {
-                str.append(", ");
+            if (ite.hasNext()) {
                 str.append(unMarshal(ite.next()));
+                while (ite.hasNext()) {
+                    str.append(", ");
+                    str.append(unMarshal(ite.next()));
+                }
             }
             s = str.append("]").toString();
         } else if (v instanceof Boolean) {
