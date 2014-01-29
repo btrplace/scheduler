@@ -55,4 +55,9 @@ public class NodeStateType extends Atomic {
         return new Constant(Type.valueOf(n), this);
     }
 
+    @Override
+    public boolean comparable(btrplace.solver.api.cstrSpec.spec.type.Type t) {
+        return t.equals(NoneType.getInstance()) || equals(t);
+    }
+
 }

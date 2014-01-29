@@ -36,4 +36,9 @@ public class NodeType extends Atomic {
     public Constant newValue(String n) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public boolean comparable(Type t) {
+        return true;
+    }
 }

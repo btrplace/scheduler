@@ -46,4 +46,9 @@ public class BoolType extends Atomic {
     public Constant newValue(boolean i) {
         return new Constant(i, BoolType.getInstance());
     }
+
+    @Override
+    public boolean comparable(Type t) {
+        return t.equals(NoneType.getInstance()) || equals(t);
+    }
 }

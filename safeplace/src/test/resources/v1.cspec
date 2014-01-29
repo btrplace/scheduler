@@ -2,7 +2,7 @@
 * Specification of constraints in BtrPlace.
 *
 * Built-in functions:
-* - vmState(vm) -> vmStatz
+* - vmState(vm) -> vmState
 *   get the state of a vm (running, sleeping, ready, terminated)
 * - nodeState(node) -> nodeState
 *   get the state of a node (online, offline)
@@ -62,7 +62,7 @@ cstr running(vs <: vms) ::=
 
 cstr ready(vs <: vms) ::=
     """ {"id": "ready", "vms": @vs} """
-    !(v : vs) vmState(v) = ready --> host(v) /: nodes
+    !(v : vs) vmState(v) = ready --> host(v) = none
 
 cstr sleeping(vs <: vms) ::=
     """ {"id": "sleeping", "vms": @vs} """
@@ -70,7 +70,7 @@ cstr sleeping(vs <: vms) ::=
 
 cstr terminated(vs <: vms) ::=
     """ {"id": "terminated", "vms": @vs} """
-    !(v : vs) vmState(v) = terminated --> host(v) /: nodes
+    !(v : vs) vmState(v) = terminated --> host(v) = none
 
 cstr root (vs <: vms) ::=
     """ {"id":"root", "vms":@vs} """

@@ -38,4 +38,9 @@ public class VMType extends Atomic {
         throw new RuntimeException();
     }
 
+    @Override
+    public boolean comparable(Type t) {
+        return t.equals(NoneType.getInstance()) || equals(t);
+    }
+
 }

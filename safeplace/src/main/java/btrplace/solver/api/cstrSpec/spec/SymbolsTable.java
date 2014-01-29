@@ -63,14 +63,11 @@ public class SymbolsTable {
 
         syms.put(new ConstantSet("vmState", VMStateType.getInstance(), EnumSet.allOf(VMStateType.Type.class)));
         syms.put(new ConstantSet("nodeState", NodeStateType.getInstance(), EnumSet.allOf(NodeStateType.Type.class)));
-
         syms.put(new ConstantSet("int", IntType.getInstance(), new InfiniteSet<>(Integer.class)));
-
         syms.put(new ConstantSet("bool", BoolType.getInstance(), BoolType.DOMAIN));
-
         syms.put(new ConstantSet("float", RealType.getInstance(), new InfiniteSet<>(Double.class)));
-
         syms.put(new ConstantSet("string", StringType.getInstance(), new InfiniteSet<>(String.class)));
+        syms.put(None.instance());
         return syms;
     }
 

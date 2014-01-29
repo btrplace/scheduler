@@ -50,4 +50,10 @@ public class RealType extends Atomic {
     public Constant newValue(double i) {
         return new Constant(i, RealType.getInstance());
     }
+
+    @Override
+    public boolean comparable(Type t) {
+        return t.equals(NoneType.getInstance()) || equals(t);
+    }
+
 }

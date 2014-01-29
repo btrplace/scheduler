@@ -52,4 +52,10 @@ public class VMStateType extends Atomic {
     public Constant newValue(String n) {
         return new Constant(Type.valueOf(n), this);
     }
+
+    @Override
+    public boolean comparable(btrplace.solver.api.cstrSpec.spec.type.Type t) {
+        return t.equals(NoneType.getInstance()) || equals(t);
+    }
+
 }

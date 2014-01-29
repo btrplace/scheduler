@@ -14,4 +14,6 @@ public interface Type {
     Constant newValue(String n);
 
     Type inside();
+
+    boolean comparable(Type t);
 }

@@ -50,4 +50,9 @@ public class IntType extends Atomic {
     public Constant newValue(int i) {
         return new Constant(i, IntType.getInstance());
     }
+
+    @Override
+    public boolean comparable(Type t) {
+        return t.equals(NoneType.getInstance()) || equals(t);
+    }
 }

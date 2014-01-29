@@ -35,4 +35,10 @@ public class StringType extends Atomic {
     public static StringType getInstance() {
         return instance;
     }
+
+    @Override
+    public boolean comparable(Type t) {
+        return t.equals(NoneType.getInstance()) || equals(t);
+    }
+
 }

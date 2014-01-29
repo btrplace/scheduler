@@ -89,4 +89,9 @@ public class SetType implements Type {
     public Type enclosingType() {
         return type;
     }
+
+    @Override
+    public boolean comparable(Type t) {
+        return t.equals(NoneType.getInstance()) || equals(t);
+    }
 }
