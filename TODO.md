@@ -11,10 +11,11 @@ NO predicates
 
 ## Reducer ##
 - Return which action violate which constraint
+- Remove any output inside btrplace
 OK Reduce plan (less actions)
 OK Reduce signature ? (lighter constraints)
    -> O(n) implementation
-- Reduce source ? (less elements, constraints)
+OK Reduce source ? (less elements, constraints)
   -> remove elements not involved in the constraints signature.
      -> VMs in first
      -> nodes after

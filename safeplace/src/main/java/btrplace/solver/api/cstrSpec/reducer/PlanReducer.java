@@ -18,7 +18,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class PlanReducer implements TestCaseReducer {
+public class PlanReducer {
 
     private ImplVerifier verif;
 
@@ -29,7 +29,6 @@ public class PlanReducer implements TestCaseReducer {
         cVerif = new CstrSpecEvaluator();
     }
 
-    @Override
     public List<TestCase> reduce(TestCase c, Constraint cstr, List<Constant> in) {
         List<TestCase> mins = new ArrayList<>();
         reduce(0, c, cstr, in, mins);
