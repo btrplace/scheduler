@@ -26,7 +26,7 @@ public class CSchedule implements ChocoConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        ActionModel am = null;
+        ActionModel am;
 
         if (cstr.getVM() != null) {
             am = rp.getVMAction(cstr.getVM());

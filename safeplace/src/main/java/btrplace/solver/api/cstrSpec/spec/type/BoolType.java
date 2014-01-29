@@ -30,12 +30,7 @@ public class BoolType extends Atomic {
 
     @Override
     public boolean match(String n) {
-        try {
-            Boolean.parseBoolean(n);
-            return true;
-        } catch (Exception e) {
-        }
-        return false;
+        return n.equalsIgnoreCase("true") || n.equalsIgnoreCase("false");
     }
 
     @Override

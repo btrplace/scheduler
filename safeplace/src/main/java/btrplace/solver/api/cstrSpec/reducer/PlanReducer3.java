@@ -60,7 +60,6 @@ public class PlanReducer3 {
             int sep = middle;
             int max = p.getSize();
 
-            boolean decidable = false;
             TestResult.ErrorType e1, e2;
             while (true) {
                 ReconfigurationPlan p1 = new DefaultReconfigurationPlan(p.getOrigin());
@@ -82,9 +81,8 @@ public class PlanReducer3 {
                     break;
                 }
                 //Only one must have the same error
-                decidable = err.equals(e1) ^ err.equals(e2);
                 System.out.println("Want " + err + "\tSplit 1:" + e1 + "\tSplit 2: " + e2);
-                if (decidable) {
+                if (err.equals(e1) ^ err.equals(e2)) {
                     if (err.equals(e1)) {
                         return reduce(err, p1, cstr, in, mins);
                     } else {
