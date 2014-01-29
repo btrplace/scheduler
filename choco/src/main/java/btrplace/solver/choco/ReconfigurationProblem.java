@@ -28,6 +28,7 @@ import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import btrplace.solver.choco.view.ChocoModelView;
 import btrplace.solver.choco.view.ModelViewMapper;
 import org.slf4j.Logger;
+import solver.ResolutionPolicy;
 import solver.Solver;
 import solver.variables.IntVar;
 
@@ -378,4 +379,18 @@ public interface ReconfigurationProblem {
      * @return the identifier of the new VM. {@code null} if the process failed
      */
     VM cloneVM(VM vm);
+
+    /**
+     * Set the resolution policy to consider.
+     *
+     * @param p the resolution policy
+     */
+    void setResolutionPolicy(ResolutionPolicy p);
+
+    /**
+     * Get the current resolution policy.
+     *
+     * @return the current resolution policy
+     */
+    ResolutionPolicy getResolutionPolicy();
 }

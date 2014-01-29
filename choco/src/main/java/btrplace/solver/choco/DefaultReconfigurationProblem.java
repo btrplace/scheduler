@@ -34,15 +34,13 @@ import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import solver.Configuration;
+import solver.ResolutionPolicy;
 import solver.Solver;
 import solver.exception.ContradictionException;
 import solver.objective.IntObjectiveManager;
 import solver.search.loop.monitors.SMF;
-import solver.search.strategy.selectors.values.InDomainMin;
-import solver.search.strategy.selectors.variables.InputOrder;
-import solver.search.strategy.strategy.Assignment;
 import solver.variables.IntVar;
+import solver.variables.Variable;
 import solver.variables.VariableFactory;
 import util.ESat;
 
@@ -61,6 +59,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private boolean useLabels = false;
 
+    private Variable objective;
     /**
      * The maximum duration of a plan in seconds: One hour.
      */
@@ -107,6 +106,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private ModelViewMapper viewMapper;
 
+    private ResolutionPolicy solvingPolicy;
+
     /**
      * Make a new RP where the next state for every VM is indicated.
      * If the state for a VM is omitted, it is considered as unchanged
@@ -142,12 +143,12 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         durEval = dEval;
         this.viewMapper = vMapper;
         solver = new Solver();
-        //Precision for the real values
-        solver.getConfiguration().putDouble(Configuration.REAL_PRECISION, REAL_VALUE_PRECISION);
 
         start = VariableFactory.fixed("RP.start", 0, solver);
         end = VariableFactory.bounded("RP.end", 0, DEFAULT_MAX_TIME, solver);
 
+        this.solvingPolicy = ResolutionPolicy.SATISFACTION;
+        objective = null;
         this.views = new HashMap<>();
 
         fillElements();
@@ -201,10 +202,18 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         } else if (optimize) {
             solver.getConfiguration().putBoolean(choco.kernel.solver.Configuration.STOP_AT_FIRST_SOLUTION, true);
         }
-        solver.getConfiguration().putInt(Configuration.SOLUTION_POOL_CAPACITY, Integer.MAX_VALUE);
-        solver.generateSearchStrategy();
+        //solver.getConfiguration().putInt(Configuration.SOLUTION_POOL_CAPACITY, Integer.MAX_VALUE);
+        //solver.generateSearchStrategy();
 
 
+        //Resolution policy:
+        //mode: sat,min,max
+        //allsolutions: false, true
+        //timeout: 0, K
+
+        //min, max -> !stop at first
+        //sat -> stop || !stop
+        //TODO:
         appendNaiveBranchHeuristic();
 
 
@@ -214,7 +223,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         int nbCstrs = solver.getNbCstrs();
         getLogger().debug("{} constraints; Variables: {} ints, {} bools", nbCstrs, nbIntVars, nbBoolVars);
         if (objAlterer == null) {
-            solver.launch();
+            if (solvingPolicy == ResolutionPolicy.SATISFACTION) {
+                solver.findSolution();
+            } else {
+                solver.findOptimalSolution(solvingPolicy, objective);
+            }
         } else if (optimize) {
             launchWithAlterer();
         }
@@ -754,5 +767,15 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             v.cloneVM(vm, newVM);
         }
         return newVM;
+    }
+
+    @Override
+    public void setResolutionPolicy(ResolutionPolicy p) {
+        this.solvingPolicy = p;
+    }
+
+    @Override
+    public ResolutionPolicy getResolutionPolicy() {
+        return this.solvingPolicy;
     }
 }

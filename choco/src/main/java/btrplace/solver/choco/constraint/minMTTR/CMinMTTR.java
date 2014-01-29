@@ -84,8 +84,9 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         costConstraints.clear();
         costConstraints.add(costConstraint);
 
-        s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
-        s.setObjective(cost);
+        p.setResolutionPolicy(ResolutionPolicy.MINIMIZE);
+
+        //s.setObjective(cost);
         //We set a restart limit by default, this may be useful especially with very small infrastructure
         //as the risk of cyclic dependencies increase and their is no solution for the moment to detect cycle
         //in the scheduling part
