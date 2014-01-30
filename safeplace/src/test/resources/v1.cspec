@@ -121,6 +121,10 @@ cstr splitAmong(vs : P(vms), part : P(nodes), cont: bool) ::=
     """ {"id":"splitAmong", "vms":@vs, "nodes":@part, "continuous" : @cont} """
     !(p : part) among(vs, p) & split(vs)
 
-cstr seq(foo : lists(vms)) ::=
-    """ TODO """
-    !(i : range(foo)) i < card(foo) & i >= 0 --> vmState(foo[i]) = booting
+cstr seq(sched : lists(vms)) ::=
+    """ {"id": "sequentialVMTransitions", "vms": @sched} """
+    !(i,j : range(sched)) (i /= j & vmState(sched[i]) : {booting, suspending, resuming, halting}) -->
+        (
+        vmState(sched[j]) : {running, sleeping, ready, terminated} &
+        ((j < i & vmState(sched[j]) /= $vmState(sched[j])) | (j > i & vmState(sched[j]) = $vmState(sched[j])))
+        )
