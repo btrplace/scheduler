@@ -51,6 +51,8 @@ public class SymbolsTable {
         root.put(new Card());
         root.put(new Sum());
         root.put(new P());
+        root.put(new Lists());
+        root.put(new Range());
         return root;
     }
 

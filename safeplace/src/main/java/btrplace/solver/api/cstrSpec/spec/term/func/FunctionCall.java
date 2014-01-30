@@ -64,7 +64,6 @@ public class FunctionCall<T> extends Term<T> {
         }
         for (int i = 0; i < expected.length; i++) {
             if (!expected[i].equals(args.get(i).type())) {
-                //System.out.println("for " + f.id() + " expected=" + expected[i] + " got=" + args.get(i).type());
                 throw new IllegalArgumentException(toString(f.id(), args) + " cannot match " + f);
             }
         }

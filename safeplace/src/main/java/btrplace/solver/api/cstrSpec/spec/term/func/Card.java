@@ -1,8 +1,8 @@
 package btrplace.solver.api.cstrSpec.spec.term.func;
 
 import btrplace.model.Model;
+import btrplace.solver.api.cstrSpec.spec.type.ColType;
 import btrplace.solver.api.cstrSpec.spec.type.IntType;
-import btrplace.solver.api.cstrSpec.spec.type.SetType;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
 
 import java.util.Collection;
@@ -35,6 +35,6 @@ public class Card extends Function<Integer> {
 
     @Override
     public Type[] signature() {
-        return new Type[]{new SetType(null)};
+        return new Type[]{new ColType(null)};
     }
 }

@@ -51,12 +51,13 @@ MARSHAL : '"""' ( '\\"\\"\\"' | . )*? '"""' ;
 STRING: '"' (~('\\'|'"'))* '"';
 CURRENT: '$';
 
-filter: LBRACK comparison (AND|OR comparison)* RBRACK;
 term: t1=term op=(INTER|UNION|PLUS|MINUS|MULT|DIV) t2=term         #termOp
     | LPARA term RPARA                              #protectedTerm
-    | call filter?                                         #termFunc
-    | ID filter?                                   #idTerm
-    | set filter?                                    #setTerm
+    | call                                         #termFunc
+    | ID                               #idTerm    
+    | ID  LBRACK term RBRACK                              #arrayTerm    
+    | set                                    #setTerm
+    | list      #listTerm
     | INT                                           #intTerm
     | STRING #stringTerm
     ;
@@ -64,8 +65,11 @@ term: t1=term op=(INTER|UNION|PLUS|MINUS|MULT|DIV) t2=term         #termOp
 set: LACC term '.' typedef (COMMA formula)? RACC #setInComprehension
    | LACC term (COMMA term)* RACC #setInExtension;
 
+list: LBRACK term '.' typedef (COMMA formula)? RBRACK #listInComprehension
+      | LBRACK term (COMMA term)* RBRACK #listInExtension;
+
 comparison: t1=term op=(EQ | NOT_EQ| LT | LEQ | GT | GEQ | IN | NOT_IN | INCL | NOT_INCL) t2=term;
-typedef: ID (COMMA ID)* op=(IN|INCL|NOT_IN|NOT_INCL) i2=term filter?;
+typedef: ID (COMMA ID)* op=(IN|INCL|NOT_IN|NOT_INCL) i2=term;
 formula: LPARA formula RPARA   #protectedFormula
        |f1=formula op=(IMPLIES|OR|AND|IFF) f2=formula              #formulaOp
        |comparison #termComparison

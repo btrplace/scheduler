@@ -1,16 +1,13 @@
 package btrplace.solver.api.cstrSpec.spec.type;
 
-import btrplace.solver.api.cstrSpec.spec.term.Constant;
-
 /**
  * @author Fabien Hermenier
  */
-public class SetType implements Type {
+public class SetType extends ColType {
 
-    private Type type;
 
     public SetType(Type t) {
-        type = t;
+        super(t);
     }
 
     @Override
@@ -62,18 +59,6 @@ public class SetType implements Type {
             b.append(type.label());
         }
         return b.append('>').toString();
-    }
-
-    @Override
-    public boolean match(String n) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Constant newValue(String n) {
-        //Add a value inside the set
-        //return type.newValue(n);
-        throw new UnsupportedOperationException();
     }
 
     @Override

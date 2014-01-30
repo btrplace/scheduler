@@ -28,6 +28,7 @@
 * the weird string below the signature is the constraint marshalling. Ignored by the parser but necessary to instantiate
 * the constraint in BtrPlace from its JSON serialisation.
 */
+
 cstr ban(vs <: vms, ns <: nodes, cont: bool) ::=
     """ {"id":"ban", "vms":@vs, "nodes":@ns, "continuous": @cont} """
     !(v : vs) vmState(v) = running --> host(v) /: ns
@@ -119,3 +120,7 @@ cstr split(part : P(vms), cont: bool) ::=
 cstr splitAmong(vs : P(vms), part : P(nodes), cont: bool) ::=
     """ {"id":"splitAmong", "vms":@vs, "nodes":@part, "continuous" : @cont} """
     !(p : part) among(vs, p) & split(vs)
+
+cstr seq(foo : lists(vms)) ::=
+    """ TODO """
+    !(i : range(foo)) i < card(foo) & i >= 0 --> vmState(foo[i]) = booting
