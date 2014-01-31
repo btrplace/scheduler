@@ -26,7 +26,12 @@
 *   return every possible lists
 * - range(list<?>) -> list<int>
 *   return all the indexes as a list
-* '$' before a function call indicates we want the initial value of the function (before the reconfiguration starts)
+*
+* Function parametrisation:
+* By default the function call evaluate the parameter at any moment
+* '^' before a function call indicates its value at the moment the reconfiguration starts
+* '$' before a function call indicates its value by the end of the reconfiguration
+*
 * the weird string below the signature is the constraint marshalling. Ignored by the parser but necessary to instantiate
 * the constraint in BtrPlace from its JSON serialisation.
 */
@@ -77,7 +82,7 @@ cstr terminated(vs <: vms) ::=
 
 cstr root (vs <: vms) ::=
     """ {"id":"root", "vms":@vs} """
-    !(v : vs) vmState(v) = running --> $host(v) = host(v)
+    !(v : vs) vmState(v) = running --> ^host(v) = host(v)
 
 cstr singleRunningCapacity(ns <: nodes, nb : int, cont: bool) ::=
     """{"id":"singleRunningCapacity","nodes":@ns,"continuous":@cont,"amount":@nb} """
@@ -128,5 +133,5 @@ cstr seq(sched : lists(vms)) ::=
     !(i,j : range(sched)) (i /= j & vmState(sched[i]) : {booting, suspending, resuming, halting}) -->
         (
         vmState(sched[j]) : {running, sleeping, ready, terminated} &
-        ((j < i & vmState(sched[j]) /= $vmState(sched[j])) | (j > i & vmState(sched[j]) = $vmState(sched[j])))
+        ((j < i & vmState(sched[j]) /= vmState(sched[j])) | (j > i & vmState(sched[j]) = vmState(sched[j])))
         )

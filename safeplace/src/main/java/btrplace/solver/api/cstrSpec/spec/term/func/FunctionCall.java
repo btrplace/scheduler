@@ -17,13 +17,35 @@ public class FunctionCall<T> extends Term<T> {
 
     private List<Term> args;
 
-    private boolean current;
 
-    public FunctionCall(Function<T> c, List<Term> args, boolean current) {
+    public static enum Moment {
+        begin {
+            @Override
+            public String toString() {
+                return "^";
+            }
+        },
+        end {
+            @Override
+            public String toString() {
+                return "$";
+            }
+        },
+        any {
+            @Override
+            public String toString() {
+                return "";
+            }
+        }
+    }
+
+    private Moment moment;
+
+    public FunctionCall(Function<T> c, List<Term> args, Moment m) {
         check(c, args);
         this.c = c;
         this.args = args;
-        this.current = current;
+        this.moment = m;
     }
 
     @Override
@@ -43,9 +65,7 @@ public class FunctionCall<T> extends Term<T> {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        if (current) {
-            b.append('$');
-        }
+        b.append(moment);
         b.append(c.id()).append('(');
         Iterator<Term> ite = args.iterator();
         while (ite.hasNext()) {
