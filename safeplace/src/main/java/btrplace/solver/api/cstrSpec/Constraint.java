@@ -3,12 +3,12 @@ package btrplace.solver.api.cstrSpec;
 import btrplace.model.Model;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.api.cstrSpec.spec.prop.Proposition;
-import btrplace.solver.api.cstrSpec.spec.term.Primitive;
 import btrplace.solver.api.cstrSpec.spec.term.UserVar;
 import btrplace.solver.api.cstrSpec.spec.term.Var;
 import btrplace.solver.api.cstrSpec.spec.term.func.Function;
 import btrplace.solver.api.cstrSpec.spec.type.BoolType;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
+import edu.emory.mathcs.backport.java.util.Collections;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -26,25 +26,26 @@ public class Constraint extends Function<Boolean> {
 
     private List<UserVar> params;
 
-    private List<Primitive> primitives;
-
     private String cstrName;
 
     private boolean discreteOnly, core;
 
-    public Constraint(String n, Proposition p, List<Primitive> primitives, List<UserVar> params, boolean discrete, boolean core) {
+    public static Constraint newCoreConstraint(String n, Proposition p, boolean discrete) {
+        return new Constraint(n, p, Collections.<UserVar>emptyList(), discrete, true);
+    }
+
+    public static Constraint newPluggableConstraint(String n, Proposition p, List<UserVar> params, boolean discrete) {
+        return new Constraint(n, p, params, discrete, false);
+    }
+
+    private Constraint(String n, Proposition p, List<UserVar> params, boolean discrete, boolean core) {
         this.p = p;
         this.not = p.not();
         this.cstrName = n;
         this.params = params;
-        this.primitives = primitives;
         this.discreteOnly = discrete;
         this.core = core;
 
-    }
-
-    public Constraint(String n, Proposition p, List<Primitive> primitives, List<UserVar> params) {
-        this(n, p, primitives, params, false, false);
     }
 
     @Override

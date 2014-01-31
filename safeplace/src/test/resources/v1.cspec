@@ -1,186 +1,90 @@
-/*
-* Specification of constraints in BtrPlace.
-*
-* Built-in functions:
-* - vmState(vm) -> vmState
-*   get the state of a vm (running, sleeping, ready, terminated)
-* - nodeState(node) -> nodeState
-*   get the state of a node (online, offline)
-* - host(vm) -> node
-*   get the node that is currently hosting the given vm
-* - running(node) -> set<vm>
-*   get the VMs running on the given node
-* - sleeping(node) -> set<vm>
-*   get the VMs sleeping on the given node
-* - hosted(node) -> set<vm>
-*   get all the VMs on the given node (i.e) running() + sleeping()
-* - colocated(vm) -> set<vm>
-*   get all the VMs running on the same node than the given vm (include)
-* - card(col<?>) -> int
-*   get the number of elements in the given set
-* - sum(col<int>) -> int
-*   returns the sum
-* - packings(set<?>) -> set<set<set<?>>>
-*   return every possible disjoint subsets (every partitions but without necessarily a complete covering)
-* - lists(set<?>) -> set<list<?>>
-*   return every possible lists
-* - range(list<?>) -> list<int>
-*   return all the indexes as a list
-*
-* Function parametrisation:
-* By default the function call evaluate the parameter at any moment
-* '^' before a function call indicates its value at the moment the reconfiguration starts
-* '$' before a function call indicates its value by the end of the reconfiguration
-*
-* the weird string below the signature is the constraint marshalling. Ignored by the parser but necessary to instantiate
-* the constraint in BtrPlace from its JSON serialisation.
-*/
+core constraint noVMsOnOfflineNodes() ::=
+    !(n : nodes) nodeState(n) = offline --> card(hosted(n)) = 0
 
-/* GLOBAL INVARIANTS */
-inv noVMsOnOfflineNodes ::= !(n : nodes) nodeState(n) = offline --> card(hosted(n)) = 0
-inv hostingRunningVMs ::= !(v : vms) vmState(v) = running --> host(v) : nodes & nodeState(host(v)) = online
-inv hostingSleepingVMs ::= !(v : vms) vmState(v) = sleeping --> host(v) : nodes & nodeState(host(v)) = online
-inv noHostForReadyVMs ::= !(v : vms) vmState(v) = ready --> host(v) = none
-inv noHostForTerminatedVMs ::= !(v : vms) vmState(v) = terminated --> host(v) = none
+core constraint hostingRunningVMs() ::=
+    !(v : vms) vmState(v) = running --> host(v) : nodes & nodeState(host(v)) = online
 
+core constraint hostingSleepingVMs() ::=
+    !(v : vms) vmState(v) = sleeping --> host(v) : nodes & nodeState(host(v)) = online
 
-cstr offline(ns <: nodes) ::=
-    !(n : ns) $nodeState(n) = offline
+core constraint noHostForReadyVMs() ::=
+    !(v : vms) vmState(v) = ready --> host(v) = none
 
-cstr online(ns <: nodes) ::=
-    !(n : ns) $nodeState(n) = online
+core constraint noHostForTerminatedVMs() ::=
+    !(v : vms) vmState(v) = terminated --> host(v) = none
 
-cstr running(vs <: vms) ::=
-    !(v : vs) $vmState(v) = running
+discrete constraint offline(ns <: nodes) ::=
+    !(n : ns) nodeState(n) = offline
 
-cstr ready(vs <: vms) ::=
-    !(v : vs) $vmState(v) = ready
+discrete constraint online(ns <: nodes) ::=
+    !(n : ns) nodeState(n) = online
 
-cstr sleeping(vs <: vms) ::=
-    !(v : vs) $vmState(v) = sleeping
+discrete constraint running(vs <: vms) ::=
+    !(v : vs) vmState(v) = running
 
-cstr terminated(vs <: vms) ::=
-    !(v : vs) $vmState(v) = terminated
+discrete constraint ready(vs <: vms) ::=
+    !(v : vs) vmState(v) = ready
 
-cstr disc_among (vs <: vms, groups : packings(nodes)) ::=
-    ?(g : groups) {$host(i). i : vs, $vmState(i) = running} <: g
+discrete constraint sleeping(vs <: vms) ::=
+    !(v : vs) vmState(v) = sleeping
 
-cstr cont_among (vs <: vms, groups : packings(nodes)) ::=
-    ?(g : groups) {host(i). i : vs, vmState(i) = running} <: g
+discrete constraint killed(vs <: vms) ::=
+    !(v : vs) vmState(v) = terminated
 
-cstr ban(vs <: vms, ns <: nodes) ::=
-    """ {"id":"ban", "vms":@vs, "nodes":@ns} """
-    !(v : vs) $vmState(v) = running --> $host(v) /: ns
+constraint among (vs <: vms, parts : packings(nodes))  ::=
+    ?(g : parts) {host(i). i : vs, vmState(i) = running} <: g
 
-cstr cont_cumulatedRunningCapacity(ns <: nodes, nb : int) ::=
-        """{"id":"cumulatedRunningCapacity","nodes":@ns,"amount":@nb, "continuous":true} """
-        sum({card(running(n)). n : ns}) <= nb
+constraint ban(vs <: vms, ns <: nodes) ::=
+    !(v : vs) vmState(v) = running --> host(v) /: ns
 
-cstr disc_cumulatedRunningCapacity(ns <: nodes, nb : int) ::=
-        """{"id":"cumulatedRunningCapacity","nodes":@ns,"amount":@nb, "continuous":false} """
-        sum({card($running(n)). n : ns}) <= nb //BIZARRE
-
-cstr cont_cumulatedResourcecapacity(ns <: nodes, id : string, qty: int) ::=
-    """ {"id": "cumulatedResourceCapacity", "nodes": @ns, "rc":@id, "amount":@qty, "continuous": true} """
-    sum({capa(i, id). i : ns}) <= qty
-
-cstr disc_cumulatedResourcecapacity(ns <: nodes, id : string, qty: int) ::=
-    """ {"id": "cumulatedResourceCapacity", "nodes": @ns, "rc":@id, "amount":@qty, "continuous": false} """
-    sum({$capa(i, id). i : ns}) <= qty
-
-cstr fence(vs <: vms, ns <: nodes) ::=
-    """ {"id":"fence", "vms":@vs, "nodes":@ns} """
+constraint fence(vs <: vms, ns <: nodes) ::=
     !(v : vs) vmState(v) = running --> host(v) : ns
 
-cstr cont_gather(vs <: vms) ::=
-    """ {"id":"gather",  "vms":@vs, "continuous": true} """
+constraint cumulatedRunningCapacity(ns <: nodes, nb : int) ::=
+    sum({card(running(n)). n : ns}) <= nb
+
+constraint cumulatedResourceCapacity(ns <: nodes, id : string, qty: int) ::=
+    sum({capa(i, id). i : ns}) <= qty
+
+constraint gather(vs <: vms) ::=
     !(x,y : vs)  (x /= y & vmState(x) = running & vmState(y) = running) --> host(x) = host(y)
 
-cstr disc_gather(vs <: vms) ::=
-    """ {"id":"gather",  "vms":@vs, "continuous": false} """
-    !(x,y : vs)  (x /= y & $vmState(x) = running & $vmState(y) = running) --> $host(x) = $host(y)
-
-cstr cont_lonely (vs <: vms) ::=
-    """ {"id":"lonely", "vms":@vs, "continuous" : true} """
+constraint lonely (vs <: vms) ::=
 	!(i : vs) vmState(i) = running --> (colocated(i) - {i}) /<: vs
 
-cstr disc_lonely (vs <: vms) ::=
-    """ {"id":"lonely", "vms":@vs, "continuous" : false} """
-	!(i : vs) $vmState(i) = running --> ($colocated(i) - {i}) /<: vs
-
-cstr cont_maxOnline(ns <: nodes, nb : int) ::=
-    """ {"id":"maxOnline", "nodes":@ns, "amount":@nb, "continuous":true} """
+constraint maxOnline(ns <: nodes, nb : int) ::=
    	card({i. i : ns , nodeState(i) = online}) <= nb
 
-cstr dist_maxOnline(ns <: nodes, nb : int) ::=
-    """ {"id":"maxOnline", "nodes":@ns, "amount":@nb, "continuous":false} """
-   	card({i. i : ns , $nodeState(i) = online}) <= nb //WEIRD
-
-cstr cont_overbook(ns <: nodes, id : string, qty: float) ::=
-    """ {"id": "overbook", "nodes": @ns, "rc":@id, "amount":@qty, "continuous": true} """
+constraint overbook(ns <: nodes, id : string, qty: float) ::=
     !(n : ns) sum({cons(v, id). v : running(n)}) * qty < capa(n, id)
 
-cstr disc_overbook(ns <: nodes, id : string, qty: float) ::=
-    """ {"id": "overbook", "nodes": @ns, "rc":@id, "amount":@qty, "continuous": false} """
-    !(n : ns) $sum({$cons(v, id). v : $running(n)}) * qty < $capa(n, id) //WEIRD
-
-cstr preserve(vs <: vms, id : string, qty: int) ::= //DISCRETE ONLY
-    """ {"id": "preserve", "vms": @vs, "rc":@id, "amount":@qty} """
+constraint preserve(vs <: vms, id : string, qty: int) ::=
     !(v : vs) vmState(v) = running --> cons(v, id) <= qty
 
-cstr root (vs <: vms) ::= //ONLY CONTINUOUS
-    """ {"id":"root", "vms":@vs} """
+constraint root(vs <: vms) ::=
     !(v : vs) vmState(v) = running --> ^host(v) = host(v)
 
-cstr quarantine(ns <: nodes) ::= //ONLY CONTINUOUS
-    """ {"id":"quarantine",  "ns":@ns} """
+constraint quarantine(ns <: nodes) ::=
      !(n : ns) !(v : hosted(n)) root(v) & ban({hosted(n2). n2 /: ns})
 
-
-cstr seq(sched : lists(vms)) ::=                  //ONLY CONTINOUS
-    """ {"id": "sequentialVMTransitions", "vms": @sched} """
+constraint sequentialVMTransitions(sched : lists(vms)) ::=
     !(i,j : range(sched)) (i /= j & vmState(sched[i]) : {booting, suspending, resuming, halting}) -->
         (
         vmState(sched[j]) : {running, sleeping, ready, terminated} &
-        ((j < i & vmState(sched[j]) /= vmState(sched[j])) | (j > i & vmState(sched[j]) = vmState(sched[j])))
+        ((j < i & vmState(sched[j]) /= vmState(sched[j])) | (j > i & vmState(sched[j]) = ^vmState(sched[j])))
         )
 
-cstr cont_singleRunningCapacity(ns <: nodes, nb : int) ::=
-    """{"id":"singleRunningCapacity","nodes":@ns,"amount":@nb, "continuous":true} """
+constraint singleRunningCapacity(ns <: nodes, nb : int) ::=
 	!(n : ns) card(running(n)) <= nb
 
-cstr disc_singleRunningCapacity(ns <: nodes, nb : int) ::=
-    """{"id":"singleRunningCapacity","nodes":@ns,"amount":@nb, "continuous":false} """
-	!(n : ns) $card($running(n)) <= nb
-
-cstr cont_spread(vs <: vms) ::=
-    """ {"id":"spread",  "vms":@vs, "continuous": true} """
+constraint spread(vs <: vms) ::=
      !(x,y : vs) (x /= y &  vmState(x) = running & vmState(y) = running) --> host(x) /= host(y)
 
-cstr disc_spread(vs <: vms) ::=
-    """ {"id":"spread",  "vms":@vs, "continuous": false} """
-     !(x,y : vs) (x /= y &  $vmState(x) = running & $vmState(y) = running) --> $host(x) /= $host(y)
-
-cstr cont_singleResourcecapacity(ns <: nodes, id : string, qty: int) ::=
-    """ {"id": "singleResourceCapacity", "nodes": @ns, "rc":@id, "amount":@qty, "continuous": true} """
+constraint singleResourceCapacity(ns <: nodes, id : string, qty: int) ::=
     !(n : ns) nodeState(n) = online --> capa(n, id) <= qty
 
-cstr disc_singleResourcecapacity(ns <: nodes, id : string, qty: int) ::=
-    """ {"id": "singleResourceCapacity", "nodes": @ns, "rc":@id, "amount":@qty, "continuous": false} """
-    !(n : ns) $nodeState(n) = online --> $capa(n, id) <= qty
-
-cstr cont_split(part : packings(vms)) ::=
-    """ {"id":"split", "vms":@part, "continuous" : true} """
+constraint split(part : packings(vms)) ::=
     { {host(v). v : p , vmState(v) = running}. p : part} : packings(nodes)
 
-cstr disc_split(part : packings(vms)) ::=
-    """ {"id":"split", "vms":@part, "continuous" : true} """
-    { {$host(v). v : p , $vmState(v) = running}. p : part} : $packings(nodes)
-
-cstr cont_splitAmong(vs : packings(vms), part : packings(nodes)) ::=
-    """ {"id":"splitAmong", "vms":@vs, "nodes":@part, "continuous" : true} """
-    !(p : part) cont_among(vs, p) & cont_split(vs)
-
-cstr disc_splitAmong(vs : packings(vms), part : packings(nodes)) ::=
-    """ {"id":"splitAmong", "vms":@vs, "nodes":@part, "continuous" : false} """
-    !(p : part) disc_among(vs, p) & disc_split(vs)
+constraint splitAmong(vs : packings(vms), part : packings(nodes)) ::=
+    !(p : part) among(vs, p) & split(vs)

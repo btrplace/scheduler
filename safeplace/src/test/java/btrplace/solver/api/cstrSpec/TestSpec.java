@@ -50,7 +50,7 @@ public class TestSpec {
     }
 
     private Specification getSpecification() throws Exception {
-        return ex.getSpecification(new File("src/test/resources/v1_1.cspec"));
+        return ex.getSpecification(new File("src/test/resources/v1.cspec"));
     }
 
     @Test
@@ -59,6 +59,13 @@ public class TestSpec {
         System.out.println(spec.pretty());
         System.out.flush();
         Assert.assertEquals(spec.getConstraints().size(), 29);
+        int sum = 0;
+        for (Constraint c : spec.getConstraints()) {
+            int l = c.pretty().length();
+            sum += l;
+            System.out.println(c.id() + " " + l);
+        }
+        System.out.println("Average: " + (sum / spec.getConstraints().size()));
     }
 
     @Test
