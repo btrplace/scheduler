@@ -85,4 +85,6 @@ formula: LPARA formula RPARA   #protectedFormula
 call: cur=(BEGIN|END)? ID LPARA term (COMMA term)* RPARA;
 
 constraint: 'cstr' ID LPARA (typedef (COMMA typedef)*)? RPARA DEF_CONTENT MARSHAL formula;
-spec: constraint+;        
+invariant: 'inv' ID DEF_CONTENT formula;
+
+spec: invariant* constraint*;

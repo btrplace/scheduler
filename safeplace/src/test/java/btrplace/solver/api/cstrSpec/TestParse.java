@@ -5,7 +5,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.util.List;
 
 /**
  * @author Fabien Hermenier
@@ -180,11 +179,10 @@ public class TestParse {
                  */
     @Test
     public void testV1() throws Exception {
-        List<Constraint> cstrs = ex.extractConstraints(new File("src/test/resources/v1.cspec"));
-        for (Constraint cstr : cstrs) {
-            System.out.println(cstr.pretty() + "\n");
-        }
+        Specification spec = ex.getSpecification(new File("src/test/resources/v1.cspec"));
+        System.out.println(spec.pretty());
         System.out.flush();
-        Assert.assertEquals(cstrs.size(), 24);
+        Assert.assertEquals(spec.getConstraints().size(), 24);
+        Assert.assertEquals(spec.getInvariants().size(), 5);
     }
 }
