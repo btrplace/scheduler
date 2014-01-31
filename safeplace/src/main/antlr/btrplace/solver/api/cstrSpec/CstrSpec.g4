@@ -12,6 +12,7 @@ WS
 -> channel(HIDDEN)
 ;
 
+SUCH_AS :'.';
 LACC:'{';
 RACC:'}';
 COMMA:',';
@@ -26,7 +27,6 @@ DIV:'/';
 ALL:'!';
 EXISTS:'?';
 INT: '0' | '-'?[1..9][0..9]*;
-ID: [a-zA-Z_][a-zA-Z0-9_]*;
 INTER: '\\/';
 UNION: '/\\';
 AND:'&';
@@ -48,9 +48,11 @@ NOT:'~';
 LBRACK: '[';
 RBRACK: ']';
 STRING: '"' (~('\\'|'"'))* '"';
-END: '$';
 BEGIN: '^';
 DISCRETE: 'discrete';
+CORE: 'core';
+CONSTRAINT: 'constraint';
+ID: [a-zA-Z_][a-zA-Z0-9_]*;
 
 term: t1=term op=(INTER|UNION|PLUS|MINUS|MULT|DIV) t2=term         #termOp
     | LPARA term RPARA                              #protectedTerm
@@ -63,10 +65,10 @@ term: t1=term op=(INTER|UNION|PLUS|MINUS|MULT|DIV) t2=term         #termOp
     | STRING #stringTerm
     ;
 
-set: LACC term '.' typedef (COMMA formula)? RACC #setInComprehension
+set: LACC term SUCH_AS typedef (COMMA formula)? RACC #setInComprehension
    | LACC term (COMMA term)* RACC #setInExtension;
 
-list: LBRACK term '.' typedef (COMMA formula)? RBRACK #listInComprehension
+list: LBRACK term SUCH_AS typedef (COMMA formula)? RBRACK #listInComprehension
       | LBRACK term (COMMA term)* RBRACK #listInExtension;
 
 comparison: t1=term op=(EQ | NOT_EQ| LT | LEQ | GT | GEQ | IN | NOT_IN | INCL | NOT_INCL) t2=term;
@@ -82,9 +84,8 @@ formula: LPARA formula RPARA   #protectedFormula
        |call        #cstrCall
        ;
        
-call: cur=(BEGIN|END)? ID LPARA term (COMMA term)* RPARA;
+call: BEGIN? ID LPARA term (COMMA term)* RPARA;
 
-constraint: DISCRETE? 'cstr' ID LPARA (typedef (COMMA typedef)*)? RPARA DEF_CONTENT formula;
-invariant: 'inv' ID DEF_CONTENT formula;
+constraint: CORE? DISCRETE? CONSTRAINT ID LPARA (typedef (COMMA typedef)*)? RPARA DEF_CONTENT formula;
 
-spec: invariant* constraint*;
+spec: constraint+;

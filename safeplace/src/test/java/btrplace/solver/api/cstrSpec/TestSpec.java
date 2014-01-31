@@ -58,8 +58,7 @@ public class TestSpec {
         Specification spec = getSpecification();
         System.out.println(spec.pretty());
         System.out.flush();
-        Assert.assertEquals(spec.getConstraints().size(), 24);
-        Assert.assertEquals(spec.getInvariants().size(), 5);
+        Assert.assertEquals(spec.getConstraints().size(), 29);
     }
 
     @Test
@@ -83,6 +82,9 @@ public class TestSpec {
 
 
         for (Constraint c : spec.getConstraints()) {
+            if (c.isCore()) {
+                continue;
+            }
             SatConstraint s = null;
             switch (c.id()) {
                 case "spread":

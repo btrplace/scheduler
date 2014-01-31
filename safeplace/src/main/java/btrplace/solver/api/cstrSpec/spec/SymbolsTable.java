@@ -1,7 +1,6 @@
 package btrplace.solver.api.cstrSpec.spec;
 
 import btrplace.solver.api.cstrSpec.Constraint;
-import btrplace.solver.api.cstrSpec.Invariant;
 import btrplace.solver.api.cstrSpec.spec.term.*;
 import btrplace.solver.api.cstrSpec.spec.term.func.*;
 import btrplace.solver.api.cstrSpec.spec.type.*;
@@ -17,8 +16,6 @@ public class SymbolsTable {
 
     private Map<String, Constraint> cstrs;
 
-    private Map<String, Invariant> invs;
-
     private Map<String, Function> funcs;
 
     private SymbolsTable parent;
@@ -33,7 +30,6 @@ public class SymbolsTable {
         table = new HashMap<>();
         this.cstrs = new HashMap<>();
         this.funcs = new HashMap<>();
-        this.invs = new HashMap<>();
         parent = p;
         primitives = new ArrayList<>();
     }
@@ -98,10 +94,6 @@ public class SymbolsTable {
         for (Map.Entry<String, Function> e : funcs.entrySet()) {
             b.append("func\t").append(e.getValue()).append("\t").append(e.getValue().type()).append("\n");
         }
-        for (Map.Entry<String, Invariant> e : invs.entrySet()) {
-            b.append("inv\t").append(e.getValue()).append("\n");
-        }
-
         for (Map.Entry<String, Constraint> e : cstrs.entrySet()) {
             b.append("cstr\t").append(e.getValue()).append("\n");
         }
@@ -157,10 +149,6 @@ public class SymbolsTable {
 
     public void put(Constraint cstr) {
         cstrs.put(cstr.id(), cstr);
-    }
-
-    public void put(Invariant inv) {
-        invs.put(inv.id(), inv);
     }
 
     public Constraint getConstraint(String id) {

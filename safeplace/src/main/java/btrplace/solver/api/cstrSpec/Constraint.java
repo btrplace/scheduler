@@ -30,20 +30,21 @@ public class Constraint extends Function<Boolean> {
 
     private String cstrName;
 
-    private boolean discreteOnly;
+    private boolean discreteOnly, core;
 
-    public Constraint(String n, Proposition p, List<Primitive> primitives, List<UserVar> params, boolean discreteOnly) {
+    public Constraint(String n, Proposition p, List<Primitive> primitives, List<UserVar> params, boolean discrete, boolean core) {
         this.p = p;
         this.not = p.not();
         this.cstrName = n;
         this.params = params;
         this.primitives = primitives;
-        this.discreteOnly = discreteOnly;
+        this.discreteOnly = discrete;
+        this.core = core;
 
     }
 
     public Constraint(String n, Proposition p, List<Primitive> primitives, List<UserVar> params) {
-        this(n, p, primitives, params, false);
+        this(n, p, primitives, params, false, false);
     }
 
     @Override
@@ -51,8 +52,12 @@ public class Constraint extends Function<Boolean> {
         return BoolType.getInstance();
     }
 
-    public boolean isDiscreteOnly() {
+    public boolean isDiscrete() {
         return discreteOnly;
+    }
+
+    public boolean isCore() {
+        return core;
     }
 
     @Override
@@ -103,6 +108,9 @@ public class Constraint extends Function<Boolean> {
     }
 
     public SatConstraint instantiate(String pkg, List values) throws ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        if (isCore()) {
+            return null;
+        }
         String clName = id().substring(0, 1).toUpperCase() + id().substring(1);
         Class<SatConstraint> cl = (Class<SatConstraint>) Class.forName(pkg + "." + clName);
         for (Constructor c : cl.getConstructors()) {
@@ -135,7 +143,10 @@ public class Constraint extends Function<Boolean> {
         if (discreteOnly) {
             b.append("discrete ");
         }
-        b.append("cstr ");
+        if (core) {
+            b.append("core ");
+        }
+        b.append("constraint ");
         b.append(cstrName).append('(');
         Iterator<UserVar> ite = params.iterator();
         if (ite.hasNext()) {

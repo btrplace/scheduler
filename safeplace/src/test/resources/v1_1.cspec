@@ -1,81 +1,81 @@
-inv noVMsOnOfflineNodes ::= !(n : nodes) nodeState(n) = offline --> card(hosted(n)) = 0
-inv hostingRunningVMs ::= !(v : vms) vmState(v) = running --> host(v) : nodes & nodeState(host(v)) = online
-inv hostingSleepingVMs ::= !(v : vms) vmState(v) = sleeping --> host(v) : nodes & nodeState(host(v)) = online
-inv noHostForReadyVMs ::= !(v : vms) vmState(v) = ready --> host(v) = none
-inv noHostForTerminatedVMs ::= !(v : vms) vmState(v) = terminated --> host(v) = none
+core constraint noVMsOnOfflineNodes() ::= !(n : nodes) nodeState(n) = offline --> card(hosted(n)) = 0
+core constraint hostingRunningVMs() ::= !(v : vms) vmState(v) = running --> host(v) : nodes & nodeState(host(v)) = online
+core constraint hostingSleepingVMs() ::= !(v : vms) vmState(v) = sleeping --> host(v) : nodes & nodeState(host(v)) = online
+core constraint noHostForReadyVMs() ::= !(v : vms) vmState(v) = ready --> host(v) = none
+core constraint noHostForTerminatedVMs() ::= !(v : vms) vmState(v) = terminated --> host(v) = none
 
-discrete cstr offline(ns <: nodes) ::=
+discrete constraint offline(ns <: nodes) ::=
     !(n : ns) nodeState(n) = offline
 
-discrete cstr online(ns <: nodes) ::=
+discrete constraint online(ns <: nodes) ::=
     !(n : ns) nodeState(n) = online
 
-discrete cstr running(vs <: vms) ::=
+discrete constraint running(vs <: vms) ::=
     !(v : vs) vmState(v) = running
 
-discrete cstr ready(vs <: vms) ::=
+discrete constraint ready(vs <: vms) ::=
     !(v : vs) vmState(v) = ready
 
-discrete cstr sleeping(vs <: vms) ::=
+discrete constraint sleeping(vs <: vms) ::=
     !(v : vs) vmState(v) = sleeping
 
-discrete cstr killed(vs <: vms) ::=
+discrete constraint killed(vs <: vms) ::=
     !(v : vs) vmState(v) = terminated
 
-cstr among (vs <: vms, parts : packings(nodes))  ::=
+constraint among (vs <: vms, parts : packings(nodes))  ::=
     ?(g : parts) {host(i). i : vs, vmState(i) = running} <: g
 
-cstr ban(vs <: vms, ns <: nodes) ::=
+constraint ban(vs <: vms, ns <: nodes) ::=
     !(v : vs) vmState(v) = running --> host(v) /: ns
 
-cstr fence(vs <: vms, ns <: nodes) ::=
+constraint fence(vs <: vms, ns <: nodes) ::=
     !(v : vs) vmState(v) = running --> host(v) : ns
 
-cstr cumulatedRunningCapacity(ns <: nodes, nb : int) ::=
+constraint cumulatedRunningCapacity(ns <: nodes, nb : int) ::=
     sum({card(running(n)). n : ns}) <= nb
 
-cstr cumulatedResourceCapacity(ns <: nodes, id : string, qty: int) ::=
+constraint cumulatedResourceCapacity(ns <: nodes, id : string, qty: int) ::=
     sum({capa(i, id). i : ns}) <= qty
 
-cstr gather(vs <: vms) ::=
+constraint gather(vs <: vms) ::=
     !(x,y : vs)  (x /= y & vmState(x) = running & vmState(y) = running) --> host(x) = host(y)
 
-cstr lonely (vs <: vms) ::=
+constraint lonely (vs <: vms) ::=
 	!(i : vs) vmState(i) = running --> (colocated(i) - {i}) /<: vs
 
-cstr maxOnline(ns <: nodes, nb : int) ::=
+constraint maxOnline(ns <: nodes, nb : int) ::=
    	card({i. i : ns , nodeState(i) = online}) <= nb
 
-cstr overbook(ns <: nodes, id : string, qty: float) ::=
+constraint overbook(ns <: nodes, id : string, qty: float) ::=
     !(n : ns) sum({cons(v, id). v : running(n)}) * qty < capa(n, id)
 
-cstr preserve(vs <: vms, id : string, qty: int) ::=
+constraint preserve(vs <: vms, id : string, qty: int) ::=
     !(v : vs) vmState(v) = running --> cons(v, id) <= qty
 
-cstr root(vs <: vms) ::=
+constraint root(vs <: vms) ::=
     !(v : vs) vmState(v) = running --> ^host(v) = host(v)
 
-cstr quarantine(ns <: nodes) ::=
+constraint quarantine(ns <: nodes) ::=
      !(n : ns) !(v : hosted(n)) root(v) & ban({hosted(n2). n2 /: ns})
 
-cstr sequentialVMTransitions(sched : lists(vms)) ::=
+constraint sequentialVMTransitions(sched : lists(vms)) ::=
     !(i,j : range(sched)) (i /= j & vmState(sched[i]) : {booting, suspending, resuming, halting}) -->
         (
         vmState(sched[j]) : {running, sleeping, ready, terminated} &
-        ((j < i & vmState(sched[j]) /= vmState(sched[j])) | (j > i & vmState(sched[j]) = vmState(sched[j])))
+        ((j < i & vmState(sched[j]) /= vmState(sched[j])) | (j > i & vmState(sched[j]) = ^vmState(sched[j])))
         )
 
-cstr singleRunningCapacity(ns <: nodes, nb : int) ::=
+constraint singleRunningCapacity(ns <: nodes, nb : int) ::=
 	!(n : ns) card(running(n)) <= nb
 
-cstr spread(vs <: vms) ::=
+constraint spread(vs <: vms) ::=
      !(x,y : vs) (x /= y &  vmState(x) = running & vmState(y) = running) --> host(x) /= host(y)
 
-cstr singleResourceCapacity(ns <: nodes, id : string, qty: int) ::=
+constraint singleResourceCapacity(ns <: nodes, id : string, qty: int) ::=
     !(n : ns) nodeState(n) = online --> capa(n, id) <= qty
 
-cstr split(part : packings(vms)) ::=
+constraint split(part : packings(vms)) ::=
     { {host(v). v : p , vmState(v) = running}. p : part} : packings(nodes)
 
-cstr splitAmong(vs : packings(vms), part : packings(nodes)) ::=
+constraint splitAmong(vs : packings(vms), part : packings(nodes)) ::=
     !(p : part) among(vs, p) & split(vs)
