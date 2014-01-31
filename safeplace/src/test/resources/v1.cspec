@@ -16,14 +16,16 @@
 *   get all the VMs on the given node (i.e) running() + sleeping()
 * - colocated(vm) -> set<vm>
 *   get all the VMs running on the same node than the given vm (include)
-* - card(set<?>) -> int
+* - card(col<?>) -> int
 *   get the number of elements in the given set
-* - sum(set<int>) -> int
+* - sum(col<int>) -> int
 *   returns the sum
-* - P(set<?>) -> set<set<set<?>>>
+* - packings(set<?>) -> set<set<set<?>>>
 *   return every possible disjoint subsets (every partitions but without necessarily a complete covering)
-*
-*
+* - lists(set<?>) -> set<list<?>>
+*   return every possible lists
+* - range(list<?>) -> list<int>
+*   return all the indexes as a list
 * '$' before a function call indicates we want the initial value of the function (before the reconfiguration starts)
 * the weird string below the signature is the constraint marshalling. Ignored by the parser but necessary to instantiate
 * the constraint in BtrPlace from its JSON serialisation.
@@ -109,15 +111,15 @@ cstr maxOnline(ns <: nodes, nb : int, cont: bool) ::=
     """ {"id":"maxOnline","nodes":@ns,"amount":@nb,"continuous":@cont} """
    	card({i. i : ns , nodeState(i) = online}) <= nb
 
-cstr among (vs <: vms, groups : P(nodes), cont: bool) ::=
+cstr among (vs <: vms, groups : packings(nodes), cont: bool) ::=
     """ {"id":"among", "nodes":@groups, "continuous" : @cont} """
     ?(g : groups) {host(i). i : vs, vmState(i) = running} <: g
 
-cstr split(part : P(vms), cont: bool) ::=
+cstr split(part : packings(vms), cont: bool) ::=
     """ {"id":"split", "vms":@part, "continuous" : @cont} """
-    { {host(v). v : p , vmState(v) = running}. p : part} : P(nodes)
+    { {host(v). v : p , vmState(v) = running}. p : part} : packings(nodes)
 
-cstr splitAmong(vs : P(vms), part : P(nodes), cont: bool) ::=
+cstr splitAmong(vs : packings(vms), part : packings(nodes), cont: bool) ::=
     """ {"id":"splitAmong", "vms":@vs, "nodes":@part, "continuous" : @cont} """
     !(p : part) among(vs, p) & split(vs)
 

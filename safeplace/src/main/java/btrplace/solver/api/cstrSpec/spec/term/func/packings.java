@@ -11,7 +11,7 @@ import java.util.*;
 /**
  * @author Fabien Hermenier
  */
-public class P extends Function<Set> {
+public class packings extends Function<Set> {
 
     @Override
     public Type type() {
@@ -38,7 +38,7 @@ public class P extends Function<Set> {
 
     @Override
     public String id() {
-        return "P";
+        return "packings";
     }
 
     @Override

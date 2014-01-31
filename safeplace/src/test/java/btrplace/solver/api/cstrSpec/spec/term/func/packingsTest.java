@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * @author Fabien Hermenier
  */
-public class PTest {
+public class packingsTest {
 
     @Test
     public void test() {
@@ -21,7 +21,7 @@ public class PTest {
             s.add(i);
         }
         List args = Arrays.asList(s);
-        P p = new P();
+        packings p = new packings();
         Set res = p.eval(new DefaultModel(), args);
         System.out.println(res);
         Assert.assertEquals(res.size(), 12);
