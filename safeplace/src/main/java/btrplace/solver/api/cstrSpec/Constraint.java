@@ -95,11 +95,7 @@ public class Constraint extends Function<Boolean> {
         Class<SatConstraint> cl = (Class<SatConstraint>) Class.forName(pkg + "." + clName);
         for (Constructor c : cl.getConstructors()) {
             if (c.getParameterTypes().length == values.size()) {
-                try {
-                    return (SatConstraint) c.newInstance(values.toArray());
-                } catch (IllegalArgumentException ex) {
-                    ex.printStackTrace();
-                }
+                return (SatConstraint) c.newInstance(values.toArray());
             }
         }
         throw new IllegalArgumentException("No constructors compatible with values '" + values + "'");
@@ -124,7 +120,7 @@ public class Constraint extends Function<Boolean> {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        b.append(cstrName).append("(");
+        b.append(cstrName).append('(');
         Iterator<UserVar> ite = params.iterator();
         if (ite.hasNext()) {
             Var v = ite.next();

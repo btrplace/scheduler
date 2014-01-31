@@ -58,14 +58,14 @@ cstr root(vs <: vms) ::=
 cstr quarantine(ns <: nodes) ::=
      !(n : ns) !(v : hosted(n)) root(v) & ban({hosted(n2). n2 /: ns})
 
-/*
-cstr seq(sched : lists(vms)) ::=
+
+cstr sequentialVMTransitions(sched : lists(vms)) ::=
     !(i,j : range(sched)) (i /= j & vmState(sched[i]) : {booting, suspending, resuming, halting}) -->
         (
         vmState(sched[j]) : {running, sleeping, ready, terminated} &
         ((j < i & vmState(sched[j]) /= vmState(sched[j])) | (j > i & vmState(sched[j]) = vmState(sched[j])))
         )
-*/
+
 cstr singleRunningCapacity(ns <: nodes, nb : int) ::=
 	!(n : ns) card(running(n)) <= nb
 

@@ -11,6 +11,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -204,9 +205,11 @@ public class TestSpec {
                 case "ready":
                 case "killed":
                 case "lonely":
-                case "seq":
                 case "root":
                     s = c.instantiate(Arrays.asList(mo.getMapping().getAllVMs()));
+                    break;
+                case "sequentialVMTransitions":
+                    s = c.instantiate(Arrays.asList(new ArrayList<>(mo.getMapping().getAllVMs())));
                     break;
                 case "online":
                 case "offline":
