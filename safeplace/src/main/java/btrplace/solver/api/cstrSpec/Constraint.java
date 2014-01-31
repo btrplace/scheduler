@@ -1,6 +1,7 @@
 package btrplace.solver.api.cstrSpec;
 
 import btrplace.model.Model;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.api.cstrSpec.spec.prop.Proposition;
 import btrplace.solver.api.cstrSpec.spec.term.Primitive;
 import btrplace.solver.api.cstrSpec.spec.term.UserVar;
@@ -9,6 +10,8 @@ import btrplace.solver.api.cstrSpec.spec.term.func.Function;
 import btrplace.solver.api.cstrSpec.spec.type.BoolType;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,14 +30,11 @@ public class Constraint extends Function<Boolean> {
 
     private String cstrName;
 
-    private String marshal;
-
-    public Constraint(String n, String m, Proposition p, List<Primitive> primitives, List<UserVar> params) {
+    public Constraint(String n, Proposition p, List<Primitive> primitives, List<UserVar> params) {
         this.p = p;
         this.not = p.not();
         this.cstrName = n;
         this.params = params;
-        this.marshal = m;
         this.primitives = primitives;
     }
 
@@ -86,6 +86,25 @@ public class Constraint extends Function<Boolean> {
         return bOk;
     }
 
+    public SatConstraint instantiate(List values) throws ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        return instantiate("btrplace.model.constraint", values);
+    }
+
+    public SatConstraint instantiate(String pkg, List values) throws ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        String clName = id().substring(0, 1).toUpperCase() + id().substring(1);
+        Class<SatConstraint> cl = (Class<SatConstraint>) Class.forName(pkg + "." + clName);
+        for (Constructor c : cl.getConstructors()) {
+            if (c.getParameterTypes().length == values.size()) {
+                try {
+                    return (SatConstraint) c.newInstance(values.toArray());
+                } catch (IllegalArgumentException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        throw new IllegalArgumentException("No constructors compatible with values '" + values + "'");
+    }
+
     public void reset() {
         for (UserVar var : params) {
             var.unset();
@@ -96,13 +115,8 @@ public class Constraint extends Function<Boolean> {
         return cstrName;
     }
 
-    public String getMarshal() {
-        return marshal;
-    }
-
     public String pretty() {
         StringBuilder b = new StringBuilder(toString()).append(" ::=\n");
-        b.append("\t\"\"\"").append(marshal).append("\"\"\"\n");
         b.append('\t').append(p);
         return b.toString();
     }
@@ -120,7 +134,7 @@ public class Constraint extends Function<Boolean> {
             Var v = ite.next();
             b.append(", ").append(v.pretty());
         }
-        b.append(")");
+        b.append(')');
         return b.toString();
     }
 }

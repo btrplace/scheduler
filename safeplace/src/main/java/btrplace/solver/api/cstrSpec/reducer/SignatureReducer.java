@@ -1,11 +1,9 @@
 package btrplace.solver.api.cstrSpec.reducer;
 
-import btrplace.json.JSONConverterException;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.CstrSpecEvaluator;
-import btrplace.solver.api.cstrSpec.JSONs;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.type.SetType;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
@@ -13,7 +11,6 @@ import btrplace.solver.api.cstrSpec.verification.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.TestResult;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -36,10 +33,10 @@ public class SignatureReducer {
         cVerif = new CstrSpecEvaluator();
     }
 
-    private TestResult.ErrorType compare(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws JSONConverterException, IOException {
+    private TestResult.ErrorType compare(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
         boolean consTh = cVerif.eval(cstr, p, in);
 
-        SatConstraint impl = JSONs.unMarshalConstraint(p, cstr, in);
+        SatConstraint impl = cstr.instantiate(in);
         return verif.verify(new TestCase(0, p, impl, consTh), false).errorType();
     }
 
@@ -71,7 +68,7 @@ public class SignatureReducer {
         return l;
     }
 
-    public List<Constant> reduce(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws IOException, JSONConverterException {
+    public List<Constant> reduce(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
         List<Constant> cpy = deepCopy(in);
         TestResult.ErrorType t = compare(p, cstr, cpy);
         if (t == TestResult.ErrorType.succeed) {
@@ -83,7 +80,7 @@ public class SignatureReducer {
         return cpy;
     }
 
-    private void reduceArg(TestResult.ErrorType t, ReconfigurationPlan p, Constraint cstr, List<Constant> in, int i) throws IOException, JSONConverterException {
+    private void reduceArg(TestResult.ErrorType t, ReconfigurationPlan p, Constraint cstr, List<Constant> in, int i) throws Exception {
         Constant c = in.get(i);
         if (c.type() instanceof SetType) {
             List l = (List) c.eval(null);
@@ -96,7 +93,7 @@ public class SignatureReducer {
         }
     }
 
-    private boolean reduceSetTo(TestResult.ErrorType t, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List col, int i) throws IOException, JSONConverterException {
+    private boolean reduceSetTo(TestResult.ErrorType t, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List col, int i) throws Exception {
         if (col.get(i) instanceof Collection) {
             if (failWithout(t, p, cstr, in, col, i)) {
                 return true;
@@ -114,7 +111,7 @@ public class SignatureReducer {
         }
     }
 
-    private boolean failWithout(TestResult.ErrorType t, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List col, int i) throws IOException, JSONConverterException {
+    private boolean failWithout(TestResult.ErrorType t, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List col, int i) throws Exception {
         Object o = col.remove(i);
 
         TestResult.ErrorType t2 = compare(p, cstr, in);

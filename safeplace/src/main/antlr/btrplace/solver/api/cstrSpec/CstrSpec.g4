@@ -47,7 +47,6 @@ FALSE:'false';
 NOT:'~';
 LBRACK: '[';
 RBRACK: ']';
-MARSHAL : '"""' ( '\\"\\"\\"' | . )*? '"""' ;
 STRING: '"' (~('\\'|'"'))* '"';
 END: '$';
 BEGIN: '^';
@@ -84,7 +83,7 @@ formula: LPARA formula RPARA   #protectedFormula
        
 call: cur=(BEGIN|END)? ID LPARA term (COMMA term)* RPARA;
 
-constraint: 'cstr' ID LPARA (typedef (COMMA typedef)*)? RPARA DEF_CONTENT MARSHAL formula;
+constraint: 'cstr' ID LPARA (typedef (COMMA typedef)*)? RPARA DEF_CONTENT formula;
 invariant: 'inv' ID DEF_CONTENT formula;
 
 spec: invariant* constraint*;

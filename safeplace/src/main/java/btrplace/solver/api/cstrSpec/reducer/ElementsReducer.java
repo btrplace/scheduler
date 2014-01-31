@@ -1,6 +1,5 @@
 package btrplace.solver.api.cstrSpec.reducer;
 
-import btrplace.json.JSONConverterException;
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
@@ -11,13 +10,11 @@ import btrplace.plan.event.Action;
 import btrplace.plan.event.VMEvent;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.CstrSpecEvaluator;
-import btrplace.solver.api.cstrSpec.JSONs;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.TestResult;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -42,24 +39,24 @@ public class ElementsReducer {
         cVerif = new CstrSpecEvaluator();
     }
 
-    private TestResult.ErrorType compare(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws JSONConverterException, IOException {
+    private TestResult.ErrorType compare(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
         boolean consTh = cVerif.eval(cstr, p, in);
 
-        SatConstraint impl = JSONs.unMarshalConstraint(p, cstr, in);
+        SatConstraint impl = cstr.instantiate(in);
         return verif.verify(new TestCase(0, p, impl, consTh)).errorType();
     }
 
-    public ReconfigurationPlan reduce(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws IOException, JSONConverterException {
+    public ReconfigurationPlan reduce(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
         ReconfigurationPlan r1 = reduceVMs(p, cstr, in);
         return reduceNodes(r1, cstr, in);
     }
 
-    public ReconfigurationPlan reduceVMs(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws IOException, JSONConverterException {
+    public ReconfigurationPlan reduceVMs(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
         TestResult.ErrorType err = compare(p, cstr, in);
         if (err == TestResult.ErrorType.succeed) {
             return p;
         }
-        SatConstraint s = JSONs.unMarshalConstraint(p, cstr, in);
+        SatConstraint s = cstr.instantiate(in);
         List<VM> l = new ArrayList<>(p.getOrigin().getMapping().getAllVMs());
         l.removeAll(s.getInvolvedVMs());
         ListIterator<VM> ite = l.listIterator();
@@ -109,12 +106,12 @@ public class ElementsReducer {
         return red;
     }
 
-    public ReconfigurationPlan reduceNodes(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws IOException, JSONConverterException {
+    public ReconfigurationPlan reduceNodes(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
         TestResult.ErrorType err = compare(p, cstr, in);
         if (err == TestResult.ErrorType.succeed) {
             return p;
         }
-        SatConstraint s = JSONs.unMarshalConstraint(p, cstr, in);
+        SatConstraint s = cstr.instantiate(in);
         List<Node> l = new ArrayList<>(p.getOrigin().getMapping().getAllNodes());
         l.removeAll(s.getInvolvedNodes());
         ListIterator<Node> ite = l.listIterator();

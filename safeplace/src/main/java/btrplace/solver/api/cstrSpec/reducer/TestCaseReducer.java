@@ -1,11 +1,9 @@
 package btrplace.solver.api.cstrSpec.reducer;
 
-import btrplace.json.JSONConverterException;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.TestCase2;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -34,7 +32,7 @@ public class TestCaseReducer {
         er = new ElementsReducer();
     }
 
-    TestCase2 reduce(TestCase2 tc) throws IOException, JSONConverterException {
+    TestCase2 reduce(TestCase2 tc) throws Exception {
         ReconfigurationPlan reducedPlan = pr.reduce(tc.getPlan(), tc.getConstraint(), tc.getInputs());
         List<Constant> reducedParams = sr.reduce(reducedPlan, tc.getConstraint(), tc.getInputs());
         ReconfigurationPlan reducedElements = er.reduce(reducedPlan, tc.getConstraint(), reducedParams);

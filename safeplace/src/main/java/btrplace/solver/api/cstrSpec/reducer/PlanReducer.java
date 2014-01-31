@@ -1,19 +1,16 @@
 package btrplace.solver.api.cstrSpec.reducer;
 
-import btrplace.json.JSONConverterException;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.CstrSpecEvaluator;
-import btrplace.solver.api.cstrSpec.JSONs;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.TestResult;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,14 +34,14 @@ public class PlanReducer {
         cVerif = new CstrSpecEvaluator();
     }
 
-    private TestResult.ErrorType compare(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws JSONConverterException, IOException {
+    private TestResult.ErrorType compare(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
         boolean consTh = cVerif.eval(cstr, p, in);
 
-        SatConstraint impl = JSONs.unMarshalConstraint(p, cstr, in);
+        SatConstraint impl = cstr.instantiate(in);
         return verif.verify(new TestCase(0, p, impl, consTh)).errorType();
     }
 
-    public ReconfigurationPlan reduce(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws JSONConverterException, IOException {
+    public ReconfigurationPlan reduce(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
 
         TestResult.ErrorType t = compare(p, cstr, in);
         if (t == TestResult.ErrorType.succeed) {
@@ -56,7 +53,7 @@ public class PlanReducer {
         return mins.get(0);
     }
 
-    private TestResult.ErrorType reduce(TestResult.ErrorType err, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List<ReconfigurationPlan> mins) throws JSONConverterException, IOException {
+    private TestResult.ErrorType reduce(TestResult.ErrorType err, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List<ReconfigurationPlan> mins) throws Exception {
         if (p.getSize() <= 1) {
             mins.add(p);
         } else {

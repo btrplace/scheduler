@@ -44,39 +44,28 @@ inv noHostForReadyVMs ::= !(v : vms) vmState(v) = ready --> host(v) = none
 inv noHostForTerminatedVMs ::= !(v : vms) vmState(v) = terminated --> host(v) = none
 
 
-/* State management */
 cstr offline(ns <: nodes) ::=
-    """ {"id":"offline",  "nodes":@ns} """
     !(n : ns) $nodeState(n) = offline
 
 cstr online(ns <: nodes) ::=
-    """ {"id": "online", "nodes": @ns} """
     !(n : ns) $nodeState(n) = online
 
 cstr running(vs <: vms) ::=
-    """ {"id": "running", "vms": @vs} """
     !(v : vs) $vmState(v) = running
 
 cstr ready(vs <: vms) ::=
-    """ {"id": "ready", "vms": @vs} """
     !(v : vs) $vmState(v) = ready
 
 cstr sleeping(vs <: vms) ::=
-    """ {"id": "sleeping", "vms": @vs} """
     !(v : vs) $vmState(v) = sleeping
 
 cstr terminated(vs <: vms) ::=
-    """ {"id": "terminated", "vms": @vs} """
     !(v : vs) $vmState(v) = terminated
 
-/* Placement management */
-
 cstr disc_among (vs <: vms, groups : packings(nodes)) ::=
-    """ {"id":"among", "nodes":@groups, "continuous" : false} """
     ?(g : groups) {$host(i). i : vs, $vmState(i) = running} <: g
 
 cstr cont_among (vs <: vms, groups : packings(nodes)) ::=
-    """ {"id":"among", "nodes":@groups, "continuous" : true} """
     ?(g : groups) {host(i). i : vs, vmState(i) = running} <: g
 
 cstr ban(vs <: vms, ns <: nodes) ::=
