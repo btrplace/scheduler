@@ -21,120 +21,6 @@ public class TestSpec {
 
     SpecReader ex = new SpecReader();
 
-    /*private void go(String path) throws Exception {
-
-        Constraint c = ex.extract(new File(path));
-
-        ModelsGenerator mg = new ModelsGenerator(2, 2);
-        ConstraintsConverter cstrC = ConstraintsConverter.newBundle();
-        Verifier verifChk = new ImplVerifier();
-        int num = 0, failures = 0;
-        for (Model mo : mg) {
-            System.out.print("-- Model " + mg.done() + "/" + mg.count());
-            ReconfigurationPlansGenerator pg = new ReconfigurationPlansGenerator(mo);
-            System.out.println(" " + pg.count() + " plan(s) --");
-            int k = 0;
-            for (ReconfigurationPlan p : pg) {
-                ReconfigurationPlan p2 = new DelaysGenerator(new DurationsGenerator(p, 1, 3, true).next(), true).next();
-                System.out.print(".");
-                ConstraintInputGenerator cg = new ConstraintInputGenerator(c, p.getOrigin(), true);
-                //System.out.println(c + "\n" + cg.count() + " signature(s)\n");
-                for (List<Object> in : cg) {
-                    cstrC.setModel(p2.getOrigin());
-                    Map<String, Object> vals = new HashMap<>();
-                    for (int i = 0; i < in.size(); i++) {
-                        vals.put(c.getParameters().get(i).label(), vals.get(i));
-                    }
-                    SatConstraint satCstr = (SatConstraint) cstrC.fromJSON(JSONs.unMarshal(c.getMarshal(), vals));
-                    TestResult res = verifChk.verify(new TestCase(num, p2, satCstr, c.eval(p.getResult(), in)));
-                    if (!res.succeeded()) {
-                        failures++;
-                        System.out.println("\n" + res);
-                        //Assert.fail();
-                    }
-                    num++;
-                }
-                cg.reset();
-                if (++k % 80 == 0) {
-                    System.out.println();
-                }
-            }
-            System.out.println();
-        }
-        System.out.println("\n" + num + " verification(s) performed: " + failures + " failures");
-        Assert.fail();
-    }         */
-
-    /*@Test
-    public void testParseSpread() throws Exception {
-        ex.extract(new File("src/test/resources/spread.cspec"));
-    }
-
-    @Test
-    public void testSingleRunningCapacity() throws Exception {
-        System.out.println(ex.extract(new File("src/test/resources/singleRunningCapacity.cspec")));
-    }
-
-    @Test
-    public void testCumulatedRunningCapacity() throws Exception {
-        System.out.println(ex.extract(new File("src/test/resources/cumulatedRunningCapacity.cspec")));
-    }
-
-
-    @Test
-    public void testParseGather() throws Exception {
-        ex.extract(new File("src/test/resources/gather.cspec"));
-    }
-
-    @Test
-    public void testParseLonely() throws Exception {
-        System.out.println(ex.extract(new File("src/test/resources/lonely.cspec")));
-    }
-
-
-    @Test
-    public void testParseFence() throws Exception {
-        ex.extract(new File("src/test/resources/fence.cspec"));
-    }
-
-    @Test
-    public void testParseBan() throws Exception {
-        ex.extract(new File("src/test/resources/ban.cspec"));
-
-    }
-
-    @Test
-    public void testParseMaxOnline() throws Exception {
-        System.out.println(ex.extract(new File("src/test/resources/maxOnline.cspec")));
-
-    }
-
-    @Test
-    public void testParseRoot() throws Exception {
-        Constraint cstr = ex.extract(new File("src/test/resources/root.cspec"));
-        System.out.println(cstr.toString());
-
-    }
-
-    @Test
-    public void testParseAmong() throws Exception {
-        Constraint cstr = ex.extract(new File("src/test/resources/among.cspec"));
-        System.out.println(cstr.toString());
-
-    }
-
-             */
-/*    @Test
-    public void testParseNodeState() throws Exception {
-        ex.extract(new File("src/test/resources/nodeState.cspec"));
-        Assert.fail();
-    }*/
-
-    /*@Test
-    public void testParseNoVMOnOfflineNode() throws Exception {
-        go("src/test/resources/noVMOnOfflineNode.cspec");
-    } */
-
     @Test
     public void testFoo() {
         for (int i = 1; i <= 5; i++) {
@@ -166,6 +52,7 @@ public class TestSpec {
     private Specification getSpecification() throws Exception {
         return ex.getSpecification(new File("src/test/resources/v1_1.cspec"));
     }
+
     @Test
     public void testV1() throws Exception {
         Specification spec = getSpecification();

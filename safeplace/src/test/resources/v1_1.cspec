@@ -4,23 +4,23 @@ inv hostingSleepingVMs ::= !(v : vms) vmState(v) = sleeping --> host(v) : nodes 
 inv noHostForReadyVMs ::= !(v : vms) vmState(v) = ready --> host(v) = none
 inv noHostForTerminatedVMs ::= !(v : vms) vmState(v) = terminated --> host(v) = none
 
-cstr offline(ns <: nodes) ::=
-    !(n : ns) $nodeState(n) = offline
+discrete cstr offline(ns <: nodes) ::=
+    !(n : ns) nodeState(n) = offline
 
-cstr online(ns <: nodes) ::=
-    !(n : ns) $nodeState(n) = online
+discrete cstr online(ns <: nodes) ::=
+    !(n : ns) nodeState(n) = online
 
-cstr running(vs <: vms) ::=
-    !(v : vs) $vmState(v) = running
+discrete cstr running(vs <: vms) ::=
+    !(v : vs) vmState(v) = running
 
-cstr ready(vs <: vms) ::=
-    !(v : vs) $vmState(v) = ready
+discrete cstr ready(vs <: vms) ::=
+    !(v : vs) vmState(v) = ready
 
-cstr sleeping(vs <: vms) ::=
-    !(v : vs) $vmState(v) = sleeping
+discrete cstr sleeping(vs <: vms) ::=
+    !(v : vs) vmState(v) = sleeping
 
-cstr killed(vs <: vms) ::=
-    !(v : vs) $vmState(v) = terminated
+discrete cstr killed(vs <: vms) ::=
+    !(v : vs) vmState(v) = terminated
 
 cstr among (vs <: vms, parts : packings(nodes))  ::=
     ?(g : parts) {host(i). i : vs, vmState(i) = running} <: g
@@ -28,14 +28,14 @@ cstr among (vs <: vms, parts : packings(nodes))  ::=
 cstr ban(vs <: vms, ns <: nodes) ::=
     !(v : vs) vmState(v) = running --> host(v) /: ns
 
+cstr fence(vs <: vms, ns <: nodes) ::=
+    !(v : vs) vmState(v) = running --> host(v) : ns
+
 cstr cumulatedRunningCapacity(ns <: nodes, nb : int) ::=
     sum({card(running(n)). n : ns}) <= nb
 
 cstr cumulatedResourceCapacity(ns <: nodes, id : string, qty: int) ::=
     sum({capa(i, id). i : ns}) <= qty
-
-cstr fence(vs <: vms, ns <: nodes) ::=
-    !(v : vs) vmState(v) = running --> host(v) : ns
 
 cstr gather(vs <: vms) ::=
     !(x,y : vs)  (x /= y & vmState(x) = running & vmState(y) = running) --> host(x) = host(y)
@@ -58,7 +58,6 @@ cstr root(vs <: vms) ::=
 cstr quarantine(ns <: nodes) ::=
      !(n : ns) !(v : hosted(n)) root(v) & ban({hosted(n2). n2 /: ns})
 
-
 cstr sequentialVMTransitions(sched : lists(vms)) ::=
     !(i,j : range(sched)) (i /= j & vmState(sched[i]) : {booting, suspending, resuming, halting}) -->
         (
@@ -71,7 +70,6 @@ cstr singleRunningCapacity(ns <: nodes, nb : int) ::=
 
 cstr spread(vs <: vms) ::=
      !(x,y : vs) (x /= y &  vmState(x) = running & vmState(y) = running) --> host(x) /= host(y)
-
 
 cstr singleResourceCapacity(ns <: nodes, id : string, qty: int) ::=
     !(n : ns) nodeState(n) = online --> capa(n, id) <= qty

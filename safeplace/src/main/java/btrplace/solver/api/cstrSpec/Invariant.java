@@ -54,7 +54,7 @@ public class Invariant {
     }
 
     public String pretty() {
-        StringBuilder b = new StringBuilder(toString()).append(" ::=\n");
+        StringBuilder b = new StringBuilder("inv ").append(toString()).append(" ::=\n");
         b.append('\t').append(p);
         return b.toString();
     }

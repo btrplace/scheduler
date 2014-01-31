@@ -30,17 +30,29 @@ public class Constraint extends Function<Boolean> {
 
     private String cstrName;
 
-    public Constraint(String n, Proposition p, List<Primitive> primitives, List<UserVar> params) {
+    private boolean discreteOnly;
+
+    public Constraint(String n, Proposition p, List<Primitive> primitives, List<UserVar> params, boolean discreteOnly) {
         this.p = p;
         this.not = p.not();
         this.cstrName = n;
         this.params = params;
         this.primitives = primitives;
+        this.discreteOnly = discreteOnly;
+
+    }
+
+    public Constraint(String n, Proposition p, List<Primitive> primitives, List<UserVar> params) {
+        this(n, p, primitives, params, false);
     }
 
     @Override
     public BoolType type() {
         return BoolType.getInstance();
+    }
+
+    public boolean isDiscreteOnly() {
+        return discreteOnly;
     }
 
     @Override
@@ -120,6 +132,10 @@ public class Constraint extends Function<Boolean> {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
+        if (discreteOnly) {
+            b.append("discrete ");
+        }
+        b.append("cstr ");
         b.append(cstrName).append('(');
         Iterator<UserVar> ite = params.iterator();
         if (ite.hasNext()) {

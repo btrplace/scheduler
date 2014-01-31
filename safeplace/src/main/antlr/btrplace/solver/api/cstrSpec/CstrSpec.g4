@@ -50,6 +50,7 @@ RBRACK: ']';
 STRING: '"' (~('\\'|'"'))* '"';
 END: '$';
 BEGIN: '^';
+DISCRETE: 'discrete';
 
 term: t1=term op=(INTER|UNION|PLUS|MINUS|MULT|DIV) t2=term         #termOp
     | LPARA term RPARA                              #protectedTerm
@@ -83,7 +84,7 @@ formula: LPARA formula RPARA   #protectedFormula
        
 call: cur=(BEGIN|END)? ID LPARA term (COMMA term)* RPARA;
 
-constraint: 'cstr' ID LPARA (typedef (COMMA typedef)*)? RPARA DEF_CONTENT formula;
+constraint: DISCRETE? 'cstr' ID LPARA (typedef (COMMA typedef)*)? RPARA DEF_CONTENT formula;
 invariant: 'inv' ID DEF_CONTENT formula;
 
 spec: invariant* constraint*;
