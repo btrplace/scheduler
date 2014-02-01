@@ -133,8 +133,8 @@ public class Constraint extends Function<Boolean> {
     }
 
     public String pretty() {
-        StringBuilder b = new StringBuilder(toString()).append(" ::=\n");
-        b.append('\t').append(p);
+        StringBuilder b = new StringBuilder(toString()).append(" ::= ");
+        b.append(p);
         return b.toString();
     }
 

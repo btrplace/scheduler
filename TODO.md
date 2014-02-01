@@ -10,7 +10,9 @@ OK discrete & continuous constraints (an operator for current && end status ?): 
 NO predicates
 
 ## Verifier ##
-- continuous | discrete
+- impl: discrete | continuous | repair | full
+- checker: discrete | continuous
+- spec: discrete | continuous
 
 ## Reducer ##
 - Return which action violate which constraint
