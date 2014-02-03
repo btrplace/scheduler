@@ -1,14 +1,11 @@
 package btrplace.solver.api.cstrSpec.spec.term.func;
 
-import btrplace.model.Model;
-import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.solver.api.cstrSpec.spec.type.SetType;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
 import btrplace.solver.api.cstrSpec.spec.type.VMType;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -23,7 +20,8 @@ public class Colocated extends Function<Set<VM>> {
     }
 
     @Override
-    public Set<VM> eval(Model mo, List<Object> args) {
+    public Set<VM> eval(SpecModel mo, List<Object> args) {
+        /*
         VM v = (VM) args.get(0);
         if (v == null) {
             return null;
@@ -38,6 +36,8 @@ public class Colocated extends Function<Set<VM>> {
         Set<VM> s = new HashSet<>(mo.getMapping().getRunningVMs(n));
         s.addAll(mo.getMapping().getSleepingVMs(n));
         return s;
+        */
+        throw new UnsupportedOperationException();
     }
 
     @Override

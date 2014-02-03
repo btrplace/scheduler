@@ -2,7 +2,6 @@ package btrplace.solver.api.cstrSpec.verification;
 
 import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.ReconfigurationPlanChecker;
 import btrplace.plan.ReconfigurationPlanCheckerException;
 import btrplace.plan.TimedBasedActionComparator;
 import btrplace.plan.event.Action;
@@ -11,7 +10,8 @@ import btrplace.solver.api.cstrSpec.spec.prop.Proposition;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.term.UserVar;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
-import btrplace.solver.api.cstrSpec.verification.specChecker.PlanChecker;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecReconfigurationPlanChecker;
 
 import java.util.Comparator;
 import java.util.Iterator;
@@ -25,8 +25,9 @@ public class SpecVerifier implements Verifier2 {
     private static Comparator<Action> startFirstComparator = new TimedBasedActionComparator();
 
     private CheckerResult checkModel(Proposition p, Proposition notP, Model mo) {
-        Boolean bOk = p.eval(mo);
-        Boolean bKO = notP.eval(mo);
+        SpecModel m = new SpecModel(mo);
+        Boolean bOk = p.eval(m);
+        Boolean bKO = notP.eval(m);
 
         if (bOk == null || bKO == null) {
             return CheckerResult.newError(new RuntimeException("Both null !\ngood:" + p + "\nnotGood: " + notP + "\n" + mo.getMapping().toString()));
@@ -49,9 +50,8 @@ public class SpecVerifier implements Verifier2 {
             Proposition good = cstr.getProposition();
             Proposition noGood = good.not();
 
-            PlanChecker chk = new PlanChecker();
-            ReconfigurationPlanChecker rchk = new ReconfigurationPlanChecker();
-            rchk.addChecker(chk);
+            //ReconfigurationSimulator chk = new ReconfigurationSimulator();
+            SpecReconfigurationPlanChecker spc = new SpecReconfigurationPlanChecker();
 
             if (discrete) {
                 Model res = p.getResult();
@@ -63,8 +63,9 @@ public class SpecVerifier implements Verifier2 {
                 return checkModel(good, noGood, res);
             } else {
                 try {
-                    rchk.check(p);
+                    spc.check(p, good, noGood);
                 } catch (Exception e) {
+//                    e.printStackTrace();
                     return new CheckerResult(false, e);
                 }
             }
@@ -75,6 +76,7 @@ public class SpecVerifier implements Verifier2 {
     }
 
     private void setInputs(Constraint c, Model src, List<Constant> values) {
+        SpecModel m = new SpecModel(src);
         //Check signature
         if (values.size() != c.getParameters().size()) {
             throw new IllegalArgumentException(toString(c.id(), values) + " cannot match " + signatureToString(c));
@@ -90,7 +92,7 @@ public class SpecVerifier implements Verifier2 {
 
         for (int i = 0; i < values.size(); i++) {
             UserVar var = c.getParameters().get(i);
-            if (!var.set(src, values.get(i).eval(src))) {
+            if (!var.set(m, values.get(i).eval(m))) {
                 throw new IllegalArgumentException("Unable to set '" + var.label() + "' (type '" + var.type() + "') to '" + values.get(i) + "'");
             }
         }

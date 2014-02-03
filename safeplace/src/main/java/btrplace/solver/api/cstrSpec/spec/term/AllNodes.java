@@ -1,8 +1,8 @@
 package btrplace.solver.api.cstrSpec.spec.term;
 
-import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.solver.api.cstrSpec.spec.type.NodeType;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 
 import java.util.Set;
 
@@ -16,7 +16,7 @@ public class AllNodes extends Primitive {
     }
 
     @Override
-    public Set<Node> eval(Model m) {
-        return m.getMapping().getAllNodes();
+    public Set<Node> eval(SpecModel m) {
+        return m.nodes();
     }
 }

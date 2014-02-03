@@ -1,0 +1,18 @@
+digraph G{
+	Init
+	Ready
+	Running
+	Sleeping
+	Killed
+
+	Init -> Ready [label="forgeVM"]
+	Ready -> Running [label="bootVM"]
+	Running -> Running [label="relocateVM"]
+	Running -> Sleeping [label="suspendVM"]
+	Sleeping -> Running [label="resumeVM"]
+	Running -> Ready [label="shutdownVM"]
+	
+	Ready -> Killed [label="killVM"]
+	Running -> Killed [label="killVM"]
+	Sleeping -> Killed [label="killVM"]
+}

@@ -1,7 +1,7 @@
 package btrplace.solver.api.cstrSpec.spec.term;
 
-import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 
 /**
  * @author Fabien Hermenier
@@ -16,7 +16,7 @@ public class Mult extends Term {
     }
 
     @Override
-    public Object eval(Model mo) {
+    public Object eval(SpecModel mo) {
         Object o1 = a.eval(mo);
         Object o2 = b.eval(mo);
         if (o1 == null || o2 == null) {

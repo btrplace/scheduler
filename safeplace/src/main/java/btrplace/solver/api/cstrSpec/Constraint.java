@@ -1,6 +1,5 @@
 package btrplace.solver.api.cstrSpec;
 
-import btrplace.model.Model;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.api.cstrSpec.spec.prop.Proposition;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
@@ -9,6 +8,7 @@ import btrplace.solver.api.cstrSpec.spec.term.Var;
 import btrplace.solver.api.cstrSpec.spec.term.func.Function;
 import btrplace.solver.api.cstrSpec.spec.type.BoolType;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 import edu.emory.mathcs.backport.java.util.Collections;
 
 import java.lang.reflect.Constructor;
@@ -79,7 +79,7 @@ public class Constraint extends Function<Boolean> {
         return params;
     }
 
-    public Boolean eval(Model res, List<Object> values) {
+    public Boolean eval(SpecModel res, List<Object> values) {
         /*
         for (int i = 0; i < values.size(); i++) {
             UserVar var = params.get(i);

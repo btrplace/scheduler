@@ -1,7 +1,7 @@
 package btrplace.solver.api.cstrSpec.spec.prop;
 
-import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.spec.term.Term;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 
 /**
  * @author Fabien Hermenier
@@ -23,7 +23,7 @@ public class Eq extends AtomicProp {
     }
 
     @Override
-    public Boolean eval(Model m) {
+    public Boolean eval(SpecModel m) {
         Object vA = a.eval(m);
         Object vB = b.eval(m);
         if (vA == null && vB == null) {

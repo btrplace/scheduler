@@ -1,9 +1,9 @@
 package btrplace.solver.api.cstrSpec.spec.term.func;
 
-import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.spec.type.IntType;
 import btrplace.solver.api.cstrSpec.spec.type.ListType;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ public class Range extends Function<List<Integer>> {
 
 
     @Override
-    public List<Integer> eval(Model mo, List<Object> args) {
+    public List<Integer> eval(SpecModel mo, List<Object> args) {
         List c = (List) args.get(0);
         if (c == null) {
             return null;

@@ -1,6 +1,6 @@
 package btrplace.solver.api.cstrSpec.spec.prop;
 
-import btrplace.model.Model;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 
 /**
  * A logical proposition.
@@ -11,7 +11,7 @@ public interface Proposition {
 
     Proposition not();
 
-    Boolean eval(Model m);
+    Boolean eval(SpecModel m);
 
     static final Proposition False = new Proposition() {
         @Override
@@ -20,7 +20,7 @@ public interface Proposition {
         }
 
         @Override
-        public Boolean eval(Model m) {
+        public Boolean eval(SpecModel m) {
             return Boolean.FALSE;
         }
 
@@ -37,7 +37,7 @@ public interface Proposition {
         }
 
         @Override
-        public Boolean eval(Model m) {
+        public Boolean eval(SpecModel m) {
             return Boolean.TRUE;
         }
 

@@ -1,10 +1,10 @@
 package btrplace.solver.api.cstrSpec.spec.prop;
 
-import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.spec.term.Term;
 import btrplace.solver.api.cstrSpec.spec.term.UserVar;
 import btrplace.solver.api.cstrSpec.spec.term.Var;
 import btrplace.solver.api.cstrSpec.util.AllTuplesGenerator;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 
 import java.util.*;
 
@@ -31,7 +31,7 @@ public class Exists implements Proposition {
     }
 
     @Override
-    public Boolean eval(Model m) {
+    public Boolean eval(SpecModel m) {
         boolean ret = false;
         List<List<Object>> values = new ArrayList<>(vars.size());
         for (int i = 0; i < vars.size(); i++) {

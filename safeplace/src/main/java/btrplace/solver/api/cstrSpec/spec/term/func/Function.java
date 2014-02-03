@@ -1,8 +1,8 @@
 package btrplace.solver.api.cstrSpec.spec.term.func;
 
-import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.spec.term.Term;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public abstract class Function<T> {
         return signature();
     }
 
-    public abstract T eval(Model mo, List<Object> args);
+    public abstract T eval(SpecModel mo, List<Object> args);
 
     @Override
     public String toString() {

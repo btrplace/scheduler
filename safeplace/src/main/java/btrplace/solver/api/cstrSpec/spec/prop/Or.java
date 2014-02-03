@@ -1,6 +1,6 @@
 package btrplace.solver.api.cstrSpec.spec.prop;
 
-import btrplace.model.Model;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 
 /**
  * @author Fabien Hermenier
@@ -31,7 +31,7 @@ public class Or extends BinaryProp {
     } */
 
     @Override
-    public Boolean eval(Model m) {
+    public Boolean eval(SpecModel m) {
         Boolean r1 = p1.eval(m);
         if (r1 == null) {
             return null;

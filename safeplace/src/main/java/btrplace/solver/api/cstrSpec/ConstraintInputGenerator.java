@@ -1,10 +1,10 @@
 package btrplace.solver.api.cstrSpec;
 
-import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.fuzzer.RandomTuplesGenerator;
 import btrplace.solver.api.cstrSpec.spec.term.UserVar;
 import btrplace.solver.api.cstrSpec.util.AllTuplesGenerator;
 import btrplace.solver.api.cstrSpec.util.Generator;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 
 import java.util.*;
 
@@ -17,7 +17,7 @@ public class ConstraintInputGenerator implements Generator<List<Object>> {
     private String[] ids;
     private Generator<Object[]> tg;
 
-    public ConstraintInputGenerator(Constraint cstr, Model mo, boolean seq) {
+    public ConstraintInputGenerator(Constraint cstr, SpecModel mo, boolean seq) {
 
         List<UserVar> params = cstr.getParameters();
         List<List<Object>> values = new ArrayList<>(params.size());

@@ -5,9 +5,9 @@ import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
 import btrplace.solver.api.cstrSpec.Constraint;
-import btrplace.solver.api.cstrSpec.CstrSpecEvaluator;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.ImplVerifier;
+import btrplace.solver.api.cstrSpec.verification.SpecVerifier;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.TestResult;
 
@@ -27,15 +27,15 @@ public class PlanReducer {
 
     private ImplVerifier verif;
 
-    private CstrSpecEvaluator cVerif;
+    private SpecVerifier cVerif;
 
     public PlanReducer() {
         verif = new ImplVerifier();
-        cVerif = new CstrSpecEvaluator();
+        cVerif = new SpecVerifier();
     }
 
     private TestResult.ErrorType compare(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
-        boolean consTh = cVerif.eval(cstr, p, in);
+        boolean consTh = cVerif.verify(cstr, p, in, false).getStatus();
 
         SatConstraint impl = cstr.instantiate(in);
         return verif.verify(new TestCase(0, p, impl, consTh)).errorType();

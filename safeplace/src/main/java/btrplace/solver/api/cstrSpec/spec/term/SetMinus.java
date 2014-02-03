@@ -1,6 +1,6 @@
 package btrplace.solver.api.cstrSpec.spec.term;
 
-import btrplace.model.Model;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,7 +15,7 @@ public class SetMinus extends Minus<Set> {
     }
 
     @Override
-    public Set eval(Model mo) {
+    public Set eval(SpecModel mo) {
         Set o1 = a.eval(mo);
         Set o2 = b.eval(mo);
         Set l = new HashSet();

@@ -1,7 +1,7 @@
 package btrplace.solver.api.cstrSpec.spec.prop;
 
-import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.spec.term.Term;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 
 import java.util.Collection;
 
@@ -30,7 +30,7 @@ public class NInc extends AtomicProp {
     } */
 
     @Override
-    public Boolean eval(Model m) {
+    public Boolean eval(SpecModel m) {
         Object cA = a.eval(m);
         Collection cB = (Collection) b.eval(m);
         if (cB == null) {

@@ -6,7 +6,6 @@ import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.event.BootVM;
 import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.Specification;
@@ -90,17 +89,11 @@ public class SpecVerifierTest {
         mo.getMapping().addOnlineNode(n);
         mo.getMapping().addRunningVM(v, n);
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
-        p.add(new ShutdownNode(n, 1, 3));
-        p.add(new BootVM(v, n, 0, 1));
+        //p.add(new ShutdownVM(v, n, 3, 4));
+        p.add(new ShutdownNode(n, 0, 3));
 
         Specification s = getSpec();
-        Constraint c = null;
-        for (Constraint c2 : s.getConstraints()) {
-            if (c2.id().equals("noHostForReadyVMs")) {
-                c = c2;
-                break;
-            }
-        }
+        Constraint c = s.get("noVMsOnOfflineNodes");
         System.out.println(mo.getMapping());
         System.out.println(p);
         SpecVerifier verif = new SpecVerifier();

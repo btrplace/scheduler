@@ -1,6 +1,6 @@
 package btrplace.solver.api.cstrSpec.spec.term.func;
 
-import btrplace.model.DefaultModel;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * @author Fabien Hermenier
  */
-public class packingsTest {
+public class PackingsTest {
 
     @Test
     public void test() {
@@ -21,8 +21,8 @@ public class packingsTest {
             s.add(i);
         }
         List args = Arrays.asList(s);
-        packings p = new packings();
-        Set res = p.eval(new DefaultModel(), args);
+        Packings p = new Packings();
+        Set res = p.eval(new SpecModel(), args);
         System.out.println(res);
         Assert.assertEquals(res.size(), 12);
     }

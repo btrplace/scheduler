@@ -1,7 +1,7 @@
 package btrplace.solver.api.cstrSpec.spec.term;
 
-import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 
 import java.util.Set;
 
@@ -17,7 +17,7 @@ public class ProtectedTerm<T> extends Term<T> {
     }
 
     @Override
-    public T eval(Model mo) {
+    public T eval(SpecModel mo) {
         return t.eval(mo);
     }
 

@@ -1,0 +1,8 @@
+digraph G{		
+	Offline
+	Online
+	
+	Offline -> Online [label=" bootNode   ",labeldistance=5, labelangle=0]
+	
+	Online -> Offline [label=" shutdownNode",labeldistance=5, labelangle=-50]
+}

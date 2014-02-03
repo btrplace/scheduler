@@ -1,12 +1,10 @@
 package btrplace.solver.api.cstrSpec.spec.term.func;
 
-import btrplace.model.Model;
-import btrplace.model.Node;
-import btrplace.model.view.ShareableResource;
 import btrplace.solver.api.cstrSpec.spec.type.IntType;
 import btrplace.solver.api.cstrSpec.spec.type.NodeType;
 import btrplace.solver.api.cstrSpec.spec.type.StringType;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 
 import java.util.List;
 
@@ -21,13 +19,14 @@ public class Capa extends Function<Integer> {
     }
 
     @Override
-    public Integer eval(Model mo, List<Object> args) {
-        String rc = args.get(1).toString();
+    public Integer eval(SpecModel mo, List<Object> args) {
+        throw new UnsupportedOperationException();
+        /*String rc = args.get(1).toString();
         ShareableResource r = (ShareableResource) mo.getView(ShareableResource.VIEW_ID_BASE + rc);
         if (r == null) {
             throw new RuntimeException("View '" + ShareableResource.VIEW_ID_BASE + rc + "' is missing");
         }
-        return r.getCapacity((Node) args.get(0));
+        return r.getCapacity((Node) args.get(0)); */
     }
 
     @Override

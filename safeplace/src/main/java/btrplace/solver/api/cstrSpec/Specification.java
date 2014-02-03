@@ -26,6 +26,15 @@ public class Specification {
         return cstrs;
     }
 
+    public Constraint get(String id) {
+        for (Constraint c : cstrs) {
+            if (c.id().equals(id)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
     public String toString() {
         StringBuilder b = new StringBuilder();
         Iterator<Constraint> ite = cstrs.iterator();

@@ -1,12 +1,12 @@
 package btrplace.solver.api.cstrSpec.spec.term;
 
-import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.prop.Not;
 import btrplace.solver.api.cstrSpec.spec.prop.Proposition;
 import btrplace.solver.api.cstrSpec.spec.term.func.Function;
 import btrplace.solver.api.cstrSpec.spec.term.func.FunctionCall;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -33,7 +33,7 @@ public class ConstraintCall implements Proposition {
     }
 
     @Override
-    public Boolean eval(Model m) {
+    public Boolean eval(SpecModel m) {
         List<UserVar> ps = c.getParameters();
         List<Object> ins = new ArrayList<>(ps.size());
         for (int i = 0; i < args.size(); i++) {

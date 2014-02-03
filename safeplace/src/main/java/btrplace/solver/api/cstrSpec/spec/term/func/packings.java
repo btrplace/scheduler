@@ -1,17 +1,17 @@
 package btrplace.solver.api.cstrSpec.spec.term.func;
 
-import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.spec.term.Term;
 import btrplace.solver.api.cstrSpec.spec.type.SetType;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
 import btrplace.solver.api.cstrSpec.util.AllTuplesGenerator;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 
 import java.util.*;
 
 /**
  * @author Fabien Hermenier
  */
-public class packings extends Function<Set> {
+public class Packings extends Function<Set> {
 
     @Override
     public Type type() {
@@ -19,7 +19,7 @@ public class packings extends Function<Set> {
     }
 
     @Override
-    public Set eval(Model mo, List<Object> args) {
+    public Set eval(SpecModel mo, List<Object> args) {
         List c = new ArrayList((Collection) args.get(0));
         List<List<Object>> l = new ArrayList<>();
         for (int i = 0; i < c.size(); i++) {

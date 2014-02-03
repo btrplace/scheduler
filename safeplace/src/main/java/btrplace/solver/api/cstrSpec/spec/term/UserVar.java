@@ -1,7 +1,7 @@
 package btrplace.solver.api.cstrSpec.spec.term;
 
-import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 
 import java.util.Collection;
 
@@ -39,7 +39,7 @@ public class UserVar<T> extends Var<T> {
         return backend;
     }
 
-    public boolean set(Model mo, T o) {
+    public boolean set(SpecModel mo, T o) {
         Collection s = backend.eval(mo);
         if (s == null) {
             throw new IllegalArgumentException("'" + o + "' is outside the domain of  " + backend + " (" + backend.eval(mo) + ")");
@@ -58,7 +58,7 @@ public class UserVar<T> extends Var<T> {
     }
 
     @Override
-    public T eval(Model m) {
+    public T eval(SpecModel m) {
         return val;
     }
 }

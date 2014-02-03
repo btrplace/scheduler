@@ -50,7 +50,7 @@ public class SymbolsTable {
         root.put(new NodeState());
         root.put(new Card());
         root.put(new Sum());
-        root.put(new packings());
+        root.put(new Packings());
         root.put(new Lists());
         root.put(new Range());
         return root;

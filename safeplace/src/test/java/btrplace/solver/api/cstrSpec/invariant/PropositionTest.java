@@ -1,7 +1,7 @@
 package btrplace.solver.api.cstrSpec.invariant;
 
-import btrplace.model.DefaultModel;
 import btrplace.solver.api.cstrSpec.spec.prop.Proposition;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -14,7 +14,7 @@ public class PropositionTest {
     public void testTrue() {
         Proposition t = Proposition.True;
         Assert.assertEquals(t.not(), Proposition.False);
-        Assert.assertEquals(t.eval(new DefaultModel()), Boolean.TRUE);
+        Assert.assertEquals(t.eval(new SpecModel()), Boolean.TRUE);
         Assert.assertEquals(t.toString(), "true");
     }
 
@@ -23,6 +23,6 @@ public class PropositionTest {
         Proposition t = Proposition.False;
         Assert.assertEquals(t.toString(), "false");
         Assert.assertEquals(t.not(), Proposition.True);
-        Assert.assertEquals(t.eval(new DefaultModel()), Boolean.FALSE);
+        Assert.assertEquals(t.eval(new SpecModel()), Boolean.FALSE);
     }
 }

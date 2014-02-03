@@ -1,8 +1,8 @@
 package btrplace.solver.api.cstrSpec.spec.term;
 
-import btrplace.model.Model;
 import btrplace.model.VM;
 import btrplace.solver.api.cstrSpec.spec.type.VMType;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 
 import java.util.Set;
 
@@ -16,7 +16,7 @@ public class AllVMs extends Primitive {
     }
 
     @Override
-    public Set<VM> eval(Model m) {
-        return m.getMapping().getAllVMs();
+    public Set<VM> eval(SpecModel m) {
+        return m.VMs();
     }
 }

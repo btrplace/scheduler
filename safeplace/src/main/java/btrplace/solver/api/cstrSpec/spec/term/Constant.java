@@ -1,8 +1,8 @@
 package btrplace.solver.api.cstrSpec.spec.term;
 
-import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.LazySet;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 
 import java.util.*;
 
@@ -62,7 +62,7 @@ public class Constant extends Term {
     }
 
     @Override
-    public Object eval(Model mo) {
+    public Object eval(SpecModel mo) {
         if (o instanceof LazySet) {
             return ((LazySet) o).expand(mo);
         }

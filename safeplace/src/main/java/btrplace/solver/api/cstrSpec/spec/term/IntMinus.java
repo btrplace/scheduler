@@ -1,6 +1,6 @@
 package btrplace.solver.api.cstrSpec.spec.term;
 
-import btrplace.model.Model;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 
 /**
  * @author Fabien Hermenier
@@ -12,7 +12,7 @@ public class IntMinus extends Minus<Integer> {
     }
 
     @Override
-    public Integer eval(Model mo) {
+    public Integer eval(SpecModel mo) {
         Integer o1 = a.eval(mo);
         Integer o2 = b.eval(mo);
         if (o1 == null || o2 == null) {

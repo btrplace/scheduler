@@ -1,8 +1,8 @@
 package btrplace.solver.api.cstrSpec.spec.term.func;
 
-import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.spec.term.Term;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -54,7 +54,7 @@ public class FunctionCall<T> extends Term<T> {
     }
 
     @Override
-    public T eval(Model m) {
+    public T eval(SpecModel m) {
         List<Object> values = new ArrayList<>();
         for (Term t : args) {
             values.add(t.eval(m));

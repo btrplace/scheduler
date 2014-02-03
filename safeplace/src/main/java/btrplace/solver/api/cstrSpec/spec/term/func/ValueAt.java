@@ -1,8 +1,8 @@
 package btrplace.solver.api.cstrSpec.spec.term.func;
 
-import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.spec.term.Term;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class ValueAt extends Term {
     }
 
     @Override
-    public Object eval(Model mo) {
+    public Object eval(SpecModel mo) {
         List l = arr.eval(mo);
         if (l == null) {
             return null;

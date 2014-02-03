@@ -3,11 +3,11 @@ package btrplace.solver.api.cstrSpec.reducer;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.Constraint;
-import btrplace.solver.api.cstrSpec.CstrSpecEvaluator;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.type.SetType;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
 import btrplace.solver.api.cstrSpec.verification.ImplVerifier;
+import btrplace.solver.api.cstrSpec.verification.SpecVerifier;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.TestResult;
 
@@ -17,24 +17,25 @@ import java.util.List;
 
 /**
  * Reduce a constraint signature to the minimum possible.
- *
+ * <p/>
  * In practice the sets are reduced one by one by removing values one by one.
  * A value will stay in the set if its removal lead to a different error.
+ *
  * @author Fabien Hermenier
  */
 public class SignatureReducer {
 
     private ImplVerifier verif;
 
-    private CstrSpecEvaluator cVerif;
+    private SpecVerifier cVerif;
 
     public SignatureReducer() {
         verif = new ImplVerifier();
-        cVerif = new CstrSpecEvaluator();
+        cVerif = new SpecVerifier();
     }
 
     private TestResult.ErrorType compare(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
-        boolean consTh = cVerif.eval(cstr, p, in);
+        boolean consTh = cVerif.verify(cstr, p, in, false).getStatus();
 
         SatConstraint impl = cstr.instantiate(in);
         return verif.verify(new TestCase(0, p, impl, consTh), false).errorType();

@@ -1,0 +1,17 @@
+digraph G{	
+		
+	Ready -> Booting
+	Booting -> Running
+	Running -> Migrating
+	Migrating -> Running
+	Running -> Halting
+	Halting -> Ready
+	Running -> Suspending
+	Suspending -> Sleeping
+	Sleeping -> Resuming
+	Resuming -> Running
+
+	Running -> Terminating
+	Sleeping -> Terminating
+	Ready -> Terminating
+}

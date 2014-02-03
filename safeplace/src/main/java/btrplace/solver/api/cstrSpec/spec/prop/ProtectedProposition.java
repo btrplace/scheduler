@@ -1,6 +1,6 @@
 package btrplace.solver.api.cstrSpec.spec.prop;
 
-import btrplace.model.Model;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 
 /**
  * @author Fabien Hermenier
@@ -14,7 +14,7 @@ public class ProtectedProposition implements Proposition {
     }
 
     @Override
-    public Boolean eval(Model m) {
+    public Boolean eval(SpecModel m) {
         return p.eval(m);
     }
 

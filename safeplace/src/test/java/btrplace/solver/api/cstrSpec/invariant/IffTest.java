@@ -1,8 +1,8 @@
 package btrplace.solver.api.cstrSpec.invariant;
 
-import btrplace.model.DefaultModel;
 import btrplace.solver.api.cstrSpec.spec.prop.Iff;
 import btrplace.solver.api.cstrSpec.spec.prop.Proposition;
+import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -28,6 +28,6 @@ public class IffTest {
     @Test(dataProvider = "input")
     public void testTruthTable(Proposition a, Proposition b, Boolean r) {
         Iff p = new Iff(a, b);
-        Assert.assertEquals(p.eval(new DefaultModel()), r);
+        Assert.assertEquals(p.eval(new SpecModel()), r);
     }
 }
