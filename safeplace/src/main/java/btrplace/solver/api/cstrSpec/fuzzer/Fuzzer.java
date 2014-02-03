@@ -66,7 +66,7 @@ public class Fuzzer {
             ReconfigurationPlansGenerator rpgen = new ReconfigurationPlansGenerator(mo);
             for (ReconfigurationPlan p : rpgen) {
                 //System.out.println("New basic plan");
-                DurationsGenerator dg = null;
+                DurationsGenerator dg;
                 int nbDurations = countDurations;
                 if (nbDurations == -1) {
                     dg = new DurationsGenerator(p, minDuration, maxDuration);
@@ -78,7 +78,7 @@ public class Fuzzer {
                     //System.out.println("New duration " + (i+1) + "/" + countDurations);
                     ReconfigurationPlan pd = dg.next();
 
-                    DelaysGenerator delayG = null;
+                    DelaysGenerator delayG;
                     int nbDelays = countDelays;
                     if (nbDelays == -1) {
                         delayG = new DelaysGenerator(pd, false);

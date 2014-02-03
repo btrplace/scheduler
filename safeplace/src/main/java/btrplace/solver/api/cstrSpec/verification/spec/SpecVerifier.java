@@ -2,7 +2,6 @@ package btrplace.solver.api.cstrSpec.verification.spec;
 
 import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.ReconfigurationPlanCheckerException;
 import btrplace.plan.TimedBasedActionComparator;
 import btrplace.plan.event.Action;
 import btrplace.solver.api.cstrSpec.Constraint;
@@ -30,12 +29,12 @@ public class SpecVerifier implements Verifier {
         Boolean bKO = notP.eval(m);
 
         if (bOk == null || bKO == null) {
-            return CheckerResult.newError(new RuntimeException("Both null !\ngood:" + p + "\nnotGood: " + notP + "\n" + mo.getMapping().toString()));
+            return CheckerResult.newError("Both null !\ngood:" + p + "\nnotGood: " + notP + "\n" + mo.getMapping().toString());
         }
         if (bOk && bKO) {
-            return CheckerResult.newError(new RuntimeException("Good _and_ bad !\ngood:" + p + "\nnotGood: " + notP + "\n" + mo.getMapping().toString()));
+            return CheckerResult.newError("Good _and_ bad !\ngood:" + p + "\nnotGood: " + notP + "\n" + mo.getMapping().toString());
         } else if (!(bOk || bKO)) {
-            return CheckerResult.newError(new RuntimeException("Nor good or bad !\ngood:" + p + "\nnotGood: " + notP + "\n" + mo.getMapping().toString()));
+            return CheckerResult.newError("Nor good or bad !\ngood:" + p + "\nnotGood: " + notP + "\n" + mo.getMapping().toString());
         }
         return new CheckerResult(bOk, null);
     }
@@ -57,16 +56,19 @@ public class SpecVerifier implements Verifier {
                 Model res = p.getResult();
                 if (res == null) {
                     //Core constraint violation
-                    return new CheckerResult(false, new ReconfigurationPlanCheckerException(null, res, true));
+                    return new CheckerResult(false, "Unable to apply the reconfiguration plan ");
 
                 }
                 return checkModel(good, noGood, res);
             } else {
                 try {
-                    spc.check(p, good, noGood);
+                    Action a = spc.check(p, good, noGood);
+                    if (a != null) {
+                        return new CheckerResult(false, a.toString());
+                    }
                 } catch (Exception e) {
 //                    e.printStackTrace();
-                    return new CheckerResult(false, e);
+                    return new CheckerResult(false, e.getMessage());
                 }
             }
         } finally {

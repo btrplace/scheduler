@@ -15,12 +15,9 @@ public class VMStateType extends Atomic {
 
     private static VMStateType instance = new VMStateType();
 
-    private Set<Object> vals;
-
     private VMStateType() {
         Set<Object> s = new HashSet<>();
         Collections.addAll(s, Type.values());
-        vals = Collections.unmodifiableSet(s);
     }
 
     public static VMStateType getInstance() {

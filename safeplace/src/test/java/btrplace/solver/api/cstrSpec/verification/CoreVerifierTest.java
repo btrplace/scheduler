@@ -47,7 +47,7 @@ public class CoreVerifierTest {
     }
 
     private void check(final List<Constraint> cores) {
-        Fuzzer fuzzer = new Fuzzer(1, 1).minDuration(1).maxDuration(3).allDurations().allDelays();/*.nbDurations(3).nbDelays(3);*/
+        Fuzzer fuzzer = new Fuzzer(2, 2).minDuration(1).maxDuration(3).allDurations().allDelays();/*.nbDurations(3).nbDelays(3);*/
         fuzzer.addListener(new FuzzerListener() {
             int d = 0;
 

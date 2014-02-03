@@ -48,7 +48,7 @@ public class ImplVerifier implements Verifier {
         try {
             sat = Constraint2BtrPlace.build(c, params);
         } catch (Exception e) {
-            return CheckerResult.newError(e);
+            return CheckerResult.newError(e.getMessage());
         }
         //FIXME: if involved in the plan
         cstrs.add(sat);
@@ -68,12 +68,12 @@ public class ImplVerifier implements Verifier {
             if (res == null) {
                 return CheckerResult.newFailure();
             } else if (!p.equals(res)) {
-                return CheckerResult.newError(new RuntimeException("The resulting schedule differ. Got:\n" + res + "\nExpected:\n" + p));
+                return CheckerResult.newError("The resulting schedule differ. Got:\n" + res + "\nExpected:\n" + p);
             } else {
                 return CheckerResult.newSucess();
             }
         } catch (SolverException ex) {
-            return CheckerResult.newFailure(ex);
+            return CheckerResult.newFailure(ex.getMessage());
         }
     }
 

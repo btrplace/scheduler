@@ -61,10 +61,7 @@ public class NEq extends AtomicProp {
         if ((vA == null && vB != null) || (vA != null && vB == null)) {
             return true;
         }
-        if (vA == null) {
-            return false;
-        }
-        return !vA.equals(vB);
+        return vA != null && !vA.equals(vB);
     }
 
 }

@@ -20,7 +20,12 @@ public class CheckerVerifier implements Verifier {
     @Override
     public CheckerResult verify(Constraint cstr, ReconfigurationPlan p, List<Constant> params, boolean discrete) {
         if (cstr.isCore()) {
-            return CheckerResult.newError(new IllegalArgumentException(cstr.id() + " is a core constraint. Not instantiable"));
+            //    return CheckerResult.newError(cstr.id() + " is a core constraint. Not instantiable");
+            Model res = p.getResult();
+            if (res == null) {
+                return new CheckerResult(false, "Core constraint violation");
+            }
+            return CheckerResult.newSucess();
         }
         try {
             SatConstraint sat = Constraint2BtrPlace.build(cstr, params);
@@ -29,14 +34,14 @@ public class CheckerVerifier implements Verifier {
                     Model res = p.getResult();
                     if (res == null) {
                         //Core constraint violation
-                        return new CheckerResult(false, new ReconfigurationPlanCheckerException(null, res, true));
+                        return new CheckerResult(false, "Core constraint violation");
                     }
                     if (!sat.getChecker().endsWith(res)) {
-                        return new CheckerResult(false, new ReconfigurationPlanCheckerException(sat, res, true));
+                        return new CheckerResult(false, "Violation of " + sat.toString());
                     }
                     return CheckerResult.newSucess();
                 } else {
-                    return new CheckerResult(false, new UnsupportedOperationException(sat + " cannot be discrete"));
+                    return new CheckerResult(false, sat + " cannot be discrete");
                 }
             } else {
                 if (sat.setContinuous(true)) {
@@ -46,14 +51,14 @@ public class CheckerVerifier implements Verifier {
                         chk.check(p);
                         return CheckerResult.newSucess();
                     } catch (ReconfigurationPlanCheckerException ex) {
-                        return CheckerResult.newFailure(ex);
+                        return CheckerResult.newFailure(ex.toString());
                     }
                 } else {
-                    return new CheckerResult(false, new UnsupportedOperationException(sat + " cannot be continuous"));
+                    return new CheckerResult(false, sat + " cannot be continuous");
                 }
             }
         } catch (Exception ex) {
-            return CheckerResult.newError(ex);
+            return CheckerResult.newError(ex.getMessage());
         }
     }
 }

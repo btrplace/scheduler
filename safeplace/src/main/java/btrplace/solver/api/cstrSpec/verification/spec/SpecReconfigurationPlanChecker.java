@@ -172,7 +172,7 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
      * @param p the plan to check
      * @throws ReconfigurationPlanCheckerException if a violation is detected
      */
-    public void check(ReconfigurationPlan p, Proposition ok, Proposition ko) throws ReconfigurationPlanCheckerException {
+    public Action check(ReconfigurationPlan p, Proposition ok, Proposition ko) throws ReconfigurationPlanCheckerException {
         checkModel(new SpecModel(p.getOrigin()), true);
 
         if (!p.getActions().isEmpty()) {
@@ -188,7 +188,9 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
                 while (a != null && a.getEnd() == curMoment) {
                     ends.remove();
                     startingEvent = false;
-                    visitAndThrowOnViolation(a, ok, ko);
+                    if (!visitAndThrowOnViolation(a, ok, ko)) {
+                        return a;
+                    }
                     visitEvents(a, Action.Hook.post);
                     a = ends.peek();
                 }
@@ -198,7 +200,9 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
                     starts.remove();
                     startingEvent = true;
                     visitEvents(a, Action.Hook.pre);
-                    visitAndThrowOnViolation(a, ok, ko);
+                    if (!visitAndThrowOnViolation(a, ok, ko)) {
+                        return a;
+                    }
                     a = starts.peek();
                 }
                 int nextEnd = ends.isEmpty() ? Integer.MAX_VALUE : ends.peek().getEnd();
@@ -208,9 +212,10 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
         }
         SpecModel mo = checkers.currentModel();
         checkModel(mo, false);
+        return null;
     }
 
-    private void visitAndThrowOnViolation(Action a, Proposition ok, Proposition ko) throws ReconfigurationPlanCheckerException {
+    private boolean visitAndThrowOnViolation(Action a, Proposition ok, Proposition ko) {
         a.visit(this);
         SpecModel mo = checkers.currentModel();
         Boolean bOk = ok.eval(mo);
@@ -221,9 +226,7 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
         if (bOk.equals(bKo)) {
             throw new RuntimeException("Both have the same result: " + bOk + " " + bKo);
         }
-        if (!bOk) {
-            throw new ReconfigurationPlanCheckerException(null, a);
-        }
+        return bOk;
     }
 
 

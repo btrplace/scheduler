@@ -2,7 +2,6 @@ package btrplace.solver.api.cstrSpec.spec.type;
 
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,14 +14,11 @@ public class NodeStateType extends Atomic {
 
     private static NodeStateType instance = new NodeStateType();
 
-    private Set<Constant> vals;
-
     private NodeStateType() {
         Set<Constant> s = new HashSet<>();
         for (Type t : Type.values()) {
             s.add(new Constant(t, this));
         }
-        vals = Collections.unmodifiableSet(s);
     }
 
     public static NodeStateType getInstance() {

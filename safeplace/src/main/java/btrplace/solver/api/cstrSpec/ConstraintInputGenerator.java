@@ -13,15 +13,13 @@ import java.util.*;
  */
 public class ConstraintInputGenerator implements Generator<List<Object>> {
 
-
-    private String[] ids;
     private Generator<Object[]> tg;
 
     public ConstraintInputGenerator(Constraint cstr, SpecModel mo, boolean seq) {
 
         List<UserVar> params = cstr.getParameters();
         List<List<Object>> values = new ArrayList<>(params.size());
-        ids = new String[params.size()];
+
         for (int i = 0; i < params.size(); i++) {
             UserVar v = params.get(i);
             Object o = v.eval(null);
@@ -30,7 +28,6 @@ public class ConstraintInputGenerator implements Generator<List<Object>> {
             } else {
                 values.add(new ArrayList<Object>((Set) v.getBackend().eval(mo)));
             }
-            ids[i] = v.label();
         }
 
         if (seq) {

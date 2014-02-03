@@ -7,9 +7,9 @@ public class CheckerResult {
 
     private Boolean b;
 
-    private Exception ex;
+    private String ex;
 
-    public CheckerResult(Boolean b, Exception ex) {
+    public CheckerResult(Boolean b, String ex) {
         this.b = b;
         this.ex = ex;
     }
@@ -22,11 +22,11 @@ public class CheckerResult {
         return new CheckerResult(false, null);
     }
 
-    public static CheckerResult newFailure(Exception ex) {
+    public static CheckerResult newFailure(String ex) {
         return new CheckerResult(false, ex);
     }
 
-    public static CheckerResult newError(Exception ex) {
+    public static CheckerResult newError(String ex) {
         return new CheckerResult(null, ex);
     }
 
@@ -34,7 +34,7 @@ public class CheckerResult {
         return b;
     }
 
-    public Exception getException() {
+    public String getException() {
         return ex;
     }
 
@@ -43,6 +43,6 @@ public class CheckerResult {
         if (ex == null) {
             return "" + b;
         }
-        return b + " " + ex.getMessage();
+        return b + " " + ex;
     }
 }

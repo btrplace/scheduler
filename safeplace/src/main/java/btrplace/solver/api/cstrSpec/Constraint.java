@@ -23,8 +23,6 @@ public class Constraint extends Function<Boolean> {
 
     private Proposition p;
 
-    private Proposition not;
-
     private List<UserVar> params;
 
     private String cstrName;
@@ -41,7 +39,6 @@ public class Constraint extends Function<Boolean> {
 
     private Constraint(String n, Proposition p, List<UserVar> params, boolean discrete, boolean core) {
         this.p = p;
-        this.not = p.not();
         this.cstrName = n;
         this.params = params;
         this.discreteOnly = discrete;
