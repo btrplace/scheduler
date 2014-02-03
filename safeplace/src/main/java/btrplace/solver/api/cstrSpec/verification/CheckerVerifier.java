@@ -1,25 +1,69 @@
 package btrplace.solver.api.cstrSpec.verification;
 
+import btrplace.model.Model;
+import btrplace.model.constraint.SatConstraint;
+import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlanChecker;
+import btrplace.plan.ReconfigurationPlanCheckerException;
+import btrplace.solver.api.cstrSpec.Constraint;
+import btrplace.solver.api.cstrSpec.spec.term.Constant;
+
+import java.util.List;
 
 /**
  * @author Fabien Hermenier
  */
-public class CheckerVerifier implements Verifier {
+public class CheckerVerifier implements Verifier2 {
+
+    public static final String DEFAULT_PACKAGE = "btrplace.model.constraint";
+
+    private String pkg;
+
+    public CheckerVerifier() {
+        this(DEFAULT_PACKAGE);
+    }
+
+    public CheckerVerifier(String pkg) {
+        this.pkg = pkg;
+    }
 
     @Override
-    public TestResult verify(TestCase c) {
-        ReconfigurationPlanChecker chk = new ReconfigurationPlanChecker();
-        chk.addChecker(c.getSatConstraint().getChecker());
-        TestResult.ErrorType err = TestResult.ErrorType.bug;
-
-        try {
-            chk.check(c.getPlan());
-        } catch (Exception ex) {
-            return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), err, ex);
+    public CheckerResult verify(Constraint cstr, ReconfigurationPlan p, List<Constant> params, boolean discrete) {
+        if (cstr.isCore()) {
+            return CheckerResult.newError(new IllegalArgumentException(cstr.id() + " is a core constraint. Not instantiable"));
         }
-        err = c.isConsistent() ? TestResult.ErrorType.succeed : TestResult.ErrorType.falsePositive;
-
-        return new TestResult(c.num(), c.getPlan(), c.getSatConstraint(), c.isConsistent(), err);
+        try {
+            SatConstraint sat = Constraint2BtrPlace.build(cstr, params);
+            if (discrete) {
+                if (sat.setContinuous(false)) {
+                    Model res = p.getResult();
+                    if (res == null) {
+                        //Core constraint violation
+                        return new CheckerResult(false, new ReconfigurationPlanCheckerException(null, res, true));
+                    }
+                    if (!sat.getChecker().endsWith(res)) {
+                        return new CheckerResult(false, new ReconfigurationPlanCheckerException(sat, res, true));
+                    }
+                    return CheckerResult.newSucess();
+                } else {
+                    return new CheckerResult(false, new UnsupportedOperationException(sat + " cannot be discrete"));
+                }
+            } else {
+                if (sat.setContinuous(true)) {
+                    ReconfigurationPlanChecker chk = new ReconfigurationPlanChecker();
+                    chk.addChecker(sat.getChecker());
+                    try {
+                        chk.check(p);
+                        return CheckerResult.newSucess();
+                    } catch (ReconfigurationPlanCheckerException ex) {
+                        return CheckerResult.newFailure(ex);
+                    }
+                } else {
+                    return new CheckerResult(false, new UnsupportedOperationException(sat + " cannot be continuous"));
+                }
+            }
+        } catch (Exception ex) {
+            return CheckerResult.newError(ex);
+        }
     }
 }

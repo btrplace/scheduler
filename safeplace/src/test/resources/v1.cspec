@@ -1,11 +1,11 @@
 core constraint noVMsOnOfflineNodes() ::=
     !(n : nodes) nodeState(n) = offline --> card(hosted(n)) = 0
 
-core constraint hostingRunningVMs() ::=
-    !(v : vms) vmState(v) = running --> host(v) : nodes & nodeState(host(v)) = online
+core constraint hostForRunningVMs() ::=
+    !(v : vms) vmState(v) = running --> (host(v) : nodes & nodeState(host(v)) = online)
 
-core constraint hostingSleepingVMs() ::=
-    !(v : vms) vmState(v) = sleeping --> host(v) : nodes & nodeState(host(v)) = online
+core constraint hostForSleepingVMs() ::=
+    !(v : vms) vmState(v) = sleeping --> (host(v) : nodes & nodeState(host(v)) = online)
 
 core constraint noHostForReadyVMs() ::=
     !(v : vms) vmState(v) = ready --> host(v) = none

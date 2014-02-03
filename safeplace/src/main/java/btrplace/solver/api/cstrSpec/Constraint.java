@@ -3,6 +3,7 @@ package btrplace.solver.api.cstrSpec;
 import btrplace.model.Model;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.api.cstrSpec.spec.prop.Proposition;
+import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.term.UserVar;
 import btrplace.solver.api.cstrSpec.spec.term.Var;
 import btrplace.solver.api.cstrSpec.spec.term.func.Function;
@@ -79,7 +80,7 @@ public class Constraint extends Function<Boolean> {
     }
 
     public Boolean eval(Model res, List<Object> values) {
-
+        /*
         for (int i = 0; i < values.size(); i++) {
             UserVar var = params.get(i);
             if (!var.set(res, values.get(i))) {
@@ -101,7 +102,8 @@ public class Constraint extends Function<Boolean> {
             throw new RuntimeException("Nor good or bad !\ngood:" + this.p + "\nnotGood: " + not + "\n" + res.getMapping().toString());
         }
         this.reset();
-        return bOk;
+        return bOk;*/
+        throw new UnsupportedOperationException();
     }
 
     public SatConstraint instantiate(List values) throws ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException {
@@ -160,5 +162,23 @@ public class Constraint extends Function<Boolean> {
         }
         b.append(')');
         return b.toString();
+    }
+
+    public static String toString(Constraint c, List<Constant> values) {
+        return c.toString(values);
+    }
+
+    public String toString(List<Constant> values) {
+        StringBuilder b = new StringBuilder();
+        b.append(id()).append('(');
+        Iterator<Constant> ite = values.iterator();
+        while (ite.hasNext()) {
+            b.append(ite.next().toString());
+            if (ite.hasNext()) {
+                b.append(", ");
+            }
+        }
+        return b.append(')').toString();
+
     }
 }

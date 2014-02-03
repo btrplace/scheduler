@@ -11,7 +11,7 @@ import java.util.Set;
  */
 public class NodeStateType extends Atomic {
 
-    public static enum Type {online, offline}
+    public static enum Type {online, booting, halting, offline}
 
     private static NodeStateType instance = new NodeStateType();
 
