@@ -11,7 +11,7 @@ import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.term.UserVar;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
 import btrplace.solver.api.cstrSpec.verification.CheckerResult;
-import btrplace.solver.api.cstrSpec.verification.Verifier2;
+import btrplace.solver.api.cstrSpec.verification.Verifier;
 
 import java.util.Comparator;
 import java.util.Iterator;
@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
-public class SpecVerifier implements Verifier2 {
+public class SpecVerifier implements Verifier {
 
     private static Comparator<Action> startFirstComparator = new TimedBasedActionComparator();
 

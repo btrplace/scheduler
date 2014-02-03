@@ -1,4 +1,4 @@
-package btrplace.solver.api.cstrSpec.verification;
+package btrplace.solver.api.cstrSpec.verification.btrplace;
 
 import btrplace.model.Model;
 import btrplace.model.constraint.SatConstraint;
@@ -7,14 +7,15 @@ import btrplace.plan.ReconfigurationPlanChecker;
 import btrplace.plan.ReconfigurationPlanCheckerException;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
-import btrplace.solver.api.cstrSpec.verification.btrplace.Constraint2BtrPlace;
+import btrplace.solver.api.cstrSpec.verification.CheckerResult;
+import btrplace.solver.api.cstrSpec.verification.Verifier;
 
 import java.util.List;
 
 /**
  * @author Fabien Hermenier
  */
-public class CheckerVerifier implements Verifier2 {
+public class CheckerVerifier implements Verifier {
 
     @Override
     public CheckerResult verify(Constraint cstr, ReconfigurationPlan p, List<Constant> params, boolean discrete) {

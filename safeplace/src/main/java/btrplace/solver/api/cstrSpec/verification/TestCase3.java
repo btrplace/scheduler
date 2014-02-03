@@ -3,7 +3,7 @@ package btrplace.solver.api.cstrSpec.verification;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
-import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier2;
+import btrplace.solver.api.cstrSpec.verification.btrplace.CheckerVerifier;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 
 import java.util.List;
@@ -28,7 +28,7 @@ public class TestCase3 {
         this.plan = p;
         this.args = args;
         this.d = d;
-        bImpl = new ImplVerifier2().verify(c, plan, args, d);
+        bImpl = new btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier().verify(c, plan, args, d);
         bCheck = new CheckerVerifier().verify(c, plan, args, d);
         bSpec = new SpecVerifier().verify(c, plan, args, d);
     }

@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
-public interface Verifier2 {
+public interface Verifier {
 
     CheckerResult verify(Constraint c, ReconfigurationPlan p, List<Constant> params, boolean discrete);
 }

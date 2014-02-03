@@ -8,7 +8,7 @@ import btrplace.solver.SolverException;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.CheckerResult;
-import btrplace.solver.api.cstrSpec.verification.Verifier2;
+import btrplace.solver.api.cstrSpec.verification.Verifier;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 
@@ -17,15 +17,15 @@ import java.util.*;
 /**
  * @author Fabien Hermenier
  */
-public class ImplVerifier2 implements Verifier2 {
+public class ImplVerifier implements Verifier {
 
     private boolean repair;
 
-    public ImplVerifier2() {
+    public ImplVerifier() {
         this(false);
     }
 
-    public ImplVerifier2(boolean repair) {
+    public ImplVerifier(boolean repair) {
         this.repair = repair;
     }
 
