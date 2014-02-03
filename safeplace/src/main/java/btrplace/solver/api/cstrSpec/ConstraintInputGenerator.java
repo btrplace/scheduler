@@ -4,7 +4,7 @@ import btrplace.solver.api.cstrSpec.fuzzer.RandomTuplesGenerator;
 import btrplace.solver.api.cstrSpec.spec.term.UserVar;
 import btrplace.solver.api.cstrSpec.util.AllTuplesGenerator;
 import btrplace.solver.api.cstrSpec.util.Generator;
-import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 
 import java.util.*;
 

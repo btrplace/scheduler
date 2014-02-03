@@ -1,4 +1,4 @@
-package btrplace.solver.api.cstrSpec.verification;
+package btrplace.solver.api.cstrSpec.verification.spec;
 
 import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlan;
@@ -10,8 +10,8 @@ import btrplace.solver.api.cstrSpec.spec.prop.Proposition;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.term.UserVar;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
-import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
-import btrplace.solver.api.cstrSpec.verification.specChecker.SpecReconfigurationPlanChecker;
+import btrplace.solver.api.cstrSpec.verification.CheckerResult;
+import btrplace.solver.api.cstrSpec.verification.Verifier2;
 
 import java.util.Comparator;
 import java.util.Iterator;

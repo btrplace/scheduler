@@ -2,7 +2,7 @@ package btrplace.solver.api.cstrSpec.spec.term;
 
 import btrplace.model.Node;
 import btrplace.solver.api.cstrSpec.spec.type.NodeType;
-import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 
 import java.util.Set;
 

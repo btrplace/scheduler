@@ -7,6 +7,7 @@ import btrplace.plan.ReconfigurationPlanChecker;
 import btrplace.plan.ReconfigurationPlanCheckerException;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
+import btrplace.solver.api.cstrSpec.verification.btrplace.Constraint2BtrPlace;
 
 import java.util.List;
 
@@ -14,18 +15,6 @@ import java.util.List;
  * @author Fabien Hermenier
  */
 public class CheckerVerifier implements Verifier2 {
-
-    public static final String DEFAULT_PACKAGE = "btrplace.model.constraint";
-
-    private String pkg;
-
-    public CheckerVerifier() {
-        this(DEFAULT_PACKAGE);
-    }
-
-    public CheckerVerifier(String pkg) {
-        this.pkg = pkg;
-    }
 
     @Override
     public CheckerResult verify(Constraint cstr, ReconfigurationPlan p, List<Constant> params, boolean discrete) {

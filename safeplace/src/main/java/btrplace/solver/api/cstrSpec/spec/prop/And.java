@@ -1,6 +1,6 @@
 package btrplace.solver.api.cstrSpec.spec.prop;
 
-import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 
 /**
  * Logical and between several propositions.

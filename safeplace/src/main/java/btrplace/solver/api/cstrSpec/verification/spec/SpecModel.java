@@ -1,4 +1,4 @@
-package btrplace.solver.api.cstrSpec.verification.specChecker;
+package btrplace.solver.api.cstrSpec.verification.spec;
 
 import btrplace.model.Model;
 import btrplace.model.Node;

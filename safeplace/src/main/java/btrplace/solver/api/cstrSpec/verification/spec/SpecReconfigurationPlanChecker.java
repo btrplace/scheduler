@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package btrplace.solver.api.cstrSpec.verification.specChecker;
+package btrplace.solver.api.cstrSpec.verification.spec;
 
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.checker.SatConstraintChecker;

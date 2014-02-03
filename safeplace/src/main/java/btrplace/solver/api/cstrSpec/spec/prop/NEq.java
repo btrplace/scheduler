@@ -1,7 +1,7 @@
 package btrplace.solver.api.cstrSpec.spec.prop;
 
 import btrplace.solver.api.cstrSpec.spec.term.Term;
-import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 
 /**
  * @author Fabien Hermenier

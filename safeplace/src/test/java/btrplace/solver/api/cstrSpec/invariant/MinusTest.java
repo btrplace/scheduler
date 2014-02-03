@@ -7,7 +7,7 @@ import btrplace.solver.api.cstrSpec.spec.term.SetMinus;
 import btrplace.solver.api.cstrSpec.spec.type.IntType;
 import btrplace.solver.api.cstrSpec.spec.type.SetType;
 import btrplace.solver.api.cstrSpec.spec.type.VMStateType;
-import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

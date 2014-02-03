@@ -22,7 +22,7 @@ public class AllTuplesGeneratorTest {
         l.add(cnt);
         l.add(cnt);
         l.add(cnt);
-        int nb = 0;
+        double nb = 0;
         AllTuplesGenerator<Integer> tg = new AllTuplesGenerator<>(Integer.class, l);
         for (Integer[] t : tg) {
             //System.out.println(t);

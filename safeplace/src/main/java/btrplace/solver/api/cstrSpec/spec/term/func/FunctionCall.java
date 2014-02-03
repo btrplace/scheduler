@@ -2,7 +2,7 @@ package btrplace.solver.api.cstrSpec.spec.term.func;
 
 import btrplace.solver.api.cstrSpec.spec.term.Term;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
-import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 
 import java.util.ArrayList;
 import java.util.Iterator;

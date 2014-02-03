@@ -7,9 +7,9 @@ import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.type.SetType;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
 import btrplace.solver.api.cstrSpec.verification.ImplVerifier;
-import btrplace.solver.api.cstrSpec.verification.SpecVerifier;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.TestResult;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -2,7 +2,7 @@ package btrplace.solver.api.cstrSpec.invariant;
 
 import btrplace.solver.api.cstrSpec.spec.prop.Iff;
 import btrplace.solver.api.cstrSpec.spec.prop.Proposition;
-import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;

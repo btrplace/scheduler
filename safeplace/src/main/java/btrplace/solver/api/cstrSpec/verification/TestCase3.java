@@ -3,6 +3,8 @@ package btrplace.solver.api.cstrSpec.verification;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
+import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier2;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 
 import java.util.List;
 

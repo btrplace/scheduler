@@ -1,4 +1,4 @@
-package btrplace.solver.api.cstrSpec.verification;
+package btrplace.solver.api.cstrSpec.verification.btrplace;
 
 import btrplace.model.*;
 import btrplace.model.constraint.*;
@@ -7,6 +7,8 @@ import btrplace.plan.event.*;
 import btrplace.solver.SolverException;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
+import btrplace.solver.api.cstrSpec.verification.CheckerResult;
+import btrplace.solver.api.cstrSpec.verification.Verifier2;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 

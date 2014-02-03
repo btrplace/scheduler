@@ -11,9 +11,9 @@ import btrplace.plan.event.VMEvent;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.ImplVerifier;
-import btrplace.solver.api.cstrSpec.verification.SpecVerifier;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.TestResult;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 
 import java.util.ArrayList;
 import java.util.List;

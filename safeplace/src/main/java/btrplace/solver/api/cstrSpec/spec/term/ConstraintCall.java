@@ -6,7 +6,7 @@ import btrplace.solver.api.cstrSpec.spec.prop.Proposition;
 import btrplace.solver.api.cstrSpec.spec.term.func.Function;
 import btrplace.solver.api.cstrSpec.spec.term.func.FunctionCall;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
-import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 
 import java.util.ArrayList;
 import java.util.Iterator;

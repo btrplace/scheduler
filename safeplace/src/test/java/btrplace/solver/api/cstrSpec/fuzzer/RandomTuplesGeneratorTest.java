@@ -1,6 +1,5 @@
 package btrplace.solver.api.cstrSpec.fuzzer;
 
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.*;
@@ -28,6 +27,5 @@ public class RandomTuplesGeneratorTest {
             //Assert.assertTrue(s.add(tg.next()));
             //System.out.println(Arrays.toString(tg.next()));
         }
-        Assert.fail();
     }
 }

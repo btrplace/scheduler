@@ -25,7 +25,7 @@ public class DelaysGenerator extends ReconfigurationPlanVariations {
     }
 
     public DelaysGenerator(ReconfigurationPlan src) {
-        this(src, true);
+        this(src, false);
     }
 
     private List<List<Action>> makePossibleDelays(ReconfigurationPlan src) {

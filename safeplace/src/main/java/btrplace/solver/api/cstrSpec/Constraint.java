@@ -8,7 +8,7 @@ import btrplace.solver.api.cstrSpec.spec.term.Var;
 import btrplace.solver.api.cstrSpec.spec.term.func.Function;
 import btrplace.solver.api.cstrSpec.spec.type.BoolType;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
-import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 import edu.emory.mathcs.backport.java.util.Collections;
 
 import java.lang.reflect.Constructor;

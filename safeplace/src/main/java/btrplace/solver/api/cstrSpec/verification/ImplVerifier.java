@@ -4,6 +4,8 @@ import btrplace.model.*;
 import btrplace.model.constraint.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.*;
+import btrplace.solver.api.cstrSpec.verification.btrplace.CSchedule;
+import btrplace.solver.api.cstrSpec.verification.btrplace.Schedule;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import choco.kernel.common.logging.ChocoLogging;
@@ -16,7 +18,7 @@ import java.util.Set;
 /**
  * @author Fabien Hermenier
  */
-public class ImplVerifier implements Verifier {
+public class ImplVerifier {
 
 
     public TestResult verify(TestCase c) {

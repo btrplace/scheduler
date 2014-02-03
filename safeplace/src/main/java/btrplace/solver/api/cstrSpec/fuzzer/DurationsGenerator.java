@@ -15,7 +15,7 @@ import java.util.List;
 public class DurationsGenerator extends ReconfigurationPlanVariations {
 
     public DurationsGenerator(ReconfigurationPlan src, int lb, int ub) {
-        this(src, lb, ub, true);
+        this(src, lb, ub, false);
     }
 
     public DurationsGenerator(ReconfigurationPlan src, int lb, int ub, boolean fuzz) {

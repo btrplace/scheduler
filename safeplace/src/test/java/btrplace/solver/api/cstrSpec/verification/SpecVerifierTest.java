@@ -9,12 +9,11 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.Specification;
-import btrplace.solver.api.cstrSpec.fuzzer.DelaysGenerator;
-import btrplace.solver.api.cstrSpec.fuzzer.DurationsGenerator;
-import btrplace.solver.api.cstrSpec.fuzzer.ModelsGenerator;
-import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlansGenerator;
+import btrplace.solver.api.cstrSpec.fuzzer.Fuzzer;
+import btrplace.solver.api.cstrSpec.fuzzer.FuzzerListener;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -46,39 +45,30 @@ public class SpecVerifierTest {
         check(cores);
     }
 
-    private void check(List<Constraint> cores) {
-        ModelsGenerator mg = new ModelsGenerator(1, 1);
-        int nb = 0;
-        for (Model mo : mg) {
-            ReconfigurationPlansGenerator rpgen = new ReconfigurationPlansGenerator(mo);
-            for (ReconfigurationPlan p : rpgen) {
-                //3 durations, 3 delays
-                DurationsGenerator dg = new DurationsGenerator(p, 1, 3);
-                for (int i = 0; i < 3; i++) {
-                    ReconfigurationPlan pd = dg.next();
-                    DelaysGenerator delayG = new DelaysGenerator(pd, true);
-                    for (int j = 0; j < 3; j++) {
-                        ReconfigurationPlan cp = delayG.next();
-                        System.out.println(cp.getOrigin().getMapping());
-                        System.out.println(cp);
-                        for (Constraint c : cores) {
-                            CheckerResult res = new SpecVerifier().verify(c, p, Collections.<Constant>emptyList(), false);
-                            if (res.getStatus() == null) {
-                                System.err.println(p.getOrigin().getMapping());
-                                System.err.println(p);
-                                System.err.println(c.toString() + " " + res);
-                                Assert.fail();
-                            }
-                            System.out.println(c.toString() + " " + res);
-                            nb++;
-                        }
-                        System.out.println("\n");
-                    }
-                }
+    private void check(final List<Constraint> cores) {
+        Fuzzer fuzzer = new Fuzzer(1, 1).minDuration(1).maxDuration(3).allDurations().allDelays();/*.nbDurations(3).nbDelays(3);*/
+        fuzzer.addListener(new FuzzerListener() {
+            int d = 0;
 
+            @Override
+            public void recv(ReconfigurationPlan p) {
+                System.out.println((++d) + ".");
+                System.out.println(p.getOrigin().getMapping());
+                System.out.println(p);
+                for (Constraint c : cores) {
+                    CheckerResult res = new SpecVerifier().verify(c, p, Collections.<Constant>emptyList(), false);
+                    if (res.getStatus() == null) {
+                        System.err.println(p.getOrigin().getMapping());
+                        System.err.println(p);
+                        System.err.println(c.toString() + " " + res);
+                        Assert.fail();
+                    }
+                    System.out.println(c.toString() + " " + res);
+                }
+                System.out.println("\n");
             }
-        }
-        System.out.println(nb + " verification(s)");
+        });
+        fuzzer.go();
     }
 
     @Test

@@ -1,4 +1,4 @@
-package btrplace.solver.api.cstrSpec.verification.specChecker;
+package btrplace.solver.api.cstrSpec.verification.spec;
 
 import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.event.*;

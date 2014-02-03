@@ -1,6 +1,6 @@
 package btrplace.solver.api.cstrSpec.spec.term.func;
 
-import btrplace.solver.api.cstrSpec.verification.specChecker.SpecModel;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
