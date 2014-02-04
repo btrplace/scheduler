@@ -44,19 +44,19 @@ public class ImplVerifier implements Verifier {
         cra.getConstraintMapper().register(new CSchedule.Builder());
         Set<SatConstraint> cstrs = new HashSet<>();
 
-        SatConstraint sat = null;
-        try {
-            sat = Constraint2BtrPlace.build(c, params);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        if (!c.isCore()) {
+            try {
+                cstrs.add(Constraint2BtrPlace.build(c, params));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
         //FIXME: if involved in the plan
-        cstrs.add(sat);
-        System.out.println("Initial: " + cstrs + " with \n" + p);
-        cstrs.addAll(actionsToConstraints(p, sat));
+        //System.out.println("Initial: " + cstrs + " with \n" + p);
+        cstrs.addAll(actionsToConstraints(p));
         setDurationEstimators(p);
 
-        System.out.println("plan2cstrs:\n" + cstrs);
+        //System.out.println("plan2cstrs:\n" + cstrs);
 
         //Test if the asked constraints belong to the plan
 
@@ -81,13 +81,13 @@ public class ImplVerifier implements Verifier {
         return new Fence(Collections.singleton(v), Collections.singleton(n));
     }
 
-    private Set<SatConstraint> actionsToConstraints(ReconfigurationPlan p, SatConstraint toTest) {
+    private Set<SatConstraint> actionsToConstraints(ReconfigurationPlan p/*, SatConstraint toTest*/) {
         Set<Node> notSwitching = new HashSet<>(p.getOrigin().getMapping().getAllNodes());
         Set<SatConstraint> cstrs = new HashSet<>();
-        if (toTest instanceof Online || toTest instanceof Offline) {
+        /*if (toTest instanceof Online || toTest instanceof Offline) {
             //System.out.println("Ignore state unchange for " + toTest);
             notSwitching.removeAll(toTest.getInvolvedNodes());
-        }
+        } */
 
         Set<VM> rooted = new HashSet<>(p.getOrigin().getMapping().getRunningVMs());
         for (Action a : p) {

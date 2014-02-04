@@ -15,6 +15,7 @@ import btrplace.solver.api.cstrSpec.fuzzer.FuzzerListener;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.btrplace.CheckerVerifier;
+import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -44,14 +45,15 @@ public class CoreVerifierTest {
                 cores.add(c);
             }
         }
-        check(cores);
-        //check(Collections.singletonList(s.get("noVMsOnOfflineNodes")));
+        //check(cores);
+        check(Collections.singletonList(s.get("noVMsOnOfflineNodes")));
     }
 
     private void check(final List<Constraint> cores) {
         final List<Verifier> vf = new ArrayList<>();
         vf.add(new SpecVerifier());
         vf.add(new CheckerVerifier());
+        vf.add(new ImplVerifier());
         final List<TestCase> issues = new ArrayList<>();
         final List<TestCase> good = new ArrayList<>();
         Fuzzer fuzzer = new Fuzzer(1, 1).minDuration(1).maxDuration(3).allDurations().allDelays();/*.nbDurations(3).nbDelays(3);*/
