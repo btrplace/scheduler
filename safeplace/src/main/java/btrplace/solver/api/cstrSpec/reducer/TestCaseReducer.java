@@ -2,7 +2,7 @@ package btrplace.solver.api.cstrSpec.reducer;
 
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
-import btrplace.solver.api.cstrSpec.verification.TestCase2;
+import btrplace.solver.api.cstrSpec.verification.TestCase;
 
 import java.util.List;
 
@@ -32,10 +32,10 @@ public class TestCaseReducer {
         er = new ElementsReducer();
     }
 
-    TestCase2 reduce(TestCase2 tc) throws Exception {
-        ReconfigurationPlan reducedPlan = pr.reduce(tc.getPlan(), tc.getConstraint(), tc.getInputs());
-        List<Constant> reducedParams = sr.reduce(reducedPlan, tc.getConstraint(), tc.getInputs());
+    TestCase reduce(TestCase tc) throws Exception {
+        ReconfigurationPlan reducedPlan = pr.reduce(tc.getPlan(), tc.getConstraint(), tc.getArguments());
+        List<Constant> reducedParams = sr.reduce(reducedPlan, tc.getConstraint(), tc.getArguments());
         ReconfigurationPlan reducedElements = er.reduce(reducedPlan, tc.getConstraint(), reducedParams);
-        return new TestCase2(reducedElements, tc.getConstraint(), reducedParams);
+        return new TestCase(tc.getVerifiers(), tc.getConstraint(), reducedElements, reducedParams, tc.isDiscrete());
     }
 }

@@ -12,7 +12,7 @@ import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.type.NodeType;
 import btrplace.solver.api.cstrSpec.spec.type.SetType;
-import btrplace.solver.api.cstrSpec.verification.TestCase2;
+import btrplace.solver.api.cstrSpec.verification.TestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -72,8 +72,8 @@ public class TestCaseReducerTest {
         in.add(new Constant(Collections.singletonList(n1), new SetType(NodeType.getInstance())));
 
         TestCaseReducer tcr = new TestCaseReducer();
-        TestCase2 tc = new TestCase2(p, cstr, in);
-        TestCase2 reduced = tcr.reduce(tc);
+        TestCase tc = new TestCase(null, cstr, p, in, false);
+        TestCase reduced = tcr.reduce(tc);
         System.out.println("From:\n" + tc);
         System.out.println("To:\n" + reduced);
         Assert.fail();

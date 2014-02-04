@@ -1,17 +1,16 @@
 package btrplace.solver.api.cstrSpec.reducer;
 
-import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.type.SetType;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
-import btrplace.solver.api.cstrSpec.verification.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
-import btrplace.solver.api.cstrSpec.verification.TestResult;
+import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -34,13 +33,10 @@ public class SignatureReducer {
         cVerif = new SpecVerifier();
     }
 
-    private TestResult.ErrorType compare(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
-        boolean consTh = cVerif.verify(cstr, p, in, false).getStatus();
-
-        SatConstraint impl = cstr.instantiate(in);
-        return verif.verify(new TestCase(0, p, impl, consTh), false).errorType();
+    private boolean consistent(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
+        TestCase tc = new TestCase(Arrays.asList(verif, cVerif), cstr, p, in, true);
+        return tc.succeed();
     }
-
     private List<Constant> deepCopy(List<Constant> in) {
         List<Constant> cpy = new ArrayList<>(in.size());
         for (Constant c : in) {
@@ -71,55 +67,52 @@ public class SignatureReducer {
 
     public List<Constant> reduce(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
         List<Constant> cpy = deepCopy(in);
-        TestResult.ErrorType t = compare(p, cstr, cpy);
-        if (t == TestResult.ErrorType.succeed) {
+        if (consistent(p, cstr, cpy)) {
             return cpy;
         }
         for (int i = 0; i < cpy.size(); i++) {
-            reduceArg(t, p, cstr, cpy, i);
+            reduceArg(p, cstr, cpy, i);
         }
         return cpy;
     }
 
-    private void reduceArg(TestResult.ErrorType t, ReconfigurationPlan p, Constraint cstr, List<Constant> in, int i) throws Exception {
+    private void reduceArg(ReconfigurationPlan p, Constraint cstr, List<Constant> in, int i) throws Exception {
         Constant c = in.get(i);
         if (c.type() instanceof SetType) {
             List l = (List) c.eval(null);
             in.set(i, new Constant(l, c.type()));
             for (int j = 0; j < l.size(); j++) {
-                if (reduceSetTo(t, p, cstr, in, l, j)) {
+                if (reduceSetTo(p, cstr, in, l, j)) {
                     j--;
                 }
             }
         }
     }
 
-    private boolean reduceSetTo(TestResult.ErrorType t, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List col, int i) throws Exception {
+    private boolean reduceSetTo(ReconfigurationPlan p, Constraint cstr, List<Constant> in, List col, int i) throws Exception {
         if (col.get(i) instanceof Collection) {
-            if (failWithout(t, p, cstr, in, col, i)) {
+            if (failWithout(p, cstr, in, col, i)) {
                 return true;
             }
             List l = (List) col.get(i);
             col.set(i, l);
             for (int j = 0; j < l.size(); j++) {
-                if (reduceSetTo(t, p, cstr, in, l, j)) {
+                if (reduceSetTo(p, cstr, in, l, j)) {
                     j--;
                 }
             }
             return false;
         } else {
-            return failWithout(t, p, cstr, in, col, i);
+            return failWithout(p, cstr, in, col, i);
         }
     }
 
-    private boolean failWithout(TestResult.ErrorType t, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List col, int i) throws Exception {
+    private boolean failWithout(ReconfigurationPlan p, Constraint cstr, List<Constant> in, List col, int i) throws Exception {
         Object o = col.remove(i);
 
-        TestResult.ErrorType t2 = compare(p, cstr, in);
-        boolean ret = t.equals(t2);
-        if (!ret) { //Not the same error. Component needed
+        if (consistent(p, cstr, in)) { //Not the same error. Component needed
             col.add(i, o);
         }
-        return ret;
+        return true;
     }
 }

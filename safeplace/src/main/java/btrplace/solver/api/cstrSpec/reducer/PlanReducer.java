@@ -1,17 +1,16 @@
 package btrplace.solver.api.cstrSpec.reducer;
 
-import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
-import btrplace.solver.api.cstrSpec.verification.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
-import btrplace.solver.api.cstrSpec.verification.TestResult;
+import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -34,26 +33,23 @@ public class PlanReducer {
         cVerif = new SpecVerifier();
     }
 
-    private TestResult.ErrorType compare(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
-        boolean consTh = cVerif.verify(cstr, p, in, false).getStatus();
-
-        SatConstraint impl = cstr.instantiate(in);
-        return verif.verify(new TestCase(0, p, impl, consTh)).errorType();
+    private boolean consistent(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
+        TestCase tc = new TestCase(Arrays.asList(verif, cVerif), cstr, p, in, true);
+        return tc.succeed();
     }
 
     public ReconfigurationPlan reduce(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
 
-        TestResult.ErrorType t = compare(p, cstr, in);
-        if (t == TestResult.ErrorType.succeed) {
+        if (consistent(p, cstr, in)) {
             return p;
         }
 
         List<ReconfigurationPlan> mins = new ArrayList<>();
-        reduce(t, p, cstr, in, mins);
+        _reduce(p, cstr, in, mins);
         return mins.get(0);
     }
 
-    private TestResult.ErrorType reduce(TestResult.ErrorType err, ReconfigurationPlan p, Constraint cstr, List<Constant> in, List<ReconfigurationPlan> mins) throws Exception {
+    private boolean _reduce(ReconfigurationPlan p, Constraint cstr, List<Constant> in, List<ReconfigurationPlan> mins) throws Exception {
         if (p.getSize() <= 1) {
             mins.add(p);
         } else {
@@ -61,7 +57,7 @@ public class PlanReducer {
             int sep = middle;
             int max = p.getSize();
 
-            TestResult.ErrorType e1, e2;
+            boolean e1, e2;
             while (true) {
                 ReconfigurationPlan p1 = new DefaultReconfigurationPlan(p.getOrigin());
                 ReconfigurationPlan p2 = new DefaultReconfigurationPlan(p.getOrigin());
@@ -75,27 +71,27 @@ public class PlanReducer {
                 }
                 //System.out.println("Split 1:\n" + p1);
                 //System.out.println("Split 2:\n" + p2);
-                e1 = compare(p1, cstr, in);
-                e2 = compare(p2, cstr, in);
+                e1 = consistent(p1, cstr, in);
+                e2 = consistent(p2, cstr, in);
                 sep = (sep + 1) % max;
                 if (sep == middle) {
                     break;
                 }
                 //Only one must have the same error
                 //System.out.println("Want " + err + "\tSplit 1:" + e1 + "\tSplit 2: " + e2);
-                if (err.equals(e1) ^ err.equals(e2)) {
-                    if (err.equals(e1)) {
-                        return reduce(err, p1, cstr, in, mins);
+                if (e1 ^ e2) {
+                    if (e1) {
+                        return _reduce(p1, cstr, in, mins);
                     } else {
-                        return reduce(err, p2, cstr, in, mins);
+                        return _reduce(p2, cstr, in, mins);
                     }
                 }
             }
             //Not decidable, this is the reduced form
             mins.add(p);
-            return err;
+            return false;
             //We decided
         }
-        return TestResult.ErrorType.bug;
+        return true;
     }
 }

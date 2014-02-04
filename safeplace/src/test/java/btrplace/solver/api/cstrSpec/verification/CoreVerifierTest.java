@@ -52,8 +52,8 @@ public class CoreVerifierTest {
         final List<Verifier> vf = new ArrayList<>();
         vf.add(new SpecVerifier());
         vf.add(new CheckerVerifier());
-        final List<TestCase3> issues = new ArrayList<>();
-        final List<TestCase3> good = new ArrayList<>();
+        final List<TestCase> issues = new ArrayList<>();
+        final List<TestCase> good = new ArrayList<>();
         Fuzzer fuzzer = new Fuzzer(1, 1).minDuration(1).maxDuration(3).allDurations().allDelays();/*.nbDurations(3).nbDelays(3);*/
         fuzzer.addListener(new FuzzerListener() {
             int d = 0;
@@ -64,7 +64,7 @@ public class CoreVerifierTest {
                 //System.out.println(p.getOrigin().getMapping());
                 //System.out.println(p);
                 for (Constraint c : cores) {
-                    TestCase3 tc3 = new TestCase3(vf, c, p, Collections.<Constant>emptyList(), false);
+                    TestCase tc3 = new TestCase(vf, c, p, Collections.<Constant>emptyList(), false);
                     if (!tc3.succeed()) {
                         System.out.println(tc3.getPlan().getOrigin().getMapping());
                         System.out.println(tc3.getPlan());

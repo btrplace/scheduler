@@ -10,12 +10,12 @@ import btrplace.plan.event.Action;
 import btrplace.plan.event.VMEvent;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
-import btrplace.solver.api.cstrSpec.verification.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
-import btrplace.solver.api.cstrSpec.verification.TestResult;
+import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -39,11 +39,9 @@ public class ElementsReducer {
         cVerif = new SpecVerifier();
     }
 
-    private TestResult.ErrorType compare(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
-        boolean consTh = cVerif.verify(cstr, p, in, false).getStatus();
-
-        SatConstraint impl = cstr.instantiate(in);
-        return verif.verify(new TestCase(0, p, impl, consTh)).errorType();
+    private boolean consistent(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
+        TestCase tc = new TestCase(Arrays.asList(verif, cVerif), cstr, p, in, true);
+        return tc.succeed();
     }
 
     public ReconfigurationPlan reduce(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
@@ -52,8 +50,7 @@ public class ElementsReducer {
     }
 
     public ReconfigurationPlan reduceVMs(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
-        TestResult.ErrorType err = compare(p, cstr, in);
-        if (err == TestResult.ErrorType.succeed) {
+        if (consistent(p, cstr, in)) {
             return p;
         }
         SatConstraint s = cstr.instantiate(in);
@@ -90,8 +87,7 @@ public class ElementsReducer {
                     red.add(a);
                 }
             }
-            TestResult.ErrorType e = compare(red, cstr, in);
-            if (!err.equals(e)) {
+            if (consistent(red, cstr, in)) {
                 //The VM must be present, put it back
                 if (state == 0) {
                     mo.getMapping().addReadyVM(v);
@@ -107,8 +103,7 @@ public class ElementsReducer {
     }
 
     public ReconfigurationPlan reduceNodes(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
-        TestResult.ErrorType err = compare(p, cstr, in);
-        if (err == TestResult.ErrorType.succeed) {
+        if (consistent(p, cstr, in)) {
             return p;
         }
         SatConstraint s = cstr.instantiate(in);
@@ -128,8 +123,8 @@ public class ElementsReducer {
                     red.add(a);
                 }
                 if (red.isApplyable()) {
-                    TestResult.ErrorType e = compare(red, cstr, in);
-                    if (!err.equals(e)) {
+                    //TestResult.ErrorType e = consistent(red, cstr, in);
+                    if (consistent(red, cstr, in)) {
                         //The node must be present, put it back
                         if (on) {
                             mo.getMapping().addOnlineNode(n);

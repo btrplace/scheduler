@@ -1,52 +1,98 @@
 package btrplace.solver.api.cstrSpec.verification;
 
-import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.solver.api.cstrSpec.Constraint;
+import btrplace.solver.api.cstrSpec.spec.term.Constant;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Fabien Hermenier
  */
 public class TestCase {
 
+    private Constraint c;
+
     private ReconfigurationPlan plan;
 
-    private SatConstraint cstr;
+    private List<Constant> args;
 
-    private boolean isConsistent;
+    private List<Verifier> verifs;
 
-    private int num;
+    private List<CheckerResult> res;
 
-    public TestCase(int num, ReconfigurationPlan p, SatConstraint cstr, boolean c) {
-        this.num = num;
+    private boolean d;
+
+    public TestCase(List<Verifier> verifs, Constraint c, ReconfigurationPlan p, List<Constant> args, boolean d) {
+        this.verifs = verifs;
+        res = new ArrayList<>(verifs.size());
+        for (Verifier v : verifs) {
+            res.add(v.verify(c, p, args, d));
+        }
+
+        this.args = args;
+        this.c = c;
         this.plan = p;
-        this.cstr = cstr;
-        this.isConsistent = c;
     }
 
-    public boolean isConsistent() {
-        return this.isConsistent;
+    public List<Verifier> getVerifiers() {
+        return verifs;
+    }
+
+    public boolean succeed() {
+        boolean st = res.get(0).getStatus();
+        for (int i = 1; i < res.size(); i++) {
+            if (res.get(i).getStatus() != st) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    public Constraint getConstraint() {
+        return c;
     }
 
     public ReconfigurationPlan getPlan() {
         return plan;
     }
 
-    public SatConstraint getSatConstraint() {
-        return this.cstr;
+    public List<Constant> getArguments() {
+        return args;
+    }
+
+    public List<CheckerResult> getResults() {
+        return res;
+    }
+
+    public boolean isDiscrete() {
+        return d;
+    }
+
+    public String pretty() {
+        StringBuilder b = new StringBuilder();
+        if (d) {
+            b.append("discrete ");
+        }
+        b.append(c.toString(args)).append(" ");
+        b.append(succeed()).append("\n");
+        for (int i = 0; i < res.size(); i++) {
+            b.append("\t").append(verifs.get(i).getClass().getSimpleName()).append(": ").append(res.get(i)).append("\n");
+        }
+        return b.toString();
     }
 
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        b.append("cstr: ").append(cstr).append("\n");
-        b.append("origin:\n").append(plan.getOrigin().getMapping()).append("\n");
-        b.append("plan:\n").append(plan).append("\n");
-        b.append("consistent:").append(isConsistent);
+        if (d) {
+            b.append("discrete ");
+        }
+        b.append(c.toString(args));
+        b.append(' ');
+        b.append(succeed());
         return b.toString();
     }
-
-    public int num() {
-        return num;
-    }
 }
-
