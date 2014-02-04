@@ -12,6 +12,10 @@ public class ReconfigurationSimulator {
 
     private SpecModel mo;
 
+    public ReconfigurationSimulator(SpecModel mo) {
+        this.mo = mo;
+    }
+
     public SpecModel currentModel() {
         return mo;
     }

@@ -19,7 +19,6 @@ package btrplace.solver.api.cstrSpec.verification.spec;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.ReconfigurationPlanCheckerException;
 import btrplace.plan.TimedBasedActionComparator;
 import btrplace.plan.event.*;
 import btrplace.solver.api.cstrSpec.spec.prop.Proposition;
@@ -47,11 +46,14 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
     private static final TimedBasedActionComparator ENDS_CMP = new TimedBasedActionComparator(false, true);
     private ReconfigurationSimulator checkers;
 
+    private ReconfigurationPlan p;
+
     /**
      * Make a new instance.
      */
-    public SpecReconfigurationPlanChecker() {
-        checkers = new ReconfigurationSimulator();
+    public SpecReconfigurationPlanChecker(ReconfigurationPlan p) {
+        checkers = new ReconfigurationSimulator(new SpecModel(p.getOrigin()));
+        this.p = p;
     }
 
     @Override
@@ -169,11 +171,11 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
     /**
      * Check if a plan satisfies all the {@link SatConstraintChecker}.
      *
-     * @param p the plan to check
-     * @throws ReconfigurationPlanCheckerException if a violation is detected
      */
-    public Action check(ReconfigurationPlan p, Proposition ok, Proposition ko) throws ReconfigurationPlanCheckerException {
-        checkModel(new SpecModel(p.getOrigin()), true);
+    public Action check(Proposition ok, Proposition ko) {
+        if (!isConsistent(ok, ko)) {
+            throw new RuntimeException("Failure at the beginning");
+        }
 
         if (!p.getActions().isEmpty()) {
             PriorityQueue<Action> starts = new PriorityQueue<>(p.getActions().size(), STARTS_CMP);
@@ -191,7 +193,7 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
                     if (!visitAndThrowOnViolation(a, ok, ko)) {
                         return a;
                     }
-                    visitEvents(a, Action.Hook.post);
+                    visitEvents(a, ok, ko, Action.Hook.post);
                     a = ends.peek();
                 }
                 a = starts.peek();
@@ -199,7 +201,7 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
                 while (a != null && a.getStart() == curMoment) {
                     starts.remove();
                     startingEvent = true;
-                    visitEvents(a, Action.Hook.pre);
+                    visitEvents(a, ok, ko, Action.Hook.pre);
                     if (!visitAndThrowOnViolation(a, ok, ko)) {
                         return a;
                     }
@@ -210,13 +212,20 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
                 curMoment = Math.min(nextEnd, nextStart);
             }
         }
-        SpecModel mo = checkers.currentModel();
-        checkModel(mo, false);
-        return null;
+        //SpecModel mo = checkers.currentModel();
+        if (!isConsistent(ok, ko)) {
+            throw new RuntimeException("Failure by the end");
+        }
+        return null; //alright
     }
 
     private boolean visitAndThrowOnViolation(Action a, Proposition ok, Proposition ko) {
         a.visit(this);
+        return isConsistent(ok, ko);
+    }
+
+
+    private boolean isConsistent(Proposition ok, Proposition ko) {
         SpecModel mo = checkers.currentModel();
         Boolean bOk = ok.eval(mo);
         Boolean bKo = ko.eval(mo);
@@ -229,30 +238,11 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
         return bOk;
     }
 
-
-    private void visitEvents(Action a, Action.Hook k) throws ReconfigurationPlanCheckerException {
-        SatConstraint c;
+    private boolean visitEvents(Action a, Proposition ok, Proposition ko, Action.Hook k) {
         for (Event e : a.getEvents(k)) {
-            c = (SatConstraint) e.visit(this);
-            if (c != null) {
-                throw new ReconfigurationPlanCheckerException(c, a);
-            }
+            e.visit(this);
+            return isConsistent(ok, ko);
         }
-    }
-
-    /**
-     * Check for the validity of a model.
-     *
-     * @param mo    the model to check
-     * @param start {@code true} iff the model corresponds to the origin model. Otherwise it is considered
-     *              to be the resulting model
-     * @throws ReconfigurationPlanCheckerException if at least one constraint is violated.
-     */
-    private void checkModel(SpecModel mo, boolean start) {
-        if (start) {
-            checkers.startsWith(mo);
-        } else {
-            checkers.endsWith(mo);
-        }
+        return true;
     }
 }

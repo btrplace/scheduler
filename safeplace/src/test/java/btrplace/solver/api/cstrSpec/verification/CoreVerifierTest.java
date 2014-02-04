@@ -6,7 +6,8 @@ import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.event.ShutdownNode;
+import btrplace.plan.event.BootNode;
+import btrplace.plan.event.BootVM;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.Specification;
 import btrplace.solver.api.cstrSpec.fuzzer.Fuzzer;
@@ -43,33 +44,41 @@ public class CoreVerifierTest {
                 cores.add(c);
             }
         }
-        check(cores);
+        //check(cores);
+        check(Collections.singletonList(s.get("noVMsOnOfflineNodes")));
     }
 
     private void check(final List<Constraint> cores) {
-        Fuzzer fuzzer = new Fuzzer(2, 2).minDuration(1).maxDuration(3).allDurations().allDelays();/*.nbDurations(3).nbDelays(3);*/
+        final List<Verifier> vf = new ArrayList<>();
+        vf.add(new SpecVerifier());
+        vf.add(new CheckerVerifier());
+        final List<TestCase3> issues = new ArrayList<>();
+        final List<TestCase3> good = new ArrayList<>();
+        Fuzzer fuzzer = new Fuzzer(1, 1).minDuration(1).maxDuration(3).allDurations().allDelays();/*.nbDurations(3).nbDelays(3);*/
         fuzzer.addListener(new FuzzerListener() {
             int d = 0;
 
             @Override
             public void recv(ReconfigurationPlan p) {
                 System.out.println((++d) + ".");
-                System.out.println(p.getOrigin().getMapping());
-                System.out.println(p);
+                //System.out.println(p.getOrigin().getMapping());
+                //System.out.println(p);
                 for (Constraint c : cores) {
-                    CheckerResult res = new SpecVerifier().verify(c, p, Collections.<Constant>emptyList(), false);
-                    if (res.getStatus() == null) {
-                        System.err.println(p.getOrigin().getMapping());
-                        System.err.println(p);
-                        System.err.println(c.toString() + " " + res);
-                        Assert.fail();
+                    TestCase3 tc3 = new TestCase3(vf, c, p, Collections.<Constant>emptyList(), false);
+                    if (!tc3.succeed()) {
+                        System.out.println(tc3.getPlan().getOrigin().getMapping());
+                        System.out.println(tc3.getPlan());
+                        System.out.println(tc3.pretty());
+                        issues.add(tc3);
+                    } else {
+                        good.add(tc3);
                     }
-                    System.out.println(c.toString() + " " + res);
                 }
                 System.out.println("\n");
             }
         });
         fuzzer.go();
+        System.err.println(issues.size() + "/" + (issues.size() + good.size()) + "  un-consistencies");
     }
 
     @Test
@@ -116,11 +125,11 @@ public class CoreVerifierTest {
         Model mo = new DefaultModel();
         Node n = mo.newNode();
         VM v = mo.newVM();
-        mo.getMapping().addOnlineNode(n);
-        mo.getMapping().addRunningVM(v, n);
+        mo.getMapping().addOfflineNode(n);
+        mo.getMapping().addReadyVM(v);
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
-        //p.add(new ShutdownVM(v, n, 3, 4));
-        p.add(new ShutdownNode(n, 0, 3));
+        p.add(new BootNode(n, 1, 4));
+        p.add(new BootVM(v, n, 2, 3));
 
         Specification s = getSpec();
         Constraint c = s.get("noVMsOnOfflineNodes");

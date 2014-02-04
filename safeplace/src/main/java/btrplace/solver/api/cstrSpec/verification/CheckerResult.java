@@ -1,5 +1,7 @@
 package btrplace.solver.api.cstrSpec.verification;
 
+import btrplace.plan.event.Action;
+
 /**
  * @author Fabien Hermenier
  */
@@ -9,25 +11,31 @@ public class CheckerResult {
 
     private String ex;
 
+    public CheckerResult(Boolean b, Action a) {
+        this.b = b;
+        this.ex = a.toString();
+    }
+
+
     public CheckerResult(Boolean b, String ex) {
         this.b = b;
         this.ex = ex;
     }
 
-    public static CheckerResult newSucess() {
-        return new CheckerResult(true, null);
+    public static CheckerResult newSuccess() {
+        return new CheckerResult(true, "");
     }
 
     public static CheckerResult newFailure() {
-        return new CheckerResult(false, null);
+        return new CheckerResult(false, "");
     }
 
     public static CheckerResult newFailure(String ex) {
         return new CheckerResult(false, ex);
     }
 
-    public static CheckerResult newError(String ex) {
-        return new CheckerResult(null, ex);
+    public static CheckerResult newFailure(Action a) {
+        return new CheckerResult(false, a);
     }
 
     public Boolean getStatus() {
@@ -40,9 +48,9 @@ public class CheckerResult {
 
     @Override
     public String toString() {
-        if (ex == null) {
+        if (ex == null || ex.length() == 0) {
             return "" + b;
         }
-        return b + " " + ex;
+        return b + " (" + ex + ")";
     }
 }

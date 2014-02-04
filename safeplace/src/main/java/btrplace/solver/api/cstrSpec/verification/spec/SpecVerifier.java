@@ -2,7 +2,6 @@ package btrplace.solver.api.cstrSpec.verification.spec;
 
 import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.TimedBasedActionComparator;
 import btrplace.plan.event.Action;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.prop.Proposition;
@@ -12,7 +11,6 @@ import btrplace.solver.api.cstrSpec.spec.type.Type;
 import btrplace.solver.api.cstrSpec.verification.CheckerResult;
 import btrplace.solver.api.cstrSpec.verification.Verifier;
 
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -20,24 +18,6 @@ import java.util.List;
  * @author Fabien Hermenier
  */
 public class SpecVerifier implements Verifier {
-
-    private static Comparator<Action> startFirstComparator = new TimedBasedActionComparator();
-
-    private CheckerResult checkModel(Proposition p, Proposition notP, Model mo) {
-        SpecModel m = new SpecModel(mo);
-        Boolean bOk = p.eval(m);
-        Boolean bKO = notP.eval(m);
-
-        if (bOk == null || bKO == null) {
-            return CheckerResult.newError("Both null !\ngood:" + p + "\nnotGood: " + notP + "\n" + mo.getMapping().toString());
-        }
-        if (bOk && bKO) {
-            return CheckerResult.newError("Good _and_ bad !\ngood:" + p + "\nnotGood: " + notP + "\n" + mo.getMapping().toString());
-        } else if (!(bOk || bKO)) {
-            return CheckerResult.newError("Nor good or bad !\ngood:" + p + "\nnotGood: " + notP + "\n" + mo.getMapping().toString());
-        }
-        return new CheckerResult(bOk, null);
-    }
 
     @Override
     public CheckerResult verify(Constraint cstr, ReconfigurationPlan p, List<Constant> values, boolean discrete) {
@@ -49,32 +29,20 @@ public class SpecVerifier implements Verifier {
             Proposition good = cstr.getProposition();
             Proposition noGood = good.not();
 
-            //ReconfigurationSimulator chk = new ReconfigurationSimulator();
-            SpecReconfigurationPlanChecker spc = new SpecReconfigurationPlanChecker();
+            SpecReconfigurationPlanChecker spc = new SpecReconfigurationPlanChecker(p);
 
             if (discrete) {
-                Model res = p.getResult();
-                if (res == null) {
-                    //Core constraint violation
-                    return new CheckerResult(false, "Unable to apply the reconfiguration plan ");
-
-                }
-                return checkModel(good, noGood, res);
+                throw new UnsupportedOperationException();
             } else {
-                try {
-                    Action a = spc.check(p, good, noGood);
-                    if (a != null) {
-                        return new CheckerResult(false, a.toString());
-                    }
-                } catch (Exception e) {
-//                    e.printStackTrace();
-                    return new CheckerResult(false, e.getMessage());
+                Action a = spc.check(good, noGood);
+                if (a != null) {
+                    return new CheckerResult(false, a);
                 }
             }
         } finally {
             cstr.reset();
         }
-        return CheckerResult.newSucess();
+        return CheckerResult.newSuccess();
     }
 
     private void setInputs(Constraint c, Model src, List<Constant> values) {

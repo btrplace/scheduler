@@ -3,9 +3,8 @@ package btrplace.solver.api.cstrSpec.verification;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
-import btrplace.solver.api.cstrSpec.verification.btrplace.CheckerVerifier;
-import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,32 +18,77 @@ public class TestCase3 {
 
     private List<Constant> args;
 
-    private CheckerResult bImpl, bCheck, bSpec;
+    private List<Verifier> verifs;
+
+    private List<CheckerResult> res;
 
     private boolean d;
 
-    public TestCase3(Constraint c, ReconfigurationPlan p, List<Constant> args, boolean d) {
+    public TestCase3(List<Verifier> verifs, Constraint c, ReconfigurationPlan p, List<Constant> args, boolean d) {
+        this.verifs = verifs;
+        res = new ArrayList<>(verifs.size());
+        for (Verifier v : verifs) {
+            res.add(v.verify(c, p, args, d));
+        }
+
+        this.args = args;
         this.c = c;
         this.plan = p;
-        this.args = args;
-        this.d = d;
-        bImpl = new btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier().verify(c, plan, args, d);
-        bCheck = new CheckerVerifier().verify(c, plan, args, d);
-        bSpec = new SpecVerifier().verify(c, plan, args, d);
     }
 
     public boolean succeed() {
-        return bImpl != null && bImpl.getStatus() == bCheck.getStatus() == bSpec.getStatus();
+        boolean st = res.get(0).getStatus();
+        for (int i = 1; i < res.size(); i++) {
+            if (res.get(i).getStatus() != st) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    public Constraint getConstraint() {
+        return c;
+    }
+
+    public ReconfigurationPlan getPlan() {
+        return plan;
+    }
+
+    public List<Constant> getArguments() {
+        return args;
+    }
+
+    public List<CheckerResult> getResults() {
+        return res;
+    }
+
+    public boolean isDiscrete() {
+        return d;
+    }
+
+    public String pretty() {
+        StringBuilder b = new StringBuilder();
+        if (d) {
+            b.append("discrete ");
+        }
+        b.append(c.toString(args)).append("\n");
+        b.append("Consistency: ").append(succeed()).append("\n");
+        for (int i = 0; i < res.size(); i++) {
+            b.append("\t").append(verifs.get(i).getClass().getSimpleName()).append(": ").append(res.get(i)).append("\n");
+        }
+        return b.toString();
     }
 
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        b.append("Mapping:\n").append(plan.getOrigin().getMapping());
-        b.append("Constraint: ").append(c.toString(args)).append(" discrete: ").append(d).append("\n");
-        b.append("Spec: ").append(bSpec);
-        b.append("Checker: ").append(bCheck);
-        b.append("Impl: ").append(bImpl);
+        if (d) {
+            b.append("discrete ");
+        }
+        b.append(c.toString(args));
+        b.append(' ');
+        b.append(succeed());
         return b.toString();
     }
 }

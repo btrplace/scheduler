@@ -20,12 +20,11 @@ public class CheckerVerifier implements Verifier {
     @Override
     public CheckerResult verify(Constraint cstr, ReconfigurationPlan p, List<Constant> params, boolean discrete) {
         if (cstr.isCore()) {
-            //    return CheckerResult.newError(cstr.id() + " is a core constraint. Not instantiable");
             Model res = p.getResult();
             if (res == null) {
                 return new CheckerResult(false, "Core constraint violation");
             }
-            return CheckerResult.newSucess();
+            return CheckerResult.newSuccess();
         }
         try {
             SatConstraint sat = Constraint2BtrPlace.build(cstr, params);
@@ -39,9 +38,9 @@ public class CheckerVerifier implements Verifier {
                     if (!sat.getChecker().endsWith(res)) {
                         return new CheckerResult(false, "Violation of " + sat.toString());
                     }
-                    return CheckerResult.newSucess();
+                    return CheckerResult.newSuccess();
                 } else {
-                    return new CheckerResult(false, sat + " cannot be discrete");
+                    throw new UnsupportedOperationException(sat + " cannot be discrete");
                 }
             } else {
                 if (sat.setContinuous(true)) {
@@ -49,16 +48,16 @@ public class CheckerVerifier implements Verifier {
                     chk.addChecker(sat.getChecker());
                     try {
                         chk.check(p);
-                        return CheckerResult.newSucess();
+                        return CheckerResult.newSuccess();
                     } catch (ReconfigurationPlanCheckerException ex) {
-                        return CheckerResult.newFailure(ex.toString());
+                        return CheckerResult.newFailure(ex.getAction());
                     }
                 } else {
-                    return new CheckerResult(false, sat + " cannot be continuous");
+                    throw new UnsupportedOperationException(sat + " cannot be continuous");
                 }
             }
         } catch (Exception ex) {
-            return CheckerResult.newError(ex.getMessage());
+            throw new RuntimeException(ex);
         }
     }
 }

@@ -44,6 +44,9 @@ public class SpecModel {
         for (Node n : mo.getMapping().getOfflineNodes()) {
             nodeState.put(n, NodeStateType.Type.offline);
         }
+        for (VM v : mo.getMapping().getReadyVMs()) {
+            vmState.put(v, VMStateType.Type.ready);
+        }
     }
 
     public NodeStateType.Type state(Node n) {
@@ -96,7 +99,7 @@ public class SpecModel {
     public Set<VM> sleeping(Node n) {
         Set<VM> s = new HashSet<>();
         for (Map.Entry<VM, Node> e : location.entrySet()) {
-            if (e.getValue().equals(n) && state(e.getKey()).equals(VMStateType.Type.running)) {
+            if (e.getValue().equals(n) && state(e.getKey()).equals(VMStateType.Type.sleeping)) {
                 s.add(e.getKey());
             }
         }
@@ -105,8 +108,11 @@ public class SpecModel {
 
     public Set<VM> hosted(Node n) {
         Set<VM> s = new HashSet<>();
-        s.addAll(runnings(n));
-        s.addAll(sleeping(n));
+        for (Map.Entry<VM, Node> e : location.entrySet()) {
+            if (e.getValue().equals(n)) {
+                s.add(e.getKey());
+            }
+        }
         return s;
     }
 }
