@@ -72,8 +72,8 @@ public class TestCase3 {
         if (d) {
             b.append("discrete ");
         }
-        b.append(c.toString(args)).append("\n");
-        b.append("Consistency: ").append(succeed()).append("\n");
+        b.append(c.toString(args)).append(" ");
+        b.append(succeed()).append("\n");
         for (int i = 0; i < res.size(); i++) {
             b.append("\t").append(verifs.get(i).getClass().getSimpleName()).append(": ").append(res.get(i)).append("\n");
         }

@@ -44,8 +44,8 @@ public class CoreVerifierTest {
                 cores.add(c);
             }
         }
-        //check(cores);
-        check(Collections.singletonList(s.get("noVMsOnOfflineNodes")));
+        check(cores);
+        //check(Collections.singletonList(s.get("noVMsOnOfflineNodes")));
     }
 
     private void check(final List<Constraint> cores) {
@@ -60,7 +60,7 @@ public class CoreVerifierTest {
 
             @Override
             public void recv(ReconfigurationPlan p) {
-                System.out.println((++d) + ".");
+                //System.out.println((++d) + ".");
                 //System.out.println(p.getOrigin().getMapping());
                 //System.out.println(p);
                 for (Constraint c : cores) {
@@ -74,11 +74,14 @@ public class CoreVerifierTest {
                         good.add(tc3);
                     }
                 }
-                System.out.println("\n");
             }
         });
         fuzzer.go();
         System.err.println(issues.size() + "/" + (issues.size() + good.size()) + "  un-consistencies");
+        System.out.flush();
+        System.err.flush();
+        Assert.fail();
+
     }
 
     @Test

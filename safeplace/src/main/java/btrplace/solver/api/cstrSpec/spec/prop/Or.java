@@ -21,15 +21,6 @@ public class Or extends BinaryProp {
         return new And(p1.not(), p2.not());
     }
 
-    /*@Override
-    public Or expand() {
-        Or or = new Or();
-        for (Proposition p : this.props) {
-            or.add(p.expand());
-        }
-        return or;
-    } */
-
     @Override
     public Boolean eval(SpecModel m) {
         Boolean r1 = p1.eval(m);
