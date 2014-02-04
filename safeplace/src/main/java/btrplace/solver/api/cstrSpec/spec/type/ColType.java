@@ -27,11 +27,8 @@ public class ColType implements Type {
         }
         ColType colType = (ColType) o;
 
-        if (!type.equals(colType.type)) {
-            return false;
-        }
+        return type.equals(colType.type);
 
-        return true;
     }
 
     @Override

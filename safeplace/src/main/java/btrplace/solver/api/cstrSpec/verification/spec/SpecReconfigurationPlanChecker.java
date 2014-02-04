@@ -241,7 +241,9 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
     private boolean visitEvents(Action a, Proposition ok, Proposition ko, Action.Hook k) {
         for (Event e : a.getEvents(k)) {
             e.visit(this);
-            return isConsistent(ok, ko);
+            if (!isConsistent(ok, ko)) {
+                return false;
+            }
         }
         return true;
     }

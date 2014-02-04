@@ -20,8 +20,7 @@ public class ConstraintInputGenerator implements Generator<List<Object>> {
         List<UserVar> params = cstr.getParameters();
         List<List<Object>> values = new ArrayList<>(params.size());
 
-        for (int i = 0; i < params.size(); i++) {
-            UserVar v = params.get(i);
+        for (UserVar v : params) {
             Object o = v.eval(null);
             if (o != null) {
                 values.add(Collections.singletonList(o));

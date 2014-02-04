@@ -36,8 +36,8 @@ public class ConstraintCall implements Proposition {
     public Boolean eval(SpecModel m) {
         List<UserVar> ps = c.getParameters();
         List<Object> ins = new ArrayList<>(ps.size());
-        for (int i = 0; i < args.size(); i++) {
-            ins.add(args.get(i).eval(m));
+        for (Term t : args) {
+            ins.add(t.eval(m));
         }
         return c.eval(m, ins);
     }

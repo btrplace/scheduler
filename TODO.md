@@ -27,6 +27,7 @@ OK Reduce source ? (less elements, constraints)
 
 ## Test case generator
 - Quantify the quality of the fuzzer ?
+- parallel execution
 - Symbolic execution ?
 
 # Bug finding
