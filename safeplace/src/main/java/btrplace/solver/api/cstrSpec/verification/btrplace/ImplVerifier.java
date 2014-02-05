@@ -12,7 +12,10 @@ import btrplace.solver.api.cstrSpec.verification.Verifier;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Fabien Hermenier
@@ -51,18 +54,11 @@ public class ImplVerifier implements Verifier {
                 throw new RuntimeException(e);
             }
         }
-        //FIXME: if involved in the plan
-        //System.out.println("Initial: " + cstrs + " with \n" + p);
         cstrs.addAll(actionsToConstraints(p));
         setDurationEstimators(p);
 
-        //System.out.println("plan2cstrs:\n" + cstrs);
-
-        //Test if the asked constraints belong to the plan
-
         try {
             cra.labelVariables(true);
-            //cra.setVerbosity(3);
             cra.doOptimize(false);
             ReconfigurationPlan res = cra.solve(p.getOrigin(), cstrs);
             if (res == null) {
@@ -84,10 +80,6 @@ public class ImplVerifier implements Verifier {
     private Set<SatConstraint> actionsToConstraints(ReconfigurationPlan p/*, SatConstraint toTest*/) {
         Set<Node> notSwitching = new HashSet<>(p.getOrigin().getMapping().getAllNodes());
         Set<SatConstraint> cstrs = new HashSet<>();
-        /*if (toTest instanceof Online || toTest instanceof Offline) {
-            //System.out.println("Ignore state unchange for " + toTest);
-            notSwitching.removeAll(toTest.getInvolvedNodes());
-        } */
 
         Set<VM> rooted = new HashSet<>(p.getOrigin().getMapping().getRunningVMs());
         for (Action a : p) {
@@ -168,13 +160,5 @@ public class ImplVerifier implements Verifier {
                 throw new UnsupportedOperationException(a.toString());
             }
         }
-    }
-
-    private String prettyList(Collection c) {
-        StringBuilder b = new StringBuilder();
-        for (Object o : c) {
-            b.append("\t").append(o).append("\n");
-        }
-        return b.toString();
     }
 }

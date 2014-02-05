@@ -170,7 +170,6 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
 
     /**
      * Check if a plan satisfies all the {@link SatConstraintChecker}.
-     *
      */
     public Action check(Proposition ok, Proposition ko) {
         if (!isConsistent(ok, ko)) {
@@ -212,7 +211,6 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
                 curMoment = Math.min(nextEnd, nextStart);
             }
         }
-        //SpecModel mo = checkers.currentModel();
         if (!isConsistent(ok, ko)) {
             throw new RuntimeException("Failure by the end");
         }

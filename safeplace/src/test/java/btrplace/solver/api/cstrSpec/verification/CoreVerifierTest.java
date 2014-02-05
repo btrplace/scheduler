@@ -28,6 +28,7 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
+
 public class CoreVerifierTest {
 
     public Specification getSpec() throws Exception {
@@ -56,7 +57,7 @@ public class CoreVerifierTest {
         vf.add(new ImplVerifier());
         final List<TestCase> issues = new ArrayList<>();
         final List<TestCase> good = new ArrayList<>();
-        Fuzzer fuzzer = new Fuzzer(1, 1).minDuration(1).maxDuration(3).allDurations().allDelays();/*.nbDurations(3).nbDelays(3);*/
+        Fuzzer fuzzer = new Fuzzer(1, 2).minDuration(1).maxDuration(3).allDurations().allDelays();/*.nbDurations(3).nbDelays(3);*/
         fuzzer.addListener(new FuzzerListener() {
             int d = 0;
 
@@ -145,4 +146,6 @@ public class CoreVerifierTest {
         System.out.println(verif.verify(c, p, Collections.<Constant>emptyList(), false));
         Assert.fail();
     }
+
+
 }
