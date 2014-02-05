@@ -57,10 +57,9 @@ public class CoreVerifierTest {
         vf.add(new ImplVerifier());
         final List<TestCase> issues = new ArrayList<>();
         final List<TestCase> good = new ArrayList<>();
-        Fuzzer fuzzer = new Fuzzer(1, 2).minDuration(1).maxDuration(3).allDurations().allDelays();/*.nbDurations(3).nbDelays(3);*/
+        final TestCaseConverter tcc = new TestCaseConverter();
+        Fuzzer fuzzer = new Fuzzer(1, 1).minDuration(1).maxDuration(3).allDurations().allDelays();/*.nbDurations(3).nbDelays(3);*/
         fuzzer.addListener(new FuzzerListener() {
-            int d = 0;
-
             @Override
             public void recv(ReconfigurationPlan p) {
                 //System.out.println((++d) + ".");
@@ -69,9 +68,16 @@ public class CoreVerifierTest {
                 for (Constraint c : cores) {
                     TestCase tc3 = new TestCase(vf, c, p, Collections.<Constant>emptyList(), false);
                     if (!tc3.succeed()) {
-                        System.out.println(tc3.getPlan().getOrigin().getMapping());
-                        System.out.println(tc3.getPlan());
-                        System.out.println(tc3.pretty());
+                        try {
+                            System.out.println("-- From:");
+                            System.out.println(tc3.pretty());
+                            String json = tcc.toJSONString(tc3);
+                            TestCase cp = tcc.fromJSON(json);
+                            System.out.println("-- To:");
+                            System.out.println(cp.pretty());
+                        } catch (Exception e) {
+                            Assert.fail(e.getMessage(), e);
+                        }
                         issues.add(tc3);
                     } else {
                         good.add(tc3);

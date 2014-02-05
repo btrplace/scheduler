@@ -11,11 +11,18 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
+import java.io.StringReader;
 
 /**
  * @author Fabien Hermenier
  */
 public class SpecReader {
+
+    public Specification getSpecification(String buffer) throws Exception {
+        try (StringReader r = new StringReader(buffer)) {
+            return getSpecification(r, "");
+        }
+    }
 
     public Specification getSpecification(File f) throws Exception {
         try (FileReader r = new FileReader(f)) {
