@@ -15,12 +15,13 @@ import btrplace.solver.api.cstrSpec.fuzzer.FuzzerListener;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.btrplace.CheckerVerifier;
-import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,49 +47,46 @@ public class CoreVerifierTest {
                 cores.add(c);
             }
         }
-        //check(cores);
-        check(Collections.singletonList(s.get("noVMsOnOfflineNodes")));
+        File f = new File("results/impl_failures.txt");
+        f.delete();
+        check(cores, f);
+        //check(Collections.singletonList(s.get("noVMsOnOfflineNodes")));
     }
 
-    private void check(final List<Constraint> cores) {
-        final List<Verifier> vf = new ArrayList<>();
-        vf.add(new SpecVerifier());
-        vf.add(new CheckerVerifier());
-        vf.add(new ImplVerifier());
+    private void check(final List<Constraint> cores, File f) throws IOException {
+        if (!f.getParentFile().isDirectory() && !f.getParentFile().mkdirs()) {
+            Assert.fail("Unable to create '" + f.getParent() + "'");
+        }
         final List<TestCase> issues = new ArrayList<>();
-        final List<TestCase> good = new ArrayList<>();
         final TestCaseConverter tcc = new TestCaseConverter();
         Fuzzer fuzzer = new Fuzzer(1, 1).minDuration(1).maxDuration(3).allDurations().allDelays();/*.nbDurations(3).nbDelays(3);*/
         fuzzer.addListener(new FuzzerListener() {
+            private int d = 0;
+
             @Override
             public void recv(ReconfigurationPlan p) {
-                //System.out.println((++d) + ".");
-                //System.out.println(p.getOrigin().getMapping());
-                //System.out.println(p);
                 for (Constraint c : cores) {
-                    TestCase tc3 = new TestCase(vf, c, p, Collections.<Constant>emptyList(), false);
+                    TestCase tc3 = new TestCase(c, p, Collections.<Constant>emptyList(), false);
                     if (!tc3.succeed()) {
-                        try {
-                            System.out.println("-- From:");
-                            System.out.println(tc3.pretty());
-                            String json = tcc.toJSONString(tc3);
-                            TestCase cp = tcc.fromJSON(json);
-                            System.out.println("-- To:");
-                            System.out.println(cp.pretty());
-                        } catch (Exception e) {
-                            Assert.fail(e.getMessage(), e);
-                        }
+                        System.out.print("-");
                         issues.add(tc3);
                     } else {
-                        good.add(tc3);
+                        System.out.print("+");
+                    }
+                    if (d++ == 80) {
+                        d = 0;
+                        System.out.println();
                     }
                 }
             }
         });
         fuzzer.go();
-        System.err.println(issues.size() + "/" + (issues.size() + good.size()) + "  un-consistencies");
-        System.out.flush();
-        System.err.flush();
+        try (FileWriter fw = new FileWriter(f, true)) {
+            tcc.toJSON(issues, fw);
+        } catch (Exception e) {
+            Assert.fail(e.getMessage(), e);
+        }
+
         Assert.fail();
 
     }

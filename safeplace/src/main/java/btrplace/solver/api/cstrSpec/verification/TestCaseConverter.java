@@ -38,7 +38,16 @@ public class TestCaseConverter {
         jo.put("discrete", tc.isDiscrete());
         jo.put("args", argsToJSON(tc.getArguments()));
         jo.put("plan", pc.toJSON(tc.getPlan()));
+        jo.put("succeed", tc.succeed());
         return jo;
+    }
+
+    public void toJSON(List<TestCase> l, Appendable o) throws IOException, JSONConverterException {
+        JSONArray a = new JSONArray();
+        for (TestCase c : l) {
+            a.add(toJSON(c));
+        }
+        a.writeJSONString(o);
     }
 
     public String toJSONString(TestCase tc) throws JSONConverterException {
