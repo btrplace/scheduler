@@ -59,7 +59,8 @@ public class TimeBasedPlanApplier extends DefaultPlanApplier {
     @Override
     public String toString(ReconfigurationPlan p) {
         StringBuilder b = new StringBuilder();
-        for (Action a : p.getActions()) {
+        List<Action> actions = new ArrayList<>(p.getActions());
+        for (Action a : actions) {
             b.append(a.getStart()).append(':').append(a.getEnd()).append(' ').append(a.toString()).append('\n');
         }
         return b.toString();

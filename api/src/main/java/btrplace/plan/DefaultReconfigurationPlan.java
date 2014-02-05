@@ -47,7 +47,8 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
      */
     public DefaultReconfigurationPlan(Model m) {
         this.src = m;
-        this.actions = new TreeSet<>(startFirstComparator);
+        //this.actions = new TreeSet<>(startFirstComparator);
+        this.actions = new HashSet<>();
         this.depsExtractor = new DependenciesExtractor(m);
     }
 
@@ -86,9 +87,17 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
         return actions;
     }
 
+    /**
+     * Iterate over the actions.
+     * The action are automatically sorted increasingly by their starting moment.
+     *
+     * @return an iterator.
+     */
     @Override
     public Iterator<Action> iterator() {
-        return actions.iterator();
+        Set<Action> sorted = new TreeSet<>(startFirstComparator);
+        sorted.addAll(actions);
+        return sorted.iterator();
     }
 
     @Override
