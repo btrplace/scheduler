@@ -15,14 +15,15 @@ import btrplace.solver.api.cstrSpec.fuzzer.FuzzerListener;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.btrplace.CheckerVerifier;
+import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -47,16 +48,14 @@ public class CoreVerifierTest {
                 cores.add(c);
             }
         }
-        File f = new File("results/impl_failures.txt");
-        f.delete();
-        check(cores, f);
-        //check(Collections.singletonList(s.get("noVMsOnOfflineNodes")));
+        System.out.println("Checker verification: ");
+        check(cores, Arrays.asList(new SpecVerifier(), new CheckerVerifier()));
+
+        System.out.println("Implementation verification: ");
+        check(cores, Arrays.asList(new SpecVerifier(), new ImplVerifier()));
     }
 
-    private void check(final List<Constraint> cores, File f) throws IOException {
-        if (!f.getParentFile().isDirectory() && !f.getParentFile().mkdirs()) {
-            Assert.fail("Unable to create '" + f.getParent() + "'");
-        }
+    private void check(final List<Constraint> cores, final List<Verifier> verifs) throws IOException {
         final List<TestCase> issues = new ArrayList<>();
         final TestCaseConverter tcc = new TestCaseConverter();
         Fuzzer fuzzer = new Fuzzer(1, 1).minDuration(1).maxDuration(3).allDurations().allDelays();/*.nbDurations(3).nbDelays(3);*/
@@ -66,7 +65,7 @@ public class CoreVerifierTest {
             @Override
             public void recv(ReconfigurationPlan p) {
                 for (Constraint c : cores) {
-                    TestCase tc3 = new TestCase(c, p, Collections.<Constant>emptyList(), false);
+                    TestCase tc3 = new TestCase(verifs, c, p, Collections.<Constant>emptyList(), false);
                     if (!tc3.succeed()) {
                         System.out.print("-");
                         issues.add(tc3);
@@ -81,14 +80,10 @@ public class CoreVerifierTest {
             }
         });
         fuzzer.go();
-        try (FileWriter fw = new FileWriter(f, true)) {
-            tcc.toJSON(issues, fw);
-        } catch (Exception e) {
-            Assert.fail(e.getMessage(), e);
+        System.out.println();
+        for (TestCase c : issues) {
+            System.out.println(c.pretty());
         }
-
-        Assert.fail();
-
     }
 
     @Test
