@@ -21,6 +21,8 @@ package btrplace.solver.choco.chocoUtil;
 import gnu.trove.list.array.TIntArrayList;
 import memory.IEnvironment;
 import memory.IStateInt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import solver.constraints.IntConstraint;
 import solver.exception.ContradictionException;
 import solver.variables.IntVar;
@@ -34,6 +36,7 @@ import util.tools.ArrayUtils;
  */
 public class Precedences extends IntConstraint<IntVar> {
 
+    private static Logger LOGGER = LoggerFactory.getLogger("solver");
     private IntVar host;
 
     private IntVar start;
@@ -268,11 +271,11 @@ public class Precedences extends IntConstraint<IntVar> {
         }
         for (int i = 0; i < horizonUB.length; i++) {
             if (horizonUB[i].get() != ubs[i]) {
-                ChocoLogging.getBranchingLogger().info("/!\\ horizonUB[" + i + "] = " + horizonUB[i].get() + ", expected=" + ubs[i]);
+                LOGGER.info("/!\\ horizonUB[" + i + "] = " + horizonUB[i].get() + ", expected=" + ubs[i]);
                 ret = false;
             }
             if (horizonLB[i].get() != lbs[i]) {
-                ChocoLogging.getBranchingLogger().info("/!\\ horizonLB[" + i + "] = " + horizonLB[i].get() + ", expected=" + lbs[i]);
+                LOGGER.info("/!\\ horizonLB[" + i + "] = " + horizonLB[i].get() + ", expected=" + lbs[i]);
                 ret = false;
             }
         }
@@ -280,24 +283,24 @@ public class Precedences extends IntConstraint<IntVar> {
     }
 
     private void printOthers() {
-        ChocoLogging.getBranchingLogger().info("--- Others ---");
+        LOGGER.info("--- Others ---");
         for (int i = 0; i < othersEnd.length; i++) {
-            ChocoLogging.getBranchingLogger().info("Task " + i + " on " + othersHost[i] + " ends at " + othersEnd[i].toString());
+            LOGGER.info("Task " + i + " on " + othersHost[i] + " ends at " + othersEnd[i].toString());
         }
     }
 
     private void printEndsByHost() {
-        ChocoLogging.getBranchingLogger().info("--- EndsByHost ---");
+        LOGGER.info("--- EndsByHost ---");
         for (int i = 0; i < endsByHost.length; i++) {
             StringBuilder buf = new StringBuilder();
             buf.append("On ").append(i).append(':');
             for (int id : endsByHost[i]) {
                 buf.append(" ").append(othersEnd[id].toString());
             }
-            ChocoLogging.getBranchingLogger().info(buf.append(" lb=").append(horizonLB[i].get()).append(" ub=").append(horizonUB[i].get()).toString());
+            LOGGER.info(buf.append(" lb=").append(horizonLB[i].get()).append(" ub=").append(horizonUB[i].get()).toString());
         }
-        ChocoLogging.getBranchingLogger().info("Mine placed on " + host.toString());
-        ChocoLogging.getBranchingLogger().info("Mine starts at " + start.toString());
+        LOGGER.info("Mine placed on " + host.toString());
+        LOGGER.info("Mine starts at " + start.toString());
     }
 
 }

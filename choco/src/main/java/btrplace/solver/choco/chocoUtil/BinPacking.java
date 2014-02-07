@@ -22,6 +22,8 @@ import memory.IEnvironment;
 import memory.IStateBitSet;
 import memory.IStateBool;
 import memory.IStateInt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import solver.constraints.IntConstraint;
 import solver.exception.ContradictionException;
 import solver.variables.IntVar;
@@ -45,6 +47,8 @@ import java.util.*;
  * @see choco.cp.solver.constraints.global.pack.PackConstraint
  */
 public class BinPacking extends IntConstraint<IntVar> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger("solver");
 
     /**
      * The solver environment.
@@ -230,7 +234,7 @@ public class BinPacking extends IntConstraint<IntVar> {
         }
         for (int b = 0; b < nbBins; b++) {
             if (tuple[b + bins.length] != l[b]) {
-                ChocoLogging.getBranchingLogger().warning("Bad load of " + b + " = " + tuple[b + bins.length] + " expected =" + l[b]);
+                LOGGER.warn("Bad load of " + b + " = " + tuple[b + bins.length] + " expected =" + l[b]);
                 return false;
             }
         }
@@ -556,41 +560,41 @@ public class BinPacking extends IntConstraint<IntVar> {
         int sls = 0;
         for (int b = 0; b < rs.length; b++) {
             if (rs[b] != bRLoads[b].get()) {
-                ChocoLogging.getBranchingLogger().warning(loads[b].toString() + " required=" + bRLoads[b].get() + " expected=" + rs[b]);
+                LOGGER.warn(loads[b].toString() + " required=" + bRLoads[b].get() + " expected=" + rs[b]);
                 check = false;
             }
             if (rs[b] + cs[b] != bTLoads[b].get()) {
-                ChocoLogging.getBranchingLogger().warning(loads[b].toString() + " total=" + bTLoads[b].get() + " expected=" + (rs[b] + cs[b]));
+                LOGGER.warn(loads[b].toString() + " total=" + bTLoads[b].get() + " expected=" + (rs[b] + cs[b]));
                 check = false;
             }
             if (loads[b].getLB() < rs[b]) {
-                ChocoLogging.getBranchingLogger().warning(loads[b].toString() + " LB expected >=" + rs[b]);
+                LOGGER.warn(loads[b].toString() + " LB expected >=" + rs[b]);
                 check = false;
             }
             if (loads[b].getUB() > rs[b] + cs[b]) {
-                ChocoLogging.getBranchingLogger().warning(loads[b].toString() + " UB expected <=" + (rs[b] + cs[b]));
+                LOGGER.warn(loads[b].toString() + " UB expected <=" + (rs[b] + cs[b]));
                 check = false;
             }
             sli += loads[b].getLB();
             sls += loads[b].getUB();
         }
         if (this.sumLoadInf.get() != sli) {
-            ChocoLogging.getBranchingLogger().warning("Sum Load LB = " + this.sumLoadInf.get() + " expected =" + sli);
+            LOGGER.warn("Sum Load LB = " + this.sumLoadInf.get() + " expected =" + sli);
             check = false;
         }
         if (this.sumLoadSup.get() != sls) {
-            ChocoLogging.getBranchingLogger().warning("Sum Load UB = " + this.sumLoadSup.get() + " expected =" + sls);
+            LOGGER.warn("Sum Load UB = " + this.sumLoadSup.get() + " expected =" + sls);
             check = false;
         }
         ChocoLogging.flushLogs();
         if (!check) {
             for (int b = 0; b < rs.length; b++) {
-                ChocoLogging.getBranchingLogger().severe(loads[b].toString() + " required=" + bRLoads[b].get() + " (" + rs[b] + ") total=" + bTLoads[b].get() + " (" + (rs[b] + cs[b]) + ")");
+                LOGGER.error(loads[b].toString() + " required=" + bRLoads[b].get() + " (" + rs[b] + ") total=" + bTLoads[b].get() + " (" + (rs[b] + cs[b]) + ")");
             }
-            ChocoLogging.getBranchingLogger().severe("Sum Load LB = " + this.sumLoadInf.get() + " (" + sumLoadInf + ")");
-            ChocoLogging.getBranchingLogger().severe("Sum Load UB = " + this.sumLoadSup.get() + " (" + sumLoadSup + ")");
+            LOGGER.error("Sum Load LB = " + this.sumLoadInf.get() + " (" + sumLoadInf + ")");
+            LOGGER.error("Sum Load UB = " + this.sumLoadSup.get() + " (" + sumLoadSup + ")");
             for (IntVar bin : bins) {
-                ChocoLogging.getBranchingLogger().severe(bin.toString());
+                LOGGER.error(bin.toString());
             }
         }
         return check;
@@ -622,9 +626,8 @@ public class BinPacking extends IntConstraint<IntVar> {
         for (int b = 0; b < nbBins; b++) {
             for (int i = 0; i < bs[b].size(); i++) {
                 if (bs[b].get(i) != candidates[b].get(i)) {
-                    ChocoLogging.getBranchingLogger().warning("candidate i '" + i + "' for bin '" + b + ": " + candidates[b].get(i) + " expected: " + bs[b].get(i));
-                    ChocoLogging.getBranchingLogger().warning("candidates for b: " + this.prettyCandidates(b));
-                    ChocoLogging.flushLogs();
+                    LOGGER.warn("candidate i '" + i + "' for bin '" + b + ": " + candidates[b].get(i) + " expected: " + bs[b].get(i));
+                    LOGGER.warn("candidates for b: " + this.prettyCandidates(b));
                     return false;
                 }
             }
