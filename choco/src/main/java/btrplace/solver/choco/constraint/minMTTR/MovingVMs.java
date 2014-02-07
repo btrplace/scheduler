@@ -37,7 +37,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class MovingVMs extends VariableSelector<IntVar> {
+public class MovingVMs implements VariableSelector<IntVar> {
 
     /**
      * The demanding slices to consider.
@@ -60,7 +60,7 @@ public class MovingVMs extends VariableSelector<IntVar> {
      * @param vms the VMs to consider
      */
     public MovingVMs(String l, ReconfigurationProblem s, Mapping m, Set<VM> vms) {
-        super(s.getSolver());
+        //super(s.getSolver());
         this.label = l;
         map = m;
 
@@ -75,7 +75,22 @@ public class MovingVMs extends VariableSelector<IntVar> {
     }
 
     @Override
-    public IntVar getVar() {
+    public IntVar[] getScope() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean hasNext() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void advance() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public IntVar getVariable() {
         for (VMActionModel a : actions) {
             if (!a.getDSlice().getHoster().instantiated()) {
                 VM vm = a.getVM();
@@ -83,7 +98,7 @@ public class MovingVMs extends VariableSelector<IntVar> {
                 if (nId != null) {
                     //VM was running
                     Slice slice = a.getDSlice();
-                    if (!slice.getHoster().canBeInstantiatedTo(rp.getNode(nId))) {
+                    if (!slice.getHoster().contains(rp.getNode(nId))) {
                         return slice.getHoster();
                     }
                 }

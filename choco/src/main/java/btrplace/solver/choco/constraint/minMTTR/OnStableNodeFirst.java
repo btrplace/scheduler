@@ -23,7 +23,6 @@ import btrplace.model.VM;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.actionModel.ActionModel;
-import btrplace.solver.choco.actionModel.ActionModelUtils;
 import btrplace.solver.choco.actionModel.VMActionModel;
 import memory.IStateInt;
 import solver.search.strategy.selectors.VariableSelector;
@@ -43,7 +42,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class OnStableNodeFirst extends VariableSelector<IntVar> {
+public class OnStableNodeFirst implements VariableSelector<IntVar> {
 
     private IntVar[] hoster;
 
@@ -57,12 +56,13 @@ public class OnStableNodeFirst extends VariableSelector<IntVar> {
 
     private BitSet[] ins;
 
-
     private CMinMTTR obj;
 
     private IStateInt firstFree;
 
     private ReconfigurationProblem rp;
+
+    private IntVar last;
 
     /**
      * Make a new heuristics
@@ -73,7 +73,7 @@ public class OnStableNodeFirst extends VariableSelector<IntVar> {
      * @param o       the objective to rely on
      */
     public OnStableNodeFirst(String lbl, ReconfigurationProblem rp, List<ActionModel> actions, CMinMTTR o) {
-        super(rp.getSolver(), ActionModelUtils.getStarts(actions.toArray(new ActionModel[actions.size()])));
+        // super(rp.getSolver(), ActionModelUtils.getStarts(actions.toArray(new ActionModel[actions.size()])));
         this.rp = rp;
         firstFree = rp.getSolver().getEnvironment().makeInt(0);
         this.obj = o;
@@ -157,7 +157,7 @@ public class OnStableNodeFirst extends VariableSelector<IntVar> {
     }
 
     @Override
-    public IntVar selectVar() {
+    public IntVar getVariable() {
 
         makeIncomings();
         /*for (BitSet b : ins) {
@@ -165,6 +165,7 @@ public class OnStableNodeFirst extends VariableSelector<IntVar> {
         } */
         IntVar v = getVMtoLeafNode();
         if (v == null) {
+            last = null;
             return null;
         }
 
@@ -178,7 +179,23 @@ public class OnStableNodeFirst extends VariableSelector<IntVar> {
         if (early == null) {
             System.out.println("Null");
         }
-        return early != null ? early : minInf();
+        last = early != null ? early : minInf();
+        return last;
+        //return early != null ? early : minInf();
+    }
+
+    @Override
+    public boolean hasNext() {
+        return last != null;
+    }
+
+    @Override
+    public void advance() {
+    }
+
+    @Override
+    public IntVar[] getScope() {
+        return starts;
     }
 
     /**

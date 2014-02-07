@@ -24,6 +24,7 @@ import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.set.hash.TIntHashSet;
 import solver.search.strategy.selectors.InValueIterator;
 import solver.variables.IntVar;
+import util.iterators.DisposableValueIterator;
 
 import java.util.Map;
 import java.util.Random;
@@ -84,7 +85,7 @@ public class RandomVMPlacement implements InValueIterator {
     private int randomWithRankedValues(IntVar x) {
         TIntArrayList[] values = new TIntArrayList[ranks.length];
 
-        DisposableIntIterator ite = x.getDomain().getIterator();
+        DisposableValueIterator ite = x.getValueIterator(true);
         try {
             while (ite.hasNext()) {
                 int v = ite.next();
@@ -118,7 +119,7 @@ public class RandomVMPlacement implements InValueIterator {
      */
     private int randomValue(IntVar x) {
         int i = rnd.nextInt(x.getDomainSize());
-        DisposableIntIterator ite = x.getDomain().getIterator();
+        DisposableValueIterator ite = x.getValueIterator(true);
         int pos = -1;
         try {
             while (i >= 0) {

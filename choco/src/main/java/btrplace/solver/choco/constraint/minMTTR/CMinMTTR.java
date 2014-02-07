@@ -40,6 +40,7 @@ import solver.search.strategy.strategy.AbstractStrategy;
 import solver.search.strategy.strategy.Assignment;
 import solver.variables.IntVar;
 import solver.variables.VariableFactory;
+import util.ESat;
 
 import java.util.*;
 
@@ -172,10 +173,12 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         strats.add(new Assignment(selectForRuns, new RandomVMPlacement("selectForRuns", p, pla, true)));
 
         //s.addGoal(new AssignVar(new StartingNodes("startingNodes", p, p.getNodeActions()), new MinVal()));
-        strats.add(new Assignment(new StartingNodes("startingNodes", p, p.getNodeActions()), new InDomainMin()));
+        //strats.add(new Assignment(new StartingNodes("startingNodes", p, p.getNodeActions()), new InDomainMin()));
+        strats.add(new Assignment(new InputOrder(ActionModelUtils.getStarts(p.getNodeActions())), new InDomainMin()));
 
         ///SCHEDULING PROBLEM
-        strats.add(new AssignOrForbidIntVarVal(schedHeuristic, new InDomainMin()));
+        //strats.add(new AssignOrForbidIntVarVal(schedHeuristic, new InDomainMin()));
+        strats.add(new Assignment(schedHeuristic, new InDomainMin()));
 
         //At this stage only it matters to plug the cost constraints
         strats.add(new Assignment(new InputOrder(new IntVar[]{p.getEnd(), cost}), new InDomainMin()));
@@ -201,7 +204,8 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
             try {
                 s.propagate();
             } catch (ContradictionException e) {
-                s.setFeasible(false);
+                s.setFeasible(ESat.FALSE);
+                //s.setFeasible(false);
                 s.post(IntConstraintFactory.FALSE(s));
             }
         }
@@ -212,12 +216,12 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
      */
     public static class Builder implements ChocoConstraintBuilder {
         @Override
-        public Class<? extends Constraint> getKey() {
+        public Class<? extends btrplace.model.constraint.Constraint> getKey() {
             return MinMTTR.class;
         }
 
         @Override
-        public CMinMTTR build(Constraint cstr) {
+        public CMinMTTR build(btrplace.model.constraint.Constraint cstr) {
             return new CMinMTTR();
         }
     }

@@ -31,13 +31,15 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class HostingVariableSelector extends VariableSelector<IntVar> {
+public class HostingVariableSelector implements VariableSelector<IntVar> {
 
     private ReconfigurationProblem rp;
 
     private String label;
 
     private OnStableNodeFirst schedHeuristic;
+
+    private IntVar[] vars;
 
     /**
      * Make a new heuristic.
@@ -48,14 +50,29 @@ public class HostingVariableSelector extends VariableSelector<IntVar> {
      * @param slices the slices to consider
      */
     public HostingVariableSelector(String dbgLbl, ReconfigurationProblem p, List<Slice> slices, OnStableNodeFirst sched) {
-        super(p.getSolver(), SliceUtils.extractHosters(slices));
+        vars = SliceUtils.extractHosters(slices);
         this.schedHeuristic = sched;
         this.rp = p;
         label = dbgLbl;
     }
 
     @Override
-    public IntVar selectVar() {
+    public IntVar[] getScope() {
+        return vars;
+    }
+
+    @Override
+    public boolean hasNext() {
+        return true;
+    }
+
+    @Override
+    public void advance() {
+
+    }
+
+    @Override
+    public IntVar getVariable() {
         for (int i = 0; i < vars.length; i++) {
             if (!vars[i].instantiated()) {
                 if (schedHeuristic != null) {
