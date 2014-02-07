@@ -19,6 +19,8 @@ package btrplace.plan;
 
 import btrplace.model.*;
 import btrplace.plan.event.Action;
+import btrplace.plan.event.ShutdownNode;
+import btrplace.plan.event.SuspendVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -97,6 +99,7 @@ public class DefaultReconfigurationPlanTest {
         Assert.assertTrue(p.add(a2));
         Assert.assertEquals(4, p.getDuration());
         int last = -1;
+        System.out.println(p);
         for (Action a : p) {
             Assert.assertTrue(a.getStart() >= last);
             last = a.getStart();
@@ -106,5 +109,57 @@ public class DefaultReconfigurationPlanTest {
         Assert.assertEquals(4, p.getSize());
 
         Assert.assertFalse(p.toString().contains("null"));
+    }
+
+    @Test
+    public void testDumb() {
+        Model mo = new DefaultModel();
+        VM v = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        mo.getMapping().addOnlineNode(n1);
+        mo.getMapping().addOnlineNode(n2);
+        mo.getMapping().addRunningVM(v, n1);
+        ReconfigurationPlan p1 = new DefaultReconfigurationPlan(mo);
+        Action a1 = new SuspendVM(v, n1, n1, 0, 1);
+        Action a2 = new ShutdownNode(n1, 1, 2);
+        Action a3 = new ShutdownNode(n2, 1, 2);
+        Assert.assertTrue(p1.add(a1));
+        Assert.assertTrue(p1.add(a2));
+        Assert.assertTrue(p1.add(a3));
+        Assert.assertTrue(p1.getActions().contains(a1));
+        Assert.assertTrue(p1.getActions().contains(a2));
+        Assert.assertTrue(p1.getActions().contains(a3));
+    }
+
+    @Test
+    public void testEquals() {
+        Model mo = new DefaultModel();
+        VM v = mo.newVM();
+        Node n1 = mo.newNode();
+        Node n2 = mo.newNode();
+        mo.getMapping().addOnlineNode(n1);
+        mo.getMapping().addOnlineNode(n2);
+        mo.getMapping().addRunningVM(v, n1);
+        ReconfigurationPlan p1 = new DefaultReconfigurationPlan(mo);
+        p1.add(new ShutdownNode(n1, 1, 2));
+        p1.add(new ShutdownNode(n2, 1, 2));
+
+        ReconfigurationPlan p2 = new DefaultReconfigurationPlan(mo.clone());
+        p2.add(new ShutdownNode(n1, 1, 2));
+        p2.add(new ShutdownNode(n2, 1, 2));
+
+        Assert.assertEquals(p1, p2);
+        /*
+        java.lang.RuntimeException: The resulting schedule differ. Got:
+0:1 {action=suspend(vm=vm#0, from=node#1, to=node#1)}
+1:2 {action=shutdown(node=node#0)}
+1:2 {action=shutdown(node=node#1)}
+
+Expected:
+0:1 {action=suspend(vm=vm#0, from=node#1, to=node#1)}
+1:2 {action=shutdown(node=node#0)}
+1:2 {action=shutdown(node=node#1)}
+         */
     }
 }
