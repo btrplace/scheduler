@@ -156,7 +156,7 @@ public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
                     // we set the cSlice duration to 0 to directly reduces the resource allocation
                     if (stay.instantiatedTo(1)) {
                         try {
-                            cSlice.getDuration().instantiateTo(0, aCause);
+                            cSlice.getDuration().instantiateTo(0, null);
                         } catch (ContradictionException ex) {
                             rp.getLogger().info("Unable to set the cSlice duration of {} to 0", cSlice.getSubject());
                             return false;
@@ -170,7 +170,7 @@ public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
                     //(the allocation will be performed at the end of the reconfiguration process)
                     if (stay.instantiatedTo(1)) {
                         try {
-                            dSlice.getDuration().instantiateTo(0, aCause);
+                            dSlice.getDuration().instantiateTo(0, null);
                         } catch (ContradictionException ex) {
                             rp.getLogger().info("Unable to set the dSlice duration of {} to 0", dSlice.getSubject());
                             return false;

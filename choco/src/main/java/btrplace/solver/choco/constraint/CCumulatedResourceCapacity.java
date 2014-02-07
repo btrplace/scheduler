@@ -31,7 +31,9 @@ import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.view.CShareableResource;
 import gnu.trove.list.array.TIntArrayList;
 import solver.Solver;
+import solver.constraints.IntConstraintFactory;
 import solver.variables.IntVar;
+import solver.variables.VariableFactory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -98,7 +100,10 @@ public class CCumulatedResourceCapacity implements ChocoConstraint {
             vs.add(rcm.getVirtualUsage()[rp.getNode(u)]);
         }
         Solver s = rp.getSolver();
-        s.post(s.leq(Solver.sum(vs.toArray(new IntVar[vs.size()])), cstr.getAmount()));
+        IntVar mySum = VariableFactory.bounded(rp.makeVarLabel("usage(", rcm.getIdentifier(), ")"), 0, Integer.MAX_VALUE, s);
+        s.post(IntConstraintFactory.sum(vs.toArray(new IntVar[vs.size()]), mySum));
+        s.post(IntConstraintFactory.arithm(mySum, "<=", cstr.getAmount()));
+        //s.post(s.leq(Solver.sum(vs.toArray(new IntVar[vs.size()])), cstr.getAmount()));
         return true;
     }
 

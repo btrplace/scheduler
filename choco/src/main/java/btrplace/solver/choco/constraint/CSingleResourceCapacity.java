@@ -27,6 +27,10 @@ import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.view.CShareableResource;
+import solver.Solver;
+import solver.constraints.IntConstraintFactory;
+import solver.exception.ContradictionException;
+import solver.variables.IntVar;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -60,13 +64,14 @@ public class CSingleResourceCapacity implements ChocoConstraint {
         Solver s = rp.getSolver();
         for (Node n : cstr.getInvolvedNodes()) {
             IntVar v = rcm.getVirtualUsage()[rp.getNode(n)];
-            s.post(s.leq(v, amount));
+            s.post(IntConstraintFactory.arithm(v, "<=", amount));
+            //s.post(s.leq(v, amount));
 
             //Continuous in practice ?
             if (cstr.isContinuous()) {
                 if (cstr.isSatisfied(rp.getSourceModel())) {
                     try {
-                        v.setSup(cstr.getAmount());
+                        v.updateUpperBound(cstr.getAmount(), null);
                     } catch (ContradictionException e) {
                         rp.getLogger().error("Unable to restrict to up to {}, the maximum '{}' usage on '{}': ", cstr.getAmount(), rcm.getResourceIdentifier(), n, e.getMessage());
                         return false;

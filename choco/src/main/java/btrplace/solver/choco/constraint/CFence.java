@@ -66,10 +66,8 @@ public class CFence implements ChocoConstraint {
                 for (VM vm : runnings) {
                     Slice t = rp.getVMAction(vm).getDSlice();
                     Node n = nodes.iterator().next();
-                    try {
-                        t.getHoster().setVal(rp.getNode(n));
-                    } catch (ContradictionException e) {
-                        rp.getLogger().error("Unable to force VM '{}' to be running on node '{}': {}", vm, n, e.getMessage());
+                    if (!t.getHoster().instantiatedTo(rp.getNode(n))) {
+                        rp.getLogger().error("Unable to force VM '{}' to be running on node '{}'", vm, n);
                         return false;
                     }
                 }

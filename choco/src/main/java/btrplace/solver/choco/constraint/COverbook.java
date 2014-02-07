@@ -27,6 +27,8 @@ import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.view.CShareableResource;
+import solver.exception.ContradictionException;
+import solver.variables.RealVar;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -61,9 +63,11 @@ public class COverbook implements ChocoConstraint {
 
         for (Node u : cstr.getInvolvedNodes()) {
             RealVar v = rcm.getOverbookRatio(rp.getNode(u));
-            RealInterval ric = new RealIntervalConstant(v.getLB(), cstr.getRatio());
+
+            //RealInterval ric = new RealIntervalConstant(v.getLB(), cstr.getRatio());
             try {
-                v.intersect(ric);
+                //  v.intersect(ric);
+                v.updateUpperBound(cstr.getRatio(), null);
             } catch (ContradictionException ex) {
                 rp.getLogger().error("Unable to restrict {} to up to {}", v.getName(), cstr.getRatio());
                 return false;

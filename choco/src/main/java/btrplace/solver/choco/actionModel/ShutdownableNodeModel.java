@@ -28,6 +28,7 @@ import solver.constraints.IntConstraintFactory;
 import solver.constraints.nary.element.Element;
 import solver.variables.BoolVar;
 import solver.variables.IntVar;
+import solver.variables.Task;
 import solver.variables.VariableFactory;
 
 
@@ -131,7 +132,8 @@ public class ShutdownableNodeModel implements NodeActionModel {
         //s.post(s.leq(start, rp.getEnd()));
         s.post(IntConstraintFactory.arithm(start, "<=", rp.getEnd()));
         /* Ae = As + D */
-        s.post(s.eq(end, s.plus(start, duration)));
+        Task t = VariableFactory.task(start, duration, end);
+        //s.post(s.eq(end, s.plus(start, duration)));
 
         //The node is already online, so it can host VMs at the beginning of the RP
         hostingStart = rp.getStart();

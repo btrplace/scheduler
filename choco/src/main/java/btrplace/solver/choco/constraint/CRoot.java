@@ -25,6 +25,8 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.actionModel.VMActionModel;
+import solver.Solver;
+import solver.constraints.IntConstraintFactory;
 
 import java.util.Collections;
 import java.util.Set;
@@ -56,7 +58,8 @@ public class CRoot implements ChocoConstraint {
             Slice cSlice = m.getCSlice();
             Slice dSlice = m.getDSlice();
             if (cSlice != null && dSlice != null) {
-                s.post(s.eq(cSlice.getHoster(), dSlice.getHoster()));
+                s.post(IntConstraintFactory.arithm(cSlice.getHoster(), "=", dSlice.getHoster()));
+                //s.post(s.eq(cSlice.getHoster(), dSlice.getHoster()));
             }
         }
         return true;

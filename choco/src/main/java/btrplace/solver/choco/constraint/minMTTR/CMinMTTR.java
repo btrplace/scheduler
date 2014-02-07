@@ -152,11 +152,11 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         HostingVariableSelector selectForBads = new HostingVariableSelector("selectForBads", p, ActionModelUtils.getDSlices(badActions), schedHeuristic);
 
         //s.addGoal(new AssignVar(selectForBads, new RandomVMPlacement("selectForBads", p, pla, true)));
-        strats.add((new Assignment(selectForBads, new RandomVMPlacement("selectForBads", p, pla, true)));
+        strats.add(new Assignment(selectForBads, new RandomVMPlacement("selectForBads", p, pla, true)));
 
         HostingVariableSelector selectForGoods = new HostingVariableSelector("selectForGoods", p, ActionModelUtils.getDSlices(goodActions), schedHeuristic);
         //s.addGoal(new AssignVar(selectForGoods, new RandomVMPlacement("selectForGoods", p, pla, true)));
-        strats.add((new Assignment(selectForGoods, new RandomVMPlacement("selectForGoods", p, pla, true)));
+        strats.add(new Assignment(selectForGoods, new RandomVMPlacement("selectForGoods", p, pla, true)));
 
         //VMs to run
         Set<VM> vmsToRun = new HashSet<>(map.getReadyVMs());
@@ -172,7 +172,7 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         strats.add(new Assignment(selectForRuns, new RandomVMPlacement("selectForRuns", p, pla, true)));
 
         //s.addGoal(new AssignVar(new StartingNodes("startingNodes", p, p.getNodeActions()), new MinVal()));
-        strats.add((new Assignment(new StartingNodes("startingNodes", p, p.getNodeActions()), new InDomainMin()));
+        strats.add(new Assignment(new StartingNodes("startingNodes", p, p.getNodeActions()), new InDomainMin()));
 
         ///SCHEDULING PROBLEM
         strats.add(new AssignOrForbidIntVarVal(schedHeuristic, new InDomainMin()));

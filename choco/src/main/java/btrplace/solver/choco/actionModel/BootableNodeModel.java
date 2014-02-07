@@ -27,6 +27,7 @@ import solver.Solver;
 import solver.constraints.IntConstraintFactory;
 import solver.variables.BoolVar;
 import solver.variables.IntVar;
+import solver.variables.Task;
 import solver.variables.VariableFactory;
 
 
@@ -132,7 +133,8 @@ public class BootableNodeModel implements NodeActionModel {
         //s.post(s.leq(end, rp.getEnd()));
         s.post(IntConstraintFactory.arithm(end, "<=", rp.getEnd()));
         /* Ae = As + D */
-        s.post(s.eq(end, s.plus(start, effectiveDuration)));
+        Task t = VariableFactory.task(start, effectiveDuration, end);
+        //s.post(s.eq(end, s.plus(start, effectiveDuration)));
 
 
         /* Hs = Ae */

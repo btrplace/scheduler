@@ -27,6 +27,11 @@ import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.chocoUtil.ChocoUtils;
+import solver.Solver;
+import solver.constraints.Arithmetic;
+import solver.constraints.IntConstraintFactory;
+import solver.variables.BoolVar;
+import solver.variables.IntVar;
 
 import java.util.*;
 
@@ -64,7 +69,8 @@ public class CSpread implements ChocoConstraint {
         Solver s = rp.getSolver();
         if (!onlyRunnings.isEmpty()) {
             //The lazy spread implementation for the placement
-            s.post(new BoundAllDiff(onlyRunnings.toArray(new IntVar[onlyRunnings.size()]), true));
+            s.post(IntConstraintFactory.alldifferent(onlyRunnings.toArray(new IntVar[onlyRunnings.size()]), "BC"));
+            //s.post(new BoundAllDiff(onlyRunnings.toArray(new IntVar[onlyRunnings.size()]), true));
 
             if (cstr.isContinuous()) {
                 VM[] vms = new VM[onlyRunnings.size()];
@@ -92,12 +98,15 @@ public class CSpread implements ChocoConstraint {
 
                         if (!currentlyGathered && dI != null && cJ != null) {
                             //No need to place the constraints if the slices do not have a chance to overlap
-                            if (!(cJ.getHoster().instantiated() && !dI.getHoster().canBeInstantiatedTo(cJ.getHoster().getValue()))
-                                    && !(dI.getHoster().instantiated() && !cJ.getHoster().canBeInstantiatedTo(dI.getHoster().getValue()))
+                            if (!(cJ.getHoster().instantiated() && !dI.getHoster().contains(cJ.getHoster().getValue()))
+                                    && !(dI.getHoster().instantiated() && !cJ.getHoster().contains(dI.getHoster().getValue()))
                                     ) {
-                                IntVar eq = rp.getSolver().createBooleanVar("eq");
-                                s.post(ReifiedFactory.builder(eq, s.eq(dI.getHoster(), cJ.getHoster()), s));
-                                ChocoUtils.postImplies(s, eq, s.leq(cJ.getEnd(), dI.getStart()));
+                                Arithmetic eqCstr = IntConstraintFactory.arithm(dI.getHoster(), "=", cJ.getHoster());
+                                BoolVar eq = eqCstr.reif();
+                                Arithmetic leqCstr = IntConstraintFactory.arithm(cJ.getEnd(), "<=", dI.getStart());
+                                //IntVar eq = rp.getSolver().createBooleanVar("eq");
+                                //s.post(ReifiedFactory.builder(eq, s.eq(dI.getHoster(), cJ.getHoster()), s));
+                                ChocoUtils.postImplies(s, eq, /*s.leq(cJ.getEnd(), dI.getStart())*/ leqCstr);
                             }
                         }
 
@@ -105,12 +114,15 @@ public class CSpread implements ChocoConstraint {
 
                         if (!currentlyGathered && dJ != null && cI != null) {
                             //No need to place the constraints if the slices do not have a chance to overlap
-                            if (!(cI.getHoster().instantiated() && !dJ.getHoster().canBeInstantiatedTo(cI.getHoster().getValue()))
-                                    && !(dJ.getHoster().instantiated() && !cI.getHoster().canBeInstantiatedTo(dJ.getHoster().getValue()))
+                            if (!(cI.getHoster().instantiated() && !dJ.getHoster().contains(cI.getHoster().getValue()))
+                                    && !(dJ.getHoster().instantiated() && !cI.getHoster().contains(dJ.getHoster().getValue()))
                                     ) {
-                                IntVar eq = s.createBooleanVar("eq");
-                                s.post(ReifiedFactory.builder(eq, s.eq(dJ.getHoster(), cI.getHoster()), s));
-                                ChocoUtils.postImplies(s, eq, s.leq(cI.getEnd(), dJ.getStart()));
+                                Arithmetic eqCstr = IntConstraintFactory.arithm(dJ.getHoster(), "=", cI.getHoster());
+                                BoolVar eq = eqCstr.reif();
+                                //IntVar eq = s.createBooleanVar("eq");
+                                //s.post(ReifiedFactory.builder(eq, s.eq(dJ.getHoster(), cI.getHoster()), s));
+                                Arithmetic leqCstr = IntConstraintFactory.arithm(cI.getEnd(), "<=", dJ.getStart());
+                                ChocoUtils.postImplies(s, eq, leqCstr);
                             }
                         }
                     }

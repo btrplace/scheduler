@@ -27,6 +27,8 @@ import btrplace.solver.choco.actionModel.ActionModel;
 import btrplace.solver.choco.actionModel.RelocatableVMModel;
 import btrplace.solver.choco.actionModel.StayAwayVMModel;
 import btrplace.solver.choco.actionModel.StayRunningVMModel;
+import solver.Solver;
+import solver.constraints.IntConstraintFactory;
 
 import java.util.*;
 
@@ -74,7 +76,8 @@ public class CSequentialVMTransitions implements ChocoConstraint {
             Solver s = rp.getSolver();
             while (ite.hasNext()) {
                 ActionModel cur = ite.next();
-                s.post(s.leq(prev.getEnd(), cur.getStart()));
+                s.post(IntConstraintFactory.arithm(prev.getEnd(), "<=", cur.getStart()));
+                //s.post(s.leq(prev.getEnd(), cur.getStart()));
                 prev = cur;
             }
         }

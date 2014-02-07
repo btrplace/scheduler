@@ -26,6 +26,7 @@ import btrplace.model.constraint.CumulatedRunningCapacity;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import solver.Solver;
+import solver.constraints.IntConstraintFactory;
 import solver.variables.IntVar;
 import solver.variables.VariableFactory;
 
@@ -81,11 +82,19 @@ public class CCumulatedRunningCapacity implements ChocoConstraint {
         //Try to get a lower bound
         //basically, we count 1 per VM necessarily in the set of nodes
         //if involved nodes == all the nodes, then sum == nb of running VMs
-        IntExp on = Solver.sum(vs.toArray(new IntVar[vs.size()]));
+        IntVar mySum = VariableFactory.bounded(rp.makeVarLabel("nbRunnings"), 0, rp.getFutureRunningVMs().size(), rp.getSolver());
+        //IntExp sumOfStates = Solver.sum(nodesState.toArray(new IntVar[nodesState.size()]));
+        //solver.post(solver.leq(sumOfStates, constraint.getAmount()));
+        s.post(IntConstraintFactory.sum(vs.toArray(new IntVar[vs.size()]), mySum));
+        s.post(IntConstraintFactory.arithm(mySum, "<=", cstr.getAmount()));
+
+
+        // IntExp on = Solver.sum(vs.toArray(new IntVar[vs.size()]));
         if (cstr.getInvolvedNodes().equals(rp.getSourceModel().getMapping().getAllNodes())) {
-            s.post(s.eq(on, rp.getFutureRunningVMs().size()));
+            s.post(IntConstraintFactory.arithm(mySum, "=", rp.getFutureRunningVMs().size()));
+            //s.post(s.eq(on, rp.getFutureRunningVMs().size()));
         }
-        s.post(s.leq(on, cstr.getAmount()));
+        //s.post(s.leq(on, cstr.getAmount()));
         return true;
     }
 

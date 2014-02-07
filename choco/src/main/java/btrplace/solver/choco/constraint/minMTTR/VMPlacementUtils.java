@@ -63,7 +63,7 @@ public final class VMPlacementUtils {
         Mapping m = rp.getSourceModel().getMapping();
         if (m.isRunning(vm)) {
             int curPos = rp.getNode(m.getVMLocation(vm));
-            return rp.getVMAction(vm).getDSlice().getHoster().canBeInstantiatedTo(curPos);
+            return rp.getVMAction(vm).getDSlice().getHoster().contains(curPos);
         }
         return false;
     }

@@ -34,6 +34,7 @@ import solver.constraints.IntConstraintFactory;
 import solver.constraints.LogicalConstraintFactory;
 import solver.variables.BoolVar;
 import solver.variables.IntVar;
+import solver.variables.Task;
 import solver.variables.VariableFactory;
 
 
@@ -118,7 +119,8 @@ public class RelocatableVMModel implements KeepRunningVMModel {
         //s.post(s.leq(duration, cSlice.getDuration()));
         //s.post(s.leq(duration, dSlice.getDuration()));
         s.post(IntConstraintFactory.arithm(duration, "<=", dSlice.getDuration()));
-        s.post(s.eq(cSlice.getEnd(), s.plus(dSlice.getStart(), duration)));
+        Task t = VariableFactory.task(dSlice.getStart(), duration, cSlice.getEnd());
+        //s.post(s.eq(cSlice.getEnd(), s.plus(dSlice.getStart(), duration)));
 
         //s.post(s.leq(cSlice.getDuration(), p.getEnd()));
         s.post(IntConstraintFactory.arithm(cSlice.getDuration(), "<=", p.getEnd()));
@@ -244,7 +246,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
      * Tells if the VM can be migrated or re-instantiated.
      *
      * @return a variable instantiated to {@code 0} for a migration based relocation or {@code 1}
-     *         for a re-instantiation based relocation
+     * for a re-instantiation based relocation
      */
     public IntVar getRelocationMethod() {
         return method;
