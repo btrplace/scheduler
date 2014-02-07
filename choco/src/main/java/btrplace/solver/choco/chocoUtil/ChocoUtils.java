@@ -24,7 +24,6 @@ import solver.constraints.IntConstraintFactory;
 import solver.variables.BoolVar;
 import solver.variables.IntVar;
 import solver.variables.VariableFactory;
-import util.tools.ArrayUtils;
 
 import java.util.Arrays;
 
@@ -119,8 +118,8 @@ public final class ChocoUtils {
      */
     public static void nth(Solver s, IntVar index, IntVar[] array, IntVar var) {
 
-        s.post(new ElementV(ArrayUtils.append(array,
-                new IntVar[]{index, var}), 0, s.getEnvironment()));
+        s.post(IntConstraintFactory.element(var, array, index, 0));/*new ElementV(ArrayUtils.append(array,
+                new IntVar[]{index, var}), 0, s.getEnvironment())); */
     }
 
     /**

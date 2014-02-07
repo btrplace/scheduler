@@ -81,17 +81,39 @@ public class MovingVMs implements VariableSelector<IntVar> {
 
     @Override
     public boolean hasNext() {
-        throw new UnsupportedOperationException();
+        return idx < actions.size();
+        //throw new UnsupportedOperationException();
     }
+
+    private IntVar v = null;
+    private int idx = 0;
 
     @Override
     public void advance() {
-        throw new UnsupportedOperationException();
+        int i = 0;
+        for (VMActionModel a : actions) {
+            if (!a.getDSlice().getHoster().instantiated()) {
+                VM vm = a.getVM();
+                Node nId = map.getVMLocation(vm);
+                if (nId != null) {
+                    //VM was running
+                    Slice slice = a.getDSlice();
+                    if (!slice.getHoster().contains(rp.getNode(nId))) {
+                        /*v = slice.getHoster();
+                        break;*/
+                        idx = i;
+                        break;
+                    }
+                }
+            }
+            i++;
+        }
     }
 
     @Override
     public IntVar getVariable() {
-        for (VMActionModel a : actions) {
+        return actions.get(idx).getDSlice().getHoster();
+        /*for (VMActionModel a : actions) {
             if (!a.getDSlice().getHoster().instantiated()) {
                 VM vm = a.getVM();
                 Node nId = map.getVMLocation(vm);
@@ -105,6 +127,6 @@ public class MovingVMs implements VariableSelector<IntVar> {
             }
         }
         rp.getLogger().debug("{} - No more VMs to handle", label);
-        return null;
+        return null;           */
     }
 }

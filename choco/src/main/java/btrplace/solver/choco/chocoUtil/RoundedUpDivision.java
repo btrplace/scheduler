@@ -19,8 +19,12 @@ package btrplace.solver.choco.chocoUtil;
 
 
 import solver.constraints.IntConstraint;
+import solver.constraints.Propagator;
+import solver.constraints.PropagatorPriority;
 import solver.exception.ContradictionException;
+import solver.variables.EventType;
 import solver.variables.IntVar;
+import util.ESat;
 
 /**
  * A constraint to enforce {@code a == b / q} where {@code q} is a real and {@code a} and {@code b} are
@@ -37,90 +41,116 @@ import solver.variables.IntVar;
  */
 public class RoundedUpDivision extends IntConstraint<IntVar> {
 
-    private double q;
-
-    private IntVar a, b;
+    private double qq;
 
     /**
      * Make a new constraint.
      */
     public RoundedUpDivision(IntVar a, IntVar b, double q) {
-        super(a, b);
-        this.a = a;
-        this.b = b;
-        this.q = q;
+        super(new IntVar[]{a, b}, a.getSolver());
+        qq = q;
+        setPropagators(new RoundedUpDivisionPropagator(vars, q));
     }
 
-    private int div(int b) {
-        return (int) Math.ceil((double) b / q);
+    @Override
+    public ESat isSatisfied(int[] values) {
+        return ESat.eval(values[0] == (int) Math.ceil((double) values[1] / qq));
     }
 
-    private int multLB(int a) {
-        if ((a - 1 * q) % 1 == 0) {
-            return (int) ((a - 1) * q + 1);
+    @Override
+    public String toString() {
+        return new StringBuilder(vars[0].toString()).append(" = ").append(vars[1].toString()).append('/').append(qq).toString();
+    }
+
+    class RoundedUpDivisionPropagator extends Propagator<IntVar> {
+
+        private double q;
+
+        public RoundedUpDivisionPropagator(IntVar[] vs, double qq) {
+            super(vs, PropagatorPriority.BINARY, true);
+            this.q = qq;
         }
-        return (int) Math.ceil(q * (a - 1));
-    }
 
-    @Override
-    public void awake() throws ContradictionException {
-        awakeOnInf(0);
-        awakeOnSup(0);
-        awakeOnInf(1);
-        awakeOnSup(1);
-    }
-
-    @Override
-    public void propagate() throws ContradictionException {
-        if (a.getLB() != div(b.getLB())
-                || a.getUB() != div(b.getUB())) {
-            fail();
+        @Override
+        protected int getPropagationConditions(int vIdx) {
+            return EventType.DECUPP.mask + EventType.INCLOW.mask + EventType.INSTANTIATE.mask;
         }
-    }
 
-    @Override
-    public void awakeOnInf(int i) throws ContradictionException {
-        if (i == 1) {
-            a.setInf(div(b.getLB()));
-        } else {
-            b.setInf(multLB(a.getLB()));
+        @Override
+        public ESat isEntailed() {
+            if (vars[0].getDomainSize() == 1 && vars[1].getDomainSize() == 1) {
+                return ESat.eval(vars[0].getValue() == (int) Math.ceil((double) vars[1].getValue() / q));
+            }
+            return ESat.UNDEFINED;
         }
-        constAwake(false);
-    }
 
-    @Override
-    public void awakeOnSup(int i) throws ContradictionException {
-        if (i == 1) {
-            a.setSup(div(b.getUB()));
-        } else {
-            b.setSup((int) Math.floor(q * a.getUB()));
+        private int div(int b) {
+            return (int) Math.ceil((double) b / q);
         }
-        constAwake(false);
-    }
 
-    @Override
-    public void awakeOnInst(int i) throws ContradictionException {
-        if (i == 1) {
-            a.setVal(div(b.getValue()));
-        } else {
-            b.setInf(multLB(a.getLB()));
-            b.setSup((int) Math.floor(q * a.getUB()));
+        private int multLB(int a) {
+            if ((a - 1 * q) % 1 == 0) {
+                return (int) ((a - 1) * q + 1);
+            }
+            return (int) Math.ceil(q * (a - 1));
         }
-        constAwake(false);
-    }
 
-    @Override
-    public boolean isSatisfied(int[] values) {
-        return values[0] == (int) Math.ceil((double) values[1] / q);
-    }
+        @Override
+        public void propagate(int evtMask) throws ContradictionException {
+            filter();
+            if (vars[0].getLB() != div(vars[1].getLB())
+                    || vars[0].getUB() != div(vars[1].getUB())) {
+                this.contradiction(null, "");
+            }
+        }
 
-    @Override
-    public String pretty() {
-        return new StringBuilder(a.toString()).append(" = ").append(b.toString()).append('/').append(q).toString();
-    }
+        private boolean filter() throws ContradictionException {
+            boolean fix = awakeOnInf(0);
+            fix |= awakeOnSup(0);
+            fix |= awakeOnInf(1);
+            fix |= awakeOnSup(1);
+            return fix;
+        }
 
-    @Override
-    public int getFilteredEventMask(int idx) {
-        return IntVarEvent.INSTINT_MASK | IntVarEvent.INCINF_MASK | IntVarEvent.DECSUP_MASK;
+        @Override
+        public void propagate(int idx, int mask) throws ContradictionException {
+            do {
+                /*if (EventType.isInclow(mask)) {
+                    awakeOnInf(idx);
+                }
+                if (EventType.isDecupp(mask)) {
+                    awakeOnSup(idx);
+                }
+                if (EventType.isInstantiate(mask)) {
+                    awakeOnInst(idx);
+                } */
+            } while (filter());
+        }
+
+
+        public boolean awakeOnInf(int i) throws ContradictionException {
+            if (i == 1) {
+                return vars[0].updateLowerBound(div(vars[1].getLB()), aCause);
+            } else {
+                return vars[1].updateLowerBound(multLB(vars[0].getLB()), aCause);
+            }
+        }
+
+        public boolean awakeOnSup(int i) throws ContradictionException {
+            if (i == 1) {
+                return vars[0].updateUpperBound(div(vars[1].getUB()), aCause);
+            } else {
+                return vars[1].updateUpperBound((int) Math.floor(q * vars[0].getUB()), aCause);
+            }
+        }
+
+        /*public boolean awakeOnInst(int i) throws ContradictionException {
+            if (i == 1) {
+                vars[0].instantiateTo(div(vars[1].getValue()), aCause);
+            } else {
+                return vars[1].updateLowerBound(multLB(vars[0].getLB()), aCause) ||
+                      vars[1].updateUpperBound((int) Math.floor(q * vars[0].getUB()), aCause);
+            }
+        } */
     }
 }
