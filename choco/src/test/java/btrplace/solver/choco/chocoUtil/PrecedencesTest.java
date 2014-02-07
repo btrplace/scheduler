@@ -20,6 +20,9 @@ package btrplace.solver.choco.chocoUtil;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Solver;
+import solver.variables.IntVar;
+import solver.variables.VF;
 
 /**
  * Unit tests for {@link Precedences}.
@@ -39,19 +42,19 @@ public class PrecedencesTest {
         IntVar[] ends = new IntVar[5];
         int[] others = new int[5];
         others[0] = 0;
-        ends[0] = s.makeConstantIntVar(1);
+        ends[0] = VF.fixed(1, s);
         others[1] = 0;
-        ends[1] = s.makeConstantIntVar(3);
+        ends[1] = VF.fixed(3, s);
         others[2] = 1;
-        ends[2] = s.makeConstantIntVar(2);
+        ends[2] = VF.fixed(2, s);
         others[3] = 1;
-        ends[3] = s.makeConstantIntVar(4);
+        ends[3] = VF.fixed(4, s);
         others[4] = 2;
-        ends[4] = s.makeConstantIntVar(5);
+        ends[4] = VF.fixed(5, s);
 
 
-        IntVar host = s.createEnumIntVar("host", 0, 2);
-        IntVar start = s.createBoundIntVar("start", 0, 5);
+        IntVar host = VF.enumerated("host", 0, 2, s);
+        IntVar start = VF.bounded("start", 0, 5, s);
         /*
            If host == 0, consume = 3,4,5
            If host == 1, consume = 4,5
@@ -76,11 +79,11 @@ public class PrecedencesTest {
         IntVar[] ends = new IntVar[3];
         int[] others = new int[3];
         others[0] = 0;
-        ends[0] = s.createBoundIntVar("ends[0]", 1, 2);
+        ends[0] = VF.bounded("ends[0]", 1, 2, s);
         others[1] = 0;
-        ends[1] = s.createBoundIntVar("ends[1]", 1, 3);
+        ends[1] = VF.bounded("ends[1]", 1, 3, s);
         others[2] = 0;
-        ends[2] = s.createBoundIntVar("ends[2]", 1, 4);
+        ends[2] = VF.bounded("ends[2]", 1, 4, s);
 
         /*
          on host 0, 2 * 2 * 2 -> 8
@@ -90,8 +93,8 @@ public class PrecedencesTest {
          16 * 9 * 16 + 27 * 4 * 16 + 32 * 4 * 9
          */
 
-        IntVar host = s.createEnumIntVar("host", 0, 0);
-        IntVar start = s.createBoundIntVar("start", 0, 5);
+        IntVar host = VF.enumerated("host", 0, 0, s);
+        IntVar start = VF.bounded("start", 0, 5, s);
         Precedences p = new Precedences(s.getEnvironment(), host, start, others, ends);
         s.post(p);
         Boolean ret = s.solveAll();

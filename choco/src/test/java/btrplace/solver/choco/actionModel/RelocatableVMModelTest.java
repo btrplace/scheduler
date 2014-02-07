@@ -38,6 +38,9 @@ import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Solver;
+import solver.constraints.IntConstraintFactory;
+import solver.exception.ContradictionException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,8 +73,8 @@ public class RelocatableVMModelTest {
                 .setDurationEvaluators(dev)
                 .labelVariables()
                 .build();
-        rp.getNodeActions()[0].getState().setVal(1);
-        rp.getNodeActions()[1].getState().setVal(1);
+        rp.getNodeActions()[0].getState().instantiateTo(1, null);
+        rp.getNodeActions()[1].getState().instantiateTo(1, null);
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm1);
         Assert.assertTrue(am.getRelocationMethod().instantiatedTo(0));
         Assert.assertEquals(vm1, am.getVM());
@@ -88,7 +91,8 @@ public class RelocatableVMModelTest {
 
         //No VMs on n1, discrete mode
         Solver s = rp.getSolver();
-        s.post(s.eq(rp.getNbRunningVMs()[rp.getNode(n1)], 0));
+
+        s.post(IntConstraintFactory.arithm(rp.getNbRunningVMs()[rp.getNode(n1)], "=", 0));
 
         ReconfigurationPlan p = rp.solve(0, false);
 
@@ -122,12 +126,12 @@ public class RelocatableVMModelTest {
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .setDurationEvaluators(dev)
                 .build();
-        rp.getNodeActions()[0].getState().setVal(1);
-        rp.getNodeActions()[1].getState().setVal(1);
+        rp.getNodeActions()[0].getState().instantiateTo(1, null);
+        rp.getNodeActions()[1].getState().instantiateTo(1, null);
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm1);
 
         //No VMs on n2
-        rp.getNbRunningVMs()[rp.getNode(n2)].setVal(0);
+        rp.getNbRunningVMs()[rp.getNode(n2)].instantiateTo(0, null);
 
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
@@ -241,7 +245,7 @@ public class RelocatableVMModelTest {
                 .setManageableVMs(map.getAllVMs())
                 .build();
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
-        am.getDSlice().getHoster().setVal(rp.getNode(n2));
+        am.getDSlice().getHoster().instantiateTo(rp.getNode(n2), null);
         new CMinMTTR().inject(rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
@@ -288,7 +292,7 @@ public class RelocatableVMModelTest {
                 .setManageableVMs(map.getAllVMs())
                 .build();
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
-        am.getDSlice().getHoster().setVal(rp.getNode(n2));
+        am.getDSlice().getHoster().instantiateTo(rp.getNode(n2), null);
         new CMinMTTR().inject(rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
@@ -329,8 +333,8 @@ public class RelocatableVMModelTest {
                 .setManageableVMs(map.getAllVMs())
                 .build();
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
-        am.getRelocationMethod().setVal(1);
-        am.getDSlice().getHoster().setVal(rp.getNode(n2));
+        am.getRelocationMethod().instantiateTo(1, null);
+        am.getDSlice().getHoster().instantiateTo(rp.getNode(n2), null);
         new CMinMTTR().inject(rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
@@ -371,8 +375,8 @@ public class RelocatableVMModelTest {
                 .setManageableVMs(map.getAllVMs())
                 .build();
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
-        am.getRelocationMethod().setVal(0);
-        am.getDSlice().getHoster().setVal(rp.getNode(n2));
+        am.getRelocationMethod().instantiateTo(0, null);
+        am.getDSlice().getHoster().instantiateTo(rp.getNode(n2), null);
         new CMinMTTR().inject(rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);

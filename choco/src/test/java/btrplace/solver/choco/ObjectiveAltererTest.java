@@ -22,6 +22,8 @@ import btrplace.model.Model;
 import btrplace.solver.SolverException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.variables.IntVar;
+import solver.variables.VF;
 
 /**
  * Unit tests for {@link btrplace.solver.choco.ObjectiveAlterer}.
@@ -34,8 +36,8 @@ public class ObjectiveAltererTest {
     public void testBasic() throws SolverException {
         Model mo = new DefaultModel();
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
-        IntVar obj = rp.getSolver().createBoundIntVar("obj", 10, 1000);
-        rp.getSolver().setObjective(obj);
+        IntVar obj = VF.bounded("obj", 10, 1000, rp.getSolver());
+        //rp.getSolver().setObjective(obj);
         ObjectiveAlterer oa = new ObjectiveAlterer(rp) {
             @Override
             public int tryNewValue(int currentValue) {

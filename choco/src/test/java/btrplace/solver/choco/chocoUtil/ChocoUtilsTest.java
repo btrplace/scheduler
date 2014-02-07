@@ -20,6 +20,10 @@ package btrplace.solver.choco.chocoUtil;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Solver;
+import solver.exception.ContradictionException;
+import solver.variables.IntVar;
+import solver.variables.VF;
 
 /**
  * Unit tests for {@link ChocoUtils}.
@@ -31,16 +35,16 @@ public class ChocoUtilsTest {
     @Test
     public void testGetNextContiguous() throws ContradictionException {
         Solver s = new Solver();
-        IntVar v = s.createEnumIntVar("foo", 0, 100);
+        IntVar v = VF.enumerated("foo", 0, 100, s);
 
         //1-3 5 9 11-15 17 25-50
-        v.remVal(0);
+        v.removeValue(0, null);
         int[] bounds = ChocoUtils.getNextContiguousValues(v, 0);
         //System.out.println(ChocoUtils.prettyContiguous(v));
         Assert.assertEquals(bounds[0], 1);
         Assert.assertEquals(bounds[1], 100);
 
-        v.remVal(4);
+        v.removeValue(4, null);
         bounds = ChocoUtils.getNextContiguousValues(v, 1);
         //System.out.println(ChocoUtils.prettyContiguous(v));
         Assert.assertEquals(bounds[0], 1);

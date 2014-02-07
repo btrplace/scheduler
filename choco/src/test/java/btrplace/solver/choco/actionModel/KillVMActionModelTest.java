@@ -28,6 +28,7 @@ import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.exception.ContradictionException;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -69,7 +70,7 @@ public class KillVMActionModelTest {
                 .setNextVMsStates(empty, empty, empty, map.getAllVMs())
                 .build();
 
-        rp.getNodeAction(n1).getState().setVal(rp.getVM(vm1));
+        rp.getNodeAction(n1).getState().instantiateTo(rp.getVM(vm1), null);
         //Common stuff
         for (VM vm : map.getAllVMs()) {
             KillVMActionModel m = (KillVMActionModel) rp.getVMAction(vm);

@@ -29,6 +29,8 @@ import btrplace.solver.choco.*;
 import btrplace.solver.choco.actionModel.VMActionModel;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.exception.ContradictionException;
+import solver.variables.IntVar;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -118,12 +120,12 @@ public class CShareableResourceTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
         VMActionModel avm1 = rp.getVMActions()[rp.getVM(vm1)];
         VMActionModel avm2 = rp.getVMActions()[rp.getVM(vm2)];
-        avm1.getDSlice().getHoster().setVal(0);
-        avm2.getDSlice().getHoster().setVal(1);
+        avm1.getDSlice().getHoster().instantiateTo(0, null);
+        avm2.getDSlice().getHoster().instantiateTo(1, null);
         CShareableResource rcm = (CShareableResource) rp.getView(btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo");
         //Basic consumption for the VMs. If would be safe to use Preserve, but I don't want:D
-        rcm.getVMsAllocation()[rp.getVM(vm1)].setInf(2);
-        rcm.getVMsAllocation()[rp.getVM(vm2)].setInf(3);
+        rcm.getVMsAllocation()[rp.getVM(vm1)].updateLowerBound(2, null);
+        rcm.getVMsAllocation()[rp.getVM(vm2)].updateLowerBound(3, null);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         Assert.assertTrue(rcm.getVirtualUsage(0).instantiatedTo(2));
@@ -190,10 +192,10 @@ public class CShareableResourceTest {
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
         VMActionModel avm1 = rp.getVMActions()[rp.getVM(vm1)];
-        avm1.getDSlice().getHoster().setVal(0);
+        avm1.getDSlice().getHoster().instantiateTo(0, null);
         CShareableResource rcm = (CShareableResource) rp.getView(btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo");
         //Basic consumption for the VMs. If would be safe to use Preserve, but I don't want:D
-        rcm.getVMsAllocation()[rp.getVM(vm2)].setInf(4);
+        rcm.getVMsAllocation()[rp.getVM(vm2)].updateLowerBound(4, null);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNull(p);
     }

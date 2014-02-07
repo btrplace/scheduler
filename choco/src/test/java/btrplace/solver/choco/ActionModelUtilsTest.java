@@ -26,6 +26,9 @@ import btrplace.solver.choco.actionModel.ActionModelVisitor;
 import btrplace.solver.choco.actionModel.VMActionModel;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Solver;
+import solver.variables.IntVar;
+import solver.variables.VF;
 
 import java.util.List;
 
@@ -115,24 +118,24 @@ public class ActionModelUtilsTest {
 
         public MockActionModel(Solver s, int nb) {
             Model mo = new DefaultModel();
-            st = s.createBoundIntVar("start" + nb, nb, nb + 1);
-            ed = s.createBoundIntVar("end" + nb, nb, nb + 1);
-            d = s.createBoundIntVar("duration" + nb, nb, nb + 1);
-            h = s.createBoundIntVar("hoster" + nb, nb, nb + 1);
-            c = s.createBoundIntVar("cost" + nb, nb, nb + 1);
-            state = s.createBoundIntVar("state" + nb, nb, nb + 1);
+            st = VF.bounded("start" + nb, nb, nb + 1, s);
+            ed = VF.bounded("end" + nb, nb, nb + 1, s);
+            d = VF.bounded("duration" + nb, nb, nb + 1, s);
+            h = VF.bounded("hoster" + nb, nb, nb + 1, s);
+            c = VF.bounded("cost" + nb, nb, nb + 1, s);
+            state = VF.bounded("state" + nb, nb, nb + 1, s);
             if (nb % 2 == 0) {
                 cSlice = new Slice(mo.newVM(),
-                        s.createBoundIntVar("cS" + nb + "-st", nb, nb + 1),
-                        s.createBoundIntVar("cS" + nb + "-ed", nb, nb + 1),
-                        s.createBoundIntVar("cS" + nb + "-d", nb, nb + 1),
-                        s.createBoundIntVar("cS" + nb + "-h", nb, nb + 1));
+                        VF.bounded("cS" + nb + "-st", nb, nb + 1, s),
+                        VF.bounded("cS" + nb + "-ed", nb, nb + 1, s),
+                        VF.bounded("cS" + nb + "-d", nb, nb + 1, s),
+                        VF.bounded("cS" + nb + "-h", nb, nb + 1, s));
             } else {
                 dSlice = new Slice(mo.newVM(),
-                        s.createBoundIntVar("dS" + nb + "-st", nb, nb + 1),
-                        s.createBoundIntVar("dS" + nb + "-ed", nb, nb + 1),
-                        s.createBoundIntVar("dS" + nb + "-d", nb, nb + 1),
-                        s.createBoundIntVar("dS" + nb + "-h", nb, nb + 1));
+                        VF.bounded("dS" + nb + "-st", nb, nb + 1, s),
+                        VF.bounded("dS" + nb + "-ed", nb, nb + 1, s),
+                        VF.bounded("dS" + nb + "-d", nb, nb + 1, s),
+                        VF.bounded("dS" + nb + "-h", nb, nb + 1, s));
             }
         }
 

@@ -20,6 +20,11 @@ package btrplace.solver.choco.chocoUtil;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Solver;
+import solver.constraints.Constraint;
+import solver.constraints.IntConstraintFactory;
+import solver.variables.IntVar;
+import solver.variables.VF;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -57,11 +62,11 @@ public class BinPackingTest {
         sizes = new IntVar[nItems];
         bins = new IntVar[nItems];
         for (int i = 0; i < nBins; i++) {
-            loads[i] = s.createBoundIntVar("l" + i, 0, capa[i]);
+            loads[i] = VF.bounded("l" + i, 0, capa[i], s);
         }
         for (int i = 0; i < nItems; i++) {
-            sizes[i] = s.createIntegerConstant("s" + i, height[i]);
-            bins[i] = s.createEnumIntVar("b" + i, 0, nBins);
+            sizes[i] = VF.fixed("s" + i, height[i], s);
+            bins[i] = VF.enumerated("b" + i, 0, nBins, s);
         }
         Constraint cPack = new BinPacking(s.getEnvironment(), loads, sizes, bins);
         s.post(cPack);
@@ -88,12 +93,12 @@ public class BinPackingTest {
         sizes = new IntVar[nItems];
         bins = new IntVar[nItems];
         for (int i = 0; i < nBins; i++) {
-            loads[i] = s.createBoundIntVar("l" + i, 0, 20);
+            loads[i] = VF.bounded("l" + i, 0, 20, s);
         }
         Random rnd = new Random();
         for (int i = 0; i < nItems; i++) {
-            sizes[i] = s.createIntegerConstant("s" + i, rnd.nextInt(4) + 1);
-            bins[i] = s.createEnumIntVar("b" + i, 0, nBins);
+            sizes[i] = VF.fixed("s" + i, rnd.nextInt(4) + 1, s);
+            bins[i] = VF.enumerated("b" + i, 0, nBins, s);
         }
         Constraint cPack = new BinPacking(s.getEnvironment(), loads, sizes, bins);
         s.post(cPack);
@@ -116,7 +121,7 @@ public class BinPackingTest {
     @Test(sequential = true)
     public void testGuillaume() {
         modelPack(2, 100, 3, 30);
-        IntVar margeLoad = s.createBoundIntVar("margeLoad", 0, 50);
+        IntVar margeLoad = VF.bounded("margeLoad", 0, 50, s);
         s.post(nth(bins[0], loads, margeLoad));
         testPack(2);
     }
@@ -125,7 +130,7 @@ public class BinPackingTest {
      * var = array[index]
      */
     public Constraint nth(IntVar index, IntVar[] array, IntVar var) {
-        return new ElementV(ArrayUtils.append(array, new IntVar[]{index, var}), 0, s.getEnvironment());
+        return IntConstraintFactory.element(var, array, index, 0);
     }
 
 }

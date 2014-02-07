@@ -30,6 +30,10 @@ import btrplace.solver.choco.view.ChocoModelViewBuilder;
 import btrplace.solver.choco.view.ModelViewMapper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Solver;
+import solver.exception.ContradictionException;
+import solver.variables.IntVar;
+import solver.variables.VF;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -739,7 +743,7 @@ public class DefaultReconfigurationProblemTest {
                 .build();
 
         for (IntVar capa : rp.getNbRunningVMs()) {
-            capa.setSup(5);
+            capa.updateUpperBound(5, null);
         }
         //Restrict the capacity to 2 at most
         ReconfigurationPlan p = rp.solve(-1, false);
@@ -814,7 +818,7 @@ public class DefaultReconfigurationProblemTest {
         }
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
         Solver s = rp.getSolver();
-        IntVar nbNodes = s.createBoundIntVar("nbNodes", 1, map.getAllNodes().size());
+        IntVar nbNodes = VF.bounded("nbNodes", 1, map.getAllNodes().size(), s);
         IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
         s.post(new AtMostNValue(hosters, nbNodes));
 
@@ -845,7 +849,7 @@ public class DefaultReconfigurationProblemTest {
         }
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
         Solver s = rp.getSolver();
-        IntVar nbNodes = s.createBoundIntVar("nbNodes", 1, map.getAllNodes().size());
+        IntVar nbNodes = VF.bounded("nbNodes", 1, map.getAllNodes().size(), s);
         IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
         s.post(new AtMostNValue(hosters, nbNodes));
         s.setObjective(nbNodes);
@@ -886,7 +890,7 @@ public class DefaultReconfigurationProblemTest {
         }
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
         Solver s = rp.getSolver();
-        IntVar nbNodes = s.createBoundIntVar("nbNodes", 1, map.getOnlineNodes().size());
+        IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
         IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
         s.post(new IncreasingNValue(nbNodes, hosters, IncreasingNValue.Mode.ATLEAST));
         s.setObjective(nbNodes);
@@ -919,7 +923,7 @@ public class DefaultReconfigurationProblemTest {
         }
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
         Solver s = rp.getSolver();
-        final IntVar nbNodes = s.createBoundIntVar("nbNodes", 1, map.getOnlineNodes().size());
+        final IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
         IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
         s.post(new IncreasingNValue(nbNodes, hosters, IncreasingNValue.Mode.ATLEAST));
         s.setObjective(nbNodes);
@@ -960,7 +964,7 @@ public class DefaultReconfigurationProblemTest {
         }
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
         Solver s = rp.getSolver();
-        IntVar nbNodes = s.createBoundIntVar("nbNodes", 0, 0);
+        IntVar nbNodes = VF.bounded("nbNodes", 0, 0, s);
         IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
         s.post(new AtMostNValue(hosters, nbNodes));
         s.setObjective(nbNodes);

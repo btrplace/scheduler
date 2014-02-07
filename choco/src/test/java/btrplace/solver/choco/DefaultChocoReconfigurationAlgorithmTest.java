@@ -29,6 +29,9 @@ import btrplace.solver.choco.runner.SolvingStatistics;
 import btrplace.solver.choco.view.ModelViewMapper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Solver;
+import solver.variables.IntVar;
+import solver.variables.VF;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -106,7 +109,7 @@ public class DefaultChocoReconfigurationAlgorithmTest {
                     public boolean inject(ReconfigurationProblem rp) throws SolverException {
                         Mapping map = rp.getSourceModel().getMapping();
                         Solver s = rp.getSolver();
-                        IntVar nbNodes = s.createBoundIntVar("nbNodes", 1, map.getOnlineNodes().size());
+                        IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
                         IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
                         s.post(new AtMostNValue(hosters, nbNodes));
                         s.setObjective(nbNodes);

@@ -28,6 +28,9 @@ import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Solver;
+import solver.constraints.IntConstraintFactory;
+import solver.exception.ContradictionException;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -57,7 +60,7 @@ public class SuspendVMModelTest {
                 .labelVariables()
                 .setNextVMsStates(new HashSet<VM>(), new HashSet<VM>(), map.getAllVMs(), new HashSet<VM>())
                 .build();
-        rp.getNodeActions()[0].getState().setVal(1);
+        rp.getNodeActions()[0].getState().instantiateTo(1, null);
         SuspendVMModel m = (SuspendVMModel) rp.getVMActions()[0];
         Assert.assertEquals(vm1, m.getVM());
         Assert.assertNull(m.getDSlice());
@@ -98,9 +101,9 @@ public class SuspendVMModelTest {
                 .build();
         SuspendVMModel m1 = (SuspendVMModel) rp.getVMActions()[rp.getVM(vm1)];
         SuspendVMModel m2 = (SuspendVMModel) rp.getVMActions()[rp.getVM(vm2)];
-        rp.getNodeActions()[0].getState().setVal(1);
+        rp.getNodeActions()[0].getState().instantiateTo(1, null);
         Solver s = rp.getSolver();
-        s.post(s.geq(m2.getStart(), m1.getEnd()));
+        s.post(IntConstraintFactory.arithm(m2.getStart(), ">=", m1.getEnd()));
 
         ReconfigurationPlan p = rp.solve(0, false);
 
