@@ -50,7 +50,7 @@ public abstract class ObjectiveAlterer {
      */
     public ObjectiveAlterer(ReconfigurationProblem p) {
         this.rp = p;
-        obj = p.getSolver().getObjective();
+        //obj = p.getSolver().getObjective();
     }
 
     /**

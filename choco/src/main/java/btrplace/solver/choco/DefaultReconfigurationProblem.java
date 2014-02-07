@@ -37,14 +37,11 @@ import org.slf4j.LoggerFactory;
 import solver.ResolutionPolicy;
 import solver.Solver;
 import solver.exception.ContradictionException;
-import solver.objective.IntObjectiveManager;
 import solver.search.loop.monitors.SMF;
 import solver.variables.IntVar;
-import solver.variables.Variable;
 import solver.variables.VariableFactory;
 import util.ESat;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
 
@@ -59,7 +56,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private boolean useLabels = false;
 
-    private Variable objective;
+    //TODO: What about real variables ?
+    private IntVar objective;
     /**
      * The maximum duration of a plan in seconds: One hour.
      */
@@ -197,11 +195,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             //solver.setTimeLimit(timeLimit * 1000);
         }
 
-        if (objAlterer == null) {
+        /*if (objAlterer == null) {
             solver.getConfiguration().putBoolean(choco.kernel.solver.Configuration.STOP_AT_FIRST_SOLUTION, !optimize);
         } else if (optimize) {
             solver.getConfiguration().putBoolean(choco.kernel.solver.Configuration.STOP_AT_FIRST_SOLUTION, true);
-        }
+        } */
         //solver.getConfiguration().putInt(Configuration.SOLUTION_POOL_CAPACITY, Integer.MAX_VALUE);
         //solver.generateSearchStrategy();
 
@@ -282,8 +280,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * @throws SolverException if an error occurred while trying to use the alterer
      */
     private void launchWithAlterer() throws SolverException {
-        BranchAndBound bb = (BranchAndBound) solver.getSearchStrategy();
-        IObjectiveManager obj = bb.getObjectiveManager();
+        /*throw new UnsupportedOperationException();
+        AbstractSearchLoop bb = solver.getSearchLoop();
+        //BranchAndBound bb = (BranchAndBound) solver.getSearchStrategy();
+        IntObjectiveManager obj = (IntObjectiveManager) bb.getObjectivemanager();
+        //IObjectiveManager obj = bb.getObjectiveManager();
         Field f;
         try {
             f = IntObjectiveManager.class.getDeclaredField("targetBound");
@@ -303,7 +304,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                     throw new SolverException(model, "Unable to set the new target bound " + newBound + " for the objective " + solver.getObjective().getName() + ": " + e.getMessage(), e);
                 }
             } while (solver.nextSolution() == Boolean.TRUE);
-        }
+        }                           */
     }
 
     private void addContinuousResourceCapacities() {
@@ -652,7 +653,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public void setObjectiveAlterer(ObjectiveAlterer a) {
-        objAlterer = a;
+        throw new UnsupportedOperationException();
+        //objAlterer = a;
     }
 
     @Override
