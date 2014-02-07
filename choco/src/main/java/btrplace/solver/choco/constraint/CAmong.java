@@ -137,7 +137,6 @@ public class CAmong implements ChocoConstraint {
                     for (VM vm : runnings) {
                         IntVar assign = rp.getVMAction(vm).getDSlice().getHoster();
                         Constraint c = IntConstraintFactory.element(assign, grps, vmGrpId, 0, "detect");
-                        //new MyElement(assign, grps, vmGrpId, 0, MyElement.Sort.detect);
                         rp.getSolver().post(c);
                     }
                 } else {

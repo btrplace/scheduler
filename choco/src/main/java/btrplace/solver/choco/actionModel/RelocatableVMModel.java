@@ -69,7 +69,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
     private IntVar duration;
 
-    private IntVar stay;
+    private BoolVar stay;
 
     private int reInstantiateDuration;
 
@@ -78,7 +78,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
     /**
      * The relocation method. 0 for migration, 1 for relocation.
      */
-    private IntVar method;
+    private BoolVar method;
 
     /**
      * Make a new model.
@@ -129,7 +129,8 @@ public class RelocatableVMModel implements KeepRunningVMModel {
         s.post(IntConstraintFactory.arithm(dSlice.getEnd(), "<=", p.getEnd()));
 
         //If we allow re-instantiate, then the dSlice duration will consume necessarily after the forgeDuration
-        s.post(new BooleanChanneling(stay, duration, 0));
+        s.post(IntConstraintFactory.boolean_channeling(new BoolVar[]{stay}, duration, 0));
+        //s.post(new BooleanChanneling(stay, duration, 0));
 
         if (!getRelocationMethod().instantiated()) {
             //TODO: not very compliant with the ForgeActionModel but forge is useless for the moment
@@ -139,7 +140,8 @@ public class RelocatableVMModel implements KeepRunningVMModel {
             s.post(IntConstraintFactory.arithm(this.dSlice.getStart(), ">=", time));
             //s.post(s.geq(this.dSlice.getStart(), ChocoUtils.mult(s, method, forgeD)));
 
-            s.post(new BooleanChanneling(method, duration, reInstantiateDuration));
+            //s.post(new BooleanChanneling(method, duration, reInstantiateDuration));
+            s.post(IntConstraintFactory.boolean_channeling(new BoolVar[]{method}, duration, reInstantiateDuration));
         }
         state = VariableFactory.one(rp.getSolver());
     }

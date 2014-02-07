@@ -148,7 +148,8 @@ public class BootableNodeModel implements NodeActionModel {
           T = { 0, RP.end}
           He = T[St]
          */
-        s.post(new ElementV(new IntVar[]{VariableFactory.zero(s), rp.getEnd(), isOnline, hostingEnd}, 0, s.getEnvironment()));
+        s.post(IntConstraintFactory.element(hostingEnd, new IntVar[]{VariableFactory.zero(s), rp.getEnd()}, isOnline, 0));
+        //s.post(new ElementV(new IntVar[]{VariableFactory.zero(s), rp.getEnd(), isOnline, hostingEnd}, 0, s.getEnvironment()));
     }
 
     @Override

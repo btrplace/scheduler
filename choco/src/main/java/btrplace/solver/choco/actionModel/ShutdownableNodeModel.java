@@ -25,7 +25,6 @@ import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
-import solver.constraints.nary.element.Element;
 import solver.variables.BoolVar;
 import solver.variables.IntVar;
 import solver.variables.Task;
@@ -119,7 +118,8 @@ public class ShutdownableNodeModel implements NodeActionModel {
         */
         int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), ShutdownNode.class, e);
         duration = VariableFactory.enumerated(rp.makeVarLabel("shutdownableNode(", e, ").duration"), new int[]{0, d}, rp.getSolver());
-        s.post(new BooleanChanneling(isOnline, duration, 0));
+        s.post(IntConstraintFactory.boolean_channeling(new BoolVar[]{isOnline, isOffline}, duration, 0));
+        //s.post(new BooleanChanneling(isOnline, duration, 0));
 
         //The moment of shutdown action consume
         /* As */
@@ -147,7 +147,8 @@ public class ShutdownableNodeModel implements NodeActionModel {
           He = T[St]
          */
         //s.post(IntConstraintFactory.element())
-        s.post(new Element(new IntVar[]{start, rp.getEnd(), isOnline, hostingEnd}, 0, s.getEnvironment()));
+        s.post(IntConstraintFactory.element(hostingEnd, new IntVar[]{start, rp.getEnd()}, isOnline, 0));
+        //s.post(new Element(new IntVar[]{start, rp.getEnd(), isOnline, hostingEnd}, 0, s.getEnvironment()));
     }
 
 
