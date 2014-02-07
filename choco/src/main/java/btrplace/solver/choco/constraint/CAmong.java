@@ -25,8 +25,8 @@ import btrplace.model.constraint.Among;
 import btrplace.model.constraint.Fence;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.chocoUtil.MyElement;
 import solver.constraints.Constraint;
+import solver.constraints.IntConstraintFactory;
 import solver.variables.IntVar;
 import solver.variables.VariableFactory;
 
@@ -136,7 +136,8 @@ public class CAmong implements ChocoConstraint {
                     //We link the VM placement variable with the group variable
                     for (VM vm : runnings) {
                         IntVar assign = rp.getVMAction(vm).getDSlice().getHoster();
-                        Constraint c = new MyElement(assign, grps, vmGrpId, 0, MyElement.Sort.detect);
+                        Constraint c = IntConstraintFactory.element(assign, grps, vmGrpId, 0, "detect");
+                        //new MyElement(assign, grps, vmGrpId, 0, MyElement.Sort.detect);
                         rp.getSolver().post(c);
                     }
                 } else {
