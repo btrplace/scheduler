@@ -221,7 +221,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
 
         int nbIntVars = solver.retrieveIntVars().length;
-        int nbBoolVars = solver.retrieveBoolVars().length;
+        int nbBoolVars = 0; //TODO: solver.retrieveBoolVars().length;
         //int nbCstes = solver.retrieveIntVars();*/
         int nbCstrs = solver.getNbCstrs();
         getLogger().debug("{} constraints; Variables: {} ints, {} bools", nbCstrs, nbIntVars, nbBoolVars);

@@ -26,6 +26,8 @@ import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Fence;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
+import solver.Cause;
+import solver.exception.ContradictionException;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -66,7 +68,9 @@ public class CFence implements ChocoConstraint {
                 for (VM vm : runnings) {
                     Slice t = rp.getVMAction(vm).getDSlice();
                     Node n = nodes.iterator().next();
-                    if (!t.getHoster().instantiatedTo(rp.getNode(n))) {
+                    try {
+                        t.getHoster().instantiateTo(rp.getNode(n), Cause.Null);
+                    } catch (ContradictionException ex) {
                         rp.getLogger().error("Unable to force VM '{}' to be running on node '{}'", vm, n);
                         return false;
                     }
