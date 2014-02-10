@@ -100,7 +100,7 @@ public class CCumulatedResourceCapacity implements ChocoConstraint {
             vs.add(rcm.getVirtualUsage()[rp.getNode(u)]);
         }
         Solver s = rp.getSolver();
-        IntVar mySum = VariableFactory.bounded(rp.makeVarLabel("usage(", rcm.getIdentifier(), ")"), 0, Integer.MAX_VALUE, s);
+        IntVar mySum = VariableFactory.bounded(rp.makeVarLabel("usage(", rcm.getIdentifier(), ")"), 0, Integer.MAX_VALUE / 100, s);
         s.post(IntConstraintFactory.sum(vs.toArray(new IntVar[vs.size()]), mySum));
         s.post(IntConstraintFactory.arithm(mySum, "<=", cstr.getAmount()));
         //s.post(s.leq(Solver.sum(vs.toArray(new IntVar[vs.size()])), cstr.getAmount()));

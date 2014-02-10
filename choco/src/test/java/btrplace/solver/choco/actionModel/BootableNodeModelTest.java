@@ -29,6 +29,7 @@ import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Cause;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
 import solver.exception.ContradictionException;
@@ -71,7 +72,7 @@ public class BootableNodeModelTest {
                 .setDurationEvaluators(dev)
                 .build();
         BootableNodeModel na = (BootableNodeModel) rp.getNodeAction(n1);
-        na.getState().instantiateTo(1, null);
+        na.getState().instantiateTo(1, Cause.Null);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         System.out.println(p);
@@ -100,7 +101,7 @@ public class BootableNodeModelTest {
                 .setDurationEvaluators(dev)
                 .build();
         BootableNodeModel na = (BootableNodeModel) rp.getNodeAction(n1);
-        na.getState().instantiateTo(0, null);
+        na.getState().instantiateTo(0, Cause.Null);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         Assert.assertEquals(na.getDuration().getValue(), 0);
@@ -161,8 +162,8 @@ public class BootableNodeModelTest {
                 .build();
         BootableNodeModel na1 = (BootableNodeModel) rp.getNodeAction(n1);
         BootableNodeModel na2 = (BootableNodeModel) rp.getNodeAction(n2);
-        na1.getState().instantiateTo(1, null);
-        na2.getState().instantiateTo(1, null);
+        na1.getState().instantiateTo(1, Cause.Null);
+        na2.getState().instantiateTo(1, Cause.Null);
         Solver solver = rp.getSolver();
         solver.post(IntConstraintFactory.arithm(na1.getEnd(), "=", na2.getEnd()));
         Assert.assertNotNull(rp.solve(0, false));
@@ -182,8 +183,8 @@ public class BootableNodeModelTest {
                 .labelVariables()
                 .build();
         BootableNodeModel ma2 = (BootableNodeModel) rp.getNodeAction(n2);
-        ma2.getState().instantiateTo(1, null);
-        ma2.getStart().updateLowerBound(5, null);
+        ma2.getState().instantiateTo(1, Cause.Null);
+        ma2.getStart().updateLowerBound(5, Cause.Null);
         ReconfigurationPlan p = rp.solve(0, false);
         //ChocoLogging.flushLogs();
         Assert.assertNotNull(p);
@@ -212,9 +213,9 @@ public class BootableNodeModelTest {
                 .build();
 
         ShutdownableNodeModel sn1 = (ShutdownableNodeModel) rp.getNodeAction(n1);
-        sn1.getState().instantiateTo(0, null);
+        sn1.getState().instantiateTo(0, Cause.Null);
         BootableNodeModel bn4 = (BootableNodeModel) rp.getNodeAction(n4);
-        bn4.getState().instantiateTo(0, null);
+        bn4.getState().instantiateTo(0, Cause.Null);
 
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);

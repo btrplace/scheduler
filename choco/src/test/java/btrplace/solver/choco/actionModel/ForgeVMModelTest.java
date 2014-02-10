@@ -29,6 +29,7 @@ import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Cause;
 import solver.exception.ContradictionException;
 
 import java.util.Collections;
@@ -99,7 +100,7 @@ public class ForgeVMModelTest {
                 .build();
         //Force the node to get offline
         ShutdownableNodeModel n = (ShutdownableNodeModel) rp.getNodeAction(n1);
-        n.getState().instantiateTo(0, null);
+        n.getState().instantiateTo(0, Cause.Null);
 
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);

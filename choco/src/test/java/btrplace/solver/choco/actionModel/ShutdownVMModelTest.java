@@ -28,6 +28,7 @@ import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Cause;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
 import solver.exception.ContradictionException;
@@ -60,7 +61,7 @@ public class ShutdownVMModelTest {
                 .labelVariables()
                 .setNextVMsStates(map.getAllVMs(), new HashSet<VM>(), new HashSet<VM>(), new HashSet<VM>())
                 .build();
-        rp.getNodeActions()[0].getState().instantiateTo(1, null);
+        rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
         ShutdownVMModel m = (ShutdownVMModel) rp.getVMActions()[0];
         Assert.assertEquals(vm1, m.getVM());
         Assert.assertNull(m.getDSlice());
@@ -101,7 +102,7 @@ public class ShutdownVMModelTest {
                 .build();
         ShutdownVMModel m1 = (ShutdownVMModel) rp.getVMActions()[rp.getVM(vm1)];
         ShutdownVMModel m2 = (ShutdownVMModel) rp.getVMActions()[rp.getVM(vm2)];
-        rp.getNodeActions()[0].getState().instantiateTo(1, null);
+        rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
         Solver s = rp.getSolver();
         s.post(IntConstraintFactory.arithm(m2.getStart(), "<=", m1.getEnd()));
 

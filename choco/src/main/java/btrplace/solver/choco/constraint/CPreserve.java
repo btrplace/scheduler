@@ -25,6 +25,7 @@ import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.view.CShareableResource;
+import solver.Cause;
 import solver.exception.ContradictionException;
 import solver.variables.IntVar;
 
@@ -62,7 +63,7 @@ public class CPreserve implements ChocoConstraint {
                 int idx = rp.getVM(vm);
                 IntVar v = map.getVMsAllocation()[idx];
                 try {
-                    v.updateLowerBound(cstr.getAmount(), null);
+                    v.updateLowerBound(cstr.getAmount(), Cause.Null);
                 } catch (ContradictionException ex) {
                     rp.getLogger().error("Unable to set the '{}' consumption for VM '{}' to '{}'", cstr.getResource(), cstr.getAmount(), ex.getMessage());
                     return false;

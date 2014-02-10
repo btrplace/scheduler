@@ -23,6 +23,7 @@ import btrplace.solver.choco.actionModel.KeepRunningVMModel;
 import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import btrplace.solver.choco.chocoUtil.TaskScheduler;
+import solver.Cause;
 import solver.Solver;
 import solver.exception.ContradictionException;
 import solver.variables.BoolVar;
@@ -157,7 +158,7 @@ public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
                     // we set the cSlice duration to 0 to directly reduces the resource allocation
                     if (stay.instantiatedTo(1)) {
                         try {
-                            cSlice.getDuration().instantiateTo(0, null);
+                            cSlice.getDuration().instantiateTo(0, Cause.Null);
                         } catch (ContradictionException ex) {
                             rp.getLogger().info("Unable to set the cSlice duration of {} to 0", cSlice.getSubject());
                             return false;
@@ -171,7 +172,7 @@ public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
                     //(the allocation will be performed at the end of the reconfiguration process)
                     if (stay.instantiatedTo(1)) {
                         try {
-                            dSlice.getDuration().instantiateTo(0, null);
+                            dSlice.getDuration().instantiateTo(0, Cause.Null);
                         } catch (ContradictionException ex) {
                             rp.getLogger().info("Unable to set the dSlice duration of {} to 0", dSlice.getSubject());
                             return false;

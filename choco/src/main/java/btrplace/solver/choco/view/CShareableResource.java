@@ -31,6 +31,7 @@ import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.chocoUtil.RoundedUpDivision;
 import gnu.trove.list.array.TIntArrayList;
+import solver.Cause;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
 import solver.exception.ContradictionException;
@@ -98,7 +99,7 @@ public class CShareableResource implements ChocoModelView {
         for (int i = 0; i < nodes.length; i++) {
             Node nId = p.getNode(i);
             phyRcUsage[i] = VariableFactory.bounded(p.makeVarLabel("phyRcUsage('", r.getResourceIdentifier(), "', '", nId, "')"), 0, r.getCapacity(nodes[i]), p.getSolver());
-            virtRcUsage[i] = VariableFactory.bounded(p.makeVarLabel("virtRcUsage('", r.getResourceIdentifier(), "', '", nId, "')"), 0, Integer.MAX_VALUE, p.getSolver());
+            virtRcUsage[i] = VariableFactory.bounded(p.makeVarLabel("virtRcUsage('", r.getResourceIdentifier(), "', '", nId, "')"), 0, Integer.MAX_VALUE / 100, p.getSolver());
             ratios[i] = VariableFactory.real(p.makeVarLabel("overbook('", r.getResourceIdentifier(), "', '", nId, "')"), 1, UNCHECKED_RATIO, 0.01, p.getSolver());
         }
 
@@ -119,7 +120,7 @@ public class CShareableResource implements ChocoModelView {
             } else {
                 //We don't know about the next VM usage for the moment, -1 is used by default to allow to detect an
                 //non-updated value.
-                vmAllocation[i] = VariableFactory.bounded(p.makeVarLabel("vmAllocation('", r.getResourceIdentifier(), "', '", vmId, "')"), -1, Integer.MAX_VALUE, s);
+                vmAllocation[i] = VariableFactory.bounded(p.makeVarLabel("vmAllocation('", r.getResourceIdentifier(), "', '", vmId, "')"), -1, Integer.MAX_VALUE / 1000, s);
                 notNullUsage.add(vmAllocation[i]);
                 hosters.add(slice.getHoster());
             }
@@ -293,7 +294,7 @@ public class CShareableResource implements ChocoModelView {
             if (v.getLB() < 0) {
                 int prevUsage = rc.getConsumption(vm);
                 try {
-                    v.updateLowerBound(prevUsage, null);
+                    v.updateLowerBound(prevUsage, Cause.Null);
                 } catch (ContradictionException e) {
                     p.getLogger().error("Unable to set the minimal '{}' usage for '{}' to its current usage ({})",
                             rc.getResourceIdentifier(), vm, prevUsage);
@@ -301,7 +302,7 @@ public class CShareableResource implements ChocoModelView {
                 }
             } else {
                 try {
-                    v.updateLowerBound(v.getLB(), null);
+                    v.updateLowerBound(v.getLB(), Cause.Null);
                 } catch (ContradictionException e) {
                     p.getLogger().error("Unable to set the VM '{}' consumption to '{}'", rc.getResourceIdentifier(), v.getLB());
                     return false;
@@ -413,7 +414,7 @@ public class CShareableResource implements ChocoModelView {
         }
 
         try {
-            ratios[nIdx].updateBounds(r, r, null);
+            ratios[nIdx].updateBounds(r, r, Cause.Null);
             //ratios[nIdx].intersect(new RealIntervalConstant(r, r));
         } catch (ContradictionException ex) {
             rp.getLogger().error("Unable to set '{}' to {}", ratios[nIdx], r);
@@ -424,7 +425,7 @@ public class CShareableResource implements ChocoModelView {
         if (r == 1) {
             solver.post(IntConstraintFactory.arithm(phyRcUsage[nIdx], "=", virtRcUsage[nIdx]));
             try {
-                virtRcUsage[nIdx].updateUpperBound(phyRcUsage[nIdx].getUB(), null);
+                virtRcUsage[nIdx].updateUpperBound(phyRcUsage[nIdx].getUB(), Cause.Null);
             } catch (ContradictionException ex) {
                 rp.getLogger().error("Unable to restrict the virtual '{}' capacity of {} to {}: ", rp.getNode(nIdx), phyRcUsage[nIdx].getUB(), ex.getMessage());
                 return false;
@@ -436,7 +437,7 @@ public class CShareableResource implements ChocoModelView {
                 solver.post(new RoundedUpDivision(phyRcUsage[nIdx], virtRcUsage[nIdx], r));
             } else {
                 try {
-                    phyRcUsage[nIdx].instantiateTo(0, null);
+                    phyRcUsage[nIdx].instantiateTo(0, Cause.Null);
                 } catch (ContradictionException ex) {
                     rp.getLogger().error("Unable to restrict the physical '{}' capacity of {} to {}: {}", getResourceIdentifier(), rp.getNode(nIdx), maxPhy, ex.getMessage());
                     return false;

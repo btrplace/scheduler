@@ -33,6 +33,7 @@ import btrplace.solver.choco.constraint.ChocoConstraint;
 import btrplace.solver.choco.constraint.ChocoConstraintBuilder;
 import btrplace.solver.choco.runner.InstanceResult;
 import btrplace.solver.choco.runner.SolutionStatistics;
+import solver.Cause;
 import solver.exception.ContradictionException;
 import solver.search.measure.IMeasures;
 import solver.search.solution.Solution;
@@ -149,7 +150,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
 
         //Set the maximum duration
         try {
-            rp.getEnd().updateUpperBound(params.getMaxEnd(), null);
+            rp.getEnd().updateUpperBound(params.getMaxEnd(), Cause.Null);
         } catch (ContradictionException e) {
             rp.getLogger().error("Unable to restrict the maximum plan duration to {}", params.getMaxEnd());
             return null;

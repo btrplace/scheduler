@@ -28,6 +28,7 @@ import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Cause;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
 import solver.exception.ContradictionException;
@@ -65,8 +66,8 @@ public class ResumeVMModelTest {
                 .labelVariables()
                 .setNextVMsStates(new HashSet<VM>(), map.getAllVMs(), new HashSet<VM>(), new HashSet<VM>())
                 .build();
-        rp.getNodeActions()[0].getState().instantiateTo(1, null);
-        rp.getNodeActions()[1].getState().instantiateTo(1, null);
+        rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
+        rp.getNodeActions()[1].getState().instantiateTo(1, Cause.Null);
         ResumeVMModel m = (ResumeVMModel) rp.getVMActions()[0];
         Assert.assertEquals(vm1, m.getVM());
         Assert.assertNull(m.getCSlice());
@@ -115,8 +116,8 @@ public class ResumeVMModelTest {
                 .build();
         ResumeVMModel m1 = (ResumeVMModel) rp.getVMActions()[rp.getVM(vm1)];
         ResumeVMModel m2 = (ResumeVMModel) rp.getVMActions()[rp.getVM(vm2)];
-        rp.getNodeActions()[0].getState().instantiateTo(1, null);
-        rp.getNodeActions()[1].getState().instantiateTo(1, null);
+        rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
+        rp.getNodeActions()[1].getState().instantiateTo(1, Cause.Null);
         Solver s = rp.getSolver();
         s.post(IntConstraintFactory.arithm(m2.getStart(), ">=", m1.getEnd()));
 

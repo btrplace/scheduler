@@ -29,6 +29,7 @@ import btrplace.solver.choco.chocoUtil.ChocoUtils;
 import btrplace.solver.choco.constraint.minMTTR.CMinMTTR;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Cause;
 import solver.Solver;
 import solver.constraints.Constraint;
 import solver.constraints.IntConstraintFactory;
@@ -223,7 +224,7 @@ public class Issues {
         //model.attach(resources);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model).labelVariables().build();
         Solver solver = rp.getSolver();
-        rp.getNodeAction(n3).getState().instantiateTo(1, null);  // n3 goes online
+        rp.getNodeAction(n3).getState().instantiateTo(1, Cause.Null);  // n3 goes online
         solver.post(IntConstraintFactory.arithm(rp.getEnd(), "<=", 10));
         int NUMBER_OF_NODE = map.getAllNodes().size();
         // Extract all the state of the involved nodes (all nodes in this case)

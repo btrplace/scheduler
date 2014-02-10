@@ -24,6 +24,7 @@ import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Cause;
 import solver.exception.ContradictionException;
 
 /**
@@ -49,7 +50,7 @@ public class StayAwayVMModelTest {
                 .labelVariables()
                 .build();
 
-        rp.getNodeAction(n1).getState().instantiateTo(1, null);
+        rp.getNodeAction(n1).getState().instantiateTo(1, Cause.Null);
         StayAwayVMModel ma1 = (StayAwayVMModel) rp.getVMAction(vm1);
         StayAwayVMModel ma2 = (StayAwayVMModel) rp.getVMAction(vm2);
         Assert.assertEquals(vm1, ma1.getVM());

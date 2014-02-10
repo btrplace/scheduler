@@ -29,6 +29,7 @@ import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Cause;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
 import solver.exception.ContradictionException;
@@ -76,11 +77,11 @@ public class ShutdownableNodeModelTest {
                 .labelVariables()
                 .build();
         ShutdownableNodeModel ma = (ShutdownableNodeModel) rp.getNodeAction(n1);
-        ma.getState().instantiateTo(1, null);   //stay online
+        ma.getState().instantiateTo(1, Cause.Null);   //stay online
 
         //To make the result plan 10 seconds long
         BootableNodeModel ma2 = (BootableNodeModel) rp.getNodeAction(n2);
-        ma2.getState().instantiateTo(1, null); //go online
+        ma2.getState().instantiateTo(1, Cause.Null); //go online
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         System.out.println(p);
@@ -111,7 +112,7 @@ public class ShutdownableNodeModelTest {
                 .labelVariables()
                 .build();
         ShutdownableNodeModel ma = (ShutdownableNodeModel) rp.getNodeAction(n1);
-        ma.getState().instantiateTo(0, null);
+        ma.getState().instantiateTo(0, Cause.Null);
 
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
@@ -144,7 +145,7 @@ public class ShutdownableNodeModelTest {
                 .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .build();
         ShutdownableNodeModel ma = (ShutdownableNodeModel) rp.getNodeAction(n1);
-        ma.getState().instantiateTo(0, null);
+        ma.getState().instantiateTo(0, Cause.Null);
 
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
@@ -185,8 +186,8 @@ public class ShutdownableNodeModelTest {
                 .build();
         ShutdownableNodeModel ma1 = (ShutdownableNodeModel) rp.getNodeAction(n1);
         ShutdownableNodeModel ma2 = (ShutdownableNodeModel) rp.getNodeAction(n2);
-        ma1.getState().instantiateTo(0, null);
-        ma2.getState().instantiateTo(0, null);
+        ma1.getState().instantiateTo(0, Cause.Null);
+        ma2.getState().instantiateTo(0, Cause.Null);
 
         Solver solver = rp.getSolver();
         solver.post(IntConstraintFactory.arithm(ma2.getStart(), "=", ma1.getEnd()));
@@ -218,9 +219,9 @@ public class ShutdownableNodeModelTest {
                 .labelVariables()
                 .build();
         ShutdownableNodeModel ma1 = (ShutdownableNodeModel) rp.getNodeAction(n1);
-        ma1.getState().instantiateTo(0, null);
-        ma1.getHostingEnd().instantiateTo(0, null);
-        rp.getEnd().updateUpperBound(10, null);
+        ma1.getState().instantiateTo(0, Cause.Null);
+        ma1.getHostingEnd().instantiateTo(0, Cause.Null);
+        rp.getEnd().updateUpperBound(10, Cause.Null);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNull(p);
         System.out.println(p);
@@ -244,8 +245,8 @@ public class ShutdownableNodeModelTest {
                 .build();
         ShutdownableNodeModel ma1 = (ShutdownableNodeModel) rp.getNodeAction(n1);
         BootableNodeModel ma2 = (BootableNodeModel) rp.getNodeAction(n2);
-        ma1.getState().instantiateTo(0, null);
-        ma2.getState().instantiateTo(1, null);
+        ma1.getState().instantiateTo(0, Cause.Null);
+        ma2.getState().instantiateTo(1, Cause.Null);
         Solver solver = rp.getSolver();
         solver.post(IntConstraintFactory.arithm(ma1.getEnd(), "=", ma2.getStart()));
         ReconfigurationPlan p = rp.solve(0, false);
@@ -280,15 +281,15 @@ public class ShutdownableNodeModelTest {
                 .labelVariables()
                 .build();
         ShutdownableNodeModel shd = (ShutdownableNodeModel) rp.getNodeAction(n1);
-        shd.getState().instantiateTo(1, null); //Stay online
+        shd.getState().instantiateTo(1, Cause.Null); //Stay online
 
         ShutdownableNodeModel shd2 = (ShutdownableNodeModel) rp.getNodeAction(n2);
-        shd2.getState().instantiateTo(0, null);  //Go offline
-        shd2.getStart().instantiateTo(1, null); //Start going offline at 1
+        shd2.getState().instantiateTo(0, Cause.Null);  //Go offline
+        shd2.getStart().instantiateTo(1, Cause.Null); //Start going offline at 1
 
         BootableNodeModel bn = (BootableNodeModel) rp.getNodeAction(n3);
-        bn.getState().instantiateTo(1, null); //Go online
-        bn.getStart().instantiateTo(6, null); //Start going online at 6
+        bn.getState().instantiateTo(1, Cause.Null); //Go online
+        bn.getStart().instantiateTo(6, Cause.Null); //Start going online at 6
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         System.out.println(p);
@@ -334,9 +335,9 @@ public class ShutdownableNodeModelTest {
                 .build();
 
         ShutdownableNodeModel sn1 = (ShutdownableNodeModel) rp.getNodeAction(n1);
-        sn1.getState().instantiateTo(0, null);
+        sn1.getState().instantiateTo(0, Cause.Null);
         BootableNodeModel bn4 = (BootableNodeModel) rp.getNodeAction(n4);
-        bn4.getState().instantiateTo(0, null);
+        bn4.getState().instantiateTo(0, Cause.Null);
 
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
@@ -372,10 +373,10 @@ public class ShutdownableNodeModelTest {
                 .build();
 
         ShutdownableNodeModel sn1 = (ShutdownableNodeModel) rp.getNodeAction(n1);
-        sn1.getState().instantiateTo(0, null);
-        sn1.getStart().instantiateTo(2, null);
+        sn1.getState().instantiateTo(0, Cause.Null);
+        sn1.getStart().instantiateTo(2, Cause.Null);
         ShutdownableNodeModel sn4 = (ShutdownableNodeModel) rp.getNodeAction(n4);
-        sn4.getState().instantiateTo(1, null);
+        sn4.getState().instantiateTo(1, Cause.Null);
 
         ReconfigurationPlan p = rp.solve(0, false);
 

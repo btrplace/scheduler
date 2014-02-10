@@ -25,6 +25,7 @@ import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.SingleRunningCapacity;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
+import solver.Cause;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
 import solver.exception.ContradictionException;
@@ -67,7 +68,7 @@ public class CSingleRunningCapacity implements ChocoConstraint {
             //Continuous in practice ?
             if (cstr.isContinuous() && cstr.isSatisfied(rp.getSourceModel())) {
                 try {
-                    v.updateUpperBound(cstr.getAmount(), null);
+                    v.updateUpperBound(cstr.getAmount(), Cause.Null);
                 } catch (ContradictionException e) {
                     rp.getLogger().error("Unable to restrict to up to {}, the maximum amount of VMs on '{}': ", cstr.getAmount(), u, e.getMessage());
                     return false;

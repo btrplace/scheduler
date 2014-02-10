@@ -29,6 +29,7 @@ import btrplace.solver.choco.*;
 import btrplace.solver.choco.actionModel.VMActionModel;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Cause;
 import solver.exception.ContradictionException;
 import solver.variables.IntVar;
 
@@ -195,7 +196,7 @@ public class CShareableResourceTest {
         avm1.getDSlice().getHoster().instantiateTo(0, null);
         CShareableResource rcm = (CShareableResource) rp.getView(btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo");
         //Basic consumption for the VMs. If would be safe to use Preserve, but I don't want:D
-        rcm.getVMsAllocation()[rp.getVM(vm2)].updateLowerBound(4, null);
+        rcm.getVMsAllocation()[rp.getVM(vm2)].updateLowerBound(4, Cause.Null);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNull(p);
     }
