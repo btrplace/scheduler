@@ -38,6 +38,8 @@ import solver.ResolutionPolicy;
 import solver.Solver;
 import solver.exception.ContradictionException;
 import solver.search.loop.monitors.SMF;
+import solver.search.solution.AllSolutionsRecorder;
+import solver.search.solution.ISolutionRecorder;
 import solver.variables.IntVar;
 import solver.variables.VariableFactory;
 import util.ESat;
@@ -106,6 +108,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private ResolutionPolicy solvingPolicy;
 
+    private ISolutionRecorder recordedSolutions;
+
     /**
      * Make a new RP where the next state for every VM is indicated.
      * If the state for a VM is omitted, it is considered as unchanged
@@ -141,7 +145,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         durEval = dEval;
         this.viewMapper = vMapper;
         solver = new Solver();
-
+        recordedSolutions = new AllSolutionsRecorder(solver);
+        solver.getSearchLoop().plugSearchMonitor(recordedSolutions);
         start = VariableFactory.fixed("RP.start", 0, solver);
         end = VariableFactory.bounded("RP.end", 0, DEFAULT_MAX_TIME, solver);
 
@@ -779,5 +784,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     @Override
     public ResolutionPolicy getResolutionPolicy() {
         return this.solvingPolicy;
+    }
+
+    @Override
+    public ISolutionRecorder getRecorderSolutions() {
+        return recordedSolutions;
     }
 }

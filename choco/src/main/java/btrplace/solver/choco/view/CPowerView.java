@@ -26,6 +26,7 @@ import btrplace.solver.choco.actionModel.NodeActionModel;
 import btrplace.solver.choco.actionModel.ShutdownableNodeModel;
 import solver.Solver;
 import solver.variables.IntVar;
+import solver.variables.VF;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -63,7 +64,8 @@ public class CPowerView implements ChocoModelView {
             if (na instanceof ShutdownableNodeModel) {
                 powerStarts.put(rp.getNode(n), rp.getStart());
                 IntVar powerEnd = rp.makeUnboundedDuration("NodeAction(", n, ").Pe");
-                solver.post(solver.eq(powerEnd, solver.plus(na.getHostingEnd(), na.getDuration())));
+                VF.task(na.getHostingEnd(), na.getDuration(), powerEnd);
+                //solver.post(solver.eq(powerEnd, solver.plus(na.getHostingEnd(), na.getDuration())));
                 powerEnds.put(rp.getNode(n), powerEnd);
             } else if (na instanceof BootableNodeModel) {
                 powerStarts.put(rp.getNode(n), na.getStart());

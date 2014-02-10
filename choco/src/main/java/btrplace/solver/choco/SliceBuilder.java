@@ -20,7 +20,9 @@ package btrplace.solver.choco;
 import btrplace.model.VM;
 import btrplace.solver.SolverException;
 import solver.Solver;
+import solver.constraints.IntConstraintFactory;
 import solver.variables.IntVar;
+import solver.variables.VF;
 
 
 /**
@@ -86,7 +88,8 @@ public class SliceBuilder {
 
         if (!start.instantiatedTo(0)) {
             //TODO redundancy with makeDuration() ?
-            s.post(s.eq(end, s.plus(start, duration)));
+            VF.task(start, duration, end);
+            //s.post(s.eq(end, s.plus(start, duration)));
         }
         return new Slice(vm, start, end, duration, hoster);
     }
@@ -100,7 +103,8 @@ public class SliceBuilder {
      */
     private void ticksSooner(Solver s, IntVar t1, IntVar t2) {
         if (!t1.equals(t2) && t1.getUB() > t2.getLB()) {
-            s.post(s.leq(t1, t2));
+            //s.post(s.leq(t1, t2));
+            s.post(IntConstraintFactory.arithm(t1, "<=", t2));
         }
     }
 
@@ -115,18 +119,20 @@ public class SliceBuilder {
             if (start.instantiatedTo(0)) {
                 return end;
             } else {
-                return new IntVarAddCste(rp.getSolver(), rp.makeVarLabel(lblPrefix, "_duration"), end, -start.getValue());
+                VF.offset(end, -start.getValue());
+                //return new IntVarAddCste(rp.getSolver(), rp.makeVarLabel(lblPrefix, "_duration"), end, -start.getValue());
             }
-        } else {
-            int inf = end.getLB() - start.getUB();
-            if (inf < 0) {
-                inf = 0;
-            }
-            int sup = end.getUB() - start.getLB();
-            IntVar d = rp.makeDuration(sup, inf, lblPrefix, "_duration");
-            rp.getSolver().post(rp.getSolver().eq(end, rp.getSolver().plus(start, d)));
-            return d;
+        } //else {
+        int inf = end.getLB() - start.getUB();
+        if (inf < 0) {
+            inf = 0;
         }
+        int sup = end.getUB() - start.getLB();
+        IntVar d = rp.makeDuration(sup, inf, lblPrefix, "_duration");
+        VF.task(start, d, end);
+        //rp.getSolver().post(rp.getSolver().eq(end, rp.getSolver().plus(start, d)));
+        return d;
+        //}
     }
 
     /**
@@ -180,7 +186,8 @@ public class SliceBuilder {
      * @return the current builder
      */
     public SliceBuilder setHoster(int v) {
-        this.hoster = rp.getSolver().createIntegerConstant(rp.makeVarLabel(lblPrefix, "_hoster(", vm, ")"), v);
+        this.hoster = VF.fixed(rp.makeVarLabel(lblPrefix, "_hoster(", vm, ")"), v, rp.getSolver());
+        //rp.getSolver().createIntegerConstant(rp.makeVarLabel(lblPrefix, "_hoster(", vm, ")"), v);
         return this;
     }
 }

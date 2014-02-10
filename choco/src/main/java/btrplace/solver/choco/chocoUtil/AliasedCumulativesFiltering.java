@@ -24,6 +24,7 @@ import memory.IStateInt;
 import memory.IStateIntVector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import solver.ICause;
 import solver.exception.ContradictionException;
 import solver.variables.IntVar;
 
@@ -88,6 +89,8 @@ public class AliasedCumulativesFiltering {
 
     private int nbDims = 0;
 
+    private ICause aCause;
+
     public AliasedCumulativesFiltering(IEnvironment env,
                                        int[] capacities,
                                        int[][] cUsages,
@@ -97,7 +100,8 @@ public class AliasedCumulativesFiltering {
                                        IntVar[] dStarts,
                                        IStateIntVector vIn,
                                        int[] assocs,
-                                       int[] revAssocs) {
+                                       int[] revAssocs,
+                                       ICause aCause) {
 
         this.associations = assocs;
         this.cEnds = cEnds;

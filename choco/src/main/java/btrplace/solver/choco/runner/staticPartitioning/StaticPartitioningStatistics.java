@@ -92,12 +92,12 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
     }
 
     @Override
-    public int getNbSearchNodes() {
+    public long getNbSearchNodes() {
         return nbSearchNodes;
     }
 
     @Override
-    public int getNbBacktracks() {
+    public long getNbBacktracks() {
         return nbBacktracks;
     }
 

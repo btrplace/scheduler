@@ -24,9 +24,13 @@ import memory.IStateInt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import solver.constraints.IntConstraint;
+import solver.constraints.Propagator;
+import solver.constraints.PropagatorPriority;
 import solver.exception.ContradictionException;
+import solver.variables.EventType;
 import solver.variables.IntVar;
-import util.iterators.DisposableIntIterator;
+import util.ESat;
+import util.iterators.DisposableValueIterator;
 import util.tools.ArrayUtils;
 
 /**
@@ -69,189 +73,26 @@ public class Precedences extends IntConstraint<IntVar> {
      * @param othersEnd  the moment each of the other tasks leave their resource
      */
     public Precedences(IEnvironment e, IntVar h, IntVar st, int[] othersHost, IntVar[] othersEnd) {
-        super(ArrayUtils.append(new IntVar[]{h, st}, othersEnd));
+        super(ArrayUtils.append(new IntVar[]{h, st}, othersEnd), h.getSolver());
         this.host = h;
         this.start = st;
         this.othersHost = othersHost;
         this.othersEnd = othersEnd;
         env = e;
+        setPropagators(new PrecedencesPropagator(h, st, othersEnd));
     }
 
     @Override
-    public void awake() throws ContradictionException {
-        //TODO: reduce the array size, to reduce memory footprint
-        horizonLB = new IStateInt[host.getUB() + 1];
-        horizonUB = new IStateInt[host.getUB() + 1];
-        endsByHost = new int[host.getUB() + 1][];
-
-        TIntArrayList[] l = new TIntArrayList[endsByHost.length];
-
-        for (int i = 0; i < horizonUB.length; i++) {
-            horizonLB[i] = env.makeInt(0);
-            horizonUB[i] = env.makeInt(0);
-            l[i] = new TIntArrayList();
-        }
-
-        for (int i = 0; i < othersHost.length; i++) {
-            int p = othersHost[i];
-            int lb = othersEnd[i].getLB();
-            int ub = othersEnd[i].getUB();
-            if (p < horizonUB.length) {
-                //The other is on a possible host
-                horizonLB[p].set(Math.max(lb, horizonLB[p].get()));
-                horizonUB[p].set(Math.max(ub, horizonUB[p].get()));
-                l[p].add(i);
-            }
-        }
-        for (int i = 0; i < l.length; i++) {
-            endsByHost[i] = l[i].toArray();
-        }
-
-        if (host.instantiated()) {
-            start.setInf(horizonLB[host.getValue()].get());
-        }
-        propagate();
-    }
-
-    @Override
-    public void propagate() throws ContradictionException {
-        assert checkHorizonConsistency();
-        checkInvariant();
-    }
-
-    @Override
-    public void awakeOnInst(int idx) throws ContradictionException {
-        switch (idx) {
-            case 0:
-                //The host variable has been instantiated, so its LB can be updated to the LB of the host.
-                start.setInf(horizonLB[idx].get());
-                break;
-            case 1:
-                //The moment the task starts has been instantiated
-                //For each possible host, we update the UB of the other ends to ensure the non-overlapping
-                int st = start.getValue();
-                DisposableIntIterator it = host.getDomain().getIterator();
-                try {
-                    while (it.hasNext()) {
-                        int h = it.next();
-                        for (int i : endsByHost[h]) {
-                            //The task can go on the resource
-                            //the other task must end after this one, so we adjust its UB
-                            othersEnd[i].setSup(st);
-                        }
-                    }
-                } finally {
-                    it.dispose();
-                }
-                break;
-            default:
-                //The moment a placed tasks ends
-                int o = idx - 2;
-                int h = othersHost[o];
-                recomputeHorizonForHost(h);
-                //We recompute the horizon of the associated host
-
-                if (host.instantiatedTo(h)) {
-                    start.setInf(horizonLB[h].get());
-                } else if (host.canBeInstantiatedTo(h)) {
-                    //Browse the horizon for each of the possible host to update the LB
-                    DisposableIntIterator it2 = host.getDomain().getIterator();
-                    int min = Choco.MAX_UPPER_BOUND;
-                    try {
-                        while (it2.hasNext()) {
-                            int candidate = it2.next();
-                            if (horizonLB[candidate].get() < min) {
-                                min = horizonLB[candidate].get();
-                            }
-                        }
-                    } finally {
-                        it2.dispose();
-                    }
-                    start.setInf(min);
-                }
-        }
-        constAwake(false);
-    }
-
-    private void recomputeHorizonForHost(int h) {
-        if (h < horizonUB.length) {
-            int lb = 0, ub = 0;
-            for (int id : endsByHost[h]) {
-                IntVar end = othersEnd[id];
-                lb = Math.max(end.getLB(), lb);
-                ub = Math.max(end.getUB(), ub);
-            }
-            horizonLB[h].set(lb);
-            horizonUB[h].set(ub);
-        }
-    }
-
-    @Override
-    public void awakeOnInf(int idx) throws ContradictionException {
-        if (idx >= 2) {
-            int o = idx - 2;
-            int h = othersHost[o];
-            recomputeHorizonForHost(h);
-            if (host.instantiatedTo(h)) {
-                start.setInf(horizonLB[h].get());
-            }
-        }
-        constAwake(false);
-    }
-
-    @Override
-    public void awakeOnSup(int idx) throws ContradictionException {
-        if (idx >= 2) {
-            int o = idx - 2;
-            int h = othersHost[o];
-            recomputeHorizonForHost(h);
-        }
-        constAwake(false);
-    }
-
-    @Override
-    public int getFilteredEventMask(int idx) {
-        switch (idx) {
-            case 0:
-                return IntVarEvent.INSTINT_MASK;
-            default:
-                return IntVarEvent.INCINF_MASK + IntVarEvent.DECSUP_MASK + IntVarEvent.INSTINT_MASK;
-        }
-    }
-
-    /**
-     * Check the constraint invariant
-     *
-     * @throws ContradictionException if the invariant is violated
-     */
-    private void checkInvariant() throws ContradictionException {
-        DisposableIntIterator it = host.getDomain().getIterator();
-        try {
-            while (it.hasNext()) {
-                checkHorizonForHost(it.next());
-            }
-        } finally {
-            it.dispose();
-        }
-    }
-
-    private void checkHorizonForHost(int h) throws ContradictionException {
-        if (start.getUB() < horizonLB[h].get()) {
-            fail();
-        }
-    }
-
-    @Override
-    public boolean isSatisfied(int[] tuple) {
+    public ESat isSatisfied(int[] tuple) {
         int h = tuple[0];
         int st = tuple[1];
 
         for (int i = 0; i < othersHost.length; i++) {
             if (othersHost[i] == h && tuple[2 + i] > st) {
-                return false;
+                return ESat.FALSE;
             }
         }
-        return true;
+        return ESat.TRUE;
     }
 
     private boolean checkHorizonConsistency() {
@@ -303,4 +144,199 @@ public class Precedences extends IntConstraint<IntVar> {
         LOGGER.info("Mine starts at " + start.toString());
     }
 
+    class PrecedencesPropagator extends Propagator<IntVar> {
+
+        public PrecedencesPropagator(IntVar h, IntVar st, IntVar[] othersEnd) {
+            super(ArrayUtils.append(new IntVar[]{h, st}, othersEnd), PropagatorPriority.LINEAR, true);
+        }
+
+        @Override
+        protected int getPropagationConditions(int idx) {
+            switch (idx) {
+                case 0:
+                    return EventType.INSTANTIATE.mask;
+                default:
+                    return EventType.INCLOW.mask + EventType.DECUPP.mask + EventType.INSTANTIATE.mask;
+            }
+        }
+
+        @Override
+        public void propagate(int evtmask) throws ContradictionException {
+            awake();
+            propagate();
+        }
+
+        @Override
+        public void propagate(int idx, int mask) throws ContradictionException {
+            if (EventType.isInstantiate(mask)) {
+                awakeOnInst(idx);
+            }
+            if (EventType.isDecupp(mask)) {
+                awakeOnSup(idx);
+            }
+            if (EventType.isInclow(mask)) {
+                awakeOnInf(idx);
+            }
+
+        }
+
+        @Override
+        public ESat isEntailed() {
+            throw new UnsupportedOperationException();
+        }
+
+        public void awake() throws ContradictionException {
+            //TODO: reduce the array size, to reduce memory footprint
+            horizonLB = new IStateInt[host.getUB() + 1];
+            horizonUB = new IStateInt[host.getUB() + 1];
+            endsByHost = new int[host.getUB() + 1][];
+
+            TIntArrayList[] l = new TIntArrayList[endsByHost.length];
+
+            for (int i = 0; i < horizonUB.length; i++) {
+                horizonLB[i] = env.makeInt(0);
+                horizonUB[i] = env.makeInt(0);
+                l[i] = new TIntArrayList();
+            }
+
+            for (int i = 0; i < othersHost.length; i++) {
+                int p = othersHost[i];
+                int lb = othersEnd[i].getLB();
+                int ub = othersEnd[i].getUB();
+                if (p < horizonUB.length) {
+                    //The other is on a possible host
+                    horizonLB[p].set(Math.max(lb, horizonLB[p].get()));
+                    horizonUB[p].set(Math.max(ub, horizonUB[p].get()));
+                    l[p].add(i);
+                }
+            }
+            for (int i = 0; i < l.length; i++) {
+                endsByHost[i] = l[i].toArray();
+            }
+
+            if (host.instantiated()) {
+                start.updateLowerBound(horizonLB[host.getValue()].get(), aCause);
+            }
+            //propagate();
+        }
+
+        //@Override
+        public void awakeOnInst(int idx) throws ContradictionException {
+            switch (idx) {
+                case 0:
+                    //The host variable has been instantiated, so its LB can be updated to the LB of the host.
+                    start.updateLowerBound(horizonLB[idx].get(), aCause);
+                    break;
+                case 1:
+                    //The moment the task starts has been instantiated
+                    //For each possible host, we update the UB of the other ends to ensure the non-overlapping
+                    int st = start.getValue();
+                    DisposableValueIterator it = host.getValueIterator(true);
+                    try {
+                        while (it.hasNext()) {
+                            int h = it.next();
+                            for (int i : endsByHost[h]) {
+                                //The task can go on the resource
+                                //the other task must end after this one, so we adjust its UB
+                                othersEnd[i].updateUpperBound(st, aCause);
+                            }
+                        }
+                    } finally {
+                        it.dispose();
+                    }
+                    break;
+                default:
+                    //The moment a placed tasks ends
+                    int o = idx - 2;
+                    int h = othersHost[o];
+                    recomputeHorizonForHost(h);
+                    //We recompute the horizon of the associated host
+
+                    if (host.instantiatedTo(h)) {
+                        start.updateLowerBound(horizonLB[h].get(), aCause);
+                    } else if (host.contains(h)) {
+                        //Browse the horizon for each of the possible host to update the LB
+                        DisposableValueIterator it2 = host.getValueIterator(true);
+                        int min = Integer.MAX_VALUE;
+                        try {
+                            while (it2.hasNext()) {
+                                int candidate = it2.next();
+                                if (horizonLB[candidate].get() < min) {
+                                    min = horizonLB[candidate].get();
+                                }
+                            }
+                        } finally {
+                            it2.dispose();
+                        }
+                        start.updateLowerBound(min, aCause);
+                    }
+            }
+            //constAwake(false);
+        }
+
+        public void propagate() throws ContradictionException {
+            assert checkHorizonConsistency();
+            checkInvariant();
+        }
+
+
+        private void recomputeHorizonForHost(int h) {
+            if (h < horizonUB.length) {
+                int lb = 0, ub = 0;
+                for (int id : endsByHost[h]) {
+                    IntVar end = othersEnd[id];
+                    lb = Math.max(end.getLB(), lb);
+                    ub = Math.max(end.getUB(), ub);
+                }
+                horizonLB[h].set(lb);
+                horizonUB[h].set(ub);
+            }
+        }
+
+        //@Override
+        public void awakeOnInf(int idx) throws ContradictionException {
+            if (idx >= 2) {
+                int o = idx - 2;
+                int h = othersHost[o];
+                recomputeHorizonForHost(h);
+                if (host.instantiatedTo(h)) {
+                    start.updateLowerBound(horizonLB[h].get(), aCause);
+                }
+            }
+            //constAwake(false);
+        }
+
+        //@Override
+        public void awakeOnSup(int idx) throws ContradictionException {
+            if (idx >= 2) {
+                int o = idx - 2;
+                int h = othersHost[o];
+                recomputeHorizonForHost(h);
+            }
+            //constAwake(false);
+        }
+
+        /**
+         * Check the constraint invariant
+         *
+         * @throws ContradictionException if the invariant is violated
+         */
+        private void checkInvariant() throws ContradictionException {
+            DisposableValueIterator it = host.getValueIterator(true);
+            try {
+                while (it.hasNext()) {
+                    checkHorizonForHost(it.next());
+                }
+            } finally {
+                it.dispose();
+            }
+        }
+
+        private void checkHorizonForHost(int h) throws ContradictionException {
+            if (start.getUB() < horizonLB[h].get()) {
+                this.contradiction(start, "");
+                //fail();
+            }
+        }
+    }
 }

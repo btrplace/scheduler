@@ -24,6 +24,7 @@ import memory.IStateInt;
 import memory.IStateIntVector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import solver.ICause;
 import solver.exception.ContradictionException;
 import solver.variables.IntVar;
 
@@ -94,6 +95,8 @@ public class LocalTaskScheduler {
 
     private IntVar early, last;
 
+    private ICause aCause;
+
     public LocalTaskScheduler(int me,
                               IEnvironment env,
                               IntVar early,
@@ -106,10 +109,11 @@ public class LocalTaskScheduler {
                               IntVar[] dStarts,
                               IStateIntVector vIn,
                               int[] assocs,
-                              int[] revAssocs) {
+                              int[] revAssocs,
+                              ICause iCause) {
         this.early = early;
         this.last = last;
-
+        this.aCause = iCause;
         this.associations = assocs;
         this.me = me;
         this.cEnds = cEnds;

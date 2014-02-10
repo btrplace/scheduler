@@ -68,14 +68,14 @@ public interface SolvingStatistics {
      *
      * @return a positive number
      */
-    int getNbSearchNodes();
+    long getNbSearchNodes();
 
     /**
      * Get the number of backtracks.
      *
      * @return a positive number
      */
-    int getNbBacktracks();
+    long getNbBacktracks();
 
     /**
      * Indicates if the solver hit a timeout.

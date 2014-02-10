@@ -26,8 +26,12 @@ import memory.IStateIntVector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import solver.constraints.IntConstraint;
+import solver.constraints.Propagator;
+import solver.constraints.PropagatorPriority;
 import solver.exception.ContradictionException;
+import solver.variables.EventType;
 import solver.variables.IntVar;
+import util.ESat;
 import util.tools.ArrayUtils;
 
 import java.util.Arrays;
@@ -99,7 +103,7 @@ public class TaskScheduler extends IntConstraint<IntVar> {
                          IntVar[] dStarts,
                          int[] assocs) {
 
-        super(ArrayUtils.<IntVar>append(dHosters, cHosters, cEnds, dStarts, earlyStarts, lastEnds));
+        super(ArrayUtils.<IntVar>append(dHosters, cHosters, cEnds, dStarts, earlyStarts, lastEnds), earlyStarts[0].getSolver());
 
         this.env = e;
         this.cHosters = cHosters;
@@ -111,115 +115,26 @@ public class TaskScheduler extends IntConstraint<IntVar> {
         this.cUsages = cUsages;
         this.dUsages = dUsages;
 
-        /*Arrays.toString(capacities);
-        Arrays.toString(cUsages);
-        Arays.toString(dUsages);*/
-
         this.nbResources = capas[0].length;
         this.nbDims = capas.length;
-        int nbCTasks = cUsages[0].length;
 
         scheds = new LocalTaskScheduler[nbResources];
 
-        BitSet[] outs = new BitSet[scheds.length];
-        for (int i = 0; i < scheds.length; i++) {
-            outs[i] = new BitSet(cHosters.length);
-        }
-
-        for (int i = 0; i < cHosters.length; i++) {
-            outs[cHosters[i].getValue()].set(i);
-        }
-
-
-        int[] revAssociations = new int[nbCTasks];
-        for (int i = 0; i < revAssociations.length; i++) {
-            revAssociations[i] = LocalTaskScheduler.NO_ASSOCIATIONS;
-        }
-
-        for (int i = 0; i < assocs.length; i++) {
-            if (assocs[i] != LocalTaskScheduler.NO_ASSOCIATIONS) {
-                revAssociations[assocs[i]] = i;
-            }
-        }
 
         this.vIns = new IStateIntVector[scheds.length];
-        for (int i = 0; i < scheds.length; i++) {
-            vIns[i] = e.makeIntVector();
-            scheds[i] = new LocalTaskScheduler(i, e,
-                    earlyStarts[i],
-                    lastEnds[i],
-                    capacities,
-                    cUsages,
-                    cEnds,
-                    outs[i],
-                    dUsages,
-                    dStarts,
-                    vIns[i],
-                    assocs,
-                    revAssociations
-            );
-        }
+        setPropagators(new TaskSchedulerPropagator(e, earlyStarts, lastEnds, capas, cHosters, cUsages, cEnds, dHosters, dUsages, dStarts, assocs));
     }
 
-    @Override
-    public void awake() throws ContradictionException {
-
-        this.toInstantiate = env.makeInt(dHosters.length);
-
-        //Check whether some hosting variable are already instantiated
-        for (int i = 0; i < dHosters.length; i++) {
-            if (dHosters[i].instantiated()) {
-                int nIdx = dHosters[i].getValue();
-                toInstantiate.add(-1);
-                vIns[nIdx].add(i);
-            }
-        }
-        //System.out.println("awake");
-        propagate();
-    }
-
-    @Override
-    public void propagate() throws ContradictionException {
-        //System.out.println("propagate");
-        if (isFull2()) {
-            //System.out.println("Propagate !");
-            for (int i = 0; i < scheds.length; i++) {
-                if (!scheds[i].propagate()) {
-                    fail();
-                }
-            }
-        }
-    }
-
-    @Override
-    public void awakeOnInst(int idx) throws ContradictionException {
-        if (idx < dHosters.length) {
-            toInstantiate.add(-1);
-            int nIdx = vars[idx].getValue();
-            vIns[nIdx].add(idx);
-        }
-        this.constAwake(false);
-    }
-
-    private boolean isFull2() {
-        return toInstantiate.get() == 0;
-    }
-
-    @Override
-    public int getFilteredEventMask(int idx) {
-        return IntVarEvent.INSTINT_MASK;
-    }
-
-    @Override
+    /*@Override
     public boolean isSatisfied() {
         int[] vals = new int[vars.length];
         for (int i = 0; i < vals.length; i++) {
             vals[i] = vars[i].getValue();
         }
         return isSatisfied(vals);
-    }
+    } */
 
-    @Override
+    /*@Override
     public boolean isConsistent() {
         for (LocalTaskScheduler sc : scheds) {
             sc.computeProfiles();
@@ -228,10 +143,10 @@ public class TaskScheduler extends IntConstraint<IntVar> {
             }
         }
         return true;
-    }
+    } */
 
     @Override
-    public boolean isSatisfied(int[] vals) {
+    public ESat isSatisfied(int[] vals) {
         //Split this use tab to ease the analysis
         int[] dHostersVals = new int[dHosters.length];
         int[] dStartsVals = new int[dStarts.length];
@@ -322,7 +237,7 @@ public class TaskScheduler extends IntConstraint<IntVar> {
                 }
             }
         }
-        return ok;
+        return ESat.eval(ok);
     }
 
     private String prettyUsages(int[][] usages, int i) {
@@ -367,5 +282,127 @@ public class TaskScheduler extends IntConstraint<IntVar> {
         }
         b.append(']');
         return b.toString();
+    }
+
+    class TaskSchedulerPropagator extends Propagator<IntVar> {
+
+        private IStateInt toInstantiate;
+
+        public TaskSchedulerPropagator(IEnvironment e,
+                                       IntVar[] earlyStarts,
+                                       IntVar[] lastEnds,
+                                       int[][] capas,
+                                       IntVar[] cHosters,
+                                       int[][] cUsages,
+                                       IntVar[] cEnds,
+                                       IntVar[] dHosters,
+                                       int[][] dUsages,
+                                       IntVar[] dStarts,
+                                       int[] assocs) {
+            super(ArrayUtils.<IntVar>append(dHosters, cHosters, cEnds, dStarts, earlyStarts, lastEnds), PropagatorPriority.VERY_SLOW, true);
+
+            BitSet[] outs = new BitSet[scheds.length];
+            for (int i = 0; i < scheds.length; i++) {
+                outs[i] = new BitSet(cHosters.length);
+            }
+
+            for (int i = 0; i < cHosters.length; i++) {
+                outs[cHosters[i].getValue()].set(i);
+            }
+
+            int nbCTasks = cUsages[0].length;
+
+            int[] revAssociations = new int[nbCTasks];
+            for (int i = 0; i < revAssociations.length; i++) {
+                revAssociations[i] = LocalTaskScheduler.NO_ASSOCIATIONS;
+            }
+
+            for (int i = 0; i < assocs.length; i++) {
+                if (assocs[i] != LocalTaskScheduler.NO_ASSOCIATIONS) {
+                    revAssociations[assocs[i]] = i;
+                }
+            }
+
+            for (int i = 0; i < scheds.length; i++) {
+                vIns[i] = e.makeIntVector(8, -1);
+                scheds[i] = new LocalTaskScheduler(i, e,
+                        earlyStarts[i],
+                        lastEnds[i],
+                        capacities,
+                        cUsages,
+                        cEnds,
+                        outs[i],
+                        dUsages,
+                        dStarts,
+                        vIns[i],
+                        assocs,
+                        revAssociations,
+                        aCause
+                );
+            }
+        }
+
+        @Override
+        protected int getPropagationConditions(int vIdx) {
+            return EventType.INSTANTIATE.mask;
+        }
+
+        @Override
+        public void propagate(int idx, int mask) throws ContradictionException {
+            if (EventType.isInstantiate(mask)) {
+                if (idx < dHosters.length) {
+                    toInstantiate.add(-1);
+                    int nIdx = vars[idx].getValue();
+                    vIns[nIdx].add(idx);
+                }
+            }
+        }
+
+        @Override
+        public ESat isEntailed() {
+            return ESat.UNDEFINED;
+        }
+
+        @Override
+        public void propagate(int evtmask) throws ContradictionException {
+
+            this.toInstantiate = env.makeInt(dHosters.length);
+
+            //Check whether some hosting variable are already instantiated
+            for (int i = 0; i < dHosters.length; i++) {
+                if (dHosters[i].instantiated()) {
+                    int nIdx = dHosters[i].getValue();
+                    toInstantiate.add(-1);
+                    vIns[nIdx].add(i);
+                }
+            }
+
+                    /*@Override
+        public void propagate() throws ContradictionException {*/
+            //System.out.println("propagate");
+            if (isFull2()) {
+                //System.out.println("Propagate !");
+                for (int i = 0; i < scheds.length; i++) {
+                    if (!scheds[i].propagate()) {
+                        this.contradiction(null, "");
+                    }
+                }
+            }
+            //}
+        }
+
+
+        public void awakeOnInst(int idx) throws ContradictionException {
+            if (idx < dHosters.length) {
+                toInstantiate.add(-1);
+                int nIdx = vars[idx].getValue();
+                vIns[nIdx].add(idx);
+            }
+            //this.constAwake(false);
+        }
+
+        private boolean isFull2() {
+            return toInstantiate.get() == 0;
+        }
     }
 }

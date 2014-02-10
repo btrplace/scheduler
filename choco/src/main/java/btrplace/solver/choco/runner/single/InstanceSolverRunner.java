@@ -33,6 +33,9 @@ import btrplace.solver.choco.constraint.ChocoConstraint;
 import btrplace.solver.choco.constraint.ChocoConstraintBuilder;
 import btrplace.solver.choco.runner.InstanceResult;
 import btrplace.solver.choco.runner.SolutionStatistics;
+import solver.exception.ContradictionException;
+import solver.search.measure.IMeasures;
+import solver.search.solution.Solution;
 
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -146,7 +149,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
 
         //Set the maximum duration
         try {
-            rp.getEnd().setSup(params.getMaxEnd());
+            rp.getEnd().updateUpperBound(params.getMaxEnd(), null);
         } catch (ContradictionException e) {
             rp.getLogger().error("Unable to restrict the maximum plan duration to {}", params.getMaxEnd());
             return null;
@@ -200,16 +203,16 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
 
     private void stateVerbosity() {
         if (params.getVerbosity() <= 0) {
-            ChocoLogging.setVerbosity(Verbosity.SILENT);
+            //ChocoLogging.setVerbosity(Verbosity.SILENT);
             params.labelVariables(false);
         } else {
             params.labelVariables(true);
-            ChocoLogging.setVerbosity(Verbosity.SOLUTION);
-            ChocoLogging.setLoggingMaxDepth(Integer.MAX_VALUE);
+            //ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+            //ChocoLogging.setLoggingMaxDepth(Integer.MAX_VALUE);
             if (params.getVerbosity() == 2) {
-                ChocoLogging.setVerbosity(Verbosity.SEARCH);
+                //ChocoLogging.setVerbosity(Verbosity.SEARCH);
             } else if (params.getVerbosity() > 2) {
-                ChocoLogging.setVerbosity(Verbosity.FINEST);
+                //ChocoLogging.setVerbosity(Verbosity.FINEST);
             }
         }
     }
@@ -253,6 +256,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         if (rp == null) {
             return new SingleRunnerStatistics(params, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0);
         }
+        IMeasures m = rp.getSolver().getMeasures();
         SingleRunnerStatistics st = new SingleRunnerStatistics(
                 params,
                 rp.getNodes().length,
@@ -260,29 +264,27 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
                 cstrs.size(),
                 rp.getManageableVMs().size(),
                 start,
-                rp.getSolver().getTimeCount(),
-                rp.getSolver().getNodeCount(),
-                rp.getSolver().getBackTrackCount(),
-                rp.getSolver().isEncounteredLimit(),
+                (long) m.getTimeCount(),
+                m.getNodeCount(),
+                m.getBackTrackCount(),
+                false,//huh
                 coreRPDuration,
                 speRPDuration);
 
-        if (rp.getSolver().getSearchStrategy() != null) {
-            for (Solution s : rp.getSolver().getSearchStrategy().getStoredSolutions()) {
-                IMeasures m = s.getMeasures();
-                SolutionStatistics sol;
-                if (m.getObjectiveValue() != null) {
+        for (Solution s : rp.getRecorderSolutions().getAllSolutions()) {
+            //IMeasures m = null;//s.getMeasures();
+            SolutionStatistics sol;
+            if (m.hasObjective()) {
+                sol = new SolutionStatistics(m.getNodeCount(),
+                            m.getBackTrackCount(),
+                        (long) m.getTimeCount(),
+                        m.getBestSolutionValue().intValue());
+            } else {
                     sol = new SolutionStatistics(m.getNodeCount(),
                             m.getBackTrackCount(),
-                            m.getTimeCount(),
-                            m.getObjectiveValue().intValue());
-                } else {
-                    sol = new SolutionStatistics(m.getNodeCount(),
-                            m.getBackTrackCount(),
-                            m.getTimeCount());
-                }
-                st.addSolution(sol);
+                            (long) m.getTimeCount());
             }
+                st.addSolution(sol);
         }
         return st;
     }

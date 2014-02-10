@@ -32,7 +32,7 @@ import util.iterators.DisposableIntIterator;
 import java.util.*;
 
 /**
- * A bin packing constraint similar to {@link choco.cp.solver.constraints.global.pack.PackConstraint}
+ * A bin packing constraint.
  * but oriented satisfaction rather than optimization as the number of empty bins is not considered here.
  * It enforces a list of constant-size items (in decreasing order of size) to be packed into bins of limited capacities (their maximum loads), using 2 invariants:
  * 1) global load O(nbBins): the sum of the bin loads is equal to the sum of the size items
@@ -44,7 +44,6 @@ import java.util.*;
  * but as items are ordered, the list can also be maintained dynamically for almost free at each item assignment/removal ({@code BigItemsPolicy.DYNAMIC})
  *
  * @author Sophie Demassey, Fabien Hermenier
- * @see choco.cp.solver.constraints.global.pack.PackConstraint
  */
 public class BinPacking extends IntConstraint<IntVar> {
 
@@ -586,7 +585,6 @@ public class BinPacking extends IntConstraint<IntVar> {
             LOGGER.warn("Sum Load UB = " + this.sumLoadSup.get() + " expected =" + sls);
             check = false;
         }
-        ChocoLogging.flushLogs();
         if (!check) {
             for (int b = 0; b < rs.length; b++) {
                 LOGGER.error(loads[b].toString() + " required=" + bRLoads[b].get() + " (" + rs[b] + ") total=" + bTLoads[b].get() + " (" + (rs[b] + cs[b]) + ")");
