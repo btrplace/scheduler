@@ -119,6 +119,7 @@ public class LightBinPacking extends IntConstraint<IntVar> {
         this.iSizes = s;
         this.bTLoads = new IStateInt[nbDims][nbBins];
         this.bRLoads = new IStateInt[nbDims][nbBins];
+        setPropagators(new LightBinPackingPropagator(labels, env, l, s, b));
     }
 
     @Override

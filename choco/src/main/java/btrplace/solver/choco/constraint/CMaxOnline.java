@@ -118,7 +118,7 @@ public class CMaxOnline implements ChocoConstraint {
                 VariableFactory.task(starts[idx], durations[idx], ends[idx]);
 
             }
-            solver.post(IntConstraintFactory.cumulative(taskVars, heights, capacity));
+            solver.post(IntConstraintFactory.cumulative(taskVars, heights, capacity, true));
             /*Cumulative cumulative = new Cumulative(solver, "Cumulative", taskVars,
                     heights, consumption, capacity, uppBound);
             solver.post(cumulative);*/
