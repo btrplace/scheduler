@@ -65,7 +65,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
     private final VM vm;
 
-    private IntVar state;
+    private BoolVar state;
 
     private IntVar duration;
 
@@ -232,7 +232,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
     }
 
     @Override
-    public IntVar getState() {
+    public BoolVar getState() {
         return state;
     }
 

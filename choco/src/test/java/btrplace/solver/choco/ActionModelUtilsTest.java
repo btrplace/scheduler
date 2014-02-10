@@ -27,6 +27,7 @@ import btrplace.solver.choco.actionModel.VMActionModel;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import solver.Solver;
+import solver.variables.BoolVar;
 import solver.variables.IntVar;
 import solver.variables.VF;
 
@@ -112,30 +113,31 @@ public class ActionModelUtilsTest {
 
     public static class MockActionModel implements VMActionModel {
 
-        private IntVar st, ed, d, h, c, state;
+        private IntVar st, ed, d, h, c;
+        private BoolVar state;
 
         private Slice cSlice, dSlice;
 
         public MockActionModel(Solver s, int nb) {
             Model mo = new DefaultModel();
-            st = VF.bounded("start" + nb, nb, nb + 1, s);
-            ed = VF.bounded("end" + nb, nb, nb + 1, s);
-            d = VF.bounded("duration" + nb, nb, nb + 1, s);
-            h = VF.bounded("hoster" + nb, nb, nb + 1, s);
-            c = VF.bounded("cost" + nb, nb, nb + 1, s);
-            state = VF.bounded("state" + nb, nb, nb + 1, s);
+            st = VF.fixed("start" + nb, nb, s);
+            ed = VF.fixed("end" + nb, nb, s);
+            d = VF.fixed("duration" + nb, nb, s);
+            h = VF.fixed("hoster" + nb, nb, s);
+            c = VF.fixed("cost" + nb, nb, s);
+            state = VF.bool("state" + nb, s);
             if (nb % 2 == 0) {
                 cSlice = new Slice(mo.newVM(),
-                        VF.bounded("cS" + nb + "-st", nb, nb + 1, s),
-                        VF.bounded("cS" + nb + "-ed", nb, nb + 1, s),
-                        VF.bounded("cS" + nb + "-d", nb, nb + 1, s),
-                        VF.bounded("cS" + nb + "-h", nb, nb + 1, s));
+                        VF.fixed("cS" + nb + "-st", nb, s),
+                        VF.fixed("cS" + nb + "-ed", nb, s),
+                        VF.fixed("cS" + nb + "-d", nb, s),
+                        VF.fixed("cS" + nb + "-h", nb, s));
             } else {
                 dSlice = new Slice(mo.newVM(),
-                        VF.bounded("dS" + nb + "-st", nb, nb + 1, s),
-                        VF.bounded("dS" + nb + "-ed", nb, nb + 1, s),
-                        VF.bounded("dS" + nb + "-d", nb, nb + 1, s),
-                        VF.bounded("dS" + nb + "-h", nb, nb + 1, s));
+                        VF.fixed("dS" + nb + "-st", nb, s),
+                        VF.fixed("dS" + nb + "-ed", nb, s),
+                        VF.fixed("dS" + nb + "-d", nb, s),
+                        VF.fixed("dS" + nb + "-h", nb, s));
             }
         }
 
@@ -175,7 +177,7 @@ public class ActionModelUtilsTest {
         }
 
         @Override
-        public IntVar getState() {
+        public BoolVar getState() {
             return state;
         }
 

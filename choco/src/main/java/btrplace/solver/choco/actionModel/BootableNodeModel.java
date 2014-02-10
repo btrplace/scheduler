@@ -181,7 +181,7 @@ public class BootableNodeModel implements NodeActionModel {
     }
 
     @Override
-    public IntVar getState() {
+    public BoolVar getState() {
         return isOnline;
     }
 

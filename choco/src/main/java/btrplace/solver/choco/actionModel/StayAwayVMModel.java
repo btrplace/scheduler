@@ -21,6 +21,7 @@ import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
+import solver.variables.BoolVar;
 import solver.variables.IntVar;
 import solver.variables.VariableFactory;
 
@@ -35,7 +36,7 @@ public class StayAwayVMModel implements VMActionModel {
 
     private VM vm;
 
-    private IntVar zero;
+    private BoolVar zero;
 
     /**
      * Make a new model.
@@ -84,7 +85,7 @@ public class StayAwayVMModel implements VMActionModel {
     }
 
     @Override
-    public IntVar getState() {
+    public BoolVar getState() {
         return zero;
     }
 

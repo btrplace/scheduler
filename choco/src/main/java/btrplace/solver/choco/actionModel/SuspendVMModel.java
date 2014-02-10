@@ -25,6 +25,7 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
+import solver.variables.BoolVar;
 import solver.variables.IntVar;
 import solver.variables.VariableFactory;
 
@@ -52,7 +53,7 @@ public class SuspendVMModel implements VMActionModel {
 
     private ReconfigurationProblem rp;
 
-    private IntVar state;
+    private BoolVar state;
 
     /**
      * Make a new model.
@@ -108,7 +109,7 @@ public class SuspendVMModel implements VMActionModel {
     }
 
     @Override
-    public IntVar getState() {
+    public BoolVar getState() {
         return state;
     }
 

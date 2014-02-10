@@ -42,7 +42,7 @@ public class SliceUtilsTest {
         List<Slice> l = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             l.add(new Slice(mo.newVM(),
-                    VF.bounded("st" + 1, 0, 1, csp),
+                    VF.bounded("st " + i, 0, 1, csp),
                     VF.bounded("ed " + i, 0, 1, csp),
                     VF.bounded("du " + i, 0, 1, csp),
                     VF.bounded("ho " + i, 0, 1, csp)

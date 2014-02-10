@@ -18,6 +18,7 @@
 package btrplace.solver.choco.actionModel;
 
 import btrplace.plan.ReconfigurationPlan;
+import solver.variables.BoolVar;
 import solver.variables.IntVar;
 
 
@@ -64,7 +65,7 @@ public interface ActionModel {
      *
      * @return {@code 0} for offline, {@code 1} for online.
      */
-    IntVar getState();
+    BoolVar getState();
 
     /**
      * Make a visitor inspect the action model.

@@ -99,7 +99,7 @@ public class StayRunningVMModel implements KeepRunningVMModel {
     }
 
     @Override
-    public IntVar getState() {
+    public BoolVar getState() {
         return null;
     }
 
