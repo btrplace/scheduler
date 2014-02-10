@@ -20,6 +20,9 @@ package btrplace.solver.choco.chocoUtil;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Solver;
+import solver.variables.IntVar;
+import solver.variables.VF;
 
 /**
  * @author Fabien Hermenier
@@ -29,23 +32,23 @@ public class RoundedUpDivisionTest {
     @Test
     public void test1() {
         Solver s = new Solver();
-        IntVar a = s.createBoundIntVar("a", 0, 5);
-        IntVar b = s.createBoundIntVar("b", 0, 5);
+        IntVar a = VF.bounded("a", 0, 5, s);
+        IntVar b = VF.bounded("b", 0, 5, s);
         double q = 1;
         s.post(new RoundedUpDivision(a, b, q));
-        Assert.assertEquals(Boolean.TRUE, s.solveAll());
-        Assert.assertEquals(s.getNbSolutions(), 6);
+        Assert.assertEquals(6, s.findAllSolutions());
+        //Assert.assertEquals(s.getNbSolutions(), 6);
     }
 
     @Test
     public void test2() {
         Solver s = new Solver();
-        IntVar a = s.createBoundIntVar("a", 0, 32);
-        IntVar b = s.createBoundIntVar("b", 0, 48);
+        IntVar a = VF.bounded("a", 0, 32, s);
+        IntVar b = VF.bounded("b", 0, 48, s);
         double q = 1.5;
         s.post(new RoundedUpDivision(a, b, q));
-        Assert.assertEquals(Boolean.TRUE, s.solveAll());
-        Assert.assertEquals(s.getNbSolutions(), 33);
+        Assert.assertEquals(33, s.findAllSolutions());
+        //Assert.assertEquals(s.getNbSolutions(), 33);
     }
     /*
     private static void pretty(int a, int b, double q) {

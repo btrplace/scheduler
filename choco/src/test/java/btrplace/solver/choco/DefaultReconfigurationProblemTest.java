@@ -30,10 +30,8 @@ import btrplace.solver.choco.view.ChocoModelViewBuilder;
 import btrplace.solver.choco.view.ModelViewMapper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import solver.Solver;
 import solver.exception.ContradictionException;
 import solver.variables.IntVar;
-import solver.variables.VF;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -808,7 +806,8 @@ public class DefaultReconfigurationProblemTest {
      */
     @Test
     public void testMinimize() throws SolverException {
-        Model mo = new DefaultModel();
+        Assert.fail();
+        /*Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         for (int i = 0; i < 10; i++) {
             Node n = mo.newNode();
@@ -828,7 +827,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertNotNull(plan);
         Assert.assertEquals(s.getNbSolutions(), 10);
         Mapping dst = plan.getResult().getMapping();
-        Assert.assertEquals(usedNodes(dst), 1);
+        Assert.assertEquals(usedNodes(dst), 1);       */
     }
 
     /**
@@ -839,7 +838,8 @@ public class DefaultReconfigurationProblemTest {
      */
     @Test
     public void testMinimizationWithAlterer() throws SolverException {
-        Model mo = new DefaultModel();
+        Assert.fail();
+        /*Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         for (int i = 0; i < 10; i++) {
             Node n = mo.newNode();
@@ -868,7 +868,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertNotNull(plan);
         Assert.assertEquals(s.getNbSolutions(), 4);
         Mapping dst = plan.getResult().getMapping();
-        Assert.assertEquals(usedNodes(dst), 1);
+        Assert.assertEquals(usedNodes(dst), 1);  */
     }
 
     /**
@@ -878,7 +878,8 @@ public class DefaultReconfigurationProblemTest {
      */
     @Test
     public void testMaximization() throws SolverException {
-        Model mo = new DefaultModel();
+        Assert.fail();
+        /*Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         Node n1 = mo.newNode();
         map.addOnlineNode(n1);
@@ -900,7 +901,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertNotNull(plan);
         Mapping dst = plan.getResult().getMapping();
         Assert.assertEquals(s.getNbSolutions(), 10);
-        Assert.assertEquals(usedNodes(dst), 10);
+        Assert.assertEquals(usedNodes(dst), 10);   */
     }
 
     /**
@@ -911,6 +912,8 @@ public class DefaultReconfigurationProblemTest {
      */
     @Test
     public void testMaximizationWithAlterer() throws SolverException {
+        Assert.fail();
+/*
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         Node n1 = mo.newNode();
@@ -944,7 +947,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertEquals(usedNodes(dst), 8);
         //Note: the optimal value would be 10 but we loose the completeness due to the alterer
         Assert.assertEquals(s.getNbSolutions(), 4);
-
+                                                                                                       */
     }
 
     /**
@@ -954,6 +957,8 @@ public class DefaultReconfigurationProblemTest {
      */
     @Test
     public void testUnfeasibleOptimizeWithAlterer() throws SolverException {
+        Assert.fail();
+        /*
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         for (int i = 0; i < 10; i++) {
@@ -979,7 +984,7 @@ public class DefaultReconfigurationProblemTest {
 
         rp.setObjectiveAlterer(alt);
         ReconfigurationPlan plan = rp.solve(0, true);
-        Assert.assertNull(plan);
+        Assert.assertNull(plan);            */
     }
 
 

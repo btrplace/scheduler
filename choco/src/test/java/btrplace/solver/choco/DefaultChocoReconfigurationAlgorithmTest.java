@@ -30,6 +30,7 @@ import btrplace.solver.choco.view.ModelViewMapper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import solver.Solver;
+import solver.constraints.IntConstraintFactory;
 import solver.variables.IntVar;
 import solver.variables.VF;
 
@@ -111,9 +112,10 @@ public class DefaultChocoReconfigurationAlgorithmTest {
                         Solver s = rp.getSolver();
                         IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
                         IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
-                        s.post(new AtMostNValue(hosters, nbNodes));
-                        s.setObjective(nbNodes);
-                        s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
+                        s.post(IntConstraintFactory.nvalues(hosters, nbNodes));//new AtMostNValue(hosters, nbNodes));
+                        //s.setObjective(nbNodes);
+                        //s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
+                        Assert.fail();
                         return true;
                     }
 

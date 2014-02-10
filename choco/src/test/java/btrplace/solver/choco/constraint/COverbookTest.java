@@ -32,6 +32,7 @@ import btrplace.solver.choco.MappingFiller;
 import btrplace.solver.choco.durationEvaluator.LinearToAResourceActionDuration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.exception.ContradictionException;
 
 import java.util.*;
 

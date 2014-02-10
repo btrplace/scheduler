@@ -38,6 +38,7 @@ import solver.search.strategy.selectors.values.InDomainMin;
 import solver.search.strategy.selectors.variables.InputOrder;
 import solver.search.strategy.strategy.AbstractStrategy;
 import solver.search.strategy.strategy.Assignment;
+import solver.search.strategy.strategy.StrategiesSequencer;
 import solver.variables.IntVar;
 import solver.variables.VariableFactory;
 import util.ESat;
@@ -182,6 +183,8 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
 
         //At this stage only it matters to plug the cost constraints
         strats.add(new Assignment(new InputOrder(new IntVar[]{p.getEnd(), cost}), new InDomainMin()));
+
+        s.getSearchLoop().set(new StrategiesSequencer());
     }
 
     @Override

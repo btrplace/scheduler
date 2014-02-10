@@ -63,9 +63,9 @@ public class PrecedencesTest {
          */
         Precedences p = new Precedences(s.getEnvironment(), host, start, others, ends);
         s.post(p);
-        Boolean ret = s.solveAll();
-        Assert.assertEquals(ret, Boolean.TRUE);
-        Assert.assertEquals(s.getNbSolutions(), 6);
+        //Boolean ret = s.solveAll();
+        //Assert.assertEquals(ret, Boolean.TRUE);
+        Assert.assertEquals(6, s.findAllSolutions());
     }
 
     /**
@@ -97,8 +97,8 @@ public class PrecedencesTest {
         IntVar start = VF.bounded("start", 0, 5, s);
         Precedences p = new Precedences(s.getEnvironment(), host, start, others, ends);
         s.post(p);
-        Boolean ret = s.solveAll();
-        Assert.assertEquals(ret, Boolean.TRUE);
-        Assert.assertEquals(s.getNbSolutions(), 75); //TODO: A way to check if it is correct ?
+        //Boolean ret = s.solveAll();
+        //Assert.assertEquals(ret, Boolean.TRUE);
+        Assert.assertEquals(s.findAllSolutions(), 75); //TODO: A way to check if it is correct ?
     }
 }
