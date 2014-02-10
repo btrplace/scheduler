@@ -23,8 +23,12 @@ import memory.IEnvironment;
 import memory.IStateInt;
 import memory.IStateIntVector;
 import solver.constraints.IntConstraint;
+import solver.constraints.Propagator;
+import solver.constraints.PropagatorPriority;
 import solver.exception.ContradictionException;
+import solver.variables.EventType;
 import solver.variables.IntVar;
+import util.ESat;
 import util.tools.ArrayUtils;
 
 import java.util.Arrays;
@@ -97,7 +101,7 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
                               IntVar[] dStarts,
                               int[] assocs) {
 
-        super(ArrayUtils.append(dHosters, cHosters, cEnds, dStarts));
+        super(ArrayUtils.append(dHosters, cHosters, cEnds, dStarts), cHosters[0].getSolver());
         this.alias = new TIntHashSet(alias);
         this.env = env;
         this.cHosters = cHosters;
@@ -112,28 +116,9 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
         this.nbDims = capas.length;
         int nbCTasks = cUsages[0].length;
 
+        setPropagators(new AliasedCumulativesPropagator(env, alias, capas, cHosters, cUsages, cEnds, dHosters, dUsages, dStarts, assocs));
 
-        BitSet out = new BitSet(cHosters.length);
-
-        for (int i = 0; i < cHosters.length; i++) {
-            int v = cHosters[i].getValue();
-            if (isIn(v)) {
-                out.set(i);
-            }
-        }
-
-
-        int[] revAssociations = new int[nbCTasks];
-        for (int i = 0; i < revAssociations.length; i++) {
-            revAssociations[i] = LocalTaskScheduler.NO_ASSOCIATIONS;
-        }
-
-        for (int i = 0; i < assocs.length; i++) {
-            if (assocs[i] != LocalTaskScheduler.NO_ASSOCIATIONS) {
-                revAssociations[assocs[i]] = i;
-            }
-        }
-
+        /*
         vIns = env.makeIntVector();
         resource = new AliasedCumulativesFiltering(env,
                 capacities,
@@ -144,75 +129,27 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
                 dStarts,
                 vIns,
                 assocs,
-                revAssociations);
+                revAssociations);  */
     }
 
-    private boolean isIn(int idx) {
-        return alias.contains(idx);
-    }
 
-    @Override
-    public void awake() throws ContradictionException {
-
-        this.toInstantiate = env.makeInt(dHosters.length);
-
-        //Check whether some hosting variable are already instantiated
-        for (int i = 0; i < dHosters.length; i++) {
-            if (dHosters[i].instantiated()) {
-                int nIdx = dHosters[i].getValue();
-                if (isIn(nIdx)) {
-                    toInstantiate.add(-1);
-                    vIns.add(i);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void propagate() throws ContradictionException {
-        if (isFull2() && !resource.propagate()) {
-            fail();
-        }
-    }
-
-    @Override
-    public void awakeOnInst(int idx) throws ContradictionException {
-        if (idx < dHosters.length) {
-            toInstantiate.add(-1);
-            int nIdx = vars[idx].getValue();
-            if (isIn(nIdx)) {
-                vIns.add(idx);
-            }
-        }
-        this.constAwake(false);
-    }
-
-    private boolean isFull2() {
-        return toInstantiate.get() == 0;
-    }
-
-    @Override
-    public int getFilteredEventMask(int idx) {
-        return IntVarEvent.INSTINT_MASK;
-    }
-
-    @Override
+    /*@Override
     public boolean isSatisfied() {
         int[] vals = new int[vars.length];
         for (int i = 0; i < vals.length; i++) {
             vals[i] = vars[i].getValue();
         }
         return isSatisfied(vals);
-    }
+    }      */
 
+    /*    @Override
+        public boolean isConsistent() {
+            resource.computeProfiles();
+            return resource.checkInvariant();
+        }
+      */
     @Override
-    public boolean isConsistent() {
-        resource.computeProfiles();
-        return resource.checkInvariant();
-    }
-
-    @Override
-    public boolean isSatisfied(int[] vals) {
+    public ESat isSatisfied(int[] vals) {
         //Split this use tab to ease the analysis
         int[] dHostersVals = new int[dHosters.length];
         int[] cHostersVals = new int[cHosters.length];
@@ -265,10 +202,134 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
             for (int x = 0; x < changes[i].keys().length; x++) {
                 currentFree[i] += changes[i].get(x);
                 if (currentFree[i] < 0) {
-                    return false;
+                    return ESat.FALSE;
                 }
             }
         }
-        return true;
+        return ESat.TRUE;
+    }
+
+    private boolean isIn(int idx) {
+        return alias.contains(idx);
+    }
+
+
+    class AliasedCumulativesPropagator extends Propagator<IntVar> {
+
+        private IStateInt toInstantiate;
+
+        private boolean first = true;
+
+        public AliasedCumulativesPropagator(IEnvironment env,
+                                            int[] alias,
+                                            int[] capas,
+                                            IntVar[] cHosters,
+                                            int[][] cUsages,
+                                            IntVar[] cEnds,
+                                            IntVar[] dHosters,
+                                            int[][] dUsages,
+                                            IntVar[] dStarts,
+                                            int[] assocs) {
+            super(ArrayUtils.append(dHosters, cHosters, cEnds, dStarts), PropagatorPriority.VERY_SLOW, true);
+
+
+            BitSet out = new BitSet(cHosters.length);
+
+            for (int i = 0; i < cHosters.length; i++) {
+                int v = cHosters[i].getValue();
+                if (isIn(v)) {
+                    out.set(i);
+                }
+            }
+
+            int nbCTasks = cUsages[0].length;
+
+            int[] revAssociations = new int[nbCTasks];
+            for (int i = 0; i < revAssociations.length; i++) {
+                revAssociations[i] = LocalTaskScheduler.NO_ASSOCIATIONS;
+            }
+
+            for (int i = 0; i < assocs.length; i++) {
+                if (assocs[i] != LocalTaskScheduler.NO_ASSOCIATIONS) {
+                    revAssociations[assocs[i]] = i;
+                }
+            }
+
+
+            resource = new AliasedCumulativesFiltering(env,
+                    capacities,
+                    cUsages,
+                    cEnds,
+                    out,
+                    dUsages,
+                    dStarts,
+                    vIns,
+                    assocs,
+                    revAssociations,
+                    aCause);
+        }
+
+        @Override
+        public ESat isEntailed() {
+            return ESat.UNDEFINED;
+        }
+
+        @Override
+        public int getPropagationConditions(int idx) {
+            return EventType.INSTANTIATE.mask;
+        }
+
+
+        public void awake() throws ContradictionException {
+            if (!first) {
+                return;
+            }
+            first = false;
+            this.toInstantiate = env.makeInt(dHosters.length);
+
+            //Check whether some hosting variable are already instantiated
+            for (int i = 0; i < dHosters.length; i++) {
+                if (dHosters[i].instantiated()) {
+                    int nIdx = dHosters[i].getValue();
+                    if (isIn(nIdx)) {
+                        toInstantiate.add(-1);
+                        vIns.add(i);
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void propagate(int m) throws ContradictionException {
+            if (isFull2() && !resource.propagate()) {
+                awake();
+                contradiction(null, "");
+                //fail();
+            }
+        }
+
+        public void propagate(int idx, int m) throws ContradictionException {
+            if (EventType.isInstantiate(m)) {
+                awakeOnInst(idx);
+            }
+        }
+
+        //@Override
+        public void awakeOnInst(int idx) throws ContradictionException {
+            if (idx < dHosters.length) {
+                toInstantiate.add(-1);
+                int nIdx = vars[idx].getValue();
+                if (isIn(nIdx)) {
+                    vIns.add(idx);
+                }
+            }
+            forcePropagate(EventType.INSTANTIATE);
+            //this.constAwake(false);
+        }
+
+        private boolean isFull2() {
+            return toInstantiate.get() == 0;
+        }
+
     }
 }

@@ -62,7 +62,7 @@ public class LightBinPackingTest {
         sizes = new int[nItems];
         bins = new IntVar[nItems];
         for (int i = 0; i < nBins; i++) {
-            loads[i] = VF.bounded(("l" + i, 0, capa[i], s);
+            loads[i] = VF.bounded("l" + i, 0, capa[i], s);
         }
         for (int i = 0; i < nItems; i++) {
             sizes[i] = height[i];
@@ -70,13 +70,13 @@ public class LightBinPackingTest {
         }
         Constraint cPack = new LightBinPacking(new String[]{"foo"}, s.getEnvironment(), new IntVar[][]{loads}, new int[][]{sizes}, bins);
         s.post(cPack);
-        s.getConfiguration().putFalse(Configuration.STOP_AT_FIRST_SOLUTION);
+        //s.getConfiguration().putFalse(Configuration.STOP_AT_FIRST_SOLUTION);
     }
 
     public void testPack(int nbSol) {
-        s.getConfiguration().putFalse(Configuration.STOP_AT_FIRST_SOLUTION);
+        /*s.getConfiguration().putFalse(Configuration.STOP_AT_FIRST_SOLUTION);
         s.generateSearchStrategy();
-        s.launch();
+        s.launch();*/
         Assert.assertEquals((boolean) s.isFeasible(), nbSol != 0, "SAT");
         if (nbSol > 0) {
             Assert.assertEquals(s.getNbSolutions(), nbSol, "#SOL");
