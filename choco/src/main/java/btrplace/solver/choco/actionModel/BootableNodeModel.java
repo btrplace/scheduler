@@ -108,7 +108,7 @@ public class BootableNodeModel implements NodeActionModel {
             - If the node is offline, it is sure it cannot host any running VMs
         */
         isOnline = VariableFactory.bool(rp.makeVarLabel("bootableNode(", nId, ").online"), s);
-        IntVar isOffline = VariableFactory.not(isOnline);//VariableFactory.bool(rp.makeVarLabel("bootableNode(", nId, ").offline"), s);
+        BoolVar isOffline = VariableFactory.not(isOnline);//VariableFactory.bool(rp.makeVarLabel("bootableNode(", nId, ").offline"), s);
         //s.post(s.neq(isOffline, isOnline));
         s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNode(nId)], 0));
 

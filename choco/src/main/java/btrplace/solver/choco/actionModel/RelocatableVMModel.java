@@ -242,7 +242,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
     }
 
     @Override
-    public IntVar isStaying() {
+    public BoolVar isStaying() {
         return stay;
     }
 

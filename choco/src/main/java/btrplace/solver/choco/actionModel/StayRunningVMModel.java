@@ -24,6 +24,7 @@ import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
 import solver.Solver;
+import solver.variables.BoolVar;
 import solver.variables.IntVar;
 import solver.variables.VariableFactory;
 
@@ -41,7 +42,7 @@ public class StayRunningVMModel implements KeepRunningVMModel {
 
     private VM vm;
 
-    private IntVar stay;
+    private BoolVar stay;
 
     /**
      * Make a new model.
@@ -113,7 +114,7 @@ public class StayRunningVMModel implements KeepRunningVMModel {
     }
 
     @Override
-    public IntVar isStaying() {
+    public BoolVar isStaying() {
         return stay;
     }
 }

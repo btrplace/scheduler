@@ -19,9 +19,13 @@ package btrplace.solver.choco.chocoUtil;
 
 
 import solver.constraints.IntConstraint;
+import solver.constraints.Propagator;
+import solver.constraints.PropagatorPriority;
 import solver.exception.ContradictionException;
-import solver.exception.SolverException;
+import solver.variables.BoolVar;
+import solver.variables.EventType;
 import solver.variables.IntVar;
+import util.ESat;
 
 /**
  * A fast implementation for BVAR => VAR = CSTE
@@ -34,106 +38,119 @@ public class FastIFFEq extends IntConstraint<IntVar> {
 
     private final int constant;
 
-    public FastIFFEq(IntVar b, IntVar var, int constante) {
-        super(b, var);
-        if (!b.hasBooleanDomain()) {
-            throw new SolverException(b.getName() + " is not a boolean variable");
-        }
+    public FastIFFEq(BoolVar b, IntVar var, int constante) {
+        super(new IntVar[]{b, var}, b.getSolver());
         this.constant = constante;
+        setPropagators(new FastIFFEqProp(vars), new FastIFFEqProp(vars));
     }
 
     @Override
-    public int getFilteredEventMask(int idx) {
-        if (idx == 0) {
-            return IntVarEvent.INSTINT_MASK;
-        } else {
-            if (v1.hasEnumeratedDomain()) {
-                return IntVarEvent.INSTINT_MASK + IntVarEvent.REMVAL_MASK;
-            }
-            return IntVarEvent.INSTINT_MASK + IntVarEvent.BOUNDS_MASK;
+    public ESat isSatisfied(int[] tuple) {
+        return ESat.eval((tuple[0] == 1 && tuple[1] == constant)
+                || (tuple[0] == 0 && tuple[1] != constant));
+    }
+
+    @Override
+    public String toString() {
+        return vars[0].toString() + " <-> " + vars + "=" + constant;
+    }
+
+    class FastIFFEqProp extends Propagator<IntVar> {
+
+        public FastIFFEqProp(IntVar[] vs) {
+            super(vs, PropagatorPriority.BINARY, true);
         }
-    }
 
-    @Override
-    public void propagate() throws ContradictionException {
-        if (v0.instantiated()) {
-            int val = v0.getValue();
-            if (val == 0) {
-                if (v1.removeVal(constant, this, false)) {
-                    this.setEntailed();
+        @Override
+        public int getPropagationConditions(int idx) {
+            if (idx == 0) {
+                return EventType.INSTANTIATE.mask;
+            } else {
+                if (vars[1].hasEnumeratedDomain()) {
+                    return EventType.INSTANTIATE.mask + EventType.REMOVE.mask;
+                }
+                return EventType.INSTANTIATE.mask + EventType.BOUND.mask;
+            }
+        }
+
+        @Override
+        public void propagate(int mask) throws ContradictionException {
+            if (vars[0].instantiated()) {
+                int val = vars[0].getValue();
+                if (val == 0) {
+                    vars[1].removeValue(constant, aCause);
+                } else {
+                    vars[1].instantiateTo(constant, aCause);
+                }
+            }
+            if (vars[1].instantiatedTo(constant)) {
+                vars[0].instantiateTo(1, aCause);
+            } else if (!vars[1].contains(constant)) {
+                vars[0].instantiateTo(0, aCause);
+            }
+        }
+
+        @Override
+        public void propagate(int idx, int mask) throws ContradictionException {
+            if (EventType.isInstantiate(mask)) {
+                awakeOnInst(idx);
+            }
+            if (EventType.isRemove(mask)) {
+                if (!vars[1].contains(constant)) {
+                    vars[0].instantiateTo(0, aCause);
+                }
+            }
+            if (EventType.isDecupp(mask)) {
+                awakeOnSup(idx);
+            }
+            if (EventType.isInclow(mask)) {
+                awakeOnInf(idx);
+            }
+        }
+
+        public void awakeOnInst(int idx) throws ContradictionException {
+            if (idx == 0) {
+                int val = vars[0].getValue();
+                if (val == 0) {
+                    vars[1].removeValue(constant, aCause);
+                } else {
+                    vars[1].instantiateTo(constant, aCause);
                 }
             } else {
-                v1.instantiate(constant, this, false);
-                this.setEntailed();
-            }
-        }
-        if (v1.instantiatedTo(constant)) {
-            v0.instantiate(1, this, false);
-        } else if (!v1.canBeInstantiatedTo(constant)) {
-            v0.instantiate(0, this, false);
-            this.setEntailed();
-        }
-    }
-
-    @Override
-    public void awakeOnInst(int idx) throws ContradictionException {
-        if (idx == 0) {
-            int val = v0.getValue();
-            if (val == 0) {
-                if (v1.removeVal(constant, this, false)) {
-                    this.setEntailed();
+                if (vars[1].instantiatedTo(constant)) {
+                    vars[0].instantiateTo(1, aCause);
+                } else {
+                    vars[0].instantiateTo(0, aCause);
                 }
-            } else {
-                v1.instantiate(constant, this, false);
-            }
-        } else {
-            if (v1.instantiatedTo(constant)) {
-                v0.instantiate(1, this, false);
-            } else {
-                v0.instantiate(0, this, false);
             }
         }
-    }
 
-    @Override
-    public void awakeOnRem(int varIdx, int val) throws ContradictionException {
-        if (varIdx == 1 && val == constant) {
-            v0.instantiate(0, this, false);
-        }
-    }
-
-    @Override
-    public void awakeOnInf(int varIdx) throws ContradictionException {
-        if (varIdx == 1) {
-            if (!v1.canBeInstantiatedTo(constant)) {
-                v0.instantiate(0, this, false);
-                this.setEntailed();
+        public void awakeOnInf(int varIdx) throws ContradictionException {
+            if (varIdx == 1) {
+                if (!vars[1].contains(constant)) {
+                    vars[0].instantiateTo(0, aCause);
+                }
             }
         }
-    }
 
-    @Override
-    public void awakeOnSup(int varIdx) throws ContradictionException {
-        if (varIdx == 1) {
-            if (!v1.canBeInstantiatedTo(constant)) {
-                v0.instantiate(0, this, false);
-                this.setEntailed();
+        public void awakeOnSup(int varIdx) throws ContradictionException {
+            if (varIdx == 1) {
+                if (!vars[1].contains(constant)) {
+                    vars[0].instantiateTo(0, aCause);
+                }
             }
         }
-    }
 
-    @Override
-    public boolean isSatisfied(int[] tuple) {
-        return (tuple[0] == 1 && tuple[1] == constant)
-                || (tuple[0] == 0 && tuple[1] != constant);
-    }
-
-    @Override
-    public boolean isConsistent() {
-        if (vars[0].instantiated() || vars[1].instantiated()) {
-            return ((vars[0].instantiatedTo(0) && !vars[1].instantiatedTo(constant))
-                    || (vars[0].instantiatedTo(1) && vars[1].instantiatedTo(constant)));
+        @Override
+        public ESat isEntailed() {
+            if (vars[0].instantiated() || vars[1].instantiated()) {
+                return ESat.eval((vars[0].instantiatedTo(0) && !vars[1].instantiatedTo(constant))
+                        || (vars[0].instantiatedTo(1) && vars[1].instantiatedTo(constant)));
+            }
+            return ESat.UNDEFINED;
         }
-        return true;
+
+
     }
+
 }

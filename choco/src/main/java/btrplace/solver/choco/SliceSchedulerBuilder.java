@@ -25,6 +25,7 @@ import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import btrplace.solver.choco.chocoUtil.TaskScheduler;
 import solver.Solver;
 import solver.exception.ContradictionException;
+import solver.variables.BoolVar;
 import solver.variables.IntVar;
 
 import java.util.ArrayList;
@@ -148,7 +149,7 @@ public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
             Slice dSlice = a.getDSlice();
             Slice cSlice = a.getCSlice();
             if (dSlice != null && cSlice != null) {
-                IntVar stay = ((KeepRunningVMModel) a).isStaying();
+                BoolVar stay = ((KeepRunningVMModel) a).isStaying();
 
                 Boolean ret = strictlyDecreasingOrUnchanged(vm);
                 if (Boolean.TRUE.equals(ret)) {

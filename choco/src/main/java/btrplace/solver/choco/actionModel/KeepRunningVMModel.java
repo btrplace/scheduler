@@ -18,7 +18,7 @@
 package btrplace.solver.choco.actionModel;
 
 
-import solver.variables.IntVar;
+import solver.variables.BoolVar;
 
 /**
  * An interface to specify an VM action model related
@@ -35,5 +35,5 @@ public interface KeepRunningVMModel extends VMActionModel {
      * @return a variable instantiated to {@code 1} iff the VM is staying on its current node.
      * Instantiated to {@code 0} otherwise
      */
-    IntVar isStaying();
+    BoolVar isStaying();
 }
