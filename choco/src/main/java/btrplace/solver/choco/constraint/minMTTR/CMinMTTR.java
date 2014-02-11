@@ -31,7 +31,6 @@ import btrplace.solver.choco.constraint.ChocoConstraintBuilder;
 import solver.Solver;
 import solver.constraints.Constraint;
 import solver.constraints.IntConstraintFactory;
-import solver.exception.ContradictionException;
 import solver.search.limits.BacktrackCounter;
 import solver.search.loop.monitors.SMF;
 import solver.search.strategy.selectors.values.InDomainMin;
@@ -41,7 +40,6 @@ import solver.search.strategy.strategy.Assignment;
 import solver.search.strategy.strategy.StrategiesSequencer;
 import solver.variables.IntVar;
 import solver.variables.VariableFactory;
-import util.ESat;
 
 import java.util.*;
 
@@ -99,7 +97,7 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
             //s.setRestart(true);
         }
         injectPlacementHeuristic(p, cost);
-        //postCostConstraints();
+        postCostConstraints();
         return true;
     }
 
@@ -197,20 +195,21 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
      */
     @Override
     public void postCostConstraints() {
+        //TODO: Delay insertion
         if (!costActivated) {
             rp.getLogger().debug("Post the cost-oriented constraints");
             costActivated = true;
             Solver s = rp.getSolver();
             for (Constraint c : costConstraints) {
-                s.postCut(c);
+                s.post(c);
             }
-            try {
+            /*try {
                 s.propagate();
             } catch (ContradictionException e) {
                 s.setFeasible(ESat.FALSE);
                 //s.setFeasible(false);
                 s.post(IntConstraintFactory.FALSE(s));
-            }
+            } */
         }
     }
 
