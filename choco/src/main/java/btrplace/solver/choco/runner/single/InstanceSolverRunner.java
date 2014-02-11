@@ -35,6 +35,7 @@ import btrplace.solver.choco.runner.InstanceResult;
 import btrplace.solver.choco.runner.SolutionStatistics;
 import solver.Cause;
 import solver.exception.ContradictionException;
+import solver.search.loop.monitors.SMF;
 import solver.search.measure.IMeasures;
 import solver.search.solution.Solution;
 
@@ -203,19 +204,9 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
     }
 
     private void stateVerbosity() {
-        if (params.getVerbosity() <= 0) {
-            //ChocoLogging.setVerbosity(Verbosity.SILENT);
-            params.labelVariables(false);
-        } else {
-            params.labelVariables(true);
-            //ChocoLogging.setVerbosity(Verbosity.SOLUTION);
-            //ChocoLogging.setLoggingMaxDepth(Integer.MAX_VALUE);
-            if (params.getVerbosity() == 2) {
-                //ChocoLogging.setVerbosity(Verbosity.SEARCH);
-            } else if (params.getVerbosity() > 2) {
-                //ChocoLogging.setVerbosity(Verbosity.FINEST);
-            }
-        }
+        int v = params.getVerbosity();
+        params.labelVariables(v >= 0);
+        SMF.log(rp.getSolver(), v >= 2, v >= 3);
     }
 
     private void checkSatisfaction2(ReconfigurationPlan p, Collection<SatConstraint> cs) throws SolverException {

@@ -76,7 +76,8 @@ public class MovingVMs implements VariableSelector<IntVar> {
 
     @Override
     public IntVar[] getScope() {
-        throw new UnsupportedOperationException();
+        return new IntVar[0];
+        //throw new UnsupportedOperationException();
     }
 
     @Override

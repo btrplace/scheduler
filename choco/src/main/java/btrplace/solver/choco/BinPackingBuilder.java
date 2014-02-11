@@ -17,8 +17,8 @@
 
 package btrplace.solver.choco;
 
-import btrplace.solver.choco.chocoUtil.LightBinPacking;
 import solver.Solver;
+import solver.constraints.IntConstraintFactory;
 import solver.exception.ContradictionException;
 import solver.variables.IntVar;
 
@@ -85,10 +85,12 @@ public class BinPackingBuilder {
                     throw new ContradictionException();
                 }
             }
-
+            //assign, size, load, offset ,
+            if (!rp.getFutureRunningVMs().isEmpty()) {
+                solver.post(IntConstraintFactory.bin_packing(bins.get(0), iSizes[i], loads.get(i), 0));
+            }
         }
         //TODO: Items must always be in the same order.
-        solver.post(new LightBinPacking(names.toArray(new String[names.size()]), solver.getEnvironment(), loads.toArray(new IntVar[loads.size()][]), iSizes, bins.get(0)));
-
+        //solver.post(new LightBinPacking(names.toArray(new String[names.size()]), solver.getEnvironment(), loads.toArray(new IntVar[loads.size()][]), iSizes, bins.get(0)));
     }
 }
