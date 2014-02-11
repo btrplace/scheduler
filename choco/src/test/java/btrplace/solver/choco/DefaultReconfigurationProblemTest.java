@@ -728,11 +728,11 @@ public class DefaultReconfigurationProblemTest {
 
 
         Mapping map = mo.getMapping();
-        Set<VM> s = new HashSet<>(map.getAllVMs());
-        for (VM vm : s) {
-            map.addReadyVM(vm);
+        for (int i = 0; i < 7; i++) {
+            VM v = mo.newVM();
+            map.addReadyVM(v);
         }
-        map.remove(n3);
+        map.addOnlineNode(n3);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(new HashSet<VM>()
                         , map.getAllVMs()
