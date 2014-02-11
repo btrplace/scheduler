@@ -31,6 +31,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import solver.Cause;
 import solver.exception.ContradictionException;
+import solver.search.loop.monitors.SMF;
 
 import java.util.Collections;
 
@@ -101,8 +102,9 @@ public class ForgeVMModelTest {
         //Force the node to get offline
         ShutdownableNodeModel n = (ShutdownableNodeModel) rp.getNodeAction(n1);
         n.getState().instantiateTo(0, Cause.Null);
-
+        SMF.log(rp.getSolver(), true, true);
         ReconfigurationPlan p = rp.solve(0, false);
+
         Assert.assertNotNull(p);
         Assert.assertEquals(p.getDuration(), 20);
         for (Action a : p) {

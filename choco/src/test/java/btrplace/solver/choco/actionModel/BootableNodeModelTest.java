@@ -129,7 +129,6 @@ public class BootableNodeModelTest {
         DurationEvaluators dev = new DurationEvaluators();
         dev.register(BootNode.class, new ConstantActionDuration(5));
         dev.register(BootVM.class, new ConstantActionDuration(2));
-        //ChocoLogging.setVerbosity(Verbosity.FINEST);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .labelVariables()
@@ -137,6 +136,7 @@ public class BootableNodeModelTest {
                 .build();
 
         BootableNodeModel na = (BootableNodeModel) rp.getNodeAction(n1);
+        System.out.println(rp.getSolver());
         Assert.assertNotNull(rp.solve(0, false));
         Assert.assertEquals(na.getStart().getValue(), 0);
         Assert.assertEquals(na.getEnd().getValue(), 5);
