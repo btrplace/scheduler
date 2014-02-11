@@ -30,6 +30,7 @@ import btrplace.solver.choco.view.ChocoModelViewBuilder;
 import btrplace.solver.choco.view.ModelViewMapper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Cause;
 import solver.exception.ContradictionException;
 import solver.variables.IntVar;
 
@@ -741,11 +742,12 @@ public class DefaultReconfigurationProblemTest {
                 .build();
 
         for (IntVar capa : rp.getNbRunningVMs()) {
-            capa.updateUpperBound(5, null);
+            capa.updateUpperBound(5, Cause.Null);
         }
         //Restrict the capacity to 2 at most
         ReconfigurationPlan p = rp.solve(-1, false);
         Assert.assertNotNull(p);
+        System.out.println(p);
         //Check consistency between the counting and the hoster variables
         int[] counts = new int[map.getAllNodes().size()];
         for (Node n : map.getOnlineNodes()) {
@@ -760,6 +762,7 @@ public class DefaultReconfigurationProblemTest {
         for (int count : counts) {
             Assert.assertEquals(count, 0);
         }
+        Assert.fail();
     }
 
     @Test

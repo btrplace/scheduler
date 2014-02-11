@@ -109,7 +109,8 @@ public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
                 capas,
                 cHosters, cUses, cEnds,
                 dHosters, dUses, dStarts,
-                associations);
+                associations,
+                rp.getSolver());
     }
 
     private Boolean strictlyDecreasingOrUnchanged(VM vm) {

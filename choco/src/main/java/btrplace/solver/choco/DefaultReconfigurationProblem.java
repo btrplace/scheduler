@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
@@ -68,14 +69,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private boolean useLabels = false;
 
-    //TODO: What about real variables ?
     private IntVar objective;
     /**
      * The maximum duration of a plan in seconds: One hour.
      */
     public static final int DEFAULT_MAX_TIME = 3600;
-
-    public static final double REAL_VALUE_PRECISION = 0.01;
 
     private Model model;
 
@@ -198,7 +196,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         addContinuousResourceCapacities();
 
-        solver.post(taskSchedBuilder.build());
+
+        if (nodeActions.length > 0) {
+            solver.post(taskSchedBuilder.build());
+        }
 
         for (AliasedCumulatives cstr : cumulativesBuilder.getConstraints()) {
             solver.post(cstr);

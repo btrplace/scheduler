@@ -25,6 +25,7 @@ import memory.IStateInt;
 import memory.IStateIntVector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import solver.Solver;
 import solver.constraints.IntConstraint;
 import solver.constraints.Propagator;
 import solver.constraints.PropagatorPriority;
@@ -101,9 +102,10 @@ public class TaskScheduler extends IntConstraint<IntVar> {
                          IntVar[] dHosters,
                          int[][] dUsages,
                          IntVar[] dStarts,
-                         int[] assocs) {
+                         int[] assocs,
+                         Solver s) {
 
-        super(ArrayUtils.<IntVar>append(dHosters, cHosters, cEnds, dStarts, earlyStarts, lastEnds), earlyStarts[0].getSolver());
+        super(ArrayUtils.<IntVar>append(dHosters, cHosters, cEnds, dStarts, earlyStarts, lastEnds), s);
 
         this.env = e;
         this.cHosters = cHosters;
