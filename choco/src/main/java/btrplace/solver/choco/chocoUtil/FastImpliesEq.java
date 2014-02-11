@@ -54,7 +54,7 @@ public class FastImpliesEq extends IntConstraint<IntVar> {
 
     @Override
     public String toString() {
-        return vars[0].toString() + " -> " + vars + "=" + constante;
+        return vars[0].toString() + " -> " + vars[1] + "=" + constante;
     }
 
     @Override

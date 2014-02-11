@@ -61,6 +61,7 @@ public class ShutdownVMModelTest {
                 .labelVariables()
                 .setNextVMsStates(map.getAllVMs(), new HashSet<VM>(), new HashSet<VM>(), new HashSet<VM>())
                 .build();
+        System.out.println(rp.getSolver());
         rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
         ShutdownVMModel m = (ShutdownVMModel) rp.getVMActions()[0];
         Assert.assertEquals(vm1, m.getVM());
@@ -70,6 +71,7 @@ public class ShutdownVMModelTest {
         Assert.assertTrue(m.getCSlice().getHoster().instantiatedTo(0));
 
         ReconfigurationPlan p = rp.solve(0, false);
+        System.out.println(p);
         ShutdownVM a = (ShutdownVM) p.getActions().iterator().next();
 
         Assert.assertEquals(vm1, a.getVM());

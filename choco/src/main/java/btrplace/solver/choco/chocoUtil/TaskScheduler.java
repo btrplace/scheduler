@@ -288,6 +288,8 @@ public class TaskScheduler extends IntConstraint<IntVar> {
 
         private IStateInt toInstantiate;
 
+        private IntVar[] earlyStarts, lastEnds;
+
         public TaskSchedulerPropagator(IEnvironment e,
                                        IntVar[] earlyStarts,
                                        IntVar[] lastEnds,
@@ -301,6 +303,8 @@ public class TaskScheduler extends IntConstraint<IntVar> {
                                        int[] assocs) {
             super(ArrayUtils.<IntVar>append(dHosters, cHosters, cEnds, dStarts, earlyStarts, lastEnds), PropagatorPriority.VERY_SLOW, true);
 
+            this.earlyStarts = earlyStarts;
+            this.lastEnds = lastEnds;
             BitSet[] outs = new BitSet[scheds.length];
             for (int i = 0; i < scheds.length; i++) {
                 outs[i] = new BitSet(cHosters.length);
@@ -324,7 +328,7 @@ public class TaskScheduler extends IntConstraint<IntVar> {
             }
 
             for (int i = 0; i < scheds.length; i++) {
-                vIns[i] = e.makeIntVector(8, 0);
+                vIns[i] = e.makeIntVector(0, 0);
                 scheds[i] = new LocalTaskScheduler(i, e,
                         earlyStarts[i],
                         lastEnds[i],
@@ -474,7 +478,7 @@ public class TaskScheduler extends IntConstraint<IntVar> {
                 //System.out.println("Propagate !");
                 for (int i = 0; i < scheds.length; i++) {
                     if (!scheds[i].propagate()) {
-                        this.contradiction(null, "");
+                        this.contradiction(earlyStarts[i], "Invalid profile on resource '" + i + "'");
                     }
                 }
             }
