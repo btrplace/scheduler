@@ -121,12 +121,12 @@ public class CShareableResourceTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
         VMActionModel avm1 = rp.getVMActions()[rp.getVM(vm1)];
         VMActionModel avm2 = rp.getVMActions()[rp.getVM(vm2)];
-        avm1.getDSlice().getHoster().instantiateTo(0, null);
-        avm2.getDSlice().getHoster().instantiateTo(1, null);
+        avm1.getDSlice().getHoster().instantiateTo(0, Cause.Null);
+        avm2.getDSlice().getHoster().instantiateTo(1, Cause.Null);
         CShareableResource rcm = (CShareableResource) rp.getView(btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo");
         //Basic consumption for the VMs. If would be safe to use Preserve, but I don't want:D
-        rcm.getVMsAllocation()[rp.getVM(vm1)].updateLowerBound(2, null);
-        rcm.getVMsAllocation()[rp.getVM(vm2)].updateLowerBound(3, null);
+        rcm.getVMsAllocation()[rp.getVM(vm1)].updateLowerBound(2, Cause.Null);
+        rcm.getVMsAllocation()[rp.getVM(vm2)].updateLowerBound(3, Cause.Null);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         Assert.assertTrue(rcm.getVirtualUsage(0).instantiatedTo(2));
@@ -193,7 +193,7 @@ public class CShareableResourceTest {
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
         VMActionModel avm1 = rp.getVMActions()[rp.getVM(vm1)];
-        avm1.getDSlice().getHoster().instantiateTo(0, null);
+        avm1.getDSlice().getHoster().instantiateTo(0, Cause.Null);
         CShareableResource rcm = (CShareableResource) rp.getView(btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo");
         //Basic consumption for the VMs. If would be safe to use Preserve, but I don't want:D
         rcm.getVMsAllocation()[rp.getVM(vm2)].updateLowerBound(4, Cause.Null);
