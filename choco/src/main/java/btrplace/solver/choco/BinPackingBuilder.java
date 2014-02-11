@@ -17,6 +17,7 @@
 
 package btrplace.solver.choco;
 
+import solver.Cause;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
 import solver.exception.ContradictionException;
@@ -81,9 +82,7 @@ public class BinPackingBuilder {
             int x = 0;
             for (IntVar ss : s) {
                 iSizes[i][x++] = ss.getLB();
-                if (!ss.instantiatedTo(ss.getLB())) {
-                    throw new ContradictionException();
-                }
+                ss.instantiateTo(ss.getLB(), Cause.Null);
             }
             //assign, size, load, offset ,
             if (!rp.getFutureRunningVMs().isEmpty()) {

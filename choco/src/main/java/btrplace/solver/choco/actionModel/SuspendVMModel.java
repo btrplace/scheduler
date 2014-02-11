@@ -25,6 +25,7 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
+import solver.constraints.IntConstraintFactory;
 import solver.variables.BoolVar;
 import solver.variables.IntVar;
 import solver.variables.VariableFactory;
@@ -72,8 +73,10 @@ public class SuspendVMModel implements VMActionModel {
         this.cSlice = new SliceBuilder(p, e, "suspendVM(" + e + ").cSlice").setHoster(p.getCurrentVMLocation(p.getVM(e)))
                 .setEnd(p.makeDuration(p.getEnd().getUB(), d, "suspendVM(", e, ").cSlice_end"))
                 .build();
-        start = VariableFactory.offset(cSlice.getEnd(), -d);//, rp.getSolver())new IntVarAddCste(p.getSolver(), p.makeVarLabel("suspendVM(" + e + ").start"), cSlice.getEnd(), -d);
-        state = VariableFactory.zero(rp.getSolver());//p.getSolver().makeConstantIntVar(0);
+        start = VariableFactory.offset(cSlice.getEnd(), -d);
+        state = VariableFactory.zero(rp.getSolver());
+        rp.getSolver().post(IntConstraintFactory.arithm(cSlice.getEnd(), "<=", p.getEnd()));
+
     }
 
     @Override

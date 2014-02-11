@@ -40,7 +40,17 @@ import solver.exception.ContradictionException;
 import solver.search.loop.monitors.SMF;
 import solver.search.solution.AllSolutionsRecorder;
 import solver.search.solution.ISolutionRecorder;
+import solver.search.strategy.IntStrategyFactory;
+import solver.search.strategy.selectors.values.RealDomainMiddle;
+import solver.search.strategy.selectors.variables.InputOrder;
+import solver.search.strategy.selectors.variables.Occurrence;
+import solver.search.strategy.strategy.AssignmentInterval;
+import solver.search.strategy.strategy.StrategiesSequencer;
+import solver.search.strategy.strategy.set.SetSearchStrategy;
+import solver.search.strategy.strategy.set.SetValSelector;
 import solver.variables.IntVar;
+import solver.variables.RealVar;
+import solver.variables.SetVar;
 import solver.variables.VariableFactory;
 import util.ESat;
 
@@ -197,7 +207,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         //Set the timeout
         if (timeLimit > 0) {
             SMF.limitTime(solver, timeLimit * 1000);
-            //solver.setTimeLimit(timeLimit * 1000);
         }
 
         /*if (objAlterer == null) {
@@ -205,8 +214,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         } else if (optimize) {
             solver.getConfiguration().putBoolean(choco.kernel.solver.Configuration.STOP_AT_FIRST_SOLUTION, true);
         } */
-        //solver.getConfiguration().putInt(Configuration.SOLUTION_POOL_CAPACITY, Integer.MAX_VALUE);
-        //solver.generateSearchStrategy();
 
 
         //Resolution policy:
@@ -216,12 +223,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         //min, max -> !stop at first
         //sat -> stop || !stop
-        //TODO:
         appendNaiveBranchHeuristic();
 
-
         int nbIntVars = solver.retrieveIntVars().length;
-        int nbBoolVars = 0; //TODO: solver.retrieveBoolVars().length;
+        int nbBoolVars = 0;//FIXME solver.retrieveBoolVars().length;
         //int nbCstes = solver.retrieveIntVars();*/
         int nbCstrs = solver.getNbCstrs();
         getLogger().debug("{} constraints; Variables: {} ints, {} bools", nbCstrs, nbIntVars, nbBoolVars);
@@ -273,9 +278,20 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * In practice, instantiate each of the variables to its lower-bound
      */
     private void appendNaiveBranchHeuristic() {
-        //TODO:
-        /*strats.add(new Assignment(new InputOrder(solver.retrieveIntVars()), new InDomainMin()));
-        strats.add(new Assignment(new InputOrder(solver, solver.retrieveSetVars()), new InDomainMin()));*/
+
+        StrategiesSequencer seq = new StrategiesSequencer(
+                IntStrategyFactory.firstFail_InDomainMin(solver.retrieveIntVars())
+        );
+        RealVar[] rv = solver.retrieveRealVars();
+        if (rv != null && rv.length > 0) {
+            seq = new StrategiesSequencer(seq, new AssignmentInterval(rv, new Occurrence<>(solver.retrieveRealVars()), new RealDomainMiddle()));
+        }
+        SetVar[] sv = solver.retrieveSetVars();
+        if (sv != null && sv.length > 0) {
+            seq = new StrategiesSequencer(seq,
+                    new SetSearchStrategy(new InputOrder<>(solver.retrieveSetVars()), new SetValSelector.FirstVal(), true));
+        }
+        solver.set(seq);
     }
 
     /**
@@ -777,8 +793,14 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public void setResolutionPolicy(ResolutionPolicy p) {
-        this.solvingPolicy = p;
+    public IntVar getObjective() {
+        return objective;
+    }
+
+    @Override
+    public void setObjective(boolean b, IntVar v) {
+        this.objective = v;
+        this.solvingPolicy = b ? ResolutionPolicy.MINIMIZE : ResolutionPolicy.MAXIMIZE;
     }
 
     @Override

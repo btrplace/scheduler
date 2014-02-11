@@ -384,11 +384,19 @@ public interface ReconfigurationProblem {
     VM cloneVM(VM vm);
 
     /**
-     * Set the resolution policy to consider.
+     * Set the optimisation variable.
      *
-     * @param p the resolution policy
+     * @param b {@code true} to minimise the value. {@code false} to maximise it
+     * @param v the variable to optimise
      */
-    void setResolutionPolicy(ResolutionPolicy p);
+    void setObjective(boolean b, IntVar v);
+
+    /**
+     * Get the optimisation variable
+     *
+     * @return a variable that is {@code null} if {@code #getResolutionPolicy() == ResolutionPolicy#SATISFACTION}
+     */
+    IntVar getObjective();
 
     /**
      * Get the current resolution policy.

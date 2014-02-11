@@ -28,11 +28,11 @@ import btrplace.solver.choco.actionModel.ActionModel;
 import btrplace.solver.choco.actionModel.ActionModelUtils;
 import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.constraint.ChocoConstraintBuilder;
-import solver.ResolutionPolicy;
 import solver.Solver;
 import solver.constraints.Constraint;
 import solver.constraints.IntConstraintFactory;
 import solver.exception.ContradictionException;
+import solver.search.limits.BacktrackCounter;
 import solver.search.loop.monitors.SMF;
 import solver.search.strategy.selectors.values.InDomainMin;
 import solver.search.strategy.selectors.variables.InputOrder;
@@ -82,11 +82,11 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         Solver s = p.getSolver();
         IntVar cost = VariableFactory.bounded(p.makeVarLabel("globalCost"), 0, Integer.MAX_VALUE / 100, s);
 
-        Constraint costConstraint = IntConstraintFactory.sum(costs, cost);//s.eq(cost, Solver.sum(costs));
+        Constraint costConstraint = IntConstraintFactory.sum(costs, cost);
         costConstraints.clear();
         costConstraints.add(costConstraint);
 
-        p.setResolutionPolicy(ResolutionPolicy.MINIMIZE);
+        p.setObjective(true, cost);
 
         //s.setObjective(cost);
         //We set a restart limit by default, this may be useful especially with very small infrastructure
@@ -94,7 +94,7 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         //in the scheduling part
         //Restart limit = 2 * number of VMs in the DC.
         if (p.getVMs().length > 0) {
-            SMF.geometrical(s, p.getVMs().length * 2, 1.5d, null, Integer.MAX_VALUE);
+            SMF.geometrical(s, 1, 1.5d, new BacktrackCounter(p.getVMs().length * 2), Integer.MAX_VALUE);
             //s.setGeometricRestart(p.getVMs().length * 2, 1.5d);
             //s.setRestart(true);
         }

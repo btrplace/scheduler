@@ -202,6 +202,7 @@ public class CMaxOnlineTest {
         cstrs.add(new Fence(Collections.singleton(v1), Collections.singleton(n3)));
         cstrs.add(new Offline(Collections.singleton(n1)));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.setTimeLimit(10);
         cra.labelVariables(true);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);

@@ -94,10 +94,10 @@ public class RelocatableVMModelTest {
         Solver s = rp.getSolver();
 
         s.post(IntConstraintFactory.arithm(rp.getNbRunningVMs()[rp.getNode(n1)], "=", 0));
-
+        System.out.println(s);
         ReconfigurationPlan p = rp.solve(0, false);
-
         Assert.assertNotNull(p);
+        System.out.println(p);
         Model m = p.getResult();
         Assert.assertEquals(n2, m.getMapping().getVMLocation(vm1));
 
