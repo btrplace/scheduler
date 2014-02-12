@@ -66,7 +66,7 @@ public class FastImpliesEq extends IntConstraint<IntVar> {
     class FastImpliesEqProp extends Propagator<IntVar> {
 
         public FastImpliesEqProp(IntVar[] vs) {
-            super(vs, PropagatorPriority.BINARY, true);
+            super(vs, PropagatorPriority.BINARY, false);
         }
 
         @Override
@@ -80,17 +80,23 @@ public class FastImpliesEq extends IntConstraint<IntVar> {
 
         @Override
         public void propagate(int mask) throws ContradictionException {
-            if (vars[0].instantiatedTo(1)) {
+            long s;
+            do {
+                s = vars[0].getDomainSize() + vars[1].getDomainSize();
+                if (vars[0].instantiatedTo(1)) {
                 vars[1].instantiateTo(constante, aCause);
             }
             if (!vars[1].contains(constante)) {
                 vars[0].instantiateTo(0, aCause);
             }
+                s -= (vars[0].getDomainSize() + vars[1].getDomainSize());
+            } while (s > 0);
         }
 
         @Override
         public void propagate(int idx, int mask) throws ContradictionException {
-            if (EventType.isInstantiate(mask)) {
+            forcePropagate(EventType.INSTANTIATE);
+            /*if (EventType.isInstantiate(mask)) {
                 if (idx == 0 && vars[0].getValue() == 1) {
                     vars[1].instantiateTo(constante, aCause);
                 }
@@ -99,8 +105,7 @@ public class FastImpliesEq extends IntConstraint<IntVar> {
                 if (idx == 1 && !vars[1].contains(constante)) {
                     vars[0].instantiateTo(0, aCause);
                 }
-
-            }
+            }      */
         }
 
         @Override

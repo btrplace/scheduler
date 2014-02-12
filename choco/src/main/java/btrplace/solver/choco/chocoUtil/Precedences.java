@@ -182,7 +182,15 @@ public class Precedences extends IntConstraint<IntVar> {
 
         @Override
         public ESat isEntailed() {
-            throw new UnsupportedOperationException();
+            int h = vars[0].getValue();
+            int st = vars[1].getValue();
+
+            for (int i = 0; i < othersHost.length; i++) {
+                if (othersHost[i] == h && vars[2 + i].getValue() > st) {
+                    return ESat.FALSE;
+                }
+            }
+            return ESat.TRUE;
         }
 
         public void awake() throws ContradictionException {

@@ -47,7 +47,7 @@ public class RoundedUpDivisionTest {
         IntVar b = VF.bounded("b", 0, 48, s);
         double q = 1.5;
         s.post(new RoundedUpDivision(a, b, q));
-        Assert.assertEquals(33, s.findAllSolutions());
+        Assert.assertEquals(s.findAllSolutions(), 49);
         //Assert.assertEquals(s.getNbSolutions(), 33);
     }
     /*

@@ -32,6 +32,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import solver.Cause;
 import solver.Solver;
+import solver.constraints.ICF;
 import solver.constraints.IntConstraintFactory;
 import solver.exception.ContradictionException;
 import solver.variables.IntVar;
@@ -728,7 +729,7 @@ public class DefaultReconfigurationProblemTest {
     public void testVMCounting() throws SolverException, ContradictionException {
         Model mo = new DefaultModel();
         Node n3 = mo.newNode();
-
+        Node n2 = mo.newNode();
 
         Mapping map = mo.getMapping();
         for (int i = 0; i < 7; i++) {
@@ -736,6 +737,7 @@ public class DefaultReconfigurationProblemTest {
             map.addReadyVM(v);
         }
         map.addOnlineNode(n3);
+        map.addOnlineNode(n2);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(new HashSet<VM>()
                         , map.getAllVMs()
@@ -744,13 +746,12 @@ public class DefaultReconfigurationProblemTest {
                 .labelVariables()
                 .build();
 
+        //Restrict the capacity to 5 at most
         for (IntVar capa : rp.getNbRunningVMs()) {
             capa.updateUpperBound(5, Cause.Null);
         }
-        //Restrict the capacity to 2 at most
         ReconfigurationPlan p = rp.solve(-1, false);
         Assert.assertNotNull(p);
-        System.out.println(p);
         //Check consistency between the counting and the hoster variables
         int[] counts = new int[map.getAllNodes().size()];
         for (Node n : map.getOnlineNodes()) {
@@ -765,7 +766,6 @@ public class DefaultReconfigurationProblemTest {
         for (int count : counts) {
             Assert.assertEquals(count, 0);
         }
-        Assert.fail();
     }
 
     @Test
@@ -812,8 +812,7 @@ public class DefaultReconfigurationProblemTest {
      */
     @Test
     public void testMinimize() throws SolverException {
-        Assert.fail();
-        /*Model mo = new DefaultModel();
+        Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         for (int i = 0; i < 10; i++) {
             Node n = mo.newNode();
@@ -825,15 +824,14 @@ public class DefaultReconfigurationProblemTest {
         Solver s = rp.getSolver();
         IntVar nbNodes = VF.bounded("nbNodes", 1, map.getAllNodes().size(), s);
         IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
-        s.post(new AtMostNValue(hosters, nbNodes));
+        s.post(ICF.nvalues(hosters, nbNodes, "at_most_BC"));
 
-        s.setObjective(nbNodes);
-        s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
-        ReconfigurationPlan plan = rp.solve(0, true);
+        rp.setObjective(true, nbNodes);
+        ReconfigurationPlan plan = rp.solve(-1, true);
         Assert.assertNotNull(plan);
-        Assert.assertEquals(s.getNbSolutions(), 10);
+        Assert.assertEquals(s.getSearchLoop().getMeasures().getSolutionCount(), 1);
         Mapping dst = plan.getResult().getMapping();
-        Assert.assertEquals(usedNodes(dst), 1);       */
+        Assert.assertEquals(usedNodes(dst), 1);
     }
 
     /**
