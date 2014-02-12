@@ -82,7 +82,7 @@ public class Issues {
 
         BoolVar[] busy = new BoolVar[NUMBER_OF_NODE];
 
-        rp.getEnd().updateUpperBound(10, null);
+        rp.getEnd().updateUpperBound(10, Cause.Null);
         int i = 0;
         int maxVMs = rp.getSourceModel().getMapping().getAllVMs().size();
         for (Node n : map.getAllNodes()) {
@@ -122,7 +122,8 @@ public class Issues {
         IntVar sumBusy = VF.bounded("sumBusy", 0, 1000, solver);
         solver.post(IntConstraintFactory.sum(states, sumBusy));
         IntVar sumIB = VF.bounded("ib", 0, 1000, solver);
-        solver.post(IntConstraintFactory.arithm(sumBusy, "+", idle));
+        VF.task(sumBusy, idle, sumIB);
+        //solver.post(IntConstraintFactory.arithm(sumBusy, "+", idle));
         solver.post(IntConstraintFactory.arithm(sumStates, "=", sumIB));//solver.eq(sumStates, sumIB));
 
         ReconfigurationPlan plan = rp.solve(0, false);
