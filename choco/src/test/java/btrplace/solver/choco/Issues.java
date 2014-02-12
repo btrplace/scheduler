@@ -315,4 +315,10 @@ public class Issues {
         Assert.assertEquals(cpu.sumCapacities(Arrays.asList(n, n2), true), 8);
     }
 
+    @Test
+    public void testFoo() throws ContradictionException {
+        Solver s = new Solver();
+        IntVar b = VF.enumerated("foo", 2, 5, s);
+        Assert.assertTrue(b.removeValue(3, Cause.Null));
+    }
 }

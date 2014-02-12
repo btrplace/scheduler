@@ -593,7 +593,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             }
             str = b.toString();
         }
-        return VariableFactory.bounded(str, 0, nodes.length - 1, solver);
+        return VariableFactory.enumerated(str, 0, nodes.length - 1, solver);
     }
 
     @Override

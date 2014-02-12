@@ -66,8 +66,9 @@ public class CBan implements ChocoConstraint {
                 Slice t = rp.getVMAction(vm).getDSlice();
                 if (t != null) {
                     for (int x : nodesIdx) {
+                        //rp.getSolver().post(IntConstraintFactory.arithm(t.getHoster(), "!=", x));
                         try {
-                            t.getHoster().removeValue(x, Cause.Null);//remVal(x);
+                            t.getHoster().removeValue(x, Cause.Null);
                         } catch (ContradictionException e) {
                             rp.getLogger().error("Unable to disallow VM '{}' to be running on '{}': {}", vm, rp.getNode(x), e.getMessage());
                             return false;
