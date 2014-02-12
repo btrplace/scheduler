@@ -31,8 +31,11 @@ import btrplace.solver.choco.view.ModelViewMapper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import solver.Cause;
+import solver.Solver;
+import solver.constraints.IntConstraintFactory;
 import solver.exception.ContradictionException;
 import solver.variables.IntVar;
+import solver.variables.VF;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -881,8 +884,7 @@ public class DefaultReconfigurationProblemTest {
      */
     @Test
     public void testMaximization() throws SolverException {
-        Assert.fail();
-        /*Model mo = new DefaultModel();
+        Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         Node n1 = mo.newNode();
         map.addOnlineNode(n1);
@@ -896,15 +898,13 @@ public class DefaultReconfigurationProblemTest {
         Solver s = rp.getSolver();
         IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
         IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
-        s.post(new IncreasingNValue(nbNodes, hosters, IncreasingNValue.Mode.ATLEAST));
-        s.setObjective(nbNodes);
-        s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MAXIMIZE);
-
+        s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_least_AC"));
+        rp.setObjective(false, nbNodes);
         ReconfigurationPlan plan = rp.solve(0, true);
         Assert.assertNotNull(plan);
         Mapping dst = plan.getResult().getMapping();
-        Assert.assertEquals(s.getNbSolutions(), 10);
-        Assert.assertEquals(usedNodes(dst), 10);   */
+        Assert.assertEquals(s.getSearchLoop().getMeasures().getSolutionCount(), 10);
+        Assert.assertEquals(usedNodes(dst), 10);
     }
 
     /**

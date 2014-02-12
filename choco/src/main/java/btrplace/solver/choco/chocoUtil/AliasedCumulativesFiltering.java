@@ -105,7 +105,7 @@ public class AliasedCumulativesFiltering {
 
         this.associations = assocs;
         this.cEnds = cEnds;
-
+        this.aCause = aCause;
         this.capacities = capacities;
         this.nbDims = capacities.length;
         this.cUsages = cUsages;

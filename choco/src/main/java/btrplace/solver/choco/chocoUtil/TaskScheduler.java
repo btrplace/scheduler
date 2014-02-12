@@ -70,8 +70,6 @@ public class TaskScheduler extends IntConstraint<IntVar> {
 
     private int[][] dUsages;
 
-    private IEnvironment env;
-
     private IStateIntVector[] vIns;
 
     /**
@@ -104,7 +102,6 @@ public class TaskScheduler extends IntConstraint<IntVar> {
 
         super(ArrayUtils.<IntVar>append(dHosters, cHosters, cEnds, dStarts, earlyStarts, lastEnds), s);
 
-        this.env = e;
         this.cHosters = cHosters;
         this.dHosters = dHosters;
         this.cEnds = cEnds;
@@ -278,7 +275,7 @@ public class TaskScheduler extends IntConstraint<IntVar> {
                                        int[][] dUsages,
                                        IntVar[] dStarts,
                                        int[] assocs) {
-            super(ArrayUtils.<IntVar>append(dHosters, cHosters, cEnds, dStarts, earlyStarts, lastEnds), PropagatorPriority.VERY_SLOW, true);
+            super(ArrayUtils.<IntVar>append(dHosters, cHosters, cEnds, dStarts, earlyStarts, lastEnds), PropagatorPriority.VERY_SLOW, false);
 
             this.earlyStarts = earlyStarts;
             this.lastEnds = lastEnds;
@@ -468,8 +465,6 @@ public class TaskScheduler extends IntConstraint<IntVar> {
                     }
                 }
             } else {
-
-
                 long size;
                 do {
                     size = 0;

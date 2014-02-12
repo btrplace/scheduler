@@ -60,8 +60,6 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
 
     private int[][] dUsages;
 
-    private IStateInt toInstantiate;
-
     private IEnvironment env;
 
     private IStateIntVector vIns;
@@ -116,6 +114,7 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
         this.nbDims = capas.length;
         int nbCTasks = cUsages[0].length;
 
+        this.vIns = env.makeIntVector(0, 0);
         setPropagators(new AliasedCumulativesPropagator(env, alias, capas, cHosters, cUsages, cEnds, dHosters, dUsages, dStarts, assocs));
 
         /*
@@ -271,7 +270,63 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
 
         @Override
         public ESat isEntailed() {
-            return ESat.UNDEFINED;
+            //Split this use tab to ease the analysis
+            int[] dHostersVals = new int[dHosters.length];
+            int[] cHostersVals = new int[cHosters.length];
+            int[] dStartsVals = new int[dStarts.length];
+            int[] cEndsVals = new int[cEnds.length];
+
+            //dHosters, cHosters, cEnds, dStarts
+            for (int i = 0; i < dHosters.length; i++) {
+                dHostersVals[i] = vars[i].getValue();
+                dStartsVals[i] = vars[i + dHosters.length + cHosters.length + cEnds.length].getValue();
+            }
+
+            for (int i = 0; i < cHosters.length; i++) {
+                cHostersVals[i] = vars[i + dHosters.length].getValue();
+                cEndsVals[i] = vars[i + dHosters.length + cHosters.length].getValue();
+            }
+
+            //A hashmap to save the changes of the resource (relatives to the previous moment) in the resources distribution
+            TIntIntHashMap[] changes = new TIntIntHashMap[nbDims];
+
+            for (int i = 0; i < nbDims; i++) {
+                changes[i] = new TIntIntHashMap();
+            }
+
+
+            for (int i = 0; i < nbDims; i++) {
+                for (int j = 0; j < dHostersVals.length; j++) {
+                    //for each placed dSlices, we get the used resource and the moment the slice arrives on it
+                    int nIdx = dHostersVals[j];
+                    if (isIn(nIdx)) {
+                        changes[i].put(dStartsVals[j], changes[i].get(dStartsVals[j]) - dUsages[i][j]);
+                    }
+                }
+            }
+
+            int[] currentFree = Arrays.copyOf(capacities, capacities.length);
+
+            for (int i = 0; i < nbDims; i++) {
+                for (int j = 0; j < cHostersVals.length; j++) {
+                    int nIdx = cHostersVals[j];
+                    if (isIn(nIdx)) {
+                        changes[i].put(cEndsVals[j], changes[i].get(cEndsVals[j]) + cUsages[i][j]);
+                        currentFree[i] -= cUsages[i][j];
+                    }
+                }
+            }
+
+            for (int i = 0; i < nbDims; i++) {
+                //Now we check the evolution of the absolute free space.
+                for (int x = 0; x < changes[i].keys().length; x++) {
+                    currentFree[i] += changes[i].get(x);
+                    if (currentFree[i] < 0) {
+                        return ESat.FALSE;
+                    }
+                }
+            }
+            return ESat.TRUE;
         }
 
         @Override
@@ -301,21 +356,33 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
 
         @Override
         public void propagate(int m) throws ContradictionException {
-            if (isFull2() && !resource.propagate()) {
-                awake();
-                contradiction(null, "");
-                //fail();
+
+            awake();
+            if (!first) {
+                long size;
+                do {
+                    size = 0;
+                    for (IntVar v : vars) {
+                        size += v.getDomainSize();
+                    }
+                    boolean isFull = true;
+                    for (IntVar v : dHosters) {
+                        if (!v.instantiated()) {
+                            isFull = false;
+                            break;
+                        }
+                    }
+                    if (isFull && !resource.propagate()) {
+                        contradiction(null, "");
+                    }
+                    for (IntVar v : vars) {
+                        size -= v.getDomainSize();
+                    }
+                } while (size > 0);
             }
         }
 
         public void propagate(int idx, int m) throws ContradictionException {
-            if (EventType.isInstantiate(m)) {
-                awakeOnInst(idx);
-            }
-        }
-
-        //@Override
-        public void awakeOnInst(int idx) throws ContradictionException {
             if (idx < dHosters.length) {
                 toInstantiate.add(-1);
                 int nIdx = vars[idx].getValue();
@@ -324,12 +391,6 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
                 }
             }
             forcePropagate(EventType.INSTANTIATE);
-            //this.constAwake(false);
         }
-
-        private boolean isFull2() {
-            return toInstantiate.get() == 0;
-        }
-
     }
 }
