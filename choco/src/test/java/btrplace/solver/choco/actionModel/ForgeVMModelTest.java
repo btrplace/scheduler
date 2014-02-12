@@ -103,13 +103,14 @@ public class ForgeVMModelTest {
         ShutdownableNodeModel n = (ShutdownableNodeModel) rp.getNodeAction(n1);
         n.getState().instantiateTo(0, Cause.Null);
         SMF.log(rp.getSolver(), true, true);
+        System.out.println(rp.getSolver());
         ReconfigurationPlan p = rp.solve(0, false);
 
         Assert.assertNotNull(p);
         Assert.assertEquals(p.getDuration(), 20);
         for (Action a : p) {
             if (a instanceof ForgeVM) {
-                ForgeVM action = (ForgeVM) p.getActions().iterator().next();
+                ForgeVM action = (ForgeVM) a;
                 Assert.assertTrue(p.getResult().getMapping().isReady(vm1));
                 Assert.assertEquals(action.getVM(), vm1);
                 Assert.assertEquals(action.getEnd(), 7);

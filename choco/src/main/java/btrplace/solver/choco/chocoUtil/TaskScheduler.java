@@ -21,7 +21,6 @@ package btrplace.solver.choco.chocoUtil;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import memory.IEnvironment;
-import memory.IStateInt;
 import memory.IStateIntVector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,8 +69,6 @@ public class TaskScheduler extends IntConstraint<IntVar> {
     private int[][] cUsages;
 
     private int[][] dUsages;
-
-    private IStateInt toInstantiate;
 
     private IEnvironment env;
 
@@ -126,26 +123,6 @@ public class TaskScheduler extends IntConstraint<IntVar> {
         this.vIns = new IStateIntVector[scheds.length];
         setPropagators(new TaskSchedulerPropagator(e, earlyStarts, lastEnds, capas, cHosters, cUsages, cEnds, dHosters, dUsages, dStarts, assocs));
     }
-
-    /*@Override
-    public boolean isSatisfied() {
-        int[] vals = new int[vars.length];
-        for (int i = 0; i < vals.length; i++) {
-            vals[i] = vars[i].getValue();
-        }
-        return isSatisfied(vals);
-    } */
-
-    /*@Override
-    public boolean isConsistent() {
-        for (LocalTaskScheduler sc : scheds) {
-            sc.computeProfiles();
-            if (!sc.checkInvariant()) {
-                return false;
-            }
-        }
-        return true;
-    } */
 
     @Override
     public ESat isSatisfied(int[] vals) {
@@ -288,8 +265,6 @@ public class TaskScheduler extends IntConstraint<IntVar> {
 
     class TaskSchedulerPropagator extends Propagator<IntVar> {
 
-        private IStateInt toInstantiate;
-
         private IntVar[] earlyStarts, lastEnds;
 
         public TaskSchedulerPropagator(IEnvironment e,
@@ -348,20 +323,33 @@ public class TaskScheduler extends IntConstraint<IntVar> {
             }
         }
 
+
         @Override
         protected int getPropagationConditions(int vIdx) {
             return EventType.INSTANTIATE.mask;
         }
 
+        private boolean first = true;
+
         @Override
         public void propagate(int idx, int mask) throws ContradictionException {
-            if (EventType.isInstantiate(mask)) {
-                if (idx < dHosters.length) {
-                    toInstantiate.add(-1);
-                    int nIdx = vars[idx].getValue();
-                    vIns[nIdx].add(idx);
+            LOGGER.error("Propagate " + EventType.isInstantiate(mask) + " on " + vars[idx]);
+
+            /*if (first) {
+                first = false;
+                for (int i = 0; i < dHosters.length; i++) {
+                    if (dHosters[i].instantiated()) {
+                        int nIdx = dHosters[i].getValue();
+                        vIns[nIdx].add(i);
+                    }
                 }
+            } else {  */
+            if (idx < dHosters.length) {
+                int nIdx = vars[idx].getValue();
+                vIns[nIdx].add(idx);
             }
+            //}
+            forcePropagate(EventType.INSTANTIATE);
         }
 
         @Override
@@ -376,11 +364,20 @@ public class TaskScheduler extends IntConstraint<IntVar> {
             for (int i = 0; i < dHosters.length; i++) {
                 dHostersVals[i] = dHosters[i].getValue();
                 dStartsVals[i] = dStarts[i].getValue();//vals[i + dHosters.length + cHosters.length + cEnds.length];
+                if (dStartsVals[i] < earlyStarts[dHostersVals[i]].getValue()) {
+                    LOGGER.error("D-slice " + dHosters[i] + " arrives too early: " + dStartsVals[i] + ". Min expected: " + earlyStarts[dHosters[i].getValue()]);
+                    return ESat.FALSE;
+                }
             }
 
             for (int i = 0; i < cHosters.length; i++) {
                 cHostersVals[i] = cHosters[i].getValue();//vals[i + dHosters.length];
                 cEndsVals[i] = cEnds[i].getValue();//vals[i + dHosters.length + cHosters.length];
+                if (cEndsVals[i] > lastEnds[cHostersVals[i]].getValue()) {
+                    LOGGER.error("C-slice " + cHosters[i] + " leaves too late: " + cEndsVals[i] + ". Max expected: " + lastEnds[cHosters[i].getValue()]);
+                    return ESat.FALSE;
+                }
+
             }
 
             //A hashmap to save the changes of each node (relatives to the previous moment) and each dimension
@@ -461,44 +458,44 @@ public class TaskScheduler extends IntConstraint<IntVar> {
 
         @Override
         public void propagate(int evtmask) throws ContradictionException {
+            //LOGGER.error("BIG propagate() " + Arrays.toString(dHosters));
 
-            this.toInstantiate = env.makeInt(dHosters.length);
-
-            //Check whether some hosting variable are already instantiated
-            for (int i = 0; i < dHosters.length; i++) {
-                if (dHosters[i].instantiated()) {
-                    int nIdx = dHosters[i].getValue();
-                    toInstantiate.add(-1);
-                    vIns[nIdx].add(i);
-                }
-            }
-
-                    /*@Override
-        public void propagate() throws ContradictionException {*/
-            //System.out.println("propagate");
-            if (isFull2()) {
-                //System.out.println("Propagate !");
-                for (int i = 0; i < scheds.length; i++) {
-                    if (!scheds[i].propagate()) {
-                        this.contradiction(earlyStarts[i], "Invalid profile on resource '" + i + "'");
+            if (first) {
+                first = false;
+                for (int i = 0; i < dHosters.length; i++) {
+                    if (dHosters[i].instantiated()) {
+                        int nIdx = dHosters[i].getValue();
+                        vIns[nIdx].add(i);
                     }
                 }
+            } else {
+
+
+                long size;
+                do {
+                    size = 0;
+                    for (IntVar v : vars) {
+                        size += v.getDomainSize();
+                    }
+                    boolean isFull = true;
+                    for (IntVar v : dHosters) {
+                        if (!v.instantiated()) {
+                            isFull = false;
+                            break;
+                        }
+                    }
+                    if (isFull) {
+                        for (int i = 0; i < scheds.length; i++) {
+                            if (!scheds[i].propagate()) {
+                                this.contradiction(earlyStarts[i], "Invalid profile on resource '" + i + "'");
+                            }
+                        }
+                }
+                    for (IntVar v : vars) {
+                        size -= v.getDomainSize();
+                    }
+                } while (size > 0);
             }
-            //}
-        }
-
-
-        public void awakeOnInst(int idx) throws ContradictionException {
-            if (idx < dHosters.length) {
-                toInstantiate.add(-1);
-                int nIdx = vars[idx].getValue();
-                vIns[nIdx].add(idx);
-            }
-            //this.constAwake(false);
-        }
-
-        private boolean isFull2() {
-            return toInstantiate.get() == 0;
         }
     }
 }

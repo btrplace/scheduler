@@ -140,7 +140,6 @@ public class BootableNodeModel implements NodeActionModel {
         /* Hs = Ae */
         hostingStart = end;
         hostingEnd = rp.makeUnboundedDuration("bootableNode(", nId, ").hostingEnd");
-        //s.post(s.leq(hostingEnd, rp.getEnd()));
         s.post(IntConstraintFactory.arithm(hostingEnd, "<=", rp.getEnd()));
 
 
@@ -148,7 +147,7 @@ public class BootableNodeModel implements NodeActionModel {
           T = { 0, RP.end}
           He = T[St]
          */
-        s.post(IntConstraintFactory.element(hostingEnd, new IntVar[]{VariableFactory.zero(s), rp.getEnd()}, isOnline, 0));
+        s.post(IntConstraintFactory.element(hostingEnd, new IntVar[]{rp.getStart(), rp.getEnd()}, isOnline, 0));
         //s.post(new ElementV(new IntVar[]{VariableFactory.zero(s), rp.getEnd(), isOnline, hostingEnd}, 0, s.getEnvironment()));
     }
 
