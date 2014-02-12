@@ -26,8 +26,10 @@ import btrplace.model.constraint.Gather;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.actionModel.VMActionModel;
+import solver.Cause;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
+import solver.exception.ContradictionException;
 import solver.variables.IntVar;
 
 import java.util.*;
@@ -86,7 +88,9 @@ public class CGather implements ChocoConstraint {
 
     private boolean placeDSlices(ReconfigurationProblem rp, List<Slice> dSlices, int nIdx) {
         for (Slice s : dSlices) {
-            if (!s.getHoster().instantiatedTo(nIdx)) {
+            try {
+                s.getHoster().instantiateTo(nIdx, Cause.Null);
+            } catch (ContradictionException ex) {
                 rp.getLogger().error("Unable to maintain the co-location of all the future-running VMs in '{}': ", cstr.getInvolvedVMs());
                 return false;
             }
@@ -107,12 +111,16 @@ public class CGather implements ChocoConstraint {
                     return false;
                 } else {
                     if (i1.instantiated()) {
-                        if (!i2.instantiatedTo(i1.getValue())) {
+                        try {
+                            i2.instantiateTo(i1.getValue(), Cause.Null);
+                        } catch (ContradictionException ex) {
                             rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with VM '" + s2.getSubject() + "'");
                             return false;
                         }
                     } else if (i2.instantiated()) {
-                        if (!i1.instantiatedTo(i2.getValue())) {
+                        try {
+                            i1.instantiateTo(i2.getValue(), Cause.Null);
+                        } catch (ContradictionException ex) {
                             rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with VM '" + s2.getSubject() + "'");
                             return false;
                         }
