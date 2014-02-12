@@ -333,7 +333,6 @@ public class TaskScheduler extends IntConstraint<IntVar> {
 
         @Override
         public void propagate(int idx, int mask) throws ContradictionException {
-            LOGGER.error("Propagate " + EventType.isInstantiate(mask) + " on " + vars[idx]);
 
             /*if (first) {
                 first = false;
@@ -490,7 +489,7 @@ public class TaskScheduler extends IntConstraint<IntVar> {
                                 this.contradiction(earlyStarts[i], "Invalid profile on resource '" + i + "'");
                             }
                         }
-                }
+                    }
                     for (IntVar v : vars) {
                         size -= v.getDomainSize();
                     }
