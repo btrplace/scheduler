@@ -61,6 +61,7 @@ public class CLonelyTest {
         cra.labelVariables(true);
         Lonely l = new Lonely(mine);
         l.setContinuous(false);
+        cra.setVerbosity(2);
         ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(l));
         Assert.assertNotNull(plan);
         //System.out.println(plan);
