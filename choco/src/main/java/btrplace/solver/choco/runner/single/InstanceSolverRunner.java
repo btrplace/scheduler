@@ -86,6 +86,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         rp = null;
         start = System.currentTimeMillis();
         coreRPDuration = -System.currentTimeMillis();
+        measures = new ArrayList<>();
         //Build the RP. As VM state management is not possible
         //We extract VM-state related constraints first.
         //For other constraint, we just create the right choco constraint
@@ -179,7 +180,6 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         stateVerbosity();
 
         //The solution monitor to store the measures at each solution
-        measures = new ArrayList<>();
         rp.getSolver().getSearchLoop().plugSearchMonitor(new IMonitorSolution() {
             @Override
             public void onSolution() {

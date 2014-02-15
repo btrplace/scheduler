@@ -163,7 +163,7 @@ public class DefaultReconfigurationProblemTest {
 
         Assert.assertEquals(dEval, rp.getDurationEvaluators());
         Assert.assertNotNull(rp.getViewMapper());
-        Assert.assertNull(rp.getObjectiveAlterer());
+        Assert.assertNotNull(rp.getObjectiveAlterer());
         Assert.assertEquals(rp.getFutureReadyVMs(), toWait);
         Assert.assertEquals(rp.getFutureRunningVMs(), toRun);
         Assert.assertEquals(rp.getFutureSleepingVMs(), Collections.singleton(vm3));
