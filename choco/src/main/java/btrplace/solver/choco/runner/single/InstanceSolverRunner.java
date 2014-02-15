@@ -35,9 +35,9 @@ import btrplace.solver.choco.runner.InstanceResult;
 import btrplace.solver.choco.runner.SolutionStatistics;
 import solver.Cause;
 import solver.exception.ContradictionException;
+import solver.search.loop.monitors.IMonitorSolution;
 import solver.search.loop.monitors.SMF;
 import solver.search.measure.IMeasures;
-import solver.search.solution.Solution;
 
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -65,6 +65,8 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
     private long speRPDuration;
 
     private long start;
+
+    private List<SolutionStatistics> measures;
 
     /**
      * Make a new runner.
@@ -176,6 +178,28 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
 
         stateVerbosity();
 
+        //The solution monitor to store the measures at each solution
+        measures = new ArrayList<>();
+        rp.getSolver().getSearchLoop().plugSearchMonitor(new IMonitorSolution() {
+            @Override
+            public void onSolution() {
+                //   measures.add(rp.getSolver().getMeasures());
+                IMeasures m = rp.getSolver().getMeasures();
+                SolutionStatistics sol;
+                if (m.hasObjective()) {
+                    sol = new SolutionStatistics(m.getNodeCount(),
+                            m.getBackTrackCount(),
+                            (long) m.getTimeCount(),
+                            m.getBestSolutionValue().intValue());
+                } else {
+                    sol = new SolutionStatistics(m.getNodeCount(),
+                            m.getBackTrackCount(),
+                            (long) m.getTimeCount());
+                }
+                measures.add(sol);
+            }
+        });
+
         //The actual solving process
         ReconfigurationPlan p = rp.solve(params.getTimeLimit(), params.doOptimize());
 
@@ -248,7 +272,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         if (rp == null) {
             return new SingleRunnerStatistics(params, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0);
         }
-        IMeasures m = rp.getSolver().getMeasures();
+        IMeasures m2 = rp.getSolver().getMeasures();
         SingleRunnerStatistics st = new SingleRunnerStatistics(
                 params,
                 rp.getNodes().length,
@@ -256,27 +280,15 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
                 cstrs.size(),
                 rp.getManageableVMs().size(),
                 start,
-                (long) m.getTimeCount(),
-                m.getNodeCount(),
-                m.getBackTrackCount(),
+                (long) m2.getTimeCount(),
+                m2.getNodeCount(),
+                m2.getBackTrackCount(),
                 false,//huh
                 coreRPDuration,
                 speRPDuration);
 
-        for (Solution s : rp.getRecorderSolutions().getAllSolutions()) {
-            //IMeasures m = null;//s.getMeasures();
-            SolutionStatistics sol;
-            if (m.hasObjective()) {
-                sol = new SolutionStatistics(m.getNodeCount(),
-                            m.getBackTrackCount(),
-                        (long) m.getTimeCount(),
-                        m.getBestSolutionValue().intValue());
-            } else {
-                    sol = new SolutionStatistics(m.getNodeCount(),
-                            m.getBackTrackCount(),
-                            (long) m.getTimeCount());
-            }
-                st.addSolution(sol);
+        for (SolutionStatistics m : measures) {
+            st.addSolution(m);
         }
         return st;
     }

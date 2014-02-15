@@ -35,6 +35,7 @@ import solver.Solver;
 import solver.constraints.ICF;
 import solver.constraints.IntConstraintFactory;
 import solver.exception.ContradictionException;
+import solver.search.loop.monitors.IMonitorSolution;
 import solver.search.loop.monitors.SMF;
 import solver.variables.IntVar;
 import solver.variables.VF;
@@ -924,11 +925,24 @@ public class DefaultReconfigurationProblemTest {
             map.addOnlineNode(n);
             map.addRunningVM(vm, n1);
         }
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
+        final ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
         Solver s = rp.getSolver();
         final IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
         IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
         s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_least_AC"));
+        s.getSearchLoop().plugSearchMonitor(new IMonitorSolution() {
+            @Override
+            public void onSolution() {
+                System.out.println("Got one solution: " + rp.getObjective().getValue());
+                System.out.println(rp.getSolver().getMeasures());
+                /*try {
+                    rp.getObjective().updateLowerBound(rp.getObjective().getValue() * 2, Cause.Null);
+                } catch (ContradictionException ex) {
+                    Assert.fail(ex.getMessage());
+                } */
+            }
+        });
+
         rp.setObjective(false, nbNodes);
         SMF.log(rp.getSolver(), true, true);
         ObjectiveAlterer alt = new ObjectiveAlterer() {
@@ -943,6 +957,7 @@ public class DefaultReconfigurationProblemTest {
         ReconfigurationPlan plan = rp.solve(0, true);
         Assert.assertNotNull(plan);
         Mapping dst = plan.getResult().getMapping();
+
         Assert.assertEquals(usedNodes(dst), 8);
         //Note: the optimal value would be 10 but we loose the completeness due to the alterer
         Assert.assertEquals(s.getMeasures().getSolutionCount(), 4);

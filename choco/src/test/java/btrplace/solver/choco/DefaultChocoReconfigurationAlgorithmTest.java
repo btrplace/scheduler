@@ -112,8 +112,8 @@ public class DefaultChocoReconfigurationAlgorithmTest {
                         Solver s = rp.getSolver();
                         IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
                         IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
-                        s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_most_BC"));//new AtMostNValue(hosters, nbNodes));
-                        rp.setObjective(true, nbNodes);
+                        s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_least_AC"));//new AtMostNValue(hosters, nbNodes));
+                        rp.setObjective(false, nbNodes);
                         return true;
                     }
 
@@ -132,8 +132,9 @@ public class DefaultChocoReconfigurationAlgorithmTest {
                 nbRunning++;
             }
         }
-        Assert.assertEquals(nbRunning, 1);
+        Assert.assertEquals(nbRunning, 10);
         SolvingStatistics st = cra.getStatistics();
+        System.out.println(st);
         Assert.assertEquals(st.getSolutions().size(), 10);
     }
 
@@ -194,6 +195,7 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         //Solve a problem with the repair mode
         Assert.assertNotNull(cra.solve(mo, cstrs, new Foo()));
         SolvingStatistics st = cra.getStatistics();
+        System.out.println(st);
         Assert.assertEquals(st.getNbManagedVMs(), 2); //vm2, vm3.
     }
 
