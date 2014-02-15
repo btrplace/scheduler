@@ -275,7 +275,7 @@ public class TaskScheduler extends IntConstraint<IntVar> {
                                        int[][] dUsages,
                                        IntVar[] dStarts,
                                        int[] assocs) {
-            super(ArrayUtils.<IntVar>append(dHosters, cHosters, cEnds, dStarts, earlyStarts, lastEnds), PropagatorPriority.VERY_SLOW, false);
+            super(ArrayUtils.<IntVar>append(dHosters, cHosters, cEnds, dStarts, earlyStarts, lastEnds), PropagatorPriority.VERY_SLOW, true);
 
             this.earlyStarts = earlyStarts;
             this.lastEnds = lastEnds;
