@@ -18,8 +18,6 @@
 package btrplace.solver.choco;
 
 
-import solver.variables.Variable;
-
 /**
  * A class to provide a method to customize the optimisation process of the solver.
  * Instead of trying all the possible values, you will be able to choose the value to try
@@ -30,57 +28,15 @@ import solver.variables.Variable;
  *
  * @author Fabien Hermenier
  */
-public abstract class ObjectiveAlterer {
+public interface ObjectiveAlterer {
 
     /**
-     * The objective variable.
-     */
-    private Variable obj;
-
-    /**
-     * The reconfiguration problem to consider.
-     */
-    private ReconfigurationProblem rp;
-
-    /**
-     * Make a new alterer on a given problem.
-     * The objective variable must have been declared.
-     *
-     * @param p the reconfiguration problem to consider
-     */
-    public ObjectiveAlterer(ReconfigurationProblem p) {
-        this.rp = p;
-        //obj = p.getSolver().getObjective();
-    }
-
-    /**
-     * Compute a new target bound for the objective one a solution has been computed.
+     * compute the offset to apply to the best value computed so far
+     * The new value to try will be the last computed value plus the offset.
      *
      * @param currentValue the current value of the objective
-     * @return the new bound to set. It must stay within the objective variable bounds to continue the solving process
+     * @return the offset to add on this value to state the new objective.
      */
-    public abstract int tryNewValue(int currentValue);
+    int offset(ReconfigurationProblem rp, int currentValue);
 
-    @Override
-    public String toString() {
-        return new StringBuilder("objectiveAlterer(").append(obj.getName()).append(')').toString();
-    }
-
-    /**
-     * Get the objective.
-     *
-     * @return the objective variable.
-     */
-    public Variable getObjective() {
-        return obj;
-    }
-
-    /**
-     * Get the reconfiguration problem associated to that objective.
-     *
-     * @return the reconfiguration problem
-     */
-    public ReconfigurationProblem getReconfigurationProblem() {
-        return rp;
-    }
 }

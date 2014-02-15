@@ -38,14 +38,13 @@ public class ObjectiveAltererTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         IntVar obj = VF.bounded("obj", 10, 1000, rp.getSolver());
         //rp.getSolver().setObjective(obj);
-        ObjectiveAlterer oa = new ObjectiveAlterer(rp) {
+        ObjectiveAlterer oa = new ObjectiveAlterer() {
             @Override
-            public int tryNewValue(int currentValue) {
+            public int offset(ReconfigurationProblem rp, int currentValue) {
                 return currentValue * 2;
             }
         };
-        Assert.assertEquals(oa.getObjective(), obj);
-        Assert.assertEquals(oa.tryNewValue(25), 50);
-        Assert.assertEquals(oa.tryNewValue(50), 100);
+        Assert.assertEquals(oa.offset(rp, 25), 50);
+        Assert.assertEquals(oa.offset(rp, 50), 100);
     }
 }

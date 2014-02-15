@@ -28,6 +28,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
 import btrplace.solver.choco.chocoUtil.AliasedCumulatives;
+import btrplace.solver.choco.chocoUtil.AlterableIntObjectiveManager;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import btrplace.solver.choco.view.ChocoModelView;
 import btrplace.solver.choco.view.ModelViewMapper;
@@ -110,7 +111,14 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private BinPackingBuilder bpBuilder;
 
-    private ObjectiveAlterer objAlterer = null;
+    private AlterableIntObjectiveManager alterableObjManager;
+
+    private ObjectiveAlterer alterer = new ObjectiveAlterer() {
+        @Override
+        public int offset(ReconfigurationProblem rp, int currentValue) {
+            return 1;
+        }
+    };
 
     private ModelViewMapper viewMapper;
 
@@ -210,13 +218,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             SMF.limitTime(solver, timeLimit * 1000);
         }
 
-        /*if (objAlterer == null) {
-            solver.getConfiguration().putBoolean(choco.kernel.solver.Configuration.STOP_AT_FIRST_SOLUTION, !optimize);
-        } else if (optimize) {
-            solver.getConfiguration().putBoolean(choco.kernel.solver.Configuration.STOP_AT_FIRST_SOLUTION, true);
-        } */
-
-
         //Resolution policy:
         //mode: sat,min,max
         //allsolutions: false, true
@@ -230,17 +231,19 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         int nbBoolVars = 0;//FIXME solver.retrieveBoolVars().length;
         //int nbCstes = solver.retrieveIntVars();*/
         int nbCstrs = solver.getNbCstrs();
-        getLogger().debug("{} constraints; Variables: {} ints, {} bools", nbCstrs, nbIntVars, nbBoolVars);
-        if (objAlterer == null) {
-            if (solvingPolicy == ResolutionPolicy.SATISFACTION) {
-                solver.findSolution();
-            } else {
-                solver.findOptimalSolution(solvingPolicy, objective);
-            }
-        } else if (optimize) {
-            launchWithAlterer();
-        }
 
+
+        getLogger().debug("{} constraints; Variables: {} ints, {} bools", nbCstrs, nbIntVars, nbBoolVars);
+        if (solvingPolicy == ResolutionPolicy.SATISFACTION) {
+            solver.findSolution();
+        } else {
+            alterableObjManager = new AlterableIntObjectiveManager(this, objective, solvingPolicy, solver, true);
+            if (alterer != null) {
+                alterableObjManager.setAlterer(alterer);
+            }
+            solver.getSearchLoop().setObjectivemanager(alterableObjManager);
+            solver.findOptimalSolution(solvingPolicy, objective);
+        }
         return makeResultingPlan();
     }
 
@@ -293,40 +296,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                     new SetSearchStrategy(new InputOrder<>(solver.retrieveSetVars()), new SetValSelector.FirstVal(), true));
         }
         solver.set(seq);
-    }
-
-    /**
-     * Launch the solver with a known ObjectiveAlterer.
-     * Each time a solution has been computed, the alterer is called to set a new bound for the objective
-     *
-     * @throws SolverException if an error occurred while trying to use the alterer
-     */
-    private void launchWithAlterer() throws SolverException {
-        /*throw new UnsupportedOperationException();
-        AbstractSearchLoop bb = solver.getSearchLoop();
-        //BranchAndBound bb = (BranchAndBound) solver.getSearchStrategy();
-        IntObjectiveManager obj = (IntObjectiveManager) bb.getObjectivemanager();
-        //IObjectiveManager obj = bb.getObjectiveManager();
-        Field f;
-        try {
-            f = IntObjectiveManager.class.getDeclaredField("targetBound");
-            f.setAccessible(true);
-        } catch (Exception e) {
-            throw new SolverException(model, "Unable to inject the alterer: " + e.getMessage(), e);
-        }
-
-        solver.launch();
-        if (solver.isFeasible() == ESat.TRUE) {
-            do {
-                int objVal = solver.getObjectiveValue().intValue();
-                int newBound = objAlterer.tryNewValue(objVal);
-                try {
-                    f.set(obj, newBound);
-                } catch (Exception e) {
-                    throw new SolverException(model, "Unable to set the new target bound " + newBound + " for the objective " + solver.getObjective().getName() + ": " + e.getMessage(), e);
-                }
-            } while (solver.nextSolution() == Boolean.TRUE);
-        }                           */
     }
 
     private void addContinuousResourceCapacities() {
@@ -670,13 +639,12 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public ObjectiveAlterer getObjectiveAlterer() {
-        return objAlterer;
+        return alterer;
     }
 
     @Override
     public void setObjectiveAlterer(ObjectiveAlterer a) {
-        throw new UnsupportedOperationException();
-        //objAlterer = a;
+        alterer = a;
     }
 
     @Override

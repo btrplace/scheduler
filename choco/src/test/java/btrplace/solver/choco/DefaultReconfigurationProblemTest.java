@@ -35,6 +35,7 @@ import solver.Solver;
 import solver.constraints.ICF;
 import solver.constraints.IntConstraintFactory;
 import solver.exception.ContradictionException;
+import solver.search.loop.monitors.SMF;
 import solver.variables.IntVar;
 import solver.variables.VF;
 
@@ -861,7 +862,7 @@ public class DefaultReconfigurationProblemTest {
 
         ObjectiveAlterer alt = new ObjectiveAlterer(rp) {
             @Override
-            public int tryNewValue(int currentValue) {
+            public int offset(int currentValue) {
                 return currentValue / 2;
             }
         };
@@ -913,8 +914,6 @@ public class DefaultReconfigurationProblemTest {
      */
     @Test
     public void testMaximizationWithAlterer() throws SolverException {
-        Assert.fail();
-/*
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         Node n1 = mo.newNode();
@@ -929,13 +928,12 @@ public class DefaultReconfigurationProblemTest {
         Solver s = rp.getSolver();
         final IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
         IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
-        s.post(new IncreasingNValue(nbNodes, hosters, IncreasingNValue.Mode.ATLEAST));
-        s.setObjective(nbNodes);
-        s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MAXIMIZE);
-
-        ObjectiveAlterer alt = new ObjectiveAlterer(rp) {
+        s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_least_AC"));
+        rp.setObjective(false, nbNodes);
+        SMF.log(rp.getSolver(), true, true);
+        ObjectiveAlterer alt = new ObjectiveAlterer() {
             @Override
-            public int tryNewValue(int currentValue) {
+            public int offset(ReconfigurationProblem rp, int currentValue) {
                 return currentValue * 2;
             }
         };
@@ -947,8 +945,7 @@ public class DefaultReconfigurationProblemTest {
         Mapping dst = plan.getResult().getMapping();
         Assert.assertEquals(usedNodes(dst), 8);
         //Note: the optimal value would be 10 but we loose the completeness due to the alterer
-        Assert.assertEquals(s.getNbSolutions(), 4);
-                                                                                                       */
+        Assert.assertEquals(s.getMeasures().getSolutionCount(), 4);
     }
 
     /**
@@ -958,8 +955,6 @@ public class DefaultReconfigurationProblemTest {
      */
     @Test
     public void testUnfeasibleOptimizeWithAlterer() throws SolverException {
-        Assert.fail();
-        /*
         Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         for (int i = 0; i < 10; i++) {
@@ -972,20 +967,18 @@ public class DefaultReconfigurationProblemTest {
         Solver s = rp.getSolver();
         IntVar nbNodes = VF.bounded("nbNodes", 0, 0, s);
         IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
-        s.post(new AtMostNValue(hosters, nbNodes));
-        s.setObjective(nbNodes);
-        s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
-
-        ObjectiveAlterer alt = new ObjectiveAlterer(rp) {
+        s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_most_BC"));
+        rp.setObjective(true, nbNodes);
+        ObjectiveAlterer alt = new ObjectiveAlterer() {
             @Override
-            public int tryNewValue(int currentValue) {
+            public int offset(ReconfigurationProblem rp, int currentValue) {
                 return currentValue / 2;
             }
         };
 
         rp.setObjectiveAlterer(alt);
         ReconfigurationPlan plan = rp.solve(0, true);
-        Assert.assertNull(plan);            */
+        Assert.assertNull(plan);
     }
 
 
