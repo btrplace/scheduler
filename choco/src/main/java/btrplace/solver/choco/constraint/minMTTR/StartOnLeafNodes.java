@@ -61,8 +61,6 @@ public class StartOnLeafNodes implements VariableSelector<IntVar> {
     public boolean hasNext() {
         graph.make();
         next = setNextIncoming();
-        if (next == null) {
-        }
         return (next != null);
     }
 

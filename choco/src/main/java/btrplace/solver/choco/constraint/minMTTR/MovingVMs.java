@@ -103,7 +103,6 @@ public class MovingVMs implements VariableSelector<IntVar> {
                     //VM was running
                     if (!h.contains(rp.getNode(nId))) {
                         idx.set(i);
-                        System.out.println("Got a moving VM " + vm);
                         return true;
                     }
                 }
@@ -125,7 +124,6 @@ public class MovingVMs implements VariableSelector<IntVar> {
 
     @Override
     public IntVar getVariable() {
-        System.out.println("Focus on moving " + scopes[idx.get()]);
         return scopes[idx.get()];
     }
 }

@@ -463,8 +463,6 @@ public class LocalTaskScheduler {
                     cEnds[i].updateUpperBound(last.getUB(), aCause);
                 }
             }
-            //System.out.println(me + " " + last.toString() + " lastInf.inf = " + cEnds[i].getUB());
-            //last.setInf(cEnds[i].getLB());
 
         }
     }

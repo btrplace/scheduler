@@ -166,23 +166,23 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
         IntVar v = getVMtoLeafNode();
         if (v == null) {
             last = null;
-            System.out.println("No more leaf");
+            //System.out.println("No more leaf");
             return null;
         }
 
         v = getMovingVM();
         if (v != null) {
             obj.postCostConstraints();
-            System.out.println("Return moving VM " + v);
+            //System.out.println("Return moving VM " + v);
             return v;
         }
 
         IntVar early = getEarlyVar();
-        if (early == null) {
+        /*if (early == null) {
             System.out.println("Null");
-        }
+        } */
         last = early != null ? early : minInf();
-        System.out.println("Last: " + last);
+        //System.out.println("Last: " + last);
         return last;
         //return early != null ? early : minInf();
     }
