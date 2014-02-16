@@ -133,6 +133,7 @@ public class CMaxOnlineTest {
         constraints.add(maxon);
         constraints.add(new Online(Collections.singleton(n2)));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.setTimeLimit(5);
         cra.getConstraintMapper().register(new CMaxOnline.Builder());
         ReconfigurationPlan plan = cra.solve(model, constraints);
         Assert.assertNotNull(plan);

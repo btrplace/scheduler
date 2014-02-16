@@ -90,11 +90,7 @@ public class CMaxOnline implements ChocoConstraint {
             for (Node n : constraint.getInvolvedNodes()) {
                 nodeIdx[i++] = rp.getNode(n);
             }
-            IntVar capacity = VariableFactory.bounded("capacity", 0, constraint.getAmount(), solver);//solver.createIntegerConstant("capacity", constraint.getAmount());
-            IntVar consumption = VariableFactory.bounded("consum", 0, constraint.getAmount(), solver);//minimum consumption
-            // of the resource
-            IntVar uppBound = rp.getEnd();//rp.makeUnboundedDuration("maxOnline_horizon");
-            //solver.post(solver.leq(uppBound, rp.getEnd()));                    // All tasks must be scheduled before this time
+            IntVar capacity = VariableFactory.bounded("capacity", 0, constraint.getAmount(), solver);
             IntVar[] heights = new IntVar[numberOfTasks];   // The state of the node
             IntVar[] starts = new IntVar[numberOfTasks];
             IntVar[] ends = new IntVar[numberOfTasks];
@@ -110,18 +106,12 @@ public class CMaxOnline implements ChocoConstraint {
                 // ------------------------------------------------------------------------
 
                 durations[idx] = rp.makeUnboundedDuration(rp.makeVarLabel("Dur(", n, ")"));
-                solver.post(IntConstraintFactory.arithm(durations[idx], "<=", rp.getEnd()));//solver.leq(durations[idx], rp.getEnd()));
-                heights[idx] = VariableFactory.one(solver);//olver.makeConstantIntVar(1);         // All tasks have to be scheduled
-                taskVars[idx] = VariableFactory.task(/*rp.makeVarLabel("onlinePeriod(", n, ")"),*/ starts[idx], ends[idx], durations[idx]);
-
-                //solver.post(solver.eq(ends[idx], solver.plus(starts[idx], durations[idx])));
-                VariableFactory.task(starts[idx], durations[idx], ends[idx]);
+                solver.post(IntConstraintFactory.arithm(durations[idx], "<=", rp.getEnd()));
+                heights[idx] = VariableFactory.one(solver);         // All tasks have to be scheduled
+                taskVars[idx] = VariableFactory.task(starts[idx], durations[idx], ends[idx]);
 
             }
             solver.post(IntConstraintFactory.cumulative(taskVars, heights, capacity, true));
-            /*Cumulative cumulative = new Cumulative(solver, "Cumulative", taskVars,
-                    heights, consumption, capacity, uppBound);
-            solver.post(cumulative);*/
         }
         // Constraint for discrete model
         List<IntVar> nodesState = new ArrayList<>(constraint.getInvolvedNodes().size());
@@ -131,11 +121,8 @@ public class CMaxOnline implements ChocoConstraint {
         }
 
         IntVar mySum = VariableFactory.bounded(rp.makeVarLabel("nbOnlines"), 0, constraint.getAmount(), rp.getSolver());
-        //IntExp sumOfStates = Solver.sum(nodesState.toArray(new IntVar[nodesState.size()]));
-        //solver.post(solver.leq(sumOfStates, constraint.getAmount()));
         solver.post(IntConstraintFactory.sum(nodesState.toArray(new IntVar[nodesState.size()]), mySum));
         solver.post(IntConstraintFactory.arithm(mySum, "<=", constraint.getAmount()));
-
 
         return true;
     }
