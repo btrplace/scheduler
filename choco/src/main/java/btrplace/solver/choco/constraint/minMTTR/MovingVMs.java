@@ -93,13 +93,7 @@ public class MovingVMs implements VariableSelector<IntVar> {
         //throw new UnsupportedOperationException();
     }
 
-    @Override
-    public boolean hasNext() {
-        return idx.get() < actions.size();
-    }
-
-    @Override
-    public void advance() {
+    private boolean setToNextMovingVM() {
         for (int i = idx.get(); i < scopes.length; i++) {
             IntVar h = scopes[i];
             if (!h.instantiated()) {
@@ -110,13 +104,23 @@ public class MovingVMs implements VariableSelector<IntVar> {
                     if (!h.contains(rp.getNode(nId))) {
                         idx.set(i);
                         System.out.println("Got a moving VM " + vm);
-                        break;
+                        return true;
                     }
                 }
             }
             i++;
         }
+        return false;
+    }
 
+    @Override
+    public boolean hasNext() {
+        return setToNextMovingVM();
+    }
+
+    @Override
+    public void advance() {
+        setToNextMovingVM();
     }
 
     @Override

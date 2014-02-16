@@ -144,18 +144,22 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
                 ite.remove();
             }
         }
-        Map<IntVar, VM> pla = VMPlacementUtils.makePlacementMap(p);
         List<AbstractStrategy> strats = new ArrayList<>();
-        strats.add(new Assignment(new MovingVMs("movingVMs", p, map, vmsToExclude), new RandomVMPlacement("movingVMs", p, pla, true)));
 
-        HostingVariableSelector selectForBads = new HostingVariableSelector("selectForBads", p, ActionModelUtils.getDSlices(badActions), schedHeuristic);
+        Map<IntVar, VM> pla = VMPlacementUtils.makePlacementMap(p);
+        if (!vmsToExclude.isEmpty()) {
+            strats.add(new Assignment(new MovingVMs("movingVMs", p, map, vmsToExclude), new RandomVMPlacement("movingVMs", p, pla, true)));
+        }
 
-        //s.addGoal(new AssignVar(selectForBads, new RandomVMPlacement("selectForBads", p, pla, true)));
-        strats.add(new Assignment(selectForBads, new RandomVMPlacement("selectForBads", p, pla, true)));
+        if (!badActions.isEmpty()) {
+            HostingVariableSelector selectForBads = new HostingVariableSelector("selectForBads", p, ActionModelUtils.getDSlices(badActions), schedHeuristic);
+            strats.add(new Assignment(selectForBads, new RandomVMPlacement("selectForBads", p, pla, true)));
+        }
 
-        HostingVariableSelector selectForGoods = new HostingVariableSelector("selectForGoods", p, ActionModelUtils.getDSlices(goodActions), schedHeuristic);
-        //s.addGoal(new AssignVar(selectForGoods, new RandomVMPlacement("selectForGoods", p, pla, true)));
-        strats.add(new Assignment(selectForGoods, new RandomVMPlacement("selectForGoods", p, pla, true)));
+        if (!goodActions.isEmpty()) {
+            HostingVariableSelector selectForGoods = new HostingVariableSelector("selectForGoods", p, ActionModelUtils.getDSlices(goodActions), schedHeuristic);
+            strats.add(new Assignment(selectForGoods, new RandomVMPlacement("selectForGoods", p, pla, true)));
+        }
 
         //VMs to run
         Set<VM> vmsToRun = new HashSet<>(map.getReadyVMs());
@@ -166,15 +170,18 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         for (VM vm : vmsToRun) {
             runActions[i++] = p.getVMAction(vm);
         }
-        HostingVariableSelector selectForRuns = new HostingVariableSelector("selectForRuns", p, ActionModelUtils.getDSlices(runActions), schedHeuristic);
-        //s.addGoal(new AssignVar(selectForRuns, new RandomVMPlacement("selectForRuns", p, pla, true)));
-        strats.add(new Assignment(selectForRuns, new RandomVMPlacement("selectForRuns", p, pla, true)));
 
-        //s.addGoal(new AssignVar(new StartingNodes("startingNodes", p, p.getNodeActions()), new MinVal()));
-        strats.add(new Assignment(new InputOrder(ActionModelUtils.getStarts(p.getNodeActions())), new InDomainMin()));
+        if (runActions.length > 0) {
+            HostingVariableSelector selectForRuns = new HostingVariableSelector("selectForRuns", p, ActionModelUtils.getDSlices(runActions), schedHeuristic);
+            strats.add(new Assignment(selectForRuns, new RandomVMPlacement("selectForRuns", p, pla, true)));
+        }
+
+        if (p.getNodeActions().length > 0) {
+            //s.addGoal(new AssignVar(new StartingNodes("startingNodes", p, p.getNodeActions()), new MinVal()));
+            strats.add(new Assignment(new InputOrder(ActionModelUtils.getStarts(p.getNodeActions())), new InDomainMin()));
+        }
 
         ///SCHEDULING PROBLEM
-        //strats.add(new AssignOrForbidIntVarVal(schedHeuristic, new InDomainMin()));
         strats.add(new Assignment(schedHeuristic, new InDomainMin()));
 
         //At this stage only it matters to plug the cost constraints

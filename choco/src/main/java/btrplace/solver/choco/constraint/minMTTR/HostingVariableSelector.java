@@ -20,7 +20,7 @@ package btrplace.solver.choco.constraint.minMTTR;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceUtils;
-import solver.search.strategy.selectors.VariableSelector;
+import solver.search.strategy.selectors.variables.InputOrder;
 import solver.variables.IntVar;
 
 import java.util.List;
@@ -31,15 +31,9 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class HostingVariableSelector implements VariableSelector<IntVar> {
-
-    private ReconfigurationProblem rp;
-
-    private String label;
+public class HostingVariableSelector extends InputOrder<IntVar> {
 
     private OnStableNodeFirst schedHeuristic;
-
-    private IntVar[] vars;
 
     /**
      * Make a new heuristic.
@@ -50,40 +44,17 @@ public class HostingVariableSelector implements VariableSelector<IntVar> {
      * @param slices the slices to consider
      */
     public HostingVariableSelector(String dbgLbl, ReconfigurationProblem p, List<Slice> slices, OnStableNodeFirst sched) {
-        vars = SliceUtils.extractHosters(slices);
+        super(SliceUtils.extractHosters(slices));
         this.schedHeuristic = sched;
-        this.rp = p;
-        label = dbgLbl;
-    }
-
-    @Override
-    public IntVar[] getScope() {
-        return vars;
-    }
-
-    @Override
-    public boolean hasNext() {
-        return true;
-    }
-
-    @Override
-    public void advance() {
-
     }
 
     @Override
     public IntVar getVariable() {
-        for (int i = 0; i < vars.length; i++) {
-            if (!vars[i].instantiated()) {
-                if (schedHeuristic != null) {
-                    schedHeuristic.invalidPlacement();
-                }
-                System.out.println("Return " + vars[i]);
-                return vars[i];
-            }
+        IntVar v = super.getVariable();
+        if (schedHeuristic != null) {
+            schedHeuristic.invalidPlacement();
         }
-        System.out.println(label + " : no more VMs to handle");
-        return null;
+        return v;
     }
 
 }

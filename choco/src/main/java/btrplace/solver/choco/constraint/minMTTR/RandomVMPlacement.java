@@ -137,7 +137,7 @@ public class RandomVMPlacement implements InValueIterator {
         if (stay) {
             VM vm = vmPlacement.get(x);
             if (VMPlacementUtils.canStay(rp, vm)) {
-                System.out.println("Stay on " + rp.getSourceModel().getMapping().getVMLocation(vm));
+                //System.out.println("Stay on " + rp.getSourceModel().getMapping().getVMLocation(vm));
                 return rp.getNode(rp.getSourceModel().getMapping().getVMLocation(vm));
             }
         }
@@ -149,7 +149,7 @@ public class RandomVMPlacement implements InValueIterator {
             } else {
                 nIdx = randomValue(x);
             }
-            System.out.println("Move elsewhere on " + rp.getNode(nIdx));
+            //System.out.println("Move elsewhere on " + rp.getNode(nIdx));
             return nIdx;
         }
         return x.getValue();
