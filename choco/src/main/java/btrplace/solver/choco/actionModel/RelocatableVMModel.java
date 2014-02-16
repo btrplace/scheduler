@@ -121,6 +121,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
         s.post(IntConstraintFactory.arithm(cSlice.getDuration(), "<=", p.getEnd()));
         s.post(IntConstraintFactory.arithm(dSlice.getDuration(), "<=", p.getEnd()));
         s.post(IntConstraintFactory.arithm(dSlice.getEnd(), "<=", p.getEnd()));
+        s.post(IntConstraintFactory.arithm(cSlice.getEnd(), "<=", p.getEnd()));
 
         //If we allow re-instantiate, then the dSlice duration will consume necessarily after the forgeDuration
         s.post(new FastIFFEq(stay, duration, 0));

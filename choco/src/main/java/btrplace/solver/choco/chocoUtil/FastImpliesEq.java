@@ -84,11 +84,11 @@ public class FastImpliesEq extends IntConstraint<IntVar> {
             do {
                 s = vars[0].getDomainSize() + vars[1].getDomainSize();
                 if (vars[0].instantiatedTo(1)) {
-                vars[1].instantiateTo(constante, aCause);
-            }
-            if (!vars[1].contains(constante)) {
-                vars[0].instantiateTo(0, aCause);
-            }
+                    vars[1].instantiateTo(constante, aCause);
+                }
+                if (!vars[1].contains(constante)) {
+                    vars[0].instantiateTo(0, aCause);
+                }
                 s -= (vars[0].getDomainSize() + vars[1].getDomainSize());
             } while (s > 0);
         }

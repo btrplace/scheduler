@@ -132,6 +132,7 @@ public class ShutdownableNodeModel implements NodeActionModel {
         s.post(IntConstraintFactory.arithm(end, "<=", rp.getEnd()));
         //s.post(s.leq(start, rp.getEnd()));
         s.post(IntConstraintFactory.arithm(start, "<=", rp.getEnd()));
+        s.post(IntConstraintFactory.arithm(duration, "<=", rp.getEnd()));
         /* Ae = As + D */
         Task t = VariableFactory.task(start, duration, end);
         //s.post(s.eq(end, s.plus(start, duration)));

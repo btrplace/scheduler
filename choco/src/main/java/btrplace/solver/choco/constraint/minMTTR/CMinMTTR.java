@@ -148,7 +148,6 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         List<AbstractStrategy> strats = new ArrayList<>();
         strats.add(new Assignment(new MovingVMs("movingVMs", p, map, vmsToExclude), new RandomVMPlacement("movingVMs", p, pla, true)));
 
-        //s.addGoal(new AssignVar(new MovingVMs("movingVMs", p, map, vmsToExclude), new RandomVMPlacement("movingVMs", p, pla, true)));
         HostingVariableSelector selectForBads = new HostingVariableSelector("selectForBads", p, ActionModelUtils.getDSlices(badActions), schedHeuristic);
 
         //s.addGoal(new AssignVar(selectForBads, new RandomVMPlacement("selectForBads", p, pla, true)));
@@ -172,7 +171,6 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         strats.add(new Assignment(selectForRuns, new RandomVMPlacement("selectForRuns", p, pla, true)));
 
         //s.addGoal(new AssignVar(new StartingNodes("startingNodes", p, p.getNodeActions()), new MinVal()));
-        //strats.add(new Assignment(new StartingNodes("startingNodes", p, p.getNodeActions()), new InDomainMin()));
         strats.add(new Assignment(new InputOrder(ActionModelUtils.getStarts(p.getNodeActions())), new InDomainMin()));
 
         ///SCHEDULING PROBLEM
@@ -182,7 +180,7 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         //At this stage only it matters to plug the cost constraints
         strats.add(new Assignment(new InputOrder(new IntVar[]{p.getEnd(), cost}), new InDomainMin()));
 
-        s.getSearchLoop().set(new StrategiesSequencer());
+        s.getSearchLoop().set(new StrategiesSequencer(s.getEnvironment(), strats.toArray(new AbstractStrategy[strats.size()])));
     }
 
     @Override

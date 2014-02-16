@@ -280,9 +280,16 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      */
     private void appendNaiveBranchHeuristic() {
 
-        StrategiesSequencer seq = new StrategiesSequencer(
-                IntStrategyFactory.firstFail_InDomainMin(solver.retrieveIntVars())
-        );
+
+        StrategiesSequencer seq;
+        if (solver.getSearchLoop().getStrategy() == null) {
+            seq = new StrategiesSequencer(
+                    IntStrategyFactory.firstFail_InDomainMin(solver.retrieveIntVars()));
+
+        } else {
+            seq = new StrategiesSequencer(solver.getSearchLoop().getStrategy(),
+                    IntStrategyFactory.firstFail_InDomainMin(solver.retrieveIntVars()));
+        }
         RealVar[] rv = solver.retrieveRealVars();
         if (rv != null && rv.length > 0) {
             seq = new StrategiesSequencer(seq, new AssignmentInterval(rv, new Occurrence<>(solver.retrieveRealVars()), new RealDomainMiddle()));

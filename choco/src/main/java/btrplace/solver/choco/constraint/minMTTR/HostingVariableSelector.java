@@ -78,10 +78,11 @@ public class HostingVariableSelector implements VariableSelector<IntVar> {
                 if (schedHeuristic != null) {
                     schedHeuristic.invalidPlacement();
                 }
+                System.out.println("Return " + vars[i]);
                 return vars[i];
             }
         }
-        rp.getLogger().debug("{}: no more VMs to handle", label);
+        System.out.println(label + " : no more VMs to handle");
         return null;
     }
 

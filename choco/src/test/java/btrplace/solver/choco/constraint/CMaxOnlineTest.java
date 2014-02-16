@@ -18,7 +18,9 @@
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.*;
-import btrplace.model.constraint.*;
+import btrplace.model.constraint.MaxOnline;
+import btrplace.model.constraint.Online;
+import btrplace.model.constraint.SatConstraint;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
@@ -52,6 +54,10 @@ public class CMaxOnlineTest {
         Set<Node> nodes = map.getAllNodes();
         MaxOnline maxon = new MaxOnline(nodes, 1);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.setVerbosity(3);
+        cra.setMaxEnd(3);
+        cra.labelVariables(true);
+        //cra.setTimeLimit(3);
         ReconfigurationPlan plan = cra.solve(model, Collections.<SatConstraint>singleton(maxon));
         Assert.assertTrue(maxon.isSatisfied(plan.getResult()));
     }
@@ -86,6 +92,7 @@ public class CMaxOnlineTest {
         constraints.add(maxon);
         constraints.add(maxon2);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.setMaxEnd(4);
         cra.getConstraintMapper().register(new CMaxOnline.Builder());
         ReconfigurationPlan plan = cra.solve(model, constraints);
         Assert.assertTrue(maxon.isSatisfied(plan.getResult()));
@@ -103,7 +110,8 @@ public class CMaxOnlineTest {
         constraints.add(maxOnline);
         constraints.add(new Online(Collections.singleton(n2)));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.setTimeLimit(5);
+        //cra.setTimeLimit(5);
+        cra.setMaxEnd(4);
         cra.getConstraintMapper().register(new CMaxOnline.Builder());
         ReconfigurationPlan plan = cra.solve(model, constraints);
         Assert.assertNotNull(plan);
@@ -133,7 +141,9 @@ public class CMaxOnlineTest {
         constraints.add(maxon);
         constraints.add(new Online(Collections.singleton(n2)));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.setTimeLimit(5);
+        //cra.setTimeLimit(3);
+        //cra.setVerbosity(3);
+        cra.setMaxEnd(3);
         cra.getConstraintMapper().register(new CMaxOnline.Builder());
         ReconfigurationPlan plan = cra.solve(model, constraints);
         Assert.assertNotNull(plan);
@@ -171,42 +181,12 @@ public class CMaxOnlineTest {
         constraints.add(new Online(new HashSet<Node>(Arrays.asList(n4, n5))));
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.setMaxEnd(15);
+        cra.setTimeLimit(3);
+        cra.setMaxEnd(10);
         cra.getConstraintMapper().register(new CMaxOnline.Builder());
         ReconfigurationPlan plan = cra.solve(model, constraints);
         Assert.assertNotNull(plan);
         Assert.assertTrue(maxOn.isSatisfied(plan));
         System.out.println(plan);
-    }
-
-    @Test
-    public void testDecommissionning() throws SolverException {
-        Model mo = new DefaultModel();
-        Node n0 = mo.newNode();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-        Node n3 = mo.newNode();
-        mo.getMapping().addOnlineNode(n0);
-        mo.getMapping().addOnlineNode(n1);
-        mo.getMapping().addOfflineNode(n2);
-        mo.getMapping().addOfflineNode(n3);
-        VM v1 = mo.newVM();
-        VM v0 = mo.newVM();
-        mo.getMapping().addRunningVM(v0, n0);
-        mo.getMapping().addRunningVM(v1, n1);
-
-        List<SatConstraint> cstrs = new ArrayList<>();
-        MaxOnline max = new MaxOnline(mo.getMapping().getAllNodes(), 3);
-        max.setContinuous(true);
-        cstrs.add(max);
-        cstrs.add(new Fence(Collections.singleton(v0), Collections.singleton(n2)));
-        cstrs.add(new Fence(Collections.singleton(v1), Collections.singleton(n3)));
-        cstrs.add(new Offline(Collections.singleton(n1)));
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.setTimeLimit(5);
-        cra.labelVariables(true);
-        ReconfigurationPlan p = cra.solve(mo, cstrs);
-        Assert.assertNotNull(p);
-        System.out.println(p);
     }
 }

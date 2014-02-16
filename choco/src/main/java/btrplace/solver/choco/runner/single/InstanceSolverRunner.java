@@ -135,6 +135,8 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         ChocoConstraint cObj = buildOptConstraint();
 
         //Make the core-RP
+
+
         DefaultReconfigurationProblemBuilder rpb = new DefaultReconfigurationProblemBuilder(origin)
                 .setNextVMsStates(toForge, toRun, toSleep, toKill)
                 .setViewMapper(params.getViewMapper())
@@ -147,9 +149,8 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
             toManage.addAll(cObj.getMisPlacedVMs(origin));
             rpb.setManageableVMs(toManage);
         }
-        if (params.areVariablesLabelled()) {
-            rpb.labelVariables();
-        }
+        rpb.labelVariables(params.getVerbosity() > 0);
+
         rp = rpb.build();
 
         //Set the maximum duration
@@ -163,10 +164,15 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
 
         //Customize with the constraints
         speRPDuration = -System.currentTimeMillis();
-        for (ChocoConstraint ccstr : cConstraints) {
-            if (!ccstr.inject(rp)) {
-                return new InstanceResult(null, makeStatistics());
+        try {
+            for (ChocoConstraint ccstr : cConstraints) {
+                if (!ccstr.inject(rp)) {
+                    return new InstanceResult(null, makeStatistics());
+                }
             }
+        } catch (UnsupportedOperationException ex) {
+            //TODO: fix that ugly hack: no solution
+            return new InstanceResult(null, makeStatistics());
         }
 
         //The objective
@@ -176,8 +182,6 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
 
         rp.getLogger().debug("{} nodes; {} VMs; {} constraints", rp.getNodes().length, rp.getVMs().length, cstrs.size());
         rp.getLogger().debug("optimize: {}; timeLimit: {}; manageableVMs: {}", params.doOptimize(), params.getTimeLimit(), rp.getManageableVMs().size());
-
-        stateVerbosity();
 
         //The solution monitor to store the measures at each solution
         rp.getSolver().getSearchLoop().plugSearchMonitor(new IMonitorSolution() {
@@ -199,6 +203,9 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
                 measures.add(sol);
             }
         });
+
+        //State the logging level for the solver
+        SMF.log(rp.getSolver(), params.getVerbosity() >= 2, params.getVerbosity() >= 3);
 
         //The actual solving process
         ReconfigurationPlan p = rp.solve(params.getTimeLimit(), params.doOptimize());

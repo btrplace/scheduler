@@ -21,8 +21,12 @@ import btrplace.model.Mapping;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.Slice;
+import btrplace.solver.choco.SliceUtils;
+import btrplace.solver.choco.actionModel.ActionModelUtils;
 import btrplace.solver.choco.actionModel.VMActionModel;
+import memory.IStateInt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import solver.search.strategy.selectors.VariableSelector;
 import solver.variables.IntVar;
 
@@ -39,6 +43,8 @@ import java.util.Set;
  */
 public class MovingVMs implements VariableSelector<IntVar> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger("solver");
+
     /**
      * The demanding slices to consider.
      */
@@ -50,6 +56,10 @@ public class MovingVMs implements VariableSelector<IntVar> {
 
     private String label;
 
+    private IntVar[] scopes;
+
+    private IStateInt idx;
+
     /**
      * Make a new heuristic.
      * By default, the heuristic doesn't touch the scheduling constraints.
@@ -60,7 +70,6 @@ public class MovingVMs implements VariableSelector<IntVar> {
      * @param vms the VMs to consider
      */
     public MovingVMs(String l, ReconfigurationProblem s, Mapping m, Set<VM> vms) {
-        //super(s.getSolver());
         this.label = l;
         map = m;
 
@@ -72,62 +81,47 @@ public class MovingVMs implements VariableSelector<IntVar> {
                 actions.add(rp.getVMAction(vm));
             }
         }
+        scopes = SliceUtils.extractHosters(ActionModelUtils.getDSlices(actions));
+        idx = s.getSolver().getEnvironment().makeInt(0);
     }
 
     @Override
     public IntVar[] getScope() {
-        return new IntVar[0];
+
+
+        return scopes;
         //throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean hasNext() {
-        return idx < actions.size();
-        //throw new UnsupportedOperationException();
+        return idx.get() < actions.size();
     }
-
-    private IntVar v = null;
-    private int idx = 0;
 
     @Override
     public void advance() {
-        int i = 0;
-        for (VMActionModel a : actions) {
-            if (!a.getDSlice().getHoster().instantiated()) {
-                VM vm = a.getVM();
+        for (int i = idx.get(); i < scopes.length; i++) {
+            IntVar h = scopes[i];
+            if (!h.instantiated()) {
+                VM vm = actions.get(i).getVM();
                 Node nId = map.getVMLocation(vm);
                 if (nId != null) {
                     //VM was running
-                    Slice slice = a.getDSlice();
-                    if (!slice.getHoster().contains(rp.getNode(nId))) {
-                        /*v = slice.getHoster();
-                        break;*/
-                        idx = i;
+                    if (!h.contains(rp.getNode(nId))) {
+                        idx.set(i);
+                        System.out.println("Got a moving VM " + vm);
                         break;
                     }
                 }
             }
             i++;
         }
+
     }
 
     @Override
     public IntVar getVariable() {
-        return actions.get(idx).getDSlice().getHoster();
-        /*for (VMActionModel a : actions) {
-            if (!a.getDSlice().getHoster().instantiated()) {
-                VM vm = a.getVM();
-                Node nId = map.getVMLocation(vm);
-                if (nId != null) {
-                    //VM was running
-                    Slice slice = a.getDSlice();
-                    if (!slice.getHoster().contains(rp.getNode(nId))) {
-                        return slice.getHoster();
-                    }
-                }
-            }
-        }
-        rp.getLogger().debug("{} - No more VMs to handle", label);
-        return null;           */
+        System.out.println("Focus on moving " + scopes[idx.get()]);
+        return scopes[idx.get()];
     }
 }
