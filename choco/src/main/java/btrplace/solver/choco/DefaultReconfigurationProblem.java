@@ -28,7 +28,6 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.*;
 import btrplace.solver.choco.chocoUtil.AliasedCumulatives;
-import btrplace.solver.choco.chocoUtil.AlterableIntObjectiveManager;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import btrplace.solver.choco.view.ChocoModelView;
 import btrplace.solver.choco.view.ModelViewMapper;
@@ -38,7 +37,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import solver.ResolutionPolicy;
 import solver.Solver;
+import solver.constraints.IntConstraintFactory;
 import solver.exception.ContradictionException;
+import solver.search.loop.monitors.IMonitorSolution;
 import solver.search.loop.monitors.SMF;
 import solver.search.solution.AllSolutionsRecorder;
 import solver.search.solution.ISolutionRecorder;
@@ -111,14 +112,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private BinPackingBuilder bpBuilder;
 
-    private AlterableIntObjectiveManager alterableObjManager;
-
-    private ObjectiveAlterer alterer = new ObjectiveAlterer() {
-        @Override
-        public int offset(ReconfigurationProblem rp, int currentValue) {
-            return 1;
-        }
-    };
+    private ObjectiveAlterer alterer = new DefaultObjectiveAlterer();
 
     private ModelViewMapper viewMapper;
 
@@ -237,11 +231,14 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (solvingPolicy == ResolutionPolicy.SATISFACTION) {
             solver.findSolution();
         } else {
-            alterableObjManager = new AlterableIntObjectiveManager(this, objective, solvingPolicy, solver, true);
-            if (alterer != null) {
-                alterableObjManager.setAlterer(alterer);
-            }
-            solver.getSearchLoop().setObjectivemanager(alterableObjManager);
+            solver.getSearchLoop().plugSearchMonitor(new IMonitorSolution() {
+                @Override
+                public void onSolution() {
+                    int v = objective.getValue();
+                    String op = solvingPolicy.equals(ResolutionPolicy.MAXIMIZE) ? ">=" : "<=";
+                    solver.postCut(IntConstraintFactory.arithm(objective, op, alterer.newBound(DefaultReconfigurationProblem.this, v)));
+                }
+            });
             solver.findOptimalSolution(solvingPolicy, objective);
         }
         return makeResultingPlan();

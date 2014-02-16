@@ -27,7 +27,7 @@ import btrplace.model.view.ShareableResource;
 /**
  * Evaluate the duration of an action on an element linearly from a given resource.
  * <p/>
- * The duration {@code d} is expressed as {@code d = coefficient * rc.get(e) + offset}.
+ * The duration {@code d} is expressed as {@code d = coefficient * rc.get(e) + newBound}.
  * It is truncated to get an integer value
  *
  * @author Fabien Hermenier
@@ -42,7 +42,7 @@ public class LinearToAResourceActionDuration<E extends Element> implements Actio
 
     /**
      * Make a new evaluator.
-     * The offset value is set to 0
+     * The newBound value is set to 0
      *
      * @param rcId the resource identifier
      * @param a    the coefficient
@@ -56,7 +56,7 @@ public class LinearToAResourceActionDuration<E extends Element> implements Actio
      *
      * @param rcId the resource to consider
      * @param a    the coefficient
-     * @param b    the offset
+     * @param b    the newBound
      */
     public LinearToAResourceActionDuration(String rcId, double a, double b) {
         this.rc = rcId;
@@ -118,7 +118,7 @@ public class LinearToAResourceActionDuration<E extends Element> implements Actio
     }
 
     /**
-     * Get the offset.
+     * Get the newBound.
      *
      * @return a number
      */
@@ -127,9 +127,9 @@ public class LinearToAResourceActionDuration<E extends Element> implements Actio
     }
 
     /**
-     * Set the offset.
+     * Set the newBound.
      *
-     * @param b the offset to use
+     * @param b the newBound to use
      */
     public void setOffset(double b) {
         this.b = b;

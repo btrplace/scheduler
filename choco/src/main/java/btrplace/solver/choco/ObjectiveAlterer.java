@@ -31,12 +31,14 @@ package btrplace.solver.choco;
 public interface ObjectiveAlterer {
 
     /**
-     * compute the offset to apply to the best value computed so far
-     * The new value to try will be the last computed value plus the offset.
+     * compute the new bound to apply to the best value computed so far
+     * The new bound to try will be the last computed value plus the newBound.
      *
+     * @param rp the associated problem
      * @param currentValue the current value of the objective
-     * @return the offset to add on this value to state the new objective.
+     * @return the computed newBound should be aligned with the resolution policy: a greater value for a variable to maximize,
+     * a smaller value for a variable to minimize
      */
-    int offset(ReconfigurationProblem rp, int currentValue);
+    int newBound(ReconfigurationProblem rp, int currentValue);
 
 }

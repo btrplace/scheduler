@@ -363,7 +363,7 @@ public interface ReconfigurationProblem {
      * Get the alterer that is used to manipulate the objective value
      * each time a solution is computed
      *
-     * @return the alterer if it was defined, {@code null} otherwise
+     * @return the alterer. By default it is an instance of {@link btrplace.solver.choco.DefaultObjectiveAlterer}.
      */
     ObjectiveAlterer getObjectiveAlterer();
 

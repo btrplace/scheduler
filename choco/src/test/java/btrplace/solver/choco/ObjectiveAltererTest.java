@@ -40,11 +40,11 @@ public class ObjectiveAltererTest {
         //rp.getSolver().setObjective(obj);
         ObjectiveAlterer oa = new ObjectiveAlterer() {
             @Override
-            public int offset(ReconfigurationProblem rp, int currentValue) {
+            public int newBound(ReconfigurationProblem rp, int currentValue) {
                 return currentValue * 2;
             }
         };
-        Assert.assertEquals(oa.offset(rp, 25), 50);
-        Assert.assertEquals(oa.offset(rp, 50), 100);
+        Assert.assertEquals(oa.newBound(rp, 25), 50);
+        Assert.assertEquals(oa.newBound(rp, 50), 100);
     }
 }

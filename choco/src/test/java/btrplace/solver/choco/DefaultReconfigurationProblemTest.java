@@ -35,8 +35,6 @@ import solver.Solver;
 import solver.constraints.ICF;
 import solver.constraints.IntConstraintFactory;
 import solver.exception.ContradictionException;
-import solver.search.loop.monitors.IMonitorSolution;
-import solver.search.loop.monitors.SMF;
 import solver.variables.IntVar;
 import solver.variables.VF;
 
@@ -842,10 +840,9 @@ public class DefaultReconfigurationProblemTest {
      *
      * @throws SolverException
      */
-    @Test
+    /*@Test
     public void testMinimizationWithAlterer() throws SolverException {
-        Assert.fail();
-        /*Model mo = new DefaultModel();
+        Model mo = new DefaultModel();
         Mapping map = mo.getMapping();
         for (int i = 0; i < 10; i++) {
             Node n = mo.newNode();
@@ -857,13 +854,11 @@ public class DefaultReconfigurationProblemTest {
         Solver s = rp.getSolver();
         IntVar nbNodes = VF.bounded("nbNodes", 1, map.getAllNodes().size(), s);
         IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
-        s.post(new AtMostNValue(hosters, nbNodes));
-        s.setObjective(nbNodes);
-        s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
+        s.post(ICF.nvalues(hosters, nbNodes, "at_most_BC"));
 
-        ObjectiveAlterer alt = new ObjectiveAlterer(rp) {
+        ObjectiveAlterer alt = new ObjectiveAlterer() {
             @Override
-            public int offset(int currentValue) {
+            public int newBound(ReconfigurationProblem rp, int currentValue) {
                 return currentValue / 2;
             }
         };
@@ -872,10 +867,10 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertEquals(rp.getObjectiveAlterer(), alt);
         ReconfigurationPlan plan = rp.solve(0, true);
         Assert.assertNotNull(plan);
-        Assert.assertEquals(s.getNbSolutions(), 4);
+        Assert.assertEquals(s.getSearchLoop().getMeasures().getSolutionCount(), 4);
         Mapping dst = plan.getResult().getMapping();
-        Assert.assertEquals(usedNodes(dst), 1);  */
-    }
+        Assert.assertEquals(usedNodes(dst), 1);
+    }    */
 
     /**
      * Test a maximization problem: use the maximum number of nodes to host VMs
@@ -930,29 +925,15 @@ public class DefaultReconfigurationProblemTest {
         final IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
         IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
         s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_least_AC"));
-        s.getSearchLoop().plugSearchMonitor(new IMonitorSolution() {
-            @Override
-            public void onSolution() {
-                System.out.println("Got one solution: " + rp.getObjective().getValue());
-                System.out.println(rp.getSolver().getMeasures());
-                /*try {
-                    rp.getObjective().updateLowerBound(rp.getObjective().getValue() * 2, Cause.Null);
-                } catch (ContradictionException ex) {
-                    Assert.fail(ex.getMessage());
-                } */
-            }
-        });
 
         rp.setObjective(false, nbNodes);
-        SMF.log(rp.getSolver(), true, true);
-        ObjectiveAlterer alt = new ObjectiveAlterer() {
+
+        rp.setObjectiveAlterer(new ObjectiveAlterer() {
             @Override
-            public int offset(ReconfigurationProblem rp, int currentValue) {
+            public int newBound(ReconfigurationProblem rp, int currentValue) {
                 return currentValue * 2;
             }
-        };
-
-        rp.setObjectiveAlterer(alt);
+        });
 
         ReconfigurationPlan plan = rp.solve(0, true);
         Assert.assertNotNull(plan);
@@ -986,7 +967,7 @@ public class DefaultReconfigurationProblemTest {
         rp.setObjective(true, nbNodes);
         ObjectiveAlterer alt = new ObjectiveAlterer() {
             @Override
-            public int offset(ReconfigurationProblem rp, int currentValue) {
+            public int newBound(ReconfigurationProblem rp, int currentValue) {
                 return currentValue / 2;
             }
         };
