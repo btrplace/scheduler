@@ -66,7 +66,7 @@ public class FastImpliesEq extends IntConstraint<IntVar> {
     class FastImpliesEqProp extends Propagator<IntVar> {
 
         public FastImpliesEqProp(IntVar[] vs) {
-            super(vs, PropagatorPriority.BINARY, false);
+            super(vs, PropagatorPriority.UNARY, true);
         }
 
         @Override
@@ -74,7 +74,7 @@ public class FastImpliesEq extends IntConstraint<IntVar> {
             if (idx == 0) {
                 return EventType.INSTANTIATE.mask;
             } else {
-                return EventType.REMOVE.mask;
+                return EventType.REMOVE.mask + EventType.INSTANTIATE.mask + EventType.BOUND.mask;
             }
         }
 

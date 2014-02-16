@@ -182,6 +182,8 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         }
 
         ///SCHEDULING PROBLEM
+        MovementGraph gr = new MovementGraph(rp);
+        strats.add(new Assignment(new StartOnLeafNodes(rp, gr), new InDomainMin()));
         strats.add(new Assignment(schedHeuristic, new InDomainMin()));
 
         //At this stage only it matters to plug the cost constraints
