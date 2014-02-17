@@ -27,7 +27,7 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.actionModel.VMActionModel;
-import btrplace.solver.choco.chocoUtil.Disjoint;
+import btrplace.solver.choco.chocoUtil.DisjointMultiple;
 import btrplace.solver.choco.chocoUtil.Precedences;
 import gnu.trove.list.array.TIntArrayList;
 import solver.Solver;
@@ -78,6 +78,11 @@ public class CSplit implements ChocoConstraint {
         int nbNodes = rp.getNodes().length;
         IntVar[][] vars = new IntVar[groups.size()][];
         for (int i = 0; i < groups.size(); i++) {
+            vars[i] = groups.get(i).toArray(new IntVar[groups.get(i).size()]);
+        }
+        s.post(new DisjointMultiple(s, vars, nbNodes));
+        /*
+        for (int i = 0; i < groups.size(); i++) {
             for (int j = 0; j < i; j++) {
                 IntVar[] gI = vars[i];
                 IntVar[] gJ = vars[j];
@@ -95,6 +100,7 @@ public class CSplit implements ChocoConstraint {
                 s.post(new Disjoint(s, gI, gJ, nbNodes));
             }
         }
+        */
         if (cstr.isContinuous()) {
             if (!cstr.isSatisfied(rp.getSourceModel())) {
                 rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);

@@ -38,19 +38,14 @@ import util.tools.ArrayUtils;
 import java.util.BitSet;
 
 /**
- * Enforces two sets of variables values to be disjoint
+ * Enforces multiple sets of variables values to be disjoint
  * created sofdem - 08/09/11
  *
  * @author Sophie Demassey
  */
-public class Disjoint extends IntConstraint<IntVar> {
+public class DisjointMultiple extends IntConstraint<IntVar> {
 
     private static Logger LOGGER = LoggerFactory.getLogger("solver");
-
-    /**
-     * number of variables in the first set (group 0)
-     */
-    private final int nbX;
 
     /**
      * the variable domains must be included in [0, nbValues-1]
@@ -58,48 +53,84 @@ public class Disjoint extends IntConstraint<IntVar> {
     private final int nbValues;
 
     /**
-     * candidates[g][v] = number of variables in group 'g' which can be assigned to the value 'v',
-     * with g = 0 || 1 and 0 <= v < nbValues
+     * the number of groups
+     */
+    private final int nbGroups;
+
+    /**
+     * indices of variables in group 'g' is between groupIdx[g] and groupIdx[g+1]
+     * with 0 <= g < nbGroups
+     */
+    private final int[] groupIdx;
+
+    /**
+     * candidates[g][v] = number of variables in group 'g' which can be assigned to value 'v',
+     * with 0 <= g < nbGroups and 0 <= v < nbValues
      */
     protected IStateInt[][] candidates;
     /**
-     * required[g].get(v) iff at least one variable in the group 'g' is assigned to the value 'v',
-     * with g = 0 || 1 and 0 <= v < nbValues
+     * required[g].get(v) iff at least one variable in group 'g' is assigned to value 'v',
+     * with 0 <= g < nbGroups and 0 <= v < nbValues
      */
     private IStateBitSet[] required;
 
     /**
-     * @param s solver
-     * @param x first set of variables (group 0)
-     * @param y second set of variables (group 1)
-     * @param c max variable value + 1
+     * @param s    solver
+     * @param vars sets of variables
+     * @param c    max variable value + 1
      */
-    public Disjoint(Solver s, IntVar[] x, IntVar[] y, int c) {
-        super(ArrayUtils.append(x, y), s);
-        this.nbX = x.length;
-        this.nbValues = c;
-        candidates = new IStateInt[2][c];
-        required = new IStateBitSet[2];
-        required[0] = s.getEnvironment().makeBitSet(c);
-        required[1] = s.getEnvironment().makeBitSet(c);
-        for (int v = 0; v < c; v++) {
-            candidates[0][v] = s.getEnvironment().makeInt(0);
-            candidates[1][v] = s.getEnvironment().makeInt(0);
+    public DisjointMultiple(Solver s, IntVar[][] vars, int c) {
+        super(ArrayUtils.flatten(vars), s);
+        nbValues = c;
+        nbGroups = vars.length;
+        groupIdx = new int[nbGroups + 1];
+        candidates = new IStateInt[nbGroups][c];
+        required = new IStateBitSet[nbGroups];
+        groupIdx[0] = 0;
+        int idx = 0;
+        for (int g = 0; g < nbGroups; g++) {
+            idx += vars[g].length;
+            groupIdx[g + 1] = idx;
+            required[g] = s.getEnvironment().makeBitSet(c);
+            for (int v = 0; v < c; v++) {
+                candidates[g][v] = s.getEnvironment().makeInt(0);
+            }
         }
-        setPropagators(new DisjointPropagator(x, y));
+        setPropagators(new DisjointPropagator(vars));
+    }
+
+    private int getGroup(int idx) {
+        return getGroup(idx, 0, nbGroups);
+    }
+
+    private int getGroup(int idx, int s, int e) {
+        assert e > s && groupIdx[s] <= idx && idx < groupIdx[e];
+        if (e == s + 1) return s;
+        int m = (s + e) / 2;
+        if (idx >= groupIdx[m])
+            return getGroup(idx, m, e);
+        return getGroup(idx, s, m);
+
     }
 
     @Override
     public ESat isSatisfied(int[] tuple) {
         BitSet valuesOne = new BitSet(nbValues);
-        int i = 0;
-        for (; i < nbX; i++) {
-            valuesOne.set(tuple[i]);
-        }
-        for (; i < tuple.length; i++) {
-            if (valuesOne.get(tuple[i])) {
-                return ESat.FALSE;
+        for (int g = 0; g < nbGroups; g++) {
+            for (int i = groupIdx[g]; i < groupIdx[g + 1]; i++) {
+                valuesOne.set(tuple[i]);
             }
+            for (int i = 0; i < groupIdx[g]; i++) {
+                if (valuesOne.get(tuple[i])) {
+                    return ESat.FALSE;
+                }
+            }
+            for (int i = groupIdx[g + 1]; i < groupIdx[nbGroups + 1]; i++) {
+                if (valuesOne.get(tuple[i])) {
+                    return ESat.FALSE;
+                }
+            }
+            valuesOne.clear();
         }
         return ESat.TRUE;
     }
@@ -114,17 +145,15 @@ public class Disjoint extends IntConstraint<IntVar> {
 
         private IntVar[][] groups;
 
-        public DisjointPropagator(IntVar[] g1, IntVar[] g2) {
-            super(ArrayUtils.append(g1, g2), PropagatorPriority.VERY_SLOW, true);
+        public DisjointPropagator(IntVar[][] g) {
+            super(ArrayUtils.flatten(g), PropagatorPriority.VERY_SLOW, true);
             idms = new IIntDeltaMonitor[vars.length];
             int i = 0;
             for (IntVar v : vars) {
                 idms[i++] = v.monitorDelta(aCause);
             }
             remProc = new RemProc();
-            groups = new IntVar[2][];
-            groups[0] = g1;
-            groups[1] = g2;
+            groups = g;
         }
 
         @Override
@@ -135,14 +164,21 @@ public class Disjoint extends IntConstraint<IntVar> {
         @Override
         public ESat isEntailed() {
             BitSet valuesOne = new BitSet(nbValues);
-            int i = 0;
-            for (; i < nbX; i++) {
-                valuesOne.set(vars[i].getValue());
-            }
-            for (; i < vars.length; i++) {
-                if (valuesOne.get(vars[i].getValue())) {
-                    return ESat.FALSE;
+            for (int g = 0; g < nbGroups; g++) {
+                for (int i = groupIdx[g]; i < groupIdx[g + 1]; i++) {
+                    valuesOne.set(vars[i].getValue());
                 }
+                for (int i = 0; i < groupIdx[g]; i++) {
+                    if (valuesOne.get(vars[i].getValue())) {
+                        return ESat.FALSE;
+                    }
+                }
+                for (int i = groupIdx[g + 1]; i < groupIdx[nbGroups]; i++) {
+                    if (valuesOne.get(vars[i].getValue())) {
+                        return ESat.FALSE;
+                    }
+                }
+                valuesOne.clear();
             }
             return ESat.TRUE;
         }
@@ -175,21 +211,19 @@ public class Disjoint extends IntConstraint<IntVar> {
             if (first) {
                 first = false;
                 int i = 0;
-                for (; i < nbX; i++) {
-                    initVar(vars[i], 0);
-                }
-                for (; i < vars.length; i++) {
-                    initVar(vars[i], 1);
+                for (int g = 0; g < nbGroups; g++) {
+                    for (; i < groupIdx[g + 1]; i++) {
+                        initVar(vars[i], g);
+                    }
                 }
                 //LOGGER.info("Done with awake:");
             }
 
             for (int v = 0; v < nbValues; v++) {
-                if (required[0].get(v)) {
-                    setRequired(v, 0);
-                }
-                if (required[1].get(v)) {
-                    setRequired(v, 1);
+                for (int g = 0; g < nbGroups; g++) {
+                    if (required[g].get(v)) {
+                        setRequired(v, g);
+                    }
                 }
             }
             //LOGGER.info("End for propagate");
@@ -206,13 +240,14 @@ public class Disjoint extends IntConstraint<IntVar> {
                 //LOGGER.info("done with rem");
             }
             if (EventType.isInstantiate(mask)) {
-                int group = (idx < nbX) ? 0 : 1;
+                int group = getGroup(idx);
                 if (!required[group].get(vars[idx].getValue())) {
                     setRequired(vars[idx].getValue(), group);
                 }
                 //LOGGER.info("done for instantiation");
             }
             //checkConsistency();
+            //LOGGER.info("End for propagate " + idx);
         }
 
         /**
@@ -222,36 +257,35 @@ public class Disjoint extends IntConstraint<IntVar> {
          *
          * @param val   the new assigned value
          * @param group the group of the new instantiated variable
-         * @throws ContradictionException when some variables in both groups are instantiated to the same value
+         * @throws solver.exception.ContradictionException when some variables in both groups are instantiated to the same value
          */
-        public boolean setRequired(int val, int group) throws ContradictionException {
-            // LOGGER.info("Required " + val + " for group " + group);
+        public void setRequired(int val, int group) throws ContradictionException {
+            //LOGGER.info("Required " + val + " for group " + group);
             required[group].set(val);
-            int other = 1 - group;
-            if (required[other].get(val)) {
-                //The value is used in the other group. It's a contradiction
-                // LOGGER.info("! Already Required " + val + " by group " + other);
-                contradiction(null, "");
-            }
-            if (candidates[other][val].get() > 0) {
-                //The value was possible for the other group, so we remove it from its variable
-                int i = (other == 0) ? 0 : nbX;
-                int end = (other == 0) ? nbX : vars.length;
-                for (; i < end; i++) {
-                    if (vars[i].removeValue(val, aCause)) {
-                        // LOGGER.info("Removed " + val + " from " + vars[i]);
-                        candidates[other][val].add(-1);
-                        if (vars[i].instantiated()) {
-                            // LOGGER.info(vars[i] + " is now instantiated");
-                            if (!required[other].get(vars[i].getValue())) {
-                                setRequired(vars[i].getValue(), other);
+            for (int g = 0; g < nbGroups; g++) {
+                if (g != group) {
+                    if (required[g].get(val)) {
+                        //The value is used in the other group. It's a contradiction
+                        //LOGGER.info("! Already Required " + val + " by group " + g);
+                        contradiction(null, "");
+                    }
+                    if (candidates[g][val].get() > 0) {
+                        //The value was possible for the other group, so we remove it from its variable
+                        for (int i = groupIdx[g]; i < groupIdx[g + 1]; i++) {
+                            if (vars[i].removeValue(val, aCause)) {
+                                //LOGGER.info("Removed " + val + " from " + vars[i]);
+                                candidates[g][val].add(-1);
+                                if (vars[i].instantiated()) {
+                                    //LOGGER.info(vars[i] + " is now instantiated");
+                                    if (!required[g].get(vars[i].getValue())) {
+                                        setRequired(vars[i].getValue(), g);
+                                    }
+                                }
                             }
                         }
                     }
                 }
-                return true;
             }
-            return false;
         }
     }
 
@@ -260,13 +294,13 @@ public class Disjoint extends IntConstraint<IntVar> {
 
         @Override
         public UnaryIntProcedure set(Integer idxVar) {
-            group = (idxVar < nbX) ? 0 : 1;
+            this.group = getGroup(idxVar);
             return this;
         }
 
         @Override
         public void execute(int val) throws ContradictionException {
-            LOGGER.info("Remove one candidate for value " + val + " in group " + group);
+            //LOGGER.info("Remove one candidate for value " + val + " in group " + group);
             candidates[group][val].add(-1);
         }
     }
@@ -277,8 +311,8 @@ public class Disjoint extends IntConstraint<IntVar> {
             for (IStateInt v : candidates[g]) {
                 b.append(" value(").append(x++).append("):").append(v.get());
             }
-            LOGGER.info("Candidates for group " + g + ": " + b.toString());
-        }              */
+            //LOGGER.info("Candidates for group " + g + ": " + b.toString());
+        }*/
 
 
            /*private void checkConsistency() {

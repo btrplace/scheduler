@@ -41,4 +41,25 @@ public class DisjointTest {
         s.post(IntConstraintFactory.arithm(g2[g2.length - 1], "<=", g1[g1.length - 1]));
         s.findAllSolutions();
     }
+
+    @Test
+    public void disjointMultipleTest() {
+        IntVar[][] groups = new IntVar[3][3];
+        Solver s = new Solver();
+        for (int g = 0; g < groups.length; g++) {
+            for (int i = 0; i < groups[g].length; i++) {
+                groups[g][i] = VF.enumerated("G" + g + "-" + i, 0, 2, s);
+            }
+        }
+        s.post(new DisjointMultiple(s, groups, 3));
+        for (int g = 1; g < groups.length; g++) {
+            s.post(IntConstraintFactory.arithm(groups[g - 1][2], "<=", groups[g][2]));
+        }
+        SMF.log(s, true, true);
+        SMF.logContradiction(s);
+        s.findAllSolutions();
+
+    }
+
+
 }
