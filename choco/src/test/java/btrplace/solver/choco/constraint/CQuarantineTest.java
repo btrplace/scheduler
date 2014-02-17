@@ -29,7 +29,9 @@ import btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Unit tests for {@link CQuarantine}.
@@ -49,8 +51,7 @@ public class CQuarantineTest {
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).get();
-        Set<Node> ns = new HashSet<>(Arrays.asList(n1, n2));
-        Quarantine q = new Quarantine(ns);
+        Quarantine q = new Quarantine(n2);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>singleton(q));
         Assert.assertNotNull(p);
@@ -73,8 +74,7 @@ public class CQuarantineTest {
         Node n3 = mo.newNode();
 
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).get();
-        Set<Node> ns = new HashSet<>(Arrays.asList(n1, n2));
-        Quarantine q = new Quarantine(ns);
+        Quarantine q = new Quarantine(n1);
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(q);
         cstrs.add(new Fence(vm4, Collections.singleton(n1)));
@@ -100,8 +100,7 @@ public class CQuarantineTest {
         Node n3 = mo.newNode();
 
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1).run(n2, vm2, vm3).run(n3, vm4).get();
-        Set<Node> ns = new HashSet<>(Arrays.asList(n1, n2));
-        Quarantine q = new Quarantine(ns);
+        Quarantine q = new Quarantine(n2);
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(q);
         cstrs.add(new Fence(vm1, Collections.singleton(n2)));

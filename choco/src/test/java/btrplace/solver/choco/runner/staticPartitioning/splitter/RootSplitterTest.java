@@ -47,7 +47,8 @@ public class RootSplitterTest {
 
         List<Instance> instances = new ArrayList<>();
         Model m0 = new DefaultModel();
-        m0.getMapping().addReadyVM(m0.newVM(1));
+        VM v = m0.newVM(1);
+        m0.getMapping().addReadyVM(v);
         m0.getMapping().addRunningVM(m0.newVM(2), m0.newNode(1));
         Model m1 = new DefaultModel();
         m1.getMapping().addReadyVM(m1.newVM(3));
@@ -64,16 +65,9 @@ public class RootSplitterTest {
         TIntIntHashMap index = Instances.makeVMIndex(instances);
 
         //Only VMs in m0
-        Root single = new Root(m0.getMapping().getAllVMs());
+        Root single = new Root(v);
         Assert.assertTrue(splitter.split(single, null, instances, index, new TIntIntHashMap()));
         Assert.assertTrue(instances.get(0).getSatConstraints().contains(single));
         Assert.assertFalse(instances.get(1).getSatConstraints().contains(single));
-
-        //All the VMs, test the split
-        Root among = new Root(all);
-
-        Assert.assertTrue(splitter.split(among, null, instances, index, new TIntIntHashMap()));
-        Assert.assertTrue(instances.get(0).getSatConstraints().contains(new Root(m0.getMapping().getAllVMs())));
-        Assert.assertTrue(instances.get(1).getSatConstraints().contains(new Root(m1.getMapping().getAllVMs())));
     }
 }

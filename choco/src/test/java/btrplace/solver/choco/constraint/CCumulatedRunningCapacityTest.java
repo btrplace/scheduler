@@ -148,8 +148,8 @@ public class CCumulatedRunningCapacityTest {
         l.add(new Fence(vm1, Collections.singleton(n1)));
         l.add(new Sleeping(vm2));
         l.add(new Running(vm1));
-        l.add(new Root(Collections.singleton(vm3)));
-        l.add(new Root(Collections.singleton(vm4)));
+        l.add(new Root(vm3));
+        l.add(new Root(vm4));
 
         Set<Node> on = new HashSet<>(Arrays.asList(n1, n2));
         CumulatedRunningCapacity x = new CumulatedRunningCapacity(on, 3);

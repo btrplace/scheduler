@@ -30,7 +30,6 @@ import btrplace.solver.choco.ReconfigurationProblem;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -56,24 +55,21 @@ public class CQuarantine implements ChocoConstraint {
         // It is just a composition of a root constraint on the VMs on the given nodes (the zone)
         // plus a ban on the other VMs to prevent them for being hosted in the zone
         Mapping map = rp.getSourceModel().getMapping();
-        Set<VM> toRoot = new HashSet<>();
-        Set<VM> toBan = new HashSet<>();
         Collection<Node> zone = cstr.getInvolvedNodes();
         for (VM vm : rp.getFutureRunningVMs()) {
             if (zone.contains(map.getVMLocation(vm))) {
-                toRoot.add(vm);
+                if (!new CRoot(new Root(vm)).inject(rp)) {
+                    return false;
+                }
             } else {
-                toBan.add(vm);
+                //Ouch, it hurts
+                if (!new CBan(new Ban(vm, cstr.getInvolvedNodes())).inject(rp)) {
+                    return false;
+                }
             }
+
         }
-
-        map.getRunningVMs(cstr.getInvolvedNodes());
-
-        CRoot r = new CRoot(new Root(toRoot));
-        //TODO: fixme
-        CBan b = new CBan(new Ban(toBan.iterator().next(), new HashSet<>(zone)));
-        return (r.inject(rp) && b.inject(rp));
-
+        return true;
     }
 
     @Override

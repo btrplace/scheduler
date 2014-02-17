@@ -22,14 +22,16 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.QuarantineChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
- * A constraint to put some nodes into quarantine.
+ * A constraint to put a node into quarantine.
  * Running VMs in the quarantine zone can not leave their node
  * while no VMs outside the quarantine zone can be hosted on
- * the nodes in quarantine.
+ * the node in quarantine.
  * <p/>
  * The restriction provided by the constraint is only continuous.
  *
@@ -38,12 +40,25 @@ import java.util.Collections;
 public class Quarantine extends SatConstraint {
 
     /**
+     * Instantiate constraints for a collection of nodes.
+     * @param nodes the nodes to integrate
+     * @return the associated list of constraints
+     */
+    public static List<Quarantine> newQuarantine(Collection<Node> nodes) {
+        List<Quarantine> l = new ArrayList<>(nodes.size());
+        for (Node n : nodes) {
+            l.add(new Quarantine(n));
+        }
+        return l;
+    }
+
+    /**
      * Make a new constraint.
      *
-     * @param nodes the nodes to put into quarantine
+     * @param n the node to put into quarantine
      */
-    public Quarantine(Collection<Node> nodes) {
-        super(Collections.<VM>emptySet(), nodes, true);
+    public Quarantine(Node n) {
+        super(Collections.<VM>emptySet(), Collections.singleton(n), true);
     }
 
     @Override
@@ -72,7 +87,7 @@ public class Quarantine extends SatConstraint {
     @Override
     public String toString() {
         return new StringBuilder("quarantine(")
-                .append("nodes=").append(getInvolvedNodes())
+                .append("node=").append(getInvolvedNodes().iterator().next())
                 .append(", continuous")
                 .append(")").toString();
     }

@@ -25,8 +25,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
 
 /**
  * Unit tests for {@link btrplace.json.model.constraint.QuarantineConverter}.
@@ -40,7 +38,7 @@ public class QuarantineConverterTest {
         Model mo = new DefaultModel();
         QuarantineConverter conv = new QuarantineConverter();
         conv.setModel(mo);
-        Quarantine d = new Quarantine(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())));
+        Quarantine d = new Quarantine(mo.newNode());
 
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
     }
