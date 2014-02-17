@@ -20,11 +20,10 @@ package btrplace.model.constraint;
 import btrplace.model.Node;
 import btrplace.model.VM;
 
-import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Abstract class for constraints restricting the type of a set of nodes.
+ * Abstract class for constraints restricting the state of a node.
  * The constraint is necessarily discrete.
  *
  * @author Fabien Hermenier
@@ -37,10 +36,10 @@ public abstract class NodeStateConstraint extends SatConstraint {
      * Make a new constraint.
      *
      * @param id the constraint identifier for {@link #toString()}
-     * @param ns the nodes to control
+     * @param n  the node to control
      */
-    public NodeStateConstraint(String id, Collection<Node> ns) {
-        super(Collections.<VM>emptySet(), ns, false);
+    public NodeStateConstraint(String id, Node n) {
+        super(Collections.<VM>emptySet(), Collections.singletonList(n), false);
         this.ref = id;
     }
 
@@ -64,7 +63,7 @@ public abstract class NodeStateConstraint extends SatConstraint {
     @Override
     public String toString() {
         return new StringBuilder(ref).append('(')
-                .append("nodes=").append(getInvolvedNodes())
+                .append("node=").append(getInvolvedNodes().iterator().next())
                 .append(", discrete")
                 .append(')').toString();
     }

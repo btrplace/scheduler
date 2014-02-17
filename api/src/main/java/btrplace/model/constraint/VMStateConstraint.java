@@ -23,7 +23,7 @@ import btrplace.model.VM;
 import java.util.Collections;
 
 /**
- * Abstract class for constraints restricting the type of a VM.
+ * Abstract class for constraints restricting the state of a VM.
  * The constraint is necessarily discrete.
  *
  * @author Fabien Hermenier
@@ -35,7 +35,7 @@ public abstract class VMStateConstraint extends SatConstraint {
     /**
      * Make a new constraint.
      *
-     * @param id  the constraint identifier for {@link #toString()}
+     * @param id the constraint identifier for {@link #toString()}
      * @param vm the VM to control
      */
     public VMStateConstraint(String id, VM vm) {

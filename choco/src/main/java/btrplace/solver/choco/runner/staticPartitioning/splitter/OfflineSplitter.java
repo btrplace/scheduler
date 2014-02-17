@@ -17,7 +17,8 @@
 
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
-import btrplace.model.*;
+import btrplace.model.Instance;
+import btrplace.model.Node;
 import btrplace.model.constraint.Offline;
 import gnu.trove.map.hash.TIntIntHashMap;
 
@@ -42,15 +43,8 @@ public class OfflineSplitter implements ConstraintSplitter<Offline> {
 
     @Override
     public boolean split(Offline cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
-        return SplittableElementSet.newNodeIndex(cstr.getInvolvedNodes(), nodePosition).
-                forEachPartition(new IterateProcedure<Node>() {
-                    @Override
-                    public boolean extract(SplittableElementSet<Node> index, int idx, int from, int to) {
-                        if (to != from) {
-                            partitions.get(idx).getSatConstraints().add(new Offline(new ElementSubSet<>(index, idx, from, to)));
-                        }
-                        return true;
-                    }
-                });
+        Node n = cstr.getInvolvedNodes().iterator().next();
+        int i = nodePosition.get(n.id());
+        return partitions.get(i).getSatConstraints().add(cstr);
     }
 }

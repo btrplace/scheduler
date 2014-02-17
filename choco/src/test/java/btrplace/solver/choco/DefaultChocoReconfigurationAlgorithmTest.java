@@ -272,7 +272,7 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.setMaxEnd(5);
         ReconfigurationPlan p = cra.solve(mo, Arrays.<SatConstraint>asList(pCPU, pMem,
-                new Online(Collections.singleton(n1)),
+                new Online(n1),
                 new Running(vm2),
                 new Ready(vm3)));
         Assert.assertNotNull(p);

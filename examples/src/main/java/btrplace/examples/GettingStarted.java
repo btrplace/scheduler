@@ -105,7 +105,7 @@ public class GettingStarted implements Example {
         cstrs.add(new Preserve(Collections.singleton(vms.get(0)), "cpu", 3));
 
         //N3 must be set offline
-        cstrs.add(new Offline(Collections.singleton(nodes.get(3))));
+        cstrs.add(new Offline(nodes.get(3)));
 
         //VM4 must be running, It asks for 3 cpu and 2 mem resources
         cstrs.add(new Running(vms.get(4)));

@@ -54,7 +54,7 @@ public class CSequentialVMTransitionsTest {
         cstrs.add(new Sleeping(vm2));
         cstrs.add(new Running(vm3));
         cstrs.add(new Ready(vm4));
-        cstrs.add(new Online(map.getAllNodes()));
+        cstrs.addAll(Online.newOnlines(map.getAllNodes()));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<VM> seq = Arrays.asList(vm1, vm2, vm3, vm4);
         cstrs.add(new SequentialVMTransitions(seq));

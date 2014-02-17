@@ -63,7 +63,7 @@ public class CBanTest {
         Collection<SatConstraint> s = new HashSet<>();
         s.add(b);
         s.addAll(Running.newRunnings(m.getAllVMs()));
-        s.add(new Online(m.getAllNodes()));
+        s.addAll(Online.newOnlines(m.getAllNodes()));
 
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.setTimeLimit(-1);

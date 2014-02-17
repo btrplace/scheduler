@@ -21,26 +21,41 @@ import btrplace.model.Node;
 import btrplace.model.constraint.checker.OfflineChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
- * A constraint to force a set of nodes at being offline.
+ * A constraint to force a node at being offline.
  * <p/>
  * The restriction provided by the constraint is discrete.
- * however, if some of the nodes are already offline, then
- * their state will be unchanged.
+ * however, if the node are already offline, then
+ * its state will be unchanged.
  *
  * @author Fabien Hermenier
  */
 public class Offline extends NodeStateConstraint {
 
     /**
+     * Simple tool to create numerous constraints.
+     * @param ns the nodes to integrate
+     * @return the associated list of constraints
+     */
+    public static List<Offline> newOfflines(Collection<Node> ns) {
+        List<Offline> l = new ArrayList<>(ns.size());
+        for (Node n : ns) {
+            l.add(new Offline(n));
+        }
+        return l;
+    }
+
+    /**
      * Make a new constraint.
      *
-     * @param nodes the nodes to set offline
+     * @param n the node to set offline
      */
-    public Offline(Collection<Node> nodes) {
-        super("offline", nodes);
+    public Offline(Node n) {
+        super("offline", n);
     }
 
     @Override

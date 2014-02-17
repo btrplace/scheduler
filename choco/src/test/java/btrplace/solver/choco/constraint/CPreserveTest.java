@@ -93,7 +93,7 @@ public class CPreserveTest {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         mo.attach(rc);
         List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.add(new Online(map.getAllNodes()));
+        cstrs.addAll(Online.newOnlines(map.getAllNodes()));
         cstrs.add(pr);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);

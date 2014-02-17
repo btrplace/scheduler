@@ -106,7 +106,7 @@ public class CMaxOnlineTest {
         MaxOnline maxOnline = new MaxOnline(model.getMapping().getAllNodes(), 1, true);
         List<SatConstraint> constraints = new ArrayList<SatConstraint>();
         constraints.add(maxOnline);
-        constraints.add(new Online(Collections.singleton(n2)));
+        constraints.add(new Online(n2));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         //cra.setTimeLimit(5);
         cra.setMaxEnd(4);
@@ -137,7 +137,7 @@ public class CMaxOnlineTest {
         MaxOnline maxon = new MaxOnline(map.getAllNodes(), 2, true);
         List<SatConstraint> constraints = new ArrayList<SatConstraint>();
         constraints.add(maxon);
-        constraints.add(new Online(Collections.singleton(n2)));
+        constraints.add(new Online(n2));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         //cra.setTimeLimit(3);
         cra.setMaxEnd(3);
@@ -175,7 +175,7 @@ public class CMaxOnlineTest {
         List<SatConstraint> constraints = new ArrayList<SatConstraint>();
         constraints.add(maxOn);
         constraints.add(maxOn2);
-        constraints.add(new Online(new HashSet<Node>(Arrays.asList(n4, n5))));
+        constraints.addAll(Online.newOnlines(Arrays.asList(n4, n5)));
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.setTimeLimit(3);

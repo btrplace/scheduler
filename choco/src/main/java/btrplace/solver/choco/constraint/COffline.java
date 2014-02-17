@@ -32,7 +32,6 @@ import solver.Cause;
 import solver.constraints.IntConstraintFactory;
 import solver.exception.ContradictionException;
 
-import java.util.HashSet;
 import java.util.Set;
 
 
@@ -56,8 +55,8 @@ public class COffline implements ChocoConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        for (Node nId : cstr.getInvolvedNodes()) {
-            int id = rp.getNode(nId);
+        Node nId = cstr.getInvolvedNodes().iterator().next();
+        int id = rp.getNode(nId);
             ActionModel m = rp.getNodeAction(nId);
             try {
                 m.getState().instantiateTo(0, Cause.Null);
@@ -72,7 +71,6 @@ public class COffline implements ChocoConstraint {
                         //rp.getSolver().post(rp.getSolver().neq(s.getHoster(), id));
                     }
                 }
-        }
         return true;
 
     }
@@ -80,9 +78,7 @@ public class COffline implements ChocoConstraint {
     @Override
     public Set<VM> getMisPlacedVMs(Model m) {
         Mapping mapping = m.getMapping();
-        Set<VM> bad = new HashSet<>();
-        bad.addAll(mapping.getRunningVMs(cstr.getInvolvedNodes()));
-        return bad;
+        return mapping.getRunningVMs(cstr.getInvolvedNodes().iterator().next());
     }
 
     @Override

@@ -97,7 +97,7 @@ public class StaticPartitioningTest {
         Assert.assertEquals(dst.getMapping().getRunningVMs().size(), 2);
 
         //Now, there is no solution for i2. the resulting plan should be null
-        i2.getSatConstraints().add(new Offline(Arrays.asList(n2)));
+        i2.getSatConstraints().addAll(Offline.newOfflines(Arrays.asList(n2)));
         res = st.solve(p, i0);
         Assert.assertNull(res.getPlan());
         Assert.assertEquals(res.getStatistics().getSolutions().size(), 0);
