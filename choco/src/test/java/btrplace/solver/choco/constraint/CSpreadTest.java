@@ -52,7 +52,6 @@ public class CSpreadTest {
 
         List<SatConstraint> cstr = new ArrayList<>();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
         Spread s = new Spread(mo.getMapping().getAllVMs());
         s.setContinuous(false);
         cstr.add(s);
@@ -80,7 +79,6 @@ public class CSpreadTest {
 
         List<SatConstraint> cstr = new ArrayList<>();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
         cstr.add(new Spread(mo.getMapping().getAllVMs(), true));
         cstr.add(new Online(mo.getMapping().getAllNodes()));
         cstr.add(new Fence(Collections.singleton(vm1), Collections.singleton(n2)));
@@ -128,7 +126,6 @@ public class CSpreadTest {
 
         List<SatConstraint> cstr = new ArrayList<>();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
         Spread s = new Spread(mo.getMapping().getAllVMs());
         s.setContinuous(true);
         cstr.add(s);

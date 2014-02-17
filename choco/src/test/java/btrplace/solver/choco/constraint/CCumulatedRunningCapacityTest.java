@@ -58,7 +58,6 @@ public class CCumulatedRunningCapacityTest {
         x.setContinuous(false);
         l.add(x);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertEquals(plan.getSize(), 0);
@@ -84,7 +83,6 @@ public class CCumulatedRunningCapacityTest {
         x.setContinuous(false);
         l.add(x);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
@@ -115,7 +113,6 @@ public class CCumulatedRunningCapacityTest {
         x.setContinuous(true);
         l.add(x);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
         for (SatConstraint c : l) {
             System.out.println(c);
         }
@@ -160,7 +157,6 @@ public class CCumulatedRunningCapacityTest {
         l.add(x);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.setMaxEnd(5);
-        cra.labelVariables(true);
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         System.out.println(plan);

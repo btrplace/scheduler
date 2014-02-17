@@ -234,12 +234,6 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         return cObj;
     }
 
-    private void stateVerbosity() {
-        int v = params.getVerbosity();
-        params.labelVariables(v >= 0);
-        SMF.log(rp.getSolver(), v >= 2, v >= 3);
-    }
-
     private void checkSatisfaction2(ReconfigurationPlan p, Collection<SatConstraint> cs) throws SolverException {
         ReconfigurationPlanChecker chk = new ReconfigurationPlanChecker();
         for (SatConstraint c : cs) {

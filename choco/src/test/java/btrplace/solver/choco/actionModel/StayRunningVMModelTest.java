@@ -24,7 +24,6 @@ import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import solver.search.loop.monitors.SMF;
 
 import java.util.Collections;
 
@@ -60,7 +59,6 @@ public class StayRunningVMModelTest {
         Assert.assertTrue(m1.getDuration().instantiatedTo(0));
         Assert.assertTrue(m1.getStart().instantiatedTo(0));
         Assert.assertTrue(m1.getEnd().instantiatedTo(0));
-        SMF.log(rp.getSolver(), true, true);
         System.out.println(rp.getSolver().toString());
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);

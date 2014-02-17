@@ -91,7 +91,6 @@ public class CPreserveTest {
 
         Preserve pr = new Preserve(map.getAllVMs(), "cpu", 5);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
         mo.attach(rc);
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Online(map.getAllNodes()));

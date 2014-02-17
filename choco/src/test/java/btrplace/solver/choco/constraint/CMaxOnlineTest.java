@@ -54,9 +54,7 @@ public class CMaxOnlineTest {
         Set<Node> nodes = map.getAllNodes();
         MaxOnline maxon = new MaxOnline(nodes, 1);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.setVerbosity(3);
         cra.setMaxEnd(3);
-        cra.labelVariables(true);
         //cra.setTimeLimit(3);
         ReconfigurationPlan plan = cra.solve(model, Collections.<SatConstraint>singleton(maxon));
         Assert.assertTrue(maxon.isSatisfied(plan.getResult()));
@@ -142,7 +140,6 @@ public class CMaxOnlineTest {
         constraints.add(new Online(Collections.singleton(n2)));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         //cra.setTimeLimit(3);
-        //cra.setVerbosity(3);
         cra.setMaxEnd(3);
         cra.getConstraintMapper().register(new CMaxOnline.Builder());
         ReconfigurationPlan plan = cra.solve(model, constraints);

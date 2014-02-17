@@ -81,7 +81,6 @@ public class FixedSizePartitioningTest {
 
         //Get a solution, the ready VMs must have been launched
         params.setTimeLimit(3);
-        params.setVerbosity(3);
         InstanceResult res = f.solve(params, i);
         Assert.assertEquals(res.getPlan().getSize(), 5);
 

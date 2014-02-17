@@ -76,7 +76,6 @@ public class CGatherTest {
         g.setContinuous(false);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(g);
         cstrs.add(new Running(map.getAllVMs()));

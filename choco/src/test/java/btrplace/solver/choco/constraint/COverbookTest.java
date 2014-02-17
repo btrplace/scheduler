@@ -69,8 +69,6 @@ public class COverbookTest {
         c.add(new Preserve(m.getAllVMs(), "cpu", 1));
         c.add(new Online(m.getAllNodes()));
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
-        //cra.setVerbosity(1);
         cra.getConstraintMapper().register(new COverbook.Builder());
         ReconfigurationPlan p = cra.solve(mo, c);
         Assert.assertNotNull(p);
@@ -107,7 +105,6 @@ public class COverbookTest {
         c.add(new Running(m.getAllVMs()));
         c.add(new Preserve(m.getAllVMs(), "cpu", 1));
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
         cra.setTimeLimit(-1);
         ReconfigurationPlan p = cra.solve(mo, c);
         Assert.assertNotNull(p);
@@ -192,7 +189,7 @@ public class COverbookTest {
         mo.attach(rcCPU);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
+
         ReconfigurationPlan p = cra.solve(mo, cstrs);
 
         Assert.assertNotNull(p);
@@ -217,7 +214,6 @@ public class COverbookTest {
         mo.attach(rc);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Online(map.getAllNodes()));
         Overbook o = new Overbook(map.getAllNodes(), "foo", 1);

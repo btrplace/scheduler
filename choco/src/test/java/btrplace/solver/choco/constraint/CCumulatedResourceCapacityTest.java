@@ -142,7 +142,6 @@ public class CCumulatedResourceCapacityTest {
         x.setContinuous(true);
         l.add(x);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
         //System.out.println(plan);

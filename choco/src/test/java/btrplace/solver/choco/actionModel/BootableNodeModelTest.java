@@ -33,7 +33,6 @@ import solver.Cause;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
 import solver.exception.ContradictionException;
-import solver.search.loop.monitors.SMF;
 
 import java.util.Collections;
 
@@ -137,7 +136,6 @@ public class BootableNodeModelTest {
                 .build();
 
         BootableNodeModel na = (BootableNodeModel) rp.getNodeAction(n1);
-        //SMF.log(rp.getSolver(), true, false);
         Assert.assertNotNull(rp.solve(0, false));
         Assert.assertEquals(na.getStart().getValue(), 0);
         Assert.assertEquals(na.getEnd().getValue(), 5);
@@ -218,7 +216,6 @@ public class BootableNodeModelTest {
         BootableNodeModel bn4 = (BootableNodeModel) rp.getNodeAction(n4);
         bn4.getState().instantiateTo(0, Cause.Null);
 
-        SMF.log(rp.getSolver(), true, true);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         System.out.println(p);

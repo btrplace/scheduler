@@ -20,7 +20,6 @@ package btrplace.solver.choco.chocoUtil;
 import org.testng.annotations.Test;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
-import solver.search.loop.monitors.SMF;
 import solver.variables.IntVar;
 import solver.variables.VF;
 
@@ -40,7 +39,6 @@ public class DisjointTest {
         }
         s.post(new Disjoint(s, g1, g2, 4));
         s.post(IntConstraintFactory.arithm(g2[g2.length - 1], "<=", g1[g1.length - 1]));
-        SMF.log(s, true, true);
         s.findAllSolutions();
     }
 }

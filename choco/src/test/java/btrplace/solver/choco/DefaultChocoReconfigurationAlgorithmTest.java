@@ -65,8 +65,8 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         cra.doRepair(true);
         Assert.assertEquals(cra.doRepair(), true);
 
-        cra.labelVariables(true);
-        Assert.assertEquals(cra.areVariablesLabelled(), true);
+        cra.setVerbosity(3);
+        Assert.assertEquals(cra.getVerbosity(), 3);
 
         Assert.assertNotNull(cra.getViewMapper());
         ModelViewMapper m = new ModelViewMapper();

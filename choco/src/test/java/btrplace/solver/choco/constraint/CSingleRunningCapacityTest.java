@@ -63,7 +63,6 @@ public class CSingleRunningCapacityTest {
         x.setContinuous(false);
         l.add(x);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertEquals(2, plan.getSize());
@@ -88,7 +87,6 @@ public class CSingleRunningCapacityTest {
         l.add(sc);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.setTimeLimit(3);
-        cra.labelVariables(true);
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);

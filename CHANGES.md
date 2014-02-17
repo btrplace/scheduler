@@ -3,7 +3,9 @@ Release notes
 
 version ?????????????
 ----------------------
-- performance improvement in the action scheduling
+- Big refactoring to move to choco 3. The scalability will be affected temporary but this was necessary
+ as choco 2 is no longer maintained
+- Close #27: the variable labelling is now inferred from the verbosity level
 
 version 0.34 - 26 Nov 2013
 ----------------------
