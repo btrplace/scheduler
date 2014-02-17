@@ -21,14 +21,12 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.model.constraint.checker.SleepingChecker;
 
-import java.util.Collection;
-
 /**
- * A constraint to force a set of VMs at being sleeping.
+ * A constraint to force a VM at being sleeping.
  * <p/>
  * The restriction provided by the constraint is discrete
- * however, if some of the VMs are already sleeping, then
- * their state will be unchanged.
+ * however, if the VM is already sleeping, then
+ * its state will be unchanged.
  *
  * @author Fabien Hermenier
  */
@@ -37,10 +35,10 @@ public class Sleeping extends VMStateConstraint {
     /**
      * Make a new constraint.
      *
-     * @param vms the VMs to make sleeping
+     * @param vm the VMs to make sleeping
      */
-    public Sleeping(Collection<VM> vms) {
-        super("sleeping", vms);
+    public Sleeping(VM vm) {
+        super("sleeping", vm);
     }
 
     @Override

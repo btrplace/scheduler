@@ -107,7 +107,7 @@ public class CCumulatedRunningCapacityTest {
                 .run(n2, vm3, vm4).ready(vm5).get();
         Set<Node> on = new HashSet<>(Arrays.asList(n1, n2));
         List<SatConstraint> l = new ArrayList<>();
-        l.add(new Running(Collections.singleton(vm5)));
+        l.add(new Running(vm5));
         l.add(new Fence(Collections.singleton(vm5), Collections.singleton(n1)));
         CumulatedRunningCapacity x = new CumulatedRunningCapacity(on, 4);
         x.setContinuous(true);
@@ -146,8 +146,8 @@ public class CCumulatedRunningCapacityTest {
         seq.add(vm2);
         l.add(new SequentialVMTransitions(seq));
         l.add(new Fence(Collections.singleton(vm1), Collections.singleton(n1)));
-        l.add(new Sleeping(Collections.singleton(vm2)));
-        l.add(new Running(Collections.singleton(vm1)));
+        l.add(new Sleeping(vm2));
+        l.add(new Running(vm1));
         l.add(new Root(Collections.singleton(vm3)));
         l.add(new Root(Collections.singleton(vm4)));
 

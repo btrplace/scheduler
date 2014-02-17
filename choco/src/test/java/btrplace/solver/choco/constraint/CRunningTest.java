@@ -38,8 +38,11 @@ public class CRunningTest {
         Node n1 = mo.newNode();
         Mapping m = new MappingFiller(mo.getMapping()).on(n1).ready(vm1).run(n1, vm2).get();
 
-        CRunning k = new CRunning(new Running(m.getAllVMs()));
+        CRunning k = new CRunning(new Running(vm1));
         Assert.assertEquals(1, k.getMisPlacedVMs(mo).size());
         Assert.assertTrue(k.getMisPlacedVMs(mo).contains(vm1));
+
+        k = new CRunning(new Running(vm2));
+        Assert.assertEquals(0, k.getMisPlacedVMs(mo).size());
     }
 }

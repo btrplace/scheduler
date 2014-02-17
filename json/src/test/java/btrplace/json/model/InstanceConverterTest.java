@@ -28,7 +28,6 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -50,7 +49,7 @@ public class InstanceConverterTest {
 
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Online(ma.getAllNodes()));
-        cstrs.add(new Running(Collections.singleton(vm1)));
+        cstrs.add(new Running(mo.newVM()));
         Instance i = new Instance(mo, cstrs, new MinMTTR());
 
         InstanceConverter conv = new InstanceConverter();

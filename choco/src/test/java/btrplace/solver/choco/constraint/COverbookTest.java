@@ -65,7 +65,7 @@ public class COverbookTest {
         Overbook o = new Overbook(m.getAllNodes(), "cpu", 2);
         Collection<SatConstraint> c = new HashSet<>();
         c.add(o);
-        c.add(new Running(m.getAllVMs()));
+        c.addAll(Running.newRunnings(m.getAllVMs()));
         c.add(new Preserve(m.getAllVMs(), "cpu", 1));
         c.add(new Online(m.getAllNodes()));
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
@@ -102,7 +102,7 @@ public class COverbookTest {
         c.add(new Overbook(Collections.singleton(nodes[0]), "cpu", 1));
         c.add(new Overbook(Collections.singleton(nodes[1]), "cpu", 2));
         c.add(new Overbook(Collections.singleton(nodes[2]), "cpu", 3));
-        c.add(new Running(m.getAllVMs()));
+        c.addAll(Running.newRunnings(m.getAllVMs()));
         c.add(new Preserve(m.getAllVMs(), "cpu", 1));
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.setTimeLimit(-1);
@@ -133,7 +133,7 @@ public class COverbookTest {
         mo.attach(rcMem);
         Collection<SatConstraint> c = new HashSet<>();
         c.add(new Overbook(m.getAllNodes(), "mem", 1));
-        c.add(new Running(m.getAllVMs()));
+        c.addAll(Running.newRunnings(m.getAllVMs()));
         c.add(new Preserve(m.getAllVMs(), "mem", 1));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.getDurationEvaluators().register(BootVM.class, new LinearToAResourceActionDuration<VM>("mem", 2, 3));
@@ -181,8 +181,8 @@ public class COverbookTest {
         ShareableResource rcCPU = new ShareableResource("cpu", 2, 2);
 
         List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.add(new Running(Collections.singleton(vm3)));
-        cstrs.add(new Sleeping(Collections.singleton(vm1)));
+        cstrs.add(new Running(vm3));
+        cstrs.add(new Sleeping(vm1));
         cstrs.add(new Online(m.getAllNodes()));
         cstrs.add(new Overbook(m.getAllNodes(), "cpu", 1));
         cstrs.add(new Preserve(m.getAllVMs(), "cpu", 2));
@@ -219,7 +219,7 @@ public class COverbookTest {
         Overbook o = new Overbook(map.getAllNodes(), "foo", 1);
         o.setContinuous(true);
         cstrs.add(o);
-        cstrs.add(new Ready(Collections.singleton(vm2)));
+        cstrs.add(new Ready(vm2));
         cstrs.add(new Preserve(Collections.singleton(vm1), "foo", 5));
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);

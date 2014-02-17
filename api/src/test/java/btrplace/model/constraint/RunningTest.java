@@ -21,7 +21,8 @@ import btrplace.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Unit tests for {@link btrplace.model.constraint.Running}.
@@ -33,10 +34,10 @@ public class RunningTest {
     @Test
     public void testInstantiation() {
         Model mo = new DefaultModel();
-        Set<VM> x = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
-        Running s = new Running(x);
+        VM vm = mo.newVM();
+        Running s = new Running(vm);
         Assert.assertNotNull(s.getChecker());
-        Assert.assertEquals(x, s.getInvolvedVMs());
+        Assert.assertEquals(Collections.singletonList(vm), s.getInvolvedVMs());
         Assert.assertTrue(s.getInvolvedNodes().isEmpty());
         Assert.assertNotNull(s.toString());
         Assert.assertFalse(s.setContinuous(true));
@@ -46,33 +47,30 @@ public class RunningTest {
     @Test
     public void testEquals() {
         Model mo = new DefaultModel();
-        Set<VM> x = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
-        Running s = new Running(x);
+        VM vm = mo.newVM();
+        Running s = new Running(vm);
 
         Assert.assertTrue(s.equals(s));
-        Assert.assertTrue(new Running(x).equals(s));
-        Assert.assertEquals(new Running(x).hashCode(), s.hashCode());
-        x = Collections.singleton(mo.newVM());
-        Assert.assertFalse(new Running(x).equals(s));
+        Assert.assertTrue(new Running(vm).equals(s));
+        Assert.assertEquals(new Running(vm).hashCode(), s.hashCode());
+        Assert.assertFalse(new Running(mo.newVM()).equals(s));
     }
 
     @Test
     public void testIsSatisfied() {
         Model i = new DefaultModel();
-        List<VM> vms = Util.newVMs(i, 2);
+        VM vm = i.newVM();
         List<Node> ns = Util.newNodes(i, 2);
         Mapping c = i.getMapping();
-        Set<VM> s = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
         c.addOnlineNode(ns.get(0));
-        c.addRunningVM(vms.get(0), ns.get(0));
-        c.addRunningVM(vms.get(1), ns.get(0));
-        Running d = new Running(s);
+        c.addRunningVM(vm, ns.get(0));
+        Running d = new Running(vm);
         Assert.assertEquals(d.isSatisfied(i), true);
-        c.addReadyVM(vms.get(0));
+        c.addReadyVM(vm);
         Assert.assertEquals(d.isSatisfied(i), false);
-        c.addSleepingVM(vms.get(0), ns.get(0));
+        c.addSleepingVM(vm, ns.get(0));
         Assert.assertEquals(d.isSatisfied(i), false);
-        c.remove(vms.get(0));
+        c.remove(vm);
         Assert.assertEquals(d.isSatisfied(i), false);
     }
 }

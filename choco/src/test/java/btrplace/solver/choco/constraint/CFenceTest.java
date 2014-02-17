@@ -103,7 +103,7 @@ public class CFenceTest {
         Assert.assertTrue(p.getSize() > 0);
         Assert.assertTrue(p.iterator().next() instanceof MigrateVM);
         //Assert.assertEquals(SatConstraint.Sat.SATISFIED, f.isSatisfied(p.getResult()));
-        cstrs.add(new Ready(Collections.singleton(vm2)));
+        cstrs.add(new Ready(vm2));
 
         p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);

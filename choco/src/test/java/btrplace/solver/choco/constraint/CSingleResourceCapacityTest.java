@@ -147,7 +147,7 @@ public class CSingleResourceCapacityTest {
 
         cstrs.add(s);
         cstrs.add(new Fence(Collections.singleton(vm4), Collections.singleton(n2)));
-        cstrs.add(new Running(Collections.singleton(vm4)));
+        cstrs.add(new Running(vm4));
         cstrs.add(new Overbook(map.getAllNodes(), "cpu", 1));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan p = cra.solve(mo, cstrs);

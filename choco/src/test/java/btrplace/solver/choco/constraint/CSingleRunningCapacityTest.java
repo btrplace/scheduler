@@ -35,7 +35,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -56,9 +55,9 @@ public class CSingleRunningCapacityTest {
         Mapping map = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1, vm2).ready(vm3).get();
 
         List<SatConstraint> l = new ArrayList<>();
-        l.add(new Running(Collections.singleton(vm1)));
-        l.add(new Ready(Collections.singleton(vm2)));
-        l.add(new Running(Collections.singleton(vm3)));
+        l.add(new Running(vm1));
+        l.add(new Ready(vm2));
+        l.add(new Running(vm3));
         SingleRunningCapacity x = new SingleRunningCapacity(map.getAllNodes(), 2);
         x.setContinuous(false);
         l.add(x);
@@ -79,9 +78,9 @@ public class CSingleRunningCapacityTest {
 
         Mapping map = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1, vm2).ready(vm3).get();
         List<SatConstraint> l = new ArrayList<>();
-        l.add(new Running(Collections.singleton(vm1)));
-        l.add(new Ready(Collections.singleton(vm2)));
-        l.add(new Running(Collections.singleton(vm3)));
+        l.add(new Running(vm1));
+        l.add(new Ready(vm2));
+        l.add(new Running(vm3));
         SingleRunningCapacity sc = new SingleRunningCapacity(map.getAllNodes(), 2);
         sc.setContinuous(true);
         l.add(sc);

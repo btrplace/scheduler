@@ -20,7 +20,6 @@ package btrplace.solver.choco.runner.staticPartitioning;
 import btrplace.model.*;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.Running;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
@@ -30,7 +29,6 @@ import btrplace.solver.choco.runner.InstanceResult;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -69,7 +67,8 @@ public class FixedSizePartitioningTest {
         for (int i = 0; i < 5; i++) {
             mo.getMapping().addReadyVM(mo.newVM());
         }
-        return new Instance(mo, Collections.<SatConstraint>singleton(new Running(mo.getMapping().getAllVMs())), new MinMTTR());
+
+        return new Instance(mo, (List) Running.newRunnings(mo.getMapping().getAllVMs()), new MinMTTR());
     }
 
     @Test

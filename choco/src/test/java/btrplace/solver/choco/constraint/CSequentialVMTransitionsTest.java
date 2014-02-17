@@ -29,7 +29,6 @@ import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -51,10 +50,10 @@ public class CSequentialVMTransitionsTest {
 
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).ready(vm1).run(n1, vm2, vm4).sleep(n2, vm3).get();
         List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.add(new Running(Collections.singleton(vm1)));
-        cstrs.add(new Sleeping(Collections.singleton(vm2)));
-        cstrs.add(new Running(Collections.singleton(vm3)));
-        cstrs.add(new Ready(Collections.singleton(vm4)));
+        cstrs.add(new Running(vm1));
+        cstrs.add(new Sleeping(vm2));
+        cstrs.add(new Running(vm3));
+        cstrs.add(new Ready(vm4));
         cstrs.add(new Online(map.getAllNodes()));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<VM> seq = Arrays.asList(vm1, vm2, vm3, vm4);
@@ -74,10 +73,10 @@ public class CSequentialVMTransitionsTest {
         Node n2 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).ready(vm1).run(n1, vm2, vm4).run(n2, vm3).get();
         List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.add(new Running(Collections.singleton(vm1)));
-        cstrs.add(new Running(Collections.singleton(vm2)));
-        cstrs.add(new Running(Collections.singleton(vm3)));
-        cstrs.add(new Ready(Collections.singleton(vm4)));
+        cstrs.add(new Running(vm1));
+        cstrs.add(new Running(vm2));
+        cstrs.add(new Running(vm3));
+        cstrs.add(new Ready(vm4));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<VM> seq = Arrays.asList(vm1, vm2, vm3, vm4);
         cstrs.add(new SequentialVMTransitions(seq));
