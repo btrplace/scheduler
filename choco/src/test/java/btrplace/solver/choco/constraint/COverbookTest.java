@@ -34,7 +34,10 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import solver.exception.ContradictionException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * Unit tests for {@link COverbook}.
@@ -45,8 +48,8 @@ public class COverbookTest {
 
     @Test
     public void testBasic() throws SolverException {
-        Node[] nodes = new Node[3];
-        VM[] vms = new VM[9];
+        Node[] nodes = new Node[2];
+        VM[] vms = new VM[3];
         Model mo = new DefaultModel();
         Mapping m = mo.getMapping();
         btrplace.model.view.ShareableResource rcCPU = new ShareableResource("cpu");
@@ -62,9 +65,11 @@ public class COverbookTest {
             m.addReadyVM(vms[i]);
         }
         mo.attach(rcCPU);
-        Overbook o = new Overbook(m.getAllNodes(), "cpu", 2);
+        Overbook o = new Overbook(nodes[0], "cpu", 2);
+        Overbook o2 = new Overbook(nodes[1], "cpu", 2);
         Collection<SatConstraint> c = new HashSet<>();
         c.add(o);
+        c.add(o2);
         c.addAll(Running.newRunnings(m.getAllVMs()));
         c.add(new Preserve(vms[0], "cpu", 1));
         c.addAll(Online.newOnlines(m.getAllNodes()));
@@ -99,9 +104,9 @@ public class COverbookTest {
         }
         mo.attach(rcCPU);
         Collection<SatConstraint> c = new HashSet<>();
-        c.add(new Overbook(Collections.singleton(nodes[0]), "cpu", 1));
-        c.add(new Overbook(Collections.singleton(nodes[1]), "cpu", 2));
-        c.add(new Overbook(Collections.singleton(nodes[2]), "cpu", 3));
+        c.add(new Overbook(nodes[0], "cpu", 1));
+        c.add(new Overbook(nodes[1], "cpu", 2));
+        c.add(new Overbook(nodes[2], "cpu", 3));
         c.addAll(Running.newRunnings(m.getAllVMs()));
         c.add(new Preserve(vms[0], "cpu", 1));
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
@@ -115,8 +120,8 @@ public class COverbookTest {
 
     @Test
     public void testNoSolution() throws SolverException {
-        Node[] nodes = new Node[10];
-        VM[] vms = new VM[31];
+        Node[] nodes = new Node[2];
+        VM[] vms = new VM[7];
         Model mo = new DefaultModel();
         Mapping m = mo.getMapping();
         ShareableResource rcMem = new ShareableResource("mem");
@@ -132,7 +137,8 @@ public class COverbookTest {
         }
         mo.attach(rcMem);
         Collection<SatConstraint> c = new HashSet<>();
-        c.add(new Overbook(m.getAllNodes(), "mem", 1));
+        c.add(new Overbook(nodes[0], "mem", 1));
+        c.add(new Overbook(nodes[1], "mem", 1));
         c.addAll(Running.newRunnings(m.getAllVMs()));
         for (VM v : vms) {
             c.add(new Preserve(v, "mem", 1));
@@ -161,9 +167,9 @@ public class COverbookTest {
                 .run(n3, vm4, vm5, vm6).get();
         ShareableResource rcCPU = new ShareableResource("cpu", 1, 1);
         mo.attach(rcCPU);
-        Overbook o1 = new Overbook(Collections.singleton(n1), "cpu", 1);
-        Overbook o2 = new Overbook(Collections.singleton(n2), "cpu", 2);
-        Overbook o3 = new Overbook(Collections.singleton(n3), "cpu", 3);
+        Overbook o1 = new Overbook(n1, "cpu", 1);
+        Overbook o2 = new Overbook(n2, "cpu", 2);
+        Overbook o3 = new Overbook(n3, "cpu", 3);
         COverbook co1 = new COverbook(o1);
         COverbook co2 = new COverbook(o2);
         COverbook co3 = new COverbook(o3);
@@ -187,7 +193,7 @@ public class COverbookTest {
         cstrs.add(new Running(vm3));
         cstrs.add(new Sleeping(vm1));
         cstrs.addAll(Online.newOnlines(m.getAllNodes()));
-        cstrs.add(new Overbook(m.getAllNodes(), "cpu", 1));
+        cstrs.add(new Overbook(n1, "cpu", 1));
         cstrs.add(new Preserve(vm1, "cpu", 2));
         cstrs.add(new Preserve(vm3, "cpu", 2));
         mo.attach(rcCPU);
@@ -220,7 +226,7 @@ public class COverbookTest {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.addAll(Online.newOnlines(map.getAllNodes()));
-        Overbook o = new Overbook(map.getAllNodes(), "foo", 1);
+        Overbook o = new Overbook(n1, "foo", 1);
         o.setContinuous(true);
         cstrs.add(o);
         cstrs.add(new Ready(vm2));

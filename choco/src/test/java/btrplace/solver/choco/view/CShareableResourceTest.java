@@ -219,9 +219,12 @@ public class CShareableResourceTest {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.addAll(Online.newOnlines(map.getAllNodes()));
-        Overbook o = new Overbook(map.getAllNodes(), "foo", 1.5);
-        o.setContinuous(false);
+        Overbook o = new Overbook(n1, "foo", 1.5, false);
         cstrs.add(o);
+
+        Overbook o2 = new Overbook(n2, "foo", 1.5, false);
+        cstrs.add(o2);
+
         cstrs.add(new Preserve(vm1, "foo", 5));
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);

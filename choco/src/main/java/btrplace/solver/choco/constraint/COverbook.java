@@ -31,6 +31,7 @@ import solver.Cause;
 import solver.exception.ContradictionException;
 import solver.variables.RealVar;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -62,8 +63,8 @@ public class COverbook implements ChocoConstraint {
             throw new SolverException(rp.getSourceModel(), "Unable to get the resource mapping '" + cstr.getResource() + "'");
         }
 
-        for (Node u : cstr.getInvolvedNodes()) {
-            RealVar v = rcm.getOverbookRatio(rp.getNode(u));
+        Node u = cstr.getInvolvedNodes().iterator().next();
+        RealVar v = rcm.getOverbookRatio(rp.getNode(u));
 
             //RealInterval ric = new RealIntervalConstant(v.getLB(), cstr.getRatio());
             try {
@@ -73,7 +74,6 @@ public class COverbook implements ChocoConstraint {
                 rp.getLogger().error("Unable to restrict {} to up to {}", v.getName(), cstr.getRatio());
                 return false;
             }
-        }
         return true;
     }
 
@@ -83,25 +83,22 @@ public class COverbook implements ChocoConstraint {
         Set<VM> bad = new HashSet<>();
         if (rc == null) {
             //No resource given, all the VMs are considered as misplaced
-            for (Node n : cstr.getInvolvedNodes()) {
-                bad.addAll(m.getMapping().getRunningVMs(n));
-            }
+            Node n = cstr.getInvolvedNodes().iterator().next();
+            return m.getMapping().getRunningVMs(n);
         } else {
             //Check if the node is saturated
-            for (Node n : cstr.getInvolvedNodes()) {
-                int overCapa = (int) (cstr.getRatio() * rc.getCapacity(n));
+            Node n = cstr.getInvolvedNodes().iterator().next();
+            int overCapa = (int) (cstr.getRatio() * rc.getCapacity(n));
                 //Minus the VMs usage
                 for (VM vmId : m.getMapping().getRunningVMs(n)) {
                     overCapa -= rc.getConsumption(vmId);
                     if (overCapa < 0) {
-                        bad.addAll(m.getMapping().getRunningVMs(n));
-                        break;
+                        return m.getMapping().getRunningVMs(n);
                     }
                 }
 
             }
-        }
-        return bad;
+        return Collections.emptySet();
     }
 
     @Override

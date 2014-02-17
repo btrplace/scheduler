@@ -26,10 +26,7 @@ import btrplace.plan.event.ShutdownVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Unit tests for {@link Overbook}.
@@ -41,12 +38,11 @@ public class OverbookTest {
     @Test
     public void testInstantiation() {
         Model mo = new DefaultModel();
-        List<Node> ns = Util.newNodes(mo, 10);
+        Node n = mo.newNode();
 
-        Set<Node> s = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
-        Overbook o = new Overbook(s, "foo", 1.5);
+        Overbook o = new Overbook(n, "foo", 1.5);
         Assert.assertNotNull(o.getChecker());
-        Assert.assertEquals(s, o.getInvolvedNodes());
+        Assert.assertEquals(n, o.getInvolvedNodes().iterator().next());
         Assert.assertEquals("foo", o.getResource());
         Assert.assertTrue(o.getInvolvedVMs().isEmpty());
         Assert.assertEquals(1.5, o.getRatio());
@@ -56,47 +52,47 @@ public class OverbookTest {
         Assert.assertFalse(o.isContinuous());
         System.out.println(o);
 
-        o = new Overbook(s, "foo", 1.5, true);
+        o = new Overbook(n, "foo", 1.5, true);
         Assert.assertTrue(o.isContinuous());
     }
 
     @Test
     public void testDiscreteIsSatisfied() {
         Model mo = new DefaultModel();
-        List<Node> ns = Util.newNodes(mo, 10);
+        Node n0 = mo.newNode();
+        Node n1 = mo.newNode();
         List<VM> vms = Util.newVMs(mo, 10);
-        Set<Node> s = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
 
         Model i = new DefaultModel();
         Mapping cfg = i.getMapping();
-        cfg.addOnlineNode(ns.get(0));
-        cfg.addOnlineNode(ns.get(1));
+        cfg.addOnlineNode(n0);
+        cfg.addOnlineNode(n1);
 
         ShareableResource rc = new ShareableResource("cpu");
-        rc.setCapacity(ns.get(0), 1);
-        rc.setCapacity(ns.get(1), 4);
+        rc.setCapacity(n0, 1);
+        rc.setCapacity(n1, 4);
 
         rc.setConsumption(vms.get(0), 2);
         rc.setConsumption(vms.get(1), 2);
         rc.setConsumption(vms.get(2), 4);
 
-        cfg.addRunningVM(vms.get(0), ns.get(0));
-        cfg.addRunningVM(vms.get(1), ns.get(1));
-        cfg.addRunningVM(vms.get(2), ns.get(1));
-        cfg.addRunningVM(vms.get(3), ns.get(1));
+        cfg.addRunningVM(vms.get(0), n0);
+        cfg.addRunningVM(vms.get(1), n1);
+        cfg.addRunningVM(vms.get(2), n1);
+        cfg.addRunningVM(vms.get(3), n1);
 
         i.attach(rc);
 
-        Overbook o = new Overbook(s, "cpu", 2);
+        Overbook o = new Overbook(n0, "cpu", 2);
         Assert.assertEquals(o.isSatisfied(i), true);
 
         rc.setConsumption(vms.get(0), 4);
         Assert.assertEquals(o.isSatisfied(i), false);
 
-        cfg.addRunningVM(vms.get(0), ns.get(1));
-        Assert.assertEquals(o.isSatisfied(i), false);
+        cfg.addRunningVM(vms.get(0), n1);
+        Assert.assertEquals(new Overbook(n1, "cpu", 2).isSatisfied(i), false);
 
-        Overbook o2 = new Overbook(s, "mem", 2);
+        Overbook o2 = new Overbook(n0, "mem", 2);
         Assert.assertEquals(o2.isSatisfied(i), false);
     }
 
@@ -104,49 +100,49 @@ public class OverbookTest {
     public void testContinuousIsSatisfied() {
 
         Model mo = new DefaultModel();
-        List<Node> ns = Util.newNodes(mo, 10);
         List<VM> vms = Util.newVMs(mo, 10);
 
-        Set<Node> s = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
+        Node n0 = mo.newNode();
+        Node n1 = mo.newNode();
 
         Model i = new DefaultModel();
         Mapping cfg = i.getMapping();
-        cfg.addOnlineNode(ns.get(0));
-        cfg.addOnlineNode(ns.get(1));
+        cfg.addOnlineNode(n0);
+        cfg.addOnlineNode(n1);
 
         ShareableResource rc = new ShareableResource("cpu");
-        rc.setCapacity(ns.get(0), 1);
-        rc.setCapacity(ns.get(1), 4);
+        rc.setCapacity(n0, 1);
+        rc.setCapacity(n1, 4);
 
         rc.setConsumption(vms.get(0), 2);
         rc.setConsumption(vms.get(1), 2);
         rc.setConsumption(vms.get(2), 4);
 
-        cfg.addRunningVM(vms.get(0), ns.get(0));
-        cfg.addRunningVM(vms.get(1), ns.get(1));
-        cfg.addRunningVM(vms.get(2), ns.get(1));
-        cfg.addRunningVM(vms.get(3), ns.get(1));
+        cfg.addRunningVM(vms.get(0), n0);
+        cfg.addRunningVM(vms.get(1), n1);
+        cfg.addRunningVM(vms.get(2), n1);
+        cfg.addRunningVM(vms.get(3), n1);
 
         i.attach(rc);
 
-        Overbook o = new Overbook(s, "cpu", 2);
+        Overbook o = new Overbook(n1, "cpu", 2);
         o.setContinuous(true);
         ReconfigurationPlan p = new DefaultReconfigurationPlan(i);
         Assert.assertEquals(o.isSatisfied(p), true);
 
-        p.add(new Allocate(vms.get(0), ns.get(0), "cpu", 1, 2, 5));
+        p.add(new Allocate(vms.get(0), n0, "cpu", 1, 2, 5));
         Assert.assertEquals(o.isSatisfied(p), true);
 
-        p.add(new Allocate(vms.get(1), ns.get(1), "cpu", 5, 2, 5));
+        p.add(new Allocate(vms.get(1), n1, "cpu", 5, 2, 5));
         Assert.assertEquals(o.isSatisfied(p), false);
 
-        p.add(new Allocate(vms.get(2), ns.get(1), "cpu", 2, 0, 1));
+        p.add(new Allocate(vms.get(2), n1, "cpu", 2, 0, 1));
         Assert.assertEquals(o.isSatisfied(p), true);
 
-        p.add(new Allocate(vms.get(3), ns.get(1), "cpu", 3, 4, 6));
+        p.add(new Allocate(vms.get(3), n1, "cpu", 3, 4, 6));
         Assert.assertEquals(o.isSatisfied(p), false);
 
-        p.add(new ShutdownVM(vms.get(2), ns.get(1), 2, 3));
+        p.add(new ShutdownVM(vms.get(2), n1, 2, 3));
 
         Assert.assertEquals(o.isSatisfied(p), true);
     }
@@ -155,18 +151,16 @@ public class OverbookTest {
     public void testEquals() {
 
         Model mo = new DefaultModel();
-        List<Node> ns = Util.newNodes(mo, 10);
+        Node n = mo.newNode();
 
-        Set<Node> x = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
-        Overbook s = new Overbook(x, "foo", 3);
+        Overbook s = new Overbook(n, "foo", 3);
 
         Assert.assertTrue(s.equals(s));
-        Overbook o2 = new Overbook(x, "foo", 3);
+        Overbook o2 = new Overbook(n, "foo", 3);
         Assert.assertTrue(o2.equals(s));
         Assert.assertEquals(o2.hashCode(), s.hashCode());
-        Assert.assertFalse(new Overbook(x, "bar", 3).equals(s));
-        Assert.assertFalse(new Overbook(x, "foo", 2).equals(s));
-        x = new HashSet<>(Arrays.asList(ns.get(2)));
-        Assert.assertFalse(new Overbook(x, "foo", 3).equals(s));
+        Assert.assertFalse(new Overbook(n, "bar", 3).equals(s));
+        Assert.assertFalse(new Overbook(n, "foo", 2).equals(s));
+        Assert.assertFalse(new Overbook(mo.newNode(), "foo", 3).equals(s));
     }
 }

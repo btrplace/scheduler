@@ -41,7 +41,7 @@ public class OverbookConverter extends ConstraintConverter<Overbook> {
     @Override
     public Overbook fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Overbook(requiredNodes(o, "nodes"),
+        return new Overbook(requiredNode(o, "node"),
                 requiredString(o, "rc"),
                 requiredDouble(o, "ratio"),
                 requiredBoolean(o, "continuous"));
@@ -51,7 +51,7 @@ public class OverbookConverter extends ConstraintConverter<Overbook> {
     public JSONObject toJSON(Overbook o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("nodes", nodesToJSON(o.getInvolvedNodes()));
+        c.put("node", toJSON(o.getInvolvedNodes().iterator().next()));
         c.put("rc", o.getResource());
         c.put("ratio", o.getRatio());
         c.put("continuous", o.isContinuous());
