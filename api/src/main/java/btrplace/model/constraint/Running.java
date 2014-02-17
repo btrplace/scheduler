@@ -37,7 +37,7 @@ import java.util.List;
 public class Running extends VMStateConstraint {
 
     /**
-     * Simple tool to create numerous constraints.
+     * Instantiate constraints for a collection of VMs.
      * @param vms the VMs to integrate
      * @return the associated list of constraints
      */

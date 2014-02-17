@@ -22,8 +22,10 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.FenceChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * A constraint to force the given VM, when running,
@@ -34,6 +36,21 @@ import java.util.Collections;
  * @author Fabien Hermenier
  */
 public class Fence extends SatConstraint {
+
+    /**
+     * Instantiate constraints for a collection of VMs.
+     *
+     * @param vms   the VMs to integrate
+     * @param nodes the hosts to disallow
+     * @return the associated list of constraints
+     */
+    public static List<Fence> newFences(Collection<VM> vms, Collection<Node> nodes) {
+        List<Fence> l = new ArrayList<>(vms.size());
+        for (VM v : vms) {
+            l.add(new Fence(v, nodes));
+        }
+        return l;
+    }
 
     /**
      * Make a new discrete constraint.

@@ -257,8 +257,8 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         cpu.setConsumption(vm4, 5);
 
         //vm1 requires more cpu resources, but fewer mem resources
-        Preserve pCPU = new Preserve(new HashSet<>(Arrays.asList(vm1, vm3)), "cpu", 7);
-        Preserve pMem = new Preserve(new HashSet<>(Arrays.asList(vm1, vm3)), "mem", 2);
+        Preserve pCPU = new Preserve(vm1, "cpu", 7);
+        Preserve pMem = new Preserve(vm1, "mem", 2);
 
 
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2)

@@ -43,10 +43,10 @@ public class PreserveTest {
     @Test
     public void testInstantiation() {
         Model mo = new DefaultModel();
-        Set<VM> vms = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
-        Preserve p = new Preserve(vms, "cpu", 3);
+        VM v = mo.newVM();
+        Preserve p = new Preserve(v, "cpu", 3);
         Assert.assertNotNull(p.getChecker());
-        Assert.assertEquals(vms, p.getInvolvedVMs());
+        Assert.assertTrue(p.getInvolvedVMs().contains(v));
         Assert.assertTrue(p.getInvolvedNodes().isEmpty());
         Assert.assertEquals(3, p.getAmount());
         Assert.assertEquals("cpu", p.getResource());
@@ -59,15 +59,15 @@ public class PreserveTest {
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsAndHashCode() {
         Model mo = new DefaultModel();
-        Set<VM> vms = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
-        Preserve p = new Preserve(vms, "cpu", 3);
-        Preserve p2 = new Preserve(vms, "cpu", 3);
+        VM v = mo.newVM();
+        Preserve p = new Preserve(v, "cpu", 3);
+        Preserve p2 = new Preserve(v, "cpu", 3);
         Assert.assertTrue(p.equals(p));
         Assert.assertTrue(p2.equals(p));
         Assert.assertEquals(p2.hashCode(), p.hashCode());
-        Assert.assertFalse(new Preserve(vms, "mem", 3).equals(p));
-        Assert.assertFalse(new Preserve(vms, "cpu", 2).equals(p));
-        Assert.assertFalse(new Preserve(new HashSet<VM>(), "cpu", 3).equals(p));
+        Assert.assertFalse(new Preserve(v, "mem", 3).equals(p));
+        Assert.assertFalse(new Preserve(v, "cpu", 2).equals(p));
+        Assert.assertFalse(new Preserve(mo.newVM(), "cpu", 3).equals(p));
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
@@ -85,7 +85,7 @@ public class PreserveTest {
         map.addRunningVM(vms.get(2), ns.get(0));
         m.attach(rc);
         Set<VM> s = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1), vms.get(2)));
-        Preserve p = new Preserve(s, "cpu", 3);
+        Preserve p = new Preserve(vms.get(0), "cpu", 3);
         rc.setConsumption(vms.get(0), 3);
         rc.setConsumption(vms.get(1), 1); //Not running so we don't care
         rc.setConsumption(vms.get(2), 3);
@@ -93,11 +93,11 @@ public class PreserveTest {
 
         rc.unset(vms.get(2)); //Set to 3 by default
         Assert.assertEquals(true, p.isSatisfied(m));
-        Assert.assertEquals(false, new Preserve(s, "mem", 3).isSatisfied(m));
+        Assert.assertEquals(false, new Preserve(vms.get(2), "mem", 3).isSatisfied(m));
 
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(m);
-        rc.setConsumption(vms.get(2), 1);
-        Assert.assertFalse(p.isSatisfied(plan));
+        rc.setConsumption(vms.get(1), 1);
+        Assert.assertFalse(new Preserve(vms.get(2), "cpu", 4).isSatisfied(plan));
         plan.add(new Allocate(vms.get(2), ns.get(0), "cpu", 7, 5, 7));
         Assert.assertTrue(p.isSatisfied(plan));
         rc.setConsumption(vms.get(0), 1);

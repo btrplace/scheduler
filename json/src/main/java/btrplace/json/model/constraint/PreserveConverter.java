@@ -41,7 +41,7 @@ public class PreserveConverter extends ConstraintConverter<Preserve> {
     @Override
     public Preserve fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Preserve(requiredVMs(o, "vms"),
+        return new Preserve(requiredVM(o, "vm"),
                 requiredString(o, "rc"),
                 requiredInt(o, "amount"));
     }
@@ -50,7 +50,7 @@ public class PreserveConverter extends ConstraintConverter<Preserve> {
     public JSONObject toJSON(Preserve o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", vmsToJSON(o.getInvolvedVMs()));
+        c.put("vm", toJSON(o.getInvolvedVMs().iterator().next()));
         c.put("rc", o.getResource());
         c.put("amount", o.getAmount());
         return c;

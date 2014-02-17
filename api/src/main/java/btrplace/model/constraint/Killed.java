@@ -21,6 +21,10 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.KilledChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * A constraint to force a VM to be killed.
  * <p/>
@@ -29,6 +33,20 @@ import btrplace.model.constraint.checker.SatConstraintChecker;
  * @author Fabien Hermenier
  */
 public class Killed extends VMStateConstraint {
+
+    /**
+     * Instantiate constraints for a collection of VMs.
+     *
+     * @param vms the VMs to integrate
+     * @return the associated list of constraints
+     */
+    public static List<Killed> newKilled(Collection<VM> vms) {
+        List<Killed> l = new ArrayList<>(vms.size());
+        for (VM v : vms) {
+            l.add(new Killed(v));
+        }
+        return l;
+    }
 
     /**
      * Make a new constraint.

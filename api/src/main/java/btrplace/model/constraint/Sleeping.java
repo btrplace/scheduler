@@ -21,6 +21,10 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.model.constraint.checker.SleepingChecker;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * A constraint to force a VM at being sleeping.
  * <p/>
@@ -31,6 +35,20 @@ import btrplace.model.constraint.checker.SleepingChecker;
  * @author Fabien Hermenier
  */
 public class Sleeping extends VMStateConstraint {
+
+    /**
+     * Instantiate constraints for a collection of VMs.
+     *
+     * @param vms the VMs to integrate
+     * @return the associated list of constraints
+     */
+    public static List<Sleeping> newSleepings(Collection<VM> vms) {
+        List<Sleeping> l = new ArrayList<>(vms.size());
+        for (VM v : vms) {
+            l.add(new Sleeping(v));
+        }
+        return l;
+    }
 
     /**
      * Make a new constraint.

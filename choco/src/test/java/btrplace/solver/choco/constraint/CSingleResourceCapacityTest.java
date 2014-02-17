@@ -86,7 +86,7 @@ public class CSingleResourceCapacityTest {
         SingleResourceCapacity s = new SingleResourceCapacity(nodes, "cpu", 4);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        ReconfigurationPlan p = cra.solve(mo, Arrays.asList(s, new Preserve(Collections.singleton(vm2), "cpu", 3)));
+        ReconfigurationPlan p = cra.solve(mo, Arrays.asList(s, new Preserve(vm2, "cpu", 3)));
         Assert.assertNotNull(p);
         Assert.assertEquals(p.getSize(), 1);
         //System.out.println(p);

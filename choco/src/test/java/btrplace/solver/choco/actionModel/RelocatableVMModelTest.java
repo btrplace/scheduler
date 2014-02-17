@@ -170,7 +170,7 @@ public class RelocatableVMModelTest {
         rc.setConsumption(vm2, 3);
         rc.setConsumption(vm3, 5);
 
-        Preserve pr = new Preserve(map.getAllVMs(), "cpu", 5);
+        Preserve pr = new Preserve(vm1, "cpu", 5);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         mo.attach(rc);
         List<SatConstraint> cstrs = new ArrayList<>();
@@ -417,7 +417,7 @@ public class RelocatableVMModelTest {
             mo.getAttributes().put(vm, "template", "small");
             mo.getAttributes().put(vm, "clone", true);
         }
-        Preserve pr = new Preserve(map.getAllVMs(), "cpu", 5);
+        Preserve pr = new Preserve(vm5, "cpu", 5);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.getDurationEvaluators().register(MigrateVM.class, new ConstantActionDuration(20));
 

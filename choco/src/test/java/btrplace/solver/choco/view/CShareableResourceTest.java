@@ -34,7 +34,6 @@ import solver.exception.ContradictionException;
 import solver.variables.IntVar;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -223,7 +222,7 @@ public class CShareableResourceTest {
         Overbook o = new Overbook(map.getAllNodes(), "foo", 1.5);
         o.setContinuous(false);
         cstrs.add(o);
-        cstrs.add(new Preserve(Collections.singleton(vm1), "foo", 5));
+        cstrs.add(new Preserve(vm1, "foo", 5));
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
         System.out.println(p);

@@ -37,13 +37,13 @@ import java.util.List;
 public class Offline extends NodeStateConstraint {
 
     /**
-     * Simple tool to create numerous constraints.
-     * @param ns the nodes to integrate
+     * Instantiate constraints for a collection of nodes.
+     * @param nodes the nodes to integrate
      * @return the associated list of constraints
      */
-    public static List<Offline> newOfflines(Collection<Node> ns) {
-        List<Offline> l = new ArrayList<>(ns.size());
-        for (Node n : ns) {
+    public static List<Offline> newOfflines(Collection<Node> nodes) {
+        List<Offline> l = new ArrayList<>(nodes.size());
+        for (Node n : nodes) {
             l.add(new Offline(n));
         }
         return l;

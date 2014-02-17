@@ -66,7 +66,7 @@ public class SolverTuning implements Example {
             Iterator<VM> ite = vmsOnN.iterator();
             for (int j = 0; ite.hasNext() && j < 4; j++) {
                 VM v = ite.next();
-                constraints.add(new Preserve(Collections.singleton(v), "bandwidth", 4));
+                constraints.add(new Preserve(v, "bandwidth", 4));
             }
         }
 

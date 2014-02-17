@@ -22,13 +22,11 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.PreserveChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Ensure the allocation of a given minimum amount of resources for
- * each of the given VMs. If a VM is not running, the constraint ignores it.
+ * the given VM. If it is not running, the constraint ignores it.
  * The amount to allocate must be specified as a minimum or an exact value.
  * At most, the VM will have an allocation of resources equals to the maximum allowed
  * <p/>
@@ -43,14 +41,30 @@ public class Preserve extends SatConstraint {
     private String rc;
 
     /**
+     * Make multiple constraints
+     *
+     * @param vms the VMs involved in the constraints
+     * @param r   the resource identifier
+     * @param q   the the minimum amount of resources to allocate to each VM. >= 0
+     * @return a list of constraints
+     */
+    public static List<Preserve> newPreserve(Collection<VM> vms, String r, int q) {
+        List<Preserve> l = new ArrayList<>(vms.size());
+        for (VM v : vms) {
+            l.add(new Preserve(v, r, q));
+        }
+        return l;
+    }
+
+    /**
      * Make a new constraint.
      *
-     * @param vms the VMs
-     * @param r   the resource identifier
-     * @param q   the minimum amount of resources to allocate to each VM. >= 0
+     * @param vm the VM
+     * @param r  the resource identifier
+     * @param q  the minimum amount of resources to allocate to each VM. >= 0
      */
-    public Preserve(Collection<VM> vms, String r, int q) {
-        super(vms, Collections.<Node>emptySet(), false);
+    public Preserve(VM vm, String r, int q) {
+        super(Collections.singleton(vm), Collections.<Node>emptySet(), false);
         if (q < 0) {
             throw new IllegalArgumentException("The amount of resource must be >= 0");
         }
@@ -98,8 +112,8 @@ public class Preserve extends SatConstraint {
 
     @Override
     public String toString() {
-        return new StringBuilder("preserve(vms=")
-                .append(getInvolvedVMs())
+        return new StringBuilder("preserve(vm=")
+                .append(getInvolvedVMs().iterator().next())
                 .append(", rc=").append(rc)
                 .append(", amount=").append(amount)
                 .append(", discrete")

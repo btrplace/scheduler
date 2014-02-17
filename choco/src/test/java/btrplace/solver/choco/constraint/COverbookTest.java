@@ -66,7 +66,7 @@ public class COverbookTest {
         Collection<SatConstraint> c = new HashSet<>();
         c.add(o);
         c.addAll(Running.newRunnings(m.getAllVMs()));
-        c.add(new Preserve(m.getAllVMs(), "cpu", 1));
+        c.add(new Preserve(vms[0], "cpu", 1));
         c.addAll(Online.newOnlines(m.getAllNodes()));
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.getConstraintMapper().register(new COverbook.Builder());
@@ -103,7 +103,7 @@ public class COverbookTest {
         c.add(new Overbook(Collections.singleton(nodes[1]), "cpu", 2));
         c.add(new Overbook(Collections.singleton(nodes[2]), "cpu", 3));
         c.addAll(Running.newRunnings(m.getAllVMs()));
-        c.add(new Preserve(m.getAllVMs(), "cpu", 1));
+        c.add(new Preserve(vms[0], "cpu", 1));
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.setTimeLimit(-1);
         ReconfigurationPlan p = cra.solve(mo, c);
@@ -134,7 +134,10 @@ public class COverbookTest {
         Collection<SatConstraint> c = new HashSet<>();
         c.add(new Overbook(m.getAllNodes(), "mem", 1));
         c.addAll(Running.newRunnings(m.getAllVMs()));
-        c.add(new Preserve(m.getAllVMs(), "mem", 1));
+        for (VM v : vms) {
+            c.add(new Preserve(v, "mem", 1));
+        }
+
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.getDurationEvaluators().register(BootVM.class, new LinearToAResourceActionDuration<VM>("mem", 2, 3));
         Assert.assertNull(cra.solve(mo, c));
@@ -185,7 +188,8 @@ public class COverbookTest {
         cstrs.add(new Sleeping(vm1));
         cstrs.addAll(Online.newOnlines(m.getAllNodes()));
         cstrs.add(new Overbook(m.getAllNodes(), "cpu", 1));
-        cstrs.add(new Preserve(m.getAllVMs(), "cpu", 2));
+        cstrs.add(new Preserve(vm1, "cpu", 2));
+        cstrs.add(new Preserve(vm3, "cpu", 2));
         mo.attach(rcCPU);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
@@ -220,7 +224,7 @@ public class COverbookTest {
         o.setContinuous(true);
         cstrs.add(o);
         cstrs.add(new Ready(vm2));
-        cstrs.add(new Preserve(Collections.singleton(vm1), "foo", 5));
+        cstrs.add(new Preserve(vm1, "foo", 5));
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
         Assert.assertEquals(p.getSize(), 2);

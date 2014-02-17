@@ -29,7 +29,7 @@ import solver.Cause;
 import solver.exception.ContradictionException;
 import solver.variables.IntVar;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 
 
@@ -58,16 +58,15 @@ public class CPreserve implements ChocoConstraint {
             throw new SolverException(rp.getSourceModel(), "Unable to get the resource mapper associated to '" +
                     cstr.getResource() + "'");
         }
-        for (VM vm : cstr.getInvolvedVMs()) {
-            if (rp.getFutureRunningVMs().contains(vm)) {
-                int idx = rp.getVM(vm);
-                IntVar v = map.getVMsAllocation()[idx];
-                try {
-                    v.updateLowerBound(cstr.getAmount(), Cause.Null);
-                } catch (ContradictionException ex) {
-                    rp.getLogger().error("Unable to set the '{}' consumption for VM '{}' to '{}'", cstr.getResource(), cstr.getAmount(), ex.getMessage());
-                    return false;
-                }
+        VM vm = cstr.getInvolvedVMs().iterator().next();
+        if (rp.getFutureRunningVMs().contains(vm)) {
+            int idx = rp.getVM(vm);
+            IntVar v = map.getVMsAllocation()[idx];
+            try {
+                v.updateLowerBound(cstr.getAmount(), Cause.Null);
+            } catch (ContradictionException ex) {
+                rp.getLogger().error("Unable to set the '{}' consumption for VM '{}' to '{}'", cstr.getResource(), cstr.getAmount(), ex.getMessage());
+                return false;
             }
         }
         return true;
@@ -75,20 +74,17 @@ public class CPreserve implements ChocoConstraint {
 
     @Override
     public Set<VM> getMisPlacedVMs(Model m) {
-        Set<VM> bad = new HashSet<>();
         ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         if (rc == null) {
-            bad.addAll(cstr.getInvolvedVMs());
+            return Collections.singleton(cstr.getInvolvedVMs().iterator().next());
         } else {
-            for (VM vm : cstr.getInvolvedVMs()) {
-                int x = rc.getConsumption(vm);
-                if (x < cstr.getAmount()) {
-                    //TODO: Very inefficient. Resources may be  available
-                    bad.add(vm);
-                }
+            VM vm = cstr.getInvolvedVMs().iterator().next();
+            int x = rc.getConsumption(vm);
+            if (x < cstr.getAmount()) {
+                return Collections.singleton(vm);
             }
         }
-        return bad;
+        return Collections.emptySet();
     }
 
     @Override
