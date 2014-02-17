@@ -76,7 +76,6 @@ public class Decommissionning implements Example {
         cstrs.add(m);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
         cra.setMaxEnd(3);
         cra.setVerbosity(2);
         try {
