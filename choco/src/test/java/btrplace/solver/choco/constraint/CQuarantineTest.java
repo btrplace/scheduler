@@ -77,7 +77,7 @@ public class CQuarantineTest {
         Quarantine q = new Quarantine(ns);
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(q);
-        cstrs.add(new Fence(Collections.singleton(vm4), Collections.singleton(n1)));
+        cstrs.add(new Fence(vm4, Collections.singleton(n1)));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNull(p);
@@ -104,7 +104,7 @@ public class CQuarantineTest {
         Quarantine q = new Quarantine(ns);
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(q);
-        cstrs.add(new Fence(Collections.singleton(vm1), Collections.singleton(n2)));
+        cstrs.add(new Fence(vm1, Collections.singleton(n2)));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNull(p);

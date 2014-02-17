@@ -154,10 +154,10 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5).get();
 
         //A satisfied constraint
-        Fence c1 = new Fence(new HashSet<>(Arrays.asList(vm1, vm2)), new HashSet<>(Arrays.asList(n1, n2)));
+        Fence c1 = new Fence(vm1, new HashSet<>(Arrays.asList(n1, n2)));
 
         //A constraint that is not satisfied. vm2 is misplaced
-        Fence c2 = new Fence(new HashSet<>(Arrays.asList(vm1, vm2)), new HashSet<>(Arrays.asList(n1, n3)));
+        Fence c2 = new Fence(vm2, new HashSet<>(Arrays.asList(n1, n3)));
 
         Set<SatConstraint> cstrs = new HashSet<SatConstraint>(Arrays.asList(c1, c2));
         mo = new DefaultModel();

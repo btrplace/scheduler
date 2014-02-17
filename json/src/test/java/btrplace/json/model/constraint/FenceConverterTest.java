@@ -40,7 +40,7 @@ public class FenceConverterTest {
         Model mo = new DefaultModel();
         FenceConverter conv = new FenceConverter();
         conv.setModel(mo);
-        Fence d = new Fence(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())),
+        Fence d = new Fence(mo.newVM(),
                 new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode())));
 
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);

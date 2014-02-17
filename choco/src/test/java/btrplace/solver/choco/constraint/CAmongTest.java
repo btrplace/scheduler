@@ -106,7 +106,7 @@ public class CAmongTest {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.addAll(Running.newRunnings(map.getAllVMs()));
-        cstrs.add(new Fence(Collections.singleton(vm2), s2));
+        cstrs.add(new Fence(vm2, s2));
         cstrs.add(a);
 
         ReconfigurationPlan p = cra.solve(mo, cstrs);
@@ -151,8 +151,8 @@ public class CAmongTest {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.addAll(Running.newRunnings(map.getAllVMs()));
-        cstrs.add(new Fence(Collections.singleton(vm2), Collections.singleton(n3)));
-        cstrs.add(new Fence(Collections.singleton(vm1), Collections.singleton(n1)));
+        cstrs.add(new Fence(vm2, Collections.singleton(n3)));
+        cstrs.add(new Fence(vm1, Collections.singleton(n1)));
         cstrs.add(a);
 
         ReconfigurationPlan p = cra.solve(mo, cstrs);
@@ -255,7 +255,7 @@ public class CAmongTest {
 
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.addAll(Running.newRunnings(map.getAllVMs()));
-        cstrs.add(new Fence(Collections.singleton(vm2), Collections.singleton(n3)));
+        cstrs.add(new Fence(vm2, Collections.singleton(n3)));
         cstrs.add(a);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();

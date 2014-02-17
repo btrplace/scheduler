@@ -23,9 +23,10 @@ import btrplace.model.constraint.checker.FenceChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
- * A constraint to force the given VMs, when running,
+ * A constraint to force the given VM, when running,
  * to be hosted on a given group of nodes.
  * <p/>
  * The restriction provided by this constraint is discrete.
@@ -37,16 +38,16 @@ public class Fence extends SatConstraint {
     /**
      * Make a new discrete constraint.
      *
-     * @param vms   the involved VMs
+     * @param vm   the involved VM
      * @param nodes the involved nodes
      */
-    public Fence(Collection<VM> vms, Collection<Node> nodes) {
-        super(vms, nodes, false);
+    public Fence(VM vm, Collection<Node> nodes) {
+        super(Collections.singleton(vm), nodes, false);
     }
 
     @Override
     public String toString() {
-        return new StringBuilder("fence(vms=")
+        return new StringBuilder("fence(vm=")
                 .append(getInvolvedVMs())
                 .append(", nodes=").append(getInvolvedNodes())
                 .append(", discrete")

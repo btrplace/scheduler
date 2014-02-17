@@ -137,7 +137,7 @@ public class CCumulatedResourceCapacityTest {
 
         List<SatConstraint> l = new ArrayList<>();
         l.add(new Running(vm5));
-        l.add(new Fence(Collections.singleton(vm5), Collections.singleton(n1)));
+        l.add(new Fence(vm5, Collections.singleton(n1)));
         CumulatedResourceCapacity x = new CumulatedResourceCapacity(on, "cpu", 10);
         x.setContinuous(true);
         l.add(x);

@@ -70,7 +70,8 @@ public class CQuarantine implements ChocoConstraint {
         map.getRunningVMs(cstr.getInvolvedNodes());
 
         CRoot r = new CRoot(new Root(toRoot));
-        CBan b = new CBan(new Ban(toBan, new HashSet<>(zone)));
+        //TODO: fixme
+        CBan b = new CBan(new Ban(toBan.iterator().next(), new HashSet<>(zone)));
         return (r.inject(rp) && b.inject(rp));
 
     }

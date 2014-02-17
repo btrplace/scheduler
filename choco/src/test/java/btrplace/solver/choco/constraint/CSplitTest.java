@@ -155,7 +155,9 @@ public class CSplitTest {
         cstrs.add(s);
         //What is running on n1 goes to n3, so VMs vm3, vm4, vm5 which does not belong to vm1, vm2 must
         //go away before the other arrive.
-        cstrs.add(new Fence(map.getRunningVMs(n1), Collections.singleton(n3)));
+        for (VM v : map.getRunningVMs(n1)) {
+            cstrs.add(new Fence(v, Collections.singleton(n3)));
+        }
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
         Assert.assertTrue(p.getSize() > 0);

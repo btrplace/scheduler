@@ -139,7 +139,8 @@ public class CGatherTest {
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.addAll(Running.newRunnings(map.getAllVMs()));
         cstrs.add(g);
-        cstrs.add(new Fence(map.getAllVMs(), Collections.singleton(n1)));
+        cstrs.add(new Fence(vm1, Collections.singleton(n1)));
+        cstrs.add(new Fence(vm2, Collections.singleton(n1)));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
         Assert.assertNull(plan);

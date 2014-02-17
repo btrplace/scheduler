@@ -23,9 +23,10 @@ import btrplace.model.constraint.checker.BanChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
- * A constraint to disallow the given VMs, when running,
+ * A constraint to disallow the given VM, when running,
  * to be hosted on a given set of nodes.
  * <p/>
  * The restriction provided by this constraint is only discrete.
@@ -38,18 +39,18 @@ public class Ban extends SatConstraint {
     /**
      * Make a new constraint.
      *
-     * @param vms   the VMs identifiers
+     * @param vm    the VM identifiers
      * @param nodes the nodes identifiers
      */
-    public Ban(Collection<VM> vms, Collection<Node> nodes) {
-        super(vms, nodes, false);
+    public Ban(VM vm, Collection<Node> nodes) {
+        super(Collections.singleton(vm), nodes, false);
     }
 
 
     @Override
     public String toString() {
         return new StringBuilder("ban(")
-                .append("vms=").append(getInvolvedVMs())
+                .append("vm=").append(getInvolvedVMs().iterator().next())
                 .append(", nodes=").append(getInvolvedNodes())
                 .append(", discrete)").toString();
     }

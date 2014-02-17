@@ -29,7 +29,7 @@ import solver.Cause;
 import solver.exception.ContradictionException;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 
 
@@ -54,25 +54,22 @@ public class CBan implements ChocoConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) {
         Collection<Node> nodes = ban.getInvolvedNodes();
-        Collection<VM> vms = ban.getInvolvedVMs();
         int[] nodesIdx = new int[nodes.size()];
         int i = 0;
         for (Node n : ban.getInvolvedNodes()) {
             nodesIdx[i++] = rp.getNode(n);
         }
 
-        for (VM vm : vms) {
-            if (rp.getFutureRunningVMs().contains(vm)) {
-                Slice t = rp.getVMAction(vm).getDSlice();
-                if (t != null) {
-                    for (int x : nodesIdx) {
-                        //rp.getSolver().post(IntConstraintFactory.arithm(t.getHoster(), "!=", x));
-                        try {
-                            t.getHoster().removeValue(x, Cause.Null);
-                        } catch (ContradictionException e) {
-                            rp.getLogger().error("Unable to disallow VM '{}' to be running on '{}': {}", vm, rp.getNode(x), e.getMessage());
-                            return false;
-                        }
+        VM vm = ban.getInvolvedVMs().iterator().next();
+        if (rp.getFutureRunningVMs().contains(vm)) {
+            Slice t = rp.getVMAction(vm).getDSlice();
+            if (t != null) {
+                for (int x : nodesIdx) {
+                    try {
+                        t.getHoster().removeValue(x, Cause.Null);
+                    } catch (ContradictionException e) {
+                        rp.getLogger().error("Unable to disallow VM '{}' to be running on '{}': {}", vm, rp.getNode(x), e.getMessage());
+                        return false;
                     }
                 }
             }
@@ -83,14 +80,11 @@ public class CBan implements ChocoConstraint {
     @Override
     public Set<VM> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-
-        Set<VM> bad = new HashSet<>();
-        for (VM vm : ban.getInvolvedVMs()) {
-            if (map.isRunning(vm) && ban.getInvolvedNodes().contains(map.getVMLocation(vm))) {
-                bad.add(vm);
-            }
+        VM vm = ban.getInvolvedVMs().iterator().next();
+        if (map.isRunning(vm) && ban.getInvolvedNodes().contains(map.getVMLocation(vm))) {
+            return Collections.singleton(vm);
         }
-        return bad;
+        return Collections.emptySet();
     }
 
     @Override
