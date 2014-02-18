@@ -87,10 +87,7 @@ public class Quarantine extends SatConstraint {
 
     @Override
     public String toString() {
-        return new StringBuilder("quarantine(")
-                .append("node=").append(getInvolvedNodes().iterator().next())
-                .append(", continuous")
-                .append(")").toString();
+        return "quarantine(" + "node=" + getInvolvedNodes().iterator().next() + ", continuous" + ")";
     }
 
     @Override

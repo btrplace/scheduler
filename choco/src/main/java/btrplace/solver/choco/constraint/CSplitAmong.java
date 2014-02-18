@@ -154,8 +154,8 @@ public class CSplitAmong implements ChocoConstraint {
         }
 
         @Override
-        public CSplitAmong build(Constraint cstr) {
-            return new CSplitAmong((SplitAmong) cstr);
+        public CSplitAmong build(Constraint c) {
+            return new CSplitAmong((SplitAmong) c);
         }
     }
 }

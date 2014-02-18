@@ -76,10 +76,7 @@ public class SubstitutedVMEvent implements VMEvent {
 
     @Override
     public String toString() {
-        return new StringBuilder("substitutedVM(")
-                .append("vm=").append(oldint)
-                .append(", newint=").append(newint)
-                .append(')').toString();
+        return "substitutedVM(" + "vm=" + oldint + ", newint=" + newint + ')';
     }
 
 }

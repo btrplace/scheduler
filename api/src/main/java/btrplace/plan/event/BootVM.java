@@ -52,10 +52,7 @@ public class BootVM extends Action implements VMStateTransition, RunningVMPlacem
 
     @Override
     public String pretty() {
-        return new StringBuilder("boot(")
-                .append("vm=").append(vm)
-                .append(", on=").append(node)
-                .append(')').toString();
+        return "boot(" + "vm=" + vm + ", on=" + node + ')';
     }
 
     @Override

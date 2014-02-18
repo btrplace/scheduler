@@ -463,9 +463,9 @@ public class CShareableResource implements ChocoModelView {
         }
 
         @Override
-        public ChocoModelView build(ReconfigurationProblem rp, ModelView v) throws SolverException {
-            ShareableResource rc = (ShareableResource) v;
-            return new CShareableResource(rp, rc);
+        public ChocoModelView build(ReconfigurationProblem p, ModelView v) throws SolverException {
+            ShareableResource r = (ShareableResource) v;
+            return new CShareableResource(p, r);
         }
     }
 }

@@ -22,8 +22,6 @@ import memory.IEnvironment;
 import memory.IStateBitSet;
 import memory.IStateBool;
 import memory.IStateInt;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import solver.constraints.Propagator;
 import solver.constraints.PropagatorPriority;
 import solver.exception.ContradictionException;
@@ -44,7 +42,6 @@ import java.util.Arrays;
 public class LightBinPackingPropagator extends Propagator<IntVar> {
 
     private boolean first = true;
-    private static final Logger LOGGER = LoggerFactory.getLogger("solver");
     /**
      * The solver environment.
      */
@@ -157,6 +154,7 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
         return EventType.BOUND.mask;
     }
 
+    @Override
     public ESat isEntailed() {
         return ESat.UNDEFINED;
     }

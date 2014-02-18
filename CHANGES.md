@@ -50,14 +50,14 @@ version 0.30 - 04 Jun 2013
 version 0.29 - 07 May 2013
 ----------------------
 - Multiple Bug fixes
-- Fix regressions in the placement subproblems that appeared in 0.28
+- Fix regressions in the placement subProblems that appeared in 0.28
 - Complete the forgeVM model. It is now required to declare
   a template for the VMs to forge using a "template" attribute
   in the model
 - Fix bugs reported in #5, #10, #13, #14
 - Full support VM relocation through a re-instantiation. BtrPlace can
   now infer if live-migration is preferable over re-instantiation.
-- Refactor completely the "satisfaction" process. Now everyting takes place
+- Refactor completely the "satisfaction" process. Now everything takes place
   inside a SatConstraintChecker.
 - Move most of the interface and abstract classes to the package of their
   implementations
@@ -114,7 +114,7 @@ version 0.20 - 25 Feb 2013
 versions prior to 0.20
 ----------------------
 
-The following changelogs were dedicated to each of the previous
+The following logs were dedicated to each of the previous
 repositories.
 
 ### solver-api ###
@@ -130,7 +130,7 @@ repositories.
 - documentation and tests
 
 ####  version 0.9 - 30 jan. 2012 ####
-- ModelView to customize a model with new domain-specific informations.
+- ModelView to customize a model with new domain-specific information.
   ShareableResource becomes possible specialization of ModelView
 - documentation fix
 

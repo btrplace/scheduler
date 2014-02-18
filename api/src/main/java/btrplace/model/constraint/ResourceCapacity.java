@@ -142,7 +142,7 @@ public class ResourceCapacity extends SatConstraint {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        b.append("cumulatedResourceCapacity(")
+        b.append("resourceCapacity(")
                 .append("nodes=").append(getInvolvedNodes())
                 .append(", rc=").append(rcId)
                 .append(", amount=").append(qty);

@@ -112,12 +112,10 @@ public class Preserve extends SatConstraint {
 
     @Override
     public String toString() {
-        return new StringBuilder("preserve(vm=")
-                .append(getInvolvedVMs().iterator().next())
-                .append(", rc=").append(rc)
-                .append(", amount=").append(amount)
-                .append(", discrete")
-                .append(')').toString();
+        return "preserve(vm=" + getInvolvedVMs().iterator().next() +
+                ", rc=" + rc +
+                ", amount=" + amount +
+                ", discrete" + ')';
     }
 
     @Override

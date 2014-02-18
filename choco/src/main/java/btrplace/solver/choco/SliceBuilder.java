@@ -93,11 +93,11 @@ public class SliceBuilder {
     }
 
     /**
-     * Ensure the time variable t1 ticks before or at moment t2
+     * Ensure the time variable t1 ticks before or at moment t2.
      *
      * @param s  the solver
-     * @param t1
-     * @param t2
+     * @param t1 first variable
+     * @param t2 second variable
      */
     private void ticksSooner(Solver s, IntVar t1, IntVar t2) {
         if (!t1.equals(t2) && t1.getUB() > t2.getLB()) {

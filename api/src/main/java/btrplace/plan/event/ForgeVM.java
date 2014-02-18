@@ -64,7 +64,7 @@ public class ForgeVM extends Action implements VMStateTransition {
      * Test if the action is equals to another object.
      *
      * @param o the object to compare with
-     * @return true if {@code o} is an instance of {@link ForgeVM} and if both
+     * @return true if {@code o} is an instance of ForgeVM and if both
      * instances involve the same VM
      */
     @Override
@@ -94,7 +94,7 @@ public class ForgeVM extends Action implements VMStateTransition {
 
     @Override
     public String pretty() {
-        return new StringBuilder("forge(vm=").append(id).append(')').toString();
+        return "forge(vm=" + id + ')';
     }
 
     @Override

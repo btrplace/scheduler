@@ -112,8 +112,8 @@ public class COverbook implements ChocoConstraint {
         }
 
         @Override
-        public COverbook build(Constraint cstr) {
-            return new COverbook((Overbook) cstr);
+        public COverbook build(Constraint c) {
+            return new COverbook((Overbook) c);
         }
     }
 }

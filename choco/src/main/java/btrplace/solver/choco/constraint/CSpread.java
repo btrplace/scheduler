@@ -165,8 +165,8 @@ public class CSpread implements ChocoConstraint {
         }
 
         @Override
-        public CSpread build(Constraint cstr) {
-            return new CSpread((Spread) cstr);
+        public CSpread build(Constraint c) {
+            return new CSpread((Spread) c);
         }
     }
 }

@@ -102,8 +102,8 @@ public class CPreserve implements ChocoConstraint {
         }
 
         @Override
-        public CPreserve build(Constraint cstr) {
-            return new CPreserve((Preserve) cstr);
+        public CPreserve build(Constraint c) {
+            return new CPreserve((Preserve) c);
         }
     }
 }

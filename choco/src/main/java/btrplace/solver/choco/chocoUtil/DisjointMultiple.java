@@ -72,27 +72,27 @@ public class DisjointMultiple extends IntConstraint<IntVar> {
 
     /**
      * @param s    solver
-     * @param vars sets of variables
+     * @param vs sets of variables
      * @param c    max variable value + 1
      */
-    public DisjointMultiple(Solver s, IntVar[][] vars, int c) {
-        super(ArrayUtils.flatten(vars), s);
+    public DisjointMultiple(Solver s, IntVar[][] vs, int c) {
+        super(ArrayUtils.flatten(vs), s);
         nbValues = c;
-        nbGroups = vars.length;
+        nbGroups = vs.length;
         groupIdx = new int[nbGroups + 1];
         candidates = new IStateInt[nbGroups][c];
         required = new IStateBitSet[nbGroups];
         groupIdx[0] = 0;
         int idx = 0;
         for (int g = 0; g < nbGroups; g++) {
-            idx += vars[g].length;
+            idx += vs[g].length;
             groupIdx[g + 1] = idx;
             required[g] = s.getEnvironment().makeBitSet(c);
             for (int v = 0; v < c; v++) {
                 candidates[g][v] = s.getEnvironment().makeInt(0);
             }
         }
-        setPropagators(new DisjointPropagator(vars));
+        setPropagators(new DisjointPropagator(vs));
     }
 
     private int getGroup(int idx) {

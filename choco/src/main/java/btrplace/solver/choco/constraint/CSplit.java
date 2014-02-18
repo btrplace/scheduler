@@ -187,8 +187,8 @@ public class CSplit implements ChocoConstraint {
         }
 
         @Override
-        public CSplit build(Constraint cstr) {
-            return new CSplit((Split) cstr);
+        public CSplit build(Constraint c) {
+            return new CSplit((Split) c);
         }
     }
 }

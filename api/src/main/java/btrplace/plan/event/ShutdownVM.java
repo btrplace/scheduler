@@ -71,9 +71,7 @@ public class ShutdownVM extends Action implements VMStateTransition {
 
     @Override
     public String pretty() {
-        return new StringBuilder("shutdown(")
-                .append("vm=").append(vm)
-                .append(", on=").append(node).append(')').toString();
+        return "shutdown(" + "vm=" + vm + ", on=" + node + ')';
     }
 
 

@@ -80,8 +80,8 @@ public class CRunning implements ChocoConstraint {
         }
 
         @Override
-        public CRunning build(Constraint cstr) {
-            return new CRunning((Running) cstr);
+        public CRunning build(Constraint c) {
+            return new CRunning((Running) c);
         }
     }
 }

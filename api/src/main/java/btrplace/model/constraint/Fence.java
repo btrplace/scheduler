@@ -64,11 +64,7 @@ public class Fence extends SatConstraint {
 
     @Override
     public String toString() {
-        return new StringBuilder("fence(vm=")
-                .append(getInvolvedVMs())
-                .append(", nodes=").append(getInvolvedNodes())
-                .append(", discrete")
-                .append(")").toString();
+        return "fence(vm=" + getInvolvedVMs() + ", nodes=" + getInvolvedNodes() + ", discrete" + ")";
     }
 
     @Override

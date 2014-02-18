@@ -95,8 +95,8 @@ public class COffline implements ChocoConstraint {
         }
 
         @Override
-        public COffline build(Constraint cstr) {
-            return new COffline((Offline) cstr);
+        public COffline build(Constraint c) {
+            return new COffline((Offline) c);
         }
     }
 }

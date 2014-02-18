@@ -175,8 +175,8 @@ public class CResourceCapacity implements ChocoConstraint {
         }
 
         @Override
-        public CResourceCapacity build(Constraint cstr) {
-            return new CResourceCapacity((ResourceCapacity) cstr);
+        public CResourceCapacity build(Constraint c) {
+            return new CResourceCapacity((ResourceCapacity) c);
         }
     }
 }

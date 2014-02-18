@@ -74,7 +74,6 @@ public class TaskScheduler extends IntConstraint<IntVar> {
     /**
      * Make a new constraint.
      *
-     * @param e           the solver environment
      * @param earlyStarts a variable for each resource to indicate the earliest moment a task can arrive on the resource
      * @param lastEnds    a variable for each resource to indicate the latest moment a task can stay on the resource
      * @param capas       for each dimension, the capacity of each resource
@@ -98,7 +97,7 @@ public class TaskScheduler extends IntConstraint<IntVar> {
                          int[] assocs,
                          Solver s) {
 
-        super(ArrayUtils.<IntVar>append(dHosters, cHosters, cEnds, dStarts, earlyStarts, lastEnds), s);
+        super(ArrayUtils.append(dHosters, cHosters, cEnds, dStarts, earlyStarts, lastEnds), s);
 
         this.cHosters = cHosters;
         this.dHosters = dHosters;
@@ -262,7 +261,7 @@ public class TaskScheduler extends IntConstraint<IntVar> {
                                        int[][] dUsages,
                                        IntVar[] dStarts,
                                        int[] assocs) {
-            super(ArrayUtils.<IntVar>append(dHosters, cHosters, cEnds, dStarts, earlyStarts, lastEnds), PropagatorPriority.VERY_SLOW, true);
+            super(ArrayUtils.append(dHosters, cHosters, cEnds, dStarts, earlyStarts, lastEnds), PropagatorPriority.VERY_SLOW, true);
 
             this.earlyStarts = earlyStarts;
             this.lastEnds = lastEnds;

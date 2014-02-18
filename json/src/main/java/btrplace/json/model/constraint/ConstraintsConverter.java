@@ -132,7 +132,7 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
     public JSONObject toJSON(Constraint o) throws JSONConverterException {
         ConstraintConverter c = java2json.get(o.getClass());
         if (c == null) {
-            throw new JSONConverterException("No converter available for a constraint with the '" + o.getClass() + "' classname");
+            throw new JSONConverterException("No converter available for a constraint with the '" + o.getClass() + "' className");
         }
         return c.toJSON(o);
     }

@@ -39,10 +39,10 @@ public class ReconfigurationPlanConverter extends AbstractJSONObjectConverter<Re
     /**
      * Make a new converter that relies on a given ModelConverter
      *
-     * @param mc the model converter to rely on
+     * @param c the model converter to rely on
      */
-    public ReconfigurationPlanConverter(ModelConverter mc) {
-        this.mc = mc;
+    public ReconfigurationPlanConverter(ModelConverter c) {
+        this.mc = c;
     }
 
     /**

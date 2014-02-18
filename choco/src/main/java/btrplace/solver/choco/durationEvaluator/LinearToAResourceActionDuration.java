@@ -36,9 +36,9 @@ public class LinearToAResourceActionDuration<E extends Element> implements Actio
 
     private String rc;
 
-    private double a;
+    private double coefficient;
 
-    private double b;
+    private double offset;
 
     /**
      * Make a new evaluator.
@@ -60,8 +60,8 @@ public class LinearToAResourceActionDuration<E extends Element> implements Actio
      */
     public LinearToAResourceActionDuration(String rcId, double a, double b) {
         this.rc = rcId;
-        this.a = a;
-        this.b = b;
+        this.coefficient = a;
+        this.offset = b;
     }
 
     @Override
@@ -78,7 +78,7 @@ public class LinearToAResourceActionDuration<E extends Element> implements Actio
         } else {
             return -1;
         }
-        return (int) (a * x + b);
+        return (int) (coefficient * x + offset);
     }
 
     /**
@@ -93,10 +93,10 @@ public class LinearToAResourceActionDuration<E extends Element> implements Actio
     /**
      * Set the resource to use;
      *
-     * @param rc a resource identifier
+     * @param r a resource identifier
      */
-    public void setResourceId(String rc) {
-        this.rc = rc;
+    public void setResourceId(String r) {
+        this.rc = r;
     }
 
     /**
@@ -105,7 +105,7 @@ public class LinearToAResourceActionDuration<E extends Element> implements Actio
      * @return a number
      */
     public double getCoefficient() {
-        return a;
+        return coefficient;
     }
 
     /**
@@ -114,7 +114,7 @@ public class LinearToAResourceActionDuration<E extends Element> implements Actio
      * @param a the coefficient to use
      */
     public void setCoefficient(double a) {
-        this.a = a;
+        this.coefficient = a;
     }
 
     /**
@@ -123,7 +123,7 @@ public class LinearToAResourceActionDuration<E extends Element> implements Actio
      * @return a number
      */
     public double getOffset() {
-        return b;
+        return offset;
     }
 
     /**
@@ -132,6 +132,6 @@ public class LinearToAResourceActionDuration<E extends Element> implements Actio
      * @param b the newBound to use
      */
     public void setOffset(double b) {
-        this.b = b;
+        this.offset = b;
     }
 }

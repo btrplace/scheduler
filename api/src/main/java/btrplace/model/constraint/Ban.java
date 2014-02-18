@@ -66,10 +66,7 @@ public class Ban extends SatConstraint {
 
     @Override
     public String toString() {
-        return new StringBuilder("ban(")
-                .append("vm=").append(getInvolvedVMs().iterator().next())
-                .append(", nodes=").append(getInvolvedNodes())
-                .append(", discrete)").toString();
+        return "ban(" + "vm=" + getInvolvedVMs().iterator().next() + ", nodes=" + getInvolvedNodes() + ", discrete)";
     }
 
     @Override

@@ -59,7 +59,7 @@ public class RoundedUpDivision extends IntConstraint<IntVar> {
 
     @Override
     public String toString() {
-        return new StringBuilder(vars[0].toString()).append(" = ").append(vars[1].toString()).append('/').append(qq).toString();
+        return vars[0].toString() + " = " + vars[1].toString() + '/' + qq;
     }
 
     class RoundedUpDivisionPropagator extends Propagator<IntVar> {

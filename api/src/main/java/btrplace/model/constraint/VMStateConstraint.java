@@ -62,10 +62,7 @@ public abstract class VMStateConstraint extends SatConstraint {
 
     @Override
     public String toString() {
-        return new StringBuilder(ref).append('(')
-                .append("vm=").append(getInvolvedVMs().iterator().next())
-                .append(", discrete")
-                .append(')').toString();
+        return ref + '(' + "vm=" + getInvolvedVMs().iterator().next() + ", discrete" + ')';
     }
 
     @Override

@@ -98,8 +98,8 @@ public class CSequentialVMTransitions implements ChocoConstraint {
         }
 
         @Override
-        public CSequentialVMTransitions build(Constraint cstr) {
-            return new CSequentialVMTransitions((SequentialVMTransitions) cstr);
+        public CSequentialVMTransitions build(Constraint c) {
+            return new CSequentialVMTransitions((SequentialVMTransitions) c);
         }
     }
 }

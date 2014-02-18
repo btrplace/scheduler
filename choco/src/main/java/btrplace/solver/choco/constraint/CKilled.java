@@ -78,8 +78,8 @@ public class CKilled implements ChocoConstraint {
         }
 
         @Override
-        public CKilled build(Constraint cstr) {
-            return new CKilled((Killed) cstr);
+        public CKilled build(Constraint c) {
+            return new CKilled((Killed) c);
         }
     }
 }

@@ -62,10 +62,7 @@ public abstract class NodeStateConstraint extends SatConstraint {
 
     @Override
     public String toString() {
-        return new StringBuilder(ref).append('(')
-                .append("node=").append(getInvolvedNodes().iterator().next())
-                .append(", discrete")
-                .append(')').toString();
+        return ref + '(' + "node=" + getInvolvedNodes().iterator().next() + ", discrete" + ')';
     }
 
     @Override

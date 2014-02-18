@@ -49,8 +49,8 @@ public class BootNode extends Action implements NodeEvent {
      * Test the equality with another object.
      *
      * @param obj The object to compare with
-     * @return {@code true} if {@code obj} is an instance of {@link BootNode}
-     *         and if both actions act on the same node
+     * @return {@code true} if {@code obj} is an instance of BootNode
+     * and if both actions act on the same node
      */
     @Override
     public boolean equals(Object obj) {
@@ -79,9 +79,7 @@ public class BootNode extends Action implements NodeEvent {
 
     @Override
     public String pretty() {
-        StringBuilder buffer = new StringBuilder("boot(");
-        buffer.append("node=").append(node).append(")");
-        return buffer.toString();
+        return "boot(" + "node=" + node + ")";
     }
 
     /**

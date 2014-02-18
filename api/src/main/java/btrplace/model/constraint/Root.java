@@ -81,10 +81,7 @@ public class Root extends SatConstraint {
 
     @Override
     public String toString() {
-        return new StringBuilder("root(")
-                .append("vm=").append(getInvolvedVMs().iterator().next())
-                .append(", continuous")
-                .append(")").toString();
+        return "root(" + "vm=" + getInvolvedVMs().iterator().next() + ", continuous" + ")";
     }
 
     @Override

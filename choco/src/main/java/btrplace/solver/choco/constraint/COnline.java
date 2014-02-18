@@ -83,8 +83,8 @@ public class COnline implements ChocoConstraint {
         }
 
         @Override
-        public COnline build(Constraint cstr) {
-            return new COnline((Online) cstr);
+        public COnline build(Constraint c) {
+            return new COnline((Online) c);
         }
     }
 }

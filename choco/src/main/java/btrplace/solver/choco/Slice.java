@@ -62,18 +62,16 @@ public class Slice {
 
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder();
-        b.append(subject).append("{from=").append(printValue(getStart()));
-        b.append(", to=").append(printValue(getEnd()));
-        b.append(", on=").append(printValue(getHoster()));
-        return b.append('}').toString();
+        return String.valueOf(subject) + "{from=" + printValue(getStart()) +
+                ", to=" + printValue(getEnd()) +
+                ", on=" + printValue(getHoster()) + '}';
     }
 
     private String printValue(IntVar v) {
         if (v.instantiated()) {
             return Integer.toString(v.getValue());
         }
-        return new StringBuilder("[").append(v.getLB()).append(':').append(v.getUB()).append(']').toString();
+        return "[" + v.getLB() + ':' + v.getUB() + ']';
     }
 
     /**

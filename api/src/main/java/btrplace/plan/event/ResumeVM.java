@@ -75,11 +75,7 @@ public class ResumeVM extends Action implements VMStateTransition, RunningVMPlac
 
     @Override
     public String pretty() {
-        return new StringBuilder("resume(")
-                .append("vm=").append(vm)
-                .append(", from=").append(src)
-                .append(", to=")
-                .append(dst).append(')').toString();
+        return "resume(" + "vm=" + vm + ", from=" + src + ", to=" + dst + ')';
     }
 
     @Override

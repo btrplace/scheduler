@@ -41,8 +41,8 @@ import solver.variables.VariableFactory;
  * The relocation can be performed through a live-migration or a re-instantiation.
  * The re-instantiation consists in forging a new VM having the same characteristics
  * and launching it on the destination node. Once this new VM has been launched, the
- * original VM is shut down. Such a relocation doReinstantiation may be faster than a migration-based
- * doReinstantiation while being less aggressive for the network. However, the VM must be able to
+ * original VM is shut down. Such a relocation n may be faster than a migration-based
+ * one while being less aggressive for the network. However, the VM must be able to
  * be cloned from a template.
  * <p/>
  * If the relocation is performed with a live-migration, a {@link MigrateVM} action
@@ -75,7 +75,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
     private Node src;
 
     /**
-     * The relocation doReinstantiation. 0 for migration, 1 for relocation.
+     * The relocation method. 0 for migration, 1 for relocation.
      */
     private BoolVar doReinstantiation;
 
@@ -248,15 +248,10 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder();
-        b.append("relocate(doReinstantiation=");
-        b.append(prettyMethod(doReinstantiation));
-        b.append(" ,vm=").append(vm)
-                .append(" ,from=").append(src)
-                .append("(").append(rp.getNode(src)).append(")")
-                .append(" ,to=").append(dSlice.getHoster().toString())
-                .append(")");
-        return b.toString();
+        return "relocate(doReinstantiation=" + prettyMethod(doReinstantiation) +
+                " ,vm=" + vm +
+                " ,from=" + src + "(" + rp.getNode(src) + ")" +
+                " ,to=" + dSlice.getHoster().toString() + ")";
     }
 
     private static String prettyMethod(IntVar method) {

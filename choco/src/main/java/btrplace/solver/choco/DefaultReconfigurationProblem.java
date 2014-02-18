@@ -42,7 +42,6 @@ import solver.exception.ContradictionException;
 import solver.search.loop.monitors.IMonitorSolution;
 import solver.search.loop.monitors.SMF;
 import solver.search.solution.AllSolutionsRecorder;
-import solver.search.solution.ISolutionRecorder;
 import solver.search.strategy.IntStrategyFactory;
 import solver.search.strategy.selectors.values.RealDomainMiddle;
 import solver.search.strategy.selectors.variables.InputOrder;
@@ -81,10 +80,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private Solver solver;
 
-    private Set<VM> ready;
+    private Set<VM> readys;
     private Set<VM> runnings;
     private Set<VM> sleepings;
-    private Set<VM> killed;
+    private Set<VM> killeds;
 
     private Set<VM> manageable;
 
@@ -118,8 +117,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private ResolutionPolicy solvingPolicy;
 
-    private ISolutionRecorder recordedSolutions;
-
     /**
      * Make a new RP where the next state for every VM is indicated.
      * If the state for a VM is omitted, it is considered as unchanged
@@ -145,18 +142,17 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                                          Set<VM> runningsToConsider,
                                          boolean label
     ) throws SolverException {
-        this.ready = new HashSet<>(ready);
+        this.readys = new HashSet<>(ready);
         this.runnings = new HashSet<>(running);
         this.sleepings = new HashSet<>(sleeping);
-        this.killed = new HashSet<>(killed);
+        this.killeds = new HashSet<>(killed);
         this.manageable = new HashSet<>(runningsToConsider);
         this.useLabels = label;
         model = m;
         durEval = dEval;
         this.viewMapper = vMapper;
         solver = new Solver();
-        recordedSolutions = new AllSolutionsRecorder(solver);
-        solver.getSearchLoop().plugSearchMonitor(recordedSolutions);
+        solver.getSearchLoop().plugSearchMonitor(new AllSolutionsRecorder(solver));
         start = VariableFactory.fixed("RP.start", 0, solver);
         end = VariableFactory.bounded("RP.end", 0, DEFAULT_MAX_TIME, solver);
 
@@ -225,7 +221,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         int nbCstrs = solver.getNbCstrs();
 
 
-        getLogger().debug("{} constraints; {} ints", nbCstrs, nbIntVars);
+        getLogger().debug("{} constraints; {} integers", nbCstrs, nbIntVars);
         if (solvingPolicy == ResolutionPolicy.SATISFACTION) {
             solver.findSolution();
         } else {
@@ -233,7 +229,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 @Override
                 public void onSolution() {
                     int v = objective.getValue();
-                    String op = solvingPolicy.equals(ResolutionPolicy.MAXIMIZE) ? ">=" : "<=";
+                    String op = solvingPolicy == ResolutionPolicy.MAXIMIZE ? ">=" : "<=";
                     solver.postCut(IntConstraintFactory.arithm(objective, op, alterer.newBound(DefaultReconfigurationProblem.this, v)));
                 }
             });
@@ -367,7 +363,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         allVMs.addAll(model.getMapping().getRunningVMs());
         allVMs.addAll(model.getMapping().getReadyVMs());
         //We have to integrate VMs in the ready state: the only VMs that may not appear in the mapping
-        allVMs.addAll(ready);
+        allVMs.addAll(readys);
 
         vms = new VM[allVMs.size()];
         //0.5f is a default load factor in trove.
@@ -414,7 +410,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                     throw new SolverException(model, "Unable to set VM '" + vmId + "' running: not ready");
                 }
             }
-            if (ready.contains(vmId)) {
+            if (readys.contains(vmId)) {
                 if (vmActions[i] != null) {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
                 } else if (!map.contains(vmId)) {
@@ -441,7 +437,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                     throw new SolverException(model, "Unable to set VM '" + vmId + "' sleeping: should be running");
                 }
             }
-            if (killed.contains(vmId)) {
+            if (killeds.contains(vmId)) {
                 if (vmActions[i] != null) {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
                 } else if (map.contains(vmId)) {
@@ -462,7 +458,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                         vmActions[i] = new StayRunningVMModel(this, vmId);
                     }
                 } else if (map.isReady(vmId)) {
-                    ready.add(vmId);
+                    readys.add(vmId);
                     vmActions[i] = new StayAwayVMModel(this, vmId);
                 } else if (map.isSleeping(vmId)) {
                     sleepings.add(vmId);
@@ -681,7 +677,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public Set<VM> getFutureReadyVMs() {
-        return ready;
+        return readys;
     }
 
     @Override
@@ -691,7 +687,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public Set<VM> getFutureKilledVMs() {
-        return killed;
+        return killeds;
     }
 
     @Override

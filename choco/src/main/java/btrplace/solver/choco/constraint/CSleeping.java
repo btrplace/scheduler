@@ -79,8 +79,8 @@ public class CSleeping implements ChocoConstraint {
         }
 
         @Override
-        public CSleeping build(Constraint cstr) {
-            return new CSleeping((Sleeping) cstr);
+        public CSleeping build(Constraint c) {
+            return new CSleeping((Sleeping) c);
         }
     }
 }

@@ -80,8 +80,8 @@ public class CReady implements ChocoConstraint {
         }
 
         @Override
-        public CReady build(Constraint cstr) {
-            return new CReady((Ready) cstr);
+        public CReady build(Constraint c) {
+            return new CReady((Ready) c);
         }
     }
 }

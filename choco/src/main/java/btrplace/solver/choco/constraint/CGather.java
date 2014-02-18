@@ -157,8 +157,8 @@ public class CGather implements ChocoConstraint {
         }
 
         @Override
-        public CGather build(Constraint cstr) {
-            return new CGather((Gather) cstr);
+        public CGather build(Constraint c) {
+            return new CGather((Gather) c);
         }
     }
 }

@@ -22,6 +22,7 @@ import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.Constraint;
+import btrplace.model.constraint.RunningCapacity;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import solver.Cause;
@@ -40,14 +41,14 @@ import java.util.*;
  */
 public class CRunningCapacity implements ChocoConstraint {
 
-    private btrplace.model.constraint.RunningCapacity cstr;
+    private RunningCapacity cstr;
 
     /**
      * Make a new constraint.
      *
      * @param c the constraint to rely on
      */
-    public CRunningCapacity(btrplace.model.constraint.RunningCapacity c) {
+    public CRunningCapacity(RunningCapacity c) {
         cstr = c;
     }
 
@@ -143,12 +144,12 @@ public class CRunningCapacity implements ChocoConstraint {
     public static class Builder implements ChocoConstraintBuilder {
         @Override
         public Class<? extends Constraint> getKey() {
-            return btrplace.model.constraint.RunningCapacity.class;
+            return RunningCapacity.class;
         }
 
         @Override
-        public CRunningCapacity build(Constraint cstr) {
-            return new CRunningCapacity((btrplace.model.constraint.RunningCapacity) cstr);
+        public CRunningCapacity build(Constraint c) {
+            return new CRunningCapacity((RunningCapacity) c);
         }
     }
 }

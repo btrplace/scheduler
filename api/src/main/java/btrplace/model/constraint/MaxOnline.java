@@ -51,7 +51,7 @@ public class MaxOnline extends SatConstraint {
      * Make a new constraint specifying restriction explicitly.
      *
      * @param nodes      The set of nodes
-     * @param n          The maximun number of online nodes
+     * @param n          The maximum number of online nodes
      * @param continuous {@code true} for continuous restriction
      */
     public MaxOnline(Set<Node> nodes, int n, boolean continuous) {

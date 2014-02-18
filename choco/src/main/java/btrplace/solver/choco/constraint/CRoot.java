@@ -84,8 +84,8 @@ public class CRoot implements ChocoConstraint {
         }
 
         @Override
-        public CRoot build(Constraint cstr) {
-            return new CRoot((Root) cstr);
+        public CRoot build(Constraint c) {
+            return new CRoot((Root) c);
         }
     }
 }

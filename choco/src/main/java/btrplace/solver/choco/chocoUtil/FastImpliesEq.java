@@ -36,30 +36,30 @@ import util.ESat;
  */
 public class FastImpliesEq extends IntConstraint<IntVar> {
 
-    private final int constante;
+    private final int constant;
 
     /**
      * New instance.
      *
-     * @param b        the boolean variable
-     * @param var      the variable
-     * @param constant the constant to use to set the variable if the boolean variable is set to true
+     * @param b   the boolean variable
+     * @param var the variable
+     * @param c   the constant to use to set the variable if the boolean variable is set to true
      */
-    public FastImpliesEq(BoolVar b, IntVar var, int constant) {
+    public FastImpliesEq(BoolVar b, IntVar var, int c) {
         super(new IntVar[]{b, var}, b.getSolver());
-        this.constante = constant;
+        this.constant = c;
         setPropagators(new FastImpliesEqProp(vars), new FastImpliesEqProp(vars));
 
     }
 
     @Override
     public String toString() {
-        return vars[0].toString() + " -> " + vars[1] + "=" + constante;
+        return vars[0].toString() + " -> " + vars[1] + "=" + constant;
     }
 
     @Override
     public ESat isSatisfied(int[] tuple) {
-        return ESat.eval((tuple[0] == 1 && tuple[1] == constante) || tuple[0] == 0);
+        return ESat.eval((tuple[0] == 1 && tuple[1] == constant) || tuple[0] == 0);
     }
 
 
@@ -92,9 +92,9 @@ public class FastImpliesEq extends IntConstraint<IntVar> {
             do {
                 s = vars[0].getDomainSize() + vars[1].getDomainSize();
                 if (vars[0].instantiatedTo(1)) {
-                    vars[1].instantiateTo(constante, aCause);
+                    vars[1].instantiateTo(constant, aCause);
                 }
-                if (!vars[1].contains(constante)) {
+                if (!vars[1].contains(constant)) {
                     vars[0].instantiateTo(0, aCause);
                 }
                 s -= (vars[0].getDomainSize() + vars[1].getDomainSize());
@@ -109,7 +109,7 @@ public class FastImpliesEq extends IntConstraint<IntVar> {
         @Override
         public ESat isEntailed() {
             if (vars[0].instantiated() && vars[1].instantiated()) {
-                return ESat.eval((vars[0].getValue() == 1 && vars[1].getValue() == constante) || vars[0].getValue() == 0);
+                return ESat.eval((vars[0].getValue() == 1 && vars[1].getValue() == constant) || vars[0].getValue() == 0);
             }
             return ESat.UNDEFINED;
         }

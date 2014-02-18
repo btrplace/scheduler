@@ -92,7 +92,7 @@ public class ElementSubSet<E extends Element> implements Set<E> {
                 r[i] = null;
                 return r;
             }
-            r[i] = (E) it.next();
+            r[i] = it.next();
         }
         return r;
     }

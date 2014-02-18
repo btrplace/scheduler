@@ -108,8 +108,8 @@ public class CFence implements ChocoConstraint {
         }
 
         @Override
-        public CFence build(Constraint cstr) {
-            return new CFence((Fence) cstr);
+        public CFence build(Constraint c) {
+            return new CFence((Fence) c);
         }
     }
 }

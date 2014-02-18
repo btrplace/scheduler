@@ -74,7 +74,7 @@ public class BootVMModel implements VMActionModel {
         start = p.makeDuration(p.getEnd().getUB() - d, 0, "bootVM(", e, ").start");
         end = VariableFactory.offset(start, d);
         duration = p.makeDuration(d, d, "bootVM.duration(", e, ')');
-        dSlice = new SliceBuilder(p, e, new StringBuilder("bootVM(").append(e).append(").dSlice").toString()).setStart(start)
+        dSlice = new SliceBuilder(p, e, "bootVM(" + e + ").dSlice").setStart(start)
                 .setDuration(p.makeDuration(p.getEnd().getUB(), d, "bootVM(", e, ").dSlice_duration"))
                 .build();
         Solver s = p.getSolver();

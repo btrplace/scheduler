@@ -64,7 +64,7 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
 
     /**
      * Register a new set of VMs int to track.
-     * Each {@link SubstitutedVMEvent} event is catched
+     * Each {@link SubstitutedVMEvent} event is caught
      * and all of the registered collections are updated
      * accordingly
      *
@@ -81,8 +81,6 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @param a the executed that will be executed
      * @return {@code startRunningVMPlacement(a)}
      */
@@ -103,8 +101,6 @@ public abstract class AllowAllConstraintChecker<C extends SatConstraint> impleme
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @param a the executed that will be executed
      * @return {@code startRunningVMPlacement(a)}
      */

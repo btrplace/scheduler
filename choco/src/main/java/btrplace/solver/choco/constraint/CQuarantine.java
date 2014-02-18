@@ -99,8 +99,8 @@ public class CQuarantine implements ChocoConstraint {
         }
 
         @Override
-        public CQuarantine build(Constraint cstr) {
-            return new CQuarantine((Quarantine) cstr);
+        public CQuarantine build(Constraint c) {
+            return new CQuarantine((Quarantine) c);
         }
     }
 }
