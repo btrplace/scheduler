@@ -26,7 +26,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -61,8 +60,8 @@ public class InstanceTest {
         ma.addOfflineNode(ns.get(0));
         ma.addReadyVM(vms.get(0));
         List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.add(new Online(ma.getAllNodes()));
-        cstrs.add(new Running(Collections.singleton(vms.get(0))));
+        cstrs.addAll(Online.newOnlines(ma.getAllNodes()));
+        cstrs.add(new Running(vms.get(0)));
         Instance i = new Instance(mo, cstrs, new MinMTTR());
         Instance i2 = new Instance(mo.clone(), new ArrayList<>(cstrs), new MinMTTR());
 

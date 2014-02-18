@@ -25,10 +25,7 @@ import btrplace.plan.event.ShutdownVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Unit tests for {@link btrplace.model.constraint.Offline}.
@@ -40,10 +37,10 @@ public class OfflineTest {
     @Test
     public void testInstantiation() {
         Model mo = new DefaultModel();
-        Set<Node> s = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
-        Offline o = new Offline(s);
+        Node n = mo.newNode();
+        Offline o = new Offline(n);
         Assert.assertNotNull(o.getChecker());
-        Assert.assertEquals(o.getInvolvedNodes(), s);
+        Assert.assertTrue(o.getInvolvedNodes().contains(n));
         Assert.assertTrue(o.getInvolvedVMs().isEmpty());
         Assert.assertNotNull(o.toString());
         Assert.assertFalse(o.setContinuous(true));
@@ -57,13 +54,11 @@ public class OfflineTest {
         Node n1 = i.newNode();
         Node n2 = i.newNode();
         c.addOfflineNode(n1);
-        c.addOfflineNode(n2);
-        Set<Node> s = new HashSet<>(Arrays.asList(n1, n2));
-        Offline o = new Offline(s);
+        Offline o = new Offline(n1);
 
         Assert.assertEquals(o.isSatisfied(i), true);
         c.addOnlineNode(n2);
-        Assert.assertEquals(o.isSatisfied(i), false);
+        Assert.assertEquals(new Offline(n2).isSatisfied(i), false);
     }
 
     @Test
@@ -76,8 +71,7 @@ public class OfflineTest {
         map.addOnlineNode(ns.get(0));
         map.addOnlineNode(ns.get(1));
 
-        Set<Node> s = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
-        Offline off = new Offline(s);
+        Offline off = new Offline(ns.get(0));
 
         map.addRunningVM(vms.get(0), ns.get(0));
 
@@ -96,13 +90,11 @@ public class OfflineTest {
         Model mo = new DefaultModel();
         List<Node> ns = Util.newNodes(mo, 10);
 
-        Set<Node> x = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
-        Offline s = new Offline(x);
+        Offline s = new Offline(ns.get(0));
 
         Assert.assertTrue(s.equals(s));
-        Assert.assertTrue(new Offline(x).equals(s));
-        Assert.assertEquals(new Offline(x).hashCode(), s.hashCode());
-        x = new HashSet<>(Arrays.asList(ns.get(2)));
-        Assert.assertFalse(new Offline(x).equals(s));
+        Assert.assertTrue(new Offline(ns.get(0)).equals(s));
+        Assert.assertEquals(new Offline(ns.get(0)).hashCode(), s.hashCode());
+        Assert.assertFalse(new Offline(ns.get(1)).equals(s));
     }
 }

@@ -54,13 +54,14 @@ public class StayRunningVMModelTest {
         StayRunningVMModel m1 = (StayRunningVMModel) rp.getVMAction(vm1);
         Assert.assertNotNull(m1.getCSlice());
         Assert.assertNotNull(m1.getDSlice());
-        Assert.assertTrue(m1.getCSlice().getHoster().isInstantiatedTo(rp.getNode(n1)));
-        Assert.assertTrue(m1.getDSlice().getHoster().isInstantiatedTo(rp.getNode(n1)));
-        Assert.assertTrue(m1.getDuration().isInstantiatedTo(0));
-        Assert.assertTrue(m1.getStart().isInstantiatedTo(0));
-        Assert.assertTrue(m1.getEnd().isInstantiatedTo(0));
-
+        Assert.assertTrue(m1.getCSlice().getHoster().instantiatedTo(rp.getNode(n1)));
+        Assert.assertTrue(m1.getDSlice().getHoster().instantiatedTo(rp.getNode(n1)));
+        Assert.assertTrue(m1.getDuration().instantiatedTo(0));
+        Assert.assertTrue(m1.getStart().instantiatedTo(0));
+        Assert.assertTrue(m1.getEnd().instantiatedTo(0));
+        System.out.println(rp.getSolver().toString());
         ReconfigurationPlan p = rp.solve(0, false);
+        Assert.assertNotNull(p);
         Assert.assertEquals(p.getSize(), 0);
     }
 }

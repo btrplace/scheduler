@@ -114,7 +114,7 @@ public abstract class StaticPartitioning implements InstanceSolver {
             } catch (ExecutionException ignore) {
                 Throwable cause = ignore.getCause();
                 if (cause != null) {
-                    throw new SolverException(null, cause.getMessage(), cause);
+                    throw new SolverException(null, cause.getMessage(), ignore);
                 }
             } catch (InterruptedException e) {
                 throw new SolverException(orig.getModel(), e.getMessage(), e);

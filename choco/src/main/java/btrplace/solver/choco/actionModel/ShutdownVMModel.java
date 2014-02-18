@@ -24,9 +24,10 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
-import choco.cp.solver.variables.integer.IntDomainVarAddCste;
-import choco.kernel.solver.variables.integer.IntDomainVar;
-
+import solver.constraints.IntConstraintFactory;
+import solver.variables.BoolVar;
+import solver.variables.IntVar;
+import solver.variables.VariableFactory;
 
 /**
  * Model an action that stop a running VM.
@@ -45,13 +46,13 @@ public class ShutdownVMModel implements VMActionModel {
 
     private VM vm;
 
-    private IntDomainVar duration;
+    private IntVar duration;
 
     private Slice cSlice;
 
-    private IntDomainVar start;
+    private IntVar start;
 
-    private IntDomainVar state;
+    private BoolVar state;
 
     /**
      * Make a new model.
@@ -68,18 +69,19 @@ public class ShutdownVMModel implements VMActionModel {
         assert d > 0;
         duration = p.makeDuration(d, d, "shutdownVM(", e, ").duration");
         this.cSlice = new SliceBuilder(p, e, "shutdownVM(" + e + ").cSlice").setHoster(p.getCurrentVMLocation(p.getVM(e)))
-                .setEnd(p.makeDuration(p.getEnd().getSup(), d, "shutdownVM(", e, ").cSlice_end"))
+                .setEnd(p.makeDuration(p.getEnd().getUB(), d, "shutdownVM(", e, ").cSlice_end"))
                 .build();
-        start = new IntDomainVarAddCste(p.getSolver(), p.makeVarLabel("shutdownVM(", e, ").start"), cSlice.getEnd(), -d);
-        state = p.getSolver().makeConstantIntVar(0);
+        start = VariableFactory.offset(cSlice.getEnd(), -d);
+        state = VariableFactory.zero(rp.getSolver());
+        rp.getSolver().post(IntConstraintFactory.arithm(cSlice.getEnd(), "<=", p.getEnd()));
     }
 
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
         plan.add(new ShutdownVM(getVM(),
                 rp.getSourceModel().getMapping().getVMLocation(getVM()),
-                start.getVal(),
-                cSlice.getEnd().getVal()));
+                start.getValue(),
+                cSlice.getEnd().getValue()));
         return true;
     }
 
@@ -89,17 +91,17 @@ public class ShutdownVMModel implements VMActionModel {
     }
 
     @Override
-    public IntDomainVar getStart() {
+    public IntVar getStart() {
         return start;
     }
 
     @Override
-    public IntDomainVar getEnd() {
+    public IntVar getEnd() {
         return cSlice.getEnd();
     }
 
     @Override
-    public IntDomainVar getDuration() {
+    public IntVar getDuration() {
         return duration;
     }
 
@@ -114,7 +116,7 @@ public class ShutdownVMModel implements VMActionModel {
     }
 
     @Override
-    public IntDomainVar getState() {
+    public BoolVar getState() {
         return state;
     }
 

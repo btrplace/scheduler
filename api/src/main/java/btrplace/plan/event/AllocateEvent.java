@@ -85,11 +85,7 @@ public class AllocateEvent implements VMEvent {
 
     @Override
     public String toString() {
-        return new StringBuilder("allocate(")
-                .append("vm=").append(vm)
-                .append(", rc=").append(rc)
-                .append(", amount=").append(qty)
-                .append(')').toString();
+        return "allocate(" + "vm=" + vm + ", rc=" + rc + ", amount=" + qty + ')';
     }
 
     @Override

@@ -42,7 +42,7 @@ public class Among extends SatConstraint {
     /**
      * Set of set of nodes.
      */
-    private Collection<Collection<Node>> pGrps;
+    private Collection<Collection<Node>> pGroups;
 
 
     /**
@@ -66,7 +66,7 @@ public class Among extends SatConstraint {
     public Among(Collection<VM> vms, Collection<Collection<Node>> parts, boolean continuous) {
         super(vms, null, continuous);
         assert checkDisjoint(parts) : "The constraint expects disjoint sets of nodes";
-        this.pGrps = parts;
+        this.pGroups = parts;
     }
 
     private static boolean checkDisjoint(Collection<Collection<Node>> parts) {
@@ -89,7 +89,7 @@ public class Among extends SatConstraint {
      * @return the group of nodes if exists, {@code null} otherwise
      */
     public Collection<Node> getAssociatedPGroup(Node u) {
-        for (Collection<Node> pGrp : pGrps) {
+        for (Collection<Node> pGrp : pGroups) {
             if (pGrp.contains(u)) {
                 return pGrp;
             }
@@ -100,7 +100,7 @@ public class Among extends SatConstraint {
     @Override
     public Collection<Node> getInvolvedNodes() {
         Set<Node> s = new HashSet<>();
-        for (Collection<Node> x : pGrps) {
+        for (Collection<Node> x : pGroups) {
             s.addAll(x);
         }
         return s;
@@ -112,7 +112,7 @@ public class Among extends SatConstraint {
      * @return the groups
      */
     public Collection<Collection<Node>> getGroupsOfNodes() {
-        return pGrps;
+        return pGroups;
     }
 
     @Override
@@ -126,14 +126,14 @@ public class Among extends SatConstraint {
 
         Among that = (Among) o;
 
-        return pGrps.equals(that.pGrps) &&
+        return pGroups.equals(that.pGroups) &&
                 getInvolvedVMs().equals(that.getInvolvedVMs()) &&
                 isContinuous() == that.isContinuous();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getInvolvedVMs(), getInvolvedNodes(), pGrps, isContinuous(), getInvolvedVMs());
+        return Objects.hash(getInvolvedVMs(), getInvolvedNodes(), pGroups, isContinuous(), getInvolvedVMs());
     }
 
     @Override
@@ -141,7 +141,7 @@ public class Among extends SatConstraint {
         StringBuilder b = new StringBuilder("among(");
         b.append("vms=").append(getInvolvedVMs());
         b.append(", nodes=[");
-        for (Iterator<Collection<Node>> ite = pGrps.iterator(); ite.hasNext(); ) {
+        for (Iterator<Collection<Node>> ite = pGroups.iterator(); ite.hasNext(); ) {
             b.append(ite.next());
             if (ite.hasNext()) {
                 b.append(", ");

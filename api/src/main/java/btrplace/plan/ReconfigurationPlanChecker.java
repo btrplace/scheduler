@@ -241,8 +241,7 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
      * Check if a plan satisfies all the {@link SatConstraintChecker}.
      *
      * @param p the plan to check
-     * @throws ReconfigurationPlanCheckerException
-     *          if a violation is detected
+     * @throws ReconfigurationPlanCheckerException if a violation is detected
      */
     public void check(ReconfigurationPlan p) throws ReconfigurationPlanCheckerException {
         if (checkers.isEmpty()) {
@@ -265,7 +264,7 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
                     ends.remove();
                     startingEvent = false;
                     visitAndThrowOnViolation(a);
-                    visitEvents(a, Action.Hook.post);
+                    visitEvents(a, Action.Hook.POST);
                     a = ends.peek();
                 }
                 a = starts.peek();
@@ -273,7 +272,7 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
                 while (a != null && a.getStart() == curMoment) {
                     starts.remove();
                     startingEvent = true;
-                    visitEvents(a, Action.Hook.pre);
+                    visitEvents(a, Action.Hook.PRE);
                     visitAndThrowOnViolation(a);
                     a = starts.peek();
                 }
@@ -309,8 +308,7 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
      * @param mo    the model to check
      * @param start {@code true} iff the model corresponds to the origin model. Otherwise it is considered
      *              to be the resulting model
-     * @throws ReconfigurationPlanCheckerException
-     *          if at least one constraint is violated.
+     * @throws ReconfigurationPlanCheckerException if at least one constraint is violated.
      */
     private void checkModel(Model mo, boolean start) throws ReconfigurationPlanCheckerException {
         for (SatConstraintChecker c : checkers) {

@@ -90,12 +90,11 @@ public class Allocate extends Action implements VMEvent {
 
     @Override
     public String pretty() {
-        return new StringBuilder("allocate(")
-                .append("vm=").append(ev.getVM())
-                .append(", on=").append(node)
-                .append(", rc=").append(ev.getResourceId())
-                .append(", amount=").append(ev.getAmount())
-                .append(')').toString();
+        return "allocate(" + "vm=" + ev.getVM() +
+                ", on=" + node +
+                ", rc=" + ev.getResourceId() +
+                ", amount=" + ev.getAmount()
+                + ')';
     }
 
     @Override

@@ -13,15 +13,16 @@
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
   ~ You should have received a copy of the GNU General Public License
-  ~ along with this program.  If not, see <http://www.gnu.org/licenses />.
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>btrplace</groupId>
     <artifactId>solver</artifactId>
-    <version>0.34</version>
+    <version>0.35-SNAPSHOT</version>
     <description>A flexible VM placement algorithm for hosting platforms.</description>
     <packaging>pom</packaging>
     <url>http://btrp.inria.fr</url>
@@ -46,7 +47,7 @@
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>6.8.5</version>
+            <version>6.8.7</version>
             <type>jar</type>
             <scope>test</scope>
             <optional>false</optional>
@@ -54,12 +55,12 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.0.13</version>
+            <version>0.9.24</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.5</version>
+            <version>1.7.6</version>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -90,7 +91,7 @@
         <connection>scm:git:git://github.com/fhermeni/btrplace-solver.git</connection>
         <url>scm:git:git@github.com:fhermeni/btrplace-solver</url>
         <developerConnection>scm:git:git@github.com:fhermeni/btrplace-solver.git</developerConnection>
-        <tag>btrplace-solver-0.34-SNAPSHOT</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <build>

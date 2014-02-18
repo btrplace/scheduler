@@ -80,10 +80,7 @@ public class ShutdownNode extends Action implements NodeEvent {
 
     @Override
     public String pretty() {
-        StringBuilder buffer = new StringBuilder("shutdown(");
-        buffer.append("node=").append(node);
-        buffer.append(")");
-        return buffer.toString();
+        return "shutdown(" + "node=" + node + ")";
     }
 
     /**

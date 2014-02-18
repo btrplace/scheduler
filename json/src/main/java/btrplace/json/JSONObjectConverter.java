@@ -63,10 +63,9 @@ public interface JSONObjectConverter<E> {
      *
      * @param buf the string to parse
      * @return the resulting object
-     * @throws IOException            if an error occurred while reading the stream
      * @throws JSONConverterException if the stream cannot be parsed
      */
-    E fromJSON(String buf) throws IOException, JSONConverterException;
+    E fromJSON(String buf) throws JSONConverterException;
 
     /**
      * Un-serialize an object from a stream.

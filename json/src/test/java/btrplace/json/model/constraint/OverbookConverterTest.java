@@ -25,8 +25,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
 
 /**
  * Unit tests for {@link btrplace.json.model.constraint.OverbookConverter}.
@@ -40,9 +38,9 @@ public class OverbookConverterTest {
         Model mo = new DefaultModel();
         OverbookConverter conv = new OverbookConverter();
         conv.setModel(mo);
-        Overbook d = new Overbook(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), "foo", 1.4);
+        Overbook d = new Overbook(mo.newNode(), "foo", 1.4);
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
 
-
+        System.out.println(conv.toJSONString(d));
     }
 }

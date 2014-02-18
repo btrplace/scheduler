@@ -22,12 +22,13 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.RootChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
- * A constraint to avoid VM relocation. Any running VMs given in parameters
- * will be disallowed to be moved to another host. Other VMs are ignored.
+ * A constraint to avoid VM relocation to another host.
  * <p/>
  * The restriction provided by the constraint is only continuous. The running
  * VMs will stay on their current node for the whole duration of the reconfiguration
@@ -38,12 +39,26 @@ import java.util.Collections;
 public class Root extends SatConstraint {
 
     /**
+     * Instantiate constraints for a collection of VMs.
+     *
+     * @param vms the VMs to integrate
+     * @return the associated list of constraints
+     */
+    public static List<Root> newRoot(Collection<VM> vms) {
+        List<Root> l = new ArrayList<>(vms.size());
+        for (VM v : vms) {
+            l.add(new Root(v));
+        }
+        return l;
+    }
+
+    /**
      * Make a new constraint.
      *
-     * @param vms the VMs to disallow to move
+     * @param vm the VM to disallow to move
      */
-    public Root(Collection<VM> vms) {
-        super(vms, Collections.<Node>emptySet(), true);
+    public Root(VM vm) {
+        super(Collections.singleton(vm), Collections.<Node>emptySet(), true);
     }
 
     @Override
@@ -66,10 +81,7 @@ public class Root extends SatConstraint {
 
     @Override
     public String toString() {
-        return new StringBuilder("root(")
-                .append("vms=").append(getInvolvedVMs())
-                .append(", continuous")
-                .append(")").toString();
+        return "root(" + "vm=" + getInvolvedVMs().iterator().next() + ", continuous" + ")";
     }
 
     @Override

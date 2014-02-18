@@ -13,16 +13,17 @@
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
   ~ You should have received a copy of the GNU General Public License
-  ~ along with this program.  If not, see <http://www.gnu.org/licenses />.
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>btrplace</groupId>
         <artifactId>solver</artifactId>
-        <version>0.34</version>
+        <version>0.35-SNAPSHOT</version>
     </parent>
     <artifactId>solver-choco</artifactId>
     <name>solver-choco</name>
@@ -43,19 +44,8 @@
         </dependency>
         <dependency>
             <groupId>choco</groupId>
-            <artifactId>choco-kernel</artifactId>
-            <version>2.1.5</version>
-            <type>jar</type>
-            <scope>compile</scope>
-            <optional>false</optional>
-        </dependency>
-        <dependency>
-            <groupId>choco</groupId>
-            <artifactId>choco-cp</artifactId>
-            <version>2.1.5</version>
-            <type>jar</type>
-            <scope>compile</scope>
-            <optional>false</optional>
+            <artifactId>choco-solver</artifactId>
+            <version>3.1.1</version>
         </dependency>
     </dependencies>
 </project>

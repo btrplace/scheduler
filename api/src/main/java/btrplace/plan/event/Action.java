@@ -39,11 +39,28 @@ public abstract class Action implements Event {
         /**
          * The event can be considered before executing the action.
          */
-        pre,
+        PRE("pre"),
         /**
          * The event can be considered after the action execution.
          */
-        post
+        POST("post");
+
+        private String name;
+
+        /**
+         * new hook
+         *
+         * @param v the pretty name
+         */
+        Hook(String v) {
+            this.name = v;
+        }
+
+
+        @Override
+        public String toString() {
+            return this.name;
+        }
     }
 
     private int start;
@@ -66,15 +83,16 @@ public abstract class Action implements Event {
 
     /**
      * Apply the action on a model.
-     * In practice, the events attached to {@link Hook#pre} are executed in first,
+     * In practice, the events attached to {@link Hook#PRE} are executed in first,
      * then {@link #applyAction(btrplace.model.Model)} is called. Finally,
-     * the events attached to {@link Hook#post} are executed.
+     * the events attached to {@link Hook#POST} are executed.
      *
      * @param i the instance to alter with the action
      * @return {@code true} if the action and all the events were applied successfully
      */
+    @Override
     public boolean apply(Model i) {
-        return applyEvents(Hook.pre, i) && applyAction(i) && applyEvents(Hook.post, i);
+        return applyEvents(Hook.PRE, i) && applyAction(i) && applyEvents(Hook.POST, i);
     }
 
     /**

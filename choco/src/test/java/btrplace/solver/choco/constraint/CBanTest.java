@@ -59,20 +59,21 @@ public class CBanTest {
                 sNodes.add(nodes[i]);
             }
         }
-        Ban b = new Ban(sVMs, sNodes);
+        Ban b = new Ban(vms[0], sNodes);
         Collection<SatConstraint> s = new HashSet<>();
         s.add(b);
-        s.add(new Running(m.getAllVMs()));
-        s.add(new Online(m.getAllNodes()));
+        s.addAll(Running.newRunnings(m.getAllVMs()));
+        s.addAll(Online.newOnlines(m.getAllNodes()));
 
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
         cra.setTimeLimit(-1);
         ReconfigurationPlan p = cra.solve(mo, s);
         Assert.assertNotNull(p);
+        System.out.println(p.getOrigin().getMapping());
+        System.out.println(b);
         System.out.println(p);
-
-        Assert.assertEquals(3, p.getSize());
+        System.out.println(p.getResult().getMapping());
+        Assert.assertEquals(1, p.getSize());
     }
 
     /**
@@ -97,18 +98,15 @@ public class CBanTest {
                 .run(n3, vm4)
                 .sleep(n4, vm5).get();
 
-        Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2));
         Set<Node> ns = new HashSet<>(Arrays.asList(n3, n4));
 
-        CBan c = new CBan(new Ban(vms, ns));
+        CBan c = new CBan(new Ban(vm1, ns));
         org.testng.Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
         ns.add(mo.newNode());
         org.testng.Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
-        vms.add(mo.newVM());
-        org.testng.Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
         ns.add(n1);
         Set<VM> bad = c.getMisPlacedVMs(mo);
-        org.testng.Assert.assertEquals(2, bad.size());
-        org.testng.Assert.assertTrue(bad.contains(vm1) && bad.contains(vm2));
+        org.testng.Assert.assertEquals(1, bad.size());
+        org.testng.Assert.assertTrue(bad.contains(vm1));
     }
 }

@@ -20,10 +20,11 @@ package btrplace.solver.choco;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.model.VM;
-import choco.cp.solver.CPSolver;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Solver;
+import solver.variables.IntVar;
+import solver.variables.VF;
 
 /**
  * Unit tests for {@link Slice}.
@@ -39,11 +40,11 @@ public class SliceTest {
     public void testInstantiation() {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
-        CPSolver s = new CPSolver();
-        IntDomainVar st = s.createIntegerConstant("start", 1);
-        IntDomainVar ed = s.createIntegerConstant("end", 3);
-        IntDomainVar duration = s.createIntegerConstant("duration", 2);
-        IntDomainVar hoster = s.createIntegerConstant("hoster", 4);
+        Solver s = new Solver();
+        IntVar st = VF.fixed("start", 1, s);
+        IntVar ed = VF.fixed("end", 3, s);
+        IntVar duration = VF.fixed("duration", 2, s);
+        IntVar hoster = VF.fixed("hoster", 4, s);
         Slice sl = new Slice(vm1, st, ed, duration, hoster);
         Assert.assertEquals(vm1, sl.getSubject());
         Assert.assertEquals(st, sl.getStart());
@@ -51,7 +52,7 @@ public class SliceTest {
         Assert.assertEquals(hoster, sl.getHoster());
         Assert.assertEquals(duration, sl.getDuration());
         Assert.assertFalse(sl.toString().contains("null"));
-        duration = s.createBoundIntVar("duration", 3, 5);
+        duration = VF.bounded("duration", 3, 5, s);
         sl = new Slice(vm1, st, ed, duration, hoster);
         Assert.assertFalse(sl.toString().contains("null"));
     }

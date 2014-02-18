@@ -27,12 +27,12 @@ public class SolutionStatistics {
     /**
      * The number of opened nodes at this point.
      */
-    private int nbNodes;
+    private long nbNodes;
 
     /**
      * The number of backtracks at this point.
      */
-    private int nbBacktracks;
+    private long nbBacktracks;
 
     /**
      * The time since the beginning of the solving process.
@@ -53,7 +53,7 @@ public class SolutionStatistics {
      * @param nbB the number of backtracks
      * @param t   the time in milliseconds
      */
-    public SolutionStatistics(int nbN, int nbB, long t) {
+    public SolutionStatistics(long nbN, long nbB, long t) {
         this(nbN, nbB, t, -1);
         hasObjective = false;
     }
@@ -66,7 +66,7 @@ public class SolutionStatistics {
      * @param t   the time in milliseconds
      * @param o   the value of the optimization variable
      */
-    public SolutionStatistics(int nbN, int nbB, long t, int o) {
+    public SolutionStatistics(long nbN, long nbB, long t, int o) {
         nbNodes = nbN;
         nbBacktracks = nbB;
         time = t;
@@ -78,7 +78,7 @@ public class SolutionStatistics {
      *
      * @return a positive number
      */
-    public int getNbNodes() {
+    public long getNbNodes() {
         return nbNodes;
     }
 
@@ -87,7 +87,7 @@ public class SolutionStatistics {
      *
      * @return a positive number
      */
-    public int getNbBacktracks() {
+    public long getNbBacktracks() {
         return nbBacktracks;
     }
 

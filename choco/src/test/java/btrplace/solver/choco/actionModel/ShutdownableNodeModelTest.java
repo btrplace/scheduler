@@ -27,11 +27,12 @@ import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import choco.cp.solver.CPSolver;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Cause;
+import solver.Solver;
+import solver.constraints.IntConstraintFactory;
+import solver.exception.ContradictionException;
 
 import java.util.Collections;
 
@@ -76,19 +77,19 @@ public class ShutdownableNodeModelTest {
                 .labelVariables()
                 .build();
         ShutdownableNodeModel ma = (ShutdownableNodeModel) rp.getNodeAction(n1);
-        ma.getState().setVal(1);   //stay online
+        ma.getState().instantiateTo(1, Cause.Null);   //stay online
 
         //To make the result plan 10 seconds long
         BootableNodeModel ma2 = (BootableNodeModel) rp.getNodeAction(n2);
-        ma2.getState().setVal(1); //go online
+        ma2.getState().instantiateTo(1, Cause.Null); //go online
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         System.out.println(p);
-        Assert.assertEquals(ma.getDuration().getVal(), 0);
-        Assert.assertEquals(ma.getStart().getVal(), 0);
-        Assert.assertEquals(ma.getEnd().getVal(), 0);
-        Assert.assertEquals(ma.getHostingStart().getVal(), 0);
-        Assert.assertEquals(ma.getHostingEnd().getVal(), 10);
+        Assert.assertEquals(ma.getDuration().getValue(), 0);
+        Assert.assertEquals(ma.getStart().getValue(), 0);
+        Assert.assertEquals(ma.getEnd().getValue(), 0);
+        Assert.assertEquals(ma.getHostingStart().getValue(), 0);
+        Assert.assertEquals(ma.getHostingEnd().getValue(), 10);
 
 
         Assert.assertEquals(p.getSize(), 1);
@@ -111,15 +112,15 @@ public class ShutdownableNodeModelTest {
                 .labelVariables()
                 .build();
         ShutdownableNodeModel ma = (ShutdownableNodeModel) rp.getNodeAction(n1);
-        ma.getState().setVal(0);
+        ma.getState().instantiateTo(0, Cause.Null);
 
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
-        Assert.assertEquals(ma.getDuration().getVal(), 5);
-        Assert.assertEquals(ma.getStart().getVal(), 0);
-        Assert.assertEquals(ma.getEnd().getVal(), 5);
-        Assert.assertEquals(ma.getHostingStart().getVal(), 0);
-        Assert.assertEquals(ma.getHostingEnd().getVal(), 0);
+        Assert.assertEquals(ma.getDuration().getValue(), 5);
+        Assert.assertEquals(ma.getStart().getValue(), 0);
+        Assert.assertEquals(ma.getEnd().getValue(), 5);
+        Assert.assertEquals(ma.getHostingStart().getValue(), 0);
+        Assert.assertEquals(ma.getHostingEnd().getValue(), 0);
 
         Assert.assertEquals(p.getSize(), 1);
         Model res = p.getResult();
@@ -144,16 +145,16 @@ public class ShutdownableNodeModelTest {
                 .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .build();
         ShutdownableNodeModel ma = (ShutdownableNodeModel) rp.getNodeAction(n1);
-        ma.getState().setVal(0);
+        ma.getState().instantiateTo(0, Cause.Null);
 
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
-        Assert.assertEquals(ma.getState().getVal(), 0);
-        Assert.assertEquals(ma.getDuration().getVal(), 5);
-        Assert.assertEquals(ma.getStart().getVal(), 2);
-        Assert.assertEquals(ma.getEnd().getVal(), 7);
-        Assert.assertEquals(ma.getHostingStart().getVal(), 0);
-        Assert.assertEquals(ma.getHostingEnd().getVal(), 2);
+        Assert.assertEquals(ma.getState().getValue(), 0);
+        Assert.assertEquals(ma.getDuration().getValue(), 5);
+        Assert.assertEquals(ma.getStart().getValue(), 2);
+        Assert.assertEquals(ma.getEnd().getValue(), 7);
+        Assert.assertEquals(ma.getHostingStart().getValue(), 0);
+        Assert.assertEquals(ma.getHostingEnd().getValue(), 2);
 
 
         Model res = p.getResult();
@@ -185,17 +186,17 @@ public class ShutdownableNodeModelTest {
                 .build();
         ShutdownableNodeModel ma1 = (ShutdownableNodeModel) rp.getNodeAction(n1);
         ShutdownableNodeModel ma2 = (ShutdownableNodeModel) rp.getNodeAction(n2);
-        ma1.getState().setVal(0);
-        ma2.getState().setVal(0);
+        ma1.getState().instantiateTo(0, Cause.Null);
+        ma2.getState().instantiateTo(0, Cause.Null);
 
-        CPSolver solver = rp.getSolver();
-        solver.post(solver.eq(ma2.getStart(), ma1.getEnd()));
+        Solver solver = rp.getSolver();
+        solver.post(IntConstraintFactory.arithm(ma2.getStart(), "=", ma1.getEnd()));
 
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         System.out.println(p);
-        Assert.assertEquals(ma1.getStart().getVal(), 0);
-        Assert.assertEquals(ma2.getStart().getVal(), ma1.getEnd().getVal());
+        Assert.assertEquals(ma1.getStart().getValue(), 0);
+        Assert.assertEquals(ma2.getStart().getValue(), ma1.getEnd().getValue());
         Model res = p.getResult();
         Assert.assertEquals(res.getMapping().getOfflineNodes().size(), 2);
     }
@@ -218,9 +219,9 @@ public class ShutdownableNodeModelTest {
                 .labelVariables()
                 .build();
         ShutdownableNodeModel ma1 = (ShutdownableNodeModel) rp.getNodeAction(n1);
-        ma1.getState().setVal(0);
-        ma1.getHostingEnd().setVal(0);
-        rp.getEnd().setSup(10);
+        ma1.getState().instantiateTo(0, Cause.Null);
+        ma1.getHostingEnd().instantiateTo(0, Cause.Null);
+        rp.getEnd().updateUpperBound(10, Cause.Null);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNull(p);
         System.out.println(p);
@@ -244,12 +245,12 @@ public class ShutdownableNodeModelTest {
                 .build();
         ShutdownableNodeModel ma1 = (ShutdownableNodeModel) rp.getNodeAction(n1);
         BootableNodeModel ma2 = (BootableNodeModel) rp.getNodeAction(n2);
-        ma1.getState().setVal(0);
-        ma2.getState().setVal(1);
-        CPSolver solver = rp.getSolver();
-        solver.post(solver.eq(ma1.getEnd(), ma2.getStart()));
+        ma1.getState().instantiateTo(0, Cause.Null);
+        ma2.getState().instantiateTo(1, Cause.Null);
+        Solver solver = rp.getSolver();
+        solver.post(IntConstraintFactory.arithm(ma1.getEnd(), "=", ma2.getStart()));
         ReconfigurationPlan p = rp.solve(0, false);
-        ChocoLogging.flushLogs();
+        //ChocoLogging.flushLogs();
         Assert.assertNotNull(p);
         System.out.println(p);
         System.out.flush();
@@ -280,33 +281,33 @@ public class ShutdownableNodeModelTest {
                 .labelVariables()
                 .build();
         ShutdownableNodeModel shd = (ShutdownableNodeModel) rp.getNodeAction(n1);
-        shd.getState().setVal(1); //Stay online
+        shd.getState().instantiateTo(1, Cause.Null); //Stay online
 
         ShutdownableNodeModel shd2 = (ShutdownableNodeModel) rp.getNodeAction(n2);
-        shd2.getState().setVal(0);  //Go offline
-        shd2.getStart().setVal(1); //Start going offline at 1
+        shd2.getState().instantiateTo(0, Cause.Null);  //Go offline
+        shd2.getStart().instantiateTo(1, Cause.Null); //Start going offline at 1
 
         BootableNodeModel bn = (BootableNodeModel) rp.getNodeAction(n3);
-        bn.getState().setVal(1); //Go online
-        bn.getStart().setVal(6); //Start going online at 6
+        bn.getState().instantiateTo(1, Cause.Null); //Go online
+        bn.getStart().instantiateTo(6, Cause.Null); //Start going online at 6
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         System.out.println(p);
-        Assert.assertEquals(shd.getDuration().getVal(), 0);
-        Assert.assertEquals(shd.getStart().getVal(), 0);
-        Assert.assertEquals(shd.getEnd().getVal(), 0);
-        Assert.assertEquals(shd.getHostingStart().getVal(), 0);
-        Assert.assertEquals(shd.getHostingEnd().getVal(), 16);
-        Assert.assertEquals(shd2.getDuration().getVal(), 5);
-        Assert.assertEquals(shd2.getStart().getVal(), 1);
-        Assert.assertEquals(shd2.getEnd().getVal(), 6);
-        Assert.assertEquals(shd2.getHostingStart().getVal(), 0);
-        Assert.assertEquals(shd2.getHostingEnd().getVal(), 1);
-        Assert.assertEquals(bn.getStart().getVal(), 6);
-        Assert.assertEquals(bn.getDuration().getVal(), 10);
-        Assert.assertEquals(bn.getEnd().getVal(), 16);
-        Assert.assertEquals(bn.getHostingStart().getVal(), 16);
-        Assert.assertEquals(bn.getHostingEnd().getVal(), 16);
+        Assert.assertEquals(shd.getDuration().getValue(), 0);
+        Assert.assertEquals(shd.getStart().getValue(), 0);
+        Assert.assertEquals(shd.getEnd().getValue(), 0);
+        Assert.assertEquals(shd.getHostingStart().getValue(), 0);
+        Assert.assertEquals(shd.getHostingEnd().getValue(), 16);
+        Assert.assertEquals(shd2.getDuration().getValue(), 5);
+        Assert.assertEquals(shd2.getStart().getValue(), 1);
+        Assert.assertEquals(shd2.getEnd().getValue(), 6);
+        Assert.assertEquals(shd2.getHostingStart().getValue(), 0);
+        Assert.assertEquals(shd2.getHostingEnd().getValue(), 1);
+        Assert.assertEquals(bn.getStart().getValue(), 6);
+        Assert.assertEquals(bn.getDuration().getValue(), 10);
+        Assert.assertEquals(bn.getEnd().getValue(), 16);
+        Assert.assertEquals(bn.getHostingStart().getValue(), 16);
+        Assert.assertEquals(bn.getHostingEnd().getValue(), 16);
         Assert.assertEquals(p.getSize(), 2);
         Model res = p.getResult();
         Assert.assertTrue(res.getMapping().isOnline(n1));
@@ -334,19 +335,19 @@ public class ShutdownableNodeModelTest {
                 .build();
 
         ShutdownableNodeModel sn1 = (ShutdownableNodeModel) rp.getNodeAction(n1);
-        sn1.getState().setVal(0);
+        sn1.getState().instantiateTo(0, Cause.Null);
         BootableNodeModel bn4 = (BootableNodeModel) rp.getNodeAction(n4);
-        bn4.getState().setVal(0);
+        bn4.getState().instantiateTo(0, Cause.Null);
 
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         System.out.println(p);
-        Assert.assertEquals(rp.getStart().getVal(), 0);
-        Assert.assertEquals(bn4.getStart().getVal(), 0);
-        Assert.assertEquals(bn4.getDuration().getVal(), 0);
-        Assert.assertEquals(bn4.getEnd().getVal(), 0);
-        Assert.assertEquals(bn4.getHostingStart().getVal(), 0);
-        Assert.assertEquals(bn4.getHostingEnd().getVal(), 0);
+        Assert.assertEquals(rp.getStart().getValue(), 0);
+        Assert.assertEquals(bn4.getStart().getValue(), 0);
+        Assert.assertEquals(bn4.getDuration().getValue(), 0);
+        Assert.assertEquals(bn4.getEnd().getValue(), 0);
+        Assert.assertEquals(bn4.getHostingStart().getValue(), 0);
+        Assert.assertEquals(bn4.getHostingEnd().getValue(), 0);
         Assert.assertEquals(p.getSize(), 1);
         Model res = p.getResult();
         Assert.assertTrue(res.getMapping().getOfflineNodes().contains(n1));
@@ -372,30 +373,30 @@ public class ShutdownableNodeModelTest {
                 .build();
 
         ShutdownableNodeModel sn1 = (ShutdownableNodeModel) rp.getNodeAction(n1);
-        sn1.getState().setVal(0);
-        sn1.getStart().setVal(2);
+        sn1.getState().instantiateTo(0, Cause.Null);
+        sn1.getStart().instantiateTo(2, Cause.Null);
         ShutdownableNodeModel sn4 = (ShutdownableNodeModel) rp.getNodeAction(n4);
-        sn4.getState().setVal(1);
+        sn4.getState().instantiateTo(1, Cause.Null);
 
         ReconfigurationPlan p = rp.solve(0, false);
 
         Assert.assertNotNull(p);
         System.out.println(p);
-        Assert.assertEquals(rp.getStart().getVal(), 0);
-        Assert.assertEquals(rp.getEnd().getVal(), 7);
+        Assert.assertEquals(rp.getStart().getValue(), 0);
+        Assert.assertEquals(rp.getEnd().getValue(), 7);
 
-        Assert.assertEquals(sn1.getStart().getVal(), 2);
-        Assert.assertEquals(sn1.getDuration().getVal(), 5);
-        Assert.assertEquals(sn1.getEnd().getVal(), 7);
-        Assert.assertEquals(sn1.getHostingStart().getVal(), 0);
-        Assert.assertEquals(sn1.getHostingEnd().getVal(), 2);
+        Assert.assertEquals(sn1.getStart().getValue(), 2);
+        Assert.assertEquals(sn1.getDuration().getValue(), 5);
+        Assert.assertEquals(sn1.getEnd().getValue(), 7);
+        Assert.assertEquals(sn1.getHostingStart().getValue(), 0);
+        Assert.assertEquals(sn1.getHostingEnd().getValue(), 2);
 
-        Assert.assertEquals(rp.getStart().getVal(), 0);
-        Assert.assertEquals(sn4.getStart().getVal(), 0);
-        Assert.assertEquals(sn4.getDuration().getVal(), 0);
-        Assert.assertEquals(sn4.getEnd().getVal(), 0);
-        Assert.assertEquals(sn4.getHostingStart().getVal(), 0);
-        Assert.assertEquals(sn4.getHostingEnd().getVal(), 7);
+        Assert.assertEquals(rp.getStart().getValue(), 0);
+        Assert.assertEquals(sn4.getStart().getValue(), 0);
+        Assert.assertEquals(sn4.getDuration().getValue(), 0);
+        Assert.assertEquals(sn4.getEnd().getValue(), 0);
+        Assert.assertEquals(sn4.getHostingStart().getValue(), 0);
+        Assert.assertEquals(sn4.getHostingEnd().getValue(), 7);
         Assert.assertEquals(p.getSize(), 1);
         Model res = p.getResult();
         Assert.assertTrue(res.getMapping().isOnline(n4));

@@ -17,7 +17,10 @@
 
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
-import btrplace.model.*;
+import btrplace.model.Instance;
+import btrplace.model.Node;
+import btrplace.model.SplittableElementSet;
+import btrplace.model.VM;
 import btrplace.model.constraint.Fence;
 import gnu.trove.map.hash.TIntIntHashMap;
 
@@ -42,21 +45,14 @@ public class FenceSplitter implements ConstraintSplitter<Fence> {
     @Override
     public boolean split(Fence cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
         final SplittableElementSet<Node> nodeIndex = SplittableElementSet.newNodeIndex(cstr.getInvolvedNodes(), nodePosition);
-        return SplittableElementSet.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
-                forEachPartition(new IterateProcedure<VM>() {
-                    @Override
-                    public boolean extract(SplittableElementSet<VM> index, int idx, int from, int to) {
-                        if (to != from) {
-                            Set<VM> vms = new ElementSubSet<>(index, idx, from, to);
-                            Set<Node> ns = nodeIndex.getSubSet(idx);
-                            if (!ns.isEmpty()) {
-                                partitions.get(idx).getSatConstraints().add(new Fence(vms, ns));
-                            } else {
-                                return false;
-                            }
-                        }
-                        return true;
-                    }
-                });
+
+        VM v = cstr.getInvolvedVMs().iterator().next();
+        int p = vmsPosition.get(v.id());
+
+        Set<Node> ns = nodeIndex.getSubSet(p);
+        if (!ns.isEmpty()) {
+            return partitions.get(p).getSatConstraints().add(new Fence(v, ns));
+        }
+        return true;
     }
 }

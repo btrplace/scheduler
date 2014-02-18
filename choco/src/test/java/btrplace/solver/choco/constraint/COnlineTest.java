@@ -31,10 +31,7 @@ import btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Unit tests for {@link COnline}.
@@ -47,9 +44,7 @@ public class COnlineTest {
     public void testInstantiation() {
         Model mo = new DefaultModel();
         Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-        Set<Node> s = new HashSet<>(Arrays.asList(n1, n2));
-        Online on = new Online(s);
+        Online on = new Online(n1);
         COnline con = new COnline(on);
         Assert.assertEquals(con.toString(), on.toString());
     }
@@ -60,7 +55,7 @@ public class COnlineTest {
         Node n1 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).off(n1).get();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Online(Collections.singleton(n1))));
+        ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Online(n1)));
         Assert.assertNotNull(plan);
         Model res = plan.getResult();
         Assert.assertTrue(res.getMapping().isOnline(n1));

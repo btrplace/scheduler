@@ -25,10 +25,13 @@ import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Offline;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.actionModel.ActionModel;
-import choco.kernel.solver.ContradictionException;
+import btrplace.solver.choco.actionModel.VMActionModel;
+import solver.Cause;
+import solver.constraints.IntConstraintFactory;
+import solver.exception.ContradictionException;
 
-import java.util.HashSet;
 import java.util.Set;
 
 
@@ -52,13 +55,19 @@ public class COffline implements ChocoConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        for (Node nId : cstr.getInvolvedNodes()) {
-            ActionModel m = rp.getNodeAction(nId);
-            try {
-                m.getState().setVal(0);
-            } catch (ContradictionException e) {
-                rp.getLogger().error("Unable to force node '{}' at being offline: {}", nId, e.getMessage());
-                return false;
+        Node nId = cstr.getInvolvedNodes().iterator().next();
+        int id = rp.getNode(nId);
+        ActionModel m = rp.getNodeAction(nId);
+        try {
+            m.getState().instantiateTo(0, Cause.Null);
+        } catch (ContradictionException ex) {
+            rp.getLogger().error("Unable to force node '{}' at being offline: {}", nId);
+            return false;
+        }
+        for (VMActionModel am : rp.getVMActions()) {
+            Slice s = am.getDSlice();
+            if (s != null) {
+                rp.getSolver().post(IntConstraintFactory.arithm(s.getHoster(), "!=", id));
             }
         }
         return true;
@@ -68,9 +77,7 @@ public class COffline implements ChocoConstraint {
     @Override
     public Set<VM> getMisPlacedVMs(Model m) {
         Mapping mapping = m.getMapping();
-        Set<VM> bad = new HashSet<>();
-        bad.addAll(mapping.getRunningVMs(cstr.getInvolvedNodes()));
-        return bad;
+        return mapping.getRunningVMs(cstr.getInvolvedNodes().iterator().next());
     }
 
     @Override
@@ -88,8 +95,8 @@ public class COffline implements ChocoConstraint {
         }
 
         @Override
-        public COffline build(Constraint cstr) {
-            return new COffline((Offline) cstr);
+        public COffline build(Constraint c) {
+            return new COffline((Offline) c);
         }
     }
 }

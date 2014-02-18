@@ -24,7 +24,6 @@ import btrplace.model.VM;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.Preserve;
 import btrplace.model.constraint.SatConstraint;
-import btrplace.solver.choco.runner.staticPartitioning.Instances;
 import gnu.trove.map.hash.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -47,7 +46,8 @@ public class PreserveSplitterTest {
 
         List<Instance> instances = new ArrayList<>();
         Model m0 = new DefaultModel();
-        m0.getMapping().addReadyVM(m0.newVM(1));
+        VM v = m0.newVM(1);
+        m0.getMapping().addReadyVM(v);
         m0.getMapping().addRunningVM(m0.newVM(2), m0.newNode(1));
         Model m1 = new DefaultModel();
         m1.getMapping().addReadyVM(m1.newVM(3));
@@ -64,16 +64,9 @@ public class PreserveSplitterTest {
 
 
         //Only VMs in m0
-        Preserve single = new Preserve(m0.getMapping().getAllVMs(), "foo", 3);
+        Preserve single = new Preserve(v, "foo", 3);
         Assert.assertTrue(splitter.split(single, null, instances, index, new TIntIntHashMap()));
         Assert.assertTrue(instances.get(0).getSatConstraints().contains(single));
         Assert.assertFalse(instances.get(1).getSatConstraints().contains(single));
-
-        //All the VMs, test the split
-        Preserve among = new Preserve(all, "foo", 2);
-
-        Assert.assertTrue(splitter.split(among, null, instances, index, new TIntIntHashMap()));
-        Assert.assertTrue(instances.get(0).getSatConstraints().contains(new Preserve(m0.getMapping().getAllVMs(), "foo", 2)));
-        Assert.assertTrue(instances.get(1).getSatConstraints().contains(new Preserve(m1.getMapping().getAllVMs(), "foo", 2)));
     }
 }

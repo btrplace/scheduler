@@ -38,8 +38,11 @@ public class CReadyTest {
         VM vm3 = mo.newVM();
         Node n1 = mo.newNode();
         Mapping m = new MappingFiller(mo.getMapping()).ready(vm1).on(n1).run(n1, vm2, vm3).get();
-        CReady k = new CReady(new Ready(m.getAllVMs()));
-        Assert.assertEquals(2, k.getMisPlacedVMs(mo).size());
-        Assert.assertFalse(k.getMisPlacedVMs(mo).contains(vm1));
+        CReady k = new CReady(new Ready(vm1));
+        Assert.assertEquals(0, k.getMisPlacedVMs(mo).size());
+
+        k = new CReady(new Ready(vm2));
+        Assert.assertEquals(1, k.getMisPlacedVMs(mo).size());
+        Assert.assertTrue(k.getMisPlacedVMs(mo).contains(vm2));
     }
 }

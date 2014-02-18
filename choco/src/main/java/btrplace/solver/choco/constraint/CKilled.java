@@ -24,7 +24,7 @@ import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Killed;
 import btrplace.solver.choco.ReconfigurationProblem;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 
 
@@ -55,14 +55,12 @@ public class CKilled implements ChocoConstraint {
 
     @Override
     public Set<VM> getMisPlacedVMs(Model m) {
-        Set<VM> bad = new HashSet<>();
         Mapping map = m.getMapping();
-        for (VM vm : cstr.getInvolvedVMs()) {
-            if (map.contains(vm)) {
-                bad.add(vm);
-            }
+        VM v = cstr.getInvolvedVMs().iterator().next();
+        if (map.contains(v)) {
+            return Collections.singleton(v);
         }
-        return bad;
+        return Collections.emptySet();
     }
 
     @Override
@@ -80,8 +78,8 @@ public class CKilled implements ChocoConstraint {
         }
 
         @Override
-        public CKilled build(Constraint cstr) {
-            return new CKilled((Killed) cstr);
+        public CKilled build(Constraint c) {
+            return new CKilled((Killed) c);
         }
     }
 }

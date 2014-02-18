@@ -26,9 +26,11 @@ import btrplace.model.constraint.Gather;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.actionModel.VMActionModel;
-import choco.cp.solver.CPSolver;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.Cause;
+import solver.Solver;
+import solver.constraints.IntConstraintFactory;
+import solver.exception.ContradictionException;
+import solver.variables.IntVar;
 
 import java.util.*;
 
@@ -87,9 +89,9 @@ public class CGather implements ChocoConstraint {
     private boolean placeDSlices(ReconfigurationProblem rp, List<Slice> dSlices, int nIdx) {
         for (Slice s : dSlices) {
             try {
-                s.getHoster().setVal(nIdx);
+                s.getHoster().instantiateTo(nIdx, Cause.Null);
             } catch (ContradictionException ex) {
-                rp.getLogger().error("Unable to maintain the co-location of all the future-running VMs in '{}': ", cstr.getInvolvedVMs(), ex.getMessage());
+                rp.getLogger().error("Unable to maintain the co-location of all the future-running VMs in '{}': ", cstr.getInvolvedVMs());
                 return false;
             }
         }
@@ -97,28 +99,33 @@ public class CGather implements ChocoConstraint {
     }
 
     private boolean forceDiscreteCollocation(ReconfigurationProblem rp, List<Slice> dSlices) {
-        CPSolver s = rp.getSolver();
+        Solver s = rp.getSolver();
         for (int i = 0; i < dSlices.size(); i++) {
             for (int j = 0; j < i; j++) {
                 Slice s1 = dSlices.get(i);
                 Slice s2 = dSlices.get(j);
-                IntDomainVar i1 = s1.getHoster();
-                IntDomainVar i2 = s2.getHoster();
-                if (i1.isInstantiated() && i2.isInstantiated() && i1.getVal() != i2.getVal()) {
+                IntVar i1 = s1.getHoster();
+                IntVar i2 = s2.getHoster();
+                if (i1.instantiated() && i2.instantiated() && i1.getValue() != i2.getValue()) {
                     rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with VM '" + s2.getSubject() + "'");
                     return false;
                 } else {
-                    try {
-                        if (i1.isInstantiated()) {
-                            i2.setVal(i1.getVal());
-                        } else if (i2.isInstantiated()) {
-                            i1.setVal(i2.getVal());
-                        } else {
-                            s.post(s.eq(i1, i2));
+                    if (i1.instantiated()) {
+                        try {
+                            i2.instantiateTo(i1.getValue(), Cause.Null);
+                        } catch (ContradictionException ex) {
+                            rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with VM '" + s2.getSubject() + "'");
+                            return false;
                         }
-                    } catch (ContradictionException ex) {
-                        rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with VM '" + s2.getSubject() + "'");
-                        return false;
+                    } else if (i2.instantiated()) {
+                        try {
+                            i1.instantiateTo(i2.getValue(), Cause.Null);
+                        } catch (ContradictionException ex) {
+                            rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with VM '" + s2.getSubject() + "'");
+                            return false;
+                        }
+                    } else {
+                        s.post(IntConstraintFactory.arithm(i1, "=", i2));
                     }
                 }
             }
@@ -150,8 +157,8 @@ public class CGather implements ChocoConstraint {
         }
 
         @Override
-        public CGather build(Constraint cstr) {
-            return new CGather((Gather) cstr);
+        public CGather build(Constraint c) {
+            return new CGather((Gather) c);
         }
     }
 }

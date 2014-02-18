@@ -26,9 +26,9 @@ import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.SplitAmong;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.matching.AllDifferent;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.Solver;
+import solver.constraints.IntConstraintFactory;
+import solver.variables.IntVar;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -63,9 +63,9 @@ public class CSplitAmong implements ChocoConstraint {
 
         Collection<Collection<VM>> vGrps = cstr.getGroupsOfVMs();
         Collection<Collection<Node>> pGrps = cstr.getGroupsOfNodes();
-        CPSolver s = rp.getSolver();
+        Solver s = rp.getSolver();
 
-        IntDomainVar[] grpVars = new IntDomainVar[vGrps.size()];
+        IntVar[] grpVars = new IntVar[vGrps.size()];
         //VM is assigned on a node <-> group variable associated to the VM
         //is assigned to the group of nodes it belong too.
         int i = 0;
@@ -84,7 +84,7 @@ public class CSplitAmong implements ChocoConstraint {
         }
 
         //forces all the vGroups to use different group of nodes
-        s.post(new AllDifferent(grpVars, s.getEnvironment()));
+        s.post(IntConstraintFactory.alldifferent(grpVars, "DEFAULT"));
         return true;
     }
 
@@ -154,8 +154,8 @@ public class CSplitAmong implements ChocoConstraint {
         }
 
         @Override
-        public CSplitAmong build(Constraint cstr) {
-            return new CSplitAmong((SplitAmong) cstr);
+        public CSplitAmong build(Constraint c) {
+            return new CSplitAmong((SplitAmong) c);
         }
     }
 }

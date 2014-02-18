@@ -43,14 +43,14 @@ public class OfflineConverter extends ConstraintConverter<Offline> {
     @Override
     public Offline fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Offline(requiredNodes(o, "nodes"));
+        return new Offline(requiredNode(o, "node"));
     }
 
     @Override
     public JSONObject toJSON(Offline o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("nodes", nodesToJSON(o.getInvolvedNodes()));
+        c.put("node", toJSON(o.getInvolvedNodes().iterator().next()));
         return c;
     }
 }

@@ -1,6 +1,13 @@
 Release notes
 ======================
 
+version 0.35 - 18 Feb 2014
+----------------------
+- Move to choco 3. The scalability will be affected temporary but choco 2 is no longer maintained
+- The variable labelling is now inferred from the verbosity level (#27)
+- Simplify the signature of constraints to reduce the signature to the minimum needed (#29)
+- SingleRunningCapacity and SingleResourceCapacity are now merged in RunningCapacity and ResourceCapacity respectively. (#24)
+
 version 0.34 - 26 Nov 2013
 ----------------------
 - Update dependencies
@@ -43,14 +50,14 @@ version 0.30 - 04 Jun 2013
 version 0.29 - 07 May 2013
 ----------------------
 - Multiple Bug fixes
-- Fix regressions in the placement subproblems that appeared in 0.28
+- Fix regressions in the placement subProblems that appeared in 0.28
 - Complete the forgeVM model. It is now required to declare
   a template for the VMs to forge using a "template" attribute
   in the model
 - Fix bugs reported in #5, #10, #13, #14
 - Full support VM relocation through a re-instantiation. BtrPlace can
   now infer if live-migration is preferable over re-instantiation.
-- Refactor completely the "satisfaction" process. Now everyting takes place
+- Refactor completely the "satisfaction" process. Now everything takes place
   inside a SatConstraintChecker.
 - Move most of the interface and abstract classes to the package of their
   implementations
@@ -107,7 +114,7 @@ version 0.20 - 25 Feb 2013
 versions prior to 0.20
 ----------------------
 
-The following changelogs were dedicated to each of the previous
+The following logs were dedicated to each of the previous
 repositories.
 
 ### solver-api ###
@@ -123,7 +130,7 @@ repositories.
 - documentation and tests
 
 ####  version 0.9 - 30 jan. 2012 ####
-- ModelView to customize a model with new domain-specific informations.
+- ModelView to customize a model with new domain-specific information.
   ShareableResource becomes possible specialization of ModelView
 - documentation fix
 

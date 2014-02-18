@@ -36,10 +36,18 @@ public class ReconfigurationPlanConverter extends AbstractJSONObjectConverter<Re
 
     private ModelConverter mc;
 
-    public ReconfigurationPlanConverter(ModelConverter mc) {
-        this.mc = mc;
+    /**
+     * Make a new converter that relies on a given ModelConverter
+     *
+     * @param c the model converter to rely on
+     */
+    public ReconfigurationPlanConverter(ModelConverter c) {
+        this.mc = c;
     }
 
+    /**
+     * Make a new converter with the default {@link ModelConverter}.
+     */
     public ReconfigurationPlanConverter() {
         this(new ModelConverter());
     }
@@ -65,6 +73,11 @@ public class ReconfigurationPlanConverter extends AbstractJSONObjectConverter<Re
         return plan;
     }
 
+    /**
+     * Get the associated {@link ModelConverter}
+     *
+     * @return the converter provided at instantiation
+     */
     public ModelConverter getModelConverter() {
         return mc;
     }

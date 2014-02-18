@@ -39,10 +39,10 @@ public class BanTest {
     @Test
     public void testInstantiation() {
         Model mo = new DefaultModel();
-        Set<VM> vms = new HashSet<>(Arrays.asList(mo.newVM()));
         Set<Node> nodes = new HashSet<>(Arrays.asList(mo.newNode()));
-        Ban b = new Ban(vms, nodes);
-        Assert.assertEquals(vms, b.getInvolvedVMs());
+        VM v = mo.newVM();
+        Ban b = new Ban(v, nodes);
+        Assert.assertTrue(b.getInvolvedVMs().contains(v));
         Assert.assertEquals(nodes, b.getInvolvedNodes());
         Assert.assertFalse(b.toString().contains("null"));
         Assert.assertFalse(b.isContinuous());
@@ -65,14 +65,12 @@ public class BanTest {
         map.addRunningVM(vms.get(0), ns.get(0));
         map.addRunningVM(vms.get(1), ns.get(1));
         map.addRunningVM(vms.get(2), ns.get(2));
-        Set<VM> vs = new HashSet<>(Arrays.asList(vms.get(1), vms.get(2)));
-
         Set<Node> nodes = new HashSet<>(Arrays.asList(ns.get(0)));
 
-        Ban b = new Ban(vs, nodes);
+        Ban b = new Ban(vms.get(2), nodes);
         Assert.assertEquals(b.isSatisfied(m), true);
         map.addRunningVM(vms.get(2), ns.get(0));
-        Assert.assertEquals(b.isSatisfied(m), false);
+        Assert.assertEquals(new Ban(vms.get(2), nodes).isSatisfied(m), false);
 
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(m);
         plan.add(new MigrateVM(vms.get(0), ns.get(0), ns.get(1), 0, 3));
@@ -84,15 +82,15 @@ public class BanTest {
     @Test
     public void testEquals() {
         Model m = new DefaultModel();
-        List<VM> vms = Util.newVMs(m, 10);
+        VM v = m.newVM();
         List<Node> ns = Util.newNodes(m, 10);
 
-        Set<VM> vs = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
         Set<Node> nodes = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
 
-        Ban b = new Ban(vs, nodes);
+        Ban b = new Ban(v, nodes);
         Assert.assertTrue(b.equals(b));
-        Assert.assertTrue(new Ban(vs, nodes).equals(b));
-        Assert.assertEquals(new Ban(vs, nodes).hashCode(), b.hashCode());
+        Assert.assertTrue(new Ban(v, nodes).equals(b));
+        Assert.assertEquals(new Ban(v, nodes).hashCode(), b.hashCode());
+        Assert.assertNotEquals(new Ban(m.newVM(), nodes), b);
     }
 }

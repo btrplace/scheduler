@@ -41,7 +41,7 @@ public class FenceConverter extends ConstraintConverter<Fence> {
     @Override
     public Fence fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Fence(requiredVMs(o, "vms"),
+        return new Fence(requiredVM(o, "vm"),
                 requiredNodes(o, "nodes"));
     }
 
@@ -49,7 +49,7 @@ public class FenceConverter extends ConstraintConverter<Fence> {
     public JSONObject toJSON(Fence o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", vmsToJSON(o.getInvolvedVMs()));
+        c.put("vm", toJSON(o.getInvolvedVMs().iterator().next()));
         c.put("nodes", nodesToJSON(o.getInvolvedNodes()));
         return c;
     }

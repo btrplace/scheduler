@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +17,8 @@
 
 package btrplace.solver.choco;
 
-import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import solver.variables.IntVar;
 
 import java.util.List;
 
@@ -41,8 +41,8 @@ public final class SliceUtils {
      * @param slices the slices
      * @return an array containing every hosting variable
      */
-    public static IntDomainVar[] extractHosters(List<Slice> slices) {
-        IntDomainVar[] vs = new IntDomainVar[slices.size()];
+    public static IntVar[] extractHosters(List<Slice> slices) {
+        IntVar[] vs = new IntVar[slices.size()];
         int i = 0;
         for (Slice s : slices) {
             vs[i++] = s.getHoster();
@@ -56,8 +56,8 @@ public final class SliceUtils {
      * @param slices the slices
      * @return an array containing every consume variable
      */
-    public static IntDomainVar[] extractStarts(List<Slice> slices) {
-        IntDomainVar[] vs = new IntDomainVar[slices.size()];
+    public static IntVar[] extractStarts(List<Slice> slices) {
+        IntVar[] vs = new IntVar[slices.size()];
         int i = 0;
         for (Slice s : slices) {
             vs[i++] = s.getStart();
@@ -71,8 +71,8 @@ public final class SliceUtils {
      * @param slices the slices
      * @return an array containing every end variable
      */
-    public static IntDomainVar[] extractEnds(List<Slice> slices) {
-        IntDomainVar[] vs = new IntDomainVar[slices.size()];
+    public static IntVar[] extractEnds(List<Slice> slices) {
+        IntVar[] vs = new IntVar[slices.size()];
         int i = 0;
         for (Slice s : slices) {
             vs[i++] = s.getEnd();
@@ -86,8 +86,8 @@ public final class SliceUtils {
      * @param slices the slices
      * @return an array containing every variable
      */
-    public static IntDomainVar[] extractDurations(List<Slice> slices) {
-        IntDomainVar[] vs = new IntDomainVar[slices.size()];
+    public static IntVar[] extractDurations(List<Slice> slices) {
+        IntVar[] vs = new IntVar[slices.size()];
         int i = 0;
         for (Slice s : slices) {
             vs[i++] = s.getDuration();

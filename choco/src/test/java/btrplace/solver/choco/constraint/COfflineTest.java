@@ -30,7 +30,8 @@ import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Unit tests for {@link COffline}.
@@ -43,7 +44,7 @@ public class COfflineTest {
     public void testInstantiation() {
         Model mo = new DefaultModel();
         Node n1 = mo.newNode();
-        Offline b = new Offline(Collections.singleton(n1));
+        Offline b = new Offline(n1);
         COffline c = new COffline(b);
         Assert.assertEquals(c.toString(), b.toString());
     }
@@ -62,7 +63,7 @@ public class COfflineTest {
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.getDurationEvaluators().register(ShutdownNode.class, new ConstantActionDuration(10));
         cra.setTimeLimit(-1);
-        Collection<SatConstraint> x = Collections.singleton((SatConstraint) new Offline(map.getAllNodes()));
+        List x = Offline.newOfflines(map.getAllNodes());
         ReconfigurationPlan plan = cra.solve(model, x);
         Assert.assertNotNull(plan);
         Assert.assertEquals(plan.getSize(), 2);
@@ -79,8 +80,7 @@ public class COfflineTest {
         Node n2 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).get();
 
-        Set<Node> s = new HashSet<>(Arrays.asList(n1, n2));
-        Offline off = new Offline(s);
+        Offline off = new Offline(n1);
         COffline coff = new COffline(off);
 
         Assert.assertTrue(coff.getMisPlacedVMs(mo).isEmpty());
@@ -97,7 +97,7 @@ public class COfflineTest {
         Node n2 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).run(n1, vm1).get();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Offline(Collections.singleton(n1))));
+        ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Offline(n1)));
         Assert.assertNotNull(plan);
         Model res = plan.getResult();
         Assert.assertTrue(res.getMapping().getOfflineNodes().contains(n1));
@@ -110,7 +110,7 @@ public class COfflineTest {
         Node n1 = mo.newNode();
         Mapping map = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1).get();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Offline(Collections.singleton(n1))));
+        ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(new Offline(n1)));
         Assert.assertNull(plan);
     }
 }

@@ -25,7 +25,6 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithmParams;
 import btrplace.solver.choco.MappingFiller;
 import btrplace.solver.choco.runner.staticPartitioning.FixedNodeSetsPartitioning;
-import btrplace.solver.choco.runner.staticPartitioning.Instances;
 import gnu.trove.map.hash.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;

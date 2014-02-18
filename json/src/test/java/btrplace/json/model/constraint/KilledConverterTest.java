@@ -25,8 +25,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
 
 /**
  * Unit tests for {@link btrplace.json.model.constraint.KilledConverter}.
@@ -40,7 +38,8 @@ public class KilledConverterTest {
         Model mo = new DefaultModel();
         KilledConverter conv = new KilledConverter();
         conv.setModel(mo);
-        Killed d = new Killed(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())));
+        Killed d = new Killed(mo.newVM());
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+        System.out.println(conv.toJSONString(d));
     }
 }

@@ -41,8 +41,6 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
 
     private boolean repair = false;
 
-    private boolean useLabels = false;
-
     private DurationEvaluators durationEvaluators;
 
     private int maxEnd = DefaultReconfigurationProblem.DEFAULT_MAX_TIME;
@@ -100,17 +98,6 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
     @Override
     public int getTimeLimit() {
         return timeLimit;
-    }
-
-    @Override
-    public ChocoReconfigurationAlgorithmParams labelVariables(boolean b) {
-        useLabels = b;
-        return this;
-    }
-
-    @Override
-    public boolean areVariablesLabelled() {
-        return useLabels;
     }
 
     @Override

@@ -23,48 +23,48 @@ import btrplace.model.view.ModelView;
 
 /**
  * A event to inform a cloneable VM
- * has been cloned and is now available using a different int.
+ * has been cloned and is now available using a different identifier.
  *
  * @author Fabien Hermenier
  */
 public class SubstitutedVMEvent implements VMEvent {
 
-    private VM oldint, newint;
+    private VM oldVm, newVm;
 
     /**
      * Instantiate a new event.
      *
-     * @param vm    the old VM int
-     * @param newVM the new VM int
+     * @param vm    the old VM identifier
+     * @param newVM the new VM identifier
      */
     public SubstitutedVMEvent(VM vm, VM newVM) {
-        oldint = vm;
-        this.newint = newVM;
+        oldVm = vm;
+        this.newVm = newVM;
     }
 
     /**
-     * Get the old VM identifier.
+     * Get the old VM.
      *
-     * @return a int
+     * @return a VM
      */
     @Override
     public VM getVM() {
-        return oldint;
+        return oldVm;
     }
 
     /**
-     * Get the new VM identifier.
+     * Get the new VM.
      *
-     * @return a int.
+     * @return a VM.
      */
     public VM getNewVM() {
-        return newint;
+        return newVm;
     }
 
     @Override
     public boolean apply(Model m) {
         for (ModelView v : m.getViews()) {
-            v.substituteVM(oldint, newint);
+            v.substituteVM(oldVm, newVm);
         }
         return true;
     }
@@ -76,10 +76,7 @@ public class SubstitutedVMEvent implements VMEvent {
 
     @Override
     public String toString() {
-        return new StringBuilder("substitutedVM(")
-                .append("vm=").append(oldint)
-                .append(", newint=").append(newint)
-                .append(')').toString();
+        return "substitutedVM(" + "vm=" + oldVm + ", newVm=" + newVm + ')';
     }
 
 }

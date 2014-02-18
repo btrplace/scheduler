@@ -20,11 +20,11 @@ package btrplace.solver.choco.constraint.minMTTR;
 
 import btrplace.model.VM;
 import btrplace.solver.choco.ReconfigurationProblem;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.solver.search.ValSelector;
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import gnu.trove.TIntHashSet;
 import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.set.hash.TIntHashSet;
+import solver.search.strategy.selectors.InValueIterator;
+import solver.variables.IntVar;
+import util.iterators.DisposableValueIterator;
 
 import java.util.Map;
 import java.util.Random;
@@ -37,7 +37,7 @@ import java.util.Random;
  *
  * @author Fabien Hermenier
  */
-public class RandomVMPlacement implements ValSelector<IntDomainVar> {
+public class RandomVMPlacement implements InValueIterator {
 
     private boolean stay;
 
@@ -45,7 +45,7 @@ public class RandomVMPlacement implements ValSelector<IntDomainVar> {
 
     private Random rnd;
 
-    private Map<IntDomainVar, VM> vmPlacement;
+    private Map<IntVar, VM> vmPlacement;
 
     private TIntHashSet[] ranks;
 
@@ -53,12 +53,11 @@ public class RandomVMPlacement implements ValSelector<IntDomainVar> {
     /**
      * Make a new heuristic.
      *
-     * @param dbgLbl      the debug label
      * @param p           the problem to rely on
      * @param pVarMapping a map to indicate the VM associated to each of the placement variable
      * @param stayFirst   {@code true} to force an already VM to stay on its current node if possible
      */
-    public RandomVMPlacement(String dbgLbl, ReconfigurationProblem p, Map<IntDomainVar, VM> pVarMapping, boolean stayFirst) {
+    public RandomVMPlacement(ReconfigurationProblem p, Map<IntVar, VM> pVarMapping, boolean stayFirst) {
         this(p, pVarMapping, null, stayFirst);
     }
 
@@ -70,7 +69,7 @@ public class RandomVMPlacement implements ValSelector<IntDomainVar> {
      * @param priorities  a list of favorites servers. Servers in rank i will be favored wrt. servers in rank i + 1
      * @param stayFirst   {@code true} to force an already VM to stay on its current node if possible
      */
-    public RandomVMPlacement(ReconfigurationProblem p, Map<IntDomainVar, VM> pVarMapping, TIntHashSet[] priorities, boolean stayFirst) {
+    public RandomVMPlacement(ReconfigurationProblem p, Map<IntVar, VM> pVarMapping, TIntHashSet[] priorities, boolean stayFirst) {
         stay = stayFirst;
         this.rp = p;
         rnd = new Random();
@@ -82,10 +81,10 @@ public class RandomVMPlacement implements ValSelector<IntDomainVar> {
      * Random value but that consider the rank of nodes.
      * So values are picked up from the first rank possible.
      */
-    private int randomWithRankedValues(IntDomainVar x) {
+    private int randomWithRankedValues(IntVar x) {
         TIntArrayList[] values = new TIntArrayList[ranks.length];
 
-        DisposableIntIterator ite = x.getDomain().getIterator();
+        DisposableValueIterator ite = x.getValueIterator(true);
         try {
             while (ite.hasNext()) {
                 int v = ite.next();
@@ -117,9 +116,9 @@ public class RandomVMPlacement implements ValSelector<IntDomainVar> {
     /**
      * Pick a random value inside the variable domain.
      */
-    private int randomValue(IntDomainVar x) {
+    private int randomValue(IntVar x) {
         int i = rnd.nextInt(x.getDomainSize());
-        DisposableIntIterator ite = x.getDomain().getIterator();
+        DisposableValueIterator ite = x.getValueIterator(true);
         int pos = -1;
         try {
             while (i >= 0) {
@@ -133,7 +132,7 @@ public class RandomVMPlacement implements ValSelector<IntDomainVar> {
     }
 
     @Override
-    public int getBestVal(IntDomainVar x) {
+    public int selectValue(IntVar x) {
         if (stay) {
             VM vm = vmPlacement.get(x);
             if (VMPlacementUtils.canStay(rp, vm)) {
@@ -141,7 +140,7 @@ public class RandomVMPlacement implements ValSelector<IntDomainVar> {
             }
         }
 
-        if (!x.isInstantiated()) {
+        if (!x.instantiated()) {
             int nIdx;
             if (ranks != null) {
                 nIdx = randomWithRankedValues(x);
@@ -150,6 +149,6 @@ public class RandomVMPlacement implements ValSelector<IntDomainVar> {
             }
             return nIdx;
         }
-        return x.getVal();
+        return x.getValue();
     }
 }

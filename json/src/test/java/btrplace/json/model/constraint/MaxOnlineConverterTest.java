@@ -46,5 +46,6 @@ public class MaxOnlineConverterTest {
         moc.setModel(model);
         MaxOnline new_max = moc.fromJSON(moc.toJSONString(mo));
         Assert.assertEquals(mo, new_max);
+        System.out.println(moc.toJSONString(mo));
     }
 }

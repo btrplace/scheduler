@@ -25,8 +25,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
 
 /**
  * Unit tests for {@link btrplace.model.constraint.Preserve}.
@@ -40,8 +38,9 @@ public class PreserveConverterTest {
         Model mo = new DefaultModel();
         PreserveConverter conv = new PreserveConverter();
         conv.setModel(mo);
-        Preserve d = new Preserve(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())), "cpu", 5);
+        Preserve d = new Preserve(mo.newVM(), "cpu", 5);
 
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+        System.out.println(conv.toJSONString(d));
     }
 }

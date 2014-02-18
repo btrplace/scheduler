@@ -21,14 +21,12 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.ReadyChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
-import java.util.Collection;
-
 /**
- * A constraint to force a set of VMs at being ready for running.
+ * A constraint to force a VM at being ready for running.
  * <p/>
  * The restriction provided by the constraint is discrete
- * however, if some of the VMs are already in the ready state, then
- * their state will be unchanged.
+ * however, if the VM is already in the ready state, then
+ * its state will be unchanged.
  *
  * @author Fabien Hermenier
  */
@@ -37,10 +35,10 @@ public class Ready extends VMStateConstraint {
     /**
      * Make a new constraint.
      *
-     * @param vms the VMs to make ready
+     * @param vm the VM to make ready
      */
-    public Ready(Collection<VM> vms) {
-        super("ready", vms);
+    public Ready(VM vm) {
+        super("ready", vm);
     }
 
     @Override

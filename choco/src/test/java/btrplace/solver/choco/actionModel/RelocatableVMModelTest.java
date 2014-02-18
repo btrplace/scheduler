@@ -24,10 +24,7 @@ import btrplace.model.constraint.Preserve;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.event.BootVM;
-import btrplace.plan.event.ForgeVM;
-import btrplace.plan.event.MigrateVM;
-import btrplace.plan.event.ShutdownVM;
+import btrplace.plan.event.*;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
@@ -36,10 +33,12 @@ import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.constraint.minMTTR.CMinMTTR;
 import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import choco.cp.solver.CPSolver;
-import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Cause;
+import solver.Solver;
+import solver.constraints.IntConstraintFactory;
+import solver.exception.ContradictionException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -72,29 +71,30 @@ public class RelocatableVMModelTest {
                 .setDurationEvaluators(dev)
                 .labelVariables()
                 .build();
-        rp.getNodeActions()[0].getState().setVal(1);
-        rp.getNodeActions()[1].getState().setVal(1);
+        rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
+        rp.getNodeActions()[1].getState().instantiateTo(1, Cause.Null);
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm1);
-        Assert.assertTrue(am.getRelocationMethod().isInstantiatedTo(0));
+        Assert.assertTrue(am.getRelocationMethod().instantiatedTo(0));
         Assert.assertEquals(vm1, am.getVM());
         Assert.assertEquals(2, am.getDuration().getDomainSize());
-        Assert.assertEquals(0, am.getDuration().getInf());
-        Assert.assertEquals(5, am.getDuration().getSup());
-        Assert.assertFalse(am.getStart().isInstantiated());
-        Assert.assertFalse(am.getEnd().isInstantiated());
+        Assert.assertEquals(0, am.getDuration().getLB());
+        Assert.assertEquals(5, am.getDuration().getUB());
+        Assert.assertFalse(am.getStart().instantiated());
+        Assert.assertFalse(am.getEnd().instantiated());
         Assert.assertNotNull(am.getCSlice());
-        Assert.assertTrue(am.getCSlice().getHoster().isInstantiatedTo(rp.getNode(n1)));
-        Assert.assertTrue(am.getState().isInstantiatedTo(1));
+        Assert.assertTrue(am.getCSlice().getHoster().instantiatedTo(rp.getNode(n1)));
+        Assert.assertTrue(am.getState().instantiatedTo(1));
         Assert.assertNotNull(am.getDSlice());
-        Assert.assertFalse(am.getDSlice().getHoster().isInstantiated());
+        Assert.assertFalse(am.getDSlice().getHoster().instantiated());
 
         //No VMs on n1, discrete mode
-        CPSolver s = rp.getSolver();
-        s.post(s.eq(rp.getNbRunningVMs()[rp.getNode(n1)], 0));
+        Solver s = rp.getSolver();
 
+        s.post(IntConstraintFactory.arithm(rp.getNbRunningVMs()[rp.getNode(n1)], "=", 0));
+        System.out.println(s);
         ReconfigurationPlan p = rp.solve(0, false);
-
         Assert.assertNotNull(p);
+        System.out.println(p);
         Model m = p.getResult();
         Assert.assertEquals(n2, m.getMapping().getVMLocation(vm1));
 
@@ -124,21 +124,21 @@ public class RelocatableVMModelTest {
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .setDurationEvaluators(dev)
                 .build();
-        rp.getNodeActions()[0].getState().setVal(1);
-        rp.getNodeActions()[1].getState().setVal(1);
+        rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
+        rp.getNodeActions()[1].getState().instantiateTo(1, Cause.Null);
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm1);
 
         //No VMs on n2
-        rp.getNbRunningVMs()[rp.getNode(n2)].setVal(0);
+        rp.getNbRunningVMs()[rp.getNode(n2)].instantiateTo(0, Cause.Null);
 
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         Assert.assertEquals(0, p.getSize());
 
-        Assert.assertTrue(am.getDuration().isInstantiatedTo(0));
-        Assert.assertTrue(am.getDSlice().getHoster().isInstantiatedTo(rp.getNode(n1)));
-        Assert.assertTrue(am.getStart().isInstantiatedTo(0));
-        Assert.assertTrue(am.getEnd().isInstantiatedTo(0));
+        Assert.assertTrue(am.getDuration().instantiatedTo(0));
+        Assert.assertTrue(am.getDSlice().getHoster().instantiatedTo(rp.getNode(n1)));
+        Assert.assertTrue(am.getStart().instantiatedTo(0));
+        Assert.assertTrue(am.getEnd().instantiatedTo(0));
 
 
         Model m = p.getResult();
@@ -167,12 +167,12 @@ public class RelocatableVMModelTest {
         rc.setConsumption(vm2, 3);
         rc.setConsumption(vm3, 5);
 
-        Preserve pr = new Preserve(map.getAllVMs(), "cpu", 5);
+        Preserve pr = new Preserve(vm1, "cpu", 5);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         mo.attach(rc);
         List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.add(new Online(map.getAllNodes()));
-        cstrs.add(new Overbook(map.getAllNodes(), "cpu", 1));
+        cstrs.addAll(Online.newOnlines(map.getAllNodes()));
+        cstrs.addAll(Overbook.newOverbook(map.getAllNodes(), "cpu", 1));
         cstrs.add(pr);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
@@ -207,7 +207,7 @@ public class RelocatableVMModelTest {
                 .labelVariables()
                 .build();
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm1);
-        Assert.assertFalse(am.getRelocationMethod().isInstantiated());
+        Assert.assertFalse(am.getRelocationMethod().instantiated());
     }
 
     /**
@@ -243,18 +243,23 @@ public class RelocatableVMModelTest {
                 .setManageableVMs(map.getAllVMs())
                 .build();
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
-        am.getDSlice().getHoster().setVal(rp.getNode(n2));
+        am.getDSlice().getHoster().instantiateTo(rp.getNode(n2), Cause.Null);
         new CMinMTTR().inject(rp);
+
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);
-        Assert.assertTrue(am.getRelocationMethod().isInstantiatedTo(1));
+        Assert.assertTrue(am.getRelocationMethod().instantiatedTo(1));
         Assert.assertEquals(p.getSize(), 3);
         Model res = p.getResult();
         //Check the VM has been relocated
         Assert.assertEquals(res.getMapping().getRunningVMs(n1).size(), 0);
         Assert.assertEquals(res.getMapping().getRunningVMs(n2).size(), 1);
         Assert.assertNotNull(p);
+        for (Action a : p) {
+            Assert.assertTrue(a.getStart() >= 0, a.toString());
+            Assert.assertTrue(a.getEnd() >= a.getStart(), a.toString());
+        }
     }
 
     /**
@@ -290,12 +295,12 @@ public class RelocatableVMModelTest {
                 .setManageableVMs(map.getAllVMs())
                 .build();
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
-        am.getDSlice().getHoster().setVal(rp.getNode(n2));
+        am.getDSlice().getHoster().instantiateTo(rp.getNode(n2), Cause.Null);
         new CMinMTTR().inject(rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);
-        Assert.assertTrue(am.getRelocationMethod().isInstantiatedTo(0));
+        Assert.assertTrue(am.getRelocationMethod().instantiatedTo(0));
         Assert.assertEquals(p.getSize(), 1);
         Model res = p.getResult();
         //Check the VM has been relocated
@@ -331,19 +336,32 @@ public class RelocatableVMModelTest {
                 .setManageableVMs(map.getAllVMs())
                 .build();
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
-        am.getRelocationMethod().setVal(1);
-        am.getDSlice().getHoster().setVal(rp.getNode(n2));
+        am.getRelocationMethod().instantiateTo(1, Cause.Null);
+        am.getDSlice().getHoster().instantiateTo(rp.getNode(n2), Cause.Null);
         new CMinMTTR().inject(rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);
-        Assert.assertTrue(am.getRelocationMethod().isInstantiatedTo(1));
+        Assert.assertTrue(am.getRelocationMethod().instantiatedTo(1));
         Assert.assertEquals(p.getSize(), 3);
         Model res = p.getResult();
         //Check the VM has been relocated
         Assert.assertEquals(res.getMapping().getRunningVMs(n1).size(), 0);
         Assert.assertEquals(res.getMapping().getRunningVMs(n2).size(), 1);
         Assert.assertNotNull(p);
+
+        //Check for the actions duration
+        for (Action a : p) {
+            if (a instanceof ForgeVM) {
+                Assert.assertEquals(a.getEnd() - a.getStart(), 3);
+            } else if (a instanceof ShutdownVM) {
+                Assert.assertEquals(a.getEnd() - a.getStart(), 1);
+            } else if (a instanceof BootVM) {
+                Assert.assertEquals(a.getEnd() - a.getStart(), 2);
+            } else {
+                Assert.fail();
+            }
+        }
     }
 
     @Test
@@ -373,13 +391,13 @@ public class RelocatableVMModelTest {
                 .setManageableVMs(map.getAllVMs())
                 .build();
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
-        am.getRelocationMethod().setVal(0);
-        am.getDSlice().getHoster().setVal(rp.getNode(n2));
+        am.getRelocationMethod().instantiateTo(0, Cause.Null);
+        am.getDSlice().getHoster().instantiateTo(rp.getNode(n2), Cause.Null);
         new CMinMTTR().inject(rp);
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);
-        Assert.assertTrue(am.getRelocationMethod().isInstantiatedTo(0));
+        Assert.assertTrue(am.getRelocationMethod().instantiatedTo(0));
         Assert.assertEquals(p.getSize(), 1);
         Model res = p.getResult();
         //Check the VM has been relocated
@@ -414,13 +432,13 @@ public class RelocatableVMModelTest {
             mo.getAttributes().put(vm, "template", "small");
             mo.getAttributes().put(vm, "clone", true);
         }
-        Preserve pr = new Preserve(map.getAllVMs(), "cpu", 5);
+        Preserve pr = new Preserve(vm5, "cpu", 5);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.getDurationEvaluators().register(MigrateVM.class, new ConstantActionDuration(20));
 
         mo.attach(rc);
         List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.add(new Online(map.getAllNodes()));
+        cstrs.addAll(Online.newOnlines(map.getAllNodes()));
         cstrs.add(pr);
         cra.doOptimize(true);
         try {

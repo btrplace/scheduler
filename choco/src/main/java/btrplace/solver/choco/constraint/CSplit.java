@@ -27,11 +27,11 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.actionModel.VMActionModel;
-import btrplace.solver.choco.chocoUtil.Disjoint;
-import btrplace.solver.choco.chocoUtil.Precedences;
-import choco.cp.solver.CPSolver;
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import gnu.trove.TIntArrayList;
+import btrplace.solver.choco.extensions.DisjointMultiple;
+import btrplace.solver.choco.extensions.Precedences;
+import gnu.trove.list.array.TIntArrayList;
+import solver.Solver;
+import solver.variables.IntVar;
 
 import java.util.*;
 
@@ -55,10 +55,10 @@ public class CSplit implements ChocoConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        List<List<IntDomainVar>> groups = new ArrayList<>();
+        List<List<IntVar>> groups = new ArrayList<>();
         List<List<VM>> vmGroups = new ArrayList<>();
         for (Collection<VM> grp : cstr.getSets()) {
-            List<IntDomainVar> l = new ArrayList<>();
+            List<IntVar> l = new ArrayList<>();
             List<VM> vl = new ArrayList<>();
             for (VM vm : grp) {
                 if (rp.getFutureRunningVMs().contains(vm)) {
@@ -72,27 +72,14 @@ public class CSplit implements ChocoConstraint {
                 vmGroups.add(vl);
             }
         }
-        CPSolver s = rp.getSolver();
+        Solver s = rp.getSolver();
         int nbNodes = rp.getNodes().length;
-        IntDomainVar[][] vars = new IntDomainVar[groups.size()][];
+        IntVar[][] vars = new IntVar[groups.size()][];
         for (int i = 0; i < groups.size(); i++) {
-            for (int j = 0; j < i; j++) {
-                IntDomainVar[] gI = vars[i];
-                IntDomainVar[] gJ = vars[j];
-
-                if (gI == null) {
-                    gI = groups.get(i).toArray(new IntDomainVar[groups.get(i).size()]);
-                    vars[i] = gI;
-                }
-
-                if (gJ == null) {
-                    gJ = groups.get(j).toArray(new IntDomainVar[groups.get(j).size()]);
-                    vars[j] = gJ;
-                }
-
-                s.post(new Disjoint(s.getEnvironment(), gI, gJ, nbNodes));
-            }
+            vars[i] = groups.get(i).toArray(new IntVar[groups.get(i).size()]);
         }
+        s.post(new DisjointMultiple(s, vars, nbNodes));
+
         if (cstr.isContinuous()) {
             if (!cstr.isSatisfied(rp.getSourceModel())) {
                 rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
@@ -104,7 +91,7 @@ public class CSplit implements ChocoConstraint {
                 //the VMs in the other groups
 
                 TIntArrayList[] otherPositions = new TIntArrayList[vmGroups.size()];
-                List<IntDomainVar>[] otherEnds = new List[vmGroups.size()];
+                List<IntVar>[] otherEnds = new List[vmGroups.size()];
                 for (int i = 0; i < vmGroups.size(); i++) {
                     otherPositions[i] = new TIntArrayList();
                     otherEnds[i] = new ArrayList<>();
@@ -116,7 +103,7 @@ public class CSplit implements ChocoConstraint {
                     for (VM vm : grp) {
                         if (map.isRunning(vm)) {
                             int myPos = rp.getNode(map.getVMLocation(vm));
-                            IntDomainVar myEnd = rp.getVMAction(vm).getCSlice().getEnd();
+                            IntVar myEnd = rp.getVMAction(vm).getCSlice().getEnd();
 
                             for (int j = 0; j < vmGroups.size(); j++) {
                                 if (i != j) {
@@ -128,10 +115,10 @@ public class CSplit implements ChocoConstraint {
                     }
                 }
                 int[][] otherPos = new int[groups.size()][];
-                IntDomainVar[][] otherEds = new IntDomainVar[groups.size()][];
+                IntVar[][] otherEds = new IntVar[groups.size()][];
                 for (int i = 0; i < vmGroups.size(); i++) {
-                    otherPos[i] = otherPositions[i].toNativeArray();
-                    otherEds[i] = otherEnds[i].toArray(new IntDomainVar[otherEnds[i].size()]);
+                    otherPos[i] = otherPositions[i].toArray();
+                    otherEds[i] = otherEnds[i].toArray(new IntVar[otherEnds[i].size()]);
                 }
 
                 //Now, we just have to put way too many precedences constraint, one per VM.
@@ -140,8 +127,8 @@ public class CSplit implements ChocoConstraint {
                     for (VM vm : grp) {
                         if (rp.getFutureRunningVMs().contains(vm)) {
                             VMActionModel a = rp.getVMAction(vm);
-                            IntDomainVar myPos = a.getDSlice().getHoster();
-                            IntDomainVar myStart = a.getDSlice().getStart();
+                            IntVar myPos = a.getDSlice().getHoster();
+                            IntVar myStart = a.getDSlice().getStart();
                             s.post(new Precedences(s.getEnvironment(), myPos, myStart, otherPos[i], otherEds[i]));
                         }
                     }
@@ -200,8 +187,8 @@ public class CSplit implements ChocoConstraint {
         }
 
         @Override
-        public CSplit build(Constraint cstr) {
-            return new CSplit((Split) cstr);
+        public CSplit build(Constraint c) {
+            return new CSplit((Split) c);
         }
     }
 }

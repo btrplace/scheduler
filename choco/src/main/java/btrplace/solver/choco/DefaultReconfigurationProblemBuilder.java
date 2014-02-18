@@ -72,9 +72,20 @@ public class DefaultReconfigurationProblemBuilder {
      * @return the current builder
      */
     public DefaultReconfigurationProblemBuilder labelVariables() {
-        labelVars = true;
+        return labelVariables(true);
+    }
+
+    /**
+     * Label the variables created by the problem.
+     *
+     * @param b {@code true} to label the variables
+     * @return the current builder
+     */
+    public DefaultReconfigurationProblemBuilder labelVariables(boolean b) {
+        labelVars = b;
         return this;
     }
+
 
     /**
      * Provide a dedicated {@link DurationEvaluators}.

@@ -24,10 +24,7 @@ import btrplace.plan.event.MigrateVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Unit tests for {@link btrplace.model.constraint.Root}.
@@ -38,10 +35,12 @@ public class RootTest {
 
     @Test
     public void testInstantiation() {
-        Set<VM> x = new HashSet<>(Util.newVMs(new DefaultModel(), 2));
-        Root s = new Root(x);
+        Model mo = new DefaultModel();
+        VM v = mo.newVM();
+
+        Root s = new Root(v);
         Assert.assertNotNull(s.getChecker());
-        Assert.assertEquals(x, s.getInvolvedVMs());
+        Assert.assertEquals(s.getInvolvedVMs().iterator().next(), v);
         Assert.assertTrue(s.getInvolvedNodes().isEmpty());
         Assert.assertNotNull(s.toString());
         System.out.println(s);
@@ -54,24 +53,24 @@ public class RootTest {
 
     @Test
     public void testEquals() {
-        Set<VM> x = new HashSet<>(Util.newVMs(new DefaultModel(), 2));
-        Root s = new Root(x);
+        Model mo = new DefaultModel();
+        VM v = mo.newVM();
+
+        Root s = new Root(v);
 
         Assert.assertTrue(s.equals(s));
-        Assert.assertTrue(new Root(x).equals(s));
-        Assert.assertEquals(s.hashCode(), new Root(x).hashCode());
-        x = new HashSet<>(Util.newVMs(new DefaultModel(), 1));
-        Assert.assertFalse(new Root(x).equals(s));
+        Assert.assertTrue(new Root(v).equals(s));
+        Assert.assertEquals(s.hashCode(), new Root(v).hashCode());
+        Assert.assertFalse(new Root(mo.newVM()).equals(s));
     }
 
     @Test
     public void testIsSatisfied() {
         Model mo = new DefaultModel();
-        List<VM> vms = Util.newVMs(mo, 2);
         Mapping map = mo.getMapping();
-        map.addReadyVM(vms.get(0));
-        map.addReadyVM(vms.get(1));
-        Root o = new Root(new HashSet<>(vms));
+        VM v = mo.newVM();
+        map.addReadyVM(v);
+        Root o = new Root(v);
 
         Assert.assertEquals(o.isSatisfied(mo), true);
         map.clear();
@@ -88,7 +87,7 @@ public class RootTest {
         map.addOnlineNode(ns.get(1));
         map.addRunningVM(vm1, ns.get(0));
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
-        Root r = new Root(Collections.singleton(vm1));
+        Root r = new Root(vm1);
         Assert.assertEquals(r.isSatisfied(p), true);
         p.add(new MigrateVM(vm1, ns.get(0), ns.get(1), 1, 2));
         Assert.assertEquals(r.isSatisfied(p), false);

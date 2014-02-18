@@ -30,11 +30,14 @@ import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.MappingFiller;
 import btrplace.solver.choco.durationEvaluator.LinearToAResourceActionDuration;
-import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.exception.ContradictionException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * Unit tests for {@link COverbook}.
@@ -45,8 +48,8 @@ public class COverbookTest {
 
     @Test
     public void testBasic() throws SolverException {
-        Node[] nodes = new Node[3];
-        VM[] vms = new VM[9];
+        Node[] nodes = new Node[2];
+        VM[] vms = new VM[3];
         Model mo = new DefaultModel();
         Mapping m = mo.getMapping();
         btrplace.model.view.ShareableResource rcCPU = new ShareableResource("cpu");
@@ -62,15 +65,15 @@ public class COverbookTest {
             m.addReadyVM(vms[i]);
         }
         mo.attach(rcCPU);
-        Overbook o = new Overbook(m.getAllNodes(), "cpu", 2);
+        Overbook o = new Overbook(nodes[0], "cpu", 2);
+        Overbook o2 = new Overbook(nodes[1], "cpu", 2);
         Collection<SatConstraint> c = new HashSet<>();
         c.add(o);
-        c.add(new Running(m.getAllVMs()));
-        c.add(new Preserve(m.getAllVMs(), "cpu", 1));
-        c.add(new Online(m.getAllNodes()));
+        c.add(o2);
+        c.addAll(Running.newRunnings(m.getAllVMs()));
+        c.add(new Preserve(vms[0], "cpu", 1));
+        c.addAll(Online.newOnlines(m.getAllNodes()));
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
-        //cra.setVerbosity(1);
         cra.getConstraintMapper().register(new COverbook.Builder());
         ReconfigurationPlan p = cra.solve(mo, c);
         Assert.assertNotNull(p);
@@ -101,13 +104,12 @@ public class COverbookTest {
         }
         mo.attach(rcCPU);
         Collection<SatConstraint> c = new HashSet<>();
-        c.add(new Overbook(Collections.singleton(nodes[0]), "cpu", 1));
-        c.add(new Overbook(Collections.singleton(nodes[1]), "cpu", 2));
-        c.add(new Overbook(Collections.singleton(nodes[2]), "cpu", 3));
-        c.add(new Running(m.getAllVMs()));
-        c.add(new Preserve(m.getAllVMs(), "cpu", 1));
+        c.add(new Overbook(nodes[0], "cpu", 1));
+        c.add(new Overbook(nodes[1], "cpu", 2));
+        c.add(new Overbook(nodes[2], "cpu", 3));
+        c.addAll(Running.newRunnings(m.getAllVMs()));
+        c.add(new Preserve(vms[0], "cpu", 1));
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
         cra.setTimeLimit(-1);
         ReconfigurationPlan p = cra.solve(mo, c);
         Assert.assertNotNull(p);
@@ -118,8 +120,8 @@ public class COverbookTest {
 
     @Test
     public void testNoSolution() throws SolverException {
-        Node[] nodes = new Node[10];
-        VM[] vms = new VM[31];
+        Node[] nodes = new Node[2];
+        VM[] vms = new VM[7];
         Model mo = new DefaultModel();
         Mapping m = mo.getMapping();
         ShareableResource rcMem = new ShareableResource("mem");
@@ -135,9 +137,13 @@ public class COverbookTest {
         }
         mo.attach(rcMem);
         Collection<SatConstraint> c = new HashSet<>();
-        c.add(new Overbook(m.getAllNodes(), "mem", 1));
-        c.add(new Running(m.getAllVMs()));
-        c.add(new Preserve(m.getAllVMs(), "mem", 1));
+        c.add(new Overbook(nodes[0], "mem", 1));
+        c.add(new Overbook(nodes[1], "mem", 1));
+        c.addAll(Running.newRunnings(m.getAllVMs()));
+        for (VM v : vms) {
+            c.add(new Preserve(v, "mem", 1));
+        }
+
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.getDurationEvaluators().register(BootVM.class, new LinearToAResourceActionDuration<VM>("mem", 2, 3));
         Assert.assertNull(cra.solve(mo, c));
@@ -161,9 +167,9 @@ public class COverbookTest {
                 .run(n3, vm4, vm5, vm6).get();
         ShareableResource rcCPU = new ShareableResource("cpu", 1, 1);
         mo.attach(rcCPU);
-        Overbook o1 = new Overbook(Collections.singleton(n1), "cpu", 1);
-        Overbook o2 = new Overbook(Collections.singleton(n2), "cpu", 2);
-        Overbook o3 = new Overbook(Collections.singleton(n3), "cpu", 3);
+        Overbook o1 = new Overbook(n1, "cpu", 1);
+        Overbook o2 = new Overbook(n2, "cpu", 2);
+        Overbook o3 = new Overbook(n3, "cpu", 3);
         COverbook co1 = new COverbook(o1);
         COverbook co2 = new COverbook(o2);
         COverbook co3 = new COverbook(o3);
@@ -184,15 +190,16 @@ public class COverbookTest {
         ShareableResource rcCPU = new ShareableResource("cpu", 2, 2);
 
         List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.add(new Running(Collections.singleton(vm3)));
-        cstrs.add(new Sleeping(Collections.singleton(vm1)));
-        cstrs.add(new Online(m.getAllNodes()));
-        cstrs.add(new Overbook(m.getAllNodes(), "cpu", 1));
-        cstrs.add(new Preserve(m.getAllVMs(), "cpu", 2));
+        cstrs.add(new Running(vm3));
+        cstrs.add(new Sleeping(vm1));
+        cstrs.addAll(Online.newOnlines(m.getAllNodes()));
+        cstrs.add(new Overbook(n1, "cpu", 1));
+        cstrs.add(new Preserve(vm1, "cpu", 2));
+        cstrs.add(new Preserve(vm3, "cpu", 2));
         mo.attach(rcCPU);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
+
         ReconfigurationPlan p = cra.solve(mo, cstrs);
 
         Assert.assertNotNull(p);
@@ -217,14 +224,13 @@ public class COverbookTest {
         mo.attach(rc);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
         List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.add(new Online(map.getAllNodes()));
-        Overbook o = new Overbook(map.getAllNodes(), "foo", 1);
+        cstrs.addAll(Online.newOnlines(map.getAllNodes()));
+        Overbook o = new Overbook(n1, "foo", 1);
         o.setContinuous(true);
         cstrs.add(o);
-        cstrs.add(new Ready(Collections.singleton(vm2)));
-        cstrs.add(new Preserve(Collections.singleton(vm1), "foo", 5));
+        cstrs.add(new Ready(vm2));
+        cstrs.add(new Preserve(vm1, "foo", 5));
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
         Assert.assertEquals(p.getSize(), 2);

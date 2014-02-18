@@ -21,7 +21,6 @@ import btrplace.model.*;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.Offline;
 import btrplace.model.constraint.Running;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
@@ -77,9 +76,9 @@ public class StaticPartitioningTest {
         Model s2 = new SubModel(origin, eb, Arrays.asList(n2), Collections.singleton(vm2));
 
         Instance i0 = new Instance(origin, new MinMTTR());
-        final Instance i1 = new Instance(s1, Collections.<SatConstraint>singleton(new Running(Arrays.asList(vm1))), new MinMTTR());
+        final Instance i1 = new Instance(s1, (List) Running.newRunnings(Arrays.asList(vm1)), new MinMTTR());
         final Instance i2 = new Instance(s2, new MinMTTR());
-        i2.getSatConstraints().add(new Running(Arrays.asList(vm2)));
+        i2.getSatConstraints().add(new Running(vm2));
 
 
         StaticPartitioning st = new StaticPartitioning() {
@@ -98,7 +97,7 @@ public class StaticPartitioningTest {
         Assert.assertEquals(dst.getMapping().getRunningVMs().size(), 2);
 
         //Now, there is no solution for i2. the resulting plan should be null
-        i2.getSatConstraints().add(new Offline(Arrays.asList(n2)));
+        i2.getSatConstraints().addAll(Offline.newOfflines(Arrays.asList(n2)));
         res = st.solve(p, i0);
         Assert.assertNull(res.getPlan());
         Assert.assertEquals(res.getStatistics().getSolutions().size(), 0);
@@ -127,9 +126,9 @@ public class StaticPartitioningTest {
         Model s2 = new SubModel(origin, eb, Arrays.asList(n2), Collections.singleton(vm2));
 
         Instance i0 = new Instance(origin, new MinMTTR());
-        final Instance i1 = new Instance(s1, Collections.<SatConstraint>singleton(new Running(Arrays.asList(vm1))), new MinMTTR());
+        final Instance i1 = new Instance(s1, (List) Running.newRunnings(Arrays.asList(vm1)), new MinMTTR());
         final Instance i2 = new Instance(s2, new MinMTTR());
-        i2.getSatConstraints().add(new Running(Arrays.asList(vm1))); //Error, vm1 is in s1, not s2
+        i2.getSatConstraints().add(new Running(vm1)); //Error, vm1 is in s1, not s2
 
 
         StaticPartitioning st = new StaticPartitioning() {

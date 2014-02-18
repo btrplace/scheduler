@@ -22,9 +22,10 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
-import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Cause;
+import solver.exception.ContradictionException;
 
 /**
  * Unit tests for {@link StayAwayVMModel}.
@@ -49,19 +50,19 @@ public class StayAwayVMModelTest {
                 .labelVariables()
                 .build();
 
-        rp.getNodeAction(n1).getState().setVal(1);
+        rp.getNodeAction(n1).getState().instantiateTo(1, Cause.Null);
         StayAwayVMModel ma1 = (StayAwayVMModel) rp.getVMAction(vm1);
         StayAwayVMModel ma2 = (StayAwayVMModel) rp.getVMAction(vm2);
         Assert.assertEquals(vm1, ma1.getVM());
         Assert.assertEquals(vm2, ma2.getVM());
 
         for (VMActionModel am : rp.getVMActions()) {
-            Assert.assertTrue(am.getState().isInstantiatedTo(0));
+            Assert.assertTrue(am.getState().instantiatedTo(0));
             Assert.assertNull(am.getCSlice());
             Assert.assertNull(am.getDSlice());
-            Assert.assertTrue(am.getStart().isInstantiatedTo(0));
-            Assert.assertTrue(am.getEnd().isInstantiatedTo(0));
-            Assert.assertTrue(am.getDuration().isInstantiatedTo(0));
+            Assert.assertTrue(am.getStart().instantiatedTo(0));
+            Assert.assertTrue(am.getEnd().instantiatedTo(0));
+            Assert.assertTrue(am.getDuration().instantiatedTo(0));
         }
 
         ReconfigurationPlan p = rp.solve(0, false);

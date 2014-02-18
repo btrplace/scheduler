@@ -27,13 +27,12 @@ import btrplace.solver.choco.constraint.ChocoConstraint;
 import btrplace.solver.choco.constraint.ChocoConstraintBuilder;
 import btrplace.solver.choco.runner.SolvingStatistics;
 import btrplace.solver.choco.view.ModelViewMapper;
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.AtMostNValue;
-import choco.kernel.solver.Configuration;
-import choco.kernel.solver.ResolutionPolicy;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Solver;
+import solver.constraints.IntConstraintFactory;
+import solver.variables.IntVar;
+import solver.variables.VF;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -66,8 +65,8 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         cra.doRepair(true);
         Assert.assertEquals(cra.doRepair(), true);
 
-        cra.labelVariables(true);
-        Assert.assertEquals(cra.areVariablesLabelled(), true);
+        cra.setVerbosity(3);
+        Assert.assertEquals(cra.getVerbosity(), 3);
 
         Assert.assertNotNull(cra.getViewMapper());
         ModelViewMapper m = new ModelViewMapper();
@@ -110,12 +109,11 @@ public class DefaultChocoReconfigurationAlgorithmTest {
                 return new ChocoConstraint() {
                     public boolean inject(ReconfigurationProblem rp) throws SolverException {
                         Mapping map = rp.getSourceModel().getMapping();
-                        CPSolver s = rp.getSolver();
-                        IntDomainVar nbNodes = s.createBoundIntVar("nbNodes", 1, map.getOnlineNodes().size());
-                        IntDomainVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
-                        s.post(new AtMostNValue(hosters, nbNodes));
-                        s.setObjective(nbNodes);
-                        s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
+                        Solver s = rp.getSolver();
+                        IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
+                        IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
+                        s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_least_AC"));//new AtMostNValue(hosters, nbNodes));
+                        rp.setObjective(false, nbNodes);
                         return true;
                     }
 
@@ -134,8 +132,9 @@ public class DefaultChocoReconfigurationAlgorithmTest {
                 nbRunning++;
             }
         }
-        Assert.assertEquals(nbRunning, 1);
+        Assert.assertEquals(nbRunning, 10);
         SolvingStatistics st = cra.getStatistics();
+        System.out.println(st);
         Assert.assertEquals(st.getSolutions().size(), 10);
     }
 
@@ -155,10 +154,10 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5).get();
 
         //A satisfied constraint
-        Fence c1 = new Fence(new HashSet<>(Arrays.asList(vm1, vm2)), new HashSet<>(Arrays.asList(n1, n2)));
+        Fence c1 = new Fence(vm1, new HashSet<>(Arrays.asList(n1, n2)));
 
         //A constraint that is not satisfied. vm2 is misplaced
-        Fence c2 = new Fence(new HashSet<>(Arrays.asList(vm1, vm2)), new HashSet<>(Arrays.asList(n1, n3)));
+        Fence c2 = new Fence(vm2, new HashSet<>(Arrays.asList(n1, n3)));
 
         Set<SatConstraint> cstrs = new HashSet<SatConstraint>(Arrays.asList(c1, c2));
         mo = new DefaultModel();
@@ -196,6 +195,7 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         //Solve a problem with the repair mode
         Assert.assertNotNull(cra.solve(mo, cstrs, new Foo()));
         SolvingStatistics st = cra.getStatistics();
+        System.out.println(st);
         Assert.assertEquals(st.getNbManagedVMs(), 2); //vm2, vm3.
     }
 
@@ -257,8 +257,8 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         cpu.setConsumption(vm4, 5);
 
         //vm1 requires more cpu resources, but fewer mem resources
-        Preserve pCPU = new Preserve(new HashSet<>(Arrays.asList(vm1, vm3)), "cpu", 7);
-        Preserve pMem = new Preserve(new HashSet<>(Arrays.asList(vm1, vm3)), "mem", 2);
+        Preserve pCPU = new Preserve(vm1, "cpu", 7);
+        Preserve pMem = new Preserve(vm1, "mem", 2);
 
 
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2)
@@ -272,9 +272,9 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.setMaxEnd(5);
         ReconfigurationPlan p = cra.solve(mo, Arrays.<SatConstraint>asList(pCPU, pMem,
-                new Online(Collections.singleton(n1)),
-                new Running(Collections.singleton(vm2)),
-                new Ready(Collections.singleton(vm3))));
+                new Online(n1),
+                new Running(vm2),
+                new Ready(vm3)));
         Assert.assertNotNull(p);
         //System.out.println(p);
     }

@@ -23,8 +23,6 @@ import btrplace.solver.choco.MappingFiller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Collections;
-
 /**
  * Unit tests for {@link CKilled}.
  *
@@ -41,9 +39,14 @@ public class CKilledTest {
         Node n1 = mo.newNode();
         Mapping m = new MappingFiller(mo.getMapping()).ready(vm1).on(n1).run(n1, vm2).get();
 
-        CKilled k = new CKilled(new Killed(Collections.singleton(vm5)));
+        CKilled k = new CKilled(new Killed(vm5));
         Assert.assertTrue(k.getMisPlacedVMs(mo).isEmpty());
-        k = new CKilled(new Killed(m.getAllVMs()));
-        Assert.assertEquals(2, k.getMisPlacedVMs(mo).size());
+        k = new CKilled(new Killed(vm2));
+        Assert.assertEquals(1, k.getMisPlacedVMs(mo).size());
+        Assert.assertTrue(k.getMisPlacedVMs(mo).contains(vm2));
+
+        k = new CKilled(new Killed(vm1));
+        Assert.assertEquals(1, k.getMisPlacedVMs(mo).size());
+        Assert.assertTrue(k.getMisPlacedVMs(mo).contains(vm1));
     }
 }

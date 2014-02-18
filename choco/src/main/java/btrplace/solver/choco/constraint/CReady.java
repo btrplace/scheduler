@@ -24,7 +24,7 @@ import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Ready;
 import btrplace.solver.choco.ReconfigurationProblem;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 
 
@@ -55,14 +55,12 @@ public class CReady implements ChocoConstraint {
 
     @Override
     public Set<VM> getMisPlacedVMs(Model m) {
-        Set<VM> bad = new HashSet<>();
+        VM v = cstr.getInvolvedVMs().iterator().next();
         Mapping map = m.getMapping();
-        for (VM vm : cstr.getInvolvedVMs()) {
-            if (!map.isReady(vm)) {
-                bad.add(vm);
-            }
+        if (!map.isReady(v)) {
+            return Collections.singleton(v);
         }
-        return bad;
+        return Collections.emptySet();
     }
 
 
@@ -82,8 +80,8 @@ public class CReady implements ChocoConstraint {
         }
 
         @Override
-        public CReady build(Constraint cstr) {
-            return new CReady((Ready) cstr);
+        public CReady build(Constraint c) {
+            return new CReady((Ready) c);
         }
     }
 }

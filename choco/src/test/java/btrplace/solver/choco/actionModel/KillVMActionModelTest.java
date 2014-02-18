@@ -26,9 +26,10 @@ import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Cause;
+import solver.exception.ContradictionException;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -70,16 +71,16 @@ public class KillVMActionModelTest {
                 .setNextVMsStates(empty, empty, empty, map.getAllVMs())
                 .build();
 
-        rp.getNodeAction(n1).getState().setVal(rp.getVM(vm1));
+        rp.getNodeAction(n1).getState().instantiateTo(rp.getVM(vm1), Cause.Null);
         //Common stuff
         for (VM vm : map.getAllVMs()) {
             KillVMActionModel m = (KillVMActionModel) rp.getVMAction(vm);
             Assert.assertEquals(vm, m.getVM());
-            Assert.assertTrue(m.getState().isInstantiatedTo(0));
+            Assert.assertTrue(m.getState().instantiatedTo(0));
             Assert.assertNull(m.getDSlice());
-            Assert.assertTrue(m.getDuration().isInstantiatedTo(1));
-            Assert.assertTrue(m.getStart().isInstantiatedTo(0));
-            Assert.assertTrue(m.getEnd().isInstantiatedTo(1));
+            Assert.assertTrue(m.getDuration().instantiatedTo(1));
+            Assert.assertTrue(m.getStart().instantiatedTo(0));
+            Assert.assertTrue(m.getEnd().instantiatedTo(1));
         }
 
         //The waiting and the sleeping VM have no CSlice
@@ -89,7 +90,7 @@ public class KillVMActionModelTest {
         //The running VM has a CSlice
         Assert.assertNotNull(rp.getVMAction(vm1).getCSlice());
         System.out.println(rp.getVMAction(vm1).getCSlice() + " " + rp.getNode(n1));
-        Assert.assertTrue(rp.getVMAction(vm1).getCSlice().getHoster().isInstantiatedTo(rp.getNode(n1)));
+        Assert.assertTrue(rp.getVMAction(vm1).getCSlice().getHoster().instantiatedTo(rp.getNode(n1)));
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
 

@@ -21,26 +21,42 @@ import btrplace.model.Node;
 import btrplace.model.constraint.checker.OnlineChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
- * A constraint to force a set of nodes at being online.
+ * A constraint to force a node at being online.
  * <p/>
  * The restriction provided by the constraint is discrete.
- * however, if some of the nodes are already offline, then
- * their state will be unchanged.
+ * however, if the node is already offline, its
+ * state will be unchanged.
  *
  * @author Fabien Hermenier
  */
 public class Online extends NodeStateConstraint {
 
     /**
+     * Instantiate constraints for a collection of nodes.
+     *
+     * @param nodes the nodes to integrate
+     * @return the associated list of constraints
+     */
+    public static List<Online> newOnlines(Collection<Node> nodes) {
+        List<Online> l = new ArrayList<>(nodes.size());
+        for (Node n : nodes) {
+            l.add(new Online(n));
+        }
+        return l;
+    }
+
+    /**
      * Make a new constraint.
      *
-     * @param nodes the nodes to set online
+     * @param n the node to set online
      */
-    public Online(Collection<Node> nodes) {
-        super("online", nodes);
+    public Online(Node n) {
+        super("online", n);
     }
 
     @Override

@@ -47,6 +47,6 @@ public class ConstantActionDuration<E extends Element> implements ActionDuration
 
     @Override
     public String toString() {
-        return new StringBuilder("d=").append(duration).toString();
+        return "d=" + duration;
     }
 }

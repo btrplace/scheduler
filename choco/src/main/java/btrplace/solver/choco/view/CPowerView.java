@@ -24,8 +24,8 @@ import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.actionModel.BootableNodeModel;
 import btrplace.solver.choco.actionModel.NodeActionModel;
 import btrplace.solver.choco.actionModel.ShutdownableNodeModel;
-import choco.cp.solver.CPSolver;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.variables.IntVar;
+import solver.variables.VF;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,8 +45,8 @@ public class CPowerView implements ChocoModelView {
      */
     public static final String VIEW_ID = "PowerTime";
 
-    private Map<Integer, IntDomainVar> powerStarts;
-    private Map<Integer, IntDomainVar> powerEnds;
+    private Map<Integer, IntVar> powerStarts;
+    private Map<Integer, IntVar> powerEnds;
 
     /**
      * Make a new view.
@@ -54,16 +54,15 @@ public class CPowerView implements ChocoModelView {
      * @param rp the problem to rely on
      */
     public CPowerView(ReconfigurationProblem rp) {
-        CPSolver solver = rp.getSolver();
-        powerStarts = new HashMap<Integer, IntDomainVar>(rp.getNodes().length);
-        powerEnds = new HashMap<Integer, IntDomainVar>(rp.getNodes().length);
+        powerStarts = new HashMap<>(rp.getNodes().length);
+        powerEnds = new HashMap<>(rp.getNodes().length);
 
         for (Node n : rp.getNodes()) {
             NodeActionModel na = rp.getNodeAction(n);
             if (na instanceof ShutdownableNodeModel) {
                 powerStarts.put(rp.getNode(n), rp.getStart());
-                IntDomainVar powerEnd = rp.makeUnboundedDuration("NodeAction(", n, ").Pe");
-                solver.post(solver.eq(powerEnd, solver.plus(na.getHostingEnd(), na.getDuration())));
+                IntVar powerEnd = rp.makeUnboundedDuration("NodeAction(", n, ").Pe");
+                VF.task(na.getHostingEnd(), na.getDuration(), powerEnd);
                 powerEnds.put(rp.getNode(n), powerEnd);
             } else if (na instanceof BootableNodeModel) {
                 powerStarts.put(rp.getNode(n), na.getStart());
@@ -78,7 +77,7 @@ public class CPowerView implements ChocoModelView {
      * @param idx the node index
      * @return the variable denoting the moment
      */
-    public IntDomainVar getPowerStart(int idx) {
+    public IntVar getPowerStart(int idx) {
         return powerStarts.get(idx);
     }
 
@@ -88,7 +87,7 @@ public class CPowerView implements ChocoModelView {
      * @param idx the node index
      * @return the variable denoting the moment.
      */
-    public IntDomainVar getPowerEnd(int idx) {
+    public IntVar getPowerEnd(int idx) {
         return powerEnds.get(idx);
     }
 

@@ -65,14 +65,14 @@ public class CFenceTest {
 
         Set<VM> vms = new HashSet<>(Arrays.asList(vm1, vm2));
         Set<Node> ns = new HashSet<>(Arrays.asList(n1, n2));
-        CFence c = new CFence(new Fence(vms, ns));
+        CFence c = new CFence(new Fence(vm1, ns));
         Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
         ns.add(mo.newNode());
         Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
         vms.add(vm3);
         Assert.assertTrue(c.getMisPlacedVMs(mo).isEmpty());
         vms.add(vm4);
-        Set<VM> bad = c.getMisPlacedVMs(mo);
+        Set<VM> bad = new CFence(new Fence(vm4, ns)).getMisPlacedVMs(mo);
         Assert.assertEquals(1, bad.size());
         Assert.assertTrue(bad.contains(vm4));
     }
@@ -93,17 +93,17 @@ public class CFenceTest {
                 .run(n3, vm3).get();
 
         Set<Node> on = new HashSet<>(Arrays.asList(n1, n3));
-        Fence f = new Fence(map.getAllVMs(), on);
+        Fence f = new Fence(vm2, on);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(f);
-        cstrs.add(new Online(map.getAllNodes()));
+        cstrs.addAll(Online.newOnlines(map.getAllNodes()));
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
         Assert.assertTrue(p.getSize() > 0);
         Assert.assertTrue(p.iterator().next() instanceof MigrateVM);
         //Assert.assertEquals(SatConstraint.Sat.SATISFIED, f.isSatisfied(p.getResult()));
-        cstrs.add(new Ready(Collections.singleton(vm2)));
+        cstrs.add(new Ready(vm2));
 
         p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);

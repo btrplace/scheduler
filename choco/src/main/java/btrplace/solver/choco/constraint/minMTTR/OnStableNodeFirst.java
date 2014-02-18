@@ -22,12 +22,10 @@ import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
-import btrplace.solver.choco.actionModel.ActionModel;
-import btrplace.solver.choco.actionModel.ActionModelUtils;
 import btrplace.solver.choco.actionModel.VMActionModel;
-import choco.kernel.memory.IStateInt;
-import choco.kernel.solver.search.integer.AbstractIntVarSelector;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import memory.IStateInt;
+import solver.search.strategy.selectors.VariableSelector;
+import solver.variables.IntVar;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -43,11 +41,11 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class OnStableNodeFirst extends AbstractIntVarSelector {
+public class OnStableNodeFirst implements VariableSelector<IntVar> {
 
-    private IntDomainVar[] hoster;
+    private IntVar[] hoster;
 
-    private IntDomainVar[] starts;
+    private IntVar[] starts;
 
     private List<VM> vms;
 
@@ -57,29 +55,28 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
 
     private BitSet[] ins;
 
-
     private CMinMTTR obj;
 
     private IStateInt firstFree;
 
+    private IntVar last;
+
     /**
      * Make a new heuristics
      *
-     * @param lbl     the heuristic label (for debugging purpose)
      * @param rp      the problem to rely on
-     * @param actions the actions to consider.
      * @param o       the objective to rely on
      */
-    public OnStableNodeFirst(String lbl, ReconfigurationProblem rp, List<ActionModel> actions, CMinMTTR o) {
-        super(rp.getSolver(), ActionModelUtils.getStarts(actions.toArray(new ActionModel[actions.size()])));
+    public OnStableNodeFirst(ReconfigurationProblem rp, CMinMTTR o) {
+
         firstFree = rp.getSolver().getEnvironment().makeInt(0);
         this.obj = o;
         Mapping cfg = rp.getSourceModel().getMapping();
 
         VMActionModel[] vmActions = rp.getVMActions();
 
-        hoster = new IntDomainVar[vmActions.length];
-        starts = new IntDomainVar[vmActions.length];
+        hoster = new IntVar[vmActions.length];
+        starts = new IntVar[vmActions.length];
 
         this.vms = new ArrayList<>(rp.getFutureRunningVMs());
 
@@ -95,8 +92,8 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
             VMActionModel action = vmActions[i];
             Slice slice = action.getDSlice();
             if (slice != null) {
-                IntDomainVar h = slice.getHoster();
-                IntDomainVar s = slice.getStart();
+                IntVar h = slice.getHoster();
+                IntVar s = slice.getStart();
                 hoster[i] = h;
                 if (s != rp.getEnd()) {
                     starts[i] = s;
@@ -133,11 +130,14 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
      */
     private void makeIncomings() {
         if (stays == null && move == null) {
+            for (BitSet in : ins) {
+                in.clear();
+            }
             stays = new BitSet();
             move = new BitSet();
             for (int i = 0; i < hoster.length; i++) {
-                if (hoster[i] != null && hoster[i].isInstantiated()) {
-                    int newPos = hoster[i].getVal();
+                if (hoster[i] != null && hoster[i].instantiated()) {
+                    int newPos = hoster[i].getValue();
                     if (oldPos[i] != -1 && newPos != oldPos[i]) {
                         //The VM has move
                         ins[newPos].set(i);
@@ -151,26 +151,39 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
     }
 
     @Override
-    public IntDomainVar selectVar() {
-
-        for (BitSet in : ins) {
-            in.clear();
-        }
+    public IntVar getVariable() {
 
         makeIncomings();
-
-        IntDomainVar v = getVMtoLeafNode();
-        if (v != null) {
+        IntVar v = getVMtoLeafNode();
+        if (v == null) {
+            last = null;
             return null;
         }
 
         v = getMovingVM();
         if (v != null) {
+            obj.postCostConstraints();
             return v;
         }
 
-        IntDomainVar early = getEarlyVar();
-        return early != null ? early : minInf();
+        IntVar early = getEarlyVar();
+        last = early != null ? early : minInf();
+        return last;
+
+    }
+
+    @Override
+    public boolean hasNext() {
+        return last != null;
+    }
+
+    @Override
+    public void advance() {
+    }
+
+    @Override
+    public IntVar[] getScope() {
+        return starts;
     }
 
     /**
@@ -178,11 +191,11 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
      *
      * @return a start moment, or {@code null} if all the moments  are already instantiated
      */
-    private IntDomainVar getMovingVM() {
+    private IntVar getMovingVM() {
         //VMs that are moving
         for (int i = move.nextSetBit(0); i >= 0; i = move.nextSetBit(i + 1)) {
-            if (starts[i] != null && !starts[i].isInstantiated()) {
-                if (oldPos[i] != hoster[i].getVal()) {
+            if (starts[i] != null && !starts[i].instantiated()) {
+                if (oldPos[i] != hoster[i].getValue()) {
                     return starts[i];
                 }
             }
@@ -190,22 +203,22 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
         return null;
     }
 
-    private IntDomainVar minInf() {
-        IntDomainVar best = null;
+    private IntVar minInf() {
+        IntVar best = null;
         for (int i = firstFree.get(); i < starts.length; i++) {
-            IntDomainVar v = starts[i];
+            IntVar v = starts[i];
             if (i < vms.size() - 1) {
                 VM vm = vms.get(i);
                 if (vm != null && v != null) {
-                    if (!v.isInstantiated()) {
-                        if (best == null || best.getInf() < v.getInf()) {
+                    if (!v.instantiated()) {
+                        if (best == null || best.getLB() < v.getLB()) {
                             best = v;
-                            if (best.getInf() == 0) {
+                            if (best.getLB() == 0) {
                                 break;
                             }
                         }
                     } else {
-                        firstFree.increment();
+                        firstFree.add(1);
                     }
                 }
             }
@@ -222,14 +235,14 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
      *
      * @return the variable, or {@code null} if all the start moments are already instantiated
      */
-    private IntDomainVar getEarlyVar() {
-        IntDomainVar earlyVar = null;
+    private IntVar getEarlyVar() {
+        IntVar earlyVar = null;
         for (int i = stays.nextSetBit(0); i >= 0; i = stays.nextSetBit(i + 1)) {
-            if (starts[i] != null && !starts[i].isInstantiated()) {
+            if (starts[i] != null && !starts[i].instantiated()) {
                 if (earlyVar == null) {
                     earlyVar = starts[i];
                 } else {
-                    if (earlyVar.getInf() > starts[i].getInf()) {
+                    if (earlyVar.getLB() > starts[i].getLB()) {
                         earlyVar = starts[i];
                     }
                 }
@@ -245,14 +258,13 @@ public class OnStableNodeFirst extends AbstractIntVarSelector {
      *
      * @return a start moment, or {@code null} if there is no more un-schedule actions to leaf nodes
      */
-    private IntDomainVar getVMtoLeafNode() {
+    private IntVar getVMtoLeafNode() {
         for (int x = 0; x < outs.length; x++) {
             if (outs[x].cardinality() == 0) {
                 //no outgoing VMs, can be launched directly.
                 BitSet in = ins[x];
                 for (int i = in.nextSetBit(0); i >= 0; i = in.nextSetBit(i + 1)) {
-                    if (starts[i] != null && !starts[i].isInstantiated()) {
-                        return starts[i];
+                    if (starts[i] != null && !starts[i].instantiated()) {
                     }
                 }
             }

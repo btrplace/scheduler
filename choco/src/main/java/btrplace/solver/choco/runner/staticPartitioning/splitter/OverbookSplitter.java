@@ -17,7 +17,8 @@
 
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
-import btrplace.model.*;
+import btrplace.model.Instance;
+import btrplace.model.Node;
 import btrplace.model.constraint.Overbook;
 import gnu.trove.map.hash.TIntIntHashMap;
 
@@ -42,18 +43,8 @@ public class OverbookSplitter implements ConstraintSplitter<Overbook> {
 
     @Override
     public boolean split(Overbook cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
-        final boolean c = cstr.isContinuous();
-        final String rc = cstr.getResource();
-        final double qty = cstr.getRatio();
-        return SplittableElementSet.newNodeIndex(cstr.getInvolvedNodes(), nodePosition).
-                forEachPartition(new IterateProcedure<Node>() {
-                    @Override
-                    public boolean extract(SplittableElementSet<Node> index, int idx, int from, int to) {
-                        if (to != from) {
-                            partitions.get(idx).getSatConstraints().add(new Overbook(new ElementSubSet<>(index, idx, from, to), rc, qty, c));
-                        }
-                        return true;
-                    }
-                });
+        Node n = cstr.getInvolvedNodes().iterator().next();
+        int i = nodePosition.get(n.id());
+        return partitions.get(i).getSatConstraints().add(cstr);
     }
 }

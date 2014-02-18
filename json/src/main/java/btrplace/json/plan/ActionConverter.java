@@ -72,10 +72,14 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
 
     public static final String VM_DESTINATION_LABEL = "to";
 
-    /** Key to indicate a resource identifier.*/
+    /**
+     * Key to indicate a resource identifier.
+     */
     public static final String RC_LABEL = "rc";
 
-    /** Key to indicate a resource amount.*/
+    /**
+     * Key to indicate a resource amount.
+     */
     public static final String RC_AMOUNT_LABEL = "amount";
 
     @Override
@@ -134,7 +138,7 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
             JSONObject hooks = (JSONObject) in.get("hooks");
             for (String k : hooks.keySet()) {
                 try {
-                    Action.Hook h = Action.Hook.valueOf(k);
+                    Action.Hook h = Action.Hook.valueOf(k.toUpperCase());
                     for (Object o : (JSONArray) hooks.get(k)) {
                         a.addEvent(h, eventFromJSON((JSONObject) o));
                     }
@@ -347,13 +351,13 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
         JSONObject o = new JSONObject();
         o.put(ACTION_ID_LABEL, "substitutedVM");
         o.put(VM_LABEL, toJSON(a.getVM()));
-        o.put("newvm", toJSON(a.getNewVM()));
+        o.put("newVm", toJSON(a.getNewVM()));
         return o;
     }
 
     private SubstitutedVMEvent substitutedVMEventFromJSON(JSONObject o) throws JSONConverterException {
         return new SubstitutedVMEvent(requiredVM(o, VM_LABEL),
-                requiredVM(o, "newvm"));
+                requiredVM(o, "newVm"));
     }
 
     @Override
@@ -417,7 +421,7 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     }
 
     @Override
-    public List<Action> listFromJSON(String buf) throws IOException, JSONConverterException {
+    public List<Action> listFromJSON(String buf) throws JSONConverterException {
         try (StringReader in = new StringReader(buf)) {
             return listFromJSON(in);
         }

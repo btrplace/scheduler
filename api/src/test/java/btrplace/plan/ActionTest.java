@@ -39,18 +39,18 @@ public class ActionTest {
         Action a1 = new MockAction(new VM(1), 1, 3);
         Assert.assertEquals(1, a1.getStart());
         Assert.assertEquals(3, a1.getEnd());
-        Assert.assertTrue(a1.getEvents(Action.Hook.pre).isEmpty());
-        Assert.assertTrue(a1.getEvents(Action.Hook.post).isEmpty());
+        Assert.assertTrue(a1.getEvents(Action.Hook.PRE).isEmpty());
+        Assert.assertTrue(a1.getEvents(Action.Hook.POST).isEmpty());
     }
 
     @Test
     public void testEvents() {
         Action a1 = new MockAction(new VM(1), 1, 3);
         Event e = mock(Event.class);
-        a1.addEvent(Action.Hook.pre, e);
-        Assert.assertEquals(1, a1.getEvents(Action.Hook.pre).size());
-        a1.addEvent(Action.Hook.post, e);
-        Assert.assertEquals(1, a1.getEvents(Action.Hook.post).size());
+        a1.addEvent(Action.Hook.PRE, e);
+        Assert.assertEquals(1, a1.getEvents(Action.Hook.PRE).size());
+        a1.addEvent(Action.Hook.POST, e);
+        Assert.assertEquals(1, a1.getEvents(Action.Hook.POST).size());
     }
 
     @Test
@@ -60,8 +60,8 @@ public class ActionTest {
         MockAction a1 = new MockAction(new VM(1), 1, 3);
         Event e = mock(Event.class);
         when(e.apply(mo)).thenReturn(true);
-        a1.addEvent(Action.Hook.pre, e);
-        a1.addEvent(Action.Hook.post, e);
+        a1.addEvent(Action.Hook.PRE, e);
+        a1.addEvent(Action.Hook.POST, e);
 
         a1.apply(mo);
 

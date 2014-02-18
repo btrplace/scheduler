@@ -77,10 +77,7 @@ public class SequentialVMTransitions extends SatConstraint {
 
     @Override
     public String toString() {
-        return new StringBuilder("sequentialVMTransitions(")
-                .append("vms=").append(getInvolvedVMs())
-                .append(", continuous")
-                .append(')').toString();
+        return "sequentialVMTransitions(" + "vms=" + getInvolvedVMs() + ", continuous" + ')';
     }
 
     @Override
