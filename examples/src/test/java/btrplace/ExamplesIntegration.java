@@ -31,7 +31,7 @@ import org.testng.annotations.Test;
  */
 public class ExamplesIntegration {
 
-    @Test(timeOut = 2000)
+    @Test
     public void testGettingStarted() throws Exception {
         Example ex = new GettingStarted();
         Assert.assertTrue("Example " + ex.toString() + " failed", ex.run());
