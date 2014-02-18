@@ -67,7 +67,6 @@ public class ConstraintSplitterMapper {
         mapper.register(new RunningSplitter());
         mapper.register(new SequentialVMTransitionsSplitter());
         mapper.register(new SingleResourceCapacitySplitter());
-        mapper.register(new SingleRunningCapacitySplitter());
         mapper.register(new SleepingSplitter());
         mapper.register(new SplitSplitter());
         mapper.register(new SpreadSplitter());

@@ -84,7 +84,9 @@ public class ModelCustomization implements Example {
         List<SatConstraint> cstrs = new ArrayList<>();
 
         //No more than 5 VMs per node
-        cstrs.add(new SingleRunningCapacity(model.getMapping().getAllNodes(), 5));
+        for (Node n : model.getMapping().getAllNodes()) {
+            cstrs.add(new RunningCapacity(n, 5));
+        }
 
         //vm1 and vm10 on the same node
         cstrs.add(new Gather(Arrays.asList(vms.get(0), vms.get(9))));

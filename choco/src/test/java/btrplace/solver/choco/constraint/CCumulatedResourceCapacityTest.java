@@ -34,7 +34,7 @@ import org.testng.annotations.Test;
 import java.util.*;
 
 /**
- * Unit tests for {@link CCumulatedRunningCapacity}.
+ * Unit tests for {@link CRunningCapacity}.
  *
  * @author Fabien Hermenier
  */

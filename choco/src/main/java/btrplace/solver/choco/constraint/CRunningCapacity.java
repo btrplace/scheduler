@@ -22,37 +22,41 @@ import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.Constraint;
-import btrplace.model.constraint.CumulatedRunningCapacity;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
+import solver.Cause;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
+import solver.exception.ContradictionException;
 import solver.variables.IntVar;
 import solver.variables.VariableFactory;
 
 import java.util.*;
 
 /**
- * Choco implementation of {@link CumulatedRunningCapacity}.
+ * Choco implementation of {@link btrplace.model.constraint.RunningCapacity}.
  *
  * @author Fabien Hermenier
  */
-public class CCumulatedRunningCapacity implements ChocoConstraint {
+public class CRunningCapacity implements ChocoConstraint {
 
-    private CumulatedRunningCapacity cstr;
+    private btrplace.model.constraint.RunningCapacity cstr;
 
     /**
      * Make a new constraint.
      *
      * @param c the constraint to rely on
      */
-    public CCumulatedRunningCapacity(CumulatedRunningCapacity c) {
+    public CRunningCapacity(btrplace.model.constraint.RunningCapacity c) {
         cstr = c;
     }
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
         Solver s = rp.getSolver();
+        if (cstr.getInvolvedVMs().size() == 1) {
+            return filterWithSingleNode(rp);
+        }
         if (cstr.isContinuous()) {
             //The constraint must be already satisfied
             if (!cstr.isSatisfied(rp.getSourceModel())) {
@@ -83,18 +87,31 @@ public class CCumulatedRunningCapacity implements ChocoConstraint {
         //basically, we count 1 per VM necessarily in the set of nodes
         //if involved nodes == all the nodes, then sum == nb of running VMs
         IntVar mySum = VariableFactory.bounded(rp.makeVarLabel("nbRunnings"), 0, rp.getFutureRunningVMs().size(), rp.getSolver());
-        //IntExp sumOfStates = Solver.sum(nodesState.toArray(new IntVar[nodesState.size()]));
-        //solver.post(solver.leq(sumOfStates, constraint.getAmount()));
         s.post(IntConstraintFactory.sum(vs.toArray(new IntVar[vs.size()]), mySum));
         s.post(IntConstraintFactory.arithm(mySum, "<=", cstr.getAmount()));
 
 
-        // IntExp on = Solver.sum(vs.toArray(new IntVar[vs.size()]));
         if (cstr.getInvolvedNodes().equals(rp.getSourceModel().getMapping().getAllNodes())) {
             s.post(IntConstraintFactory.arithm(mySum, "=", rp.getFutureRunningVMs().size()));
-            //s.post(s.eq(on, rp.getFutureRunningVMs().size()));
         }
-        //s.post(s.leq(on, cstr.getAmount()));
+        return true;
+    }
+
+    private boolean filterWithSingleNode(ReconfigurationProblem rp) throws SolverException {
+        Node n = cstr.getInvolvedNodes().iterator().next();
+        IntVar v = rp.getNbRunningVMs()[rp.getNode(n)];
+        Solver s = rp.getSolver();
+        s.post(IntConstraintFactory.arithm(v, "<=", cstr.getAmount()));
+
+        //Continuous in practice ?
+        if (cstr.isContinuous() && cstr.isSatisfied(rp.getSourceModel())) {
+            try {
+                v.updateUpperBound(cstr.getAmount(), Cause.Null);
+            } catch (ContradictionException e) {
+                rp.getLogger().error("Unable to cap the amount of VMs on '{}' to {}, : ", n, cstr.getAmount(), e.getMessage());
+                return false;
+            }
+        }
         return true;
     }
 
@@ -126,12 +143,12 @@ public class CCumulatedRunningCapacity implements ChocoConstraint {
     public static class Builder implements ChocoConstraintBuilder {
         @Override
         public Class<? extends Constraint> getKey() {
-            return CumulatedRunningCapacity.class;
+            return btrplace.model.constraint.RunningCapacity.class;
         }
 
         @Override
-        public CCumulatedRunningCapacity build(Constraint cstr) {
-            return new CCumulatedRunningCapacity((CumulatedRunningCapacity) cstr);
+        public CRunningCapacity build(Constraint cstr) {
+            return new CRunningCapacity((btrplace.model.constraint.RunningCapacity) cstr);
         }
     }
 }

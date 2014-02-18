@@ -31,18 +31,18 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Unit tests for {@link CumulatedRunningCapacity}.
+ * Unit tests for {@link RunningCapacity}.
  *
  * @author Fabien Hermenier
  */
-public class CumulatedRunningCapacityTest {
+public class RunningCapacityTest {
 
     @Test
     public void testInstantiation() {
         Model mo = new DefaultModel();
         List<Node> ns = Util.newNodes(mo, 10);
         Set<Node> s = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
-        CumulatedRunningCapacity c = new CumulatedRunningCapacity(s, 3);
+        RunningCapacity c = new RunningCapacity(s, 3);
         Assert.assertNotNull(c.getChecker());
         Assert.assertEquals(s, c.getInvolvedNodes());
         Assert.assertEquals(3, c.getAmount());
@@ -54,7 +54,7 @@ public class CumulatedRunningCapacityTest {
         Assert.assertTrue(c.isContinuous());
         System.out.println(c);
 
-        c = new CumulatedRunningCapacity(s, 3, true);
+        c = new RunningCapacity(s, 3, true);
         Assert.assertTrue(c.isContinuous());
 
     }
@@ -65,14 +65,14 @@ public class CumulatedRunningCapacityTest {
         List<Node> ns = Util.newNodes(mo, 10);
 
         Set<Node> s = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
-        CumulatedRunningCapacity c = new CumulatedRunningCapacity(s, 3);
-        CumulatedRunningCapacity c2 = new CumulatedRunningCapacity(s, 3);
+        RunningCapacity c = new RunningCapacity(s, 3);
+        RunningCapacity c2 = new RunningCapacity(s, 3);
         Assert.assertTrue(c.equals(c));
         Assert.assertTrue(c.equals(c2));
         Assert.assertEquals(c.hashCode(), c2.hashCode());
 
-        Assert.assertFalse(c.equals(new CumulatedRunningCapacity(s, 2)));
-        Assert.assertFalse(c.equals(new CumulatedRunningCapacity(new HashSet<Node>(), 3)));
+        Assert.assertFalse(c.equals(new RunningCapacity(s, 2)));
+        Assert.assertFalse(c.equals(new RunningCapacity(new HashSet<Node>(), 3)));
     }
 
     @Test
@@ -88,7 +88,7 @@ public class CumulatedRunningCapacityTest {
         m.addRunningVM(vms.get(2), ns.get(1));
         m.addReadyVM(vms.get(3));
 
-        CumulatedRunningCapacity c = new CumulatedRunningCapacity(m.getAllNodes(), 2);
+        RunningCapacity c = new RunningCapacity(m.getAllNodes(), 2);
         c.setContinuous(false);
         Assert.assertEquals(c.isSatisfied(mo), true);
         m.addRunningVM(vms.get(1), ns.get(1));
@@ -110,7 +110,7 @@ public class CumulatedRunningCapacityTest {
         m.addRunningVM(vms.get(2), ns.get(1));
         m.addReadyVM(vms.get(3));
 
-        CumulatedRunningCapacity c = new CumulatedRunningCapacity(m.getAllNodes(), 2);
+        RunningCapacity c = new RunningCapacity(m.getAllNodes(), 2);
         c.setContinuous(true);
 
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);

@@ -18,37 +18,37 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
-import btrplace.model.constraint.CumulatedRunningCapacity;
+import btrplace.model.constraint.RunningCapacity;
 import net.minidev.json.JSONObject;
 
 /**
- * JSON Converter for the constraint {@link CumulatedRunningCapacityConverter}.
+ * JSON Converter for the constraint {@link RunningCapacity}.
  *
  * @author Fabien Hermenier
  */
-public class CumulatedRunningCapacityConverter extends ConstraintConverter<CumulatedRunningCapacity> {
+public class RunningCapacityConverter extends ConstraintConverter<RunningCapacity> {
 
     @Override
-    public Class<CumulatedRunningCapacity> getSupportedConstraint() {
-        return CumulatedRunningCapacity.class;
+    public Class<RunningCapacity> getSupportedConstraint() {
+        return RunningCapacity.class;
     }
 
     @Override
     public String getJSONId() {
-        return "cumulatedRunningCapacity";
+        return "runningCapacity";
     }
 
 
     @Override
-    public CumulatedRunningCapacity fromJSON(JSONObject o) throws JSONConverterException {
+    public RunningCapacity fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new CumulatedRunningCapacity(requiredNodes(o, "nodes"),
+        return new RunningCapacity(requiredNodes(o, "nodes"),
                 requiredInt(o, "amount"),
                 requiredBoolean(o, "continuous"));
     }
 
     @Override
-    public JSONObject toJSON(CumulatedRunningCapacity o) {
+    public JSONObject toJSON(RunningCapacity o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
         c.put("nodes", nodesToJSON(o.getInvolvedNodes()));

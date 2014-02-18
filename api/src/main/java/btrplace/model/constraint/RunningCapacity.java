@@ -19,7 +19,7 @@ package btrplace.model.constraint;
 
 import btrplace.model.Node;
 import btrplace.model.VM;
-import btrplace.model.constraint.checker.CumulatedRunningCapacityChecker;
+import btrplace.model.constraint.checker.RunningCapacityChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
@@ -27,21 +27,42 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Restrict to a given value, the cumulated amount of VMs running
+ * Restrict to a given value, the total amount of VMs running
  * on the given set of nodes.
  * <p/>
  * The restriction provided by the constraint can be either discrete or continuous.
  * If it is discrete, the constraint only considers the model obtained as the end
  * of the reconfiguration process.
  * <p/>
- * If the restriction is continuous, then the cumulated usage must never exceed
+ * If the restriction is continuous, then the total usage must never exceed
  * the given amount, in the source model, during the reconfiguration and at the end.
  *
  * @author Fabien Hermenier
  */
-public class CumulatedRunningCapacity extends SatConstraint {
+public class RunningCapacity extends SatConstraint {
 
     private int qty;
+
+    /**
+     * Make a new discrete constraint on a single node
+     *
+     * @param n      the node involved in the constraint
+     * @param amount the maximum amount running VMs running on the given node. >= 0
+     */
+    public RunningCapacity(Node n, int amount) {
+        this(Collections.singleton(n), amount, false);
+    }
+
+    /**
+     * Make a new constraint on a single node
+     *
+     * @param n          the node involved in the constraint
+     * @param amount     the maximum amount running VMs running on the given node. >= 0
+     * @param continuous {@code true} for a continuous restriction
+     */
+    public RunningCapacity(Node n, int amount, boolean continuous) {
+        this(Collections.singleton(n), amount, continuous);
+    }
 
     /**
      * Make a new constraint having a discrete restriction.
@@ -49,7 +70,7 @@ public class CumulatedRunningCapacity extends SatConstraint {
      * @param nodes  the nodes involved in the constraint
      * @param amount the maximum amount running VMs running on the given nodes. >= 0
      */
-    public CumulatedRunningCapacity(Set<Node> nodes, int amount) {
+    public RunningCapacity(Set<Node> nodes, int amount) {
         this(nodes, amount, false);
     }
 
@@ -60,7 +81,7 @@ public class CumulatedRunningCapacity extends SatConstraint {
      * @param amount     the maximum amount running VMs running on the given nodes. >= 0
      * @param continuous {@code true} for a continuous restriction
      */
-    public CumulatedRunningCapacity(Set<Node> nodes, int amount, boolean continuous) {
+    public RunningCapacity(Set<Node> nodes, int amount, boolean continuous) {
         super(Collections.<VM>emptySet(), nodes, continuous);
         if (amount < 0) {
             throw new IllegalArgumentException("The amount of VMs must be >= 0");
@@ -80,7 +101,7 @@ public class CumulatedRunningCapacity extends SatConstraint {
             return false;
         }
 
-        CumulatedRunningCapacity that = (CumulatedRunningCapacity) o;
+        RunningCapacity that = (RunningCapacity) o;
 
         return qty == that.qty &&
                 getInvolvedNodes().equals(that.getInvolvedNodes());
@@ -118,7 +139,7 @@ public class CumulatedRunningCapacity extends SatConstraint {
 
     @Override
     public SatConstraintChecker getChecker() {
-        return new CumulatedRunningCapacityChecker(this);
+        return new RunningCapacityChecker(this);
     }
 
 }
