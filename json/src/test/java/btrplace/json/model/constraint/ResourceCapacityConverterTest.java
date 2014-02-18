@@ -20,7 +20,7 @@ package btrplace.json.model.constraint;
 import btrplace.json.JSONConverterException;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
-import btrplace.model.constraint.SingleResourceCapacity;
+import btrplace.model.constraint.ResourceCapacity;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -29,19 +29,19 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 /**
- * Unit tests for {@link btrplace.model.constraint.SingleResourceCapacity}.
+ * Unit tests for {@link btrplace.model.constraint.ResourceCapacity}.
  *
  * @author Fabien Hermenier
  */
-public class SingleResourceCapacityConverterTest {
+public class ResourceCapacityConverterTest {
 
     @Test
     public void testViables() throws JSONConverterException, IOException {
+        ResourceCapacityConverter conv = new ResourceCapacityConverter();
         Model mo = new DefaultModel();
-        SingleResourceCapacityConverter conv = new SingleResourceCapacityConverter();
         conv.setModel(mo);
-        SingleResourceCapacity d = new SingleResourceCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), "cpu", 5, false);
-        SingleResourceCapacity c = new SingleResourceCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), "mem", 5, true);
+        ResourceCapacity d = new ResourceCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), "cpu", 5, false);
+        ResourceCapacity c = new ResourceCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode())), "mem", 5, true);
 
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);

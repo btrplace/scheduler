@@ -19,7 +19,7 @@ package btrplace.model.constraint;
 
 import btrplace.model.Node;
 import btrplace.model.VM;
-import btrplace.model.constraint.checker.CumulatedResourceCapacityChecker;
+import btrplace.model.constraint.checker.ResourceCapacityChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.Collections;
@@ -27,23 +27,46 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Restrict the cumulated amount of virtual resources consumed by
+ * Restrict the total amount of virtual resources consumed by
  * the VMs hosted on the given nodes.
  * <p/>
  * The restriction provided by the constraint can be either discrete or continuous.
  * If it is discrete, the constraint only considers the model obtained as the end
  * of the reconfiguration process.
  * <p/>
- * If the restriction is continuous, then the cumulated resource usage must never exceed
+ * If the restriction is continuous, then the total resource usage must never exceed
  * the given amount, in the source model, during the reconfiguration and at the end.
  *
  * @author Fabien Hermenier
  */
-public class CumulatedResourceCapacity extends SatConstraint {
+public class ResourceCapacity extends SatConstraint {
 
     private int qty;
 
     private String rcId;
+
+    /**
+     * Make a new discrete constraint on a single node.
+     *
+     * @param n  the n involved in the constraint
+     * @param rc     the resource identifier
+     * @param amount the maximum amount of resource consumed by all the VMs running on the given nodes. >= 0
+     */
+    public ResourceCapacity(Node n, String rc, int amount) {
+        this(Collections.singleton(n), rc, amount, false);
+    }
+
+    /**
+     * Make a new constraint on a single node.
+     *
+     * @param n          the n involved in the constraint
+     * @param rc         the resource identifier
+     * @param amount     the maximum amount of resource consumed by all the VMs running on the given nodes. >= 0
+     * @param continuous {@code true} for a continuous restriction.
+     */
+    public ResourceCapacity(Node n, String rc, int amount, boolean continuous) {
+        this(Collections.singleton(n), rc, amount, continuous);
+    }
 
     /**
      * Make a new constraint with a discrete restriction.
@@ -52,7 +75,7 @@ public class CumulatedResourceCapacity extends SatConstraint {
      * @param rc     the resource identifier
      * @param amount the maximum amount of resource consumed by all the VMs running on the given nodes. >= 0
      */
-    public CumulatedResourceCapacity(Set<Node> nodes, String rc, int amount) {
+    public ResourceCapacity(Set<Node> nodes, String rc, int amount) {
         this(nodes, rc, amount, false);
     }
 
@@ -64,7 +87,7 @@ public class CumulatedResourceCapacity extends SatConstraint {
      * @param amount     the maximum amount of resource consumed by all the VMs running on the given nodes. >= 0
      * @param continuous {@code true} for a continuous restriction.
      */
-    public CumulatedResourceCapacity(Set<Node> nodes, String rc, int amount, boolean continuous) {
+    public ResourceCapacity(Set<Node> nodes, String rc, int amount, boolean continuous) {
         super(Collections.<VM>emptySet(), nodes, continuous);
         if (amount < 0) {
             throw new IllegalArgumentException("The amount of resource must be >= 0");
@@ -103,7 +126,7 @@ public class CumulatedResourceCapacity extends SatConstraint {
             return false;
         }
 
-        CumulatedResourceCapacity that = (CumulatedResourceCapacity) o;
+        ResourceCapacity that = (ResourceCapacity) o;
 
         return qty == that.qty &&
                 rcId.equals(that.rcId) &&
@@ -136,7 +159,7 @@ public class CumulatedResourceCapacity extends SatConstraint {
 
     @Override
     public SatConstraintChecker getChecker() {
-        return new CumulatedResourceCapacityChecker(this);
+        return new ResourceCapacityChecker(this);
     }
 
 }

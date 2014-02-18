@@ -31,18 +31,18 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Unit tests for {@link CumulatedResourceCapacity}.
+ * Unit tests for {@link ResourceCapacity}.
  *
  * @author Fabien Hermenier
  */
-public class CumulatedResourceCapacityTest {
+public class ResourceCapacityTest {
 
     @Test
     public void testInstantiation() {
         Model mo = new DefaultModel();
         List<Node> ns = Util.newNodes(mo, 10);
         Set<Node> s = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
-        CumulatedResourceCapacity c = new CumulatedResourceCapacity(s, "foo", 3);
+        ResourceCapacity c = new ResourceCapacity(s, "foo", 3);
         Assert.assertNotNull(c.getChecker());
         Assert.assertEquals(s, c.getInvolvedNodes());
         Assert.assertEquals("foo", c.getResource());
@@ -53,7 +53,7 @@ public class CumulatedResourceCapacityTest {
         Assert.assertTrue(c.setContinuous(true));
         Assert.assertTrue(c.isContinuous());
 
-        c = new CumulatedResourceCapacity(s, "foo", 3, true);
+        c = new ResourceCapacity(s, "foo", 3, true);
         Assert.assertTrue(c.isContinuous());
 
         System.out.println(c);
@@ -64,15 +64,15 @@ public class CumulatedResourceCapacityTest {
         Model mo = new DefaultModel();
         List<Node> ns = Util.newNodes(mo, 10);
         Set<Node> s = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
-        CumulatedResourceCapacity c = new CumulatedResourceCapacity(s, "foo", 3);
-        CumulatedResourceCapacity c2 = new CumulatedResourceCapacity(s, "foo", 3);
+        ResourceCapacity c = new ResourceCapacity(s, "foo", 3);
+        ResourceCapacity c2 = new ResourceCapacity(s, "foo", 3);
         Assert.assertTrue(c.equals(c));
         Assert.assertTrue(c.equals(c2));
         Assert.assertEquals(c.hashCode(), c2.hashCode());
 
-        Assert.assertFalse(c.equals(new CumulatedResourceCapacity(s, "bar", 3)));
-        Assert.assertFalse(c.equals(new CumulatedResourceCapacity(s, "foo", 2)));
-        Assert.assertFalse(c.equals(new CumulatedResourceCapacity(new HashSet<Node>(), "foo", 3)));
+        Assert.assertFalse(c.equals(new ResourceCapacity(s, "bar", 3)));
+        Assert.assertFalse(c.equals(new ResourceCapacity(s, "foo", 2)));
+        Assert.assertFalse(c.equals(new ResourceCapacity(new HashSet<Node>(), "foo", 3)));
     }
 
     @Test
@@ -94,9 +94,9 @@ public class CumulatedResourceCapacityTest {
         rc.setConsumption(vms.get(1), 2);
         mo.attach(rc);
         Set<Node> nodes = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
-        CumulatedResourceCapacity cc = new CumulatedResourceCapacity(nodes, "foo", 4);
+        ResourceCapacity cc = new ResourceCapacity(nodes, "foo", 4);
         Assert.assertEquals(cc.isSatisfied(mo), true);
-        Assert.assertEquals(new CumulatedResourceCapacity(nodes, "bar", 100).isSatisfied(mo), false);
+        Assert.assertEquals(new ResourceCapacity(nodes, "bar", 100).isSatisfied(mo), false);
 
         rc.setConsumption(vms.get(0), 3);
         Assert.assertEquals(cc.isSatisfied(mo), false);
@@ -124,7 +124,7 @@ public class CumulatedResourceCapacityTest {
         mo.attach(rc);
 
         Set<Node> nodes = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
-        CumulatedResourceCapacity cc = new CumulatedResourceCapacity(nodes, "foo", 4, true);
+        ResourceCapacity cc = new ResourceCapacity(nodes, "foo", 4, true);
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(cc.isSatisfied(plan), true);
         //3/4

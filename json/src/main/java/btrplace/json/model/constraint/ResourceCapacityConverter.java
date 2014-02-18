@@ -18,37 +18,37 @@
 package btrplace.json.model.constraint;
 
 import btrplace.json.JSONConverterException;
-import btrplace.model.constraint.SingleResourceCapacity;
+import btrplace.model.constraint.ResourceCapacity;
 import net.minidev.json.JSONObject;
 
 /**
- * JSON Converter for the constraint {@link SingleResourceCapacityConverter}.
+ * JSON Converter for the constraint {@link ResourceCapacityConverter}.
  *
  * @author Fabien Hermenier
  */
-public class SingleResourceCapacityConverter extends ConstraintConverter<SingleResourceCapacity> {
+public class ResourceCapacityConverter extends ConstraintConverter<ResourceCapacity> {
 
     @Override
-    public Class<SingleResourceCapacity> getSupportedConstraint() {
-        return SingleResourceCapacity.class;
+    public Class<ResourceCapacity> getSupportedConstraint() {
+        return ResourceCapacity.class;
     }
 
     @Override
     public String getJSONId() {
-        return "singleResourceCapacity";
+        return "resourceCapacity";
     }
 
     @Override
-    public SingleResourceCapacity fromJSON(JSONObject o) throws JSONConverterException {
+    public ResourceCapacity fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new SingleResourceCapacity(requiredNodes(o, "nodes"),
+        return new ResourceCapacity(requiredNodes(o, "nodes"),
                 requiredString(o, "rc"),
                 requiredInt(o, "amount"),
                 requiredBoolean(o, "continuous"));
     }
 
     @Override
-    public JSONObject toJSON(SingleResourceCapacity o) {
+    public JSONObject toJSON(ResourceCapacity o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
         c.put("nodes", nodesToJSON(o.getInvolvedNodes()));

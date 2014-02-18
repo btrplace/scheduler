@@ -59,7 +59,7 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
         ConstraintsConverter conv = new ConstraintsConverter();
         conv.register(new AmongConverter());
         conv.register(new BanConverter());
-        conv.register(new CumulatedResourceCapacityConverter());
+        conv.register(new ResourceCapacityConverter());
         conv.register(new RunningCapacityConverter());
         conv.register(new FenceConverter());
         conv.register(new GatherConverter());
@@ -74,7 +74,6 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
         conv.register(new RootConverter());
         conv.register(new RunningConverter());
         conv.register(new SequentialVMTransitionsConverter());
-        conv.register(new SingleResourceCapacityConverter());
         conv.register(new SleepingConverter());
         conv.register(new SplitAmongConverter());
         conv.register(new SplitConverter());

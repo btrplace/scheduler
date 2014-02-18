@@ -20,17 +20,17 @@ package btrplace.model.constraint.checker;
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.Node;
-import btrplace.model.constraint.CumulatedResourceCapacity;
+import btrplace.model.constraint.ResourceCapacity;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.event.*;
 
 /**
- * Checker for the {@link btrplace.model.constraint.CumulatedResourceCapacity} constraint
+ * Checker for the {@link btrplace.model.constraint.ResourceCapacity} constraint
  *
  * @author Fabien Hermenier
- * @see btrplace.model.constraint.CumulatedResourceCapacity
+ * @see btrplace.model.constraint.ResourceCapacity
  */
-public class CumulatedResourceCapacityChecker extends AllowAllConstraintChecker<CumulatedResourceCapacity> {
+public class ResourceCapacityChecker extends AllowAllConstraintChecker<ResourceCapacity> {
 
     private ShareableResource rc;
 
@@ -41,7 +41,7 @@ public class CumulatedResourceCapacityChecker extends AllowAllConstraintChecker<
      *
      * @param s the associated constraint
      */
-    public CumulatedResourceCapacityChecker(CumulatedResourceCapacity s) {
+    public ResourceCapacityChecker(ResourceCapacity s) {
         super(s);
     }
 

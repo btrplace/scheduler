@@ -22,7 +22,7 @@ import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.Constraint;
-import btrplace.model.constraint.CumulatedResourceCapacity;
+import btrplace.model.constraint.ResourceCapacity;
 import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -30,8 +30,10 @@ import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.view.CShareableResource;
 import gnu.trove.list.array.TIntArrayList;
+import solver.Cause;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
+import solver.exception.ContradictionException;
 import solver.variables.IntVar;
 import solver.variables.VariableFactory;
 
@@ -41,21 +43,46 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Choco implementation of {@link btrplace.model.constraint.CumulatedResourceCapacity}.
+ * Choco implementation of {@link btrplace.model.constraint.ResourceCapacity}.
  *
  * @author Fabien Hermenier
  */
-public class CCumulatedResourceCapacity implements ChocoConstraint {
+public class CResourceCapacity implements ChocoConstraint {
 
-    private CumulatedResourceCapacity cstr;
+    private ResourceCapacity cstr;
 
     /**
      * Make a new constraint.
      *
      * @param c the constraint to rely on
      */
-    public CCumulatedResourceCapacity(CumulatedResourceCapacity c) {
+    public CResourceCapacity(ResourceCapacity c) {
         cstr = c;
+    }
+
+    private boolean injectWithSingleNode(CShareableResource rcm, ReconfigurationProblem rp) throws SolverException {
+        int amount = cstr.getAmount();
+        Solver s = rp.getSolver();
+        Node n = cstr.getInvolvedNodes().iterator().next();
+        int nIdx = rp.getNode(n);
+        IntVar v = rcm.getVirtualUsage()[nIdx];
+        s.post(IntConstraintFactory.arithm(v, "<=", amount));
+
+        //Continuous in practice ?
+        if (cstr.isContinuous()) {
+            if (cstr.isSatisfied(rp.getSourceModel())) {
+                try {
+                    v.updateUpperBound(cstr.getAmount(), Cause.Null);
+                } catch (ContradictionException e) {
+                    rp.getLogger().error("Unable to restrict to up to {}, the maximum '{}' usage on '{}': ", cstr.getAmount(), rcm.getResourceIdentifier(), n, e.getMessage());
+                    return false;
+                }
+            } else {
+                rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -64,6 +91,10 @@ public class CCumulatedResourceCapacity implements ChocoConstraint {
         CShareableResource rcm = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
         if (rcm == null) {
             throw new SolverException(rp.getSourceModel(), "No resource associated to identifier '" + cstr.getResource() + "'");
+        }
+
+        if (cstr.getInvolvedNodes().size() == 1) {
+            return injectWithSingleNode(rcm, rp);
         }
 
         if (cstr.isContinuous()) {
@@ -103,7 +134,6 @@ public class CCumulatedResourceCapacity implements ChocoConstraint {
         IntVar mySum = VariableFactory.bounded(rp.makeVarLabel("usage(", rcm.getIdentifier(), ")"), 0, Integer.MAX_VALUE / 100, s);
         s.post(IntConstraintFactory.sum(vs.toArray(new IntVar[vs.size()]), mySum));
         s.post(IntConstraintFactory.arithm(mySum, "<=", cstr.getAmount()));
-        //s.post(s.leq(Solver.sum(vs.toArray(new IntVar[vs.size()])), cstr.getAmount()));
         return true;
     }
 
@@ -141,12 +171,12 @@ public class CCumulatedResourceCapacity implements ChocoConstraint {
     public static class Builder implements ChocoConstraintBuilder {
         @Override
         public Class<? extends Constraint> getKey() {
-            return CumulatedResourceCapacity.class;
+            return ResourceCapacity.class;
         }
 
         @Override
-        public CCumulatedResourceCapacity build(Constraint cstr) {
-            return new CCumulatedResourceCapacity((CumulatedResourceCapacity) cstr);
+        public CResourceCapacity build(Constraint cstr) {
+            return new CResourceCapacity((ResourceCapacity) cstr);
         }
     }
 }

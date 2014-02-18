@@ -58,8 +58,7 @@ public class ConstraintMapper {
         map.register(new COnline.Builder());
         map.register(new COffline.Builder());
         map.register(new CRunningCapacity.Builder());
-        map.register(new CSingleResourceCapacity.Builder());
-        map.register(new CCumulatedResourceCapacity.Builder());
+        map.register(new CResourceCapacity.Builder());
         map.register(new CPreserve.Builder());
         map.register(new COverbook.Builder());
         map.register(new CRoot.Builder());
