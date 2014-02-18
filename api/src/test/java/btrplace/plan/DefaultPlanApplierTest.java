@@ -100,9 +100,9 @@ public class DefaultPlanApplierTest {
 
         BootVM b = new BootVM(vms.get(0), ns.get(0), 0, 5);
         AllocateEvent pre = new AllocateEvent(vms.get(0), "cpu", 7);
-        b.addEvent(Action.Hook.pre, pre);
+        b.addEvent(Action.Hook.PRE, pre);
         SubstitutedVMEvent post = new SubstitutedVMEvent(vms.get(0), vms.get(3));
-        b.addEvent(Action.Hook.post, post);
+        b.addEvent(Action.Hook.POST, post);
 
         InOrder order = inOrder(ev);
         app.fireAction(b);

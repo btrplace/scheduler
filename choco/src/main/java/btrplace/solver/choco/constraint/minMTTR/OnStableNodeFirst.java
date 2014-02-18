@@ -22,7 +22,6 @@ import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
-import btrplace.solver.choco.actionModel.ActionModel;
 import btrplace.solver.choco.actionModel.VMActionModel;
 import memory.IStateInt;
 import solver.search.strategy.selectors.VariableSelector;
@@ -60,21 +59,16 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
 
     private IStateInt firstFree;
 
-    private ReconfigurationProblem rp;
-
     private IntVar last;
 
     /**
      * Make a new heuristics
      *
-     * @param lbl     the heuristic label (for debugging purpose)
      * @param rp      the problem to rely on
-     * @param actions the actions to consider.
      * @param o       the objective to rely on
      */
-    public OnStableNodeFirst(String lbl, ReconfigurationProblem rp, List<ActionModel> actions, CMinMTTR o) {
+    public OnStableNodeFirst(ReconfigurationProblem rp, CMinMTTR o) {
 
-        this.rp = rp;
         firstFree = rp.getSolver().getEnvironment().makeInt(0);
         this.obj = o;
         Mapping cfg = rp.getSourceModel().getMapping();

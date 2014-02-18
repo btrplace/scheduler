@@ -46,8 +46,8 @@ public class BootVMTest {
         Assert.assertEquals(3, a.getStart());
         Assert.assertEquals(5, a.getEnd());
         Assert.assertFalse(a.toString().contains("null"));
-        Assert.assertEquals(a.getCurrentState(), VMStateTransition.VMState.ready);
-        Assert.assertEquals(a.getNextState(), VMStateTransition.VMState.running);
+        Assert.assertEquals(a.getCurrentState(), VMStateTransition.VMState.READY);
+        Assert.assertEquals(a.getNextState(), VMStateTransition.VMState.RUNNING);
 
     }
 

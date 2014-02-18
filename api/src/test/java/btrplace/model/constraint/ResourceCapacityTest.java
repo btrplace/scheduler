@@ -129,7 +129,7 @@ public class ResourceCapacityTest {
         Assert.assertEquals(cc.isSatisfied(plan), true);
         //3/4
         MigrateVM m = new MigrateVM(vms.get(3), ns.get(2), ns.get(1), 0, 1);
-        m.addEvent(Action.Hook.post, new AllocateEvent(vms.get(3), "foo", 2));
+        m.addEvent(Action.Hook.POST, new AllocateEvent(vms.get(3), "foo", 2));
         plan.add(m);
         //5/4
         plan.add(new ShutdownVM(vms.get(2), ns.get(1), 1, 2));

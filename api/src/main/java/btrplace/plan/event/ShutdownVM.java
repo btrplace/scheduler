@@ -115,12 +115,12 @@ public class ShutdownVM extends Action implements VMStateTransition {
 
     @Override
     public VMState getCurrentState() {
-        return VMState.running;
+        return VMState.RUNNING;
     }
 
     @Override
     public VMState getNextState() {
-        return VMState.ready;
+        return VMState.READY;
     }
 
     @Override

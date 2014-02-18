@@ -104,7 +104,7 @@ public class PreserveTest {
         AllocateEvent e = new AllocateEvent(vms.get(0), "cpu", 4);
         Assert.assertFalse(p.isSatisfied(plan));
         MigrateVM mig = new MigrateVM(vms.get(0), ns.get(0), ns.get(1), 0, 3);
-        mig.addEvent(Action.Hook.post, e);
+        mig.addEvent(Action.Hook.POST, e);
         plan.add(mig);
         Assert.assertTrue(p.isSatisfied(plan));
     }

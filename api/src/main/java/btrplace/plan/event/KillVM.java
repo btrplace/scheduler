@@ -98,12 +98,12 @@ public class KillVM extends Action implements VMStateTransition {
 
     @Override
     public VMState getCurrentState() {
-        return VMState.running;
+        return VMState.RUNNING;
     }
 
     @Override
     public VMState getNextState() {
-        return VMState.killed;
+        return VMState.KILLED;
     }
 
     @Override

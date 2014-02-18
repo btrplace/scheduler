@@ -47,8 +47,8 @@ public class ResumeVMTest {
         Assert.assertEquals(3, a.getStart());
         Assert.assertEquals(5, a.getEnd());
         Assert.assertFalse(a.toString().contains("null"));
-        Assert.assertEquals(a.getCurrentState(), VMStateTransition.VMState.sleeping);
-        Assert.assertEquals(a.getNextState(), VMStateTransition.VMState.running);
+        Assert.assertEquals(a.getCurrentState(), VMStateTransition.VMState.SLEEPING);
+        Assert.assertEquals(a.getNextState(), VMStateTransition.VMState.RUNNING);
 
 
     }

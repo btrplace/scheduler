@@ -63,7 +63,7 @@ public class DisjointMultiple extends IntConstraint<IntVar> {
      * candidates[g][v] = number of variables in group 'g' which can be assigned to value 'v',
      * with 0 <= g < nbGroups and 0 <= v < nbValues
      */
-    protected IStateInt[][] candidates;
+    private IStateInt[][] candidates;
     /**
      * required[g].get(v) iff at least one variable in group 'g' is assigned to value 'v',
      * with 0 <= g < nbGroups and 0 <= v < nbValues
@@ -101,10 +101,13 @@ public class DisjointMultiple extends IntConstraint<IntVar> {
 
     private int getGroup(int idx, int s, int e) {
         assert e > s && groupIdx[s] <= idx && idx < groupIdx[e];
-        if (e == s + 1) return s;
+        if (e == s + 1) {
+            return s;
+        }
         int m = (s + e) / 2;
-        if (idx >= groupIdx[m])
+        if (idx >= groupIdx[m]) {
             return getGroup(idx, m, e);
+        }
         return getGroup(idx, s, m);
 
     }
@@ -139,8 +142,6 @@ public class DisjointMultiple extends IntConstraint<IntVar> {
 
         private RemProc remProc;
 
-        private IntVar[][] groups;
-
         public DisjointPropagator(IntVar[][] g) {
             super(ArrayUtils.flatten(g), PropagatorPriority.VERY_SLOW, true);
             idms = new IIntDeltaMonitor[vars.length];
@@ -149,7 +150,6 @@ public class DisjointMultiple extends IntConstraint<IntVar> {
                 idms[i++] = v.monitorDelta(aCause);
             }
             remProc = new RemProc();
-            groups = g;
         }
 
         @Override

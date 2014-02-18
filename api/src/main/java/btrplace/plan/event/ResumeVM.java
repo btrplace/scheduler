@@ -117,12 +117,12 @@ public class ResumeVM extends Action implements VMStateTransition, RunningVMPlac
 
     @Override
     public VMState getCurrentState() {
-        return VMState.sleeping;
+        return VMState.SLEEPING;
     }
 
     @Override
     public VMState getNextState() {
-        return VMState.running;
+        return VMState.RUNNING;
     }
 
     @Override

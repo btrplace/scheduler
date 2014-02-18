@@ -19,7 +19,6 @@ package btrplace.solver.choco;
 
 import btrplace.solver.choco.chocoUtil.AliasedCumulatives;
 import gnu.trove.list.array.TIntArrayList;
-import solver.Solver;
 import solver.variables.IntVar;
 
 import java.util.ArrayList;
@@ -75,9 +74,7 @@ public class AliasedCumulativesBuilder extends SchedulingConstraintBuilder {
      * @return a list of constraint that may be empty.
      */
     public List<AliasedCumulatives> getConstraints() {
-        Solver s = rp.getSolver();
         List<AliasedCumulatives> cstrs = new ArrayList<>();
-
 
         for (int i = 0; i < aliases.size(); i++) {
             int capa = capacities.get(i);

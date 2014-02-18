@@ -24,7 +24,6 @@ import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.chocoUtil.FastImpliesEq;
 import btrplace.solver.choco.chocoUtil.TaskScheduler;
 import solver.Cause;
-import solver.Solver;
 import solver.exception.ContradictionException;
 import solver.variables.BoolVar;
 import solver.variables.IntVar;
@@ -71,7 +70,6 @@ public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
      * @return the resulting constraint
      */
     public TaskScheduler build() {
-        Solver s = rp.getSolver();
 
         //We get the UB of the node capacity and the LB for the VM usage.
         int[][] capas = new int[capacities.size()][];

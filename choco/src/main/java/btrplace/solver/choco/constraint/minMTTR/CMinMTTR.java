@@ -101,9 +101,7 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         Model mo = p.getSourceModel();
         Mapping map = mo.getMapping();
 
-        List<ActionModel> actions = new ArrayList<>();
-        Collections.addAll(actions, p.getVMActions());
-        OnStableNodeFirst schedHeuristic = new OnStableNodeFirst("stableNodeFirst", p, actions, this);
+        OnStableNodeFirst schedHeuristic = new OnStableNodeFirst(p, this);
 
         //Get the VMs to move
         Set<VM> onBadNodes = p.getManageableVMs();
@@ -143,7 +141,7 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
 
         Map<IntVar, VM> pla = VMPlacementUtils.makePlacementMap(p);
         if (!vmsToExclude.isEmpty()) {
-            strats.add(new Assignment(new MovingVMs("movingVMs", p, map, vmsToExclude), new RandomVMPlacement(p, pla, true)));
+            strats.add(new Assignment(new MovingVMs(p, map, vmsToExclude), new RandomVMPlacement(p, pla, true)));
         }
 
         if (!badActions.isEmpty()) {
@@ -172,7 +170,7 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         }
 
         if (p.getNodeActions().length > 0) {
-            strats.add(new Assignment(new InputOrder(ActionModelUtils.getStarts(p.getNodeActions())), new InDomainMin()));
+            strats.add(new Assignment(new InputOrder<>(ActionModelUtils.getStarts(p.getNodeActions())), new InDomainMin()));
         }
 
         ///SCHEDULING PROBLEM
@@ -181,7 +179,7 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         strats.add(new Assignment(schedHeuristic, new InDomainMin()));
 
         //At this stage only it matters to plug the cost constraints
-        strats.add(new Assignment(new InputOrder(new IntVar[]{p.getEnd(), cost}), new InDomainMin()));
+        strats.add(new Assignment(new InputOrder<>(new IntVar[]{p.getEnd(), cost}), new InDomainMin()));
 
         s.getSearchLoop().set(new StrategiesSequencer(s.getEnvironment(), strats.toArray(new AbstractStrategy[strats.size()])));
     }

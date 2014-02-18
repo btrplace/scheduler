@@ -248,16 +248,6 @@ public class TaskScheduler extends IntConstraint<IntVar> {
         return b.toString();
     }
 
-    private String pretty(int[][] arr) {
-        StringBuilder b = new StringBuilder();
-        b.append('[');
-        for (int[] x : arr) {
-            b.append(Arrays.toString(x));
-        }
-        b.append(']');
-        return b.toString();
-    }
-
     class TaskSchedulerPropagator extends Propagator<IntVar> {
 
         private IntVar[] earlyStarts, lastEnds;

@@ -50,8 +50,6 @@ public class MovingVMs implements VariableSelector<IntVar> {
 
     private ReconfigurationProblem rp;
 
-    private String label;
-
     private IntVar[] scopes;
 
     private IStateInt idx;
@@ -60,13 +58,11 @@ public class MovingVMs implements VariableSelector<IntVar> {
      * Make a new heuristic.
      * By default, the heuristic doesn't touch the scheduling constraints.
      *
-     * @param l   the label to use for debugging purpose
      * @param s   the solver to use to extract the assignment variables
      * @param m   the initial configuration
      * @param vms the VMs to consider
      */
-    public MovingVMs(String l, ReconfigurationProblem s, Mapping m, Set<VM> vms) {
-        this.label = l;
+    public MovingVMs(ReconfigurationProblem s, Mapping m, Set<VM> vms) {
         map = m;
 
         this.rp = s;

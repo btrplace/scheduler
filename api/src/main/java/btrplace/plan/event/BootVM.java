@@ -79,7 +79,7 @@ public class BootVM extends Action implements VMStateTransition, RunningVMPlacem
      *
      * @param o the object to compare with
      * @return true if {@code o} is an instanceof {@link BootVM} and if both
-     *         instance involve the same VM and the same node
+     * instance involve the same VM and the same node
      */
     @Override
     public boolean equals(Object o) {
@@ -104,12 +104,12 @@ public class BootVM extends Action implements VMStateTransition, RunningVMPlacem
 
     @Override
     public VMState getCurrentState() {
-        return VMState.ready;
+        return VMState.READY;
     }
 
     @Override
     public VMState getNextState() {
-        return VMState.running;
+        return VMState.RUNNING;
     }
 
     @Override

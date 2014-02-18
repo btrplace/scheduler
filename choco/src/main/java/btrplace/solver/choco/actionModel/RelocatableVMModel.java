@@ -180,7 +180,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
                     //Boot the new VM
                     int endForging = fvm.getEnd();
                     BootVM boot = new BootVM(newVM, dst, endForging, endForging + dev.evaluate(rp.getSourceModel(), BootVM.class, newVM));
-                    boot.addEvent(Action.Hook.pre, new SubstitutedVMEvent(vm, newVM));
+                    boot.addEvent(Action.Hook.PRE, new SubstitutedVMEvent(vm, newVM));
                     return plan.add(boot) && plan.add(new ShutdownVM(vm, src, boot.getEnd(), cSlice.getEnd().getValue()));
                 } catch (SolverException ex) {
                     rp.getLogger().error(ex.getMessage());

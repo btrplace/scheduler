@@ -333,11 +333,11 @@ public class CShareableResource implements ChocoModelView {
                         if (tmp.getVM() == dVM) {
                             if (a instanceof MigrateVM) {
                                 //For a migrated VM, we allocate once the migration over
-                                insertAllocateEvent(a, Action.Hook.post, dVM);
+                                insertAllocateEvent(a, Action.Hook.POST, dVM);
                             } else {
                                 //Resume or Boot VM
                                 //As the VM was not running, we pre-allocate
-                                insertAllocateEvent(a, Action.Hook.pre, dVM);
+                                insertAllocateEvent(a, Action.Hook.PRE, dVM);
                             }
                             break;
                         }
