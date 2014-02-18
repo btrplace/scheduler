@@ -180,6 +180,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     @Override
     public ReconfigurationPlan solve(int timeLimit, boolean optimize) throws SolverException {
 
+        if (!optimize) {
+            solvingPolicy = ResolutionPolicy.SATISFACTION;
+        }
+
         for (Map.Entry<String, ChocoModelView> cv : views.entrySet()) {
             if (!cv.getValue().beforeSolve(this)) {
                 return null;

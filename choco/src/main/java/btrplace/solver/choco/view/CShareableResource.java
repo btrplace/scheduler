@@ -323,6 +323,7 @@ public class CShareableResource implements ChocoModelView {
             if (srcMapping.isRunning(vm) && destNode == srcMapping.getVMLocation(vm)) {
                 //Was running and stay on the same node
                 //Check if the VM has been cloned
+                //TODO: might be too late depending on the symmetry breaking on the actions schedule
                 insertAllocateAction(p, vm, destNode, dSlice.getStart().getValue());
             } else {
                 //TODO: not constant time operation. Maybe a big failure
