@@ -127,7 +127,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
             //TODO: not very compliant with the ForgeActionModel but forge is useless for the moment
             int forgeD = p.getDurationEvaluators().evaluate(p.getSourceModel(), ForgeVM.class, vm);
             IntVar time = VariableFactory.bounded(rp.makeVarLabel(doReinstantiation.getName(), " * ", forgeD), 0, Integer.MAX_VALUE / 100, s);
-            IntConstraintFactory.times(doReinstantiation, VariableFactory.fixed(forgeD, s), time);
+            s.post(IntConstraintFactory.times(doReinstantiation, VariableFactory.fixed(forgeD, s), time));
             s.post(IntConstraintFactory.arithm(this.dSlice.getStart(), ">=", time));
 
             s.post(new FastIFFEq(doReinstantiation, duration, reInstantiateDuration));

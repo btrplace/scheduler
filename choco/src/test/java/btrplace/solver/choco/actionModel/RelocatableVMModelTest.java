@@ -24,10 +24,7 @@ import btrplace.model.constraint.Preserve;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.event.BootVM;
-import btrplace.plan.event.ForgeVM;
-import btrplace.plan.event.MigrateVM;
-import btrplace.plan.event.ShutdownVM;
+import btrplace.plan.event.*;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
@@ -248,6 +245,7 @@ public class RelocatableVMModelTest {
         RelocatableVMModel am = (RelocatableVMModel) rp.getVMAction(vm10);
         am.getDSlice().getHoster().instantiateTo(rp.getNode(n2), Cause.Null);
         new CMinMTTR().inject(rp);
+
         ReconfigurationPlan p = rp.solve(10, true);
         Assert.assertNotNull(p);
         System.out.println(p);
@@ -258,6 +256,10 @@ public class RelocatableVMModelTest {
         Assert.assertEquals(res.getMapping().getRunningVMs(n1).size(), 0);
         Assert.assertEquals(res.getMapping().getRunningVMs(n2).size(), 1);
         Assert.assertNotNull(p);
+        for (Action a : p) {
+            Assert.assertTrue(a.getStart() >= 0, a.toString());
+            Assert.assertTrue(a.getEnd() >= a.getStart(), a.toString());
+        }
     }
 
     /**
