@@ -3,9 +3,10 @@ Release notes
 
 version ?????????????
 ----------------------
-- Big refactoring to move to choco 3. The scalability will be affected temporary but this was necessary
- as choco 2 is no longer maintained
-- Close #27: the variable labelling is now inferred from the verbosity level
+- Move to choco 3. The scalability will be affected temporary but choco 2 is no longer maintained
+- the variable labelling is now inferred from the verbosity level (#27)
+- Simplify the signature of constraints to reduce the signature to the minimum needed (#29)
+- SingleRunningCapacity and SingleResourceCapacity are now merged in RunningCapacity and ResourceCapacity respectively. (#24)
 
 version 0.34 - 26 Nov 2013
 ----------------------
