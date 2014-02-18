@@ -28,7 +28,10 @@ import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import btrplace.solver.choco.durationEvaluator.LinearToAResourceActionDuration;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Tutorial about the basic tuning of a model.
@@ -81,7 +84,9 @@ public class ModelCustomization implements Example {
         List<SatConstraint> cstrs = new ArrayList<>();
 
         //No more than 5 VMs per node
-        cstrs.add(new SingleRunningCapacity(model.getMapping().getAllNodes(), 5));
+        for (Node n : model.getMapping().getAllNodes()) {
+            cstrs.add(new RunningCapacity(n, 5));
+        }
 
         //vm1 and vm10 on the same node
         cstrs.add(new Gather(Arrays.asList(vms.get(0), vms.get(9))));
@@ -93,7 +98,7 @@ public class ModelCustomization implements Example {
         cstrs.add(new Split(Arrays.asList(g1, g2)));
 
         //vm10 must be running
-        cstrs.add(new Running(Collections.singleton(vms.get(9))));
+        cstrs.add(new Running(vms.get(9)));
         return cstrs;
     }
 

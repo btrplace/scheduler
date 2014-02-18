@@ -92,7 +92,7 @@ public class CLonelyTest {
         l.setContinuous(true);
         Set<SatConstraint> cstrs = new HashSet<>();
         cstrs.add(l);
-        cstrs.add(new Fence(Collections.singleton(vm3), Collections.singleton(n2)));
+        cstrs.add(new Fence(vm3, Collections.singleton(n2)));
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
         Assert.assertNotNull(plan);
     }

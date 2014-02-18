@@ -21,19 +21,19 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
-import btrplace.model.constraint.CumulatedRunningCapacity;
+import btrplace.model.constraint.RunningCapacity;
 import btrplace.plan.event.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Checker for the {@link btrplace.model.constraint.CumulatedRunningCapacity} constraint
+ * Checker for the {@link btrplace.model.constraint.RunningCapacity} constraint
  *
  * @author Fabien Hermenier
- * @see btrplace.model.constraint.CumulatedRunningCapacity
+ * @see btrplace.model.constraint.RunningCapacity
  */
-public class CumulatedRunningCapacityChecker extends AllowAllConstraintChecker<CumulatedRunningCapacity> {
+public class RunningCapacityChecker extends AllowAllConstraintChecker<RunningCapacity> {
 
     private int usage;
 
@@ -46,7 +46,7 @@ public class CumulatedRunningCapacityChecker extends AllowAllConstraintChecker<C
      *
      * @param c the associated constraint
      */
-    public CumulatedRunningCapacityChecker(CumulatedRunningCapacity c) {
+    public RunningCapacityChecker(RunningCapacity c) {
         super(c);
         qty = c.getAmount();
     }

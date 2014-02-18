@@ -21,16 +21,15 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
-import btrplace.model.constraint.Ban;
 import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Quarantine;
-import btrplace.model.constraint.Root;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
+import solver.Cause;
+import solver.exception.ContradictionException;
+import solver.variables.IntVar;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -56,23 +55,28 @@ public class CQuarantine implements ChocoConstraint {
         // It is just a composition of a root constraint on the VMs on the given nodes (the zone)
         // plus a ban on the other VMs to prevent them for being hosted in the zone
         Mapping map = rp.getSourceModel().getMapping();
-        Set<VM> toRoot = new HashSet<>();
-        Set<VM> toBan = new HashSet<>();
-        Collection<Node> zone = cstr.getInvolvedNodes();
+        Node n = cstr.getInvolvedNodes().iterator().next();
+        int nIdx = rp.getNode(n);
         for (VM vm : rp.getFutureRunningVMs()) {
-            if (zone.contains(map.getVMLocation(vm))) {
-                toRoot.add(vm);
+            if (n.equals(map.getVMLocation(vm))) {
+                IntVar d = rp.getVMAction(vm).getDSlice().getHoster();
+                try {
+                    d.instantiateTo(nIdx, Cause.Null);
+                } catch (ContradictionException e) {
+                    rp.getLogger().error("Unable to root VM '{}' on '{}': {}", vm, n, e.getMessage());
+                    return false;
+                }
             } else {
-                toBan.add(vm);
+                IntVar d = rp.getVMAction(vm).getDSlice().getHoster();
+                try {
+                    d.removeValue(nIdx, Cause.Null);
+                } catch (ContradictionException e) {
+                    rp.getLogger().error("Unable to disallow VM '{}' to be hosted on '{}': {}", vm, n, e.getMessage());
+                    return false;
+                }
             }
         }
-
-        map.getRunningVMs(cstr.getInvolvedNodes());
-
-        CRoot r = new CRoot(new Root(toRoot));
-        CBan b = new CBan(new Ban(toBan, new HashSet<>(zone)));
-        return (r.inject(rp) && b.inject(rp));
-
+        return true;
     }
 
     @Override

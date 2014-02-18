@@ -25,8 +25,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
 
 /**
  * Unit tests for {@link btrplace.json.model.constraint.RootConverter}.
@@ -40,7 +38,7 @@ public class RootConverterTest {
         Model mo = new DefaultModel();
         RootConverter conv = new RootConverter();
         conv.setModel(mo);
-        Root d = new Root(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())));
+        Root d = new Root(mo.newVM());
 
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
     }

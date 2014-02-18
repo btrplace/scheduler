@@ -59,8 +59,8 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
         ConstraintsConverter conv = new ConstraintsConverter();
         conv.register(new AmongConverter());
         conv.register(new BanConverter());
-        conv.register(new CumulatedResourceCapacityConverter());
-        conv.register(new CumulatedRunningCapacityConverter());
+        conv.register(new ResourceCapacityConverter());
+        conv.register(new RunningCapacityConverter());
         conv.register(new FenceConverter());
         conv.register(new GatherConverter());
         conv.register(new KilledConverter());
@@ -74,8 +74,6 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
         conv.register(new RootConverter());
         conv.register(new RunningConverter());
         conv.register(new SequentialVMTransitionsConverter());
-        conv.register(new SingleResourceCapacityConverter());
-        conv.register(new SingleRunningCapacityConverter());
         conv.register(new SleepingConverter());
         conv.register(new SplitAmongConverter());
         conv.register(new SplitConverter());
@@ -90,7 +88,7 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
      *
      * @param c the converter to register
      * @return the container that was previously registered for a constraint. {@code null} if there was
-     *         no registered converter
+     * no registered converter
      */
     public ConstraintConverter register(ConstraintConverter<? extends Constraint> c) {
         java2json.put(c.getSupportedConstraint(), c);

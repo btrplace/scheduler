@@ -22,50 +22,41 @@ import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.Constraint;
-import btrplace.model.constraint.CumulatedResourceCapacity;
-import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.Slice;
-import btrplace.solver.choco.actionModel.VMActionModel;
-import btrplace.solver.choco.view.CShareableResource;
-import gnu.trove.list.array.TIntArrayList;
+import solver.Cause;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
+import solver.exception.ContradictionException;
 import solver.variables.IntVar;
 import solver.variables.VariableFactory;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
- * Choco implementation of {@link btrplace.model.constraint.CumulatedResourceCapacity}.
+ * Choco implementation of {@link btrplace.model.constraint.RunningCapacity}.
  *
  * @author Fabien Hermenier
  */
-public class CCumulatedResourceCapacity implements ChocoConstraint {
+public class CRunningCapacity implements ChocoConstraint {
 
-    private CumulatedResourceCapacity cstr;
+    private btrplace.model.constraint.RunningCapacity cstr;
 
     /**
      * Make a new constraint.
      *
      * @param c the constraint to rely on
      */
-    public CCumulatedResourceCapacity(CumulatedResourceCapacity c) {
+    public CRunningCapacity(btrplace.model.constraint.RunningCapacity c) {
         cstr = c;
     }
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
-
-        CShareableResource rcm = (CShareableResource) rp.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
-        if (rcm == null) {
-            throw new SolverException(rp.getSourceModel(), "No resource associated to identifier '" + cstr.getResource() + "'");
+        Solver s = rp.getSolver();
+        if (cstr.getInvolvedVMs().size() == 1) {
+            return filterWithSingleNode(rp);
         }
-
         if (cstr.isContinuous()) {
             //The constraint must be already satisfied
             if (!cstr.isSatisfied(rp.getSourceModel())) {
@@ -77,54 +68,65 @@ public class CCumulatedResourceCapacity implements ChocoConstraint {
                 for (Node n : cstr.getInvolvedNodes()) {
                     alias[i++] = rp.getNode(n);
                 }
-
-                TIntArrayList cUse = new TIntArrayList();
-                List<IntVar> dUse = new ArrayList<>();
-
-                for (VM vmId : rp.getVMs()) {
-                    VMActionModel a = rp.getVMAction(vmId);
-                    Slice c = a.getCSlice();
-                    Slice d = a.getDSlice();
-                    if (c != null) {
-                        cUse.add(rcm.getSourceResource().getConsumption(vmId));
-                    }
-                    if (d != null) {
-                        dUse.add(rcm.getVMsAllocation()[rp.getVM(vmId)]);
-                    }
+                int nbRunnings = 0;
+                for (Node n : rp.getSourceModel().getMapping().getOnlineNodes()) {
+                    nbRunnings += rp.getSourceModel().getMapping().getRunningVMs(n).size();
                 }
-                rp.getAliasedCumulativesBuilder().add(cstr.getAmount(), cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]), alias);
+                int[] cUse = new int[nbRunnings];
+                IntVar[] dUse = new IntVar[rp.getFutureRunningVMs().size()];
+                Arrays.fill(cUse, 1);
+                Arrays.fill(dUse, VariableFactory.one(rp.getSolver()));
+                rp.getAliasedCumulativesBuilder().add(cstr.getAmount(), cUse, dUse, alias);
             }
         }
         List<IntVar> vs = new ArrayList<>();
         for (Node u : cstr.getInvolvedNodes()) {
-            vs.add(rcm.getVirtualUsage()[rp.getNode(u)]);
+            vs.add(rp.getNbRunningVMs()[rp.getNode(u)]);
         }
-        Solver s = rp.getSolver();
-        IntVar mySum = VariableFactory.bounded(rp.makeVarLabel("usage(", rcm.getIdentifier(), ")"), 0, Integer.MAX_VALUE / 100, s);
+        //Try to get a lower bound
+        //basically, we count 1 per VM necessarily in the set of nodes
+        //if involved nodes == all the nodes, then sum == nb of running VMs
+        IntVar mySum = VariableFactory.bounded(rp.makeVarLabel("nbRunnings"), 0, rp.getFutureRunningVMs().size(), rp.getSolver());
         s.post(IntConstraintFactory.sum(vs.toArray(new IntVar[vs.size()]), mySum));
         s.post(IntConstraintFactory.arithm(mySum, "<=", cstr.getAmount()));
-        //s.post(s.leq(Solver.sum(vs.toArray(new IntVar[vs.size()])), cstr.getAmount()));
+
+
+        if (cstr.getInvolvedNodes().equals(rp.getSourceModel().getMapping().getAllNodes())) {
+            s.post(IntConstraintFactory.arithm(mySum, "=", rp.getFutureRunningVMs().size()));
+        }
+        return true;
+    }
+
+    private boolean filterWithSingleNode(ReconfigurationProblem rp) throws SolverException {
+        Node n = cstr.getInvolvedNodes().iterator().next();
+        IntVar v = rp.getNbRunningVMs()[rp.getNode(n)];
+        Solver s = rp.getSolver();
+        s.post(IntConstraintFactory.arithm(v, "<=", cstr.getAmount()));
+
+        //Continuous in practice ?
+        if (cstr.isContinuous() && cstr.isSatisfied(rp.getSourceModel())) {
+            try {
+                v.updateUpperBound(cstr.getAmount(), Cause.Null);
+            } catch (ContradictionException e) {
+                rp.getLogger().error("Unable to cap the amount of VMs on '{}' to {}, : ", n, cstr.getAmount(), e.getMessage());
+                return false;
+            }
+        }
         return true;
     }
 
     @Override
     public Set<VM> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-        ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
-        if (rc == null) {
-            return map.getRunningVMs(cstr.getInvolvedNodes());
-        }
         Set<VM> bad = new HashSet<>();
         int remainder = cstr.getAmount();
         for (Node n : cstr.getInvolvedNodes()) {
-            for (VM v : map.getRunningVMs(n)) {
-                remainder -= rc.getConsumption(v);
-                if (remainder < 0) {
-                    for (Node n2 : cstr.getInvolvedNodes()) {
-                        bad.addAll(map.getRunningVMs(n2));
-                    }
-                    return bad;
+            remainder -= map.getRunningVMs(n).size();
+            if (remainder < 0) {
+                for (Node n2 : cstr.getInvolvedNodes()) {
+                    bad.addAll(map.getRunningVMs(n2));
                 }
+                return bad;
             }
         }
         return bad;
@@ -141,12 +143,12 @@ public class CCumulatedResourceCapacity implements ChocoConstraint {
     public static class Builder implements ChocoConstraintBuilder {
         @Override
         public Class<? extends Constraint> getKey() {
-            return CumulatedResourceCapacity.class;
+            return btrplace.model.constraint.RunningCapacity.class;
         }
 
         @Override
-        public CCumulatedResourceCapacity build(Constraint cstr) {
-            return new CCumulatedResourceCapacity((CumulatedResourceCapacity) cstr);
+        public CRunningCapacity build(Constraint cstr) {
+            return new CRunningCapacity((btrplace.model.constraint.RunningCapacity) cstr);
         }
     }
 }

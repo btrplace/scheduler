@@ -235,10 +235,12 @@ public class CSplitAmongTest {
 
         //Move group of VMs 1 to the group of nodes 2. Cannot work as
         //the among part of the constraint will be violated
-        Fence f = new Fence(vg1, pg2);
+
 
         cstrs.add(s);
-        cstrs.add(f);
+        for (VM v : vg1) {
+            cstrs.add(new Fence(v, pg2));
+        }
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         Assert.assertNull(cra.solve(mo, cstrs));
@@ -286,10 +288,11 @@ public class CSplitAmongTest {
 
         //Move group of VMs 1 to the group of nodes 2. This is allowed
         //group of VMs 2 will move to another group of node so at the end, the constraint should be satisfied
-        Fence f = new Fence(vg1, pg2);
 
         cstrs.add(s);
-        cstrs.add(f);
+        for (VM v : vg1) {
+            cstrs.add(new Fence(v, pg2));
+        }
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan plan = cra.solve(mo, cstrs);

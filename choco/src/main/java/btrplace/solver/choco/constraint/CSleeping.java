@@ -25,7 +25,7 @@ import btrplace.model.constraint.Sleeping;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 
 
@@ -56,14 +56,12 @@ public class CSleeping implements ChocoConstraint {
 
     @Override
     public Set<VM> getMisPlacedVMs(Model m) {
-        Set<VM> bad = new HashSet<>();
+        VM v = cstr.getInvolvedVMs().iterator().next();
         Mapping map = m.getMapping();
-        for (VM vm : cstr.getInvolvedVMs()) {
-            if (!map.isSleeping(vm)) {
-                bad.add(vm);
-            }
+        if (!map.isSleeping(v)) {
+            return Collections.singleton(v);
         }
-        return bad;
+        return Collections.emptySet();
     }
 
     @Override

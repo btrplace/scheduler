@@ -20,7 +20,7 @@ package btrplace.json.model.constraint;
 import btrplace.json.JSONConverterException;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
-import btrplace.model.constraint.SingleResourceCapacity;
+import btrplace.model.constraint.RunningCapacity;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -29,21 +29,21 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 /**
- * Unit tests for {@link btrplace.model.constraint.SingleResourceCapacity}.
+ * Unit tests for {@link btrplace.model.constraint.RunningCapacity}.
  *
  * @author Fabien Hermenier
  */
-public class SingleResourceCapacityConverterTest {
+public class RunningCapacityConverterTest {
 
     @Test
     public void testViables() throws JSONConverterException, IOException {
+        RunningCapacityConverter conv = new RunningCapacityConverter();
         Model mo = new DefaultModel();
-        SingleResourceCapacityConverter conv = new SingleResourceCapacityConverter();
         conv.setModel(mo);
-        SingleResourceCapacity d = new SingleResourceCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), "cpu", 5, false);
-        SingleResourceCapacity c = new SingleResourceCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), "mem", 5, true);
+        RunningCapacity d = new RunningCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), 5, false);
+        RunningCapacity c = new RunningCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode())), 5, true);
 
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
-        Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
+        Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
+        Assert.assertEquals(conv.fromJSON(conv.toJSON(c)), c);
     }
 }

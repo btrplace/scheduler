@@ -51,11 +51,10 @@ public class CRootTest {
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.doRepair(false);
-        Root r1 = new Root(map.getAllVMs());
-        Online n = new Online(map.getAllNodes());
+        Root r1 = new Root(vm1);
         List<SatConstraint> l = new ArrayList<>();
         l.add(r1);
-        l.add(n);
+        l.addAll(Online.newOnlines(map.getAllNodes()));
         ReconfigurationPlan p = cra.solve(mo, l);
         Assert.assertNotNull(p);
         Model res = p.getResult();

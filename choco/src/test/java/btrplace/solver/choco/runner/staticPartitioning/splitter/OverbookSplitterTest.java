@@ -47,7 +47,8 @@ public class OverbookSplitterTest {
 
         List<Instance> instances = new ArrayList<>();
         Model m0 = new DefaultModel();
-        m0.getMapping().addOnlineNode(m0.newNode(0));
+        Node n = m0.newNode(0);
+        m0.getMapping().addOnlineNode(n);
         m0.getMapping().addOnlineNode(m0.newNode(1));
 
         Model m1 = new DefaultModel();
@@ -62,16 +63,9 @@ public class OverbookSplitterTest {
 
         TIntIntHashMap nodeIndex = Instances.makeNodeIndex(instances);
         //Only nodes in m0
-        Overbook oSimple = new Overbook(m0.getMapping().getAllNodes(), "cpu", 2);
+        Overbook oSimple = new Overbook(n, "cpu", 2);
         Assert.assertTrue(splitter.split(oSimple, null, instances, new TIntIntHashMap(), nodeIndex));
         Assert.assertTrue(instances.get(0).getSatConstraints().contains(oSimple));
         Assert.assertFalse(instances.get(1).getSatConstraints().contains(oSimple));
-
-        //All the nodes, test the split
-        Overbook oAmong = new Overbook(all, "cpu", 2);
-
-        Assert.assertTrue(splitter.split(oAmong, null, instances, new TIntIntHashMap(), nodeIndex));
-        Assert.assertTrue(instances.get(0).getSatConstraints().contains(new Overbook(m0.getMapping().getAllNodes(), "cpu", 2)));
-        Assert.assertTrue(instances.get(1).getSatConstraints().contains(new Overbook(m1.getMapping().getAllNodes(), "cpu", 2)));
     }
 }

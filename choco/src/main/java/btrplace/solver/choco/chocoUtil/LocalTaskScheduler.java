@@ -163,10 +163,6 @@ public class LocalTaskScheduler {
     public boolean propagate() throws ContradictionException {
         computeProfiles();
         last.updateLowerBound(lastCendInf.get(), aCause);
-/*        if (me == DEBUG || DEBUG == -2) {
-            LOGGER.debug(me + " last: " + last.toString() + "; early: " + early.toString() + " lastInf:" + lastCendInf + " " + lastCendSup);
-        }*/
-
 
         if (!checkInvariant()) {
             return false;
@@ -407,13 +403,8 @@ public class LocalTaskScheduler {
                         break;
                     }
                 }
-                //System.out.println(lastT + " " + early.getLB() + " " + Math.max(lastT, early.getLB()));
                 dStarts[i].updateLowerBound(Math.max(lastT, early.getLB()), aCause);
-                //LOGGER.error("YEAH: " + dStarts[i] + " " + Math.max(lastT, early.getLB()));
-            } else {
-                //LOGGER.error("Skip " + dStarts[i]);
             }
-            //early.setSup(dStarts[i].getLB());
         }
     }
 

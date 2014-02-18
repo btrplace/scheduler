@@ -31,7 +31,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -78,7 +77,7 @@ public class CGatherTest {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(g);
-        cstrs.add(new Running(map.getAllVMs()));
+        cstrs.addAll(Running.newRunnings(map.getAllVMs()));
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
         Assert.assertNotNull(plan);
         Model res = plan.getResult();
@@ -115,7 +114,7 @@ public class CGatherTest {
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(true);
         List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.add(new Running(map.getAllVMs()));
+        cstrs.addAll(Running.newRunnings(map.getAllVMs()));
         cstrs.add(g);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
@@ -138,9 +137,10 @@ public class CGatherTest {
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(true);
         List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.add(new Running(map.getAllVMs()));
+        cstrs.addAll(Running.newRunnings(map.getAllVMs()));
         cstrs.add(g);
-        cstrs.add(new Fence(map.getAllVMs(), Collections.singleton(n1)));
+        cstrs.add(new Fence(vm1, Collections.singleton(n1)));
+        cstrs.add(new Fence(vm2, Collections.singleton(n1)));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
         Assert.assertNull(plan);
@@ -156,7 +156,9 @@ public class CGatherTest {
         Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2).ready(vm1, vm2).get();
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(true);
-        List<SatConstraint> cstrs = Arrays.asList(g, new Running(map.getAllVMs()));
+        List<SatConstraint> cstrs = new ArrayList<>();
+        cstrs.add(g);
+        cstrs.addAll(Running.newRunnings(map.getAllVMs()));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
         Assert.assertNotNull(plan);

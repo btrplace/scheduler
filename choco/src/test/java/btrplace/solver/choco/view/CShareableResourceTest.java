@@ -34,7 +34,6 @@ import solver.exception.ContradictionException;
 import solver.variables.IntVar;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -219,11 +218,14 @@ public class CShareableResourceTest {
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.add(new Online(map.getAllNodes()));
-        Overbook o = new Overbook(map.getAllNodes(), "foo", 1.5);
-        o.setContinuous(false);
+        cstrs.addAll(Online.newOnlines(map.getAllNodes()));
+        Overbook o = new Overbook(n1, "foo", 1.5, false);
         cstrs.add(o);
-        cstrs.add(new Preserve(Collections.singleton(vm1), "foo", 5));
+
+        Overbook o2 = new Overbook(n2, "foo", 1.5, false);
+        cstrs.add(o2);
+
+        cstrs.add(new Preserve(vm1, "foo", 5));
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
         System.out.println(p);

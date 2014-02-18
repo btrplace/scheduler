@@ -415,7 +415,6 @@ public class CShareableResource implements ChocoModelView {
 
         try {
             ratios[nIdx].updateBounds(r, r, Cause.Null);
-            //ratios[nIdx].intersect(new RealIntervalConstant(r, r));
         } catch (ContradictionException ex) {
             rp.getLogger().error("Unable to set '{}' to {}", ratios[nIdx], r);
             return false;

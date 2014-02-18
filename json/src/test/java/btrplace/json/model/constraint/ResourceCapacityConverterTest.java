@@ -20,7 +20,7 @@ package btrplace.json.model.constraint;
 import btrplace.json.JSONConverterException;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
-import btrplace.model.constraint.CumulatedRunningCapacity;
+import btrplace.model.constraint.ResourceCapacity;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -29,21 +29,21 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 /**
- * Unit tests for {@link btrplace.model.constraint.CumulatedRunningCapacity}.
+ * Unit tests for {@link btrplace.model.constraint.ResourceCapacity}.
  *
  * @author Fabien Hermenier
  */
-public class CumulatedRunningCapacityConverterTest {
+public class ResourceCapacityConverterTest {
 
     @Test
     public void testViables() throws JSONConverterException, IOException {
-        CumulatedRunningCapacityConverter conv = new CumulatedRunningCapacityConverter();
+        ResourceCapacityConverter conv = new ResourceCapacityConverter();
         Model mo = new DefaultModel();
         conv.setModel(mo);
-        CumulatedRunningCapacity d = new CumulatedRunningCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), 5, false);
-        CumulatedRunningCapacity c = new CumulatedRunningCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode())), 5, true);
+        ResourceCapacity d = new ResourceCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())), "cpu", 5, false);
+        ResourceCapacity c = new ResourceCapacity(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode())), "mem", 5, true);
 
-        Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
-        Assert.assertEquals(conv.fromJSON(conv.toJSON(c)), c);
+        Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+        Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
     }
 }

@@ -22,10 +22,13 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.BanChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * A constraint to disallow the given VMs, when running,
+ * A constraint to disallow the given VM, when running,
  * to be hosted on a given set of nodes.
  * <p/>
  * The restriction provided by this constraint is only discrete.
@@ -36,20 +39,35 @@ import java.util.Collection;
 public class Ban extends SatConstraint {
 
     /**
+     * Instantiate constraints for a collection of VMs.
+     *
+     * @param vms   the VMs to integrate
+     * @param nodes the hosts to disallow
+     * @return the associated list of constraints
+     */
+    public static List<Ban> newBans(Collection<VM> vms, Collection<Node> nodes) {
+        List<Ban> l = new ArrayList<>(vms.size());
+        for (VM v : vms) {
+            l.add(new Ban(v, nodes));
+        }
+        return l;
+    }
+
+    /**
      * Make a new constraint.
      *
-     * @param vms   the VMs identifiers
+     * @param vm    the VM identifiers
      * @param nodes the nodes identifiers
      */
-    public Ban(Collection<VM> vms, Collection<Node> nodes) {
-        super(vms, nodes, false);
+    public Ban(VM vm, Collection<Node> nodes) {
+        super(Collections.singleton(vm), nodes, false);
     }
 
 
     @Override
     public String toString() {
         return new StringBuilder("ban(")
-                .append("vms=").append(getInvolvedVMs())
+                .append("vm=").append(getInvolvedVMs().iterator().next())
                 .append(", nodes=").append(getInvolvedNodes())
                 .append(", discrete)").toString();
     }

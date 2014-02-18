@@ -39,11 +39,10 @@ public class FenceTest {
         List<Node> ns = Util.newNodes(mo, 10);
         List<VM> vms = Util.newVMs(mo, 10);
 
-        Set<VM> vs = new HashSet<>(Arrays.asList(vms.get(0)));
         Set<Node> nodes = new HashSet<>(Arrays.asList(ns.get(0)));
-        Fence f = new Fence(vs, nodes);
+        Fence f = new Fence(vms.get(0), nodes);
         Assert.assertNotNull(f.getChecker());
-        Assert.assertEquals(vs, f.getInvolvedVMs());
+        Assert.assertEquals(vms.get(0), f.getInvolvedVMs().iterator().next());
         Assert.assertEquals(nodes, f.getInvolvedNodes());
         Assert.assertFalse(f.toString().contains("null"));
         Assert.assertFalse(f.isContinuous());
@@ -64,25 +63,25 @@ public class FenceTest {
         map.addRunningVM(vms.get(0), ns.get(0));
         map.addRunningVM(vms.get(1), ns.get(1));
         map.addRunningVM(vms.get(2), ns.get(1));
-        Set<VM> vs = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1), vms.get(2)));
 
         Set<Node> nodes = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
 
-        Fence f = new Fence(vs, nodes);
+        Fence f = new Fence(vms.get(2), nodes);
         Assert.assertEquals(true, f.isSatisfied(m));
-        map.addRunningVM(vms.get(2), ns.get(2));
-        Assert.assertEquals(false, f.isSatisfied(m));
+        map.addRunningVM(vms.get(0), ns.get(2));
+        Assert.assertEquals(false, new Fence(vms.get(0), nodes).isSatisfied(m));
     }
 
     @Test
     public void testEquals() {
 
         Model mo = new DefaultModel();
-        Set<VM> vms = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
+        VM v = mo.newVM();
         Set<Node> nodes = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
-        Fence f = new Fence(vms, nodes);
+        Fence f = new Fence(v, nodes);
         Assert.assertTrue(f.equals(f));
-        Assert.assertTrue(new Fence(vms, nodes).equals(f));
-        Assert.assertEquals(new Fence(vms, nodes).hashCode(), f.hashCode());
+        Assert.assertTrue(new Fence(v, nodes).equals(f));
+        Assert.assertFalse(new Fence(mo.newVM(), nodes).equals(f));
+        Assert.assertEquals(new Fence(v, nodes).hashCode(), f.hashCode());
     }
 }

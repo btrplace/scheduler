@@ -115,15 +115,6 @@ public class RoundedUpDivision extends IntConstraint<IntVar> {
         @Override
         public void propagate(int idx, int mask) throws ContradictionException {
             do {
-                /*if (EventType.isInclow(mask)) {
-                    awakeOnInf(idx);
-                }
-                if (EventType.isDecupp(mask)) {
-                    awakeOnSup(idx);
-                }
-                if (EventType.isInstantiate(mask)) {
-                    awakeOnInst(idx);
-                } */
             } while (filter());
         }
 

@@ -20,6 +20,8 @@ package btrplace.solver.choco.constraint;
 import btrplace.model.*;
 import btrplace.model.constraint.*;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.Action;
+import btrplace.plan.event.BootVM;
 import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
@@ -32,11 +34,11 @@ import org.testng.annotations.Test;
 import java.util.*;
 
 /**
- * Unit tests for {@link btrplace.solver.choco.constraint.CCumulatedRunningCapacity}.
+ * Unit tests for {@link CRunningCapacity}.
  *
  * @author Fabien Hermenier
  */
-public class CCumulatedRunningCapacityTest {
+public class CCRunningCapacityTest {
 
     @Test
     public void testWithSatisfiedConstraint() throws SolverException {
@@ -54,7 +56,7 @@ public class CCumulatedRunningCapacityTest {
                 .run(n3, vm3, vm4)
                 .sleep(n2, vm5).get();
         List<SatConstraint> l = new ArrayList<>();
-        CumulatedRunningCapacity x = new CumulatedRunningCapacity(map.getAllNodes(), 4);
+        btrplace.model.constraint.RunningCapacity x = new btrplace.model.constraint.RunningCapacity(map.getAllNodes(), 4);
         x.setContinuous(false);
         l.add(x);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
@@ -79,14 +81,13 @@ public class CCumulatedRunningCapacityTest {
                 .run(n2, vm3, vm4, vm5).get();
         Set<Node> on = new HashSet<>(Arrays.asList(n1, n2));
         List<SatConstraint> l = new ArrayList<>();
-        CumulatedRunningCapacity x = new CumulatedRunningCapacity(on, 4);
+        btrplace.model.constraint.RunningCapacity x = new btrplace.model.constraint.RunningCapacity(on, 4);
         x.setContinuous(false);
         l.add(x);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
-        //System.out.println(plan);
         Assert.assertEquals(plan.getSize(), 1);
     }
 
@@ -102,14 +103,14 @@ public class CCumulatedRunningCapacityTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+        new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .run(n1, vm1, vm2)
                 .run(n2, vm3, vm4).ready(vm5).get();
         Set<Node> on = new HashSet<>(Arrays.asList(n1, n2));
         List<SatConstraint> l = new ArrayList<>();
-        l.add(new Running(Collections.singleton(vm5)));
-        l.add(new Fence(Collections.singleton(vm5), Collections.singleton(n1)));
-        CumulatedRunningCapacity x = new CumulatedRunningCapacity(on, 4);
+        l.add(new Running(vm5));
+        l.add(new Fence(vm5, Collections.singleton(n1)));
+        btrplace.model.constraint.RunningCapacity x = new btrplace.model.constraint.RunningCapacity(on, 4);
         x.setContinuous(true);
         l.add(x);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
@@ -119,7 +120,6 @@ public class CCumulatedRunningCapacityTest {
         cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
         ReconfigurationPlan plan = cra.solve(mo, l);
         Assert.assertNotNull(plan);
-        //System.out.println(plan);
         Assert.assertEquals(plan.getSize(), 2);
     }
 
@@ -134,7 +134,7 @@ public class CCumulatedRunningCapacityTest {
         Node n1 = mo.newNode();
         Node n2 = mo.newNode();
         Node n3 = mo.newNode();
-        Mapping map = new MappingFiller(mo.getMapping()).on(n1, n2, n3)
+        new MappingFiller(mo.getMapping()).on(n1, n2, n3)
                 .ready(vm1)
                 .run(n1, vm2)
                 .run(n2, vm3, vm4)
@@ -145,14 +145,14 @@ public class CCumulatedRunningCapacityTest {
         seq.add(vm1);
         seq.add(vm2);
         l.add(new SequentialVMTransitions(seq));
-        l.add(new Fence(Collections.singleton(vm1), Collections.singleton(n1)));
-        l.add(new Sleeping(Collections.singleton(vm2)));
-        l.add(new Running(Collections.singleton(vm1)));
-        l.add(new Root(Collections.singleton(vm3)));
-        l.add(new Root(Collections.singleton(vm4)));
+        l.add(new Fence(vm1, Collections.singleton(n1)));
+        l.add(new Sleeping(vm2));
+        l.add(new Running(vm1));
+        l.add(new Root(vm3));
+        l.add(new Root(vm4));
 
         Set<Node> on = new HashSet<>(Arrays.asList(n1, n2));
-        CumulatedRunningCapacity x = new CumulatedRunningCapacity(on, 3);
+        btrplace.model.constraint.RunningCapacity x = new btrplace.model.constraint.RunningCapacity(on, 3);
         x.setContinuous(true);
         l.add(x);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
@@ -178,8 +178,8 @@ public class CCumulatedRunningCapacityTest {
                 .run(n1, vm1, vm2, vm3)
                 .run(n2, vm4).ready(vm5).get();
 
-        CumulatedRunningCapacity c = new CumulatedRunningCapacity(map.getAllNodes(), 4);
-        CCumulatedRunningCapacity cc = new CCumulatedRunningCapacity(c);
+        btrplace.model.constraint.RunningCapacity c = new btrplace.model.constraint.RunningCapacity(map.getAllNodes(), 4);
+        CRunningCapacity cc = new CRunningCapacity(c);
 
         Assert.assertTrue(cc.getMisPlacedVMs(mo).isEmpty());
         map.addRunningVM(vm5, n3);
@@ -203,11 +203,79 @@ public class CCumulatedRunningCapacityTest {
                 .run(n2, vm3)
                 .run(n3, vm4).get();
         Collection<SatConstraint> ctrs = new HashSet<>();
-        ctrs.add(new CumulatedRunningCapacity(map.getAllNodes(), 2));
+        ctrs.add(new btrplace.model.constraint.RunningCapacity(map.getAllNodes(), 2));
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan plan = cra.solve(model, ctrs);
         Assert.assertNull(plan);
+    }
 
+    @Test
+    public void testSingleDiscreteResolution() throws SolverException {
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        Node n1 = mo.newNode();
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1, vm2).ready(vm3).get();
+
+        List<SatConstraint> l = new ArrayList<>();
+        l.add(new Running(vm1));
+        l.add(new Ready(vm2));
+        l.add(new Running(vm3));
+        RunningCapacity x = new RunningCapacity(Collections.singleton(n1), 2);
+        x.setContinuous(false);
+        l.add(x);
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
+        ReconfigurationPlan plan = cra.solve(mo, l);
+        Assert.assertEquals(2, plan.getSize());
+    }
+
+    @Test
+    public void testSingleContinuousResolution() throws SolverException {
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm3 = mo.newVM();
+        Node n1 = mo.newNode();
+
+        Mapping map = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1, vm2).ready(vm3).get();
+        List<SatConstraint> l = new ArrayList<>();
+        l.add(new Running(vm1));
+        l.add(new Ready(vm2));
+        l.add(new Running(vm3));
+        RunningCapacity sc = new RunningCapacity(Collections.singleton(n1), 2);
+        sc.setContinuous(true);
+        l.add(sc);
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.setTimeLimit(3);
+        cra.getDurationEvaluators().register(ShutdownVM.class, new ConstantActionDuration(10));
+        ReconfigurationPlan plan = cra.solve(mo, l);
+        Assert.assertNotNull(plan);
+        Iterator<Action> ite = plan.iterator();
+        Assert.assertEquals(2, plan.getSize());
+        Action a1 = ite.next();
+        Action a2 = ite.next();
+        Assert.assertTrue(a1 instanceof ShutdownVM);
+        Assert.assertTrue(a2 instanceof BootVM);
+        Assert.assertTrue(a1.getEnd() <= a2.getStart());
+    }
+
+    @Test
+    public void testSingleGetMisplaced() {
+        Model mo = new DefaultModel();
+        VM vm1 = mo.newVM();
+        VM vm2 = mo.newVM();
+        VM vm4 = mo.newVM();
+        Node n1 = mo.newNode();
+        Mapping m = new MappingFiller(mo.getMapping()).on(n1).run(n1, vm1).ready(vm2, vm4).get();
+
+        RunningCapacity c = new RunningCapacity(Collections.singleton(n1), 1);
+        CRunningCapacity cc = new CRunningCapacity(c);
+
+        Assert.assertTrue(cc.getMisPlacedVMs(mo).isEmpty());
+        m.addRunningVM(vm4, n1);
+        Assert.assertEquals(m.getRunningVMs(n1), cc.getMisPlacedVMs(mo));
     }
 }

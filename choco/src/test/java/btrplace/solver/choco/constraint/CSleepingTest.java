@@ -38,8 +38,15 @@ public class CSleepingTest {
         VM vm3 = mo.newVM();
         Node n1 = mo.newNode();
         Mapping m = new MappingFiller(mo.getMapping()).on(n1).ready(vm1).run(n1, vm2).sleep(n1, vm3).get();
-        CSleeping k = new CSleeping(new Sleeping(m.getAllVMs()));
-        Assert.assertEquals(2, k.getMisPlacedVMs(mo).size());
-        Assert.assertFalse(k.getMisPlacedVMs(mo).contains(vm3));
+        CSleeping k = new CSleeping(new Sleeping(vm3));
+        Assert.assertEquals(0, k.getMisPlacedVMs(mo).size());
+        //Assert.assertFalse(k.getMisPlacedVMs(mo).contains(vm3));
+
+        k = new CSleeping(new Sleeping(vm1));
+        Assert.assertEquals(1, k.getMisPlacedVMs(mo).size());
+        Assert.assertTrue(k.getMisPlacedVMs(mo).contains(vm1));
+
+        k = new CSleeping(new Sleeping(vm3));
+        Assert.assertEquals(0, k.getMisPlacedVMs(mo).size());
     }
 }

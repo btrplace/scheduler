@@ -22,9 +22,7 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.OverbookChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A constraint to specify and overbooking factor between
@@ -49,26 +47,42 @@ public class Overbook extends SatConstraint {
     private double ratio;
 
     /**
-     * Make a new constraint with a continuous restriction.
+     * Instantiate constraints for a collection of nodes.
      *
-     * @param nodes the nodes
+     * @param nodes the nodes to integrate
      * @param rc    the resource identifier
      * @param r     the overbooking ratio, >= 1
+     * @return the associated list of continuous constraints
      */
-    public Overbook(Collection<Node> nodes, String rc, double r) {
-        this(nodes, rc, r, true);
+    public static List<Overbook> newOverbook(Collection<Node> nodes, String rc, double r) {
+        List<Overbook> l = new ArrayList<>(nodes.size());
+        for (Node n : nodes) {
+            l.add(new Overbook(n, rc, r));
+        }
+        return l;
+    }
+
+    /**
+     * Make a new constraint with a continuous restriction.
+     *
+     * @param n  the node
+     * @param rc the resource identifier
+     * @param r  the overbooking ratio, >= 1
+     */
+    public Overbook(Node n, String rc, double r) {
+        this(n, rc, r, true);
     }
 
     /**
      * Make a new constraint.
      *
-     * @param nodes      the nodes identifiers
+     * @param n          the nodes identifiers
      * @param rc         the resource identifier
      * @param r          the overbooking ratio, >= 1
      * @param continuous {@code true} for a continuous restriction
      */
-    public Overbook(Collection<Node> nodes, String rc, double r, boolean continuous) {
-        super(Collections.<VM>emptySet(), nodes, continuous);
+    public Overbook(Node n, String rc, double r, boolean continuous) {
+        super(Collections.<VM>emptySet(), Collections.singleton(n), continuous);
         if (r < 1.0d) {
             throw new IllegalArgumentException("The overbooking ratio must be >= 1.0");
         }
@@ -97,8 +111,8 @@ public class Overbook extends SatConstraint {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        b.append("overbook(nodes=");
-        b.append(this.getInvolvedNodes()).append(", rc=").append(rcId).append(", ratio=").append(ratio);
+        b.append("overbook(node=");
+        b.append(this.getInvolvedNodes().iterator().next()).append(", rc=").append(rcId).append(", ratio=").append(ratio);
         if (!isContinuous()) {
             b.append(", discrete");
         } else {

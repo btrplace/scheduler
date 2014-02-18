@@ -25,8 +25,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
 
 /**
  * Unit tests for {@link btrplace.json.model.constraint.RunningConverter}.
@@ -40,7 +38,7 @@ public class RunningConverterTest {
         Model mo = new DefaultModel();
         RunningConverter conv = new RunningConverter();
         conv.setModel(mo);
-        Running d = new Running(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())));
+        Running d = new Running(mo.newVM());
 
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
     }

@@ -20,8 +20,6 @@ package btrplace.solver.choco.chocoUtil;
 
 import memory.IStateBitSet;
 import memory.IStateInt;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import solver.Solver;
 import solver.constraints.IntConstraint;
 import solver.constraints.Propagator;
@@ -44,8 +42,6 @@ import java.util.BitSet;
  * @author Sophie Demassey
  */
 public class Disjoint extends IntConstraint<IntVar> {
-
-    private static Logger LOGGER = LoggerFactory.getLogger("solver");
 
     /**
      * number of variables in the first set (group 0)
@@ -129,7 +125,63 @@ public class Disjoint extends IntConstraint<IntVar> {
 
         @Override
         protected int getPropagationConditions(int vIdx) {
-            return EventType.REMOVE.mask + EventType.INSTANTIATE.mask;
+            return EventType.BOUND.mask + EventType.INSTANTIATE.mask;
+        }
+
+        @Override
+        public void propagate(int evtmask) throws ContradictionException {
+            if (first) {
+                awake();
+                first = false;
+            }
+
+            for (int v = 0; v < nbValues; v++) {
+                //Check if the value 'v' is required by a group
+                if (required[0].get(v)) {
+                    //Required by group 0
+                    setRequired(v, 0, 1);
+                }
+                if (required[1].get(v)) {
+                    setRequired(v, 1, 0);
+                }
+            }
+        }
+
+        private void filterInst(int idx, int g) throws ContradictionException {
+            int val = groups[g][idx].getLB();
+            int otherGroup = 1 - g;
+            //Required in the group
+            required[g].set(val);
+            //Forbidden for the other
+            required[otherGroup].clear(val);
+
+            //remove the value for the domains of the other groups
+            int i = 0;
+            for (IntVar v : groups[otherGroup]) {
+                if (v.removeValue(val, aCause)) {
+                    candidates[otherGroup][val].add(-1);
+                    if (v.instantiated()) {
+                        filterInst(i, otherGroup);
+                    }
+                }
+                i++;
+            }
+            //remove the candidates for the delta domain
+            idms[idx + g * nbX].freeze();
+            idms[idx + g * nbX].forEach(remProc.set(idx + g * nbX), EventType.REMOVE);
+            idms[idx + g * nbX].unfreeze();
+        }
+
+        @Override
+        public void propagate(int idx, int mask) throws ContradictionException {
+            if (EventType.isInstantiate(mask)) {
+                int group = (idx < nbX) ? 0 : 1;
+                filterInst(idx - group * nbX, group);
+            } else if (EventType.isBound(mask)) {
+                idms[idx].freeze();
+                idms[idx].forEach(remProc.set(idx), EventType.REMOVE);
+                idms[idx].unfreeze();
+            }
         }
 
         @Override
@@ -148,7 +200,8 @@ public class Disjoint extends IntConstraint<IntVar> {
         }
 
         /**
-         * Initialise required and candidate for a given variable that belong to a given group.
+         * Initialise required and candidate for a given variable
+         * that belong to a given group.
          *
          * @param var   the variable
          * @param group the group of the variable
@@ -169,50 +222,14 @@ public class Disjoint extends IntConstraint<IntVar> {
             }
         }
 
-        @Override
-        public void propagate(int evtmask) throws ContradictionException {
-            //LOGGER.info("propagate " + EventType.isInstantiate(evtmask) + " " + EventType.isBound(evtmask) + " "  + EventType.isRemove(evtmask));
-            if (first) {
-                first = false;
-                int i = 0;
-                for (; i < nbX; i++) {
-                    initVar(vars[i], 0);
-                }
-                for (; i < vars.length; i++) {
-                    initVar(vars[i], 1);
-                }
-                //LOGGER.info("Done with awake:");
+        public void awake() throws ContradictionException {
+            int i = 0;
+            for (; i < nbX; i++) {
+                initVar(vars[i], 0);
             }
-
-            for (int v = 0; v < nbValues; v++) {
-                if (required[0].get(v)) {
-                    setRequired(v, 0);
-                }
-                if (required[1].get(v)) {
-                    setRequired(v, 1);
-                }
+            for (; i < vars.length; i++) {
+                initVar(vars[i], 1);
             }
-            //LOGGER.info("End for propagate");
-        }
-
-        @Override
-        public void propagate(int idx, int mask) throws ContradictionException {
-            //LOGGER.info("\n\n propagate " + idx + " " + EventType.isInstantiate(mask) + " " + EventType.isBound(mask) + " "  + EventType.isRemove(mask));
-            if (EventType.isRemove(mask)) {
-                //LOGGER.info("Deal with rem of " + vars[idx]);
-                idms[idx].freeze();
-                idms[idx].forEach(remProc.set(idx), EventType.REMOVE);
-                idms[idx].unfreeze();
-                //LOGGER.info("done with rem");
-            }
-            if (EventType.isInstantiate(mask)) {
-                int group = (idx < nbX) ? 0 : 1;
-                if (!required[group].get(vars[idx].getValue())) {
-                    setRequired(vars[idx].getValue(), group);
-                }
-                //LOGGER.info("done for instantiation");
-            }
-            //checkConsistency();
         }
 
         /**
@@ -222,90 +239,49 @@ public class Disjoint extends IntConstraint<IntVar> {
          *
          * @param val   the new assigned value
          * @param group the group of the new instantiated variable
+         * @param other the other group (other = 1-group)
          * @throws ContradictionException when some variables in both groups are instantiated to the same value
          */
-        public boolean setRequired(int val, int group) throws ContradictionException {
-            // LOGGER.info("Required " + val + " for group " + group);
-            required[group].set(val);
-            int other = 1 - group;
+        public boolean setRequired(int val, int group, int other) throws ContradictionException {
+
             if (required[other].get(val)) {
                 //The value is used in the other group. It's a contradiction
-                // LOGGER.info("! Already Required " + val + " by group " + other);
                 contradiction(null, "");
             }
             if (candidates[other][val].get() > 0) {
                 //The value was possible for the other group, so we remove it from its variable
+                //n is the number of variables that were updated
+                int n = 0;
                 int i = (other == 0) ? 0 : nbX;
                 int end = (other == 0) ? nbX : vars.length;
                 for (; i < end; i++) {
                     if (vars[i].removeValue(val, aCause)) {
-                        // LOGGER.info("Removed " + val + " from " + vars[i]);
-                        candidates[other][val].add(-1);
-                        if (vars[i].instantiated()) {
-                            // LOGGER.info(vars[i] + " is now instantiated");
-                            if (!required[other].get(vars[i].getValue())) {
-                                setRequired(vars[i].getValue(), other);
-                            }
-                        }
+                        n++;
                     }
                 }
+                assert n == candidates[other][val].get() : n + " variables in group '" + other + "' were updated for value '" + val + "' but candidate was equals to " + candidates[other][val].get();
+                candidates[other][val].set(0);
                 return true;
             }
+            required[group].set(val);
             return false;
         }
     }
 
     private class RemProc implements UnaryIntProcedure<Integer> {
-        private int group;
+        private int var;
 
         @Override
         public UnaryIntProcedure set(Integer idxVar) {
-            group = (idxVar < nbX) ? 0 : 1;
+            this.var = idxVar;
             return this;
         }
 
         @Override
         public void execute(int val) throws ContradictionException {
-            LOGGER.info("Remove one candidate for value " + val + " in group " + group);
+            int group = (var < nbX) ? 0 : 1;
             candidates[group][val].add(-1);
         }
     }
-
-         /*private void prettyCandidates(int g) {
-            StringBuilder b = new StringBuilder();
-            int x = 0;
-            for (IStateInt v : candidates[g]) {
-                b.append(" value(").append(x++).append("):").append(v.get());
-            }
-            LOGGER.info("Candidates for group " + g + ": " + b.toString());
-        }              */
-
-
-           /*private void checkConsistency() {
-            LOGGER.info(Arrays.toString(vars));
-            prettyCandidates(0);
-            prettyCandidates(1);
-            int [][] cdts;
-            cdts = new int[2][nbValues];
-            int i = 0;
-            for (IntVar v : vars) {
-                DisposableValueIterator ite = v.getValueIterator(true);
-                while (ite.hasNext()) {
-                    int g = i < nbX ? 0 : 1;
-                    int n = ite.next();
-                    cdts[g][n]++;
-                }
-                i++;
-                ite.dispose();
-            }
-            for (int g = 0; g < 2; g++) {
-                for (int y = 0;  y < candidates[g].length; y++) {
-                    if (candidates[g][y].get() != cdts[g][y]) {
-                        LOGGER.error("Unconsistency about value " + y + " for group " + g + ": " + candidates[g][y].get() + "/=" + cdts[g][y]);
-                        assert false;
-                    }
-                }
-            }
-        }            */
 
 }

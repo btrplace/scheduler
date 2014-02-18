@@ -52,14 +52,13 @@ public class COnline implements ChocoConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        for (Node nId : cstr.getInvolvedNodes()) {
-            ActionModel m = rp.getNodeAction(nId);
-            try {
-                m.getState().instantiateTo(1, Cause.Null);
-            } catch (ContradictionException ex) {
-                rp.getLogger().error("Unable to force node '{}' at being online", nId);
-                return false;
-            }
+        Node nId = cstr.getInvolvedNodes().iterator().next();
+        ActionModel m = rp.getNodeAction(nId);
+        try {
+            m.getState().instantiateTo(1, Cause.Null);
+        } catch (ContradictionException ex) {
+            rp.getLogger().error("Unable to force node '{}' at being online", nId);
+            return false;
         }
         return true;
     }

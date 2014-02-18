@@ -331,20 +331,10 @@ public class TaskScheduler extends IntConstraint<IntVar> {
         @Override
         public void propagate(int idx, int mask) throws ContradictionException {
 
-            /*if (first) {
-                first = false;
-                for (int i = 0; i < dHosters.length; i++) {
-                    if (dHosters[i].instantiated()) {
-                        int nIdx = dHosters[i].getValue();
-                        vIns[nIdx].add(i);
-                    }
-                }
-            } else {  */
             if (idx < dHosters.length) {
                 int nIdx = vars[idx].getValue();
                 vIns[nIdx].add(idx);
             }
-            //}
             forcePropagate(EventType.INSTANTIATE);
         }
 
@@ -359,7 +349,7 @@ public class TaskScheduler extends IntConstraint<IntVar> {
             //dHosters, cHosters, cEnds, dStarts
             for (int i = 0; i < dHosters.length; i++) {
                 dHostersVals[i] = dHosters[i].getValue();
-                dStartsVals[i] = dStarts[i].getValue();//vals[i + dHosters.length + cHosters.length + cEnds.length];
+                dStartsVals[i] = dStarts[i].getValue();
                 if (dStartsVals[i] < earlyStarts[dHostersVals[i]].getValue()) {
                     LOGGER.error("D-slice " + dHosters[i] + " arrives too early: " + dStartsVals[i] + ". Min expected: " + earlyStarts[dHosters[i].getValue()]);
                     return ESat.FALSE;
@@ -367,8 +357,8 @@ public class TaskScheduler extends IntConstraint<IntVar> {
             }
 
             for (int i = 0; i < cHosters.length; i++) {
-                cHostersVals[i] = cHosters[i].getValue();//vals[i + dHosters.length];
-                cEndsVals[i] = cEnds[i].getValue();//vals[i + dHosters.length + cHosters.length];
+                cHostersVals[i] = cHosters[i].getValue();
+                cEndsVals[i] = cEnds[i].getValue();
                 if (cEndsVals[i] > lastEnds[cHostersVals[i]].getValue()) {
                     LOGGER.error("C-slice " + cHosters[i] + " leaves too late: " + cEndsVals[i] + ". Max expected: " + lastEnds[cHosters[i].getValue()]);
                     return ESat.FALSE;
@@ -454,8 +444,6 @@ public class TaskScheduler extends IntConstraint<IntVar> {
 
         @Override
         public void propagate(int evtmask) throws ContradictionException {
-            //LOGGER.error("BIG propagate() " + Arrays.toString(dHosters));
-
             if (first) {
                 first = false;
                 for (int i = 0; i < dHosters.length; i++) {

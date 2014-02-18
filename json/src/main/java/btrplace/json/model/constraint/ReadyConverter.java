@@ -42,14 +42,14 @@ public class ReadyConverter extends ConstraintConverter<Ready> {
     @Override
     public Ready fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Ready(requiredVMs(o, "vms"));
+        return new Ready(requiredVM(o, "vm"));
     }
 
     @Override
     public JSONObject toJSON(Ready o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("vms", vmsToJSON(o.getInvolvedVMs()));
+        c.put("vm", toJSON(o.getInvolvedVMs().iterator().next()));
         return c;
     }
 }

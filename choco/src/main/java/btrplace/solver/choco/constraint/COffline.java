@@ -32,7 +32,6 @@ import solver.Cause;
 import solver.constraints.IntConstraintFactory;
 import solver.exception.ContradictionException;
 
-import java.util.HashSet;
 import java.util.Set;
 
 
@@ -56,22 +55,20 @@ public class COffline implements ChocoConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        for (Node nId : cstr.getInvolvedNodes()) {
-            int id = rp.getNode(nId);
-            ActionModel m = rp.getNodeAction(nId);
-            try {
-                m.getState().instantiateTo(0, Cause.Null);
-            } catch (ContradictionException ex) {
-                rp.getLogger().error("Unable to force node '{}' at being offline: {}", nId);
-                return false;
+        Node nId = cstr.getInvolvedNodes().iterator().next();
+        int id = rp.getNode(nId);
+        ActionModel m = rp.getNodeAction(nId);
+        try {
+            m.getState().instantiateTo(0, Cause.Null);
+        } catch (ContradictionException ex) {
+            rp.getLogger().error("Unable to force node '{}' at being offline: {}", nId);
+            return false;
+        }
+        for (VMActionModel am : rp.getVMActions()) {
+            Slice s = am.getDSlice();
+            if (s != null) {
+                rp.getSolver().post(IntConstraintFactory.arithm(s.getHoster(), "!=", id));
             }
-            for (VMActionModel am : rp.getVMActions()) {
-                    Slice s = am.getDSlice();
-                    if (s != null) {
-                        rp.getSolver().post(IntConstraintFactory.arithm(s.getHoster(), "!=", id));
-                        //rp.getSolver().post(rp.getSolver().neq(s.getHoster(), id));
-                    }
-                }
         }
         return true;
 
@@ -80,9 +77,7 @@ public class COffline implements ChocoConstraint {
     @Override
     public Set<VM> getMisPlacedVMs(Model m) {
         Mapping mapping = m.getMapping();
-        Set<VM> bad = new HashSet<>();
-        bad.addAll(mapping.getRunningVMs(cstr.getInvolvedNodes()));
-        return bad;
+        return mapping.getRunningVMs(cstr.getInvolvedNodes().iterator().next());
     }
 
     @Override

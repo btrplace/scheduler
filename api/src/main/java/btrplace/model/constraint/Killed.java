@@ -21,10 +21,12 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.KilledChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
- * A constraint to force a set of VMs to be killed.
+ * A constraint to force a VM to be killed.
  * <p/>
  * The restriction provided by the constraint is discrete.
  *
@@ -33,12 +35,26 @@ import java.util.Collection;
 public class Killed extends VMStateConstraint {
 
     /**
+     * Instantiate constraints for a collection of VMs.
+     *
+     * @param vms the VMs to integrate
+     * @return the associated list of constraints
+     */
+    public static List<Killed> newKilled(Collection<VM> vms) {
+        List<Killed> l = new ArrayList<>(vms.size());
+        for (VM v : vms) {
+            l.add(new Killed(v));
+        }
+        return l;
+    }
+
+    /**
      * Make a new constraint.
      *
-     * @param vms the VMs to remove
+     * @param vm the VMs to remove
      */
-    public Killed(Collection<VM> vms) {
-        super("killed", vms);
+    public Killed(VM vm) {
+        super("killed", vm);
     }
 
     @Override

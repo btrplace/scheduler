@@ -25,8 +25,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
 
 /**
  * Unit tests for {@link btrplace.json.model.constraint.OnlineConverter}.
@@ -40,7 +38,7 @@ public class OnlineConverterTest {
         Model mo = new DefaultModel();
         OnlineConverter conv = new OnlineConverter();
         conv.setModel(mo);
-        Online d = new Online(new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode(), mo.newNode())));
+        Online d = new Online(mo.newNode());
 
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
     }

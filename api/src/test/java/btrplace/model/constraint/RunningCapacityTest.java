@@ -18,7 +18,6 @@
 package btrplace.model.constraint;
 
 import btrplace.model.*;
-import btrplace.model.view.ShareableResource;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootVM;
@@ -32,49 +31,48 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Unit tests for {@link SingleResourceCapacity}.
+ * Unit tests for {@link RunningCapacity}.
  *
  * @author Fabien Hermenier
  */
-public class SingleResourceCapacityTest {
+public class RunningCapacityTest {
 
     @Test
     public void testInstantiation() {
         Model mo = new DefaultModel();
-        Set<Node> s = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
-
-        SingleResourceCapacity c = new SingleResourceCapacity(s, "foo", 3);
+        List<Node> ns = Util.newNodes(mo, 10);
+        Set<Node> s = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
+        RunningCapacity c = new RunningCapacity(s, 3);
         Assert.assertNotNull(c.getChecker());
         Assert.assertEquals(s, c.getInvolvedNodes());
-        Assert.assertEquals("foo", c.getResource());
         Assert.assertEquals(3, c.getAmount());
         Assert.assertTrue(c.getInvolvedVMs().isEmpty());
         Assert.assertFalse(c.toString().contains("null"));
-        System.out.println(c);
+
         Assert.assertFalse(c.isContinuous());
         Assert.assertTrue(c.setContinuous(true));
         Assert.assertTrue(c.isContinuous());
+        System.out.println(c);
 
-        c = new SingleResourceCapacity(s, "foo", 3, true);
+        c = new RunningCapacity(s, 3, true);
         Assert.assertTrue(c.isContinuous());
+
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})
     public void testEqualsAndHashCode() {
         Model mo = new DefaultModel();
-        Set<Node> s = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
-        SingleResourceCapacity c = new SingleResourceCapacity(s, "foo", 3);
-        SingleResourceCapacity c2 = new SingleResourceCapacity(s, "foo", 3);
+        List<Node> ns = Util.newNodes(mo, 10);
+
+        Set<Node> s = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
+        RunningCapacity c = new RunningCapacity(s, 3);
+        RunningCapacity c2 = new RunningCapacity(s, 3);
         Assert.assertTrue(c.equals(c));
         Assert.assertTrue(c.equals(c2));
         Assert.assertEquals(c.hashCode(), c2.hashCode());
 
-        Assert.assertFalse(c.equals(new SingleResourceCapacity(s, "bar", 3)));
-        Assert.assertFalse(c.equals(new SingleResourceCapacity(s, "foo", 2)));
-        Assert.assertFalse(c.equals(new SingleResourceCapacity(new HashSet<Node>(), "foo", 3)));
-        c.setContinuous(true);
-        c2.setContinuous(false);
-        Assert.assertFalse(c.equals(c2));
+        Assert.assertFalse(c.equals(new RunningCapacity(s, 2)));
+        Assert.assertFalse(c.equals(new RunningCapacity(new HashSet<Node>(), 3)));
     }
 
     @Test
@@ -87,28 +85,23 @@ public class SingleResourceCapacityTest {
         m.addOnlineNode(ns.get(1));
         m.addRunningVM(vms.get(0), ns.get(0));
         m.addReadyVM(vms.get(1));
-
         m.addRunningVM(vms.get(2), ns.get(1));
         m.addReadyVM(vms.get(3));
 
-        ShareableResource rc = new ShareableResource("foo", 2, 2);
-        mo.attach(rc);
-        SingleResourceCapacity c = new SingleResourceCapacity(m.getAllNodes(), "foo", 3);
+        RunningCapacity c = new RunningCapacity(m.getAllNodes(), 2);
+        c.setContinuous(false);
         Assert.assertEquals(c.isSatisfied(mo), true);
-        rc.setConsumption(vms.get(2), 4);
+        m.addRunningVM(vms.get(1), ns.get(1));
         Assert.assertEquals(c.isSatisfied(mo), false);
-
-        rc.setConsumption(vms.get(2), 1);
-        m.addRunningVM(vms.get(0), ns.get(1));
-        Assert.assertEquals(c.isSatisfied(mo), true);
     }
 
     @Test
     public void testContinuousIsSatisfied() {
         Model mo = new DefaultModel();
-        List<VM> vms = Util.newVMs(mo, 10);
-        List<Node> ns = Util.newNodes(mo, 10);
         Mapping m = mo.getMapping();
+        List<Node> ns = Util.newNodes(mo, 10);
+        List<VM> vms = Util.newVMs(mo, 10);
+
         m.addOnlineNode(ns.get(0));
         m.addOnlineNode(ns.get(1));
         m.addRunningVM(vms.get(0), ns.get(0));
@@ -117,19 +110,16 @@ public class SingleResourceCapacityTest {
         m.addRunningVM(vms.get(2), ns.get(1));
         m.addReadyVM(vms.get(3));
 
-        ShareableResource rc = new ShareableResource("foo", 2, 2);
-        mo.attach(rc);
-        SingleResourceCapacity c = new SingleResourceCapacity(m.getAllNodes(), "foo", 3);
+        RunningCapacity c = new RunningCapacity(m.getAllNodes(), 2);
+        c.setContinuous(true);
 
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(c.isSatisfied(plan), true);
-        plan.add(new BootVM(vms.get(3), ns.get(0), 1, 2));
+        plan.add(new BootVM(vms.get(3), ns.get(1), 2, 4));
         Assert.assertEquals(c.isSatisfied(plan), false);
-
         plan.add(new ShutdownVM(vms.get(0), ns.get(0), 0, 1));
         Assert.assertEquals(c.isSatisfied(plan), true);
 
 
     }
-
 }

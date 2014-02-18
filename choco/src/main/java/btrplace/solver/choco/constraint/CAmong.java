@@ -110,11 +110,19 @@ public class CAmong implements ChocoConstraint {
 
         if (cstr.isContinuous() && curGrp != -1) {
             vmGrpId = VariableFactory.fixed(rp.makeVarLabel("among#pGrp"), curGrp, rp.getSolver());
-            return new CFence(new Fence(runnings, groups.get(curGrp))).inject(rp);
+            for (VM v : runnings) {
+                if (!new CFence(new Fence(v, groups.get(curGrp))).inject(rp)) {
+                    return false;
+                }
+            }
         } else {
             if (groups.size() == 1 && !groups.iterator().next().equals(rp.getSourceModel().getMapping().getAllNodes())) {
                 //Only 1 group of nodes, it's just a fence constraint
-                new CFence(new Fence(new HashSet<>(runnings), groups.get(0))).inject(rp);
+                for (VM v : runnings) {
+                    if (!new CFence(new Fence(v, groups.get(0))).inject(rp)) {
+                        return false;
+                    }
+                }
                 vmGrpId = VariableFactory.fixed(rp.makeVarLabel("among#pGrp"), 0, rp.getSolver());
             } else {
                 //Now, we create a variable to indicate on which group of nodes the VMs will be
@@ -132,7 +140,12 @@ public class CAmong implements ChocoConstraint {
                         }
                     }
                     //In any case, the VMs cannot go to nodes that are in no groups
-                    new CFence(new Fence(runnings, new HashSet<>(possibleNodes))).inject(rp);
+                    Collection<Node> ok = new HashSet<>(possibleNodes);
+                    for (VM v : runnings) {
+                        if (!new CFence(new Fence(v, ok)).inject(rp)) {
+                            return false;
+                        }
+                    }
                     //We link the VM placement variable with the group variable
                     for (VM vm : runnings) {
                         IntVar assign = rp.getVMAction(vm).getDSlice().getHoster();
@@ -142,7 +155,11 @@ public class CAmong implements ChocoConstraint {
                 } else {
                     vmGrpId = VariableFactory.fixed(rp.makeVarLabel("among#pGrp"), nextGrp, rp.getSolver());
                     //As the group is already known, it's now just a fence constraint
-                    new CFence(new Fence(runnings, groups.get(nextGrp))).inject(rp);
+                    for (VM v : runnings) {
+                        if (!new CFence(new Fence(v, groups.get(nextGrp))).inject(rp)) {
+                            return false;
+                        }
+                    }
                 }
             }
         }

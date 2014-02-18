@@ -298,9 +298,9 @@ public class Issues {
 
         ctrsC.add(new Spread(vms1));
         ctrsC.add(new Spread(vms2));
-        ctrsC.add(new Fence(Collections.singleton(vm3), Collections.singleton(n1)));
+        ctrsC.add(new Fence(vm3, Collections.singleton(n1)));
 
-        Offline off = new Offline(Collections.singleton(n2));
+        Offline off = new Offline(n2);
         ctrsC.add(off);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan dp = cra.solve(model, ctrsC);
