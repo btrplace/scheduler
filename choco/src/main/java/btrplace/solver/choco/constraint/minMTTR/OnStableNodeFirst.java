@@ -73,7 +73,7 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
      * @param o       the objective to rely on
      */
     public OnStableNodeFirst(String lbl, ReconfigurationProblem rp, List<ActionModel> actions, CMinMTTR o) {
-        // super(rp.getSolver(), ActionModelUtils.getStarts(actions.toArray(new ActionModel[actions.size()])));
+
         this.rp = rp;
         firstFree = rp.getSolver().getEnvironment().makeInt(0);
         this.obj = o;
@@ -160,31 +160,22 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
     public IntVar getVariable() {
 
         makeIncomings();
-        /*for (BitSet b : ins) {
-            System.out.println(b);
-        } */
         IntVar v = getVMtoLeafNode();
         if (v == null) {
             last = null;
-            //System.out.println("No more leaf");
             return null;
         }
 
         v = getMovingVM();
         if (v != null) {
             obj.postCostConstraints();
-            //System.out.println("Return moving VM " + v);
             return v;
         }
 
         IntVar early = getEarlyVar();
-        /*if (early == null) {
-            System.out.println("Null");
-        } */
         last = early != null ? early : minInf();
-        //System.out.println("Last: " + last);
         return last;
-        //return early != null ? early : minInf();
+
     }
 
     @Override
@@ -275,19 +266,12 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
      */
     private IntVar getVMtoLeafNode() {
         for (int x = 0; x < outs.length; x++) {
-            //System.out.println("Leaf node ? " + rp.getNode(x) + " " + outs[x]);
             if (outs[x].cardinality() == 0) {
                 //no outgoing VMs, can be launched directly.
                 BitSet in = ins[x];
-                //System.out.println("\tindeed. Incoming: " + in);
                 for (int i = in.nextSetBit(0); i >= 0; i = in.nextSetBit(i + 1)) {
                     if (starts[i] != null && !starts[i].instantiated()) {
-                        //System.out.println(starts[i].toString());
-                        return starts[i];
                     }
-                    /*else {
-                        System.out.println(starts[i].toString());
-                    } */
                 }
             }
         }

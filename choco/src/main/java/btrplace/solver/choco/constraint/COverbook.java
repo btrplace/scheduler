@@ -32,7 +32,6 @@ import solver.exception.ContradictionException;
 import solver.variables.RealVar;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 
@@ -78,7 +77,6 @@ public class COverbook implements ChocoConstraint {
     @Override
     public Set<VM> getMisPlacedVMs(Model m) {
         ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
-        Set<VM> bad = new HashSet<>();
         if (rc == null) {
             //No resource given, all the VMs are considered as misplaced
             Node n = cstr.getInvolvedNodes().iterator().next();

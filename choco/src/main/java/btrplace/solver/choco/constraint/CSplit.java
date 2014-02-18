@@ -35,8 +35,6 @@ import solver.variables.IntVar;
 
 import java.util.*;
 
-/*import gnu.trove.list.array.TIntArrayList;*/
-
 /**
  * Choco implementation of the {@link btrplace.model.constraint.Split} constraint.
  *
@@ -81,26 +79,7 @@ public class CSplit implements ChocoConstraint {
             vars[i] = groups.get(i).toArray(new IntVar[groups.get(i).size()]);
         }
         s.post(new DisjointMultiple(s, vars, nbNodes));
-        /*
-        for (int i = 0; i < groups.size(); i++) {
-            for (int j = 0; j < i; j++) {
-                IntVar[] gI = vars[i];
-                IntVar[] gJ = vars[j];
 
-                if (gI == null) {
-                    gI = groups.get(i).toArray(new IntVar[groups.get(i).size()]);
-                    vars[i] = gI;
-                }
-
-                if (gJ == null) {
-                    gJ = groups.get(j).toArray(new IntVar[groups.get(j).size()]);
-                    vars[j] = gJ;
-                }
-
-                s.post(new Disjoint(s, gI, gJ, nbNodes));
-            }
-        }
-        */
         if (cstr.isContinuous()) {
             if (!cstr.isSatisfied(rp.getSourceModel())) {
                 rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);

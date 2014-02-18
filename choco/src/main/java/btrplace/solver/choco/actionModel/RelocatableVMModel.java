@@ -106,11 +106,8 @@ public class RelocatableVMModel implements KeepRunningVMModel {
                 .setStart(p.makeUnboundedDuration("relocatable(", vm, ").dSlice_start"))
                 .build();
 
-        //BoolVar move = VariableFactory.bool(p.makeVarLabel("relocatable(", vm, ").move"), s);
         Constraint cstr = IntConstraintFactory.arithm(cSlice.getHoster(), "!=", dSlice.getHoster());
         BoolVar move = cstr.reif();
-        //LogicalConstraintFactory.reification(move, cstr);
-        //s.post(ReifiedFactory.builder(move, s.neq(cSlice.getHoster(), dSlice.getHoster()), s));
 
         stay = VariableFactory.not(move);
 
@@ -125,7 +122,6 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
         //If we allow re-instantiate, then the dSlice duration will consume necessarily after the forgeDuration
         s.post(new FastIFFEq(stay, duration, 0));
-        //s.post(new BooleanChanneling(stay, duration, 0));
 
         if (!getRelocationMethod().instantiated()) {
             //TODO: not very compliant with the ForgeActionModel but forge is useless for the moment
@@ -133,11 +129,8 @@ public class RelocatableVMModel implements KeepRunningVMModel {
             IntVar time = VariableFactory.bounded(rp.makeVarLabel(doReinstantiation.getName(), " * ", forgeD), 0, Integer.MAX_VALUE / 100, s);
             IntConstraintFactory.times(doReinstantiation, VariableFactory.fixed(forgeD, s), time);
             s.post(IntConstraintFactory.arithm(this.dSlice.getStart(), ">=", time));
-            //s.post(s.geq(this.dSlice.getStart(), ChocoUtils.mult(s, doReinstantiation, forgeD)));
 
-            //s.post(new BooleanChanneling(doReinstantiation, duration, reInstantiateDuration));
             s.post(new FastIFFEq(doReinstantiation, duration, reInstantiateDuration));
-            //s.post(IntConstraintFactory.boolean_channeling(new BoolVar[]{doReinstantiation}, duration, reInstantiateDuration));
         }
         state = VariableFactory.one(rp.getSolver());
     }

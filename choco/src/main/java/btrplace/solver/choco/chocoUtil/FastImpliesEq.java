@@ -63,8 +63,16 @@ public class FastImpliesEq extends IntConstraint<IntVar> {
     }
 
 
+    /**
+     * Propagator for {@link btrplace.solver.choco.chocoUtil.FastImpliesEq}.
+     */
     class FastImpliesEqProp extends Propagator<IntVar> {
 
+        /**
+         * Default constructor.
+         *
+         * @param vs vs[0] is the boolean variable, vs[1] is the integer one
+         */
         public FastImpliesEqProp(IntVar[] vs) {
             super(vs, PropagatorPriority.UNARY, true);
         }

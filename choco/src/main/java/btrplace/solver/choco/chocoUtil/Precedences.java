@@ -40,7 +40,7 @@ import util.tools.ArrayUtils;
  */
 public class Precedences extends IntConstraint<IntVar> {
 
-    private static Logger LOGGER = LoggerFactory.getLogger("solver");
+    private static final Logger LOGGER = LoggerFactory.getLogger("solver");
     private IntVar host;
 
     private IntVar start;

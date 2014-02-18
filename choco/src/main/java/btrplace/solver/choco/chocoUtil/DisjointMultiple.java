@@ -258,10 +258,8 @@ public class DisjointMultiple extends IntConstraint<IntVar> {
                         //The value was possible for the other group, so we remove it from its variable
                         for (int i = groupIdx[g]; i < groupIdx[g + 1]; i++) {
                             if (vars[i].removeValue(val, aCause)) {
-                                //LOGGER.info("Removed " + val + " from " + vars[i]);
                                 candidates[g][val].add(-1);
                                 if (vars[i].instantiated()) {
-                                    //LOGGER.info(vars[i] + " is now instantiated");
                                     if (!required[g].get(vars[i].getValue())) {
                                         setRequired(vars[i].getValue(), g);
                                     }

@@ -30,7 +30,6 @@ import btrplace.solver.choco.view.ModelViewMapper;
 import org.slf4j.Logger;
 import solver.ResolutionPolicy;
 import solver.Solver;
-import solver.search.solution.ISolutionRecorder;
 import solver.variables.IntVar;
 
 import java.util.Collection;
@@ -207,8 +206,6 @@ public interface ReconfigurationProblem {
      * @throws SolverException if an error occurs
      */
     ReconfigurationPlan solve(int timeLimit, boolean optimize) throws SolverException;
-
-    ISolutionRecorder getRecorderSolutions();
 
     /**
      * Get the Solver used to model this problem.

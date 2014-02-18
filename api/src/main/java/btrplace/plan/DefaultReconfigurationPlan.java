@@ -47,7 +47,6 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
      */
     public DefaultReconfigurationPlan(Model m) {
         this.src = m;
-        //this.actions = new TreeSet<>(startFirstComparator);
         this.actions = new HashSet<>();
         this.depsExtractor = new DependenciesExtractor(m);
     }

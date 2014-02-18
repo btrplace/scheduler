@@ -48,7 +48,7 @@ import java.util.BitSet;
  */
 public class TaskScheduler extends IntConstraint<IntVar> {
 
-    private static Logger LOGGER = LoggerFactory.getLogger("solver");
+    private static final Logger LOGGER = LoggerFactory.getLogger("solver");
 
     private LocalTaskScheduler[] scheds;
 

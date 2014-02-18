@@ -134,14 +134,5 @@ public class RoundedUpDivision extends IntConstraint<IntVar> {
                 return vars[1].updateUpperBound((int) Math.floor(q * vars[0].getUB()), aCause);
             }
         }
-
-        /*public boolean awakeOnInst(int i) throws ContradictionException {
-            if (i == 1) {
-                vars[0].instantiateTo(div(vars[1].getValue()), aCause);
-            } else {
-                return vars[1].updateLowerBound(multLB(vars[0].getLB()), aCause) ||
-                      vars[1].updateUpperBound((int) Math.floor(q * vars[0].getUB()), aCause);
-            }
-        } */
     }
 }

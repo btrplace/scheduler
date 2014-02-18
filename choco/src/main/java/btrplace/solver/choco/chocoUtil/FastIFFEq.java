@@ -29,7 +29,6 @@ import util.ESat;
 
 /**
  * A fast implementation for BVAR => VAR = CSTE
- * <br/>
  *
  * @author Charles Prud'homme
  * @since 29/06/11
@@ -38,9 +37,16 @@ public class FastIFFEq extends IntConstraint<IntVar> {
 
     private final int constant;
 
-    public FastIFFEq(BoolVar b, IntVar var, int constante) {
+    /**
+     * New constraint.
+     *
+     * @param b   the boolean variable.
+     * @param var the variable that can be equals to c
+     * @param c   the constraint
+     */
+    public FastIFFEq(BoolVar b, IntVar var, int c) {
         super(new IntVar[]{b, var}, b.getSolver());
-        this.constant = constante;
+        this.constant = c;
         setPropagators(new FastIFFEqProp(vars), new FastIFFEqProp(vars));
     }
 
@@ -55,8 +61,16 @@ public class FastIFFEq extends IntConstraint<IntVar> {
         return vars[0].toString() + " <-> " + vars + "=" + constant;
     }
 
+    /**
+     * Propagator for {@link btrplace.solver.choco.chocoUtil.FastIFFEq}
+     */
     class FastIFFEqProp extends Propagator<IntVar> {
 
+        /**
+         * Default constructor.
+         *
+         * @param vs vs[0] is the boolean variable, vs[1] is the integer one
+         */
         public FastIFFEqProp(IntVar[] vs) {
             super(vs, PropagatorPriority.BINARY, true);
         }

@@ -36,7 +36,7 @@ import java.util.BitSet;
  */
 public class AliasedCumulativesFiltering {
 
-    private static Logger LOGGER = LoggerFactory.getLogger("solver");
+    private static final Logger LOGGER = LoggerFactory.getLogger("solver");
 
     /**
      * out[i] = true <=> the consuming slice i will leave me.

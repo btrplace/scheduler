@@ -81,7 +81,7 @@ public class ResumeVMModel implements VMActionModel {
 
         Solver s = p.getSolver();
         s.post(IntConstraintFactory.arithm(end, "<=", p.getEnd()));
-        state = VariableFactory.one(rp.getSolver());//s.makeConstantIntVar(1);
+        state = VariableFactory.one(rp.getSolver());
     }
 
     @Override

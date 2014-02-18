@@ -112,41 +112,12 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
         this.dUsages = dUsages;
 
         this.nbDims = capas.length;
-        int nbCTasks = cUsages[0].length;
 
         this.vIns = env.makeIntVector(0, 0);
         setPropagators(new AliasedCumulativesPropagator(env, alias, capas, cHosters, cUsages, cEnds, dHosters, dUsages, dStarts, assocs));
 
-        /*
-        vIns = env.makeIntVector();
-        resource = new AliasedCumulativesFiltering(env,
-                capacities,
-                cUsages,
-                cEnds,
-                out,
-                dUsages,
-                dStarts,
-                vIns,
-                assocs,
-                revAssociations);  */
     }
 
-
-    /*@Override
-    public boolean isSatisfied() {
-        int[] vals = new int[vars.length];
-        for (int i = 0; i < vals.length; i++) {
-            vals[i] = vars[i].getValue();
-        }
-        return isSatisfied(vals);
-    }      */
-
-    /*    @Override
-        public boolean isConsistent() {
-            resource.computeProfiles();
-            return resource.checkInvariant();
-        }
-      */
     @Override
     public ESat isSatisfied(int[] vals) {
         //Split this use tab to ease the analysis
@@ -382,6 +353,7 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
             }
         }
 
+        @Override
         public void propagate(int idx, int m) throws ContradictionException {
             if (idx < dHosters.length) {
                 toInstantiate.add(-1);

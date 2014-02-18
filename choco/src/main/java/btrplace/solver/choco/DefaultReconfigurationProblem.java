@@ -779,9 +779,4 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     public ResolutionPolicy getResolutionPolicy() {
         return this.solvingPolicy;
     }
-
-    @Override
-    public ISolutionRecorder getRecorderSolutions() {
-        return recordedSolutions;
-    }
 }

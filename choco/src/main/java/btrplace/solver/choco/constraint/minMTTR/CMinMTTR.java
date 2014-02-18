@@ -43,8 +43,6 @@ import solver.variables.VariableFactory;
 
 import java.util.*;
 
-/*import btrplace.model.constraint.Constraint;*/
-
 /**
  * An objective that minimizes the time to repair a non-viable model.
  *

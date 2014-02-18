@@ -83,10 +83,7 @@ public class MovingVMs implements VariableSelector<IntVar> {
 
     @Override
     public IntVar[] getScope() {
-
-
         return scopes;
-        //throw new UnsupportedOperationException();
     }
 
     private boolean setToNextMovingVM() {

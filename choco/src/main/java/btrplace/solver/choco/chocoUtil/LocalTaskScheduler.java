@@ -38,7 +38,7 @@ import java.util.BitSet;
  */
 public class LocalTaskScheduler {
 
-    private static Logger LOGGER = LoggerFactory.getLogger("solver");
+    private static final Logger LOGGER = LoggerFactory.getLogger("solver");
 
     private int me;
 
