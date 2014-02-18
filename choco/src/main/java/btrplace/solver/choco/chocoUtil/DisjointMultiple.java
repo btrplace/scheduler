@@ -20,8 +20,6 @@ package btrplace.solver.choco.chocoUtil;
 
 import memory.IStateBitSet;
 import memory.IStateInt;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import solver.Solver;
 import solver.constraints.IntConstraint;
 import solver.constraints.Propagator;
@@ -44,8 +42,6 @@ import java.util.BitSet;
  * @author Sophie Demassey
  */
 public class DisjointMultiple extends IntConstraint<IntVar> {
-
-    private static Logger LOGGER = LoggerFactory.getLogger("solver");
 
     /**
      * the variable domains must be included in [0, nbValues-1]
@@ -207,7 +203,6 @@ public class DisjointMultiple extends IntConstraint<IntVar> {
 
         @Override
         public void propagate(int evtmask) throws ContradictionException {
-            //LOGGER.info("propagate " + EventType.isInstantiate(evtmask) + " " + EventType.isBound(evtmask) + " "  + EventType.isRemove(evtmask));
             if (first) {
                 first = false;
                 int i = 0;
@@ -216,7 +211,6 @@ public class DisjointMultiple extends IntConstraint<IntVar> {
                         initVar(vars[i], g);
                     }
                 }
-                //LOGGER.info("Done with awake:");
             }
 
             for (int v = 0; v < nbValues; v++) {
@@ -226,28 +220,21 @@ public class DisjointMultiple extends IntConstraint<IntVar> {
                     }
                 }
             }
-            //LOGGER.info("End for propagate");
         }
 
         @Override
         public void propagate(int idx, int mask) throws ContradictionException {
-            //LOGGER.info("\n\n propagate " + idx + " " + EventType.isInstantiate(mask) + " " + EventType.isBound(mask) + " "  + EventType.isRemove(mask));
             if (EventType.isRemove(mask)) {
-                //LOGGER.info("Deal with rem of " + vars[idx]);
                 idms[idx].freeze();
                 idms[idx].forEach(remProc.set(idx), EventType.REMOVE);
                 idms[idx].unfreeze();
-                //LOGGER.info("done with rem");
             }
             if (EventType.isInstantiate(mask)) {
                 int group = getGroup(idx);
                 if (!required[group].get(vars[idx].getValue())) {
                     setRequired(vars[idx].getValue(), group);
                 }
-                //LOGGER.info("done for instantiation");
             }
-            //checkConsistency();
-            //LOGGER.info("End for propagate " + idx);
         }
 
         /**
@@ -257,16 +244,14 @@ public class DisjointMultiple extends IntConstraint<IntVar> {
          *
          * @param val   the new assigned value
          * @param group the group of the new instantiated variable
-         * @throws solver.exception.ContradictionException when some variables in both groups are instantiated to the same value
+         * @throws ContradictionException when some variables in both groups are instantiated to the same value
          */
         public void setRequired(int val, int group) throws ContradictionException {
-            //LOGGER.info("Required " + val + " for group " + group);
             required[group].set(val);
             for (int g = 0; g < nbGroups; g++) {
                 if (g != group) {
                     if (required[g].get(val)) {
                         //The value is used in the other group. It's a contradiction
-                        //LOGGER.info("! Already Required " + val + " by group " + g);
                         contradiction(null, "");
                     }
                     if (candidates[g][val].get() > 0) {
@@ -300,46 +285,7 @@ public class DisjointMultiple extends IntConstraint<IntVar> {
 
         @Override
         public void execute(int val) throws ContradictionException {
-            //LOGGER.info("Remove one candidate for value " + val + " in group " + group);
             candidates[group][val].add(-1);
         }
     }
-
-         /*private void prettyCandidates(int g) {
-            StringBuilder b = new StringBuilder();
-            int x = 0;
-            for (IStateInt v : candidates[g]) {
-                b.append(" value(").append(x++).append("):").append(v.get());
-            }
-            //LOGGER.info("Candidates for group " + g + ": " + b.toString());
-        }*/
-
-
-           /*private void checkConsistency() {
-            LOGGER.info(Arrays.toString(vars));
-            prettyCandidates(0);
-            prettyCandidates(1);
-            int [][] cdts;
-            cdts = new int[2][nbValues];
-            int i = 0;
-            for (IntVar v : vars) {
-                DisposableValueIterator ite = v.getValueIterator(true);
-                while (ite.hasNext()) {
-                    int g = i < nbX ? 0 : 1;
-                    int n = ite.next();
-                    cdts[g][n]++;
-                }
-                i++;
-                ite.dispose();
-            }
-            for (int g = 0; g < 2; g++) {
-                for (int y = 0;  y < candidates[g].length; y++) {
-                    if (candidates[g][y].get() != cdts[g][y]) {
-                        LOGGER.error("Unconsistency about value " + y + " for group " + g + ": " + candidates[g][y].get() + "/=" + cdts[g][y]);
-                        assert false;
-                    }
-                }
-            }
-        }            */
-
 }

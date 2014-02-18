@@ -25,8 +25,6 @@ import btrplace.solver.choco.SliceUtils;
 import btrplace.solver.choco.actionModel.ActionModelUtils;
 import btrplace.solver.choco.actionModel.VMActionModel;
 import memory.IStateInt;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import solver.search.strategy.selectors.VariableSelector;
 import solver.variables.IntVar;
 
@@ -42,8 +40,6 @@ import java.util.Set;
  * @author Fabien Hermenier
  */
 public class MovingVMs implements VariableSelector<IntVar> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger("solver");
 
     /**
      * The demanding slices to consider.

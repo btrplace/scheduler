@@ -4,7 +4,7 @@ Release notes
 version ?????????????
 ----------------------
 - Move to choco 3. The scalability will be affected temporary but choco 2 is no longer maintained
-- the variable labelling is now inferred from the verbosity level (#27)
+- The variable labelling is now inferred from the verbosity level (#27)
 - Simplify the signature of constraints to reduce the signature to the minimum needed (#29)
 - SingleRunningCapacity and SingleResourceCapacity are now merged in RunningCapacity and ResourceCapacity respectively. (#24)
 
