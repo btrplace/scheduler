@@ -66,14 +66,12 @@ public class COverbook implements ChocoConstraint {
         Node u = cstr.getInvolvedNodes().iterator().next();
         RealVar v = rcm.getOverbookRatio(rp.getNode(u));
 
-            //RealInterval ric = new RealIntervalConstant(v.getLB(), cstr.getRatio());
-            try {
-                //  v.intersect(ric);
-                v.updateUpperBound(cstr.getRatio(), Cause.Null);
-            } catch (ContradictionException ex) {
-                rp.getLogger().error("Unable to restrict {} to up to {}", v.getName(), cstr.getRatio());
-                return false;
-            }
+        try {
+            v.updateUpperBound(cstr.getRatio(), Cause.Null);
+        } catch (ContradictionException ex) {
+            rp.getLogger().error("Unable to restrict {} to up to {}", v.getName(), cstr.getRatio());
+            return false;
+        }
         return true;
     }
 
@@ -89,15 +87,15 @@ public class COverbook implements ChocoConstraint {
             //Check if the node is saturated
             Node n = cstr.getInvolvedNodes().iterator().next();
             int overCapa = (int) (cstr.getRatio() * rc.getCapacity(n));
-                //Minus the VMs usage
-                for (VM vmId : m.getMapping().getRunningVMs(n)) {
-                    overCapa -= rc.getConsumption(vmId);
-                    if (overCapa < 0) {
-                        return m.getMapping().getRunningVMs(n);
-                    }
+            //Minus the VMs usage
+            for (VM vmId : m.getMapping().getRunningVMs(n)) {
+                overCapa -= rc.getConsumption(vmId);
+                if (overCapa < 0) {
+                    return m.getMapping().getRunningVMs(n);
                 }
-
             }
+
+        }
         return Collections.emptySet();
     }
 

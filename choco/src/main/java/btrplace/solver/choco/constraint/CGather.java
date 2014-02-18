@@ -125,7 +125,7 @@ public class CGather implements ChocoConstraint {
                             return false;
                         }
                     } else {
-                        s.post(IntConstraintFactory.arithm(i1, "=", i2));//s.eq(i1, i2));
+                        s.post(IntConstraintFactory.arithm(i1, "=", i2));
                     }
                 }
             }

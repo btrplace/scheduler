@@ -108,8 +108,7 @@ public class BootableNodeModel implements NodeActionModel {
             - If the node is offline, it is sure it cannot host any running VMs
         */
         isOnline = VariableFactory.bool(rp.makeVarLabel("bootableNode(", nId, ").online"), s);
-        BoolVar isOffline = VariableFactory.not(isOnline);//VariableFactory.bool(rp.makeVarLabel("bootableNode(", nId, ").offline"), s);
-        //s.post(s.neq(isOffline, isOnline));
+        BoolVar isOffline = VariableFactory.not(isOnline);
         s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNode(nId)], 0));
 
 
@@ -121,34 +120,29 @@ public class BootableNodeModel implements NodeActionModel {
                 rp.makeVarLabel("bootableNode(", nId, ").effectiveDuration")
                 , new int[]{0, d}, s);
         s.post(IntConstraintFactory.times(isOnline, VariableFactory.fixed(d, s), effectiveDuration));
-        //s.post(new TimesXYZ(isOnline, VariableFactory.fixed(d, s), effectiveDuration));
 
         /* As */
         start = rp.makeUnboundedDuration("bootableNode(", nId, ").start");
         /* Ae */
         end = rp.makeUnboundedDuration("bootableNode(", nId, ").end");
 
-        s.post(IntConstraintFactory.arithm(start, "<=", rp.getEnd()));//s.leq(start, rp.getEnd()));
-        //s.post(s.leq(end, rp.getEnd()));
+        s.post(IntConstraintFactory.arithm(start, "<=", rp.getEnd()));
+
         s.post(IntConstraintFactory.arithm(end, "<=", rp.getEnd()));
         /* Ae = As + D */
         /*Task t = */
         VariableFactory.task(start, effectiveDuration, end);
-        //s.post(s.eq(end, s.plus(start, effectiveDuration)));
-
 
         /* Hs = Ae */
         hostingStart = end;
         hostingEnd = rp.makeUnboundedDuration("bootableNode(", nId, ").hostingEnd");
         s.post(IntConstraintFactory.arithm(hostingEnd, "<=", rp.getEnd()));
 
-
         /*
           T = { 0, RP.end}
           He = T[St]
          */
         s.post(IntConstraintFactory.element(hostingEnd, new IntVar[]{rp.getStart(), rp.getEnd()}, isOnline, 0));
-        //s.post(new ElementV(new IntVar[]{VariableFactory.zero(s), rp.getEnd(), isOnline, hostingEnd}, 0, s.getEnvironment()));
     }
 
     @Override

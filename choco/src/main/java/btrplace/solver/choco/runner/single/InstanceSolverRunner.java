@@ -187,7 +187,6 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         rp.getSolver().getSearchLoop().plugSearchMonitor(new IMonitorSolution() {
             @Override
             public void onSolution() {
-                //   measures.add(rp.getSolver().getMeasures());
                 IMeasures m = rp.getSolver().getMeasures();
                 SolutionStatistics sol;
                 if (m.hasObjective()) {

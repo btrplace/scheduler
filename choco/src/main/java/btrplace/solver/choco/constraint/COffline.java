@@ -57,20 +57,19 @@ public class COffline implements ChocoConstraint {
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
         Node nId = cstr.getInvolvedNodes().iterator().next();
         int id = rp.getNode(nId);
-            ActionModel m = rp.getNodeAction(nId);
-            try {
-                m.getState().instantiateTo(0, Cause.Null);
-            } catch (ContradictionException ex) {
-                rp.getLogger().error("Unable to force node '{}' at being offline: {}", nId);
-                return false;
+        ActionModel m = rp.getNodeAction(nId);
+        try {
+            m.getState().instantiateTo(0, Cause.Null);
+        } catch (ContradictionException ex) {
+            rp.getLogger().error("Unable to force node '{}' at being offline: {}", nId);
+            return false;
+        }
+        for (VMActionModel am : rp.getVMActions()) {
+            Slice s = am.getDSlice();
+            if (s != null) {
+                rp.getSolver().post(IntConstraintFactory.arithm(s.getHoster(), "!=", id));
             }
-            for (VMActionModel am : rp.getVMActions()) {
-                    Slice s = am.getDSlice();
-                    if (s != null) {
-                        rp.getSolver().post(IntConstraintFactory.arithm(s.getHoster(), "!=", id));
-                        //rp.getSolver().post(rp.getSolver().neq(s.getHoster(), id));
-                    }
-                }
+        }
         return true;
 
     }

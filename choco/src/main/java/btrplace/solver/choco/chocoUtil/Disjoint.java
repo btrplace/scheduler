@@ -20,8 +20,6 @@ package btrplace.solver.choco.chocoUtil;
 
 import memory.IStateBitSet;
 import memory.IStateInt;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import solver.Solver;
 import solver.constraints.IntConstraint;
 import solver.constraints.Propagator;
@@ -44,8 +42,6 @@ import java.util.BitSet;
  * @author Sophie Demassey
  */
 public class Disjoint extends IntConstraint<IntVar> {
-
-    private static Logger LOGGER = LoggerFactory.getLogger("solver");
 
     /**
      * number of variables in the first set (group 0)
@@ -134,14 +130,9 @@ public class Disjoint extends IntConstraint<IntVar> {
 
         @Override
         public void propagate(int evtmask) throws ContradictionException {
-            //LOGGER.info("propagate " + EventType.isInstantiate(evtmask) + " " + EventType.isBound(evtmask) + " "  + EventType.isRemove(evtmask));
             if (first) {
                 awake();
                 first = false;
-                //LOGGER.info("Done with awake:");
-                //LOGGER.info(Arrays.toString(vars));
-                //prettyCandidates(0);
-                //prettyCandidates(1);
             }
 
             for (int v = 0; v < nbValues; v++) {
@@ -154,61 +145,10 @@ public class Disjoint extends IntConstraint<IntVar> {
                     setRequired(v, 1, 0);
                 }
             }
-            //LOGGER.info("End for propagate");
-            //LOGGER.info(Arrays.toString(vars));
-            //prettyCandidates(0);
-            //prettyCandidates(1);
-            //throw new UnsupportedOperationException();
         }
-
-        private int domainSizes() {
-            int i = 0;
-            for (IntVar v : vars) {
-                i += v.getDomainSize();
-            }
-            return i;
-        }
-
-
-        /*
-        @Override
-        public void propagate(int idx, int mask) throws ContradictionException {
-            LOGGER.info("\n\npropagate " + idx + " " + EventType.isInstantiate(mask) + " " + EventType.isBound(mask) + " "  + EventType.isRemove(mask));
-            //LOGGER.info(Arrays.toString(vars));
-            //prettyCandidates(0);
-            //prettyCandidates(1);
-            int i = domainSizes();
-            //do {
-                if (EventType.isInstantiate(mask)) {
-                    LOGGER.info("Deal with instantiation of " + vars[idx]);
-                    int group = (idx < nbX) ? 0 : 1;
-                    setRequired(vars[idx].getValue(), group, 1 - group);
-                        idms[idx].freeze();
-                        idms[idx].forEach(remProc.set(idx), EventType.REMOVE);
-                        idms[idx].unfreeze();
-                    //}
-                        LOGGER.info("done for instantiation");
-                    //forcePropagate(EventType.INSTANTIATE);
-                } else if (EventType.isBound(mask)) {
-                    LOGGER.info("Deal with bound of " + vars[idx]);
-                    idms[idx].freeze();
-                    idms[idx].forEach(remProc.set(idx), EventType.REMOVE);
-                    idms[idx].unfreeze();
-                    LOGGER.info("done with bound");
-                    //forcePropagate(EventType.INSTANTIATE);
-                }
-                i -= domainSizes();
-            //} while (i > 0);
-
-            LOGGER.info("End of propagate:");
-            checkConsistency();
-
-        }
-                                     */
 
         private void filterInst(int idx, int g) throws ContradictionException {
             int val = groups[g][idx].getLB();
-            //LOGGER.info("Deal with instantiation of " + vars[idx]);
             int otherGroup = 1 - g;
             //Required in the group
             required[g].set(val);
@@ -221,7 +161,6 @@ public class Disjoint extends IntConstraint<IntVar> {
                 if (v.removeValue(val, aCause)) {
                     candidates[otherGroup][val].add(-1);
                     if (v.instantiated()) {
-                        //LOGGER.info(v + " is now instantiated");
                         filterInst(i, otherGroup);
                     }
                 }
@@ -235,55 +174,16 @@ public class Disjoint extends IntConstraint<IntVar> {
 
         @Override
         public void propagate(int idx, int mask) throws ContradictionException {
-            //LOGGER.info("\n\npropagate " + idx + " " + EventType.isInstantiate(mask) + " " + EventType.isBound(mask) + " "  + EventType.isRemove(mask));
-            int i;
-            //do {
-            i = domainSizes();
             if (EventType.isInstantiate(mask)) {
                 int group = (idx < nbX) ? 0 : 1;
                 filterInst(idx - group * nbX, group);
-                //}
-                //LOGGER.info("done for instantiation");
             } else if (EventType.isBound(mask)) {
-                //LOGGER.info("Deal with bound of " + vars[idx]);
                 idms[idx].freeze();
                 idms[idx].forEach(remProc.set(idx), EventType.REMOVE);
                 idms[idx].unfreeze();
-                //LOGGER.info("done with bound");
             }
-            i -= domainSizes();
-            //LOGGER.info("End of propagate: continue ?" + (i > 0));
-            //} while (i > 0);
-            //checkConsistency();
-
         }
 
-        /*private void checkConsistency() {
-            LOGGER.info(Arrays.toString(vars));
-            prettyCandidates(0);
-            prettyCandidates(1);
-            int [][] cdts;
-            cdts = new int[2][nbValues];
-            int i = 0;
-            for (IntVar v : vars) {
-                DisposableValueIterator ite = v.getValueIterator(true);
-                while (ite.hasNext()) {
-                    int g = i < nbX ? 0 : 1;
-                    int n = ite.next();
-                    cdts[g][n]++;
-                }
-                i++;
-                ite.dispose();
-            }
-            for (int g = 0; g < 2; g++) {
-                for (int y = 0;  y < candidates[g].length; y++) {
-                    if (candidates[g][y].get() != cdts[g][y]) {
-                        LOGGER.error("Unconsistency about value " + y + " for group " + g + ": " + candidates[g][y].get() + "/=" + cdts[g][y]);
-                        assert false;
-                    }
-                }
-            }
-        }            */
         @Override
         public ESat isEntailed() {
             BitSet valuesOne = new BitSet(nbValues);
@@ -298,15 +198,6 @@ public class Disjoint extends IntConstraint<IntVar> {
             }
             return ESat.TRUE;
         }
-
-        /*private void prettyCandidates(int g) {
-            StringBuilder b = new StringBuilder();
-            int x = 0;
-            for (IStateInt v : candidates[g]) {
-                b.append(" value(").append(x++).append("):").append(v.get());
-            }
-            LOGGER.info("Candidates for group " + g + ": " + b.toString());
-        }              */
 
         /**
          * Initialise required and candidate for a given variable
@@ -356,7 +247,6 @@ public class Disjoint extends IntConstraint<IntVar> {
             if (required[other].get(val)) {
                 //The value is used in the other group. It's a contradiction
                 contradiction(null, "");
-                //fail();
             }
             if (candidates[other][val].get() > 0) {
                 //The value was possible for the other group, so we remove it from its variable
@@ -366,10 +256,7 @@ public class Disjoint extends IntConstraint<IntVar> {
                 int end = (other == 0) ? nbX : vars.length;
                 for (; i < end; i++) {
                     if (vars[i].removeValue(val, aCause)) {
-                        //LOGGER.info("Removed " + val + " from " + vars[i]);
                         n++;
-                    } else {
-                        //LOGGER.info("Ignored " + val + " from " + vars[i]);
                     }
                 }
                 assert n == candidates[other][val].get() : n + " variables in group '" + other + "' were updated for value '" + val + "' but candidate was equals to " + candidates[other][val].get();
@@ -393,7 +280,6 @@ public class Disjoint extends IntConstraint<IntVar> {
         @Override
         public void execute(int val) throws ContradictionException {
             int group = (var < nbX) ? 0 : 1;
-            //LOGGER.info("Remove one candidate for value " + val + " in group " + group);
             candidates[group][val].add(-1);
         }
     }

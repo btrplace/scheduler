@@ -73,7 +73,6 @@ public class ResumeVMModel implements VMActionModel {
         int d = p.getDurationEvaluators().evaluate(p.getSourceModel(), ResumeVM.class, e);
 
         start = p.makeDuration(p.getEnd().getUB() - d, 0, "resumeVM(", e, ").start");
-        //end = new IntVarAddCste(p.getSolver(), p.makeVarLabel("resumeVM(", e, ").end"), start, d);
         end = VariableFactory.offset(start, d);
         duration = p.makeDuration(d, d, "resumeVM(", e, ").duration");
         dSlice = new SliceBuilder(p, e, "resumeVM(" + e + ").dSlice").setStart(start)
@@ -81,7 +80,6 @@ public class ResumeVMModel implements VMActionModel {
                 .build();
 
         Solver s = p.getSolver();
-        //s.post(s.leq(end, p.getEnd()));
         s.post(IntConstraintFactory.arithm(end, "<=", p.getEnd()));
         state = VariableFactory.one(rp.getSolver());//s.makeConstantIntVar(1);
     }

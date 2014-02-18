@@ -77,7 +77,6 @@ public class CSequentialVMTransitions implements ChocoConstraint {
             while (ite.hasNext()) {
                 ActionModel cur = ite.next();
                 s.post(IntConstraintFactory.arithm(prev.getEnd(), "<=", cur.getStart()));
-                //s.post(s.leq(prev.getEnd(), cur.getStart()));
                 prev = cur;
             }
         }

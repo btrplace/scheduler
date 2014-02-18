@@ -24,7 +24,6 @@ import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.actionModel.BootableNodeModel;
 import btrplace.solver.choco.actionModel.NodeActionModel;
 import btrplace.solver.choco.actionModel.ShutdownableNodeModel;
-import solver.Solver;
 import solver.variables.IntVar;
 import solver.variables.VF;
 
@@ -55,7 +54,6 @@ public class CPowerView implements ChocoModelView {
      * @param rp the problem to rely on
      */
     public CPowerView(ReconfigurationProblem rp) {
-        Solver solver = rp.getSolver();
         powerStarts = new HashMap<>(rp.getNodes().length);
         powerEnds = new HashMap<>(rp.getNodes().length);
 
@@ -65,7 +63,6 @@ public class CPowerView implements ChocoModelView {
                 powerStarts.put(rp.getNode(n), rp.getStart());
                 IntVar powerEnd = rp.makeUnboundedDuration("NodeAction(", n, ").Pe");
                 VF.task(na.getHostingEnd(), na.getDuration(), powerEnd);
-                //solver.post(solver.eq(powerEnd, solver.plus(na.getHostingEnd(), na.getDuration())));
                 powerEnds.put(rp.getNode(n), powerEnd);
             } else if (na instanceof BootableNodeModel) {
                 powerStarts.put(rp.getNode(n), na.getStart());

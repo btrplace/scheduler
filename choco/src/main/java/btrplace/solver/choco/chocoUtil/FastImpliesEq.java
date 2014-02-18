@@ -96,16 +96,6 @@ public class FastImpliesEq extends IntConstraint<IntVar> {
         @Override
         public void propagate(int idx, int mask) throws ContradictionException {
             forcePropagate(EventType.INSTANTIATE);
-            /*if (EventType.isInstantiate(mask)) {
-                if (idx == 0 && vars[0].getValue() == 1) {
-                    vars[1].instantiateTo(constante, aCause);
-                }
-            }
-            if (EventType.isRemove(mask)) {
-                if (idx == 1 && !vars[1].contains(constante)) {
-                    vars[0].instantiateTo(0, aCause);
-                }
-            }      */
         }
 
         @Override

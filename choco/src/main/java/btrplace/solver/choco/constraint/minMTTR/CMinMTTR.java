@@ -86,15 +86,12 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
 
         p.setObjective(true, cost);
 
-        //s.setObjective(cost);
         //We set a restart limit by default, this may be useful especially with very small infrastructure
         //as the risk of cyclic dependencies increase and their is no solution for the moment to detect cycle
         //in the scheduling part
         //Restart limit = 2 * number of VMs in the DC.
         if (p.getVMs().length > 0) {
             SMF.geometrical(s, 1, 1.5d, new BacktrackCounter(p.getVMs().length * 2), Integer.MAX_VALUE);
-            //s.setGeometricRestart(p.getVMs().length * 2, 1.5d);
-            //s.setRestart(true);
         }
         injectPlacementHeuristic(p, cost);
         postCostConstraints();
@@ -177,7 +174,6 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         }
 
         if (p.getNodeActions().length > 0) {
-            //s.addGoal(new AssignVar(new StartingNodes("startingNodes", p, p.getNodeActions()), new MinVal()));
             strats.add(new Assignment(new InputOrder(ActionModelUtils.getStarts(p.getNodeActions())), new InDomainMin()));
         }
 

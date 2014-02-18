@@ -86,9 +86,8 @@ public class ForgeVMModel implements VMActionModel {
                 .setEnd(rp.makeUnboundedDuration("forge(", e, ").stop"))
                 .setHoster(-1)
                 .build();
-        //s.post(s.leq(d, dSlice.getDuration()));
         s.post(IntConstraintFactory.arithm(dSlice.getDuration(), ">=", d));
-        s.post(IntConstraintFactory.arithm(dSlice.getEnd(), "<=", rp.getEnd()));//s.leq(dSlice.getEnd(), rp.getEnd()));
+        s.post(IntConstraintFactory.arithm(dSlice.getEnd(), "<=", rp.getEnd()));
     }
 
     @Override

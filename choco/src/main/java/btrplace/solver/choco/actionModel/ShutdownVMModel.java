@@ -71,9 +71,7 @@ public class ShutdownVMModel implements VMActionModel {
         this.cSlice = new SliceBuilder(p, e, "shutdownVM(" + e + ").cSlice").setHoster(p.getCurrentVMLocation(p.getVM(e)))
                 .setEnd(p.makeDuration(p.getEnd().getUB(), d, "shutdownVM(", e, ").cSlice_end"))
                 .build();
-        start = VariableFactory.offset(cSlice.getEnd(), -d);//new IntVarAddCste(p.getSolver(), p.makeVarLabel("shutdownVM(", e, ").start"), cSlice.getEnd(), -d);
-        //start = VF.bounded(p.makeVarLabel("shutdownVM(", e, ").start"), 0, Integer.MAX_VALUE / 100, p.getSolver());
-        //rp.getSolver().post(IntConstraintFactory.arithm(cSlice.getEnd(),"-",start, "=", d));
+        start = VariableFactory.offset(cSlice.getEnd(), -d);
         state = VariableFactory.zero(rp.getSolver());
         rp.getSolver().post(IntConstraintFactory.arithm(cSlice.getEnd(), "<=", p.getEnd()));
     }

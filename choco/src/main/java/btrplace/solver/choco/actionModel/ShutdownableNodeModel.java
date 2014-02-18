@@ -28,7 +28,6 @@ import solver.Solver;
 import solver.constraints.IntConstraintFactory;
 import solver.variables.BoolVar;
 import solver.variables.IntVar;
-import solver.variables.Task;
 import solver.variables.VariableFactory;
 
 
@@ -102,7 +101,6 @@ public class ShutdownableNodeModel implements NodeActionModel {
     public ShutdownableNodeModel(ReconfigurationProblem rp, Node e) throws SolverException {
         this.node = e;
 
-
         Solver s = rp.getSolver();
 
         /*
@@ -120,7 +118,6 @@ public class ShutdownableNodeModel implements NodeActionModel {
         int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), ShutdownNode.class, e);
         duration = VariableFactory.enumerated(rp.makeVarLabel("shutdownableNode(", e, ").duration"), new int[]{0, d}, rp.getSolver());
         s.post(new FastIFFEq(isOnline, duration, 0));
-        //s.post(new BooleanChanneling(isOnline, duration, 0));
 
         //The moment of shutdown action consume
         /* As */
@@ -128,29 +125,26 @@ public class ShutdownableNodeModel implements NodeActionModel {
         //The moment of shutdown action end
         /* Ae */
         end = rp.makeUnboundedDuration("shutdownableNode(", e, ").end");
-        //s.post(s.leq(end, rp.getEnd()));
+
         s.post(IntConstraintFactory.arithm(end, "<=", rp.getEnd()));
-        //s.post(s.leq(start, rp.getEnd()));
+
         s.post(IntConstraintFactory.arithm(start, "<=", rp.getEnd()));
         s.post(IntConstraintFactory.arithm(duration, "<=", rp.getEnd()));
         /* Ae = As + D */
-        Task t = VariableFactory.task(start, duration, end);
-        //s.post(s.eq(end, s.plus(start, duration)));
+        VariableFactory.task(start, duration, end);
+
 
         //The node is already online, so it can host VMs at the beginning of the RP
         hostingStart = rp.getStart();
         //The moment the node can no longer host VMs varies depending on its next state
         hostingEnd = rp.makeUnboundedDuration("shutdownableNode(", e, ").hostingEnd");
-        //s.post(s.leq(hostingEnd, rp.getEnd()));
         s.post(IntConstraintFactory.arithm(hostingEnd, "<=", rp.getEnd()));
 
         /*
           T = { As, RP.end}
           He = T[St]
          */
-        //s.post(IntConstraintFactory.element())
         s.post(IntConstraintFactory.element(hostingEnd, new IntVar[]{start, rp.getEnd()}, isOnline, 0));
-        //s.post(new Element(new IntVar[]{start, rp.getEnd(), isOnline, hostingEnd}, 0, s.getEnvironment()));
     }
 
 
