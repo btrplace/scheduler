@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.chocoUtil;
+package btrplace.solver.choco.extensions;
 
 
 import solver.constraints.IntConstraint;
@@ -64,7 +64,7 @@ public class FastImpliesEq extends IntConstraint<IntVar> {
 
 
     /**
-     * Propagator for {@link btrplace.solver.choco.chocoUtil.FastImpliesEq}.
+     * Propagator for {@link btrplace.solver.choco.extensions.FastImpliesEq}.
      */
     class FastImpliesEqProp extends Propagator<IntVar> {
 

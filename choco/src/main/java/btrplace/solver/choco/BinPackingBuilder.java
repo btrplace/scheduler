@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Builder to create {@link btrplace.solver.choco.chocoUtil.LightBinPacking} constraints
+ * Builder to create {@link btrplace.solver.choco.extensions.LightBinPacking} constraints
  *
  * @author Fabien Hermenier
  */

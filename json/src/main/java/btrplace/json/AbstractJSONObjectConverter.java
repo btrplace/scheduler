@@ -294,7 +294,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     }
 
     @Override
-    public E fromJSON(String buf) throws IOException, JSONConverterException {
+    public E fromJSON(String buf) throws JSONConverterException {
         try (StringReader in = new StringReader(buf)) {
             return fromJSON(in);
         }

@@ -60,7 +60,7 @@ public class CResourceCapacity implements ChocoConstraint {
         cstr = c;
     }
 
-    private boolean injectWithSingleNode(CShareableResource rcm, ReconfigurationProblem rp) throws SolverException {
+    private boolean injectWithSingleNode(CShareableResource rcm, ReconfigurationProblem rp) {
         int amount = cstr.getAmount();
         Solver s = rp.getSolver();
         Node n = cstr.getInvolvedNodes().iterator().next();

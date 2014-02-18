@@ -65,6 +65,6 @@ public class Dependency {
 
     @Override
     public String toString() {
-        return String.valueOf(deps) + " -> " + a;
+        return deps + " -> " + a;
     }
 }

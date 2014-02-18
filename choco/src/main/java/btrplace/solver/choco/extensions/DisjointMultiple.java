@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.chocoUtil;
+package btrplace.solver.choco.extensions;
 
 
 import memory.IStateBitSet;
@@ -71,9 +71,9 @@ public class DisjointMultiple extends IntConstraint<IntVar> {
     private IStateBitSet[] required;
 
     /**
-     * @param s    solver
+     * @param s  solver
      * @param vs sets of variables
-     * @param c    max variable value + 1
+     * @param c  max variable value + 1
      */
     public DisjointMultiple(Solver s, IntVar[][] vs, int c) {
         super(ArrayUtils.flatten(vs), s);

@@ -138,7 +138,7 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
             JSONObject hooks = (JSONObject) in.get("hooks");
             for (String k : hooks.keySet()) {
                 try {
-                    Action.Hook h = Action.Hook.valueOf(k);
+                    Action.Hook h = Action.Hook.valueOf(k.toUpperCase());
                     for (Object o : (JSONArray) hooks.get(k)) {
                         a.addEvent(h, eventFromJSON((JSONObject) o));
                     }
@@ -421,7 +421,7 @@ public class ActionConverter extends AbstractJSONObjectConverter<Action> impleme
     }
 
     @Override
-    public List<Action> listFromJSON(String buf) throws IOException, JSONConverterException {
+    public List<Action> listFromJSON(String buf) throws JSONConverterException {
         try (StringReader in = new StringReader(buf)) {
             return listFromJSON(in);
         }

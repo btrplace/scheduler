@@ -167,7 +167,7 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
     }
 
     @Override
-    public List<SatConstraint> listFromJSON(String buf) throws IOException, JSONConverterException {
+    public List<SatConstraint> listFromJSON(String buf) throws JSONConverterException {
         try (StringReader in = new StringReader(buf)) {
             return listFromJSON(in);
         }

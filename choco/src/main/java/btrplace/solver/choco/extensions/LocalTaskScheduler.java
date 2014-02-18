@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.chocoUtil;
+package btrplace.solver.choco.extensions;
 
 
 import gnu.trove.map.hash.TIntIntHashMap;
@@ -31,11 +31,15 @@ import java.util.Arrays;
 import java.util.BitSet;
 
 /**
+ * TODO: Transpose dimension/element indexes to remove getUsage()
+ *
  * @author Fabien Hermenier
  */
-public class AliasedCumulativesFiltering {
+public class LocalTaskScheduler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("solver");
+
+    private int me;
 
     /**
      * out[i] = true <=> the consuming slice i will leave me.
@@ -56,7 +60,7 @@ public class AliasedCumulativesFiltering {
 
     private int[] startupFree;
 
-    private static final boolean DEBUG = true;
+    public static final int DEBUG = -3;
 
     private int[] associations;
 
@@ -82,28 +86,36 @@ public class AliasedCumulativesFiltering {
      */
     private IStateInt lastCendSup;
 
-    private int[] capacities;
+    private int[][] capacities;
 
     private int[][] cUsages, dUsages;
 
     private int nbDims = 0;
 
+    private IntVar early, last;
+
     private ICause aCause;
 
-    public AliasedCumulativesFiltering(int[] capacities,
-                                       int[][] cUsages,
-                                       IntVar[] cEnds,
-                                       BitSet outs,
-                                       int[][] dUsages,
-                                       IntVar[] dStarts,
-                                       IStateIntVector vIn,
-                                       int[] assocs,
-                                       int[] revAssocs,
-                                       ICause aCause) {
-
+    public LocalTaskScheduler(int me,
+                              IntVar early,
+                              IntVar last,
+                              int[][] capacities,
+                              int[][] cUsages,
+                              IntVar[] cEnds,
+                              BitSet outs,
+                              int[][] dUsages,
+                              IntVar[] dStarts,
+                              IStateIntVector vIn,
+                              int[] assocs,
+                              int[] revAssocs,
+                              ICause iCause) {
+        this.early = early;
+        this.last = last;
+        this.aCause = iCause;
         this.associations = assocs;
+        this.me = me;
         this.cEnds = cEnds;
-        this.aCause = aCause;
+
         this.capacities = capacities;
         this.nbDims = capacities.length;
         this.cUsages = cUsages;
@@ -120,7 +132,7 @@ public class AliasedCumulativesFiltering {
         profilesMax = new TIntIntHashMap[nbDims];
         profilesMin = new TIntIntHashMap[nbDims];
         for (int i = 0; i < capacities.length; i++) {
-            startupFree[i] = capacities[i];
+            startupFree[i] = capacities[i][me];
             profilesMax[i] = new TIntIntHashMap();
             profilesMin[i] = new TIntIntHashMap();
         }
@@ -142,12 +154,14 @@ public class AliasedCumulativesFiltering {
                 lastSup = s;
             }
         }
-        this.lastCendInf = cEnds[0].getSolver().getEnvironment().makeInt(lastInf);
-        this.lastCendSup = cEnds[0].getSolver().getEnvironment().makeInt(lastSup);
+        this.lastCendInf = early.getSolver().getEnvironment().makeInt(lastInf);
+        this.lastCendSup = early.getSolver().getEnvironment().makeInt(lastSup);
     }
 
     public boolean propagate() throws ContradictionException {
         computeProfiles();
+        last.updateLowerBound(lastCendInf.get(), aCause);
+
         if (!checkInvariant()) {
             return false;
         }
@@ -176,14 +190,14 @@ public class AliasedCumulativesFiltering {
     public void computeProfiles() {
 
         for (int i = 0; i < nbDims; i++) {
-            //Sur de ce qui est utilise sur la ressource
-            profilesMin[i].clear();
+            //What is necessarily used on the resource
+            profilesMin[i] = new TIntIntHashMap();
 
-            //Maximum simultanee dans le pire des cas sur la ressource
-            profilesMax[i].clear();
+            //Maximum possible usage on the resource
+            profilesMax[i] = new TIntIntHashMap();
 
-            profilesMax[i].put(0, capacities[i] - startupFree[i]);
-            profilesMin[i].put(0, capacities[i] - startupFree[i]);
+            profilesMax[i].put(0, capacities[i][me] - startupFree[i]);
+            profilesMin[i].put(0, capacities[i][me] - startupFree[i]);
         }
 
         int lastInf = out.isEmpty() ? 0 : Integer.MAX_VALUE;
@@ -195,16 +209,19 @@ public class AliasedCumulativesFiltering {
             if (t < lastInf) {
                 lastInf = t;
             }
-
-            if (associatedToDSliceOnCurrentNode(j) && increase(j, revAssociations[j])) {
-                if (DEBUG) {
-                    LOGGER.debug(cEnds[j].toString() + " increasing");
+            boolean increasing = associatedToDSliceOnCurrentNode(j) && increase(j, revAssociations[j]);
+            if (increasing) {
+                if (me == DEBUG || DEBUG == -2) {
+                    LOGGER.debug(me + " " + cEnds[j].toString() + " increasing");
                 }
                 for (int i = 0; i < nbDims; i++) {
                     profilesMax[i].put(t, profilesMax[i].get(t) - cUsages[i][j]);
                 }
 
             } else {
+                if (me == DEBUG || DEBUG == -2) {
+                    LOGGER.debug(me + " " + cEnds[j].toString() + " < or non-associated (" + (revAssociations[j] >= 0 ? dStarts[revAssociations[j]].toString() : "no rev") + "?)");
+                }
                 for (int i = 0; i < nbDims; i++) {
                     profilesMin[i].put(t, profilesMin[i].get(t) - cUsages[i][j]);
                 }
@@ -215,7 +232,7 @@ public class AliasedCumulativesFiltering {
             if (t > lastSup) {
                 lastSup = t;
             }
-            if (associatedToDSliceOnCurrentNode(j) && increase(j, revAssociations[j])) {
+            if (increasing) {
                 for (int i = 0; i < nbDims; i++) {
                     profilesMin[i].put(t, profilesMin[i].get(t) - cUsages[i][j]);
                 }
@@ -260,24 +277,24 @@ public class AliasedCumulativesFiltering {
             toAbsoluteFreeResources(profilesMax[i], sortedMaxProfile);
         }
 
-        if (DEBUG) {
-            LOGGER.debug("--- startup=(" + Arrays.toString(startupFree) + ")"
-                    + " capacities=(" + Arrays.toString(capacities) + ") ---");
+        if (me == DEBUG || DEBUG == -2) {
+            LOGGER.debug("---" + me + "--- startupFree=" + Arrays.toString(startupFree)
+                    + " init=" + Arrays.toString(getUsages(capacities, me)) + "; early=" + early.toString() + "; last=" + last.toString());
             for (int x = 0; x < vIn.size(); x++) {
                 int i = vIn.get(x);
-                LOGGER.debug((dStarts[i].instantiated() ? "!" : "?") + " " + dStarts[i].toString() + " " + Arrays.toString(dUsages));
+                LOGGER.debug((dStarts[i].instantiated() ? "!" : "?") + " " + dStarts[i].toString() + " " + Arrays.toString(getUsages(dUsages, i)));
             }
 
             for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
-                LOGGER.debug((cEnds[i].instantiated() ? "!" : "?") + " " + cEnds[i].toString() + " " + Arrays.toString(cUsages));
+                LOGGER.debug((cEnds[i].instantiated() ? "!" : "?") + " " + cEnds[i].toString() + " " + Arrays.toString(getUsages(cUsages, i)));
             }
-            LOGGER.debug("---");
 
 
             for (int i = 0; i < nbDims; i++) {
-                LOGGER.debug("profileMin(dim " + i + ")= " + prettyProfile(sortedMinProfile, profilesMin[i]));
-                LOGGER.debug("profileMax(dim " + i + ")= " + prettyProfile(sortedMaxProfile, profilesMax[i]));
+                LOGGER.debug("profileMin dim " + i + "=" + prettyProfile(sortedMinProfile, profilesMin[i]));
+                LOGGER.debug("profileMax dim " + i + "=" + prettyProfile(sortedMaxProfile, profilesMax[i]));
             }
+            LOGGER.debug("/--- " + me + "---/");
         }
     }
 
@@ -306,8 +323,7 @@ public class AliasedCumulativesFiltering {
     }
 
     private boolean associatedToCSliceOnCurrentNode(int dSlice) {
-        return associations[dSlice] != NO_ASSOCIATIONS
-                && out.get(associations[dSlice]);
+        return associations[dSlice] != NO_ASSOCIATIONS && out.get(associations[dSlice]);
     }
 
     private String prettyProfile(int[] ascMoments, TIntIntHashMap prof) {
@@ -315,13 +331,10 @@ public class AliasedCumulativesFiltering {
         for (int i = 0; i < ascMoments.length; i++) {
             int t = ascMoments[i];
             b.append(t);
-            b.append(":(");
+            b.append(':');
             b.append(prof.get(t));
-            b.append(",");
-            b.append(prof.get(t));
-            b.append(")");
             if (i != ascMoments.length - 1) {
-                b.append(" ");
+                b.append(' ');
             }
         }
         return b.toString();
@@ -331,14 +344,35 @@ public class AliasedCumulativesFiltering {
         for (int x = 0; x < sortedMinProfile.length; x++) {
             int t = sortedMinProfile[x];
             for (int i = 0; i < nbDims; i++) {
-                if (profilesMin[i].get(t) > capacities[i]) {
-                    if (DEBUG) {
-                        LOGGER.debug("Invalid min profile at " + t + " on dimension " + i
-                                + ": " + profilesMin[i].get(t) + " > " + capacities[i]);
+                if (profilesMin[i].get(t) > capacities[i][me]) {
+                    if (me == DEBUG || DEBUG == -2) {
+                        LOGGER.debug("(" + me + ") Invalid min profile at " + t + " on dimension " + i
+                                + ": " + profilesMin[i].get(t) + " > " + capacities[i][me]);
                     }
                     return false;
                 }
             }
+        }
+
+        //invariant related to the last and the early.
+        for (int idx = 0; idx < vIn.size(); idx++) {
+            int i = vIn.get(idx);
+            if (dStarts[i].getUB() < early.getLB()) {
+                if (me == DEBUG || DEBUG == -2) {
+                    LOGGER.debug("(" + me + ") The dSlice " + i + " starts too early (" + dStarts[i].toString() + ") (min expected=" + early.toString() + ")");
+                }
+                return false;
+            }
+        }
+
+        for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
+            if (cEnds[i].getLB() > last.getUB()) {
+                if (me == DEBUG || DEBUG == -2) {
+                    LOGGER.debug("(" + me + ") The cSlice " + i + " ends too late (" + cEnds[i].toString() + ") (last expected=" + last.toString() + ")");
+                }
+                return false;
+            }
+
         }
         return true;
     }
@@ -348,6 +382,9 @@ public class AliasedCumulativesFiltering {
         for (int idx = 0; idx < vIn.size(); idx++) {
             int i = vIn.get(idx);
             if (!dStarts[i].instantiated() && !associatedToCSliceOnCurrentNode(i)) {
+                if (DEBUG == me || DEBUG == -2) {
+                    LOGGER.debug("(" + me + ") - try to update lb of " + dStarts[i]);
+                }
 
                 int[] myUsage = getUsages(dUsages, i);
 
@@ -364,9 +401,7 @@ public class AliasedCumulativesFiltering {
                         break;
                     }
                 }
-                if (lastT != -1) {
-                    dStarts[i].updateLowerBound(lastT, aCause);
-                }
+                dStarts[i].updateLowerBound(Math.max(lastT, early.getLB()), aCause);
             }
         }
     }
@@ -374,7 +409,7 @@ public class AliasedCumulativesFiltering {
     private void updateDStartsSup() throws ContradictionException {
 
 
-        int[] myCapacity = capacities;
+        int[] myCapacity = getUsages(capacities, me);
         int lastSup = -1;
         for (int i = sortedMaxProfile.length - 1; i >= 0; i--) {
             int t = sortedMaxProfile[i];
@@ -387,7 +422,7 @@ public class AliasedCumulativesFiltering {
         if (lastSup != -1) {
             for (int x = 0; x < vIn.size(); x++) {
                 int i = vIn.get(x);
-                if (!dStarts[i].instantiated() && !associatedToCSliceOnCurrentNode(i) && dStarts[i].getUB() > lastSup) {
+                if (!dStarts[i].instantiated() && !associatedToCSliceOnCurrentNode(i)) {
                     int s = Math.max(dStarts[i].getLB(), lastSup);
                     dStarts[i].updateUpperBound(s, aCause);
                 }
@@ -412,19 +447,18 @@ public class AliasedCumulativesFiltering {
                     }
                 }
                 if (lastT != -1) {
-                    if (DEBUG) {
-                        LOGGER.debug(cEnds[i].toString() + " cEndsSup =" + lastT);
-                    }
-                    cEnds[i].updateUpperBound(lastT, aCause);
+                    cEnds[i].updateUpperBound(Math.min(lastT, last.getUB()), aCause);
+                } else {
+                    cEnds[i].updateUpperBound(last.getUB(), aCause);
                 }
-
             }
+
         }
     }
 
     private boolean exceedCapacity(TIntIntHashMap[] profiles, int t, int[] usage) {
         for (int i = 0; i < nbDims; i++) {
-            if (profiles[i].get(t) + usage[i] > capacities[i]) {
+            if (profiles[i].get(t) + usage[i] > capacities[i][me]) {
                 return true;
             }
         }

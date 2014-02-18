@@ -98,7 +98,7 @@ public class CRunningCapacity implements ChocoConstraint {
         return true;
     }
 
-    private boolean filterWithSingleNode(ReconfigurationProblem rp) throws SolverException {
+    private boolean filterWithSingleNode(ReconfigurationProblem rp) {
         Node n = cstr.getInvolvedNodes().iterator().next();
         IntVar v = rp.getNbRunningVMs()[rp.getNode(n)];
         Solver s = rp.getSolver();

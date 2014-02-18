@@ -26,7 +26,7 @@ import btrplace.model.constraint.Spread;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.actionModel.VMActionModel;
-import btrplace.solver.choco.chocoUtil.ChocoUtils;
+import btrplace.solver.choco.extensions.ChocoUtils;
 import solver.Solver;
 import solver.constraints.Arithmetic;
 import solver.constraints.IntConstraintFactory;

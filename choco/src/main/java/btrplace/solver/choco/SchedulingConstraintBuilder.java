@@ -19,7 +19,7 @@ package btrplace.solver.choco;
 
 import btrplace.model.VM;
 import btrplace.solver.choco.actionModel.VMActionModel;
-import btrplace.solver.choco.chocoUtil.LocalTaskScheduler;
+import btrplace.solver.choco.extensions.LocalTaskScheduler;
 import solver.variables.IntVar;
 
 import java.util.ArrayList;

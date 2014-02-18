@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.chocoUtil;
+package btrplace.solver.choco.extensions;
 
 
 import gnu.trove.list.array.TIntArrayList;
@@ -315,7 +315,7 @@ public class Precedences extends IntConstraint<IntVar> {
         }
 
         //@Override
-        public void awakeOnSup(int idx) throws ContradictionException {
+        public void awakeOnSup(int idx) {
             if (idx >= 2) {
                 int o = idx - 2;
                 int h = othersHost[o];

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.runner.staticPartitioning;
+package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
 import btrplace.model.Instance;
 import btrplace.model.Mapping;

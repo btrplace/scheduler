@@ -39,11 +39,28 @@ public abstract class Action implements Event {
         /**
          * The event can be considered before executing the action.
          */
-        PRE,
+        PRE("pre"),
         /**
          * The event can be considered after the action execution.
          */
-        POST
+        POST("post");
+
+        private String name;
+
+        /**
+         * new hook
+         *
+         * @param v the pretty name
+         */
+        Hook(String v) {
+            this.name = v;
+        }
+
+
+        @Override
+        public String toString() {
+            return this.name;
+        }
     }
 
     private int start;

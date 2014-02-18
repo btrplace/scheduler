@@ -22,7 +22,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootNode;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.chocoUtil.FastImpliesEq;
+import btrplace.solver.choco.extensions.FastImpliesEq;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
 import solver.variables.BoolVar;

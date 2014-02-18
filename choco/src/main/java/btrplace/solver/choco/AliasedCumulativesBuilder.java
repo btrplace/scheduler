@@ -17,7 +17,7 @@
 
 package btrplace.solver.choco;
 
-import btrplace.solver.choco.chocoUtil.AliasedCumulatives;
+import btrplace.solver.choco.extensions.AliasedCumulatives;
 import gnu.trove.list.array.TIntArrayList;
 import solver.variables.IntVar;
 

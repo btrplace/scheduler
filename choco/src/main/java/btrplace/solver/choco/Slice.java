@@ -62,7 +62,7 @@ public class Slice {
 
     @Override
     public String toString() {
-        return String.valueOf(subject) + "{from=" + printValue(getStart()) +
+        return subject + "{from=" + printValue(getStart()) +
                 ", to=" + printValue(getEnd()) +
                 ", on=" + printValue(getHoster()) + '}';
     }

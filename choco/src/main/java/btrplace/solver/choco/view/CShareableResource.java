@@ -29,7 +29,7 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.actionModel.VMActionModel;
-import btrplace.solver.choco.chocoUtil.RoundedUpDivision;
+import btrplace.solver.choco.extensions.RoundedUpDivision;
 import gnu.trove.list.array.TIntArrayList;
 import solver.Cause;
 import solver.Solver;

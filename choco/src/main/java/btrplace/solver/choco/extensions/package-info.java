@@ -15,10 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
-
 /**
- * @author Fabien Hermenier
+ * Some tool to ease the use of Choco and additional constraints that are not in the
+ * distribution.
  */
-public interface ChocoInstanceSolver {
-}
+package btrplace.solver.choco.extensions;
