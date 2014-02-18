@@ -349,6 +349,19 @@ public class RelocatableVMModelTest {
         Assert.assertEquals(res.getMapping().getRunningVMs(n1).size(), 0);
         Assert.assertEquals(res.getMapping().getRunningVMs(n2).size(), 1);
         Assert.assertNotNull(p);
+
+        //Check for the actions duration
+        for (Action a : p) {
+            if (a instanceof ForgeVM) {
+                Assert.assertEquals(a.getEnd() - a.getStart(), 3);
+            } else if (a instanceof ShutdownVM) {
+                Assert.assertEquals(a.getEnd() - a.getStart(), 1);
+            } else if (a instanceof BootVM) {
+                Assert.assertEquals(a.getEnd() - a.getStart(), 2);
+            } else {
+                Assert.fail();
+            }
+        }
     }
 
     @Test

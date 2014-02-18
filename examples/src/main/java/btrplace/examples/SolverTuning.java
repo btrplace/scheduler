@@ -98,7 +98,9 @@ public class SolverTuning implements Example {
             }
         } catch (SolverException e) {
             System.err.println("--- Solving using repair : " + cra.doRepair() + "; Error: " + e.getMessage());
+            System.err.flush();
         }
+        System.out.flush();
     }
 
     /**
