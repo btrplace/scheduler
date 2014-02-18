@@ -41,5 +41,6 @@ public class SleepingConverterTest {
         Sleeping d = new Sleeping(mo.newVM());
 
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+        System.out.println(conv.toJSONString(d));
     }
 }

@@ -41,5 +41,6 @@ public class ReadyConverterTest {
         Ready d = new Ready(mo.newVM());
 
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+        System.out.println(conv.toJSONString(d));
     }
 }

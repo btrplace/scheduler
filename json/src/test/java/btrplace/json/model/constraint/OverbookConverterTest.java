@@ -41,6 +41,6 @@ public class OverbookConverterTest {
         Overbook d = new Overbook(mo.newNode(), "foo", 1.4);
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
 
-
+        System.out.println(conv.toJSONString(d));
     }
 }

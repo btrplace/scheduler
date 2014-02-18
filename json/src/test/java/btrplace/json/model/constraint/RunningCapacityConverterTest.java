@@ -45,5 +45,6 @@ public class RunningCapacityConverterTest {
 
         Assert.assertEquals(conv.fromJSON(conv.toJSON(d)), d);
         Assert.assertEquals(conv.fromJSON(conv.toJSON(c)), c);
+        System.out.println(conv.toJSONString(d));
     }
 }

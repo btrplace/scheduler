@@ -20,10 +20,7 @@ package btrplace.plan;
 import btrplace.model.Model;
 import btrplace.plan.event.Action;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * An applier that relies on the estimated start moment and
@@ -58,9 +55,10 @@ public class TimeBasedPlanApplier extends DefaultPlanApplier {
 
     @Override
     public String toString(ReconfigurationPlan p) {
+        Set<Action> sorted = new TreeSet<>(new TimedBasedActionComparator(true, true));
+        sorted.addAll(p.getActions());
         StringBuilder b = new StringBuilder();
-        List<Action> actions = new ArrayList<>(p.getActions());
-        for (Action a : actions) {
+        for (Action a : sorted) {
             b.append(a.getStart()).append(':').append(a.getEnd()).append(' ').append(a.toString()).append('\n');
         }
         return b.toString();

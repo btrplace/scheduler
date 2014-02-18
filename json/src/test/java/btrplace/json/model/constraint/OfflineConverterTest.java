@@ -41,5 +41,6 @@ public class OfflineConverterTest {
         Offline d = new Offline(mo.newNode());
 
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+        System.out.println(conv.toJSONString(d));
     }
 }

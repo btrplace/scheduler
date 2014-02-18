@@ -40,5 +40,6 @@ public class KilledConverterTest {
         conv.setModel(mo);
         Killed d = new Killed(mo.newVM());
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+        System.out.println(conv.toJSONString(d));
     }
 }

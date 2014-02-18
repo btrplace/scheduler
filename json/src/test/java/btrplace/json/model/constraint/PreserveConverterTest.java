@@ -41,5 +41,6 @@ public class PreserveConverterTest {
         Preserve d = new Preserve(mo.newVM(), "cpu", 5);
 
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+        System.out.println(conv.toJSONString(d));
     }
 }
