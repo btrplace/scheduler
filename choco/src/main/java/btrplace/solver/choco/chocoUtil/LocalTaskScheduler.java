@@ -19,7 +19,6 @@ package btrplace.solver.choco.chocoUtil;
 
 
 import gnu.trove.map.hash.TIntIntHashMap;
-import memory.IEnvironment;
 import memory.IStateInt;
 import memory.IStateIntVector;
 import org.slf4j.Logger;
@@ -98,7 +97,6 @@ public class LocalTaskScheduler {
     private ICause aCause;
 
     public LocalTaskScheduler(int me,
-                              IEnvironment env,
                               IntVar early,
                               IntVar last,
                               int[][] capacities,
@@ -156,8 +154,8 @@ public class LocalTaskScheduler {
                 lastSup = s;
             }
         }
-        this.lastCendInf = env.makeInt(lastInf);
-        this.lastCendSup = env.makeInt(lastSup);
+        this.lastCendInf = early.getSolver().getEnvironment().makeInt(lastInf);
+        this.lastCendSup = early.getSolver().getEnvironment().makeInt(lastSup);
     }
 
     public boolean propagate() throws ContradictionException {

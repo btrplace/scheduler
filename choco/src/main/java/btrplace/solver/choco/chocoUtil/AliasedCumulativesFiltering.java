@@ -19,7 +19,6 @@ package btrplace.solver.choco.chocoUtil;
 
 
 import gnu.trove.map.hash.TIntIntHashMap;
-import memory.IEnvironment;
 import memory.IStateInt;
 import memory.IStateIntVector;
 import org.slf4j.Logger;
@@ -91,8 +90,7 @@ public class AliasedCumulativesFiltering {
 
     private ICause aCause;
 
-    public AliasedCumulativesFiltering(IEnvironment env,
-                                       int[] capacities,
+    public AliasedCumulativesFiltering(int[] capacities,
                                        int[][] cUsages,
                                        IntVar[] cEnds,
                                        BitSet outs,
@@ -144,8 +142,8 @@ public class AliasedCumulativesFiltering {
                 lastSup = s;
             }
         }
-        this.lastCendInf = env.makeInt(lastInf);
-        this.lastCendSup = env.makeInt(lastSup);
+        this.lastCendInf = cEnds[0].getSolver().getEnvironment().makeInt(lastInf);
+        this.lastCendSup = cEnds[0].getSolver().getEnvironment().makeInt(lastSup);
     }
 
     public boolean propagate() throws ContradictionException {

@@ -143,17 +143,17 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
 
         Map<IntVar, VM> pla = VMPlacementUtils.makePlacementMap(p);
         if (!vmsToExclude.isEmpty()) {
-            strats.add(new Assignment(new MovingVMs("movingVMs", p, map, vmsToExclude), new RandomVMPlacement("movingVMs", p, pla, true)));
+            strats.add(new Assignment(new MovingVMs("movingVMs", p, map, vmsToExclude), new RandomVMPlacement(p, pla, true)));
         }
 
         if (!badActions.isEmpty()) {
-            HostingVariableSelector selectForBads = new HostingVariableSelector("selectForBads", p, ActionModelUtils.getDSlices(badActions), schedHeuristic);
-            strats.add(new Assignment(selectForBads, new RandomVMPlacement("selectForBads", p, pla, true)));
+            HostingVariableSelector selectForBads = new HostingVariableSelector(ActionModelUtils.getDSlices(badActions), schedHeuristic);
+            strats.add(new Assignment(selectForBads, new RandomVMPlacement(p, pla, true)));
         }
 
         if (!goodActions.isEmpty()) {
-            HostingVariableSelector selectForGoods = new HostingVariableSelector("selectForGoods", p, ActionModelUtils.getDSlices(goodActions), schedHeuristic);
-            strats.add(new Assignment(selectForGoods, new RandomVMPlacement("selectForGoods", p, pla, true)));
+            HostingVariableSelector selectForGoods = new HostingVariableSelector(ActionModelUtils.getDSlices(goodActions), schedHeuristic);
+            strats.add(new Assignment(selectForGoods, new RandomVMPlacement(p, pla, true)));
         }
 
         //VMs to run
@@ -167,8 +167,8 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         }
 
         if (runActions.length > 0) {
-            HostingVariableSelector selectForRuns = new HostingVariableSelector("selectForRuns", p, ActionModelUtils.getDSlices(runActions), schedHeuristic);
-            strats.add(new Assignment(selectForRuns, new RandomVMPlacement("selectForRuns", p, pla, true)));
+            HostingVariableSelector selectForRuns = new HostingVariableSelector(ActionModelUtils.getDSlices(runActions), schedHeuristic);
+            strats.add(new Assignment(selectForRuns, new RandomVMPlacement(p, pla, true)));
         }
 
         if (p.getNodeActions().length > 0) {

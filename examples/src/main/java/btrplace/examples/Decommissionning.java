@@ -69,10 +69,8 @@ public class Decommissionning implements Example {
         }
 
         List<SatConstraint> cstrs = new ArrayList<>();
-        //cstrs.add(new Overbook(mo.getMapping().getAllNodes(), "cpu", 2, true));
         cstrs.addAll(Offline.newOfflines(mo.getMapping().getOnlineNodes()));
         MaxOnline m = new MaxOnline(mo.getMapping().getAllNodes(), nbNodes + 1);
-        //m.setContinuous(true);
         cstrs.add(m);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();

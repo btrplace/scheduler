@@ -213,7 +213,6 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         if (p == null) {
             return new InstanceResult(null, makeStatistics());
         }
-        //checkSatisfaction2(p, cstrs);
         return new InstanceResult(p, makeStatistics());
     }
 

@@ -19,7 +19,6 @@ package btrplace.solver.choco.chocoUtil;
 
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.set.hash.TIntHashSet;
-import memory.IEnvironment;
 import memory.IStateInt;
 import memory.IStateIntVector;
 import solver.constraints.IntConstraint;
@@ -60,8 +59,6 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
 
     private int[][] dUsages;
 
-    private IEnvironment env;
-
     private IStateIntVector vIns;
 
     /**
@@ -77,7 +74,6 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
     /**
      * Make a new constraint.
      *
-     * @param env      the solver environment
      * @param alias    the resource identifier related to this cumulative
      * @param capas    for each dimension, the capacity of each resource
      * @param cHosters the placement variable of each cTask
@@ -88,8 +84,7 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
      * @param dStarts  the moment each dTask starts
      * @param assocs   indicate association between cTasks and dTasks. Associated tasks cannot overlap on a same resource
      */
-    public AliasedCumulatives(IEnvironment env,
-                              int[] alias,
+    public AliasedCumulatives(int[] alias,
                               int[] capas,
                               IntVar[] cHosters,
                               int[][] cUsages,
@@ -101,7 +96,6 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
 
         super(ArrayUtils.append(dHosters, cHosters, cEnds, dStarts), cHosters[0].getSolver());
         this.alias = new TIntHashSet(alias);
-        this.env = env;
         this.cHosters = cHosters;
         this.dHosters = dHosters;
         this.cEnds = cEnds;
@@ -113,8 +107,8 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
 
         this.nbDims = capas.length;
 
-        this.vIns = env.makeIntVector(0, 0);
-        setPropagators(new AliasedCumulativesPropagator(env, alias, capas, cHosters, cUsages, cEnds, dHosters, dUsages, dStarts, assocs));
+        this.vIns = cHosters[0].getSolver().getEnvironment().makeIntVector(0, 0);
+        setPropagators(new AliasedCumulativesPropagator(alias, capas, cHosters, cUsages, cEnds, dHosters, dUsages, dStarts, assocs));
 
     }
 
@@ -190,8 +184,7 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
 
         private boolean first = true;
 
-        public AliasedCumulativesPropagator(IEnvironment env,
-                                            int[] alias,
+        public AliasedCumulativesPropagator(int[] alias,
                                             int[] capas,
                                             IntVar[] cHosters,
                                             int[][] cUsages,
@@ -226,7 +219,7 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
             }
 
 
-            resource = new AliasedCumulativesFiltering(env,
+            resource = new AliasedCumulativesFiltering(
                     capacities,
                     cUsages,
                     cEnds,
@@ -311,7 +304,7 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
                 return;
             }
             first = false;
-            this.toInstantiate = env.makeInt(dHosters.length);
+            this.toInstantiate = cHosters[0].getSolver().getEnvironment().makeInt(dHosters.length);
 
             //Check whether some hosting variable are already instantiated
             for (int i = 0; i < dHosters.length; i++) {

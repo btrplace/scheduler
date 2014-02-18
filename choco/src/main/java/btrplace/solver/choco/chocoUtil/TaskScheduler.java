@@ -20,7 +20,6 @@ package btrplace.solver.choco.chocoUtil;
 
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import memory.IEnvironment;
 import memory.IStateIntVector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,8 +86,7 @@ public class TaskScheduler extends IntConstraint<IntVar> {
      * @param dStarts     the moment each dTask starts
      * @param assocs      indicate association between cTasks and dTasks. Associated tasks cannot overlap on a same resource
      */
-    public TaskScheduler(IEnvironment e,
-                         IntVar[] earlyStarts,
+    public TaskScheduler(IntVar[] earlyStarts,
                          IntVar[] lastEnds,
                          int[][] capas,
                          IntVar[] cHosters,
@@ -118,7 +116,7 @@ public class TaskScheduler extends IntConstraint<IntVar> {
 
 
         this.vIns = new IStateIntVector[scheds.length];
-        setPropagators(new TaskSchedulerPropagator(e, earlyStarts, lastEnds, capas, cHosters, cUsages, cEnds, dHosters, dUsages, dStarts, assocs));
+        setPropagators(new TaskSchedulerPropagator(earlyStarts, lastEnds, capas, cHosters, cUsages, cEnds, dHosters, dUsages, dStarts, assocs));
     }
 
     @Override
@@ -264,8 +262,7 @@ public class TaskScheduler extends IntConstraint<IntVar> {
 
         private IntVar[] earlyStarts, lastEnds;
 
-        public TaskSchedulerPropagator(IEnvironment e,
-                                       IntVar[] earlyStarts,
+        public TaskSchedulerPropagator(IntVar[] earlyStarts,
                                        IntVar[] lastEnds,
                                        int[][] capas,
                                        IntVar[] cHosters,
@@ -302,8 +299,8 @@ public class TaskScheduler extends IntConstraint<IntVar> {
             }
 
             for (int i = 0; i < scheds.length; i++) {
-                vIns[i] = e.makeIntVector(0, 0);
-                scheds[i] = new LocalTaskScheduler(i, e,
+                vIns[i] = earlyStarts[0].getSolver().getEnvironment().makeIntVector(0, 0);
+                scheds[i] = new LocalTaskScheduler(i,
                         earlyStarts[i],
                         lastEnds[i],
                         capacities,

@@ -56,7 +56,7 @@ public final class ChocoUtils {
     }
 
     /**
-     * Make and post a postifOnlyIf constraint that state and(or(b1, non c2), or(non b1, c2))
+     * Make and post a constraint that states and(or(b1, non c2), or(non b1, c2))
      *
      * @param s  the solver
      * @param b1 the first constraint
@@ -66,9 +66,7 @@ public final class ChocoUtils {
         BoolVar notBC1 = VariableFactory.not(b1);
 
         BoolVar bC2 = c2.reif();
-
         BoolVar notBC2 = bC2.not();
-
         s.post(or(and(b1, bC2), and(notBC1, notBC2)));
     }
 }

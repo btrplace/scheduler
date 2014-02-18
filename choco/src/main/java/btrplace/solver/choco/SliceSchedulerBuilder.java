@@ -103,8 +103,7 @@ public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
         symmetryBreakingForStayingVMs();
         IntVar[] earlyStarts = ActionModelUtils.getHostingStarts(rp.getNodeActions());
         IntVar[] lastEnd = ActionModelUtils.getHostingEnds(rp.getNodeActions());
-        return new TaskScheduler(s.getEnvironment(),
-                earlyStarts,
+        return new TaskScheduler(earlyStarts,
                 lastEnd,
                 capas,
                 cHosters, cUses, cEnds,

@@ -222,11 +222,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         appendNaiveBranchHeuristic();
 
         int nbIntVars = solver.retrieveIntVars().length;
-        int nbBoolVars = 0;//FIXME solver.retrieveBoolVars().length;
         int nbCstrs = solver.getNbCstrs();
 
 
-        getLogger().debug("{} constraints; Variables: {} ints, {} bools", nbCstrs, nbIntVars, nbBoolVars);
+        getLogger().debug("{} constraints; {} ints", nbCstrs, nbIntVars);
         if (solvingPolicy == ResolutionPolicy.SATISFACTION) {
             solver.findSolution();
         } else {

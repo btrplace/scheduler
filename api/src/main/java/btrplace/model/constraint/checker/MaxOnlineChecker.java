@@ -67,13 +67,6 @@ public class MaxOnlineChecker extends AllowAllConstraintChecker<MaxOnline> {
     }
 
     @Override
-    public void end(BootNode a) {
-        /*if (getNodes().contains(a.getNode())) {
-            currentOnline++;
-        } */
-    }
-
-    @Override
     public void end(ShutdownNode a) {
         if (getNodes().contains(a.getNode())) {
             currentOnline--;

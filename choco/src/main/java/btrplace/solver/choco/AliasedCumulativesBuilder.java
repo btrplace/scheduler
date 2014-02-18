@@ -87,8 +87,7 @@ public class AliasedCumulativesBuilder extends SchedulingConstraintBuilder {
             for (IntVar dUseDim : dUsages.get(i)) {
                 dUses[i++] = dUseDim.getLB();
             }
-            cstrs.add(new AliasedCumulatives(s.getEnvironment(),
-                    alias,
+            cstrs.add(new AliasedCumulatives(alias,
                     new int[]{capa},
                     cHosters, new int[][]{cUse}, cEnds,
                     dHosters, new int[][]{dUses}, dStarts,

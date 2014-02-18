@@ -17,7 +17,6 @@
 
 package btrplace.solver.choco.constraint.minMTTR;
 
-import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceUtils;
 import solver.search.strategy.selectors.variables.InputOrder;
@@ -39,11 +38,10 @@ public class HostingVariableSelector extends InputOrder<IntVar> {
      * Make a new heuristic.
      * By default, the heuristic doesn't touch the scheduling constraints.
      *
-     * @param dbgLbl the debug label
-     * @param p      the rp to rely on
      * @param slices the slices to consider
+     * @param sched  the scheduling heuristic to notify when the placement is invalidated
      */
-    public HostingVariableSelector(String dbgLbl, ReconfigurationProblem p, List<Slice> slices, OnStableNodeFirst sched) {
+    public HostingVariableSelector(List<Slice> slices, OnStableNodeFirst sched) {
         super(SliceUtils.extractHosters(slices));
         this.schedHeuristic = sched;
     }

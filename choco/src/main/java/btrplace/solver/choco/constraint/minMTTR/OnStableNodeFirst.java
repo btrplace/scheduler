@@ -224,7 +224,7 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
                             }
                         }
                     } else {
-                        firstFree.add(1);//increment();
+                        firstFree.add(1);
                     }
                 }
             }

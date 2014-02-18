@@ -53,12 +53,11 @@ public class RandomVMPlacement implements InValueIterator {
     /**
      * Make a new heuristic.
      *
-     * @param dbgLbl      the debug label
      * @param p           the problem to rely on
      * @param pVarMapping a map to indicate the VM associated to each of the placement variable
      * @param stayFirst   {@code true} to force an already VM to stay on its current node if possible
      */
-    public RandomVMPlacement(String dbgLbl, ReconfigurationProblem p, Map<IntVar, VM> pVarMapping, boolean stayFirst) {
+    public RandomVMPlacement(ReconfigurationProblem p, Map<IntVar, VM> pVarMapping, boolean stayFirst) {
         this(p, pVarMapping, null, stayFirst);
     }
 
