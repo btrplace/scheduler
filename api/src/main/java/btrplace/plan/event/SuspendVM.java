@@ -55,10 +55,7 @@ public class SuspendVM extends Action implements VMStateTransition {
 
     @Override
     public String pretty() {
-        return new StringBuilder("suspend(")
-                .append("vm=").append(vm)
-                .append(", from=").append(src)
-                .append(", to=").append(dst).append(')').toString();
+        return "suspend(" + "vm=" + vm + ", from=" + src + ", to=" + dst + ')';
     }
 
     /**
@@ -127,12 +124,12 @@ public class SuspendVM extends Action implements VMStateTransition {
 
     @Override
     public VMState getCurrentState() {
-        return VMState.running;
+        return VMState.RUNNING;
     }
 
     @Override
     public VMState getNextState() {
-        return VMState.sleeping;
+        return VMState.SLEEPING;
     }
 
     @Override

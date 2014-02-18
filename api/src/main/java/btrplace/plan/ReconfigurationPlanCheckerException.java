@@ -101,15 +101,9 @@ public class ReconfigurationPlanCheckerException extends Exception {
     @Override
     public String toString() {
         if (action != null) {
-            return new StringBuilder("Action '")
-                    .append(action)
-                    .append("' violates the constraint '")
-                    .append(cstr).toString();
+            return "Action '" + action + "' violates the constraint '" + cstr;
         }
 
-        StringBuilder b = new StringBuilder("The following ");
-        b.append(origin ? "origin" : "resulting");
-        b.append(" model violates the constraint '").append(cstr).append("':\n");
-        return b.append(mo).toString();
+        return "The " + (origin ? "origin" : "resulting") + " model violates '" + cstr + "':\n" + mo;
     }
 }

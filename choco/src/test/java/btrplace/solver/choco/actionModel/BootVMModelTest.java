@@ -26,10 +26,12 @@ import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import choco.cp.solver.CPSolver;
-import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Cause;
+import solver.Solver;
+import solver.constraints.IntConstraintFactory;
+import solver.exception.ContradictionException;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -64,21 +66,21 @@ public class BootVMModelTest {
                 .labelVariables()
                 .setNextVMsStates(new HashSet<VM>(), map.getAllVMs(), new HashSet<VM>(), new HashSet<VM>())
                 .build();
-        rp.getNodeActions()[0].getState().setVal(1);
-        rp.getNodeActions()[1].getState().setVal(1);
+        rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
+        rp.getNodeActions()[1].getState().instantiateTo(1, Cause.Null);
         BootVMModel m = (BootVMModel) rp.getVMActions()[0];
         Assert.assertEquals(vm1, m.getVM());
         Assert.assertNull(m.getCSlice());
-        Assert.assertTrue(m.getDuration().isInstantiatedTo(5));
-        Assert.assertTrue(m.getState().isInstantiatedTo(1));
-        Assert.assertFalse(m.getDSlice().getHoster().isInstantiated());
-        Assert.assertFalse(m.getDSlice().getStart().isInstantiated());
-        Assert.assertFalse(m.getDSlice().getEnd().isInstantiated());
+        Assert.assertTrue(m.getDuration().instantiatedTo(5));
+        Assert.assertTrue(m.getState().instantiatedTo(1));
+        Assert.assertFalse(m.getDSlice().getHoster().instantiated());
+        Assert.assertFalse(m.getDSlice().getStart().instantiated());
+        Assert.assertFalse(m.getDSlice().getEnd().instantiated());
 
         ReconfigurationPlan p = rp.solve(0, false);
         BootVM a = (BootVM) p.getActions().iterator().next();
 
-        Node dest = rp.getNode(m.getDSlice().getHoster().getVal());
+        Node dest = rp.getNode(m.getDSlice().getHoster().getValue());
         Assert.assertEquals(vm1, a.getVM());
         Assert.assertEquals(dest, a.getDestinationNode());
         Assert.assertEquals(5, a.getEnd() - a.getStart());
@@ -112,10 +114,10 @@ public class BootVMModelTest {
                 .build();
         BootVMModel m1 = (BootVMModel) rp.getVMActions()[rp.getVM(vm1)];
         BootVMModel m2 = (BootVMModel) rp.getVMActions()[rp.getVM(vm2)];
-        rp.getNodeActions()[0].getState().setVal(1);
-        rp.getNodeActions()[1].getState().setVal(1);
-        CPSolver s = rp.getSolver();
-        s.post(s.geq(m2.getStart(), m1.getEnd()));
+        rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
+        rp.getNodeActions()[1].getState().instantiateTo(1, Cause.Null);
+        Solver s = rp.getSolver();
+        s.post(IntConstraintFactory.arithm(m2.getStart(), ">=", m1.getEnd()));
 
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);

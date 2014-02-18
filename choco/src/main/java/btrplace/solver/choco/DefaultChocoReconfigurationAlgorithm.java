@@ -89,16 +89,6 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     @Override
-    public ChocoReconfigurationAlgorithmParams labelVariables(boolean b) {
-        return params.labelVariables(b);
-    }
-
-    @Override
-    public boolean areVariablesLabelled() {
-        return params.areVariablesLabelled();
-    }
-
-    @Override
     public ReconfigurationPlan solve(Model i, Collection<SatConstraint> cstrs) throws SolverException {
         return solve(i, cstrs, new MinMTTR());
     }

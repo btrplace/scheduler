@@ -24,7 +24,6 @@ import btrplace.model.Node;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.Online;
 import btrplace.model.constraint.SatConstraint;
-import btrplace.solver.choco.runner.staticPartitioning.Instances;
 import gnu.trove.map.hash.TIntIntHashMap;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -47,7 +46,8 @@ public class OnlineSplitterTest {
 
         List<Instance> instances = new ArrayList<>();
         Model m0 = new DefaultModel();
-        m0.getMapping().addOnlineNode(m0.newNode(0));
+        Node n = m0.newNode();
+        m0.getMapping().addOnlineNode(n);
         m0.getMapping().addOnlineNode(m0.newNode(1));
 
         Model m1 = new DefaultModel();
@@ -62,16 +62,9 @@ public class OnlineSplitterTest {
 
         TIntIntHashMap nodeIndex = Instances.makeNodeIndex(instances);
         //Only nodes in m0
-        Online oSimple = new Online(m0.getMapping().getAllNodes());
+        Online oSimple = new Online(n);
         Assert.assertTrue(splitter.split(oSimple, null, instances, new TIntIntHashMap(), nodeIndex));
         Assert.assertTrue(instances.get(0).getSatConstraints().contains(oSimple));
         Assert.assertFalse(instances.get(1).getSatConstraints().contains(oSimple));
-
-        //All the nodes, test the split
-        Online oAmong = new Online(all);
-
-        Assert.assertTrue(splitter.split(oAmong, null, instances, new TIntIntHashMap(), nodeIndex));
-        Assert.assertTrue(instances.get(0).getSatConstraints().contains(new Online(m0.getMapping().getAllNodes())));
-        Assert.assertTrue(instances.get(1).getSatConstraints().contains(new Online(m1.getMapping().getAllNodes())));
     }
 }

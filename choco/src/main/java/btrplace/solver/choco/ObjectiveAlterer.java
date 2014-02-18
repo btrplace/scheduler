@@ -17,7 +17,6 @@
 
 package btrplace.solver.choco;
 
-import choco.kernel.solver.variables.Var;
 
 /**
  * A class to provide a method to customize the optimisation process of the solver.
@@ -29,57 +28,17 @@ import choco.kernel.solver.variables.Var;
  *
  * @author Fabien Hermenier
  */
-public abstract class ObjectiveAlterer {
+public interface ObjectiveAlterer {
 
     /**
-     * The objective variable.
-     */
-    private Var obj;
-
-    /**
-     * The reconfiguration problem to consider.
-     */
-    private ReconfigurationProblem rp;
-
-    /**
-     * Make a new alterer on a given problem.
-     * The objective variable must have been declared.
+     * compute the new bound to apply to the best value computed so far
+     * The new bound to try will be the last computed value plus the newBound.
      *
-     * @param p the reconfiguration problem to consider
-     */
-    public ObjectiveAlterer(ReconfigurationProblem p) {
-        this.rp = p;
-        obj = p.getSolver().getObjective();
-    }
-
-    /**
-     * Compute a new target bound for the objective one a solution has been computed.
-     *
+     * @param rp the associated problem
      * @param currentValue the current value of the objective
-     * @return the new bound to set. It must stay within the objective variable bounds to continue the solving process
+     * @return the computed newBound should be aligned with the resolution policy: a greater value for a variable to maximize,
+     * a smaller value for a variable to minimize
      */
-    public abstract int tryNewValue(int currentValue);
+    int newBound(ReconfigurationProblem rp, int currentValue);
 
-    @Override
-    public String toString() {
-        return new StringBuilder("objectiveAlterer(").append(obj.getName()).append(')').toString();
-    }
-
-    /**
-     * Get the objective.
-     *
-     * @return the objective variable.
-     */
-    public Var getObjective() {
-        return obj;
-    }
-
-    /**
-     * Get the reconfiguration problem associated to that objective.
-     *
-     * @return the reconfiguration problem
-     */
-    public ReconfigurationProblem getReconfigurationProblem() {
-        return rp;
-    }
 }

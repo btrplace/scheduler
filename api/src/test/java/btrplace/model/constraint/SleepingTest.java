@@ -21,10 +21,7 @@ import btrplace.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.Collections;
 
 /**
  * Unit tests for {@link btrplace.model.constraint.Sleeping}.
@@ -36,12 +33,11 @@ public class SleepingTest {
     @Test
     public void testInstantiation() {
         Model mo = new DefaultModel();
-        List<VM> vms = Util.newVMs(mo, 3);
+        VM v = mo.newVM();
 
-        Set<VM> x = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
-        Sleeping s = new Sleeping(x);
+        Sleeping s = new Sleeping(v);
         Assert.assertNotNull(s.getChecker());
-        Assert.assertEquals(x, s.getInvolvedVMs());
+        Assert.assertEquals(Collections.singletonList(v), s.getInvolvedVMs());
         Assert.assertTrue(s.getInvolvedNodes().isEmpty());
         Assert.assertNotNull(s.toString());
         Assert.assertFalse(s.setContinuous(true));
@@ -51,36 +47,32 @@ public class SleepingTest {
     @Test
     public void testEquals() {
         Model mo = new DefaultModel();
-        List<VM> vms = Util.newVMs(mo, 3);
-        Set<VM> x = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
-        Sleeping s = new Sleeping(x);
+        VM v = mo.newVM();
+        Sleeping s = new Sleeping(v);
 
         Assert.assertTrue(s.equals(s));
-        Assert.assertTrue(new Sleeping(x).equals(s));
-        Assert.assertEquals(new Sleeping(x).hashCode(), s.hashCode());
-        x = new HashSet<>(Arrays.asList(vms.get(2)));
-        Assert.assertFalse(new Sleeping(x).equals(s));
+        Assert.assertTrue(new Sleeping(v).equals(s));
+        Assert.assertEquals(new Sleeping(v).hashCode(), s.hashCode());
+        Assert.assertFalse(new Sleeping(mo.newVM()).equals(s));
     }
 
     @Test
     public void testIsSatisfied() {
         Model i = new DefaultModel();
-        List<VM> vms = Util.newVMs(i, 3);
-        List<Node> ns = Util.newNodes(i, 3);
+        VM v = i.newVM();
+        Node n = i.newNode();
 
         Mapping c = i.getMapping();
-        Set<VM> s = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
 
-        c.addOnlineNode(ns.get(0));
-        c.addSleepingVM(vms.get(0), ns.get(0));
-        c.addSleepingVM(vms.get(1), ns.get(0));
-        Sleeping d = new Sleeping(s);
+        c.addOnlineNode(n);
+        c.addSleepingVM(v, n);
+        Sleeping d = new Sleeping(v);
         Assert.assertEquals(d.isSatisfied(i), true);
-        c.addReadyVM(vms.get(0));
+        c.addReadyVM(v);
         Assert.assertEquals(d.isSatisfied(i), false);
-        c.addRunningVM(vms.get(0), ns.get(0));
+        c.addRunningVM(v, n);
         Assert.assertEquals(d.isSatisfied(i), false);
-        c.remove(vms.get(0));
+        c.remove(v);
         Assert.assertEquals(d.isSatisfied(i), false);
     }
 }

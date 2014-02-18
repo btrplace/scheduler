@@ -69,7 +69,7 @@ public class CAmongTest {
         a.setContinuous(false);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.add(new Running(map.getAllVMs()));
+        cstrs.addAll(Running.newRunnings(map.getAllVMs()));
         cstrs.add(a);
 
         ReconfigurationPlan p = cra.solve(mo, cstrs);
@@ -105,8 +105,8 @@ public class CAmongTest {
         a.setContinuous(false);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.add(new Running(map.getAllVMs()));
-        cstrs.add(new Fence(Collections.singleton(vm2), s2));
+        cstrs.addAll(Running.newRunnings(map.getAllVMs()));
+        cstrs.add(new Fence(vm2, s2));
         cstrs.add(a);
 
         ReconfigurationPlan p = cra.solve(mo, cstrs);
@@ -150,9 +150,9 @@ public class CAmongTest {
         a.setContinuous(false);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.add(new Running(map.getAllVMs()));
-        cstrs.add(new Fence(Collections.singleton(vm2), Collections.singleton(n3)));
-        cstrs.add(new Fence(Collections.singleton(vm1), Collections.singleton(n1)));
+        cstrs.addAll(Running.newRunnings(map.getAllVMs()));
+        cstrs.add(new Fence(vm2, Collections.singleton(n3)));
+        cstrs.add(new Fence(vm1, Collections.singleton(n1)));
         cstrs.add(a);
 
         ReconfigurationPlan p = cra.solve(mo, cstrs);
@@ -218,7 +218,7 @@ public class CAmongTest {
         a.setContinuous(true);
 
         List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.add(new Running(map.getAllVMs()));
+        cstrs.addAll(Running.newRunnings(map.getAllVMs()));
         cstrs.add(a);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
@@ -254,8 +254,8 @@ public class CAmongTest {
         a.setContinuous(true);
 
         List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.add(new Running(map.getAllVMs()));
-        cstrs.add(new Fence(Collections.singleton(vm2), Collections.singleton(n3)));
+        cstrs.addAll(Running.newRunnings(map.getAllVMs()));
+        cstrs.add(new Fence(vm2, Collections.singleton(n3)));
         cstrs.add(a);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();

@@ -42,14 +42,14 @@ public class QuarantineConverter extends ConstraintConverter<Quarantine> {
     @Override
     public Quarantine fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Quarantine(requiredNodes(o, "nodes"));
+        return new Quarantine(requiredNode(o, "node"));
     }
 
     @Override
     public JSONObject toJSON(Quarantine o) {
         JSONObject c = new JSONObject();
         c.put("id", getJSONId());
-        c.put("nodes", nodesToJSON(o.getInvolvedNodes()));
+        c.put("node", toJSON(o.getInvolvedNodes().iterator().next()));
         return c;
     }
 }

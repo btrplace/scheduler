@@ -90,20 +90,18 @@ public class KillVM extends Action implements VMStateTransition {
 
     @Override
     public String pretty() {
-        return new StringBuilder("killVM(vm=").append(id)
-                .append(", node=").append(host)
-                .append(')').toString();
+        return "killVM(vm=" + id + ", node=" + host + ')';
     }
 
 
     @Override
     public VMState getCurrentState() {
-        return VMState.running;
+        return VMState.RUNNING;
     }
 
     @Override
     public VMState getNextState() {
-        return VMState.killed;
+        return VMState.KILLED;
     }
 
     @Override

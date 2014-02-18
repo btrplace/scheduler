@@ -21,7 +21,6 @@ import btrplace.model.*;
 import btrplace.model.constraint.MaxOnline;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.model.constraint.Running;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
@@ -66,7 +65,8 @@ public class FixedNodeSetsPartitioningTest {
             VM v = mo.newVM();
             mo.getMapping().addReadyVM(v);
         }
-        return new Instance(mo, Collections.<SatConstraint>singleton(new Running(mo.getMapping().getAllVMs())), new MinMTTR());
+
+        return new Instance(mo, (List) Running.newRunnings(mo.getMapping().getAllVMs()), new MinMTTR());
     }
 
     @Test

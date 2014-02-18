@@ -21,7 +21,6 @@ import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
-import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -29,18 +28,18 @@ import btrplace.solver.choco.actionModel.ActionModel;
 import btrplace.solver.choco.actionModel.ActionModelUtils;
 import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.constraint.ChocoConstraintBuilder;
-import choco.Choco;
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarVal;
-import choco.cp.solver.search.integer.branching.AssignVar;
-import choco.cp.solver.search.integer.valselector.MinVal;
-import choco.cp.solver.search.integer.varselector.StaticVarOrder;
-import choco.kernel.common.Constant;
-import choco.kernel.solver.Configuration;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.ResolutionPolicy;
-import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.Solver;
+import solver.constraints.Constraint;
+import solver.constraints.IntConstraintFactory;
+import solver.search.limits.BacktrackCounter;
+import solver.search.loop.monitors.SMF;
+import solver.search.strategy.selectors.values.InDomainMin;
+import solver.search.strategy.selectors.variables.InputOrder;
+import solver.search.strategy.strategy.AbstractStrategy;
+import solver.search.strategy.strategy.Assignment;
+import solver.search.strategy.strategy.StrategiesSequencer;
+import solver.variables.IntVar;
+import solver.variables.VariableFactory;
 
 import java.util.*;
 
@@ -51,7 +50,7 @@ import java.util.*;
  */
 public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
 
-    private List<SConstraint> costConstraints;
+    private List<Constraint> costConstraints;
 
     private boolean costActivated = false;
 
@@ -68,43 +67,41 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
     public boolean inject(ReconfigurationProblem p) throws SolverException {
         this.rp = p;
         costActivated = false;
-        List<IntDomainVar> mttrs = new ArrayList<>();
+        List<IntVar> mttrs = new ArrayList<>();
         for (ActionModel m : p.getVMActions()) {
             mttrs.add(m.getEnd());
         }
         for (ActionModel m : p.getNodeActions()) {
             mttrs.add(m.getEnd());
         }
-        IntDomainVar[] costs = mttrs.toArray(new IntDomainVar[mttrs.size()]);
-        CPSolver s = p.getSolver();
-        IntDomainVar cost = s.createBoundIntVar(p.makeVarLabel("globalCost"), 0, Choco.MAX_UPPER_BOUND);
+        IntVar[] costs = mttrs.toArray(new IntVar[mttrs.size()]);
+        Solver s = p.getSolver();
+        IntVar cost = VariableFactory.bounded(p.makeVarLabel("globalCost"), 0, Integer.MAX_VALUE / 100, s);
 
-        SConstraint costConstraint = s.eq(cost, CPSolver.sum(costs));
+        Constraint costConstraint = IntConstraintFactory.sum(costs, cost);
         costConstraints.clear();
         costConstraints.add(costConstraint);
 
-        s.getConfiguration().putEnum(Configuration.RESOLUTION_POLICY, ResolutionPolicy.MINIMIZE);
-        s.setObjective(cost);
+        p.setObjective(true, cost);
+
         //We set a restart limit by default, this may be useful especially with very small infrastructure
         //as the risk of cyclic dependencies increase and their is no solution for the moment to detect cycle
         //in the scheduling part
         //Restart limit = 2 * number of VMs in the DC.
         if (p.getVMs().length > 0) {
-            s.setGeometricRestart(p.getVMs().length * 2, 1.5d);
-            s.setRestart(true);
+            SMF.geometrical(s, 1, 1.5d, new BacktrackCounter(p.getVMs().length * 2), Integer.MAX_VALUE);
         }
         injectPlacementHeuristic(p, cost);
+        postCostConstraints();
         return true;
     }
 
-    private void injectPlacementHeuristic(ReconfigurationProblem p, IntDomainVar cost) {
+    private void injectPlacementHeuristic(ReconfigurationProblem p, IntVar cost) {
 
         Model mo = p.getSourceModel();
         Mapping map = mo.getMapping();
 
-        List<ActionModel> actions = new ArrayList<>();
-        Collections.addAll(actions, p.getVMActions());
-        OnStableNodeFirst schedHeuristic = new OnStableNodeFirst("stableNodeFirst", p, actions, this);
+        OnStableNodeFirst schedHeuristic = new OnStableNodeFirst(p, this);
 
         //Get the VMs to move
         Set<VM> onBadNodes = p.getManageableVMs();
@@ -130,7 +127,7 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
             badActions.add(p.getVMAction(vm));
         }
 
-        CPSolver s = p.getSolver();
+        Solver s = p.getSolver();
 
         //Get the VMs to move for exclusion issue
         Set<VM> vmsToExclude = new HashSet<>(p.getManageableVMs());
@@ -140,15 +137,22 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
                 ite.remove();
             }
         }
-        Map<IntDomainVar, VM> pla = VMPlacementUtils.makePlacementMap(p);
+        List<AbstractStrategy> strats = new ArrayList<>();
 
-        s.addGoal(new AssignVar(new MovingVMs("movingVMs", p, map, vmsToExclude), new RandomVMPlacement("movingVMs", p, pla, true)));
-        HostingVariableSelector selectForBads = new HostingVariableSelector("selectForBads", p, ActionModelUtils.getDSlices(badActions), schedHeuristic);
-        s.addGoal(new AssignVar(selectForBads, new RandomVMPlacement("selectForBads", p, pla, true)));
+        Map<IntVar, VM> pla = VMPlacementUtils.makePlacementMap(p);
+        if (!vmsToExclude.isEmpty()) {
+            strats.add(new Assignment(new MovingVMs(p, map, vmsToExclude), new RandomVMPlacement(p, pla, true)));
+        }
 
+        if (!badActions.isEmpty()) {
+            HostingVariableSelector selectForBads = new HostingVariableSelector(ActionModelUtils.getDSlices(badActions), schedHeuristic);
+            strats.add(new Assignment(selectForBads, new RandomVMPlacement(p, pla, true)));
+        }
 
-        HostingVariableSelector selectForGoods = new HostingVariableSelector("selectForGoods", p, ActionModelUtils.getDSlices(goodActions), schedHeuristic);
-        s.addGoal(new AssignVar(selectForGoods, new RandomVMPlacement("selectForGoods", p, pla, true)));
+        if (!goodActions.isEmpty()) {
+            HostingVariableSelector selectForGoods = new HostingVariableSelector(ActionModelUtils.getDSlices(goodActions), schedHeuristic);
+            strats.add(new Assignment(selectForGoods, new RandomVMPlacement(p, pla, true)));
+        }
 
         //VMs to run
         Set<VM> vmsToRun = new HashSet<>(map.getReadyVMs());
@@ -159,15 +163,25 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         for (VM vm : vmsToRun) {
             runActions[i++] = p.getVMAction(vm);
         }
-        HostingVariableSelector selectForRuns = new HostingVariableSelector("selectForRuns", p, ActionModelUtils.getDSlices(runActions), schedHeuristic);
-        s.addGoal(new AssignVar(selectForRuns, new RandomVMPlacement("selectForRuns", p, pla, true)));
 
-        s.addGoal(new AssignVar(new StartingNodes("startingNodes", p, p.getNodeActions()), new MinVal()));
+        if (runActions.length > 0) {
+            HostingVariableSelector selectForRuns = new HostingVariableSelector(ActionModelUtils.getDSlices(runActions), schedHeuristic);
+            strats.add(new Assignment(selectForRuns, new RandomVMPlacement(p, pla, true)));
+        }
+
+        if (p.getNodeActions().length > 0) {
+            strats.add(new Assignment(new InputOrder<>(ActionModelUtils.getStarts(p.getNodeActions())), new InDomainMin()));
+        }
+
         ///SCHEDULING PROBLEM
-        s.addGoal(new AssignOrForbidIntVarVal(schedHeuristic, new MinVal()));
+        MovementGraph gr = new MovementGraph(rp);
+        strats.add(new Assignment(new StartOnLeafNodes(rp, gr), new InDomainMin()));
+        strats.add(new Assignment(schedHeuristic, new InDomainMin()));
 
         //At this stage only it matters to plug the cost constraints
-        s.addGoal(new AssignVar(new StaticVarOrder(p.getSolver(), new IntDomainVar[]{p.getEnd(), cost}), new MinVal()));
+        strats.add(new Assignment(new InputOrder<>(new IntVar[]{p.getEnd(), cost}), new InDomainMin()));
+
+        s.getSearchLoop().set(new StrategiesSequencer(s.getEnvironment(), strats.toArray(new AbstractStrategy[strats.size()])));
     }
 
     @Override
@@ -180,19 +194,21 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
      */
     @Override
     public void postCostConstraints() {
+        //TODO: Delay insertion
         if (!costActivated) {
             rp.getLogger().debug("Post the cost-oriented constraints");
             costActivated = true;
-            CPSolver s = rp.getSolver();
-            for (SConstraint c : costConstraints) {
-                s.postCut(c);
+            Solver s = rp.getSolver();
+            for (Constraint c : costConstraints) {
+                s.post(c);
             }
-            try {
+            /*try {
                 s.propagate();
             } catch (ContradictionException e) {
-                s.setFeasible(false);
-                s.post(Constant.FALSE);
-            }
+                s.setFeasible(ESat.FALSE);
+                //s.setFeasible(false);
+                s.post(IntConstraintFactory.FALSE(s));
+            } */
         }
     }
 
@@ -201,12 +217,12 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
      */
     public static class Builder implements ChocoConstraintBuilder {
         @Override
-        public Class<? extends Constraint> getKey() {
+        public Class<? extends btrplace.model.constraint.Constraint> getKey() {
             return MinMTTR.class;
         }
 
         @Override
-        public CMinMTTR build(Constraint cstr) {
+        public CMinMTTR build(btrplace.model.constraint.Constraint cstr) {
             return new CMinMTTR();
         }
     }

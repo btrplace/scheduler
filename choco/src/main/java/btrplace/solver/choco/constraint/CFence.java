@@ -26,9 +26,11 @@ import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Fence;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
-import choco.kernel.solver.ContradictionException;
+import solver.Cause;
+import solver.exception.ContradictionException;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -53,26 +55,18 @@ public class CFence implements ChocoConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) {
-
-        Set<VM> runnings = new HashSet<>();
-        for (VM vm : cstr.getInvolvedVMs()) {
-            if (rp.getFutureRunningVMs().contains(vm)) {
-                runnings.add(vm);
-            }
-        }
+        VM vm = cstr.getInvolvedVMs().iterator().next();
         Collection<Node> nodes = cstr.getInvolvedNodes();
-        if (!runnings.isEmpty()) {
+        if (rp.getFutureRunningVMs().contains(vm)) {
             if (nodes.size() == 1) {
                 //Only 1 possible destination node, so we directly instantiate the variable.
-                for (VM vm : runnings) {
-                    Slice t = rp.getVMAction(vm).getDSlice();
-                    Node n = nodes.iterator().next();
-                    try {
-                        t.getHoster().setVal(rp.getNode(n));
-                    } catch (ContradictionException e) {
-                        rp.getLogger().error("Unable to force VM '{}' to be running on node '{}': {}", vm, n, e.getMessage());
-                        return false;
-                    }
+                Slice t = rp.getVMAction(vm).getDSlice();
+                Node n = nodes.iterator().next();
+                try {
+                    t.getHoster().instantiateTo(rp.getNode(n), Cause.Null);
+                } catch (ContradictionException ex) {
+                    rp.getLogger().error("Unable to force VM '{}' to be running on node '{}'", vm, n);
+                    return false;
                 }
             } else {
                 //Transformation to a ban constraint that disallow all the other nodes
@@ -82,7 +76,7 @@ public class CFence implements ChocoConstraint {
                         otherNodes.add(n);
                     }
                 }
-                return new CBan(new Ban(runnings, otherNodes)).inject(rp);
+                return new CBan(new Ban(vm, otherNodes)).inject(rp);
 
             }
         }
@@ -92,13 +86,11 @@ public class CFence implements ChocoConstraint {
     @Override
     public Set<VM> getMisPlacedVMs(Model m) {
         Mapping map = m.getMapping();
-        Set<VM> bad = new HashSet<>();
-        for (VM vm : cstr.getInvolvedVMs()) {
-            if (map.isRunning(vm) && !cstr.getInvolvedNodes().contains(map.getVMLocation(vm))) {
-                bad.add(vm);
-            }
+        VM vm = cstr.getInvolvedVMs().iterator().next();
+        if (map.isRunning(vm) && !cstr.getInvolvedNodes().contains(map.getVMLocation(vm))) {
+            return Collections.singleton(vm);
         }
-        return bad;
+        return Collections.emptySet();
     }
 
     @Override
@@ -116,8 +108,8 @@ public class CFence implements ChocoConstraint {
         }
 
         @Override
-        public CFence build(Constraint cstr) {
-            return new CFence((Fence) cstr);
+        public CFence build(Constraint c) {
+            return new CFence((Fence) c);
         }
     }
 }

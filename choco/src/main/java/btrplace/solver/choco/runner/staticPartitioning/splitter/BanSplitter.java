@@ -17,12 +17,14 @@
 
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
-import btrplace.model.*;
+import btrplace.model.Instance;
+import btrplace.model.Node;
+import btrplace.model.SplittableElementSet;
+import btrplace.model.VM;
 import btrplace.model.constraint.Ban;
 import gnu.trove.map.hash.TIntIntHashMap;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Splitter for {@link btrplace.model.constraint.Ban} constraints.
@@ -42,19 +44,8 @@ public class BanSplitter implements ConstraintSplitter<Ban> {
     @Override
     public boolean split(Ban cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
         final SplittableElementSet<Node> nodeIndex = SplittableElementSet.newNodeIndex(cstr.getInvolvedNodes(), nodePosition);
-        return SplittableElementSet.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
-                forEachPartition(new IterateProcedure<VM>() {
-                    @Override
-                    public boolean extract(SplittableElementSet<VM> index, int idx, int from, int to) {
-                        if (to != from) {
-                            Set<VM> vms = new ElementSubSet<>(index, idx, from, to);
-                            Set<Node> ns = nodeIndex.getSubSet(idx);
-                            if (ns != null && !ns.isEmpty()) {
-                                partitions.get(idx).getSatConstraints().add(new Ban(vms, ns));
-                            }
-                        }
-                        return true;
-                    }
-                });
+        VM v = cstr.getInvolvedVMs().iterator().next();
+        int p = vmsPosition.get(v.id());
+        return partitions.get(p).getSatConstraints().add(new Ban(v, nodeIndex.getSubSet(p)));
     }
 }

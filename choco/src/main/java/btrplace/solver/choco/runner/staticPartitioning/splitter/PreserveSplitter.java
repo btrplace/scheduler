@@ -17,7 +17,8 @@
 
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
-import btrplace.model.*;
+import btrplace.model.Instance;
+import btrplace.model.VM;
 import btrplace.model.constraint.Preserve;
 import gnu.trove.map.hash.TIntIntHashMap;
 
@@ -42,17 +43,8 @@ public class PreserveSplitter implements ConstraintSplitter<Preserve> {
 
     @Override
     public boolean split(Preserve cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
-        final int qty = cstr.getAmount();
-        final String rcId = cstr.getResource();
-        return SplittableElementSet.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
-                forEachPartition(new IterateProcedure<VM>() {
-                    @Override
-                    public boolean extract(SplittableElementSet<VM> index, int idx, int from, int to) {
-                        if (to != from) {
-                            partitions.get(idx).getSatConstraints().add(new Preserve(new ElementSubSet<>(index, idx, from, to), rcId, qty));
-                        }
-                        return true;
-                    }
-                });
+        VM v = cstr.getInvolvedVMs().iterator().next();
+        int p = vmsPosition.get(v.id());
+        return partitions.get(p).getSatConstraints().add(cstr);
     }
 }

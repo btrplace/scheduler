@@ -24,10 +24,12 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.choco.actionModel.ActionModelUtils;
 import btrplace.solver.choco.actionModel.ActionModelVisitor;
 import btrplace.solver.choco.actionModel.VMActionModel;
-import choco.cp.solver.CPSolver;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Solver;
+import solver.variables.BoolVar;
+import solver.variables.IntVar;
+import solver.variables.VF;
 
 import java.util.List;
 
@@ -41,7 +43,7 @@ public class ActionModelUtilsTest {
 
     private VMActionModel[] makeActions() {
         VMActionModel[] as = new VMActionModel[10];
-        CPSolver s = new CPSolver();
+        Solver s = new Solver();
         for (int i = 0; i < as.length; i++) {
             as[i] = new MockActionModel(s, i);
 
@@ -57,7 +59,7 @@ public class ActionModelUtilsTest {
             Slice s = cs.get(i);
             Slice ns = cs.get(i + 1);
             Assert.assertTrue(s.getHoster().getName().startsWith("dS"));
-            Assert.assertTrue(s.getHoster().getVal() < ns.getHoster().getVal());
+            Assert.assertTrue(s.getHoster().getValue() < ns.getHoster().getValue());
         }
     }
 
@@ -69,77 +71,78 @@ public class ActionModelUtilsTest {
             Slice s = cs.get(i);
             Slice ns = cs.get(i + 1);
             Assert.assertTrue(s.getHoster().getName().startsWith("cS"));
-            Assert.assertTrue(s.getHoster().getVal() < ns.getHoster().getVal());
+            Assert.assertTrue(s.getHoster().getValue() < ns.getHoster().getValue());
         }
     }
 
     @Test
     public void testGetStarts() {
-        IntDomainVar[] sts = ActionModelUtils.getStarts(makeActions());
+        IntVar[] sts = ActionModelUtils.getStarts(makeActions());
         Assert.assertEquals(10, sts.length);
         for (int i = 0; i < sts.length - 1; i++) {
-            IntDomainVar s = sts[i];
-            IntDomainVar ns = sts[i + 1];
+            IntVar s = sts[i];
+            IntVar ns = sts[i + 1];
             Assert.assertTrue(s.getName().startsWith("start"));
-            Assert.assertTrue(s.getVal() < ns.getVal());
+            Assert.assertTrue(s.getValue() < ns.getValue());
         }
     }
 
     @Test
     public void testGetEnds() {
-        IntDomainVar[] sts = ActionModelUtils.getEnds(makeActions());
+        IntVar[] sts = ActionModelUtils.getEnds(makeActions());
         Assert.assertEquals(10, sts.length);
         for (int i = 0; i < sts.length - 1; i++) {
-            IntDomainVar s = sts[i];
-            IntDomainVar ns = sts[i + 1];
+            IntVar s = sts[i];
+            IntVar ns = sts[i + 1];
             Assert.assertTrue(s.getName().startsWith("end"));
-            Assert.assertTrue(s.getVal() < ns.getVal());
+            Assert.assertTrue(s.getValue() < ns.getValue());
         }
     }
 
     @Test
     public void testGetDurations() {
-        IntDomainVar[] sts = ActionModelUtils.getDurations(makeActions());
+        IntVar[] sts = ActionModelUtils.getDurations(makeActions());
         Assert.assertEquals(10, sts.length);
         for (int i = 0; i < sts.length - 1; i++) {
-            IntDomainVar s = sts[i];
-            IntDomainVar ns = sts[i + 1];
+            IntVar s = sts[i];
+            IntVar ns = sts[i + 1];
             Assert.assertTrue(s.getName().startsWith("duration"));
-            Assert.assertTrue(s.getVal() < ns.getVal());
+            Assert.assertTrue(s.getValue() < ns.getValue());
         }
     }
 
     public static class MockActionModel implements VMActionModel {
 
-        private IntDomainVar st, ed, d, h, c, state;
+        private IntVar st, ed, d, h, c;
+        private BoolVar state;
 
         private Slice cSlice, dSlice;
 
-        public MockActionModel(CPSolver s, int nb) {
+        public MockActionModel(Solver s, int nb) {
             Model mo = new DefaultModel();
-            st = s.createBoundIntVar("start" + nb, nb, nb + 1);
-            ed = s.createBoundIntVar("end" + nb, nb, nb + 1);
-            d = s.createBoundIntVar("duration" + nb, nb, nb + 1);
-            h = s.createBoundIntVar("hoster" + nb, nb, nb + 1);
-            c = s.createBoundIntVar("cost" + nb, nb, nb + 1);
-            state = s.createBoundIntVar("state" + nb, nb, nb + 1);
+            st = VF.fixed("start" + nb, nb, s);
+            ed = VF.fixed("end" + nb, nb, s);
+            d = VF.fixed("duration" + nb, nb, s);
+            h = VF.fixed("hoster" + nb, nb, s);
+            c = VF.fixed("cost" + nb, nb, s);
+            state = VF.bool("state" + nb, s);
             if (nb % 2 == 0) {
                 cSlice = new Slice(mo.newVM(),
-                        s.createBoundIntVar("cS" + nb + "-st", nb, nb + 1),
-                        s.createBoundIntVar("cS" + nb + "-ed", nb, nb + 1),
-                        s.createBoundIntVar("cS" + nb + "-d", nb, nb + 1),
-                        s.createBoundIntVar("cS" + nb + "-h", nb, nb + 1));
+                        VF.fixed("cS" + nb + "-st", nb, s),
+                        VF.fixed("cS" + nb + "-ed", nb, s),
+                        VF.fixed("cS" + nb + "-d", nb, s),
+                        VF.fixed("cS" + nb + "-h", nb, s));
             } else {
                 dSlice = new Slice(mo.newVM(),
-                        s.createBoundIntVar("dS" + nb + "-st", nb, nb + 1),
-                        s.createBoundIntVar("dS" + nb + "-ed", nb, nb + 1),
-                        s.createBoundIntVar("dS" + nb + "-d", nb, nb + 1),
-                        s.createBoundIntVar("dS" + nb + "-h", nb, nb + 1));
+                        VF.fixed("dS" + nb + "-st", nb, s),
+                        VF.fixed("dS" + nb + "-ed", nb, s),
+                        VF.fixed("dS" + nb + "-d", nb, s),
+                        VF.fixed("dS" + nb + "-h", nb, s));
             }
         }
 
         @Override
-        public IntDomainVar getStart() {
+        public IntVar getStart() {
             return st;
         }
 
@@ -149,12 +152,12 @@ public class ActionModelUtilsTest {
         }
 
         @Override
-        public IntDomainVar getEnd() {
+        public IntVar getEnd() {
             return ed;
         }
 
         @Override
-        public IntDomainVar getDuration() {
+        public IntVar getDuration() {
             return d;
         }
 
@@ -174,7 +177,7 @@ public class ActionModelUtilsTest {
         }
 
         @Override
-        public IntDomainVar getState() {
+        public BoolVar getState() {
             return state;
         }
 

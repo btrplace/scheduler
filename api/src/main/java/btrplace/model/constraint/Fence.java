@@ -22,10 +22,13 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.FenceChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * A constraint to force the given VMs, when running,
+ * A constraint to force the given VM, when running,
  * to be hosted on a given group of nodes.
  * <p/>
  * The restriction provided by this constraint is discrete.
@@ -35,22 +38,33 @@ import java.util.Collection;
 public class Fence extends SatConstraint {
 
     /**
+     * Instantiate constraints for a collection of VMs.
+     *
+     * @param vms   the VMs to integrate
+     * @param nodes the hosts to disallow
+     * @return the associated list of constraints
+     */
+    public static List<Fence> newFences(Collection<VM> vms, Collection<Node> nodes) {
+        List<Fence> l = new ArrayList<>(vms.size());
+        for (VM v : vms) {
+            l.add(new Fence(v, nodes));
+        }
+        return l;
+    }
+
+    /**
      * Make a new discrete constraint.
      *
-     * @param vms   the involved VMs
+     * @param vm    the involved VM
      * @param nodes the involved nodes
      */
-    public Fence(Collection<VM> vms, Collection<Node> nodes) {
-        super(vms, nodes, false);
+    public Fence(VM vm, Collection<Node> nodes) {
+        super(Collections.singleton(vm), nodes, false);
     }
 
     @Override
     public String toString() {
-        return new StringBuilder("fence(vms=")
-                .append(getInvolvedVMs())
-                .append(", nodes=").append(getInvolvedNodes())
-                .append(", discrete")
-                .append(")").toString();
+        return "fence(vm=" + getInvolvedVMs() + ", nodes=" + getInvolvedNodes() + ", discrete" + ")";
     }
 
     @Override

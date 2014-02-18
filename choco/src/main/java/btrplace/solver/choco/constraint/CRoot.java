@@ -25,7 +25,8 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.actionModel.VMActionModel;
-import choco.cp.solver.CPSolver;
+import solver.Solver;
+import solver.constraints.IntConstraintFactory;
 
 import java.util.Collections;
 import java.util.Set;
@@ -51,14 +52,13 @@ public class CRoot implements ChocoConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        CPSolver s = rp.getSolver();
-        for (VM vm : cstr.getInvolvedVMs()) {
-            VMActionModel m = rp.getVMAction(vm);
-            Slice cSlice = m.getCSlice();
-            Slice dSlice = m.getDSlice();
-            if (cSlice != null && dSlice != null) {
-                s.post(s.eq(cSlice.getHoster(), dSlice.getHoster()));
-            }
+        Solver s = rp.getSolver();
+        VM vm = cstr.getInvolvedVMs().iterator().next();
+        VMActionModel m = rp.getVMAction(vm);
+        Slice cSlice = m.getCSlice();
+        Slice dSlice = m.getDSlice();
+        if (cSlice != null && dSlice != null) {
+            s.post(IntConstraintFactory.arithm(cSlice.getHoster(), "=", dSlice.getHoster()));
         }
         return true;
     }
@@ -84,8 +84,8 @@ public class CRoot implements ChocoConstraint {
         }
 
         @Override
-        public CRoot build(Constraint cstr) {
-            return new CRoot((Root) cstr);
+        public CRoot build(Constraint c) {
+            return new CRoot((Root) c);
         }
     }
 }

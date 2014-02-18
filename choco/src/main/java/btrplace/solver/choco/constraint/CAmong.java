@@ -22,13 +22,13 @@ import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.Among;
-import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Fence;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.chocoUtil.MyElement;
-import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.constraints.Constraint;
+import solver.constraints.IntConstraintFactory;
+import solver.variables.IntVar;
+import solver.variables.VariableFactory;
 
 import java.util.*;
 
@@ -41,7 +41,7 @@ public class CAmong implements ChocoConstraint {
 
     private Among cstr;
 
-    private IntDomainVar vmGrpId;
+    private IntVar vmGrpId;
 
     /**
      * Make a new constraint.
@@ -56,9 +56,9 @@ public class CAmong implements ChocoConstraint {
      * Get the group variable that indicate on which group the VMs are running.
      *
      * @return a variable that may be instantiated but {@code null} until
-     *         {@link #inject(btrplace.solver.choco.ReconfigurationProblem)} has been called
+     * {@link #inject(btrplace.solver.choco.ReconfigurationProblem)} has been called
      */
-    public IntDomainVar getGroupVariable() {
+    public IntVar getGroupVariable() {
         return vmGrpId;
     }
 
@@ -78,11 +78,11 @@ public class CAmong implements ChocoConstraint {
             if (rp.getFutureRunningVMs().contains(vm)) {
                 //The VM will be running
                 runnings.add(vm);
-                IntDomainVar vAssign = rp.getVMAction(vm).getDSlice().getHoster();
+                IntVar vAssign = rp.getVMAction(vm).getDSlice().getHoster();
                 //If one of the VM is already placed, no need for the constraint, the group will be known
-                if (vAssign.isInstantiated()) {
+                if (vAssign.instantiated()) {
                     //Get the group of nodes that match the selected node
-                    int g = getGroup(rp.getNode(vAssign.getVal()));
+                    int g = getGroup(rp.getNode(vAssign.getValue()));
                     if (g == -1) {
                         rp.getLogger().error("The VM in '{}' will be placed out of any of the allowed group", vm);
                         return false;
@@ -109,17 +109,25 @@ public class CAmong implements ChocoConstraint {
         }
 
         if (cstr.isContinuous() && curGrp != -1) {
-            vmGrpId = rp.getSolver().makeConstantIntVar(rp.makeVarLabel("among#pGrp"), curGrp);
-            return new CFence(new Fence(runnings, groups.get(curGrp))).inject(rp);
+            vmGrpId = VariableFactory.fixed(rp.makeVarLabel("among#pGrp"), curGrp, rp.getSolver());
+            for (VM v : runnings) {
+                if (!new CFence(new Fence(v, groups.get(curGrp))).inject(rp)) {
+                    return false;
+                }
+            }
         } else {
             if (groups.size() == 1 && !groups.iterator().next().equals(rp.getSourceModel().getMapping().getAllNodes())) {
                 //Only 1 group of nodes, it's just a fence constraint
-                new CFence(new Fence(new HashSet<>(runnings), groups.get(0))).inject(rp);
-                vmGrpId = rp.getSolver().makeConstantIntVar(rp.makeVarLabel("among#pGrp"), 0);
+                for (VM v : runnings) {
+                    if (!new CFence(new Fence(v, groups.get(0))).inject(rp)) {
+                        return false;
+                    }
+                }
+                vmGrpId = VariableFactory.fixed(rp.makeVarLabel("among#pGrp"), 0, rp.getSolver());
             } else {
                 //Now, we create a variable to indicate on which group of nodes the VMs will be
                 if (nextGrp == -1) {
-                    vmGrpId = rp.getSolver().createEnumIntVar(rp.makeVarLabel("among#pGrp"), 0, groups.size() - 1);
+                    vmGrpId = VariableFactory.enumerated(rp.makeVarLabel("among#pGrp"), 0, groups.size() - 1, rp.getSolver());
                     //grp: A table to indicate the group each node belong to, -1 for no group
                     int[] grps = new int[rp.getNodes().length];
                     Set<Node> possibleNodes = new HashSet<>();
@@ -132,17 +140,26 @@ public class CAmong implements ChocoConstraint {
                         }
                     }
                     //In any case, the VMs cannot go to nodes that are in no groups
-                    new CFence(new Fence(runnings, new HashSet<>(possibleNodes))).inject(rp);
+                    Collection<Node> ok = new HashSet<>(possibleNodes);
+                    for (VM v : runnings) {
+                        if (!new CFence(new Fence(v, ok)).inject(rp)) {
+                            return false;
+                        }
+                    }
                     //We link the VM placement variable with the group variable
                     for (VM vm : runnings) {
-                        IntDomainVar assign = rp.getVMAction(vm).getDSlice().getHoster();
-                        SConstraint c = new MyElement(assign, grps, vmGrpId, 0, MyElement.Sort.detect);
+                        IntVar assign = rp.getVMAction(vm).getDSlice().getHoster();
+                        Constraint c = IntConstraintFactory.element(assign, grps, vmGrpId, 0, "detect");
                         rp.getSolver().post(c);
                     }
                 } else {
-                    vmGrpId = rp.getSolver().makeConstantIntVar(rp.makeVarLabel("among#pGrp"), nextGrp);
+                    vmGrpId = VariableFactory.fixed(rp.makeVarLabel("among#pGrp"), nextGrp, rp.getSolver());
                     //As the group is already known, it's now just a fence constraint
-                    new CFence(new Fence(runnings, groups.get(nextGrp))).inject(rp);
+                    for (VM v : runnings) {
+                        if (!new CFence(new Fence(v, groups.get(nextGrp))).inject(rp)) {
+                            return false;
+                        }
+                    }
                 }
             }
         }
@@ -184,12 +201,12 @@ public class CAmong implements ChocoConstraint {
      */
     public static class Builder implements ChocoConstraintBuilder {
         @Override
-        public Class<? extends Constraint> getKey() {
+        public Class<? extends btrplace.model.constraint.Constraint> getKey() {
             return Among.class;
         }
 
         @Override
-        public CAmong build(Constraint c) {
+        public CAmong build(btrplace.model.constraint.Constraint c) {
             return new CAmong((Among) c);
         }
     }

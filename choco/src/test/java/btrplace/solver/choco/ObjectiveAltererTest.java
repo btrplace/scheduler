@@ -20,9 +20,10 @@ package btrplace.solver.choco;
 import btrplace.model.DefaultModel;
 import btrplace.model.Model;
 import btrplace.solver.SolverException;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.variables.IntVar;
+import solver.variables.VF;
 
 /**
  * Unit tests for {@link btrplace.solver.choco.ObjectiveAlterer}.
@@ -35,16 +36,15 @@ public class ObjectiveAltererTest {
     public void testBasic() throws SolverException {
         Model mo = new DefaultModel();
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
-        IntDomainVar obj = rp.getSolver().createBoundIntVar("obj", 10, 1000);
-        rp.getSolver().setObjective(obj);
-        ObjectiveAlterer oa = new ObjectiveAlterer(rp) {
+        IntVar obj = VF.bounded("obj", 10, 1000, rp.getSolver());
+        //rp.getSolver().setObjective(obj);
+        ObjectiveAlterer oa = new ObjectiveAlterer() {
             @Override
-            public int tryNewValue(int currentValue) {
+            public int newBound(ReconfigurationProblem rp, int currentValue) {
                 return currentValue * 2;
             }
         };
-        Assert.assertEquals(oa.getObjective(), obj);
-        Assert.assertEquals(oa.tryNewValue(25), 50);
-        Assert.assertEquals(oa.tryNewValue(50), 100);
+        Assert.assertEquals(oa.newBound(rp, 25), 50);
+        Assert.assertEquals(oa.newBound(rp, 50), 100);
     }
 }

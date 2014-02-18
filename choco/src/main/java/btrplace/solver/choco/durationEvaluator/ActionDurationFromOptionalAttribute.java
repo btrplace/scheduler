@@ -88,9 +88,7 @@ public class ActionDurationFromOptionalAttribute<E extends Element> implements A
 
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder();
-        b.append("d= attr[").append(key).append("]? attr[").append(key).append("]:").append(parent);
-        return b.toString();
+        return "d= attr[" + key + "]? attr[" + key + "]:" + parent;
     }
 
 }

@@ -56,5 +56,6 @@ public class AmongConverterTest {
         Among c = new Among(s1, pgrps, true);
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(c)), c);
+        System.out.println(conv.toJSONString(d));
     }
 }

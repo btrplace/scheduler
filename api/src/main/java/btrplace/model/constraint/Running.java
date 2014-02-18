@@ -21,26 +21,42 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.RunningChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
- * A constraint to force a set of VMs at being running.
+ * A constraint to force a VM at being running.
  * <p/>
  * The restriction provided by the constraint is discrete.
- * however, if some of the VMs are already running, then
- * their state will be unchanged.
+ * however, if the VM is already running, then
+ * its state will be unchanged.
  *
  * @author Fabien Hermenier
  */
 public class Running extends VMStateConstraint {
 
     /**
+     * Instantiate constraints for a collection of VMs.
+     *
+     * @param vms the VMs to integrate
+     * @return the associated list of constraints
+     */
+    public static List<Running> newRunnings(Collection<VM> vms) {
+        List<Running> l = new ArrayList<>(vms.size());
+        for (VM v : vms) {
+            l.add(new Running(v));
+        }
+        return l;
+    }
+
+    /**
      * Make a new constraint.
      *
-     * @param vms the VMs to make running
+     * @param vm the VM to make running
      */
-    public Running(Collection<VM> vms) {
-        super("running", vms);
+    public Running(VM vm) {
+        super("running", vm);
     }
 
     @Override

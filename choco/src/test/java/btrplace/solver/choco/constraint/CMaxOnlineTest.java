@@ -1,3 +1,20 @@
+/*
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
+ *
+ * This file is part of btrplace.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package btrplace.solver.choco.constraint;
 
 import btrplace.model.*;
@@ -37,6 +54,8 @@ public class CMaxOnlineTest {
         Set<Node> nodes = map.getAllNodes();
         MaxOnline maxon = new MaxOnline(nodes, 1);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.setMaxEnd(3);
+        //cra.setTimeLimit(3);
         ReconfigurationPlan plan = cra.solve(model, Collections.<SatConstraint>singleton(maxon));
         Assert.assertTrue(maxon.isSatisfied(plan.getResult()));
     }
@@ -71,6 +90,7 @@ public class CMaxOnlineTest {
         constraints.add(maxon);
         constraints.add(maxon2);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.setMaxEnd(4);
         cra.getConstraintMapper().register(new CMaxOnline.Builder());
         ReconfigurationPlan plan = cra.solve(model, constraints);
         Assert.assertTrue(maxon.isSatisfied(plan.getResult()));
@@ -86,9 +106,10 @@ public class CMaxOnlineTest {
         MaxOnline maxOnline = new MaxOnline(model.getMapping().getAllNodes(), 1, true);
         List<SatConstraint> constraints = new ArrayList<SatConstraint>();
         constraints.add(maxOnline);
-        constraints.add(new Online(Collections.singleton(n2)));
+        constraints.add(new Online(n2));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.setTimeLimit(5);
+        //cra.setTimeLimit(5);
+        cra.setMaxEnd(4);
         cra.getConstraintMapper().register(new CMaxOnline.Builder());
         ReconfigurationPlan plan = cra.solve(model, constraints);
         Assert.assertNotNull(plan);
@@ -116,8 +137,10 @@ public class CMaxOnlineTest {
         MaxOnline maxon = new MaxOnline(map.getAllNodes(), 2, true);
         List<SatConstraint> constraints = new ArrayList<SatConstraint>();
         constraints.add(maxon);
-        constraints.add(new Online(Collections.singleton(n2)));
+        constraints.add(new Online(n2));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        //cra.setTimeLimit(3);
+        cra.setMaxEnd(3);
         cra.getConstraintMapper().register(new CMaxOnline.Builder());
         ReconfigurationPlan plan = cra.solve(model, constraints);
         Assert.assertNotNull(plan);
@@ -152,10 +175,11 @@ public class CMaxOnlineTest {
         List<SatConstraint> constraints = new ArrayList<SatConstraint>();
         constraints.add(maxOn);
         constraints.add(maxOn2);
-        constraints.add(new Online(new HashSet<Node>(Arrays.asList(n4, n5))));
+        constraints.addAll(Online.newOnlines(Arrays.asList(n4, n5)));
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.setMaxEnd(15);
+        cra.setTimeLimit(3);
+        cra.setMaxEnd(10);
         cra.getConstraintMapper().register(new CMaxOnline.Builder());
         ReconfigurationPlan plan = cra.solve(model, constraints);
         Assert.assertNotNull(plan);

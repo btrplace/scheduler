@@ -33,7 +33,7 @@ import net.minidev.json.JSONObject;
  */
 public class AttributesConverter extends AbstractJSONObjectConverter<Attributes> {
 
-    private void putAttributes(Attributes attrs, Element e, JSONObject entries) throws JSONConverterException {
+    private void putAttributes(Attributes attrs, Element e, JSONObject entries) {
         for (String key : entries.keySet()) {
             Object value = entries.get(key);
             if (value.getClass().equals(Boolean.class)) {

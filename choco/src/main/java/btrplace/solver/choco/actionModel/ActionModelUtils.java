@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,7 +18,7 @@
 package btrplace.solver.choco.actionModel;
 
 import btrplace.solver.choco.Slice;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.variables.IntVar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,8 +91,8 @@ public final class ActionModelUtils {
      *
      * @return an array of variable
      */
-    public static IntDomainVar[] getStarts(ActionModel[] actions) {
-        IntDomainVar[] starts = new IntDomainVar[actions.length];
+    public static IntVar[] getStarts(ActionModel[] actions) {
+        IntVar[] starts = new IntVar[actions.length];
         for (int i = 0; i < actions.length; i++) {
             starts[i] = actions[i].getStart();
         }
@@ -106,8 +105,8 @@ public final class ActionModelUtils {
      *
      * @return an array of variable
      */
-    public static IntDomainVar[] getHostingEnds(NodeActionModel[] actions) {
-        IntDomainVar[] starts = new IntDomainVar[actions.length];
+    public static IntVar[] getHostingEnds(NodeActionModel[] actions) {
+        IntVar[] starts = new IntVar[actions.length];
         for (int i = 0; i < actions.length; i++) {
             starts[i] = actions[i].getHostingEnd();
         }
@@ -120,8 +119,8 @@ public final class ActionModelUtils {
      *
      * @return an array of variable
      */
-    public static IntDomainVar[] getHostingStarts(NodeActionModel[] actions) {
-        IntDomainVar[] starts = new IntDomainVar[actions.length];
+    public static IntVar[] getHostingStarts(NodeActionModel[] actions) {
+        IntVar[] starts = new IntVar[actions.length];
         for (int i = 0; i < actions.length; i++) {
             starts[i] = actions[i].getHostingStart();
         }
@@ -134,8 +133,8 @@ public final class ActionModelUtils {
      *
      * @return an array of variable
      */
-    public static IntDomainVar[] getEnds(ActionModel[] actions) {
-        IntDomainVar[] starts = new IntDomainVar[actions.length];
+    public static IntVar[] getEnds(ActionModel[] actions) {
+        IntVar[] starts = new IntVar[actions.length];
         for (int i = 0; i < actions.length; i++) {
             starts[i] = actions[i].getEnd();
         }
@@ -148,8 +147,8 @@ public final class ActionModelUtils {
      *
      * @return an array of variable
      */
-    public static IntDomainVar[] getDurations(ActionModel[] actions) {
-        IntDomainVar[] starts = new IntDomainVar[actions.length];
+    public static IntVar[] getDurations(ActionModel[] actions) {
+        IntVar[] starts = new IntVar[actions.length];
         for (int i = 0; i < actions.length; i++) {
             starts[i] = actions[i].getDuration();
         }

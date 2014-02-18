@@ -21,14 +21,20 @@ import btrplace.model.*;
 import btrplace.model.constraint.*;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.BootVM;
 import btrplace.plan.event.MigrateVM;
+import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import btrplace.solver.choco.durationEvaluator.LinearToAResourceActionDuration;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Tutorial about the basic tuning of a model.
@@ -81,7 +87,9 @@ public class ModelCustomization implements Example {
         List<SatConstraint> cstrs = new ArrayList<>();
 
         //No more than 5 VMs per node
-        cstrs.add(new SingleRunningCapacity(model.getMapping().getAllNodes(), 5));
+        for (Node n : model.getMapping().getAllNodes()) {
+            cstrs.add(new RunningCapacity(n, 5));
+        }
 
         //vm1 and vm10 on the same node
         cstrs.add(new Gather(Arrays.asList(vms.get(0), vms.get(9))));
@@ -93,7 +101,7 @@ public class ModelCustomization implements Example {
         cstrs.add(new Split(Arrays.asList(g1, g2)));
 
         //vm10 must be running
-        cstrs.add(new Running(Collections.singleton(vms.get(9))));
+        cstrs.add(new Running(vms.get(9)));
         return cstrs;
     }
 
@@ -108,22 +116,24 @@ public class ModelCustomization implements Example {
         for (VM vm : model.getMapping().getAllVMs()) {
             attrs.put(vm, "template", vm.id() % 2 == 0 ? "small" : "large");
             attrs.put(vm, "clone", true);
-            attrs.put(vm, "forge", vm.id() % 2 == 0 ? 2 : 7);
+            attrs.put(vm, "forge", vm.id() % 2 == 0 ? 2 : 10);
             //forge == 2 && template == small  for vm0, vm2, vm4, vm6, vm8
-            //forge == 7 && template == large for vm1, vm3, vm5, vm7, vm9
+            //forge == 10 && template == large for vm1, vm3, vm5, vm7, vm9
         }
 
         //Change the duration evaluator for MigrateVM action
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         DurationEvaluators dev = cra.getDurationEvaluators();
         dev.register(MigrateVM.class, new LinearToAResourceActionDuration<VM>("mem", 2, 3));
+        dev.register(BootVM.class, new ConstantActionDuration(1));
+        dev.register(ShutdownVM.class, new ConstantActionDuration(1));
 
         //Relocate VM4:
-        //  using a migration: 7 sec. (mem=2)
-        //  using a re-instantiation: 3 sec. (forge:2 + boot:1)
+        //  using a migration: (2 * mem + 3) = (2 * 2 + 3) = 7 sec.
+        //  using a re-instantiation: forge + boot + shutdown = 2 + 1 + 1 = 4 sec.
         //Relocate VM5:
-        //  using a migration: 5 sec. (mem=1)
-        //  using a re-instantiation: 8 sec. (forge:7 + boot:1)
+        //  using a migration: (2 * mem + 3) = (2 * 3 + 3) = 9 sec.
+        //  using a re-instantiation: forge + boot + shutdown = 10 + 1 + 1 = 12 sec.
 
         try {
             cra.doOptimize(true);

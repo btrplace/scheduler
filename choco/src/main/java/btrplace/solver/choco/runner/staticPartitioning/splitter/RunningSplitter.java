@@ -17,7 +17,8 @@
 
 package btrplace.solver.choco.runner.staticPartitioning.splitter;
 
-import btrplace.model.*;
+import btrplace.model.Instance;
+import btrplace.model.VM;
 import btrplace.model.constraint.Running;
 import gnu.trove.map.hash.TIntIntHashMap;
 
@@ -41,15 +42,8 @@ public class RunningSplitter implements ConstraintSplitter<Running> {
 
     @Override
     public boolean split(Running cstr, Instance origin, final List<Instance> partitions, TIntIntHashMap vmsPosition, TIntIntHashMap nodePosition) {
-        return SplittableElementSet.newVMIndex(cstr.getInvolvedVMs(), vmsPosition).
-                forEachPartition(new IterateProcedure<VM>() {
-                    @Override
-                    public boolean extract(SplittableElementSet<VM> index, int idx, int from, int to) {
-                        if (to != from) {
-                            partitions.get(idx).getSatConstraints().add(new Running(new ElementSubSet<>(index, idx, from, to)));
-                        }
-                        return true;
-                    }
-                });
+        VM v = cstr.getInvolvedVMs().iterator().next();
+        int i = vmsPosition.get(v.id());
+        return partitions.get(i).getSatConstraints().add(cstr);
     }
 }

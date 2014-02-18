@@ -27,11 +27,12 @@ import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.durationEvaluator.ConstantActionDuration;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
-import choco.cp.solver.CPSolver;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.solver.ContradictionException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import solver.Cause;
+import solver.Solver;
+import solver.constraints.IntConstraintFactory;
+import solver.exception.ContradictionException;
 
 import java.util.Collections;
 
@@ -71,15 +72,15 @@ public class BootableNodeModelTest {
                 .setDurationEvaluators(dev)
                 .build();
         BootableNodeModel na = (BootableNodeModel) rp.getNodeAction(n1);
-        na.getState().setVal(1);
+        na.getState().instantiateTo(1, Cause.Null);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         System.out.println(p);
-        Assert.assertEquals(na.getDuration().getVal(), 5);
-        Assert.assertEquals(na.getStart().getVal(), 0);
-        Assert.assertEquals(na.getEnd().getVal(), 5);
-        Assert.assertEquals(na.getHostingStart().getVal(), 5);
-        Assert.assertEquals(na.getHostingEnd().getVal(), 5);
+        Assert.assertEquals(na.getDuration().getValue(), 5);
+        Assert.assertEquals(na.getStart().getValue(), 0);
+        Assert.assertEquals(na.getEnd().getValue(), 5);
+        Assert.assertEquals(na.getHostingStart().getValue(), 5);
+        Assert.assertEquals(na.getHostingEnd().getValue(), 5);
 
 
         Model res = p.getResult();
@@ -100,14 +101,14 @@ public class BootableNodeModelTest {
                 .setDurationEvaluators(dev)
                 .build();
         BootableNodeModel na = (BootableNodeModel) rp.getNodeAction(n1);
-        na.getState().setVal(0);
+        na.getState().instantiateTo(0, Cause.Null);
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
-        Assert.assertEquals(na.getDuration().getVal(), 0);
-        Assert.assertEquals(na.getStart().getVal(), 0);
-        Assert.assertEquals(na.getEnd().getVal(), 0);
-        Assert.assertEquals(na.getHostingStart().getVal(), rp.getEnd().getVal());
-        Assert.assertEquals(na.getHostingEnd().getVal(), rp.getEnd().getVal());
+        Assert.assertEquals(na.getDuration().getValue(), 0);
+        Assert.assertEquals(na.getStart().getValue(), 0);
+        Assert.assertEquals(na.getEnd().getValue(), 0);
+        Assert.assertEquals(na.getHostingStart().getValue(), rp.getEnd().getValue());
+        Assert.assertEquals(na.getHostingEnd().getValue(), rp.getEnd().getValue());
 
         Assert.assertNotNull(p);
         Assert.assertEquals(p.getSize(), 0);
@@ -136,10 +137,10 @@ public class BootableNodeModelTest {
 
         BootableNodeModel na = (BootableNodeModel) rp.getNodeAction(n1);
         Assert.assertNotNull(rp.solve(0, false));
-        Assert.assertEquals(na.getStart().getVal(), 0);
-        Assert.assertEquals(na.getEnd().getVal(), 5);
-        Assert.assertEquals(na.getHostingStart().getVal(), 5);
-        Assert.assertEquals(na.getHostingEnd().getVal(), 7);
+        Assert.assertEquals(na.getStart().getValue(), 0);
+        Assert.assertEquals(na.getEnd().getValue(), 5);
+        Assert.assertEquals(na.getHostingStart().getValue(), 5);
+        Assert.assertEquals(na.getHostingEnd().getValue(), 7);
     }
 
     @Test
@@ -160,10 +161,10 @@ public class BootableNodeModelTest {
                 .build();
         BootableNodeModel na1 = (BootableNodeModel) rp.getNodeAction(n1);
         BootableNodeModel na2 = (BootableNodeModel) rp.getNodeAction(n2);
-        na1.getState().setVal(1);
-        na2.getState().setVal(1);
-        CPSolver solver = rp.getSolver();
-        solver.post(solver.eq(na1.getEnd(), na2.getStart()));
+        na1.getState().instantiateTo(1, Cause.Null);
+        na2.getState().instantiateTo(1, Cause.Null);
+        Solver solver = rp.getSolver();
+        solver.post(IntConstraintFactory.arithm(na1.getEnd(), "=", na2.getEnd()));
         Assert.assertNotNull(rp.solve(0, false));
     }
 
@@ -181,10 +182,10 @@ public class BootableNodeModelTest {
                 .labelVariables()
                 .build();
         BootableNodeModel ma2 = (BootableNodeModel) rp.getNodeAction(n2);
-        ma2.getState().setVal(1);
-        ma2.getStart().setInf(5);
+        ma2.getState().instantiateTo(1, Cause.Null);
+        ma2.getStart().updateLowerBound(5, Cause.Null);
         ReconfigurationPlan p = rp.solve(0, false);
-        ChocoLogging.flushLogs();
+        //ChocoLogging.flushLogs();
         Assert.assertNotNull(p);
         System.out.println(p);
         System.out.flush();
@@ -211,18 +212,18 @@ public class BootableNodeModelTest {
                 .build();
 
         ShutdownableNodeModel sn1 = (ShutdownableNodeModel) rp.getNodeAction(n1);
-        sn1.getState().setVal(0);
+        sn1.getState().instantiateTo(0, Cause.Null);
         BootableNodeModel bn4 = (BootableNodeModel) rp.getNodeAction(n4);
-        bn4.getState().setVal(0);
+        bn4.getState().instantiateTo(0, Cause.Null);
 
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
         System.out.println(p);
-        Assert.assertEquals(bn4.getStart().getVal(), 0);
-        Assert.assertEquals(bn4.getDuration().getVal(), 0);
-        Assert.assertEquals(bn4.getEnd().getVal(), 0);
-        Assert.assertEquals(bn4.getHostingStart().getVal(), 0);
-        Assert.assertEquals(bn4.getHostingEnd().getVal(), 0);
+        Assert.assertEquals(bn4.getStart().getValue(), 0);
+        Assert.assertEquals(bn4.getDuration().getValue(), 0);
+        Assert.assertEquals(bn4.getEnd().getValue(), 0);
+        Assert.assertEquals(bn4.getHostingStart().getValue(), 0);
+        Assert.assertEquals(bn4.getHostingEnd().getValue(), 0);
         Assert.assertEquals(p.getSize(), 1);
         Model res = p.getResult();
         Assert.assertTrue(res.getMapping().getOfflineNodes().contains(n1));

@@ -21,10 +21,12 @@ import btrplace.model.Mapping;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.Slice;
+import btrplace.solver.choco.SliceUtils;
+import btrplace.solver.choco.actionModel.ActionModelUtils;
 import btrplace.solver.choco.actionModel.VMActionModel;
-import choco.kernel.solver.search.integer.AbstractIntVarSelector;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import memory.IStateInt;
+import solver.search.strategy.selectors.VariableSelector;
+import solver.variables.IntVar;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -37,7 +39,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class MovingVMs extends AbstractIntVarSelector {
+public class MovingVMs implements VariableSelector<IntVar> {
 
     /**
      * The demanding slices to consider.
@@ -48,20 +50,19 @@ public class MovingVMs extends AbstractIntVarSelector {
 
     private ReconfigurationProblem rp;
 
-    private String label;
+    private IntVar[] scopes;
+
+    private IStateInt idx;
 
     /**
      * Make a new heuristic.
      * By default, the heuristic doesn't touch the scheduling constraints.
      *
-     * @param l   the label to use for debugging purpose
      * @param s   the solver to use to extract the assignment variables
      * @param m   the initial configuration
      * @param vms the VMs to consider
      */
-    public MovingVMs(String l, ReconfigurationProblem s, Mapping m, Set<VM> vms) {
-        super(s.getSolver());
-        this.label = l;
+    public MovingVMs(ReconfigurationProblem s, Mapping m, Set<VM> vms) {
         map = m;
 
         this.rp = s;
@@ -72,24 +73,46 @@ public class MovingVMs extends AbstractIntVarSelector {
                 actions.add(rp.getVMAction(vm));
             }
         }
+        scopes = SliceUtils.extractHosters(ActionModelUtils.getDSlices(actions));
+        idx = s.getSolver().getEnvironment().makeInt(0);
     }
 
     @Override
-    public IntDomainVar selectVar() {
-        for (VMActionModel a : actions) {
-            if (!a.getDSlice().getHoster().isInstantiated()) {
-                VM vm = a.getVM();
+    public IntVar[] getScope() {
+        return scopes;
+    }
+
+    private boolean setToNextMovingVM() {
+        for (int i = idx.get(); i < scopes.length; i++) {
+            IntVar h = scopes[i];
+            if (!h.instantiated()) {
+                VM vm = actions.get(i).getVM();
                 Node nId = map.getVMLocation(vm);
                 if (nId != null) {
                     //VM was running
-                    Slice slice = a.getDSlice();
-                    if (!slice.getHoster().canBeInstantiatedTo(rp.getNode(nId))) {
-                        return slice.getHoster();
+                    if (!h.contains(rp.getNode(nId))) {
+                        idx.set(i);
+                        return true;
                     }
                 }
             }
+            i++;
         }
-        rp.getLogger().debug("{} - No more VMs to handle", label);
-        return null;
+        return false;
+    }
+
+    @Override
+    public boolean hasNext() {
+        return setToNextMovingVM();
+    }
+
+    @Override
+    public void advance() {
+        setToNextMovingVM();
+    }
+
+    @Override
+    public IntVar getVariable() {
+        return scopes[idx.get()];
     }
 }

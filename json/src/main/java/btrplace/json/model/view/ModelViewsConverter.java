@@ -143,7 +143,7 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
     }
 
     @Override
-    public List<ModelView> listFromJSON(String buf) throws IOException, JSONConverterException {
+    public List<ModelView> listFromJSON(String buf) throws JSONConverterException {
         try (StringReader in = new StringReader(buf)) {
             return listFromJSON(in);
         }

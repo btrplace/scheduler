@@ -115,10 +115,7 @@ public class MigrateVM extends Action implements VMEvent, RunningVMPlacement {
 
     @Override
     public String pretty() {
-        return new StringBuilder("migrate(vm=").append(vm)
-                .append(", from=").append(src)
-                .append(", to=").append(dst)
-                .append(')').toString();
+        return "migrate(vm=" + vm + ", from=" + src + ", to=" + dst + ')';
     }
 
     @Override

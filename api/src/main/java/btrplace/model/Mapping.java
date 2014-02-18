@@ -54,7 +54,7 @@ public interface Mapping extends Cloneable {
      * If the VM is already in a other location or state in the mapping, its state is updated
      *
      * @param vm the VM
-     * @return {@code true} iff the VM is now in the running state
+     * @return {@code true} iff the VM is now in the ready state
      */
     boolean addReadyVM(VM vm);
 

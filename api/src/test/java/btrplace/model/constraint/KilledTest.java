@@ -21,10 +21,7 @@ import btrplace.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.Collections;
 
 /**
  * Unit tests for {@link Killed}.
@@ -37,10 +34,10 @@ public class KilledTest {
     public void testInstantiation() {
         Model mo = new DefaultModel();
 
-        Set<VM> x = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
-        Killed s = new Killed(x);
+        VM v = mo.newVM();
+        Killed s = new Killed(v);
         Assert.assertNotNull(s.getChecker());
-        Assert.assertEquals(x, s.getInvolvedVMs());
+        Assert.assertEquals(Collections.singletonList(v), s.getInvolvedVMs());
         Assert.assertTrue(s.getInvolvedNodes().isEmpty());
         Assert.assertNotNull(s.toString());
         System.out.println(s);
@@ -50,35 +47,31 @@ public class KilledTest {
     @Test
     public void testEquals() {
         Model mo = new DefaultModel();
-        List<VM> vms = Util.newVMs(mo, 3);
-
-        Set<VM> x = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
-        Killed s = new Killed(x);
+        VM v = mo.newVM();
+        Killed s = new Killed(v);
 
         Assert.assertTrue(s.equals(s));
-        Assert.assertTrue(new Killed(x).equals(s));
-        Assert.assertEquals(new Killed(x).hashCode(), s.hashCode());
-        x = new HashSet<>(Arrays.asList(vms.get(2)));
-        Assert.assertFalse(new Killed(x).equals(s));
-        Assert.assertFalse(new Killed(x).equals(new Object()));
+        Assert.assertTrue(new Killed(v).equals(s));
+        Assert.assertEquals(new Killed(v).hashCode(), s.hashCode());
+        Assert.assertFalse(new Killed(mo.newVM()).equals(s));
+        Assert.assertFalse(new Killed(mo.newVM()).equals(new Object()));
     }
 
     @Test
     public void testIsSatisfied() {
         Model i = new DefaultModel();
-        List<VM> vms = Util.newVMs(i, 3);
-        List<Node> ns = Util.newNodes(i, 3);
+        VM v = i.newVM();
+        Node n = i.newNode();
 
         Mapping c = i.getMapping();
-        Set<VM> s = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
-        Killed d = new Killed(s);
+        Killed d = new Killed(v);
         Assert.assertEquals(d.isSatisfied(i), true);
-        c.addReadyVM(vms.get(0));
+        c.addReadyVM(v);
         Assert.assertEquals(d.isSatisfied(i), false);
-        c.addOnlineNode(ns.get(0));
-        c.addRunningVM(vms.get(0), ns.get(0));
+        c.addOnlineNode(n);
+        c.addRunningVM(v, n);
         Assert.assertEquals(d.isSatisfied(i), false);
-        c.addSleepingVM(vms.get(0), ns.get(0));
+        c.addSleepingVM(v, n);
         Assert.assertEquals(d.isSatisfied(i), false);
     }
 }

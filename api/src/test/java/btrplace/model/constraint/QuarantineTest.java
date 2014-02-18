@@ -26,10 +26,7 @@ import btrplace.plan.event.ShutdownVM;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Unit tests for {@link Quarantine}.
@@ -41,11 +38,11 @@ public class QuarantineTest {
     @Test
     public void testInstantiation() {
         Model mo = new DefaultModel();
-        Set<Node> s = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
-        Quarantine q = new Quarantine(s);
+        Node n = mo.newNode();
+        Quarantine q = new Quarantine(n);
         Assert.assertNotNull(q.getChecker());
         Assert.assertTrue(q.getInvolvedVMs().isEmpty());
-        Assert.assertEquals(q.getInvolvedNodes(), s);
+        Assert.assertEquals(q.getInvolvedNodes().iterator().next(), n);
         Assert.assertTrue(q.isContinuous());
         Assert.assertFalse(q.setContinuous(false));
         Assert.assertTrue(q.setContinuous(true));
@@ -57,12 +54,12 @@ public class QuarantineTest {
     @Test
     public void testEqualsHashCode() {
         Model mo = new DefaultModel();
-        Set<Node> s = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
-        Quarantine q = new Quarantine(s);
+        Node n = mo.newNode();
+        Quarantine q = new Quarantine(n);
         Assert.assertTrue(q.equals(q));
-        Assert.assertTrue(q.equals(new Quarantine(new HashSet<>(s))));
-        Assert.assertEquals(q.hashCode(), new Quarantine(new HashSet<>(s)).hashCode());
-        Assert.assertFalse(q.equals(new Quarantine(new HashSet<Node>())));
+        Assert.assertTrue(q.equals(new Quarantine(n)));
+        Assert.assertEquals(q.hashCode(), new Quarantine(n).hashCode());
+        Assert.assertFalse(q.equals(new Quarantine(mo.newNode())));
     }
 
     @Test
@@ -79,7 +76,7 @@ public class QuarantineTest {
         map.addReadyVM(vms.get(2));
         map.addRunningVM(vms.get(3), ns.get(2));
 
-        Quarantine q = new Quarantine(new HashSet<>(Arrays.asList(ns.get(0), ns.get(1))));
+        Quarantine q = new Quarantine(ns.get(0));
 
         ReconfigurationPlan plan = new DefaultReconfigurationPlan(mo);
         Assert.assertEquals(q.isSatisfied(plan), true);
@@ -91,9 +88,9 @@ public class QuarantineTest {
 
         plan = new DefaultReconfigurationPlan(mo);
         plan.add(new BootVM(vms.get(2), ns.get(2), 0, 1));
-        Assert.assertEquals(q.isSatisfied(plan), true);
+        Assert.assertEquals(new Quarantine(ns.get(1)).isSatisfied(plan), true);
         plan.add(new MigrateVM(vms.get(3), ns.get(2), ns.get(1), 0, 1));
-        Assert.assertEquals(q.isSatisfied(plan), false);
+        Assert.assertEquals(new Quarantine(ns.get(1)).isSatisfied(plan), false);
 
         plan = new DefaultReconfigurationPlan(mo);
         plan.add(new MigrateVM(vms.get(1), ns.get(1), ns.get(0), 0, 1));

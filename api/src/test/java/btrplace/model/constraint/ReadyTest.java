@@ -21,10 +21,7 @@ import btrplace.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.Collections;
 
 /**
  * Unit tests for {@link Ready}.
@@ -36,10 +33,10 @@ public class ReadyTest {
     @Test
     public void testInstantiation() {
         Model mo = new DefaultModel();
-        Set<VM> x = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
-        Ready s = new Ready(x);
+        VM v = mo.newVM();
+        Ready s = new Ready(v);
         Assert.assertNotNull(s.getChecker());
-        Assert.assertEquals(x, s.getInvolvedVMs());
+        Assert.assertEquals(Collections.singletonList(v), s.getInvolvedVMs());
         Assert.assertTrue(s.getInvolvedNodes().isEmpty());
         Assert.assertNotNull(s.toString());
         Assert.assertFalse(s.setContinuous(true));
@@ -49,33 +46,30 @@ public class ReadyTest {
     @Test
     public void testEquals() {
         Model mo = new DefaultModel();
-        Set<VM> x = new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM()));
-        Ready s = new Ready(x);
+        VM v = mo.newVM();
+        Ready s = new Ready(v);
 
         Assert.assertTrue(s.equals(s));
-        Assert.assertTrue(new Ready(x).equals(s));
-        Assert.assertEquals(new Ready(x).hashCode(), s.hashCode());
-        x = new HashSet<>(Arrays.asList(mo.newVM()));
-        Assert.assertFalse(new Ready(x).equals(s));
+        Assert.assertTrue(new Ready(v).equals(s));
+        Assert.assertEquals(new Ready(v).hashCode(), s.hashCode());
+        Assert.assertFalse(new Ready(mo.newVM()).equals(s));
     }
 
     @Test
     public void testIsSatisfied() {
         Model i = new DefaultModel();
         Mapping c = i.getMapping();
-        List<VM> vms = Util.newVMs(i, 5);
+        VM v = i.newVM();
         Node n = i.newNode();
-        Set<VM> s = new HashSet<>(Arrays.asList(vms.get(0), vms.get(1)));
         c.addOnlineNode(n);
-        c.addReadyVM(vms.get(0));
-        c.addReadyVM(vms.get(1));
-        Ready d = new Ready(s);
+        c.addReadyVM(v);
+        Ready d = new Ready(v);
         Assert.assertEquals(d.isSatisfied(i), true);
-        c.addRunningVM(vms.get(0), n);
+        c.addRunningVM(v, n);
         Assert.assertEquals(d.isSatisfied(i), false);
-        c.addSleepingVM(vms.get(0), n);
+        c.addSleepingVM(v, n);
         Assert.assertEquals(d.isSatisfied(i), false);
-        c.remove(vms.get(0));
+        c.remove(v);
         Assert.assertEquals(d.isSatisfied(i), false);
     }
 }

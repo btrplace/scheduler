@@ -25,7 +25,8 @@ import btrplace.model.constraint.Online;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.actionModel.ActionModel;
-import choco.kernel.solver.ContradictionException;
+import solver.Cause;
+import solver.exception.ContradictionException;
 
 import java.util.Collections;
 import java.util.Set;
@@ -51,14 +52,13 @@ public class COnline implements ChocoConstraint {
 
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
-        for (Node nId : cstr.getInvolvedNodes()) {
-            ActionModel m = rp.getNodeAction(nId);
-            try {
-                m.getState().setVal(1);
-            } catch (ContradictionException e) {
-                rp.getLogger().error("Unable to force node '{}' at being online: {}", nId, e.getMessage());
-                return false;
-            }
+        Node nId = cstr.getInvolvedNodes().iterator().next();
+        ActionModel m = rp.getNodeAction(nId);
+        try {
+            m.getState().instantiateTo(1, Cause.Null);
+        } catch (ContradictionException ex) {
+            rp.getLogger().error("Unable to force node '{}' at being online", nId);
+            return false;
         }
         return true;
     }
@@ -83,8 +83,8 @@ public class COnline implements ChocoConstraint {
         }
 
         @Override
-        public COnline build(Constraint cstr) {
-            return new COnline((Online) cstr);
+        public COnline build(Constraint c) {
+            return new COnline((Online) c);
         }
     }
 }

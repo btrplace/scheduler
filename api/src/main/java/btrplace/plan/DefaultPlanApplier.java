@@ -59,20 +59,20 @@ public abstract class DefaultPlanApplier implements ReconfigurationPlanApplier {
     /**
      * Propagate the action to every listener added by
      * {@link #addEventCommittedListener(EventCommittedListener)}.
-     * Events hooked on {@link btrplace.plan.event.Action.Hook#pre} are propagated in first
-     * Then the real action is propagated. Finally, events hooked on {@link btrplace.plan.event.Action.Hook#post}
+     * Events hooked on {@link btrplace.plan.event.Action.Hook#PRE} are propagated in first
+     * Then the real action is propagated. Finally, events hooked on {@link btrplace.plan.event.Action.Hook#POST}
      * are propagated
      *
      * @param a the event to propagate
      */
     public void fireAction(Action a) {
 
-        for (Event e : a.getEvents(Action.Hook.pre)) {
+        for (Event e : a.getEvents(Action.Hook.PRE)) {
             e.visit(notificationDispatcher);
         }
         a.visit(notificationDispatcher);
 
-        for (Event e : a.getEvents(Action.Hook.post)) {
+        for (Event e : a.getEvents(Action.Hook.POST)) {
             e.visit(notificationDispatcher);
         }
     }

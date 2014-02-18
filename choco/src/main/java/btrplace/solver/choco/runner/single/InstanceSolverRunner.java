@@ -33,11 +33,11 @@ import btrplace.solver.choco.constraint.ChocoConstraint;
 import btrplace.solver.choco.constraint.ChocoConstraintBuilder;
 import btrplace.solver.choco.runner.InstanceResult;
 import btrplace.solver.choco.runner.SolutionStatistics;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solution;
-import choco.kernel.solver.search.measure.IMeasures;
+import solver.Cause;
+import solver.exception.ContradictionException;
+import solver.search.loop.monitors.IMonitorSolution;
+import solver.search.loop.monitors.SMF;
+import solver.search.measure.IMeasures;
 
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -66,6 +66,8 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
 
     private long start;
 
+    private List<SolutionStatistics> measures;
+
     /**
      * Make a new runner.
      *
@@ -84,6 +86,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         rp = null;
         start = System.currentTimeMillis();
         coreRPDuration = -System.currentTimeMillis();
+        measures = new ArrayList<>();
         //Build the RP. As VM state management is not possible
         //We extract VM-state related constraints first.
         //For other constraint, we just create the right choco constraint
@@ -132,6 +135,8 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         ChocoConstraint cObj = buildOptConstraint();
 
         //Make the core-RP
+
+
         DefaultReconfigurationProblemBuilder rpb = new DefaultReconfigurationProblemBuilder(origin)
                 .setNextVMsStates(toForge, toRun, toSleep, toKill)
                 .setViewMapper(params.getViewMapper())
@@ -144,14 +149,13 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
             toManage.addAll(cObj.getMisPlacedVMs(origin));
             rpb.setManageableVMs(toManage);
         }
-        if (params.areVariablesLabelled()) {
-            rpb.labelVariables();
-        }
+        rpb.labelVariables(params.getVerbosity() > 0);
+
         rp = rpb.build();
 
         //Set the maximum duration
         try {
-            rp.getEnd().setSup(params.getMaxEnd());
+            rp.getEnd().updateUpperBound(params.getMaxEnd(), Cause.Null);
         } catch (ContradictionException e) {
             rp.getLogger().error("Unable to restrict the maximum plan duration to {}", params.getMaxEnd());
             return null;
@@ -160,10 +164,15 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
 
         //Customize with the constraints
         speRPDuration = -System.currentTimeMillis();
-        for (ChocoConstraint ccstr : cConstraints) {
-            if (!ccstr.inject(rp)) {
-                return new InstanceResult(null, makeStatistics());
+        try {
+            for (ChocoConstraint ccstr : cConstraints) {
+                if (!ccstr.inject(rp)) {
+                    return new InstanceResult(null, makeStatistics());
+                }
             }
+        } catch (UnsupportedOperationException ex) {
+            //TODO: fix that ugly hack: no solution
+            return new InstanceResult(null, makeStatistics());
         }
 
         //The objective
@@ -174,7 +183,28 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         rp.getLogger().debug("{} nodes; {} VMs; {} constraints", rp.getNodes().length, rp.getVMs().length, cstrs.size());
         rp.getLogger().debug("optimize: {}; timeLimit: {}; manageableVMs: {}", params.doOptimize(), params.getTimeLimit(), rp.getManageableVMs().size());
 
-        stateVerbosity();
+        //The solution monitor to store the measures at each solution
+        rp.getSolver().getSearchLoop().plugSearchMonitor(new IMonitorSolution() {
+            @Override
+            public void onSolution() {
+                IMeasures m = rp.getSolver().getMeasures();
+                SolutionStatistics sol;
+                if (m.hasObjective()) {
+                    sol = new SolutionStatistics(m.getNodeCount(),
+                            m.getBackTrackCount(),
+                            (long) m.getTimeCount(),
+                            m.getBestSolutionValue().intValue());
+                } else {
+                    sol = new SolutionStatistics(m.getNodeCount(),
+                            m.getBackTrackCount(),
+                            (long) m.getTimeCount());
+                }
+                measures.add(sol);
+            }
+        });
+
+        //State the logging level for the solver
+        SMF.log(rp.getSolver(), params.getVerbosity() >= 2, params.getVerbosity() >= 3);
 
         //The actual solving process
         ReconfigurationPlan p = rp.solve(params.getTimeLimit(), params.doOptimize());
@@ -183,7 +213,6 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         if (p == null) {
             return new InstanceResult(null, makeStatistics());
         }
-        checkSatisfaction2(p, cstrs);
         return new InstanceResult(p, makeStatistics());
     }
 
@@ -201,22 +230,6 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
                     + obj.getClass().getSimpleName() + "'");
         }
         return cObj;
-    }
-
-    private void stateVerbosity() {
-        if (params.getVerbosity() <= 0) {
-            ChocoLogging.setVerbosity(Verbosity.SILENT);
-            params.labelVariables(false);
-        } else {
-            params.labelVariables(true);
-            ChocoLogging.setVerbosity(Verbosity.SOLUTION);
-            if (params.getVerbosity() == 2) {
-                ChocoLogging.setVerbosity(Verbosity.SEARCH);
-                ChocoLogging.setLoggingMaxDepth(Integer.MAX_VALUE);
-            } else if (params.getVerbosity() > 2) {
-                ChocoLogging.setVerbosity(Verbosity.FINEST);
-            }
-        }
     }
 
     private void checkSatisfaction2(ReconfigurationPlan p, Collection<SatConstraint> cs) throws SolverException {
@@ -258,6 +271,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         if (rp == null) {
             return new SingleRunnerStatistics(params, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0);
         }
+        IMeasures m2 = rp.getSolver().getMeasures();
         SingleRunnerStatistics st = new SingleRunnerStatistics(
                 params,
                 rp.getNodes().length,
@@ -265,29 +279,15 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
                 cstrs.size(),
                 rp.getManageableVMs().size(),
                 start,
-                rp.getSolver().getTimeCount(),
-                rp.getSolver().getNodeCount(),
-                rp.getSolver().getBackTrackCount(),
-                rp.getSolver().isEncounteredLimit(),
+                (long) m2.getTimeCount(),
+                m2.getNodeCount(),
+                m2.getBackTrackCount(),
+                false,//huh
                 coreRPDuration,
                 speRPDuration);
 
-        if (rp.getSolver().getSearchStrategy() != null) {
-            for (Solution s : rp.getSolver().getSearchStrategy().getStoredSolutions()) {
-                IMeasures m = s.getMeasures();
-                SolutionStatistics sol;
-                if (m.getObjectiveValue() != null) {
-                    sol = new SolutionStatistics(m.getNodeCount(),
-                            m.getBackTrackCount(),
-                            m.getTimeCount(),
-                            m.getObjectiveValue().intValue());
-                } else {
-                    sol = new SolutionStatistics(m.getNodeCount(),
-                            m.getBackTrackCount(),
-                            m.getTimeCount());
-                }
-                st.addSolution(sol);
-            }
+        for (SolutionStatistics m : measures) {
+            st.addSolution(m);
         }
         return st;
     }

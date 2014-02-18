@@ -89,25 +89,9 @@ public interface ChocoReconfigurationAlgorithmParams {
      * Get the timeout value.
      *
      * @return a positive integer in seconds to indicate the timeout value or a negative value to
-     *         indicate no timeout has been set
+     * indicate no timeout has been set
      */
     int getTimeLimit();
-
-    /**
-     * Indicate if variables have to be labelled.
-     * This is convenient for debugging but not activated by default.
-     *
-     * @param b {@code true} to create label for variables
-     * @return the current instance
-     */
-    ChocoReconfigurationAlgorithmParams labelVariables(boolean b);
-
-    /**
-     * Indicate if variables are labelled.
-     *
-     * @return {@code true} iff the variables are labelled
-     */
-    boolean areVariablesLabelled();
 
     /**
      * Get the mapper that converts {@link btrplace.model.constraint.Constraint} to {@link btrplace.solver.choco.constraint.ChocoConstraint}.
@@ -156,11 +140,14 @@ public interface ChocoReconfigurationAlgorithmParams {
 
     /**
      * Set the verbosity level of the solver.
-     * At level 0, their is no information about the solving process.
-     * Increasing the level increases the verbosity. The highest level
-     * of verbosity is the level 3.
+     * <ul>
+     * <li>Level 0: no information about the solving process</li>
+     * <li>Level 1: variables are labelled</li>
+     * <li>Level 2: solutions of Choco are printed</li>
+     * <li>Level 3: choices are printed</li>
+     * </ul>
      *
-     * @param lvl the level of verbosity
+     * @param lvl the verbosity level
      * @return the current instance
      */
     ChocoReconfigurationAlgorithmParams setVerbosity(int lvl);

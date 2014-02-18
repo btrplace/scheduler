@@ -67,7 +67,7 @@ public interface JSONArrayConverter<E> {
      * @return the resulting collection
      * @throws JSONConverterException if the stream cannot be parsed
      */
-    List<E> listFromJSON(String buf) throws IOException, JSONConverterException;
+    List<E> listFromJSON(String buf) throws JSONConverterException;
 
     /**
      * Un-serialize a collection from a stream.

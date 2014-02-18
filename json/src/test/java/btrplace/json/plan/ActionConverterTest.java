@@ -150,9 +150,9 @@ public class ActionConverterTest {
     @Test(dependsOnMethods = "testBootNode")
     public void testEvents() throws JSONConverterException, IOException {
         BootNode a = new BootNode(n1, 3, 5);
-        a.addEvent(Action.Hook.pre, new AllocateEvent(vm1, "foo", 3));
-        a.addEvent(Action.Hook.post, new AllocateEvent(vm2, "bar", 5));
-        a.addEvent(Action.Hook.post, new SubstitutedVMEvent(vm2, vm3));
+        a.addEvent(Action.Hook.PRE, new AllocateEvent(vm1, "foo", 3));
+        a.addEvent(Action.Hook.POST, new AllocateEvent(vm2, "bar", 5));
+        a.addEvent(Action.Hook.POST, new SubstitutedVMEvent(vm2, vm3));
         ActionConverter ac = new ActionConverter();
         ac.setModel(mo);
         String o = ac.toJSONString(a);

@@ -25,9 +25,11 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.variables.integer.IntDomainVarAddCste;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.Solver;
+import solver.constraints.IntConstraintFactory;
+import solver.variables.BoolVar;
+import solver.variables.IntVar;
+import solver.variables.VariableFactory;
 
 
 /**
@@ -45,17 +47,17 @@ public class BootVMModel implements VMActionModel {
 
     private Slice dSlice;
 
-    private IntDomainVar end;
+    private IntVar end;
 
-    private IntDomainVar start;
+    private IntVar start;
 
-    private IntDomainVar duration;
+    private IntVar duration;
 
     private VM vm;
 
     private ReconfigurationProblem rp;
 
-    private IntDomainVar state;
+    private BoolVar state;
 
     /**
      * Make a new model.
@@ -69,40 +71,40 @@ public class BootVMModel implements VMActionModel {
 
         int d = p.getDurationEvaluators().evaluate(p.getSourceModel(), BootVM.class, e);
         this.rp = p;
-        start = p.makeDuration(p.getEnd().getSup() - d, 0, "bootVM(", e, ").start");
-        end = new IntDomainVarAddCste(p.getSolver(), p.makeVarLabel("bootVM(", e, ").end"), start, d);
+        start = p.makeDuration(p.getEnd().getUB() - d, 0, "bootVM(", e, ").start");
+        end = VariableFactory.offset(start, d);
         duration = p.makeDuration(d, d, "bootVM.duration(", e, ')');
-        dSlice = new SliceBuilder(p, e, new StringBuilder("bootVM(").append(e).append(").dSlice").toString()).setStart(start)
-                .setDuration(p.makeDuration(p.getEnd().getSup(), d, "bootVM(", e, ").dSlice_duration"))
+        dSlice = new SliceBuilder(p, e, "bootVM(" + e + ").dSlice").setStart(start)
+                .setDuration(p.makeDuration(p.getEnd().getUB(), d, "bootVM(", e, ").dSlice_duration"))
                 .build();
-        CPSolver s = p.getSolver();
-        s.post(s.leq(start, p.getEnd()));
-        s.post(s.leq(duration, p.getEnd()));
-        s.post(s.leq(end, p.getEnd()));
+        Solver s = p.getSolver();
+        s.post(IntConstraintFactory.arithm(start, "<=", p.getEnd()));
+        s.post(IntConstraintFactory.arithm(end, "<=", p.getEnd()));
+        s.post(IntConstraintFactory.arithm(duration, "<=", p.getEnd()));
 
-        state = s.makeConstantIntVar(1);
+        state = VariableFactory.one(rp.getSolver());
     }
 
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
-        Node node = rp.getNode(dSlice.getHoster().getVal());
-        BootVM a = new BootVM(vm, node, start.getVal(), end.getVal());
+        Node node = rp.getNode(dSlice.getHoster().getValue());
+        BootVM a = new BootVM(vm, node, start.getValue(), end.getValue());
         plan.add(a);
         return true;
     }
 
     @Override
-    public IntDomainVar getStart() {
+    public IntVar getStart() {
         return start;
     }
 
     @Override
-    public IntDomainVar getEnd() {
+    public IntVar getEnd() {
         return end;
     }
 
     @Override
-    public IntDomainVar getDuration() {
+    public IntVar getDuration() {
         return duration;
     }
 
@@ -117,7 +119,7 @@ public class BootVMModel implements VMActionModel {
     }
 
     @Override
-    public IntDomainVar getState() {
+    public BoolVar getState() {
         return state;
     }
 

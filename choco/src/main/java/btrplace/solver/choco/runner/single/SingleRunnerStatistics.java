@@ -46,12 +46,12 @@ public class SingleRunnerStatistics implements SolvingStatistics {
     /**
      * The total number of opened nodes.
      */
-    private int nbSearchNodes;
+    private long nbSearchNodes;
 
     /**
      * The total number of backtracks.
      */
-    private int nbBacktracks;
+    private long nbBacktracks;
 
     /**
      * Indicates whether or not the solver hits the timeout.
@@ -88,7 +88,7 @@ public class SingleRunnerStatistics implements SolvingStatistics {
      * @param speRPDuration       the duration of the core-RP specialization process
      */
     public SingleRunnerStatistics(ChocoReconfigurationAlgorithmParams ps, int nbNodes, int nbVMs, int nbConstraints, int managedVMs, long st,
-                                  long t, int nbN, int nbB, boolean to, long coreRPBuildDuration, long speRPDuration) {
+                                  long t, long nbN, long nbB, boolean to, long coreRPBuildDuration, long speRPDuration) {
         nbManagedVMs = managedVMs;
         this.params = ps;
         this.nbNodes = nbNodes;
@@ -126,12 +126,12 @@ public class SingleRunnerStatistics implements SolvingStatistics {
     }
 
     @Override
-    public int getNbSearchNodes() {
+    public long getNbSearchNodes() {
         return nbSearchNodes;
     }
 
     @Override
-    public int getNbBacktracks() {
+    public long getNbBacktracks() {
         return nbBacktracks;
     }
 

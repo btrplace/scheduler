@@ -57,14 +57,15 @@ public class CPreserveTest {
         rc.setConsumption(vm2, 3);
         rc.setConsumption(vm3, 5);
 
-        Preserve p = new Preserve(map.getAllVMs(), "cpu", 5);
+        Preserve p = new Preserve(vm1, "cpu", 5);
 
         mo.attach(rc);
         //Assert.assertEquals(SatConstraint.Sat.UNSATISFIED, p.isSatisfied(mo));
 
         CPreserve cp = new CPreserve(p);
         Set<VM> bads = cp.getMisPlacedVMs(mo);
-        Assert.assertEquals(map.getRunningVMs(n1), bads);
+        Assert.assertEquals(1, bads.size());
+        Assert.assertEquals(vm1, bads.iterator().next());
     }
 
     /**
@@ -89,12 +90,11 @@ public class CPreserveTest {
         rc.setConsumption(vm2, 3);
         rc.setConsumption(vm3, 5);
 
-        Preserve pr = new Preserve(map.getAllVMs(), "cpu", 5);
+        Preserve pr = new Preserve(vm2, "cpu", 5);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
         mo.attach(rc);
         List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.add(new Online(map.getAllNodes()));
+        cstrs.addAll(Online.newOnlines(map.getAllNodes()));
         cstrs.add(pr);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);

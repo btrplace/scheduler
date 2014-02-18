@@ -25,9 +25,11 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.variables.integer.IntDomainVarAddCste;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.Solver;
+import solver.constraints.IntConstraintFactory;
+import solver.variables.BoolVar;
+import solver.variables.IntVar;
+import solver.variables.VariableFactory;
 
 
 /**
@@ -47,15 +49,15 @@ public class ResumeVMModel implements VMActionModel {
 
     private ReconfigurationProblem rp;
 
-    private IntDomainVar start;
+    private IntVar start;
 
-    private IntDomainVar end;
+    private IntVar end;
 
-    private IntDomainVar duration;
+    private IntVar duration;
 
     private Slice dSlice;
 
-    private IntDomainVar state;
+    private BoolVar state;
 
     /**
      * Make a new model.
@@ -70,24 +72,24 @@ public class ResumeVMModel implements VMActionModel {
 
         int d = p.getDurationEvaluators().evaluate(p.getSourceModel(), ResumeVM.class, e);
 
-        start = p.makeDuration(p.getEnd().getSup() - d, 0, "resumeVM(", e, ").start");
-        end = new IntDomainVarAddCste(p.getSolver(), p.makeVarLabel("resumeVM(", e, ").end"), start, d);
+        start = p.makeDuration(p.getEnd().getUB() - d, 0, "resumeVM(", e, ").start");
+        end = VariableFactory.offset(start, d);
         duration = p.makeDuration(d, d, "resumeVM(", e, ").duration");
         dSlice = new SliceBuilder(p, e, "resumeVM(" + e + ").dSlice").setStart(start)
-                .setDuration(p.makeDuration(p.getEnd().getSup(), d, "resumeVM(", e, ").dSlice_duration"))
+                .setDuration(p.makeDuration(p.getEnd().getUB(), d, "resumeVM(", e, ").dSlice_duration"))
                 .build();
 
-        CPSolver s = p.getSolver();
-        s.post(s.leq(end, p.getEnd()));
-        state = s.makeConstantIntVar(1);
+        Solver s = p.getSolver();
+        s.post(IntConstraintFactory.arithm(end, "<=", p.getEnd()));
+        state = VariableFactory.one(rp.getSolver());
     }
 
     @Override
     public boolean insertActions(ReconfigurationPlan plan) {
-        int ed = end.getVal();
-        int st = start.getVal();
+        int ed = end.getValue();
+        int st = start.getValue();
         Node src = rp.getSourceModel().getMapping().getVMLocation(vm);
-        Node dst = rp.getNode(dSlice.getHoster().getVal());
+        Node dst = rp.getNode(dSlice.getHoster().getValue());
         ResumeVM a = new ResumeVM(vm, src, dst, st, ed);
         plan.add(a);
         return true;
@@ -99,17 +101,17 @@ public class ResumeVMModel implements VMActionModel {
     }
 
     @Override
-    public IntDomainVar getStart() {
+    public IntVar getStart() {
         return start;
     }
 
     @Override
-    public IntDomainVar getEnd() {
+    public IntVar getEnd() {
         return end;
     }
 
     @Override
-    public IntDomainVar getDuration() {
+    public IntVar getDuration() {
         return duration;
     }
 
@@ -124,7 +126,7 @@ public class ResumeVMModel implements VMActionModel {
     }
 
     @Override
-    public IntDomainVar getState() {
+    public BoolVar getState() {
         return state;
     }
 

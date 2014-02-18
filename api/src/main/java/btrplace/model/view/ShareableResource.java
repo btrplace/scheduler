@@ -71,7 +71,7 @@ public class ShareableResource implements ModelView, Cloneable {
         vmsConsumption = new HashMap<>();
         nodesCapacity = new HashMap<>();
         this.rcId = id;
-        this.viewId = new StringBuilder(VIEW_ID_BASE).append(rcId).toString();
+        this.viewId = VIEW_ID_BASE + rcId;
         this.nodesNoValue = defCapacity;
         this.vmsNoValue = defConsumption;
     }

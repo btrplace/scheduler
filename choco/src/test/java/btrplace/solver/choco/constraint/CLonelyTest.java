@@ -58,7 +58,6 @@ public class CLonelyTest {
 
         Set<VM> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
         Lonely l = new Lonely(mine);
         l.setContinuous(false);
         ReconfigurationPlan plan = cra.solve(mo, Collections.<SatConstraint>singleton(l));
@@ -89,12 +88,11 @@ public class CLonelyTest {
                 .run(n2, vm4, vm5).get();
         Set<VM> mine = new HashSet<>(Arrays.asList(vm1, vm2, vm3));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.labelVariables(true);
         Lonely l = new Lonely(mine);
         l.setContinuous(true);
         Set<SatConstraint> cstrs = new HashSet<>();
         cstrs.add(l);
-        cstrs.add(new Fence(Collections.singleton(vm3), Collections.singleton(n2)));
+        cstrs.add(new Fence(vm3, Collections.singleton(n2)));
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
         Assert.assertNotNull(plan);
     }

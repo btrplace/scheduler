@@ -52,10 +52,7 @@ public class BootVM extends Action implements VMStateTransition, RunningVMPlacem
 
     @Override
     public String pretty() {
-        return new StringBuilder("boot(")
-                .append("vm=").append(vm)
-                .append(", on=").append(node)
-                .append(')').toString();
+        return "boot(" + "vm=" + vm + ", on=" + node + ')';
     }
 
     @Override
@@ -79,7 +76,7 @@ public class BootVM extends Action implements VMStateTransition, RunningVMPlacem
      *
      * @param o the object to compare with
      * @return true if {@code o} is an instanceof {@link BootVM} and if both
-     *         instance involve the same VM and the same node
+     * instance involve the same VM and the same node
      */
     @Override
     public boolean equals(Object o) {
@@ -104,12 +101,12 @@ public class BootVM extends Action implements VMStateTransition, RunningVMPlacem
 
     @Override
     public VMState getCurrentState() {
-        return VMState.ready;
+        return VMState.READY;
     }
 
     @Override
     public VMState getNextState() {
-        return VMState.running;
+        return VMState.RUNNING;
     }
 
     @Override

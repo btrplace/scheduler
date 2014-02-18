@@ -17,11 +17,10 @@
 
 package btrplace.solver.choco.constraint.minMTTR;
 
-import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceUtils;
-import choco.kernel.solver.search.integer.AbstractIntVarSelector;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import solver.search.strategy.selectors.variables.InputOrder;
+import solver.variables.IntVar;
 
 import java.util.List;
 
@@ -31,11 +30,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class HostingVariableSelector extends AbstractIntVarSelector {
-
-    private ReconfigurationProblem rp;
-
-    private String label;
+public class HostingVariableSelector extends InputOrder<IntVar> {
 
     private OnStableNodeFirst schedHeuristic;
 
@@ -43,29 +38,21 @@ public class HostingVariableSelector extends AbstractIntVarSelector {
      * Make a new heuristic.
      * By default, the heuristic doesn't touch the scheduling constraints.
      *
-     * @param dbgLbl the debug label
-     * @param p      the rp to rely on
      * @param slices the slices to consider
+     * @param sched  the scheduling heuristic to notify when the placement is invalidated
      */
-    public HostingVariableSelector(String dbgLbl, ReconfigurationProblem p, List<Slice> slices, OnStableNodeFirst sched) {
-        super(p.getSolver(), SliceUtils.extractHosters(slices));
+    public HostingVariableSelector(List<Slice> slices, OnStableNodeFirst sched) {
+        super(SliceUtils.extractHosters(slices));
         this.schedHeuristic = sched;
-        this.rp = p;
-        label = dbgLbl;
     }
 
     @Override
-    public IntDomainVar selectVar() {
-        for (int i = 0; i < vars.length; i++) {
-            if (!vars[i].isInstantiated()) {
-                if (schedHeuristic != null) {
-                    schedHeuristic.invalidPlacement();
-                }
-                return vars[i];
-            }
+    public IntVar getVariable() {
+        IntVar v = super.getVariable();
+        if (schedHeuristic != null) {
+            schedHeuristic.invalidPlacement();
         }
-        rp.getLogger().debug("{}: no more VMs to handle", label);
-        return null;
+        return v;
     }
 
 }

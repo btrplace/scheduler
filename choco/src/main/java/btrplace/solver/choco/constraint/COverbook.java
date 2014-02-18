@@ -27,12 +27,11 @@ import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.view.CShareableResource;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.variables.real.RealInterval;
-import choco.kernel.solver.variables.real.RealIntervalConstant;
-import choco.kernel.solver.variables.real.RealVar;
+import solver.Cause;
+import solver.exception.ContradictionException;
+import solver.variables.RealVar;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 
 
@@ -63,15 +62,14 @@ public class COverbook implements ChocoConstraint {
             throw new SolverException(rp.getSourceModel(), "Unable to get the resource mapping '" + cstr.getResource() + "'");
         }
 
-        for (Node u : cstr.getInvolvedNodes()) {
-            RealVar v = rcm.getOverbookRatio(rp.getNode(u));
-            RealInterval ric = new RealIntervalConstant(v.getInf(), cstr.getRatio());
-            try {
-                v.intersect(ric);
-            } catch (ContradictionException ex) {
-                rp.getLogger().error("Unable to restrict {} to up to {}", v.getName(), cstr.getRatio());
-                return false;
-            }
+        Node u = cstr.getInvolvedNodes().iterator().next();
+        RealVar v = rcm.getOverbookRatio(rp.getNode(u));
+
+        try {
+            v.updateUpperBound(cstr.getRatio(), Cause.Null);
+        } catch (ContradictionException ex) {
+            rp.getLogger().error("Unable to restrict {} to up to {}", v.getName(), cstr.getRatio());
+            return false;
         }
         return true;
     }
@@ -79,28 +77,24 @@ public class COverbook implements ChocoConstraint {
     @Override
     public Set<VM> getMisPlacedVMs(Model m) {
         ShareableResource rc = (ShareableResource) m.getView(ShareableResource.VIEW_ID_BASE + cstr.getResource());
-        Set<VM> bad = new HashSet<>();
         if (rc == null) {
             //No resource given, all the VMs are considered as misplaced
-            for (Node n : cstr.getInvolvedNodes()) {
-                bad.addAll(m.getMapping().getRunningVMs(n));
-            }
+            Node n = cstr.getInvolvedNodes().iterator().next();
+            return m.getMapping().getRunningVMs(n);
         } else {
             //Check if the node is saturated
-            for (Node n : cstr.getInvolvedNodes()) {
-                int overCapa = (int) (cstr.getRatio() * rc.getCapacity(n));
-                //Minus the VMs usage
-                for (VM vmId : m.getMapping().getRunningVMs(n)) {
-                    overCapa -= rc.getConsumption(vmId);
-                    if (overCapa < 0) {
-                        bad.addAll(m.getMapping().getRunningVMs(n));
-                        break;
-                    }
+            Node n = cstr.getInvolvedNodes().iterator().next();
+            int overCapa = (int) (cstr.getRatio() * rc.getCapacity(n));
+            //Minus the VMs usage
+            for (VM vmId : m.getMapping().getRunningVMs(n)) {
+                overCapa -= rc.getConsumption(vmId);
+                if (overCapa < 0) {
+                    return m.getMapping().getRunningVMs(n);
                 }
-
             }
+
         }
-        return bad;
+        return Collections.emptySet();
     }
 
     @Override
@@ -118,8 +112,8 @@ public class COverbook implements ChocoConstraint {
         }
 
         @Override
-        public COverbook build(Constraint cstr) {
-            return new COverbook((Overbook) cstr);
+        public COverbook build(Constraint c) {
+            return new COverbook((Overbook) c);
         }
     }
 }

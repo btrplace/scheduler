@@ -25,8 +25,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
 
 /**
  * Unit tests for {@link btrplace.json.model.constraint.SleepingConverter}.
@@ -40,8 +38,9 @@ public class ReadyConverterTest {
         Model mo = new DefaultModel();
         ReadyConverter conv = new ReadyConverter();
         conv.setModel(mo);
-        Ready d = new Ready(new HashSet<>(Arrays.asList(mo.newVM(), mo.newVM())));
+        Ready d = new Ready(mo.newVM());
 
         Assert.assertEquals(conv.fromJSON(conv.toJSONString(d)), d);
+        System.out.println(conv.toJSONString(d));
     }
 }

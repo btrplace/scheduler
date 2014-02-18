@@ -20,11 +20,10 @@ package btrplace.model.constraint;
 import btrplace.model.Node;
 import btrplace.model.VM;
 
-import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Abstract class for constraints restricting the type of a set of VMs.
+ * Abstract class for constraints restricting the state of a VM.
  * The constraint is necessarily discrete.
  *
  * @author Fabien Hermenier
@@ -36,11 +35,11 @@ public abstract class VMStateConstraint extends SatConstraint {
     /**
      * Make a new constraint.
      *
-     * @param id  the constraint identifier for {@link #toString()}
-     * @param vms the VMs to control
+     * @param id the constraint identifier for {@link #toString()}
+     * @param vm the VM to control
      */
-    public VMStateConstraint(String id, Collection<VM> vms) {
-        super(vms, Collections.<Node>emptySet(), false);
+    public VMStateConstraint(String id, VM vm) {
+        super(Collections.singleton(vm), Collections.<Node>emptySet(), false);
         this.ref = id;
     }
 
@@ -63,10 +62,7 @@ public abstract class VMStateConstraint extends SatConstraint {
 
     @Override
     public String toString() {
-        return new StringBuilder(ref).append('(')
-                .append("vms=").append(getInvolvedVMs())
-                .append(", discrete")
-                .append(')').toString();
+        return ref + '(' + "vm=" + getInvolvedVMs().iterator().next() + ", discrete" + ')';
     }
 
     @Override

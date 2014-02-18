@@ -144,7 +144,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     public Set<VM> requiredVMs(JSONObject o, String id) throws JSONConverterException {
         Object x = o.get(id);
         if (!(x instanceof JSONArray)) {
-            throw new JSONConverterException("Set of ints expected at key '" + id + "'");
+            throw new JSONConverterException("integers expected at key '" + id + "'");
         }
         Set<VM> s = new HashSet<>(((JSONArray) x).size());
         for (Object i : (JSONArray) x) {
@@ -165,7 +165,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     public Set<Node> requiredNodes(JSONObject o, String id) throws JSONConverterException {
         Object x = o.get(id);
         if (!(x instanceof JSONArray)) {
-            throw new JSONConverterException("Set of ints expected at key '" + id + "'");
+            throw new JSONConverterException("integers expected at key '" + id + "'");
         }
         Set<Node> s = new HashSet<>(((JSONArray) x).size());
         for (Object i : (JSONArray) x) {
@@ -188,7 +188,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
             throw new JSONConverterException("No value at key '" + id + "'");
         }
         try {
-            return (int) o.get(id);
+            return (Integer) o.get(id);
         } catch (Exception e) {
             throw new JSONConverterException("Unable to read a int from string '" + id + "'", e);
         }
@@ -273,8 +273,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
      * @param o  the object to parse
      * @param id the id in the map that should point to the boolean
      * @return the boolean
-     * @throws btrplace.json.JSONConverterException
-     *          if the key does not point to a boolean
+     * @throws btrplace.json.JSONConverterException if the key does not point to a boolean
      */
     public static boolean requiredBoolean(JSONObject o, String id) throws JSONConverterException {
         Object x = o.get(id);
@@ -295,7 +294,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     }
 
     @Override
-    public E fromJSON(String buf) throws IOException, JSONConverterException {
+    public E fromJSON(String buf) throws JSONConverterException {
         try (StringReader in = new StringReader(buf)) {
             return fromJSON(in);
         }

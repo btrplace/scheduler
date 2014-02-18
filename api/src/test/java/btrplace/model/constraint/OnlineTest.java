@@ -21,10 +21,7 @@ import btrplace.model.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Unit tests for {@link btrplace.model.constraint.Online}.
@@ -36,11 +33,10 @@ public class OnlineTest {
     @Test
     public void testInstantiation() {
         Model mo = new DefaultModel();
-
-        Set<Node> s = new HashSet<>(Arrays.asList(mo.newNode(), mo.newNode()));
-        Online o = new Online(s);
+        Node n = mo.newNode();
+        Online o = new Online(n);
         Assert.assertNotNull(o.getChecker());
-        Assert.assertEquals(o.getInvolvedNodes(), s);
+        Assert.assertTrue(o.getInvolvedNodes().contains(n));
         Assert.assertTrue(o.getInvolvedVMs().isEmpty());
         Assert.assertNotNull(o.toString());
         Assert.assertFalse(o.setContinuous(true));
@@ -54,26 +50,21 @@ public class OnlineTest {
 
         Mapping c = i.getMapping();
         c.addOnlineNode(ns.get(0));
-        c.addOnlineNode(ns.get(1));
-        Set<Node> s = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
-        Online o = new Online(s);
-
+        Online o = new Online(ns.get(0));
         Assert.assertEquals(o.isSatisfied(i), true);
         c.addOfflineNode(ns.get(1));
-        Assert.assertEquals(o.isSatisfied(i), false);
+        Assert.assertEquals(new Online(ns.get(1)).isSatisfied(i), false);
     }
 
     @Test
     public void testEquals() {
         Model mo = new DefaultModel();
-        List<Node> ns = Util.newNodes(mo, 10);
-        Set<Node> x = new HashSet<>(Arrays.asList(ns.get(0), ns.get(1)));
-        Online s = new Online(x);
+        Node n = mo.newNode();
+        Online s = new Online(n);
 
         Assert.assertTrue(s.equals(s));
-        Assert.assertTrue(new Online(x).equals(s));
-        Assert.assertEquals(new Online(x).hashCode(), s.hashCode());
-        x = new HashSet<>(Arrays.asList(ns.get(2)));
-        Assert.assertFalse(new Online(x).equals(s));
+        Assert.assertTrue(new Online(n).equals(s));
+        Assert.assertEquals(new Online(n).hashCode(), s.hashCode());
+        Assert.assertFalse(new Online(mo.newNode()).equals(s));
     }
 }

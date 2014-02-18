@@ -45,8 +45,8 @@ public class ForgeVMTest {
         Assert.assertEquals(3, a.getStart());
         Assert.assertEquals(5, a.getEnd());
         Assert.assertFalse(a.toString().contains("null"));
-        Assert.assertEquals(a.getCurrentState(), VMStateTransition.VMState.init);
-        Assert.assertEquals(a.getNextState(), VMStateTransition.VMState.ready);
+        Assert.assertEquals(a.getCurrentState(), VMStateTransition.VMState.INIT);
+        Assert.assertEquals(a.getNextState(), VMStateTransition.VMState.READY);
 
     }
 
