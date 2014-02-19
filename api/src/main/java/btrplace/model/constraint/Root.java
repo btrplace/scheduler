@@ -44,7 +44,7 @@ public class Root extends SatConstraint {
      * @param vms the VMs to integrate
      * @return the associated list of constraints
      */
-    public static List<Root> newRoot(Collection<VM> vms) {
+    public static List<Root> newRoots(Collection<VM> vms) {
         List<Root> l = new ArrayList<>(vms.size());
         for (VM v : vms) {
             l.add(new Root(v));

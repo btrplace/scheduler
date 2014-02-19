@@ -54,7 +54,7 @@ public class Overbook extends SatConstraint {
      * @param r     the overbooking ratio, >= 1
      * @return the associated list of continuous constraints
      */
-    public static List<Overbook> newOverbook(Collection<Node> nodes, String rc, double r) {
+    public static List<Overbook> newOverbooks(Collection<Node> nodes, String rc, double r) {
         List<Overbook> l = new ArrayList<>(nodes.size());
         for (Node n : nodes) {
             l.add(new Overbook(n, rc, r));

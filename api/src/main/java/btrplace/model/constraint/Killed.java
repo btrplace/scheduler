@@ -40,7 +40,7 @@ public class Killed extends VMStateConstraint {
      * @param vms the VMs to integrate
      * @return the associated list of constraints
      */
-    public static List<Killed> newKilled(Collection<VM> vms) {
+    public static List<Killed> newKilleds(Collection<VM> vms) {
         List<Killed> l = new ArrayList<>(vms.size());
         for (VM v : vms) {
             l.add(new Killed(v));

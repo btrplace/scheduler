@@ -271,7 +271,7 @@ public class CResourceCapacityTest {
         cstrs.add(s);
         cstrs.add(new Fence(vm4, Collections.singleton(n1)));
         cstrs.add(new Running(vm4));
-        cstrs.addAll(Overbook.newOverbook(map.getAllNodes(), "cpu", 1));
+        cstrs.addAll(Overbook.newOverbooks(map.getAllNodes(), "cpu", 1));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);

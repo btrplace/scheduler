@@ -48,7 +48,7 @@ public class Preserve extends SatConstraint {
      * @param q   the the minimum amount of resources to allocate to each VM. >= 0
      * @return a list of constraints
      */
-    public static List<Preserve> newPreserve(Collection<VM> vms, String r, int q) {
+    public static List<Preserve> newPreserves(Collection<VM> vms, String r, int q) {
         List<Preserve> l = new ArrayList<>(vms.size());
         for (VM v : vms) {
             l.add(new Preserve(v, r, q));

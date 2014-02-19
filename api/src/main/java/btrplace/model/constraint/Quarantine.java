@@ -45,7 +45,7 @@ public class Quarantine extends SatConstraint {
      * @param nodes the nodes to integrate
      * @return the associated list of constraints
      */
-    public static List<Quarantine> newQuarantine(Collection<Node> nodes) {
+    public static List<Quarantine> newQuarantines(Collection<Node> nodes) {
         List<Quarantine> l = new ArrayList<>(nodes.size());
         for (Node n : nodes) {
             l.add(new Quarantine(n));

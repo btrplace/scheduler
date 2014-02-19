@@ -21,6 +21,10 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.ReadyChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * A constraint to force a VM at being ready for running.
  * <p/>
@@ -31,6 +35,20 @@ import btrplace.model.constraint.checker.SatConstraintChecker;
  * @author Fabien Hermenier
  */
 public class Ready extends VMStateConstraint {
+
+    /**
+     * Instantiate constraints for a collection of VMs.
+     *
+     * @param vms the VMs to integrate
+     * @return the associated list of constraints
+     */
+    public static List<Ready> newReadys(Collection<VM> vms) {
+        List<Ready> l = new ArrayList<>(vms.size());
+        for (VM v : vms) {
+            l.add(new Ready(v));
+        }
+        return l;
+    }
 
     /**
      * Make a new constraint.

@@ -172,7 +172,7 @@ public class RelocatableVMModelTest {
         mo.attach(rc);
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.addAll(Online.newOnlines(map.getAllNodes()));
-        cstrs.addAll(Overbook.newOverbook(map.getAllNodes(), "cpu", 1));
+        cstrs.addAll(Overbook.newOverbooks(map.getAllNodes(), "cpu", 1));
         cstrs.add(pr);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);

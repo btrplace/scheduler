@@ -55,7 +55,7 @@ public class SolverTuning implements Example {
         Set<SatConstraint> constraints = new HashSet<>();
         //We allow memory over-commitment with a overbooking ratio of 50%
         //i.e. 1MB physical RAM for 1.5MB virtual RAM
-        constraints.addAll(Overbook.newOverbook(model.getMapping().getAllNodes(), "mem", 1.5));
+        constraints.addAll(Overbook.newOverbooks(model.getMapping().getAllNodes(), "mem", 1.5));
 
         /**
          * On 10 nodes, 4 of the 6 hosted VMs ask now for a 4GB bandwidth
