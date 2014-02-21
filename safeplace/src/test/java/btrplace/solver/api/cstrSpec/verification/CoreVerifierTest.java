@@ -6,8 +6,8 @@ import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.plan.event.BootNode;
-import btrplace.plan.event.BootVM;
+import btrplace.plan.event.ShutdownNode;
+import btrplace.plan.event.SuspendVM;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.Specification;
 import btrplace.solver.api.cstrSpec.fuzzer.Fuzzer;
@@ -46,10 +46,11 @@ public class CoreVerifierTest {
         for (Constraint c : s.getConstraints()) {
             if (c.isCore()) {
                 cores.add(c);
+                break;
             }
         }
         System.out.println("Checker verification: ");
-        //check(cores, Arrays.asList(new SpecVerifier(), new CheckerVerifier()));
+        check(cores, Arrays.asList(new SpecVerifier(), new CheckerVerifier()));
 
         System.out.println("Implementation verification: ");
         check(cores, Arrays.asList(new SpecVerifier(), new ImplVerifier()));
@@ -129,23 +130,29 @@ public class CoreVerifierTest {
 
     @Test
     public void testDumb() throws Exception {
+        /*
+        node#0: vm#0
+        READY
+
+        0:1 {action=shutdown(node=node#0)}
+        0:1 {action=suspend(vm=vm#0, from=node#0, to=node#0)}
+         */
         Model mo = new DefaultModel();
         Node n = mo.newNode();
         VM v = mo.newVM();
-        mo.getMapping().addOfflineNode(n);
-        mo.getMapping().addReadyVM(v);
+        mo.getMapping().addOnlineNode(n);
+        mo.getMapping().addRunningVM(v, n);
         ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
-        p.add(new BootNode(n, 1, 4));
-        p.add(new BootVM(v, n, 2, 3));
+        p.add(new ShutdownNode(n, 0, 1));
+        p.add(new SuspendVM(v, n, n, 0, 1));
 
         Specification s = getSpec();
         Constraint c = s.get("noVMsOnOfflineNodes");
         System.out.println(mo.getMapping());
         System.out.println(p);
-        SpecVerifier verif = new SpecVerifier();
+        Verifier verif = new ImplVerifier();
         System.out.println(c.getProposition());
         System.out.println(verif.verify(c, p, Collections.<Constant>emptyList(), false));
-        Assert.fail();
     }
 
 
