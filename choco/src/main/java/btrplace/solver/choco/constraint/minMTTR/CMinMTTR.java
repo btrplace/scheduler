@@ -24,6 +24,7 @@ import btrplace.model.VM;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.SliceUtils;
 import btrplace.solver.choco.actionModel.ActionModel;
 import btrplace.solver.choco.actionModel.ActionModelUtils;
 import btrplace.solver.choco.actionModel.VMActionModel;
@@ -145,13 +146,19 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         }
 
         if (!badActions.isEmpty()) {
-            HostingVariableSelector selectForBads = new HostingVariableSelector(ActionModelUtils.getDSlices(badActions), schedHeuristic);
-            strats.add(new Assignment(selectForBads, new RandomVMPlacement(p, pla, true)));
+            IntVar[] hosts = SliceUtils.extractHosters(ActionModelUtils.getDSlices(badActions));
+            if (hosts.length > 0) {
+                HostingVariableSelector selectForBads = new HostingVariableSelector(hosts, schedHeuristic);
+                strats.add(new Assignment(selectForBads, new RandomVMPlacement(p, pla, true)));
+            }
         }
 
         if (!goodActions.isEmpty()) {
-            HostingVariableSelector selectForGoods = new HostingVariableSelector(ActionModelUtils.getDSlices(goodActions), schedHeuristic);
-            strats.add(new Assignment(selectForGoods, new RandomVMPlacement(p, pla, true)));
+            IntVar[] hosts = SliceUtils.extractHosters(ActionModelUtils.getDSlices(goodActions));
+            if (hosts.length > 0) {
+                HostingVariableSelector selectForGoods = new HostingVariableSelector(hosts, schedHeuristic);
+                strats.add(new Assignment(selectForGoods, new RandomVMPlacement(p, pla, true)));
+            }
         }
 
         //VMs to run
@@ -165,8 +172,11 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         }
 
         if (runActions.length > 0) {
-            HostingVariableSelector selectForRuns = new HostingVariableSelector(ActionModelUtils.getDSlices(runActions), schedHeuristic);
-            strats.add(new Assignment(selectForRuns, new RandomVMPlacement(p, pla, true)));
+            IntVar[] hosts = SliceUtils.extractHosters(ActionModelUtils.getDSlices(runActions));
+            if (hosts.length > 0) {
+                HostingVariableSelector selectForRuns = new HostingVariableSelector(hosts, schedHeuristic);
+                strats.add(new Assignment(selectForRuns, new RandomVMPlacement(p, pla, true)));
+            }
         }
 
         if (p.getNodeActions().length > 0) {
