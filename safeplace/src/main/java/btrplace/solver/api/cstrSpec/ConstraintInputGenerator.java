@@ -1,38 +1,39 @@
 package btrplace.solver.api.cstrSpec;
 
 import btrplace.solver.api.cstrSpec.fuzzer.RandomTuplesGenerator;
+import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.term.UserVar;
 import btrplace.solver.api.cstrSpec.util.AllTuplesGenerator;
 import btrplace.solver.api.cstrSpec.util.Generator;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Fabien Hermenier
  */
-public class ConstraintInputGenerator implements Generator<List<Object>> {
+public class ConstraintInputGenerator implements Generator<List<Constant>> {
 
-    private Generator<Object[]> tg;
+    private Generator<Constant[]> tg;
 
     public ConstraintInputGenerator(Constraint cstr, SpecModel mo, boolean seq) {
 
         List<UserVar> params = cstr.getParameters();
-        List<List<Object>> values = new ArrayList<>(params.size());
+        List<List<Constant>> values = new ArrayList<>(params.size());
 
         for (UserVar v : params) {
-            Object o = v.eval(null);
-            if (o != null) {
-                values.add(Collections.singletonList(o));
-            } else {
-                values.add(new ArrayList<Object>((Set) v.getBackend().eval(mo)));
-            }
+            List<Constant> dom = v.domain(mo);
+            values.add(dom);
         }
-
+        //System.out.println(cstr.pretty());
+        //System.out.println(values);
         if (seq) {
-            tg = new AllTuplesGenerator<>(Object.class, values);
+            tg = new AllTuplesGenerator<>(Constant.class, values);
         } else {
-            tg = new RandomTuplesGenerator<>(Object.class, values);
+            tg = new RandomTuplesGenerator<>(Constant.class, values);
         }
     }
 
@@ -42,9 +43,9 @@ public class ConstraintInputGenerator implements Generator<List<Object>> {
     }
 
     @Override
-    public List<Object> next() {
-        Object[] tuple = tg.next();
-        List<Object> m = new ArrayList<>(tuple.length);
+    public List<Constant> next() {
+        Constant[] tuple = tg.next();
+        List<Constant> m = new ArrayList<>(tuple.length);
         Collections.addAll(m, tuple);
         return m;
     }
@@ -55,7 +56,7 @@ public class ConstraintInputGenerator implements Generator<List<Object>> {
     }
 
     @Override
-    public Iterator<List<Object>> iterator() {
+    public Iterator<List<Constant>> iterator() {
         return this;
     }
 
