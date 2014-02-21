@@ -432,10 +432,21 @@ public class TaskScheduler extends IntConstraint<IntVar> {
         public void propagate(int evtmask) throws ContradictionException {
             if (first) {
                 first = false;
+                boolean isFull = true;
                 for (int i = 0; i < dHosters.length; i++) {
                     if (dHosters[i].instantiated()) {
                         int nIdx = dHosters[i].getValue();
                         vIns[nIdx].add(i);
+                    } else {
+                        isFull = false;
+                    }
+                }
+                //Already completely instantiated, need to propagate
+                if (isFull) {
+                    for (int j = 0; j < scheds.length; j++) {
+                        if (!scheds[j].propagate()) {
+                            this.contradiction(earlyStarts[j], "Invalid profile on resource '" + j + "'");
+                        }
                     }
                 }
             } else {
