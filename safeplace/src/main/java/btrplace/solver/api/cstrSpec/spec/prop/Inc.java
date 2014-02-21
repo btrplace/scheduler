@@ -24,16 +24,10 @@ public class Inc extends AtomicProp {
         return new NInc(a, b);
     }
 
-    //@Override
-    public Or expand() {
-        throw new UnsupportedOperationException();
-    }
-
     @Override
     public Boolean eval(SpecModel m) {
         Object o = a.eval(m);
         Collection c = (Collection) b.eval(m);
-        //System.err.println(o + " <:" + c + ": " + c.contains(o));
         if (o != null && c != null) {
             return c.contains(o);
         }

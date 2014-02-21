@@ -28,8 +28,6 @@ public class InfiniteSet<T> implements Set<T> {
     @Override
     public boolean contains(Object o) {
         return o.getClass().equals(c);
-        /*Class cl = o.getClass();
-        return true;*/
     }
 
     @Override

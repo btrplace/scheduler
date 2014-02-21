@@ -4,7 +4,9 @@ import btrplace.solver.api.cstrSpec.LazySet;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * @author Fabien Hermenier
@@ -22,11 +24,6 @@ public class Constant extends Term {
 
     public Type type() {
         return t;
-    }
-
-    //@Override
-    public Set<Constant> domain() {
-        return Collections.singleton(this);
     }
 
     @Override

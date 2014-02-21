@@ -13,8 +13,6 @@ public abstract class Primitive extends Var<Set> {
 
     private Type type;
 
-    protected Set cnt;
-
     public Primitive(String name, Type enclosingType) {
         super(name);
         type = new SetType(enclosingType);

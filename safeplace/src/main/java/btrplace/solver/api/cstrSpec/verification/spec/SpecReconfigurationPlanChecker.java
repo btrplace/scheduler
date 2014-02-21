@@ -192,7 +192,7 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
                     if (!visitAndThrowOnViolation(a, ok, ko)) {
                         return a;
                     }
-                    visitEvents(a, ok, ko, Action.Hook.post);
+                    visitEvents(a, ok, ko, Action.Hook.POST);
                     a = ends.peek();
                 }
                 a = starts.peek();
@@ -200,7 +200,7 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
                 while (a != null && a.getStart() == curMoment) {
                     starts.remove();
                     startingEvent = true;
-                    visitEvents(a, ok, ko, Action.Hook.pre);
+                    visitEvents(a, ok, ko, Action.Hook.PRE);
                     if (!visitAndThrowOnViolation(a, ok, ko)) {
                         return a;
                     }

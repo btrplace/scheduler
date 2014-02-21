@@ -10,7 +10,6 @@ public class VMType extends Atomic {
     private static VMType instance = new VMType();
 
     private VMType() {
-
     }
 
     public static VMType getInstance() {

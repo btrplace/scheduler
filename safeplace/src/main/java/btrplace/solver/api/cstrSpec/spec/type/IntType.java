@@ -29,9 +29,7 @@ public class IntType extends Atomic {
     public boolean match(String n) {
         try {
             Integer i = Integer.parseInt(n);
-            if (i >= inf && i <= sup) {
-                return true;
-            }
+            return i >= inf && i <= sup;
         } catch (Exception e) {
         }
         return false;

@@ -49,7 +49,7 @@ public class CoreVerifierTest {
             }
         }
         System.out.println("Checker verification: ");
-        check(cores, Arrays.asList(new SpecVerifier(), new CheckerVerifier()));
+        //check(cores, Arrays.asList(new SpecVerifier(), new CheckerVerifier()));
 
         System.out.println("Implementation verification: ");
         check(cores, Arrays.asList(new SpecVerifier(), new ImplVerifier()));
@@ -83,6 +83,8 @@ public class CoreVerifierTest {
         System.out.println();
         for (TestCase c : issues) {
             System.out.println(c.pretty());
+            System.out.println("\tOrigin:\n" + c.getPlan().getOrigin().getMapping());
+            System.out.println("\tPlan:\n" + c.getPlan());
         }
     }
 

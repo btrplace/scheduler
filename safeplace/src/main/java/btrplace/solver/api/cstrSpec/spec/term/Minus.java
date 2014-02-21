@@ -9,7 +9,7 @@ public abstract class Minus<T> extends Term<T> {
 
     protected Term<T> a, b;
 
-    public Minus(Term t1, Term t2) {
+    public Minus(Term<T> t1, Term<T> t2) {
         this.a = t1;
         this.b = t2;
     }

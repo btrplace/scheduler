@@ -58,7 +58,7 @@ public class ImplVerifier implements Verifier {
         setDurationEstimators(p);
 
         try {
-            cra.labelVariables(true);
+            cra.setVerbosity(1);
             cra.doOptimize(false);
             ReconfigurationPlan res = cra.solve(p.getOrigin(), cstrs);
             if (res == null) {
@@ -74,7 +74,7 @@ public class ImplVerifier implements Verifier {
     }
 
     private static SatConstraint on(VM v, Node n) {
-        return new Fence(Collections.singleton(v), Collections.singleton(n));
+        return new Fence(v, Collections.singleton(n));
     }
 
     private Set<SatConstraint> actionsToConstraints(ReconfigurationPlan p/*, SatConstraint toTest*/) {
@@ -85,32 +85,32 @@ public class ImplVerifier implements Verifier {
         for (Action a : p) {
             if (a instanceof MigrateVM) {
                 MigrateVM m = (MigrateVM) a;
-                cstrs.add(new Running(Collections.singleton(m.getVM())));
+                cstrs.add(new Running(m.getVM()));
                 cstrs.add(on(m.getVM(), m.getDestinationNode()));
                 rooted.remove(m.getVM());
             } else if (a instanceof SuspendVM) {
                 SuspendVM s = (SuspendVM) a;
-                cstrs.add(new Sleeping(Collections.singleton(s.getVM())));
+                cstrs.add(new Sleeping(s.getVM()));
                 cstrs.add(on(s.getVM(), s.getDestinationNode()));
                 rooted.remove(s.getVM());
             } else if (a instanceof ResumeVM) {
                 ResumeVM s = (ResumeVM) a;
-                cstrs.add(new Running(Collections.singleton(s.getVM())));
+                cstrs.add(new Running(s.getVM()));
                 cstrs.add(on(s.getVM(), s.getDestinationNode()));
             } else if (a instanceof BootVM) {
                 BootVM s = (BootVM) a;
-                cstrs.add(new Running(Collections.singleton(s.getVM())));
+                cstrs.add(new Running(s.getVM()));
                 cstrs.add(on(s.getVM(), s.getDestinationNode()));
             } else if (a instanceof ShutdownVM) {
                 ShutdownVM s = (ShutdownVM) a;
-                cstrs.add(new Ready(Collections.singleton(s.getVM())));
+                cstrs.add(new Ready(s.getVM()));
             } else if (a instanceof BootNode) {
                 BootNode s = (BootNode) a;
-                cstrs.add(new Online(Collections.singleton(s.getNode())));
+                cstrs.add(new Online(s.getNode()));
                 notSwitching.remove(s.getNode());
             } else if (a instanceof ShutdownNode) {
                 ShutdownNode s = (ShutdownNode) a;
-                cstrs.add(new Offline(Collections.singleton(s.getNode())));
+                cstrs.add(new Offline(s.getNode()));
                 notSwitching.remove(s.getNode());
             } else {
                 throw new UnsupportedOperationException(a.toString());
@@ -123,14 +123,14 @@ public class ImplVerifier implements Verifier {
             }
         }
         if (!rooted.isEmpty()) {
-            cstrs.add(new Root(rooted));
+            cstrs.addAll(Root.newRoots(rooted));
         }
         Mapping map = p.getOrigin().getMapping();
         for (Node n : notSwitching) {
             if (map.isOnline(n)) {
-                cstrs.add(new Online(Collections.singleton(n)));
+                cstrs.add(new Online(n));
             } else {
-                cstrs.add(new Offline(Collections.singleton(n)));
+                cstrs.add(new Offline(n));
             }
         }
 

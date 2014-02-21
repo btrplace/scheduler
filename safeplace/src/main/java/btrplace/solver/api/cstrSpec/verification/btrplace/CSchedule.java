@@ -8,7 +8,8 @@ import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.actionModel.ActionModel;
 import btrplace.solver.choco.constraint.ChocoConstraint;
 import btrplace.solver.choco.constraint.ChocoConstraintBuilder;
-import choco.kernel.solver.ContradictionException;
+import solver.Cause;
+import solver.exception.ContradictionException;
 
 import java.util.Collections;
 import java.util.Set;
@@ -37,8 +38,8 @@ public class CSchedule implements ChocoConstraint {
             return false;
         }
         try {
-            am.getStart().setVal(cstr.getStart());
-            am.getEnd().setVal(cstr.getEnd());
+            am.getStart().instantiateTo(cstr.getStart(), Cause.Null);
+            am.getEnd().instantiateTo(cstr.getEnd(), Cause.Null);
         } catch (ContradictionException ex) {
             //ex.printStackTrace();
             rp.getLogger().error("Unable to force the schedule of " + am + " to " + cstr + ": " + ex.getMessage());

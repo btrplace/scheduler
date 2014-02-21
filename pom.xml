@@ -23,17 +23,17 @@
         <dependency>
             <groupId>btrplace</groupId>
             <artifactId>solver-api</artifactId>
-            <version>0.35-SNAPSHOT</version>
+            <version>0.36-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>btrplace</groupId>
             <artifactId>solver-json</artifactId>
-            <version>0.35-SNAPSHOT</version>
+            <version>0.36-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>btrplace</groupId>
             <artifactId>solver-choco</artifactId>
-            <version>0.35-SNAPSHOT</version>
+            <version>0.36-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>net.minidev</groupId>
@@ -79,4 +79,16 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>btrp-releases</id>
+            <url>http://btrp.inria.fr/repos/releases</url>
+        </repository>
+        <repository>
+            <id>btrp-snapshots</id>
+            <url>http://btrp.inria.fr/repos/snapshot-releases</url>
+        </repository>
+    </repositories>
+
 </project>

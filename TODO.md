@@ -34,3 +34,11 @@ OK Reduce source ? (less elements, constraints)
 - checker
 - local search
 - generification
+
+#Evaluation
+- concision du language
+- nb de bugs et taxonomie
+- TCB avec Cobertura ?
+- taille des checkers
+- performance des spec checkers si online
+- efficacité de la réduction

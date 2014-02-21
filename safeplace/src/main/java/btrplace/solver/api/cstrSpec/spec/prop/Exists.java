@@ -58,10 +58,6 @@ public class Exists implements Proposition {
         return ret;
     }
 
-    public void associate(Proposition p) {
-        this.prop = p;
-    }
-
     public String toString() {
         StringBuilder b = new StringBuilder("?(");
         Iterator<UserVar> ite = vars.iterator();
@@ -75,15 +71,5 @@ public class Exists implements Proposition {
             }
         }
         return b.append(") ").append(prop).toString();
-    }
-
-    private String enumerate() {
-        Iterator<UserVar> ite = vars.iterator();
-        StringBuilder b = new StringBuilder(ite.next().label());
-        while (ite.hasNext()) {
-            b.append(",");
-            b.append(ite.next().label());
-        }
-        return b.toString();
     }
 }
