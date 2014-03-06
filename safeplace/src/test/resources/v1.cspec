@@ -78,7 +78,7 @@ constraint sequentialVMTransitions(sched : lists(vms)) ::=
         )
 
 constraint spread(vs <: vms) ::=
-     !(x,y : vs) (x /= y &  vmState(x) = running & vmState(y) = running) --> host(x) /= host(y)
+     !(x,y : vs) (x /= y & vmState(x) = running & vmState(y) = running) --> host(x) /= host(y)
 
 constraint split(part : packings(vms)) ::=
     { {host(v). v : p , vmState(v) = running}. p : part} : packings(nodes)

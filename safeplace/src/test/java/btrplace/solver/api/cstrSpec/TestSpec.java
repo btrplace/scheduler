@@ -94,14 +94,19 @@ public class TestSpec {
             }
             SatConstraint s = null;
             switch (c.id()) {
-                case "spread":
-                case "gather":
                 case "running":
                 case "sleeping":
                 case "ready":
                 case "killed":
-                case "lonely":
                 case "root":
+                    s = c.instantiate(Arrays.asList(mo.getMapping().getAllVMs().iterator().next()));
+                    break;
+                case "preserve":
+                    s = c.instantiate(Arrays.asList(mo.getMapping().getAllVMs().iterator().next(), "cpu", 3));
+                    break;
+                case "spread":
+                case "gather":
+                case "lonely":
                     s = c.instantiate(Arrays.asList(mo.getMapping().getAllVMs()));
                     break;
                 case "sequentialVMTransitions":
@@ -110,26 +115,21 @@ public class TestSpec {
                 case "online":
                 case "offline":
                 case "quarantine":
-                    s = c.instantiate(Arrays.asList(mo.getMapping().getAllNodes()));
+                    s = c.instantiate(Arrays.asList(mo.getMapping().getAllNodes().iterator().next()));
+                    break;
+                case "overbook":
+                    s = c.instantiate(Arrays.asList(mo.getMapping().getAllNodes().iterator().next(), "cpu", 1.5));
                     break;
                 case "ban":
                 case "fence":
-                    s = c.instantiate(Arrays.asList(mo.getMapping().getAllVMs(), mo.getMapping().getAllNodes()));
+                    s = c.instantiate(Arrays.asList(mo.getMapping().getAllVMs().iterator().next(), mo.getMapping().getAllNodes()));
                     break;
                 case "maxOnline":
-                case "cumulatedRunningCapacity":
-                case "singleRunningCapacity":
+                case "runningCapacity":
                     s = c.instantiate(Arrays.asList(mo.getMapping().getAllNodes(), 3));
                     break;
-                case "cumulatedResourceCapacity":
-                case "singleResourceCapacity":
+                case "resourceCapacity":
                     s = c.instantiate(Arrays.asList(mo.getMapping().getAllNodes(), "cpu", 3));
-                    break;
-                case "overbook":
-                    s = c.instantiate(Arrays.asList(mo.getMapping().getAllNodes(), "cpu", 1.2));
-                    break;
-                case "preserve":
-                    s = c.instantiate(Arrays.asList(mo.getMapping().getAllVMs(), "cpu", 2));
                     break;
                 case "split":
                     s = c.instantiate(Arrays.asList(
@@ -151,7 +151,7 @@ public class TestSpec {
                 default:
                     System.err.println("Unsupported constraint specification: " + c.id());
             }
-            Assert.assertNotNull(s);
+            Assert.assertNotNull(s, c.pretty());
             System.out.println(s);
             System.out.flush();
 
