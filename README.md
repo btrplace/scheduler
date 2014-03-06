@@ -3,6 +3,8 @@
 This repository contains the main sources of the flexible VM placement
 algorithm btrPlace (http://btrp.inria.fr)
 
+[![Build Status](http://btrp.inria.fr/jenkins/buildStatus/icon?job=DEV btrplace-solver)](http://btrp.inria.fr/jenkins/job/DEV%20btrplace-solver/)
+
 Contact: fabien.hermenier@unice.fr
 
 ## Usage ##
