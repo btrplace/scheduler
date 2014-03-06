@@ -16,7 +16,7 @@ public abstract class BinaryProp implements Proposition {
 
     @Override
     public String toString() {
-        return new StringBuilder(p1.toString()).append(operator()).append(p2.toString()).toString();
+        return p1.toString() + " " + operator() + " " + p2.toString();
     }
 
     public abstract String operator();

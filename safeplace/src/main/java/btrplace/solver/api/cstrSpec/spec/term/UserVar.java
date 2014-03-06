@@ -37,7 +37,7 @@ public class UserVar<T> extends Var<T> {
 
     @Override
     public String pretty() {
-        return new StringBuilder(label()).append(not ? " /" : " ").append(incl ? ": " : "<: ").append(backend).toString();
+        return label() + (not ? " /" : " ") + (incl ? ": " : "<: ") + backend;
     }
 
     public Term<Collection> getBackend() {

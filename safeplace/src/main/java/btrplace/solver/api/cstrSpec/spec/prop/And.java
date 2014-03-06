@@ -15,7 +15,7 @@ public class And extends BinaryProp {
 
     @Override
     public String operator() {
-        return " & ";
+        return "&";
     }
 
     @Override

@@ -41,6 +41,6 @@ public class ValueAt extends Term {
 
     @Override
     public String toString() {
-        return new StringBuilder(arr.toString()).append('[').append(idx.toString()).append(']').toString();
+        return arr.toString() + "[" + idx.toString() + "]";
     }
 }

@@ -25,6 +25,6 @@ public class ProtectedProposition implements Proposition {
 
     @Override
     public String toString() {
-        return new StringBuilder("(").append(p.toString()).append(')').toString();
+        return "(" + p + ")";
     }
 }

@@ -16,7 +16,7 @@ public abstract class Minus<T> extends Term<T> {
 
     @Override
     public String toString() {
-        return new StringBuilder(a.toString()).append(" - ").append(b.toString()).toString();
+        return a.toString() + " - " + b.toString();
     }
 
     @Override

@@ -38,6 +38,6 @@ public class ProtectedTerm<T> extends Term<T> {
 
     @Override
     public String toString() {
-        return new StringBuilder("(").append(t.toString()).append(')').toString();
+        return "(" + t.toString() + ")";
     }
 }

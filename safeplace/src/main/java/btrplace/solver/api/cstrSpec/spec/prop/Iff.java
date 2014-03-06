@@ -17,7 +17,7 @@ public class Iff extends BinaryProp {
 
     @Override
     public String operator() {
-        return " <--> ";
+        return "<-->";
     }
 
     @Override
