@@ -9,12 +9,7 @@ import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 public class Eq extends AtomicProp {
 
     public Eq(Term a, Term b) {
-        super(a, b);
-    }
-
-    @Override
-    public String toString() {
-        return new StringBuilder(a.toString()).append(" = ").append(b).toString();
+        super(a, b, "=");
     }
 
     @Override

@@ -11,12 +11,7 @@ import java.util.Collection;
 public class NIn extends AtomicProp {
 
     public NIn(Term a, Term b) {
-        super(a, b);
-    }
-
-    @Override
-    public String toString() {
-        return new StringBuilder(a.toString()).append(" /: ").append(b).toString();
+        super(a, b, "/:");
     }
 
     @Override

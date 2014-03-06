@@ -58,7 +58,7 @@ public class TestSpec {
         Specification spec = getSpecification();
         System.out.println(spec.pretty());
         System.out.flush();
-        Assert.assertEquals(spec.getConstraints().size(), 29);
+        Assert.assertEquals(spec.getConstraints().size(), 24);
         int sum = 0;
         for (Constraint c : spec.getConstraints()) {
             int l = c.pretty().length();
