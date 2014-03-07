@@ -12,10 +12,11 @@ public class SpecStatistics {
     public static void main(String[] args) throws Exception {
         SpecReader r = new SpecReader();
         Specification spec = r.getSpecification(new File(args[0]));
+        System.err.println(spec.getConstraints().size() + " constraint(s)");
         System.out.println("id length");
         for (Constraint c : spec.getConstraints()) {
             int l = c.pretty().length();
-            System.out.println(c.pretty());
+            System.err.println(c.pretty());
             System.out.println(c.id() + " " + l);
         }
     }
