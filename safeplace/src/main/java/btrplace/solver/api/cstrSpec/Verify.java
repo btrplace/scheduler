@@ -117,7 +117,7 @@ public class Verify {
     }
 
     private static void summarize() {
-        System.out.println("Size of the model: " + nbVMs + "VM(s), " + nbNodes + " node(s)");
+        System.out.println("Size of the model: " + nbVMs + " VM(s), " + nbNodes + " node(s)");
         System.out.println("Verifier: " + verifier);
         System.out.println("Action duration: " + minDuration + ".." + maxDuration);
         System.out.println("nbDurations per action per plan: " + (nbDurations == -1 ? "all" : nbDurations));
@@ -126,9 +126,9 @@ public class Verify {
         if (json != null) {
             System.out.println("Output file: " + json);
         }
-        System.out.println("Nb of models to test:" + fuzzer.nbSourceModel());
-        System.out.println("Max nb. of basic plan per model" + fuzzer.maxNbOfPlansPerModel());
-        System.out.println("Max nb. of plan with diff. durations" + fuzzer.maxNbOfDurationsPerPlan());
+        System.out.println("Nb of models to test: " + fuzzer.nbSourceModel());
+        System.out.println("Max nb. of basic plan per model: " + fuzzer.maxNbOfPlansPerModel());
+        System.out.println("Max nb. of plan with diff. durations: " + fuzzer.maxNbOfDurationsPerPlan());
     }
 
     private static void usage() {
