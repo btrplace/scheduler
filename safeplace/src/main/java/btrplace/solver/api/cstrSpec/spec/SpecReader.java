@@ -2,7 +2,6 @@ package btrplace.solver.api.cstrSpec.spec;
 
 import btrplace.solver.api.cstrSpec.CstrSpecLexer;
 import btrplace.solver.api.cstrSpec.CstrSpecParser;
-import btrplace.solver.api.cstrSpec.MyCstrSpecVisitor;
 import btrplace.solver.api.cstrSpec.Specification;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;

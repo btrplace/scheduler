@@ -208,7 +208,7 @@ public class Verify {
             }
         }
         if (args.length - i < 2) {
-            System.err.println("Missing arguments: " + (args.length - i) + " " + i);
+            System.err.println("Missing arguments");
             usage();
 
         }
