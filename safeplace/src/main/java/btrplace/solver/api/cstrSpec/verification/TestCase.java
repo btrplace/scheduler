@@ -78,7 +78,7 @@ public class TestCase {
         return d;
     }
 
-    public String pretty() {
+    public String pretty(boolean verbose) {
         StringBuilder b = new StringBuilder();
         if (d) {
             b.append("discrete ");
@@ -86,7 +86,14 @@ public class TestCase {
         b.append(c.toString(args)).append(" ");
         b.append(succeed()).append("\n");
         for (int i = 0; i < res.size(); i++) {
-            b.append("\t").append(verifs.get(i).getClass().getSimpleName()).append(": ").append(res.get(i)).append("\n");
+            b.append("\t").append(verifs.get(i).getClass().getSimpleName()).append(": ").append(res.get(i));
+            if (i < res.size() - 1) {
+                b.append("\n");
+            }
+        }
+        if (verbose) {
+            b.append("\nSource Model:\n").append(plan.getOrigin().getMapping());
+            b.append("Plan:\n").append(plan);
         }
         return b.toString();
     }

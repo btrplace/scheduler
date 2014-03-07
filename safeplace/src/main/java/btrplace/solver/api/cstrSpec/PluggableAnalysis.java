@@ -29,9 +29,7 @@ public class PluggableAnalysis {
         Constraint cstr = spec.get("spread");
         List<TestCase> issues = check(cstr, Arrays.asList(new SpecVerifier(), new ImplVerifier()));
         for (TestCase tc : issues) {
-            System.out.println(tc.pretty());
-            System.out.println(tc.getPlan().getOrigin().getMapping());
-            System.out.println(tc.getPlan());
+            System.out.println(tc.pretty(true));
         }
 
     }

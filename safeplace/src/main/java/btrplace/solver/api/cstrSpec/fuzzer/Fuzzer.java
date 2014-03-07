@@ -59,6 +59,19 @@ public class Fuzzer {
         this.listeners.add(l);
     }
 
+    public int nbSourceModel() {
+        return new ModelsGenerator(nbNodes, nbVMs).count();
+    }
+
+    public int maxNbOfPlansPerModel() {
+        return nbNodes * nbNodes * (int) Math.pow(nbVMs, 4);
+    }
+
+    public int maxNbOfDurationsPerPlan() {
+        int nbActions = nbNodes * nbVMs;
+        return (int) Math.pow((maxDuration - minDuration) + 1, nbActions);
+    }
+
     public void go() {
         ModelsGenerator mg = new ModelsGenerator(nbNodes, nbVMs);
         for (Model mo : mg) {

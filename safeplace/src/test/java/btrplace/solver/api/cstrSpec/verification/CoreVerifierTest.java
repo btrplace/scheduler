@@ -83,9 +83,7 @@ public class CoreVerifierTest {
         fuzzer.go();
         System.out.println();
         for (TestCase c : issues) {
-            System.out.println(c.pretty());
-            System.out.println("\tOrigin:\n" + c.getPlan().getOrigin().getMapping());
-            System.out.println("\tPlan:\n" + c.getPlan());
+            System.out.println(c.pretty(true));
         }
     }
 
