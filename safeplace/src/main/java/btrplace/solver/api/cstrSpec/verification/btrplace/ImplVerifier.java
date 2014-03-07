@@ -58,7 +58,7 @@ public class ImplVerifier implements Verifier {
         setDurationEstimators(p);
 
         try {
-            //cra.setVerbosity(3);
+            cra.setVerbosity(0);
             cra.doOptimize(false);
             ReconfigurationPlan res = cra.solve(p.getOrigin(), cstrs);
             if (res == null) {
@@ -70,6 +70,8 @@ public class ImplVerifier implements Verifier {
             }
         } catch (SolverException ex) {
             return CheckerResult.newFailure(ex.getMessage());
+        } catch (Exception e) {
+            return CheckerResult.newFailure(e.getClass().getSimpleName() + " " + e.getMessage());
         }
     }
 
@@ -77,7 +79,7 @@ public class ImplVerifier implements Verifier {
         return new Fence(v, Collections.singleton(n));
     }
 
-    private Set<SatConstraint> actionsToConstraints(ReconfigurationPlan p/*, SatConstraint toTest*/) {
+    private Set<SatConstraint> actionsToConstraints(ReconfigurationPlan p) {
         Set<Node> notSwitching = new HashSet<>(p.getOrigin().getMapping().getAllNodes());
         Set<SatConstraint> cstrs = new HashSet<>();
 

@@ -6,13 +6,19 @@ import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.view.ShareableResource;
+import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
+import btrplace.solver.api.cstrSpec.spec.term.Constant;
+import btrplace.solver.api.cstrSpec.spec.type.SetType;
+import btrplace.solver.api.cstrSpec.spec.type.VMType;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * @author Fabien Hermenier
@@ -156,5 +162,29 @@ public class TestSpec {
             System.out.flush();
 
         }
+    }
+
+    @Test
+    public void testLonely() throws Exception {
+        Model mo = new DefaultModel();
+        Node n0 = mo.newNode();
+        Node n1 = mo.newNode();
+        VM vm0 = mo.newVM();
+        VM vm1 = mo.newVM();
+        mo.getMapping().addOnlineNode(n0);
+        mo.getMapping().addOfflineNode(n1);
+        mo.getMapping().addRunningVM(vm0, n0);
+        mo.getMapping().addRunningVM(vm1, n0);
+
+        Specification spec = getSpecification();
+        Constraint c = spec.get("lonely");
+        SpecVerifier v = new SpecVerifier();
+        /*TestCase tc = new TestCase(Arrays.asList(new SpecVerifier()),
+                                  c, new DefaultReconfigurationPlan(mo),
+                                   Arrays.asList(new Constant(Collections.singleton(vm1),
+                                  new SetType(VMType.getInstance()))), true);*/
+        System.out.println(v.verify(c, new DefaultReconfigurationPlan(mo), Arrays.asList(new Constant(Collections.singleton(vm1),
+                new SetType(VMType.getInstance()))), true));
+        Assert.fail();
     }
 }
