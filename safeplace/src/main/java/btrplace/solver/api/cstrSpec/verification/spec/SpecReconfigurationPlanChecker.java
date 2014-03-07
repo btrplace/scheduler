@@ -173,7 +173,7 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
      */
     public Action check(Proposition ok, Proposition ko) {
         if (!isConsistent(ok, ko)) {
-            throw new RuntimeException("Failure at the beginning");
+            throw new RuntimeException("Failure at the beginning:\nok=" + ok + "\nko=" + ko + "\nmodel:\n" + p.getOrigin().getMapping() + "\nPlan:\n" + p);
         }
 
         if (!p.getActions().isEmpty()) {
@@ -223,7 +223,7 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
     }
 
 
-    private boolean isConsistent(Proposition ok, Proposition ko) {
+    public boolean isConsistent(Proposition ok, Proposition ko) {
         SpecModel mo = checkers.currentModel();
         Boolean bOk = ok.eval(mo);
         Boolean bKo = ko.eval(mo);

@@ -1,8 +1,11 @@
 package btrplace.solver.api.cstrSpec;
 
+import btrplace.model.Model;
+import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.solver.api.cstrSpec.fuzzer.Fuzzer;
-import btrplace.solver.api.cstrSpec.fuzzer.FuzzerListener;
+import btrplace.solver.api.cstrSpec.fuzzer.ModelsGenerator;
+import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer;
+import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzerListener;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
@@ -10,6 +13,7 @@ import btrplace.solver.api.cstrSpec.verification.TestCaseConverter;
 import btrplace.solver.api.cstrSpec.verification.Verifier;
 import btrplace.solver.api.cstrSpec.verification.btrplace.CheckerVerifier;
 import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 
 import java.io.File;
@@ -56,7 +60,7 @@ public class Verify {
     private static boolean q = false;
     private static boolean continuous = true;
 
-    private static Fuzzer fuzzer;
+    private static ReconfigurationPlanFuzzer fuzzer;
 
     private static void exit(String msg) {
         System.err.println(msg);
@@ -218,38 +222,29 @@ public class Verify {
         final List<Verifier> verifiers = makeVerifier(verifier);
 
         final List<TestCase> issues = new ArrayList<>();
-        fuzzer = new Fuzzer(nbVMs, nbNodes).minDuration(minDuration).maxDuration(maxDuration)
-                .nbDelays(nbDelays).nbDurations(nbDurations);
 
-        if (!q) {
-            summarize();
-        }
-        final boolean quiet = q;
-        fuzzer.addListener(new FuzzerListener() {
-            private int d = 0;
+        if (continuous) {
+            fuzzer = new ReconfigurationPlanFuzzer(nbVMs, nbNodes).minDuration(minDuration).maxDuration(maxDuration)
+                    .nbDelays(nbDelays).nbDurations(nbDurations);
 
-            @Override
-            public void recv(ReconfigurationPlan p) {
-                TestCase tc3 = new TestCase(verifiers, c, p, Collections.<Constant>emptyList(), false);
-                counter.hit();
-                if (!tc3.succeed()) {
-                    if (!quiet) {
-                        System.out.print("-");
-                    }
-                    issues.add(tc3);
-                } else {
-                    if (!quiet) {
-                        System.out.print("+");
-                    }
-                }
-                if (!quiet && d++ == 80) {
-                    d = 0;
-                    System.out.println();
-                }
+            if (!q) {
+                summarize();
             }
-        });
-        fuzzer.go();
-        if (!quiet) {
+            fuzzer.addListener(new ReconfigurationPlanFuzzerListener() {
+                @Override
+            public void recv(ReconfigurationPlan p) {
+                    verify2(verifiers, c, p, !continuous, issues, counter);
+                }
+            });
+            fuzzer.go();
+        } else {
+            ModelsGenerator mg = new ModelsGenerator(nbNodes, nbVMs);
+            for (Model m : mg) {
+                ReconfigurationPlan p = new DefaultReconfigurationPlan(m);
+                verify2(verifiers, c, p, !continuous, issues, counter);
+            }
+        }
+        if (!q) {
             System.out.println();
             System.out.println(issues.size() + "/" + counter.get() + " failure(s)");
             for (TestCase tc : issues) {
@@ -258,5 +253,36 @@ public class Verify {
         }
 
         serialize(issues, json);
+    }
+
+    private static void verify2(List<Verifier> verifiers, Constraint c, ReconfigurationPlan p, boolean discrete, List<TestCase> issues, Counter counter) {
+        if (c.isCore()) {
+            TestCase tc3 = new TestCase(verifiers, c, p, Collections.<Constant>emptyList(), !continuous);
+            verify(tc3, issues, counter);
+        } else {
+            SpecModel mo = new SpecModel(p.getOrigin());
+            ConstraintInputGenerator tig = new ConstraintInputGenerator(c, mo, true);
+            for (List<Constant> params : tig) {
+                TestCase tc3 = new TestCase(verifiers, c, p, params, !continuous);
+                verify(tc3, issues, counter);
+            }
+        }
+    }
+
+    private static void verify(TestCase tc, List<TestCase> issues, Counter c) {
+        c.hit();
+        if (!tc.succeed()) {
+            if (!q) {
+                System.out.print("-");
+            }
+            issues.add(tc);
+        } else {
+            if (!q) {
+                System.out.print("+");
+            }
+        }
+        if (!q && c.get() % 80 == 0) {
+            System.out.println();
+        }
     }
 }

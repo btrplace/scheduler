@@ -10,8 +10,8 @@ import btrplace.plan.event.ShutdownNode;
 import btrplace.plan.event.SuspendVM;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.Specification;
-import btrplace.solver.api.cstrSpec.fuzzer.Fuzzer;
-import btrplace.solver.api.cstrSpec.fuzzer.FuzzerListener;
+import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer;
+import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzerListener;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.btrplace.CheckerVerifier;
@@ -59,8 +59,8 @@ public class CoreVerifierTest {
     private void check(final List<Constraint> cores, final List<Verifier> verifs) throws IOException {
         final List<TestCase> issues = new ArrayList<>();
         final TestCaseConverter tcc = new TestCaseConverter();
-        Fuzzer fuzzer = new Fuzzer(1, 1).minDuration(1).maxDuration(3).allDurations().allDelays();/*.nbDurations(3).nbDelays(3);*/
-        fuzzer.addListener(new FuzzerListener() {
+        ReconfigurationPlanFuzzer fuzzer = new ReconfigurationPlanFuzzer(1, 1).minDuration(1).maxDuration(3).allDurations().allDelays();/*.nbDurations(3).nbDelays(3);*/
+        fuzzer.addListener(new ReconfigurationPlanFuzzerListener() {
             private int d = 0;
 
             @Override
@@ -101,8 +101,8 @@ public class CoreVerifierTest {
     }
 
     private void checkcheck(final List<Constraint> cores) {
-        Fuzzer fuzzer = new Fuzzer(1, 1).minDuration(1).maxDuration(3).allDurations().allDelays();/*.nbDurations(3).nbDelays(3);*/
-        fuzzer.addListener(new FuzzerListener() {
+        ReconfigurationPlanFuzzer fuzzer = new ReconfigurationPlanFuzzer(1, 1).minDuration(1).maxDuration(3).allDurations().allDelays();/*.nbDurations(3).nbDelays(3);*/
+        fuzzer.addListener(new ReconfigurationPlanFuzzerListener() {
             int d = 0;
 
             @Override

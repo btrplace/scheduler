@@ -5,7 +5,7 @@ import btrplace.plan.ReconfigurationPlan;
 /**
  * @author Fabien Hermenier
  */
-public interface FuzzerListener {
+public interface ReconfigurationPlanFuzzerListener {
 
     void recv(ReconfigurationPlan p);
 }

@@ -1,8 +1,8 @@
 package btrplace.solver.api.cstrSpec;
 
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.solver.api.cstrSpec.fuzzer.Fuzzer;
-import btrplace.solver.api.cstrSpec.fuzzer.FuzzerListener;
+import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer;
+import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzerListener;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
@@ -36,8 +36,8 @@ public class PluggableAnalysis {
 
     private static List<TestCase> check(final Constraint cstr, final List<Verifier> verifiers) throws Exception {
         final List<TestCase> issues = new ArrayList<>();
-        Fuzzer fuzzer = new Fuzzer(2, 2).minDuration(1).maxDuration(3).allDurations().allDelays();
-        fuzzer.addListener(new FuzzerListener() {
+        ReconfigurationPlanFuzzer fuzzer = new ReconfigurationPlanFuzzer(2, 2).minDuration(1).maxDuration(3).allDurations().allDelays();
+        fuzzer.addListener(new ReconfigurationPlanFuzzerListener() {
             private int d = 0;
 
             @Override

@@ -1,8 +1,8 @@
 package btrplace.solver.api.cstrSpec;
 
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.solver.api.cstrSpec.fuzzer.Fuzzer;
-import btrplace.solver.api.cstrSpec.fuzzer.FuzzerListener;
+import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer;
+import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzerListener;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.Verifier;
@@ -14,9 +14,9 @@ import java.util.concurrent.*;
 /**
  * @author Fabien Hermenier
  */
-public class ParallelConstraintVerification implements FuzzerListener {
+public class ParallelConstraintVerification implements ReconfigurationPlanFuzzerListener {
 
-    private Fuzzer fuzzer;
+    private ReconfigurationPlanFuzzer fuzzer;
 
     private ExecutorService executor;
 
@@ -32,7 +32,7 @@ public class ParallelConstraintVerification implements FuzzerListener {
 
     private int nbPlans;
 
-    public ParallelConstraintVerification(Fuzzer f, List<Verifier> verifiers, int nbWorkers, Constraint cstr, List<Constant> args, boolean conti) {
+    public ParallelConstraintVerification(ReconfigurationPlanFuzzer f, List<Verifier> verifiers, int nbWorkers, Constraint cstr, List<Constant> args, boolean conti) {
         this.fuzzer = f;
         executor = Executors.newFixedThreadPool(nbWorkers);
         completionService = new ExecutorCompletionService<>(executor);

@@ -9,9 +9,9 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
-public class Fuzzer {
+public class ReconfigurationPlanFuzzer {
 
-    private List<FuzzerListener> listeners;
+    private List<ReconfigurationPlanFuzzerListener> listeners;
 
     private int minDuration = 1, maxDuration = 3;
 
@@ -19,43 +19,43 @@ public class Fuzzer {
 
     private int nbNodes, nbVMs;
 
-    public Fuzzer(int nbVMs, int nbNodes) {
+    public ReconfigurationPlanFuzzer(int nbVMs, int nbNodes) {
         listeners = new ArrayList<>();
         this.nbNodes = nbNodes;
         this.nbVMs = nbVMs;
     }
 
-    public Fuzzer minDuration(int d) {
+    public ReconfigurationPlanFuzzer minDuration(int d) {
         minDuration = d;
         return this;
     }
 
-    public Fuzzer maxDuration(int d) {
+    public ReconfigurationPlanFuzzer maxDuration(int d) {
         maxDuration = d;
         return this;
     }
 
-    public Fuzzer nbDurations(int d) {
+    public ReconfigurationPlanFuzzer nbDurations(int d) {
         countDurations = d;
         return this;
     }
 
-    public Fuzzer allDurations() {
+    public ReconfigurationPlanFuzzer allDurations() {
         countDurations = -1;
         return this;
     }
 
-    public Fuzzer nbDelays(int d) {
+    public ReconfigurationPlanFuzzer nbDelays(int d) {
         countDelays = d;
         return this;
     }
 
-    public Fuzzer allDelays() {
+    public ReconfigurationPlanFuzzer allDelays() {
         countDelays = -1;
         return this;
     }
 
-    public void addListener(FuzzerListener l) {
+    public void addListener(ReconfigurationPlanFuzzerListener l) {
         this.listeners.add(l);
     }
 
@@ -102,7 +102,7 @@ public class Fuzzer {
                     for (int j = 0; j < nbDelays; j++) {
                         //System.out.println("New delay " + (j+1) + "/" + countDelays);
                         ReconfigurationPlan gp = delayG.next();
-                        for (FuzzerListener l : listeners) {
+                        for (ReconfigurationPlanFuzzerListener l : listeners) {
                             l.recv(gp);
                         }
                     }

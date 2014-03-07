@@ -1,6 +1,6 @@
 package btrplace.solver.api.cstrSpec;
 
-import btrplace.solver.api.cstrSpec.fuzzer.Fuzzer;
+import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
@@ -36,7 +36,7 @@ public class ParallelConstraintVerificationTest {
                 cores.add(c);
             }
         }
-        Fuzzer fuzzer = new Fuzzer(1, 1).minDuration(1).maxDuration(3).allDurations().allDelays();
+        ReconfigurationPlanFuzzer fuzzer = new ReconfigurationPlanFuzzer(1, 1).minDuration(1).maxDuration(3).allDurations().allDelays();
 
         List<Verifier> verifs = Arrays.asList(new SpecVerifier(), new ImplVerifier());
         Constraint c = s.get("noVMsOnOfflineNodes");
