@@ -12,6 +12,9 @@ public class SetPlus extends Plus<Set<?>> {
 
     public SetPlus(Term<Set<?>> t1, Term<Set<?>> t2) {
         super(t1, t2);
+        if (!a.type().equals(b.type())) {
+            throw new RuntimeException();
+        }
     }
 
     @Override

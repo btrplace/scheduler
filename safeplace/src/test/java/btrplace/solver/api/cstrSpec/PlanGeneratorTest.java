@@ -7,14 +7,13 @@ import btrplace.solver.api.cstrSpec.fuzzer.DurationsGenerator;
 import btrplace.solver.api.cstrSpec.fuzzer.ModelsGenerator;
 import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlansGenerator;
 import org.testng.Assert;
-import org.testng.annotations.Test;
 
 /**
  * @author Fabien Hermenier
  */
 public class PlanGeneratorTest {
 
-    @Test
+    /*@Test*/
     public void gogogo() {
         int nb = 0;
         ModelsGenerator mg = new ModelsGenerator(2, 2);

@@ -41,7 +41,7 @@ constraint gather(vs <: vms) ::=
     !(x,y : vs) (x /= y & vmState(x) = running & vmState(y) = running) --> host(x) = host(y)
 
 constraint lonely (vs <: vms) ::=
-	!(i : vs) vmState(i) = running --> (colocated(i) - {i}) /<: vs
+	!(i : vs) vmState(i) = running --> (colocated(i) - {i}) <: vs
 
 constraint maxOnline(ns <: nodes, nb : int) ::=
    	card({i. i : ns , nodeState(i) = online}) <= nb

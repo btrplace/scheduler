@@ -21,10 +21,10 @@ public class Inc extends AtomicProp {
 
     @Override
     public Boolean eval(SpecModel m) {
-        Object o = a.eval(m);
+        Collection o = (Collection) a.eval(m);
         Collection c = (Collection) b.eval(m);
         if (o != null && c != null) {
-            return c.contains(o);
+            return c.containsAll(o);
         }
         return null;
     }

@@ -26,12 +26,12 @@ public class NInc extends AtomicProp {
 
     @Override
     public Boolean eval(SpecModel m) {
-        Object cA = a.eval(m);
+        Collection cA = (Collection) a.eval(m);
         Collection cB = (Collection) b.eval(m);
         if (cB == null) {
             return null;
         }
         //System.err.println(cA + " /<:" + cB + ": " + !cB.contains(cA));
-        return !cB.contains(cA);
+        return !cB.containsAll(cA);
     }
 }

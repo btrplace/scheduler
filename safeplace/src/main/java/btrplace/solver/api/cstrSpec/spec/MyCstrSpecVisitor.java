@@ -13,9 +13,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Fabien Hermenier
@@ -245,8 +243,8 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
     }
 
     @Override
-    public Constant visitSetInExtension(@NotNull CstrSpecParser.SetInExtensionContext ctx) {
-        Set<Object> s = new HashSet<>();
+    public ExplodedSet visitSetInExtension(@NotNull CstrSpecParser.SetInExtensionContext ctx) {
+        List<Term> s = new ArrayList<>();
         Type ty = null;
         for (CstrSpecParser.TermContext t : ctx.term()) {
             Term tr = (Term) visit(t);
@@ -262,7 +260,7 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
             }
             s.add(tr);
         }
-        return new Constant(s, new SetType(ty));
+        return new ExplodedSet(s, ty);
     }
 
     @Override

@@ -185,6 +185,5 @@ public class TestSpec {
                                   new SetType(VMType.getInstance()))), true);*/
         System.out.println(v.verify(c, new DefaultReconfigurationPlan(mo), Arrays.asList(new Constant(Collections.singleton(vm1),
                 new SetType(VMType.getInstance()))), true));
-        Assert.fail();
     }
 }

@@ -106,6 +106,16 @@ public class SpecModel {
         return s;
     }
 
+    public Set<VM> ready() {
+        Set<VM> s = new HashSet<>();
+        for (Map.Entry<VM, VMStateType.Type> e : vmState.entrySet()) {
+            if (e.getValue() == VMStateType.Type.ready) {
+                s.add(e.getKey());
+            }
+        }
+        return s;
+    }
+
     public Set<VM> hosted(Node n) {
         Set<VM> s = new HashSet<>();
         for (Map.Entry<VM, Node> e : location.entrySet()) {
