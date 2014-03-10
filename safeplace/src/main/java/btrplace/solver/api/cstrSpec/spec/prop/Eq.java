@@ -26,22 +26,4 @@ public class Eq extends AtomicProp {
         }
         return (vA != null && vA.equals(vB));
     }
-
-    /*@Override
-    public Or expand() {
-        Or or = new Or();
-        if (a.domain().size() > 1 && b.domain().size() > 1) {
-            // {1,2} ={1,2} == {1} = {1} | {2} = {2}
-            for (Constant i : a.domain()) {
-                for (Constant j : b.domain()) {
-                    if (i.equals(j)) {
-                        or.add(new Eq(a, j));//.add(new Eq(b, i));
-                    }
-                }
-            }
-        } else {
-            or.add(this);
-        }
-        return or;
-    }       */
 }

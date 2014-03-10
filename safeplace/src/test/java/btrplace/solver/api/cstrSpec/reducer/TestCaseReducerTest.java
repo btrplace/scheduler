@@ -11,14 +11,12 @@ import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.type.NodeType;
-import btrplace.solver.api.cstrSpec.spec.type.SetType;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -69,10 +67,10 @@ public class TestCaseReducerTest {
         Constraint cstr = makeConstraint("offline");
 
         List<Constant> in = new ArrayList<>();
-        in.add(new Constant(Collections.singletonList(n1), new SetType(NodeType.getInstance())));
+        in.add(new Constant(n1, NodeType.getInstance()));
 
         TestCaseReducer tcr = new TestCaseReducer();
-        TestCase tc = new TestCase(null, cstr, p, in, false);
+        TestCase tc = new TestCase(cstr, p, in, false);
         TestCase reduced = tcr.reduce(tc);
         System.out.println("From:\n" + tc);
         System.out.println("To:\n" + reduced);

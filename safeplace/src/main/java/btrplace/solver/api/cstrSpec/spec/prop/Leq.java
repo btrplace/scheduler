@@ -17,26 +17,6 @@ public class Leq extends AtomicProp {
         return new Leq(b, a);
     }
 
-   /* @Override
-    public Or expand() {
-        //Expect nat type with a constant
-        Or or = new Or();
-        if (!a.type().equals(IntType.getInstance()) || !b.type().equals(IntType.getInstance())) {
-            throw new RuntimeException("Expect " + IntType.getInstance() + " <= " + IntType.getInstance() +
-                    ". Got " + a.type() + " <= " + b.type());
-        }
-        for (Constant vA : a.domain()) {
-            for (Constant vB : b.domain()) {
-                int x = (Integer)vA.value();
-                int y = (Integer)vB.value();
-                if (x <= y) {
-                    or.add(new Eq(a, vB));
-                }
-            }
-        }
-        return or;
-    } */
-
     @Override
     public Boolean eval(SpecModel m) {
         Integer iA = (Integer) a.eval(m);

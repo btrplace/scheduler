@@ -28,9 +28,4 @@ public class In extends AtomicProp {
         }
         return null;
     }
-
-    /*@Override
-    public Or expand() {
-        throw new UnsupportedOperationException();
-    } */
 }

@@ -24,15 +24,6 @@ public class Implies extends BinaryProp {
         return o.not();
     }
 
-    /*@Override
-    public Or expand() {
-        Or or = new Or();
-        for (Proposition p : this.props) {
-            or.add(p.expand());
-        }
-        return or;
-    } */
-
     @Override
     public Boolean eval(SpecModel m) {
         return o.eval(m);

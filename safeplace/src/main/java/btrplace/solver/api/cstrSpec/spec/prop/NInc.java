@@ -19,11 +19,6 @@ public class NInc extends AtomicProp {
         return new Inc(a, b);
     }
 
-    /*@Override
-    public Or expand() {
-        throw new UnsupportedOperationException();
-    } */
-
     @Override
     public Boolean eval(SpecModel m) {
         Collection cA = (Collection) a.eval(m);
@@ -31,7 +26,6 @@ public class NInc extends AtomicProp {
         if (cB == null) {
             return null;
         }
-        //System.err.println(cA + " /<:" + cB + ": " + !cB.contains(cA));
         return !cB.containsAll(cA);
     }
 }

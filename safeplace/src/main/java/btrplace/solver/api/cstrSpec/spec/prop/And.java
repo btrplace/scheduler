@@ -23,42 +23,6 @@ public class And extends BinaryProp {
         return new Or(p1.not(), p2.not());
     }
 
-/*    public Or develop() {
-        Or l = new Or();
-        int[] indexes = new int[size()];
-        int i = 0;
-        int nbStates = 1;
-        for (Proposition p : this) {
-            indexes[i++] = 0;
-            nbStates *= p.size();
-        }
-
-        for (int k = 0; k < nbStates; k++) {
-            And and = new And();
-            for (int x = 0; x < size(); x++) {
-                and.add(((Or) getVar(x)).getVar(indexes[x]));
-            }
-            l.add(and);
-            for (int x = 0; x < size(); x++) {
-                indexes[x]++;
-                if (indexes[x] < getVar(x).size()) {
-                    break;
-                }
-                indexes[x] = 0;
-            }
-        }
-        return l;
-    }       */
-
-    /*@Override
-    public And expand() {
-        And and = new And();
-        for (Proposition p : this.props) {
-            and.add(p.expand());
-        }
-        return and;
-    }        */
-
     @Override
     public Boolean eval(SpecModel m) {
 

@@ -29,7 +29,7 @@ public class ConstraintInputGenerator implements Generator<List<Constant>> {
             values.add(dom);
         }
         //System.out.println(cstr.pretty());
-        //System.out.println(values);
+        System.out.println(values);
         if (seq) {
             tg = new AllTuplesGenerator<>(Constant.class, values);
         } else {

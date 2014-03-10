@@ -1,5 +1,6 @@
 package btrplace.solver.api.cstrSpec.spec.term;
 
+import btrplace.solver.api.cstrSpec.spec.term.func.FunctionCall;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
 import btrplace.solver.api.cstrSpec.util.AllTuplesGenerator;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
@@ -95,8 +96,15 @@ public class UserVar<T> extends Var<T> {
                 }
                 return res;
             }
-
+        } else if (backend instanceof FunctionCall) {
+            Collection c = backend.eval(mo);
+            //Each element is must be converted to a constant
+            List<Constant> l = new ArrayList<>();
+            for (Object o : c) {
+                l.add(new Constant(o, backend.type().inside()));
+            }
+            return l;
         }
-        return null;
+        throw new RuntimeException("Unable to get the domain of a " + backend.getClass().getSimpleName());
     }
 }
