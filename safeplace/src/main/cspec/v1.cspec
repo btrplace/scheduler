@@ -1,0 +1,75 @@
+core constraint noVMsOnOfflineNodes() ::=
+    !(n : nodes) nodeState(n) /= online --> card(hosted(n)) = 0
+
+core constraint hostForVMs() ::=
+        !(v : vms) vmState(v) /= ready <--> (host(v) : nodes & nodeState(host(v)) = online)
+
+discrete constraint offline(n : nodes) ::=
+    nodeState(n) = offline
+
+discrete constraint online(n : nodes) ::=
+    nodeState(n) = online
+
+discrete constraint running(v : vms) ::=
+    vmState(v) = running
+
+discrete constraint ready(v : vms) ::=
+    vmState(v) = ready
+
+discrete constraint sleeping(v : vms) ::=
+    vmState(v) = sleeping
+
+discrete constraint killed(v : vms) ::=
+    vmState(v) = terminated
+
+constraint among (vs <: vms, parts : packings(nodes))  ::=
+    ?(g : parts) {host(i). i : vs, vmState(i) = running} <: g
+
+constraint ban(v : vms, ns <: nodes) ::=
+    vmState(v) = running --> host(v) /: ns
+
+constraint fence(v : vms, ns <: nodes) ::=
+    vmState(v) = running --> host(v) : ns
+
+constraint runningCapacity(ns <: nodes, nb : int) ::=
+    sum({card(running(n)). n : ns}) <= nb
+
+constraint resourceCapacity(ns <: nodes, id : string, qty: int) ::=
+    sum({capa(i, id). i : ns}) <= qty
+
+constraint gather(vs <: vms) ::=
+    !(x,y : vs) (x /= y & vmState(x) = running & vmState(y) = running) --> host(x) = host(y)
+
+constraint lonely (vs <: vms) ::=
+	!(i : vs) vmState(i) = running --> (colocated(i) - {i}) <: vs
+
+constraint maxOnline(ns <: nodes, nb : int) ::=
+   	card({i. i : ns , nodeState(i) = online}) <= nb
+
+constraint overbook(n : nodes, id : string, qty: float) ::=
+    sum({cons(v, id). v : running(n)}) * qty < capa(n, id)
+
+constraint preserve(v : vms, id : string, qty: int) ::=
+    vmState(v) = running --> cons(v, id) <= qty
+
+constraint root(v : vms) ::=
+    vmState(v) = running --> ^host(v) = host(v)
+
+constraint quarantine(n : nodes) ::=
+     !(v : hosted(n)) !(v2 /: hosted(n)) root(v) & ban(v2, {n})
+
+constraint sequentialVMTransitions(sched : lists(vms)) ::=
+    !(i,j : range(sched)) (i /= j & vmState(sched[i]) : {booting, suspending, resuming, halting}) -->
+        (
+        vmState(sched[j]) : {running, sleeping, ready, terminated} &
+        ((j < i & vmState(sched[j]) /= vmState(sched[j])) | (j > i & vmState(sched[j]) = ^vmState(sched[j])))
+        )
+
+constraint spread(vs <: vms) ::=
+     !(x,y : vs) (x /= y & vmState(x) = running & vmState(y) = running) --> host(x) /= host(y)
+
+constraint split(part : packings(vms)) ::=
+    { {host(v). v : p , vmState(v) = running}. p : part} : packings(nodes)
+
+constraint splitAmong(vs : packings(vms), part : packings(nodes)) ::=
+    !(p : part) among(vs, p) & split(vs)

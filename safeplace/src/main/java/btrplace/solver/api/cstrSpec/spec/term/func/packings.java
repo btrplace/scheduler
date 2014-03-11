@@ -3,10 +3,13 @@ package btrplace.solver.api.cstrSpec.spec.term.func;
 import btrplace.solver.api.cstrSpec.spec.term.Term;
 import btrplace.solver.api.cstrSpec.spec.type.SetType;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
-import btrplace.solver.api.cstrSpec.util.AllTuplesGenerator;
+import btrplace.solver.api.cstrSpec.util.AllPackingsGenerator;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Fabien Hermenier
@@ -18,22 +21,21 @@ public class Packings extends Function<Set> {
         return new SetType(new SetType(null));
     }
 
-    @Override
     public Set eval(SpecModel mo, List<Object> args) {
-        List c = new ArrayList((Collection) args.get(0));
-        List<List<Object>> l = new ArrayList<>();
-        for (int i = 0; i < c.size(); i++) {
-            l.add(c);
+        return allPacking((Collection) args.get(0));
+    }
+
+
+    private Set<Set<Set<Object>>> allPacking(Collection<Object> args) {
+        AllPackingsGenerator<Object> pg = new AllPackingsGenerator<>(Object.class, args);
+        Set<Set<Set<Object>>> packings = new HashSet<>();
+        while (pg.hasNext()) {
+            Set<Set<Object>> s = pg.next();
+            if (!s.isEmpty()) {
+                packings.add(s);
+            }
         }
-        AllTuplesGenerator<Object> tg = new AllTuplesGenerator<>(Object.class, l);
-        Set<Set> res = new HashSet<>();
-        while (tg.hasNext()) {
-            Object[] in = tg.next();
-            Set<Object> s = new HashSet<>(in.length);
-            Collections.addAll(s, in);
-            res.add(s);
-        }
-        return res;
+        return packings;
     }
 
     @Override

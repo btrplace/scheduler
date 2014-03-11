@@ -27,6 +27,14 @@
                 <include>*</include>
             </includes>
         </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/src/main/cspec</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>*</include>
+            </includes>
+        </fileSet>
+
     </fileSets>
     <files>
         <file>

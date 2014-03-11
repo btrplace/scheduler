@@ -139,8 +139,8 @@ public class Verify {
         System.out.println("Verify [options] specFile cstr_id");
         System.out.println("\tVerify the constraint 'cstr_id' using its specification available in 'specFile'");
         System.out.println("\nOptions:");
-        System.out.println("--verifier (impl||impl_repair||checker)\tthe verifier to compare to. Default is 'impl'");
-        System.out.println("--mode (continuous||discrete)\tThe restriction mode to consider for the constraint (if supported). Default is continuous");
+        System.out.println("--verifier (impl | impl_repair | checker)\tthe verifier to compare to. Default is 'impl'");
+        System.out.println("--restriction (continuous | discrete)\tThe type of restriction  to consider for the constraint (if supported). Default is continuous");
         System.out.println("--size VxN\tmake a model of V vms and N nodes. Default is 1x1");
         System.out.println("--durations min..sup\taction duration vary from min to sup (incl). Default is 1..3");
         System.out.println("--nbDurations (all|nb)\tnb of different durations per scheduling. 'all' for all possible. Default is 10");
@@ -175,7 +175,7 @@ public class Verify {
                 case "--verifier":
                     verifier = args[++i];
                     break;
-                case "--mode":
+                case "--restriction":
                     continuous = args[++i].equals("continuous");
                     break;
                 case "--nbDelays":
