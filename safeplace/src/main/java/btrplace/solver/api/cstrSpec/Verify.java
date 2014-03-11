@@ -57,7 +57,7 @@ public class Verify {
     private static String cstrId = null;
     private static String verifier = "impl";
     private static String json = null;
-    private static boolean q = false;
+    private static int verbosityLvl = 0;
     private static boolean continuous = true;
 
     private static ReconfigurationPlanFuzzer fuzzer;
@@ -146,23 +146,20 @@ public class Verify {
         System.out.println("--nbDurations (all|nb)\tnb of different durations per scheduling. 'all' for all possible. Default is 10");
         System.out.println("--nbDelays (all|nb)\tnb of different scheduling delay per plan. 'all' for all possible. Default is 10");
         System.out.println("--json out\tthe JSON file where failures are stored. Default is no output");
-        System.out.println("--quiet no output.");
+        System.out.println("-v Increment the verbosity level (up to three '-v').");
         System.out.println("-h || --help\tprint this help");
         System.exit(1);
     }
 
     public static void main(String[] args) {
         /*
-         --spec foo.cspec
-         --constraint c
-         --size 2x3
-         --durations 1..3
-         (--verifier impl || impl_repair || checker)
-         (--mode continuous || discrete)
-         --nbDurations (all | nb)
-         --nbDelays (all || nb)
-         --quiet
-         (--json file)
+        -v
+        -v
+        -v
+        0 -> exit code
+        1 -> number of success/errors
+        2 -> +/-
+        3 -> the errors
          */
 
         //Parse arguments
@@ -201,8 +198,9 @@ public class Verify {
                 case "--help":
                     usage();
                     break;
-                case "--quiet":
-                    q = true;
+                case "-v":
+                    verbosityLvl++;
+                    break;
                 default:
                     endOptions = true;
                     break;
@@ -227,7 +225,7 @@ public class Verify {
             fuzzer = new ReconfigurationPlanFuzzer(nbVMs, nbNodes).minDuration(minDuration).maxDuration(maxDuration)
                     .nbDelays(nbDelays).nbDurations(nbDurations);
 
-            if (!q) {
+            if (verbosityLvl >= 2) {
                 summarize();
             }
             fuzzer.addListener(new ReconfigurationPlanFuzzerListener() {
@@ -244,15 +242,21 @@ public class Verify {
                 verify2(verifiers, c, p, !continuous, issues, counter);
             }
         }
-        if (!q) {
+        if (verbosityLvl > 1) {
             System.out.println();
+        }
+        if (verbosityLvl > 0) {
             System.out.println(issues.size() + "/" + counter.get() + " failure(s)");
+        }
+        if (verbosityLvl > 2) {
             for (TestCase tc : issues) {
                 System.out.println(tc.pretty(true));
             }
         }
-
         serialize(issues, json);
+        if (!issues.isEmpty()) {
+            System.exit(1);
+        }
     }
 
     private static void verify2(List<Verifier> verifiers, Constraint c, ReconfigurationPlan p, boolean discrete, List<TestCase> issues, Counter counter) {
@@ -272,16 +276,16 @@ public class Verify {
     private static void verify(TestCase tc, List<TestCase> issues, Counter c) {
         c.hit();
         if (!tc.succeed()) {
-            if (!q) {
+            if (verbosityLvl > 1) {
                 System.out.print("-");
             }
             issues.add(tc);
         } else {
-            if (!q) {
+            if (verbosityLvl > 1) {
                 System.out.print("+");
             }
         }
-        if (!q && c.get() % 80 == 0) {
+        if (verbosityLvl > 1 && c.get() % 80 == 0) {
             System.out.println();
         }
     }
