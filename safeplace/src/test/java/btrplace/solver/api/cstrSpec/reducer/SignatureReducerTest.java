@@ -72,7 +72,7 @@ public class SignatureReducerTest {
 
         SpecReader ex = new SpecReader();
         try {
-            for (btrplace.solver.api.cstrSpec.Constraint x : ex.getSpecification(new File("src/test/resources/v1.cspec")).getConstraints()) {
+            for (btrplace.solver.api.cstrSpec.Constraint x : ex.getSpecification(new File("src/main/cspec/v1.cspec")).getConstraints()) {
                 if (x.id().equals(id)) {
                     return x;
                 }

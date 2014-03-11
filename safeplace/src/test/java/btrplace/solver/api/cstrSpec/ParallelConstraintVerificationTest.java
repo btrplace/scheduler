@@ -23,7 +23,7 @@ public class ParallelConstraintVerificationTest {
 
     public Specification getSpec() throws Exception {
         SpecReader r = new SpecReader();
-        return r.getSpecification(new File("src/test/resources/v1.cspec"));
+        return r.getSpecification(new File("src/main/cspec/v1.cspec"));
     }
 
     @Test

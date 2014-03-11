@@ -55,6 +55,42 @@ public class SpecVerifier implements Verifier {
         return CheckerResult.newSuccess();
     }
 
+    public CheckerResult verify2(Constraint cstr, ReconfigurationPlan p, List<Constant> values, boolean discrete) {
+        try {
+            Model src = p.getOrigin();
+
+            setInputs(cstr, src, values);
+
+            Proposition good = cstr.getProposition();
+            Proposition noGood = good.not();
+
+            SpecReconfigurationPlanChecker spc = new SpecReconfigurationPlanChecker(p);
+            if (discrete) {
+                SpecModel mo = new SpecModel(p.getOrigin()); //Discrete means the plan contains no actions.
+                Proposition ok = cstr.getProposition();
+                Proposition ko = ok.not();
+                Boolean bOk = ok.eval(mo);
+                Boolean bKo = ko.eval(mo);
+                if (bOk == null || bKo == null) {
+                    throw new RuntimeException(ok.eval(mo) + "\n" + ko.eval(mo));
+                }
+                if (bOk.equals(bKo)) {
+                    throw new RuntimeException("Both have the same result: " + bOk + " " + bKo);
+                }
+                return new CheckerResult(bOk, "");
+            } else {
+                Action a = spc.check(good, noGood);
+                if (a != null) {
+                    return new CheckerResult(false, a);
+                }
+            }
+        } finally {
+            cstr.reset();
+        }
+        return CheckerResult.newSuccess();
+    }
+
+
     private void setInputs(Constraint c, Model src, List<Constant> values) {
         SpecModel m = new SpecModel(src);
         //Check signature

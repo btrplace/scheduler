@@ -76,31 +76,26 @@ public class Constraint extends Function<Boolean> {
         return params;
     }
 
-    public Boolean eval(SpecModel res, List<Object> values) {
-        /*
-        for (int i = 0; i < values.size(); i++) {
-            UserVar var = params.get(i);
-            if (!var.set(res, values.get(i))) {
-                throw new IllegalArgumentException("Unable to set '" + var.label() + "' (type '" + var.type() + "') to '" + values.get(i) + "'");
+    public Boolean eval(SpecModel mo, List<Object> values) {
+        try {
+            for (int i = 0; i < params.size(); i++) {
+                UserVar v = params.get(i);
+                v.set(mo, values.get(i));
             }
+            Proposition good = p;
+            Proposition noGood = good.not();
+            Boolean bOk = good.eval(mo);
+            Boolean bKo = noGood.eval(mo);
+            if (bOk == null || bKo == null) {
+                throw new RuntimeException(good.eval(mo) + "\n" + noGood.eval(mo));
+            }
+            if (bOk.equals(bKo)) {
+                throw new RuntimeException("Both have the same result: " + bOk + " " + bKo);
+            }
+            return bOk;
+        } finally {
+            reset();
         }
-        if (res == null) {     //TODO: flaw ?
-            return false;
-        }
-        Boolean bOk = this.p.eval(res);
-        Boolean bKO = this.not.eval(res);
-
-        if (bOk == null || bKO == null) {
-            throw new RuntimeException("Both null !\ngood:" + this.p + "\nnotGood: " + not + "\n" + res.getMapping().toString());
-        }
-        if (bOk && bKO) {
-            throw new RuntimeException(values + " good and bad !\ngood:" + this.p + "\nnotGood: " + not + "\n" + res.getMapping().toString());
-        } else if (!(bOk || bKO)) {
-            throw new RuntimeException("Nor good or bad !\ngood:" + this.p + "\nnotGood: " + not + "\n" + res.getMapping().toString());
-        }
-        this.reset();
-        return bOk;*/
-        throw new UnsupportedOperationException();
     }
 
     public SatConstraint instantiate(List values) throws ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException {

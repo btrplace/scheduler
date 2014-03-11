@@ -56,7 +56,7 @@ constraint root(v : vms) ::=
     vmState(v) = running --> ^host(v) = host(v)
 
 constraint quarantine(n : nodes) ::=
-     !(v : hosted(n)) !(v2 /: hosted(n)) root(v) & ban(v2, {n})
+     (!(v : hosted(n)) root(v)) & (!(v2 /: hosted(n)) ban(v2, {n}))
 
 constraint sequentialVMTransitions(sched : lists(vms)) ::=
     !(i,j : range(sched)) (i /= j & vmState(sched[i]) : {booting, suspending, resuming, halting}) -->

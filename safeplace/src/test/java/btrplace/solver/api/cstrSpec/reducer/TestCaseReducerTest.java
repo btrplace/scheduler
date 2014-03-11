@@ -28,7 +28,7 @@ public class TestCaseReducerTest {
 
         SpecReader ex = new SpecReader();
         try {
-            for (Constraint x : ex.getSpecification(new File("src/test/resources/v1.cspec")).getConstraints()) {
+            for (Constraint x : ex.getSpecification(new File("src/main/cspec/v1.cspec")).getConstraints()) {
                 if (x.id().equals(id)) {
                     return x;
                 }

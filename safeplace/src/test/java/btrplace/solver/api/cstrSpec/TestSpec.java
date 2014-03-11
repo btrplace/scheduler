@@ -9,8 +9,7 @@ import btrplace.model.view.ShareableResource;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
-import btrplace.solver.api.cstrSpec.spec.type.SetType;
-import btrplace.solver.api.cstrSpec.spec.type.VMType;
+import btrplace.solver.api.cstrSpec.spec.type.NodeType;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -18,7 +17,6 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * @author Fabien Hermenier
@@ -56,7 +54,7 @@ public class TestSpec {
     }
 
     private Specification getSpecification() throws Exception {
-        return ex.getSpecification(new File("src/test/resources/v1.cspec"));
+        return ex.getSpecification(new File("src/main/cspec/v1.cspec"));
     }
 
     @Test
@@ -165,7 +163,7 @@ public class TestSpec {
     }
 
     @Test
-    public void testLonely() throws Exception {
+    public void testQuarantine() throws Exception {
         Model mo = new DefaultModel();
         Node n0 = mo.newNode();
         Node n1 = mo.newNode();
@@ -177,13 +175,13 @@ public class TestSpec {
         mo.getMapping().addRunningVM(vm1, n0);
 
         Specification spec = getSpecification();
-        Constraint c = spec.get("lonely");
+        Constraint c = spec.get("quarantine");
         SpecVerifier v = new SpecVerifier();
         /*TestCase tc = new TestCase(Arrays.asList(new SpecVerifier()),
                                   c, new DefaultReconfigurationPlan(mo),
                                    Arrays.asList(new Constant(Collections.singleton(vm1),
                                   new SetType(VMType.getInstance()))), true);*/
-        System.out.println(v.verify(c, new DefaultReconfigurationPlan(mo), Arrays.asList(new Constant(Collections.singleton(vm1),
-                new SetType(VMType.getInstance()))), true));
+        System.out.println(v.verify(c, new DefaultReconfigurationPlan(mo), Arrays.asList(new Constant(n0,
+                NodeType.getInstance())), true));
     }
 }
