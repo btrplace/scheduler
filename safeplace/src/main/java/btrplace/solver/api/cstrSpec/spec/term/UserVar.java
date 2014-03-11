@@ -66,7 +66,7 @@ public class UserVar<T> extends Var<T> {
     }
 
     public List<Constant> domain(SpecModel mo) {
-        if ((Term) backend instanceof Primitive) {
+        if ((Term) backend instanceof Primitive || backend instanceof UserVar) {
             if (incl) {
                 List<Constant> s = new ArrayList<>();
                 Collection col = backend.eval(mo);

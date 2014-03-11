@@ -1,3 +1,4 @@
+
 core constraint noVMsOnOfflineNodes() ::=
     !(n : nodes) nodeState(n) /= online --> card(hosted(n)) = 0
 

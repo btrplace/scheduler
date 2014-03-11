@@ -8,6 +8,10 @@ TODO Discrete
 	* impl_repair
 	* checker
 
+  LazySet is still to implement
+
+* Documentation for Corentin
+  
 * Detection of the model size from the constraint signature ?
 
 # Reporting issues

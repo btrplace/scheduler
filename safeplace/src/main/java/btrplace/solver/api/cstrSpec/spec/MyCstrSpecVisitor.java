@@ -281,9 +281,9 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
         Proposition p = Proposition.True;
         if (ctx.COMMA() != null) {
             p = (Proposition) visit(ctx.formula());
-        }
-        if (p == null) {
-            return null;
+            if (p == null) {
+                return null;
+            }
         }
         Term t = (Term) visit(ctx.term());
         if (t == null) {

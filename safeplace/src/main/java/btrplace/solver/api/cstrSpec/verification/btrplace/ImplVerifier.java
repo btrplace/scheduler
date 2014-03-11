@@ -49,7 +49,13 @@ public class ImplVerifier implements Verifier {
 
         if (!c.isCore()) {
             try {
-                cstrs.add(Constraint2BtrPlace.build(c, params));
+                SatConstraint satC = Constraint2BtrPlace.build(c, params);
+                if (discrete && !satC.setContinuous(false)) {
+                    throw new RuntimeException("Implementation of " + c + " don't support the discrete restriction");
+                } else if (!discrete && !satC.setContinuous(true)) {
+                    throw new RuntimeException("Implementation of " + c + " don't support the continuous restriction");
+                }
+                cstrs.add(satC);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

@@ -10,6 +10,8 @@ import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.type.NodeType;
+import btrplace.solver.api.cstrSpec.spec.type.SetType;
+import btrplace.solver.api.cstrSpec.spec.type.VMType;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -183,5 +185,29 @@ public class TestSpec {
                                   new SetType(VMType.getInstance()))), true);*/
         System.out.println(v.verify(c, new DefaultReconfigurationPlan(mo), Arrays.asList(new Constant(n0,
                 NodeType.getInstance())), true));
+    }
+
+    @Test
+    public void testAmong() throws Exception {
+        Model mo = new DefaultModel();
+        Node n0 = mo.newNode();
+        Node n1 = mo.newNode();
+        VM vm0 = mo.newVM();
+        VM vm1 = mo.newVM();
+        mo.getMapping().addOnlineNode(n0);
+        mo.getMapping().addOfflineNode(n1);
+        mo.getMapping().addRunningVM(vm0, n0);
+        mo.getMapping().addSleepingVM(vm1, n0);
+
+        Specification spec = getSpecification();
+        Constraint c = spec.get("among");
+        SpecVerifier v = new SpecVerifier();
+        System.out.println(v.verify(c, new DefaultReconfigurationPlan(mo),
+                Arrays.asList(
+                        new Constant(Arrays.asList(vm0, vm1), new SetType(VMType.getInstance())),
+                        new Constant(Arrays.asList(Arrays.asList(n1)), new SetType(new SetType(NodeType.getInstance())))
+                ),
+                true));
+        Assert.fail();
     }
 }

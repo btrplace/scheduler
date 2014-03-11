@@ -1,11 +1,13 @@
 package btrplace.solver.api.cstrSpec;
 
 import btrplace.solver.api.cstrSpec.spec.prop.Proposition;
+import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.term.Term;
 import btrplace.solver.api.cstrSpec.spec.term.UserVar;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -27,6 +29,9 @@ public class LazySet {
 
     public Set expand(SpecModel mo) {
         Set res = new HashSet();
+        List<Constant> domain = v.domain(mo);
+        System.out.println("Domain for " + v + ": " + domain);
+
         /*for (Object v : (Collection) vars.get(0).getBackend().eval(mo)) {
             vars.get(0).set(v);
             Object o = t.eval(mo);
