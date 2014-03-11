@@ -11,17 +11,19 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * Build a set of elements from a variable, a proposition to test which of the values have to be inserted,
+ * and a term to perform transformations on the variable.
  * @author Fabien Hermenier
  *         TODO: multiple variables
  */
-public class LazySet {
+public class SetBuilder {
 
     private Proposition p;
 
     private UserVar v;
     private Term t;
 
-    public LazySet(Term t, UserVar v, Proposition p) {
+    public SetBuilder(Term t, UserVar v, Proposition p) {
         this.p = p;
         this.t = t;
         this.v = v;
@@ -30,14 +32,14 @@ public class LazySet {
     public Set expand(SpecModel mo) {
         Set res = new HashSet();
         List<Constant> domain = v.domain(mo);
-        System.out.println("Domain for " + v + ": " + domain);
-
-        /*for (Object v : (Collection) vars.get(0).getBackend().eval(mo)) {
-            vars.get(0).set(v);
-            Object o = t.eval(mo);
-            res.add(o);
-            vars.get(0).unset();
-        } */
+        for (Constant c : domain) {
+            v.set(mo, c.eval(mo));
+            Boolean ok = p.eval(mo);
+            if (ok) {
+                res.add(t.eval(mo));
+            }
+        }
+        v.unset();
         return res;
     }
 

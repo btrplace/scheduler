@@ -1,6 +1,6 @@
 package btrplace.solver.api.cstrSpec.spec.term;
 
-import btrplace.solver.api.cstrSpec.LazySet;
+import btrplace.solver.api.cstrSpec.SetBuilder;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 
@@ -60,8 +60,8 @@ public class Constant extends Term {
 
     @Override
     public Object eval(SpecModel mo) {
-        if (o instanceof LazySet) {
-            return ((LazySet) o).expand(mo);
+        if (o instanceof SetBuilder) {
+            return ((SetBuilder) o).expand(mo);
         }
         return o;
     }

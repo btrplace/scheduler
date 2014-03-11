@@ -6,13 +6,7 @@ import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.model.view.ShareableResource;
-import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
-import btrplace.solver.api.cstrSpec.spec.term.Constant;
-import btrplace.solver.api.cstrSpec.spec.type.NodeType;
-import btrplace.solver.api.cstrSpec.spec.type.SetType;
-import btrplace.solver.api.cstrSpec.spec.type.VMType;
-import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -26,34 +20,6 @@ import java.util.Arrays;
 public class TestSpec {
 
     SpecReader ex = new SpecReader();
-
-    @Test
-    public void testFoo() {
-        for (int i = 1; i <= 5; i++) {
-            int nbNodes = i;
-            int nbVMs = i;
-            long nbModels = 0;
-            for (int q = 0; q <= nbNodes; q++) {
-                long vmp = (long) Math.pow(2 * q + 1, nbVMs);
-                long np = C(nbNodes, q);
-                long r = vmp * np;
-                nbModels += r;
-            }
-            System.err.println("Nb of models having " + nbNodes + " nodes and " + nbVMs + " VMs: " + nbModels);
-        }
-    }
-
-    public static long C(int n, int k) {
-        return facto(n) / (facto(k) * facto(n - k));
-    }
-
-    public static long facto(int n) {
-        long r = 1;
-        while (n > 1) {
-            r *= n--;
-        }
-        return r;
-    }
 
     private Specification getSpecification() throws Exception {
         return ex.getSpecification(new File("src/main/cspec/v1.cspec"));
@@ -92,7 +58,6 @@ public class TestSpec {
             }
 
         }
-
 
         for (Constraint c : spec.getConstraints()) {
             if (c.isCore()) {
@@ -162,52 +127,5 @@ public class TestSpec {
             System.out.flush();
 
         }
-    }
-
-    @Test
-    public void testQuarantine() throws Exception {
-        Model mo = new DefaultModel();
-        Node n0 = mo.newNode();
-        Node n1 = mo.newNode();
-        VM vm0 = mo.newVM();
-        VM vm1 = mo.newVM();
-        mo.getMapping().addOnlineNode(n0);
-        mo.getMapping().addOfflineNode(n1);
-        mo.getMapping().addRunningVM(vm0, n0);
-        mo.getMapping().addRunningVM(vm1, n0);
-
-        Specification spec = getSpecification();
-        Constraint c = spec.get("quarantine");
-        SpecVerifier v = new SpecVerifier();
-        /*TestCase tc = new TestCase(Arrays.asList(new SpecVerifier()),
-                                  c, new DefaultReconfigurationPlan(mo),
-                                   Arrays.asList(new Constant(Collections.singleton(vm1),
-                                  new SetType(VMType.getInstance()))), true);*/
-        System.out.println(v.verify(c, new DefaultReconfigurationPlan(mo), Arrays.asList(new Constant(n0,
-                NodeType.getInstance())), true));
-    }
-
-    @Test
-    public void testAmong() throws Exception {
-        Model mo = new DefaultModel();
-        Node n0 = mo.newNode();
-        Node n1 = mo.newNode();
-        VM vm0 = mo.newVM();
-        VM vm1 = mo.newVM();
-        mo.getMapping().addOnlineNode(n0);
-        mo.getMapping().addOfflineNode(n1);
-        mo.getMapping().addRunningVM(vm0, n0);
-        mo.getMapping().addSleepingVM(vm1, n0);
-
-        Specification spec = getSpecification();
-        Constraint c = spec.get("among");
-        SpecVerifier v = new SpecVerifier();
-        System.out.println(v.verify(c, new DefaultReconfigurationPlan(mo),
-                Arrays.asList(
-                        new Constant(Arrays.asList(vm0, vm1), new SetType(VMType.getInstance())),
-                        new Constant(Arrays.asList(Arrays.asList(n1)), new SetType(new SetType(NodeType.getInstance())))
-                ),
-                true));
-        Assert.fail();
     }
 }

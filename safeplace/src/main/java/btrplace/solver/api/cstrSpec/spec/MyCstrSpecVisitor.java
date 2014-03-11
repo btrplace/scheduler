@@ -289,7 +289,7 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
         if (t == null) {
             return null;
         }
-        return new Constant(new LazySet(t, v.get(0), p), new SetType(t.type()));
+        return new Constant(new SetBuilder(t, v.get(0), p), new SetType(t.type()));
     }
 
     @Override

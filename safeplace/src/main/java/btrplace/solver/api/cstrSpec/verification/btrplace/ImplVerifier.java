@@ -64,7 +64,7 @@ public class ImplVerifier implements Verifier {
         setDurationEstimators(p);
 
         try {
-            cra.setVerbosity(0);
+            //cra.setVerbosity(3);
             cra.doOptimize(false);
             ReconfigurationPlan res = cra.solve(p.getOrigin(), cstrs);
             if (res == null) {
