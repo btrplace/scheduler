@@ -55,6 +55,30 @@ public class SpecVerifierTest {
     }
 
     @Test
+    public void testSplitAmong() throws Exception {
+        Model mo = new DefaultModel();
+        Node n0 = mo.newNode();
+        Node n1 = mo.newNode();
+        VM vm0 = mo.newVM();
+        VM vm1 = mo.newVM();
+        mo.getMapping().addOnlineNode(n0);
+        mo.getMapping().addOfflineNode(n1);
+        mo.getMapping().addRunningVM(vm0, n0);
+        mo.getMapping().addSleepingVM(vm1, n0);
+
+        Specification spec = getSpecification();
+        Constraint c = spec.get("splitAmong");
+        SpecVerifier v = new SpecVerifier();
+        CheckerResult res = v.verify(c, new DefaultReconfigurationPlan(mo),
+                Arrays.asList(
+                        new Constant(Arrays.asList(Arrays.asList(vm0), Arrays.asList(vm1)), new SetType(new SetType(VMType.getInstance()))),
+                        new Constant(Arrays.asList(Arrays.asList(n1, n0)), new SetType(new SetType(NodeType.getInstance())))
+                ),
+                true);
+        Assert.assertFalse(res.getStatus());
+    }
+
+    @Test
     public void testQuarantine() throws Exception {
         Model mo = new DefaultModel();
         Node n0 = mo.newNode();

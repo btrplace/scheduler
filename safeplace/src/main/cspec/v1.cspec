@@ -73,4 +73,4 @@ constraint split(part : packings(vms)) ::=
     { {host(v). v : p , vmState(v) = running}. p : part} : packings(nodes)
 
 constraint splitAmong(vs : packings(vms), part : packings(nodes)) ::=
-    !(p : part) among(vs, p) & split(vs)
+    (!(p : part) among(vs, p)) & split(vs)

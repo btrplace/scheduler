@@ -8,10 +8,10 @@ TODO Discrete
 	* impl_repair
 	* checker
 
-  LazySet is still to implement
+* The notion of discrete kinda suck for the moment. It is an empty reconfiguration plan. This is suspicious
 
-* Documentation for Corentin
-  
+* Support correctly discrete constraints. Quarantine, root should be evaluatable. We just don't care about the content of the plans. Just focus on the initial and the resulting omdel.
+
 * Detection of the model size from the constraint signature ?
 
 # Reporting issues

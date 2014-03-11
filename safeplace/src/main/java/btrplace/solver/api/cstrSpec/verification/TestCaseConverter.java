@@ -2,6 +2,9 @@ package btrplace.solver.api.cstrSpec.verification;
 
 import btrplace.json.JSONConverterException;
 import btrplace.json.plan.ReconfigurationPlanConverter;
+import btrplace.model.Element;
+import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.Specification;
@@ -99,19 +102,19 @@ public class TestCaseConverter {
         Constraint cstr = spec.getConstraints().get(0);
         boolean discrete = Boolean.parseBoolean(o.get("discrete").toString());
         ReconfigurationPlan p = pc.fromJSON((JSONObject) o.get("plan"));
-        List<Constant> args = argsFromJSON((JSONArray) o.get("args"));
+        List<Constant> args = argsFromJSON(p, (JSONArray) o.get("args"));
         return new TestCase(cstr, p, args, discrete);
     }
 
-    public List<Constant> argsFromJSON(JSONArray o) throws JSONConverterException {
+    public List<Constant> argsFromJSON(ReconfigurationPlan p, JSONArray o) throws JSONConverterException {
         List<Constant> args = new ArrayList<>();
         for (Object c : o) {
-            args.add(argFromJSON((JSONObject) c));
+            args.add(argFromJSON(p, (JSONObject) c));
         }
         return args;
     }
 
-    private Constant argFromJSON(JSONObject o) throws JSONConverterException {
+    private Constant argFromJSON(ReconfigurationPlan p, JSONObject o) throws JSONConverterException {
         String type = o.get("type").toString();
         switch (type) {
             case "int":
@@ -122,10 +125,16 @@ public class TestCaseConverter {
                 return BoolType.getInstance().newValue(o.get("value").toString());
             case "float":
                 return RealType.getInstance().newValue(o.get("value").toString());
+            case "vm":
+                VM v = p.getOrigin().newVM(Integer.parseInt(o.get("value").toString()));
+                return new Constant(v, VMType.getInstance());
+            case "node":
+                Node n = p.getOrigin().newNode(Integer.parseInt(o.get("value").toString()));
+                return new Constant(n, NodeType.getInstance());
             case "set":
-                return new Constant(argFromJSON((JSONObject) o.get("value")), new SetType(null));
+                return new Constant(argFromJSON(p, (JSONObject) o.get("value")), new SetType(null));
             case "list":
-                return new Constant(argFromJSON((JSONObject) o.get("value")), new ListType(null));
+                return new Constant(argFromJSON(p, (JSONObject) o.get("value")), new ListType(null));
             default:
                 throw new JSONConverterException("Unsupported type '" + type + "'");
         }
@@ -148,11 +157,13 @@ public class TestCaseConverter {
                 jo.put("type", "list");
             }
             JSONArray a = new JSONArray();
-            for (Object cnt : (List) o) {
+            for (Object cnt : (Collection) o) {
                 a.add(jsonValue(cnt));
             }
             jo.put("value", a);
             return jo;
+        } else if (o instanceof Element) {
+            return atom(o instanceof VM ? "vm" : "node", ((Element) o).id());
         } else {
             throw new UnsupportedOperationException("Unsupported type '" + o.getClass().getSimpleName() + "'");
         }

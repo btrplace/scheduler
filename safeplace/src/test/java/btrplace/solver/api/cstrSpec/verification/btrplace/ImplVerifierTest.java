@@ -12,12 +12,15 @@ import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.type.NodeType;
 import btrplace.solver.api.cstrSpec.spec.type.SetType;
 import btrplace.solver.api.cstrSpec.spec.type.VMType;
-import btrplace.solver.api.cstrSpec.verification.CheckerResult;
+import btrplace.solver.api.cstrSpec.verification.TestCase;
+import btrplace.solver.api.cstrSpec.verification.TestCaseConverter;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 
 /**
  * @author Fabien Hermenier
@@ -36,22 +39,26 @@ public class ImplVerifierTest {
         Node n0 = mo.newNode();
         Node n1 = mo.newNode();
         VM vm0 = mo.newVM();
-        VM vm1 = mo.newVM();
+        //VM vm1 = mo.newVM();
         mo.getMapping().addOnlineNode(n0);
         mo.getMapping().addOnlineNode(n1);
         mo.getMapping().addRunningVM(vm0, n0);
-        mo.getMapping().addReadyVM(vm1);
+        //mo.getMapping().addSleepingVM(vm1, n0);
 
         Specification spec = getSpecification();
         Constraint c = spec.get("among");
-        ImplVerifier v = new ImplVerifier(false);
-        //System.out.println(mo.getMapping());
-        CheckerResult res = v.verify(c, new DefaultReconfigurationPlan(mo),
+        //ImplVerifier v = new ImplVerifier(false);
+        TestCase tc = new TestCase(c,
+                new DefaultReconfigurationPlan(mo),
                 Arrays.asList(
-                        new Constant(Arrays.asList(vm0), new SetType(VMType.getInstance())),
-                        new Constant(Arrays.asList(Arrays.asList(n0, n1)), new SetType(new SetType(NodeType.getInstance())))
+                        new Constant(Collections.singleton(vm0), new SetType(VMType.getInstance())),
+                        new Constant(Collections.singleton(new HashSet(Arrays.asList(n0, n1))), new SetType(new SetType(NodeType.getInstance())))
                 ),
-                true);
-        Assert.assertFalse(res.getStatus());
+                true
+        );
+        TestCaseConverter conv = new TestCaseConverter();
+        conv.toJSONString(tc);
+        System.out.println(tc.pretty(true));
+        Assert.fail();
     }
 }
