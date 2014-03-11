@@ -1,6 +1,0 @@
-maxOnline(ns <: NODES, nb : NAT) ::
-	card({i . i : ns & state(i) = online}) <= nb &
-	card({i . i : ns & state(i) = online}) <= nb 
-
-spread(ns <: NODES, nb : NAT) ::
-	card({i . i : ns & state(i) = online}) <= nb 
