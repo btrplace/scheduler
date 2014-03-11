@@ -22,6 +22,6 @@ public class AllPackingsGeneratorTest {
         for (Set<Set<Character>> s : packings) {
             System.out.println(s);
         }
-        Assert.assertEquals(packings.size(), 14);
+        Assert.assertEquals(packings.size(), 15);
     }
 }

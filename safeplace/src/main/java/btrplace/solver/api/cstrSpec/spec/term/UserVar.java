@@ -6,10 +6,7 @@ import btrplace.solver.api.cstrSpec.util.AllTuplesGenerator;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 import edu.emory.mathcs.backport.java.util.Arrays;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Fabien Hermenier
@@ -83,18 +80,16 @@ public class UserVar<T> extends Var<T> {
                 for (Object o : col) {
                     s.add(o);
                 }
-
-
                 List<List<Object>> tuples = new ArrayList<>();
                 for (Object o : s) {
                     tuples.add(s);
                 }
                 AllTuplesGenerator<Object> tg = new AllTuplesGenerator<>(Object.class, tuples);
-                List<Constant> res = new ArrayList<>();
+                Set<Constant> res = new HashSet<>();
                 for (Object[] tuple : tg) {
                     res.add(new Constant(new HashSet(Arrays.asList(tuple)), backend.type()));
                 }
-                return res;
+                return new ArrayList<>(res);
             }
         } else if (backend instanceof FunctionCall) {
             Collection c = backend.eval(mo);

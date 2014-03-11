@@ -1,5 +1,5 @@
 #!/bin/sh
-CSTRS="noVMsOnOfflineNodes hostForVMs offline online running ready sleeping killed among ban fence runningCapacity resourceCapacity gather lonely maxOnline overbook preserve root quarantine sequentualVMTransitions spread split splitAmong"
+CSTRS="noVMsOnOfflineNodes hostForVMs offline online running ready sleeping killed among ban fence runningCapacity resourceCapacity gather lonely maxOnline overbook preserve root quarantine sequentialVMTransitions spread split splitAmong"
 VERIFIERS="impl impl_repair checker"
 for CSTR in ${CSTRS}; do
     echo "--- constraint ${CSTR} ---"
