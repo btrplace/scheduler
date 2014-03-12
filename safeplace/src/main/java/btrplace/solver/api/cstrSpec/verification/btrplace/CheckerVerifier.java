@@ -60,4 +60,9 @@ public class CheckerVerifier implements Verifier {
             throw new RuntimeException(ex);
         }
     }
+
+    @Override
+    public String toString() {
+        return "checker";
+    }
 }

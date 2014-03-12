@@ -60,11 +60,10 @@ public class ImplVerifier implements Verifier {
                 throw new RuntimeException(e);
             }
         }
-        cstrs.addAll(actionsToConstraints(p));
+        cstrs.addAll(actionsToConstraints(p, !discrete));
         setDurationEstimators(p);
 
         try {
-            //cra.setVerbosity(3);
             cra.doOptimize(false);
             ReconfigurationPlan res = cra.solve(p.getOrigin(), cstrs);
             if (res == null) {
@@ -85,7 +84,7 @@ public class ImplVerifier implements Verifier {
         return new Fence(v, Collections.singleton(n));
     }
 
-    private Set<SatConstraint> actionsToConstraints(ReconfigurationPlan p) {
+    private Set<SatConstraint> actionsToConstraints(ReconfigurationPlan p, boolean continuous) {
         Set<Node> notSwitching = new HashSet<>(p.getOrigin().getMapping().getAllNodes());
         Set<SatConstraint> cstrs = new HashSet<>();
 
@@ -124,10 +123,13 @@ public class ImplVerifier implements Verifier {
                 throw new UnsupportedOperationException(a.toString());
             }
 
-            if (a instanceof VMEvent) {
-                cstrs.add(new Schedule(((VMEvent) a).getVM(), a.getStart(), a.getEnd()));
-            } else if (a instanceof NodeEvent) {
-                cstrs.add(new Schedule(((NodeEvent) a).getNode(), a.getStart(), a.getEnd()));
+            if (continuous) {
+                //Only force the schedule for continuous constraints
+                if (a instanceof VMEvent) {
+                    cstrs.add(new Schedule(((VMEvent) a).getVM(), a.getStart(), a.getEnd()));
+                } else if (a instanceof NodeEvent) {
+                    cstrs.add(new Schedule(((NodeEvent) a).getNode(), a.getStart(), a.getEnd()));
+                }
             }
         }
         if (!rooted.isEmpty()) {
@@ -168,5 +170,13 @@ public class ImplVerifier implements Verifier {
                 throw new UnsupportedOperationException(a.toString());
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        if (repair) {
+            return "impl_repair";
+        }
+        return "impl";
     }
 }
