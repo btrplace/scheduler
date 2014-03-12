@@ -27,8 +27,7 @@ public class Running extends Function<Set<VM>> {
         if (n == null) {
             throw new UnsupportedOperationException();
         }
-        throw new UnsupportedOperationException();
-        //return mo.getMapping().getRunningVMs(n);
+        return mo.runnings(n);
     }
 
     @Override
