@@ -26,9 +26,14 @@ public class Constraint2BtrPlace {
         }
         for (Constructor c : cl.getConstructors()) {
             if (c.getParameterTypes().length == values.size()) {
-                return (SatConstraint) c.newInstance(values.toArray());
+                try {
+                    return (SatConstraint) c.newInstance(values.toArray());
+                } catch (Exception e) {
+                    //We want ot try other constructors that may match
+                }
             }
         }
+
         throw new IllegalArgumentException("No constructors compatible with values '" + values + "'");
     }
 }
