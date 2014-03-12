@@ -4,6 +4,8 @@ import btrplace.solver.api.cstrSpec.spec.prop.Proposition;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.term.Term;
 import btrplace.solver.api.cstrSpec.spec.term.UserVar;
+import btrplace.solver.api.cstrSpec.spec.type.ListType;
+import btrplace.solver.api.cstrSpec.spec.type.Type;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 
 import java.util.ArrayList;
@@ -16,20 +18,29 @@ import java.util.List;
  * @author Fabien Hermenier
  *         TODO: multiple variables
  */
-public class ListBuilder {
+public class ListBuilder<T> extends Term<List<T>> {
 
     private Proposition p;
 
     private UserVar v;
-    private Term t;
+    private Term<T> t;
 
-    public ListBuilder(Term t, UserVar v, Proposition p) {
+    private Type type;
+
+    public ListBuilder(Term<T> t, UserVar v, Proposition p) {
         this.p = p;
         this.t = t;
         this.v = v;
+        type = new ListType(t.type());
     }
 
-    public List expand(SpecModel mo) {
+    @Override
+    public Type type() {
+        return type;
+    }
+
+    @Override
+    public List<T> eval(SpecModel mo) {
         List res = new ArrayList();
         List<Constant> domain = v.domain(mo);
         for (Constant c : domain) {

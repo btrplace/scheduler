@@ -271,7 +271,7 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
 
 
     @Override
-    public Object visitSetInComprehension(@NotNull CstrSpecParser.SetInComprehensionContext ctx) {
+    public SetBuilder visitSetInComprehension(@NotNull CstrSpecParser.SetInComprehensionContext ctx) {
         //Get the binder
         List<UserVar> v = visitTypedef(ctx.typedef());
         if (v == null) {
@@ -289,11 +289,11 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
         if (t == null) {
             return null;
         }
-        return new Constant(new SetBuilder(t, v.get(0), p), new SetType(t.type()));
+        return new SetBuilder(t, v.get(0), p);
     }
 
     @Override
-    public Object visitListInComprehension(@NotNull CstrSpecParser.ListInComprehensionContext ctx) {
+    public ListBuilder visitListInComprehension(@NotNull CstrSpecParser.ListInComprehensionContext ctx) {
         //Get the binder
         List<UserVar> v = visitTypedef(ctx.typedef());
         if (v == null) {
@@ -311,7 +311,7 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
         if (t == null) {
             return null;
         }
-        return new Constant(new ListBuilder(t, v.get(0), p), new ListType(t.type()));
+        return new ListBuilder(t, v.get(0), p);
     }
 
     @Override

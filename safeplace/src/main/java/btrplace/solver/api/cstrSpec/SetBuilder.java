@@ -4,6 +4,8 @@ import btrplace.solver.api.cstrSpec.spec.prop.Proposition;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.term.Term;
 import btrplace.solver.api.cstrSpec.spec.term.UserVar;
+import btrplace.solver.api.cstrSpec.spec.type.SetType;
+import btrplace.solver.api.cstrSpec.spec.type.Type;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 
 import java.util.HashSet;
@@ -16,20 +18,29 @@ import java.util.Set;
  * @author Fabien Hermenier
  *         TODO: multiple variables
  */
-public class SetBuilder {
+public class SetBuilder<T> extends Term<Set<T>> {
 
     private Proposition p;
 
     private UserVar v;
-    private Term t;
+    private Term<T> t;
 
-    public SetBuilder(Term t, UserVar v, Proposition p) {
+    private Type type;
+
+    public SetBuilder(Term<T> t, UserVar v, Proposition p) {
         this.p = p;
         this.t = t;
         this.v = v;
+        type = new SetType(t.type());
     }
 
-    public Set expand(SpecModel mo) {
+    @Override
+    public Type type() {
+        return type;
+    }
+
+    @Override
+    public Set<T> eval(SpecModel mo) {
         Set res = new HashSet();
         List<Constant> domain = v.domain(mo);
         for (Constant c : domain) {
