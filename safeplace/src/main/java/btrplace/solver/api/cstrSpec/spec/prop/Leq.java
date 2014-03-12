@@ -14,7 +14,7 @@ public class Leq extends AtomicProp {
 
     @Override
     public AtomicProp not() {
-        return new Leq(b, a);
+        return new Lt(b, a);
     }
 
     @Override

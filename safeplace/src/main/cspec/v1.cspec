@@ -33,10 +33,10 @@ constraint fence(v : vms, ns <: nodes) ::=
     vmState(v) = running --> host(v) : ns
 
 constraint runningCapacity(ns <: nodes, nb : int) ::=
-    sum({card(running(n)). n : ns}) <= nb
+    sum([card(running(n)). n : ns]) <= nb
 
 constraint resourceCapacity(ns <: nodes, id : string, qty: int) ::=
-    sum({capa(i, id). i : ns}) <= qty
+    sum([capa(i, id). i : ns]) <= qty
 
 constraint gather(vs <: vms) ::=
     !(x,y : vs) (x /= y & vmState(x) = running & vmState(y) = running) --> host(x) = host(y)

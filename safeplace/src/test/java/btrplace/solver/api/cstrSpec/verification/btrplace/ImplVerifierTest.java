@@ -14,6 +14,7 @@ import btrplace.solver.api.cstrSpec.spec.type.SetType;
 import btrplace.solver.api.cstrSpec.spec.type.VMType;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.TestCaseConverter;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -47,12 +48,14 @@ public class ImplVerifierTest {
 
         Specification spec = getSpecification();
         Constraint c = spec.get("among");
-        //ImplVerifier v = new ImplVerifier(false);
-        TestCase tc = new TestCase(c,
+        TestCase tc = new TestCase(
+                new SpecModel(mo),
+                new ImplVerifier(),
+                c,
                 new DefaultReconfigurationPlan(mo),
                 Arrays.asList(
-                        new Constant(Collections.singleton(vm0), new SetType(VMType.getInstance())),
-                        new Constant(Collections.singleton(new HashSet(Arrays.asList(n0, n1))), new SetType(new SetType(NodeType.getInstance())))
+                        new Constant(Collections.singletonList(vm0), new SetType(VMType.getInstance())),
+                        new Constant(Collections.singleton(new HashSet<>(Arrays.asList(n0, n1))), new SetType(new SetType(NodeType.getInstance())))
                 ),
                 true
         );

@@ -35,10 +35,11 @@ TODO Discrete
 - constraints of Corentin
 - constraints of Tu
  -> bugs category
-  cause:  	
-  	- aggresive optimisation (due to repair mode ?)
-  	- situation omission (offline w. sleeping)
-  	- ...
+  cause:
+    - corner case omission (offline w. sleeping)
+  	- aggresive optimisation (due to repair mode ?)      
+  	- incorrect model (iff but was implies)       
+    - programming error (index error)
   consequence:
   	-> crashs
   	-> over-filtering

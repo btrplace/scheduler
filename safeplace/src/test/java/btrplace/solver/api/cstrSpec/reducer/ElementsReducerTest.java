@@ -12,6 +12,7 @@ import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.type.NodeType;
 import btrplace.solver.api.cstrSpec.spec.type.SetType;
+import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -71,7 +72,7 @@ public class ElementsReducerTest {
         in.add(new Constant(Collections.singletonList(n1), new SetType(NodeType.getInstance())));
 
 
-        ElementsReducer tcr = new ElementsReducer();
+        ElementsReducer tcr = new ElementsReducer(new ImplVerifier());
         //System.out.println(p.getOrigin().getMapping());
         System.out.println(p);
         ReconfigurationPlan reduced = tcr.reduceVMs(p, cstr, in);

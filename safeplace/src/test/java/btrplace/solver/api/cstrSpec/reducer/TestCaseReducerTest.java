@@ -12,6 +12,8 @@ import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.type.NodeType;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
+import btrplace.solver.api.cstrSpec.verification.btrplace.CheckerVerifier;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -70,7 +72,7 @@ public class TestCaseReducerTest {
         in.add(new Constant(n1, NodeType.getInstance()));
 
         TestCaseReducer tcr = new TestCaseReducer();
-        TestCase tc = new TestCase(cstr, p, in, false);
+        TestCase tc = new TestCase(new SpecModel(mo), new CheckerVerifier(), cstr, p, in, false);
         TestCase reduced = tcr.reduce(tc);
         System.out.println("From:\n" + tc);
         System.out.println("To:\n" + reduced);

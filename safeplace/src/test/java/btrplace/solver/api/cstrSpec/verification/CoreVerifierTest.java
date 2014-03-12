@@ -50,10 +50,10 @@ public class CoreVerifierTest {
             }
         }
         System.out.println("Checker verification: ");
-        check(cores, Arrays.asList(new SpecVerifier(), new CheckerVerifier()));
+        check(cores, Arrays.asList(new SpecVerifier(null), new CheckerVerifier()));
 
         System.out.println("Implementation verification: ");
-        check(cores, Arrays.asList(new SpecVerifier(), new ImplVerifier()));
+        check(cores, Arrays.asList(new SpecVerifier(null), new ImplVerifier()));
     }
 
     private void check(final List<Constraint> cores, final List<Verifier> verifs) throws IOException {
@@ -66,7 +66,7 @@ public class CoreVerifierTest {
             @Override
             public void recv(ReconfigurationPlan p) {
                 for (Constraint c : cores) {
-                    TestCase tc3 = new TestCase(verifs, c, p, Collections.<Constant>emptyList(), false);
+                    TestCase tc3 = new TestCase(null, new ImplVerifier(), c, p, Collections.<Constant>emptyList(), false);
                     if (!tc3.succeed()) {
                         System.out.print("-");
                         issues.add(tc3);

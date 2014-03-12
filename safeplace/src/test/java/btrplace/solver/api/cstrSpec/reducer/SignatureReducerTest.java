@@ -9,6 +9,8 @@ import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.type.NodeType;
 import btrplace.solver.api.cstrSpec.spec.type.SetType;
+import btrplace.solver.api.cstrSpec.verification.btrplace.CheckerVerifier;
+import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -89,7 +91,7 @@ public class SignatureReducerTest {
         Constraint c = makeConstraint("offline");
         System.out.println(p.getOrigin().getMapping() + "\n" + p);
         System.out.println(c.pretty());
-        SignatureReducer red = new SignatureReducer();
+        SignatureReducer red = new SignatureReducer(new ImplVerifier());
         List<Constant> args = new ArrayList<>();
 
         args.add(new Constant(p.getOrigin().getMapping().getAllNodes(), new SetType(NodeType.getInstance())));
@@ -134,7 +136,7 @@ public class SignatureReducerTest {
         List<Constant> in = new ArrayList<>();
         in.add(new Constant(Collections.singletonList(n1), new SetType(NodeType.getInstance())));
 
-        SignatureReducer sr = new SignatureReducer();
+        SignatureReducer sr = new SignatureReducer(new CheckerVerifier());
         List<Constant> red = sr.reduce(p, cstr, in);
         System.out.println(in + " -> " + red);
         Assert.fail();
