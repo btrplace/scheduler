@@ -1,5 +1,6 @@
 package btrplace.solver.api.cstrSpec.spec.term;
 
+import btrplace.solver.api.cstrSpec.ListBuilder;
 import btrplace.solver.api.cstrSpec.SetBuilder;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
@@ -62,7 +63,10 @@ public class Constant extends Term {
     public Object eval(SpecModel mo) {
         if (o instanceof SetBuilder) {
             return ((SetBuilder) o).expand(mo);
+        } else if (o instanceof ListBuilder) {
+            return ((ListBuilder) o).expand(mo);
         }
+
         return o;
     }
 }

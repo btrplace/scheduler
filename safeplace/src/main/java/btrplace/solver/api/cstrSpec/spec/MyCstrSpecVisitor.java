@@ -293,6 +293,28 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
     }
 
     @Override
+    public Object visitListInComprehension(@NotNull CstrSpecParser.ListInComprehensionContext ctx) {
+        //Get the binder
+        List<UserVar> v = visitTypedef(ctx.typedef());
+        if (v == null) {
+            return null;
+        }
+
+        Proposition p = Proposition.True;
+        if (ctx.COMMA() != null) {
+            p = (Proposition) visit(ctx.formula());
+            if (p == null) {
+                return null;
+            }
+        }
+        Term t = (Term) visit(ctx.term());
+        if (t == null) {
+            return null;
+        }
+        return new Constant(new ListBuilder(t, v.get(0), p), new ListType(t.type()));
+    }
+
+    @Override
     public Proposition visitProtectedFormula(@NotNull CstrSpecParser.ProtectedFormulaContext ctx) {
         Proposition p = (Proposition) visit(ctx.formula());
         return p == null ? null : new ProtectedProposition(p);
