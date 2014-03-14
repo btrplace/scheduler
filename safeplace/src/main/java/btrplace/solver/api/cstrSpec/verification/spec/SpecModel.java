@@ -18,6 +18,8 @@ public class SpecModel {
 
     private Model mo;
 
+    private Map<String, Object> vars;
+
     public SpecModel() {
         this(new DefaultModel());
     }
@@ -26,6 +28,7 @@ public class SpecModel {
         this.mo = mo;
         sm = new SpecMapping(mo.getMapping());
         vDoms = new HashMap<>();
+        this.vars = new HashMap<>();
     }
 
     public Model getModel() {
@@ -46,5 +49,18 @@ public class SpecModel {
 
     public SpecMapping getMapping() {
         return sm;
+    }
+
+    public void setValue(String label, Object o) {
+        //System.err.println("Register '" + label + "' " + o + " " +vars.containsKey(label));
+        vars.put(label, o);
+    }
+
+    public Object getValue(String label) {
+        Object o = vars.get(label);
+        if (o == null) {
+            throw new RuntimeException("No value for " + label);
+        }
+        return o;
     }
 }

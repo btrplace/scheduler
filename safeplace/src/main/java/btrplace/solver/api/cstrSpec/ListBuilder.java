@@ -44,13 +44,14 @@ public class ListBuilder<T> extends Term<List<T>> {
         List res = new ArrayList();
         List<Constant> domain = v.domain(mo);
         for (Constant c : domain) {
-            v.set(mo, c.eval(mo));
+            //v.set(mo, c.eval(mo));
+            mo.setValue(v.label(), c.eval(mo));
             Boolean ok = p.eval(mo);
             if (ok) {
                 res.add(t.eval(mo));
             }
         }
-        v.unset();
+        //v.unset();
         return res;
     }
 

@@ -5,6 +5,9 @@ import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.plan.DefaultReconfigurationPlan;
+import btrplace.plan.ReconfigurationPlan;
+import btrplace.plan.event.BootVM;
+import btrplace.plan.event.SuspendVM;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.Specification;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
@@ -21,6 +24,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * @author Fabien Hermenier
@@ -62,6 +66,27 @@ public class ImplVerifierTest {
         System.out.println(tc.pretty(true));
         //Cause it is a bug in btrplace among
         Assert.assertFalse(tc.succeed());
+    }
 
+    @Test
+    public void testLonely() throws Exception {
+        Model mo = new DefaultModel();
+        Node n0 = mo.newNode();
+        Node n1 = mo.newNode();
+        VM v0 = mo.newVM();
+        VM v1 = mo.newVM();
+        mo.getMapping().addOnlineNode(n0);
+        mo.getMapping().addOnlineNode(n1);
+        mo.getMapping().addRunningVM(v0, n1);
+        mo.getMapping().addReadyVM(v1);
+        ReconfigurationPlan p = new DefaultReconfigurationPlan(mo);
+        p.add(new SuspendVM(v0, n1, n1, 0, 3));
+        p.add(new BootVM(v1, n1, 0, 3));
+        ImplVerifier v = new ImplVerifier(false);
+        Constraint c = getSpecification().get("lonely");
+        List<Constant> args = Arrays.asList(new Constant(new HashSet(Arrays.asList(v0, v1)), new SetType(VMType.getInstance())));
+        TestCase tc = new TestCase(v, c, p, args, true);
+        System.out.println(tc.pretty(true));
+        Assert.fail();
     }
 }

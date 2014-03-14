@@ -67,7 +67,7 @@ public class ImplVerifier implements Verifier {
             cra.doOptimize(false);
             ReconfigurationPlan res = cra.solve(p.getOrigin(), cstrs);
             if (res == null) {
-                return CheckerResult.newFailure();
+                return CheckerResult.newFailure("No solution");
             } else if (!p.equals(res)) {
                 throw new RuntimeException("The resulting schedule differ. Got:\n" + res + "\nExpected:\n" + p);
             } else {

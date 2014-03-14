@@ -77,25 +77,21 @@ public class Constraint extends Function<Boolean> {
     }
 
     public Boolean eval(SpecModel mo, List<Object> values) {
-        try {
-            for (int i = 0; i < params.size(); i++) {
-                UserVar v = params.get(i);
-                v.set(mo, values.get(i));
-            }
-            Proposition good = p;
-            Proposition noGood = good.not();
-            Boolean bOk = good.eval(mo);
-            Boolean bKo = noGood.eval(mo);
-            if (bOk == null || bKo == null) {
-                throw new RuntimeException(good.eval(mo) + "\n" + noGood.eval(mo));
-            }
-            if (bOk.equals(bKo)) {
-                throw new RuntimeException("Both have the same result: " + bOk + " " + bKo);
-            }
-            return bOk;
-        } finally {
-            reset();
+        for (int i = 0; i < params.size(); i++) {
+            UserVar v = params.get(i);
+            mo.setValue(v.label(), values.get(i));
         }
+        Proposition good = p;
+        Proposition noGood = good.not();
+        Boolean bOk = good.eval(mo);
+        Boolean bKo = noGood.eval(mo);
+        if (bOk == null || bKo == null) {
+            throw new RuntimeException(good.eval(mo) + "\n" + noGood.eval(mo));
+        }
+        if (bOk.equals(bKo)) {
+            throw new RuntimeException("Both have the same result: " + bOk + " " + bKo);
+        }
+        return bOk;
     }
 
     public SatConstraint instantiate(List values) throws ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException {
@@ -114,12 +110,6 @@ public class Constraint extends Function<Boolean> {
             }
         }
         throw new IllegalArgumentException("No constructors compatible with values '" + values + "'");
-    }
-
-    public void reset() {
-        for (UserVar var : params) {
-            var.unset();
-        }
     }
 
     public String id() {

@@ -15,6 +15,7 @@ import java.util.Set;
 /**
  * Build a set of elements from a variable, a proposition to test which of the values have to be inserted,
  * and a term to perform transformations on the variable.
+ *
  * @author Fabien Hermenier
  *         TODO: multiple variables
  */
@@ -44,13 +45,14 @@ public class SetBuilder<T> extends Term<Set<T>> {
         Set res = new HashSet();
         List<Constant> domain = v.domain(mo);
         for (Constant c : domain) {
-            v.set(mo, c.eval(mo));
+            mo.setValue(v.label(), c.eval(mo));
+            //v.set(mo, c.eval(mo));
             Boolean ok = p.eval(mo);
             if (ok) {
                 res.add(t.eval(mo));
             }
         }
-        v.unset();
+        //v.unset();
         return res;
     }
 

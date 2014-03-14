@@ -16,8 +16,6 @@ public class UserVar<T> extends Var<T> {
 
     private boolean incl;
 
-    private T val;
-
     private boolean not;
 
     public UserVar(String lbl, boolean incl, boolean not, Term backend) {
@@ -41,27 +39,9 @@ public class UserVar<T> extends Var<T> {
         return backend;
     }
 
-    public boolean set(SpecModel mo, T o) {
-        /*Collection s = backend.eval(mo);
-        if (s == null) {
-            throw new IllegalArgumentException("'" + o + "' is outside the domain of  " + backend + " (" + backend.eval(mo) + ")");
-        } */
-        /*if (incl && !backend.eval(mo).contains(o)) {
-            throw new IllegalArgumentException("'" + o + "' is outside the domain of  " + backend + " (" + backend.eval(mo) + ")");
-        } else if (!incl && !backend.eval(mo).containsAll((Collection) o)) {
-            throw new IllegalArgumentException("'" + o + "' is outside the domain of  " + backend + " (" + backend.eval(mo) + ")");
-        } */
-        val = o;
-        return true;
-    }
-
-    public void unset() {
-        val = null;
-    }
-
     @Override
     public T eval(SpecModel m) {
-        return val;
+        return (T) m.getValue(label());
     }
 
     public List<Constant> domain(SpecModel mo) {

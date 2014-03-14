@@ -31,8 +31,6 @@ public class SpecVerifier implements Verifier {
 
     @Override
     public CheckerResult verify(Constraint cstr, ReconfigurationPlan p, List<Constant> values, boolean discrete) {
-        try {
-
             SpecModel mo = new SpecModel(p.getOrigin()); //Discrete means the plan contains no actions.
             setInputs(cstr, mo, values);
 
@@ -58,9 +56,6 @@ public class SpecVerifier implements Verifier {
                     return new CheckerResult(false, a);
                 }
             }
-        } finally {
-            cstr.reset();
-        }
         return CheckerResult.newSuccess();
     }
 
@@ -79,9 +74,7 @@ public class SpecVerifier implements Verifier {
 
         for (int i = 0; i < values.size(); i++) {
             UserVar var = c.getParameters().get(i);
-            if (!var.set(mo, values.get(i).eval(mo))) {
-                throw new IllegalArgumentException("Unable to set '" + var.label() + "' (type '" + var.type() + "') to '" + values.get(i) + "'");
-            }
+            mo.setValue(var.label(), values.get(i).eval(mo));
         }
     }
 

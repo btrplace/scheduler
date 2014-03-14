@@ -63,6 +63,8 @@ public class TestCase {
         StringBuilder b = new StringBuilder();
         if (d) {
             b.append("discrete ");
+        } else {
+            b.append("continuous ");
         }
         b.append(c.toString(args)).append(" ");
         b.append(succeed()).append("\n");
