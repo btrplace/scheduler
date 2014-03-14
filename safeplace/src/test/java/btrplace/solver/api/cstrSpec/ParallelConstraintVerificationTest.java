@@ -2,15 +2,12 @@ package btrplace.solver.api.cstrSpec;
 
 import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
-import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -27,18 +24,16 @@ public class ParallelConstraintVerificationTest {
     public void test() throws Exception {
 
         Specification s = getSpec();
-        List<Constraint> cores = new ArrayList<>();
-        for (Constraint c : s.getConstraints()) {
-            if (c.isCore()) {
-                cores.add(c);
-            }
-        }
-        ReconfigurationPlanFuzzer fuzzer = new ReconfigurationPlanFuzzer(1, 1).minDuration(1).maxDuration(3).allDurations().allDelays();
+        ReconfigurationPlanFuzzer fuzzer = new ReconfigurationPlanFuzzer(2, 2).minDuration(1).maxDuration(3).nbDurations(3).nbDelays(3).discrete();
 
-        Constraint c = s.get("noVMsOnOfflineNodes");
+        Constraint c = s.get("among");
         System.out.println(c.pretty());
-        ParallelConstraintVerification pc = new ParallelConstraintVerification(fuzzer, new ImplVerifier(), 4, c, Collections.<Constant>emptyList(), false);
+        ParallelConstraintVerification pc = new ParallelConstraintVerification(fuzzer, new ImplVerifier(), 4, c, false);
+        long st = System.currentTimeMillis();
         List<TestCase> issues = pc.verify();
-        Assert.assertEquals(issues.size(), 12);
+        long ed = System.currentTimeMillis();
+        System.err.println("Computed in " + (ed - st) + " ms");
+        Assert.assertEquals(issues.size(), 19);
+        Assert.fail();
     }
 }

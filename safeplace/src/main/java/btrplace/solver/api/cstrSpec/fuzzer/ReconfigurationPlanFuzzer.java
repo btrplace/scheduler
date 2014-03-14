@@ -1,6 +1,7 @@
 package btrplace.solver.api.cstrSpec.fuzzer;
 
 import btrplace.model.Model;
+import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 
 import java.util.ArrayList;
@@ -19,10 +20,17 @@ public class ReconfigurationPlanFuzzer {
 
     private int nbNodes, nbVMs;
 
+    private boolean continuous = true;
+
     public ReconfigurationPlanFuzzer(int nbVMs, int nbNodes) {
         listeners = new ArrayList<>();
         this.nbNodes = nbNodes;
         this.nbVMs = nbVMs;
+    }
+
+    public ReconfigurationPlanFuzzer discrete() {
+        continuous = false;
+        return this;
     }
 
     public ReconfigurationPlanFuzzer minDuration(int d) {
@@ -73,12 +81,11 @@ public class ReconfigurationPlanFuzzer {
     }
 
     public void go() {
-        ModelsGenerator mg = new ModelsGenerator(nbNodes, nbVMs);
+        if (continuous) {
+            ModelsGenerator mg = new ModelsGenerator(nbNodes, nbVMs);
         for (Model mo : mg) {
-            //System.out.println("New model");
             ReconfigurationPlansGenerator rpgen = new ReconfigurationPlansGenerator(mo);
             for (ReconfigurationPlan p : rpgen) {
-                //System.out.println("New basic plan");
                 DurationsGenerator dg;
                 int nbDurations = countDurations;
                 if (nbDurations == -1) {
@@ -88,24 +95,28 @@ public class ReconfigurationPlanFuzzer {
                     dg = new DurationsGenerator(p, minDuration, maxDuration, true);
                 }
                 for (int i = 0; i < nbDurations; i++) {
-                    //System.out.println("New duration " + (i+1) + "/" + countDurations);
                     ReconfigurationPlan pd = dg.next();
+                    DelaysGenerator delayG = new DelaysGenerator(pd, false);
 
-                    DelaysGenerator delayG;
-                    int nbDelays = countDelays;
-                    if (nbDelays == -1) {
-                        delayG = new DelaysGenerator(pd, false);
-                        nbDelays = delayG.count();
-                    } else {
+                    int nbDelays = delayG.count();
+                    if (nbDelays != -1 && nbDelays < delayG.count()) {
                         delayG = new DelaysGenerator(pd, true);
+                        nbDelays = countDelays;
                     }
                     for (int j = 0; j < nbDelays; j++) {
-                        //System.out.println("New delay " + (j+1) + "/" + countDelays);
                         ReconfigurationPlan gp = delayG.next();
                         for (ReconfigurationPlanFuzzerListener l : listeners) {
                             l.recv(gp);
                         }
                     }
+                }
+            }
+        }
+        } else {
+            ModelsGenerator mg = new ModelsGenerator(nbNodes, nbVMs);
+            for (Model m : mg) {
+                for (ReconfigurationPlanFuzzerListener l : listeners) {
+                    l.recv(new DefaultReconfigurationPlan(m));
                 }
             }
         }

@@ -21,7 +21,7 @@ for CSTR in ${CSTRS}; do
     echo "--- pluggable constraint ${CSTR} ---"
     for VERIFIER in ${VERIFIERS}; do
         echo "\tVerifying ${VERIFIER}"
-        ./verify.sh --size 2x2 -v --restriction discrete --verifier ${VERIFIER} $* ${CSTR}
+        ./verify.sh --size 2x2 -v --restriction discrete --dom int=0..5 --verifier ${VERIFIER} $* ${CSTR}
     done
 done
 

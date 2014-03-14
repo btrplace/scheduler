@@ -1,9 +1,6 @@
 package btrplace.solver.api.cstrSpec;
 
-import btrplace.model.Model;
-import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
-import btrplace.solver.api.cstrSpec.fuzzer.ModelsGenerator;
 import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzer;
 import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlanFuzzerListener;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
@@ -15,6 +12,7 @@ import btrplace.solver.api.cstrSpec.verification.btrplace.CheckerVerifier;
 import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.spec.IntVerifDomain;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
+import btrplace.solver.api.cstrSpec.verification.spec.StringEnumVerifDomain;
 import btrplace.solver.api.cstrSpec.verification.spec.VerifDomain;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -65,7 +63,8 @@ public class Verify {
 
     private static ReconfigurationPlanFuzzer fuzzer;
 
-    private static IntVerifDomain intVerifDomain = new IntVerifDomain(0, 5);
+    //private static IntVerifDomain intVerifDomain = new IntVerifDomain(0, 5);
+    private static List<VerifDomain> vDoms = new ArrayList<>();
 
     private static void exit(String msg) {
         System.err.println(msg);
@@ -128,16 +127,21 @@ public class Verify {
 
     private static VerifDomain makeVerifDomain(String def) {
         String[] toks = def.split("=");
-        String[] bounds = toks[1].split("\\.\\.");
+
         if (toks[0].equals("int")) {
-            intVerifDomain = new IntVerifDomain(Integer.parseInt(bounds[0]), Integer.parseInt(bounds[1]));
+            String[] bounds = toks[1].split("\\.\\.");
+            vDoms.add(new IntVerifDomain(Integer.parseInt(bounds[0]), Integer.parseInt(bounds[1])));
+        } else if (toks[0].equals("string")) {
+            vDoms.add(new StringEnumVerifDomain(toks[1].split(",")));
         }
         return null;
     }
 
     private static void summarize() {
         System.out.println("Size of the model: " + nbVMs + " VM(s), " + nbNodes + " node(s)");
-        System.out.println("Int space: " + intVerifDomain);
+        for (VerifDomain vd : vDoms) {
+            System.out.println(vd);
+        }
         System.out.println("Verifier: " + verifier);
         System.out.println("Action duration: " + minDuration + ".." + maxDuration);
         System.out.println("nbDurations per action per plan: " + (nbDurations == -1 ? "all" : nbDurations));
@@ -158,7 +162,7 @@ public class Verify {
         System.out.println("--verifier (impl | impl_repair | checker)\tthe verifier to compare to. Default is '" + verifier + "'");
         System.out.println("--restriction (continuous | discrete)\tThe type of restriction  to consider for the constraint (if supported). Default is continuous");
         System.out.println("--size VxN\tmake a model of V vms and N nodes. Default is " + nbVMs + "x" + nbNodes);
-        System.out.println("--dom key=lb..ub. Search space for integer values. Default is " + intVerifDomain);
+        System.out.println("--dom key=lb..ub. Search space for the given type");
         System.out.println("--durations min..sup\taction duration vary from min to sup (incl). Default is 1..3");
         System.out.println("--nbDurations (all|nb)\tnb of different durations per scheduling. 'all' for all possible. Default is " + nbDurations);
         System.out.println("--nbDelays (all|nb)\tnb of different scheduling delay per plan. 'all' for all possible. Default is " + nbDelays);
@@ -231,33 +235,29 @@ public class Verify {
 
         final List<TestCase> issues = new ArrayList<>();
 
-        if (continuous) {
-            fuzzer = new ReconfigurationPlanFuzzer(nbVMs, nbNodes).minDuration(minDuration).maxDuration(maxDuration)
-                    .nbDelays(nbDelays).nbDurations(nbDurations);
-
-            if (verbosityLvl >= 2) {
-                summarize();
-            }
-            fuzzer.addListener(new ReconfigurationPlanFuzzerListener() {
-                @Override
-            public void recv(ReconfigurationPlan p) {
-                    verify2(v, c, p, !continuous, issues, counter);
-                }
-            });
-            fuzzer.go();
-        } else {
-            ModelsGenerator mg = new ModelsGenerator(nbNodes, nbVMs);
-            for (Model m : mg) {
-                ReconfigurationPlan p = new DefaultReconfigurationPlan(m);
-                verify2(v, c, p, !continuous, issues, counter);
-
-            }
+        long startTime = System.currentTimeMillis();
+        fuzzer = new ReconfigurationPlanFuzzer(nbVMs, nbNodes).minDuration(minDuration).maxDuration(maxDuration)
+                .nbDelays(nbDelays).nbDurations(nbDurations);
+        if (!continuous) {
+            fuzzer.discrete();
         }
+        if (verbosityLvl >= 2) {
+            summarize();
+        }
+        fuzzer.addListener(new ReconfigurationPlanFuzzerListener() {
+            @Override
+            public void recv(ReconfigurationPlan p) {
+                makeTestCase(v, c, p, issues, counter);
+            }
+            });
+        fuzzer.go();
+
+        long endTime = System.currentTimeMillis();
         if (verbosityLvl > 1) {
             System.out.println();
         }
         if (verbosityLvl > 0) {
-            System.out.println(issues.size() + "/" + counter.get() + " failure(s)");
+            System.out.println(issues.size() + "/" + counter.get() + " failure(s); in " + (endTime - startTime) + " ms");
         }
         if (verbosityLvl > 2) {
             for (TestCase tc : issues) {
@@ -270,14 +270,16 @@ public class Verify {
         }
     }
 
-    private static void verify2(Verifier v, Constraint c, ReconfigurationPlan p, boolean discrete, List<TestCase> issues, Counter counter) {
+    private static void makeTestCase(Verifier v, Constraint c, ReconfigurationPlan p, List<TestCase> issues, Counter counter) {
 
         if (c.isCore()) {
             TestCase tc3 = new TestCase(v, c, p, Collections.<Constant>emptyList(), !continuous);
             verify(tc3, issues, counter);
         } else {
             SpecModel mo = new SpecModel(p.getOrigin());
-            mo.add(intVerifDomain);
+            for (VerifDomain vd : vDoms) {
+                mo.add(vd);
+            }
             try {
                 ConstraintInputGenerator tig = new ConstraintInputGenerator(c, mo, true);
                 for (List<Constant> params : tig) {

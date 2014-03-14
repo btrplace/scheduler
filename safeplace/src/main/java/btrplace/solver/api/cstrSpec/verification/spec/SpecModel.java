@@ -16,12 +16,20 @@ public class SpecModel {
 
     private Map<String, VerifDomain> vDoms;
 
+    private Model mo;
+
     public SpecModel() {
         this(new DefaultModel());
     }
+
     public SpecModel(Model mo) {
+        this.mo = mo;
         sm = new SpecMapping(mo.getMapping());
         vDoms = new HashMap<>();
+    }
+
+    public Model getModel() {
+        return mo;
     }
 
     public void add(VerifDomain d) {

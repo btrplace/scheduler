@@ -1,5 +1,7 @@
 package btrplace.solver.api.cstrSpec.spec.term.func;
 
+import btrplace.model.VM;
+import btrplace.model.view.ShareableResource;
 import btrplace.solver.api.cstrSpec.spec.type.IntType;
 import btrplace.solver.api.cstrSpec.spec.type.StringType;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
@@ -15,13 +17,13 @@ public class Cons extends Function<Integer> {
 
     @Override
     public Integer eval(SpecModel mo, List<Object> args) {
-        throw new UnsupportedOperationException();
-        /*String rc = (String) args.get(1);
-        ShareableResource r = (ShareableResource) mo.getView(ShareableResource.VIEW_ID_BASE + rc);
+        //throw new UnsupportedOperationException();
+        String rc = (String) args.get(1);
+        ShareableResource r = (ShareableResource) mo.getModel().getView(ShareableResource.VIEW_ID_BASE + rc);
         if (r == null) {
             throw new RuntimeException("View '" + ShareableResource.VIEW_ID_BASE + rc + "' is missing");
         }
-        return r.getConsumption((VM) args.get(0));*/
+        return r.getConsumption((VM) args.get(0));
     }
 
     @Override
