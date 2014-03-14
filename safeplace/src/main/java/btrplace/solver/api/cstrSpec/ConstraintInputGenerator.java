@@ -19,8 +19,10 @@ public class ConstraintInputGenerator implements Generator<List<Constant>> {
 
     private Generator<Constant[]> tg;
 
-    public ConstraintInputGenerator(Constraint cstr, SpecModel mo, boolean seq) {
+    private Constraint cstr;
 
+    public ConstraintInputGenerator(Constraint cstr, SpecModel mo, boolean seq) {
+        this.cstr = cstr;
         List<UserVar> params = cstr.getParameters();
         List<List<Constant>> values = new ArrayList<>(params.size());
 
@@ -37,11 +39,14 @@ public class ConstraintInputGenerator implements Generator<List<Constant>> {
 
     @Override
     public boolean hasNext() {
-        return tg.hasNext();
+        return cstr.isCore() ? false : tg.hasNext();
     }
 
     @Override
     public List<Constant> next() {
+        if (cstr.isCore()) {
+            return Collections.emptyList();
+        }
         Constant[] tuple = tg.next();
         List<Constant> m = new ArrayList<>(tuple.length);
         Collections.addAll(m, tuple);
@@ -60,7 +65,7 @@ public class ConstraintInputGenerator implements Generator<List<Constant>> {
 
     @Override
     public int count() {
-        return tg.count();
+        return cstr.isCore() ? 0 : tg.count();
     }
 
     @Override
