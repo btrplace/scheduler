@@ -25,7 +25,7 @@ public class NodeState extends Function<NodeStateType.Type> {
         if (n == null) {
             return null;
         }
-        return mo.state(n);
+        return mo.getMapping().state(n);
         /*if (mo.getMapping().isOffline(n)) {
             return NodeStateType.Type.offline;
         } else if (mo.getMapping().isOnline(n)) {

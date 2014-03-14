@@ -14,7 +14,6 @@ import btrplace.solver.api.cstrSpec.spec.type.SetType;
 import btrplace.solver.api.cstrSpec.spec.type.VMType;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.TestCaseConverter;
-import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -49,7 +48,6 @@ public class ImplVerifierTest {
         Specification spec = getSpecification();
         Constraint c = spec.get("among");
         TestCase tc = new TestCase(
-                new SpecModel(mo),
                 new ImplVerifier(),
                 c,
                 new DefaultReconfigurationPlan(mo),
@@ -62,6 +60,8 @@ public class ImplVerifierTest {
         TestCaseConverter conv = new TestCaseConverter();
         conv.toJSONString(tc);
         System.out.println(tc.pretty(true));
-        Assert.fail();
+        //Cause it is a bug in btrplace among
+        Assert.assertFalse(tc.succeed());
+
     }
 }

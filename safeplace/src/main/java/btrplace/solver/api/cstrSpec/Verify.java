@@ -13,8 +13,11 @@ import btrplace.solver.api.cstrSpec.verification.TestCaseConverter;
 import btrplace.solver.api.cstrSpec.verification.Verifier;
 import btrplace.solver.api.cstrSpec.verification.btrplace.CheckerVerifier;
 import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
+import btrplace.solver.api.cstrSpec.verification.spec.IntVerifDomain;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
-import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
+import btrplace.solver.api.cstrSpec.verification.spec.VerifDomain;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -62,6 +65,8 @@ public class Verify {
 
     private static ReconfigurationPlanFuzzer fuzzer;
 
+    private static IntVerifDomain intVerifDomain = new IntVerifDomain(0, 5);
+
     private static void exit(String msg) {
         System.err.println(msg);
         System.exit(1);
@@ -89,23 +94,17 @@ public class Verify {
         return c;
     }
 
-    private static List<Verifier> makeVerifier(String verifier) {
-        List<Verifier> verifiers = new ArrayList<>();
-        verifiers.add(new SpecVerifier());
+    private static Verifier makeVerifier(String verifier) {
         switch (verifier) {
             case "impl":
-                verifiers.add(new ImplVerifier(false));
-                break;
+                return new ImplVerifier(false);
             case "impl_repair":
-                verifiers.add(new ImplVerifier(true));
-                break;
+                return new ImplVerifier(true);
             case "checker":
-                verifiers.add(new CheckerVerifier());
-                break;
-            default:
-                exit("Unsupported verifier: '" + verifier);
+                return new CheckerVerifier();
         }
-        return verifiers;
+        exit("Unsupported verifier: '" + verifier);
+        return null;
     }
 
     private static void serialize(List<TestCase> issues, String output) {
@@ -114,14 +113,31 @@ public class Verify {
             return;
         }
         try (FileWriter implF = new FileWriter(output)) {
-            tcc.toJSON(issues, implF);
+            JSONArray arr = new JSONArray();
+            for (TestCase tc : issues) {
+                JSONObject o = new JSONObject();
+                o.put("tc", tcc.toJSON(tc));
+                o.put("succeeded", false);
+                arr.add(o);
+            }
+            arr.writeJSONString(implF);
         } catch (Exception e) {
             exit(e.getMessage());
         }
     }
 
+    private static VerifDomain makeVerifDomain(String def) {
+        String[] toks = def.split("=");
+        String[] bounds = toks[1].split("\\.\\.");
+        if (toks[0].equals("int")) {
+            intVerifDomain = new IntVerifDomain(Integer.parseInt(bounds[0]), Integer.parseInt(bounds[1]));
+        }
+        return null;
+    }
+
     private static void summarize() {
         System.out.println("Size of the model: " + nbVMs + " VM(s), " + nbNodes + " node(s)");
+        System.out.println("Int space: " + intVerifDomain);
         System.out.println("Verifier: " + verifier);
         System.out.println("Action duration: " + minDuration + ".." + maxDuration);
         System.out.println("nbDurations per action per plan: " + (nbDurations == -1 ? "all" : nbDurations));
@@ -139,29 +155,20 @@ public class Verify {
         System.out.println("Verify [options] specFile cstr_id");
         System.out.println("\tVerify the constraint 'cstr_id' using its specification available in 'specFile'");
         System.out.println("\nOptions:");
-        System.out.println("--verifier (impl | impl_repair | checker)\tthe verifier to compare to. Default is 'impl'");
+        System.out.println("--verifier (impl | impl_repair | checker)\tthe verifier to compare to. Default is '" + verifier + "'");
         System.out.println("--restriction (continuous | discrete)\tThe type of restriction  to consider for the constraint (if supported). Default is continuous");
-        System.out.println("--size VxN\tmake a model of V vms and N nodes. Default is 1x1");
+        System.out.println("--size VxN\tmake a model of V vms and N nodes. Default is " + nbVMs + "x" + nbNodes);
+        System.out.println("--dom key=lb..ub. Search space for integer values. Default is " + intVerifDomain);
         System.out.println("--durations min..sup\taction duration vary from min to sup (incl). Default is 1..3");
-        System.out.println("--nbDurations (all|nb)\tnb of different durations per scheduling. 'all' for all possible. Default is 10");
-        System.out.println("--nbDelays (all|nb)\tnb of different scheduling delay per plan. 'all' for all possible. Default is 10");
+        System.out.println("--nbDurations (all|nb)\tnb of different durations per scheduling. 'all' for all possible. Default is " + nbDurations);
+        System.out.println("--nbDelays (all|nb)\tnb of different scheduling delay per plan. 'all' for all possible. Default is " + nbDelays);
         System.out.println("--json out\tthe JSON file where failures are stored. Default is no output");
         System.out.println("-v Increment the verbosity level (up to three '-v').");
-        System.out.println("-h || --help\tprint this help");
+        System.out.println("-h | --help\tprint this help");
         System.exit(1);
     }
 
     public static void main(String[] args) {
-        /*
-        -v
-        -v
-        -v
-        0 -> exit code
-        1 -> number of success/errors
-        2 -> +/-
-        3 -> the errors
-         */
-
         //Parse arguments
         final Counter counter = new Counter();
         int i;
@@ -185,6 +192,9 @@ public class Verify {
                     String[] toks = args[++i].split("\\.\\.");
                     minDuration = Integer.parseInt(toks[0]);
                     maxDuration = Integer.parseInt(toks[1]);
+                    break;
+                case "--dom":
+                    makeVerifDomain(args[++i]);
                     break;
                 case "--size":
                     String[] ts = args[++i].split("x");
@@ -217,7 +227,7 @@ public class Verify {
         specFile = args[i++];
         cstrId = args[i++];
         final Constraint c = makeConstraint(specFile, cstrId, continuous);
-        final List<Verifier> verifiers = makeVerifier(verifier);
+        final Verifier v = makeVerifier(verifier);
 
         final List<TestCase> issues = new ArrayList<>();
 
@@ -231,7 +241,7 @@ public class Verify {
             fuzzer.addListener(new ReconfigurationPlanFuzzerListener() {
                 @Override
             public void recv(ReconfigurationPlan p) {
-                    verify2(verifiers, c, p, !continuous, issues, counter);
+                    verify2(v, c, p, !continuous, issues, counter);
                 }
             });
             fuzzer.go();
@@ -239,7 +249,8 @@ public class Verify {
             ModelsGenerator mg = new ModelsGenerator(nbNodes, nbVMs);
             for (Model m : mg) {
                 ReconfigurationPlan p = new DefaultReconfigurationPlan(m);
-                verify2(verifiers, c, p, !continuous, issues, counter);
+                verify2(v, c, p, !continuous, issues, counter);
+
             }
         }
         if (verbosityLvl > 1) {
@@ -259,15 +270,17 @@ public class Verify {
         }
     }
 
-    private static void verify2(List<Verifier> verifiers, Constraint c, ReconfigurationPlan p, boolean discrete, List<TestCase> issues, Counter counter) {
+    private static void verify2(Verifier v, Constraint c, ReconfigurationPlan p, boolean discrete, List<TestCase> issues, Counter counter) {
+
         if (c.isCore()) {
-            TestCase tc3 = new TestCase(verifiers, c, p, Collections.<Constant>emptyList(), !continuous);
+            TestCase tc3 = new TestCase(v, c, p, Collections.<Constant>emptyList(), !continuous);
             verify(tc3, issues, counter);
         } else {
             SpecModel mo = new SpecModel(p.getOrigin());
+            mo.add(intVerifDomain);
             ConstraintInputGenerator tig = new ConstraintInputGenerator(c, mo, true);
             for (List<Constant> params : tig) {
-                TestCase tc3 = new TestCase(verifiers, c, p, params, !continuous);
+                TestCase tc3 = new TestCase(v, c, p, params, !continuous);
                 verify(tc3, issues, counter);
             }
         }

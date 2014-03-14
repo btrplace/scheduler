@@ -3,11 +3,8 @@ package btrplace.solver.api.cstrSpec.verification;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
-import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -21,42 +18,30 @@ public class TestCase {
 
     private List<Constant> args;
 
-    private List<Verifier> verifs;
+    private CheckerResult[] res;
 
-    private List<CheckerResult> res;
+    private Verifier verifier;
 
     private boolean d;
 
-    public TestCase(Constraint c, ReconfigurationPlan p, List<Constant> args, boolean d) {
-        this(Arrays.asList(new ImplVerifier()/*, new CheckerVerifier()*/, new SpecVerifier()), c, p, args, d);
-    }
-
-    public TestCase(List<Verifier> verifs, Constraint c, ReconfigurationPlan p, List<Constant> args, boolean d) {
-        this.verifs = verifs;
-        res = new ArrayList<>(verifs.size());
-        for (Verifier v : verifs) {
-            res.add(v.verify(c, p, args, d));
-        }
-
+    public TestCase(Verifier v, Constraint c, ReconfigurationPlan p, List<Constant> args, boolean d) {
+        res = new CheckerResult[2];
+        res[0] = new SpecVerifier().verify(c, p, args, d);
+        res[1] = v.verify(c, p, args, d);
+        verifier = v;
         this.args = args;
         this.c = c;
         this.plan = p;
-    }
-
-    public List<Verifier> getVerifiers() {
-        return verifs;
+        this.d = d;
     }
 
     public boolean succeed() {
-        boolean st = res.get(0).getStatus();
-        for (int i = 1; i < res.size(); i++) {
-            if (res.get(i).getStatus() != st) {
-                return false;
-            }
-        }
-        return true;
+        return res[0].getStatus() == res[1].getStatus();
     }
 
+    public Verifier getVerifier() {
+        return verifier;
+    }
 
     public Constraint getConstraint() {
         return c;
@@ -70,10 +55,6 @@ public class TestCase {
         return args;
     }
 
-    public List<CheckerResult> getResults() {
-        return res;
-    }
-
     public boolean isDiscrete() {
         return d;
     }
@@ -85,12 +66,9 @@ public class TestCase {
         }
         b.append(c.toString(args)).append(" ");
         b.append(succeed()).append("\n");
-        for (int i = 0; i < res.size(); i++) {
-            b.append("\t").append(verifs.get(i).getClass().getSimpleName()).append(": ").append(res.get(i));
-            if (i < res.size() - 1) {
-                b.append("\n");
-            }
-        }
+        b.append("spec: ").append(res[0]).append("\n");
+        b.append(verifier.toString()).append(": ").append(res[1]);
+
         if (verbose) {
             b.append("\nSource Model:\n").append(plan.getOrigin().getMapping());
             b.append("Plan:\n").append(plan);

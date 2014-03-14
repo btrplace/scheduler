@@ -11,6 +11,7 @@ import btrplace.solver.api.cstrSpec.Specification;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.type.*;
+import btrplace.solver.api.cstrSpec.verification.btrplace.CheckerVerifier;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.parser.JSONParser;
@@ -45,13 +46,13 @@ public class TestCaseConverter {
         return jo;
     }
 
-    public void toJSON(List<TestCase> l, Appendable o) throws IOException, JSONConverterException {
+   /*public void toJSON(List<TestCase> l, Appendable o) throws IOException, JSONConverterException {
         JSONArray a = new JSONArray();
         for (TestCase c : l) {
             a.add(toJSON(c));
         }
         a.writeJSONString(o);
-    }
+    }*/
 
     public String toJSONString(TestCase tc) throws JSONConverterException {
         return toJSON(tc).toJSONString();
@@ -103,7 +104,7 @@ public class TestCaseConverter {
         boolean discrete = Boolean.parseBoolean(o.get("discrete").toString());
         ReconfigurationPlan p = pc.fromJSON((JSONObject) o.get("plan"));
         List<Constant> args = argsFromJSON(p, (JSONArray) o.get("args"));
-        return new TestCase(cstr, p, args, discrete);
+        return new TestCase(new CheckerVerifier(), cstr, p, args, discrete);
     }
 
     public List<Constant> argsFromJSON(ReconfigurationPlan p, JSONArray o) throws JSONConverterException {

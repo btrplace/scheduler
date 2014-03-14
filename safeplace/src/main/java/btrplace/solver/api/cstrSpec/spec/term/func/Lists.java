@@ -6,7 +6,9 @@ import btrplace.solver.api.cstrSpec.spec.type.SetType;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Fabien Hermenier
@@ -20,12 +22,11 @@ public class Lists extends Function<java.util.List> {
 
 
     @Override
-    public java.util.List eval(SpecModel mo, java.util.List<Object> args) {
+    public java.util.List eval(SpecModel mo, List<Object> args) {
         Collection c = (Collection) args.get(0);
         if (c == null) {
             return null;
         }
-        Set<ArrayList> s = new HashSet<>();
         return new ArrayList<>(c);
     }
 

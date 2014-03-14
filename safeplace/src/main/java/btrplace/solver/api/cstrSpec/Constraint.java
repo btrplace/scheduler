@@ -3,6 +3,7 @@ package btrplace.solver.api.cstrSpec;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.api.cstrSpec.spec.prop.Proposition;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
+import btrplace.solver.api.cstrSpec.spec.term.Primitive;
 import btrplace.solver.api.cstrSpec.spec.term.UserVar;
 import btrplace.solver.api.cstrSpec.spec.term.Var;
 import btrplace.solver.api.cstrSpec.spec.term.func.Function;
@@ -29,15 +30,18 @@ public class Constraint extends Function<Boolean> {
 
     private boolean discreteOnly, core;
 
-    public static Constraint newCoreConstraint(String n, Proposition p, boolean discrete) {
-        return new Constraint(n, p, Collections.<UserVar>emptyList(), discrete, true);
+    private List<Primitive> primitives;
+
+    public static Constraint newCoreConstraint(String n, Proposition p, List<Primitive> primitives, boolean discrete) {
+        return new Constraint(n, p, primitives, Collections.<UserVar>emptyList(), discrete, true);
     }
 
-    public static Constraint newPluggableConstraint(String n, Proposition p, List<UserVar> params, boolean discrete) {
-        return new Constraint(n, p, params, discrete, false);
+    public static Constraint newPluggableConstraint(String n, Proposition p, List<Primitive> primitives, List<UserVar> params, boolean discrete) {
+        return new Constraint(n, p, primitives, params, discrete, false);
     }
 
-    private Constraint(String n, Proposition p, List<UserVar> params, boolean discrete, boolean core) {
+    private Constraint(String n, Proposition p, List<Primitive> primitives, List<UserVar> params, boolean discrete, boolean core) {
+        this.primitives = primitives;
         this.p = p;
         this.cstrName = n;
         this.params = params;
@@ -158,6 +162,10 @@ public class Constraint extends Function<Boolean> {
         return c.toString(values);
     }
 
+    public List<Primitive> getPrimitives() {
+        return primitives;
+    }
+
     public String toString(List<Constant> values) {
         StringBuilder b = new StringBuilder();
         b.append(id()).append('(');
@@ -169,6 +177,5 @@ public class Constraint extends Function<Boolean> {
             }
         }
         return b.append(')').toString();
-
     }
 }

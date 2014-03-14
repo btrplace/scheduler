@@ -66,7 +66,7 @@ public class CoreVerifierTest {
             @Override
             public void recv(ReconfigurationPlan p) {
                 for (Constraint c : cores) {
-                    TestCase tc3 = new TestCase(null, new ImplVerifier(), c, p, Collections.<Constant>emptyList(), false);
+                    TestCase tc3 = new TestCase(new ImplVerifier(), c, p, Collections.<Constant>emptyList(), false);
                     if (!tc3.succeed()) {
                         System.out.print("-");
                         issues.add(tc3);

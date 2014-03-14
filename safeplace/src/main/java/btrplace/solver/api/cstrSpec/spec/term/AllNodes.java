@@ -17,6 +17,6 @@ public class AllNodes extends Primitive {
 
     @Override
     public Set<Node> eval(SpecModel m) {
-        return m.nodes();
+        return m.getMapping().nodes();
     }
 }

@@ -11,11 +11,9 @@ import btrplace.plan.event.VMEvent;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
-import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
-import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
+import btrplace.solver.api.cstrSpec.verification.Verifier;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -30,17 +28,14 @@ import java.util.ListIterator;
  */
 public class ElementsReducer {
 
-    private ImplVerifier verif;
+    private Verifier v;
 
-    private SpecVerifier cVerif;
-
-    public ElementsReducer() {
-        verif = new ImplVerifier();
-        cVerif = new SpecVerifier();
+    public ElementsReducer(Verifier v) {
+        this.v = v;
     }
 
     private boolean consistent(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
-        TestCase tc = new TestCase(Arrays.asList(verif, cVerif), cstr, p, in, true);
+        TestCase tc = new TestCase(v, cstr, p, in, true);
         return tc.succeed();
     }
 

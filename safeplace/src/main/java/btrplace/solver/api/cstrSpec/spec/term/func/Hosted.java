@@ -27,7 +27,7 @@ public class Hosted extends Function<Set<VM>> {
         if (n == null) {
             throw new UnsupportedOperationException();
         }
-        return mo.hosted(n);
+        return mo.getMapping().hosted(n);
     }
 
     @Override

@@ -24,7 +24,7 @@ public class VMState extends Function<VMStateType.Type> {
         if (v == null) {
             throw new UnsupportedOperationException();
         }
-        return mo.state(v);
+        return mo.getMapping().state(v);
     }
 
     @Override

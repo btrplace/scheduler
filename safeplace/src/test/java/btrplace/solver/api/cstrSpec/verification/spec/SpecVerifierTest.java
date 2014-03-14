@@ -48,7 +48,7 @@ public class SpecVerifierTest {
 
         Specification spec = getSpecification();
         Constraint c = spec.get("among");
-        SpecVerifier v = new SpecVerifier(new SpecModel(mo));
+        SpecVerifier v = new SpecVerifier();
         CheckerResult res = v.verify(c, new DefaultReconfigurationPlan(mo),
                 Arrays.asList(
                         new Constant(Arrays.asList(vm0, vm1), new SetType(VMType.getInstance())),
@@ -72,7 +72,7 @@ public class SpecVerifierTest {
 
         Specification spec = getSpecification();
         Constraint c = spec.get("splitAmong");
-        SpecVerifier v = new SpecVerifier(new SpecModel(mo));
+        SpecVerifier v = new SpecVerifier();
         CheckerResult res = v.verify(c, new DefaultReconfigurationPlan(mo),
                 Arrays.asList(
                         new Constant(Arrays.asList(Arrays.asList(vm0), Arrays.asList(vm1)), new SetType(new SetType(VMType.getInstance()))),
@@ -96,7 +96,7 @@ public class SpecVerifierTest {
 
         Specification spec = getSpecification();
         Constraint c = spec.get("quarantine");
-        SpecVerifier v = new SpecVerifier(new SpecModel(mo));
+        SpecVerifier v = new SpecVerifier();
         /*TestCase tc = new TestCase(Arrays.asList(new SpecVerifier()),
                                   c, new DefaultReconfigurationPlan(mo),
                                    Arrays.asList(new Constant(Collections.singleton(vm1),
@@ -120,13 +120,12 @@ public class SpecVerifierTest {
 
         Specification spec = getSpecification();
         Constraint c = spec.get("runningCapacity");
-        TestCase tc = new TestCase(new SpecModel(mo), new ImplVerifier(), c, new DefaultReconfigurationPlan(mo),
+        TestCase tc = new TestCase(new ImplVerifier(), c, new DefaultReconfigurationPlan(mo),
                 Arrays.asList(
                         new Constant(new HashSet<>(Arrays.asList(n0, n1)), new SetType(NodeType.getInstance())),
                         new Constant(1, IntType.getInstance())
                 ),
                 true);
         System.out.println(tc.pretty(true));
-        Assert.fail();
     }
 }

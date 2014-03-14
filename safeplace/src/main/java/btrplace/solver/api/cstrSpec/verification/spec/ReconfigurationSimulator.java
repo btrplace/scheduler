@@ -26,75 +26,75 @@ public class ReconfigurationSimulator {
 
 
     public void start(MigrateVM a) {
-        mo.state(a.getVM(), VMStateType.Type.migrating);
+        mo.getMapping().state(a.getVM(), VMStateType.Type.migrating);
     }
 
 
     public void end(MigrateVM a) {
-        mo.state(a.getVM(), VMStateType.Type.running);
+        mo.getMapping().state(a.getVM(), VMStateType.Type.running);
     }
 
 
     public void start(BootVM a) {
-        mo.state(a.getVM(), VMStateType.Type.booting);
-        mo.host(a.getVM(), a.getDestinationNode());
+        mo.getMapping().state(a.getVM(), VMStateType.Type.booting);
+        mo.getMapping().host(a.getVM(), a.getDestinationNode());
     }
 
 
     public void end(BootVM a) {
-        mo.state(a.getVM(), VMStateType.Type.running);
+        mo.getMapping().state(a.getVM(), VMStateType.Type.running);
     }
 
 
     public void start(BootNode a) {
-        mo.state(a.getNode(), NodeStateType.Type.booting);
+        mo.getMapping().state(a.getNode(), NodeStateType.Type.booting);
     }
 
 
     public void end(BootNode a) {
-        mo.state(a.getNode(), NodeStateType.Type.online);
+        mo.getMapping().state(a.getNode(), NodeStateType.Type.online);
     }
 
 
     public void start(ShutdownVM a) {
-        mo.state(a.getVM(), VMStateType.Type.halting);
+        mo.getMapping().state(a.getVM(), VMStateType.Type.halting);
     }
 
 
     public void end(ShutdownVM a) {
-        mo.state(a.getVM(), VMStateType.Type.ready);
-        mo.unhost(a.getVM());
+        mo.getMapping().state(a.getVM(), VMStateType.Type.ready);
+        mo.getMapping().unhost(a.getVM());
     }
 
 
     public void start(ShutdownNode a) {
-        mo.state(a.getNode(), NodeStateType.Type.halting);
+        mo.getMapping().state(a.getNode(), NodeStateType.Type.halting);
     }
 
 
     public void end(ShutdownNode a) {
-        mo.state(a.getNode(), NodeStateType.Type.offline);
+        mo.getMapping().state(a.getNode(), NodeStateType.Type.offline);
     }
 
 
     public void start(ResumeVM a) {
-        mo.state(a.getVM(), VMStateType.Type.resuming);
-        mo.host(a.getVM(), a.getDestinationNode());
+        mo.getMapping().state(a.getVM(), VMStateType.Type.resuming);
+        mo.getMapping().host(a.getVM(), a.getDestinationNode());
     }
 
 
     public void end(ResumeVM a) {
-        mo.state(a.getVM(), VMStateType.Type.running);
+        mo.getMapping().state(a.getVM(), VMStateType.Type.running);
     }
 
 
     public void start(SuspendVM a) {
-        mo.state(a.getVM(), VMStateType.Type.suspending);
+        mo.getMapping().state(a.getVM(), VMStateType.Type.suspending);
     }
 
 
     public void end(SuspendVM a) {
-        mo.state(a.getVM(), VMStateType.Type.sleeping);
+        mo.getMapping().state(a.getVM(), VMStateType.Type.sleeping);
     }
 
 

@@ -22,7 +22,7 @@ public class ParallelConstraintVerification implements ReconfigurationPlanFuzzer
 
     private Constraint cstr;
 
-    private List<Verifier> verifiers;
+    private Verifier v;
 
     private List<Constant> args;
 
@@ -32,11 +32,11 @@ public class ParallelConstraintVerification implements ReconfigurationPlanFuzzer
 
     private int nbPlans;
 
-    public ParallelConstraintVerification(ReconfigurationPlanFuzzer f, List<Verifier> verifiers, int nbWorkers, Constraint cstr, List<Constant> args, boolean conti) {
+    public ParallelConstraintVerification(ReconfigurationPlanFuzzer f, Verifier v, int nbWorkers, Constraint cstr, List<Constant> args, boolean conti) {
         this.fuzzer = f;
         executor = Executors.newFixedThreadPool(nbWorkers);
         completionService = new ExecutorCompletionService<>(executor);
-        this.verifiers = verifiers;
+        this.v = v;
         this.cstr = cstr;
         this.args = args;
         this.continuous = conti;
@@ -71,7 +71,7 @@ public class ParallelConstraintVerification implements ReconfigurationPlanFuzzer
 
     @Override
     public void recv(final ReconfigurationPlan p) {
-        completionService.submit(new Consumer(verifiers, p, cstr, args, continuous));
+        completionService.submit(new Consumer(v, p, cstr, args, continuous));
         nbPlans++;
     }
 
@@ -79,8 +79,8 @@ public class ParallelConstraintVerification implements ReconfigurationPlanFuzzer
 
         private TestCase tc;
 
-        public Consumer(List<Verifier> verifiers, ReconfigurationPlan p, Constraint c, List<Constant> args, boolean continuous) {
-            tc = new TestCase(verifiers, c, p, args, continuous);
+        public Consumer(Verifier v, ReconfigurationPlan p, Constraint c, List<Constant> args, boolean continuous) {
+            tc = new TestCase(v, c, p, args, continuous);
         }
 
         @Override

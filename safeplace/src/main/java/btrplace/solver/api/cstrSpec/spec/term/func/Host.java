@@ -30,7 +30,7 @@ public class Host extends Function<Node> {
         if (vm == null) {
             throw new UnsupportedOperationException();
         }
-        return mo.host(vm);
+        return mo.getMapping().host(vm);
     }
 
     public Type[] signature() {

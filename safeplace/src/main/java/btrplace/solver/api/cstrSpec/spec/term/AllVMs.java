@@ -17,6 +17,6 @@ public class AllVMs extends Primitive {
 
     @Override
     public Set<VM> eval(SpecModel m) {
-        return m.VMs();
+        return m.getMapping().VMs();
     }
 }

@@ -54,8 +54,6 @@ public class ColType implements Type {
 
     @Override
     public Constant newValue(String n) {
-        //Add a value inside the set
-        //return type.newValue(n);
         throw new UnsupportedOperationException();
     }
 

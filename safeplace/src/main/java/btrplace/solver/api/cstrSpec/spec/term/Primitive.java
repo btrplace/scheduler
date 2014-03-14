@@ -9,17 +9,28 @@ import java.util.Set;
 /**
  * @author Fabien Hermenier
  */
-public abstract class Primitive extends Var<Set> {
+public class Primitive extends Var<Set> {
 
     private Type type;
 
-    public Primitive(String name, Type enclosingType) {
+
+    private Primitive(String name, Type enclosingType, Set c) {
         super(name);
         type = new SetType(enclosingType);
     }
 
+    public Primitive(String name, Type enclosingType) {
+        this(name, enclosingType, null);
+    }
+
     @Override
-    public abstract Set eval(SpecModel m);
+    public Set eval(SpecModel mo) {
+        Set s = mo.getVerifDomain(toString());
+        if (s == null) {
+            throw new UnsupportedOperationException("No domain has been set for primitive '" + label() + "'");
+        }
+        return s;
+    }
 
     @Override
     public Type type() {

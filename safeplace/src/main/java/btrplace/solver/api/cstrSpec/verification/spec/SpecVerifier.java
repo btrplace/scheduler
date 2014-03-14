@@ -1,6 +1,5 @@
 package btrplace.solver.api.cstrSpec.verification.spec;
 
-import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
 import btrplace.solver.api.cstrSpec.Constraint;
@@ -11,6 +10,7 @@ import btrplace.solver.api.cstrSpec.spec.type.Type;
 import btrplace.solver.api.cstrSpec.verification.CheckerResult;
 import btrplace.solver.api.cstrSpec.verification.Verifier;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -19,19 +19,28 @@ import java.util.List;
  */
 public class SpecVerifier implements Verifier {
 
+    private List<VerifDomain> vDoms;
+
+    public SpecVerifier(List<VerifDomain> vDoms) {
+        this.vDoms = vDoms;
+    }
+
+    public SpecVerifier() {
+        this(Collections.<VerifDomain>emptyList());
+    }
+
     @Override
     public CheckerResult verify(Constraint cstr, ReconfigurationPlan p, List<Constant> values, boolean discrete) {
         try {
-            Model src = p.getOrigin();
 
-            setInputs(cstr, src, values);
+            SpecModel mo = new SpecModel(p.getOrigin()); //Discrete means the plan contains no actions.
+            setInputs(cstr, mo, values);
 
             Proposition good = cstr.getProposition();
             Proposition noGood = good.not();
 
-            SpecReconfigurationPlanChecker spc = new SpecReconfigurationPlanChecker(p);
+            SpecReconfigurationPlanChecker spc = new SpecReconfigurationPlanChecker(mo, p);
             if (discrete) {
-                SpecModel mo = new SpecModel(p.getOrigin()); //Discrete means the plan contains no actions.
                 Proposition ok = cstr.getProposition();
                 Proposition ko = ok.not();
                 Boolean bOk = ok.eval(mo);
@@ -55,49 +64,11 @@ public class SpecVerifier implements Verifier {
         return CheckerResult.newSuccess();
     }
 
-    public CheckerResult verify2(Constraint cstr, ReconfigurationPlan p, List<Constant> values, boolean discrete) {
-        try {
-            Model src = p.getOrigin();
-
-            setInputs(cstr, src, values);
-
-            Proposition good = cstr.getProposition();
-            Proposition noGood = good.not();
-
-            SpecReconfigurationPlanChecker spc = new SpecReconfigurationPlanChecker(p);
-            if (discrete) {
-                SpecModel mo = new SpecModel(p.getOrigin()); //Discrete means the plan contains no actions.
-                Proposition ok = cstr.getProposition();
-                Proposition ko = ok.not();
-                Boolean bOk = ok.eval(mo);
-                Boolean bKo = ko.eval(mo);
-                if (bOk == null || bKo == null) {
-                    throw new RuntimeException(ok.eval(mo) + "\n" + ko.eval(mo));
-                }
-                if (bOk.equals(bKo)) {
-                    throw new RuntimeException("Both have the same result: " + bOk + " " + bKo);
-                }
-                return new CheckerResult(bOk, "");
-            } else {
-                Action a = spc.check(good, noGood);
-                if (a != null) {
-                    return new CheckerResult(false, a);
-                }
-            }
-        } finally {
-            cstr.reset();
-        }
-        return CheckerResult.newSuccess();
-    }
-
-
-    private void setInputs(Constraint c, Model src, List<Constant> values) {
-        SpecModel m = new SpecModel(src);
+    private void setInputs(Constraint c, SpecModel mo, List<Constant> values) {
         //Check signature
         if (values.size() != c.getParameters().size()) {
             throw new IllegalArgumentException(toString(c.id(), values) + " cannot match " + signatureToString(c));
         }
-        //System.out.println(values);
         for (int i = 0; i < values.size(); i++) {
             UserVar var = c.getParameters().get(i);
             Type t = values.get(i).type();
@@ -108,7 +79,7 @@ public class SpecVerifier implements Verifier {
 
         for (int i = 0; i < values.size(); i++) {
             UserVar var = c.getParameters().get(i);
-            if (!var.set(m, values.get(i).eval(m))) {
+            if (!var.set(mo, values.get(i).eval(mo))) {
                 throw new IllegalArgumentException("Unable to set '" + var.label() + "' (type '" + var.type() + "') to '" + values.get(i) + "'");
             }
         }

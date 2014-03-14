@@ -28,13 +28,13 @@ public class Colocated extends Function<Set<VM>> {
         if (v == null) {
             return null;
         }
-        Node n = mo.host(v);
+        Node n = mo.getMapping().host(v);
         if (n == null) {
             return Collections.emptySet();
         }
         Set<VM> vms = new HashSet<>();
-        vms.addAll(mo.sleeping(n));
-        vms.addAll(mo.runnings(n));
+        vms.addAll(mo.getMapping().sleeping(n));
+        vms.addAll(mo.getMapping().runnings(n));
         return vms;
     }
 

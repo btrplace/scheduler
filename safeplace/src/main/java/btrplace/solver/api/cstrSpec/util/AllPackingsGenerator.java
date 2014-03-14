@@ -1,6 +1,5 @@
 package btrplace.solver.api.cstrSpec.util;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -54,7 +53,6 @@ public class AllPackingsGenerator<T> implements Iterator<Set<Set<T>>>, Iterable<
 
     @Override
     public Set<Set<T>> next() {
-        T[] tuple = (T[]) Array.newInstance(cl, indexes.length);
         for (int x = 0; x < doms.length; x++) {
             indexes[x]++;
             if (indexes[x] < nbPos) {
@@ -63,7 +61,6 @@ public class AllPackingsGenerator<T> implements Iterator<Set<Set<T>>>, Iterable<
             indexes[x] = 0;
         }
         k++;
-        //System.out.println(toSet());
         return toSet();
     }
 

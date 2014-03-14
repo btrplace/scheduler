@@ -51,7 +51,7 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
     /**
      * Make a new instance.
      */
-    public SpecReconfigurationPlanChecker(ReconfigurationPlan p) {
+    public SpecReconfigurationPlanChecker(SpecModel mo, ReconfigurationPlan p) {
         checkers = new ReconfigurationSimulator(new SpecModel(p.getOrigin()));
         this.p = p;
     }

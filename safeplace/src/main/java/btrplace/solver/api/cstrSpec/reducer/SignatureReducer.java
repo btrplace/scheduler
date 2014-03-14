@@ -6,11 +6,9 @@ import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.spec.type.SetType;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
-import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
-import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
+import btrplace.solver.api.cstrSpec.verification.Verifier;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -24,19 +22,17 @@ import java.util.List;
  */
 public class SignatureReducer {
 
-    private ImplVerifier verif;
+    private Verifier v;
 
-    private SpecVerifier cVerif;
-
-    public SignatureReducer() {
-        verif = new ImplVerifier();
-        cVerif = new SpecVerifier();
+    public SignatureReducer(Verifier v) {
+        this.v = v;
     }
 
     private boolean consistent(ReconfigurationPlan p, Constraint cstr, List<Constant> in) throws Exception {
-        TestCase tc = new TestCase(Arrays.asList(verif, cVerif), cstr, p, in, true);
+        TestCase tc = new TestCase(v, cstr, p, in, true);
         return tc.succeed();
     }
+
     private List<Constant> deepCopy(List<Constant> in) {
         List<Constant> cpy = new ArrayList<>(in.size());
         for (Constant c : in) {
