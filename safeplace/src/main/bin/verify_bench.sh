@@ -9,7 +9,7 @@ for CSTR in ${CSTRS}; do
     echo "--- core constraint ${CSTR} ---"
     for VERIFIER in ${VERIFIERS}; do
         echo "\tVerifying ${VERIFIER}"
-        ./verify.sh --size 1x1 -v --restriction continuous --verifier ${VERIFIER} $* ${CSTR}
+        ./verify.sh --size 1x1 -v --restriction continuous --nbDurations all --nbDelays all --verifier ${VERIFIER} $* ${CSTR}
     done
 done
 

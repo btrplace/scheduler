@@ -278,10 +278,14 @@ public class Verify {
         } else {
             SpecModel mo = new SpecModel(p.getOrigin());
             mo.add(intVerifDomain);
-            ConstraintInputGenerator tig = new ConstraintInputGenerator(c, mo, true);
-            for (List<Constant> params : tig) {
-                TestCase tc3 = new TestCase(v, c, p, params, !continuous);
-                verify(tc3, issues, counter);
+            try {
+                ConstraintInputGenerator tig = new ConstraintInputGenerator(c, mo, true);
+                for (List<Constant> params : tig) {
+                    TestCase tc3 = new TestCase(v, c, p, params, !continuous);
+                    verify(tc3, issues, counter);
+                }
+            } catch (UnsupportedOperationException e) {
+                exit(e.getMessage());
             }
         }
     }
