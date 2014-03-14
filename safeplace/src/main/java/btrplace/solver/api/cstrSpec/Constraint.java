@@ -3,7 +3,6 @@ package btrplace.solver.api.cstrSpec;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.solver.api.cstrSpec.spec.prop.Proposition;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
-import btrplace.solver.api.cstrSpec.spec.term.Primitive;
 import btrplace.solver.api.cstrSpec.spec.term.UserVar;
 import btrplace.solver.api.cstrSpec.spec.term.Var;
 import btrplace.solver.api.cstrSpec.spec.term.func.Function;
@@ -30,18 +29,15 @@ public class Constraint extends Function<Boolean> {
 
     private boolean discreteOnly, core;
 
-    private List<Primitive> primitives;
-
-    public static Constraint newCoreConstraint(String n, Proposition p, List<Primitive> primitives, boolean discrete) {
-        return new Constraint(n, p, primitives, Collections.<UserVar>emptyList(), discrete, true);
+    public static Constraint newCoreConstraint(String n, Proposition p, boolean discrete) {
+        return new Constraint(n, p, Collections.<UserVar>emptyList(), discrete, true);
     }
 
-    public static Constraint newPluggableConstraint(String n, Proposition p, List<Primitive> primitives, List<UserVar> params, boolean discrete) {
-        return new Constraint(n, p, primitives, params, discrete, false);
+    public static Constraint newPluggableConstraint(String n, Proposition p, List<UserVar> params, boolean discrete) {
+        return new Constraint(n, p, params, discrete, false);
     }
 
-    private Constraint(String n, Proposition p, List<Primitive> primitives, List<UserVar> params, boolean discrete, boolean core) {
-        this.primitives = primitives;
+    private Constraint(String n, Proposition p, List<UserVar> params, boolean discrete, boolean core) {
         this.p = p;
         this.cstrName = n;
         this.params = params;
@@ -131,11 +127,6 @@ public class Constraint extends Function<Boolean> {
     }
 
     public String pretty() {
-        return toString() + " ::= " + p;
-    }
-
-    @Override
-    public String toString() {
         StringBuilder b = new StringBuilder();
         if (discreteOnly) {
             b.append("discrete ");
@@ -155,15 +146,12 @@ public class Constraint extends Function<Boolean> {
             b.append(", ").append(v.pretty());
         }
         b.append(')');
+        b.append(" ::= ").append(p);
         return b.toString();
     }
 
     public static String toString(Constraint c, List<Constant> values) {
         return c.toString(values);
-    }
-
-    public List<Primitive> getPrimitives() {
-        return primitives;
     }
 
     public String toString(List<Constant> values) {

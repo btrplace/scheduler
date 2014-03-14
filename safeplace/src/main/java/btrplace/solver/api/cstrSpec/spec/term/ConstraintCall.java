@@ -3,7 +3,6 @@ package btrplace.solver.api.cstrSpec.spec.term;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.prop.Not;
 import btrplace.solver.api.cstrSpec.spec.prop.Proposition;
-import btrplace.solver.api.cstrSpec.spec.term.func.Function;
 import btrplace.solver.api.cstrSpec.spec.term.func.FunctionCall;
 import btrplace.solver.api.cstrSpec.spec.type.Type;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
@@ -22,9 +21,9 @@ public class ConstraintCall implements Proposition {
     private List<Term> args;
 
     public ConstraintCall(Constraint c, List<Term> args) {
+        check(c, args);
         this.c = c;
         this.args = args;
-        //TODO: check(c, args);
     }
 
     @Override
@@ -42,14 +41,14 @@ public class ConstraintCall implements Proposition {
         return c.eval(m, ins);
     }
 
-    private static void check(Function f, List<Term> args) {
+    private static void check(Constraint f, List<Term> args) {
         Type[] expected = f.signature(args);
         if (expected.length != args.size()) {
-            throw new IllegalArgumentException(FunctionCall.toString(f.id(), args) + " cannot match " + f);
+            throw new IllegalArgumentException(FunctionCall.toString(f.id(), args) + " cannot match " + f.toString());
         }
         for (int i = 0; i < expected.length; i++) {
             if (!expected[i].equals(args.get(i).type())) {
-                throw new IllegalArgumentException(FunctionCall.toString(f.id(), args) + " cannot match " + f);
+                throw new IllegalArgumentException(FunctionCall.toString(f.id(), args) + " cannot match " + f.toString());
             }
         }
     }

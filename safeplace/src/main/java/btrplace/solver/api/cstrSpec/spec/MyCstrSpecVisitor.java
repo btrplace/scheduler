@@ -93,7 +93,7 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
                 return null;
             }
             Proposition p = (Proposition) visit(ctx.formula());
-            return p == null ? null : Constraint.newCoreConstraint(cstrName, p, symbols.getPrimitives(), discrete);
+            return p == null ? null : Constraint.newCoreConstraint(cstrName, p, discrete);
         } else {
             for (CstrSpecParser.TypedefContext c : ctx.typedef()) {
                 List<UserVar> vars = visitTypedef(c);
@@ -103,7 +103,7 @@ public class MyCstrSpecVisitor extends CstrSpecBaseVisitor {
                 params.addAll(vars);
             }
             Proposition p = (Proposition) visit(ctx.formula());
-            return p == null ? null : Constraint.newPluggableConstraint(cstrName, p, symbols.getPrimitives(), params, discrete);
+            return p == null ? null : Constraint.newPluggableConstraint(cstrName, p, params, discrete);
         }
     }
 
