@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
-public class VerifyNG {
+public class Verify {
 
     private static int nbVMs = 1;
     private static int nbNodes = 1;
