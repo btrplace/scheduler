@@ -4,13 +4,13 @@ import btrplace.model.*;
 import btrplace.model.constraint.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.*;
-import btrplace.solver.SolverException;
 import btrplace.solver.api.cstrSpec.Constraint;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.CheckerResult;
 import btrplace.solver.api.cstrSpec.verification.Verifier;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
+import solver.exception.SolverException;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -49,6 +49,7 @@ public class ImplVerifier implements Verifier {
 
         if (!c.isCore()) {
             try {
+                //TODO: encache the sat constraint
                 SatConstraint satC = Constraint2BtrPlace.build(c, params);
                 if (discrete && !satC.setContinuous(false)) {
                     throw new RuntimeException("Implementation of " + c + " don't support the discrete restriction");

@@ -22,10 +22,18 @@ public class ReconfigurationPlansGenerator extends DefaultGenerator<Reconfigurat
 
     private Model src;
 
-    public ReconfigurationPlansGenerator(Model src) {
+    private int duration;
+
+    public ReconfigurationPlansGenerator(Model src, int d) {
+        this.duration = d;
         List<List<Action>> possibles = makePossibleActions(src);
         tg = new AllTuplesGenerator<>(Action.class, possibles);
         this.src = src;
+
+    }
+
+    public ReconfigurationPlansGenerator(Model src) {
+        this(src, 3);
     }
 
     private List<List<Action>> makePossibleActions(Model src) {
@@ -35,34 +43,34 @@ public class ReconfigurationPlansGenerator extends DefaultGenerator<Reconfigurat
         for (Node n : m.getOnlineNodes()) {
             List<Action> as = new ArrayList<>(2);
             as.add(null);
-            as.add(new ShutdownNode(n, 0, 3));
+            as.add(new ShutdownNode(n, 0, duration));
             l.add(as);
         }
         for (Node n : m.getOfflineNodes()) {
             List<Action> as = new ArrayList<>(2);
             as.add(null);
-            as.add(new BootNode(n, 0, 3));
+            as.add(new BootNode(n, 0, duration));
             l.add(as);
         }
 
         for (VM v : m.getRunningVMs()) {
-            List<Action> dom = new ArrayList<>(m.getNbNodes() * 2 + 1);
+            List<Action> dom = new ArrayList<>(m.getOnlineNodes().size() + 2);
             Node loc = m.getVMLocation(v);
-            dom.add(new SuspendVM(v, loc, loc, 0, 3));
-            dom.add(new ShutdownVM(v, loc, 0, 3));
+            dom.add(new SuspendVM(v, loc, loc, 0, duration));
+            dom.add(new ShutdownVM(v, loc, 0, duration));
             for (Node n : m.getAllNodes()) {
                 if (n.equals(loc)) {
                     dom.add(null); //no action.
                 } else {
-                    dom.add(new MigrateVM(v, loc, n, 0, 3)); //Warning with staying node
+                    dom.add(new MigrateVM(v, loc, n, 0, duration)); //Warning with staying node
                 }
             }
             l.add(dom);
         }
         for (VM v : m.getReadyVMs()) {
-            List<Action> dom = new ArrayList<>(m.getNbNodes() + 1);
+            List<Action> dom = new ArrayList<>(m.getOnlineNodes().size() + 1);
             for (Node n : m.getAllNodes()) {
-                dom.add(new BootVM(v, n, 0, 3)); //Warning with staying node
+                dom.add(new BootVM(v, n, 0, duration)); //Warning with staying node
             }
             dom.add(null);
             l.add(dom);
@@ -72,7 +80,7 @@ public class ReconfigurationPlansGenerator extends DefaultGenerator<Reconfigurat
             List<Action> dom = new ArrayList<>(2);
             dom.add(null);
             Node loc = m.getVMLocation(v);
-            dom.add(new ResumeVM(v, loc, loc, 0, 3));
+            dom.add(new ResumeVM(v, loc, loc, 0, duration));
             l.add(dom);
         }
         return l;

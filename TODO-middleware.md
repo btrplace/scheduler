@@ -1,18 +1,25 @@
 TODO Discrete
 
-
 ## Verifier
+
+## Discrete verifier:
+  OK input = source model
+  actions with duration of 2
+
+  * force the destination model
+
+## Continuous verifier
+
+* discrete + force the schedule
 
 * Ensure the verification is working for every discrete constraints + core constraints in the following verifiers
 	* impl
 	* impl_repair
 	* checker
 
-* The notion of discrete kinda suck for the moment. It is an empty reconfiguration plan. This is suspicious
+* Quarantine, root should be evaluatable. We just don't care about the content of the plans. Just focus on the initial and the resulting omdel.
 
-* Support correctly discrete constraints. Quarantine, root should be evaluatable. We just don't care about the content of the plans. Just focus on the initial and the resulting omdel.
-
-* Detection of the model size from the constraint signature ?
+* Detection of the model size from the constraint signature ? -> at least 2 elements per set, 1 node per VM
 
 # Reporting issues
 

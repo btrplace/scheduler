@@ -1,6 +1,12 @@
 package btrplace.solver.api.cstrSpec.fuzzer;
 
 import btrplace.model.*;
+import btrplace.solver.api.cstrSpec.Constraint;
+import btrplace.solver.api.cstrSpec.spec.term.UserVar;
+import btrplace.solver.api.cstrSpec.spec.type.ColType;
+import btrplace.solver.api.cstrSpec.spec.type.NodeType;
+import btrplace.solver.api.cstrSpec.spec.type.Type;
+import btrplace.solver.api.cstrSpec.spec.type.VMType;
 import btrplace.solver.api.cstrSpec.util.Generator;
 import btrplace.solver.api.cstrSpec.util.Maths;
 
@@ -19,8 +25,12 @@ public class ModelsGenerator implements Generator<Model> {
 
     private int k, nbStates;
 
+    private int nbVMs, nbNodes;
+
     public ModelsGenerator(int nbNodes, int nbVMs) {
         k = 0;
+        this.nbNodes = nbNodes;
+        this.nbVMs = nbVMs;
         nbStates = 0;
         for (int q = 0; q <= nbNodes; q++) {
             long vmp = (long) Math.pow(2 * q + 1, nbVMs);
@@ -39,6 +49,14 @@ public class ModelsGenerator implements Generator<Model> {
             vms[i] = eb.newVM();
         }
         ng = new NodeModelsGenerator(ns);
+    }
+
+    public int getNbVMs() {
+        return nbVMs;
+    }
+
+    public int getNbNodes() {
+        return nbNodes;
     }
 
     @Override
@@ -79,5 +97,37 @@ public class ModelsGenerator implements Generator<Model> {
     @Override
     public Iterator<Model> iterator() {
         return this;
+    }
+
+    public static ModelsGenerator makeFromSpec(Constraint cstr) {
+        if (cstr.isCore()) {
+            return new ModelsGenerator(1, 1);
+        }
+        int nbVMs = 0;
+        int nbNodes = 0;
+        for (UserVar v : cstr.getParameters()) {
+            if (v.type() == VMType.getInstance()) {
+                nbVMs++;
+            } else if (v.type() == NodeType.getInstance()) {
+                nbNodes++;
+            } else if (v.type() instanceof ColType) {
+                //At least 2 elements of the type
+                int n = 0;
+                Type t = v.type();
+                while (t instanceof ColType) {
+                    n += 2;
+                    t = ((ColType) t).enclosingType();
+                }
+                if (t == VMType.getInstance()) {
+                    nbVMs += n;
+                } else if (t == NodeType.getInstance()) {
+                    nbNodes += n;
+                }
+
+            }
+        }
+
+        //At least as much nodes that VMs
+        return new ModelsGenerator(Math.max(nbNodes, nbVMs), nbVMs);
     }
 }

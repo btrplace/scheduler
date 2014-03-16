@@ -82,15 +82,15 @@ public class Constraint extends Function<Boolean> {
             mo.setValue(v.label(), values.get(i));
         }
         Proposition good = p;
-        Proposition noGood = good.not();
+        //Proposition noGood = good.not();
         Boolean bOk = good.eval(mo);
-        Boolean bKo = noGood.eval(mo);
+        /*Boolean bKo = noGood.eval(mo);
         if (bOk == null || bKo == null) {
             throw new RuntimeException(good.eval(mo) + "\n" + noGood.eval(mo));
         }
         if (bOk.equals(bKo)) {
             throw new RuntimeException("Both have the same result: " + bOk + " " + bKo);
-        }
+        } */
         return bOk;
     }
 

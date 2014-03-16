@@ -1,5 +1,6 @@
 package btrplace.solver.api.cstrSpec.verification.spec;
 
+import btrplace.model.Model;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
 import btrplace.solver.api.cstrSpec.Constraint;
@@ -31,29 +32,32 @@ public class SpecVerifier implements Verifier {
 
     @Override
     public CheckerResult verify(Constraint cstr, ReconfigurationPlan p, List<Constant> values, boolean discrete) {
-            SpecModel mo = new SpecModel(p.getOrigin()); //Discrete means the plan contains no actions.
-            setInputs(cstr, mo, values);
 
             Proposition good = cstr.getProposition();
             Proposition noGood = good.not();
-
-            SpecReconfigurationPlanChecker spc = new SpecReconfigurationPlanChecker(mo, p);
             if (discrete) {
+                Model res = p.getResult();
+                if (res == null) {
+                    return new CheckerResult(false, "Violation of a core constraint");
+                }
+                SpecModel sRes = new SpecModel(res);
+                setInputs(cstr, sRes, values);
                 Proposition ok = cstr.getProposition();
                 Proposition ko = ok.not();
-                Boolean bOk = ok.eval(mo);
-                Boolean bKo = ko.eval(mo);
-                if (bOk == null || bKo == null) {
-                    throw new RuntimeException(ok.eval(mo) + "\n" + ko.eval(mo));
-                }
-                if (bOk.equals(bKo)) {
-                    throw new RuntimeException("Both have the same result: " + bOk + " " + bKo);
-                }
+                Boolean bOk = ok.eval(sRes);
                 return new CheckerResult(bOk, "");
             } else {
-                Action a = spc.check(good, noGood);
-                if (a != null) {
-                    return new CheckerResult(false, a);
+                SpecModel mo = new SpecModel(p.getOrigin()); //Discrete means the plan contains no actions.
+                setInputs(cstr, mo, values);
+                SpecReconfigurationPlanChecker spc = new SpecReconfigurationPlanChecker(mo, p);
+                try {
+                    Action a = spc.check(good, noGood);
+                    if (a != null) {
+                        return new CheckerResult(false, a);
+                    }
+
+                } catch (Exception e) {
+                    return new CheckerResult(false, e.getMessage());
                 }
             }
         return CheckerResult.newSuccess();

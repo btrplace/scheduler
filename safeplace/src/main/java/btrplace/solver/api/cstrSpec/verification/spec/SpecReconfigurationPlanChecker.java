@@ -226,13 +226,13 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
     public boolean isConsistent(Proposition ok, Proposition ko) {
         SpecModel mo = checkers.currentModel();
         Boolean bOk = ok.eval(mo);
-        Boolean bKo = ko.eval(mo);
+        /*Boolean bKo = ko.eval(mo);
         if (bOk == null || bKo == null) {
             throw new RuntimeException(ok.eval(mo) + "\n" + ko.eval(mo));
         }
         if (bOk.equals(bKo)) {
             throw new RuntimeException("Both have the same result: " + bOk + " " + bKo);
-        }
+        } */
         return bOk;
     }
 

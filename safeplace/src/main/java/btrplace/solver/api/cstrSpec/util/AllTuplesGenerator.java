@@ -1,7 +1,8 @@
 package btrplace.solver.api.cstrSpec.util;
 
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Fabien Hermenier
@@ -49,25 +50,6 @@ public class AllTuplesGenerator<T> implements Generator<T[]> {
     @Override
     public boolean hasNext() {
         return k < nbStates;
-    }
-
-    public static <T> Set<Set<T>> allSubsets(Class<T> cl, Collection<T> cnt) {
-        List<List<T>> l = new ArrayList<>();
-        for (T t : cnt) {
-            l.add(new ArrayList<>(cnt));
-        }
-        AllTuplesGenerator<T> tg = new AllTuplesGenerator<>(cl, l);
-        return tg.allSubsets();
-    }
-
-    public Set<Set<T>> allSubsets() {
-        Set<Set<T>> res = new HashSet<>();
-        for (T[] tuple : this) {
-            Set<T> s = new HashSet<>(tuple.length);
-            Collections.addAll(s, tuple);
-            res.add(s);
-        }
-        return res;
     }
 
     @Override
