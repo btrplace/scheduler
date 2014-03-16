@@ -8,6 +8,7 @@ import btrplace.solver.api.cstrSpec.spec.term.Constant;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.Verifier;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
+import btrplace.solver.api.cstrSpec.verification.spec.VerifDomain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,17 +27,24 @@ class CallableVerification implements Callable<List<TestCase>[]> {
 
     private Verifier ve;
 
-    public CallableVerification(Verifier ve, Model mo, Constraint c, boolean cont) {
+    private boolean verbose;
+
+    private List<VerifDomain> vDoms;
+
+    public CallableVerification(Verifier ve, List<VerifDomain> vDoms, Model mo, Constraint c, boolean cont, boolean verbose) {
         this.mo = mo;
         this.c = c;
         this.ve = ve;
+        this.vDoms = vDoms;
         this.continuous = cont;
+        this.verbose = verbose;
+
     }
 
     @Override
     public List<TestCase>[] call() {
-        System.err.println("start");
-        ReconfigurationPlansGenerator grn = new ReconfigurationPlansGenerator(mo, 2);
+        int nbPlans = 0;
+        ReconfigurationPlansGenerator grn = new ReconfigurationPlansGenerator(mo, 1);
         SpecModel sp = new SpecModel(mo);
         List<List<Constant>> allArgs = new ArrayList<>();
         ConstraintInputGenerator cig = new ConstraintInputGenerator(this.c, sp, true);
@@ -58,7 +66,9 @@ class CallableVerification implements Callable<List<TestCase>[]> {
                 delayed.add(skelPlan);
             }
             for (ReconfigurationPlan p : delayed) {
+                nbPlans++;
                 for (List<Constant> args : allArgs) {
+
                     TestCase tc = new TestCase(ve, this.c, p, args, !continuous);
                     try {
                         if (tc.succeed()) {
@@ -73,7 +83,9 @@ class CallableVerification implements Callable<List<TestCase>[]> {
             }
         }
         long ed = System.currentTimeMillis();
-        System.err.println("Stop: " + (ed - st));
+        if (verbose) {
+            System.out.println(nbPlans + " plan(s) x " + allArgs.size() + " input(s) = " + (nbPlans * allArgs.size()) + " tests in " + (ed - st) + " ms");
+        }
         return res;
     }
 }

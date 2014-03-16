@@ -4,6 +4,7 @@ import btrplace.model.Model;
 import btrplace.solver.api.cstrSpec.fuzzer.ModelsGenerator;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.Verifier;
+import btrplace.solver.api.cstrSpec.verification.spec.VerifDomain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +29,13 @@ public class ParallelConstraintVerification {
     private List<TestCase> ok;
     private List<TestCase> ko;
 
-    public ParallelConstraintVerification(ModelsGenerator mg, Verifier v, int nbWorkers, Constraint cstr, boolean cont) {
+    private List<VerifDomain> vDoms;
+    private boolean verbose;
+
+
+    public ParallelConstraintVerification(ModelsGenerator mg, List<VerifDomain> vDoms, Verifier v, int nbWorkers, Constraint cstr, boolean cont, boolean verbose) {
         exec = Executors.newFixedThreadPool(nbWorkers);
+        this.vDoms = vDoms;
         completionService = new ExecutorCompletionService<>(exec);
         this.v = v;
         this.cstr = cstr;
@@ -37,6 +43,7 @@ public class ParallelConstraintVerification {
         modelsGen = mg;
         ok = new ArrayList<>();
         ko = new ArrayList<>();
+        this.verbose = verbose;
     }
 
     public List<TestCase> getCompliant() {
@@ -51,17 +58,18 @@ public class ParallelConstraintVerification {
         int nbModels = 0;
         long st = System.currentTimeMillis();
         for (Model mo : modelsGen) {
-            CallableVerification c = new CallableVerification(v, mo, cstr, continuous);
+            CallableVerification c = new CallableVerification(v, vDoms, mo, cstr, continuous, verbose);
             completionService.submit(c);
             nbModels++;
         }
         long end = System.currentTimeMillis();
         exec.shutdown();
-        System.out.println(nbModels + " produced in " + (end - st) + " ms");
+        if (verbose) {
+            System.out.println(nbModels + " produced in " + (end - st) + " ms");
+        }
         for (int i = 0; i < nbModels; i++) {
             try {
                 Future<List<TestCase>[]> f = completionService.take();
-                //System.out.print(".");
                 List<TestCase>[] res = f.get();
                 ok.addAll(res[0]);
                 ko.addAll(res[1]);

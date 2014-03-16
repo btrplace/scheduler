@@ -3,6 +3,7 @@ package btrplace.solver.api.cstrSpec;
 import btrplace.solver.api.cstrSpec.fuzzer.ModelsGenerator;
 import btrplace.solver.api.cstrSpec.spec.SpecReader;
 import btrplace.solver.api.cstrSpec.verification.btrplace.ImplVerifier;
+import edu.emory.mathcs.backport.java.util.Collections;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -25,7 +26,7 @@ public class ParallelConstraintVerificationTest {
 
         Constraint c = s.get("noVMsOnOfflineNodes");
         System.out.println(c.pretty());
-        ParallelConstraintVerification pc = new ParallelConstraintVerification(mg, new ImplVerifier(), 3, c, true);
+        ParallelConstraintVerification pc = new ParallelConstraintVerification(mg, Collections.emptyList(), new ImplVerifier(), 3, c, true, false);
         long st = System.currentTimeMillis();
         pc.verify();
         long ed = System.currentTimeMillis();

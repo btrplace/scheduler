@@ -9,19 +9,19 @@ for CSTR in ${CSTRS}; do
     echo "--- core constraint ${CSTR} ---"
     for VERIFIER in ${VERIFIERS}; do
         echo "\tVerifying ${VERIFIER}"
-        ./verify.sh --size 1x1 -v --restriction continuous --nbDurations all --nbDelays all --verifier ${VERIFIER} $* ${CSTR}
+        ./verify.sh --size 1x1 -v --continuous --verifier ${VERIFIER} $* ${CSTR}
     done
 done
 
 
 ##Pluggable constraints, discrete restriction only, size=2x2
-CSTRS="offline online running ready sleeping killed among ban fence runningCapacity resourceCapacity gather lonely maxOnline overbook preserve spread split splitAmong"
+CSTRS="offline online running ready sleeping killed among ban fence runningCapacity gather lonely maxOnline  spread split splitAmong"
 VERIFIERS="impl impl_repair checker"
 for CSTR in ${CSTRS}; do
     echo "--- pluggable constraint ${CSTR} ---"
     for VERIFIER in ${VERIFIERS}; do
         echo "\tVerifying ${VERIFIER}"
-        ./verify.sh --size 2x2 -v --restriction discrete --dom int=0..5 --verifier ${VERIFIER} $* ${CSTR}
+        ./verify.sh --size 2x2 -v --discrete --dom int=0..5 --verifier ${VERIFIER} $* ${CSTR}
     done
 done
 

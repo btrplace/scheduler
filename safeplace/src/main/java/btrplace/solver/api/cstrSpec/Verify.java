@@ -29,7 +29,7 @@ public class Verify {
     private static String json = null;
     private static int verbosityLvl = 0;
     private static boolean continuous = true;
-    private static int nbWorkers = Runtime.getRuntime().availableProcessors();
+    private static int nbWorkers = Runtime.getRuntime().availableProcessors() - 1;
 
     private static List<VerifDomain> vDoms = new ArrayList<>();
 
@@ -98,7 +98,7 @@ public class Verify {
         }
     }
 
-    private static VerifDomain makeVerifDomain(String def) {
+    private static void makeVerifDomain(String def) {
         String[] toks = def.split("=");
 
         if (toks[0].equals("int")) {
@@ -107,7 +107,6 @@ public class Verify {
         } else if (toks[0].equals("string")) {
             vDoms.add(new StringEnumVerifDomain(toks[1].split(",")));
         }
-        return null;
     }
 
     private static void usage() {
@@ -185,9 +184,8 @@ public class Verify {
         final Constraint c = makeConstraint(specFile, cstrId);
         final Verifier v = makeVerifier(verifier);
 
-
         ParallelConstraintVerification paraVerif =
-                new ParallelConstraintVerification(new ModelsGenerator(nbNodes, nbVMs), v, nbWorkers, c, continuous);
+                new ParallelConstraintVerification(new ModelsGenerator(nbNodes, nbVMs), vDoms, v, nbWorkers, c, continuous, verbosityLvl > 1);
         long startTime = System.currentTimeMillis();
         paraVerif.verify();
         long endTime = System.currentTimeMillis();
@@ -198,13 +196,13 @@ public class Verify {
         if (verbosityLvl > 0) {
             System.out.println(defiant.size() + "/" + (defiant.size() + compliant.size()) + " failure(s); in " + (endTime - startTime) + " ms");
         }
-        if (verbosityLvl > 1) {
+        if (verbosityLvl > 2) {
             System.out.println("---- Defiant TestCases ----");
             for (TestCase tc : defiant) {
                 System.out.println(tc.pretty(true));
             }
         }
-        if (verbosityLvl > 2) {
+        if (verbosityLvl > 3) {
             System.out.println("---- Compliant TestCases ----");
             for (TestCase tc : compliant) {
                 System.out.println(tc.pretty(true));
