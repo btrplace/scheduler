@@ -603,13 +603,15 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (lb < 0 || ub < lb) {
             throw new SolverException(model, "Unable to create duration variable '" + Arrays.toString(n) + "': invalid bounds");
         }
-        StringBuilder b = new StringBuilder();
+        String s = "";
         if (useLabels) {
+            StringBuilder b = new StringBuilder();
             for (Object o : n) {
                 b.append(o);
             }
+            s = b.toString();
         }
-        return VariableFactory.bounded(b.toString(), lb, ub < end.getUB() ? ub : end.getUB(), solver);
+        return VariableFactory.bounded(s, lb, ub < end.getUB() ? ub : end.getUB(), solver);
     }
 
     @Override
