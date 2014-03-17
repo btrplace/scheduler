@@ -245,10 +245,13 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
     }
 
     private void checkUnknownVMsInMapping(Model m, Collection<VM> vms) throws SolverException {
-        if (!m.getMapping().getAllVMs().containsAll(vms)) {
-            Set<VM> unknown = new HashSet<>(vms);
-            unknown.removeAll(m.getMapping().getAllVMs());
-            throw new SolverException(m, "Unknown VMs: " + unknown);
+        for (VM v : vms) {
+            //This loop prevent from a useless allocation of memory when there is no issue
+            if (!m.getMapping().contains(v)) {
+                Set<VM> unknown = new HashSet<>(vms);
+                unknown.removeAll(m.getMapping().getAllVMs());
+                throw new SolverException(m, "Unknown VMs: " + unknown);
+            }
         }
     }
 
