@@ -48,7 +48,8 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
     public DefaultReconfigurationPlan(Model m) {
         this.src = m;
         this.actions = new HashSet<>();
-        this.depsExtractor = new DependenciesExtractor(m);
+        //Dependency management is performed lazily.
+        this.depsExtractor = null;
     }
 
     @Override
@@ -59,7 +60,8 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
     @Override
     public boolean add(Action a) {
         boolean ret = this.actions.add(a);
-        if (ret) {
+        if (ret && depsExtractor != null) {
+            //We only track dependencies incrementally if already started
             a.visit(depsExtractor);
         }
         return ret;
@@ -134,6 +136,13 @@ public class DefaultReconfigurationPlan implements ReconfigurationPlan {
 
     @Override
     public Set<Action> getDirectDependencies(Action a) {
+        if (depsExtractor == null) {
+            //Track dependencies of all the already registered actions
+            depsExtractor = new DependenciesExtractor(src);
+            for (Action x : actions) {
+                x.visit(depsExtractor);
+            }
+        }
         return depsExtractor.getDependencies(a);
     }
 
