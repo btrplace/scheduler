@@ -12,10 +12,7 @@ import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import solver.exception.SolverException;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Fabien Hermenier
@@ -45,7 +42,7 @@ public class ImplVerifier implements Verifier {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.doRepair(repair);
         cra.getConstraintMapper().register(new CSchedule.Builder());
-        Set<SatConstraint> cstrs = new HashSet<>();
+        List<SatConstraint> cstrs = new ArrayList<>();
 
         if (!c.isCore()) {
             try {
@@ -69,7 +66,7 @@ public class ImplVerifier implements Verifier {
             ReconfigurationPlan res = cra.solve(p.getOrigin(), cstrs);
             if (res == null) {
                 return CheckerResult.newFailure("No solution");
-            } else if (!p.equals(res)) {
+            } else if (!discrete && !p.equals(res)) {
                 throw new RuntimeException("The resulting schedule differ. Got:\n" + res + "\nExpected:\n" + p);
             } else {
                 return CheckerResult.newSuccess();
@@ -85,12 +82,12 @@ public class ImplVerifier implements Verifier {
         return new Fence(v, Collections.singleton(n));
     }
 
-    private Set<SatConstraint> actionsToConstraints(ReconfigurationPlan p, boolean continuous) {
+    private Collection<SatConstraint> actionsToConstraints(ReconfigurationPlan p, boolean continuous) {
         Set<Node> notSwitching = new HashSet<>(p.getOrigin().getMapping().getAllNodes());
-        Set<SatConstraint> cstrs = new HashSet<>();
+        List<SatConstraint> cstrs = new ArrayList<>();
 
         Set<VM> rooted = new HashSet<>(p.getOrigin().getMapping().getRunningVMs());
-        for (Action a : p) {
+        for (Action a : p.getActions()) {
             if (a instanceof MigrateVM) {
                 MigrateVM m = (MigrateVM) a;
                 cstrs.add(new Running(m.getVM()));
