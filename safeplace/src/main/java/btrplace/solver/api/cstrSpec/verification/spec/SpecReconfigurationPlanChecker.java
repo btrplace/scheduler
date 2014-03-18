@@ -171,9 +171,9 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
     /**
      * Check if a plan satisfies all the {@link SatConstraintChecker}.
      */
-    public Action check(Proposition ok, Proposition ko) {
-        if (!isConsistent(ok, ko)) {
-            throw new RuntimeException("Failure at the beginning:\nok=" + ok + "\nko=" + ko + "\nmodel:\n" + p.getOrigin().getMapping() + "\nPlan:\n" + p);
+    public Action check(Proposition ok) {
+        if (!isConsistent(ok)) {
+            throw new RuntimeException("Failure at the beginning of the plan");
         }
 
         if (!p.getActions().isEmpty()) {
@@ -189,10 +189,10 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
                 while (a != null && a.getEnd() == curMoment) {
                     ends.remove();
                     startingEvent = false;
-                    if (!visitAndThrowOnViolation(a, ok, ko)) {
+                    if (!visitAndThrowOnViolation(a, ok)) {
                         return a;
                     }
-                    visitEvents(a, ok, ko, Action.Hook.POST);
+                    visitEvents(a, ok, Action.Hook.POST);
                     a = ends.peek();
                 }
                 a = starts.peek();
@@ -200,8 +200,8 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
                 while (a != null && a.getStart() == curMoment) {
                     starts.remove();
                     startingEvent = true;
-                    visitEvents(a, ok, ko, Action.Hook.PRE);
-                    if (!visitAndThrowOnViolation(a, ok, ko)) {
+                    visitEvents(a, ok, Action.Hook.PRE);
+                    if (!visitAndThrowOnViolation(a, ok)) {
                         return a;
                     }
                     a = starts.peek();
@@ -211,35 +211,28 @@ public class SpecReconfigurationPlanChecker implements ActionVisitor {
                 curMoment = Math.min(nextEnd, nextStart);
             }
         }
-        if (!isConsistent(ok, ko)) {
+        if (!isConsistent(ok)) {
             throw new RuntimeException("Failure by the end");
         }
         return null; //alright
     }
 
-    private boolean visitAndThrowOnViolation(Action a, Proposition ok, Proposition ko) {
+    private boolean visitAndThrowOnViolation(Action a, Proposition ok) {
         a.visit(this);
-        return isConsistent(ok, ko);
+        return isConsistent(ok);
     }
 
 
-    public boolean isConsistent(Proposition ok, Proposition ko) {
+    public boolean isConsistent(Proposition ok) {
         SpecModel mo = checkers.currentModel();
         Boolean bOk = ok.eval(mo);
-        /*Boolean bKo = ko.eval(mo);
-        if (bOk == null || bKo == null) {
-            throw new RuntimeException(ok.eval(mo) + "\n" + ko.eval(mo));
-        }
-        if (bOk.equals(bKo)) {
-            throw new RuntimeException("Both have the same result: " + bOk + " " + bKo);
-        } */
         return bOk;
     }
 
-    private boolean visitEvents(Action a, Proposition ok, Proposition ko, Action.Hook k) {
+    private boolean visitEvents(Action a, Proposition ok, Action.Hook k) {
         for (Event e : a.getEvents(k)) {
             e.visit(this);
-            if (!isConsistent(ok, ko)) {
+            if (!isConsistent(ok)) {
                 return false;
             }
         }

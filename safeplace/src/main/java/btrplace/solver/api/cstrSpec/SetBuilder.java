@@ -46,13 +46,11 @@ public class SetBuilder<T> extends Term<Set<T>> {
         List<Constant> domain = v.domain(mo);
         for (Constant c : domain) {
             mo.setValue(v.label(), c.eval(mo));
-            //v.set(mo, c.eval(mo));
             Boolean ok = p.eval(mo);
             if (ok) {
                 res.add(t.eval(mo));
             }
         }
-        //v.unset();
         return res;
     }
 

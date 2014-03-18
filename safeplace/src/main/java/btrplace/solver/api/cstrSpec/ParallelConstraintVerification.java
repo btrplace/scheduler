@@ -58,7 +58,12 @@ public class ParallelConstraintVerification {
         int nbModels = 0;
         long st = System.currentTimeMillis();
         for (Model mo : modelsGen) {
-            CallableVerification c = new CallableVerification(v, vDoms, mo, cstr, continuous, verbose);
+            Callable c;
+            if (continuous) {
+                c = new CallableContinuousVerification(v, vDoms, mo, cstr, verbose);
+            } else {
+                c = new CallableDiscreteVerification(v, vDoms, mo, cstr, verbose);
+            }
             completionService.submit(c);
             nbModels++;
         }

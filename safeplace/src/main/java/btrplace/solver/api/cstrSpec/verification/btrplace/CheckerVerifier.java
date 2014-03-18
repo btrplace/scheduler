@@ -18,7 +18,36 @@ import java.util.List;
 public class CheckerVerifier implements Verifier {
 
     @Override
-    public CheckerResult verify(Constraint cstr, ReconfigurationPlan p, List<Constant> params, boolean discrete) {
+    public CheckerResult verify(Constraint cstr, Model src, Model res, List<Constant> params) {
+        if (cstr.isCore()) {
+            if (res == null) {
+                return new CheckerResult(false, "Core constraint violation");
+            }
+            return CheckerResult.newSuccess();
+        }
+        try {
+            SatConstraint sat = Constraint2BtrPlace.build(cstr, params);
+            if (sat.setContinuous(false)) {
+
+                if (res == null) {
+                    //Core constraint violation
+                    return new CheckerResult(false, "Core constraint violation");
+                }
+                if (!sat.getChecker().endsWith(res)) {
+                    return new CheckerResult(false, "Violation of " + sat.toString());
+                }
+                return CheckerResult.newSuccess();
+            } else {
+                throw new UnsupportedOperationException(sat + " cannot be discrete");
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+
+    }
+
+    @Override
+    public CheckerResult verify(Constraint cstr, ReconfigurationPlan p, List<Constant> params) {
         if (cstr.isCore()) {
             Model res = p.getResult();
             if (res == null) {
@@ -28,33 +57,17 @@ public class CheckerVerifier implements Verifier {
         }
         try {
             SatConstraint sat = Constraint2BtrPlace.build(cstr, params);
-            if (discrete) {
-                if (sat.setContinuous(false)) {
-                    Model res = p.getResult();
-                    if (res == null) {
-                        //Core constraint violation
-                        return new CheckerResult(false, "Core constraint violation");
-                    }
-                    if (!sat.getChecker().endsWith(res)) {
-                        return new CheckerResult(false, "Violation of " + sat.toString());
-                    }
+            if (sat.setContinuous(true)) {
+                ReconfigurationPlanChecker chk = new ReconfigurationPlanChecker();
+                chk.addChecker(sat.getChecker());
+                try {
+                    chk.check(p);
                     return CheckerResult.newSuccess();
-                } else {
-                    throw new UnsupportedOperationException(sat + " cannot be discrete");
+                } catch (ReconfigurationPlanCheckerException ex) {
+                    return CheckerResult.newFailure(ex.getAction());
                 }
             } else {
-                if (sat.setContinuous(true)) {
-                    ReconfigurationPlanChecker chk = new ReconfigurationPlanChecker();
-                    chk.addChecker(sat.getChecker());
-                    try {
-                        chk.check(p);
-                        return CheckerResult.newSuccess();
-                    } catch (ReconfigurationPlanCheckerException ex) {
-                        return CheckerResult.newFailure(ex.getAction());
-                    }
-                } else {
-                    throw new UnsupportedOperationException(sat + " cannot be continuous");
-                }
+                throw new UnsupportedOperationException(sat + " cannot be continuous");
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);

@@ -18,16 +18,26 @@ public class TestCase {
 
     private List<Constant> args;
 
-    private CheckerResult[] res;
+    private CheckerResult expected, got;
 
     private Verifier verifier;
 
     private boolean d;
 
+    public TestCase(CheckerResult specRes, CheckerResult againstRes, Verifier v, Constraint c, ReconfigurationPlan p, List<Constant> args, boolean d) {
+        expected = specRes;
+        got = againstRes;
+        verifier = v;
+        this.args = args;
+        this.c = c;
+        this.plan = p;
+        this.d = d;
+    }
+
+
     public TestCase(Verifier v, Constraint c, ReconfigurationPlan p, List<Constant> args, boolean d) {
-        res = new CheckerResult[2];
-        res[0] = new SpecVerifier().verify(c, p, args, d);
-        res[1] = v.verify(c, p, args, d);
+        expected = new SpecVerifier().verify(c, p, args);
+        got = v.verify(c, p, args);
         verifier = v;
         this.args = args;
         this.c = c;
@@ -36,7 +46,7 @@ public class TestCase {
     }
 
     public boolean succeed() {
-        return res[0].getStatus() == res[1].getStatus();
+        return expected.getStatus() == got.getStatus();
     }
 
     public Verifier getVerifier() {
@@ -68,8 +78,8 @@ public class TestCase {
         }
         b.append(c.toString(args)).append(" ");
         b.append(succeed()).append("\n");
-        b.append("spec: ").append(res[0]).append("\n");
-        b.append(verifier.toString()).append(": ").append(res[1]);
+        b.append("spec: ").append(expected).append("\n");
+        b.append(verifier.toString()).append(": ").append(got);
 
         if (verbose) {
             b.append("\nSource Model:\n").append(plan.getOrigin().getMapping());

@@ -5,9 +5,11 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.api.cstrSpec.fuzzer.DelaysGenerator;
 import btrplace.solver.api.cstrSpec.fuzzer.ReconfigurationPlansGenerator;
 import btrplace.solver.api.cstrSpec.spec.term.Constant;
+import btrplace.solver.api.cstrSpec.verification.CheckerResult;
 import btrplace.solver.api.cstrSpec.verification.TestCase;
 import btrplace.solver.api.cstrSpec.verification.Verifier;
 import btrplace.solver.api.cstrSpec.verification.spec.SpecModel;
+import btrplace.solver.api.cstrSpec.verification.spec.SpecVerifier;
 import btrplace.solver.api.cstrSpec.verification.spec.VerifDomain;
 
 import java.util.ArrayList;
@@ -17,11 +19,9 @@ import java.util.concurrent.Callable;
 /**
  * @author Fabien Hermenier
  */
-class CallableVerification implements Callable<List<TestCase>[]> {
+class CallableContinuousVerification implements Callable<List<TestCase>[]> {
 
     private Model mo;
-
-    private boolean continuous;
 
     private Constraint c;
 
@@ -31,18 +31,18 @@ class CallableVerification implements Callable<List<TestCase>[]> {
 
     private List<VerifDomain> vDoms;
 
-    public CallableVerification(Verifier ve, List<VerifDomain> vDoms, Model mo, Constraint c, boolean cont, boolean verbose) {
+    public CallableContinuousVerification(Verifier ve, List<VerifDomain> vDoms, Model mo, Constraint c, boolean verbose) {
         this.mo = mo;
         this.c = c;
         this.ve = ve;
         this.vDoms = vDoms;
-        this.continuous = cont;
         this.verbose = verbose;
 
     }
 
     @Override
     public List<TestCase>[] call() {
+        SpecVerifier specVerifier = new SpecVerifier();
         int nbPlans = 0;
         ReconfigurationPlansGenerator grn = new ReconfigurationPlansGenerator(mo, 1);
         SpecModel sp = new SpecModel(mo);
@@ -58,18 +58,17 @@ class CallableVerification implements Callable<List<TestCase>[]> {
         for (ReconfigurationPlan skelPlan : grn) {
             //Every input
             List<ReconfigurationPlan> delayed = new ArrayList<>();
-            if (continuous) {
-                for (ReconfigurationPlan drp : new DelaysGenerator(skelPlan)) {
-                    delayed.add(drp);
-                }
-            } else {
-                delayed.add(skelPlan);
+            for (ReconfigurationPlan drp : new DelaysGenerator(skelPlan)) {
+                delayed.add(drp);
             }
+
             for (ReconfigurationPlan p : delayed) {
                 nbPlans++;
                 for (List<Constant> args : allArgs) {
+                    CheckerResult specRes = specVerifier.verify(c, p, args);
+                    CheckerResult againstRes = ve.verify(c, p, args);
 
-                    TestCase tc = new TestCase(ve, this.c, p, args, !continuous);
+                    TestCase tc = new TestCase(specRes, againstRes, ve, this.c, p, args, false);
                     try {
                         if (tc.succeed()) {
                             res[0].add(tc);
@@ -77,6 +76,7 @@ class CallableVerification implements Callable<List<TestCase>[]> {
                             res[1].add(tc);
                         }
                     } catch (Exception e) {
+                        e.printStackTrace();
                         res[1].add(tc);
                     }
                 }

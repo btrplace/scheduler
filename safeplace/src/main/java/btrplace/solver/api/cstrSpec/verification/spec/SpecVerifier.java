@@ -31,34 +31,29 @@ public class SpecVerifier implements Verifier {
     }
 
     @Override
-    public CheckerResult verify(Constraint cstr, ReconfigurationPlan p, List<Constant> values, boolean discrete) {
+    public CheckerResult verify(Constraint cstr, Model res, Model dst, List<Constant> values) {
+        SpecModel sRes = new SpecModel(res);
+        setInputs(cstr, sRes, values);
+        Proposition ok = cstr.getProposition();
+        Boolean bOk = ok.eval(sRes);
+        return new CheckerResult(bOk, "");
+    }
 
-            Proposition good = cstr.getProposition();
-            Proposition noGood = good.not();
-            if (discrete) {
-                Model res = p.getResult();
-                if (res == null) {
-                    return new CheckerResult(false, "Violation of a core constraint");
-                }
-                SpecModel sRes = new SpecModel(res);
-                setInputs(cstr, sRes, values);
-                Proposition ok = cstr.getProposition();
-                Proposition ko = ok.not();
-                Boolean bOk = ok.eval(sRes);
-                return new CheckerResult(bOk, "");
-            } else {
-                SpecModel mo = new SpecModel(p.getOrigin()); //Discrete means the plan contains no actions.
-                setInputs(cstr, mo, values);
-                SpecReconfigurationPlanChecker spc = new SpecReconfigurationPlanChecker(mo, p);
-                try {
-                    Action a = spc.check(good, noGood);
-                    if (a != null) {
-                        return new CheckerResult(false, a);
+    @Override
+    public CheckerResult verify(Constraint cstr, ReconfigurationPlan p, List<Constant> values) {
+
+        Proposition good = cstr.getProposition();
+        SpecModel mo = new SpecModel(p.getOrigin()); //Discrete means the plan contains no actions.
+        setInputs(cstr, mo, values);
+        SpecReconfigurationPlanChecker spc = new SpecReconfigurationPlanChecker(mo, p);
+        try {
+            Action a = spc.check(good);
+            if (a != null) {
+                return new CheckerResult(false, a);
                     }
 
-                } catch (Exception e) {
-                    return new CheckerResult(false, e.getMessage());
-                }
+        } catch (Exception e) {
+            return new CheckerResult(false, e.getMessage());
             }
         return CheckerResult.newSuccess();
     }

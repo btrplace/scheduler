@@ -49,12 +49,11 @@ public class SpecVerifierTest {
         Specification spec = getSpecification();
         Constraint c = spec.get("among");
         SpecVerifier v = new SpecVerifier();
-        CheckerResult res = v.verify(c, new DefaultReconfigurationPlan(mo),
+        CheckerResult res = v.verify(c, mo, mo,
                 Arrays.asList(
                         new Constant(Arrays.asList(vm0, vm1), new SetType(VMType.getInstance())),
                         new Constant(Arrays.asList(Arrays.asList(n1)), new SetType(new SetType(NodeType.getInstance())))
-                ),
-                true);
+                ));
         Assert.assertFalse(res.getStatus());
     }
 
@@ -73,12 +72,11 @@ public class SpecVerifierTest {
         Specification spec = getSpecification();
         Constraint c = spec.get("splitAmong");
         SpecVerifier v = new SpecVerifier();
-        CheckerResult res = v.verify(c, new DefaultReconfigurationPlan(mo),
+        CheckerResult res = v.verify(c, mo, mo,
                 Arrays.asList(
                         new Constant(Arrays.asList(Arrays.asList(vm0), Arrays.asList(vm1)), new SetType(new SetType(VMType.getInstance()))),
                         new Constant(Arrays.asList(Arrays.asList(n1, n0)), new SetType(new SetType(NodeType.getInstance())))
-                ),
-                true);
+                ));
         Assert.assertFalse(res.getStatus());
     }
 
@@ -101,8 +99,8 @@ public class SpecVerifierTest {
                                   c, new DefaultReconfigurationPlan(mo),
                                    Arrays.asList(new Constant(Collections.singleton(vm1),
                                   new SetType(VMType.getInstance()))), true);*/
-        CheckerResult res = v.verify(c, new DefaultReconfigurationPlan(mo), Arrays.asList(new Constant(n0,
-                NodeType.getInstance())), true);
+        CheckerResult res = v.verify(c, mo, mo, Arrays.asList(new Constant(n0,
+                NodeType.getInstance())));
         Assert.assertFalse(res.getStatus());
     }
 

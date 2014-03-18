@@ -23,9 +23,9 @@ public class SpecMapping {
     private Map<VM, Node> location;
 
     public SpecMapping(Mapping ma) {
-        vmState = new HashMap<>();
-        location = new HashMap<>();
-        nodeState = new HashMap<>();
+        vmState = new HashMap<>(ma.getNbVMs());
+        location = new HashMap<>(ma.getNbVMs());
+        nodeState = new HashMap<>(ma.getNbNodes());
 
         for (Node n : ma.getOnlineNodes()) {
             nodeState.put(n, NodeStateType.Type.online);

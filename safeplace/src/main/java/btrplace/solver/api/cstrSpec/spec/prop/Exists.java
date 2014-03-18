@@ -45,15 +45,16 @@ public class Exists implements Proposition {
         for (Object[] tuple : tg) {
             for (int i = 0; i < tuple.length; i++) {
                 m.setValue(vars.get(i).label(), tuple[i]);
-                //vars.get(i).set(m, tuple[i]);
             }
             Boolean r = prop.eval(m);
             if (r == null) {
                 return null;
             }
-            ret |= r;
+            if (r) {
+                return true;
+            }
         }
-        return ret;
+        return false;
     }
 
     public String toString() {

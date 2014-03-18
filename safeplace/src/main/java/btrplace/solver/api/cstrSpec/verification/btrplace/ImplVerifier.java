@@ -19,6 +19,9 @@ import java.util.*;
  */
 public class ImplVerifier implements Verifier {
 
+    private ChocoReconfigurationAlgorithm cra;
+
+
     private boolean repair;
 
     public ImplVerifier() {
@@ -27,6 +30,9 @@ public class ImplVerifier implements Verifier {
 
     public ImplVerifier(boolean repair) {
         this.repair = repair;
+        cra = new DefaultChocoReconfigurationAlgorithm();
+        cra.doRepair(repair);
+        cra.getConstraintMapper().register(new CSchedule.Builder());
     }
 
     public boolean isRepair() {
@@ -38,19 +44,45 @@ public class ImplVerifier implements Verifier {
     }
 
     @Override
-    public CheckerResult verify(Constraint c, ReconfigurationPlan p, List<Constant> params, boolean discrete) {
-        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
-        cra.doRepair(repair);
-        cra.getConstraintMapper().register(new CSchedule.Builder());
+    public CheckerResult verify(Constraint c, Model src, Model dst, List<Constant> params) {
+
+        List<SatConstraint> cstrs = new ArrayList<>();
+        if (!c.isCore()) {
+            try {
+                //TODO: encache the sat constraint
+                SatConstraint satC = Constraint2BtrPlace.build(c, params);
+                if (!satC.setContinuous(false)) {
+                    throw new RuntimeException("Implementation of " + c + " don't support the discrete restriction");
+                }
+                cstrs.add(satC);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        try {
+            cra.doOptimize(false);
+            ReconfigurationPlan res = cra.solve(src, cstrs);
+            if (res == null) {
+                return CheckerResult.newFailure("No solution");
+            } else {
+                return CheckerResult.newSuccess();
+            }
+        } catch (SolverException ex) {
+            return CheckerResult.newFailure(ex.getMessage());
+        } catch (Exception e) {
+            return CheckerResult.newFailure(e.getClass().getSimpleName() + " " + e.getMessage());
+        }
+    }
+
+    @Override
+    public CheckerResult verify(Constraint c, ReconfigurationPlan p, List<Constant> params) {
         List<SatConstraint> cstrs = new ArrayList<>();
 
         if (!c.isCore()) {
             try {
                 //TODO: encache the sat constraint
                 SatConstraint satC = Constraint2BtrPlace.build(c, params);
-                if (discrete && !satC.setContinuous(false)) {
-                    throw new RuntimeException("Implementation of " + c + " don't support the discrete restriction");
-                } else if (!discrete && !satC.setContinuous(true)) {
+                if (!satC.setContinuous(true)) {
                     throw new RuntimeException("Implementation of " + c + " don't support the continuous restriction");
                 }
                 cstrs.add(satC);
@@ -58,7 +90,7 @@ public class ImplVerifier implements Verifier {
                 throw new RuntimeException(e);
             }
         }
-        cstrs.addAll(actionsToConstraints(p, !discrete));
+        cstrs.addAll(actionsToConstraints(p, true));
         setDurationEstimators(p);
 
         try {
@@ -66,7 +98,7 @@ public class ImplVerifier implements Verifier {
             ReconfigurationPlan res = cra.solve(p.getOrigin(), cstrs);
             if (res == null) {
                 return CheckerResult.newFailure("No solution");
-            } else if (!discrete && !p.equals(res)) {
+            } else if (!p.equals(res)) {
                 throw new RuntimeException("The resulting schedule differ. Got:\n" + res + "\nExpected:\n" + p);
             } else {
                 return CheckerResult.newSuccess();

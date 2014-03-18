@@ -55,7 +55,7 @@ public class FunctionCall<T> extends Term<T> {
 
     @Override
     public T eval(SpecModel m) {
-        List<Object> values = new ArrayList<>();
+        List<Object> values = new ArrayList<>(args.size());
         for (Term t : args) {
             values.add(t.eval(m));
         }

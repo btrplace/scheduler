@@ -11,6 +11,8 @@ public class CheckerResult {
 
     private String ex;
 
+    private static final CheckerResult success = new CheckerResult(true, "");
+
     public CheckerResult(Boolean b, Action a) {
         this.b = b;
         this.ex = a.toString();
@@ -23,7 +25,7 @@ public class CheckerResult {
     }
 
     public static CheckerResult newSuccess() {
-        return new CheckerResult(true, "");
+        return success;
     }
 
     public static CheckerResult newFailure() {
@@ -49,7 +51,7 @@ public class CheckerResult {
     @Override
     public String toString() {
         if (ex == null || ex.length() == 0) {
-            return "" + b;
+            return b.toString();
         }
         return b + " (" + ex + ")";
     }
