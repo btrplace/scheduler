@@ -85,7 +85,7 @@ public class Spread extends SatConstraint {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getInvolvedNodes(), isContinuous());
+        return Objects.hash(getInvolvedVMs(), isContinuous());
     }
 
     @Override
