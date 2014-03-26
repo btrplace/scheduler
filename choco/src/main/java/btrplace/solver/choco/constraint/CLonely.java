@@ -155,8 +155,8 @@ public class CLonely implements ChocoConstraint {
         }
 
         @Override
-        public CLonely build(Constraint cstr) {
-            return new CLonely((Lonely) cstr);
+        public CLonely build(Constraint c) {
+            return new CLonely((Lonely) c);
         }
     }
 }

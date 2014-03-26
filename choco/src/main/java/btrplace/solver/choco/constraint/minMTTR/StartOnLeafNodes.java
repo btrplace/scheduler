@@ -45,9 +45,11 @@ public class StartOnLeafNodes implements VariableSelector<IntVar> {
 
     /**
      * Make a new heuristics
+     * @param rp the problem
+     * @param g the movement graph
      */
-    public StartOnLeafNodes(ReconfigurationProblem rp, MovementGraph graph) {
-        this.graph = graph;
+    public StartOnLeafNodes(ReconfigurationProblem rp, MovementGraph g) {
+        this.graph = g;
         scope = SliceUtils.extractStarts(ActionModelUtils.getDSlices(rp.getVMActions()));
         nodes = rp.getNodes();
     }
