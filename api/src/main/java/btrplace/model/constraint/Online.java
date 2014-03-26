@@ -42,7 +42,7 @@ public class Online extends NodeStateConstraint {
      * @param nodes the nodes to integrate
      * @return the associated list of constraints
      */
-    public static List<Online> newOnlines(Collection<Node> nodes) {
+    public static List<Online> newOnline(Collection<Node> nodes) {
         List<Online> l = new ArrayList<>(nodes.size());
         for (Node n : nodes) {
             l.add(new Online(n));

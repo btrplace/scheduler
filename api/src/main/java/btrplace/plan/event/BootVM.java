@@ -75,8 +75,8 @@ public class BootVM extends Action implements VMStateTransition, RunningVMPlacem
      * Test if this action is equals to another object.
      *
      * @param o the object to compare with
-     * @return true if {@code o} is an instanceof {@link BootVM} and if both
-     * instance involve the same VM and the same node
+     * @return true if {@code o} is an instanceof BootVM and if both
+     * instances involve the same VM and the same node
      */
     @Override
     public boolean equals(Object o) {

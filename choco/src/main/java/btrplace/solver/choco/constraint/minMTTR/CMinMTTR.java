@@ -146,7 +146,7 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         }
 
         if (!badActions.isEmpty()) {
-            IntVar[] hosts = SliceUtils.extractHosters(ActionModelUtils.getDSlices(badActions));
+            IntVar[] hosts = SliceUtils.extractHoster(ActionModelUtils.getDSlices(badActions));
             if (hosts.length > 0) {
                 HostingVariableSelector selectForBads = new HostingVariableSelector(hosts, schedHeuristic);
                 strats.add(new Assignment(selectForBads, new RandomVMPlacement(p, pla, true)));
@@ -154,7 +154,7 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         }
 
         if (!goodActions.isEmpty()) {
-            IntVar[] hosts = SliceUtils.extractHosters(ActionModelUtils.getDSlices(goodActions));
+            IntVar[] hosts = SliceUtils.extractHoster(ActionModelUtils.getDSlices(goodActions));
             if (hosts.length > 0) {
                 HostingVariableSelector selectForGoods = new HostingVariableSelector(hosts, schedHeuristic);
                 strats.add(new Assignment(selectForGoods, new RandomVMPlacement(p, pla, true)));
@@ -172,7 +172,7 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         }
 
         if (runActions.length > 0) {
-            IntVar[] hosts = SliceUtils.extractHosters(ActionModelUtils.getDSlices(runActions));
+            IntVar[] hosts = SliceUtils.extractHoster(ActionModelUtils.getDSlices(runActions));
             if (hosts.length > 0) {
                 HostingVariableSelector selectForRuns = new HostingVariableSelector(hosts, schedHeuristic);
                 strats.add(new Assignment(selectForRuns, new RandomVMPlacement(p, pla, true)));

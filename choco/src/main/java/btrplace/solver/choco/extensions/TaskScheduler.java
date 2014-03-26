@@ -41,7 +41,7 @@ import java.util.BitSet;
  * Tasks and resources can have multiple dimensions.
  * There is only 2 kind of tasks. cTasks that are already placed and necessarily starts at 0 and dTasks that
  * are not placed but end necessarily at the end of the schedule.
- * Inspired by the cumulatives constraint.
+ * Inspired by the cumulative constraint.
  *
  * @author Fabien Hermenier
  */

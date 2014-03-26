@@ -30,14 +30,14 @@ import java.util.*;
  * <p/>
  * Associated constraints:
  * <ul>
- *     <li>{@link btrplace.model.constraint.Preserve} to ensure the availability of a certain amount of <b>virtual resources</b> for a VM</li>
- *     <li>{@link btrplace.model.constraint.ResourceCapacity} to cap the amount of <b>physical resources</b> that can be used on a node</li>
- *     <li>{@link btrplace.model.constraint.Overbook} to specify a mapping between the virtual and the physical resources.</li>
+ * <li>{@link btrplace.model.constraint.Preserve} to ensure the availability of a certain amount of <b>virtual resources</b> for a VM</li>
+ * <li>{@link btrplace.model.constraint.ResourceCapacity} to cap the amount of <b>physical resources</b> that can be used on a node</li>
+ * <li>{@link btrplace.model.constraint.Overbook} to specify a mapping between the virtual and the physical resources.</li>
  * </ul>
- *
+ * <p/>
  * By default, if there is no {@link btrplace.model.constraint.Preserve} constraint for a VM, it is considered the VM requires
  * the same amount of virtual resources it is currently consuming.
- *
+ * <p/>
  * By default, if there is no {@link btrplace.model.constraint.Overbook} constraint for a node, a conservative ratio
  * of <b>1</b> is used. This means one unit of virtual resources consumes one unit of physical resources.
  *
@@ -339,7 +339,7 @@ public class ShareableResource implements ModelView, Cloneable {
     }
 
     /**
-     * Get the cumulated VMs consumption.
+     * Get the cumulative VMs consumption.
      *
      * @param ids   the VMs.
      * @param undef {@code true} to include the undefined elements using the default value
@@ -356,7 +356,7 @@ public class ShareableResource implements ModelView, Cloneable {
     }
 
     /**
-     * Get the cumulated nodes capacity.
+     * Get the cumulative nodes capacity.
      *
      * @param ids   the nodes.
      * @param undef {@code true} to include the undefined elements using the default value

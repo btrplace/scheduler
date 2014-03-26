@@ -53,7 +53,7 @@ public class SliceUtilsTest {
 
     @Test
     public void testExtractHosters() {
-        IntVar[] vs = SliceUtils.extractHosters(makeSlices());
+        IntVar[] vs = SliceUtils.extractHoster(makeSlices());
         for (int i = 0; i < vs.length; i++) {
             Assert.assertEquals(vs[i].getName(), "ho " + i);
         }

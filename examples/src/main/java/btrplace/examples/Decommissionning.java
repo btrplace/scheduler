@@ -69,7 +69,7 @@ public class Decommissionning implements Example {
         }
 
         List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.addAll(Offline.newOfflines(mo.getMapping().getOnlineNodes()));
+        cstrs.addAll(Offline.newOffline(mo.getMapping().getOnlineNodes()));
         MaxOnline m = new MaxOnline(mo.getMapping().getAllNodes(), nbNodes + 1);
         cstrs.add(m);
 

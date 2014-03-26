@@ -42,7 +42,7 @@ public class Sleeping extends VMStateConstraint {
      * @param vms the VMs to integrate
      * @return the associated list of constraints
      */
-    public static List<Sleeping> newSleepings(Collection<VM> vms) {
+    public static List<Sleeping> newSleeping(Collection<VM> vms) {
         List<Sleeping> l = new ArrayList<>(vms.size());
         for (VM v : vms) {
             l.add(new Sleeping(v));

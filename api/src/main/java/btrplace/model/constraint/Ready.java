@@ -42,7 +42,7 @@ public class Ready extends VMStateConstraint {
      * @param vms the VMs to integrate
      * @return the associated list of constraints
      */
-    public static List<Ready> newReadys(Collection<VM> vms) {
+    public static List<Ready> newReady(Collection<VM> vms) {
         List<Ready> l = new ArrayList<>(vms.size());
         for (VM v : vms) {
             l.add(new Ready(v));

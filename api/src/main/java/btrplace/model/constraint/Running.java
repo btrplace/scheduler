@@ -42,7 +42,7 @@ public class Running extends VMStateConstraint {
      * @param vms the VMs to integrate
      * @return the associated list of constraints
      */
-    public static List<Running> newRunnings(Collection<VM> vms) {
+    public static List<Running> newRunning(Collection<VM> vms) {
         List<Running> l = new ArrayList<>(vms.size());
         for (VM v : vms) {
             l.add(new Running(v));

@@ -42,7 +42,7 @@ public class Offline extends NodeStateConstraint {
      * @param nodes the nodes to integrate
      * @return the associated list of constraints
      */
-    public static List<Offline> newOfflines(Collection<Node> nodes) {
+    public static List<Offline> newOffline(Collection<Node> nodes) {
         List<Offline> l = new ArrayList<>(nodes.size());
         for (Node n : nodes) {
             l.add(new Offline(n));

@@ -62,8 +62,8 @@ public class CBanTest {
         Ban b = new Ban(vms[0], sNodes);
         Collection<SatConstraint> s = new HashSet<>();
         s.add(b);
-        s.addAll(Running.newRunnings(m.getAllVMs()));
-        s.addAll(Online.newOnlines(m.getAllNodes()));
+        s.addAll(Running.newRunning(m.getAllVMs()));
+        s.addAll(Online.newOnline(m.getAllNodes()));
 
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.setTimeLimit(-1);

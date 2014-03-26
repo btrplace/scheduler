@@ -171,7 +171,7 @@ public class RelocatableVMModelTest {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         mo.attach(rc);
         List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.addAll(Online.newOnlines(map.getAllNodes()));
+        cstrs.addAll(Online.newOnline(map.getAllNodes()));
         cstrs.addAll(Overbook.newOverbooks(map.getAllNodes(), "cpu", 1));
         cstrs.add(pr);
         ReconfigurationPlan p = cra.solve(mo, cstrs);
@@ -438,7 +438,7 @@ public class RelocatableVMModelTest {
 
         mo.attach(rc);
         List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.addAll(Online.newOnlines(map.getAllNodes()));
+        cstrs.addAll(Online.newOnline(map.getAllNodes()));
         cstrs.add(pr);
         cra.doOptimize(true);
         try {

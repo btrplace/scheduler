@@ -175,7 +175,7 @@ public class CMaxOnlineTest {
         List<SatConstraint> constraints = new ArrayList<SatConstraint>();
         constraints.add(maxOn);
         constraints.add(maxOn2);
-        constraints.addAll(Online.newOnlines(Arrays.asList(n4, n5)));
+        constraints.addAll(Online.newOnline(Arrays.asList(n4, n5)));
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.setTimeLimit(3);

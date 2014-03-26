@@ -53,20 +53,20 @@ public class SplitAmongChecker extends AllowAllConstraintChecker<SplitAmong> {
     private boolean checkMapping(Mapping m) {
         Set<Collection<Node>> pUsed = new HashSet<>();
         for (Set<VM> vgrp : vGrps) {
-            Collection<Node> choosedGroup = null;
+            Collection<Node> chosenGroup = null;
             //Check every running VM in a single vgroup are running in the same pgroup
             for (VM vmId : vgrp) {
                 if (m.isRunning(vmId)) {
-                    if (choosedGroup == null) {
-                        choosedGroup = getConstraint().getAssociatedPGroup(m.getVMLocation(vmId));
-                        if (choosedGroup == null) {
+                    if (chosenGroup == null) {
+                        chosenGroup = getConstraint().getAssociatedPGroup(m.getVMLocation(vmId));
+                        if (chosenGroup == null) {
                             //Te VM is running but on an unknown group. It is an error
                             return false;
-                        } else if (!pUsed.add(choosedGroup)) {
+                        } else if (!pUsed.add(chosenGroup)) {
                             //The pgroup has already been used for another set of VMs.
                             return false;
                         }
-                    } else if (!choosedGroup.contains(m.getVMLocation(vmId))) {
+                    } else if (!chosenGroup.contains(m.getVMLocation(vmId))) {
                         //The VM is not in the group with the other
                         return false;
                     }

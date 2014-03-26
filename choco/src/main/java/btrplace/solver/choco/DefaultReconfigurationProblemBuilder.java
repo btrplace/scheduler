@@ -113,19 +113,19 @@ public class DefaultReconfigurationProblemBuilder {
      * Set the next state of the VMs.
      * Sets must be disjoint
      *
-     * @param ready     the future VMs in the ready state
-     * @param runnings  the future VMs in the running state
-     * @param sleepings the future VMs in the sleeping state
-     * @param killed    the VMs to kill
+     * @param ready    the future VMs in the ready state
+     * @param running  the future VMs in the running state
+     * @param sleeping the future VMs in the sleeping state
+     * @param killed   the VMs to kill
      * @return the current builder
      */
     public DefaultReconfigurationProblemBuilder setNextVMsStates(Set<VM> ready,
-                                                                 Set<VM> runnings,
-                                                                 Set<VM> sleepings,
+                                                                 Set<VM> running,
+                                                                 Set<VM> sleeping,
                                                                  Set<VM> killed) {
-        runs = runnings;
+        runs = running;
         waits = ready;
-        sleep = sleepings;
+        sleep = sleeping;
         over = killed;
         return this;
     }
