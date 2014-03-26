@@ -23,10 +23,23 @@ import btrplace.model.VM;
 import java.util.*;
 
 /**
- * An interface to denote a resource that nodes share among the VMs they host
+ * A view to denote a resource that nodes share among the VMs they host
  * <p/>
- * The interface allows to specify the physical resource capacity of the nodes
+ * The view allows to specify the physical resource capacity of the nodes
  * and the amount of virtual resources allocated to the VMs.
+ * <p/>
+ * Associated constraints:
+ * <ul>
+ *     <li>{@link btrplace.model.constraint.Preserve} to ensure the availability of a certain amount of <b>virtual resources</b> for a VM</li>
+ *     <li>{@link btrplace.model.constraint.ResourceCapacity} to cap the amount of <b>physical resources</b> that can be used on a node</li>
+ *     <li>{@link btrplace.model.constraint.Overbook} to specify a mapping between the virtual and the physical resources.</li>
+ * </ul>
+ *
+ * By default, if there is no {@link btrplace.model.constraint.Preserve} constraint for a VM, it is considered the VM requires
+ * the same amount of virtual resources it is currently consuming.
+ *
+ * By default, if there is no {@link btrplace.model.constraint.Overbook} constraint for a node, a conservative ratio
+ * of <b>1</b> is used. This means one unit of virtual resources consumes one unit of physical resources.
  *
  * @author Fabien Hermenier
  */
