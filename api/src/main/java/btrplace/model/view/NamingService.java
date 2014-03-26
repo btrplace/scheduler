@@ -122,20 +122,11 @@ public class NamingService<E extends Element> implements ModelView {
     }
 
     /**
-     * Get all the registered names.
-     *
-     * @return a set of names that may be empty.
-     */
-    public Set<String> getRegisteredNames() {
-        return resolve.keySet();
-    }
-
-    /**
      * Get all the registered elements.
      *
      * @return a set of elements that may be empty.
      */
-    public Set<E> getRegisteredElements() {
+    public Set<E> getNamedElements() {
         return rev.keySet();
     }
 
@@ -167,24 +158,12 @@ public class NamingService<E extends Element> implements ModelView {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof NamingService)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
         NamingService that = (NamingService) o;
-        if (!getRegisteredNames().equals(that.getRegisteredNames())) {
-            return false;
-        }
-        for (String s : getRegisteredNames()) {
-            E e = resolve(s);
-            if (!s.equals(that.resolve(e))) {
-                return false;
-            }
-        }
-        return true;
+
+        return elmtId.equals(that.elmtId) && resolve.equals(that.resolve);
     }
 
     @Override

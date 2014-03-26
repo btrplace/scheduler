@@ -39,8 +39,7 @@ public class NamingServiceTest {
         Assert.assertTrue(ns.register(n, "n0"));
         Assert.assertFalse(ns.register(mo.newNode(), "n0"));
         Assert.assertEquals(ns.getElementIdentifier(), "node");
-        Assert.assertEquals(ns.getRegisteredElements().size(), 1);
-        Assert.assertEquals(ns.getRegisteredNames().size(), 1);
+        Assert.assertEquals(ns.getNamedElements().size(), 1);
     }
 
     @Test(dependsOnMethods = {"testRegisterAndGets"})
