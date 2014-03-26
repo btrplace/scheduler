@@ -5,6 +5,7 @@ Release notes
 ----------------------
 - Homogenize constraints signature in API
 - fix #32, #33
+- a basic NamingService to associate a unique name to elements (#34)
 
 version 0.35 - 18 Feb 2014
 ----------------------
