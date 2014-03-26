@@ -48,14 +48,18 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
     }
 
     /**
-     * Make a new {@code ModelViewsConverter} and fulfill it
-     * using a default converter for each supported view.
+     * Make a new {@code ModelViewsConverter} and fulfill it using converters for the following views:
+     * <ul>
+     *     <li>{@link btrplace.json.model.view.ShareableResourceConverter}</li>
+     *     <li>{@link btrplace.json.model.view.NamingServiceConverter}</li>
+     * </ul>
      *
      * @return a fulfilled converter.
      */
     public static ModelViewsConverter newBundle() {
         ModelViewsConverter conv = new ModelViewsConverter();
         conv.register(new ShareableResourceConverter());
+        conv.register(new NamingServiceConverter());
         return conv;
     }
 
