@@ -18,6 +18,7 @@
 package btrplace.model.view;
 
 import btrplace.model.Element;
+import btrplace.model.Node;
 import btrplace.model.VM;
 
 import java.util.HashMap;
@@ -26,35 +27,61 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * A simple service to name elements.
- * This service allows to associate a name to any element.
- * The namespace is the same for all the kind of elements so it is not possible to
- * have a node and a VM with a same name.
+ * A simple service to name VMs or nodes.
+ * For a given type of element, the name must be unique
  *
  * @author Fabien Hermenier
  */
-public class NamingService implements ModelView {
+public class NamingService<E extends Element> implements ModelView {
 
-    private Map<String, Element> resolve;
-
-    private Map<Element, String> rev;
+    private Map<String, E> resolve;
+    private Map<E, String> rev;
 
     /**
-     * The view identifier.
+     * The root view identifier.
+     * Will be suffixed by either "vm" or "node
      */
-    public static final String ID = "btrpsl.ns";
+    public static final String ID = "btrpsl.ns.";
+
+    private String elmtId;
+
+    /**
+     * Make a naming service dedicated to nodes.
+     * @return a new naming service
+     */
+    public static NamingService<Node> newNodeNS() {
+        return new NamingService<Node>("node");
+    }
+
+    /**
+     * Make a naming service dedicated to VMs.
+     * @return a new naming service
+     */
+    public static NamingService<VM> newVMNS() {
+        return new NamingService<VM>("vm");
+    }
 
     /**
      * Make a new service.
+     * @param eId "vm" or "node"
      */
-    public NamingService() {
+    private NamingService(String eId) {
         resolve = new HashMap<>();
         rev = new HashMap<>();
+        this.elmtId = eId;
     }
 
     @Override
     public String getIdentifier() {
-        return ID;
+        return ID + elmtId;
+    }
+
+    /**
+     * Get the element identifier of this naming service
+     * @return "vm" or "node" for a naming service dedicated to the VMs or the nodes respectively
+     */
+    public String getElementIdentifier() {
+        return elmtId;
     }
 
     /**
@@ -65,7 +92,7 @@ public class NamingService implements ModelView {
      * @return {@code true} if the association has been established, {@code false} if the name is already used
      * for another element
      */
-    public boolean register(Element e, String name) {
+    public boolean register(E e, String name) {
         if (resolve.containsKey(name)) {
             return false;
         }
@@ -80,7 +107,7 @@ public class NamingService implements ModelView {
      * @param name the element name
      * @return the associated element if exists, {@code null} otherwise
      */
-    public Element resolve(String name) {
+    public E resolve(String name) {
         return resolve.get(name);
     }
 
@@ -90,7 +117,7 @@ public class NamingService implements ModelView {
      * @param e the element
      * @return the element unique name if exists. {@code null} otherwise
      */
-    public String resolve(Element e) {
+    public String resolve(E e) {
         return rev.get(e);
     }
 
@@ -108,7 +135,7 @@ public class NamingService implements ModelView {
      *
      * @return a set of elements that may be empty.
      */
-    public Set<Element> getRegisteredElements() {
+    public Set<E> getRegisteredElements() {
         return rev.keySet();
     }
 
@@ -122,17 +149,18 @@ public class NamingService implements ModelView {
      */
     @Override
     public boolean substituteVM(VM curId, VM nextId) {
-        if (rev.containsKey(nextId)) {
-            //the new id already exists. It is a failure scenario.
-            return false;
-        }
+        if (elmtId.equals("vm")) {
+            if (rev.containsKey(nextId)) {
+                //the new id already exists. It is a failure scenario.
+                return false;
+            }
 
-        String fqn = rev.remove(curId);
-        if (fqn != null) {
-            //new resolution, with the substitution of the old one.
-            rev.put(nextId, fqn);
-            resolve.put(fqn, nextId);
-
+            String fqn = rev.remove(curId);
+            if (fqn != null) {
+                //new resolution, with the substitution of the old one.
+                rev.put((E) nextId, fqn);
+                resolve.put(fqn, (E) nextId);
+            }
         }
         return true;
     }
@@ -151,7 +179,7 @@ public class NamingService implements ModelView {
             return false;
         }
         for (String s : getRegisteredNames()) {
-            Element e = resolve(s);
+            E e = resolve(s);
             if (!s.equals(that.resolve(e))) {
                 return false;
             }
@@ -160,12 +188,12 @@ public class NamingService implements ModelView {
     }
 
     @Override
-    public NamingService clone() {
-        NamingService cpy = new NamingService();
-        for (Map.Entry<String, Element> e : resolve.entrySet()) {
+    public NamingService<E> clone() {
+        NamingService<E> cpy = new NamingService<E>(elmtId);
+        for (Map.Entry<String, E> e : resolve.entrySet()) {
             cpy.resolve.put(e.getKey(), e.getValue());
         }
-        for (Map.Entry<Element, String> e : rev.entrySet()) {
+        for (Map.Entry<E, String> e : rev.entrySet()) {
             cpy.rev.put(e.getKey(), e.getValue());
         }
         return cpy;
@@ -180,13 +208,14 @@ public class NamingService implements ModelView {
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        for (Iterator<Map.Entry<Element, String>> ite = rev.entrySet().iterator(); ite.hasNext(); ) {
-            Map.Entry<Element, String> e = ite.next();
-            b.append('<').append(e.getKey()).append(" : ").append(e.getValue()).append('>');
+        for (Iterator<Map.Entry<E, String>> ite = rev.entrySet().iterator(); ite.hasNext(); ) {
+            Map.Entry<E, String> e = ite.next();
+            b.append(e.getKey()).append("<->").append(e.getValue());
             if (ite.hasNext()) {
                 b.append(", ");
             }
         }
         return b.toString();
     }
+
 }
