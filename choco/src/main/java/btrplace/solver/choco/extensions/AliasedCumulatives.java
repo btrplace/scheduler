@@ -120,7 +120,7 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
         int[] dStartsVals = new int[dStarts.length];
         int[] cEndsVals = new int[cEnds.length];
 
-        //dHosters, cHosters, cEnds, dStarts
+        //dHosts, cHosts, cEnds, dStarts
         for (int i = 0; i < dHosters.length; i++) {
             dHostersVals[i] = vals[i];
             dStartsVals[i] = vals[i + dHosters.length + cHosters.length + cEnds.length];
@@ -240,7 +240,7 @@ public class AliasedCumulatives extends IntConstraint<IntVar> {
             int[] dStartsVals = new int[dStarts.length];
             int[] cEndsVals = new int[cEnds.length];
 
-            //dHosters, cHosters, cEnds, dStarts
+            //dHosts, cHosts, cEnds, dStarts
             for (int i = 0; i < dHosters.length; i++) {
                 dHostersVals[i] = vars[i].getValue();
                 dStartsVals[i] = vars[i + dHosters.length + cHosters.length + cEnds.length].getValue();

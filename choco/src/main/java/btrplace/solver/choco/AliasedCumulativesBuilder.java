@@ -56,13 +56,13 @@ public class AliasedCumulativesBuilder extends SchedulingConstraintBuilder {
     /**
      * Add a constraint
      *
-     * @param capas the cumulated capacity of the aliased resources
+     * @param c     the cumulative capacity of the aliased resources
      * @param cUse  the usage of each of the c-slices
      * @param dUse  the usage of each of the d-slices
      * @param alias the resource identifiers that compose the alias
      */
-    public void add(int capas, int[] cUse, IntVar[] dUse, int[] alias) {
-        capacities.add(capas);
+    public void add(int c, int[] cUse, IntVar[] dUse, int[] alias) {
+        capacities.add(c);
         cUsages.add(cUse);
         dUsages.add(dUse);
         aliases.add(alias);
@@ -86,8 +86,8 @@ public class AliasedCumulativesBuilder extends SchedulingConstraintBuilder {
             }
             cstrs.add(new AliasedCumulatives(alias,
                     new int[]{capa},
-                    cHosters, new int[][]{cUse}, cEnds,
-                    dHosters, new int[][]{dUses}, dStarts,
+                    cHosts, new int[][]{cUse}, cEnds,
+                    dHosts, new int[][]{dUses}, dStarts,
                     associations));
 
         }

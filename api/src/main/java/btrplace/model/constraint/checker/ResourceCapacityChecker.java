@@ -69,7 +69,7 @@ public class ResourceCapacityChecker extends AllowAllConstraintChecker<ResourceC
 
     @Override
     public boolean start(KillVM a) {
-        if (getConstraint().isContinuous()/* && srcRunnings.remove(a.getVM())*/) {
+        if (getConstraint().isContinuous()/* && srcRunning.remove(a.getVM())*/) {
             return leave(rc.getConsumption(a.getVM()), a.getNode());
         }
         return true;

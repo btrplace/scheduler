@@ -43,14 +43,14 @@ public class NamingService<E extends Element> implements ModelView {
      */
     public static final String ID = "btrpsl.ns.";
 
-    private String elmtId;
+    private String elemId;
 
     /**
      * Make a naming service dedicated to nodes.
      * @return a new naming service
      */
     public static NamingService<Node> newNodeNS() {
-        return new NamingService<Node>("node");
+        return new NamingService<>("node");
     }
 
     /**
@@ -58,7 +58,7 @@ public class NamingService<E extends Element> implements ModelView {
      * @return a new naming service
      */
     public static NamingService<VM> newVMNS() {
-        return new NamingService<VM>("vm");
+        return new NamingService<>("vm");
     }
 
     /**
@@ -68,12 +68,12 @@ public class NamingService<E extends Element> implements ModelView {
     private NamingService(String eId) {
         resolve = new HashMap<>();
         rev = new HashMap<>();
-        this.elmtId = eId;
+        this.elemId = eId;
     }
 
     @Override
     public String getIdentifier() {
-        return ID + elmtId;
+        return ID + elemId;
     }
 
     /**
@@ -81,7 +81,7 @@ public class NamingService<E extends Element> implements ModelView {
      * @return "vm" or "node" for a naming service dedicated to the VMs or the nodes respectively
      */
     public String getElementIdentifier() {
-        return elmtId;
+        return elemId;
     }
 
     /**
@@ -140,7 +140,7 @@ public class NamingService<E extends Element> implements ModelView {
      */
     @Override
     public boolean substituteVM(VM curId, VM nextId) {
-        if (elmtId.equals("vm")) {
+        if (elemId.equals("vm")) {
             if (rev.containsKey(nextId)) {
                 //the new id already exists. It is a failure scenario.
                 return false;
@@ -163,12 +163,12 @@ public class NamingService<E extends Element> implements ModelView {
 
         NamingService that = (NamingService) o;
 
-        return elmtId.equals(that.elmtId) && resolve.equals(that.resolve);
+        return elemId.equals(that.elemId) && resolve.equals(that.resolve);
     }
 
     @Override
     public NamingService<E> clone() {
-        NamingService<E> cpy = new NamingService<E>(elmtId);
+        NamingService<E> cpy = new NamingService<>(elemId);
         for (Map.Entry<String, E> e : resolve.entrySet()) {
             cpy.resolve.put(e.getKey(), e.getValue());
         }

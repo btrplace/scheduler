@@ -44,9 +44,9 @@ public abstract class SchedulingConstraintBuilder {
 
     protected IntVar[] cEnds;
 
-    protected IntVar[] cHosters;
+    protected IntVar[] cHosts;
 
-    protected IntVar[] dHosters;
+    protected IntVar[] dHosts;
 
     protected IntVar[] dStarts;
 
@@ -93,10 +93,10 @@ public abstract class SchedulingConstraintBuilder {
 
 
         int i = 0;
-        cHosters = new IntVar[cS.size()];
+        cHosts = new IntVar[cS.size()];
         cEnds = new IntVar[cS.size()];
         for (Slice s : cS) {
-            cHosters[i] = s.getHoster();
+            cHosts[i] = s.getHoster();
             cEnds[i] = s.getEnd();
             i++;
 
@@ -104,16 +104,16 @@ public abstract class SchedulingConstraintBuilder {
 
         i = 0;
         dStarts = new IntVar[dS.size()];
-        dHosters = new IntVar[dS.size()];
+        dHosts = new IntVar[dS.size()];
 
         for (Slice s : dS) {
-            dHosters[i] = s.getHoster();
+            dHosts[i] = s.getHoster();
             dStarts[i] = s.getStart();
             i++;
         }
 
 
-        associations = new int[dHosters.length];
+        associations = new int[dHosts.length];
         //No associations task by default, then we create the associations.
         for (i = 0; i < associations.length; i++) {
             associations[i] = LocalTaskScheduler.NO_ASSOCIATIONS;

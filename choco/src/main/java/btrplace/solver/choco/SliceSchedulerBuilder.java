@@ -54,12 +54,12 @@ public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
     /**
      * Add a dimension.
      *
-     * @param capa the resource capacity of each of the nodes
+     * @param c the resource capacity of each of the nodes
      * @param cUse the resource usage of each of the cSlices
      * @param dUse the resource usage of each of the dSlices
      */
-    public void add(IntVar[] capa, int[] cUse, IntVar[] dUse) {
-        capacities.add(capa);
+    public void add(IntVar[] c, int[] cUse, IntVar[] dUse) {
+        capacities.add(c);
         cUsages.add(cUse);
         dUsages.add(dUse);
     }
@@ -104,8 +104,8 @@ public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
         return new TaskScheduler(earlyStarts,
                 lastEnd,
                 capas,
-                cHosters, cUses, cEnds,
-                dHosters, dUses, dStarts,
+                cHosts, cUses, cEnds,
+                dHosts, dUses, dStarts,
                 associations,
                 rp.getSolver());
     }

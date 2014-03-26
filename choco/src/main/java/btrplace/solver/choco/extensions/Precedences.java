@@ -66,20 +66,20 @@ public class Precedences extends IntConstraint<IntVar> {
     /**
      * Make a new constraint.
      *
-     * @param e          the environment.
-     * @param h          the task host
-     * @param st         the moment the task arrives on resources h
-     * @param othersHost the host of all the other tasks
-     * @param othersEnd  the moment each of the other tasks leave their resource
+     * @param e  the environment.
+     * @param h  the task host
+     * @param st the moment the task arrives on resources h
+     * @param oh the host of all the other tasks
+     * @param oe the moment each of the other tasks leave their resource
      */
-    public Precedences(IEnvironment e, IntVar h, IntVar st, int[] othersHost, IntVar[] othersEnd) {
-        super(ArrayUtils.append(new IntVar[]{h, st}, othersEnd), h.getSolver());
+    public Precedences(IEnvironment e, IntVar h, IntVar st, int[] oh, IntVar[] oe) {
+        super(ArrayUtils.append(new IntVar[]{h, st}, oe), h.getSolver());
         this.host = h;
         this.start = st;
-        this.othersHost = othersHost;
-        this.othersEnd = othersEnd;
+        this.othersHost = oh;
+        this.othersEnd = oe;
         env = e;
-        setPropagators(new PrecedencesPropagator(h, st, othersEnd));
+        setPropagators(new PrecedencesPropagator(h, st, oe));
     }
 
     @Override
@@ -146,8 +146,8 @@ public class Precedences extends IntConstraint<IntVar> {
 
     class PrecedencesPropagator extends Propagator<IntVar> {
 
-        public PrecedencesPropagator(IntVar h, IntVar st, IntVar[] othersEnd) {
-            super(ArrayUtils.append(new IntVar[]{h, st}, othersEnd), PropagatorPriority.LINEAR, true);
+        public PrecedencesPropagator(IntVar h, IntVar st, IntVar[] oe) {
+            super(ArrayUtils.append(new IntVar[]{h, st}, oe), PropagatorPriority.LINEAR, true);
         }
 
         @Override
@@ -161,7 +161,7 @@ public class Precedences extends IntConstraint<IntVar> {
         }
 
         @Override
-        public void propagate(int evtmask) throws ContradictionException {
+        public void propagate(int m) throws ContradictionException {
             awake();
             propagate();
         }

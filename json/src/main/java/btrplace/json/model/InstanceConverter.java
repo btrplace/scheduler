@@ -37,12 +37,12 @@ public class InstanceConverter extends AbstractJSONObjectConverter<Instance> {
     @Override
     public Instance fromJSON(JSONObject in) throws JSONConverterException {
         ModelConverter moc = new ModelConverter();
-        ConstraintsConverter cstrc = ConstraintsConverter.newBundle();
+        ConstraintsConverter cConverter = ConstraintsConverter.newBundle();
 
         Model mo = moc.fromJSON((JSONObject) in.get("model"));
-        cstrc.setModel(mo);
-        return new Instance(mo, cstrc.listFromJSON((JSONArray) in.get("constraints")),
-                (OptConstraint) cstrc.fromJSON((JSONObject) in.get("objective")));
+        cConverter.setModel(mo);
+        return new Instance(mo, cConverter.listFromJSON((JSONArray) in.get("constraints")),
+                (OptConstraint) cConverter.fromJSON((JSONObject) in.get("objective")));
     }
 
     @Override

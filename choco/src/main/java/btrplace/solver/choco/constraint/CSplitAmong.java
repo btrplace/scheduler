@@ -61,17 +61,17 @@ public class CSplitAmong implements ChocoConstraint {
             return false;
         }
 
-        Collection<Collection<VM>> vGrps = cstr.getGroupsOfVMs();
-        Collection<Collection<Node>> pGrps = cstr.getGroupsOfNodes();
+        Collection<Collection<VM>> vGroups = cstr.getGroupsOfVMs();
+        Collection<Collection<Node>> pGroups = cstr.getGroupsOfNodes();
         Solver s = rp.getSolver();
 
-        IntVar[] grpVars = new IntVar[vGrps.size()];
+        IntVar[] grpVars = new IntVar[vGroups.size()];
         //VM is assigned on a node <-> group variable associated to the VM
         //is assigned to the group of nodes it belong too.
         int i = 0;
-        for (Collection<VM> vms : vGrps) {
+        for (Collection<VM> vms : vGroups) {
 
-            Among a = new Among(vms, pGrps);
+            Among a = new Among(vms, pGroups);
             //If the constraint is continuous, there is no way a group of VMs already bound to a group of
             //nodes can move to another group. It also means the group of VMs will never overlap
             a.setContinuous(cstr.isContinuous());

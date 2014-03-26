@@ -273,8 +273,8 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
     @Override
     /**
      * propagate 1) globally: sumItemSizes == sumBinLoads 2) on each bin: sumAssignedItemSizes == binLoad
-     * rule 1.0: if sumSizes < sumBinLoadInfs or sumSizes > sumBinLoadSups then fail
-     * rule 1.1, for each bin: sumItemSizes - sumOtherBinLoadSups <= binLoad <= sumItemSizes - sumOtherBinLoadInfs
+     * rule 1.0: if sumSizes < sumBinLoadInf or sumSizes > sumBinLoadSups then fail
+     * rule 1.1, for each bin: sumItemSizes - sumOtherBinLoadSups <= binLoad <= sumItemSizes - sumOtherBinLoadInf
      * rule 2.0, for each bin: binRequiredLoad <= binLoad <= binTotalLoad
      * rule 2.1, for each bin and candidate item: if binRequiredLoad + itemSize > binLoadSup then remove item from bin
      * rule 2.2, for each bin and candidate item: if binTotalLoad - itemSize < binLoadInf then pack item into bin

@@ -80,10 +80,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private Solver solver;
 
-    private Set<VM> readys;
-    private Set<VM> runnings;
-    private Set<VM> sleepings;
-    private Set<VM> killeds;
+    private Set<VM> ready;
+    private Set<VM> running;
+    private Set<VM> sleeping;
+    private Set<VM> killed;
 
     private Set<VM> manageable;
 
@@ -107,7 +107,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private SliceSchedulerBuilder taskSchedBuilder;
 
-    private AliasedCumulativesBuilder cumulativesBuilder;
+    private AliasedCumulativesBuilder cumulativeBuilder;
 
     private BinPackingBuilder bpBuilder;
 
@@ -121,14 +121,14 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * Make a new RP where the next state for every VM is indicated.
      * If the state for a VM is omitted, it is considered as unchanged
      *
-     * @param m                  the initial model
-     * @param dEval              to evaluate the duration of every action
-     * @param ready              the VMs that must be in the ready state
-     * @param running            the VMs that must be in the running state
-     * @param sleeping           the VMs that must be in the sleeping state
-     * @param label              {@code true} to label the variables (for debugging purpose)
-     * @param killed             the VMs that must be killed
-     * @param runningsToConsider the VMs that can be managed by the solver when they are already running and they must keep running
+     * @param m                 the initial model
+     * @param dEval             to evaluate the duration of every action
+     * @param ready             the VMs that must be in the ready state
+     * @param running           the VMs that must be in the running state
+     * @param sleeping          the VMs that must be in the sleeping state
+     * @param label             {@code true} to label the variables (for debugging purpose)
+     * @param killed            the VMs that must be killed
+     * @param runningToConsider the VMs that can be managed by the solver when they are already running and they must keep running
      * @throws SolverException if an error occurred
      * @see DefaultReconfigurationProblemBuilder to ease the instantiation process
      */
@@ -139,14 +139,14 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                                          Set<VM> running,
                                          Set<VM> sleeping,
                                          Set<VM> killed,
-                                         Set<VM> runningsToConsider,
+                                         Set<VM> runningToConsider,
                                          boolean label
     ) throws SolverException {
-        this.readys = new HashSet<>(ready);
-        this.runnings = new HashSet<>(running);
-        this.sleepings = new HashSet<>(sleeping);
-        this.killeds = new HashSet<>(killed);
-        this.manageable = new HashSet<>(runningsToConsider);
+        this.ready = new HashSet<>(ready);
+        this.running = new HashSet<>(running);
+        this.sleeping = new HashSet<>(sleeping);
+        this.killed = new HashSet<>(killed);
+        this.manageable = new HashSet<>(runningToConsider);
         this.useLabels = label;
         model = m;
         durEval = dEval;
@@ -162,18 +162,18 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         fillElements();
 
-        makeCardinalyVariables();
+        makeCardinalityVariables();
 
         makeNodeActionModels();
         makeVMActionModels();
 
         bpBuilder = new BinPackingBuilder(this);
         taskSchedBuilder = new SliceSchedulerBuilder(this);
-        cumulativesBuilder = new AliasedCumulativesBuilder(this);
+        cumulativeBuilder = new AliasedCumulativesBuilder(this);
 
         makeViews();
 
-        linkCardinatiesWithSlices();
+        linkCardinalityWithSlices();
 
     }
 
@@ -203,7 +203,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             solver.post(taskSchedBuilder.build());
         }
 
-        for (AliasedCumulatives cstr : cumulativesBuilder.getConstraints()) {
+        for (AliasedCumulatives cstr : cumulativeBuilder.getConstraints()) {
             solver.post(cstr);
         }
 
@@ -212,13 +212,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             SMF.limitTime(solver, timeLimit * 1000);
         }
 
-        //Resolution policy:
-        //mode: sat,min,max
-        //allsolutions: false, true
-        //timeout: 0, K
-
-        //min, max -> !stop at first
-        //sat -> stop || !stop
         appendNaiveBranchHeuristic();
 
         int nbIntVars = solver.retrieveIntVars().length;
@@ -343,7 +336,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     /**
      * Create the cardinality variables.
      */
-    private void makeCardinalyVariables() {
+    private void makeCardinalityVariables() {
         vmsCountOnNodes = new IntVar[nodes.length];
         int nbVMs = vms.length;
         for (int i = 0; i < vmsCountOnNodes.length; i++) {
@@ -351,7 +344,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
     }
 
-    private void linkCardinatiesWithSlices() {
+    private void linkCardinalityWithSlices() {
         IntVar[] ds = SliceUtils.extractHoster(ActionModelUtils.getDSlices(vmActions));
         IntVar[] usages = new IntVar[ds.length];
         for (int i = 0; i < ds.length; i++) {
@@ -367,7 +360,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         allVMs.addAll(model.getMapping().getRunningVMs());
         allVMs.addAll(model.getMapping().getReadyVMs());
         //We have to integrate VMs in the ready state: the only VMs that may not appear in the mapping
-        allVMs.addAll(readys);
+        allVMs.addAll(ready);
 
         vms = new VM[allVMs.size()];
         //0.5f is a default load factor in trove.
@@ -397,7 +390,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         vmActions = new VMActionModel[vms.length];
         for (int i = 0; i < vms.length; i++) {
             VM vmId = vms[i];
-            if (runnings.contains(vmId)) {
+            if (running.contains(vmId)) {
                 if (map.isSleeping(vmId)) {
                     vmActions[i] = new ResumeVMModel(this, vmId);
                     manageable.add(vmId);
@@ -414,7 +407,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                     throw new SolverException(model, "Unable to set VM '" + vmId + "' running: not ready");
                 }
             }
-            if (readys.contains(vmId)) {
+            if (ready.contains(vmId)) {
                 if (vmActions[i] != null) {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
                 } else if (!map.contains(vmId)) {
@@ -429,7 +422,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                     throw new SolverException(model, "Unable to set VM '" + vmId + "' ready: not in the 'running' state or already forged");
                 }
             }
-            if (sleepings.contains(vmId)) {
+            if (sleeping.contains(vmId)) {
                 if (vmActions[i] != null) {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
                 } else if (map.isRunning(vmId)) {
@@ -441,7 +434,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                     throw new SolverException(model, "Unable to set VM '" + vmId + "' sleeping: should be running");
                 }
             }
-            if (killeds.contains(vmId)) {
+            if (killed.contains(vmId)) {
                 if (vmActions[i] != null) {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
                 } else if (map.contains(vmId)) {
@@ -453,19 +446,19 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             }
             if (vmActions[i] == null) {
                 //Next state is undefined, keep the current state
-                //Need to update runnings, sleeping and waitings accordingly
+                //Need to update running, sleeping and waiting accordingly
                 if (map.isRunning(vmId)) {
-                    runnings.add(vmId);
+                    running.add(vmId);
                     if (manageable.contains(vmId)) {
                         vmActions[i] = new RelocatableVMModel(this, vmId);
                     } else {
                         vmActions[i] = new StayRunningVMModel(this, vmId);
                     }
                 } else if (map.isReady(vmId)) {
-                    readys.add(vmId);
+                    ready.add(vmId);
                     vmActions[i] = new StayAwayVMModel(this, vmId);
                 } else if (map.isSleeping(vmId)) {
-                    sleepings.add(vmId);
+                    sleeping.add(vmId);
                     vmActions[i] = new StayAwayVMModel(this, vmId);
                 } else {
                     throw new SolverException(model, "Unable to infer the next state of VM '" + vmId + "'");
@@ -546,7 +539,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public AliasedCumulativesBuilder getAliasedCumulativesBuilder() {
-        return cumulativesBuilder;
+        return cumulativeBuilder;
     }
 
     @Override
@@ -678,22 +671,22 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public Set<VM> getFutureRunningVMs() {
-        return runnings;
+        return running;
     }
 
     @Override
     public Set<VM> getFutureReadyVMs() {
-        return readys;
+        return ready;
     }
 
     @Override
     public Set<VM> getFutureSleepingVMs() {
-        return sleepings;
+        return sleeping;
     }
 
     @Override
     public Set<VM> getFutureKilledVMs() {
-        return killeds;
+        return killed;
     }
 
     @Override

@@ -43,7 +43,7 @@ import java.util.List;
  */
 public class OnStableNodeFirst implements VariableSelector<IntVar> {
 
-    private IntVar[] hoster;
+    private IntVar[] hosts;
 
     private IntVar[] starts;
 
@@ -64,8 +64,8 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
     /**
      * Make a new heuristics
      *
-     * @param rp      the problem to rely on
-     * @param o       the objective to rely on
+     * @param rp the problem to rely on
+     * @param o  the objective to rely on
      */
     public OnStableNodeFirst(ReconfigurationProblem rp, CMinMTTR o) {
 
@@ -75,12 +75,12 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
 
         VMActionModel[] vmActions = rp.getVMActions();
 
-        hoster = new IntVar[vmActions.length];
+        hosts = new IntVar[vmActions.length];
         starts = new IntVar[vmActions.length];
 
         this.vms = new ArrayList<>(rp.getFutureRunningVMs());
 
-        oldPos = new int[hoster.length];
+        oldPos = new int[hosts.length];
         outs = new BitSet[rp.getNodes().length];
         ins = new BitSet[rp.getNodes().length];
         for (int i = 0; i < rp.getNodes().length; i++) {
@@ -88,13 +88,13 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
             ins[i] = new BitSet();
         }
 
-        for (int i = 0; i < hoster.length; i++) {
+        for (int i = 0; i < hosts.length; i++) {
             VMActionModel action = vmActions[i];
             Slice slice = action.getDSlice();
             if (slice != null) {
                 IntVar h = slice.getHoster();
                 IntVar s = slice.getStart();
-                hoster[i] = h;
+                hosts[i] = h;
                 if (s != rp.getEnd()) {
                     starts[i] = s;
                 }
@@ -128,16 +128,16 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
      * that go on this node. We also fulfill stays and move
      * TODO: stays and move seems redundant !
      */
-    private void makeIncomings() {
+    private void makeIncoming() {
         if (stays == null && move == null) {
             for (BitSet in : ins) {
                 in.clear();
             }
             stays = new BitSet();
             move = new BitSet();
-            for (int i = 0; i < hoster.length; i++) {
-                if (hoster[i] != null && hoster[i].instantiated()) {
-                    int newPos = hoster[i].getValue();
+            for (int i = 0; i < hosts.length; i++) {
+                if (hosts[i] != null && hosts[i].instantiated()) {
+                    int newPos = hosts[i].getValue();
                     if (oldPos[i] != -1 && newPos != oldPos[i]) {
                         //The VM has move
                         ins[newPos].set(i);
@@ -153,7 +153,7 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
     @Override
     public IntVar getVariable() {
 
-        makeIncomings();
+        makeIncoming();
         IntVar v = getVMtoLeafNode();
         if (v == null) {
             last = null;
@@ -195,7 +195,7 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
         //VMs that are moving
         for (int i = move.nextSetBit(0); i >= 0; i = move.nextSetBit(i + 1)) {
             if (starts[i] != null && !starts[i].instantiated()) {
-                if (oldPos[i] != hoster[i].getValue()) {
+                if (oldPos[i] != hosts[i].getValue()) {
                     return starts[i];
                 }
             }

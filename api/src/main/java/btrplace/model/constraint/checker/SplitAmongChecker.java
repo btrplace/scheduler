@@ -31,7 +31,7 @@ import java.util.*;
  */
 public class SplitAmongChecker extends AllowAllConstraintChecker<SplitAmong> {
 
-    private List<Set<VM>> vGrps;
+    private List<Set<VM>> vGroups;
 
     private Model mockModel;
 
@@ -42,20 +42,20 @@ public class SplitAmongChecker extends AllowAllConstraintChecker<SplitAmong> {
      */
     public SplitAmongChecker(SplitAmong s) {
         super(s);
-        vGrps = new ArrayList<>();
+        vGroups = new ArrayList<>();
         for (Collection<VM> vGroup : s.getGroupsOfVMs()) {
             Set<VM> x = new HashSet<>(vGroup);
             track(x);
-            vGrps.add(x);
+            vGroups.add(x);
         }
     }
 
     private boolean checkMapping(Mapping m) {
         Set<Collection<Node>> pUsed = new HashSet<>();
-        for (Set<VM> vgrp : vGrps) {
+        for (Set<VM> vGroup : vGroups) {
             Collection<Node> chosenGroup = null;
-            //Check every running VM in a single vgroup are running in the same pgroup
-            for (VM vmId : vgrp) {
+            //Check every running VM in a single vGroup are running in the same pGroup
+            for (VM vmId : vGroup) {
                 if (m.isRunning(vmId)) {
                     if (chosenGroup == null) {
                         chosenGroup = getConstraint().getAssociatedPGroup(m.getVMLocation(vmId));

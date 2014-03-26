@@ -129,7 +129,7 @@ public class Disjoint extends IntConstraint<IntVar> {
         }
 
         @Override
-        public void propagate(int evtmask) throws ContradictionException {
+        public void propagate(int m) throws ContradictionException {
             if (first) {
                 awake();
                 first = false;

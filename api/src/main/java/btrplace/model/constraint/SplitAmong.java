@@ -44,12 +44,12 @@ public class SplitAmong extends SatConstraint {
     /**
      * Set of set of vms.
      */
-    private Collection<Collection<VM>> vGrps;
+    private Collection<Collection<VM>> vGroups;
 
     /**
      * Set of set of nodes.
      */
-    private Collection<Collection<Node>> pGrps;
+    private Collection<Collection<Node>> pGroups;
 
     /**
      * Make a new constraint having a discrete restriction.
@@ -81,14 +81,14 @@ public class SplitAmong extends SatConstraint {
             }
         }
 
-        this.vGrps = vParts;
-        this.pGrps = pParts;
+        this.vGroups = vParts;
+        this.pGroups = pParts;
     }
 
     @Override
     public Set<VM> getInvolvedVMs() {
         Set<VM> s = new HashSet<>();
-        for (Collection<VM> x : vGrps) {
+        for (Collection<VM> x : vGroups) {
             s.addAll(x);
         }
         return s;
@@ -97,7 +97,7 @@ public class SplitAmong extends SatConstraint {
     @Override
     public Set<Node> getInvolvedNodes() {
         Set<Node> s = new HashSet<>();
-        for (Collection<Node> x : pGrps) {
+        for (Collection<Node> x : pGroups) {
             s.addAll(x);
         }
         return s;
@@ -109,7 +109,7 @@ public class SplitAmong extends SatConstraint {
      * @return the groups
      */
     public Collection<Collection<VM>> getGroupsOfVMs() {
-        return vGrps;
+        return vGroups;
     }
 
     /**
@@ -118,7 +118,7 @@ public class SplitAmong extends SatConstraint {
      * @return the groups
      */
     public Collection<Collection<Node>> getGroupsOfNodes() {
-        return pGrps;
+        return pGroups;
     }
 
     /**
@@ -128,7 +128,7 @@ public class SplitAmong extends SatConstraint {
      * @return the associated group of nodes if exists, {@code null} otherwise
      */
     public Collection<Node> getAssociatedPGroup(Node u) {
-        for (Collection<Node> pGrp : pGrps) {
+        for (Collection<Node> pGrp : pGroups) {
             if (pGrp.contains(u)) {
                 return pGrp;
             }
@@ -143,7 +143,7 @@ public class SplitAmong extends SatConstraint {
      * @return the associated group of VMs if exists, {@code null} otherwise
      */
     public Collection<VM> getAssociatedVGroup(VM u) {
-        for (Collection<VM> vGrp : vGrps) {
+        for (Collection<VM> vGrp : vGroups) {
             if (vGrp.contains(u)) {
                 return vGrp;
             }
@@ -162,26 +162,26 @@ public class SplitAmong extends SatConstraint {
 
         SplitAmong that = (SplitAmong) o;
 
-        return pGrps.equals(that.pGrps) && vGrps.equals(that.vGrps) && this.isContinuous() == that.isContinuous();
+        return pGroups.equals(that.pGroups) && vGroups.equals(that.vGroups) && this.isContinuous() == that.isContinuous();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(vGrps, pGrps, isContinuous());
+        return Objects.hash(vGroups, pGroups, isContinuous());
     }
 
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder("splitAmong(");
         b.append("vms=[");
-        for (Iterator<Collection<VM>> ite = vGrps.iterator(); ite.hasNext(); ) {
+        for (Iterator<Collection<VM>> ite = vGroups.iterator(); ite.hasNext(); ) {
             b.append(ite.next());
             if (ite.hasNext()) {
                 b.append(", ");
             }
         }
         b.append("], nodes=[");
-        for (Iterator<Collection<Node>> ite = pGrps.iterator(); ite.hasNext(); ) {
+        for (Iterator<Collection<Node>> ite = pGroups.iterator(); ite.hasNext(); ) {
             b.append(ite.next());
             if (ite.hasNext()) {
                 b.append(", ");

@@ -84,11 +84,11 @@ public class COverbook implements ChocoConstraint {
         } else {
             //Check if the node is saturated
             Node n = cstr.getInvolvedNodes().iterator().next();
-            int overCapa = (int) (cstr.getRatio() * rc.getCapacity(n));
+            int maxVCapacity = (int) (cstr.getRatio() * rc.getCapacity(n));
             //Minus the VMs usage
             for (VM vmId : m.getMapping().getRunningVMs(n)) {
-                overCapa -= rc.getConsumption(vmId);
-                if (overCapa < 0) {
+                maxVCapacity -= rc.getConsumption(vmId);
+                if (maxVCapacity < 0) {
                     return m.getMapping().getRunningVMs(n);
                 }
             }
