@@ -17,12 +17,14 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.checker.RunningChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -34,7 +36,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class Running extends VMStateConstraint {
+public class Running extends SatConstraint {
 
     /**
      * Instantiate constraints for a collection of VMs.
@@ -56,7 +58,7 @@ public class Running extends VMStateConstraint {
      * @param vm the VM to make running
      */
     public Running(VM vm) {
-        super("running", vm);
+        super(Collections.singleton(vm), Collections.<Node>emptySet(), false);
     }
 
     @Override
@@ -64,4 +66,13 @@ public class Running extends VMStateConstraint {
         return new RunningChecker(this);
     }
 
+    @Override
+    public String toString() {
+        return "running(vms=" + getInvolvedVMs().iterator().next() + ", discrete)";
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        return !b;
+    }
 }

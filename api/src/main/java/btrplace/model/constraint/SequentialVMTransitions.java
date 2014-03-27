@@ -82,9 +82,6 @@ public class SequentialVMTransitions extends SatConstraint {
 
     @Override
     public boolean setContinuous(boolean b) {
-        if (b) {
-            super.setContinuous(b);
-        }
         return b;
     }
 

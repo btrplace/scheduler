@@ -110,9 +110,6 @@ public class Preserve extends SatConstraint {
 
     @Override
     public boolean setContinuous(boolean b) {
-        if (!b) {
-            return super.setContinuous(b);
-        }
         return !b;
     }
 

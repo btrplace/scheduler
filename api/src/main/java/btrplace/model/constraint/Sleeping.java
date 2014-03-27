@@ -17,12 +17,14 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.model.constraint.checker.SleepingChecker;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -34,7 +36,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class Sleeping extends VMStateConstraint {
+public class Sleeping extends SatConstraint {
 
     /**
      * Instantiate constraints for a collection of VMs.
@@ -56,7 +58,7 @@ public class Sleeping extends VMStateConstraint {
      * @param vm the VMs to make sleeping
      */
     public Sleeping(VM vm) {
-        super("sleeping", vm);
+        super(Collections.singleton(vm), Collections.<Node>emptySet(), false);
     }
 
     @Override
@@ -64,4 +66,13 @@ public class Sleeping extends VMStateConstraint {
         return new SleepingChecker(this);
     }
 
+    @Override
+    public String toString() {
+        return "sleeping(vms=" + getInvolvedVMs().iterator().next() + ", discrete)";
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        return !b;
+    }
 }

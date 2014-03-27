@@ -63,7 +63,6 @@ public class Ban extends SatConstraint {
         super(Collections.singleton(vm), nodes, false);
     }
 
-
     @Override
     public String toString() {
         return "ban(" + "vm=" + getInvolvedVMs().iterator().next() + ", nodes=" + getInvolvedNodes() + ", discrete)";
@@ -71,9 +70,6 @@ public class Ban extends SatConstraint {
 
     @Override
     public boolean setContinuous(boolean b) {
-        if (!b) {
-            super.setContinuous(b);
-        }
         return !b;
     }
 

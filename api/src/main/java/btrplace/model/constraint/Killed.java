@@ -17,12 +17,14 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.checker.KilledChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,7 +34,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class Killed extends VMStateConstraint {
+public class Killed extends SatConstraint {
 
     /**
      * Instantiate constraints for a collection of VMs.
@@ -48,13 +50,18 @@ public class Killed extends VMStateConstraint {
         return l;
     }
 
+    @Override
+    public boolean setContinuous(boolean b) {
+        return !b;
+    }
+
     /**
      * Make a new constraint.
      *
      * @param vm the VMs to remove
      */
     public Killed(VM vm) {
-        super("killed", vm);
+        super(Collections.singleton(vm), Collections.<Node>emptySet(), false);
     }
 
     @Override
@@ -62,4 +69,8 @@ public class Killed extends VMStateConstraint {
         return new KilledChecker(this);
     }
 
+    @Override
+    public String toString() {
+        return "killed(vms=" + getInvolvedVMs().iterator().next() + ", discrete)";
+    }
 }

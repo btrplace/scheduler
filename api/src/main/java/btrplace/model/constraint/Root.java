@@ -68,9 +68,6 @@ public class Root extends SatConstraint {
 
     @Override
     public boolean setContinuous(boolean b) {
-        if (b) {
-            return super.setContinuous(b);
-        }
         return b;
     }
 
