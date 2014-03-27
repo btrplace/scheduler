@@ -45,7 +45,7 @@ public class Quarantine extends SatConstraint {
      * @param nodes the nodes to integrate
      * @return the associated list of constraints
      */
-    public static List<Quarantine> newQuarantines(Collection<Node> nodes) {
+    public static List<Quarantine> newQuarantine(Collection<Node> nodes) {
         List<Quarantine> l = new ArrayList<>(nodes.size());
         for (Node n : nodes) {
             l.add(new Quarantine(n));
@@ -65,24 +65,6 @@ public class Quarantine extends SatConstraint {
     @Override
     public SatConstraintChecker getChecker() {
         return new QuarantineChecker(this);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Quarantine that = (Quarantine) o;
-        return getInvolvedNodes().equals(that.getInvolvedNodes());
-    }
-
-    @Override
-    public int hashCode() {
-        return getInvolvedNodes().hashCode();
     }
 
     @Override

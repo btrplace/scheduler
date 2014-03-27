@@ -56,6 +56,19 @@ public class MaxOnlineTest {
         Assert.assertFalse(o.equals(new MaxOnline(s, 3, true)));
     }
 
+    public void testEquals() {
+        Model m = new DefaultModel();
+        Set<Node> s = new HashSet<>(Arrays.asList(m.newNode(), m.newNode()));
+        MaxOnline mo = new MaxOnline(s, 3);
+        Assert.assertEquals(mo, new MaxOnline(s, 3));
+        Assert.assertNotEquals(mo, new MaxOnline(s, 1));
+        Assert.assertNotEquals(mo, new MaxOnline(new HashSet<Node>(), 3));
+        Assert.assertNotEquals(new MaxOnline(s, 3, true), new MaxOnline(s, 3, false));
+        Assert.assertEquals(mo, new MaxOnline(s, 3));
+        Assert.assertNotEquals(new MaxOnline(s, 3, true).hashCode(), new MaxOnline(s, 3, false).hashCode());
+        Assert.assertEquals(new MaxOnline(s, 3, true), new MaxOnline(s, 3, false));
+    }
+
     @Test
     public void isSatisfiedModel() {
         Model model = new DefaultModel();

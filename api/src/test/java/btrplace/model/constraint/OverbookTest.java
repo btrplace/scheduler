@@ -162,5 +162,7 @@ public class OverbookTest {
         Assert.assertFalse(new Overbook(n, "bar", 3).equals(s));
         Assert.assertFalse(new Overbook(n, "foo", 2).equals(s));
         Assert.assertFalse(new Overbook(mo.newNode(), "foo", 3).equals(s));
+        Assert.assertNotEquals(new Overbook(mo.newNode(), "foo", 3, true), new Overbook(mo.newNode(), "foo", 3, false));
+        Assert.assertNotEquals(new Overbook(mo.newNode(), "foo", 3, true).hashCode(), new Overbook(mo.newNode(), "foo", 3, false).hashCode());
     }
 }

@@ -77,6 +77,7 @@ public class SplitTest {
         List<Collection<VM>> args2 = new ArrayList<>(args);
         args2.add(Collections.singleton(vms.get(2)));
         Assert.assertFalse(new Split(args2).equals(sp));
+        Assert.assertNotEquals(new Split(args, true), new Split(args, false));
     }
 
     @Test

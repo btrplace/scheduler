@@ -73,6 +73,8 @@ public class RunningCapacityTest {
 
         Assert.assertFalse(c.equals(new RunningCapacity(s, 2)));
         Assert.assertFalse(c.equals(new RunningCapacity(new HashSet<Node>(), 3)));
+        Assert.assertNotEquals(new RunningCapacity(s, 2, true), new RunningCapacity(s, 2, false));
+        Assert.assertNotEquals(new RunningCapacity(s, 2, true).hashCode(), new RunningCapacity(s, 2, false).hashCode());
     }
 
     @Test

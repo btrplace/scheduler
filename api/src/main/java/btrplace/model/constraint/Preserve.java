@@ -48,7 +48,7 @@ public class Preserve extends SatConstraint {
      * @param q   the the minimum amount of resources to allocate to each VM. >= 0
      * @return a list of constraints
      */
-    public static List<Preserve> newPreserves(Collection<VM> vms, String r, int q) {
+    public static List<Preserve> newPreserve(Collection<VM> vms, String r, int q) {
         List<Preserve> l = new ArrayList<>(vms.size());
         for (VM v : vms) {
             l.add(new Preserve(v, r, q));
@@ -92,22 +92,12 @@ public class Preserve extends SatConstraint {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Preserve that = (Preserve) o;
-        return getInvolvedVMs().equals(that.getInvolvedVMs()) &&
-                amount == that.amount &&
-                rc.equals(that.rc);
+        return super.equals(o) && rc.equals(((Preserve) o).rc) && amount == ((Preserve) o).amount;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getInvolvedVMs(), rc, amount, isContinuous());
+        return Objects.hash(super.hashCode(), rc, amount);
     }
 
     @Override

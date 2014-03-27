@@ -114,7 +114,7 @@ public class Split extends SatConstraint {
         }
 
         Split that = (Split) o;
-        return sets.equals(that.sets);
+        return sets.equals(that.sets) && isContinuous() == that.isContinuous();
     }
 
     @Override

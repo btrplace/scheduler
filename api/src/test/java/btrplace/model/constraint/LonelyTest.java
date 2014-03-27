@@ -65,6 +65,8 @@ public class LonelyTest {
         Assert.assertTrue(l.equals(new Lonely(new HashSet<>(s))));
         Assert.assertEquals(l.hashCode(), new Lonely(new HashSet<>(s)).hashCode());
         Assert.assertFalse(l.equals(new Lonely(new HashSet<VM>())));
+        Assert.assertNotEquals(new Lonely(s, true), new Lonely(s, false));
+        Assert.assertNotEquals(new Lonely(s, true).hashCode(), new Lonely(s, false).hashCode());
     }
 
     @Test(dependsOnMethods = {"testInstantiation"})

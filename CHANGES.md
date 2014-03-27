@@ -7,6 +7,7 @@ Release notes
 - fix #32, #33
 - fix some spell errors in the comments/API
 - a basic NamingService to associate a unique name to elements (#34)
+- remove some memory allocation hotspot in the api
 
 version 0.35 - 18 Feb 2014
 ----------------------

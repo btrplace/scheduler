@@ -123,23 +123,12 @@ public class Overbook extends SatConstraint {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Overbook that = (Overbook) o;
-
-        return ratio == that.ratio &&
-                getInvolvedNodes().equals(that.getInvolvedNodes()) &&
-                rcId.equals(that.rcId);
+        return super.equals(o) && ratio == ((Overbook) o).ratio && rcId.equals(((Overbook) o).rcId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getInvolvedNodes(), rcId, ratio, isContinuous());
+        return Objects.hash(super.hashCode(), rcId, ratio);
     }
 
     @Override

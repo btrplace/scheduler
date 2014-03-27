@@ -117,7 +117,7 @@ public abstract class SatConstraint implements Constraint {
 
     @Override
     public int hashCode() {
-        return Objects.hash(vms, nodes);
+        return Objects.hash(vms, nodes, continuous);
     }
 
     @Override
@@ -130,7 +130,7 @@ public abstract class SatConstraint implements Constraint {
         }
 
         SatConstraint that = (SatConstraint) o;
-        return nodes.equals(that.nodes) && vms.equals(that.vms);
+        return nodes.equals(that.nodes) && vms.equals(that.vms) && continuous == that.continuous;
     }
 
     /**

@@ -59,24 +59,6 @@ public class Gather extends SatConstraint {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Gather that = (Gather) o;
-        return getInvolvedVMs().equals(that.getInvolvedVMs());
-    }
-
-    @Override
-    public int hashCode() {
-        return getInvolvedVMs().hashCode();
-    }
-
-    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("gather(")
                 .append("vms=").append(getInvolvedVMs());

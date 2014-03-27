@@ -66,6 +66,8 @@ public class SpreadTest {
         Assert.assertNotEquals(s.hashCode(), new Spread(new HashSet<VM>()).hashCode());
         x = new HashSet<>(Arrays.asList(mo.newVM()));
         Assert.assertFalse(new Spread(x).equals(s));
+        Assert.assertFalse(new Spread(x, false).equals(new Spread(x, true)));
+        Assert.assertNotSame(new Spread(x, false).hashCode(), new Spread(x, true).hashCode());
     }
 
     /**

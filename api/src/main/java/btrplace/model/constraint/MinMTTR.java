@@ -25,7 +25,6 @@ package btrplace.model.constraint;
  */
 public class MinMTTR extends OptConstraint {
 
-
     @Override
     public String id() {
         return "minimizeMTTR";

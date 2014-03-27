@@ -23,7 +23,6 @@ import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.model.constraint.checker.SpreadChecker;
 
 import java.util.Collections;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -68,24 +67,6 @@ public class Spread extends SatConstraint {
             b.append(", continuous");
         }
         return b.append(')').toString();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Spread that = (Spread) o;
-        return getInvolvedVMs().equals(that.getInvolvedVMs()) && isContinuous() == that.isContinuous();
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getInvolvedVMs(), isContinuous());
     }
 
     @Override

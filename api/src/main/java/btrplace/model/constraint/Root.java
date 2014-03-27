@@ -62,24 +62,6 @@ public class Root extends SatConstraint {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Root that = (Root) o;
-        return getInvolvedVMs().equals(that.getInvolvedVMs());
-    }
-
-    @Override
-    public int hashCode() {
-        return getInvolvedVMs().hashCode();
-    }
-
-    @Override
     public String toString() {
         return "root(" + "vm=" + getInvolvedVMs().iterator().next() + ", continuous" + ")";
     }

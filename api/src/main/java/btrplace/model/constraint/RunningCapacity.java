@@ -91,20 +91,7 @@ public class RunningCapacity extends SatConstraint {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (!super.equals(o)) {
-            return false;
-        }
-
-        RunningCapacity that = (RunningCapacity) o;
-
-        return qty == that.qty &&
-                getInvolvedNodes().equals(that.getInvolvedNodes());
+        return super.equals(o) && qty == ((RunningCapacity) o).qty;
     }
 
     /**
@@ -118,7 +105,7 @@ public class RunningCapacity extends SatConstraint {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getInvolvedNodes(), qty, isContinuous());
+        return Objects.hash(super.hashCode(), qty);
     }
 
     @Override

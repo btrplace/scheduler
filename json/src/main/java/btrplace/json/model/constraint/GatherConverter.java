@@ -42,7 +42,7 @@ public class GatherConverter extends ConstraintConverter<Gather> {
     @Override
     public Gather fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Gather(requiredVMs(o, "vms"));
+        return new Gather(requiredVMs(o, "vms"), requiredBoolean(o, "continuous"));
     }
 
     @Override
