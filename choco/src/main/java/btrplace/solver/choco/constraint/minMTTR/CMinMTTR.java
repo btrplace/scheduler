@@ -24,6 +24,7 @@ import btrplace.model.VM;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.SliceUtils;
 import btrplace.solver.choco.actionModel.ActionModel;
 import btrplace.solver.choco.actionModel.ActionModelUtils;
 import btrplace.solver.choco.actionModel.VMActionModel;
@@ -137,21 +138,27 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
                 ite.remove();
             }
         }
-        List<AbstractStrategy> strats = new ArrayList<>();
+        List<AbstractStrategy> strategies = new ArrayList<>();
 
         Map<IntVar, VM> pla = VMPlacementUtils.makePlacementMap(p);
         if (!vmsToExclude.isEmpty()) {
-            strats.add(new Assignment(new MovingVMs(p, map, vmsToExclude), new RandomVMPlacement(p, pla, true)));
+            strategies.add(new Assignment(new MovingVMs(p, map, vmsToExclude), new RandomVMPlacement(p, pla, true)));
         }
 
         if (!badActions.isEmpty()) {
-            HostingVariableSelector selectForBads = new HostingVariableSelector(ActionModelUtils.getDSlices(badActions), schedHeuristic);
-            strats.add(new Assignment(selectForBads, new RandomVMPlacement(p, pla, true)));
+            IntVar[] hosts = SliceUtils.extractHoster(ActionModelUtils.getDSlices(badActions));
+            if (hosts.length > 0) {
+                HostingVariableSelector selectForBad = new HostingVariableSelector(hosts, schedHeuristic);
+                strategies.add(new Assignment(selectForBad, new RandomVMPlacement(p, pla, true)));
+            }
         }
 
         if (!goodActions.isEmpty()) {
-            HostingVariableSelector selectForGoods = new HostingVariableSelector(ActionModelUtils.getDSlices(goodActions), schedHeuristic);
-            strats.add(new Assignment(selectForGoods, new RandomVMPlacement(p, pla, true)));
+            IntVar[] hosts = SliceUtils.extractHoster(ActionModelUtils.getDSlices(goodActions));
+            if (hosts.length > 0) {
+                HostingVariableSelector selectForGoods = new HostingVariableSelector(hosts, schedHeuristic);
+                strategies.add(new Assignment(selectForGoods, new RandomVMPlacement(p, pla, true)));
+            }
         }
 
         //VMs to run
@@ -165,23 +172,26 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         }
 
         if (runActions.length > 0) {
-            HostingVariableSelector selectForRuns = new HostingVariableSelector(ActionModelUtils.getDSlices(runActions), schedHeuristic);
-            strats.add(new Assignment(selectForRuns, new RandomVMPlacement(p, pla, true)));
+            IntVar[] hosts = SliceUtils.extractHoster(ActionModelUtils.getDSlices(runActions));
+            if (hosts.length > 0) {
+                HostingVariableSelector selectForRuns = new HostingVariableSelector(hosts, schedHeuristic);
+                strategies.add(new Assignment(selectForRuns, new RandomVMPlacement(p, pla, true)));
+            }
         }
 
         if (p.getNodeActions().length > 0) {
-            strats.add(new Assignment(new InputOrder<>(ActionModelUtils.getStarts(p.getNodeActions())), new InDomainMin()));
+            strategies.add(new Assignment(new InputOrder<>(ActionModelUtils.getStarts(p.getNodeActions())), new InDomainMin()));
         }
 
         ///SCHEDULING PROBLEM
         MovementGraph gr = new MovementGraph(rp);
-        strats.add(new Assignment(new StartOnLeafNodes(rp, gr), new InDomainMin()));
-        strats.add(new Assignment(schedHeuristic, new InDomainMin()));
+        strategies.add(new Assignment(new StartOnLeafNodes(rp, gr), new InDomainMin()));
+        strategies.add(new Assignment(schedHeuristic, new InDomainMin()));
 
         //At this stage only it matters to plug the cost constraints
-        strats.add(new Assignment(new InputOrder<>(new IntVar[]{p.getEnd(), cost}), new InDomainMin()));
+        strategies.add(new Assignment(new InputOrder<>(new IntVar[]{p.getEnd(), cost}), new InDomainMin()));
 
-        s.getSearchLoop().set(new StrategiesSequencer(s.getEnvironment(), strats.toArray(new AbstractStrategy[strats.size()])));
+        s.getSearchLoop().set(new StrategiesSequencer(s.getEnvironment(), strategies.toArray(new AbstractStrategy[strategies.size()])));
     }
 
     @Override

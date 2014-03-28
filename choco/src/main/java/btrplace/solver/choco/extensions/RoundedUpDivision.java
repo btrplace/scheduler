@@ -27,14 +27,14 @@ import solver.variables.IntVar;
 import util.ESat;
 
 /**
- * A constraint to enforce {@code a == b / q} where {@code q} is a real and {@code a} and {@code b} are
+ * A constraint to enforce {@code a == b / divider} where {@code divider} is a real and {@code a} and {@code b} are
  * both integers.
  * The division is rounded up to the smallest integer.
  * <p/>
  * In practice, the constraint maintains:
  * <ul>
- * <li>{@code a = Math.ceil(b / q)}</li>
- * <li>{@code b = ((a - 1 )* q) % 1 == 0 ? [(a - 1)*q + 1; Math.floor(a * q)] : [Math.ceil((a -1)*q); Math.floor(a * q)]}</li>
+ * <li>{@code a = Math.ceil(b / divider)}</li>
+ * <li>{@code b = ((a - 1 )* divider) % 1 == 0 ? [(a - 1)*divider + 1; Math.floor(a * divider)] : [Math.ceil((a -1)*divider); Math.floor(a * divider)]}</li>
  * </ul>
  *
  * @author Fabien Hermenier
@@ -45,11 +45,14 @@ public class RoundedUpDivision extends IntConstraint<IntVar> {
 
     /**
      * Make a new constraint.
+     * @param a the variable to divide
+     * @param b the resulting ratio
+     * @param d the divider
      */
-    public RoundedUpDivision(IntVar a, IntVar b, double q) {
+    public RoundedUpDivision(IntVar a, IntVar b, double d) {
         super(new IntVar[]{a, b}, a.getSolver());
-        qq = q;
-        setPropagators(new RoundedUpDivisionPropagator(vars, q));
+        qq = d;
+        setPropagators(new RoundedUpDivisionPropagator(vars, d));
     }
 
     @Override
@@ -64,11 +67,17 @@ public class RoundedUpDivision extends IntConstraint<IntVar> {
 
     class RoundedUpDivisionPropagator extends Propagator<IntVar> {
 
-        private double q;
+        private double divider;
 
-        public RoundedUpDivisionPropagator(IntVar[] vs, double qq) {
+        /**
+         * New propagator
+         *
+         * @param vs the variables
+         * @param d  the divider
+         */
+        public RoundedUpDivisionPropagator(IntVar[] vs, double d) {
             super(vs, PropagatorPriority.BINARY, true);
-            this.q = qq;
+            this.divider = d;
         }
 
         @Override
@@ -79,20 +88,20 @@ public class RoundedUpDivision extends IntConstraint<IntVar> {
         @Override
         public ESat isEntailed() {
             if (vars[0].getDomainSize() == 1 && vars[1].getDomainSize() == 1) {
-                return ESat.eval(vars[0].getValue() == (int) Math.ceil((double) vars[1].getValue() / q));
+                return ESat.eval(vars[0].getValue() == (int) Math.ceil((double) vars[1].getValue() / divider));
             }
             return ESat.UNDEFINED;
         }
 
         private int div(int b) {
-            return (int) Math.ceil((double) b / q);
+            return (int) Math.ceil((double) b / divider);
         }
 
         private int multLB(int a) {
-            if ((a - 1 * q) % 1 == 0) {
-                return (int) ((a - 1) * q + 1);
+            if ((a - 1 * divider) % 1 == 0) {
+                return (int) ((a - 1) * divider + 1);
             }
-            return (int) Math.ceil(q * (a - 1));
+            return (int) Math.ceil(divider * (a - 1));
         }
 
         @Override
@@ -131,7 +140,7 @@ public class RoundedUpDivision extends IntConstraint<IntVar> {
             if (i == 1) {
                 return vars[0].updateUpperBound(div(vars[1].getUB()), aCause);
             } else {
-                return vars[1].updateUpperBound((int) Math.floor(q * vars[0].getUB()), aCause);
+                return vars[1].updateUpperBound((int) Math.floor(divider * vars[0].getUB()), aCause);
             }
         }
     }

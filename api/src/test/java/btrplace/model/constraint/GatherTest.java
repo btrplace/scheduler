@@ -68,6 +68,8 @@ public class GatherTest {
         Assert.assertEquals(g2.hashCode(), g.hashCode());
         s.remove(vm);
         Assert.assertFalse(g2.equals(g));
+        Assert.assertFalse(new Gather(s, false).equals(new Gather(s, true)));
+        Assert.assertNotEquals(new Gather(s, false).hashCode(), new Gather(s, true).hashCode());
     }
 
     @Test

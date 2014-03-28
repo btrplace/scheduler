@@ -56,23 +56,23 @@ public class CSpread implements ChocoConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) {
 
-        List<IntVar> onlyRunnings = new ArrayList<>();
+        List<IntVar> running = new ArrayList<>();
         for (VM vmId : cstr.getInvolvedVMs()) {
             if (rp.getFutureRunningVMs().contains(vmId)) {
                 VMActionModel a = rp.getVMAction(vmId);
                 Slice d = a.getDSlice();
                 if (d != null) {
-                    onlyRunnings.add(d.getHoster());
+                    running.add(d.getHoster());
                 }
             }
         }
         Solver s = rp.getSolver();
-        if (!onlyRunnings.isEmpty()) {
+        if (!running.isEmpty()) {
             //The lazy spread implementation for the placement
-            s.post(IntConstraintFactory.alldifferent(onlyRunnings.toArray(new IntVar[onlyRunnings.size()]), "BC"));
+            s.post(IntConstraintFactory.alldifferent(running.toArray(new IntVar[running.size()]), "BC"));
 
             if (cstr.isContinuous()) {
-                VM[] vms = new VM[onlyRunnings.size()];
+                VM[] vms = new VM[running.size()];
                 int x = 0;
                 for (VM vm : cstr.getInvolvedVMs()) {
                     if (rp.getFutureRunningVMs().contains(vm)) {

@@ -17,12 +17,8 @@
 
 package btrplace.solver.choco.constraint.minMTTR;
 
-import btrplace.solver.choco.Slice;
-import btrplace.solver.choco.SliceUtils;
 import solver.search.strategy.selectors.variables.InputOrder;
 import solver.variables.IntVar;
-
-import java.util.List;
 
 /**
  * A variable selector that focuses the placement variables of slices.
@@ -38,11 +34,11 @@ public class HostingVariableSelector extends InputOrder<IntVar> {
      * Make a new heuristic.
      * By default, the heuristic doesn't touch the scheduling constraints.
      *
-     * @param slices the slices to consider
+     * @param hosts the variables denoting the VMs next host
      * @param sched  the scheduling heuristic to notify when the placement is invalidated
      */
-    public HostingVariableSelector(List<Slice> slices, OnStableNodeFirst sched) {
-        super(SliceUtils.extractHosters(slices));
+    public HostingVariableSelector(IntVar[] hosts, OnStableNodeFirst sched) {
+        super(hosts);
         this.schedHeuristic = sched;
     }
 

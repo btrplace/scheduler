@@ -44,7 +44,7 @@ public class Fence extends SatConstraint {
      * @param nodes the hosts to disallow
      * @return the associated list of constraints
      */
-    public static List<Fence> newFences(Collection<VM> vms, Collection<Node> nodes) {
+    public static List<Fence> newFence(Collection<VM> vms, Collection<Node> nodes) {
         List<Fence> l = new ArrayList<>(vms.size());
         for (VM v : vms) {
             l.add(new Fence(v, nodes));
@@ -69,9 +69,6 @@ public class Fence extends SatConstraint {
 
     @Override
     public boolean setContinuous(boolean b) {
-        if (!b) {
-            super.setContinuous(b);
-        }
         return !b;
     }
 

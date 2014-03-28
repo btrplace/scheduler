@@ -77,7 +77,7 @@ public class CGatherTest {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(g);
-        cstrs.addAll(Running.newRunnings(map.getAllVMs()));
+        cstrs.addAll(Running.newRunning(map.getAllVMs()));
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
         Assert.assertNotNull(plan);
         Model res = plan.getResult();
@@ -114,7 +114,7 @@ public class CGatherTest {
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(true);
         List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.addAll(Running.newRunnings(map.getAllVMs()));
+        cstrs.addAll(Running.newRunning(map.getAllVMs()));
         cstrs.add(g);
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
@@ -137,7 +137,7 @@ public class CGatherTest {
         Gather g = new Gather(map.getAllVMs());
         g.setContinuous(true);
         List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.addAll(Running.newRunnings(map.getAllVMs()));
+        cstrs.addAll(Running.newRunning(map.getAllVMs()));
         cstrs.add(g);
         cstrs.add(new Fence(vm1, Collections.singleton(n1)));
         cstrs.add(new Fence(vm2, Collections.singleton(n1)));
@@ -158,7 +158,7 @@ public class CGatherTest {
         g.setContinuous(true);
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(g);
-        cstrs.addAll(Running.newRunnings(map.getAllVMs()));
+        cstrs.addAll(Running.newRunning(map.getAllVMs()));
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         ReconfigurationPlan plan = cra.solve(mo, cstrs);
         Assert.assertNotNull(plan);

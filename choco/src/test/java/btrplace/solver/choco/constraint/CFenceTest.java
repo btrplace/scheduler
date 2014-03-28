@@ -97,7 +97,7 @@ public class CFenceTest {
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(f);
-        cstrs.addAll(Online.newOnlines(map.getAllNodes()));
+        cstrs.addAll(Online.newOnline(map.getAllNodes()));
         ReconfigurationPlan p = cra.solve(mo, cstrs);
         Assert.assertNotNull(p);
         Assert.assertTrue(p.getSize() > 0);

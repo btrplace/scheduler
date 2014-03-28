@@ -54,7 +54,7 @@ public class CRootTest {
         Root r1 = new Root(vm1);
         List<SatConstraint> l = new ArrayList<>();
         l.add(r1);
-        l.addAll(Online.newOnlines(map.getAllNodes()));
+        l.addAll(Online.newOnline(map.getAllNodes()));
         ReconfigurationPlan p = cra.solve(mo, l);
         Assert.assertNotNull(p);
         Model res = p.getResult();

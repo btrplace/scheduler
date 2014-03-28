@@ -111,7 +111,7 @@ public class DefaultChocoReconfigurationAlgorithmTest {
                         Mapping map = rp.getSourceModel().getMapping();
                         Solver s = rp.getSolver();
                         IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
-                        IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
+                        IntVar[] hosters = SliceUtils.extractHoster(ActionModelUtils.getDSlices(rp.getVMActions()));
                         s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_least_AC"));//new AtMostNValue(hosters, nbNodes));
                         rp.setObjective(false, nbNodes);
                         return true;

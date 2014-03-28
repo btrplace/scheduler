@@ -45,7 +45,7 @@ public class Ban extends SatConstraint {
      * @param nodes the hosts to disallow
      * @return the associated list of constraints
      */
-    public static List<Ban> newBans(Collection<VM> vms, Collection<Node> nodes) {
+    public static List<Ban> newBan(Collection<VM> vms, Collection<Node> nodes) {
         List<Ban> l = new ArrayList<>(vms.size());
         for (VM v : vms) {
             l.add(new Ban(v, nodes));
@@ -63,7 +63,6 @@ public class Ban extends SatConstraint {
         super(Collections.singleton(vm), nodes, false);
     }
 
-
     @Override
     public String toString() {
         return "ban(" + "vm=" + getInvolvedVMs().iterator().next() + ", nodes=" + getInvolvedNodes() + ", discrete)";
@@ -71,9 +70,6 @@ public class Ban extends SatConstraint {
 
     @Override
     public boolean setContinuous(boolean b) {
-        if (!b) {
-            super.setContinuous(b);
-        }
         return !b;
     }
 

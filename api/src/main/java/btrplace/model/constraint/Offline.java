@@ -18,11 +18,13 @@
 package btrplace.model.constraint;
 
 import btrplace.model.Node;
+import btrplace.model.VM;
 import btrplace.model.constraint.checker.OfflineChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -34,7 +36,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class Offline extends NodeStateConstraint {
+public class Offline extends SatConstraint {
 
     /**
      * Instantiate constraints for a collection of nodes.
@@ -42,7 +44,7 @@ public class Offline extends NodeStateConstraint {
      * @param nodes the nodes to integrate
      * @return the associated list of constraints
      */
-    public static List<Offline> newOfflines(Collection<Node> nodes) {
+    public static List<Offline> newOffline(Collection<Node> nodes) {
         List<Offline> l = new ArrayList<>(nodes.size());
         for (Node n : nodes) {
             l.add(new Offline(n));
@@ -56,7 +58,7 @@ public class Offline extends NodeStateConstraint {
      * @param n the node to set offline
      */
     public Offline(Node n) {
-        super("offline", n);
+        super(Collections.<VM>emptyList(), Collections.singleton(n), false);
     }
 
     @Override
@@ -64,4 +66,13 @@ public class Offline extends NodeStateConstraint {
         return new OfflineChecker(this);
     }
 
+    @Override
+    public boolean setContinuous(boolean b) {
+        return !b;
+    }
+
+    @Override
+    public String toString() {
+        return "offline(nodes=" + getInvolvedNodes().iterator().next() + ", discrete)";
+    }
 }

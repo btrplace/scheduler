@@ -56,31 +56,31 @@ public class ConstraintsConverter extends AbstractJSONObjectConverter<Constraint
      */
     public static ConstraintsConverter newBundle() {
         //The default converters
-        ConstraintsConverter conv = new ConstraintsConverter();
-        conv.register(new AmongConverter());
-        conv.register(new BanConverter());
-        conv.register(new ResourceCapacityConverter());
-        conv.register(new RunningCapacityConverter());
-        conv.register(new FenceConverter());
-        conv.register(new GatherConverter());
-        conv.register(new KilledConverter());
-        conv.register(new LonelyConverter());
-        conv.register(new OfflineConverter());
-        conv.register(new OnlineConverter());
-        conv.register(new OverbookConverter());
-        conv.register(new PreserveConverter());
-        conv.register(new QuarantineConverter());
-        conv.register(new ReadyConverter());
-        conv.register(new RootConverter());
-        conv.register(new RunningConverter());
-        conv.register(new SequentialVMTransitionsConverter());
-        conv.register(new SleepingConverter());
-        conv.register(new SplitAmongConverter());
-        conv.register(new SplitConverter());
-        conv.register(new SpreadConverter());
-        conv.register(new MaxOnlineConverter());
-        conv.register(new MinMTTRConverter());
-        return conv;
+        ConstraintsConverter c = new ConstraintsConverter();
+        c.register(new AmongConverter());
+        c.register(new BanConverter());
+        c.register(new ResourceCapacityConverter());
+        c.register(new RunningCapacityConverter());
+        c.register(new FenceConverter());
+        c.register(new GatherConverter());
+        c.register(new KilledConverter());
+        c.register(new LonelyConverter());
+        c.register(new OfflineConverter());
+        c.register(new OnlineConverter());
+        c.register(new OverbookConverter());
+        c.register(new PreserveConverter());
+        c.register(new QuarantineConverter());
+        c.register(new ReadyConverter());
+        c.register(new RootConverter());
+        c.register(new RunningConverter());
+        c.register(new SequentialVMTransitionsConverter());
+        c.register(new SleepingConverter());
+        c.register(new SplitAmongConverter());
+        c.register(new SplitConverter());
+        c.register(new SpreadConverter());
+        c.register(new MaxOnlineConverter());
+        c.register(new MinMTTRConverter());
+        return c;
     }
 
     /**

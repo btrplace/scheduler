@@ -61,9 +61,9 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
         o.put(DEFAULT_CAPACITY, rc.getDefaultCapacity());
         o.put("rcId", rc.getResourceIdentifier());
 
-        Set<VM> elems = rc.getDefinedVMs();
+        Set<VM> vms = rc.getDefinedVMs();
         JSONObject values = new JSONObject();
-        for (VM u : elems) {
+        for (VM u : vms) {
             values.put(Integer.toString(u.id()), rc.getConsumption(u));
         }
         o.put("vms", values);

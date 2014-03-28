@@ -60,24 +60,6 @@ public class Lonely extends SatConstraint {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Lonely that = (Lonely) o;
-        return getInvolvedVMs().equals(that.getInvolvedVMs());
-    }
-
-    @Override
-    public int hashCode() {
-        return getInvolvedVMs().hashCode();
-    }
-
-    @Override
     public String toString() {
         StringBuilder b = new StringBuilder("lonely(")
                 .append("vms=").append(getInvolvedVMs());

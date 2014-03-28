@@ -55,7 +55,7 @@ public class CSpreadTest {
         Spread s = new Spread(mo.getMapping().getAllVMs());
         s.setContinuous(false);
         cstr.add(s);
-        cstr.addAll(Online.newOnlines(mo.getMapping().getAllNodes()));
+        cstr.addAll(Online.newOnline(mo.getMapping().getAllNodes()));
         cstr.add(new Fence(vm1, Collections.singleton(n2)));
         ReconfigurationPlan p = cra.solve(mo, cstr);
         Assert.assertNotNull(p);
@@ -80,7 +80,7 @@ public class CSpreadTest {
         List<SatConstraint> cstr = new ArrayList<>();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cstr.add(new Spread(mo.getMapping().getAllVMs(), true));
-        cstr.addAll(Online.newOnlines(mo.getMapping().getAllNodes()));
+        cstr.addAll(Online.newOnline(mo.getMapping().getAllNodes()));
         cstr.add(new Fence(vm1, Collections.singleton(n2)));
         ReconfigurationPlan p = cra.solve(mo, cstr);
         Assert.assertNotNull(p);
@@ -129,7 +129,7 @@ public class CSpreadTest {
         Spread s = new Spread(mo.getMapping().getAllVMs());
         s.setContinuous(true);
         cstr.add(s);
-        cstr.addAll(Online.newOnlines(mo.getMapping().getAllNodes()));
+        cstr.addAll(Online.newOnline(mo.getMapping().getAllNodes()));
         cstr.add(new Fence(vm1, Collections.singleton(n2)));
         ReconfigurationPlan p = cra.solve(mo, cstr);
         Assert.assertNotNull(p);

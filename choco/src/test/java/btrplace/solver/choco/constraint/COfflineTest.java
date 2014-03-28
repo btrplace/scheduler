@@ -63,7 +63,7 @@ public class COfflineTest {
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.getDurationEvaluators().register(ShutdownNode.class, new ConstantActionDuration(10));
         cra.setTimeLimit(-1);
-        List x = Offline.newOfflines(map.getAllNodes());
+        List x = Offline.newOffline(map.getAllNodes());
         ReconfigurationPlan plan = cra.solve(model, x);
         Assert.assertNotNull(plan);
         Assert.assertEquals(plan.getSize(), 2);

@@ -92,22 +92,12 @@ public class Preserve extends SatConstraint {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Preserve that = (Preserve) o;
-        return getInvolvedVMs().equals(that.getInvolvedVMs()) &&
-                amount == that.amount &&
-                rc.equals(that.rc);
+        return super.equals(o) && rc.equals(((Preserve) o).rc) && amount == ((Preserve) o).amount;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getInvolvedVMs(), rc, amount, isContinuous());
+        return Objects.hash(super.hashCode(), rc, amount);
     }
 
     @Override
@@ -120,9 +110,6 @@ public class Preserve extends SatConstraint {
 
     @Override
     public boolean setContinuous(boolean b) {
-        if (!b) {
-            return super.setContinuous(b);
-        }
         return !b;
     }
 

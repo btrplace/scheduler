@@ -47,10 +47,16 @@ perform)
     VERSION=$(cat .version)
         
     echo "-- Prepare the release --"
-    mvn -B release:prepare || exit 1
+    if ! mvn -B release:prepare; then
+        mvn release:rollback
+        exit 1
+    fi
 
     echo "-- Perform the release --"
-    mvn release:perform || exit 1
+    if ! mvn release:perform; then
+        mvn release:rollback
+        exit 1
+    fi
     rm .version #To prevent for an infinite loop
     
     DEV_HEAD=$(git rev-parse HEAD)

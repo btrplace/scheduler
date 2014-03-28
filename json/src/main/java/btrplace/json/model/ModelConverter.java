@@ -28,7 +28,7 @@ import net.minidev.json.JSONObject;
 
 /**
  * Class to serialize/unSerialize a model using the JSON format.
- *
+ * By default, it embeds converters for the views bundle in {@link btrplace.json.model.view.ModelViewsConverter#newBundle()}
  * @author Fabien Hermenier
  */
 public class ModelConverter extends AbstractJSONObjectConverter<Model> {

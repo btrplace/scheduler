@@ -36,7 +36,7 @@ import java.util.Set;
  */
 public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<SequentialVMTransitions> {
 
-    private Set<VM> runnings;
+    private Set<VM> running;
 
     private List<VM> order;
 
@@ -55,11 +55,11 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<Se
 
     @Override
     public boolean startsWith(Model mo) {
-        runnings = new HashSet<>();
+        running = new HashSet<>();
         for (Node n : mo.getMapping().getOnlineNodes()) {
-            runnings.addAll(mo.getMapping().getRunningVMs(n));
+            running.addAll(mo.getMapping().getRunningVMs(n));
         }
-        track(runnings);
+        track(running);
         return true;
     }
 
@@ -108,7 +108,7 @@ public class SequentialVMTransitionsChecker extends AllowAllConstraintChecker<Se
 
     @Override
     public boolean start(KillVM a) {
-        if (runnings.contains(a.getVM())) {
+        if (running.contains(a.getVM())) {
             return makePending(a.getVM());
         }
         return true;

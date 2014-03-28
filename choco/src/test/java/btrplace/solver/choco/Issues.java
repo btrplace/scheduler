@@ -25,6 +25,8 @@ import btrplace.model.constraint.Spread;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
+import btrplace.solver.choco.actionModel.NodeActionModel;
+import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.constraint.minMTTR.CMinMTTR;
 import btrplace.solver.choco.extensions.ChocoUtils;
 import org.testng.Assert;
@@ -317,9 +319,29 @@ public class Issues {
     }
 
     @Test
-    public void testFoo() throws ContradictionException {
-        Solver s = new Solver();
-        IntVar b = VF.enumerated("foo", 2, 5, s);
-        Assert.assertTrue(b.removeValue(3, Cause.Null));
+    public void issue33() throws SolverException, ContradictionException {
+        Model mo = new DefaultModel();
+        Node n = mo.newNode();
+        VM v = mo.newVM();
+        mo.getMapping().addOnlineNode(n);
+        mo.getMapping().addRunningVM(v, n);
+
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setNextVMsStates(Collections.<VM>emptySet(),
+                        Collections.<VM>emptySet(),
+                        Collections.singleton(v),
+                        Collections.<VM>emptySet())
+                .labelVariables(true)
+                .build();
+
+        NodeActionModel na = rp.getNodeAction(n);
+        na.getStart().instantiateTo(0, Cause.Null);
+        na.getEnd().instantiateTo(1, Cause.Null);
+        VMActionModel vma = rp.getVMAction(v);
+        vma.getStart().instantiateTo(0, Cause.Null);
+        vma.getEnd().instantiateTo(1, Cause.Null);
+
+        ReconfigurationPlan plan = rp.solve(0, false);
+        Assert.assertEquals(plan, null);
     }
 }

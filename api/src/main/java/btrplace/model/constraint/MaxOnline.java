@@ -80,25 +80,12 @@ public class MaxOnline extends SatConstraint {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (!super.equals(o)) {
-            return false;
-        }
-
-        MaxOnline that = (MaxOnline) o;
-
-        return qty == that.getAmount() && getInvolvedNodes().equals(that.getInvolvedNodes())
-                && this.isContinuous() == that.isContinuous();
+        return super.equals(o) && qty == ((MaxOnline) o).qty;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(qty, getInvolvedNodes(), isContinuous());
+        return Objects.hash(super.hashCode(), qty);
     }
 
     @Override

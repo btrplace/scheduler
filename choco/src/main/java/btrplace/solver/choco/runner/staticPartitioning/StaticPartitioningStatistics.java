@@ -47,32 +47,32 @@ public class StaticPartitioningStatistics implements SolvingStatistics {
      * Make the statistics.
      *
      * @param ps            the standard parameters for the solving process
-     * @param nbNodes       the number of nodes in the model
-     * @param nbVMs         the number of VMs in the model
-     * @param nbConstraints the number of satisfaction-oriented constraints.
+     * @param n       the number of nodes in the model
+     * @param v         the number of VMs in the model
+     * @param c the number of satisfaction-oriented constraints.
      * @param st            the moment the computation started, epoch format
-     * @param splitDuration the duration of the splitting process in milliseconds
-     * @param duration      the solving process duration in milliseconds
-     * @param nbWorkers     the number of workers to solve the partitions in parallel
+     * @param sd the duration of the splitting process in milliseconds
+     * @param d      the solving process duration in milliseconds
+     * @param w     the number of workers to solve the partitions in parallel
      * @param nbParts       the number of partitions to compute
      */
-    public StaticPartitioningStatistics(ChocoReconfigurationAlgorithmParams ps, int nbNodes, int nbVMs, int nbConstraints,
-                                        long st, long splitDuration, long duration, int nbWorkers, int nbParts) {
+    public StaticPartitioningStatistics(ChocoReconfigurationAlgorithmParams ps, int n, int v, int c,
+                                        long st, long sd, long d, int w, int nbParts) {
         partResults = new ArrayList<>();
         this.start = st;
-        this.nbNodes = nbNodes;
-        this.nbVMs = nbVMs;
-        this.nbConstraints = nbConstraints;
-        this.duration = duration;
+        this.nbNodes = n;
+        this.nbVMs = v;
+        this.nbConstraints = c;
+        this.duration = d;
         nbSearchNodes = 0;
         nbBacktracks = 0;
         nbManaged = 0;
         coreRPDuration = 0;
         speRPDuration = 0;
         hitTimeout = false;
-        this.nbWorkers = nbWorkers;
+        this.nbWorkers = w;
         params = ps;
-        this.splitDuration = splitDuration;
+        this.splitDuration = sd;
         this.nbPartitions = nbParts;
     }
 

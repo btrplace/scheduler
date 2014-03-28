@@ -71,13 +71,13 @@ public class CAmong implements ChocoConstraint {
         List<Collection<Node>> groups = new ArrayList<>();
         groups.addAll(cstr.getGroupsOfNodes());
 
-        //Browse every VM, check if one is already placed and isolate future runnings
-        Set<VM> runnings = new HashSet<>();
+        //Browse every VM, check if one is already placed and isolate the future running VMs
+        Set<VM> running = new HashSet<>();
         Mapping src = rp.getSourceModel().getMapping();
         for (VM vm : cstr.getInvolvedVMs()) {
             if (rp.getFutureRunningVMs().contains(vm)) {
                 //The VM will be running
-                runnings.add(vm);
+                running.add(vm);
                 IntVar vAssign = rp.getVMAction(vm).getDSlice().getHoster();
                 //If one of the VM is already placed, no need for the constraint, the group will be known
                 if (vAssign.instantiated()) {
@@ -110,7 +110,7 @@ public class CAmong implements ChocoConstraint {
 
         if (cstr.isContinuous() && curGrp != -1) {
             vmGrpId = VariableFactory.fixed(rp.makeVarLabel("among#pGrp"), curGrp, rp.getSolver());
-            for (VM v : runnings) {
+            for (VM v : running) {
                 if (!new CFence(new Fence(v, groups.get(curGrp))).inject(rp)) {
                     return false;
                 }
@@ -118,7 +118,7 @@ public class CAmong implements ChocoConstraint {
         } else {
             if (groups.size() == 1 && !groups.iterator().next().equals(rp.getSourceModel().getMapping().getAllNodes())) {
                 //Only 1 group of nodes, it's just a fence constraint
-                for (VM v : runnings) {
+                for (VM v : running) {
                     if (!new CFence(new Fence(v, groups.get(0))).inject(rp)) {
                         return false;
                     }
@@ -129,33 +129,33 @@ public class CAmong implements ChocoConstraint {
                 if (nextGrp == -1) {
                     vmGrpId = VariableFactory.enumerated(rp.makeVarLabel("among#pGrp"), 0, groups.size() - 1, rp.getSolver());
                     //grp: A table to indicate the group each node belong to, -1 for no group
-                    int[] grps = new int[rp.getNodes().length];
+                    int[] grp = new int[rp.getNodes().length];
                     Set<Node> possibleNodes = new HashSet<>();
-                    for (int i = 0; i < grps.length; i++) {
+                    for (int i = 0; i < grp.length; i++) {
                         Node n = rp.getNodes()[i];
                         int idx = getGroup(n);
                         if (idx >= 0) {
-                            grps[i] = idx;
+                            grp[i] = idx;
                             possibleNodes.add(n);
                         }
                     }
                     //In any case, the VMs cannot go to nodes that are in no groups
                     Collection<Node> ok = new HashSet<>(possibleNodes);
-                    for (VM v : runnings) {
+                    for (VM v : running) {
                         if (!new CFence(new Fence(v, ok)).inject(rp)) {
                             return false;
                         }
                     }
                     //We link the VM placement variable with the group variable
-                    for (VM vm : runnings) {
+                    for (VM vm : running) {
                         IntVar assign = rp.getVMAction(vm).getDSlice().getHoster();
-                        Constraint c = IntConstraintFactory.element(assign, grps, vmGrpId, 0, "detect");
+                        Constraint c = IntConstraintFactory.element(assign, grp, vmGrpId, 0, "detect");
                         rp.getSolver().post(c);
                     }
                 } else {
                     vmGrpId = VariableFactory.fixed(rp.makeVarLabel("among#pGrp"), nextGrp, rp.getSolver());
                     //As the group is already known, it's now just a fence constraint
-                    for (VM v : runnings) {
+                    for (VM v : running) {
                         if (!new CFence(new Fence(v, groups.get(nextGrp))).inject(rp)) {
                             return false;
                         }

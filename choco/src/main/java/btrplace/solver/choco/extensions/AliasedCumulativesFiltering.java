@@ -176,10 +176,10 @@ public class AliasedCumulativesFiltering {
     public void computeProfiles() {
 
         for (int i = 0; i < nbDims; i++) {
-            //Sur de ce qui est utilise sur la ressource
+            //sure about what is used on the resource
             profilesMin[i].clear();
 
-            //Maximum simultanee dans le pire des cas sur la ressource
+            //simultaneous max in the worst case on the resource
             profilesMax[i].clear();
 
             profilesMax[i].put(0, capacities[i] - startupFree[i]);

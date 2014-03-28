@@ -37,7 +37,7 @@ public class RunningCapacityChecker extends AllowAllConstraintChecker<RunningCap
 
     private int usage;
 
-    private Set<VM> srcRunnings;
+    private Set<VM> srcRunning;
 
     private int qty;
 
@@ -69,7 +69,7 @@ public class RunningCapacityChecker extends AllowAllConstraintChecker<RunningCap
 
     @Override
     public boolean start(KillVM a) {
-        if (getConstraint().isContinuous() && srcRunnings.remove(a.getVM())) {
+        if (getConstraint().isContinuous() && srcRunning.remove(a.getVM())) {
             return leave(a.getNode());
         }
         return true;
@@ -111,11 +111,11 @@ public class RunningCapacityChecker extends AllowAllConstraintChecker<RunningCap
                     return false;
                 }
             }
-            srcRunnings = new HashSet<>();
+            srcRunning = new HashSet<>();
             for (Node n : map.getOnlineNodes()) {
-                srcRunnings.addAll(map.getRunningVMs(n));
+                srcRunning.addAll(map.getRunningVMs(n));
             }
-            track(srcRunnings);
+            track(srcRunning);
         }
         return true;
     }

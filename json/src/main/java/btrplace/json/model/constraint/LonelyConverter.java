@@ -42,7 +42,7 @@ public class LonelyConverter extends ConstraintConverter<Lonely> {
     @Override
     public Lonely fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-        return new Lonely(requiredVMs(o, "vms"));
+        return new Lonely(requiredVMs(o, "vms"), requiredBoolean(o, "continuous"));
     }
 
     @Override

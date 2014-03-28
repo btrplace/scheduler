@@ -26,24 +26,30 @@ import solver.variables.IntVar;
 import java.util.*;
 
 /**
+ * Class denoting the movement of the running VMs from their source to their destination node.
  * @author Fabien Hermenier
  */
 public class MovementGraph {
 
     private ReconfigurationProblem rp;
 
-    private Map<Node, List<IntVar>> incomings;
+    private Map<Node, List<IntVar>> incoming;
 
     private Map<Node, List<IntVar>> outgoings;
 
-    public MovementGraph(ReconfigurationProblem rp) {
-        this.rp = rp;
-        incomings = new HashMap<>();
+    /**
+     * Make a new graph.
+     *
+     * @param p the associated problem
+     */
+    public MovementGraph(ReconfigurationProblem p) {
+        this.rp = p;
+        incoming = new HashMap<>();
         outgoings = new HashMap<>();
     }
 
     public void make() {
-        incomings.clear();
+        incoming.clear();
         outgoings.clear();
 
         for (VMActionModel a : rp.getVMActions()) {
@@ -71,22 +77,34 @@ public class MovementGraph {
 
     private void addIncoming(Slice cSlice) {
         Node h = rp.getNode(cSlice.getHoster().getLB());
-        List<IntVar> l = incomings.get(h);
+        List<IntVar> l = incoming.get(h);
         if (l == null) {
             l = new ArrayList<>();
-            incomings.put(h, l);
+            incoming.put(h, l);
         }
         l.add(cSlice.getStart());
     }
 
+    /**
+     * Get the start moment of the movements that terminate
+     * on a given node
+     * @param n the destination node
+     * @return a list of start moment. May be empty
+     */
     public List<IntVar> getIncoming(Node n) {
-        List<IntVar> l = incomings.get(n);
+        List<IntVar> l = incoming.get(n);
         if (l == null) {
             l = Collections.emptyList();
         }
         return l;
     }
 
+    /**
+     * Get the start moment of the movements that leave
+     * from a given node
+     * @param n the source node
+     * @return a list of start moment. May be empty
+     */
     public List<IntVar> getOutgoing(Node n) {
         List<IntVar> l = outgoings.get(n);
         if (l == null) {

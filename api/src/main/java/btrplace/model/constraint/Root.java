@@ -44,7 +44,7 @@ public class Root extends SatConstraint {
      * @param vms the VMs to integrate
      * @return the associated list of constraints
      */
-    public static List<Root> newRoot(Collection<VM> vms) {
+    public static List<Root> newRoots(Collection<VM> vms) {
         List<Root> l = new ArrayList<>(vms.size());
         for (VM v : vms) {
             l.add(new Root(v));
@@ -62,33 +62,12 @@ public class Root extends SatConstraint {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Root that = (Root) o;
-        return getInvolvedVMs().equals(that.getInvolvedVMs());
-    }
-
-    @Override
-    public int hashCode() {
-        return getInvolvedVMs().hashCode();
-    }
-
-    @Override
     public String toString() {
         return "root(" + "vm=" + getInvolvedVMs().iterator().next() + ", continuous" + ")";
     }
 
     @Override
     public boolean setContinuous(boolean b) {
-        if (b) {
-            return super.setContinuous(b);
-        }
         return b;
     }
 

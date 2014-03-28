@@ -34,9 +34,9 @@ public class DependenciesExtractor implements ActionVisitor {
 
     private Map<Action, Node> demandingNodes;
 
-    private Map<Node, Set<Action>> freeings;
+    private Map<Node, Set<Action>> freeing;
 
-    private Map<Node, Set<Action>> demandings;
+    private Map<Node, Set<Action>> demanding;
 
     private Model origin;
 
@@ -46,26 +46,26 @@ public class DependenciesExtractor implements ActionVisitor {
      * @param o the model at the source of the reconfiguration plan
      */
     public DependenciesExtractor(Model o) {
-        demandings = new HashMap<>();
-        freeings = new HashMap<>();
+        demanding = new HashMap<>();
+        freeing = new HashMap<>();
         this.demandingNodes = new HashMap<>();
         origin = o;
     }
 
     private Set<Action> getFreeings(Node u) {
-        Set<Action> actions = freeings.get(u);
+        Set<Action> actions = freeing.get(u);
         if (actions == null) {
             actions = new HashSet<>();
-            freeings.put(u, actions);
+            freeing.put(u, actions);
         }
         return actions;
     }
 
     private Set<Action> getDemandings(Node u) {
-        Set<Action> actions = demandings.get(u);
+        Set<Action> actions = demanding.get(u);
         if (actions == null) {
             actions = new HashSet<>();
-            demandings.put(u, actions);
+            demanding.put(u, actions);
         }
         return actions;
     }

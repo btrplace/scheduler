@@ -116,27 +116,12 @@ public class ResourceCapacity extends SatConstraint {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (!super.equals(o)) {
-            return false;
-        }
-
-        ResourceCapacity that = (ResourceCapacity) o;
-
-        return qty == that.qty &&
-                rcId.equals(that.rcId) &&
-                getInvolvedNodes().equals(that.getInvolvedNodes()) &&
-                this.isContinuous() == that.isContinuous();
+        return super.equals(o) && rcId.equals(((ResourceCapacity) o).rcId) && qty == ((ResourceCapacity) o).qty;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getInvolvedNodes(), qty, rcId, isContinuous());
+        return Objects.hash(super.hashCode(), qty, rcId);
     }
 
     @Override

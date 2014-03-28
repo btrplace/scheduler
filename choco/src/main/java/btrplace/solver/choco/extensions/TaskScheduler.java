@@ -41,7 +41,7 @@ import java.util.BitSet;
  * Tasks and resources can have multiple dimensions.
  * There is only 2 kind of tasks. cTasks that are already placed and necessarily starts at 0 and dTasks that
  * are not placed but end necessarily at the end of the schedule.
- * Inspired by the cumulatives constraint.
+ * Inspired by the cumulative constraint.
  *
  * @author Fabien Hermenier
  */
@@ -126,7 +126,7 @@ public class TaskScheduler extends IntConstraint<IntVar> {
         int[] cHostersVals = new int[cHosters.length];
         int[] cEndsVals = new int[cEnds.length];
 
-        //dHosters, cHosters, cEnds, dStarts
+        //dHosts, cHosts, cEnds, dStarts
         for (int i = 0; i < dHosters.length; i++) {
             dHostersVals[i] = vals[i];
             dStartsVals[i] = vals[i + dHosters.length + cHosters.length + cEnds.length];
@@ -332,7 +332,7 @@ public class TaskScheduler extends IntConstraint<IntVar> {
             int[] cHostersVals = new int[cHosters.length];
             int[] cEndsVals = new int[cEnds.length];
 
-            //dHosters, cHosters, cEnds, dStarts
+            //dHosts, cHosts, cEnds, dStarts
             for (int i = 0; i < dHosters.length; i++) {
                 dHostersVals[i] = dHosters[i].getValue();
                 dStartsVals[i] = dStarts[i].getValue();
@@ -432,10 +432,21 @@ public class TaskScheduler extends IntConstraint<IntVar> {
         public void propagate(int evtmask) throws ContradictionException {
             if (first) {
                 first = false;
+                boolean isFull = true;
                 for (int i = 0; i < dHosters.length; i++) {
                     if (dHosters[i].instantiated()) {
                         int nIdx = dHosters[i].getValue();
                         vIns[nIdx].add(i);
+                    } else {
+                        isFull = false;
+                    }
+                }
+                //Already completely instantiated, need to propagate
+                if (isFull) {
+                    for (int j = 0; j < scheds.length; j++) {
+                        if (!scheds[j].propagate()) {
+                            this.contradiction(earlyStarts[j], "Invalid profile on resource '" + j + "'");
+                        }
                     }
                 }
             } else {

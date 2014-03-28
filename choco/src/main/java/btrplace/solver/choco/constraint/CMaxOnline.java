@@ -120,7 +120,7 @@ public class CMaxOnline implements ChocoConstraint {
             nodesState.add(rp.getNodeAction(ni).getState());
         }
 
-        IntVar mySum = VariableFactory.bounded(rp.makeVarLabel("nbOnlines"), 0, constraint.getAmount(), rp.getSolver());
+        IntVar mySum = VariableFactory.bounded(rp.makeVarLabel("nbOnline"), 0, constraint.getAmount(), rp.getSolver());
         solver.post(IntConstraintFactory.sum(nodesState.toArray(new IntVar[nodesState.size()]), mySum));
         solver.post(IntConstraintFactory.arithm(mySum, "<=", constraint.getAmount()));
 

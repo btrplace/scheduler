@@ -17,9 +17,15 @@
 
 package btrplace.model.constraint;
 
+import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.checker.ReadyChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A constraint to force a VM at being ready for running.
@@ -30,7 +36,21 @@ import btrplace.model.constraint.checker.SatConstraintChecker;
  *
  * @author Fabien Hermenier
  */
-public class Ready extends VMStateConstraint {
+public class Ready extends SatConstraint {
+
+    /**
+     * Instantiate constraints for a collection of VMs.
+     *
+     * @param vms the VMs to integrate
+     * @return the associated list of constraints
+     */
+    public static List<Ready> newReady(Collection<VM> vms) {
+        List<Ready> l = new ArrayList<>(vms.size());
+        for (VM v : vms) {
+            l.add(new Ready(v));
+        }
+        return l;
+    }
 
     /**
      * Make a new constraint.
@@ -38,7 +58,7 @@ public class Ready extends VMStateConstraint {
      * @param vm the VM to make ready
      */
     public Ready(VM vm) {
-        super("ready", vm);
+        super(Collections.singleton(vm), Collections.<Node>emptySet(), false);
     }
 
     @Override
@@ -46,4 +66,13 @@ public class Ready extends VMStateConstraint {
         return new ReadyChecker(this);
     }
 
+    @Override
+    public String toString() {
+        return "ready(vms=" + getInvolvedVMs().iterator().next() + ", discrete)";
+    }
+
+    @Override
+    public boolean setContinuous(boolean b) {
+        return !b;
+    }
 }

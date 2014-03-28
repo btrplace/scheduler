@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2012 University of Nice Sophia-Antipolis
+ * Copyright (c) 2013 University of Nice Sophia-Antipolis
  *
  * This file is part of btrplace.
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +16,7 @@
  */
 
 /**
- * Core package of btrplace that allow to describe a datacenter model that is composed of
+ * Core package of btrplace that allow to describe a data centre model that is composed of
  * a consistent view of an infrastructure, and some constraint that should be satisfied
  */
 package btrplace.model;

@@ -73,7 +73,7 @@ public class MovingVMs implements VariableSelector<IntVar> {
                 actions.add(rp.getVMAction(vm));
             }
         }
-        scopes = SliceUtils.extractHosters(ActionModelUtils.getDSlices(actions));
+        scopes = SliceUtils.extractHoster(ActionModelUtils.getDSlices(actions));
         idx = s.getSolver().getEnvironment().makeInt(0);
     }
 

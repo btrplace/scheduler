@@ -41,7 +41,7 @@ public final class SliceUtils {
      * @param slices the slices
      * @return an array containing every hosting variable
      */
-    public static IntVar[] extractHosters(List<Slice> slices) {
+    public static IntVar[] extractHoster(List<Slice> slices) {
         IntVar[] vs = new IntVar[slices.size()];
         int i = 0;
         for (Slice s : slices) {

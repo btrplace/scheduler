@@ -72,7 +72,7 @@ public class SequentialVMTransitions extends SatConstraint {
 
     @Override
     public int hashCode() {
-        return getInvolvedVMs().hashCode();
+        return order.hashCode();
     }
 
     @Override
@@ -82,9 +82,6 @@ public class SequentialVMTransitions extends SatConstraint {
 
     @Override
     public boolean setContinuous(boolean b) {
-        if (b) {
-            super.setContinuous(b);
-        }
         return b;
     }
 

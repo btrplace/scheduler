@@ -68,33 +68,12 @@ public class Quarantine extends SatConstraint {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Quarantine that = (Quarantine) o;
-        return getInvolvedNodes().equals(that.getInvolvedNodes());
-    }
-
-    @Override
-    public int hashCode() {
-        return getInvolvedNodes().hashCode();
-    }
-
-    @Override
     public String toString() {
         return "quarantine(" + "node=" + getInvolvedNodes().iterator().next() + ", continuous" + ")";
     }
 
     @Override
     public boolean setContinuous(boolean b) {
-        if (b) {
-            return super.setContinuous(b);
-        }
         return b;
     }
 

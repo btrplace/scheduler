@@ -107,7 +107,7 @@ public class CShareableResource implements ChocoModelView {
         //Bin packing for the node vmAllocation
         Solver s = p.getSolver();
         List<IntVar> notNullUsage = new ArrayList<>();
-        List<IntVar> hosters = new ArrayList<>();
+        List<IntVar> hosts = new ArrayList<>();
 
         vmAllocation = new IntVar[p.getVMs().length];
         for (int i = 0; i < vmAllocation.length; i++) {
@@ -122,7 +122,7 @@ public class CShareableResource implements ChocoModelView {
                 //non-updated value.
                 vmAllocation[i] = VariableFactory.bounded(p.makeVarLabel("vmAllocation('", r.getResourceIdentifier(), "', '", vmId, "')"), -1, Integer.MAX_VALUE / 1000, s);
                 notNullUsage.add(vmAllocation[i]);
-                hosters.add(slice.getHoster());
+                hosts.add(slice.getHoster());
             }
 
         }
@@ -130,7 +130,7 @@ public class CShareableResource implements ChocoModelView {
         p.getBinPackingBuilder().add(r.getResourceIdentifier(),
                 virtRcUsage,
                 notNullUsage.toArray(new IntVar[notNullUsage.size()]),
-                hosters.toArray(new IntVar[hosters.size()]));
+                hosts.toArray(new IntVar[hosts.size()]));
 
     }
 
@@ -401,9 +401,9 @@ public class CShareableResource implements ChocoModelView {
             }
         }
 
-        IntVar[] capa = new IntVar[rp.getNodes().length];
-        System.arraycopy(virtRcUsage, 0, capa, 0, rp.getNodes().length);
-        rp.getTaskSchedulerBuilder().add(capa, cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]));
+        IntVar[] capacities = new IntVar[rp.getNodes().length];
+        System.arraycopy(virtRcUsage, 0, capacities, 0, rp.getNodes().length);
+        rp.getTaskSchedulerBuilder().add(capacities, cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]));
         return true;
     }
 

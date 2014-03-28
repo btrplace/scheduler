@@ -1,6 +1,14 @@
 Release notes
 ======================
 
+0.36 - 28 Mar 2014
+----------------------
+- Homogenize constraints signature in API
+- fix #32, #33
+- fix some spell errors in the comments/API
+- a basic NamingService to associate a unique name to elements (#34)
+- minor improvements and bug fix in the API
+
 version 0.35 - 18 Feb 2014
 ----------------------
 - Move to choco 3. The scalability will be affected temporary but choco 2 is no longer maintained

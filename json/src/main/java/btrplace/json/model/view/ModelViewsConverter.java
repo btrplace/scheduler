@@ -48,15 +48,19 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
     }
 
     /**
-     * Make a new {@code ModelViewsConverter} and fulfill it
-     * using a default converter for each supported view.
+     * Make a new {@code ModelViewsConverter} and fulfill it using converters for the following views:
+     * <ul>
+     * <li>{@link btrplace.json.model.view.ShareableResourceConverter}</li>
+     * <li>{@link btrplace.json.model.view.NamingServiceConverter}</li>
+     * </ul>
      *
      * @return a fulfilled converter.
      */
     public static ModelViewsConverter newBundle() {
-        ModelViewsConverter conv = new ModelViewsConverter();
-        conv.register(new ShareableResourceConverter());
-        return conv;
+        ModelViewsConverter converter = new ModelViewsConverter();
+        converter.register(new ShareableResourceConverter());
+        converter.register(new NamingServiceConverter());
+        return converter;
     }
 
     /**
@@ -64,7 +68,7 @@ public class ModelViewsConverter extends AbstractJSONObjectConverter<ModelView> 
      *
      * @param c the converter to register
      * @return the container that was previously registered for a view. {@code null} if there was
-     *         no registered converter
+     * no registered converter
      */
     public ModelViewConverter register(ModelViewConverter<? extends ModelView> c) {
         java2json.put(c.getSupportedView(), c);

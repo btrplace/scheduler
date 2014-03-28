@@ -69,11 +69,11 @@ public class CRunningCapacity implements ChocoConstraint {
                 for (Node n : cstr.getInvolvedNodes()) {
                     alias[i++] = rp.getNode(n);
                 }
-                int nbRunnings = 0;
+                int nbRunning = 0;
                 for (Node n : rp.getSourceModel().getMapping().getOnlineNodes()) {
-                    nbRunnings += rp.getSourceModel().getMapping().getRunningVMs(n).size();
+                    nbRunning += rp.getSourceModel().getMapping().getRunningVMs(n).size();
                 }
-                int[] cUse = new int[nbRunnings];
+                int[] cUse = new int[nbRunning];
                 IntVar[] dUse = new IntVar[rp.getFutureRunningVMs().size()];
                 Arrays.fill(cUse, 1);
                 Arrays.fill(dUse, VariableFactory.one(rp.getSolver()));
@@ -87,7 +87,7 @@ public class CRunningCapacity implements ChocoConstraint {
         //Try to get a lower bound
         //basically, we count 1 per VM necessarily in the set of nodes
         //if involved nodes == all the nodes, then sum == nb of running VMs
-        IntVar mySum = VariableFactory.bounded(rp.makeVarLabel("nbRunnings"), 0, rp.getFutureRunningVMs().size(), rp.getSolver());
+        IntVar mySum = VariableFactory.bounded(rp.makeVarLabel("nbRunning"), 0, rp.getFutureRunningVMs().size(), rp.getSolver());
         s.post(IntConstraintFactory.sum(vs.toArray(new IntVar[vs.size()]), mySum));
         s.post(IntConstraintFactory.arithm(mySum, "<=", cstr.getAmount()));
 

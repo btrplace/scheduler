@@ -100,8 +100,8 @@ public class DefaultModel implements Model, Cloneable {
         if (!attrs.equals(that.getAttributes())) {
             return false;
         }
-        Collection<ModelView> thatRrcs = that.getViews();
-        return resources.size() == thatRrcs.size() && resources.values().containsAll(thatRrcs);
+        Collection<ModelView> thatViews = that.getViews();
+        return resources.size() == thatViews.size() && resources.values().containsAll(thatViews);
     }
 
     @Override

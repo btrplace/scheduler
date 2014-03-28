@@ -118,17 +118,17 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
                 toKill.addAll(cstr.getInvolvedVMs());
             }
 
-            ChocoConstraintBuilder ccstrb = params.getConstraintMapper().getBuilder(cstr.getClass());
-            if (ccstrb == null) {
+            ChocoConstraintBuilder ccBuilder = params.getConstraintMapper().getBuilder(cstr.getClass());
+            if (ccBuilder == null) {
                 throw new SolverException(origin, "Unable to map constraint '" + cstr.getClass().getSimpleName() + "'");
             }
-            ChocoConstraint ccstr = ccstrb.build(cstr);
-            if (ccstr == null) {
+            ChocoConstraint cc = ccBuilder.build(cstr);
+            if (cc == null) {
                 throw new SolverException(origin, "Error while mapping the constraint '"
                         + cstr.getClass().getSimpleName() + "'");
             }
 
-            cConstraints.add(ccstr);
+            cConstraints.add(cc);
         }
 
         //Make the optimization constraint
@@ -220,11 +220,11 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
      * Make the optimization constraint
      */
     private ChocoConstraint buildOptConstraint() throws SolverException {
-        ChocoConstraintBuilder ccstrb = params.getConstraintMapper().getBuilder(obj.getClass());
-        if (ccstrb == null) {
+        ChocoConstraintBuilder ccBuilder = params.getConstraintMapper().getBuilder(obj.getClass());
+        if (ccBuilder == null) {
             throw new SolverException(origin, "Unable to map constraint '" + obj.getClass().getSimpleName() + "'");
         }
-        ChocoConstraint cObj = ccstrb.build(obj);
+        ChocoConstraint cObj = ccBuilder.build(obj);
         if (cObj == null) {
             throw new SolverException(origin, "Error while mapping the constraint '"
                     + obj.getClass().getSimpleName() + "'");
@@ -245,10 +245,13 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
     }
 
     private void checkUnknownVMsInMapping(Model m, Collection<VM> vms) throws SolverException {
-        if (!m.getMapping().getAllVMs().containsAll(vms)) {
-            Set<VM> unknown = new HashSet<>(vms);
-            unknown.removeAll(m.getMapping().getAllVMs());
-            throw new SolverException(m, "Unknown VMs: " + unknown);
+        for (VM v : vms) {
+            //This loop prevent from a useless allocation of memory when there is no issue
+            if (!m.getMapping().contains(v)) {
+                Set<VM> unknown = new HashSet<>(vms);
+                unknown.removeAll(m.getMapping().getAllVMs());
+                throw new SolverException(m, "Unknown VMs: " + unknown);
+            }
         }
     }
 

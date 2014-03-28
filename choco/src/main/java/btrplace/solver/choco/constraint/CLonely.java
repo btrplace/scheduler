@@ -96,21 +96,21 @@ public class CLonely implements ChocoConstraint {
             }
             for (VM vm : vms) {
                 VMActionModel a = rp.getVMAction(vm);
-                Precedences prec = new Precedences(s.getEnvironment(), a.getDSlice().getHoster(),
+                Precedences p = new Precedences(s.getEnvironment(), a.getDSlice().getHoster(),
                         a.getDSlice().getStart(),
                         otherPos.toArray(),
                         otherEnds.toArray(new IntVar[otherEnds.size()]));
-                s.post(prec);
+                s.post(p);
             }
 
             //TODO: The following reveals a model problem. Too many constraints!!
             for (VM vm : otherVMs) {
                 VMActionModel a = rp.getVMAction(vm);
-                Precedences prec = new Precedences(s.getEnvironment(), a.getDSlice().getHoster(),
+                Precedences p = new Precedences(s.getEnvironment(), a.getDSlice().getHoster(),
                         a.getDSlice().getStart(),
                         minePos.toArray(),
                         mineEnds.toArray(new IntVar[mineEnds.size()]));
-                s.post(prec);
+                s.post(p);
             }
         }
         return true;
@@ -119,15 +119,15 @@ public class CLonely implements ChocoConstraint {
     @Override
     public Set<VM> getMisPlacedVMs(Model m) {
         Set<VM> bad = new HashSet<>();
-        Set<Node> hosters = new HashSet<>();
+        Set<Node> hosts = new HashSet<>();
         Collection<VM> vms = cstr.getInvolvedVMs();
         Mapping map = m.getMapping();
         for (VM vm : vms) {
             if (map.isRunning(vm)) {
-                hosters.add(map.getVMLocation(vm));
+                hosts.add(map.getVMLocation(vm));
             }
         }
-        for (Node n : hosters) {
+        for (Node n : hosts) {
             //Every used node that host a VMs that is not a part of the constraint
             //is a bad node. All the hosted VMs are candidate for relocation. Not optimal, but safe
             for (VM vm : map.getRunningVMs(n)) {
@@ -155,8 +155,8 @@ public class CLonely implements ChocoConstraint {
         }
 
         @Override
-        public CLonely build(Constraint cstr) {
-            return new CLonely((Lonely) cstr);
+        public CLonely build(Constraint c) {
+            return new CLonely((Lonely) c);
         }
     }
 }

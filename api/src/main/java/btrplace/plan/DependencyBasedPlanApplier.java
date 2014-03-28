@@ -53,17 +53,17 @@ public class DependencyBasedPlanApplier extends DefaultPlanApplier {
             }
         }
         while (nbCommitted != p.getSize()) {
-            Set<Action> newFeasibles = new HashSet<>();
+            Set<Action> newFeasible = new HashSet<>();
             for (Action a : feasible) {
                 Set<Action> s = rpm.commit(a);
                 if (s == null) {
                     return null;
                 }
                 fireAction(a);
-                newFeasibles.addAll(s);
+                newFeasible.addAll(s);
                 nbCommitted++;
             }
-            feasible = newFeasibles;
+            feasible = newFeasible;
         }
 
         return rpm.getCurrentModel();

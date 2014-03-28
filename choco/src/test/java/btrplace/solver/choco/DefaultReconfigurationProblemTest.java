@@ -823,7 +823,7 @@ public class DefaultReconfigurationProblemTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
         Solver s = rp.getSolver();
         IntVar nbNodes = VF.bounded("nbNodes", 1, map.getAllNodes().size(), s);
-        IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
+        IntVar[] hosters = SliceUtils.extractHoster(ActionModelUtils.getDSlices(rp.getVMActions()));
         s.post(ICF.nvalues(hosters, nbNodes, "at_most_BC"));
 
         rp.setObjective(true, nbNodes);
@@ -833,44 +833,6 @@ public class DefaultReconfigurationProblemTest {
         Mapping dst = plan.getResult().getMapping();
         Assert.assertEquals(usedNodes(dst), 1);
     }
-
-    /**
-     * Test a minimization problem: use the minimum number of nodes. For a faster reduction,
-     * an alterer divide the current objective by 2 at each solution
-     *
-     * @throws SolverException
-     */
-    /*@Test
-    public void testMinimizationWithAlterer() throws SolverException {
-        Model mo = new DefaultModel();
-        Mapping map = mo.getMapping();
-        for (int i = 0; i < 10; i++) {
-            Node n = mo.newNode();
-            VM vm = mo.newVM();
-            map.addOnlineNode(n);
-            map.addRunningVM(vm, n);
-        }
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
-        Solver s = rp.getSolver();
-        IntVar nbNodes = VF.bounded("nbNodes", 1, map.getAllNodes().size(), s);
-        IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
-        s.post(ICF.nvalues(hosters, nbNodes, "at_most_BC"));
-
-        ObjectiveAlterer alt = new ObjectiveAlterer() {
-            @Override
-            public int newBound(ReconfigurationProblem rp, int currentValue) {
-                return currentValue / 2;
-            }
-        };
-
-        rp.setObjectiveAlterer(alt);
-        Assert.assertEquals(rp.getObjectiveAlterer(), alt);
-        ReconfigurationPlan plan = rp.solve(0, true);
-        Assert.assertNotNull(plan);
-        Assert.assertEquals(s.getSearchLoop().getMeasures().getSolutionCount(), 4);
-        Mapping dst = plan.getResult().getMapping();
-        Assert.assertEquals(usedNodes(dst), 1);
-    }    */
 
     /**
      * Test a maximization problem: use the maximum number of nodes to host VMs
@@ -892,7 +854,7 @@ public class DefaultReconfigurationProblemTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
         Solver s = rp.getSolver();
         IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
-        IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
+        IntVar[] hosters = SliceUtils.extractHoster(ActionModelUtils.getDSlices(rp.getVMActions()));
         s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_least_AC"));
         rp.setObjective(false, nbNodes);
         ReconfigurationPlan plan = rp.solve(0, true);
@@ -923,7 +885,7 @@ public class DefaultReconfigurationProblemTest {
         final ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
         Solver s = rp.getSolver();
         final IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
-        IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
+        IntVar[] hosters = SliceUtils.extractHoster(ActionModelUtils.getDSlices(rp.getVMActions()));
         s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_least_AC"));
 
         rp.setObjective(false, nbNodes);
@@ -962,7 +924,7 @@ public class DefaultReconfigurationProblemTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
         Solver s = rp.getSolver();
         IntVar nbNodes = VF.bounded("nbNodes", 0, 0, s);
-        IntVar[] hosters = SliceUtils.extractHosters(ActionModelUtils.getDSlices(rp.getVMActions()));
+        IntVar[] hosters = SliceUtils.extractHoster(ActionModelUtils.getDSlices(rp.getVMActions()));
         s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_most_BC"));
         rp.setObjective(true, nbNodes);
         ObjectiveAlterer alt = new ObjectiveAlterer() {

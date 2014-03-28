@@ -238,8 +238,8 @@ public class SubModel implements Model {
             return false;
         }
 
-        Collection<ModelView> thatRrcs = that.getViews();
-        return getViews().equals(thatRrcs);
+        Collection<ModelView> thatViews = that.getViews();
+        return getViews().equals(thatViews);
     }
 
     @Override

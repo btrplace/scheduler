@@ -75,33 +75,33 @@ public class SingleRunnerStatistics implements SolvingStatistics {
     /**
      * Make new statistics.
      *
-     * @param nbNodes             the number of nodes in the model
-     * @param nbVMs               the number of VMs in the model
-     * @param nbConstraints       the number of constraints
+     * @param n             the number of nodes in the model
+     * @param v               the number of VMs in the model
+     * @param c       the number of constraints
      * @param managedVMs          the number of VMs managed by the algorithm.
      * @param st                  the moment the computation starts (epoch format)
      * @param t                   the solving duration in milliseconds
      * @param nbN                 the number of opened nodes at the moment
      * @param nbB                 the number of backtracks at the moment
      * @param to                  {@code true} to indicate the solver hit a timeout
-     * @param coreRPBuildDuration the duration of the core-RP building process
-     * @param speRPDuration       the duration of the core-RP specialization process
+     * @param cd the duration of the core-RP building process
+     * @param sd       the duration of the core-RP specialization process
      */
-    public SingleRunnerStatistics(ChocoReconfigurationAlgorithmParams ps, int nbNodes, int nbVMs, int nbConstraints, int managedVMs, long st,
-                                  long t, long nbN, long nbB, boolean to, long coreRPBuildDuration, long speRPDuration) {
+    public SingleRunnerStatistics(ChocoReconfigurationAlgorithmParams ps, int n, int v, int c, int managedVMs, long st,
+                                  long t, long nbN, long nbB, boolean to, long cd, long sd) {
         nbManagedVMs = managedVMs;
         this.params = ps;
-        this.nbNodes = nbNodes;
-        this.nbVMs = nbVMs;
-        this.nbConstraints = nbConstraints;
+        this.nbNodes = n;
+        this.nbVMs = v;
+        this.nbConstraints = c;
         time = t;
         this.start = st;
         nbSearchNodes = nbN;
         nbBacktracks = nbB;
         this.timeout = to;
         solutions = new ArrayList<>();
-        this.coreRPBuildDuration = coreRPBuildDuration;
-        this.speRPDuration = speRPDuration;
+        this.coreRPBuildDuration = cd;
+        this.speRPDuration = sd;
     }
 
     @Override

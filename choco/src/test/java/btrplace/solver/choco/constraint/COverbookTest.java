@@ -70,9 +70,9 @@ public class COverbookTest {
         Collection<SatConstraint> c = new HashSet<>();
         c.add(o);
         c.add(o2);
-        c.addAll(Running.newRunnings(m.getAllVMs()));
+        c.addAll(Running.newRunning(m.getAllVMs()));
         c.add(new Preserve(vms[0], "cpu", 1));
-        c.addAll(Online.newOnlines(m.getAllNodes()));
+        c.addAll(Online.newOnline(m.getAllNodes()));
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.getConstraintMapper().register(new COverbook.Builder());
         ReconfigurationPlan p = cra.solve(mo, c);
@@ -107,7 +107,7 @@ public class COverbookTest {
         c.add(new Overbook(nodes[0], "cpu", 1));
         c.add(new Overbook(nodes[1], "cpu", 2));
         c.add(new Overbook(nodes[2], "cpu", 3));
-        c.addAll(Running.newRunnings(m.getAllVMs()));
+        c.addAll(Running.newRunning(m.getAllVMs()));
         c.add(new Preserve(vms[0], "cpu", 1));
         DefaultChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         cra.setTimeLimit(-1);
@@ -139,7 +139,7 @@ public class COverbookTest {
         Collection<SatConstraint> c = new HashSet<>();
         c.add(new Overbook(nodes[0], "mem", 1));
         c.add(new Overbook(nodes[1], "mem", 1));
-        c.addAll(Running.newRunnings(m.getAllVMs()));
+        c.addAll(Running.newRunning(m.getAllVMs()));
         for (VM v : vms) {
             c.add(new Preserve(v, "mem", 1));
         }
@@ -192,7 +192,7 @@ public class COverbookTest {
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.add(new Running(vm3));
         cstrs.add(new Sleeping(vm1));
-        cstrs.addAll(Online.newOnlines(m.getAllNodes()));
+        cstrs.addAll(Online.newOnline(m.getAllNodes()));
         cstrs.add(new Overbook(n1, "cpu", 1));
         cstrs.add(new Preserve(vm1, "cpu", 2));
         cstrs.add(new Preserve(vm3, "cpu", 2));
@@ -225,7 +225,7 @@ public class COverbookTest {
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         List<SatConstraint> cstrs = new ArrayList<>();
-        cstrs.addAll(Online.newOnlines(map.getAllNodes()));
+        cstrs.addAll(Online.newOnline(map.getAllNodes()));
         Overbook o = new Overbook(n1, "foo", 1);
         o.setContinuous(true);
         cstrs.add(o);

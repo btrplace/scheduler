@@ -66,7 +66,7 @@ public class FixedNodeSetsPartitioningTest {
             mo.getMapping().addReadyVM(v);
         }
 
-        return new Instance(mo, (List) Running.newRunnings(mo.getMapping().getAllVMs()), new MinMTTR());
+        return new Instance(mo, (List) Running.newRunning(mo.getMapping().getAllVMs()), new MinMTTR());
     }
 
     @Test

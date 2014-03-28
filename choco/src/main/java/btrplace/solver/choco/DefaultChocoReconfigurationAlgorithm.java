@@ -52,10 +52,18 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
     /**
      * Make a new algorithm.
+     * @param ps the parameters to use to configure the algorithm
+     */
+    public DefaultChocoReconfigurationAlgorithm(DefaultChocoReconfigurationAlgorithmParams ps) {
+        params = ps;
+        runner = new SingleRunner();
+    }
+
+    /**
+     * Make a new algorithm with default parameters.
      */
     public DefaultChocoReconfigurationAlgorithm() {
-        params = new DefaultChocoReconfigurationAlgorithmParams();
-        runner = new SingleRunner();
+        this(new DefaultChocoReconfigurationAlgorithmParams());
     }
 
     @Override
