@@ -21,7 +21,7 @@
 
     <groupId>btrplace</groupId>
     <artifactId>solver</artifactId>
-    <version>0.36</version>
+    <version>0.37-SNAPSHOT</version>
     <description>A flexible VM placement algorithm for hosting platforms.</description>
     <packaging>pom</packaging>
     <url>http://btrp.inria.fr</url>
@@ -90,7 +90,7 @@
         <connection>scm:git:git://github.com/fhermeni/btrplace-solver.git</connection>
         <url>scm:git:git@github.com:fhermeni/btrplace-solver</url>
         <developerConnection>scm:git:git@github.com:fhermeni/btrplace-solver.git</developerConnection>
-        <tag>btrplace-solver-0.36-SNAPSHOT</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <build>
