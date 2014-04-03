@@ -15,29 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.plan.event;
-
-import btrplace.model.VMState;
+package btrplace.model;
 
 /**
- * A interface to indicate an event realize a transition
- * on a VM state.
- *
- * @author Fabien Hermenier
+ * The possible state for a VM.
  */
-public interface VMStateTransition extends VMEvent {
-
-    /**
-     * Get the current state of the VM.
-     *
-     * @return a State
-     */
-    VMState getCurrentState();
-
-    /**
-     * Get the next state of the VM.
-     *
-     * @return a State
-     */
-    VMState getNextState();
+public enum VMState {
+    INIT, READY, RUNNING, SLEEPING, KILLED
 }

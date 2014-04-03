@@ -18,10 +18,7 @@
 package btrplace.plan.event;
 
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.model.Node;
-import btrplace.model.VM;
+import btrplace.model.*;
 
 import java.util.Objects;
 

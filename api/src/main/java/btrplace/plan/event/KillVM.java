@@ -20,6 +20,7 @@ package btrplace.plan.event;
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
+import btrplace.model.VMState;
 
 import java.util.Objects;
 
