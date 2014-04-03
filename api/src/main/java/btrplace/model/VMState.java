@@ -21,5 +21,25 @@ package btrplace.model;
  * The possible state for a VM.
  */
 public enum VMState {
-    INIT, READY, RUNNING, SLEEPING, KILLED
+    INIT(1), READY(2), RUNNING(4), SLEEPING(8), KILLED(16);
+
+    private int v;
+
+    /**
+     * Unique identifier for the state.
+     *
+     * @param val the state value
+     */
+    VMState(int val) {
+        this.v = val;
+    }
+
+    /**
+     * Get the enum identifier.
+     *
+     * @return the identifier
+     */
+    public int value() {
+        return v;
+    }
 }

@@ -21,5 +21,25 @@ package btrplace.model;
  * The possible state for a node.
  */
 public enum NodeState {
-    ONLINE, OFFLINE
+    ONLINE(1), OFFLINE(2);
+
+    private int v;
+
+    /**
+     * Unique identifier for the state.
+     *
+     * @param val the state value
+     */
+    NodeState(int val) {
+        this.v = val;
+    }
+
+    /**
+     * Get the enum identifier.
+     *
+     * @return the identifier
+     */
+    public int value() {
+        return v;
+    }
 }
