@@ -21,6 +21,8 @@ import btrplace.model.Model;
 import btrplace.model.VM;
 import btrplace.model.view.ModelView;
 
+import java.util.Objects;
+
 /**
  * A event to inform a cloneable VM
  * has been cloned and is now available using a different identifier.
@@ -79,4 +81,21 @@ public class SubstitutedVMEvent implements VMEvent {
         return "substitutedVM(" + "vm=" + oldVm + ", newVm=" + newVm + ')';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        SubstitutedVMEvent that = (SubstitutedVMEvent) o;
+        return newVm.equals(that.newVm) && oldVm.equals(that.oldVm);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(oldVm, newVm);
+    }
 }

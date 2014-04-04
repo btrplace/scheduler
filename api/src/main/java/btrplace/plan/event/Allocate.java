@@ -99,20 +99,14 @@ public class Allocate extends Action implements VMEvent {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null) {
+        if (!super.equals(o)) {
             return false;
-        } else if (o == this) {
-            return true;
-        } else if (o.getClass() == this.getClass()) {
-            Allocate that = (Allocate) o;
-            return this.getVM().equals(that.getVM())
-                    && this.node.equals(that.node)
-                    && this.getResourceId().equals(that.getResourceId())
-                    && this.getStart() == that.getStart()
-                    && this.getEnd() == that.getEnd()
-                    && this.getAmount() == that.getAmount();
         }
-        return false;
+        Allocate that = (Allocate) o;
+        return this.getVM().equals(that.getVM())
+                && this.node.equals(that.node)
+                && this.getResourceId().equals(that.getResourceId())
+                && this.getAmount() == that.getAmount();
     }
 
     @Override

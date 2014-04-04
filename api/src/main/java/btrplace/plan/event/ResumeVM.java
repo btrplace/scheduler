@@ -87,19 +87,13 @@ public class ResumeVM extends Action implements VMStateTransition, RunningVMPlac
 
     @Override
     public boolean equals(Object o) {
-        if (o == null) {
+        if (!super.equals(o)) {
             return false;
-        } else if (o == this) {
-            return true;
-        } else if (o.getClass() == this.getClass()) {
-            ResumeVM that = (ResumeVM) o;
-            return this.vm.equals(that.vm) &&
-                    this.src.equals(that.src) &&
-                    this.dst.equals(that.dst) &&
-                    this.getStart() == that.getStart() &&
-                    this.getEnd() == that.getEnd();
         }
-        return false;
+        ResumeVM that = (ResumeVM) o;
+        return this.vm.equals(that.vm) &&
+                this.src.equals(that.src) &&
+                this.dst.equals(that.dst);
     }
 
     @Override

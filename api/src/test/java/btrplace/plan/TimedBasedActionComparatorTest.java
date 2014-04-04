@@ -64,10 +64,11 @@ public class TimedBasedActionComparatorTest {
 
     @Test
     public void testEqualityWithSimultaneousDisallowed() {
+        VM vm2 = mo.newVM();
         Action a = new MockAction(vm, 0, 4);
-        Action b = new MockAction(vm, 0, 4);
-        Assert.assertNotEquals(new TimedBasedActionComparator(true, true).compare(a, b), 0);
+        Action b = new MockAction(vm2, 0, 4);
         Assert.assertNotEquals(new TimedBasedActionComparator(false, true).compare(a, b), 0);
+        Assert.assertNotEquals(new TimedBasedActionComparator(true, true).compare(a, b), 0);
 
     }
 

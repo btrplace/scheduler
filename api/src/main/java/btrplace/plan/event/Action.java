@@ -67,7 +67,7 @@ public abstract class Action implements Event {
 
     private int stop;
 
-    private Map<Hook, List<Event>> events;
+    private Map<Hook, Set<Event>> events;
 
     /**
      * Create an action.
@@ -147,9 +147,9 @@ public abstract class Action implements Event {
      * @return {@code true} iff the event was added
      */
     public boolean addEvent(Hook k, Event n) {
-        List<Event> l = events.get(k);
+        Set<Event> l = events.get(k);
         if (l == null) {
-            l = new ArrayList<>();
+            l = new HashSet<>();
             events.put(k, l);
         }
         return l.add(n);
@@ -161,9 +161,9 @@ public abstract class Action implements Event {
      * @param k the hook
      * @return a list of events that may be empty
      */
-    public List<Event> getEvents(Hook k) {
-        List<Event> l = events.get(k);
-        return l == null ? Collections.<Event>emptyList() : l;
+    public Set<Event> getEvents(Hook k) {
+        Set<Event> l = events.get(k);
+        return l == null ? Collections.<Event>emptySet() : l;
     }
 
     /**
@@ -178,8 +178,8 @@ public abstract class Action implements Event {
         StringBuilder b = new StringBuilder();
         b.append("{action=").append(pretty());
         if (!events.isEmpty()) {
-            for (Map.Entry<Hook, List<Event>> entry : events.entrySet()) {
-                List<Event> l = entry.getValue();
+            for (Map.Entry<Hook, Set<Event>> entry : events.entrySet()) {
+                Set<Event> l = entry.getValue();
                 Hook k = entry.getKey();
                 b.append(", @").append(k).append("= {");
                 for (Iterator<Event> ite = l.iterator(); ite.hasNext(); ) {
@@ -188,10 +188,29 @@ public abstract class Action implements Event {
                         b.append(", ");
                     }
                 }
-                b.append("}");
+                b.append('}');
             }
         }
         b.append('}');
         return b.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Action action = (Action) o;
+
+        return start == action.start && stop == action.stop && events.equals(action.events);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(start, stop, events);
     }
 }

@@ -1,6 +1,11 @@
 Release notes
 ======================
 
+??????????????
+----------------------
+- minor bug fixes
+- externalize the ActionModel so you can use your own now.
+
 0.36 - 28 Mar 2014
 ----------------------
 - Homogenize constraints signature in API

@@ -48,23 +48,17 @@ public class BootNode extends Action implements NodeEvent {
     /**
      * Test the equality with another object.
      *
-     * @param obj The object to compare with
+     * @param o The object to compare with
      * @return {@code true} if {@code obj} is an instance of BootNode
      * and if both actions act on the same node
      */
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
+    public boolean equals(Object o) {
+        if (!super.equals(o)) {
             return false;
-        } else if (obj == this) {
-            return true;
-        } else if (obj.getClass() == this.getClass()) {
-            BootNode that = (BootNode) obj;
-            return this.node.equals(that.node) &&
-                    this.getStart() == that.getStart() &&
-                    this.getEnd() == that.getEnd();
         }
-        return false;
+        BootNode that = (BootNode) o;
+        return this.node.equals(that.node);
     }
 
     @Override
