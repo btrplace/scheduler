@@ -24,6 +24,7 @@ import btrplace.model.constraint.OptConstraint;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
+import btrplace.solver.choco.actionModel.ActionModelFactory;
 import btrplace.solver.choco.constraint.ConstraintMapper;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import btrplace.solver.choco.runner.InstanceResult;
@@ -52,6 +53,7 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
 
     /**
      * Make a new algorithm.
+     *
      * @param ps the parameters to use to configure the algorithm
      */
     public DefaultChocoReconfigurationAlgorithm(DefaultChocoReconfigurationAlgorithmParams ps) {
@@ -177,5 +179,15 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     @Override
     public void setInstanceSolver(InstanceSolver p) {
         runner = p;
+    }
+
+    @Override
+    public void setActionModelFactory(ActionModelFactory amf) {
+        params.setActionModelFactory(amf);
+    }
+
+    @Override
+    public ActionModelFactory getActionModelFactory() {
+        return params.getActionModelFactory();
     }
 }

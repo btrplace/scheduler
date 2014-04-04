@@ -19,7 +19,6 @@ package btrplace.solver.choco.actionModel;
 
 import btrplace.model.NodeState;
 import btrplace.model.VMState;
-import btrplace.solver.SolverException;
 
 import java.util.*;
 
@@ -42,6 +41,11 @@ public class ActionModelFactory {
         nodeAMB = new HashMap<>();
     }
 
+    /**
+     * Add a builder for a VM
+     *
+     * @param b the builder to add
+     */
     public void add(VMActionModelBuilder b) {
         List<VMActionModelBuilder> l = vmAMB2.get(b.getDestinationState());
         if (l == null) {
@@ -51,6 +55,31 @@ public class ActionModelFactory {
         l.add(b);
     }
 
+    /**
+     * Remove a builder for an action on a VM.
+     *
+     * @param b the builder to remove
+     * @return {@code true} if it has been removed
+     */
+    public boolean remove(VMActionModelBuilder b) {
+        VMState dst = b.getDestinationState();
+        return vmAMB2.get(dst).remove(b);
+    }
+
+    /**
+     * Remove a builder for an action on a node.
+     *
+     * @param b the builder to remove
+     * @return {@code true} if it has been removed
+     */
+    public boolean remove(NodeActionModelBuilder b) {
+        return nodeAMB.remove(b.getSourceState()) != null;
+    }
+
+    /**
+     * Add a builder for a VM
+     * @param b the builder to add
+     */
     public void add(NodeActionModelBuilder b) {
         nodeAMB.put(b.getSourceState(), b);
     }
@@ -60,17 +89,17 @@ public class ActionModelFactory {
      *
      * @param srcState the current VM state
      * @param dstState the current VM state
-     * @return the {@link btrplace.solver.choco.actionModel.VMActionModel} associated to the state transition
-     * @throws btrplace.solver.SolverException no transition or multiple transitions are possible
+     * @return the list of possible transitions. May be empty
      */
-    public VMActionModelBuilder getBuilder(VMState srcState, VMState dstState) throws SolverException {
-        List<VMActionModelBuilder> possibleTransitions = vmAMB2.get(srcState);
-        for (VMActionModelBuilder vmb : possibleTransitions) {
-            if (vmb.getDestinationState() == dstState) {
-                return vmb;
+    public List<VMActionModelBuilder> getBuilder(VMState srcState, VMState dstState) {
+        List<VMActionModelBuilder> dstCompliant = vmAMB2.get(dstState);
+        List<VMActionModelBuilder> possibles = new ArrayList<>();
+        for (VMActionModelBuilder vmb : dstCompliant) {
+            if (vmb.getSourceStates().contains(srcState)) {
+                possibles.add(vmb);
             }
         }
-        return null;
+        return possibles;
     }
 
     /**
@@ -79,19 +108,24 @@ public class ActionModelFactory {
      * @param srcState the current VM state
      * @return the {@link btrplace.solver.choco.actionModel.NodeActionModel} associated to the state transition
      */
-    public NodeActionModelBuilder getBuilder(NodeState srcState) throws SolverException {
+    public NodeActionModelBuilder getBuilder(NodeState srcState) {
         return nodeAMB.get(srcState);
     }
 
-    public static void fillWithDefaults(ActionModelFactory f) {
+    public static ActionModelFactory newBundle() {
+        ActionModelFactory f = new ActionModelFactory();
         f.add(new BootVMModel.Builder());
         f.add(new ShutdownVMModel.Builder());
         f.add(new SuspendVMModel.Builder());
         f.add(new ResumeVMModel.Builder());
         f.add(new KillVMModel.Builder());
-
+        f.add(new RelocatableVMModel.Builder());
+        f.add(new ForgeVMModel.Builder());
+        f.add(new StayAwayVMModel.BuilderReady());
+        f.add(new StayAwayVMModel.BuilderSleeping());
         f.add(new BootableNodeModel.Builder());
         f.add(new ShutdownableNodeModel.Builder());
+        return f;
     }
 
     @Override

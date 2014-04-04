@@ -22,6 +22,7 @@ import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.solver.SolverException;
+import btrplace.solver.choco.actionModel.ActionModelFactory;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import btrplace.solver.choco.view.ModelViewMapper;
 
@@ -56,6 +57,8 @@ public class DefaultReconfigurationProblemBuilder {
     private Set<VM> runs, waits, over, sleep;
 
     private Set<VM> manageable;
+
+    private ActionModelFactory amf;
 
     /**
      * Make a new builder for a problem working on a given model.
@@ -95,6 +98,11 @@ public class DefaultReconfigurationProblemBuilder {
      */
     public DefaultReconfigurationProblemBuilder setDurationEvaluators(DurationEvaluators d) {
         dEval = d;
+        return this;
+    }
+
+    public DefaultReconfigurationProblemBuilder setActionModelFactory(ActionModelFactory a) {
+        amf = a;
         return this;
     }
 
@@ -173,7 +181,10 @@ public class DefaultReconfigurationProblemBuilder {
             manageable.addAll(model.getMapping().getRunningVMs());
             manageable.addAll(model.getMapping().getReadyVMs());
         }
-        return new DefaultReconfigurationProblem(model, dEval, viewMapper, waits, runs, sleep, over, manageable, labelVars);
+        if (amf == null) {
+            amf = ActionModelFactory.newBundle();
+        }
+        return new DefaultReconfigurationProblem(model, dEval, viewMapper, amf, waits, runs, sleep, over, manageable, labelVars);
     }
 
 }

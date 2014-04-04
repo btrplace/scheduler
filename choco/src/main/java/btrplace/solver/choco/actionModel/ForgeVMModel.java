@@ -133,9 +133,10 @@ public class ForgeVMModel implements VMActionModel {
     }
 
     @Override
-    public void visit(ActionModelVisitor v) {
-        v.visit(this);
+    public boolean isManaged() {
+        return true;
     }
+
 
     /**
      * Get the template to use to build the VM.

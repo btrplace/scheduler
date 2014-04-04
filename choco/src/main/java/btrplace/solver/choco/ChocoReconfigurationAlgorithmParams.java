@@ -17,6 +17,7 @@
 
 package btrplace.solver.choco;
 
+import btrplace.solver.choco.actionModel.ActionModelFactory;
 import btrplace.solver.choco.constraint.ConstraintMapper;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import btrplace.solver.choco.view.ModelViewMapper;
@@ -159,4 +160,18 @@ public interface ChocoReconfigurationAlgorithmParams {
      * @see #setVerbosity(int)
      */
     int getVerbosity();
+
+    /**
+     * Set the factory that is used to model the actions.
+     *
+     * @param amf the factory to rely on
+     */
+    void setActionModelFactory(ActionModelFactory amf);
+
+    /**
+     * Get the current factory that is used to model the actions.
+     *
+     * @return the factory
+     */
+    ActionModelFactory getActionModelFactory();
 }

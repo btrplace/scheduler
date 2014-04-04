@@ -66,11 +66,4 @@ public interface ActionModel {
      * @return {@code 0} for offline, {@code 1} for online.
      */
     BoolVar getState();
-
-    /**
-     * Make a visitor inspect the action model.
-     *
-     * @param v the visitor to use
-     */
-    void visit(ActionModelVisitor v);
 }

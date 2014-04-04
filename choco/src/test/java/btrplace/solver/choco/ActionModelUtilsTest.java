@@ -22,7 +22,6 @@ import btrplace.model.Model;
 import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.choco.actionModel.ActionModelUtils;
-import btrplace.solver.choco.actionModel.ActionModelVisitor;
 import btrplace.solver.choco.actionModel.VMActionModel;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -142,6 +141,11 @@ public class ActionModelUtilsTest {
         }
 
         @Override
+        public boolean isManaged() {
+            return false;
+        }
+
+        @Override
         public IntVar getStart() {
             return st;
         }
@@ -181,9 +185,5 @@ public class ActionModelUtilsTest {
             return state;
         }
 
-        @Override
-        public void visit(ActionModelVisitor v) {
-            throw new UnsupportedOperationException();
-        }
     }
 }

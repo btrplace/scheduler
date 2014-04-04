@@ -66,7 +66,7 @@ public class NamingServiceConverter extends ModelViewConverter<NamingService> {
             return null;
         }
 
-        NamingService ns = null;
+        NamingService ns;
         String type = o.get("type").toString();
         switch (type) {
             case "vm":

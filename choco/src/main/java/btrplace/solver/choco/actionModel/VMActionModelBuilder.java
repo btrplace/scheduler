@@ -46,25 +46,25 @@ public abstract class VMActionModelBuilder {
     /**
      * New builder.
      *
-     * @param id  the action identifier
+     * @param lbl the action identifier
      * @param src the possible initial states of the VM.
      * @param dst the destination state of the VM
      */
-    public VMActionModelBuilder(String id, EnumSet<VMState> src, VMState dst) {
+    public VMActionModelBuilder(String lbl, EnumSet<VMState> src, VMState dst) {
         this.s = src;
         this.d = dst;
-        this.id = id;
+        this.id = lbl;
     }
 
     /**
      * New builder.
      *
-     * @param id  the action identifier
+     * @param lbl the action identifier
      * @param src the initial state of the VM.
      * @param dst the destination state of the VM
      */
-    public VMActionModelBuilder(String id, VMState src, VMState dst) {
-        this(id, EnumSet.of(src), dst);
+    public VMActionModelBuilder(String lbl, VMState src, VMState dst) {
+        this(lbl, EnumSet.of(src), dst);
     }
 
     /**

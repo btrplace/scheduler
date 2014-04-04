@@ -89,6 +89,11 @@ public class BootVMModel implements VMActionModel {
     }
 
     @Override
+    public boolean isManaged() {
+        return true;
+    }
+
+    @Override
     public boolean insertActions(ReconfigurationPlan plan) {
         Node node = rp.getNode(dSlice.getHoster().getValue());
         BootVM a = new BootVM(vm, node, start.getValue(), end.getValue());
@@ -129,11 +134,6 @@ public class BootVMModel implements VMActionModel {
     @Override
     public VM getVM() {
         return vm;
-    }
-
-    @Override
-    public void visit(ActionModelVisitor v) {
-        v.visit(this);
     }
 
     public static class Builder extends VMActionModelBuilder {

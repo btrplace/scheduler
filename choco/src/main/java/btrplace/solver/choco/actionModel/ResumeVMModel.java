@@ -86,6 +86,11 @@ public class ResumeVMModel implements VMActionModel {
     }
 
     @Override
+    public boolean isManaged() {
+        return true;
+    }
+
+    @Override
     public boolean insertActions(ReconfigurationPlan plan) {
         int ed = end.getValue();
         int st = start.getValue();
@@ -129,11 +134,6 @@ public class ResumeVMModel implements VMActionModel {
     @Override
     public BoolVar getState() {
         return state;
-    }
-
-    @Override
-    public void visit(ActionModelVisitor v) {
-        v.visit(this);
     }
 
     public static class Builder extends VMActionModelBuilder {

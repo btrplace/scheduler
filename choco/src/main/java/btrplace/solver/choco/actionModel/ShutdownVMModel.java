@@ -78,6 +78,12 @@ public class ShutdownVMModel implements VMActionModel {
     }
 
     @Override
+    public boolean isManaged() {
+        return true;
+    }
+
+
+    @Override
     public boolean insertActions(ReconfigurationPlan plan) {
         plan.add(new ShutdownVM(getVM(),
                 rp.getSourceModel().getMapping().getVMLocation(getVM()),
@@ -119,11 +125,6 @@ public class ShutdownVMModel implements VMActionModel {
     @Override
     public BoolVar getState() {
         return state;
-    }
-
-    @Override
-    public void visit(ActionModelVisitor v) {
-        v.visit(this);
     }
 
     public static class Builder extends VMActionModelBuilder {

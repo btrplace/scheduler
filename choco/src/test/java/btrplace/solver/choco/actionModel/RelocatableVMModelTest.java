@@ -449,4 +449,34 @@ public class RelocatableVMModelTest {
             Assert.fail(e.getMessage(), e);
         }
     }
+
+    @Test
+    public void testStayRunning() throws SolverException {
+
+        Model mo = new DefaultModel();
+        Mapping map = mo.getMapping();
+        final VM vm1 = mo.newVM();
+        Node n1 = mo.newNode();
+
+        map.addOnlineNode(n1);
+        map.addRunningVM(vm1, n1);
+
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
+                .setManageableVMs(Collections.<VM>emptySet())
+                .labelVariables()
+                .build();
+        Assert.assertEquals(rp.getVMAction(vm1).getClass(), RelocatableVMModel.class);
+        RelocatableVMModel m1 = (RelocatableVMModel) rp.getVMAction(vm1);
+        Assert.assertNotNull(m1.getCSlice());
+        Assert.assertNotNull(m1.getDSlice());
+        Assert.assertTrue(m1.getCSlice().getHoster().instantiatedTo(rp.getNode(n1)));
+        Assert.assertTrue(m1.getDSlice().getHoster().instantiatedTo(rp.getNode(n1)));
+        Assert.assertTrue(m1.getDuration().instantiatedTo(0));
+        Assert.assertTrue(m1.getStart().instantiatedTo(0));
+        Assert.assertTrue(m1.getEnd().instantiatedTo(0));
+        System.out.println(rp.getSolver().toString());
+        ReconfigurationPlan p = rp.solve(0, false);
+        Assert.assertNotNull(p);
+        Assert.assertEquals(p.getSize(), 0);
+    }
 }

@@ -168,7 +168,7 @@ public class DefaultReconfigurationProblemTest {
         Assert.assertEquals(rp.getFutureKilledVMs(), Collections.singleton(vm2));
         Assert.assertEquals(rp.getVMs().length, 7);
         Assert.assertEquals(rp.getNodes().length, 3);
-        Assert.assertEquals(rp.getManageableVMs().size(), rp.getVMs().length);
+        Assert.assertEquals(rp.getManageableVMs().size(), rp.getVMs().length, rp.getManageableVMs().toString());
         Assert.assertTrue(rp.getStart().instantiated() && rp.getStart().getValue() == 0);
 
         //Test the index values of the nodes and the VMs.
@@ -216,21 +216,24 @@ public class DefaultReconfigurationProblemTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), runnings, map.getSleepingVMs(), Collections.<VM>emptySet())
                 .setManageableVMs(map.getRunningVMs(n1)).build();
+        /*
+          vm1: running -> running
+          vm2: running-> running
+          vm3: running -> running
+          vm4: sleeping -> sleeping
+          vm5: ready -> running
+          vm6: ready -> running
+
+         * manageable_runnings: vm1, vm2
+         * manageable: vm1, vm2, vm5, vm6 (with ids: vm#0, vm#1, vm#4, vm#5)
+         */
         Set<VM> manageable = rp.getManageableVMs();
 
-        Assert.assertEquals(manageable.size(), 4);
+        Assert.assertEquals(manageable.size(), 4, manageable.toString());
         Assert.assertTrue(manageable.containsAll(Arrays.asList(vm6, vm5, vm1, vm2)));
         //Check the action model that has been used for each of the VM.
         for (VM vm : map.getAllVMs()) {
-            if (map.isRunning(vm) && rp.getFutureRunningVMs().contains(vm)) {
-                if (!manageable.contains(vm)) {
-                    Assert.assertEquals(rp.getVMAction(vm).getClass(), StayRunningVMModel.class);
-                } else {
-                    Assert.assertEquals(rp.getVMAction(vm).getClass(), RelocatableVMModel.class);
-                }
-            } else {
-                Assert.assertNotEquals(rp.getVMAction(vm).getClass(), StayRunningVMModel.class);
-            }
+            Assert.assertEquals(manageable.contains(vm), rp.getVMAction(vm).isManaged());
         }
     }
 
@@ -468,29 +471,10 @@ public class DefaultReconfigurationProblemTest {
     public void testVMStaySleeping() throws SolverException {
         Model mo = new DefaultModel();
         VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
-        VM vm4 = mo.newVM();
-        VM vm5 = mo.newVM();
-        VM vm6 = mo.newVM();
         Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-        Node n3 = mo.newNode();
 
-        Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOfflineNode(n3);
-
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addSleepingVM(vm4, n2);
-        map.addReadyVM(vm5);
-        map.addReadyVM(vm6);
-        Mapping m = mo.getMapping();
-        m.addOnlineNode(n1);
-        m.addSleepingVM(vm1, n1);
+        mo.getMapping().addOnlineNode(n1);
+        mo.getMapping().addSleepingVM(vm1, n1);
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(new HashSet<VM>(),
                         new HashSet<VM>(),
@@ -791,7 +775,9 @@ public class DefaultReconfigurationProblemTest {
         mo.getAttributes().put(vm4, "template", "small");
         mo.attach(rc);
 
+        ActionModelFactory amf = ActionModelFactory.newBundle();
         ReconfigurationProblem rp = new DefaultReconfigurationProblem(mo, DurationEvaluators.newBundle(), new ModelViewMapper(),
+                amf,
                 Collections.singleton(vm4),
                 Collections.singleton(vm5),
                 Collections.singleton(vm1),

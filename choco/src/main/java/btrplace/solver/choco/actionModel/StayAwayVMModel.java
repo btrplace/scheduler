@@ -52,6 +52,11 @@ public class StayAwayVMModel implements VMActionModel {
     }
 
     @Override
+    public boolean isManaged() {
+        return false;
+    }
+
+    @Override
     public boolean insertActions(ReconfigurationPlan plan) {
         return true;
     }
@@ -91,20 +96,27 @@ public class StayAwayVMModel implements VMActionModel {
         return zero;
     }
 
-    @Override
-    public void visit(ActionModelVisitor v) {
-        v.visit(this);
-    }
+    public static class BuilderReady extends VMActionModelBuilder {
 
-    public static class Builder extends VMActionModelBuilder {
-
-        public Builder() {
-            super("stayAway", VMState.RUNNING, VMState.RUNNING);
+        public BuilderReady() {
+            super("stayReady", VMState.READY, VMState.READY);
         }
 
         @Override
         public VMActionModel build(ReconfigurationProblem r, VM v) throws SolverException {
-            return new RelocatableVMModel(r, v);
+            return new StayAwayVMModel(r, v);
+        }
+    }
+
+    public static class BuilderSleeping extends VMActionModelBuilder {
+
+        public BuilderSleeping() {
+            super("staySleeping", VMState.SLEEPING, VMState.SLEEPING);
+        }
+
+        @Override
+        public VMActionModel build(ReconfigurationProblem r, VM v) throws SolverException {
+            return new StayAwayVMModel(r, v);
         }
     }
 }

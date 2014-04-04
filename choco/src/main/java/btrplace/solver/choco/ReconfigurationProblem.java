@@ -235,23 +235,23 @@ public interface ReconfigurationProblem {
      * Create a variable that indicate the current placement of a VM.
      * The variable is then already instantiated
      *
-     * @param n    the variable label
      * @param vmId the VM identifier
+     * @param n    the variable label
      * @return the created variable
      * @throws SolverException if an error occurred while creating the variable
      */
-    IntVar makeCurrentHost(String n, VM vmId) throws SolverException;
+    IntVar makeCurrentHost(VM vmId, Object... n) throws SolverException;
 
     /**
      * Create a variable that indicate a given node.
      * The variable is then already instantiated
      *
-     * @param n   the variable label
      * @param nId the node identifier
+     * @param n   the variable label
      * @return the created variable
      * @throws SolverException if an error occurred while creating the variable
      */
-    IntVar makeCurrentNode(String n, Node nId) throws SolverException;
+    IntVar makeCurrentNode(Node nId, Object... n) throws SolverException;
 
     /**
      * Create a variable denoting a duration.

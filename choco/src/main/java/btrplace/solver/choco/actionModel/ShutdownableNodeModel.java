@@ -183,11 +183,6 @@ public class ShutdownableNodeModel implements NodeActionModel {
     }
 
     @Override
-    public void visit(ActionModelVisitor v) {
-        v.visit(this);
-    }
-
-    @Override
     public IntVar getHostingStart() {
         return hostingStart;
     }

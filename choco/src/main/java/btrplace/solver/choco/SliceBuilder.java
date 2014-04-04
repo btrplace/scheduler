@@ -44,7 +44,7 @@ public class SliceBuilder {
 
     private VM vm;
 
-    private String[] lblPrefix;
+    private Object[] lblPrefix;
 
     /**
      * Make a new Builder.
@@ -53,7 +53,7 @@ public class SliceBuilder {
      * @param v      the VM associated to the slice
      * @param prefix the label prefix for the variables
      */
-    public SliceBuilder(ReconfigurationProblem p, VM v, String... prefix) {
+    public SliceBuilder(ReconfigurationProblem p, VM v, Object... prefix) {
         this.rp = p;
         this.vm = v;
         lblPrefix = prefix;

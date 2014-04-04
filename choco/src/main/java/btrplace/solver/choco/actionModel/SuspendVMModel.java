@@ -77,7 +77,11 @@ public class SuspendVMModel implements VMActionModel {
         start = VariableFactory.offset(cSlice.getEnd(), -d);
         state = VariableFactory.zero(rp.getSolver());
         rp.getSolver().post(IntConstraintFactory.arithm(cSlice.getEnd(), "<=", p.getEnd()));
+    }
 
+    @Override
+    public boolean isManaged() {
+        return true;
     }
 
     @Override
@@ -122,11 +126,6 @@ public class SuspendVMModel implements VMActionModel {
         return vm;
     }
 
-    @Override
-    public void visit(ActionModelVisitor v) {
-        v.visit(this);
-    }
-
     public static class Builder extends VMActionModelBuilder {
 
         public Builder() {
@@ -135,7 +134,7 @@ public class SuspendVMModel implements VMActionModel {
 
         @Override
         public VMActionModel build(ReconfigurationProblem r, VM v) throws SolverException {
-            return new BootVMModel(r, v);
+            return new SuspendVMModel(r, v);
         }
     }
 }

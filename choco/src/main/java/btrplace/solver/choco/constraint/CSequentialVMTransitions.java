@@ -26,7 +26,6 @@ import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.actionModel.ActionModel;
 import btrplace.solver.choco.actionModel.RelocatableVMModel;
 import btrplace.solver.choco.actionModel.StayAwayVMModel;
-import btrplace.solver.choco.actionModel.StayRunningVMModel;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
 
@@ -64,8 +63,7 @@ public class CSequentialVMTransitions implements ChocoConstraint {
             ActionModel am = rp.getVMAction(vmId);
 
             //Avoid VMs with no action model or ActionModel that do not denotes a state transition
-            if (am == null || am instanceof StayRunningVMModel
-                    || am instanceof StayAwayVMModel || am instanceof RelocatableVMModel) {
+            if (am == null || am instanceof StayAwayVMModel || am instanceof RelocatableVMModel) {
                 continue;
             }
             ams.add(am);

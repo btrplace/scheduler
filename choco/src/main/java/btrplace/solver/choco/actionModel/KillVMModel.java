@@ -88,8 +88,11 @@ public class KillVMModel implements VMActionModel {
             end = VariableFactory.fixed(d, rp.getSolver());
         }
         start = rp.getStart();
+    }
 
-
+    @Override
+    public boolean isManaged() {
+        return true;
     }
 
     @Override
@@ -120,11 +123,6 @@ public class KillVMModel implements VMActionModel {
     @Override
     public VM getVM() {
         return vm;
-    }
-
-    @Override
-    public void visit(ActionModelVisitor v) {
-        v.visit(this);
     }
 
     @Override

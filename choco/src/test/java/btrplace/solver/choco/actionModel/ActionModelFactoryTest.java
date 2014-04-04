@@ -17,16 +17,10 @@
 
 package btrplace.solver.choco.actionModel;
 
-import btrplace.model.*;
-import btrplace.solver.SolverException;
-import btrplace.solver.choco.DefaultReconfigurationProblem;
-import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
-import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.model.NodeState;
+import btrplace.model.VMState;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.util.Collections;
-import java.util.HashSet;
 
 /**
  * Unit tests for {@link btrplace.solver.choco.actionModel.ActionModelFactory}.
@@ -35,333 +29,64 @@ import java.util.HashSet;
  */
 public class ActionModelFactoryTest {
 
-
     @Test
-    public void testVMToWaiting() throws SolverException {
-        Model mo = new DefaultModel();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
-        VM vm4 = mo.newVM();
-        VM vm5 = mo.newVM();
-        VM vm6 = mo.newVM();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-        Node n3 = mo.newNode();
+    public void testDefault() {
+        ActionModelFactory amf = ActionModelFactory.newBundle();
 
-        Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOfflineNode(n3);
-
-        //map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addSleepingVM(vm4, n2);
-        map.addReadyVM(vm5);
-        map.addReadyVM(vm6);
-        mo.getAttributes().put(vm1, "template", "small");
-        ReconfigurationProblem rp =
-                new DefaultReconfigurationProblemBuilder(mo)
-                        .setNextVMsStates(Collections.singleton(vm1),
-                                new HashSet<VM>(),
-                                new HashSet<VM>(),
-                                new HashSet<VM>()).build();
-
-        ActionModel a = rp.getVMActions()[rp.getVM(vm1)];
-        Assert.assertEquals(a, rp.getVMAction(vm1));
-        Assert.assertEquals(ForgeVMModel.class, a.getClass());
-    }
-
-    @Test
-    public void testWaitinVMToRun() throws SolverException {
-        Model mo = new DefaultModel();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
-        VM vm4 = mo.newVM();
-        VM vm5 = mo.newVM();
-        VM vm6 = mo.newVM();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-        Node n3 = mo.newNode();
-
-        Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOfflineNode(n3);
-
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addSleepingVM(vm4, n2);
-        map.addReadyVM(vm5);
-        map.addReadyVM(vm6);
-        Mapping m = mo.getMapping();
-        m.addReadyVM(vm1);
-        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(new HashSet<VM>(),
-                        Collections.singleton(vm1),
-                        new HashSet<VM>(),
-                        new HashSet<VM>()).build();
-
-        ActionModel a = rp.getVMActions()[0];
-        Assert.assertEquals(a, rp.getVMAction(vm1));
-        Assert.assertEquals(BootVMModel.class, a.getClass());
-    }
-
-    @Test
-    public void testVMStayRunning() throws SolverException {
-        Model mo = new DefaultModel();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
-        VM vm4 = mo.newVM();
-        VM vm5 = mo.newVM();
-        VM vm6 = mo.newVM();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-        Node n3 = mo.newNode();
-
-        Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOfflineNode(n3);
-
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addSleepingVM(vm4, n2);
-        map.addReadyVM(vm5);
-        map.addReadyVM(vm6);
-        Mapping m = mo.getMapping();
-        m.addOnlineNode(n1);
-        m.addRunningVM(vm1, n1);
-
-        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(new HashSet<VM>(),
-                        Collections.singleton(vm1),
-                        new HashSet<VM>(),
-                        new HashSet<VM>()).build();
-        ActionModel a = rp.getVMActions()[0];
-        Assert.assertEquals(a, rp.getVMAction(vm1));
-        Assert.assertEquals(RelocatableVMModel.class, a.getClass());
-    }
-
-    @Test
-    public void testVMRunningToSleeping() throws SolverException {
-        Model mo = new DefaultModel();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
-        VM vm4 = mo.newVM();
-        VM vm5 = mo.newVM();
-        VM vm6 = mo.newVM();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-        Node n3 = mo.newNode();
-
-        Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOfflineNode(n3);
-
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addSleepingVM(vm4, n2);
-        map.addReadyVM(vm5);
-        map.addReadyVM(vm6);
-        Mapping m = mo.getMapping();
-        m.addOnlineNode(n1);
-        m.addRunningVM(vm1, n1);
-        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(new HashSet<VM>(),
-                        new HashSet<VM>(),
-                        Collections.singleton(vm1),
-                        new HashSet<VM>()).build();
-
-        ActionModel a = rp.getVMActions()[0];
-        Assert.assertEquals(a, rp.getVMAction(vm1));
-        Assert.assertEquals(SuspendVMModel.class, a.getClass());
-    }
-
-    @Test
-    public void testVMsToKill() throws SolverException {
-        Model mo = new DefaultModel();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
-        VM vm4 = mo.newVM();
-        VM vm5 = mo.newVM();
-        VM vm6 = mo.newVM();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-        Node n3 = mo.newNode();
-
-        Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOfflineNode(n3);
-
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addSleepingVM(vm4, n2);
-        map.addReadyVM(vm5);
-        map.addReadyVM(vm6);
-        Mapping m = mo.getMapping();
-        m.addOnlineNode(n1);
-        m.addRunningVM(vm1, n1);
-        m.addSleepingVM(vm2, n1);
-        m.addReadyVM(vm3);
-        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(new HashSet<VM>(),
-                        new HashSet<VM>(),
-                        new HashSet<VM>(),
-                        m.getAllVMs()).build();
-
-        for (ActionModel a : rp.getVMActions()) {
-            Assert.assertEquals(a.getClass(), KillVMModel.class);
-        }
-    }
-
-    @Test
-    public void testVMToShutdown() throws SolverException {
-        Model mo = new DefaultModel();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
-        VM vm4 = mo.newVM();
-        VM vm5 = mo.newVM();
-        VM vm6 = mo.newVM();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-        Node n3 = mo.newNode();
-
-        Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOfflineNode(n3);
-
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addSleepingVM(vm4, n2);
-        map.addReadyVM(vm5);
-        map.addReadyVM(vm6);
-        Mapping m = mo.getMapping();
-        m.addOnlineNode(n1);
-        m.addRunningVM(vm1, n1);
-        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(Collections.singleton(vm1),
-                        new HashSet<VM>(),
-                        new HashSet<VM>(),
-                        new HashSet<VM>()).build();
-        ActionModel a = rp.getVMActions()[0];
-        Assert.assertEquals(a, rp.getVMAction(vm1));
-        Assert.assertEquals(ShutdownVMModel.class, a.getClass());
-
-    }
-
-
-    @Test
-    public void testVMStaySleeping() throws SolverException {
-        Model mo = new DefaultModel();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
-        VM vm4 = mo.newVM();
-        VM vm5 = mo.newVM();
-        VM vm6 = mo.newVM();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-        Node n3 = mo.newNode();
-
-        Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOfflineNode(n3);
-
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addSleepingVM(vm4, n2);
-        map.addReadyVM(vm5);
-        map.addReadyVM(vm6);
-        Mapping m = mo.getMapping();
-        m.addOnlineNode(n1);
-        m.addSleepingVM(vm1, n1);
-        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(new HashSet<VM>(),
-                        new HashSet<VM>(),
-                        Collections.singleton(vm1),
-                        new HashSet<VM>()).build();
-
-        ActionModel a = rp.getVMActions()[0];
-        Assert.assertEquals(a, rp.getVMAction(vm1));
-        Assert.assertEquals(StayAwayVMModel.class, a.getClass());
-    }
-
-    @Test
-    public void testVMSleepToRun() throws SolverException {
-        Model mo = new DefaultModel();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
-        VM vm4 = mo.newVM();
-        VM vm5 = mo.newVM();
-        VM vm6 = mo.newVM();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-        Node n3 = mo.newNode();
-
-        Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOfflineNode(n3);
-
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addSleepingVM(vm4, n2);
-        map.addReadyVM(vm5);
-        map.addReadyVM(vm6);
-        Mapping m = mo.getMapping();
-        m.addOnlineNode(n1);
-        m.addSleepingVM(vm1, n1);
-        DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setNextVMsStates(new HashSet<VM>(),
-                        Collections.singleton(vm1),
-                        new HashSet<VM>(),
-                        new HashSet<VM>()).build();
-        ActionModel a = rp.getVMActions()[0];
-        Assert.assertEquals(a, rp.getVMAction(vm1));
-        Assert.assertEquals(ResumeVMModel.class, a.getClass());
-    }
-
-    @Test
-    public void testNodeOn() throws SolverException {
-        Model mo = new DefaultModel();
-        Mapping m = mo.getMapping();
-        Node n1 = mo.newNode();
-        m.addOnlineNode(n1);
-        ActionModelFactory amf = new ActionModelFactory();
-        ActionModelFactory.fillWithDefaults(amf);
         System.out.println(amf);
-        NodeActionModelBuilder na = amf.getBuilder(m.getState(n1));
-        Assert.assertEquals(na.getClass(), ShutdownableNodeModel.Builder.class);
+        //Running -> Sleeping
+        VMActionModelBuilder b = amf.getBuilder(VMState.RUNNING, VMState.SLEEPING).get(0);
+        Assert.assertNotNull(b);
+        Assert.assertEquals(b.getDestinationState(), VMState.SLEEPING);
+        Assert.assertTrue(b.getSourceStates().contains(VMState.RUNNING));
+
+        //Sleeping -> Running
+        b = amf.getBuilder(VMState.SLEEPING, VMState.RUNNING).get(0);
+        Assert.assertNotNull(b);
+        Assert.assertEquals(b.getDestinationState(), VMState.RUNNING);
+        Assert.assertTrue(b.getSourceStates().contains(VMState.SLEEPING));
+
+        //Running -> Running
+        b = amf.getBuilder(VMState.RUNNING, VMState.RUNNING).get(0);
+        Assert.assertNotNull(b);
+        Assert.assertEquals(b.getDestinationState(), VMState.RUNNING);
+        Assert.assertTrue(b.getSourceStates().contains(VMState.RUNNING));
+
+        //Ready -> Running
+        b = amf.getBuilder(VMState.READY, VMState.RUNNING).get(0);
+        Assert.assertNotNull(b);
+        Assert.assertEquals(b.getDestinationState(), VMState.RUNNING);
+        Assert.assertTrue(b.getSourceStates().contains(VMState.READY));
+
+        //Running -> Ready
+        b = amf.getBuilder(VMState.RUNNING, VMState.READY).get(0);
+        Assert.assertNotNull(b);
+        Assert.assertEquals(b.getDestinationState(), VMState.READY);
+        Assert.assertTrue(b.getSourceStates().contains(VMState.RUNNING));
+
+        //Init -> Ready
+        b = amf.getBuilder(VMState.INIT, VMState.READY).get(0);
+        Assert.assertNotNull(b);
+        Assert.assertEquals(b.getDestinationState(), VMState.READY);
+        Assert.assertTrue(b.getSourceStates().contains(VMState.INIT));
+
+        //Ready -> READY
+        b = amf.getBuilder(VMState.READY, VMState.READY).get(0);
+        Assert.assertNotNull(b);
+        Assert.assertEquals(b.getDestinationState(), VMState.READY);
+        Assert.assertTrue(b.getSourceStates().contains(VMState.READY));
+
+        //Sleeping -> Sleeping
+        b = amf.getBuilder(VMState.SLEEPING, VMState.SLEEPING).get(0);
+        Assert.assertNotNull(b);
+        Assert.assertEquals(b.getDestinationState(), VMState.SLEEPING);
+        Assert.assertTrue(b.getSourceStates().contains(VMState.SLEEPING));
+
+        //The nodes
+        NodeActionModelBuilder b2 = amf.getBuilder(NodeState.ONLINE);
+        Assert.assertEquals(b2.getSourceState(), NodeState.ONLINE);
+        b2 = amf.getBuilder(NodeState.OFFLINE);
+        Assert.assertEquals(b2.getSourceState(), NodeState.OFFLINE);
     }
 
-    @Test
-    public void testNodeOff() throws SolverException {
-        Model mo = new DefaultModel();
-        Mapping m = mo.getMapping();
-        Node n1 = mo.newNode();
-        m.addOfflineNode(n1);
-        ActionModelFactory amf = new ActionModelFactory();
-        ActionModelFactory.fillWithDefaults(amf);
-        NodeActionModelBuilder na = amf.getBuilder(m.getState(n1));
-        Assert.assertEquals(na.getClass(), BootableNodeModel.Builder.class);
-    }
 }

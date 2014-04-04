@@ -48,4 +48,12 @@ public interface VMActionModel extends ActionModel {
      * @return a {@link Slice} that may be {@code null}
      */
     Slice getDSlice();
+
+    /**
+     * Tell if this actions allow the management of the VM.
+     * Typically if it is possible to have a resulting action.
+     *
+     * @return {@code true} if the VM must be manipulated
+     */
+    boolean isManaged();
 }

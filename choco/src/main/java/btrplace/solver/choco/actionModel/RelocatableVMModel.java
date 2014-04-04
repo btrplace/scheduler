@@ -67,7 +67,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
     private BoolVar state;
 
-    private IntVar duration;
+    private IntVar duration, start, end;
 
     private BoolVar stay;
 
@@ -75,6 +75,7 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
     private Node src;
 
+    private boolean manageable = true;
     /**
      * The relocation method. 0 for migration, 1 for relocation.
      */
@@ -88,8 +89,19 @@ public class RelocatableVMModel implements KeepRunningVMModel {
      * @throws SolverException if an error occurred
      */
     public RelocatableVMModel(ReconfigurationProblem p, VM e) throws SolverException {
+
         this.vm = e;
         this.rp = p;
+
+        //Default values, i.e. when there is a staying running VM
+        start = rp.getStart();
+        end = rp.getStart();
+        duration = rp.getStart();
+        state = VariableFactory.one(rp.getSolver());
+        if (!p.getManageableVMs().contains(e)) {
+            stayRunning();
+            return;
+        }
 
         src = p.getSourceModel().getMapping().getVMLocation(e);
 
@@ -107,6 +119,8 @@ public class RelocatableVMModel implements KeepRunningVMModel {
                 .setStart(p.makeUnboundedDuration("relocatable(", vm, ").dSlice_start"))
                 .build();
 
+        start = dSlice.getStart();
+        end = cSlice.getEnd();
         Constraint cstr = IntConstraintFactory.arithm(cSlice.getHoster(), "!=", dSlice.getHoster());
         BoolVar move = cstr.reif();
 
@@ -133,7 +147,20 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
             s.post(new FastIFFEq(doReinstantiation, duration, reInstantiateDuration));
         }
-        state = VariableFactory.one(rp.getSolver());
+    }
+
+    private void stayRunning() throws SolverException {
+        IntVar host = rp.makeCurrentHost(vm, "stayRunningVM(", vm, ").host");
+        cSlice = new SliceBuilder(rp, vm, "stayRunningVM(", vm.toString(), ").cSlice")
+                .setHoster(host)
+                .setEnd(rp.makeUnboundedDuration("stayRunningVM(", vm, ").cSlice_end"))
+                .build();
+        dSlice = new SliceBuilder(rp, vm, "stayRunningVM(", vm, ").dSlice")
+                .setHoster(host)
+                .setStart(cSlice.getEnd())
+                .build();
+        stay = VariableFactory.one(rp.getSolver());
+        manageable = false;
     }
 
     private void prepareRelocationMethod() throws SolverException {
@@ -149,11 +176,17 @@ public class RelocatableVMModel implements KeepRunningVMModel {
             reInstantiateDuration = bootDuration + shutdownDuration;
             duration = VariableFactory.enumerated(rp.makeVarLabel("relocatable(", vm, ").duration"),
                     new int[]{0, Math.min(migrateDuration, reInstantiateDuration),
-                            Math.max(migrateDuration, reInstantiateDuration)}, s);
+                            Math.max(migrateDuration, reInstantiateDuration)}, s
+            );
         } else {
             doReinstantiation = VariableFactory.zero(rp.getSolver());
             duration = VariableFactory.enumerated(rp.makeVarLabel("relocatable(", vm, ").duration"), new int[]{0, migrateDuration}, s);
         }
+    }
+
+    @Override
+    public boolean isManaged() {
+        return manageable;
     }
 
     @Override
@@ -199,12 +232,12 @@ public class RelocatableVMModel implements KeepRunningVMModel {
 
     @Override
     public IntVar getStart() {
-        return dSlice.getStart();
+        return start;
     }
 
     @Override
     public IntVar getEnd() {
-        return cSlice.getEnd();
+        return end;
     }
 
     @Override
@@ -225,11 +258,6 @@ public class RelocatableVMModel implements KeepRunningVMModel {
     @Override
     public BoolVar getState() {
         return state;
-    }
-
-    @Override
-    public void visit(ActionModelVisitor v) {
-        v.visit(this);
     }
 
     @Override

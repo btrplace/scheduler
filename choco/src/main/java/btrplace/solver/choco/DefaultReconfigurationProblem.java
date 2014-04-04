@@ -114,6 +114,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private ResolutionPolicy solvingPolicy;
 
+    private ActionModelFactory amFactory;
+
     /**
      * Make a new RP where the next state for every VM is indicated.
      * If the state for a VM is omitted, it is considered as unchanged
@@ -125,26 +127,28 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * @param sleeping          the VMs that must be in the sleeping state
      * @param label             {@code true} to label the variables (for debugging purpose)
      * @param killed            the VMs that must be killed
-     * @param runningToConsider the VMs that can be managed by the solver when they are already running and they must keep running
+     * @param preRooted the VMs that can be managed by the solver when they are already running and they must keep running
      * @throws SolverException if an error occurred
      * @see DefaultReconfigurationProblemBuilder to ease the instantiation process
      */
     public DefaultReconfigurationProblem(Model m,
                                          DurationEvaluators dEval,
                                          ModelViewMapper vMapper,
+                                         ActionModelFactory amf,
                                          Set<VM> ready,
                                          Set<VM> running,
                                          Set<VM> sleeping,
                                          Set<VM> killed,
-                                         Set<VM> runningToConsider,
+                                         Set<VM> preRooted,
                                          boolean label
     ) throws SolverException {
         this.ready = new HashSet<>(ready);
         this.running = new HashSet<>(running);
         this.sleeping = new HashSet<>(sleeping);
         this.killed = new HashSet<>(killed);
-        this.manageable = new HashSet<>(runningToConsider);
+        this.manageable = new HashSet<>(preRooted);
         this.useLabels = label;
+        this.amFactory = amf;
         model = m;
         durEval = dEval;
         this.viewMapper = vMapper;
@@ -401,79 +405,40 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         vmActions = new VMActionModel[vms.length];
         for (int i = 0; i < vms.length; i++) {
             VM vmId = vms[i];
-            if (running.contains(vmId)) {
-                if (map.isSleeping(vmId)) {
-                    vmActions[i] = new ResumeVMModel(this, vmId);
-                    manageable.add(vmId);
-                } else if (map.isRunning(vmId)) {
-                    if (manageable.contains(vmId)) {
-                        vmActions[i] = new RelocatableVMModel(this, vmId);
-                    } else {
-                        vmActions[i] = new StayRunningVMModel(this, vmId);
-                    }
-                } else if (map.isReady(vmId)) {
-                    vmActions[i] = new BootVMModel(this, vmId);
-                    manageable.add(vmId);
-                } else {
-                    throw new SolverException(model, "Unable to set VM '" + vmId + "' running: not ready");
-                }
+            VMState nextState = getNextState(vmId);
+            VMState curState = map.getState(vmId);
+            if (curState == null) {
+                curState = VMState.INIT; //It's a new VM
             }
-            if (ready.contains(vmId)) {
-                if (vmActions[i] != null) {
-                    throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
-                } else if (!map.contains(vmId)) {
-                    vmActions[i] = new ForgeVMModel(this, vmId);
-                    manageable.add(vmId);
-                } else if (map.isReady(vmId)) {
-                    vmActions[i] = new StayAwayVMModel(this, vmId);
-                } else if (map.isRunning(vmId)) {
-                    vmActions[i] = new ShutdownVMModel(this, vmId);
-                    manageable.add(vmId);
-                } else {
-                    throw new SolverException(model, "Unable to set VM '" + vmId + "' ready: not in the 'running' state or already forged");
-                }
-            }
-            if (sleeping.contains(vmId)) {
-                if (vmActions[i] != null) {
-                    throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
-                } else if (map.isRunning(vmId)) {
-                    vmActions[i] = new SuspendVMModel(this, vmId);
-                    manageable.add(vmId);
-                } else if (map.isSleeping(vmId)) {
-                    vmActions[i] = new StayAwayVMModel(this, vmId);
-                } else {
-                    throw new SolverException(model, "Unable to set VM '" + vmId + "' sleeping: should be running");
-                }
-            }
-            if (killed.contains(vmId)) {
-                if (vmActions[i] != null) {
-                    throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
-                } else if (map.contains(vmId)) {
-                    vmActions[i] = new KillVMModel(this, vmId);
-                    manageable.add(vmId);
-                } else {
-                    throw new SolverException(model, "Unable to kill VM '" + vmId + "': unknown");
-                }
-            }
-            if (vmActions[i] == null) {
+            if (nextState == null) {
                 //Next state is undefined, keep the current state
                 //Need to update running, sleeping and waiting accordingly
-                if (map.isRunning(vmId)) {
-                    running.add(vmId);
-                    if (manageable.contains(vmId)) {
-                        vmActions[i] = new RelocatableVMModel(this, vmId);
-                    } else {
-                        vmActions[i] = new StayRunningVMModel(this, vmId);
-                    }
-                } else if (map.isReady(vmId)) {
-                    ready.add(vmId);
-                    vmActions[i] = new StayAwayVMModel(this, vmId);
-                } else if (map.isSleeping(vmId)) {
-                    sleeping.add(vmId);
-                    vmActions[i] = new StayAwayVMModel(this, vmId);
-                } else {
-                    throw new SolverException(model, "Unable to infer the next state of VM '" + vmId + "'");
+                nextState = curState;
+                switch (nextState) {
+                    case RUNNING:
+                        running.add(vmId);
+                        break;
+                    case SLEEPING:
+                        sleeping.add(vmId);
+                        break;
+                    case READY:
+                        ready.add(vmId);
+                        break;
+                    default:
+                        throw new SolverException(model, "Unable to infer the next state of VM '" + vmId + "'");
                 }
+            }
+
+            List<VMActionModelBuilder> am = amFactory.getBuilder(curState, nextState);
+            if (am.isEmpty()) {
+                throw new SolverException(model, "No model available for VM transition " + curState + " -> " + nextState);
+                }
+            if (am.size() > 1) {
+                throw new SolverException(model, "Multiple transition are possible for VM " + vmId + "(" + curState + "->" + nextState + "):\n" + am);
+                }
+            vmActions[i] = am.get(0).build(this, vmId);
+            if (vmActions[i].isManaged()) {
+                manageable.add(vmId);
             }
         }
     }
@@ -560,46 +525,30 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public IntVar makeHostVariable(Object... n) {
-        String str = "";
-        if (useLabels) {
-            StringBuilder b = new StringBuilder();
-            for (Object o : n) {
-                b.append(o);
-            }
-            str = b.toString();
-        }
-        return VariableFactory.enumerated(str, 0, nodes.length - 1, solver);
+        return VariableFactory.enumerated(useLabels ? makeVarLabel(n) : "", 0, nodes.length - 1, solver);
     }
 
     @Override
-    public IntVar makeCurrentHost(String n, VM vmId) throws SolverException {
+    public IntVar makeCurrentHost(VM vmId, Object... n) throws SolverException {
         int idx = getVM(vmId);
         if (idx < 0) {
             throw new SolverException(model, "Unknown VM '" + vmId + "'");
         }
-        return makeCurrentNode(useLabels ? n : "", model.getMapping().getVMLocation(vmId));
+        return makeCurrentNode(model.getMapping().getVMLocation(vmId), useLabels ? n : "");
     }
 
     @Override
-    public IntVar makeCurrentNode(String n, Node nId) throws SolverException {
+    public IntVar makeCurrentNode(Node nId, Object... n) throws SolverException {
         int idx = getNode(nId);
         if (idx < 0) {
             throw new SolverException(model, "Unknown node '" + nId + "'");
         }
-        return VariableFactory.fixed(useLabels ? n : "", idx, solver);
+        return VariableFactory.fixed(useLabels ? makeVarLabel(n) : "", idx, solver);
     }
 
     @Override
     public IntVar makeUnboundedDuration(Object... n) {
-        String str = "";
-        if (useLabels) {
-            StringBuilder b = new StringBuilder();
-            for (Object s : n) {
-                b.append(s);
-            }
-            str = b.toString();
-        }
-        return VariableFactory.bounded(str, 0, end.getUB(), solver);
+        return VariableFactory.bounded(useLabels ? makeVarLabel(n) : "", 0, end.getUB(), solver);
     }
 
     @Override
@@ -607,15 +556,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (lb < 0 || ub < lb) {
             throw new SolverException(model, "Unable to create duration variable '" + Arrays.toString(n) + "': invalid bounds");
         }
-        String s = "";
-        if (useLabels) {
-            StringBuilder b = new StringBuilder();
-            for (Object o : n) {
-                b.append(o);
-            }
-            s = b.toString();
-        }
-        return VariableFactory.bounded(s, lb, ub < end.getUB() ? ub : end.getUB(), solver);
+        return VariableFactory.bounded(useLabels ? makeVarLabel(n) : "", lb, ub < end.getUB() ? ub : end.getUB(), solver);
     }
 
     @Override
@@ -761,7 +702,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     public VM cloneVM(VM vm) {
         VM newVM = model.newVM();
         if (newVM == null) {
-            return newVM;
+            return null;
         }
         for (ChocoModelView v : views.values()) {
             v.cloneVM(vm, newVM);

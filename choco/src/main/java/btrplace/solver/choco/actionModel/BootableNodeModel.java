@@ -180,11 +180,6 @@ public class BootableNodeModel implements NodeActionModel {
     }
 
     @Override
-    public void visit(ActionModelVisitor v) {
-        v.visit(this);
-    }
-
-    @Override
     public IntVar getHostingStart() {
         return hostingStart;
     }
