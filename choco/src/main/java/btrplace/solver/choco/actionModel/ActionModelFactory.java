@@ -112,6 +112,11 @@ public class ActionModelFactory {
         return nodeAMB.get(srcState);
     }
 
+    /**
+     * a new factory that embeds the default builders.
+     *
+     * @return a viable factory
+     */
     public static ActionModelFactory newBundle() {
         ActionModelFactory f = new ActionModelFactory();
         f.add(new BootVMModel.Builder());

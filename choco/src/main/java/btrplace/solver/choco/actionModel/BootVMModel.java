@@ -136,8 +136,14 @@ public class BootVMModel implements VMActionModel {
         return vm;
     }
 
+    /**
+     * The builder devoted to a ready->running transition.
+     */
     public static class Builder extends VMActionModelBuilder {
 
+        /**
+         * New builder
+         */
         public Builder() {
             super("boot", EnumSet.of(VMState.READY), VMState.RUNNING);
         }

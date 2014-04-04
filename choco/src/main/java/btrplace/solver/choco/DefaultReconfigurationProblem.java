@@ -120,13 +120,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * Make a new RP where the next state for every VM is indicated.
      * If the state for a VM is omitted, it is considered as unchanged
      *
-     * @param m                 the initial model
-     * @param dEval             to evaluate the duration of every action
-     * @param ready             the VMs that must be in the ready state
-     * @param running           the VMs that must be in the running state
-     * @param sleeping          the VMs that must be in the sleeping state
-     * @param label             {@code true} to label the variables (for debugging purpose)
-     * @param killed            the VMs that must be killed
+     * @param m         the initial model
+     * @param dEval     to evaluate the duration of every action
+     * @param ready     the VMs that must be in the ready state
+     * @param running   the VMs that must be in the running state
+     * @param sleeping  the VMs that must be in the sleeping state
+     * @param label     {@code true} to label the variables (for debugging purpose)
+     * @param killed    the VMs that must be killed
      * @param preRooted the VMs that can be managed by the solver when they are already running and they must keep running
      * @throws SolverException if an error occurred
      * @see DefaultReconfigurationProblemBuilder to ease the instantiation process
@@ -217,9 +217,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         int nbIntVars = solver.retrieveIntVars().length;
         int nbCstrs = solver.getNbCstrs();
-
-
         getLogger().debug("{} constraints; {} integers", nbCstrs, nbIntVars);
+
+
         if (solvingPolicy == ResolutionPolicy.SATISFACTION) {
             solver.findSolution();
         } else {
@@ -432,10 +432,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             List<VMActionModelBuilder> am = amFactory.getBuilder(curState, nextState);
             if (am.isEmpty()) {
                 throw new SolverException(model, "No model available for VM transition " + curState + " -> " + nextState);
-                }
+            }
             if (am.size() > 1) {
                 throw new SolverException(model, "Multiple transition are possible for VM " + vmId + "(" + curState + "->" + nextState + "):\n" + am);
-                }
+            }
             vmActions[i] = am.get(0).build(this, vmId);
             if (vmActions[i].isManaged()) {
                 manageable.add(vmId);

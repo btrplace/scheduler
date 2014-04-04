@@ -127,8 +127,14 @@ public class ShutdownVMModel implements VMActionModel {
         return state;
     }
 
+    /**
+     * The builder devoted to a running->ready transition.
+     */
     public static class Builder extends VMActionModelBuilder {
 
+        /**
+         * New builder
+         */
         public Builder() {
             super("shutdown", VMState.RUNNING, VMState.READY);
         }

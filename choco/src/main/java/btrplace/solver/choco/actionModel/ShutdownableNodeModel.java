@@ -192,8 +192,12 @@ public class ShutdownableNodeModel implements NodeActionModel {
         return hostingEnd;
     }
 
+    /**
+     * The builder devoted to a online->(online|offline) transition.
+     */
     public static class Builder extends NodeActionModelBuilder {
 
+        /** New builder */
         public Builder() {
             super("shutdownable", NodeState.ONLINE);
         }

@@ -292,8 +292,14 @@ public class RelocatableVMModel implements KeepRunningVMModel {
         return "(migration || re-instantiation)";
     }
 
+    /**
+     * The builder devoted to a running->running transition.
+     */
     public static class Builder extends VMActionModelBuilder {
 
+        /**
+         * New builder
+         */
         public Builder() {
             super("relocatable", VMState.RUNNING, VMState.RUNNING);
         }

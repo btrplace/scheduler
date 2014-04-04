@@ -214,6 +214,20 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     }
 
     /**
+     * Check if some keys are present.
+     * @param o the object to parse
+     * @param keys the keys to check
+     * @throws JSONConverterException when at least a key is missing
+     */
+    public static void checkKeys(JSONObject o, String... keys) throws JSONConverterException {
+        for (String k : keys) {
+            if (!o.containsKey(k)) {
+                throw new JSONConverterException("Missing key '" + k + "'");
+            }
+        }
+    }
+
+    /**
      * Read an expected node.
      *
      * @param o  the object to parse

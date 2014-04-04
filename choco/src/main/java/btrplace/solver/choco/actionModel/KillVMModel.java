@@ -136,8 +136,14 @@ public class KillVMModel implements VMActionModel {
         return state;
     }
 
+    /**
+     * The builder devoted to a (init|ready|running|sleep)->killed transition.
+     */
     public static class Builder extends VMActionModelBuilder {
 
+        /**
+         * New builder
+         */
         public Builder() {
             super("kill", EnumSet.of(VMState.INIT, VMState.READY, VMState.RUNNING, VMState.SLEEPING), VMState.KILLED);
         }

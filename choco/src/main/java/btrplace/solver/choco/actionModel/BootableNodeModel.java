@@ -189,8 +189,12 @@ public class BootableNodeModel implements NodeActionModel {
         return hostingEnd;
     }
 
+    /**
+     * The builder devoted to a offline->(online|offline) transition.
+     */
     public static class Builder extends NodeActionModelBuilder {
 
+        /** New builder. */
         public Builder() {
             super("bootable", NodeState.OFFLINE);
         }

@@ -37,8 +37,9 @@ import java.util.Set;
  * <ul>
  * <li>Variables are not labelled to save memory</li>
  * <li>All the VMs are manageable</li>
- * <li>The default {@link btrplace.solver.choco.durationEvaluator.DurationEvaluators} is used</li>
- * <li>The default {@link btrplace.solver.choco.view.ModelViewMapper} is used</li>
+ * <li>Default DurationEvaluators: {@link btrplace.solver.choco.durationEvaluator.DurationEvaluators#newBundle()}</li>
+ * <li>Default ViewMapper: {@link btrplace.solver.choco.view.ModelViewMapper#newBundle()}</li>
+ * <li>Default ActionModelFactory: {@link btrplace.solver.choco.actionModel.ActionModelFactory#newBundle()}</li>
  * <li>The state of the VMs is unchanged</li>
  * </ul>
  *
@@ -101,6 +102,12 @@ public class DefaultReconfigurationProblemBuilder {
         return this;
     }
 
+    /**
+     * Provide a dedicated {@link btrplace.solver.choco.actionModel.ActionModelFactory}.
+     *
+     * @param a the factory to use
+     * @return the current builder
+     */
     public DefaultReconfigurationProblemBuilder setActionModelFactory(ActionModelFactory a) {
         amf = a;
         return this;

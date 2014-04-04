@@ -136,8 +136,14 @@ public class ResumeVMModel implements VMActionModel {
         return state;
     }
 
+    /**
+     * The builder devoted to a sleeping->running transition.
+     */
     public static class Builder extends VMActionModelBuilder {
 
+        /**
+         * New builder
+         */
         public Builder() {
             super("resume", VMState.SLEEPING, VMState.RUNNING);
         }

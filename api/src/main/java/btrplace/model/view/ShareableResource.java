@@ -275,21 +275,9 @@ public class ShareableResource implements ModelView, Cloneable {
 
         ShareableResource that = (ShareableResource) o;
 
-        if (!that.getDefinedVMs().equals(vmsConsumption.keySet()) ||
-                !that.getDefinedNodes().equals(nodesCapacity.keySet())) {
+        if (!this.vmsConsumption.equals(that.vmsConsumption) ||
+                !this.nodesCapacity.equals(that.nodesCapacity)) {
             return false;
-        }
-
-        for (VM k : vmsConsumption.keySet()) {
-            if (!vmsConsumption.get(k).equals(that.getConsumption(k))) {
-                return false;
-            }
-        }
-
-        for (Node k : nodesCapacity.keySet()) {
-            if (!nodesCapacity.get(k).equals(that.getCapacity(k))) {
-                return false;
-            }
         }
         return rcId.equals(that.getResourceIdentifier()) && getDefaultCapacity() == that.getDefaultCapacity()
                 && getDefaultConsumption() == that.getDefaultConsumption();

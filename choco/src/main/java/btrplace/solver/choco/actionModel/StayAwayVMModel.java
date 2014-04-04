@@ -96,8 +96,14 @@ public class StayAwayVMModel implements VMActionModel {
         return zero;
     }
 
+    /**
+     * The builder devoted to a ready->ready transition.
+     */
     public static class BuilderReady extends VMActionModelBuilder {
 
+        /**
+         * New builder
+         */
         public BuilderReady() {
             super("stayReady", VMState.READY, VMState.READY);
         }
@@ -108,8 +114,14 @@ public class StayAwayVMModel implements VMActionModel {
         }
     }
 
+    /**
+     * The builder devoted to a sleeping->sleeping transition.
+     */
     public static class BuilderSleeping extends VMActionModelBuilder {
 
+        /**
+         * New builder
+         */
         public BuilderSleeping() {
             super("staySleeping", VMState.SLEEPING, VMState.SLEEPING);
         }

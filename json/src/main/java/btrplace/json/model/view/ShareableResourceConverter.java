@@ -80,10 +80,8 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
 
     @Override
     public ShareableResource fromJSON(JSONObject o) throws JSONConverterException {
-        if (!o.containsKey("id") || !o.containsKey("vms") || !o.containsKey("nodes")
-                || !o.containsKey("rcId") || !o.containsKey(DEFAULT_CONSUMPTION) || !o.containsKey(DEFAULT_CAPACITY)) {
-            return null;
-        }
+        checkKeys(o, "id", "vms", "nodes", "rcId", DEFAULT_CAPACITY, DEFAULT_CONSUMPTION);
+
         String id = o.get("id").toString();
         if (!id.equals(getJSONId())) {
             return null;

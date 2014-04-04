@@ -58,9 +58,8 @@ public class NamingServiceConverter extends ModelViewConverter<NamingService> {
 
     @Override
     public NamingService fromJSON(JSONObject o) throws JSONConverterException {
-        if (!o.containsKey("id") || !o.containsKey("type") || !o.containsKey("map")) {
-            return null;
-        }
+        checkKeys(o, "id", "type", "map");
+
         String id = o.get("id").toString();
         if (!id.equals(getJSONId())) {
             return null;

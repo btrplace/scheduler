@@ -147,8 +147,14 @@ public class ForgeVMModel implements VMActionModel {
         return template;
     }
 
+    /**
+     * The builder devoted to a init->ready transition.
+     */
     public static class Builder extends VMActionModelBuilder {
 
+        /**
+         * New builder
+         */
         public Builder() {
             super("forge", VMState.INIT, VMState.READY);
         }

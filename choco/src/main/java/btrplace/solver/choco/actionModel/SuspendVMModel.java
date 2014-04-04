@@ -126,8 +126,14 @@ public class SuspendVMModel implements VMActionModel {
         return vm;
     }
 
+    /**
+     * The builder devoted to a running->sleeping transition.
+     */
     public static class Builder extends VMActionModelBuilder {
 
+        /**
+         * New builder
+         */
         public Builder() {
             super("suspend", VMState.RUNNING, VMState.SLEEPING);
         }

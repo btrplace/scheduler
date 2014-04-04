@@ -48,7 +48,6 @@ public class AmongConverter extends ConstraintConverter<Among> {
     @Override
     public Among fromJSON(JSONObject o) throws JSONConverterException {
         checkId(o);
-
         Set<Collection<Node>> nodes = new HashSet<>();
         Object x = o.get("parts");
         if (!(x instanceof JSONArray)) {
