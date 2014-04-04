@@ -19,6 +19,7 @@ package btrplace.solver.choco.actionModel;
 
 import btrplace.model.Node;
 import btrplace.model.VM;
+import btrplace.model.VMState;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootVM;
 import btrplace.solver.SolverException;
@@ -30,6 +31,8 @@ import solver.constraints.IntConstraintFactory;
 import solver.variables.BoolVar;
 import solver.variables.IntVar;
 import solver.variables.VariableFactory;
+
+import java.util.EnumSet;
 
 
 /**
@@ -133,5 +136,15 @@ public class BootVMModel implements VMActionModel {
         v.visit(this);
     }
 
+    public static class Builder extends VMActionModelBuilder {
 
+        public Builder() {
+            super("boot", EnumSet.of(VMState.READY), VMState.RUNNING);
+        }
+
+        @Override
+        public VMActionModel build(ReconfigurationProblem r, VM v) throws SolverException {
+            return new BootVMModel(r, v);
+        }
+    }
 }

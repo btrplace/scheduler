@@ -42,7 +42,7 @@ public class Decommissionning implements Example {
     public boolean run() {
         int ratio = 1;
         int nbPCPUs = 4;
-        int nbNodes = 3;
+        int nbNodes = 2;
 
         //The current DC
         Model mo = new DefaultModel();
@@ -62,7 +62,7 @@ public class Decommissionning implements Example {
         mo.attach(rc);
 
         //The new DC
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < nbNodes; i++) {
             Node n = mo.newNode();
             mo.getMapping().addOfflineNode(n);
             rc.setCapacity(n, 10);
@@ -70,7 +70,7 @@ public class Decommissionning implements Example {
 
         List<SatConstraint> cstrs = new ArrayList<>();
         cstrs.addAll(Offline.newOffline(mo.getMapping().getOnlineNodes()));
-        MaxOnline m = new MaxOnline(mo.getMapping().getAllNodes(), nbNodes + 1);
+        MaxOnline m = new MaxOnline(mo.getMapping().getAllNodes(), nbNodes + 1, true);
         cstrs.add(m);
 
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();

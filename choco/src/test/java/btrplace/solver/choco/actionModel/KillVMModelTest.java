@@ -36,11 +36,11 @@ import java.util.Set;
 
 
 /**
- * Unit tests for {@link KillVMActionModel}.
+ * Unit tests for {@link KillVMModel}.
  *
  * @author Fabien Hermenier
  */
-public class KillVMActionModelTest {
+public class KillVMModelTest {
 
     /**
      * Test the action model with different action models.
@@ -74,7 +74,7 @@ public class KillVMActionModelTest {
         rp.getNodeAction(n1).getState().instantiateTo(rp.getVM(vm1), Cause.Null);
         //Common stuff
         for (VM vm : map.getAllVMs()) {
-            KillVMActionModel m = (KillVMActionModel) rp.getVMAction(vm);
+            KillVMModel m = (KillVMModel) rp.getVMAction(vm);
             Assert.assertEquals(vm, m.getVM());
             Assert.assertTrue(m.getState().instantiatedTo(0));
             Assert.assertNull(m.getDSlice());

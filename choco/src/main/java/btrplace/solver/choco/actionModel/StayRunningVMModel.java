@@ -18,6 +18,7 @@
 package btrplace.solver.choco.actionModel;
 
 import btrplace.model.VM;
+import btrplace.model.VMState;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
@@ -116,5 +117,17 @@ public class StayRunningVMModel implements KeepRunningVMModel {
     @Override
     public BoolVar isStaying() {
         return stay;
+    }
+
+    public static class Builder extends VMActionModelBuilder {
+
+        public Builder() {
+            super("stayRunningOn", VMState.RUNNING, VMState.RUNNING);
+        }
+
+        @Override
+        public VMActionModel build(ReconfigurationProblem r, VM v) throws SolverException {
+            return new StayRunningVMModel(r, v);
+        }
     }
 }

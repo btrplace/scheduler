@@ -61,7 +61,7 @@ public class CPowerView implements ChocoModelView {
             NodeActionModel na = rp.getNodeAction(n);
             if (na instanceof ShutdownableNodeModel) {
                 powerStarts.put(rp.getNode(n), rp.getStart());
-                IntVar powerEnd = rp.makeUnboundedDuration("NodeAction(", n, ").Pe");
+                IntVar powerEnd = rp.makeUnboundedDuration("NodeActionType(", n, ").Pe");
                 VF.task(na.getHostingEnd(), na.getDuration(), powerEnd);
                 powerEnds.put(rp.getNode(n), powerEnd);
             } else if (na instanceof BootableNodeModel) {

@@ -18,6 +18,7 @@
 package btrplace.solver.choco.actionModel;
 
 import btrplace.model.Node;
+import btrplace.model.NodeState;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.SolverException;
@@ -195,4 +196,17 @@ public class ShutdownableNodeModel implements NodeActionModel {
     public IntVar getHostingEnd() {
         return hostingEnd;
     }
+
+    public static class Builder extends NodeActionModelBuilder {
+
+        public Builder() {
+            super("shutdownable", NodeState.ONLINE);
+        }
+
+        @Override
+        public NodeActionModel build(ReconfigurationProblem r, Node n) throws SolverException {
+            return new ShutdownableNodeModel(r, n);
+        }
+    }
+
 }

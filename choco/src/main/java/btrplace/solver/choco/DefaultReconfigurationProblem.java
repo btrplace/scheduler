@@ -18,10 +18,7 @@
 
 package btrplace.solver.choco;
 
-import btrplace.model.Mapping;
-import btrplace.model.Model;
-import btrplace.model.Node;
-import btrplace.model.VM;
+import btrplace.model.*;
 import btrplace.model.view.ModelView;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
@@ -353,6 +350,20 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         bpBuilder.add("vmsOnNodes", vmsCountOnNodes, usages, ds);
     }
 
+    @Override
+    public VMState getNextState(VM v) {
+        if (running.contains(v)) {
+            return VMState.RUNNING;
+        } else if (ready.contains(v)) {
+            return VMState.READY;
+        } else if (sleeping.contains(v)) {
+            return VMState.SLEEPING;
+        } else if (killed.contains(v)) {
+            return VMState.KILLED;
+        }
+        return null;
+    }
+
     private void fillElements() {
 
         Set<VM> allVMs = new HashSet<>();
@@ -438,7 +449,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 if (vmActions[i] != null) {
                     throw new SolverException(model, "Next state for VM '" + vmId + "' is ambiguous");
                 } else if (map.contains(vmId)) {
-                    vmActions[i] = new KillVMActionModel(this, vmId);
+                    vmActions[i] = new KillVMModel(this, vmId);
                     manageable.add(vmId);
                 } else {
                     throw new SolverException(model, "Unable to kill VM '" + vmId + "': unknown");

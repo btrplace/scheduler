@@ -20,6 +20,7 @@ package btrplace.solver.choco.actionModel;
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
+import btrplace.model.VMState;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.*;
 import btrplace.solver.SolverException;
@@ -261,5 +262,17 @@ public class RelocatableVMModel implements KeepRunningVMModel {
             return "re-instantiation";
         }
         return "(migration || re-instantiation)";
+    }
+
+    public static class Builder extends VMActionModelBuilder {
+
+        public Builder() {
+            super("relocatable", VMState.RUNNING, VMState.RUNNING);
+        }
+
+        @Override
+        public VMActionModel build(ReconfigurationProblem r, VM v) throws SolverException {
+            return new RelocatableVMModel(r, v);
+        }
     }
 }

@@ -19,6 +19,7 @@ package btrplace.solver.choco.actionModel;
 
 import btrplace.model.Node;
 import btrplace.model.VM;
+import btrplace.model.VMState;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ResumeVM;
 import btrplace.solver.SolverException;
@@ -135,4 +136,15 @@ public class ResumeVMModel implements VMActionModel {
         v.visit(this);
     }
 
+    public static class Builder extends VMActionModelBuilder {
+
+        public Builder() {
+            super("resume", VMState.SLEEPING, VMState.RUNNING);
+        }
+
+        @Override
+        public VMActionModel build(ReconfigurationProblem r, VM v) throws SolverException {
+            return new ResumeVMModel(r, v);
+        }
+    }
 }

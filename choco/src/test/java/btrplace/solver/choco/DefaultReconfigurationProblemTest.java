@@ -421,7 +421,7 @@ public class DefaultReconfigurationProblemTest {
                         m.getAllVMs()).build();
 
         for (ActionModel a : rp.getVMActions()) {
-            Assert.assertEquals(a.getClass(), KillVMActionModel.class);
+            Assert.assertEquals(a.getClass(), KillVMModel.class);
         }
     }
 

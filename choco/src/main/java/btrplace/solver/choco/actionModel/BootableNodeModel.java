@@ -18,6 +18,7 @@
 package btrplace.solver.choco.actionModel;
 
 import btrplace.model.Node;
+import btrplace.model.NodeState;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.BootNode;
 import btrplace.solver.SolverException;
@@ -191,5 +192,17 @@ public class BootableNodeModel implements NodeActionModel {
     @Override
     public IntVar getHostingEnd() {
         return hostingEnd;
+    }
+
+    public static class Builder extends NodeActionModelBuilder {
+
+        public Builder() {
+            super("bootable", NodeState.OFFLINE);
+        }
+
+        @Override
+        public NodeActionModel build(ReconfigurationProblem r, Node n) throws SolverException {
+            return new BootableNodeModel(r, n);
+        }
     }
 }

@@ -18,6 +18,7 @@
 package btrplace.solver.choco.actionModel;
 
 import btrplace.model.VM;
+import btrplace.model.VMState;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ForgeVM;
 import btrplace.solver.SolverException;
@@ -143,5 +144,17 @@ public class ForgeVMModel implements VMActionModel {
      */
     public String getTemplate() {
         return template;
+    }
+
+    public static class Builder extends VMActionModelBuilder {
+
+        public Builder() {
+            super("forge", VMState.INIT, VMState.READY);
+        }
+
+        @Override
+        public VMActionModel build(ReconfigurationProblem r, VM v) throws SolverException {
+            return new ForgeVMModel(r, v);
+        }
     }
 }

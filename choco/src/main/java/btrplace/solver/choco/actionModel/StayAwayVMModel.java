@@ -18,7 +18,9 @@
 package btrplace.solver.choco.actionModel;
 
 import btrplace.model.VM;
+import btrplace.model.VMState;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import solver.variables.BoolVar;
@@ -94,4 +96,15 @@ public class StayAwayVMModel implements VMActionModel {
         v.visit(this);
     }
 
+    public static class Builder extends VMActionModelBuilder {
+
+        public Builder() {
+            super("stayAway", VMState.RUNNING, VMState.RUNNING);
+        }
+
+        @Override
+        public VMActionModel build(ReconfigurationProblem r, VM v) throws SolverException {
+            return new RelocatableVMModel(r, v);
+        }
+    }
 }

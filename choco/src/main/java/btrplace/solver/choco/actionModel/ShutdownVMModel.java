@@ -18,6 +18,7 @@
 package btrplace.solver.choco.actionModel;
 
 import btrplace.model.VM;
+import btrplace.model.VMState;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.ShutdownVM;
 import btrplace.solver.SolverException;
@@ -125,4 +126,15 @@ public class ShutdownVMModel implements VMActionModel {
         v.visit(this);
     }
 
+    public static class Builder extends VMActionModelBuilder {
+
+        public Builder() {
+            super("shutdown", VMState.RUNNING, VMState.READY);
+        }
+
+        @Override
+        public VMActionModel build(ReconfigurationProblem r, VM v) throws SolverException {
+            return new ShutdownVMModel(r, v);
+        }
+    }
 }

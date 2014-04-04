@@ -20,6 +20,7 @@ package btrplace.solver.choco.actionModel;
 import btrplace.model.Mapping;
 import btrplace.model.Node;
 import btrplace.model.VM;
+import btrplace.model.VMState;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.KillVM;
 import btrplace.solver.SolverException;
@@ -29,6 +30,8 @@ import btrplace.solver.choco.SliceBuilder;
 import solver.variables.BoolVar;
 import solver.variables.IntVar;
 import solver.variables.VariableFactory;
+
+import java.util.EnumSet;
 
 
 /**
@@ -45,7 +48,7 @@ import solver.variables.VariableFactory;
  *
  * @author Fabien Hermenier
  */
-public class KillVMActionModel implements VMActionModel {
+public class KillVMModel implements VMActionModel {
 
     private VM vm;
 
@@ -66,7 +69,7 @@ public class KillVMActionModel implements VMActionModel {
      * @param e  the VM managed by the action
      * @throws SolverException if an error occurred
      */
-    public KillVMActionModel(ReconfigurationProblem rp, VM e) throws SolverException {
+    public KillVMModel(ReconfigurationProblem rp, VM e) throws SolverException {
         vm = e;
         Mapping map = rp.getSourceModel().getMapping();
         node = map.getVMLocation(vm);
@@ -133,5 +136,17 @@ public class KillVMActionModel implements VMActionModel {
     @Override
     public BoolVar getState() {
         return state;
+    }
+
+    public static class Builder extends VMActionModelBuilder {
+
+        public Builder() {
+            super("kill", EnumSet.of(VMState.INIT, VMState.READY, VMState.RUNNING, VMState.SLEEPING), VMState.KILLED);
+        }
+
+        @Override
+        public VMActionModel build(ReconfigurationProblem r, VM v) throws SolverException {
+            return new KillVMModel(r, v);
+        }
     }
 }

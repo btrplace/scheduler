@@ -20,6 +20,7 @@ package btrplace.solver.choco;
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
+import btrplace.model.VMState;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.actionModel.NodeActionModel;
@@ -105,6 +106,14 @@ public interface ReconfigurationProblem {
      * @return a set, may be empty
      */
     Set<VM> getFutureKilledVMs();
+
+    /**
+     * Get the next state for a given VM.
+     *
+     * @param v the VM
+     * @return the state if the VM is known, {@code null} otherwise
+     */
+    VMState getNextState(VM v);
 
     /**
      * Get the starting moment of the reconfiguration.
