@@ -21,6 +21,7 @@ import btrplace.solver.choco.Slice;
 import solver.variables.IntVar;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -55,7 +56,7 @@ public final class ActionModelUtils {
      * @param l the models to browse
      * @return a list of d-slices that may be empty
      */
-    public static List<Slice> getDSlices(List<VMActionModel> l) {
+    public static List<Slice> getDSlices(Collection<VMActionModel> l) {
         return getDSlices(l.toArray(new VMActionModel[l.size()]));
     }
 
@@ -81,7 +82,7 @@ public final class ActionModelUtils {
      * @param l the models to browse
      * @return a list of c-slices that may be empty
      */
-    public static List<Slice> getCSlices(List<VMActionModel> l) {
+    public static List<Slice> getCSlices(Collection<VMActionModel> l) {
         return getCSlices(l.toArray(new VMActionModel[l.size()]));
     }
 

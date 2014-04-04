@@ -424,8 +424,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                     case READY:
                         ready.add(vmId);
                         break;
-                    default:
-                        throw new SolverException(model, "Unable to infer the next state of VM '" + vmId + "'");
                 }
             }
 
