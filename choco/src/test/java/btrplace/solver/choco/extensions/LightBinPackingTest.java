@@ -67,7 +67,7 @@ public class LightBinPackingTest {
             sizes[i] = height[i];
             bins[i] = VF.enumerated("b" + i, 0, nBins, s);
         }
-        Constraint cPack = new LightBinPacking(new String[]{"foo"}, s.getEnvironment(), new IntVar[][]{loads}, new int[][]{sizes}, bins);
+        Constraint cPack = new LightBinPacking(new String[]{"foo"}, new IntVar[][]{loads}, new int[][]{sizes}, bins);
         s.post(cPack);
         //s.getConfiguration().putFalse(Configuration.STOP_AT_FIRST_SOLUTION);
     }
@@ -99,7 +99,7 @@ public class LightBinPackingTest {
             sizes[i] = rnd.nextInt(4);
             bins[i] = VF.enumerated("b" + i, 0, nBins, s);
         }
-        Constraint cPack = new LightBinPacking(new String[]{"foo"}, s.getEnvironment(), new IntVar[][]{loads}, new int[][]{sizes}, bins);
+        Constraint cPack = new LightBinPacking(new String[]{"foo"}, new IntVar[][]{loads}, new int[][]{sizes}, bins);
         s.post(cPack);
 
         //s.getConfiguration().putTrue(Configuration.STOP_AT_FIRST_SOLUTION);

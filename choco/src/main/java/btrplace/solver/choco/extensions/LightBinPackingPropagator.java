@@ -18,7 +18,6 @@
 package btrplace.solver.choco.extensions;
 
 
-import memory.IEnvironment;
 import memory.IStateBitSet;
 import memory.IStateBool;
 import memory.IStateInt;
@@ -41,40 +40,29 @@ import java.util.Arrays;
  */
 public class LightBinPackingPropagator extends Propagator<IntVar> {
 
-    private boolean first = true;
-    /**
-     * The solver environment.
-     */
-    private IEnvironment env;
-
     /**
      * The number of bins.
      */
     private final int nbBins;
-
     private final int nbDims;
-
     /**
      * The bin assigned to each item.
      */
     private final IntVar[] bins;
-
     /**
      * The constant size of each item in decreasing order.
      * [nbDims][nbItems]
      */
     private final int[][] iSizes;
-
-    /**
-     * The sum of the item sizes per dimension. [nbItems]
-     */
-    private long[] sumISizes;
-
     /**
      * The load of each bin per dimension. [nbDims][nbBins]
      */
     private final IntVar[][] loads;
-
+    private boolean first = true;
+    /**
+     * The sum of the item sizes per dimension. [nbItems]
+     */
+    private long[] sumISizes;
     /**
      * The total size of the required + candidate items for each bin. [nbDims][nbBins]
      */
@@ -108,15 +96,13 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
      * constructor of the FastBinPacking global constraint
      *
      * @param labels      the label describing each dimension
-     * @param environment the solver environment
      * @param l           array of nbBins variables, each figuring the total size of the items assigned to it, usually initialized to [0, capacity]
      * @param s           array of nbItems variables, each figuring the item size. Only the LB will be considered!
      * @param b           array of nbItems variables, each figuring the possible bins an item can be assigned to, usually initialized to [0, nbBins-1]
      */
-    public LightBinPackingPropagator(String[] labels, IEnvironment environment, IntVar[][] l, int[][] s, IntVar[] b) {
+    public LightBinPackingPropagator(String[] labels, IntVar[][] l, int[][] s, IntVar[] b) {
         super(ArrayUtils.append(b, ArrayUtils.flatten(l)), PropagatorPriority.VERY_SLOW, true);
         this.name = labels;
-        this.env = environment;
         this.loads = l;
         this.nbBins = l[0].length;
         this.nbDims = l.length;
@@ -172,7 +158,7 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
         }
         first = false;
         sumISizes = new long[nbDims];
-        notEntailedDims = env.makeBitSet(nbDims);
+        notEntailedDims = environment.makeBitSet(nbDims);
         notEntailedDims.clear(0, 3);
 
         computeSums();
@@ -212,8 +198,8 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
         int[] slu = new int[nbDims];
         for (int b = 0; b < nbBins; b++) {
             for (int d = 0; d < nbDims; d++) {
-                bRLoads[d][b] = env.makeInt(rLoads[d][b]);
-                bTLoads[d][b] = env.makeInt(rLoads[d][b] + cLoads[d][b]);
+                bRLoads[d][b] = environment.makeInt(rLoads[d][b]);
+                bTLoads[d][b] = environment.makeInt(rLoads[d][b] + cLoads[d][b]);
                 loads[d][b].updateLowerBound(rLoads[d][b], aCause);
                 loads[d][b].updateUpperBound(rLoads[d][b] + cLoads[d][b], aCause);
                 slb[d] += loads[d][b].getLB();
@@ -224,11 +210,11 @@ public class LightBinPackingPropagator extends Propagator<IntVar> {
         sumLoadInf = new IStateInt[nbDims];
         sumLoadSup = new IStateInt[nbDims];
         for (int d = 0; d < nbDims; d++) {
-            this.sumLoadInf[d] = env.makeInt(slb[d]);
-            this.sumLoadSup[d] = env.makeInt(slu[d]);
+            this.sumLoadInf[d] = environment.makeInt(slb[d]);
+            this.sumLoadSup[d] = environment.makeInt(slu[d]);
         }
 
-        this.loadsHaveChanged = env.makeBool(false);
+        this.loadsHaveChanged = environment.makeBool(false);
 
         detectEntailedDimensions(nbUnassigned);
 
