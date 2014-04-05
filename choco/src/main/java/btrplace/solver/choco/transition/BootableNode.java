@@ -34,7 +34,7 @@ import solver.variables.VariableFactory;
 /**
  * Model a transition that allows an offline node to be booted if necessary.
  * An estimation of the action duration must be provided through a
- * {@link btrplace.solver.choco.durationEvaluator.ActionDurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.duration.ActionDurationEvaluator} accessible from
  * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code BootNode.class}
  * <p/>
  * The action is modeled as follow:

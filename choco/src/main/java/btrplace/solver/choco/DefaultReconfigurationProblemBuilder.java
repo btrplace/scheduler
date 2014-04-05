@@ -22,7 +22,7 @@ import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
+import btrplace.solver.choco.duration.DurationEvaluators;
 import btrplace.solver.choco.transition.TransitionFactory;
 import btrplace.solver.choco.view.ModelViewMapper;
 
@@ -37,7 +37,7 @@ import java.util.Set;
  * <ul>
  * <li>Variables are not labelled to save memory</li>
  * <li>All the VMs are manageable</li>
- * <li>Default DurationEvaluators: {@link btrplace.solver.choco.durationEvaluator.DurationEvaluators#newBundle()}</li>
+ * <li>Default DurationEvaluators: {@link btrplace.solver.choco.duration.DurationEvaluators#newBundle()}</li>
  * <li>Default ViewMapper: {@link btrplace.solver.choco.view.ModelViewMapper#newBundle()}</li>
  * <li>Default TransitionFactory: {@link btrplace.solver.choco.transition.TransitionFactory#newBundle()}</li>
  * <li>The state of the VMs is unchanged</li>

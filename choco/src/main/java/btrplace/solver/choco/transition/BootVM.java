@@ -37,7 +37,7 @@ import java.util.EnumSet;
 /**
  * Model a transition that allows a ready VP to be booted on a node.
  * An estimation of the action duration must be provided through a
- * {@link btrplace.solver.choco.durationEvaluator.ActionDurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.duration.ActionDurationEvaluator} accessible from
  * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code BootVM.class}
  * <p/>
  * If the reconfiguration problem has a solution, a {@link btrplace.plan.event.BootVM} action

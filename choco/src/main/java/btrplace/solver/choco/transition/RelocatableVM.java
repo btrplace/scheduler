@@ -29,7 +29,7 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.SliceBuilder;
-import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
+import btrplace.solver.choco.duration.DurationEvaluators;
 import btrplace.solver.choco.extensions.FastIFFEq;
 import solver.Solver;
 import solver.constraints.Constraint;

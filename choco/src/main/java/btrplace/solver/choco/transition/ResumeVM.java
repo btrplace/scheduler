@@ -35,7 +35,7 @@ import solver.variables.VariableFactory;
 /**
  * Model an action that resume a sleeping VM.
  * An estimation of the action duration must be provided through a
- * {@link btrplace.solver.choco.durationEvaluator.ActionDurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.duration.ActionDurationEvaluator} accessible from
  * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code ResumeVM.class}
  * <p/>
  * If the reconfiguration problem has a solution, a {@link btrplace.plan.event.ResumeVM} action

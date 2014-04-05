@@ -38,7 +38,7 @@ import solver.variables.VariableFactory;
  * {@code template} that indicate the template identifier to use to build the VM image.
  * <p/>
  * An estimation of the action duration must be provided through a
- * {@link btrplace.solver.choco.durationEvaluator.ActionDurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.duration.ActionDurationEvaluator} accessible from
  * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code ForgeVM.class}
  * <p/>
  * If the reconfiguration problem has a solution, a {@link btrplace.plan.event.ForgeVM} action

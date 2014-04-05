@@ -18,7 +18,7 @@
 package btrplace.solver.choco;
 
 import btrplace.solver.choco.constraint.ConstraintMapper;
-import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
+import btrplace.solver.choco.duration.DurationEvaluators;
 import btrplace.solver.choco.transition.TransitionFactory;
 import btrplace.solver.choco.view.ModelViewMapper;
 

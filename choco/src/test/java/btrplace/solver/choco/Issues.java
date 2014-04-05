@@ -25,7 +25,7 @@ import btrplace.model.constraint.Spread;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.constraint.minMTTR.CMinMTTR;
+import btrplace.solver.choco.constraint.mttr.CMinMTTR;
 import btrplace.solver.choco.extensions.ChocoUtils;
 import btrplace.solver.choco.transition.NodeTransition;
 import btrplace.solver.choco.transition.VMTransition;

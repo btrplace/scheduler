@@ -35,7 +35,7 @@ import solver.variables.VariableFactory;
 /**
  * Model an action that allow a node to boot if necessary.
  * An estimation of the action duration must be provided through a
- * {@link btrplace.solver.choco.durationEvaluator.ActionDurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.duration.ActionDurationEvaluator} accessible from
  * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code ShutdownNode.class}
  * <p/>
  * The action is modeled as follow:

@@ -23,7 +23,7 @@ import btrplace.model.VM;
 import btrplace.model.VMState;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
+import btrplace.solver.choco.duration.DurationEvaluators;
 import btrplace.solver.choco.transition.NodeTransition;
 import btrplace.solver.choco.transition.VMTransition;
 import btrplace.solver.choco.view.ChocoModelView;

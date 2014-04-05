@@ -34,7 +34,7 @@ import solver.variables.VariableFactory;
 /**
  * Model an action where a running VM goes into the sleeping state through a {@link btrplace.plan.event.SuspendVM} action.
  * An estimation of the action duration must be provided through a
- * {@link btrplace.solver.choco.durationEvaluator.ActionDurationEvaluator} accessible from
+ * {@link btrplace.solver.choco.duration.ActionDurationEvaluator} accessible from
  * {@link btrplace.solver.choco.ReconfigurationProblem#getDurationEvaluators()} with the key {@code SuspendVM.class}
  * <p/>
  * If the reconfiguration problem has a solution, a {@link btrplace.plan.event.SuspendVM} action is inserted into the resulting

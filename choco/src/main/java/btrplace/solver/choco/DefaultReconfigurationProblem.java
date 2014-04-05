@@ -23,7 +23,7 @@ import btrplace.model.view.ModelView;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
+import btrplace.solver.choco.duration.DurationEvaluators;
 import btrplace.solver.choco.extensions.AliasedCumulatives;
 import btrplace.solver.choco.transition.*;
 import btrplace.solver.choco.view.ChocoModelView;

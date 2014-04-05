@@ -32,7 +32,7 @@ import java.util.Set;
  *
  * @author Fabien Hermenier
  */
-public class NamingService<E extends Element> implements ModelView {
+public final class NamingService<E extends Element> implements ModelView {
 
     private Map<String, E> resolve;
     private Map<E, String> rev;

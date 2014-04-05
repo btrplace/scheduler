@@ -4,7 +4,12 @@ Release notes
 ??????????????
 ----------------------
 - minor bug fixes
-- externalize the ActionModel so you can use your own now.
+- refactor choco.actionModel to choco.transition. Now xActionModel classes are xTransition classes.
+  The TransitionFactory allows to plug your own classes to model transitions.
+- some package where renamed to fit code conventions:
+    - btrplace.solver.choco.runner.staticPartitioning is now btrplace.solver.choco.runner.disjoint
+    - btrplace.solver.choco.constraint.minMTTR is now btrplace.solver.choco.constraint.mttr
+    - btrplace.solver.choco.durationEvaluation is now btrplace.solver.choco.duration
 
 0.36 - 28 Mar 2014
 ----------------------

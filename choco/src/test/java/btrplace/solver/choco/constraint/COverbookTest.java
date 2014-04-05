@@ -29,7 +29,7 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
 import btrplace.solver.choco.MappingFiller;
-import btrplace.solver.choco.durationEvaluator.LinearToAResourceActionDuration;
+import btrplace.solver.choco.duration.LinearToAResourceActionDuration;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import solver.exception.ContradictionException;

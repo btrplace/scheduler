@@ -25,7 +25,7 @@ import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.constraint.ConstraintMapper;
-import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
+import btrplace.solver.choco.duration.DurationEvaluators;
 import btrplace.solver.choco.runner.InstanceResult;
 import btrplace.solver.choco.runner.InstanceSolver;
 import btrplace.solver.choco.runner.SolvingStatistics;
