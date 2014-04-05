@@ -45,18 +45,13 @@ import solver.variables.VariableFactory;
  */
 public class ResumeVM implements VMTransition {
 
+    public static final String PREFIX = "resumeVM(";
     private VM vm;
-
     private ReconfigurationProblem rp;
-
     private IntVar start;
-
     private IntVar end;
-
     private IntVar duration;
-
     private Slice dSlice;
-
     private BoolVar state;
 
     /**
@@ -72,11 +67,11 @@ public class ResumeVM implements VMTransition {
 
         int d = p.getDurationEvaluators().evaluate(p.getSourceModel(), btrplace.plan.event.ResumeVM.class, e);
 
-        start = p.makeDuration(p.getEnd().getUB() - d, 0, "resumeVM(", e, ").start");
+        start = p.makeDuration(p.getEnd().getUB() - d, 0, PREFIX, e, ").start");
         end = VariableFactory.offset(start, d);
-        duration = p.makeDuration(d, d, "resumeVM(", e, ").duration");
-        dSlice = new SliceBuilder(p, e, "resumeVM(" + e + ").dSlice").setStart(start)
-                .setDuration(p.makeDuration(p.getEnd().getUB(), d, "resumeVM(", e, ").dSlice_duration"))
+        duration = p.makeDuration(d, d, PREFIX, e, ").duration");
+        dSlice = new SliceBuilder(p, e, PREFIX, e, ").dSlice").setStart(start)
+                .setDuration(p.makeDuration(p.getEnd().getUB(), d, PREFIX, e, ").dSlice_duration"))
                 .build();
 
         Solver s = p.getSolver();

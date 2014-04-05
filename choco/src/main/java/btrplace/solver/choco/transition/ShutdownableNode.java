@@ -78,18 +78,13 @@ import solver.variables.VariableFactory;
  */
 public class ShutdownableNode implements NodeTransition {
 
+    public static final String PREFIX = "shutdownableNode(";
     private Node node;
-
     private BoolVar isOnline, isOffline;
-
     private IntVar duration;
-
     private IntVar end;
-
     private IntVar hostingStart;
-
     private IntVar hostingEnd;
-
     private IntVar start;
 
     /**
@@ -108,7 +103,7 @@ public class ShutdownableNode implements NodeTransition {
             - If the node is hosting running VMs, it is necessarily online
             - If the node is offline, it is sure it cannot host any running VMs
         */
-        isOnline = VariableFactory.bool(rp.makeVarLabel("shutdownableNode(", e, ").online"), rp.getSolver());
+        isOnline = VariableFactory.bool(rp.makeVarLabel(PREFIX, e, ").online"), rp.getSolver());
         isOffline = VariableFactory.not(isOnline);
         s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNode(e)], 0));
 
@@ -117,15 +112,15 @@ public class ShutdownableNode implements NodeTransition {
         * D = St * d;
         */
         int d = rp.getDurationEvaluators().evaluate(rp.getSourceModel(), ShutdownNode.class, e);
-        duration = VariableFactory.enumerated(rp.makeVarLabel("shutdownableNode(", e, ").duration"), new int[]{0, d}, rp.getSolver());
+        duration = VariableFactory.enumerated(rp.makeVarLabel(PREFIX, e, ").duration"), new int[]{0, d}, rp.getSolver());
         s.post(new FastIFFEq(isOnline, duration, 0));
 
         //The moment of shutdown action consume
         /* As */
-        start = rp.makeUnboundedDuration("shutdownableNode(", e, ").start");
+        start = rp.makeUnboundedDuration(PREFIX, e, ").start");
         //The moment of shutdown action end
         /* Ae */
-        end = rp.makeUnboundedDuration("shutdownableNode(", e, ").end");
+        end = rp.makeUnboundedDuration(PREFIX, e, ").end");
 
         s.post(IntConstraintFactory.arithm(end, "<=", rp.getEnd()));
 
@@ -138,7 +133,7 @@ public class ShutdownableNode implements NodeTransition {
         //The node is already online, so it can host VMs at the beginning of the RP
         hostingStart = rp.getStart();
         //The moment the node can no longer host VMs varies depending on its next state
-        hostingEnd = rp.makeUnboundedDuration("shutdownableNode(", e, ").hostingEnd");
+        hostingEnd = rp.makeUnboundedDuration(PREFIX, e, ").hostingEnd");
         s.post(IntConstraintFactory.arithm(hostingEnd, "<=", rp.getEnd()));
 
         /*

@@ -77,18 +77,13 @@ import solver.variables.VariableFactory;
  */
 public class BootableNode implements NodeTransition {
 
+    public static final String PREFIX = "bootableNode(";
     private IntVar start;
-
     private IntVar end;
-
     private BoolVar isOnline;
-
     private IntVar hostingStart;
-
     private IntVar hostingEnd;
-
     private IntVar effectiveDuration;
-
     private Node node;
 
     /**
@@ -108,7 +103,7 @@ public class BootableNode implements NodeTransition {
             - If the node is hosting running VMs, it is necessarily online
             - If the node is offline, it is sure it cannot host any running VMs
         */
-        isOnline = VariableFactory.bool(rp.makeVarLabel("bootableNode(", nId, ").online"), s);
+        isOnline = VariableFactory.bool(rp.makeVarLabel(PREFIX, nId, ").online"), s);
         BoolVar isOffline = VariableFactory.not(isOnline);
         s.post(new FastImpliesEq(isOffline, rp.getNbRunningVMs()[rp.getNode(nId)], 0));
 
@@ -118,14 +113,14 @@ public class BootableNode implements NodeTransition {
         * D = St * d;
         */
         effectiveDuration = VariableFactory.enumerated(
-                rp.makeVarLabel("bootableNode(", nId, ").effectiveDuration")
+                rp.makeVarLabel(PREFIX, nId, ").effectiveDuration")
                 , new int[]{0, d}, s);
         s.post(IntConstraintFactory.times(isOnline, VariableFactory.fixed(d, s), effectiveDuration));
 
         /* As */
-        start = rp.makeUnboundedDuration("bootableNode(", nId, ").start");
+        start = rp.makeUnboundedDuration(PREFIX, nId, ").start");
         /* Ae */
-        end = rp.makeUnboundedDuration("bootableNode(", nId, ").end");
+        end = rp.makeUnboundedDuration(PREFIX, nId, ").end");
 
         s.post(IntConstraintFactory.arithm(start, "<=", rp.getEnd()));
 
@@ -136,7 +131,7 @@ public class BootableNode implements NodeTransition {
 
         /* Hs = Ae */
         hostingStart = end;
-        hostingEnd = rp.makeUnboundedDuration("bootableNode(", nId, ").hostingEnd");
+        hostingEnd = rp.makeUnboundedDuration(PREFIX, nId, ").hostingEnd");
         s.post(IntConstraintFactory.arithm(hostingEnd, "<=", rp.getEnd()));
 
         /*

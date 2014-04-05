@@ -61,22 +61,16 @@ import solver.variables.VariableFactory;
  */
 public class RelocatableVM implements KeepRunningVM {
 
-    private Slice cSlice, dSlice;
-
-    private ReconfigurationProblem rp;
-
+    public static final String PREFIX = "relocatable(";
+    public static final String PREFIX_STAY = "stayRunningOn(";
     private final VM vm;
-
+    private Slice cSlice, dSlice;
+    private ReconfigurationProblem rp;
     private BoolVar state;
-
     private IntVar duration, start, end;
-
     private BoolVar stay;
-
     private int reInstantiateDuration;
-
     private Node src;
-
     private boolean manageable = true;
     /**
      * The relocation method. 0 for migration, 1 for relocation.
@@ -112,13 +106,13 @@ public class RelocatableVM implements KeepRunningVM {
 
         Solver s = p.getSolver();
 
-        cSlice = new SliceBuilder(p, e, "relocatable(" + e + ").cSlice")
+        cSlice = new SliceBuilder(p, e, PREFIX, e, ").cSlice")
                 .setHoster(p.getNode(p.getSourceModel().getMapping().getVMLocation(e)))
-                .setEnd(p.makeUnboundedDuration("relocatable(" + e + ").cSlice_end"))
+                .setEnd(p.makeUnboundedDuration(PREFIX, e, ").cSlice_end"))
                 .build();
 
-        dSlice = new SliceBuilder(p, vm, "relocatable(" + vm + ").dSlice")
-                .setStart(p.makeUnboundedDuration("relocatable(", vm, ").dSlice_start"))
+        dSlice = new SliceBuilder(p, vm, PREFIX, vm, ").dSlice")
+                .setStart(p.makeUnboundedDuration(PREFIX, vm, ").dSlice_start"))
                 .build();
 
         start = dSlice.getStart();
@@ -151,13 +145,22 @@ public class RelocatableVM implements KeepRunningVM {
         }
     }
 
+    private static String prettyMethod(IntVar method) {
+        if (method.instantiatedTo(0)) {
+            return "migration";
+        } else if (method.instantiatedTo(1)) {
+            return "re-instantiation";
+        }
+        return "(migration || re-instantiation)";
+    }
+
     private void stayRunning() throws SolverException {
-        IntVar host = rp.makeCurrentHost(vm, "stayRunningVM(", vm, ").host");
-        cSlice = new SliceBuilder(rp, vm, "stayRunningVM(", vm.toString(), ").cSlice")
+        IntVar host = rp.makeCurrentHost(vm, PREFIX_STAY, vm, ").host");
+        cSlice = new SliceBuilder(rp, vm, PREFIX_STAY, vm.toString(), ").cSlice")
                 .setHoster(host)
-                .setEnd(rp.makeUnboundedDuration("stayRunningVM(", vm, ").cSlice_end"))
+                .setEnd(rp.makeUnboundedDuration(PREFIX_STAY, vm, ").cSlice_end"))
                 .build();
-        dSlice = new SliceBuilder(rp, vm, "stayRunningVM(", vm, ").dSlice")
+        dSlice = new SliceBuilder(rp, vm, PREFIX_STAY, vm, ").dSlice")
                 .setHoster(host)
                 .setStart(cSlice.getEnd())
                 .build();
@@ -176,13 +179,13 @@ public class RelocatableVM implements KeepRunningVM {
             int bootDuration = dev.evaluate(rp.getSourceModel(), btrplace.plan.event.BootVM.class, vm);
             int shutdownDuration = dev.evaluate(rp.getSourceModel(), btrplace.plan.event.ShutdownVM.class, vm);
             reInstantiateDuration = bootDuration + shutdownDuration;
-            duration = VariableFactory.enumerated(rp.makeVarLabel("relocatable(", vm, ").duration"),
+            duration = VariableFactory.enumerated(rp.makeVarLabel(PREFIX, vm, ").duration"),
                     new int[]{0, Math.min(migrateDuration, reInstantiateDuration),
                             Math.max(migrateDuration, reInstantiateDuration)}, s
             );
         } else {
             doReinstantiation = VariableFactory.zero(rp.getSolver());
-            duration = VariableFactory.enumerated(rp.makeVarLabel("relocatable(", vm, ").duration"), new int[]{0, migrateDuration}, s);
+            duration = VariableFactory.enumerated(rp.makeVarLabel(PREFIX, vm, ").duration"), new int[]{0, migrateDuration}, s);
         }
     }
 
@@ -283,15 +286,6 @@ public class RelocatableVM implements KeepRunningVM {
                 " ,vm=" + vm +
                 " ,from=" + src + "(" + rp.getNode(src) + ")" +
                 " ,to=" + dSlice.getHoster().toString() + ")";
-    }
-
-    private static String prettyMethod(IntVar method) {
-        if (method.instantiatedTo(0)) {
-            return "migration";
-        } else if (method.instantiatedTo(1)) {
-            return "re-instantiation";
-        }
-        return "(migration || re-instantiation)";
     }
 
     /**
