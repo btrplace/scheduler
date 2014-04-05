@@ -24,13 +24,13 @@ import btrplace.model.constraint.OptConstraint;
 import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.actionModel.ActionModelFactory;
 import btrplace.solver.choco.constraint.ConstraintMapper;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import btrplace.solver.choco.runner.InstanceResult;
 import btrplace.solver.choco.runner.InstanceSolver;
 import btrplace.solver.choco.runner.SolvingStatistics;
 import btrplace.solver.choco.runner.single.SingleRunner;
+import btrplace.solver.choco.transition.TransitionFactory;
 import btrplace.solver.choco.view.ModelViewMapper;
 
 import java.util.Collection;
@@ -182,12 +182,12 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     @Override
-    public void setActionModelFactory(ActionModelFactory amf) {
+    public void setActionModelFactory(TransitionFactory amf) {
         params.setActionModelFactory(amf);
     }
 
     @Override
-    public ActionModelFactory getActionModelFactory() {
+    public TransitionFactory getActionModelFactory() {
         return params.getActionModelFactory();
     }
 }

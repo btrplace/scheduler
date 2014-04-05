@@ -22,7 +22,7 @@ import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
-import btrplace.solver.choco.actionModel.VMActionModel;
+import btrplace.solver.choco.transition.VMTransition;
 import memory.IStateInt;
 import solver.search.strategy.selectors.VariableSelector;
 import solver.variables.IntVar;
@@ -73,7 +73,7 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
         this.obj = o;
         Mapping cfg = rp.getSourceModel().getMapping();
 
-        VMActionModel[] vmActions = rp.getVMActions();
+        VMTransition[] vmActions = rp.getVMActions();
 
         hosts = new IntVar[vmActions.length];
         starts = new IntVar[vmActions.length];
@@ -89,7 +89,7 @@ public class OnStableNodeFirst implements VariableSelector<IntVar> {
         }
 
         for (int i = 0; i < hosts.length; i++) {
-            VMActionModel action = vmActions[i];
+            VMTransition action = vmActions[i];
             Slice slice = action.getDSlice();
             if (slice != null) {
                 IntVar h = slice.getHoster();

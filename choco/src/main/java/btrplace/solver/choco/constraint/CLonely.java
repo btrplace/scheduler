@@ -24,9 +24,9 @@ import btrplace.model.VM;
 import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Lonely;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.extensions.Disjoint;
 import btrplace.solver.choco.extensions.Precedences;
+import btrplace.solver.choco.transition.VMTransition;
 import gnu.trove.list.array.TIntArrayList;
 import solver.Solver;
 import solver.variables.IntVar;
@@ -85,17 +85,17 @@ public class CLonely implements ChocoConstraint {
                 for (VM vm : map.getRunningVMs(n)) {
                     if (!vms.contains(vm)) {
                         otherPos.add(rp.getNode(map.getVMLocation(vm)));
-                        VMActionModel a = rp.getVMAction(vm);
+                        VMTransition a = rp.getVMAction(vm);
                         otherEnds.add(a.getCSlice().getEnd());
                     } else {
                         minePos.add(rp.getNode(map.getVMLocation(vm)));
-                        VMActionModel a = rp.getVMAction(vm);
+                        VMTransition a = rp.getVMAction(vm);
                         mineEnds.add(a.getCSlice().getEnd());
                     }
                 }
             }
             for (VM vm : vms) {
-                VMActionModel a = rp.getVMAction(vm);
+                VMTransition a = rp.getVMAction(vm);
                 Precedences p = new Precedences(s.getEnvironment(), a.getDSlice().getHoster(),
                         a.getDSlice().getStart(),
                         otherPos.toArray(),
@@ -105,7 +105,7 @@ public class CLonely implements ChocoConstraint {
 
             //TODO: The following reveals a model problem. Too many constraints!!
             for (VM vm : otherVMs) {
-                VMActionModel a = rp.getVMAction(vm);
+                VMTransition a = rp.getVMAction(vm);
                 Precedences p = new Precedences(s.getEnvironment(), a.getDSlice().getHoster(),
                         a.getDSlice().getStart(),
                         minePos.toArray(),

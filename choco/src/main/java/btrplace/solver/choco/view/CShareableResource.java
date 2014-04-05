@@ -28,8 +28,8 @@ import btrplace.plan.event.*;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
-import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.extensions.RoundedUpDivision;
+import btrplace.solver.choco.transition.VMTransition;
 import gnu.trove.list.array.TIntArrayList;
 import solver.Cause;
 import solver.Solver;
@@ -112,7 +112,7 @@ public class CShareableResource implements ChocoModelView {
         vmAllocation = new IntVar[p.getVMs().length];
         for (int i = 0; i < vmAllocation.length; i++) {
             VM vmId = p.getVM(i);
-            VMActionModel a = p.getVMAction(vmId);
+            VMTransition a = p.getVMAction(vmId);
             Slice slice = a.getDSlice();
             if (slice == null) {
                 //The VMs will not be running, so its consumption is set to 0
@@ -390,7 +390,7 @@ public class CShareableResource implements ChocoModelView {
         List<IntVar> dUse = new ArrayList<>();
 
         for (VM vmId : rp.getVMs()) {
-            VMActionModel a = rp.getVMAction(vmId);
+            VMTransition a = rp.getVMAction(vmId);
             Slice c = a.getCSlice();
             Slice d = a.getDSlice();
             if (c != null) {

@@ -18,8 +18,8 @@
 package btrplace.solver.choco;
 
 import btrplace.model.VM;
-import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.extensions.LocalTaskScheduler;
+import btrplace.solver.choco.transition.VMTransition;
 import solver.variables.IntVar;
 
 import java.util.ArrayList;
@@ -73,7 +73,7 @@ public abstract class SchedulingConstraintBuilder {
 
         int dIdx = 0, cIdx = 0;
 
-        for (VMActionModel a : p.getVMActions()) {
+        for (VMTransition a : p.getVMActions()) {
             Slice c = a.getCSlice();
             Slice d = a.getDSlice();
 

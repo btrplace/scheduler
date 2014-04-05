@@ -20,13 +20,14 @@ package btrplace.solver.choco.constraint.minMTTR;
 import btrplace.model.Node;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
-import btrplace.solver.choco.actionModel.VMActionModel;
+import btrplace.solver.choco.transition.VMTransition;
 import solver.variables.IntVar;
 
 import java.util.*;
 
 /**
  * Class denoting the movement of the running VMs from their source to their destination node.
+ *
  * @author Fabien Hermenier
  */
 public class MovementGraph {
@@ -52,7 +53,7 @@ public class MovementGraph {
         incoming.clear();
         outgoings.clear();
 
-        for (VMActionModel a : rp.getVMActions()) {
+        for (VMTransition a : rp.getVMActions()) {
             Slice cSlice = a.getCSlice();
             Slice dSlice = a.getDSlice();
 
@@ -88,6 +89,7 @@ public class MovementGraph {
     /**
      * Get the start moment of the movements that terminate
      * on a given node
+     *
      * @param n the destination node
      * @return a list of start moment. May be empty
      */
@@ -102,6 +104,7 @@ public class MovementGraph {
     /**
      * Get the start moment of the movements that leave
      * from a given node
+     *
      * @param n the source node
      * @return a list of start moment. May be empty
      */

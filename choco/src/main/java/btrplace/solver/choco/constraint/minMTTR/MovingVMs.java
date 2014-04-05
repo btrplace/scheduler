@@ -22,8 +22,8 @@ import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.SliceUtils;
-import btrplace.solver.choco.actionModel.ActionModelUtils;
-import btrplace.solver.choco.actionModel.VMActionModel;
+import btrplace.solver.choco.transition.TransitionUtils;
+import btrplace.solver.choco.transition.VMTransition;
 import memory.IStateInt;
 import solver.search.strategy.selectors.VariableSelector;
 import solver.variables.IntVar;
@@ -44,7 +44,7 @@ public class MovingVMs implements VariableSelector<IntVar> {
     /**
      * The demanding slices to consider.
      */
-    private List<VMActionModel> actions;
+    private List<VMTransition> actions;
 
     private Mapping map;
 
@@ -73,7 +73,7 @@ public class MovingVMs implements VariableSelector<IntVar> {
                 actions.add(rp.getVMAction(vm));
             }
         }
-        scopes = SliceUtils.extractHoster(ActionModelUtils.getDSlices(actions));
+        scopes = SliceUtils.extractHoster(TransitionUtils.getDSlices(actions));
         idx = s.getSolver().getEnvironment().makeInt(0);
     }
 

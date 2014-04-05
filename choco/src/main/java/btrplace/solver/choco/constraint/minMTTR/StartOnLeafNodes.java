@@ -20,7 +20,7 @@ package btrplace.solver.choco.constraint.minMTTR;
 import btrplace.model.Node;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.SliceUtils;
-import btrplace.solver.choco.actionModel.ActionModelUtils;
+import btrplace.solver.choco.transition.TransitionUtils;
 import solver.search.strategy.selectors.VariableSelector;
 import solver.variables.IntVar;
 
@@ -45,12 +45,13 @@ public class StartOnLeafNodes implements VariableSelector<IntVar> {
 
     /**
      * Make a new heuristics
+     *
      * @param rp the problem
-     * @param g the movement graph
+     * @param g  the movement graph
      */
     public StartOnLeafNodes(ReconfigurationProblem rp, MovementGraph g) {
         this.graph = g;
-        scope = SliceUtils.extractStarts(ActionModelUtils.getDSlices(rp.getVMActions()));
+        scope = SliceUtils.extractStarts(TransitionUtils.getDSlices(rp.getVMActions()));
         nodes = rp.getNodes();
     }
 

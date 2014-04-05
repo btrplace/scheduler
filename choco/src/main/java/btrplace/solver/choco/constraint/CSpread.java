@@ -25,8 +25,8 @@ import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Spread;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
-import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.extensions.ChocoUtils;
+import btrplace.solver.choco.transition.VMTransition;
 import solver.Solver;
 import solver.constraints.Arithmetic;
 import solver.constraints.IntConstraintFactory;
@@ -59,7 +59,7 @@ public class CSpread implements ChocoConstraint {
         List<IntVar> running = new ArrayList<>();
         for (VM vmId : cstr.getInvolvedVMs()) {
             if (rp.getFutureRunningVMs().contains(vmId)) {
-                VMActionModel a = rp.getVMAction(vmId);
+                VMTransition a = rp.getVMAction(vmId);
                 Slice d = a.getDSlice();
                 if (d != null) {
                     running.add(d.getHoster());
@@ -81,10 +81,10 @@ public class CSpread implements ChocoConstraint {
                 }
                 for (int i = 0; i < vms.length; i++) {
                     VM vm = vms[i];
-                    VMActionModel aI = rp.getVMAction(vm);
+                    VMTransition aI = rp.getVMAction(vm);
                     for (int j = 0; j < i; j++) {
                         VM vmJ = vms[j];
-                        VMActionModel aJ = rp.getVMAction(vmJ);
+                        VMTransition aJ = rp.getVMAction(vmJ);
                         Slice dI = aI.getDSlice();
                         Slice cJ = aJ.getCSlice();
 

@@ -23,9 +23,9 @@ import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.SequentialVMTransitions;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.actionModel.ActionModel;
-import btrplace.solver.choco.actionModel.RelocatableVMModel;
-import btrplace.solver.choco.actionModel.StayAwayVMModel;
+import btrplace.solver.choco.transition.RelocatableVM;
+import btrplace.solver.choco.transition.StayAwayVM;
+import btrplace.solver.choco.transition.Transition;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
 
@@ -58,22 +58,22 @@ public class CSequentialVMTransitions implements ChocoConstraint {
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
         List<VM> seq = cstr.getInvolvedVMs();
 
-        List<ActionModel> ams = new ArrayList<>();
+        List<Transition> ams = new ArrayList<>();
         for (VM vmId : seq) {
-            ActionModel am = rp.getVMAction(vmId);
+            Transition am = rp.getVMAction(vmId);
 
-            //Avoid VMs with no action model or ActionModel that do not denotes a state transition
-            if (am == null || am instanceof StayAwayVMModel || am instanceof RelocatableVMModel) {
+            //Avoid VMs with no action model or Transition that do not denotes a state transition
+            if (am == null || am instanceof StayAwayVM || am instanceof RelocatableVM) {
                 continue;
             }
             ams.add(am);
         }
         if (ams.size() > 1) {
-            Iterator<ActionModel> ite = ams.iterator();
-            ActionModel prev = ite.next();
+            Iterator<Transition> ite = ams.iterator();
+            Transition prev = ite.next();
             Solver s = rp.getSolver();
             while (ite.hasNext()) {
-                ActionModel cur = ite.next();
+                Transition cur = ite.next();
                 s.post(IntConstraintFactory.arithm(prev.getEnd(), "<=", cur.getStart()));
                 prev = cur;
             }

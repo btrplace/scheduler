@@ -23,9 +23,9 @@ import btrplace.model.VM;
 import btrplace.model.VMState;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.actionModel.NodeActionModel;
-import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
+import btrplace.solver.choco.transition.NodeTransition;
+import btrplace.solver.choco.transition.VMTransition;
 import btrplace.solver.choco.view.ChocoModelView;
 import btrplace.solver.choco.view.ModelViewMapper;
 import org.slf4j.Logger;
@@ -162,43 +162,43 @@ public interface ReconfigurationProblem {
     Node getNode(int idx);
 
     /**
-     * Get all the actions related to VMs.
+     * Get the VMs transition.
      *
-     * @return a list of actions.
+     * @return a list of transitions.
      */
-    VMActionModel[] getVMActions();
+    VMTransition[] getVMActions();
 
     /**
-     * Get the action associated to a given VM.
+     * Get the transition associated to a given VM.
      *
      * @param id the VM identifier
-     * @return the associated action if exists, {@code null} otherwise
+     * @return the associated transition if exists, {@code null} otherwise
      */
-    VMActionModel getVMAction(VM id);
+    VMTransition getVMAction(VM id);
 
     /**
-     * Get all the actions associated to a list of VMs.
+     * Get the transitions associated to a set of VMs.
      *
      * @param id the VMs
-     * @return a list of actions. The order is the same than the order of the VMs.
+     * @return an array of transition. The order is provided by the collection iterator.
      */
-    VMActionModel[] getVMActions(Set<VM> id);
+    VMTransition[] getVMActions(Set<VM> id);
 
 
     /**
-     * Get all the actions related to nodes.
+     * Get all the nodes transition.
      *
-     * @return a list of actions.
+     * @return a list of transitions.
      */
-    NodeActionModel[] getNodeActions();
+    NodeTransition[] getNodeActions();
 
     /**
-     * Get the action associated to a given node.
+     * Get the transition associated to a given node.
      *
      * @param id the node identifier
-     * @return the associated action if exists, {@code null} otherwise
+     * @return the associated transition if exists, {@code null} otherwise
      */
-    NodeActionModel getNodeAction(Node id);
+    NodeTransition getNodeAction(Node id);
 
     /**
      * Get the evaluator to estimate the duration of the actions.

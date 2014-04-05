@@ -24,7 +24,7 @@ import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Online;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
-import btrplace.solver.choco.actionModel.ActionModel;
+import btrplace.solver.choco.transition.Transition;
 import solver.Cause;
 import solver.exception.ContradictionException;
 
@@ -53,7 +53,7 @@ public class COnline implements ChocoConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) throws SolverException {
         Node nId = cstr.getInvolvedNodes().iterator().next();
-        ActionModel m = rp.getNodeAction(nId);
+        Transition m = rp.getNodeAction(nId);
         try {
             m.getState().instantiateTo(1, Cause.Null);
         } catch (ContradictionException ex) {

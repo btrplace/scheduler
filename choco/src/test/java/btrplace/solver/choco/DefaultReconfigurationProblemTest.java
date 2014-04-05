@@ -22,8 +22,8 @@ import btrplace.model.view.ModelView;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.actionModel.*;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
+import btrplace.solver.choco.transition.*;
 import btrplace.solver.choco.view.CShareableResource;
 import btrplace.solver.choco.view.ChocoModelView;
 import btrplace.solver.choco.view.ChocoModelViewBuilder;
@@ -270,9 +270,9 @@ public class DefaultReconfigurationProblemTest {
                                 new HashSet<VM>(),
                                 new HashSet<VM>()).build();
 
-        ActionModel a = rp.getVMActions()[rp.getVM(vm1)];
+        Transition a = rp.getVMActions()[rp.getVM(vm1)];
         Assert.assertEquals(a, rp.getVMAction(vm1));
-        Assert.assertEquals(ForgeVMModel.class, a.getClass());
+        Assert.assertEquals(ForgeVM.class, a.getClass());
     }
 
     @Test
@@ -307,9 +307,9 @@ public class DefaultReconfigurationProblemTest {
                         new HashSet<VM>(),
                         new HashSet<VM>()).build();
 
-        ActionModel a = rp.getVMActions()[0];
+        Transition a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMAction(vm1));
-        Assert.assertEquals(BootVMModel.class, a.getClass());
+        Assert.assertEquals(BootVM.class, a.getClass());
     }
 
     @Test
@@ -345,9 +345,9 @@ public class DefaultReconfigurationProblemTest {
                         Collections.singleton(vm1),
                         new HashSet<VM>(),
                         new HashSet<VM>()).build();
-        ActionModel a = rp.getVMActions()[0];
+        Transition a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMAction(vm1));
-        Assert.assertEquals(RelocatableVMModel.class, a.getClass());
+        Assert.assertEquals(RelocatableVM.class, a.getClass());
     }
 
     @Test
@@ -383,9 +383,9 @@ public class DefaultReconfigurationProblemTest {
                         Collections.singleton(vm1),
                         new HashSet<VM>()).build();
 
-        ActionModel a = rp.getVMActions()[0];
+        Transition a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMAction(vm1));
-        Assert.assertEquals(SuspendVMModel.class, a.getClass());
+        Assert.assertEquals(SuspendVM.class, a.getClass());
     }
 
     @Test
@@ -423,8 +423,8 @@ public class DefaultReconfigurationProblemTest {
                         new HashSet<VM>(),
                         m.getAllVMs()).build();
 
-        for (ActionModel a : rp.getVMActions()) {
-            Assert.assertEquals(a.getClass(), KillVMModel.class);
+        for (Transition a : rp.getVMActions()) {
+            Assert.assertEquals(a.getClass(), KillVM.class);
         }
     }
 
@@ -460,9 +460,9 @@ public class DefaultReconfigurationProblemTest {
                         new HashSet<VM>(),
                         new HashSet<VM>(),
                         new HashSet<VM>()).build();
-        ActionModel a = rp.getVMActions()[0];
+        Transition a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMAction(vm1));
-        Assert.assertEquals(ShutdownVMModel.class, a.getClass());
+        Assert.assertEquals(ShutdownVM.class, a.getClass());
 
     }
 
@@ -481,9 +481,9 @@ public class DefaultReconfigurationProblemTest {
                         Collections.singleton(vm1),
                         new HashSet<VM>()).build();
 
-        ActionModel a = rp.getVMActions()[0];
+        Transition a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMAction(vm1));
-        Assert.assertEquals(StayAwayVMModel.class, a.getClass());
+        Assert.assertEquals(StayAwayVM.class, a.getClass());
     }
 
     @Test
@@ -518,9 +518,9 @@ public class DefaultReconfigurationProblemTest {
                         Collections.singleton(vm1),
                         new HashSet<VM>(),
                         new HashSet<VM>()).build();
-        ActionModel a = rp.getVMActions()[0];
+        Transition a = rp.getVMActions()[0];
         Assert.assertEquals(a, rp.getVMAction(vm1));
-        Assert.assertEquals(ResumeVMModel.class, a.getClass());
+        Assert.assertEquals(ResumeVM.class, a.getClass());
     }
 
     @Test
@@ -535,9 +535,9 @@ public class DefaultReconfigurationProblemTest {
                         new HashSet<VM>(),
                         new HashSet<VM>()).build();
 
-        ActionModel a = rp.getNodeActions()[0];
+        Transition a = rp.getNodeActions()[0];
         Assert.assertEquals(a, rp.getNodeAction(n1));
-        Assert.assertEquals(ShutdownableNodeModel.class, a.getClass());
+        Assert.assertEquals(ShutdownableNode.class, a.getClass());
     }
 
 
@@ -574,9 +574,9 @@ public class DefaultReconfigurationProblemTest {
                         new HashSet<VM>(),
                         new HashSet<VM>()).build();
 
-        ActionModel a = rp.getNodeActions()[rp.getNode(n3)];
+        Transition a = rp.getNodeActions()[rp.getNode(n3)];
         Assert.assertEquals(a, rp.getNodeAction(n3));
-        Assert.assertEquals(BootableNodeModel.class, a.getClass());
+        Assert.assertEquals(BootableNode.class, a.getClass());
     }
 
     @Test
@@ -743,7 +743,7 @@ public class DefaultReconfigurationProblemTest {
             counts[nIdx] = rp.getNbRunningVMs()[nIdx].getValue();
         }
         for (VM vm : rp.getFutureRunningVMs()) {
-            VMActionModel vmo = rp.getVMActions()[rp.getVM(vm)];
+            VMTransition vmo = rp.getVMActions()[rp.getVM(vm)];
             int on = vmo.getDSlice().getHoster().getValue();
             counts[on]--;
         }
@@ -775,7 +775,7 @@ public class DefaultReconfigurationProblemTest {
         mo.getAttributes().put(vm4, "template", "small");
         mo.attach(rc);
 
-        ActionModelFactory amf = ActionModelFactory.newBundle();
+        TransitionFactory amf = TransitionFactory.newBundle();
         ReconfigurationProblem rp = new DefaultReconfigurationProblem(mo, DurationEvaluators.newBundle(), new ModelViewMapper(),
                 amf,
                 Collections.singleton(vm4),
@@ -809,7 +809,7 @@ public class DefaultReconfigurationProblemTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
         Solver s = rp.getSolver();
         IntVar nbNodes = VF.bounded("nbNodes", 1, map.getAllNodes().size(), s);
-        IntVar[] hosters = SliceUtils.extractHoster(ActionModelUtils.getDSlices(rp.getVMActions()));
+        IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
         s.post(ICF.nvalues(hosters, nbNodes, "at_most_BC"));
 
         rp.setObjective(true, nbNodes);
@@ -840,7 +840,7 @@ public class DefaultReconfigurationProblemTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
         Solver s = rp.getSolver();
         IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
-        IntVar[] hosters = SliceUtils.extractHoster(ActionModelUtils.getDSlices(rp.getVMActions()));
+        IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
         s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_least_AC"));
         rp.setObjective(false, nbNodes);
         ReconfigurationPlan plan = rp.solve(0, true);
@@ -871,7 +871,7 @@ public class DefaultReconfigurationProblemTest {
         final ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
         Solver s = rp.getSolver();
         final IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
-        IntVar[] hosters = SliceUtils.extractHoster(ActionModelUtils.getDSlices(rp.getVMActions()));
+        IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
         s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_least_AC"));
 
         rp.setObjective(false, nbNodes);
@@ -910,7 +910,7 @@ public class DefaultReconfigurationProblemTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
         Solver s = rp.getSolver();
         IntVar nbNodes = VF.bounded("nbNodes", 0, 0, s);
-        IntVar[] hosters = SliceUtils.extractHoster(ActionModelUtils.getDSlices(rp.getVMActions()));
+        IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
         s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_most_BC"));
         rp.setObjective(true, nbNodes);
         ObjectiveAlterer alt = new ObjectiveAlterer() {

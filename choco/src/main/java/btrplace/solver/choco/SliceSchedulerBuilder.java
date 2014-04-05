@@ -18,11 +18,11 @@
 package btrplace.solver.choco;
 
 import btrplace.model.VM;
-import btrplace.solver.choco.actionModel.ActionModelUtils;
-import btrplace.solver.choco.actionModel.KeepRunningVMModel;
-import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.extensions.FastImpliesEq;
 import btrplace.solver.choco.extensions.TaskScheduler;
+import btrplace.solver.choco.transition.KeepRunningVM;
+import btrplace.solver.choco.transition.TransitionUtils;
+import btrplace.solver.choco.transition.VMTransition;
 import solver.Cause;
 import solver.exception.ContradictionException;
 import solver.variables.BoolVar;
@@ -54,7 +54,7 @@ public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
     /**
      * Add a dimension.
      *
-     * @param c the resource capacity of each of the nodes
+     * @param c    the resource capacity of each of the nodes
      * @param cUse the resource usage of each of the cSlices
      * @param dUse the resource usage of each of the dSlices
      */
@@ -99,8 +99,8 @@ public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
             i++;
         }
         symmetryBreakingForStayingVMs();
-        IntVar[] earlyStarts = ActionModelUtils.getHostingStarts(rp.getNodeActions());
-        IntVar[] lastEnd = ActionModelUtils.getHostingEnds(rp.getNodeActions());
+        IntVar[] earlyStarts = TransitionUtils.getHostingStarts(rp.getNodeActions());
+        IntVar[] lastEnd = TransitionUtils.getHostingEnds(rp.getNodeActions());
         return new TaskScheduler(earlyStarts,
                 lastEnd,
                 capas,
@@ -144,11 +144,11 @@ public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
      */
     private boolean symmetryBreakingForStayingVMs() {
         for (VM vm : rp.getFutureRunningVMs()) {
-            VMActionModel a = rp.getVMAction(vm);
+            VMTransition a = rp.getVMAction(vm);
             Slice dSlice = a.getDSlice();
             Slice cSlice = a.getCSlice();
             if (dSlice != null && cSlice != null) {
-                BoolVar stay = ((KeepRunningVMModel) a).isStaying();
+                BoolVar stay = ((KeepRunningVM) a).isStaying();
 
                 Boolean ret = strictlyDecreasingOrUnchanged(vm);
                 if (Boolean.TRUE.equals(ret)) {

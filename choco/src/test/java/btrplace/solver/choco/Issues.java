@@ -25,10 +25,10 @@ import btrplace.model.constraint.Spread;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.actionModel.NodeActionModel;
-import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.constraint.minMTTR.CMinMTTR;
 import btrplace.solver.choco.extensions.ChocoUtils;
+import btrplace.solver.choco.transition.NodeTransition;
+import btrplace.solver.choco.transition.VMTransition;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import solver.Cause;
@@ -334,10 +334,10 @@ public class Issues {
                 .labelVariables(true)
                 .build();
 
-        NodeActionModel na = rp.getNodeAction(n);
+        NodeTransition na = rp.getNodeAction(n);
         na.getStart().instantiateTo(0, Cause.Null);
         na.getEnd().instantiateTo(1, Cause.Null);
-        VMActionModel vma = rp.getVMAction(v);
+        VMTransition vma = rp.getVMAction(v);
         vma.getStart().instantiateTo(0, Cause.Null);
         vma.getEnd().instantiateTo(1, Cause.Null);
 

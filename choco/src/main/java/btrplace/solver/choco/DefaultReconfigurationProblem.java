@@ -23,9 +23,9 @@ import btrplace.model.view.ModelView;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.actionModel.*;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
 import btrplace.solver.choco.extensions.AliasedCumulatives;
+import btrplace.solver.choco.transition.*;
 import btrplace.solver.choco.view.ChocoModelView;
 import btrplace.solver.choco.view.ModelViewMapper;
 import gnu.trove.list.array.TIntArrayList;
@@ -93,8 +93,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private IntVar start;
     private IntVar end;
 
-    private VMActionModel[] vmActions;
-    private NodeActionModel[] nodeActions;
+    private VMTransition[] vmActions;
+    private NodeTransition[] nodeActions;
 
     private DurationEvaluators durEval;
 
@@ -114,7 +114,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private ResolutionPolicy solvingPolicy;
 
-    private ActionModelFactory amFactory;
+    private TransitionFactory amFactory;
 
     /**
      * Make a new RP where the next state for every VM is indicated.
@@ -134,7 +134,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     public DefaultReconfigurationProblem(Model m,
                                          DurationEvaluators dEval,
                                          ModelViewMapper vMapper,
-                                         ActionModelFactory amf,
+                                         TransitionFactory amf,
                                          Set<VM> ready,
                                          Set<VM> running,
                                          Set<VM> sleeping,
@@ -249,11 +249,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
 
         DefaultReconfigurationPlan plan = new DefaultReconfigurationPlan(model);
-        for (ActionModel action : nodeActions) {
+        for (Transition action : nodeActions) {
             action.insertActions(plan);
         }
 
-        for (ActionModel action : vmActions) {
+        for (Transition action : vmActions) {
             action.insertActions(plan);
         }
 
@@ -298,7 +298,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         TIntArrayList cUse = new TIntArrayList();
         List<IntVar> iUse = new ArrayList<>();
         for (int j = 0; j < getVMs().length; j++) {
-            VMActionModel a = vmActions[j];
+            VMTransition a = vmActions[j];
             if (a.getDSlice() != null) {
                 iUse.add(VariableFactory.one(solver));
             }
@@ -346,7 +346,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     private void linkCardinalityWithSlices() {
-        IntVar[] ds = SliceUtils.extractHoster(ActionModelUtils.getDSlices(vmActions));
+        IntVar[] ds = SliceUtils.extractHoster(TransitionUtils.getDSlices(vmActions));
         IntVar[] usages = new IntVar[ds.length];
         for (int i = 0; i < ds.length; i++) {
             usages[i] = VariableFactory.one(solver);
@@ -402,7 +402,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private void makeVMActionModels() throws SolverException {
         Mapping map = model.getMapping();
-        vmActions = new VMActionModel[vms.length];
+        vmActions = new VMTransition[vms.length];
         for (int i = 0; i < vms.length; i++) {
             VM vmId = vms[i];
             VMState nextState = getNextState(vmId);
@@ -427,7 +427,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                 }
             }
 
-            List<VMActionModelBuilder> am = amFactory.getBuilder(curState, nextState);
+            List<VMTransitionBuilder> am = amFactory.getBuilder(curState, nextState);
             if (am.isEmpty()) {
                 throw new SolverException(model, "No model available for VM transition " + curState + " -> " + nextState);
             }
@@ -444,17 +444,17 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     private void makeNodeActionModels() throws SolverException {
 
         Mapping m = model.getMapping();
-        nodeActions = new NodeActionModel[nodes.length];
+        nodeActions = new NodeTransition[nodes.length];
         for (int i = 0; i < nodes.length; i++) {
             Node nId = nodes[i];
             if (m.getOfflineNodes().contains(nId)) {
-                nodeActions[i] = new BootableNodeModel(this, nId);
+                nodeActions[i] = new BootableNode(this, nId);
             }
             if (m.isOnline(nId)) {
                 if (nodeActions[i] != null) {
                     throw new SolverException(model, "Next state for node '" + nId + "' is ambiguous");
                 }
-                nodeActions[i] = new ShutdownableNodeModel(this, nId);
+                nodeActions[i] = new ShutdownableNode(this, nId);
             }
         }
     }
@@ -595,7 +595,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public NodeActionModel[] getNodeActions() {
+    public NodeTransition[] getNodeActions() {
         return nodeActions;
     }
 
@@ -670,23 +670,23 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public VMActionModel[] getVMActions() {
+    public VMTransition[] getVMActions() {
         return vmActions;
     }
 
     @Override
-    public VMActionModel[] getVMActions(Set<VM> id) {
+    public VMTransition[] getVMActions(Set<VM> id) {
         return vmActions;
     }
 
     @Override
-    public VMActionModel getVMAction(VM id) {
+    public VMTransition getVMAction(VM id) {
         int idx = getVM(id);
         return idx < 0 ? null : vmActions[idx];
     }
 
     @Override
-    public NodeActionModel getNodeAction(Node id) {
+    public NodeTransition getNodeAction(Node id) {
         int idx = getNode(id);
         return idx < 0 ? null : nodeActions[idx];
     }

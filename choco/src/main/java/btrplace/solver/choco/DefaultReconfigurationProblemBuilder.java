@@ -22,8 +22,8 @@ import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.actionModel.ActionModelFactory;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
+import btrplace.solver.choco.transition.TransitionFactory;
 import btrplace.solver.choco.view.ModelViewMapper;
 
 import java.util.Collections;
@@ -39,7 +39,7 @@ import java.util.Set;
  * <li>All the VMs are manageable</li>
  * <li>Default DurationEvaluators: {@link btrplace.solver.choco.durationEvaluator.DurationEvaluators#newBundle()}</li>
  * <li>Default ViewMapper: {@link btrplace.solver.choco.view.ModelViewMapper#newBundle()}</li>
- * <li>Default ActionModelFactory: {@link btrplace.solver.choco.actionModel.ActionModelFactory#newBundle()}</li>
+ * <li>Default TransitionFactory: {@link btrplace.solver.choco.transition.TransitionFactory#newBundle()}</li>
  * <li>The state of the VMs is unchanged</li>
  * </ul>
  *
@@ -59,7 +59,7 @@ public class DefaultReconfigurationProblemBuilder {
 
     private Set<VM> manageable;
 
-    private ActionModelFactory amf;
+    private TransitionFactory amf;
 
     /**
      * Make a new builder for a problem working on a given model.
@@ -103,12 +103,12 @@ public class DefaultReconfigurationProblemBuilder {
     }
 
     /**
-     * Provide a dedicated {@link btrplace.solver.choco.actionModel.ActionModelFactory}.
+     * Provide a dedicated {@link btrplace.solver.choco.transition.TransitionFactory}.
      *
      * @param a the factory to use
      * @return the current builder
      */
-    public DefaultReconfigurationProblemBuilder setActionModelFactory(ActionModelFactory a) {
+    public DefaultReconfigurationProblemBuilder setActionModelFactory(TransitionFactory a) {
         amf = a;
         return this;
     }
@@ -189,7 +189,7 @@ public class DefaultReconfigurationProblemBuilder {
             manageable.addAll(model.getMapping().getReadyVMs());
         }
         if (amf == null) {
-            amf = ActionModelFactory.newBundle();
+            amf = TransitionFactory.newBundle();
         }
         return new DefaultReconfigurationProblem(model, dEval, viewMapper, amf, waits, runs, sleep, over, manageable, labelVars);
     }

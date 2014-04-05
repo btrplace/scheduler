@@ -25,7 +25,7 @@ import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.Gather;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
-import btrplace.solver.choco.actionModel.VMActionModel;
+import btrplace.solver.choco.transition.VMTransition;
 import solver.Cause;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
@@ -55,7 +55,7 @@ public class CGather implements ChocoConstraint {
     private List<Slice> getDSlices(ReconfigurationProblem rp) {
         List<Slice> dSlices = new ArrayList<>();
         for (VM vm : cstr.getInvolvedVMs()) {
-            VMActionModel a = rp.getVMAction(vm);
+            VMTransition a = rp.getVMAction(vm);
             Slice dSlice = a.getDSlice();
             if (dSlice != null) {
                 dSlices.add(dSlice);

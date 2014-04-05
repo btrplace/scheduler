@@ -27,7 +27,7 @@ import btrplace.model.view.ShareableResource;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
-import btrplace.solver.choco.actionModel.VMActionModel;
+import btrplace.solver.choco.transition.VMTransition;
 import btrplace.solver.choco.view.CShareableResource;
 import gnu.trove.list.array.TIntArrayList;
 import solver.Cause;
@@ -113,7 +113,7 @@ public class CResourceCapacity implements ChocoConstraint {
                 List<IntVar> dUse = new ArrayList<>();
 
                 for (VM vmId : rp.getVMs()) {
-                    VMActionModel a = rp.getVMAction(vmId);
+                    VMTransition a = rp.getVMAction(vmId);
                     Slice c = a.getCSlice();
                     Slice d = a.getDSlice();
                     if (c != null) {

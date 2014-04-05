@@ -26,9 +26,9 @@ import btrplace.model.constraint.Split;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
-import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.extensions.DisjointMultiple;
 import btrplace.solver.choco.extensions.Precedences;
+import btrplace.solver.choco.transition.VMTransition;
 import gnu.trove.list.array.TIntArrayList;
 import solver.Solver;
 import solver.variables.IntVar;
@@ -126,7 +126,7 @@ public class CSplit implements ChocoConstraint {
                     List<VM> grp = vmGroups.get(i);
                     for (VM vm : grp) {
                         if (rp.getFutureRunningVMs().contains(vm)) {
-                            VMActionModel a = rp.getVMAction(vm);
+                            VMTransition a = rp.getVMAction(vm);
                             IntVar myPos = a.getDSlice().getHoster();
                             IntVar myStart = a.getDSlice().getStart();
                             s.post(new Precedences(s.getEnvironment(), myPos, myStart, otherPos[i], otherEds[i]));

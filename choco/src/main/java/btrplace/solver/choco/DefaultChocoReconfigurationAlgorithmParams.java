@@ -17,9 +17,9 @@
 
 package btrplace.solver.choco;
 
-import btrplace.solver.choco.actionModel.ActionModelFactory;
 import btrplace.solver.choco.constraint.ConstraintMapper;
 import btrplace.solver.choco.durationEvaluator.DurationEvaluators;
+import btrplace.solver.choco.transition.TransitionFactory;
 import btrplace.solver.choco.view.ModelViewMapper;
 
 /**
@@ -33,7 +33,7 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
 
     private ConstraintMapper cstrMapper;
 
-    private ActionModelFactory amf;
+    private TransitionFactory amf;
 
     private boolean optimize = false;
 
@@ -57,7 +57,7 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
         cstrMapper = ConstraintMapper.newBundle();
         durationEvaluators = DurationEvaluators.newBundle();
         viewMapper = ModelViewMapper.newBundle();
-        amf = ActionModelFactory.newBundle();
+        amf = TransitionFactory.newBundle();
     }
 
     @Override
@@ -149,12 +149,12 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
     }
 
     @Override
-    public void setActionModelFactory(ActionModelFactory f) {
+    public void setActionModelFactory(TransitionFactory f) {
         this.amf = f;
     }
 
     @Override
-    public ActionModelFactory getActionModelFactory() {
+    public TransitionFactory getActionModelFactory() {
         return this.amf;
     }
 }

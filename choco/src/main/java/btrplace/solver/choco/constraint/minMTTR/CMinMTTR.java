@@ -25,10 +25,10 @@ import btrplace.model.constraint.MinMTTR;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.SliceUtils;
-import btrplace.solver.choco.actionModel.ActionModel;
-import btrplace.solver.choco.actionModel.ActionModelUtils;
-import btrplace.solver.choco.actionModel.VMActionModel;
 import btrplace.solver.choco.constraint.ChocoConstraintBuilder;
+import btrplace.solver.choco.transition.Transition;
+import btrplace.solver.choco.transition.TransitionUtils;
+import btrplace.solver.choco.transition.VMTransition;
 import solver.Solver;
 import solver.constraints.Constraint;
 import solver.constraints.IntConstraintFactory;
@@ -69,10 +69,10 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         this.rp = p;
         costActivated = false;
         List<IntVar> mttrs = new ArrayList<>();
-        for (ActionModel m : p.getVMActions()) {
+        for (Transition m : p.getVMActions()) {
             mttrs.add(m.getEnd());
         }
-        for (ActionModel m : p.getNodeActions()) {
+        for (Transition m : p.getNodeActions()) {
             mttrs.add(m.getEnd());
         }
         IntVar[] costs = mttrs.toArray(new IntVar[mttrs.size()]);
@@ -119,11 +119,11 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         }
         onGoodNodes.removeAll(onBadNodes);
 
-        List<VMActionModel> goodActions = new ArrayList<>();
+        List<VMTransition> goodActions = new ArrayList<>();
         for (VM vm : onGoodNodes) {
             goodActions.add(p.getVMAction(vm));
         }
-        List<VMActionModel> badActions = new ArrayList<>();
+        List<VMTransition> badActions = new ArrayList<>();
         for (VM vm : onBadNodes) {
             badActions.add(p.getVMAction(vm));
         }
@@ -146,7 +146,7 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         }
 
         if (!badActions.isEmpty()) {
-            IntVar[] hosts = SliceUtils.extractHoster(ActionModelUtils.getDSlices(badActions));
+            IntVar[] hosts = SliceUtils.extractHoster(TransitionUtils.getDSlices(badActions));
             if (hosts.length > 0) {
                 HostingVariableSelector selectForBad = new HostingVariableSelector(hosts, schedHeuristic);
                 strategies.add(new Assignment(selectForBad, new RandomVMPlacement(p, pla, true)));
@@ -154,7 +154,7 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         }
 
         if (!goodActions.isEmpty()) {
-            IntVar[] hosts = SliceUtils.extractHoster(ActionModelUtils.getDSlices(goodActions));
+            IntVar[] hosts = SliceUtils.extractHoster(TransitionUtils.getDSlices(goodActions));
             if (hosts.length > 0) {
                 HostingVariableSelector selectForGoods = new HostingVariableSelector(hosts, schedHeuristic);
                 strategies.add(new Assignment(selectForGoods, new RandomVMPlacement(p, pla, true)));
@@ -165,14 +165,14 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         Set<VM> vmsToRun = new HashSet<>(map.getReadyVMs());
         vmsToRun.removeAll(p.getFutureReadyVMs());
 
-        VMActionModel[] runActions = new VMActionModel[vmsToRun.size()];
+        VMTransition[] runActions = new VMTransition[vmsToRun.size()];
         int i = 0;
         for (VM vm : vmsToRun) {
             runActions[i++] = p.getVMAction(vm);
         }
 
         if (runActions.length > 0) {
-            IntVar[] hosts = SliceUtils.extractHoster(ActionModelUtils.getDSlices(runActions));
+            IntVar[] hosts = SliceUtils.extractHoster(TransitionUtils.getDSlices(runActions));
             if (hosts.length > 0) {
                 HostingVariableSelector selectForRuns = new HostingVariableSelector(hosts, schedHeuristic);
                 strategies.add(new Assignment(selectForRuns, new RandomVMPlacement(p, pla, true)));
@@ -180,7 +180,7 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         }
 
         if (p.getNodeActions().length > 0) {
-            strategies.add(new Assignment(new InputOrder<>(ActionModelUtils.getStarts(p.getNodeActions())), new InDomainMin()));
+            strategies.add(new Assignment(new InputOrder<>(TransitionUtils.getStarts(p.getNodeActions())), new InDomainMin()));
         }
 
         ///SCHEDULING PROBLEM
