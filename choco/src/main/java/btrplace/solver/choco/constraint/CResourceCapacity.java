@@ -97,35 +97,10 @@ public class CResourceCapacity implements ChocoConstraint {
             return injectWithSingleNode(rcm, rp);
         }
 
-        if (cstr.isContinuous()) {
-            //The constraint must be already satisfied
-            if (!cstr.isSatisfied(rp.getSourceModel())) {
-                rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
-                return false;
-            } else {
-                int[] alias = new int[cstr.getInvolvedNodes().size()];
-                int i = 0;
-                for (Node n : cstr.getInvolvedNodes()) {
-                    alias[i++] = rp.getNode(n);
-                }
-
-                TIntArrayList cUse = new TIntArrayList();
-                List<IntVar> dUse = new ArrayList<>();
-
-                for (VM vmId : rp.getVMs()) {
-                    VMTransition a = rp.getVMAction(vmId);
-                    Slice c = a.getCSlice();
-                    Slice d = a.getDSlice();
-                    if (c != null) {
-                        cUse.add(rcm.getSourceResource().getConsumption(vmId));
-                    }
-                    if (d != null) {
-                        dUse.add(rcm.getVMsAllocation()[rp.getVM(vmId)]);
-                    }
-                }
-                rp.getAliasedCumulativesBuilder().add(cstr.getAmount(), cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]), alias);
-            }
+        if (cstr.isContinuous() && !injectContinuous(rp, rcm)) {
+            return false;
         }
+
         List<IntVar> vs = new ArrayList<>();
         for (Node u : cstr.getInvolvedNodes()) {
             vs.add(rcm.getVirtualUsage()[rp.getNode(u)]);
@@ -134,6 +109,37 @@ public class CResourceCapacity implements ChocoConstraint {
         IntVar mySum = VariableFactory.bounded(rp.makeVarLabel("usage(", rcm.getIdentifier(), ")"), 0, Integer.MAX_VALUE / 100, s);
         s.post(IntConstraintFactory.sum(vs.toArray(new IntVar[vs.size()]), mySum));
         s.post(IntConstraintFactory.arithm(mySum, "<=", cstr.getAmount()));
+        return true;
+    }
+
+    private boolean injectContinuous(ReconfigurationProblem rp, CShareableResource rcm) {
+        //The constraint must be already satisfied
+        if (!cstr.isSatisfied(rp.getSourceModel())) {
+            rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
+            return false;
+        } else {
+            int[] alias = new int[cstr.getInvolvedNodes().size()];
+            int i = 0;
+            for (Node n : cstr.getInvolvedNodes()) {
+                alias[i++] = rp.getNode(n);
+            }
+
+            TIntArrayList cUse = new TIntArrayList();
+            List<IntVar> dUse = new ArrayList<>();
+
+            for (VM vmId : rp.getVMs()) {
+                VMTransition a = rp.getVMAction(vmId);
+                Slice c = a.getCSlice();
+                Slice d = a.getDSlice();
+                if (c != null) {
+                    cUse.add(rcm.getSourceResource().getConsumption(vmId));
+                }
+                if (d != null) {
+                    dUse.add(rcm.getVMsAllocation()[rp.getVM(vmId)]);
+                }
+            }
+            rp.getAliasedCumulativesBuilder().add(cstr.getAmount(), cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]), alias);
+        }
         return true;
     }
 
