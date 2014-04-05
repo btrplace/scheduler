@@ -80,14 +80,14 @@ public class ShareableResourceConverter extends ModelViewConverter<ShareableReso
 
     @Override
     public ShareableResource fromJSON(JSONObject o) throws JSONConverterException {
-        checkKeys(o, "id", "vms", "nodes", "rcId", DEFAULT_CAPACITY, DEFAULT_CONSUMPTION);
+        checkKeys(o, "vms", "nodes", DEFAULT_CAPACITY, DEFAULT_CONSUMPTION);
 
-        String id = o.get("id").toString();
+        String id = requiredString(o, "id");
         if (!id.equals(getJSONId())) {
             return null;
         }
 
-        String rcId = o.get("rcId").toString();
+        String rcId = requiredString(o, "rcId");
         Object dc = o.get(DEFAULT_CONSUMPTION);
         if (!(dc instanceof Integer)) {
             throw new JSONConverterException("Integer expected for key '" + DEFAULT_CONSUMPTION + "' but got '" + dc.getClass().getName() + "'");

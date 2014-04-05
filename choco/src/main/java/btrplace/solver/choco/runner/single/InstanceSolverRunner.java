@@ -303,7 +303,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
                 (long) m2.getTimeCount(),
                 m2.getNodeCount(),
                 m2.getBackTrackCount(),
-                false,//huh
+                params.getTimeLimit() <= (m2.getTimeCount() / 1000),
                 coreRPDuration,
                 speRPDuration);
 

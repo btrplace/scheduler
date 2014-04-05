@@ -76,14 +76,16 @@ public class GettingStarted implements Example {
 
         //Declare a view to specify the "cpu" physical capacity of the nodes
         // and the virtual consumption of the VMs.
-        ShareableResource rcCPU = new ShareableResource("cpu", 8, 0); //By default, nodes have 8 "cpu" resources
+        //By default, nodes have 8 "cpu" resources
+        ShareableResource rcCPU = new ShareableResource("cpu", 8, 0);
         rcCPU.setConsumption(vms.get(0), 2);
         rcCPU.setConsumption(vms.get(1), 3);
         rcCPU.setConsumption(vms.get(2), 4);
         rcCPU.setConsumption(vms.get(3), 3);
         rcCPU.setConsumption(vms.get(5), 5);
 
-        ShareableResource rcMem = new ShareableResource("mem", 7, 0); //By default, nodes have 7 "mem" resources
+        //By default, nodes have 7 "mem" resources
+        ShareableResource rcMem = new ShareableResource("mem", 7, 0);
         rcMem.setConsumption(vms.get(0), 2);
         rcMem.setConsumption(vms.get(1), 2);
         rcMem.setConsumption(vms.get(2), 4);

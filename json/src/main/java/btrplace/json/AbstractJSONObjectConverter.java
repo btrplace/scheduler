@@ -59,12 +59,83 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     }
 
     /**
-     * Set the model to use to generate VMs and nodes from identifiers.
+     * Read an expected integer.
      *
-     * @param m the model to use
+     * @param o  the object to parse
+     * @param id the key in the map that points to an integer
+     * @return the int
+     * @throws JSONConverterException if the key does not point to a int
      */
-    public void setModel(Model m) {
-        mo = m;
+    public static int requiredInt(JSONObject o, String id) throws JSONConverterException {
+        checkKeys(o, id);
+        try {
+            return (Integer) o.get(id);
+        } catch (Exception e) {
+            throw new JSONConverterException("Unable to read a int from string '" + id + "'", e);
+        }
+    }
+
+    /**
+     * Check if some keys are present.
+     *
+     * @param o    the object to parse
+     * @param keys the keys to check
+     * @throws JSONConverterException when at least a key is missing
+     */
+    public static void checkKeys(JSONObject o, String... keys) throws JSONConverterException {
+        for (String k : keys) {
+            if (!o.containsKey(k)) {
+                throw new JSONConverterException("Missing key '" + k + "'");
+            }
+        }
+    }
+
+    /**
+     * Read an expected string.
+     *
+     * @param o  the object to parse
+     * @param id the key in the map that points to the string
+     * @return the string
+     * @throws JSONConverterException if the key does not point to a string
+     */
+    public static String requiredString(JSONObject o, String id) throws JSONConverterException {
+        checkKeys(o, id);
+        Object x = o.get(id);
+        return x.toString();
+    }
+
+    /**
+     * Read an expected double.
+     *
+     * @param o  the object to parse
+     * @param id the key in the map that points to the double
+     * @return the double
+     * @throws JSONConverterException if the key does not point to a double
+     */
+    public static double requiredDouble(JSONObject o, String id) throws JSONConverterException {
+        checkKeys(o, id);
+        Object x = o.get(id);
+        if (!(x instanceof Number)) {
+            throw new JSONConverterException("Number expected at key '" + id + "' but was '" + x.getClass() + "'.");
+        }
+        return ((Number) x).doubleValue();
+    }
+
+    /**
+     * Read an expected boolean.
+     *
+     * @param o  the object to parse
+     * @param id the id in the map that should point to the boolean
+     * @return the boolean
+     * @throws btrplace.json.JSONConverterException if the key does not point to a boolean
+     */
+    public static boolean requiredBoolean(JSONObject o, String id) throws JSONConverterException {
+        checkKeys(o, id);
+        Object x = o.get(id);
+        if (!(x instanceof Boolean)) {
+            throw new JSONConverterException("Boolean expected at key '" + id + "' but was '" + x.getClass() + "'.");
+        }
+        return (Boolean) x;
     }
 
     /**
@@ -74,6 +145,15 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
      */
     public Model getModel() {
         return mo;
+    }
+
+    /**
+     * Set the model to use to generate VMs and nodes from identifiers.
+     *
+     * @param m the model to use
+     */
+    public void setModel(Model m) {
+        mo = m;
     }
 
     /**
@@ -103,7 +183,6 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
         }
         return s;
     }
-
 
     /**
      * Convert a collection of VMs to an array of VM identifiers.
@@ -142,6 +221,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
      * @throws JSONConverterException if the key does not point to a set of VM identifiers
      */
     public Set<VM> requiredVMs(JSONObject o, String id) throws JSONConverterException {
+        checkKeys(o, id);
         Object x = o.get(id);
         if (!(x instanceof JSONArray)) {
             throw new JSONConverterException("integers expected at key '" + id + "'");
@@ -163,6 +243,7 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
      * @throws JSONConverterException if the key does not point to a set of nodes identifiers
      */
     public Set<Node> requiredNodes(JSONObject o, String id) throws JSONConverterException {
+        checkKeys(o, id);
         Object x = o.get(id);
         if (!(x instanceof JSONArray)) {
             throw new JSONConverterException("integers expected at key '" + id + "'");
@@ -176,25 +257,6 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
     }
 
     /**
-     * Read an expected integer.
-     *
-     * @param o  the object to parse
-     * @param id the key in the map that points to an integer
-     * @return the int
-     * @throws JSONConverterException if the key does not point to a int
-     */
-    public static int requiredInt(JSONObject o, String id) throws JSONConverterException {
-        if (!o.containsKey(id)) {
-            throw new JSONConverterException("No value at key '" + id + "'");
-        }
-        try {
-            return (Integer) o.get(id);
-        } catch (Exception e) {
-            throw new JSONConverterException("Unable to read a int from string '" + id + "'", e);
-        }
-    }
-
-    /**
      * Read an expected VM.
      *
      * @param o  the object to parse
@@ -203,27 +265,11 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
      * @throws JSONConverterException if the key does not point to a VM identifier
      */
     public VM requiredVM(JSONObject o, String id) throws JSONConverterException {
-        if (!o.containsKey(id)) {
-            throw new JSONConverterException("No value at key '" + id + "'");
-        }
+        checkKeys(o, id);
         try {
             return getOrMakeVM((Integer) o.get(id));
         } catch (Exception e) {
             throw new JSONConverterException("Unable to read a VM identifier from string at key '" + id + "'", e);
-        }
-    }
-
-    /**
-     * Check if some keys are present.
-     * @param o the object to parse
-     * @param keys the keys to check
-     * @throws JSONConverterException when at least a key is missing
-     */
-    public static void checkKeys(JSONObject o, String... keys) throws JSONConverterException {
-        for (String k : keys) {
-            if (!o.containsKey(k)) {
-                throw new JSONConverterException("Missing key '" + k + "'");
-            }
         }
     }
 
@@ -236,68 +282,12 @@ public abstract class AbstractJSONObjectConverter<E> implements JSONObjectConver
      * @throws JSONConverterException if the key does not point to a node identifier
      */
     public Node requiredNode(JSONObject o, String id) throws JSONConverterException {
-        if (!o.containsKey(id)) {
-            throw new JSONConverterException("No value at key '" + id + "'");
-        }
+        checkKeys(o, id);
         try {
             return getOrMakeNode((Integer) o.get(id));
         } catch (Exception e) {
             throw new JSONConverterException("Unable to read a Node identifier from string at key '" + id + "'", e);
         }
-    }
-
-    /**
-     * Read an expected string.
-     *
-     * @param o  the object to parse
-     * @param id the key in the map that points to the string
-     * @return the string
-     * @throws JSONConverterException if the key does not point to a string
-     */
-    public static String requiredString(JSONObject o, String id) throws JSONConverterException {
-        Object x = o.get(id);
-        if (x == null) {
-            throw new JSONConverterException("String expected at key '" + id + "'");
-        }
-        return x.toString();
-    }
-
-    /**
-     * Read an expected double.
-     *
-     * @param o  the object to parse
-     * @param id the key in the map that points to the double
-     * @return the double
-     * @throws JSONConverterException if the key does not point to a double
-     */
-    public static double requiredDouble(JSONObject o, String id) throws JSONConverterException {
-        Object x = o.get(id);
-        if (x == null) {
-            throw new JSONConverterException("No value at key '" + id + "'");
-        }
-        if (!(x instanceof Number)) {
-            throw new JSONConverterException("Number expected at key '" + id + "' but was '" + x.getClass() + "'.");
-        }
-        return ((Number) x).doubleValue();
-    }
-
-    /**
-     * Read an expected boolean.
-     *
-     * @param o  the object to parse
-     * @param id the id in the map that should point to the boolean
-     * @return the boolean
-     * @throws btrplace.json.JSONConverterException if the key does not point to a boolean
-     */
-    public static boolean requiredBoolean(JSONObject o, String id) throws JSONConverterException {
-        Object x = o.get(id);
-        if (x == null) {
-            throw new JSONConverterException("No value at key '" + id + "'");
-        }
-        if (!(x instanceof Boolean)) {
-            throw new JSONConverterException("Boolean expected at key '" + id + "' but was '" + x.getClass() + "'.");
-        }
-        return (Boolean) x;
     }
 
     @Override

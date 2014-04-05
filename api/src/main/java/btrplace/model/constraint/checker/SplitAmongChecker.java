@@ -60,7 +60,7 @@ public class SplitAmongChecker extends AllowAllConstraintChecker<SplitAmong> {
                     if (chosenGroup == null) {
                         chosenGroup = getConstraint().getAssociatedPGroup(m.getVMLocation(vmId));
                         if (chosenGroup == null) {
-                            //Te VM is running but on an unknown group. It is an error
+                            //The VM is running but on an unknown group. It is an error
                             return false;
                         } else if (!pUsed.add(chosenGroup)) {
                             //The pgroup has already been used for another set of VMs.

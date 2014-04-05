@@ -63,16 +63,13 @@ import java.util.*;
  */
 public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("ChocoRP");
-
-    private boolean useLabels = false;
-
-    private IntVar objective;
     /**
      * The maximum duration of a plan in seconds: One hour.
      */
     public static final int DEFAULT_MAX_TIME = 3600;
-
+    private static final Logger LOGGER = LoggerFactory.getLogger("ChocoRP");
+    private boolean useLabels = false;
+    private IntVar objective;
     private Model model;
 
     private Solver solver;
@@ -408,7 +405,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             VMState nextState = getNextState(vmId);
             VMState curState = map.getState(vmId);
             if (curState == null) {
-                curState = VMState.INIT; //It's a new VM
+                //It's a new VM
+                curState = VMState.INIT;
             }
             if (nextState == null) {
                 //Next state is undefined, keep the current state
@@ -447,15 +445,12 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         nodeActions = new NodeTransition[nodes.length];
         for (int i = 0; i < nodes.length; i++) {
             Node nId = nodes[i];
-            if (m.getOfflineNodes().contains(nId)) {
-                nodeActions[i] = new BootableNode(this, nId);
+            NodeState state = m.getOfflineNodes().contains(nId) ? NodeState.OFFLINE : NodeState.ONLINE;
+            NodeTransitionBuilder b = amFactory.getBuilder(state);
+            if (b == null) {
+                throw new SolverException(model, "No model available for a node transition " + state + " -> (offline|online)");
             }
-            if (m.isOnline(nId)) {
-                if (nodeActions[i] != null) {
-                    throw new SolverException(model, "Next state for node '" + nId + "' is ambiguous");
-                }
-                nodeActions[i] = new ShutdownableNode(this, nId);
-            }
+            nodeActions[i] = b.build(this, nId);
         }
     }
 

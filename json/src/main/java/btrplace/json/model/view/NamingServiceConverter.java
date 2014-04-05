@@ -58,15 +58,13 @@ public class NamingServiceConverter extends ModelViewConverter<NamingService> {
 
     @Override
     public NamingService fromJSON(JSONObject o) throws JSONConverterException {
-        checkKeys(o, "id", "type", "map");
-
-        String id = o.get("id").toString();
+        String id = requiredString(o, "id");
         if (!id.equals(getJSONId())) {
             return null;
         }
 
         NamingService ns;
-        String type = o.get("type").toString();
+        String type = requiredString(o, "type");
         switch (type) {
             case "vm":
                 ns = NamingService.newVMNS();
@@ -78,6 +76,7 @@ public class NamingServiceConverter extends ModelViewConverter<NamingService> {
                 throw new JSONConverterException("Unsupported type of element '" + type + "'");
         }
 
+        checkKeys(o, "map");
         JSONObject map = (JSONObject) o.get("map");
         for (Map.Entry<String, Object> e : map.entrySet()) {
             String n = e.getKey();

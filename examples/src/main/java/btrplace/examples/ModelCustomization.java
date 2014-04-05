@@ -61,7 +61,8 @@ public class ModelCustomization implements Example {
         map.addOnlineNode(ns.get(0));
         map.addOnlineNode(ns.get(1));
 
-        ShareableResource rcMem = new ShareableResource("mem", 32, 1); //32GB by default for the nodes
+        //32GB by default for the nodes, 1 for the VMs
+        ShareableResource rcMem = new ShareableResource("mem", 32, 1);
 
         for (int i = 0; i < 10; i++) {
             rcMem.setConsumption(vms.get(i), i % 3 + 1);

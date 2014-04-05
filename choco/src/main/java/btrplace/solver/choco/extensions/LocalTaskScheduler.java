@@ -37,37 +37,27 @@ import java.util.BitSet;
  */
 public class LocalTaskScheduler {
 
+    public static final int DEBUG = -3;
+    public static final int DEBUG_ALL = -2;
+    public static final int NO_ASSOCIATIONS = -1;
     private static final Logger LOGGER = LoggerFactory.getLogger("solver");
-
     private int me;
-
     /**
      * out[i] = true <=> the consuming slice i will leave me.
      */
     private BitSet out;
-
     /**
      * The moment the consuming slices ends. Same order as the hosting variables.
      */
     private IntVar[] cEnds;
-
     private IStateIntVector vIn;
-
     /*
      * The moment the demanding slices ends. Same order as the hosting variables.
      */
     private IntVar[] dStarts;
-
     private int[] startupFree;
-
-    public static final int DEBUG = -3;
-
     private int[] associations;
-
     private int[] revAssociations;
-
-    public static final int NO_ASSOCIATIONS = -1;
-
     private int[] sortedMinProfile;
 
     private TIntIntHashMap[] profilesMin;
@@ -158,19 +148,6 @@ public class LocalTaskScheduler {
         this.lastCendSup = early.getSolver().getEnvironment().makeInt(lastSup);
     }
 
-    public boolean propagate() throws ContradictionException {
-        computeProfiles();
-        last.updateLowerBound(lastCendInf.get(), aCause);
-
-        if (!checkInvariant()) {
-            return false;
-        }
-        updateCEndsSup();
-        updateDStartsInf();
-        updateDStartsSup();
-        return true;
-    }
-
     /**
      * Translation for a relatives resources changes to an absolute free resources.
      *
@@ -185,6 +162,19 @@ public class LocalTaskScheduler {
 
             changes.put(t, changes.get(t) + lastFree);
         }
+    }
+
+    public boolean propagate() throws ContradictionException {
+        computeProfiles();
+        last.updateLowerBound(lastCendInf.get(), aCause);
+
+        if (!checkInvariant()) {
+            return false;
+        }
+        updateCEndsSup();
+        updateDStartsInf();
+        updateDStartsSup();
+        return true;
     }
 
     public void computeProfiles() {
@@ -211,7 +201,7 @@ public class LocalTaskScheduler {
             }
             boolean increasing = associatedToDSliceOnCurrentNode(j) && increase(j, revAssociations[j]);
             if (increasing) {
-                if (me == DEBUG || DEBUG == -2) {
+                if (me == DEBUG || DEBUG == DEBUG_ALL) {
                     LOGGER.debug(me + " " + cEnds[j].toString() + " increasing");
                 }
                 for (int i = 0; i < nbDims; i++) {
@@ -219,7 +209,7 @@ public class LocalTaskScheduler {
                 }
 
             } else {
-                if (me == DEBUG || DEBUG == -2) {
+                if (me == DEBUG || DEBUG == DEBUG_ALL) {
                     LOGGER.debug(me + " " + cEnds[j].toString() + " < or non-associated (" + (revAssociations[j] >= 0 ? dStarts[revAssociations[j]].toString() : "no rev") + "?)");
                 }
                 for (int i = 0; i < nbDims; i++) {
@@ -277,7 +267,7 @@ public class LocalTaskScheduler {
             toAbsoluteFreeResources(profilesMax[i], sortedMaxProfile);
         }
 
-        if (me == DEBUG || DEBUG == -2) {
+        if (me == DEBUG || DEBUG == DEBUG_ALL) {
             LOGGER.debug("---" + me + "--- startupFree=" + Arrays.toString(startupFree)
                     + " init=" + Arrays.toString(getUsages(capacities, me)) + "; early=" + early.toString() + "; last=" + last.toString());
             for (int x = 0; x < vIn.size(); x++) {
@@ -345,7 +335,7 @@ public class LocalTaskScheduler {
             int t = sortedMinProfile[x];
             for (int i = 0; i < nbDims; i++) {
                 if (profilesMin[i].get(t) > capacities[i][me]) {
-                    if (me == DEBUG || DEBUG == -2) {
+                    if (me == DEBUG || DEBUG == DEBUG_ALL) {
                         LOGGER.debug("(" + me + ") Invalid min profile at " + t + " on dimension " + i
                                 + ": " + profilesMin[i].get(t) + " > " + capacities[i][me]);
                     }
@@ -358,7 +348,7 @@ public class LocalTaskScheduler {
         for (int idx = 0; idx < vIn.size(); idx++) {
             int i = vIn.get(idx);
             if (dStarts[i].getUB() < early.getLB()) {
-                if (me == DEBUG || DEBUG == -2) {
+                if (me == DEBUG || DEBUG == DEBUG_ALL) {
                     LOGGER.debug("(" + me + ") The dSlice " + i + " starts too early (" + dStarts[i].toString() + ") (min expected=" + early.toString() + ")");
                 }
                 return false;
@@ -367,7 +357,7 @@ public class LocalTaskScheduler {
 
         for (int i = out.nextSetBit(0); i >= 0; i = out.nextSetBit(i + 1)) {
             if (cEnds[i].getLB() > last.getUB()) {
-                if (me == DEBUG || DEBUG == -2) {
+                if (me == DEBUG || DEBUG == DEBUG_ALL) {
                     LOGGER.debug("(" + me + ") The cSlice " + i + " ends too late (" + cEnds[i].toString() + ") (last expected=" + last.toString() + ")");
                 }
                 return false;
@@ -382,7 +372,7 @@ public class LocalTaskScheduler {
         for (int idx = 0; idx < vIn.size(); idx++) {
             int i = vIn.get(idx);
             if (!dStarts[i].instantiated() && !associatedToCSliceOnCurrentNode(i)) {
-                if (DEBUG == me || DEBUG == -2) {
+                if (DEBUG == me || DEBUG == DEBUG_ALL) {
                     LOGGER.debug("(" + me + ") - try to update lb of " + dStarts[i]);
                 }
 

@@ -47,6 +47,7 @@ public class AmongConverter extends ConstraintConverter<Among> {
 
     @Override
     public Among fromJSON(JSONObject o) throws JSONConverterException {
+        checkKeys(o, "parts");
         checkId(o);
         Set<Collection<Node>> nodes = new HashSet<>();
         Object x = o.get("parts");
@@ -59,7 +60,7 @@ public class AmongConverter extends ConstraintConverter<Among> {
 
         return new Among(requiredVMs(o, "vms"),
                 nodes,
-                (Boolean) o.get("continuous"));
+                requiredBoolean(o, "continuous"));
     }
 
     @Override
