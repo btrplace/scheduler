@@ -56,18 +56,13 @@ public class CSpread implements ChocoConstraint {
     @Override
     public boolean inject(ReconfigurationProblem rp) {
 
-        List<IntVar> running = new ArrayList<>();
-        for (VM vmId : cstr.getInvolvedVMs()) {
-            if (rp.getFutureRunningVMs().contains(vmId)) {
-                VMTransition a = rp.getVMAction(vmId);
-                Slice d = a.getDSlice();
-                if (d != null) {
-                    running.add(d.getHoster());
-                }
-            }
-        }
+        List<IntVar> running = placementVariables(rp);
+
         Solver s = rp.getSolver();
-        if (!running.isEmpty()) {
+        if (running.isEmpty()) {
+            return true;
+        }
+
             //The lazy spread implementation for the placement
             s.post(IntConstraintFactory.alldifferent(running.toArray(new IntVar[running.size()]), "BC"));
 
@@ -75,9 +70,7 @@ public class CSpread implements ChocoConstraint {
                 VM[] vms = new VM[running.size()];
                 int x = 0;
                 for (VM vm : cstr.getInvolvedVMs()) {
-                    if (rp.getFutureRunningVMs().contains(vm)) {
                         vms[x++] = vm;
-                    }
                 }
                 for (int i = 0; i < vms.length; i++) {
                     VM vm = vms[i];
@@ -95,36 +88,45 @@ public class CSpread implements ChocoConstraint {
                         //between the c and the d-slices as it may create a non-solution
                         boolean currentlyGathered = cI != null && cJ != null && cJ.getHoster().instantiatedTo(cI.getHoster().getValue());
 
-                        if (!currentlyGathered && dI != null && cJ != null) {
-                            //No need to place the constraints if the slices do not have a chance to overlap
-                            if (!(cJ.getHoster().instantiated() && !dI.getHoster().contains(cJ.getHoster().getValue()))
-                                    && !(dI.getHoster().instantiated() && !cJ.getHoster().contains(dI.getHoster().getValue()))
-                                    ) {
-                                Arithmetic eqCstr = IntConstraintFactory.arithm(dI.getHoster(), "=", cJ.getHoster());
-                                BoolVar eq = eqCstr.reif();
-                                Arithmetic leqCstr = IntConstraintFactory.arithm(cJ.getEnd(), "<=", dI.getStart());
-                                ChocoUtils.postImplies(s, eq, leqCstr);
+                        if (!currentlyGathered) {
+                            if (dI != null && cJ != null) {
+                                noOverlap(s, dI, cJ);
                             }
-                        }
-
-                        //The inverse relation
-
-                        if (!currentlyGathered && dJ != null && cI != null) {
-                            //No need to place the constraints if the slices do not have a chance to overlap
-                            if (!(cI.getHoster().instantiated() && !dJ.getHoster().contains(cI.getHoster().getValue()))
-                                    && !(dJ.getHoster().instantiated() && !cI.getHoster().contains(dJ.getHoster().getValue()))
-                                    ) {
-                                Arithmetic eqCstr = IntConstraintFactory.arithm(dJ.getHoster(), "=", cI.getHoster());
-                                BoolVar eq = eqCstr.reif();
-                                Arithmetic leqCstr = IntConstraintFactory.arithm(cI.getEnd(), "<=", dJ.getStart());
-                                ChocoUtils.postImplies(s, eq, leqCstr);
+                            //The inverse relation
+                            if (dJ != null && cI != null) {
+                                noOverlap(s, dJ, cI);
                             }
                         }
                     }
                 }
             }
-        }
         return true;
+    }
+
+    private void noOverlap(Solver s, Slice dI, Slice cJ) {
+        //No need to place the constraints if the slices do not have a chance to overlap
+        if (!(cJ.getHoster().instantiated() && !dI.getHoster().contains(cJ.getHoster().getValue()))
+                && !(dI.getHoster().instantiated() && !cJ.getHoster().contains(dI.getHoster().getValue()))
+                ) {
+            Arithmetic eqCstr = IntConstraintFactory.arithm(dI.getHoster(), "=", cJ.getHoster());
+            BoolVar eq = eqCstr.reif();
+            Arithmetic leqCstr = IntConstraintFactory.arithm(cJ.getEnd(), "<=", dI.getStart());
+            ChocoUtils.postImplies(s, eq, leqCstr);
+        }
+    }
+
+    private List<IntVar> placementVariables(ReconfigurationProblem rp) {
+        List<IntVar> running = new ArrayList<>();
+        for (VM vmId : cstr.getInvolvedVMs()) {
+            if (rp.getFutureRunningVMs().contains(vmId)) {
+                VMTransition a = rp.getVMAction(vmId);
+                Slice d = a.getDSlice();
+                if (d != null) {
+                    running.add(d.getHoster());
+                }
+            }
+        }
+        return running;
     }
 
     @Override
