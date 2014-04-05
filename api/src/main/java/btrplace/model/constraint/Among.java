@@ -22,7 +22,10 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.AmongChecker;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * A constraint to force a set of VMs to be hosted on a single group of nodes
@@ -138,22 +141,7 @@ public class Among extends SatConstraint {
 
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder("among(");
-        b.append("vms=").append(getInvolvedVMs());
-        b.append(", nodes=[");
-        for (Iterator<Collection<Node>> ite = pGroups.iterator(); ite.hasNext(); ) {
-            b.append(ite.next());
-            if (ite.hasNext()) {
-                b.append(", ");
-            }
-        }
-        b.append(']');
-        if (isContinuous()) {
-            b.append(", continuous");
-        } else {
-            b.append(", discrete");
-        }
-        return b.append(")").toString();
+        return "among(" + "vms=" + getInvolvedVMs() + ", nodes=" + pGroups + ", " + restrictionToString() + ")";
     }
 
     @Override

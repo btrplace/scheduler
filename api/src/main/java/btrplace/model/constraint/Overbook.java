@@ -47,22 +47,6 @@ public class Overbook extends SatConstraint {
     private double ratio;
 
     /**
-     * Instantiate constraints for a collection of nodes.
-     *
-     * @param nodes the nodes to integrate
-     * @param rc    the resource identifier
-     * @param r     the overbooking ratio, >= 1
-     * @return the associated list of continuous constraints
-     */
-    public static List<Overbook> newOverbooks(Collection<Node> nodes, String rc, double r) {
-        List<Overbook> l = new ArrayList<>(nodes.size());
-        for (Node n : nodes) {
-            l.add(new Overbook(n, rc, r));
-        }
-        return l;
-    }
-
-    /**
      * Make a new constraint with a continuous restriction.
      *
      * @param n  the node
@@ -91,6 +75,22 @@ public class Overbook extends SatConstraint {
     }
 
     /**
+     * Instantiate constraints for a collection of nodes.
+     *
+     * @param nodes the nodes to integrate
+     * @param rc    the resource identifier
+     * @param r     the overbooking ratio, >= 1
+     * @return the associated list of continuous constraints
+     */
+    public static List<Overbook> newOverbooks(Collection<Node> nodes, String rc, double r) {
+        List<Overbook> l = new ArrayList<>(nodes.size());
+        for (Node n : nodes) {
+            l.add(new Overbook(n, rc, r));
+        }
+        return l;
+    }
+
+    /**
      * Get the resource identifier.
      *
      * @return an identifier
@@ -110,15 +110,8 @@ public class Overbook extends SatConstraint {
 
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder();
-        b.append("overbook(node=");
-        b.append(this.getInvolvedNodes().iterator().next()).append(", rc=").append(rcId).append(", ratio=").append(ratio);
-        if (!isContinuous()) {
-            b.append(", discrete");
-        } else {
-            b.append(", continuous");
-        }
-        return b.append(')').toString();
+        return "overbook(node=" + this.getInvolvedNodes().iterator().next()
+                + ", rc=" + rcId + ", ratio=" + ratio + ", " + restrictionToString() + ')';
     }
 
     @Override

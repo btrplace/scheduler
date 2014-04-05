@@ -126,20 +126,8 @@ public class ResourceCapacity extends SatConstraint {
 
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder();
-        b.append("resourceCapacity(")
-                .append("nodes=").append(getInvolvedNodes())
-                .append(", rc=").append(rcId)
-                .append(", amount=").append(qty);
-
-        if (isContinuous()) {
-            b.append(", continuous");
-        } else {
-            b.append(", discrete");
-        }
-        b.append(')');
-
-        return b.toString();
+        return "resourceCapacity(" + "nodes=" + getInvolvedNodes()
+                + ", rc=" + rcId + ", amount=" + qty + ", " + restrictionToString() + ')';
     }
 
     @Override

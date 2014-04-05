@@ -60,15 +60,7 @@ public class Gather extends SatConstraint {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("gather(")
-                .append("vms=").append(getInvolvedVMs());
-
-        if (!isContinuous()) {
-            sb.append(", discrete");
-        } else {
-            sb.append(", continuous");
-        }
-        return sb.append(')').toString();
+        return "gather(" + "vms=" + getInvolvedVMs() + ", " + restrictionToString() + ')';
     }
 
     @Override

@@ -60,13 +60,7 @@ public class Spread extends SatConstraint {
 
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder("spread(vms=").append(getInvolvedVMs());
-        if (!isContinuous()) {
-            b.append(", discrete");
-        } else {
-            b.append(", continuous");
-        }
-        return b.append(')').toString();
+        return "spread(vms=" + getInvolvedVMs() + ", " + restrictionToString() + ')';
     }
 
     @Override

@@ -61,16 +61,7 @@ public class Lonely extends SatConstraint {
 
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder("lonely(")
-                .append("vms=").append(getInvolvedVMs());
-
-        if (!isContinuous()) {
-            b.append(", discrete");
-        } else {
-            b.append(", continuous");
-        }
-
-        return b.append(')').toString();
+        return "lonely(" + "vms=" + getInvolvedVMs() + ", " + restrictionToString() + ')';
     }
 
     @Override

@@ -161,4 +161,11 @@ public abstract class SatConstraint implements Constraint {
     public SatConstraintChecker getChecker() {
         throw new UnsupportedOperationException();
     }
+
+    /**
+     * Pretty string for a restriction
+     */
+    public String restrictionToString() {
+        return isContinuous() ? "continuous" : "discrete";
+    }
 }

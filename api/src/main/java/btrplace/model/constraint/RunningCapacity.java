@@ -110,18 +110,8 @@ public class RunningCapacity extends SatConstraint {
 
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder();
-        b.append("runningCapacity(")
-                .append("nodes=").append(getInvolvedNodes())
-                .append(", amount=").append(qty);
-        if (!isContinuous()) {
-            b.append(", discrete");
-        } else {
-            b.append(", continuous");
-        }
-        b.append(')');
-
-        return b.toString();
+        return "runningCapacity(" + "nodes=" + getInvolvedNodes()
+                + ", amount=" + qty + ", " + restrictionToString() + ')';
     }
 
     @Override

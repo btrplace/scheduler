@@ -22,7 +22,10 @@ import btrplace.model.VM;
 import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.model.constraint.checker.SplitAmongChecker;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * A constraint to force sets of running VMs to be hosted on distinct set of nodes.
@@ -172,29 +175,7 @@ public class SplitAmong extends SatConstraint {
 
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder("splitAmong(");
-        b.append("vms=[");
-        for (Iterator<Collection<VM>> ite = vGroups.iterator(); ite.hasNext(); ) {
-            b.append(ite.next());
-            if (ite.hasNext()) {
-                b.append(", ");
-            }
-        }
-        b.append("], nodes=[");
-        for (Iterator<Collection<Node>> ite = pGroups.iterator(); ite.hasNext(); ) {
-            b.append(ite.next());
-            if (ite.hasNext()) {
-                b.append(", ");
-            }
-        }
-        b.append(']');
-        if (isContinuous()) {
-            b.append(", continuous");
-        } else {
-            b.append(", discrete");
-        }
-
-        return b.append(')').toString();
+        return "splitAmong(" + "vms=[" + vGroups + ", nodes=" + pGroups + ", " + restrictionToString() + ')';
     }
 
 
