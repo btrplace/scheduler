@@ -78,14 +78,6 @@ public interface ChocoReconfigurationAlgorithmParams {
     ChocoReconfigurationAlgorithmParams setViewMapper(ModelViewMapper m);
 
     /**
-     * Get the timeout value.
-     *
-     * @return a positive integer in seconds to indicate the timeout value or a negative value to
-     * indicate no timeout has been set
-     */
-    int getTimeLimit();
-
-    /**
      * Set the timeout value for the solving process.
      * Use a negative number to remove any timeout.
      *
@@ -93,6 +85,14 @@ public interface ChocoReconfigurationAlgorithmParams {
      * @return the current instance
      */
     ChocoReconfigurationAlgorithmParams setTimeLimit(int t);
+
+    /**
+     * Get the timeout value.
+     *
+     * @return a positive integer in seconds to indicate the timeout value or a negative value to
+     * indicate no timeout has been set
+     */
+    int getTimeLimit();
 
     /**
      * Get the mapper that converts {@link btrplace.model.constraint.Constraint} to {@link btrplace.solver.choco.constraint.ChocoConstraint}.
@@ -125,13 +125,6 @@ public interface ChocoReconfigurationAlgorithmParams {
     ChocoReconfigurationAlgorithmParams setDurationEvaluators(DurationEvaluators dev);
 
     /**
-     * Get the maximum duration of a reconfiguration plan.
-     *
-     * @return a positive integer
-     */
-    int getMaxEnd();
-
-    /**
      * Set the maximum duration of a reconfiguration plan.
      *
      * @param end a positive integer
@@ -140,12 +133,11 @@ public interface ChocoReconfigurationAlgorithmParams {
     ChocoReconfigurationAlgorithmParams setMaxEnd(int end);
 
     /**
-     * Get the verbosity level of the solver.
+     * Get the maximum duration of a reconfiguration plan.
      *
-     * @return the verbosity level.
-     * @see #setVerbosity(int)
+     * @return a positive integer
      */
-    int getVerbosity();
+    int getMaxEnd();
 
     /**
      * Set the verbosity level of the solver.
@@ -162,11 +154,12 @@ public interface ChocoReconfigurationAlgorithmParams {
     ChocoReconfigurationAlgorithmParams setVerbosity(int lvl);
 
     /**
-     * Get the current factory that is used to model the transitions.
+     * Get the verbosity level of the solver.
      *
-     * @return the factory
+     * @return the verbosity level.
+     * @see #setVerbosity(int)
      */
-    TransitionFactory getTransitionFactory();
+    int getVerbosity();
 
     /**
      * Set the factory that is used to model the transitions.
@@ -174,4 +167,11 @@ public interface ChocoReconfigurationAlgorithmParams {
      * @param amf the factory to rely on
      */
     void setTransitionFactory(TransitionFactory amf);
+
+    /**
+     * Get the current factory that is used to model the transitions.
+     *
+     * @return the factory
+     */
+    TransitionFactory getTransitionFactory();
 }

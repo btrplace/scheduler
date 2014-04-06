@@ -91,39 +91,37 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         Assert.assertNull(cra.getStatistics());
 
         class Foo extends OptConstraint {
-ChocoConstraintBuilder() {
-    @Override
-    public Class<? extends Constraint> getKey () {
-        return Foo.class;
-            }
-
-            @Override
-    public ChocoConstraint build (Constraint cstr){
-        return new ChocoConstraint() {
-            public boolean inject(ReconfigurationProblem rp) throws SolverException {
-                Mapping map = rp.getSourceModel().getMapping();
-                Solver s = rp.getSolver();
-                IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
-                IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
-                s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_least_AC"));//new AtMostNValue(hosters, nbNodes));
-                rp.setObjective(false, nbNodes);
-                return true;
-            }
-
-            public Set<VM> getMisPlacedVMs(Model m) {
-                return Collections.emptySet();
-            }
-        };
-    }
-}
-
             @Override
             public String id() {
                 return "foo";
             }
         }
 
-        cra.getConstraintMapper().register(new);
+        cra.getConstraintMapper().register(new ChocoConstraintBuilder() {
+            @Override
+            public Class<? extends Constraint> getKey() {
+                return Foo.class;
+            }
+
+            @Override
+            public ChocoConstraint build(Constraint cstr) {
+                return new ChocoConstraint() {
+                    public boolean inject(ReconfigurationProblem rp) throws SolverException {
+                        Mapping map = rp.getSourceModel().getMapping();
+                        Solver s = rp.getSolver();
+                        IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
+                        IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
+                        s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_least_AC"));//new AtMostNValue(hosters, nbNodes));
+                        rp.setObjective(false, nbNodes);
+                        return true;
+                    }
+
+                    public Set<VM> getMisPlacedVMs(Model m) {
+                        return Collections.emptySet();
+                    }
+                };
+            }
+        });
 
         ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>emptyList(), new Foo());
         Mapping res = p.getResult().getMapping();
@@ -165,33 +163,31 @@ ChocoConstraintBuilder() {
         new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5).get();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         class Foo extends OptConstraint {
-ChocoConstraintBuilder() {
-    @Override
-    public Class<? extends Constraint> getKey () {
-        return Foo.class;
-            }
-
-            @Override
-    public ChocoConstraint build (Constraint cstr){
-        return new ChocoConstraint() {
-            public boolean inject(ReconfigurationProblem rp) throws SolverException {
-                return true;
-            }
-
-            public Set<VM> getMisPlacedVMs(Model m) {
-                return new HashSet<>(Arrays.asList(vm2, vm3));
-            }
-        };
-    }
-}
-
             @Override
             public String id() {
                 return "foo";
             }
         }
 
-        cra.getConstraintMapper().register(new);
+        cra.getConstraintMapper().register(new ChocoConstraintBuilder() {
+            @Override
+            public Class<? extends Constraint> getKey() {
+                return Foo.class;
+            }
+
+            @Override
+            public ChocoConstraint build(Constraint cstr) {
+                return new ChocoConstraint() {
+                    public boolean inject(ReconfigurationProblem rp) throws SolverException {
+                        return true;
+                    }
+
+                    public Set<VM> getMisPlacedVMs(Model m) {
+                        return new HashSet<>(Arrays.asList(vm2, vm3));
+                    }
+                };
+            }
+        });
         cra.doRepair(true);
         cra.doOptimize(false);
 

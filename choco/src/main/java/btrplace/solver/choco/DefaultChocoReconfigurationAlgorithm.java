@@ -182,12 +182,12 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     }
 
     @Override
-    public TransitionFactory getTransitionFactory() {
-        return params.getTransitionFactory();
+    public void setTransitionFactory(TransitionFactory amf) {
+        params.setTransitionFactory(amf);
     }
 
     @Override
-    public void setTransitionFactory(TransitionFactory amf) {
-        params.setTransitionFactory(amf);
+    public TransitionFactory getTransitionFactory() {
+        return params.getTransitionFactory();
     }
 }
