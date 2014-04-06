@@ -184,7 +184,7 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
         DefaultReconfigurationProblemBuilder rpb = new DefaultReconfigurationProblemBuilder(origin)
                 .setNextVMsStates(toForge, toRun, toSleep, toKill)
                 .setViewMapper(params.getViewMapper())
-                .setActionModelFactory(params.getActionModelFactory())
+                .setTransitionFactory(params.getTransitionFactory())
                 .setDurationEvaluators(params.getDurationEvaluators());
         if (params.doRepair()) {
             Set<VM> toManage = new HashSet<>();

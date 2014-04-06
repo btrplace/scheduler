@@ -135,7 +135,7 @@ public class RelocatableVM implements KeepRunningVM {
         s.post(new FastIFFEq(stay, duration, 0));
 
         if (!getRelocationMethod().instantiated()) {
-            //TODO: not very compliant with the ForgeActionModel but forge is useless for the moment
+            //TODO: not very compliant with the Forge transition but forge is useless for the moment
             int forgeD = p.getDurationEvaluators().evaluate(p.getSourceModel(), btrplace.plan.event.ForgeVM.class, vm);
             IntVar time = VariableFactory.bounded(rp.makeVarLabel(doReinstantiation.getName(), " * ", forgeD), 0, Integer.MAX_VALUE / 100, s);
             s.post(IntConstraintFactory.times(doReinstantiation, VariableFactory.fixed(forgeD, s), time));

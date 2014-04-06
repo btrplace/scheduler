@@ -108,7 +108,7 @@ public class DefaultReconfigurationProblemBuilder {
      * @param a the factory to use
      * @return the current builder
      */
-    public DefaultReconfigurationProblemBuilder setActionModelFactory(TransitionFactory a) {
+    public DefaultReconfigurationProblemBuilder setTransitionFactory(TransitionFactory a) {
         amf = a;
         return this;
     }

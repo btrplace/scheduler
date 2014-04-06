@@ -25,7 +25,9 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.constraint.ChocoConstraint;
 import btrplace.solver.choco.constraint.ChocoConstraintBuilder;
 import btrplace.solver.choco.runner.SolvingStatistics;
+import btrplace.solver.choco.transition.TransitionFactory;
 import btrplace.solver.choco.transition.TransitionUtils;
+import btrplace.solver.choco.transition.VMTransitionBuilder;
 import btrplace.solver.choco.view.ModelViewMapper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -34,10 +36,7 @@ import solver.constraints.IntConstraintFactory;
 import solver.variables.IntVar;
 import solver.variables.VF;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -92,37 +91,39 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         Assert.assertNull(cra.getStatistics());
 
         class Foo extends OptConstraint {
+            ChocoConstraintBuilder() {
+            @Override
+                public Class<? extends Constraint> getKey () {
+                    return Foo.class;
+                }
+
+                @Override
+                public ChocoConstraint build (Constraint cstr){
+                    return new ChocoConstraint() {
+                        public boolean inject(ReconfigurationProblem rp) throws SolverException {
+                            Mapping map = rp.getSourceModel().getMapping();
+                            Solver s = rp.getSolver();
+                            IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
+                            IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
+                            s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_least_AC"));//new AtMostNValue(hosters, nbNodes));
+                            rp.setObjective(false, nbNodes);
+                            return true;
+                        }
+
+                        public Set<VM> getMisPlacedVMs(Model m) {
+                            return Collections.emptySet();
+                        }
+                    };
+                }
+            }
+
             @Override
             public String id() {
                 return "foo";
             }
         }
 
-        cra.getConstraintMapper().register(new ChocoConstraintBuilder() {
-            @Override
-            public Class<? extends Constraint> getKey() {
-                return Foo.class;
-            }
-
-            @Override
-            public ChocoConstraint build(Constraint cstr) {
-                return new ChocoConstraint() {
-                    public boolean inject(ReconfigurationProblem rp) throws SolverException {
-                        Mapping map = rp.getSourceModel().getMapping();
-                        Solver s = rp.getSolver();
-                        IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
-                        IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
-                        s.post(IntConstraintFactory.nvalues(hosters, nbNodes, "at_least_AC"));//new AtMostNValue(hosters, nbNodes));
-                        rp.setObjective(false, nbNodes);
-                        return true;
-                    }
-
-                    public Set<VM> getMisPlacedVMs(Model m) {
-                        return Collections.emptySet();
-                    }
-                };
-            }
-        });
+        cra.getConstraintMapper().register(new);
 
         ReconfigurationPlan p = cra.solve(mo, Collections.<SatConstraint>emptyList(), new Foo());
         Mapping res = p.getResult().getMapping();
@@ -164,31 +165,33 @@ public class DefaultChocoReconfigurationAlgorithmTest {
         new MappingFiller(mo.getMapping()).on(n1, n2, n3).run(n1, vm1, vm4).run(n2, vm2).run(n3, vm3, vm5).get();
         ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
         class Foo extends OptConstraint {
+            ChocoConstraintBuilder() {
+            @Override
+                public Class<? extends Constraint> getKey () {
+                    return Foo.class;
+                }
+
+                @Override
+                public ChocoConstraint build (Constraint cstr){
+                    return new ChocoConstraint() {
+                        public boolean inject(ReconfigurationProblem rp) throws SolverException {
+                            return true;
+                        }
+
+                        public Set<VM> getMisPlacedVMs(Model m) {
+                            return new HashSet<>(Arrays.asList(vm2, vm3));
+                        }
+                    };
+                }
+            }
+
             @Override
             public String id() {
                 return "foo";
             }
         }
 
-        cra.getConstraintMapper().register(new ChocoConstraintBuilder() {
-            @Override
-            public Class<? extends Constraint> getKey() {
-                return Foo.class;
-            }
-
-            @Override
-            public ChocoConstraint build(Constraint cstr) {
-                return new ChocoConstraint() {
-                    public boolean inject(ReconfigurationProblem rp) throws SolverException {
-                        return true;
-                    }
-
-                    public Set<VM> getMisPlacedVMs(Model m) {
-                        return new HashSet<>(Arrays.asList(vm2, vm3));
-                    }
-                };
-            }
-        });
+        cra.getConstraintMapper().register(new);
         cra.doRepair(true);
         cra.doOptimize(false);
 
@@ -276,7 +279,22 @@ public class DefaultChocoReconfigurationAlgorithmTest {
                 new Running(vm2),
                 new Ready(vm3)));
         Assert.assertNotNull(p);
-        //System.out.println(p);
     }
 
+    /**
+     * Remove the ready->running transition so the solving process will fail
+     *
+     * @throws SolverException
+     */
+    @Test(expectedExceptions = {SolverException.class})
+    public void testTransitionFactoryCustomisation() throws SolverException {
+        ChocoReconfigurationAlgorithm cra = new DefaultChocoReconfigurationAlgorithm();
+        TransitionFactory tf = cra.getTransitionFactory();
+        List<VMTransitionBuilder> b = tf.getBuilder(VMState.READY, VMState.RUNNING);
+        Assert.assertTrue(tf.remove(b.get(0)));
+        Model mo = new DefaultModel();
+        VM v = mo.newVM();
+        mo.getMapping().addReadyVM(v);
+        cra.solve(mo, Collections.<SatConstraint>singletonList(new Running(v)));
+    }
 }

@@ -162,8 +162,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         makeCardinalityVariables();
 
-        makeNodeActionModels();
-        makeVMActionModels();
+        makeNodeTransitions();
+        makeVMTransitions();
 
         bpBuilder = new BinPackingBuilder(this);
         taskSchedBuilder = new SliceSchedulerBuilder(this);
@@ -397,7 +397,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
     }
 
-    private void makeVMActionModels() throws SolverException {
+    private void makeVMTransitions() throws SolverException {
         Mapping map = model.getMapping();
         vmActions = new VMTransition[vms.length];
         for (int i = 0; i < vms.length; i++) {
@@ -439,7 +439,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
     }
 
-    private void makeNodeActionModels() throws SolverException {
+    private void makeNodeTransitions() throws SolverException {
 
         Mapping m = model.getMapping();
         nodeActions = new NodeTransition[nodes.length];
