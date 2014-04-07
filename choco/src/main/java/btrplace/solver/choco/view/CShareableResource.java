@@ -127,7 +127,7 @@ public class CShareableResource implements ChocoModelView {
 
         }
         //We create a BP with only the VMs requiring a not null amount of resources
-        p.getBinPackingBuilder().add(r.getResourceIdentifier(),
+        p.getGlobalPackingConstraint().addDim(r.getResourceIdentifier(),
                 virtRcUsage,
                 notNullUsage.toArray(new IntVar[notNullUsage.size()]),
                 hosts.toArray(new IntVar[hosts.size()]));

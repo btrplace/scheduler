@@ -185,7 +185,9 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
                 .setNextVMsStates(toForge, toRun, toSleep, toKill)
                 .setViewMapper(params.getViewMapper())
                 .setTransitionFactory(params.getTransitionFactory())
+                .setPackingBuilder(params.getPackingBuilder())
                 .setDurationEvaluators(params.getDurationEvaluators());
+
         if (params.doRepair()) {
             Set<VM> toManage = new HashSet<>();
             for (ChocoConstraint cstr : cConstraints) {

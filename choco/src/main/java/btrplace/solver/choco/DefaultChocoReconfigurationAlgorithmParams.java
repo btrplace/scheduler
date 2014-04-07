@@ -35,6 +35,8 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
 
     private TransitionFactory amf;
 
+    private PackingConstraintBuilder pb;
+
     private boolean optimize = false;
 
     /**
@@ -58,6 +60,7 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
         durationEvaluators = DurationEvaluators.newBundle();
         viewMapper = ModelViewMapper.newBundle();
         amf = TransitionFactory.newBundle();
+        pb = new DefaultPackingConstraint.Builder();
     }
 
     @Override
@@ -156,5 +159,15 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
     @Override
     public TransitionFactory getTransitionFactory() {
         return this.amf;
+    }
+
+    @Override
+    public void setPackingBuilder(PackingConstraintBuilder packBuilder) {
+        this.pb = packBuilder;
+    }
+
+    @Override
+    public PackingConstraintBuilder getPackingBuilder() {
+        return this.pb;
     }
 }

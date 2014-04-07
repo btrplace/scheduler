@@ -190,4 +190,15 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     public TransitionFactory getTransitionFactory() {
         return params.getTransitionFactory();
     }
+
+
+    @Override
+    public void setPackingBuilder(PackingConstraintBuilder pb) {
+        params.setPackingBuilder(pb);
+    }
+
+    @Override
+    public PackingConstraintBuilder getPackingBuilder() {
+        return params.getPackingBuilder();
+    }
 }

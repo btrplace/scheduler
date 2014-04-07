@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 import solver.ResolutionPolicy;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
-import solver.exception.ContradictionException;
 import solver.search.loop.monitors.IMonitorSolution;
 import solver.search.loop.monitors.SMF;
 import solver.search.solution.AllSolutionsRecorder;
@@ -103,7 +102,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private AliasedCumulativesBuilder cumulativeBuilder;
 
-    private BinPackingBuilder bpBuilder;
+    private PackingConstraint packBuilder;
 
     private ObjectiveAlterer alterer = new DefaultObjectiveAlterer();
 
@@ -132,6 +131,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                                          DurationEvaluators dEval,
                                          ModelViewMapper vMapper,
                                          TransitionFactory amf,
+                                         PackingConstraintBuilder pb,
                                          Set<VM> ready,
                                          Set<VM> running,
                                          Set<VM> sleeping,
@@ -146,6 +146,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         this.manageable = new HashSet<>(preRooted);
         this.useLabels = label;
         this.amFactory = amf;
+        this.packBuilder = pb.build(this);
         model = m;
         durEval = dEval;
         this.viewMapper = vMapper;
@@ -165,7 +166,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         makeNodeTransitions();
         makeVMTransitions();
 
-        bpBuilder = new BinPackingBuilder(this);
         taskSchedBuilder = new SliceSchedulerBuilder(this);
         cumulativeBuilder = new AliasedCumulativesBuilder(this);
 
@@ -188,10 +188,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             }
         }
 
-        try {
-            bpBuilder.inject();
-        } catch (ContradictionException ex) {
-            throw new SolverException(model, ex.getMessage(), ex);
+        if (!packBuilder.commit()) {
+            return null;
         }
 
         addContinuousResourceCapacities();
@@ -348,7 +346,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         for (int i = 0; i < ds.length; i++) {
             usages[i] = VariableFactory.one(solver);
         }
-        bpBuilder.add("vmsOnNodes", vmsCountOnNodes, usages, ds);
+        packBuilder.addDim("vmsOnNodes", vmsCountOnNodes, usages, ds);
     }
 
     @Override
@@ -512,8 +510,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public BinPackingBuilder getBinPackingBuilder() {
-        return bpBuilder;
+    public PackingConstraint getGlobalPackingConstraint() {
+        return packBuilder;
     }
 
     @Override

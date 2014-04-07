@@ -778,6 +778,7 @@ public class DefaultReconfigurationProblemTest {
         TransitionFactory amf = TransitionFactory.newBundle();
         ReconfigurationProblem rp = new DefaultReconfigurationProblem(mo, DurationEvaluators.newBundle(), new ModelViewMapper(),
                 amf,
+                new DefaultPackingConstraint.Builder(),
                 Collections.singleton(vm4),
                 Collections.singleton(vm5),
                 Collections.singleton(vm1),

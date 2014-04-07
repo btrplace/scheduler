@@ -352,11 +352,11 @@ public interface ReconfigurationProblem {
     AliasedCumulativesBuilder getAliasedCumulativesBuilder();
 
     /**
-     * Get the builder that handle the VM placement at the end of the reconfiguration process.
+     * Get the global packing constraint that manage the VMs placement according to some resources
      *
-     * @return the builder
+     * @return the constraint
      */
-    BinPackingBuilder getBinPackingBuilder();
+    PackingConstraint getGlobalPackingConstraint();
 
     /**
      * Get the logger.

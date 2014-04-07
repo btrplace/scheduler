@@ -174,4 +174,18 @@ public interface ChocoReconfigurationAlgorithmParams {
      * @return the factory
      */
     TransitionFactory getTransitionFactory();
+
+    /**
+     * Set the packing builder to use.
+     *
+     * @param pb the builder to user
+     */
+    void setPackingBuilder(PackingConstraintBuilder pb);
+
+    /**
+     * Get the packing builder that is used.
+     *
+     * @return the current builder.
+     */
+    PackingConstraintBuilder getPackingBuilder();
 }

@@ -40,6 +40,7 @@ import java.util.Set;
  * <li>Default DurationEvaluators: {@link btrplace.solver.choco.duration.DurationEvaluators#newBundle()}</li>
  * <li>Default ViewMapper: {@link btrplace.solver.choco.view.ModelViewMapper#newBundle()}</li>
  * <li>Default TransitionFactory: {@link btrplace.solver.choco.transition.TransitionFactory#newBundle()}</li>
+ * <li>Default PackingConstraint: {@link DefaultPackingConstraint}</li>
  * <li>The state of the VMs is unchanged</li>
  * </ul>
  *
@@ -60,6 +61,8 @@ public class DefaultReconfigurationProblemBuilder {
     private Set<VM> manageable;
 
     private TransitionFactory amf;
+
+    private PackingConstraintBuilder packBuilder;
 
     /**
      * Make a new builder for a problem working on a given model.
@@ -102,6 +105,10 @@ public class DefaultReconfigurationProblemBuilder {
         return this;
     }
 
+    public DefaultReconfigurationProblemBuilder setPackingBuilder(PackingConstraintBuilder p) {
+        packBuilder = p;
+        return this;
+    }
     /**
      * Provide a dedicated {@link btrplace.solver.choco.transition.TransitionFactory}.
      *
@@ -191,7 +198,11 @@ public class DefaultReconfigurationProblemBuilder {
         if (amf == null) {
             amf = TransitionFactory.newBundle();
         }
-        return new DefaultReconfigurationProblem(model, dEval, viewMapper, amf, waits, runs, sleep, over, manageable, labelVars);
+
+        if (packBuilder == null) {
+            packBuilder = new DefaultPackingConstraint.Builder();
+        }
+        return new DefaultReconfigurationProblem(model, dEval, viewMapper, amf, packBuilder, waits, runs, sleep, over, manageable, labelVars);
     }
 
 }
