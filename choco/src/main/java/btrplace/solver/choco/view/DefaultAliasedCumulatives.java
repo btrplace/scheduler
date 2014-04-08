@@ -15,10 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.extensions;
+package btrplace.solver.choco.view;
 
-import btrplace.solver.SolverException;
+import btrplace.model.VM;
+import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.extensions.AliasedCumulatives;
 import gnu.trove.list.array.TIntArrayList;
 import solver.variables.IntVar;
 
@@ -29,14 +31,14 @@ import java.util.List;
  * Builder to create constraints where slices have to be placed on nodes
  * with regards to the slice and the nodes capacity.
  * <p/>
- * It differs from {@link DefaultCumulatives} as
+ * It differs from {@link btrplace.solver.choco.view.DefaultCumulatives} as
  * a resource may in fact be an alias to another one. This allows
  * to create a fake resource that aggregate the capacity of each of
  * the aliased resources.
  *
  * @author Fabien Hermenier
  */
-public class AliasedCumulativesBuilder extends AbstractCumulatives {
+public class DefaultAliasedCumulatives extends AbstractCumulatives implements btrplace.solver.choco.view.AliasedCumulatives {
 
     private TIntArrayList capacities;
 
@@ -47,12 +49,13 @@ public class AliasedCumulativesBuilder extends AbstractCumulatives {
      *
      * @param p the associated problem
      */
-    public AliasedCumulativesBuilder(ReconfigurationProblem p) {
+    public DefaultAliasedCumulatives(ReconfigurationProblem p) {
         super(p);
         capacities = new TIntArrayList();
         aliases = new ArrayList<>();
 
     }
+
 
     /**
      * Add a constraint
@@ -62,7 +65,8 @@ public class AliasedCumulativesBuilder extends AbstractCumulatives {
      * @param dUse  the usage of each of the d-slices
      * @param alias the resource identifiers that compose the alias
      */
-    public void add(int c, int[] cUse, IntVar[] dUse, int[] alias) {
+    @Override
+    public void addDim(int c, int[] cUse, IntVar[] dUse, int[] alias) {
         capacities.add(c);
         cUsages.add(cUse);
         dUsages.add(dUse);
@@ -74,7 +78,7 @@ public class AliasedCumulativesBuilder extends AbstractCumulatives {
      *
      * @return a list of constraint that may be empty.
      */
-    public boolean commit() throws SolverException {
+    public boolean beforeSolve(ReconfigurationProblem r) {
         for (int i = 0; i < aliases.size(); i++) {
             int capa = capacities.get(i);
             int[] alias = aliases.get(i);
@@ -94,7 +98,33 @@ public class AliasedCumulativesBuilder extends AbstractCumulatives {
     }
 
     @Override
-    public void add(IntVar[] c, int[] cUse, IntVar[] dUse) {
+    public String getIdentifier() {
+        return btrplace.solver.choco.view.AliasedCumulatives.VIEW_ID;
+    }
 
+    @Override
+    public boolean insertActions(ReconfigurationProblem r, ReconfigurationPlan p) {
+        return true;
+    }
+
+    @Override
+    public boolean cloneVM(VM vm, VM clone) {
+        return true;
+    }
+
+    /**
+     * Builder associated to this constraint.
+     */
+    public static class Builder implements SolverViewBuilder {
+
+        @Override
+        public String getKey() {
+            return btrplace.solver.choco.view.AliasedCumulatives.VIEW_ID;
+        }
+
+        @Override
+        public btrplace.solver.choco.view.AliasedCumulatives build(ReconfigurationProblem p) {
+            return new DefaultAliasedCumulatives(p);
+        }
     }
 }

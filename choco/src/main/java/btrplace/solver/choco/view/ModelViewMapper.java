@@ -55,7 +55,7 @@ public class ModelViewMapper {
     /**
      * Register a constraint builder.
      *
-     * @param vb the builder to add
+     * @param vb the builder to addDim
      * @return {@code true} if no builder previously that registered for the view it handles
      */
     public boolean register(ChocoModelViewBuilder vb) {

@@ -24,8 +24,6 @@ import btrplace.model.VMState;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.duration.DurationEvaluators;
-import btrplace.solver.choco.extensions.AliasedCumulativesBuilder;
-import btrplace.solver.choco.extensions.Cumulatives;
 import btrplace.solver.choco.transition.NodeTransition;
 import btrplace.solver.choco.transition.VMTransition;
 import btrplace.solver.choco.view.ChocoModelView;
@@ -292,7 +290,7 @@ public interface ReconfigurationProblem {
      * Add a view.
      * There must not be a view with a same identifier already in.
      *
-     * @param v the view to add
+     * @param v the view to addDim
      * @return {@code true} iff the view has been added.
      */
     boolean addView(ChocoModelView v);
@@ -322,27 +320,6 @@ public interface ReconfigurationProblem {
      * @return a set of VMs identifier
      */
     Set<VM> getManageableVMs();
-
-    /**
-     * Get the global constraint that handle the scheduling part of the problem.
-     *
-     * @return the constraint
-     */
-    Cumulatives getGlobalCumulatives();
-
-    /**
-     * Get the global constraint that handle the management of capacities over the time.
-     *
-     * @return the builder
-     */
-    AliasedCumulativesBuilder getAliasedCumulativesBuilder();
-
-    /**
-     * Get the global packing constraint that manage the VMs placement according to some resources
-     *
-     * @return the constraint
-     */
-    //Packing getGlobalPacking();
 
     /**
      * Get the logger.

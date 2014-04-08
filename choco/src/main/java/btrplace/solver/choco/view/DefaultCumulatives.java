@@ -15,12 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.extensions;
+package btrplace.solver.choco.view;
 
 import btrplace.model.VM;
-import btrplace.solver.SolverException;
+import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
+import btrplace.solver.choco.extensions.FastImpliesEq;
+import btrplace.solver.choco.extensions.TaskScheduler;
 import btrplace.solver.choco.transition.KeepRunningVM;
 import btrplace.solver.choco.transition.TransitionUtils;
 import btrplace.solver.choco.transition.VMTransition;
@@ -38,7 +40,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class DefaultCumulatives extends AbstractCumulatives {
+public class DefaultCumulatives extends AbstractCumulatives implements Cumulatives {
 
     private List<IntVar[]> capacities;
 
@@ -52,6 +54,22 @@ public class DefaultCumulatives extends AbstractCumulatives {
         capacities = new ArrayList<>();
     }
 
+
+    @Override
+    public String getIdentifier() {
+        return Cumulatives.VIEW_ID;
+    }
+
+    @Override
+    public boolean insertActions(ReconfigurationProblem r, ReconfigurationPlan p) {
+        return true;
+    }
+
+    @Override
+    public boolean cloneVM(VM vm, VM clone) {
+        return true;
+    }
+
     /**
      * Add a dimension.
      *
@@ -60,7 +78,7 @@ public class DefaultCumulatives extends AbstractCumulatives {
      * @param dUse the resource usage of each of the dSlices
      */
     @Override
-    public void add(IntVar[] c, int[] cUse, IntVar[] dUse) {
+    public void addDim(IntVar[] c, int[] cUse, IntVar[] dUse) {
         capacities.add(c);
         cUsages.add(cUse);
         dUsages.add(dUse);
@@ -72,8 +90,10 @@ public class DefaultCumulatives extends AbstractCumulatives {
      * @return the resulting constraint
      */
     @Override
-    public boolean commit() throws SolverException {
-
+    public boolean beforeSolve(ReconfigurationProblem p) {
+        if (capacities.isEmpty()) {
+            return true;
+        }
         //We get the UB of the node capacity and the LB for the VM usage.
         int[][] capas = new int[capacities.size()][];
         int i = 0;
@@ -193,7 +213,12 @@ public class DefaultCumulatives extends AbstractCumulatives {
     /**
      * Builder associated to this constraint.
      */
-    public static class Builder implements CumulativesBuilder {
+    public static class Builder implements SolverViewBuilder {
+
+        @Override
+        public String getKey() {
+            return Cumulatives.VIEW_ID;
+        }
 
         @Override
         public Cumulatives build(ReconfigurationProblem p) {

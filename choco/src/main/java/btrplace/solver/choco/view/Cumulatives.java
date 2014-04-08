@@ -15,17 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.extensions;
+package btrplace.solver.choco.view;
 
-import btrplace.solver.SolverException;
 import solver.variables.IntVar;
 
 /**
  * Interface to specify a multi-dimension cumulatives constraints.
  * Dimensions can be added on the fly.
+ *
  * @author Fabien Hermenier
  */
-public interface Cumulatives {
+public interface Cumulatives extends ChocoModelView {
+
+    public static final String VIEW_ID = "choco.cumulatives";
+
 
     /**
      * Add a new dimension.
@@ -34,13 +37,5 @@ public interface Cumulatives {
      * @param cUse the resource usage of each of the cSlices
      * @param dUse the resource usage of each of the dSlices
      */
-    void add(IntVar[] c, int[] cUse, IntVar[] dUse);
-
-    /**
-     * Commit all the stated dimensions, generate then plug the underlying constraints to the problem
-     *
-     * @return {@code false} if the resulting problem has no solution
-     * @throws SolverException if an error occurred while building the underlying constraints.
-     */
-    boolean commit() throws SolverException;
+    public abstract void addDim(IntVar[] c, int[] cUse, IntVar[] dUse);
 }

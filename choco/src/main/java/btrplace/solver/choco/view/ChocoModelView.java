@@ -19,6 +19,7 @@ package btrplace.solver.choco.view;
 
 import btrplace.model.VM;
 import btrplace.plan.ReconfigurationPlan;
+import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 
 
@@ -41,8 +42,9 @@ public interface ChocoModelView {
      * The view can then customize the RP a last time.
      *
      * @return {@code false} iff there will be no solution to the RP.
+     * @throws btrplace.solver.SolverException if an error occurred while building the problem
      */
-    boolean beforeSolve(ReconfigurationProblem rp);
+    boolean beforeSolve(ReconfigurationProblem rp) throws SolverException;
 
     /**
      * Allow the insertion of actions on the plan computed for a given problem.

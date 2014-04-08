@@ -17,20 +17,14 @@
 
 package btrplace.solver.choco.view;
 
-import btrplace.solver.choco.ReconfigurationProblem;
+import solver.variables.IntVar;
 
 /**
- * Abstract builder for {@link Packing}.
- *
  * @author Fabien Hermenier
  */
-public interface PackingBuilder {
+public interface AliasedCumulatives extends ChocoModelView {
 
-    /**
-     * Build a new constraint
-     *
-     * @param p the problem to rely on
-     * @return the created constraint
-     */
-    Packing build(ReconfigurationProblem p);
+    static final String VIEW_ID = "choco.aliasedCumulatives";
+
+    void addDim(int c, int[] cUse, IntVar[] dUse, int[] alias);
 }

@@ -37,7 +37,7 @@ import java.util.BitSet;
  * A kind of cumulatives constraint where a single resource is shared among multiple identifiers.
  *
  * @author Fabien Hermenier
- * @see TaskScheduler
+ * @see btrplace.solver.choco.extensions.TaskScheduler
  */
 public class AliasedCumulatives extends IntConstraint<IntVar> {
 

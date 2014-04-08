@@ -37,7 +37,7 @@ public interface SolverViewBuilder {
      * Build the {@link ChocoModelView} associated to the {@link ModelView}
      * identified as key.
      *
-     * @param rp the problem to add
+     * @param rp the problem to addDim
      * @throws btrplace.solver.SolverException if an error occurred while building the view
      */
     ChocoModelView build(ReconfigurationProblem rp) throws SolverException;

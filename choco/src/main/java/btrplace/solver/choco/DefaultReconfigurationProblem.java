@@ -24,13 +24,8 @@ import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.duration.DurationEvaluators;
-import btrplace.solver.choco.extensions.AliasedCumulativesBuilder;
-import btrplace.solver.choco.extensions.Cumulatives;
 import btrplace.solver.choco.transition.*;
-import btrplace.solver.choco.view.ChocoModelView;
-import btrplace.solver.choco.view.ModelViewMapper;
-import btrplace.solver.choco.view.Packing;
-import btrplace.solver.choco.view.SolverViewBuilder;
+import btrplace.solver.choco.view.*;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import org.slf4j.Logger;
@@ -103,12 +98,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private IntVar[] vmsCountOnNodes;
 
-    private AliasedCumulativesBuilder cumulativeBuilder;
-
-    //private Packing packing;
-
-    private Cumulatives cumulatives;
-
     private ObjectiveAlterer alterer = new DefaultObjectiveAlterer();
 
     private ModelViewMapper viewMapper;
@@ -175,12 +164,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         modelViews = new HashMap<>(model.getViews().size());
         insertModelViews();
 
-        //this.packing = ps.getPackingBuilder().build(this);
-        this.cumulatives = ps.getCumulativesBuilder().build(this);
-
-        cumulativeBuilder = new AliasedCumulativesBuilder(this);
-
-
         linkCardinalityWithSlices();
 
     }
@@ -191,6 +174,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (!optimize) {
             solvingPolicy = ResolutionPolicy.SATISFACTION;
         }
+        addContinuousResourceCapacities();
 
         for (Map.Entry<String, ChocoModelView> cv : modelViews.entrySet()) {
             if (!cv.getValue().beforeSolve(this)) {
@@ -204,20 +188,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             }
         }
 
-
-/*        if (!packing.commit()) {
-            return null;
-        }*/
-
-        addContinuousResourceCapacities();
-
-        if (!cumulatives.commit()) {
-            return null;
-        }
-
-        if (!cumulativeBuilder.commit()) {
-            return null;
-        }
 
         //Set the timeout
         if (timeLimit > 0) {
@@ -305,7 +275,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         solver.set(seq);
     }
 
-    private void addContinuousResourceCapacities() {
+    private void addContinuousResourceCapacities() throws SolverException {
         TIntArrayList cUse = new TIntArrayList();
         List<IntVar> iUse = new ArrayList<>();
         for (int j = 0; j < getVMs().length; j++) {
@@ -318,9 +288,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             }
         }
 
-        getGlobalCumulatives().add(getNbRunningVMs(),
-                cUse.toArray(),
-                iUse.toArray(new IntVar[iUse.size()]));
+        ChocoModelView v = getView(Cumulatives.VIEW_ID);
+        if (v == null) {
+            throw new SolverException(model, "View '" + Cumulatives.VIEW_ID + "' is required but missing");
+        }
+        ((Cumulatives) v).addDim(getNbRunningVMs(), cUse.toArray(), iUse.toArray(new IntVar[iUse.size()]));
     }
 
     /**
@@ -355,13 +327,17 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
     }
 
-    private void linkCardinalityWithSlices() {
+    private void linkCardinalityWithSlices() throws SolverException {
         IntVar[] ds = SliceUtils.extractHoster(TransitionUtils.getDSlices(vmActions));
         IntVar[] usages = new IntVar[ds.length];
         for (int i = 0; i < ds.length; i++) {
             usages[i] = VariableFactory.one(solver);
         }
-        ((Packing) getView(Packing.VIEW_ID)).addDim("vmsOnNodes", vmsCountOnNodes, usages, ds);
+        ChocoModelView v = getView(Packing.VIEW_ID);
+        if (v == null) {
+            throw new SolverException(model, "View '" + Packing.VIEW_ID + "' is required but missing");
+        }
+        ((Packing) v).addDim("vmsOnNodes", vmsCountOnNodes, usages, ds);
     }
 
     @Override
@@ -520,21 +496,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     public Solver getSolver() {
         return solver;
     }
-
-    @Override
-    public Cumulatives getGlobalCumulatives() {
-        return cumulatives;
-    }
-
-    @Override
-    public AliasedCumulativesBuilder getAliasedCumulativesBuilder() {
-        return cumulativeBuilder;
-    }
-
-    /*@Override
-    public Packing getGlobalPacking() {
-        return packing;
-    } */
 
     @Override
     public IntVar makeHostVariable(Object... n) {

@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.extensions;
+package btrplace.solver.choco.view;
 
 import btrplace.solver.choco.ReconfigurationProblem;
 
 /**
- * Abstract builder for {@link btrplace.solver.choco.extensions.Cumulatives}.
+ * Abstract builder for {@link Cumulatives}.
  *
  * @author Fabien Hermenier
  */

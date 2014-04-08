@@ -19,7 +19,6 @@ package btrplace.solver.choco;
 
 import btrplace.solver.choco.constraint.ConstraintMapper;
 import btrplace.solver.choco.duration.DurationEvaluators;
-import btrplace.solver.choco.extensions.CumulativesBuilder;
 import btrplace.solver.choco.transition.TransitionFactory;
 import btrplace.solver.choco.view.ModelViewMapper;
 import btrplace.solver.choco.view.SolverViewBuilder;
@@ -178,20 +177,6 @@ public interface ChocoReconfigurationAlgorithmParams {
      * @return the factory
      */
     TransitionFactory getTransitionFactory();
-
-    /**
-     * Set the cumulatives builder to use.
-     *
-     * @param pb the builder to user
-     */
-    void setCumulativesBuilder(CumulativesBuilder pb);
-
-    /**
-     * Get the cumulatives builder that is used.
-     *
-     * @return the current builder.
-     */
-    CumulativesBuilder getCumulativesBuilder();
 
     void addSolverViewBuilder(SolverViewBuilder b);
 

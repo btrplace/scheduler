@@ -75,17 +75,17 @@ public class SingleRunnerStatistics implements SolvingStatistics {
     /**
      * Make new statistics.
      *
-     * @param n             the number of nodes in the model
-     * @param v               the number of VMs in the model
-     * @param c       the number of constraints
-     * @param managedVMs          the number of VMs managed by the algorithm.
-     * @param st                  the moment the computation starts (epoch format)
-     * @param t                   the solving duration in milliseconds
-     * @param nbN                 the number of opened nodes at the moment
-     * @param nbB                 the number of backtracks at the moment
-     * @param to                  {@code true} to indicate the solver hit a timeout
-     * @param cd the duration of the core-RP building process
-     * @param sd       the duration of the core-RP specialization process
+     * @param n          the number of nodes in the model
+     * @param v          the number of VMs in the model
+     * @param c          the number of constraints
+     * @param managedVMs the number of VMs managed by the algorithm.
+     * @param st         the moment the computation starts (epoch format)
+     * @param t          the solving duration in milliseconds
+     * @param nbN        the number of opened nodes at the moment
+     * @param nbB        the number of backtracks at the moment
+     * @param to         {@code true} to indicate the solver hit a timeout
+     * @param cd         the duration of the core-RP building process
+     * @param sd         the duration of the core-RP specialization process
      */
     public SingleRunnerStatistics(ChocoReconfigurationAlgorithmParams ps, int n, int v, int c, int managedVMs, long st,
                                   long t, long nbN, long nbB, boolean to, long cd, long sd) {
@@ -143,7 +143,7 @@ public class SingleRunnerStatistics implements SolvingStatistics {
     /**
      * Add a solution to the statistics.
      *
-     * @param so the solution to add
+     * @param so the solution to addDim
      */
     public void addSolution(SolutionStatistics so) {
         this.solutions.add(so);

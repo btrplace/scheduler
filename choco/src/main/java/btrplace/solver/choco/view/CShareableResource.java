@@ -84,7 +84,7 @@ public class CShareableResource implements ChocoModelView {
      * @param p the problem to rely on
      * @param r the resource to consider
      */
-    public CShareableResource(ReconfigurationProblem p, ShareableResource r) {
+    public CShareableResource(ReconfigurationProblem p, ShareableResource r) throws SolverException {
         this.rc = r;
         this.rp = p;
         this.references = new HashMap<>();
@@ -127,7 +127,11 @@ public class CShareableResource implements ChocoModelView {
 
         }
         //We create a BP with only the VMs requiring a not null amount of resources
-        ((Packing) rp.getView(Packing.VIEW_ID)).addDim(r.getResourceIdentifier(),
+        ChocoModelView v = rp.getView(Packing.VIEW_ID);
+        if (v == null) {
+            throw new SolverException(rp.getSourceModel(), "View '" + Cumulatives.VIEW_ID + "' is required but missing");
+        }
+        ((Packing) v).addDim(r.getResourceIdentifier(),
                 virtRcUsage,
                 notNullUsage.toArray(new IntVar[notNullUsage.size()]),
                 hosts.toArray(new IntVar[hosts.size()]));
@@ -248,7 +252,7 @@ public class CShareableResource implements ChocoModelView {
     }
 
     /**
-     * Generate and add an {@link btrplace.plan.event.Allocate} action if the amount of
+     * Generate and addDim an {@link btrplace.plan.event.Allocate} action if the amount of
      * resources allocated to a VM has changed.
      * The action schedule must be known.
      *
@@ -287,7 +291,7 @@ public class CShareableResource implements ChocoModelView {
      * @return false if an operation leads to a problem without solution
      */
     @Override
-    public boolean beforeSolve(ReconfigurationProblem p) {
+    public boolean beforeSolve(ReconfigurationProblem p) throws SolverException {
         for (VM vm : source.getMapping().getAllVMs()) {
             int vmId = p.getVM(vm);
             IntVar v = vmAllocation[vmId];
@@ -377,7 +381,7 @@ public class CShareableResource implements ChocoModelView {
         return false;
     }
 
-    private boolean linkVirtualToPhysicalUsage() {
+    private boolean linkVirtualToPhysicalUsage() throws SolverException {
         for (int nIdx = 0; nIdx < ratios.length; nIdx++) {
             if (!linkVirtualToPhysicalUsage(nIdx)) {
                 return false;
@@ -403,7 +407,12 @@ public class CShareableResource implements ChocoModelView {
 
         IntVar[] capacities = new IntVar[rp.getNodes().length];
         System.arraycopy(virtRcUsage, 0, capacities, 0, rp.getNodes().length);
-        rp.getGlobalCumulatives().add(capacities, cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]));
+        ChocoModelView v = rp.getView(Cumulatives.VIEW_ID);
+        if (v == null) {
+            throw new SolverException(rp.getSourceModel(), "View '" + Cumulatives.VIEW_ID + "' is required but missing");
+        }
+
+        ((Cumulatives) v).addDim(capacities, cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]));
         return true;
     }
 

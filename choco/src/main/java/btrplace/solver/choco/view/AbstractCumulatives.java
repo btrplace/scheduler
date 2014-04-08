@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.extensions;
+package btrplace.solver.choco.view;
 
 import btrplace.model.VM;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.Slice;
+import btrplace.solver.choco.extensions.LocalTaskScheduler;
 import btrplace.solver.choco.transition.VMTransition;
 import solver.variables.IntVar;
 
@@ -33,7 +34,7 @@ import java.util.Map;
  *
  * @author Fabien Hermenier
  */
-public abstract class AbstractCumulatives implements Cumulatives {
+public abstract class AbstractCumulatives {
 
     protected ReconfigurationProblem rp;
 

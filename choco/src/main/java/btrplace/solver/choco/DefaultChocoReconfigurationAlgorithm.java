@@ -26,7 +26,6 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.constraint.ConstraintMapper;
 import btrplace.solver.choco.duration.DurationEvaluators;
-import btrplace.solver.choco.extensions.CumulativesBuilder;
 import btrplace.solver.choco.runner.InstanceResult;
 import btrplace.solver.choco.runner.InstanceSolver;
 import btrplace.solver.choco.runner.SolvingStatistics;
@@ -191,16 +190,6 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     @Override
     public TransitionFactory getTransitionFactory() {
         return params.getTransitionFactory();
-    }
-
-    @Override
-    public void setCumulativesBuilder(CumulativesBuilder pb) {
-        params.setCumulativesBuilder(pb);
-    }
-
-    @Override
-    public CumulativesBuilder getCumulativesBuilder() {
-        return params.getCumulativesBuilder();
     }
 
     @Override

@@ -25,6 +25,9 @@ import btrplace.model.constraint.Constraint;
 import btrplace.model.constraint.RunningCapacity;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.view.AliasedCumulatives;
+import btrplace.solver.choco.view.ChocoModelView;
+import btrplace.solver.choco.view.Cumulatives;
 import solver.Cause;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
@@ -77,7 +80,12 @@ public class CRunningCapacity implements ChocoConstraint {
                 IntVar[] dUse = new IntVar[rp.getFutureRunningVMs().size()];
                 Arrays.fill(cUse, 1);
                 Arrays.fill(dUse, VariableFactory.one(rp.getSolver()));
-                rp.getAliasedCumulativesBuilder().add(cstr.getAmount(), cUse, dUse, alias);
+
+                ChocoModelView v = rp.getView(AliasedCumulatives.VIEW_ID);
+                if (v == null) {
+                    throw new SolverException(rp.getSourceModel(), "View '" + Cumulatives.VIEW_ID + "' is required but missing");
+                }
+                ((AliasedCumulatives) v).addDim(cstr.getAmount(), cUse, dUse, alias);
             }
         }
         List<IntVar> vs = new ArrayList<>();
