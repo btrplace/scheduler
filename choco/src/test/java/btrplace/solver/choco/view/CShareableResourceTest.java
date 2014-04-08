@@ -117,7 +117,7 @@ public class CShareableResourceTest {
         rc.setCapacity(n2, 3);
         mo.attach(rc);
 
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         VMTransition avm1 = rp.getVMActions()[rp.getVM(vm1)];
         VMTransition avm2 = rp.getVMActions()[rp.getVM(vm2)];
         avm1.getDSlice().getHoster().instantiateTo(0, Cause.Null);
@@ -156,7 +156,6 @@ public class CShareableResourceTest {
         vMapper.register(new CShareableResource.Builder());
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
-                .labelVariables()
                 .build();
         ReconfigurationPlan p = rp.solve(0, false);
         Assert.assertNotNull(p);
@@ -191,7 +190,7 @@ public class CShareableResourceTest {
 
         mo.attach(rc);
 
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         VMTransition avm1 = rp.getVMActions()[rp.getVM(vm1)];
         avm1.getDSlice().getHoster().instantiateTo(0, Cause.Null);
         CShareableResource rcm = (CShareableResource) rp.getView(btrplace.model.view.ShareableResource.VIEW_ID_BASE + "foo");

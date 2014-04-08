@@ -32,7 +32,6 @@ import java.util.Set;
  * Builder to help at the creation of a reconfiguration algorithm.
  * By default:
  * <ul>
- * <li>Variables are not labelled to save memory</li>
  * <li>All the VMs are manageable</li>
  * <li>Default ChocoReconfigurationAlgorithmParams: {@link btrplace.solver.choco.DefaultChocoReconfigurationAlgorithmParams}</li>
  * <li>The state of the VMs is unchanged</li>
@@ -43,8 +42,6 @@ import java.util.Set;
 public class DefaultReconfigurationProblemBuilder {
 
     private Model model;
-
-    private boolean labelVars = false;
 
     private Set<VM> runs, waits, over, sleep;
 
@@ -59,26 +56,6 @@ public class DefaultReconfigurationProblemBuilder {
      */
     public DefaultReconfigurationProblemBuilder(Model m) {
         model = m;
-    }
-
-    /**
-     * Label the variables created by the problem.
-     *
-     * @return the current builder
-     */
-    public DefaultReconfigurationProblemBuilder labelVariables() {
-        return labelVariables(true);
-    }
-
-    /**
-     * Label the variables created by the problem.
-     *
-     * @param b {@code true} to label the variables
-     * @return the current builder
-     */
-    public DefaultReconfigurationProblemBuilder labelVariables(boolean b) {
-        labelVars = b;
-        return this;
     }
 
     /**
@@ -155,7 +132,7 @@ public class DefaultReconfigurationProblemBuilder {
         if (ps == null) {
             ps = new DefaultChocoReconfigurationAlgorithmParams();
         }
-        return new DefaultReconfigurationProblem(model, ps, waits, runs, sleep, over, manageable, labelVars);
+        return new DefaultReconfigurationProblem(model, ps, waits, runs, sleep, over, manageable);
     }
 
 }

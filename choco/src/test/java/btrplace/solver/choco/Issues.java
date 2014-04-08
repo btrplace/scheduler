@@ -71,7 +71,6 @@ public class Issues {
         model.attach(resources);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
-                .labelVariables()
                 .build();
 
         Solver solver = rp.getSolver();
@@ -151,7 +150,6 @@ public class Issues {
 
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
-                .labelVariables()
                 .build();
 
         IntVar[] nodes_state = rp.getNbRunningVMs();
@@ -193,7 +191,6 @@ public class Issues {
                 .run(n2, vm1, vm2, vm3, vm4).get();
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
-                .labelVariables()
                 .build();
 
         IntVar[] nodes_state = rp.getNbRunningVMs();
@@ -225,7 +222,7 @@ public class Issues {
 
         Mapping map = new MappingFiller(model.getMapping()).on(n1, n2).off(n3).run(n1, vm1, vm2).get();
         //model.attach(resources);
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model).labelVariables().build();
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model).build();
         Solver solver = rp.getSolver();
         rp.getNodeAction(n3).getState().instantiateTo(1, Cause.Null);  // n3 goes online
         solver.post(IntConstraintFactory.arithm(rp.getEnd(), "<=", 10));
@@ -331,7 +328,6 @@ public class Issues {
                         Collections.<VM>emptySet(),
                         Collections.singleton(v),
                         Collections.<VM>emptySet())
-                .labelVariables(true)
                 .build();
 
         NodeTransition na = rp.getNodeAction(n);

@@ -54,7 +54,6 @@ public class ShutdownableNodeTest {
         map.addOnlineNode(n1);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .labelVariables()
                 .build();
         ShutdownableNode ma = (ShutdownableNode) rp.getNodeAction(n1);
         Assert.assertEquals(ma.getNode(), n1);
@@ -77,7 +76,6 @@ public class ShutdownableNodeTest {
         dev.register(BootNode.class, new ConstantActionDuration(10));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
-                .labelVariables()
                 .build();
         ShutdownableNode ma = (ShutdownableNode) rp.getNodeAction(n1);
         ma.getState().instantiateTo(1, Cause.Null);   //stay online
@@ -113,7 +111,6 @@ public class ShutdownableNodeTest {
         dev.register(ShutdownNode.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
-                .labelVariables()
                 .build();
         ShutdownableNode ma = (ShutdownableNode) rp.getNodeAction(n1);
         ma.getState().instantiateTo(0, Cause.Null);
@@ -146,7 +143,6 @@ public class ShutdownableNodeTest {
         dev.register(ShutdownNode.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
-                .labelVariables()
                 .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .build();
         ShutdownableNode ma = (ShutdownableNode) rp.getNodeAction(n1);
@@ -188,7 +184,6 @@ public class ShutdownableNodeTest {
         dev.register(ShutdownNode.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
-                .labelVariables()
                 .build();
         ShutdownableNode ma1 = (ShutdownableNode) rp.getNodeAction(n1);
         ShutdownableNode ma2 = (ShutdownableNode) rp.getNodeAction(n2);
@@ -223,7 +218,6 @@ public class ShutdownableNodeTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .setParams(ps)
-                .labelVariables()
                 .build();
         ShutdownableNode ma1 = (ShutdownableNode) rp.getNodeAction(n1);
         ma1.getState().instantiateTo(0, Cause.Null);
@@ -249,7 +243,6 @@ public class ShutdownableNodeTest {
         dev.register(ShutdownNode.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
-                .labelVariables()
                 .build();
         ShutdownableNode ma1 = (ShutdownableNode) rp.getNodeAction(n1);
         BootableNode ma2 = (BootableNode) rp.getNodeAction(n2);
@@ -287,7 +280,6 @@ public class ShutdownableNodeTest {
         dev.register(BootNode.class, new ConstantActionDuration(10));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
                 .setParams(ps)
-                .labelVariables()
                 .build();
         ShutdownableNode shd = (ShutdownableNode) rp.getNodeAction(n1);
         shd.getState().instantiateTo(1, Cause.Null); //Stay online
@@ -341,7 +333,6 @@ public class ShutdownableNodeTest {
         dev.register(BootNode.class, new ConstantActionDuration(3));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
                 .setParams(ps)
-                .labelVariables()
                 .build();
 
         ShutdownableNode sn1 = (ShutdownableNode) rp.getNodeAction(n1);
@@ -380,7 +371,6 @@ public class ShutdownableNodeTest {
         dev.register(BootNode.class, new ConstantActionDuration(3));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
                 .setParams(ps)
-                .labelVariables()
                 .build();
 
         ShutdownableNode sn1 = (ShutdownableNode) rp.getNodeAction(n1);

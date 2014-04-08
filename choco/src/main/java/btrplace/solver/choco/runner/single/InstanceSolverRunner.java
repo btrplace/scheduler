@@ -192,7 +192,6 @@ public class InstanceSolverRunner implements Callable<InstanceResult> {
             }
             rpb.setManageableVMs(toManage);
         }
-        rpb.labelVariables(params.getVerbosity() > 0);
 
         return rpb.build();
     }

@@ -123,7 +123,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * @param ready     the VMs that must be in the ready state
      * @param running   the VMs that must be in the running state
      * @param sleeping  the VMs that must be in the sleeping state
-     * @param label     {@code true} to label the variables (for debugging purpose)
      * @param killed    the VMs that must be killed
      * @param preRooted the VMs that can be managed by the solver when they are already running and they must keep running
      * @throws SolverException if an error occurred
@@ -135,15 +134,14 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                                          Set<VM> running,
                                          Set<VM> sleeping,
                                          Set<VM> killed,
-                                         Set<VM> preRooted,
-                                         boolean label
+                                         Set<VM> preRooted
     ) throws SolverException {
         this.ready = new HashSet<>(ready);
         this.running = new HashSet<>(running);
         this.sleeping = new HashSet<>(sleeping);
         this.killed = new HashSet<>(killed);
         this.manageable = new HashSet<>(preRooted);
-        this.useLabels = label;
+        this.useLabels = ps.getVerbosity() > 0;
         this.amFactory = ps.getTransitionFactory();
         model = m;
         durEval = ps.getDurationEvaluators();

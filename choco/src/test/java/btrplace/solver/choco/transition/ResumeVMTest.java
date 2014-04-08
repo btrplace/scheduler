@@ -65,7 +65,6 @@ public class ResumeVMTest {
         dev.register(btrplace.plan.event.ResumeVM.class, new ConstantActionDuration(10));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
-                .labelVariables()
                 .setNextVMsStates(new HashSet<VM>(), map.getAllVMs(), new HashSet<VM>(), new HashSet<VM>())
                 .build();
         rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
@@ -114,7 +113,6 @@ public class ResumeVMTest {
         dev.register(btrplace.plan.event.ResumeVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
-                .labelVariables()
                 .setNextVMsStates(new HashSet<VM>(), map.getAllVMs(), new HashSet<VM>(), new HashSet<VM>())
                 .build();
         ResumeVM m1 = (ResumeVM) rp.getVMActions()[rp.getVM(vm1)];

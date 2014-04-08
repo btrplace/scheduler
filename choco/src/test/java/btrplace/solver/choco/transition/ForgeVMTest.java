@@ -100,7 +100,6 @@ public class ForgeVMTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
                 .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
-                .labelVariables()
                 .build();
         //Force the node to get offline
         ShutdownableNode n = (ShutdownableNode) rp.getNodeAction(n1);

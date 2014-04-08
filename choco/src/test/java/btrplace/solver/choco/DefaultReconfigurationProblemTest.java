@@ -731,7 +731,6 @@ public class DefaultReconfigurationProblemTest {
                         , map.getAllVMs()
                         , new HashSet<VM>()
                         , new HashSet<VM>())
-                .labelVariables()
                 .build();
 
         //Restrict the capacity to 5 at most
@@ -785,8 +784,7 @@ public class DefaultReconfigurationProblemTest {
                 Collections.singleton(vm5),
                 Collections.singleton(vm1),
                 Collections.<VM>emptySet(),
-                map.getAllVMs(),
-                false);
+                map.getAllVMs());
         Assert.assertTrue(rp.getFutureSleepingVMs().contains(vm1));
         Assert.assertTrue(rp.getFutureReadyVMs().contains(vm2));
         Assert.assertTrue(rp.getFutureSleepingVMs().contains(vm3));
@@ -809,7 +807,7 @@ public class DefaultReconfigurationProblemTest {
             map.addOnlineNode(n);
             map.addRunningVM(vm, n);
         }
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         Solver s = rp.getSolver();
         IntVar nbNodes = VF.bounded("nbNodes", 1, map.getAllNodes().size(), s);
         IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
@@ -840,7 +838,7 @@ public class DefaultReconfigurationProblemTest {
             map.addOnlineNode(n);
             map.addRunningVM(vm, n1);
         }
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         Solver s = rp.getSolver();
         IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
         IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
@@ -871,7 +869,7 @@ public class DefaultReconfigurationProblemTest {
             map.addOnlineNode(n);
             map.addRunningVM(vm, n1);
         }
-        final ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
+        final ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         Solver s = rp.getSolver();
         final IntVar nbNodes = VF.bounded("nbNodes", 1, map.getOnlineNodes().size(), s);
         IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
@@ -910,7 +908,7 @@ public class DefaultReconfigurationProblemTest {
             map.addOnlineNode(n);
             map.addRunningVM(vm, n);
         }
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         Solver s = rp.getSolver();
         IntVar nbNodes = VF.bounded("nbNodes", 0, 0, s);
         IntVar[] hosters = SliceUtils.extractHoster(TransitionUtils.getDSlices(rp.getVMActions()));
@@ -932,7 +930,7 @@ public class DefaultReconfigurationProblemTest {
     @Test
     public void testViewAddition() throws SolverException {
         Model mo = new DefaultModel();
-        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).labelVariables().build();
+        ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
         MockCViewModel view = new MockCViewModel();
         Assert.assertTrue(rp.addView(view));
         Assert.assertEquals(rp.getView(view.getIdentifier()), view);

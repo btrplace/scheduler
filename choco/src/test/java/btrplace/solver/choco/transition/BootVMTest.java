@@ -65,7 +65,6 @@ public class BootVMTest {
         dev.register(btrplace.plan.event.BootVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
-                .labelVariables()
                 .setNextVMsStates(new HashSet<VM>(), map.getAllVMs(), new HashSet<VM>(), new HashSet<VM>())
                 .build();
         rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
@@ -112,7 +111,6 @@ public class BootVMTest {
         dev.register(btrplace.plan.event.BootVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
-                .labelVariables()
                 .setNextVMsStates(new HashSet<VM>(), map.getAllVMs(), new HashSet<VM>(), new HashSet<VM>())
                 .build();
         BootVM m1 = (BootVM) rp.getVMActions()[rp.getVM(vm1)];

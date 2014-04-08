@@ -60,7 +60,6 @@ public class ShutdownVMTest {
         dev.register(btrplace.plan.event.ShutdownVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
-                .labelVariables()
                 .setNextVMsStates(map.getAllVMs(), new HashSet<VM>(), new HashSet<VM>(), new HashSet<VM>())
                 .build();
         rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
@@ -100,7 +99,6 @@ public class ShutdownVMTest {
         dev.register(btrplace.plan.event.ShutdownVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
-                .labelVariables()
                 .setNextVMsStates(map.getAllVMs(), new HashSet<VM>(), new HashSet<VM>(), new HashSet<VM>())
                 .build();
         ShutdownVM m1 = (ShutdownVM) rp.getVMActions()[rp.getVM(vm1)];

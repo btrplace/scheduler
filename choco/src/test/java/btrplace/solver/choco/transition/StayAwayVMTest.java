@@ -47,7 +47,6 @@ public class StayAwayVMTest {
         map.addReadyVM(vm2);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .labelVariables()
                 .build();
 
         rp.getNodeAction(n1).getState().instantiateTo(1, Cause.Null);

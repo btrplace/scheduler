@@ -68,7 +68,6 @@ public class RelocatableVMTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .setParams(ps)
-                .labelVariables()
                 .build();
         rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
         rp.getNodeActions()[1].getState().instantiateTo(1, Cause.Null);
@@ -205,7 +204,6 @@ public class RelocatableVMTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .setParams(ps)
-                .labelVariables()
                 .build();
         RelocatableVM am = (RelocatableVM) rp.getVMAction(vm1);
         Assert.assertFalse(am.getRelocationMethod().instantiated());
@@ -241,7 +239,6 @@ public class RelocatableVMTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .setParams(ps)
-                .labelVariables()
                 .setManageableVMs(map.getAllVMs())
                 .build();
         RelocatableVM am = (RelocatableVM) rp.getVMAction(vm10);
@@ -294,7 +291,6 @@ public class RelocatableVMTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .setParams(ps)
-                .labelVariables()
                 .setManageableVMs(map.getAllVMs())
                 .build();
         RelocatableVM am = (RelocatableVM) rp.getVMAction(vm10);
@@ -336,7 +332,6 @@ public class RelocatableVMTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .setParams(ps)
-                .labelVariables()
                 .setManageableVMs(map.getAllVMs())
                 .build();
         RelocatableVM am = (RelocatableVM) rp.getVMAction(vm10);
@@ -392,7 +387,6 @@ public class RelocatableVMTest {
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .setParams(ps)
-                .labelVariables()
                 .setManageableVMs(map.getAllVMs())
                 .build();
         RelocatableVM am = (RelocatableVM) rp.getVMAction(vm10);
@@ -468,7 +462,6 @@ public class RelocatableVMTest {
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setManageableVMs(Collections.<VM>emptySet())
-                .labelVariables()
                 .build();
         Assert.assertEquals(rp.getVMAction(vm1).getClass(), RelocatableVM.class);
         RelocatableVM m1 = (RelocatableVM) rp.getVMAction(vm1);

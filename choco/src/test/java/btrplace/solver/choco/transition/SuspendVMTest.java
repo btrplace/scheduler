@@ -60,7 +60,6 @@ public class SuspendVMTest {
         dev.register(btrplace.plan.event.SuspendVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
-                .labelVariables()
                 .setNextVMsStates(new HashSet<VM>(), new HashSet<VM>(), map.getAllVMs(), new HashSet<VM>())
                 .build();
         rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
@@ -100,7 +99,6 @@ public class SuspendVMTest {
         dev.register(btrplace.plan.event.SuspendVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
-                .labelVariables()
                 .setNextVMsStates(new HashSet<VM>(), new HashSet<VM>(), map.getAllVMs(), new HashSet<VM>())
                 .build();
         SuspendVM m1 = (SuspendVM) rp.getVMActions()[rp.getVM(vm1)];

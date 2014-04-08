@@ -72,7 +72,6 @@ public class BootableNodeTest {
         dev.register(BootNode.class, new ConstantActionDuration(5));
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .labelVariables()
                 .setParams(ps)
                 .build();
         BootableNode na = (BootableNode) rp.getNodeAction(n1);
@@ -102,7 +101,6 @@ public class BootableNodeTest {
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(BootNode.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .labelVariables()
                 .setParams(ps)
                 .build();
         BootableNode na = (BootableNode) rp.getNodeAction(n1);
@@ -137,7 +135,6 @@ public class BootableNodeTest {
         dev.register(BootVM.class, new ConstantActionDuration(2));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet())
-                .labelVariables()
                 .setParams(ps)
                 .build();
 
@@ -163,7 +160,6 @@ public class BootableNodeTest {
         DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(BootNode.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .labelVariables()
                 .setParams(ps)
                 .build();
         BootableNode na1 = (BootableNode) rp.getNodeAction(n1);
@@ -187,7 +183,6 @@ public class BootableNodeTest {
         dev.register(BootNode.class, new ConstantActionDuration(2));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setParams(ps)
-                .labelVariables()
                 .build();
         BootableNode ma2 = (BootableNode) rp.getNodeAction(n2);
         ma2.getState().instantiateTo(1, Cause.Null);
@@ -217,7 +212,6 @@ public class BootableNodeTest {
         dev.register(BootNode.class, new ConstantActionDuration(3));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(model)
                 .setParams(ps)
-                .labelVariables()
                 .build();
 
         ShutdownableNode sn1 = (ShutdownableNode) rp.getNodeAction(n1);
