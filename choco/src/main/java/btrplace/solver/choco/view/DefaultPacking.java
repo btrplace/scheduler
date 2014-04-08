@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.extensions;
+package btrplace.solver.choco.view;
 
-import btrplace.solver.SolverException;
+import btrplace.model.VM;
+import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.choco.ReconfigurationProblem;
 import solver.Cause;
 import solver.Solver;
@@ -34,7 +35,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class DefaultPacking implements Packing {
+public class DefaultPacking extends Packing {
 
     private ReconfigurationProblem rp;
 
@@ -69,7 +70,7 @@ public class DefaultPacking implements Packing {
     }
 
     @Override
-    public boolean commit() throws SolverException {
+    public boolean beforeSolve(ReconfigurationProblem p) {
         Solver solver = rp.getSolver();
         int[][] iSizes = new int[sizes.size()][sizes.get(0).length];
         for (int i = 0; i < sizes.size(); i++) {
@@ -91,8 +92,24 @@ public class DefaultPacking implements Packing {
         return true;
     }
 
+    @Override
+    public boolean insertActions(ReconfigurationProblem rp, ReconfigurationPlan p) {
+        return true;
+    }
+
+    @Override
+    public boolean cloneVM(VM vm, VM clone) {
+        return true;
+    }
+
     /** Builder associated to this constraint. */
-    public static class Builder implements PackingBuilder {
+    public static class Builder implements SolverViewBuilder {
+
+        @Override
+        public String getKey() {
+            return Packing.VIEW_ID;
+        }
+
         @Override
         public Packing build(ReconfigurationProblem p) {
             return new DefaultPacking(p);

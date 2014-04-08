@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco.extensions;
+package btrplace.solver.choco.view;
 
 import btrplace.solver.SolverException;
 import solver.variables.IntVar;
@@ -26,7 +26,14 @@ import solver.variables.IntVar;
  *
  * @author Fabien Hermenier
  */
-public interface Packing {
+public abstract class Packing implements ChocoModelView {
+
+    public static final String VIEW_ID = "choco.packing";
+
+    @Override
+    public String getIdentifier() {
+        return VIEW_ID;
+    }
 
     /**
      * Add a new dimension.
@@ -36,7 +43,7 @@ public interface Packing {
      * @param s    the capacity of each node. The variables *must be* ordered according to {@link btrplace.solver.choco.DefaultReconfigurationProblem#getNode(btrplace.model.Node)}.
      * @param b    the placement variable for each VM. Same order than for {@code l}
      */
-    void addDim(String name, IntVar[] l, IntVar[] s, IntVar[] b);
+    public abstract void addDim(String name, IntVar[] l, IntVar[] s, IntVar[] b);
 
     /**
      * Commit all the stated dimensions, generate then plug the underlying constraints to the problem
@@ -44,5 +51,5 @@ public interface Packing {
      * @return {@code false} if the resulting problem has no solution
      * @throws SolverException if an error occurred while building the underlying constraints.
      */
-    boolean commit() throws SolverException;
+    //public abstract boolean commit() throws SolverException;
 }

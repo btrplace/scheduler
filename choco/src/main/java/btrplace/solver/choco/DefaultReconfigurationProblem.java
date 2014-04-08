@@ -26,10 +26,11 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.duration.DurationEvaluators;
 import btrplace.solver.choco.extensions.AliasedCumulativesBuilder;
 import btrplace.solver.choco.extensions.Cumulatives;
-import btrplace.solver.choco.extensions.Packing;
 import btrplace.solver.choco.transition.*;
 import btrplace.solver.choco.view.ChocoModelView;
 import btrplace.solver.choco.view.ModelViewMapper;
+import btrplace.solver.choco.view.Packing;
+import btrplace.solver.choco.view.SolverViewBuilder;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import org.slf4j.Logger;
@@ -96,13 +97,15 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private DurationEvaluators durEval;
 
-    private Map<String, ChocoModelView> views;
+    private Map<String, ChocoModelView> modelViews;
+
+    private Map<String, ChocoModelView> coreViews;
 
     private IntVar[] vmsCountOnNodes;
 
     private AliasedCumulativesBuilder cumulativeBuilder;
 
-    private Packing packing;
+    //private Packing packing;
 
     private Cumulatives cumulatives;
 
@@ -153,7 +156,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         this.solvingPolicy = ResolutionPolicy.SATISFACTION;
         objective = null;
-        this.views = new HashMap<>();
+        this.modelViews = new HashMap<>();
 
         fillElements();
 
@@ -162,12 +165,21 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         makeNodeTransitions();
         makeVMTransitions();
 
-        this.packing = ps.getPackingBuilder().build(this);
+
+        coreViews = new HashMap<>();
+        for (SolverViewBuilder b : ps.getSolverViews()) {
+            ChocoModelView mv = b.build(this);
+            coreViews.put(mv.getIdentifier(), mv);
+        }
+
+        modelViews = new HashMap<>(model.getViews().size());
+        insertModelViews();
+
+        //this.packing = ps.getPackingBuilder().build(this);
         this.cumulatives = ps.getCumulativesBuilder().build(this);
 
         cumulativeBuilder = new AliasedCumulativesBuilder(this);
 
-        makeViews();
 
         linkCardinalityWithSlices();
 
@@ -180,15 +192,22 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             solvingPolicy = ResolutionPolicy.SATISFACTION;
         }
 
-        for (Map.Entry<String, ChocoModelView> cv : views.entrySet()) {
+        for (Map.Entry<String, ChocoModelView> cv : modelViews.entrySet()) {
             if (!cv.getValue().beforeSolve(this)) {
                 return null;
             }
         }
 
-        if (!packing.commit()) {
-            return null;
+        for (Map.Entry<String, ChocoModelView> cv : coreViews.entrySet()) {
+            if (!cv.getValue().beforeSolve(this)) {
+                return null;
+            }
         }
+
+
+/*        if (!packing.commit()) {
+            return null;
+        }*/
 
         addContinuousResourceCapacities();
 
@@ -249,7 +268,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             action.insertActions(plan);
         }
 
-        for (ChocoModelView view : views.values()) {
+        for (ChocoModelView view : modelViews.values()) {
             view.insertActions(this, plan);
         }
 
@@ -309,12 +328,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      *
      * @throws SolverException if an error occurred
      */
-    private void makeViews() throws SolverException {
-        views = new HashMap<>(model.getViews().size());
+    private void insertModelViews() throws SolverException {
         for (ModelView rc : model.getViews()) {
             ChocoModelView vv = viewMapper.map(this, rc);
             if (vv != null) {
-                ChocoModelView in = views.put(vv.getIdentifier(), vv);
+                ChocoModelView in = modelViews.put(vv.getIdentifier(), vv);
                 if (in != null) {
                     throw new SolverException(model, "Cannot use the implementation '" + vv.getIdentifier() +
                             "' implementation for '" + rc.getIdentifier() + "'."
@@ -343,7 +361,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         for (int i = 0; i < ds.length; i++) {
             usages[i] = VariableFactory.one(solver);
         }
-        packing.addDim("vmsOnNodes", vmsCountOnNodes, usages, ds);
+        ((Packing) getView(Packing.VIEW_ID)).addDim("vmsOnNodes", vmsCountOnNodes, usages, ds);
     }
 
     @Override
@@ -474,20 +492,27 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public ChocoModelView getView(String id) {
-        return views.get(id);
+        ChocoModelView v = modelViews.get(id);
+        if (v == null) {
+            return coreViews.get(id);
+        }
+        return v;
     }
 
     @Override
-    public Collection<ChocoModelView> getViews() {
-        return views.values();
+    public Collection<String> getViews() {
+        Set<String> keys = new HashSet<>(modelViews.size() + coreViews.size());
+        keys.addAll(modelViews.keySet());
+        keys.addAll(coreViews.keySet());
+        return keys;
     }
 
     @Override
     public boolean addView(ChocoModelView v) {
-        if (views.containsKey(v.getIdentifier())) {
+        if (modelViews.containsKey(v.getIdentifier())) {
             return false;
         }
-        views.put(v.getIdentifier(), v);
+        modelViews.put(v.getIdentifier(), v);
         return true;
     }
 
@@ -506,10 +531,10 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         return cumulativeBuilder;
     }
 
-    @Override
+    /*@Override
     public Packing getGlobalPacking() {
         return packing;
-    }
+    } */
 
     @Override
     public IntVar makeHostVariable(Object... n) {
@@ -682,7 +707,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (newVM == null) {
             return null;
         }
-        for (ChocoModelView v : views.values()) {
+        for (ChocoModelView v : modelViews.values()) {
             v.cloneVM(vm, newVM);
         }
         return newVM;

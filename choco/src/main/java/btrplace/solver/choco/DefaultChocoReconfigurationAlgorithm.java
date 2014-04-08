@@ -27,13 +27,13 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.constraint.ConstraintMapper;
 import btrplace.solver.choco.duration.DurationEvaluators;
 import btrplace.solver.choco.extensions.CumulativesBuilder;
-import btrplace.solver.choco.extensions.PackingBuilder;
 import btrplace.solver.choco.runner.InstanceResult;
 import btrplace.solver.choco.runner.InstanceSolver;
 import btrplace.solver.choco.runner.SolvingStatistics;
 import btrplace.solver.choco.runner.single.SingleRunner;
 import btrplace.solver.choco.transition.TransitionFactory;
 import btrplace.solver.choco.view.ModelViewMapper;
+import btrplace.solver.choco.view.SolverViewBuilder;
 
 import java.util.Collection;
 
@@ -193,17 +193,6 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
         return params.getTransitionFactory();
     }
 
-
-    @Override
-    public void setPackingBuilder(PackingBuilder pb) {
-        params.setPackingBuilder(pb);
-    }
-
-    @Override
-    public PackingBuilder getPackingBuilder() {
-        return params.getPackingBuilder();
-    }
-
     @Override
     public void setCumulativesBuilder(CumulativesBuilder pb) {
         params.setCumulativesBuilder(pb);
@@ -212,5 +201,20 @@ public class DefaultChocoReconfigurationAlgorithm implements ChocoReconfiguratio
     @Override
     public CumulativesBuilder getCumulativesBuilder() {
         return params.getCumulativesBuilder();
+    }
+
+    @Override
+    public void addSolverViewBuilder(SolverViewBuilder b) {
+        params.addSolverViewBuilder(b);
+    }
+
+    @Override
+    public boolean removeSolverViewBuilder(SolverViewBuilder b) {
+        return params.removeSolverViewBuilder(b);
+    }
+
+    @Override
+    public Collection<SolverViewBuilder> getSolverViews() {
+        return params.getSolverViews();
     }
 }

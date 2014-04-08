@@ -20,9 +20,11 @@ package btrplace.solver.choco;
 import btrplace.solver.choco.constraint.ConstraintMapper;
 import btrplace.solver.choco.duration.DurationEvaluators;
 import btrplace.solver.choco.extensions.CumulativesBuilder;
-import btrplace.solver.choco.extensions.PackingBuilder;
 import btrplace.solver.choco.transition.TransitionFactory;
 import btrplace.solver.choco.view.ModelViewMapper;
+import btrplace.solver.choco.view.SolverViewBuilder;
+
+import java.util.Collection;
 
 /**
  * Parameters for a {@link ChocoReconfigurationAlgorithm}.
@@ -178,20 +180,6 @@ public interface ChocoReconfigurationAlgorithmParams {
     TransitionFactory getTransitionFactory();
 
     /**
-     * Set the packing builder to use.
-     *
-     * @param pb the builder to user
-     */
-    void setPackingBuilder(PackingBuilder pb);
-
-    /**
-     * Get the packing builder that is used.
-     *
-     * @return the current builder.
-     */
-    PackingBuilder getPackingBuilder();
-
-    /**
      * Set the cumulatives builder to use.
      *
      * @param pb the builder to user
@@ -204,4 +192,10 @@ public interface ChocoReconfigurationAlgorithmParams {
      * @return the current builder.
      */
     CumulativesBuilder getCumulativesBuilder();
+
+    void addSolverViewBuilder(SolverViewBuilder b);
+
+    boolean removeSolverViewBuilder(SolverViewBuilder b);
+
+    Collection<SolverViewBuilder> getSolverViews();
 }

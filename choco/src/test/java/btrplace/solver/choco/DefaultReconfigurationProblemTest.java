@@ -668,7 +668,6 @@ public class DefaultReconfigurationProblemTest {
                 .setParams(ps)
                 .build();
 
-        Assert.assertEquals(rp.getViews().size(), 1);
         Assert.assertNotNull(rp.getView("cmock"));
         Assert.assertTrue(rp.getView("cmock") instanceof MockCViewModel);
     }

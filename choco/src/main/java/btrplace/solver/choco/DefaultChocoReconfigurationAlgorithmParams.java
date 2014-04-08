@@ -21,10 +21,15 @@ import btrplace.solver.choco.constraint.ConstraintMapper;
 import btrplace.solver.choco.duration.DurationEvaluators;
 import btrplace.solver.choco.extensions.CumulativesBuilder;
 import btrplace.solver.choco.extensions.DefaultCumulatives;
-import btrplace.solver.choco.extensions.DefaultPacking;
-import btrplace.solver.choco.extensions.PackingBuilder;
 import btrplace.solver.choco.transition.TransitionFactory;
+import btrplace.solver.choco.view.DefaultPacking;
 import btrplace.solver.choco.view.ModelViewMapper;
+import btrplace.solver.choco.view.Packing;
+import btrplace.solver.choco.view.SolverViewBuilder;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Default implementation of {@link ChocoReconfigurationAlgorithmParams}.
@@ -38,8 +43,6 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
     private ConstraintMapper cstrMapper;
 
     private TransitionFactory amf;
-
-    private PackingBuilder pb;
 
     private CumulativesBuilder cb;
 
@@ -58,6 +61,8 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
 
     private int verbosityLevel;
 
+    private Map<String, SolverViewBuilder> solverViewsBuilder;
+
     /**
      * New set of parameters.
      */
@@ -66,8 +71,11 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
         durationEvaluators = DurationEvaluators.newBundle();
         viewMapper = ModelViewMapper.newBundle();
         amf = TransitionFactory.newBundle();
-        pb = new DefaultPacking.Builder();
         cb = new DefaultCumulatives.Builder();
+        solverViewsBuilder = new HashMap<>();
+        //Default solver views
+        solverViewsBuilder.put(Packing.VIEW_ID, new DefaultPacking.Builder());
+
     }
 
     @Override
@@ -169,16 +177,6 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
     }
 
     @Override
-    public void setPackingBuilder(PackingBuilder packBuilder) {
-        this.pb = packBuilder;
-    }
-
-    @Override
-    public PackingBuilder getPackingBuilder() {
-        return this.pb;
-    }
-
-    @Override
     public void setCumulativesBuilder(CumulativesBuilder c) {
         this.cb = c;
     }
@@ -186,5 +184,20 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
     @Override
     public CumulativesBuilder getCumulativesBuilder() {
         return this.cb;
+    }
+
+    @Override
+    public void addSolverViewBuilder(SolverViewBuilder b) {
+        solverViewsBuilder.put(b.getKey(), b);
+    }
+
+    @Override
+    public boolean removeSolverViewBuilder(SolverViewBuilder b) {
+        return solverViewsBuilder.remove(b.getKey()) != null;
+    }
+
+    @Override
+    public Collection<SolverViewBuilder> getSolverViews() {
+        return solverViewsBuilder.values();
     }
 }

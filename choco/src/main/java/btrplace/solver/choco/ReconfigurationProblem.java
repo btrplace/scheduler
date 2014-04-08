@@ -26,7 +26,6 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.duration.DurationEvaluators;
 import btrplace.solver.choco.extensions.AliasedCumulativesBuilder;
 import btrplace.solver.choco.extensions.Cumulatives;
-import btrplace.solver.choco.extensions.Packing;
 import btrplace.solver.choco.transition.NodeTransition;
 import btrplace.solver.choco.transition.VMTransition;
 import btrplace.solver.choco.view.ChocoModelView;
@@ -283,11 +282,11 @@ public interface ReconfigurationProblem {
     ChocoModelView getView(String id);
 
     /**
-     * Get all the declared views.
+     * Get all the declared view keys.
      *
-     * @return a collection of views, may be empty
+     * @return a collection of keys, may be empty
      */
-    Collection<ChocoModelView> getViews();
+    Collection<String> getViews();
 
     /**
      * Add a view.
@@ -343,7 +342,7 @@ public interface ReconfigurationProblem {
      *
      * @return the constraint
      */
-    Packing getGlobalPacking();
+    //Packing getGlobalPacking();
 
     /**
      * Get the logger.
