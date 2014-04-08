@@ -17,7 +17,6 @@
 
 package btrplace.solver.choco.view;
 
-import btrplace.model.view.ModelView;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 
@@ -34,12 +33,11 @@ public interface SolverViewBuilder {
     String getKey();
 
     /**
-     * Build the {@link ChocoModelView} associated to the {@link ModelView}
-     * identified as key.
+     * Build the {@link ChocoView}
      *
      * @param rp the problem to addDim
      * @throws btrplace.solver.SolverException if an error occurred while building the view
      */
-    ChocoModelView build(ReconfigurationProblem rp) throws SolverException;
+    ChocoView build(ReconfigurationProblem rp) throws SolverException;
 
 }

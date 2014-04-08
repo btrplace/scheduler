@@ -30,7 +30,7 @@ import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.transition.VMTransition;
 import btrplace.solver.choco.view.AliasedCumulatives;
 import btrplace.solver.choco.view.CShareableResource;
-import btrplace.solver.choco.view.ChocoModelView;
+import btrplace.solver.choco.view.ChocoView;
 import gnu.trove.list.array.TIntArrayList;
 import solver.Cause;
 import solver.Solver;
@@ -140,7 +140,7 @@ public class CResourceCapacity implements ChocoConstraint {
                     dUse.add(rcm.getVMsAllocation()[rp.getVM(vmId)]);
                 }
             }
-            ChocoModelView v = rp.getView(AliasedCumulatives.VIEW_ID);
+            ChocoView v = rp.getView(AliasedCumulatives.VIEW_ID);
             if (v == null) {
                 throw new SolverException(rp.getSourceModel(), "View '" + AliasedCumulatives.VIEW_ID + "' is required but missing");
             }

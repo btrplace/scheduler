@@ -26,7 +26,7 @@ import btrplace.model.constraint.RunningCapacity;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.view.AliasedCumulatives;
-import btrplace.solver.choco.view.ChocoModelView;
+import btrplace.solver.choco.view.ChocoView;
 import btrplace.solver.choco.view.Cumulatives;
 import solver.Cause;
 import solver.Solver;
@@ -81,7 +81,7 @@ public class CRunningCapacity implements ChocoConstraint {
                 Arrays.fill(cUse, 1);
                 Arrays.fill(dUse, VariableFactory.one(rp.getSolver()));
 
-                ChocoModelView v = rp.getView(AliasedCumulatives.VIEW_ID);
+                ChocoView v = rp.getView(AliasedCumulatives.VIEW_ID);
                 if (v == null) {
                     throw new SolverException(rp.getSourceModel(), "View '" + Cumulatives.VIEW_ID + "' is required but missing");
                 }

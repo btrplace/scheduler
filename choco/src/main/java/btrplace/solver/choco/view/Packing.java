@@ -17,7 +17,6 @@
 
 package btrplace.solver.choco.view;
 
-import btrplace.solver.SolverException;
 import solver.variables.IntVar;
 
 /**
@@ -26,8 +25,11 @@ import solver.variables.IntVar;
  *
  * @author Fabien Hermenier
  */
-public abstract class Packing implements ChocoModelView {
+public abstract class Packing implements ChocoView {
 
+    /**
+     * The view identifier.
+     */
     public static final String VIEW_ID = "choco.packing";
 
     @Override
@@ -44,12 +46,4 @@ public abstract class Packing implements ChocoModelView {
      * @param b    the placement variable for each VM. Same order than for {@code l}
      */
     public abstract void addDim(String name, IntVar[] l, IntVar[] s, IntVar[] b);
-
-    /**
-     * Commit all the stated dimensions, generate then plug the underlying constraints to the problem
-     *
-     * @return {@code false} if the resulting problem has no solution
-     * @throws SolverException if an error occurred while building the underlying constraints.
-     */
-    //public abstract boolean commit() throws SolverException;
 }

@@ -25,12 +25,12 @@ import solver.variables.IntVar;
  *
  * @author Fabien Hermenier
  */
-public interface Cumulatives extends ChocoModelView {
+public interface Cumulatives extends ChocoView {
 
     /**
      * View identifier.
      */
-    final String VIEW_ID = "choco.cumulatives";
+    String VIEW_ID = "choco.cumulatives";
 
     /**
      * Add a new dimension.

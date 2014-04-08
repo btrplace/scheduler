@@ -50,7 +50,7 @@ import java.util.Map;
  *
  * @author Fabien Hermenier
  */
-public class CShareableResource implements ChocoModelView {
+public class CShareableResource implements ChocoView {
 
     private ShareableResource rc;
 
@@ -127,7 +127,7 @@ public class CShareableResource implements ChocoModelView {
 
         }
         //We create a BP with only the VMs requiring a not null amount of resources
-        ChocoModelView v = rp.getView(Packing.VIEW_ID);
+        ChocoView v = rp.getView(Packing.VIEW_ID);
         if (v == null) {
             throw new SolverException(rp.getSourceModel(), "View '" + Cumulatives.VIEW_ID + "' is required but missing");
         }
@@ -407,7 +407,7 @@ public class CShareableResource implements ChocoModelView {
 
         IntVar[] capacities = new IntVar[rp.getNodes().length];
         System.arraycopy(virtRcUsage, 0, capacities, 0, rp.getNodes().length);
-        ChocoModelView v = rp.getView(Cumulatives.VIEW_ID);
+        ChocoView v = rp.getView(Cumulatives.VIEW_ID);
         if (v == null) {
             throw new SolverException(rp.getSourceModel(), "View '" + Cumulatives.VIEW_ID + "' is required but missing");
         }
@@ -473,7 +473,7 @@ public class CShareableResource implements ChocoModelView {
         }
 
         @Override
-        public ChocoModelView build(ReconfigurationProblem p, ModelView v) throws SolverException {
+        public ChocoView build(ReconfigurationProblem p, ModelView v) throws SolverException {
             ShareableResource r = (ShareableResource) v;
             return new CShareableResource(p, r);
         }

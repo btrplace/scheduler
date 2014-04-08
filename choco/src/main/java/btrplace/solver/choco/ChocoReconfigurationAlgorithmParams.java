@@ -65,7 +65,7 @@ public interface ChocoReconfigurationAlgorithmParams {
 
     /**
      * Get the mapper that is used to associate the {@link btrplace.model.view.ModelView}
-     * to the {@link btrplace.solver.choco.view.ChocoModelView}.
+     * to the {@link btrplace.solver.choco.view.ChocoView}.
      *
      * @return the mapper
      */
@@ -73,7 +73,7 @@ public interface ChocoReconfigurationAlgorithmParams {
 
     /**
      * Set the mapper to use to associate the {@link btrplace.model.view.ModelView}
-     * to the {@link btrplace.solver.choco.view.ChocoModelView}.
+     * to the {@link btrplace.solver.choco.view.ChocoView}.
      *
      * @param m the mapper to use
      * @return the current instance

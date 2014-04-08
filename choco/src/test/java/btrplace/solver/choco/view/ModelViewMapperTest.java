@@ -61,14 +61,14 @@ public class ModelViewMapperTest {
         ModelViewMapper map = new ModelViewMapper();
         map.register(new Builder());
         MockModelView v = new MockModelView();
-        ChocoModelView cv = map.map(null, v);
-        Assert.assertTrue(cv.getClass().equals(CMockModelView.class));
+        ChocoView cv = map.map(null, v);
+        Assert.assertTrue(cv.getClass().equals(CMockView.class));
 
         map.unRegister(MockModelView.class);
         Assert.assertNull(map.map(null, v));
     }
 
-    public static class CMockModelView implements ChocoModelView {
+    public static class CMockView implements ChocoView {
         @Override
         public String getIdentifier() {
             return "mock";
@@ -97,8 +97,8 @@ public class ModelViewMapperTest {
         }
 
         @Override
-        public ChocoModelView build(ReconfigurationProblem rp, ModelView v) throws SolverException {
-            return new CMockModelView();
+        public ChocoView build(ReconfigurationProblem rp, ModelView v) throws SolverException {
+            return new CMockView();
         }
     }
 

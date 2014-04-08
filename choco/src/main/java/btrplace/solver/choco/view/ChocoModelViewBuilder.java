@@ -22,8 +22,8 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.ReconfigurationProblem;
 
 /**
- * The builder that is used by {@link ChocoModelViewBuilder} to create
- * the solver-side views.
+ * The builder that is used by {@link btrplace.solver.choco.view.ModelViewMapper} to create
+ * the solver-side views from an api-side ones.
  *
  * @author Fabien Hermenier
  */
@@ -37,13 +37,13 @@ public interface ChocoModelViewBuilder {
     Class<? extends ModelView> getKey();
 
     /**
-     * Build the {@link ChocoModelView} associated to the {@link ModelView}
+     * Build the {@link ChocoView} associated to the {@link ModelView}
      * identified as key.
      *
      * @param rp the problem to addDim
      * @param v  the model constraint
      * @throws SolverException if an error occurred while building the view
      */
-    ChocoModelView build(ReconfigurationProblem rp, ModelView v) throws SolverException;
+    ChocoView build(ReconfigurationProblem rp, ModelView v) throws SolverException;
 
 }

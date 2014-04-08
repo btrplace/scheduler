@@ -26,7 +26,7 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.duration.DurationEvaluators;
 import btrplace.solver.choco.transition.NodeTransition;
 import btrplace.solver.choco.transition.VMTransition;
-import btrplace.solver.choco.view.ChocoModelView;
+import btrplace.solver.choco.view.ChocoView;
 import org.slf4j.Logger;
 import solver.ResolutionPolicy;
 import solver.Solver;
@@ -277,7 +277,7 @@ public interface ReconfigurationProblem {
      * @param id the view identifier
      * @return the view if exists, {@code null} otherwise
      */
-    ChocoModelView getView(String id);
+    ChocoView getView(String id);
 
     /**
      * Get all the declared view keys.
@@ -293,7 +293,7 @@ public interface ReconfigurationProblem {
      * @param v the view to addDim
      * @return {@code true} iff the view has been added.
      */
-    boolean addView(ChocoModelView v);
+    boolean addView(ChocoView v);
 
 
     /**

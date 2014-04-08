@@ -38,7 +38,7 @@ import java.util.Map;
  * Date: 6/4/13
  * Time: 9:17 PM
  */
-public class CPowerView implements ChocoModelView {
+public class CPowerView implements ChocoView {
 
     /**
      * The view identifier.

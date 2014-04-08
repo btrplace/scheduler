@@ -25,8 +25,8 @@ import btrplace.solver.SolverException;
 import btrplace.solver.choco.duration.DurationEvaluators;
 import btrplace.solver.choco.transition.*;
 import btrplace.solver.choco.view.CShareableResource;
-import btrplace.solver.choco.view.ChocoModelView;
 import btrplace.solver.choco.view.ChocoModelViewBuilder;
+import btrplace.solver.choco.view.ChocoView;
 import btrplace.solver.choco.view.ModelViewMapper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -50,7 +50,7 @@ import java.util.Set;
  */
 public class DefaultReconfigurationProblemTest {
 
-    public class MockCViewModel implements ChocoModelView {
+    public class MockCView implements ChocoView {
         @Override
         public String getIdentifier() {
             return "cmock";
@@ -656,8 +656,8 @@ public class DefaultReconfigurationProblemTest {
             }
 
             @Override
-            public ChocoModelView build(ReconfigurationProblem rp, ModelView v) throws SolverException {
-                return new MockCViewModel();
+            public ChocoView build(ReconfigurationProblem rp, ModelView v) throws SolverException {
+                return new MockCView();
             }
         });
 
@@ -669,7 +669,7 @@ public class DefaultReconfigurationProblemTest {
                 .build();
 
         Assert.assertNotNull(rp.getView("cmock"));
-        Assert.assertTrue(rp.getView("cmock") instanceof MockCViewModel);
+        Assert.assertTrue(rp.getView("cmock") instanceof MockCView);
     }
 
     @Test
@@ -929,7 +929,7 @@ public class DefaultReconfigurationProblemTest {
     public void testViewAddition() throws SolverException {
         Model mo = new DefaultModel();
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo).build();
-        MockCViewModel view = new MockCViewModel();
+        MockCView view = new MockCView();
         Assert.assertTrue(rp.addView(view));
         Assert.assertEquals(rp.getView(view.getIdentifier()), view);
         Assert.assertFalse(rp.addView(view));

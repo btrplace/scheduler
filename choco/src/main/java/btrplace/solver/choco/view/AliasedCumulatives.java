@@ -24,12 +24,12 @@ import solver.variables.IntVar;
  * multiple nodes.
  * @author Fabien Hermenier
  */
-public interface AliasedCumulatives extends ChocoModelView {
+public interface AliasedCumulatives extends ChocoView {
 
     /**
      * The view identifier.
      */
-    final String VIEW_ID = "choco.aliasedCumulatives";
+    String VIEW_ID = "choco.aliasedCumulatives";
 
     /**
      * Add a new dimension.

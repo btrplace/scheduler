@@ -92,9 +92,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private DurationEvaluators durEval;
 
-    private Map<String, ChocoModelView> modelViews;
+    private Map<String, ChocoView> modelViews;
 
-    private Map<String, ChocoModelView> coreViews;
+    private Map<String, ChocoView> coreViews;
 
     private IntVar[] vmsCountOnNodes;
 
@@ -157,7 +157,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         coreViews = new HashMap<>();
         for (SolverViewBuilder b : ps.getSolverViews()) {
-            ChocoModelView mv = b.build(this);
+            ChocoView mv = b.build(this);
             coreViews.put(mv.getIdentifier(), mv);
         }
 
@@ -176,13 +176,13 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
         addContinuousResourceCapacities();
 
-        for (Map.Entry<String, ChocoModelView> cv : modelViews.entrySet()) {
+        for (Map.Entry<String, ChocoView> cv : modelViews.entrySet()) {
             if (!cv.getValue().beforeSolve(this)) {
                 return null;
             }
         }
 
-        for (Map.Entry<String, ChocoModelView> cv : coreViews.entrySet()) {
+        for (Map.Entry<String, ChocoView> cv : coreViews.entrySet()) {
             if (!cv.getValue().beforeSolve(this)) {
                 return null;
             }
@@ -238,7 +238,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             action.insertActions(plan);
         }
 
-        for (ChocoModelView view : modelViews.values()) {
+        for (ChocoView view : modelViews.values()) {
             view.insertActions(this, plan);
         }
 
@@ -288,7 +288,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             }
         }
 
-        ChocoModelView v = getView(Cumulatives.VIEW_ID);
+        ChocoView v = getView(Cumulatives.VIEW_ID);
         if (v == null) {
             throw new SolverException(model, "View '" + Cumulatives.VIEW_ID + "' is required but missing");
         }
@@ -296,15 +296,15 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     /**
-     * Create the {@link ChocoModelView} for each of the {@link ModelView}.
+     * Create the {@link btrplace.solver.choco.view.ChocoView} for each of the {@link ModelView}.
      *
      * @throws SolverException if an error occurred
      */
     private void insertModelViews() throws SolverException {
         for (ModelView rc : model.getViews()) {
-            ChocoModelView vv = viewMapper.map(this, rc);
+            ChocoView vv = viewMapper.map(this, rc);
             if (vv != null) {
-                ChocoModelView in = modelViews.put(vv.getIdentifier(), vv);
+                ChocoView in = modelViews.put(vv.getIdentifier(), vv);
                 if (in != null) {
                     throw new SolverException(model, "Cannot use the implementation '" + vv.getIdentifier() +
                             "' implementation for '" + rc.getIdentifier() + "'."
@@ -333,7 +333,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         for (int i = 0; i < ds.length; i++) {
             usages[i] = VariableFactory.one(solver);
         }
-        ChocoModelView v = getView(Packing.VIEW_ID);
+        ChocoView v = getView(Packing.VIEW_ID);
         if (v == null) {
             throw new SolverException(model, "View '" + Packing.VIEW_ID + "' is required but missing");
         }
@@ -467,8 +467,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public ChocoModelView getView(String id) {
-        ChocoModelView v = modelViews.get(id);
+    public ChocoView getView(String id) {
+        ChocoView v = modelViews.get(id);
         if (v == null) {
             return coreViews.get(id);
         }
@@ -484,7 +484,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public boolean addView(ChocoModelView v) {
+    public boolean addView(ChocoView v) {
         if (modelViews.containsKey(v.getIdentifier())) {
             return false;
         }
@@ -668,7 +668,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (newVM == null) {
             return null;
         }
-        for (ChocoModelView v : modelViews.values()) {
+        for (ChocoView v : modelViews.values()) {
             v.cloneVM(vm, newVM);
         }
         return newVM;
