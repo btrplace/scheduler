@@ -24,7 +24,9 @@ import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.duration.DurationEvaluators;
-import btrplace.solver.choco.extensions.AliasedCumulatives;
+import btrplace.solver.choco.extensions.AliasedCumulativesBuilder;
+import btrplace.solver.choco.extensions.Cumulatives;
+import btrplace.solver.choco.extensions.Packing;
 import btrplace.solver.choco.transition.*;
 import btrplace.solver.choco.view.ChocoModelView;
 import btrplace.solver.choco.view.ModelViewMapper;
@@ -98,11 +100,11 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private IntVar[] vmsCountOnNodes;
 
-    private SliceSchedulerBuilder taskSchedBuilder;
-
     private AliasedCumulativesBuilder cumulativeBuilder;
 
-    private PackingConstraint packBuilder;
+    private Packing packing;
+
+    private Cumulatives cumulatives;
 
     private ObjectiveAlterer alterer = new DefaultObjectiveAlterer();
 
@@ -117,7 +119,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * If the state for a VM is omitted, it is considered as unchanged
      *
      * @param m         the initial model
-     * @param dEval     to evaluate the duration of every action
+     * @param ps        parameters to customize the problem
      * @param ready     the VMs that must be in the ready state
      * @param running   the VMs that must be in the running state
      * @param sleeping  the VMs that must be in the sleeping state
@@ -128,10 +130,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * @see DefaultReconfigurationProblemBuilder to ease the instantiation process
      */
     public DefaultReconfigurationProblem(Model m,
-                                         DurationEvaluators dEval,
-                                         ModelViewMapper vMapper,
-                                         TransitionFactory amf,
-                                         PackingConstraintBuilder pb,
+                                         ChocoReconfigurationAlgorithmParams ps,
                                          Set<VM> ready,
                                          Set<VM> running,
                                          Set<VM> sleeping,
@@ -145,15 +144,14 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         this.killed = new HashSet<>(killed);
         this.manageable = new HashSet<>(preRooted);
         this.useLabels = label;
-        this.amFactory = amf;
-        this.packBuilder = pb.build(this);
+        this.amFactory = ps.getTransitionFactory();
         model = m;
-        durEval = dEval;
-        this.viewMapper = vMapper;
+        durEval = ps.getDurationEvaluators();
+        this.viewMapper = ps.getViewMapper();
         solver = new Solver();
         solver.getSearchLoop().plugSearchMonitor(new AllSolutionsRecorder(solver));
-        start = VariableFactory.fixed("RP.start", 0, solver);
-        end = VariableFactory.bounded("RP.end", 0, DEFAULT_MAX_TIME, solver);
+        start = VariableFactory.fixed(makeVarLabel("RP.start"), 0, solver);
+        end = VariableFactory.bounded(makeVarLabel("RP.end"), 0, DEFAULT_MAX_TIME, solver);
 
         this.solvingPolicy = ResolutionPolicy.SATISFACTION;
         objective = null;
@@ -166,7 +164,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         makeNodeTransitions();
         makeVMTransitions();
 
-        taskSchedBuilder = new SliceSchedulerBuilder(this);
+        this.packing = ps.getPackingBuilder().build(this);
+        this.cumulatives = ps.getCumulativesBuilder().build(this);
+
         cumulativeBuilder = new AliasedCumulativesBuilder(this);
 
         makeViews();
@@ -188,19 +188,18 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             }
         }
 
-        if (!packBuilder.commit()) {
+        if (!packing.commit()) {
             return null;
         }
 
         addContinuousResourceCapacities();
 
-
-        if (nodeActions.length > 0) {
-            solver.post(taskSchedBuilder.build());
+        if (!cumulatives.commit()) {
+            return null;
         }
 
-        for (AliasedCumulatives cstr : cumulativeBuilder.getConstraints()) {
-            solver.post(cstr);
+        if (!cumulativeBuilder.commit()) {
+            return null;
         }
 
         //Set the timeout
@@ -302,7 +301,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             }
         }
 
-        taskSchedBuilder.add(getNbRunningVMs(),
+        getGlobalCumulatives().add(getNbRunningVMs(),
                 cUse.toArray(),
                 iUse.toArray(new IntVar[iUse.size()]));
     }
@@ -346,7 +345,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         for (int i = 0; i < ds.length; i++) {
             usages[i] = VariableFactory.one(solver);
         }
-        packBuilder.addDim("vmsOnNodes", vmsCountOnNodes, usages, ds);
+        packing.addDim("vmsOnNodes", vmsCountOnNodes, usages, ds);
     }
 
     @Override
@@ -500,8 +499,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public SliceSchedulerBuilder getTaskSchedulerBuilder() {
-        return taskSchedBuilder;
+    public Cumulatives getGlobalCumulatives() {
+        return cumulatives;
     }
 
     @Override
@@ -510,8 +509,8 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public PackingConstraint getGlobalPackingConstraint() {
-        return packBuilder;
+    public Packing getGlobalPacking() {
+        return packing;
     }
 
     @Override

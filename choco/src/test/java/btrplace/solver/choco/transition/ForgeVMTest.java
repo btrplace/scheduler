@@ -22,6 +22,8 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
 import btrplace.plan.event.ShutdownNode;
 import btrplace.solver.SolverException;
+import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithmParams;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.duration.ConstantActionDuration;
@@ -48,10 +50,11 @@ public class ForgeVMTest {
         final VM vm1 = mo.newVM();
 
         mo.getAttributes().put(vm1, "template", "small");
-        DurationEvaluators dev = new DurationEvaluators();
+        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(btrplace.plan.event.ForgeVM.class, new ConstantActionDuration(7));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setDurationEvaluators(dev)
+                .setParams(ps)
                 .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .build();
         ForgeVM ma = (ForgeVM) rp.getVMAction(vm1);
@@ -71,10 +74,11 @@ public class ForgeVMTest {
         Mapping m = mo.getMapping();
         final VM vm1 = mo.newVM();
 
-        DurationEvaluators dev = new DurationEvaluators();
+        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(btrplace.plan.event.ForgeVM.class, new ConstantActionDuration(7));
         new DefaultReconfigurationProblemBuilder(mo)
-                .setDurationEvaluators(dev)
+                .setParams(ps)
                 .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .build();
 
@@ -89,11 +93,12 @@ public class ForgeVMTest {
 
         m.addOnlineNode(n1);
         mo.getAttributes().put(vm1, "template", "small");
-        DurationEvaluators dev = new DurationEvaluators();
+        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(btrplace.plan.event.ForgeVM.class, new ConstantActionDuration(7));
         dev.register(ShutdownNode.class, new ConstantActionDuration(20));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setDurationEvaluators(dev)
+                .setParams(ps)
                 .setNextVMsStates(Collections.singleton(vm1), Collections.<VM>emptySet(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
                 .labelVariables()
                 .build();

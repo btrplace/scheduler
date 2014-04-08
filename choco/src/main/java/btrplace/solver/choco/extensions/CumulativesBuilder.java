@@ -15,14 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.extensions;
+
+import btrplace.solver.choco.ReconfigurationProblem;
 
 /**
- * Abstract builder for {@link btrplace.solver.choco.PackingConstraint}.
+ * Abstract builder for {@link btrplace.solver.choco.extensions.Cumulatives}.
  *
  * @author Fabien Hermenier
  */
-public interface PackingConstraintBuilder {
+public interface CumulativesBuilder {
 
     /**
      * Build a new constraint
@@ -30,5 +32,5 @@ public interface PackingConstraintBuilder {
      * @param p the problem to rely on
      * @return the created constraint
      */
-    PackingConstraint build(ReconfigurationProblem p);
+    Cumulatives build(ReconfigurationProblem p);
 }

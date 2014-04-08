@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.extensions;
 
 import btrplace.solver.SolverException;
 import solver.variables.IntVar;
@@ -26,8 +26,7 @@ import solver.variables.IntVar;
  *
  * @author Fabien Hermenier
  */
-public interface PackingConstraint {
-
+public interface Packing {
 
     /**
      * Add a new dimension.

@@ -19,6 +19,10 @@ package btrplace.solver.choco;
 
 import btrplace.solver.choco.constraint.ConstraintMapper;
 import btrplace.solver.choco.duration.DurationEvaluators;
+import btrplace.solver.choco.extensions.CumulativesBuilder;
+import btrplace.solver.choco.extensions.DefaultCumulatives;
+import btrplace.solver.choco.extensions.DefaultPacking;
+import btrplace.solver.choco.extensions.PackingBuilder;
 import btrplace.solver.choco.transition.TransitionFactory;
 import btrplace.solver.choco.view.ModelViewMapper;
 
@@ -35,7 +39,9 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
 
     private TransitionFactory amf;
 
-    private PackingConstraintBuilder pb;
+    private PackingBuilder pb;
+
+    private CumulativesBuilder cb;
 
     private boolean optimize = false;
 
@@ -60,7 +66,8 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
         durationEvaluators = DurationEvaluators.newBundle();
         viewMapper = ModelViewMapper.newBundle();
         amf = TransitionFactory.newBundle();
-        pb = new DefaultPackingConstraint.Builder();
+        pb = new DefaultPacking.Builder();
+        cb = new DefaultCumulatives.Builder();
     }
 
     @Override
@@ -162,12 +169,22 @@ public class DefaultChocoReconfigurationAlgorithmParams implements ChocoReconfig
     }
 
     @Override
-    public void setPackingBuilder(PackingConstraintBuilder packBuilder) {
+    public void setPackingBuilder(PackingBuilder packBuilder) {
         this.pb = packBuilder;
     }
 
     @Override
-    public PackingConstraintBuilder getPackingBuilder() {
+    public PackingBuilder getPackingBuilder() {
         return this.pb;
+    }
+
+    @Override
+    public void setCumulativesBuilder(CumulativesBuilder c) {
+        this.cb = c;
+    }
+
+    @Override
+    public CumulativesBuilder getCumulativesBuilder() {
+        return this.cb;
     }
 }

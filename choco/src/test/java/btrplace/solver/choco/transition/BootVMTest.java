@@ -21,6 +21,8 @@ import btrplace.model.*;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
 import btrplace.solver.SolverException;
+import btrplace.solver.choco.ChocoReconfigurationAlgorithmParams;
+import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithmParams;
 import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
 import btrplace.solver.choco.ReconfigurationProblem;
 import btrplace.solver.choco.duration.ConstantActionDuration;
@@ -58,10 +60,11 @@ public class BootVMTest {
         map.addOnlineNode(n2);
         map.addReadyVM(vm1);
 
-        DurationEvaluators dev = DurationEvaluators.newBundle();
+        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(btrplace.plan.event.BootVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setDurationEvaluators(dev)
+                .setParams(ps)
                 .labelVariables()
                 .setNextVMsStates(new HashSet<VM>(), map.getAllVMs(), new HashSet<VM>(), new HashSet<VM>())
                 .build();
@@ -104,10 +107,11 @@ public class BootVMTest {
         map.addReadyVM(vm1);
         map.addReadyVM(vm2);
 
-        DurationEvaluators dev = DurationEvaluators.newBundle();
+        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(btrplace.plan.event.BootVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setDurationEvaluators(dev)
+                .setParams(ps)
                 .labelVariables()
                 .setNextVMsStates(new HashSet<VM>(), map.getAllVMs(), new HashSet<VM>(), new HashSet<VM>())
                 .build();

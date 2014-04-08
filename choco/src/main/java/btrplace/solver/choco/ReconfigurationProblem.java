@@ -24,6 +24,9 @@ import btrplace.model.VMState;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.duration.DurationEvaluators;
+import btrplace.solver.choco.extensions.AliasedCumulativesBuilder;
+import btrplace.solver.choco.extensions.Cumulatives;
+import btrplace.solver.choco.extensions.Packing;
 import btrplace.solver.choco.transition.NodeTransition;
 import btrplace.solver.choco.transition.VMTransition;
 import btrplace.solver.choco.view.ChocoModelView;
@@ -338,14 +341,14 @@ public interface ReconfigurationProblem {
     Set<VM> getManageableVMs();
 
     /**
-     * Get the builder that handle the scheduling part of the problem.
+     * Get the global constraint that handle the scheduling part of the problem.
      *
-     * @return the builder
+     * @return the constraint
      */
-    SliceSchedulerBuilder getTaskSchedulerBuilder();
+    Cumulatives getGlobalCumulatives();
 
     /**
-     * Get the builder that handle the management of capacities over the time.
+     * Get the global constraint that handle the management of capacities over the time.
      *
      * @return the builder
      */
@@ -356,7 +359,7 @@ public interface ReconfigurationProblem {
      *
      * @return the constraint
      */
-    PackingConstraint getGlobalPackingConstraint();
+    Packing getGlobalPacking();
 
     /**
      * Get the logger.

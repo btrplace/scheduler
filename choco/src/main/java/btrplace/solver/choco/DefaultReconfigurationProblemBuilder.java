@@ -22,9 +22,6 @@ import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.duration.DurationEvaluators;
-import btrplace.solver.choco.transition.TransitionFactory;
-import btrplace.solver.choco.view.ModelViewMapper;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -37,10 +34,7 @@ import java.util.Set;
  * <ul>
  * <li>Variables are not labelled to save memory</li>
  * <li>All the VMs are manageable</li>
- * <li>Default DurationEvaluators: {@link btrplace.solver.choco.duration.DurationEvaluators#newBundle()}</li>
- * <li>Default ViewMapper: {@link btrplace.solver.choco.view.ModelViewMapper#newBundle()}</li>
- * <li>Default TransitionFactory: {@link btrplace.solver.choco.transition.TransitionFactory#newBundle()}</li>
- * <li>Default PackingConstraint: {@link DefaultPackingConstraint}</li>
+ * <li>Default ChocoReconfigurationAlgorithmParams: {@link btrplace.solver.choco.DefaultChocoReconfigurationAlgorithmParams}</li>
  * <li>The state of the VMs is unchanged</li>
  * </ul>
  *
@@ -52,17 +46,11 @@ public class DefaultReconfigurationProblemBuilder {
 
     private boolean labelVars = false;
 
-    private DurationEvaluators dEval;
-
-    private ModelViewMapper viewMapper;
-
     private Set<VM> runs, waits, over, sleep;
 
     private Set<VM> manageable;
 
-    private TransitionFactory amf;
-
-    private PackingConstraintBuilder packBuilder;
+    private ChocoReconfigurationAlgorithmParams ps;
 
     /**
      * Make a new builder for a problem working on a given model.
@@ -93,41 +81,8 @@ public class DefaultReconfigurationProblemBuilder {
         return this;
     }
 
-
-    /**
-     * Provide a dedicated {@link DurationEvaluators}.
-     *
-     * @param d the evaluator to use
-     * @return the current builder
-     */
-    public DefaultReconfigurationProblemBuilder setDurationEvaluators(DurationEvaluators d) {
-        dEval = d;
-        return this;
-    }
-
-    public DefaultReconfigurationProblemBuilder setPackingBuilder(PackingConstraintBuilder p) {
-        packBuilder = p;
-        return this;
-    }
-    /**
-     * Provide a dedicated {@link btrplace.solver.choco.transition.TransitionFactory}.
-     *
-     * @param a the factory to use
-     * @return the current builder
-     */
-    public DefaultReconfigurationProblemBuilder setTransitionFactory(TransitionFactory a) {
-        amf = a;
-        return this;
-    }
-
-    /**
-     * Provide a dedicated {@link ModelViewMapper}.
-     *
-     * @param m the mapper to use
-     * @return the current builder
-     */
-    public DefaultReconfigurationProblemBuilder setViewMapper(ModelViewMapper m) {
-        viewMapper = m;
+    public DefaultReconfigurationProblemBuilder setParams(ChocoReconfigurationAlgorithmParams p) {
+        this.ps = p;
         return this;
     }
 
@@ -183,26 +138,18 @@ public class DefaultReconfigurationProblemBuilder {
             waits = map.getReadyVMs();
             over = Collections.emptySet();
         }
-        if (dEval == null) {
-            dEval = DurationEvaluators.newBundle();
-        }
-        if (viewMapper == null) {
-            viewMapper = ModelViewMapper.newBundle();
-        }
+
         if (manageable == null) {
             manageable = new HashSet<>();
             manageable.addAll(model.getMapping().getSleepingVMs());
             manageable.addAll(model.getMapping().getRunningVMs());
             manageable.addAll(model.getMapping().getReadyVMs());
         }
-        if (amf == null) {
-            amf = TransitionFactory.newBundle();
-        }
 
-        if (packBuilder == null) {
-            packBuilder = new DefaultPackingConstraint.Builder();
+        if (ps == null) {
+            ps = new DefaultChocoReconfigurationAlgorithmParams();
         }
-        return new DefaultReconfigurationProblem(model, dEval, viewMapper, amf, packBuilder, waits, runs, sleep, over, manageable, labelVars);
+        return new DefaultReconfigurationProblem(model, ps, waits, runs, sleep, over, manageable, labelVars);
     }
 
 }

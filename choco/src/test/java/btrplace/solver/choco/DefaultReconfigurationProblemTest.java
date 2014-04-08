@@ -154,10 +154,12 @@ public class DefaultReconfigurationProblemTest {
         toRun.add(vm4);
         toRun.add(vm1);
         mo.getAttributes().put(vm7, "template", "small");
-        DurationEvaluators dEval = DurationEvaluators.newBundle();
+        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        DurationEvaluators dEval = ps.getDurationEvaluators();
         DefaultReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(toWait, toRun, Collections.singleton(vm3), Collections.singleton(vm2))
-                .setDurationEvaluators(dEval).build();
+                .setParams(ps)
+                .build();
 
         Assert.assertEquals(dEval, rp.getDurationEvaluators());
         Assert.assertNotNull(rp.getViewMapper());
@@ -645,7 +647,9 @@ public class DefaultReconfigurationProblemTest {
         map.addReadyVM(vm5);
         map.addReadyVM(vm6);
 
+        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
         ModelViewMapper mapper = new ModelViewMapper();
+        ps.setViewMapper(mapper);
         mapper.register(new ChocoModelViewBuilder() {
             @Override
             public Class<? extends ModelView> getKey() {
@@ -662,7 +666,7 @@ public class DefaultReconfigurationProblemTest {
         mo.attach(v);
 
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
-                .setViewMapper(mapper)
+                .setParams(ps)
                 .build();
 
         Assert.assertEquals(rp.getViews().size(), 1);
@@ -775,10 +779,8 @@ public class DefaultReconfigurationProblemTest {
         mo.getAttributes().put(vm4, "template", "small");
         mo.attach(rc);
 
-        TransitionFactory amf = TransitionFactory.newBundle();
-        ReconfigurationProblem rp = new DefaultReconfigurationProblem(mo, DurationEvaluators.newBundle(), new ModelViewMapper(),
-                amf,
-                new DefaultPackingConstraint.Builder(),
+        ReconfigurationProblem rp = new DefaultReconfigurationProblem(mo,
+                new DefaultChocoReconfigurationAlgorithmParams(),
                 Collections.singleton(vm4),
                 Collections.singleton(vm5),
                 Collections.singleton(vm1),

@@ -127,7 +127,7 @@ public class CShareableResource implements ChocoModelView {
 
         }
         //We create a BP with only the VMs requiring a not null amount of resources
-        p.getGlobalPackingConstraint().addDim(r.getResourceIdentifier(),
+        p.getGlobalPacking().addDim(r.getResourceIdentifier(),
                 virtRcUsage,
                 notNullUsage.toArray(new IntVar[notNullUsage.size()]),
                 hosts.toArray(new IntVar[hosts.size()]));
@@ -403,7 +403,7 @@ public class CShareableResource implements ChocoModelView {
 
         IntVar[] capacities = new IntVar[rp.getNodes().length];
         System.arraycopy(virtRcUsage, 0, capacities, 0, rp.getNodes().length);
-        rp.getTaskSchedulerBuilder().add(capacities, cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]));
+        rp.getGlobalCumulatives().add(capacities, cUse.toArray(), dUse.toArray(new IntVar[dUse.size()]));
         return true;
     }
 

@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.extensions;
 
 import btrplace.model.VM;
-import btrplace.solver.choco.extensions.LocalTaskScheduler;
+import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.transition.VMTransition;
 import solver.variables.IntVar;
 
@@ -32,7 +33,7 @@ import java.util.Map;
  *
  * @author Fabien Hermenier
  */
-public abstract class SchedulingConstraintBuilder {
+public abstract class AbstractCumulatives implements Cumulatives {
 
     protected ReconfigurationProblem rp;
 
@@ -60,7 +61,7 @@ public abstract class SchedulingConstraintBuilder {
      *
      * @param p the associated problem
      */
-    public SchedulingConstraintBuilder(ReconfigurationProblem p) {
+    public AbstractCumulatives(ReconfigurationProblem p) {
         this.rp = p;
         cUsages = new ArrayList<>();
         dUsages = new ArrayList<>();

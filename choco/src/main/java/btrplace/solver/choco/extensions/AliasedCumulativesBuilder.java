@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.extensions;
 
-import btrplace.solver.choco.extensions.AliasedCumulatives;
+import btrplace.solver.SolverException;
+import btrplace.solver.choco.ReconfigurationProblem;
 import gnu.trove.list.array.TIntArrayList;
 import solver.variables.IntVar;
 
@@ -28,14 +29,14 @@ import java.util.List;
  * Builder to create constraints where slices have to be placed on nodes
  * with regards to the slice and the nodes capacity.
  * <p/>
- * It differs from {@link btrplace.solver.choco.SliceSchedulerBuilder} as
+ * It differs from {@link DefaultCumulatives} as
  * a resource may in fact be an alias to another one. This allows
  * to create a fake resource that aggregate the capacity of each of
  * the aliased resources.
  *
  * @author Fabien Hermenier
  */
-public class AliasedCumulativesBuilder extends SchedulingConstraintBuilder {
+public class AliasedCumulativesBuilder extends AbstractCumulatives {
 
     private TIntArrayList capacities;
 
@@ -73,9 +74,7 @@ public class AliasedCumulativesBuilder extends SchedulingConstraintBuilder {
      *
      * @return a list of constraint that may be empty.
      */
-    public List<AliasedCumulatives> getConstraints() {
-        List<AliasedCumulatives> cstrs = new ArrayList<>();
-
+    public boolean commit() throws SolverException {
         for (int i = 0; i < aliases.size(); i++) {
             int capa = capacities.get(i);
             int[] alias = aliases.get(i);
@@ -84,13 +83,18 @@ public class AliasedCumulativesBuilder extends SchedulingConstraintBuilder {
             for (IntVar dUseDim : dUsages.get(i)) {
                 dUses[i++] = dUseDim.getLB();
             }
-            cstrs.add(new AliasedCumulatives(alias,
+            rp.getSolver().post(new AliasedCumulatives(alias,
                     new int[]{capa},
                     cHosts, new int[][]{cUse}, cEnds,
                     dHosts, new int[][]{dUses}, dStarts,
                     associations));
 
         }
-        return cstrs;
+        return true;
+    }
+
+    @Override
+    public void add(IntVar[] c, int[] cUse, IntVar[] dUse) {
+
     }
 }

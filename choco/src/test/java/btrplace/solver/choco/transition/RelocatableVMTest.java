@@ -27,10 +27,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
 import btrplace.plan.event.MigrateVM;
 import btrplace.solver.SolverException;
-import btrplace.solver.choco.ChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.DefaultChocoReconfigurationAlgorithm;
-import btrplace.solver.choco.DefaultReconfigurationProblemBuilder;
-import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.*;
 import btrplace.solver.choco.constraint.mttr.CMinMTTR;
 import btrplace.solver.choco.duration.ConstantActionDuration;
 import btrplace.solver.choco.duration.DurationEvaluators;
@@ -65,11 +62,12 @@ public class RelocatableVMTest {
         map.addOnlineNode(n2);
         map.addRunningVM(vm1, n1);
 
-        DurationEvaluators dev = DurationEvaluators.newBundle();
+        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(MigrateVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
-                .setDurationEvaluators(dev)
+                .setParams(ps)
                 .labelVariables()
                 .build();
         rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
@@ -119,11 +117,12 @@ public class RelocatableVMTest {
         map.addOnlineNode(n2);
         map.addRunningVM(vm1, n1);
 
-        DurationEvaluators dev = DurationEvaluators.newBundle();
+        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(MigrateVM.class, new ConstantActionDuration(5));
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
-                .setDurationEvaluators(dev)
+                .setParams(ps)
                 .build();
         rp.getNodeActions()[0].getState().instantiateTo(1, Cause.Null);
         rp.getNodeActions()[1].getState().instantiateTo(1, Cause.Null);
@@ -197,14 +196,15 @@ public class RelocatableVMTest {
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm1, n1);
-        DurationEvaluators dev = DurationEvaluators.newBundle();
+        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(MigrateVM.class, new ConstantActionDuration(2));
 
         mo.getAttributes().put(vm1, "template", "small");
         mo.getAttributes().put(vm1, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
-                .setDurationEvaluators(dev)
+                .setParams(ps)
                 .labelVariables()
                 .build();
         RelocatableVM am = (RelocatableVM) rp.getVMAction(vm1);
@@ -229,7 +229,8 @@ public class RelocatableVMTest {
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
-        DurationEvaluators dev = DurationEvaluators.newBundle();
+        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(btrplace.plan.event.MigrateVM.class, new ConstantActionDuration(20));
         dev.register(btrplace.plan.event.ForgeVM.class, new ConstantActionDuration(3));
         dev.register(btrplace.plan.event.BootVM.class, new ConstantActionDuration(2));
@@ -239,7 +240,7 @@ public class RelocatableVMTest {
         mo.getAttributes().put(vm10, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
-                .setDurationEvaluators(dev)
+                .setParams(ps)
                 .labelVariables()
                 .setManageableVMs(map.getAllVMs())
                 .build();
@@ -281,7 +282,8 @@ public class RelocatableVMTest {
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
-        DurationEvaluators dev = DurationEvaluators.newBundle();
+        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(MigrateVM.class, new ConstantActionDuration(2));
         dev.register(btrplace.plan.event.ForgeVM.class, new ConstantActionDuration(3));
         dev.register(btrplace.plan.event.BootVM.class, new ConstantActionDuration(2));
@@ -291,7 +293,7 @@ public class RelocatableVMTest {
         mo.getAttributes().put(vm10, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
-                .setDurationEvaluators(dev)
+                .setParams(ps)
                 .labelVariables()
                 .setManageableVMs(map.getAllVMs())
                 .build();
@@ -322,7 +324,8 @@ public class RelocatableVMTest {
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
-        DurationEvaluators dev = DurationEvaluators.newBundle();
+        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(MigrateVM.class, new ConstantActionDuration(20));
         dev.register(btrplace.plan.event.ForgeVM.class, new ConstantActionDuration(3));
         dev.register(btrplace.plan.event.BootVM.class, new ConstantActionDuration(2));
@@ -332,7 +335,7 @@ public class RelocatableVMTest {
         mo.getAttributes().put(vm10, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
-                .setDurationEvaluators(dev)
+                .setParams(ps)
                 .labelVariables()
                 .setManageableVMs(map.getAllVMs())
                 .build();
@@ -377,7 +380,8 @@ public class RelocatableVMTest {
         map.addOnlineNode(n1);
         map.addOnlineNode(n2);
         map.addRunningVM(vm10, n1); //Not using vm1 because intPool starts at 0 so their will be multiple (0,1) VMs.
-        DurationEvaluators dev = DurationEvaluators.newBundle();
+        ChocoReconfigurationAlgorithmParams ps = new DefaultChocoReconfigurationAlgorithmParams();
+        DurationEvaluators dev = ps.getDurationEvaluators();
         dev.register(MigrateVM.class, new ConstantActionDuration(20));
         dev.register(btrplace.plan.event.ForgeVM.class, new ConstantActionDuration(3));
         dev.register(btrplace.plan.event.BootVM.class, new ConstantActionDuration(2));
@@ -387,7 +391,7 @@ public class RelocatableVMTest {
         mo.getAttributes().put(vm10, "clone", true);
         ReconfigurationProblem rp = new DefaultReconfigurationProblemBuilder(mo)
                 .setNextVMsStates(Collections.<VM>emptySet(), map.getAllVMs(), Collections.<VM>emptySet(), Collections.<VM>emptySet())
-                .setDurationEvaluators(dev)
+                .setParams(ps)
                 .labelVariables()
                 .setManageableVMs(map.getAllVMs())
                 .build();

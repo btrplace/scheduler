@@ -41,7 +41,7 @@ import java.util.Map;
 public class CPowerView implements ChocoModelView {
 
     /**
-     * The view identifier .
+     * The view identifier.
      */
     public static final String VIEW_ID = "PowerTime";
 

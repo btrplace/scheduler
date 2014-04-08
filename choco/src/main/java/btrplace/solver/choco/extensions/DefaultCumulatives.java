@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.extensions;
 
 import btrplace.model.VM;
-import btrplace.solver.choco.extensions.FastImpliesEq;
-import btrplace.solver.choco.extensions.TaskScheduler;
+import btrplace.solver.SolverException;
+import btrplace.solver.choco.ReconfigurationProblem;
+import btrplace.solver.choco.Slice;
 import btrplace.solver.choco.transition.KeepRunningVM;
 import btrplace.solver.choco.transition.TransitionUtils;
 import btrplace.solver.choco.transition.VMTransition;
@@ -37,7 +38,7 @@ import java.util.List;
  *
  * @author Fabien Hermenier
  */
-public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
+public class DefaultCumulatives extends AbstractCumulatives {
 
     private List<IntVar[]> capacities;
 
@@ -46,7 +47,7 @@ public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
      *
      * @param p the associated problem
      */
-    public SliceSchedulerBuilder(ReconfigurationProblem p) {
+    public DefaultCumulatives(ReconfigurationProblem p) {
         super(p);
         capacities = new ArrayList<>();
     }
@@ -58,6 +59,7 @@ public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
      * @param cUse the resource usage of each of the cSlices
      * @param dUse the resource usage of each of the dSlices
      */
+    @Override
     public void add(IntVar[] c, int[] cUse, IntVar[] dUse) {
         capacities.add(c);
         cUsages.add(cUse);
@@ -69,7 +71,8 @@ public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
      *
      * @return the resulting constraint
      */
-    public TaskScheduler build() {
+    @Override
+    public boolean commit() throws SolverException {
 
         //We get the UB of the node capacity and the LB for the VM usage.
         int[][] capas = new int[capacities.size()][];
@@ -101,13 +104,16 @@ public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
         symmetryBreakingForStayingVMs();
         IntVar[] earlyStarts = TransitionUtils.getHostingStarts(rp.getNodeActions());
         IntVar[] lastEnd = TransitionUtils.getHostingEnds(rp.getNodeActions());
-        return new TaskScheduler(earlyStarts,
-                lastEnd,
-                capas,
-                cHosts, cUses, cEnds,
-                dHosts, dUses, dStarts,
-                associations,
-                rp.getSolver());
+        rp.getSolver().post(
+                new TaskScheduler(earlyStarts,
+                        lastEnd,
+                        capas,
+                        cHosts, cUses, cEnds,
+                        dHosts, dUses, dStarts,
+                        associations,
+                        rp.getSolver())
+        );
+        return true;
     }
 
     private Boolean strictlyDecreasingOrUnchanged(VM vm) {
@@ -182,5 +188,13 @@ public class SliceSchedulerBuilder extends SchedulingConstraintBuilder {
             }
         }
         return true;
+    }
+
+    public static class Builder implements CumulativesBuilder {
+
+        @Override
+        public Cumulatives build(ReconfigurationProblem p) {
+            return new DefaultCumulatives(p);
+        }
     }
 }

@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.solver.choco;
+package btrplace.solver.choco.extensions;
 
 import btrplace.solver.SolverException;
+import btrplace.solver.choco.ReconfigurationProblem;
 import solver.Cause;
 import solver.Solver;
 import solver.constraints.IntConstraintFactory;
@@ -30,9 +31,10 @@ import java.util.List;
 /**
  * Default implementation that relies on the pack constraint bundled with Choco.
  * This is a pretty slow constraint... but it exists.
+ *
  * @author Fabien Hermenier
  */
-public class DefaultPackingConstraint implements PackingConstraint {
+public class DefaultPacking implements Packing {
 
     private ReconfigurationProblem rp;
 
@@ -44,7 +46,7 @@ public class DefaultPackingConstraint implements PackingConstraint {
 
     private List<String> names;
 
-    public DefaultPackingConstraint(ReconfigurationProblem p) {
+    public DefaultPacking(ReconfigurationProblem p) {
         loads = new ArrayList<>();
         bins = new ArrayList<>();
         sizes = new ArrayList<>();
@@ -84,10 +86,10 @@ public class DefaultPackingConstraint implements PackingConstraint {
         return true;
     }
 
-    public static class Builder implements PackingConstraintBuilder {
+    public static class Builder implements PackingBuilder {
         @Override
-        public PackingConstraint build(ReconfigurationProblem p) {
-            return new DefaultPackingConstraint(p);
+        public Packing build(ReconfigurationProblem p) {
+            return new DefaultPacking(p);
         }
     }
 }
