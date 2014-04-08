@@ -21,11 +21,26 @@ import btrplace.solver.SolverException;
 import solver.variables.IntVar;
 
 /**
+ * Interface to specify a multi-dimension cumulatives constraints.
+ * Dimensions can be added on the fly.
  * @author Fabien Hermenier
  */
 public interface Cumulatives {
 
+    /**
+     * Add a new dimension.
+     *
+     * @param c    the capacity of each node. The variables *must be* ordered according to {@link btrplace.solver.choco.DefaultReconfigurationProblem#getNode(btrplace.model.Node)}.
+     * @param cUse the resource usage of each of the cSlices
+     * @param dUse the resource usage of each of the dSlices
+     */
     void add(IntVar[] c, int[] cUse, IntVar[] dUse);
 
+    /**
+     * Commit all the stated dimensions, generate then plug the underlying constraints to the problem
+     *
+     * @return {@code false} if the resulting problem has no solution
+     * @throws SolverException if an error occurred while building the underlying constraints.
+     */
     boolean commit() throws SolverException;
 }

@@ -190,6 +190,9 @@ public class DefaultCumulatives extends AbstractCumulatives {
         return true;
     }
 
+    /**
+     * Builder associated to this constraint.
+     */
     public static class Builder implements CumulativesBuilder {
 
         @Override

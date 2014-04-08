@@ -46,6 +46,11 @@ public class DefaultPacking implements Packing {
 
     private List<String> names;
 
+    /**
+     * A new constraint.
+     *
+     * @param p the associated problem
+     */
     public DefaultPacking(ReconfigurationProblem p) {
         loads = new ArrayList<>();
         bins = new ArrayList<>();
@@ -86,6 +91,7 @@ public class DefaultPacking implements Packing {
         return true;
     }
 
+    /** Builder associated to this constraint. */
     public static class Builder implements PackingBuilder {
         @Override
         public Packing build(ReconfigurationProblem p) {

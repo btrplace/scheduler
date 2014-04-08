@@ -33,7 +33,7 @@ public interface Packing {
      *
      * @param name the dimension label
      * @param l    the load of each VM. The variables *must be* ordered according to {@link btrplace.solver.choco.DefaultReconfigurationProblem#getVM(btrplace.model.VM)}.
-     * @param s    the capacity of each node. The variables *must be* ordered according to {@link btrplace.solver.choco.DefaultReconfigurationProblem#getVM(btrplace.model.VM)}.
+     * @param s    the capacity of each node. The variables *must be* ordered according to {@link btrplace.solver.choco.DefaultReconfigurationProblem#getNode(btrplace.model.Node)}.
      * @param b    the placement variable for each VM. Same order than for {@code l}
      */
     void addDim(String name, IntVar[] l, IntVar[] s, IntVar[] b);

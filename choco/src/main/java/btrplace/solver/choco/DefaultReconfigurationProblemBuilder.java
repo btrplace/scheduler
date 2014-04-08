@@ -81,6 +81,12 @@ public class DefaultReconfigurationProblemBuilder {
         return this;
     }
 
+    /**
+     * Set the parameters to use.
+     *
+     * @param p the parameters
+     * @return the current builder
+     */
     public DefaultReconfigurationProblemBuilder setParams(ChocoReconfigurationAlgorithmParams p) {
         this.ps = p;
         return this;
