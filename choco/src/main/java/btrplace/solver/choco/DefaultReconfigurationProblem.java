@@ -560,11 +560,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public boolean isVarLabelling() {
-        return useLabels;
-    }
-
-    @Override
     public Set<VM> getManageableVMs() {
         return manageable;
     }
@@ -679,11 +674,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     public NodeTransition getNodeAction(Node id) {
         int idx = getNode(id);
         return idx < 0 ? null : nodeActions[idx];
-    }
-
-    @Override
-    public ModelViewMapper getViewMapper() {
-        return viewMapper;
     }
 
     @Override

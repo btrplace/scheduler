@@ -30,7 +30,6 @@ import btrplace.solver.choco.extensions.Packing;
 import btrplace.solver.choco.transition.NodeTransition;
 import btrplace.solver.choco.transition.VMTransition;
 import btrplace.solver.choco.view.ChocoModelView;
-import btrplace.solver.choco.view.ModelViewMapper;
 import org.slf4j.Logger;
 import solver.ResolutionPolicy;
 import solver.Solver;
@@ -284,14 +283,6 @@ public interface ReconfigurationProblem {
     ChocoModelView getView(String id);
 
     /**
-     * Get the view mapper that is used to associate
-     * {@link btrplace.model.view.ModelView} to {@link ChocoModelView}.
-     *
-     * @return the mapper
-     */
-    ModelViewMapper getViewMapper();
-
-    /**
      * Get all the declared views.
      *
      * @return a collection of views, may be empty
@@ -323,13 +314,6 @@ public interface ReconfigurationProblem {
      * @return the label that will be used in practice
      */
     String makeVarLabel(Object... lbl);
-
-    /**
-     * Check if variables labelling is enabled.
-     *
-     * @return {@code true} iff enabled
-     */
-    boolean isVarLabelling();
 
     /**
      * Get the VMs managed by the solver.
