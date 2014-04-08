@@ -20,11 +20,23 @@ package btrplace.solver.choco.view;
 import solver.variables.IntVar;
 
 /**
+ * An interface to specify a cumulatives constraint when a resource is shared among
+ * multiple nodes.
  * @author Fabien Hermenier
  */
 public interface AliasedCumulatives extends ChocoModelView {
 
-    static final String VIEW_ID = "choco.aliasedCumulatives";
+    /**
+     * The view identifier.
+     */
+    final String VIEW_ID = "choco.aliasedCumulatives";
 
+    /**
+     * Add a new dimension.
+     * @param c the capacity of the resource
+     * @param cUse the current usage for each VM
+     * @param dUse the current demain for each VM
+     * @param alias the indexes of the nodes that share the resource
+     */
     void addDim(int c, int[] cUse, IntVar[] dUse, int[] alias);
 }

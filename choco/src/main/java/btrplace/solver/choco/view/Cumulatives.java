@@ -27,8 +27,10 @@ import solver.variables.IntVar;
  */
 public interface Cumulatives extends ChocoModelView {
 
-    public static final String VIEW_ID = "choco.cumulatives";
-
+    /**
+     * View identifier.
+     */
+    final String VIEW_ID = "choco.cumulatives";
 
     /**
      * Add a new dimension.
@@ -37,5 +39,5 @@ public interface Cumulatives extends ChocoModelView {
      * @param cUse the resource usage of each of the cSlices
      * @param dUse the resource usage of each of the dSlices
      */
-    public abstract void addDim(IntVar[] c, int[] cUse, IntVar[] dUse);
+    void addDim(IntVar[] c, int[] cUse, IntVar[] dUse);
 }

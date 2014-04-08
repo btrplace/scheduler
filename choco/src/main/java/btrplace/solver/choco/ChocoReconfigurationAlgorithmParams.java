@@ -178,9 +178,23 @@ public interface ChocoReconfigurationAlgorithmParams {
      */
     TransitionFactory getTransitionFactory();
 
+    /**
+     * Declare a builder that create solve-only views.
+     *
+     * @param b the builder to add
+     */
     void addSolverViewBuilder(SolverViewBuilder b);
 
+    /**
+     * Remove a builder dedicated to solver-only views.
+     * @param b the builder to remove
+     * @return {@code true} iff the builder has been removed
+     */
     boolean removeSolverViewBuilder(SolverViewBuilder b);
 
+    /**
+     * Get the solver-only view builders.
+     * @return a collection that may be empty
+     */
     Collection<SolverViewBuilder> getSolverViews();
 }
