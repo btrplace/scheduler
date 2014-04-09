@@ -143,7 +143,7 @@ public class SingleRunnerStatistics implements SolvingStatistics {
     /**
      * Add a solution to the statistics.
      *
-     * @param so the solution to addDim
+     * @param so the solution to add
      */
     public void addSolution(SolutionStatistics so) {
         this.solutions.add(so);

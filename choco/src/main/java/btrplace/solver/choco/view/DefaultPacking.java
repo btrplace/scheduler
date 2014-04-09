@@ -27,6 +27,7 @@ import solver.exception.ContradictionException;
 import solver.variables.IntVar;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -102,8 +103,10 @@ public class DefaultPacking extends Packing {
         return true;
     }
 
-    /** Builder associated to this constraint. */
-    public static class Builder implements SolverViewBuilder {
+    /**
+     * Builder associated to this constraint.
+     */
+    public static class Builder extends SolverViewBuilder {
 
         @Override
         public String getKey() {
@@ -114,5 +117,11 @@ public class DefaultPacking extends Packing {
         public Packing build(ReconfigurationProblem p) {
             return new DefaultPacking(p);
         }
+
+        @Override
+        public List<String> getDependencies() {
+            return Collections.emptyList();
+        }
+
     }
 }

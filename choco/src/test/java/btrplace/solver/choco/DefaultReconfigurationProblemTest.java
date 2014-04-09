@@ -24,10 +24,7 @@ import btrplace.plan.ReconfigurationPlan;
 import btrplace.solver.SolverException;
 import btrplace.solver.choco.duration.DurationEvaluators;
 import btrplace.solver.choco.transition.*;
-import btrplace.solver.choco.view.CShareableResource;
-import btrplace.solver.choco.view.ChocoModelViewBuilder;
-import btrplace.solver.choco.view.ChocoView;
-import btrplace.solver.choco.view.ModelViewMapper;
+import btrplace.solver.choco.view.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import solver.Cause;
@@ -656,8 +653,13 @@ public class DefaultReconfigurationProblemTest {
             }
 
             @Override
-            public ChocoView build(ReconfigurationProblem rp, ModelView v) throws SolverException {
-                return new MockCView();
+            public SolverViewBuilder build(ModelView v) throws SolverException {
+                return new DelegatedBuilder("cmock", Collections.<String>emptyList()) {
+                    @Override
+                    public ChocoView build(ReconfigurationProblem rp) throws SolverException {
+                        return new ModelViewMapperTest.CMockView();
+                    }
+                };
             }
         });
 
@@ -668,34 +670,13 @@ public class DefaultReconfigurationProblemTest {
                 .setParams(ps)
                 .build();
 
-        Assert.assertNotNull(rp.getView("cmock"));
-        Assert.assertTrue(rp.getView("cmock") instanceof MockCView);
+        Assert.assertNotNull(rp.getView("mock"));
+        Assert.assertTrue(rp.getView("mock") instanceof ModelViewMapperTest.CMockView);
     }
 
     @Test
     public void testNoViewImplementation() throws SolverException {
         Model mo = new DefaultModel();
-        VM vm1 = mo.newVM();
-        VM vm2 = mo.newVM();
-        VM vm3 = mo.newVM();
-        VM vm4 = mo.newVM();
-        VM vm5 = mo.newVM();
-        VM vm6 = mo.newVM();
-        Node n1 = mo.newNode();
-        Node n2 = mo.newNode();
-        Node n3 = mo.newNode();
-
-        Mapping map = mo.getMapping();
-        map.addOnlineNode(n1);
-        map.addOnlineNode(n2);
-        map.addOfflineNode(n3);
-
-        map.addRunningVM(vm1, n1);
-        map.addRunningVM(vm2, n1);
-        map.addRunningVM(vm3, n2);
-        map.addSleepingVM(vm4, n2);
-        map.addReadyVM(vm5);
-        map.addReadyVM(vm6);
 
         MockView v = new MockView();
         mo.attach(v);

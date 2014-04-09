@@ -25,6 +25,7 @@ import gnu.trove.list.array.TIntArrayList;
 import solver.variables.IntVar;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -115,7 +116,7 @@ public class DefaultAliasedCumulatives extends AbstractCumulatives implements bt
     /**
      * Builder associated to this constraint.
      */
-    public static class Builder implements SolverViewBuilder {
+    public static class Builder extends SolverViewBuilder {
 
         @Override
         public String getKey() {
@@ -126,5 +127,11 @@ public class DefaultAliasedCumulatives extends AbstractCumulatives implements bt
         public btrplace.solver.choco.view.AliasedCumulatives build(ReconfigurationProblem p) {
             return new DefaultAliasedCumulatives(p);
         }
+
+        @Override
+        public List<String> getDependencies() {
+            return Collections.emptyList();
+        }
+
     }
 }

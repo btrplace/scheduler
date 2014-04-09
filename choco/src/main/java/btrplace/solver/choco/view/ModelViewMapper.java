@@ -105,6 +105,6 @@ public class ModelViewMapper {
         if (b == null) {
             return null;
         }
-        return b.build(rp, v);
+        return b.build(v).build(rp);
     }
 }

@@ -39,10 +39,7 @@ import solver.variables.IntVar;
 import solver.variables.RealVar;
 import solver.variables.VariableFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Specify, for a given resource, the physical resource usage associated to each server,
@@ -473,9 +470,13 @@ public class CShareableResource implements ChocoView {
         }
 
         @Override
-        public ChocoView build(ReconfigurationProblem p, ModelView v) throws SolverException {
-            ShareableResource r = (ShareableResource) v;
-            return new CShareableResource(p, r);
+        public SolverViewBuilder build(final ModelView v) throws SolverException {
+            return new DelegatedBuilder(v.getIdentifier(), Arrays.asList(Packing.VIEW_ID, Cumulatives.VIEW_ID)) {
+                @Override
+                public ChocoView build(ReconfigurationProblem r) throws SolverException {
+                    return new CShareableResource(r, (ShareableResource) v);
+                }
+            };
         }
     }
 }

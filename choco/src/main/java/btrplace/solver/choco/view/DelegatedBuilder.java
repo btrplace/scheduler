@@ -25,33 +25,27 @@ import java.util.List;
 /**
  * @author Fabien Hermenier
  */
-public abstract class SolverViewBuilder {
+public abstract class DelegatedBuilder extends SolverViewBuilder {
 
-    /**
-     * Get the identifier of the view that is handled by this builder.
-     *
-     * @return a string
-     */
-    public abstract String getKey();
+    private String key;
 
-    /**
-     * Build the {@link ChocoView}
-     *
-     * @param rp the problem to add
-     * @throws btrplace.solver.SolverException if an error occurred while building the view
-     */
-    public abstract ChocoView build(ReconfigurationProblem rp) throws SolverException;
+    private List<String> deps;
 
-    /**
-     * Get the view dependencies.
-     * The dependencies will be build in prior.
-     *
-     * @return a list of view identifier that may be empty
-     */
-    public abstract List<String> getDependencies();
+    public DelegatedBuilder(String k, List<String> d) {
+        this.key = k;
+        this.deps = d;
+    }
 
     @Override
-    public String toString() {
-        return getKey() + " requires " + getDependencies();
+    public String getKey() {
+        return this.key;
+    }
+
+    @Override
+    public abstract ChocoView build(ReconfigurationProblem rp) throws SolverException;
+
+    @Override
+    public List<String> getDependencies() {
+        return deps;
     }
 }

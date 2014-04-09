@@ -92,20 +92,15 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     private DurationEvaluators durEval;
 
-    private Map<String, ChocoView> modelViews;
-
-    private Map<String, ChocoView> coreViews;
-
     private IntVar[] vmsCountOnNodes;
 
     private ObjectiveAlterer alterer = new DefaultObjectiveAlterer();
-
-    private ModelViewMapper viewMapper;
 
     private ResolutionPolicy solvingPolicy;
 
     private TransitionFactory amFactory;
 
+    private SolverViewsManager viewsManager;
     /**
      * Make a new RP where the next state for every VM is indicated.
      * If the state for a VM is omitted, it is considered as unchanged
@@ -126,8 +121,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
                                          Set<VM> running,
                                          Set<VM> sleeping,
                                          Set<VM> killed,
-                                         Set<VM> preRooted
-    ) throws SolverException {
+                                         Set<VM> preRooted) throws SolverException {
         this.ready = new HashSet<>(ready);
         this.running = new HashSet<>(running);
         this.sleeping = new HashSet<>(sleeping);
@@ -137,7 +131,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         this.amFactory = ps.getTransitionFactory();
         model = m;
         durEval = ps.getDurationEvaluators();
-        this.viewMapper = ps.getViewMapper();
+
         solver = new Solver();
         solver.getSearchLoop().plugSearchMonitor(new AllSolutionsRecorder(solver));
         start = VariableFactory.fixed(makeVarLabel("RP.start"), 0, solver);
@@ -145,7 +139,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
         this.solvingPolicy = ResolutionPolicy.SATISFACTION;
         objective = null;
-        this.modelViews = new HashMap<>();
+
 
         fillElements();
 
@@ -154,18 +148,23 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         makeNodeTransitions();
         makeVMTransitions();
 
-
-        coreViews = new HashMap<>();
-        for (SolverViewBuilder b : ps.getSolverViews()) {
-            ChocoView mv = b.build(this);
-            coreViews.put(mv.getIdentifier(), mv);
-        }
-
-        modelViews = new HashMap<>(model.getViews().size());
-        insertModelViews();
-
+        makeViews(ps);
         linkCardinalityWithSlices();
 
+    }
+
+    private void makeViews(ChocoReconfigurationAlgorithmParams ps) throws SolverException {
+        List<SolverViewBuilder> viewBuilders = new ArrayList<>(ps.getSolverViews());
+        ModelViewMapper vm = ps.getViewMapper();
+        for (ModelView v : model.getViews()) {
+            ChocoModelViewBuilder modelViewBuilder = vm.getBuilder(v.getClass());
+            if (modelViewBuilder != null) {
+                SolverViewBuilder sb = modelViewBuilder.build(v);
+                viewBuilders.add(sb);
+            }
+        }
+        viewsManager = new SolverViewsManager(this);
+        viewsManager.build(viewBuilders);
     }
 
     @Override
@@ -176,18 +175,9 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         }
         addContinuousResourceCapacities();
 
-        for (Map.Entry<String, ChocoView> cv : modelViews.entrySet()) {
-            if (!cv.getValue().beforeSolve(this)) {
-                return null;
-            }
+        if (!viewsManager.beforeSolve()) {
+            return null;
         }
-
-        for (Map.Entry<String, ChocoView> cv : coreViews.entrySet()) {
-            if (!cv.getValue().beforeSolve(this)) {
-                return null;
-            }
-        }
-
 
         //Set the timeout
         if (timeLimit > 0) {
@@ -238,9 +228,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
             action.insertActions(plan);
         }
 
-        for (ChocoView view : modelViews.values()) {
-            view.insertActions(this, plan);
-        }
+        viewsManager.insertActions(plan);
 
         assert plan.isApplyable() : "The following plan cannot be applied:\n" + plan;
         assert checkConsistency(plan);
@@ -252,8 +240,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
      * In practice, instantiate each of the variables to its lower-bound
      */
     private void appendNaiveBranchHeuristic() {
-
-
         StrategiesSequencer seq;
         if (solver.getSearchLoop().getStrategy() == null) {
             seq = new StrategiesSequencer(
@@ -296,27 +282,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     /**
-     * Create the {@link btrplace.solver.choco.view.ChocoView} for each of the {@link ModelView}.
-     *
-     * @throws SolverException if an error occurred
-     */
-    private void insertModelViews() throws SolverException {
-        for (ModelView rc : model.getViews()) {
-            ChocoView vv = viewMapper.map(this, rc);
-            if (vv != null) {
-                ChocoView in = modelViews.put(vv.getIdentifier(), vv);
-                if (in != null) {
-                    throw new SolverException(model, "Cannot use the implementation '" + vv.getIdentifier() +
-                            "' implementation for '" + rc.getIdentifier() + "'."
-                            + "The '" + in.getIdentifier() + "' implementation is already used");
-                }
-            } else {
-                LOGGER.debug("No implementation available for the view '{}'", rc.getIdentifier());
-            }
-        }
-    }
-
-    /**
      * Create the cardinality variables.
      */
     private void makeCardinalityVariables() {
@@ -355,7 +320,6 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     private void fillElements() {
-
         Set<VM> allVMs = new HashSet<>();
         allVMs.addAll(model.getMapping().getSleepingVMs());
         allVMs.addAll(model.getMapping().getRunningVMs());
@@ -468,28 +432,17 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
 
     @Override
     public ChocoView getView(String id) {
-        ChocoView v = modelViews.get(id);
-        if (v == null) {
-            return coreViews.get(id);
-        }
-        return v;
+        return viewsManager.get(id);
     }
 
     @Override
     public Collection<String> getViews() {
-        Set<String> keys = new HashSet<>(modelViews.size() + coreViews.size());
-        keys.addAll(modelViews.keySet());
-        keys.addAll(coreViews.keySet());
-        return keys;
+        return viewsManager.getKeys();
     }
 
     @Override
     public boolean addView(ChocoView v) {
-        if (modelViews.containsKey(v.getIdentifier())) {
-            return false;
-        }
-        modelViews.put(v.getIdentifier(), v);
-        return true;
+        return viewsManager.add(v);
     }
 
     @Override
@@ -668,9 +621,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
         if (newVM == null) {
             return null;
         }
-        for (ChocoView v : modelViews.values()) {
-            v.cloneVM(vm, newVM);
-        }
+        viewsManager.cloneVM(vm, newVM);
         return newVM;
     }
 

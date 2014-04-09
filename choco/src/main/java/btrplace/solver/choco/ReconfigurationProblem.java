@@ -290,7 +290,7 @@ public interface ReconfigurationProblem {
      * Add a view.
      * There must not be a view with a same identifier already in.
      *
-     * @param v the view to addDim
+     * @param v the view to add
      * @return {@code true} iff the view has been added.
      */
     boolean addView(ChocoView v);

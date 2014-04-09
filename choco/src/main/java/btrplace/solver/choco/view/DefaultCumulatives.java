@@ -32,6 +32,7 @@ import solver.variables.BoolVar;
 import solver.variables.IntVar;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -213,7 +214,7 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
     /**
      * Builder associated to this constraint.
      */
-    public static class Builder implements SolverViewBuilder {
+    public static class Builder extends SolverViewBuilder {
 
         @Override
         public String getKey() {
@@ -223,6 +224,11 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
         @Override
         public Cumulatives build(ReconfigurationProblem p) {
             return new DefaultCumulatives(p);
+        }
+
+        @Override
+        public List<String> getDependencies() {
+            return Collections.emptyList();
         }
     }
 }

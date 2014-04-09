@@ -45,7 +45,7 @@ public class TransitionFactory {
     /**
      * Add a builder for a VM
      *
-     * @param b the builder to addDim
+     * @param b the builder to add
      */
     public void add(VMTransitionBuilder b) {
         List<VMTransitionBuilder> l = vmAMB2.get(b.getDestinationState());
@@ -80,7 +80,7 @@ public class TransitionFactory {
     /**
      * Add a builder for a VM
      *
-     * @param b the builder to addDim
+     * @param b the builder to add
      */
     public void add(NodeTransitionBuilder b) {
         nodeAMB.put(b.getSourceState(), b);
