@@ -15,8 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+package btrplace.model.constraint;
+
+import btrplace.plan.event.MigrateVM;
+
 /**
- * Checkers to verify the viability of constraints with regards to a given
- * model or reconfiguration plan.
+ * Checker for the {@link btrplace.model.constraint.Root} constraint
+ *
+ * @author Fabien Hermenier
+ * @see btrplace.model.constraint.Root
  */
-package btrplace.model.constraint.checker;
+public class RootChecker extends AllowAllConstraintChecker<Root> {
+
+    /**
+     * Make a new checker.
+     *
+     * @param r the associated constraint
+     */
+    public RootChecker(Root r) {
+        super(r);
+    }
+
+    @Override
+    public boolean start(MigrateVM a) {
+        return !getVMs().contains(a.getVM());
+    }
+}

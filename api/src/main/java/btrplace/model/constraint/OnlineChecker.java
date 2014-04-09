@@ -15,44 +15,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.model.constraint.checker;
+package btrplace.model.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.VM;
-import btrplace.model.constraint.Fence;
-import btrplace.plan.event.RunningVMPlacement;
+import btrplace.model.Node;
+import btrplace.plan.event.ShutdownNode;
 
 /**
- * Checker for the {@link btrplace.model.constraint.Fence} constraint
+ * Checker for the {@link btrplace.model.constraint.Online} constraint
  *
  * @author Fabien Hermenier
- * @see btrplace.model.constraint.Fence
+ * @see btrplace.model.constraint.Online
  */
-public class FenceChecker extends AllowAllConstraintChecker<Fence> {
+public class OnlineChecker extends AllowAllConstraintChecker<Online> {
 
     /**
      * Make a new checker.
      *
-     * @param f the associated constraint
+     * @param o the associated constraint
      */
-    public FenceChecker(Fence f) {
-        super(f);
+    public OnlineChecker(Online o) {
+        super(o);
     }
 
     @Override
-    public boolean startRunningVMPlacement(RunningVMPlacement r) {
-        if (getVMs().contains(r.getVM())) {
-            return getNodes().contains(r.getDestinationNode());
-        }
-        return true;
+    public boolean start(ShutdownNode a) {
+        return !getNodes().contains(a.getNode());
     }
 
     @Override
     public boolean endsWith(Model mo) {
         Mapping c = mo.getMapping();
-        for (VM vm : getVMs()) {
-            if (c.isRunning(vm) && !getNodes().contains(c.getVMLocation(vm))) {
+        for (Node n : getNodes()) {
+            if (!c.isOnline(n)) {
                 return false;
             }
         }

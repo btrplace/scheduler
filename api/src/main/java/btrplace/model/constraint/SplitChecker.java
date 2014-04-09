@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.model.constraint.checker;
+package btrplace.model.constraint;
 
 import btrplace.model.*;
-import btrplace.model.constraint.Split;
 import btrplace.plan.event.RunningVMPlacement;
 
 import java.util.*;

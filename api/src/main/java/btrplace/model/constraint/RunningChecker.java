@@ -15,41 +15,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.model.constraint.checker;
+package btrplace.model.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.Node;
-import btrplace.model.constraint.Offline;
-import btrplace.plan.event.BootNode;
+import btrplace.model.VM;
+import btrplace.plan.event.AllocateEvent;
+import btrplace.plan.event.RunningVMPlacement;
 
 /**
- * Checker for the {@link btrplace.model.constraint.Offline} constraint
+ * Checker for the {@link btrplace.model.constraint.Running} constraint
  *
  * @author Fabien Hermenier
- * @see btrplace.model.constraint.Offline
+ * @see btrplace.model.constraint.Running
  */
-public class OfflineChecker extends AllowAllConstraintChecker<Offline> {
+public class RunningChecker extends DenyMyVMsActions<Running> {
 
     /**
      * Make a new checker.
      *
-     * @param o the associated constraint
+     * @param r the associated constraint
      */
-    public OfflineChecker(Offline o) {
-        super(o);
+    public RunningChecker(Running r) {
+        super(r);
     }
 
     @Override
-    public boolean start(BootNode a) {
-        return !getNodes().contains(a.getNode());
+    public boolean startRunningVMPlacement(RunningVMPlacement a) {
+        return true;
+    }
+
+    @Override
+    public boolean consume(AllocateEvent e) {
+        return true;
     }
 
     @Override
     public boolean endsWith(Model mo) {
         Mapping c = mo.getMapping();
-        for (Node n : getNodes()) {
-            if (!c.isOffline(n)) {
+        for (VM vm : getVMs()) {
+            if (!c.isRunning(vm)) {
                 return false;
             }
         }

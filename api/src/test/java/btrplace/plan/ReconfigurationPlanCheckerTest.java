@@ -18,7 +18,7 @@
 package btrplace.plan;
 
 import btrplace.model.*;
-import btrplace.model.constraint.checker.SatConstraintChecker;
+import btrplace.model.constraint.SatConstraintChecker;
 import btrplace.plan.event.BootNode;
 import btrplace.plan.event.BootVM;
 import btrplace.plan.event.MigrateVM;

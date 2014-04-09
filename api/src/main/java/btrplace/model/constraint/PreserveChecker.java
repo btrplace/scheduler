@@ -15,11 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.model.constraint.checker;
+package btrplace.model.constraint;
 
 import btrplace.model.Model;
 import btrplace.model.VM;
-import btrplace.model.constraint.Preserve;
 import btrplace.model.view.ShareableResource;
 import btrplace.plan.event.Allocate;
 import btrplace.plan.event.AllocateEvent;

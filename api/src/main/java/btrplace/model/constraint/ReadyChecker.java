@@ -15,55 +15,49 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.model.constraint.checker;
+package btrplace.model.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.constraint.Quarantine;
-import btrplace.plan.event.MigrateVM;
-import btrplace.plan.event.RunningVMPlacement;
+import btrplace.model.VM;
+import btrplace.plan.event.ForgeVM;
+import btrplace.plan.event.ShutdownVM;
 
 /**
- * Checker for the {@link btrplace.model.constraint.Quarantine} constraint
+ * Checker for the {@link btrplace.model.constraint.Ready} constraint
  *
  * @author Fabien Hermenier
- * @see btrplace.model.constraint.Quarantine
+ * @see btrplace.model.constraint.Ready
  */
-public class QuarantineChecker extends AllowAllConstraintChecker<Quarantine> {
+public class ReadyChecker extends DenyMyVMsActions<Ready> {
 
     /**
      * Make a new checker.
      *
-     * @param q the associated constraint
+     * @param r the associated constraint
      */
-    public QuarantineChecker(Quarantine q) {
-        super(q);
+    public ReadyChecker(Ready r) {
+        super(r);
     }
 
     @Override
-    public boolean start(MigrateVM a) {
-        if (getVMs().contains(a.getVM())) {
-            //the VM can not move elsewhere
-            return false;
-        }
-        return startRunningVMPlacement(a);
-    }
-
-    @Override
-    public boolean startRunningVMPlacement(RunningVMPlacement a) {
-        return !getNodes().contains(a.getDestinationNode());
-    }
-
-    @Override
-    public boolean endsWith(Model mo) {
+    public boolean start(ForgeVM a) {
         return true;
     }
 
     @Override
-    public boolean startsWith(Model mo) {
-        Mapping map = mo.getMapping();
-        getVMs().clear();
-        return getVMs().addAll(map.getRunningVMs(getNodes()));
+    public boolean start(ShutdownVM a) {
+        return true;
     }
 
+    @Override
+    public boolean endsWith(Model mo) {
+        Mapping c = mo.getMapping();
+        for (VM vm : getVMs()) {
+            if (!c.isReady(vm)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
