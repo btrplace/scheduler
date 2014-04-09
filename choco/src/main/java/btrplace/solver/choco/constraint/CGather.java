@@ -111,18 +111,12 @@ public class CGather implements ChocoConstraint {
                 Slice s2 = dSlices.get(j);
                 IntVar i1 = s1.getHoster();
                 IntVar i2 = s2.getHoster();
-                if (i1.instantiated() && i2.instantiated() && i1.getValue() != i2.getValue()) {
-                    rp.getLogger().error("Unable to force VM '" + s1.getSubject() + "' to be co-located with VM '" + s2.getSubject() + "'");
+                if (i1.instantiated() && !instantiateTo(rp, i2, i1.getLB(), s1, s2)) {
                     return false;
-                } else {
-                    if (i1.instantiated() && !instantiateTo(rp, i2, i1.getLB(), s1, s2)) {
-                            return false;
-                    } else if (i2.instantiated() && !instantiateTo(rp, i1, i2.getLB(), s1, s2)) {
-                            return false;
-                    } else {
-                        s.post(IntConstraintFactory.arithm(i1, "=", i2));
-                    }
+                } else if (i2.instantiated() && !instantiateTo(rp, i1, i2.getLB(), s1, s2)) {
+                    return false;
                 }
+                s.post(IntConstraintFactory.arithm(i1, "=", i2));
             }
         }
         return true;

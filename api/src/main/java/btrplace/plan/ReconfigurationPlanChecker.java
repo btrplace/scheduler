@@ -276,8 +276,15 @@ public class ReconfigurationPlanChecker implements ActionVisitor {
                     visitAndThrowOnViolation(a);
                     a = starts.peek();
                 }
-                int nextEnd = ends.isEmpty() ? Integer.MAX_VALUE : ends.peek().getEnd();
-                int nextStart = starts.isEmpty() ? Integer.MAX_VALUE : starts.peek().getStart();
+                int nextEnd = Integer.MAX_VALUE;
+                if (!ends.isEmpty()) {
+                    nextEnd = ends.peek().getEnd();
+                }
+                int nextStart = Integer.MAX_VALUE;
+                if (!starts.isEmpty()) {
+                    nextStart = starts.peek().getStart();
+                }
+
                 curMoment = Math.min(nextEnd, nextStart);
             }
         }

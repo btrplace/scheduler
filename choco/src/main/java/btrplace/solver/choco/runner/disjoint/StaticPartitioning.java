@@ -18,8 +18,6 @@
 package btrplace.solver.choco.runner.disjoint;
 
 import btrplace.model.Instance;
-import btrplace.model.Mapping;
-import btrplace.model.Node;
 import btrplace.plan.DefaultReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.event.Action;
@@ -88,14 +86,6 @@ public abstract class StaticPartitioning implements InstanceSolver {
         CompletionService<InstanceResult> completionService = new ExecutorCompletionService<>(exe);
         List<InstanceResult> results = new ArrayList<>(partitions.size());
 
-        int nbVMs = 0;
-        Mapping origMapping = orig.getModel().getMapping();
-        for (Node n : origMapping.getOnlineNodes()) {
-            nbVMs += origMapping.getRunningVMs(n).size();
-            nbVMs += origMapping.getSleepingVMs(n).size();
-        }
-        nbVMs += origMapping.getReadyVMs().size();
-        int nbNodes = origMapping.getOnlineNodes().size() + origMapping.getOfflineNodes().size();
         int nbConstraints = orig.getSatConstraints().size();
 
         long duration = -System.currentTimeMillis();
@@ -121,8 +111,8 @@ public abstract class StaticPartitioning implements InstanceSolver {
             }
         }
         duration += System.currentTimeMillis();
-        StaticPartitioningStatistics stats = new StaticPartitioningStatistics(cra, nbNodes,
-                nbVMs,
+        StaticPartitioningStatistics stats = new StaticPartitioningStatistics(cra, orig.getModel().getMapping().getNbNodes(),
+                orig.getModel().getMapping().getNbVMs(),
                 nbConstraints,
                 start,
                 splitDuration,

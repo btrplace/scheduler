@@ -96,7 +96,7 @@ public class CLonely implements ChocoConstraint {
             }
             for (VM vm : vms) {
                 VMTransition a = rp.getVMAction(vm);
-                Precedences p = new Precedences(s.getEnvironment(), a.getDSlice().getHoster(),
+                Precedences p = new Precedences(a.getDSlice().getHoster(),
                         a.getDSlice().getStart(),
                         otherPos.toArray(),
                         otherEnds.toArray(new IntVar[otherEnds.size()]));
@@ -106,7 +106,7 @@ public class CLonely implements ChocoConstraint {
             //TODO: The following reveals a model problem. Too many constraints!!
             for (VM vm : otherVMs) {
                 VMTransition a = rp.getVMAction(vm);
-                Precedences p = new Precedences(s.getEnvironment(), a.getDSlice().getHoster(),
+                Precedences p = new Precedences(a.getDSlice().getHoster(),
                         a.getDSlice().getStart(),
                         minePos.toArray(),
                         mineEnds.toArray(new IntVar[mineEnds.size()]));

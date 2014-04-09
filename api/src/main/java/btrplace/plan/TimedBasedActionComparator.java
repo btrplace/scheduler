@@ -60,21 +60,26 @@ public class TimedBasedActionComparator implements Comparator<Action> {
 
     @Override
     public int compare(Action a1, Action a2) {
-        int d = startBased ? a1.getStart() - a2.getStart() : a1.getEnd() - a2.getEnd();
+        if (a1.equals(a2)) {
+            return 0;
+        }
+        int d = delay(a1, a2, startBased);
         if (d == 0) {
-            if (a1.equals(a2)) {
-                return 0;
-            } else {
-                d = startBased ? a1.getEnd() - a2.getEnd() : a1.getStart() - a2.getStart();
-                //At this level we don't care but we must not return 0 because the action will
-                //not be added
+            //Compare wrt. the other bound
+            d = delay(a1, a2, !startBased);
                 if (diffSimultaneous && d == 0) {
+                    //At this level we don't care but we must not return 0 because the action will
+                    //not be added
                     return -1;
                 }
-                return d;
-            }
-        } else {
-            return d;
         }
+        return d;
+    }
+
+    private int delay(Action a1, Action a2, boolean onStart) {
+        if (onStart) {
+            return a1.getStart() - a2.getStart();
+        }
+        return a1.getEnd() - a2.getEnd();
     }
 }

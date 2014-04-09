@@ -19,7 +19,6 @@ package btrplace.solver.choco.extensions;
 
 
 import gnu.trove.list.array.TIntArrayList;
-import memory.IEnvironment;
 import memory.IStateInt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,24 +60,21 @@ public class Precedences extends IntConstraint<IntVar> {
      */
     private IStateInt[] horizonUB;
 
-    private IEnvironment env;
 
     /**
      * Make a new constraint.
      *
-     * @param e  the environment.
      * @param h  the task host
      * @param st the moment the task arrives on resources h
      * @param oh the host of all the other tasks
      * @param oe the moment each of the other tasks leave their resource
      */
-    public Precedences(IEnvironment e, IntVar h, IntVar st, int[] oh, IntVar[] oe) {
+    public Precedences(IntVar h, IntVar st, int[] oh, IntVar[] oe) {
         super(ArrayUtils.append(new IntVar[]{h, st}, oe), h.getSolver());
         this.host = h;
         this.start = st;
         this.othersHost = oh;
         this.othersEnd = oe;
-        env = e;
         setPropagators(new PrecedencesPropagator(h, st, oe));
     }
 
@@ -202,8 +198,8 @@ public class Precedences extends IntConstraint<IntVar> {
             TIntArrayList[] l = new TIntArrayList[endsByHost.length];
 
             for (int i = 0; i < horizonUB.length; i++) {
-                horizonLB[i] = env.makeInt(0);
-                horizonUB[i] = env.makeInt(0);
+                horizonLB[i] = environment.makeInt(0);
+                horizonUB[i] = environment.makeInt(0);
                 l[i] = new TIntArrayList();
             }
 

@@ -80,62 +80,67 @@ public class CSplit implements ChocoConstraint {
         }
         s.post(new DisjointMultiple(s, vars, nbNodes));
 
-        if (cstr.isContinuous()) {
-            if (!cstr.isSatisfied(rp.getSourceModel())) {
-                rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
-                return false;
-            } else {
-                Mapping map = rp.getSourceModel().getMapping();
-                //Each VM on a group, can not go to a node until all the VMs from the other groups have leaved
-                //So, for each group of VM, we create a list containing the c^end and the c^host variable of all
-                //the VMs in the other groups
+        if (cstr.isContinuous() && !injectContinuous(rp, vmGroups, groups)) {
+            return false;
+        }
+        return true;
+    }
 
-                TIntArrayList[] otherPositions = new TIntArrayList[vmGroups.size()];
-                List<IntVar>[] otherEnds = new List[vmGroups.size()];
-                for (int i = 0; i < vmGroups.size(); i++) {
-                    otherPositions[i] = new TIntArrayList();
-                    otherEnds[i] = new ArrayList<>();
+    private boolean injectContinuous(ReconfigurationProblem rp, List<List<VM>> vmGroups, List<List<IntVar>> groups) {
+        if (!cstr.isSatisfied(rp.getSourceModel())) {
+            rp.getLogger().error("The constraint '{}' must be already satisfied to provide a continuous restriction", cstr);
+            return false;
+        }
+        //Each VM on a group, can not go to a node until all the VMs from the other groups have leaved
+        //So, for each group of VM, we create a list containing the c^end and the c^host variable of all
+        //the VMs in the other groups then we establish precedences constraints.
+
+        TIntArrayList[] otherPositions = new TIntArrayList[vmGroups.size()];
+        List<IntVar>[] otherEnds = new List[vmGroups.size()];
+        for (int i = 0; i < vmGroups.size(); i++) {
+            otherPositions[i] = new TIntArrayList();
+            otherEnds[i] = new ArrayList<>();
+        }
+
+        fullfillOthers(rp, otherPositions, otherEnds, vmGroups);
+
+        //Now, we just have to put way too many precedences constraint, one per VM.
+        for (int i = 0; i < vmGroups.size(); i++) {
+            List<VM> grp = vmGroups.get(i);
+            for (VM vm : grp) {
+                if (rp.getFutureRunningVMs().contains(vm)) {
+                    VMTransition a = rp.getVMAction(vm);
+                    IntVar myPos = a.getDSlice().getHoster();
+                    IntVar myStart = a.getDSlice().getStart();
+                    rp.getSolver().post(new Precedences(myPos,
+                            myStart,
+                            otherPositions[i].toArray(),
+                            otherEnds[i].toArray(new IntVar[otherEnds[i].size()])));
                 }
+            }
+        }
+        return true;
+    }
 
-                //Fulfill the others stuff.
-                for (int i = 0; i < vmGroups.size(); i++) {
-                    List<VM> grp = vmGroups.get(i);
-                    for (VM vm : grp) {
-                        if (map.isRunning(vm)) {
-                            int myPos = rp.getNode(map.getVMLocation(vm));
-                            IntVar myEnd = rp.getVMAction(vm).getCSlice().getEnd();
+    private void fullfillOthers(ReconfigurationProblem rp, TIntArrayList[] otherPositions, List<IntVar>[] otherEnds, List<List<VM>> vmGroups) {
+        Mapping map = rp.getSourceModel().getMapping();
+        //Fulfill the others stuff.
+        for (int i = 0; i < vmGroups.size(); i++) {
+            List<VM> grp = vmGroups.get(i);
+            for (VM vm : grp) {
+                if (map.isRunning(vm)) {
+                    int myPos = rp.getNode(map.getVMLocation(vm));
+                    IntVar myEnd = rp.getVMAction(vm).getCSlice().getEnd();
 
-                            for (int j = 0; j < vmGroups.size(); j++) {
-                                if (i != j) {
-                                    otherPositions[j].add(myPos);
-                                    otherEnds[j].add(myEnd);
-                                }
-                            }
-                        }
-                    }
-                }
-                int[][] otherPos = new int[groups.size()][];
-                IntVar[][] otherEds = new IntVar[groups.size()][];
-                for (int i = 0; i < vmGroups.size(); i++) {
-                    otherPos[i] = otherPositions[i].toArray();
-                    otherEds[i] = otherEnds[i].toArray(new IntVar[otherEnds[i].size()]);
-                }
-
-                //Now, we just have to put way too many precedences constraint, one per VM.
-                for (int i = 0; i < vmGroups.size(); i++) {
-                    List<VM> grp = vmGroups.get(i);
-                    for (VM vm : grp) {
-                        if (rp.getFutureRunningVMs().contains(vm)) {
-                            VMTransition a = rp.getVMAction(vm);
-                            IntVar myPos = a.getDSlice().getHoster();
-                            IntVar myStart = a.getDSlice().getStart();
-                            s.post(new Precedences(s.getEnvironment(), myPos, myStart, otherPos[i], otherEds[i]));
+                    for (int j = 0; j < vmGroups.size(); j++) {
+                        if (i != j) {
+                            otherPositions[j].add(myPos);
+                            otherEnds[j].add(myEnd);
                         }
                     }
                 }
             }
         }
-        return true;
     }
 
     @Override
