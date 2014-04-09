@@ -58,18 +58,6 @@ public class ModelViewMapperTest {
         Assert.assertFalse(map.unRegister(MockModelView.class));
     }
 
-    @Test(dependsOnMethods = {"testInstantiate", "testUnregister", "testRegister"})
-    public void testMap() throws SolverException {
-        ModelViewMapper map = new ModelViewMapper();
-        map.register(new Builder());
-        MockModelView v = new MockModelView();
-        ChocoView cv = map.map(null, v);
-        Assert.assertTrue(cv.getClass().equals(CMockView.class));
-
-        map.unRegister(MockModelView.class);
-        Assert.assertNull(map.map(null, v));
-    }
-
     public static class CMockView implements ChocoView {
         @Override
         public String getIdentifier() {

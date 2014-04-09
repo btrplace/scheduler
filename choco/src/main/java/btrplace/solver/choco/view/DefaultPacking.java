@@ -94,7 +94,7 @@ public class DefaultPacking extends Packing {
     }
 
     @Override
-    public boolean insertActions(ReconfigurationProblem rp, ReconfigurationPlan p) {
+    public boolean insertActions(ReconfigurationProblem pb, ReconfigurationPlan p) {
         return true;
     }
 

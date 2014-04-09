@@ -23,6 +23,8 @@ import btrplace.solver.choco.ReconfigurationProblem;
 import java.util.List;
 
 /**
+ * To build solver-side views.
+ *
  * @author Fabien Hermenier
  */
 public abstract class SolverViewBuilder {

@@ -79,6 +79,7 @@ public class DefaultAliasedCumulatives extends AbstractCumulatives implements bt
      *
      * @return a list of constraint that may be empty.
      */
+    @Override
     public boolean beforeSolve(ReconfigurationProblem r) {
         for (int i = 0; i < aliases.size(); i++) {
             int capa = capacities.get(i);

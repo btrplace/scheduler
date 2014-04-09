@@ -18,8 +18,6 @@
 package btrplace.solver.choco.view;
 
 import btrplace.model.view.ModelView;
-import btrplace.solver.SolverException;
-import btrplace.solver.choco.ReconfigurationProblem;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -90,21 +88,5 @@ public class ModelViewMapper {
      */
     public ChocoModelViewBuilder getBuilder(Class<? extends ModelView> id) {
         return builders.get(id);
-    }
-
-    /**
-     * Map the given {@link ModelView} to a {@link ChocoView} if possible.
-     *
-     * @param rp the problem to customize
-     * @param v  the view to map
-     * @return the solver-side view if a mapping was possible, or {@code null} if no mapping was possible.
-     * @throws SolverException if en error occurred while creating the view implementation
-     */
-    public ChocoView map(ReconfigurationProblem rp, ModelView v) throws SolverException {
-        ChocoModelViewBuilder b = builders.get(v.getClass());
-        if (b == null) {
-            return null;
-        }
-        return b.build(v).build(rp);
     }
 }

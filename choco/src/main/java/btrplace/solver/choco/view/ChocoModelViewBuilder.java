@@ -22,7 +22,7 @@ import btrplace.solver.SolverException;
 
 /**
  * The builder that is used by {@link btrplace.solver.choco.view.ModelViewMapper} to create
- * the solver-side views from an api-side ones.
+ * the solver-side builder from from an api-side model.
  *
  * @author Fabien Hermenier
  */
