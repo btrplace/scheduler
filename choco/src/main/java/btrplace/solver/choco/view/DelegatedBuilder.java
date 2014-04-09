@@ -23,6 +23,8 @@ import btrplace.solver.choco.ReconfigurationProblem;
 import java.util.List;
 
 /**
+ * Kind of a builder that is used when {@link btrplace.solver.choco.view.ChocoModelViewBuilder} cannot
+ * instantiate {@link btrplace.solver.choco.view.SolverViewBuilder} out of the box.
  * @author Fabien Hermenier
  */
 public abstract class DelegatedBuilder extends SolverViewBuilder {
@@ -31,6 +33,12 @@ public abstract class DelegatedBuilder extends SolverViewBuilder {
 
     private List<String> deps;
 
+    /**
+     * New builder.
+     *
+     * @param k the view identifier.
+     * @param d the dependencies for the building process
+     */
     public DelegatedBuilder(String k, List<String> d) {
         this.key = k;
         this.deps = d;

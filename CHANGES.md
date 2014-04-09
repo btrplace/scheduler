@@ -10,6 +10,7 @@ Release notes
     - btrplace.solver.choco.runner.staticPartitioning is now btrplace.solver.choco.runner.disjoint
     - btrplace.solver.choco.constraint.minMTTR is now btrplace.solver.choco.constraint.mttr
     - btrplace.solver.choco.durationEvaluation is now btrplace.solver.choco.duration
+- package model.constraint.checker merged into model.constraint
 
 0.36 - 28 Mar 2014
 ----------------------

@@ -25,6 +25,8 @@ import btrplace.solver.choco.ReconfigurationProblem;
 import java.util.*;
 
 /**
+ * A tool to manage views according to their dependencies.
+ *
  * @author Fabien Hermenier
  */
 public class SolverViewsManager {
@@ -35,13 +37,23 @@ public class SolverViewsManager {
 
     private Map<String, ChocoView> views;
 
-    public SolverViewsManager(ReconfigurationProblem p) throws SolverException {
+    /**
+     * New manager.
+     *
+     * @param p the problem to consider
+     */
+    public SolverViewsManager(ReconfigurationProblem p) {
         this.rp = p;
         workflow = new ArrayList<>();
         this.views = new HashMap<>();
     }
 
-
+    /**
+     * Build all the constraints.
+     * The building is done according to the dependencies between the constraints.
+     * @param vs the builders to call
+     * @throws SolverException if an error occurred while building a constraint or if there is a cycle of dependencies.
+     */
     public void build(List<SolverViewBuilder> vs) throws SolverException {
         Set<String> done = new HashSet<>();
         List<SolverViewBuilder> remaining = new ArrayList<>(vs);
@@ -66,6 +78,12 @@ public class SolverViewsManager {
         }
     }
 
+    /**
+     * Call {@link btrplace.solver.choco.view.ChocoView#beforeSolve(btrplace.solver.choco.ReconfigurationProblem)}
+     * on each of the views in the <b>reverse order</b> of their dependencies.
+     * @return {@code false} if it is sure the problem does not have a solution
+     * @throws SolverException if an error occurred
+     */
     public boolean beforeSolve() throws SolverException {
         ListIterator<ChocoView> l = workflow.listIterator(workflow.size());
         while (l.hasPrevious()) {
@@ -77,6 +95,12 @@ public class SolverViewsManager {
         return true;
     }
 
+    /**
+     * Call {@link btrplace.solver.choco.view.ChocoView#insertActions(btrplace.solver.choco.ReconfigurationProblem, btrplace.plan.ReconfigurationPlan)}
+     * on each of the views in the <b>order</b> of their dependencies.
+     * @return {@code true}
+     * @throws SolverException if an error occurred
+     */
     public boolean insertActions(ReconfigurationPlan p) throws SolverException {
         for (ChocoView v : workflow) {
             v.insertActions(rp, p);
@@ -84,12 +108,23 @@ public class SolverViewsManager {
         return true;
     }
 
+    /**
+     * Call {@link btrplace.solver.choco.view.ChocoView#cloneVM(btrplace.model.VM, btrplace.model.VM)}
+     * on each of the views in the <b>order</b> of their dependencies.
+     * @param vm the old VM identifier
+     * @param newVM the new VM identifier
+     */
     public void cloneVM(VM vm, VM newVM) {
         for (ChocoView v : workflow) {
             v.cloneVM(vm, newVM);
         }
     }
 
+    /**
+     * Add a view. the view identifier must not be already known.
+     * @param v the view to add.
+     * @return {@code true} if the view has been added. {@code false} otherwise
+     */
     public boolean add(ChocoView v) {
         if (views.put(v.getIdentifier(), v) == null) {
             workflow.add(v);
@@ -98,10 +133,19 @@ public class SolverViewsManager {
         return false;
     }
 
+    /**
+     * Get all the views keys.
+     * @return a set that can be empty.
+     */
     public Set<String> getKeys() {
         return views.keySet();
     }
 
+    /**
+     * Get a view.
+     * @param id the view identifier.
+     * @return the associated view if exists, {@code null} otherwise
+     */
     public ChocoView get(String id) {
         return views.get(id);
     }

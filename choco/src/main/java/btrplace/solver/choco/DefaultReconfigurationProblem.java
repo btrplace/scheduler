@@ -306,7 +306,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public VMState getNextState(VM v) {
+    public final VMState getNextState(VM v) {
         if (running.contains(v)) {
             return VMState.RUNNING;
         } else if (ready.contains(v)) {
@@ -431,7 +431,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public ChocoView getView(String id) {
+    public final ChocoView getView(String id) {
         return viewsManager.get(id);
     }
 
@@ -487,7 +487,7 @@ public class DefaultReconfigurationProblem implements ReconfigurationProblem {
     }
 
     @Override
-    public String makeVarLabel(Object... lbl) {
+    public final String makeVarLabel(Object... lbl) {
         if (useLabels) {
             StringBuilder b = new StringBuilder();
             for (Object s : lbl) {
