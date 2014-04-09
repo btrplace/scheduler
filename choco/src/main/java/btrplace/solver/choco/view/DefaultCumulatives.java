@@ -143,24 +143,24 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
         if (slicesIndexes == null) {
             return false;
         }
-            int dIdx = slicesIndexes[0];
-            int cIdx = slicesIndexes[1];
+        int dIdx = slicesIndexes[0];
+        int cIdx = slicesIndexes[1];
 
-            Boolean decOrStay = null;
-            //Get the resources usage
-            for (int d = 0; d < cUsages.size(); d++) {
-                int req = dUsages.get(d)[dIdx].getLB();
-                int use = cUsages.get(d)[cIdx];
-                if (decOrStay == null) {
-                    decOrStay = req <= use;
-                } else {
-                    if (decOrStay && req > use) {
-                        return false;
-                    } else if (!decOrStay && req <= use) {
-                        return false;
-                    }
+        Boolean decOrStay = null;
+        //Get the resources usage
+        for (int d = 0; d < cUsages.size(); d++) {
+            int req = dUsages.get(d)[dIdx].getLB();
+            int use = cUsages.get(d)[cIdx];
+            if (decOrStay == null) {
+                decOrStay = req <= use;
+            } else {
+                if (decOrStay && req > use) {
+                    return false;
+                } else if (!decOrStay && req <= use) {
+                    return false;
                 }
             }
+        }
         return decOrStay;
     }
 

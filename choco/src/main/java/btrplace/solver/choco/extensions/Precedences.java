@@ -221,7 +221,6 @@ public class Precedences extends IntConstraint<IntVar> {
             if (host.instantiated()) {
                 start.updateLowerBound(horizonLB[host.getValue()].get(), aCause);
             }
-            //propagate();
         }
 
         //@Override
@@ -275,7 +274,6 @@ public class Precedences extends IntConstraint<IntVar> {
                         start.updateLowerBound(min, aCause);
                     }
             }
-            //constAwake(false);
         }
 
         public void propagate() throws ContradictionException {
@@ -307,7 +305,6 @@ public class Precedences extends IntConstraint<IntVar> {
                     start.updateLowerBound(horizonLB[h].get(), aCause);
                 }
             }
-            //constAwake(false);
         }
 
         //@Override
@@ -317,7 +314,6 @@ public class Precedences extends IntConstraint<IntVar> {
                 int h = othersHost[o];
                 recomputeHorizonForHost(h);
             }
-            //constAwake(false);
         }
 
         /**
@@ -339,7 +335,6 @@ public class Precedences extends IntConstraint<IntVar> {
         private void checkHorizonForHost(int h) throws ContradictionException {
             if (start.getUB() < horizonLB[h].get()) {
                 this.contradiction(start, "");
-                //fail();
             }
         }
     }

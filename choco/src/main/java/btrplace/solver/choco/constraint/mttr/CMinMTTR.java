@@ -19,7 +19,6 @@ package btrplace.solver.choco.constraint.mttr;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.Node;
 import btrplace.model.VM;
 import btrplace.model.constraint.MinMTTR;
 import btrplace.solver.SolverException;
@@ -113,20 +112,11 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
             }
         }
 
-        Set<VM> onGoodNodes = new HashSet<>();
-        for (Node n : map.getOnlineNodes()) {
-            onGoodNodes.addAll(map.getRunningVMs(n));
-        }
+        Set<VM> onGoodNodes = map.getRunningVMs(map.getOnlineNodes());
         onGoodNodes.removeAll(onBadNodes);
 
-        List<VMTransition> goodActions = new ArrayList<>();
-        for (VM vm : onGoodNodes) {
-            goodActions.add(p.getVMAction(vm));
-        }
-        List<VMTransition> badActions = new ArrayList<>();
-        for (VM vm : onBadNodes) {
-            badActions.add(p.getVMAction(vm));
-        }
+        VMTransition[] goodActions = p.getVMActions(onGoodNodes);
+        VMTransition[] badActions = p.getVMActions(onBadNodes);
 
         Solver s = p.getSolver();
 
@@ -145,39 +135,16 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
             strategies.add(new Assignment(new MovingVMs(p, map, vmsToExclude), new RandomVMPlacement(p, pla, true)));
         }
 
-        if (!badActions.isEmpty()) {
-            IntVar[] hosts = SliceUtils.extractHoster(TransitionUtils.getDSlices(badActions));
-            if (hosts.length > 0) {
-                HostingVariableSelector selectForBad = new HostingVariableSelector(hosts, schedHeuristic);
-                strategies.add(new Assignment(selectForBad, new RandomVMPlacement(p, pla, true)));
-            }
-        }
-
-        if (!goodActions.isEmpty()) {
-            IntVar[] hosts = SliceUtils.extractHoster(TransitionUtils.getDSlices(goodActions));
-            if (hosts.length > 0) {
-                HostingVariableSelector selectForGoods = new HostingVariableSelector(hosts, schedHeuristic);
-                strategies.add(new Assignment(selectForGoods, new RandomVMPlacement(p, pla, true)));
-            }
-        }
+        placeVMs(strategies, badActions, schedHeuristic, pla);
+        placeVMs(strategies, goodActions, schedHeuristic, pla);
 
         //VMs to run
         Set<VM> vmsToRun = new HashSet<>(map.getReadyVMs());
         vmsToRun.removeAll(p.getFutureReadyVMs());
 
-        VMTransition[] runActions = new VMTransition[vmsToRun.size()];
-        int i = 0;
-        for (VM vm : vmsToRun) {
-            runActions[i++] = p.getVMAction(vm);
-        }
+        VMTransition[] runActions = p.getVMActions(vmsToRun);
 
-        if (runActions.length > 0) {
-            IntVar[] hosts = SliceUtils.extractHoster(TransitionUtils.getDSlices(runActions));
-            if (hosts.length > 0) {
-                HostingVariableSelector selectForRuns = new HostingVariableSelector(hosts, schedHeuristic);
-                strategies.add(new Assignment(selectForRuns, new RandomVMPlacement(p, pla, true)));
-            }
-        }
+        placeVMs(strategies, runActions, schedHeuristic, pla);
 
         if (p.getNodeActions().length > 0) {
             strategies.add(new Assignment(new InputOrder<>(TransitionUtils.getStarts(p.getNodeActions())), new InDomainMin()));
@@ -192,6 +159,16 @@ public class CMinMTTR implements btrplace.solver.choco.constraint.CObjective {
         strategies.add(new Assignment(new InputOrder<>(new IntVar[]{p.getEnd(), cost}), new InDomainMin()));
 
         s.getSearchLoop().set(new StrategiesSequencer(s.getEnvironment(), strategies.toArray(new AbstractStrategy[strategies.size()])));
+    }
+
+    private void placeVMs(List<AbstractStrategy> strategies, VMTransition[] actions, OnStableNodeFirst schedHeuristic, Map<IntVar, VM> map) {
+        if (actions.length > 0) {
+            IntVar[] hosts = SliceUtils.extractHoster(TransitionUtils.getDSlices(actions));
+            if (hosts.length > 0) {
+                HostingVariableSelector selectForBad = new HostingVariableSelector(hosts, schedHeuristic);
+                strategies.add(new Assignment(selectForBad, new RandomVMPlacement(rp, map, true)));
+            }
+        }
     }
 
     @Override
