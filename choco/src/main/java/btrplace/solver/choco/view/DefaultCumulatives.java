@@ -140,7 +140,9 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
     private Boolean strictlyDecreasingOrUnchanged(VM vm) {
         //If it has non-overlapping slices
         int[] slicesIndexes = non.get(vm);
-        if (slicesIndexes != null) {
+        if (slicesIndexes == null) {
+            return false;
+        }
             int dIdx = slicesIndexes[0];
             int cIdx = slicesIndexes[1];
 
@@ -159,9 +161,7 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
                     }
                 }
             }
-            return decOrStay;
-        }
-        return false;
+        return decOrStay;
     }
 
     /**
@@ -181,13 +181,8 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
                 if (Boolean.TRUE.equals(ret)) {
                     //Else, the resource usage is decreasing, so
                     // we set the cSlice duration to 0 to directly reduces the resource allocation
-                    if (stay.instantiatedTo(1)) {
-                        try {
-                            cSlice.getDuration().instantiateTo(0, Cause.Null);
-                        } catch (ContradictionException ex) {
-                            rp.getLogger().info("Unable to set the cSlice duration of {} to 0", cSlice.getSubject());
-                            return false;
-                        }
+                    if (stay.instantiatedTo(1) && !zeroDuration(cSlice)) {
+                        return false;
                     } else {
                         rp.getSolver().post(new FastImpliesEq(stay, cSlice.getDuration(), 0));
                     }
@@ -195,18 +190,23 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
                     //If the resource usage will be increasing
                     //Then the duration of the dSlice can be set to 0
                     //(the allocation will be performed at the end of the reconfiguration process)
-                    if (stay.instantiatedTo(1)) {
-                        try {
-                            dSlice.getDuration().instantiateTo(0, Cause.Null);
-                        } catch (ContradictionException ex) {
-                            rp.getLogger().info("Unable to set the dSlice duration of {} to 0", dSlice.getSubject());
-                            return false;
-                        }
+                    if (stay.instantiatedTo(1) && !zeroDuration(dSlice)) {
+                        return false;
                     } else {
                         rp.getSolver().post(new FastImpliesEq(stay, dSlice.getDuration(), 0));
                     }
                 }
             }
+        }
+        return true;
+    }
+
+    private boolean zeroDuration(Slice s) {
+        try {
+            s.getDuration().instantiateTo(0, Cause.Null);
+        } catch (ContradictionException ex) {
+            rp.getLogger().info("Unable to set the duration of slice {} to 0", s.getSubject());
+            return false;
         }
         return true;
     }

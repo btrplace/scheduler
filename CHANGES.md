@@ -11,6 +11,8 @@ Release notes
     - btrplace.solver.choco.constraint.minMTTR is now btrplace.solver.choco.constraint.mttr
     - btrplace.solver.choco.durationEvaluation is now btrplace.solver.choco.duration
 - package model.constraint.checker merged into model.constraint
+- It is possible to customize the solver-only views (typically the packing, cumulatives, ...)
+- Support for dependencies at building time between views
 
 0.36 - 28 Mar 2014
 ----------------------
