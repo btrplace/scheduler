@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.model.constraint.checker;
+package btrplace.model.constraint;
 
 import btrplace.model.*;
-import btrplace.model.constraint.SatConstraint;
 import btrplace.plan.event.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -30,7 +29,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit tests for {@link DenyMyVMsActions}.
+ * Unit tests for {@link btrplace.model.constraint.DenyMyVMsActions}.
  *
  * @author Fabien Hermenier
  */

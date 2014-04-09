@@ -15,41 +15,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.model.constraint.checker;
+package btrplace.model.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.VM;
-import btrplace.model.constraint.Sleeping;
-import btrplace.plan.event.SuspendVM;
+import btrplace.model.Node;
+import btrplace.plan.event.BootNode;
 
 /**
- * Checker for the {@link btrplace.model.constraint.Sleeping} constraint
+ * Checker for the {@link btrplace.model.constraint.Offline} constraint
  *
  * @author Fabien Hermenier
- * @see btrplace.model.constraint.Sleeping
+ * @see btrplace.model.constraint.Offline
  */
-public class SleepingChecker extends DenyMyVMsActions<Sleeping> {
+public class OfflineChecker extends AllowAllConstraintChecker<Offline> {
 
     /**
      * Make a new checker.
      *
-     * @param s the associated constraint
+     * @param o the associated constraint
      */
-    public SleepingChecker(Sleeping s) {
-        super(s);
+    public OfflineChecker(Offline o) {
+        super(o);
     }
 
     @Override
-    public boolean start(SuspendVM a) {
-        return true;
+    public boolean start(BootNode a) {
+        return !getNodes().contains(a.getNode());
     }
 
     @Override
     public boolean endsWith(Model mo) {
         Mapping c = mo.getMapping();
-        for (VM vm : getVMs()) {
-            if (!c.isSleeping(vm)) {
+        for (Node n : getNodes()) {
+            if (!c.isOffline(n)) {
                 return false;
             }
         }

@@ -19,8 +19,6 @@ package btrplace.model.constraint;
 
 import btrplace.model.Node;
 import btrplace.model.VM;
-import btrplace.model.constraint.checker.SatConstraintChecker;
-import btrplace.model.constraint.checker.SplitAmongChecker;
 
 import java.util.Collection;
 import java.util.HashSet;

@@ -15,50 +15,54 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.model.constraint.checker;
+package btrplace.model.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
-import btrplace.model.VM;
-import btrplace.model.constraint.Ready;
-import btrplace.plan.event.ForgeVM;
-import btrplace.plan.event.ShutdownVM;
+import btrplace.plan.event.MigrateVM;
+import btrplace.plan.event.RunningVMPlacement;
 
 /**
- * Checker for the {@link btrplace.model.constraint.Ready} constraint
+ * Checker for the {@link btrplace.model.constraint.Quarantine} constraint
  *
  * @author Fabien Hermenier
- * @see btrplace.model.constraint.Ready
+ * @see btrplace.model.constraint.Quarantine
  */
-public class ReadyChecker extends DenyMyVMsActions<Ready> {
+public class QuarantineChecker extends AllowAllConstraintChecker<Quarantine> {
 
     /**
      * Make a new checker.
      *
-     * @param r the associated constraint
+     * @param q the associated constraint
      */
-    public ReadyChecker(Ready r) {
-        super(r);
+    public QuarantineChecker(Quarantine q) {
+        super(q);
     }
 
     @Override
-    public boolean start(ForgeVM a) {
-        return true;
+    public boolean start(MigrateVM a) {
+        if (getVMs().contains(a.getVM())) {
+            //the VM can not move elsewhere
+            return false;
+        }
+        return startRunningVMPlacement(a);
     }
 
     @Override
-    public boolean start(ShutdownVM a) {
-        return true;
+    public boolean startRunningVMPlacement(RunningVMPlacement a) {
+        return !getNodes().contains(a.getDestinationNode());
     }
 
     @Override
     public boolean endsWith(Model mo) {
-        Mapping c = mo.getMapping();
-        for (VM vm : getVMs()) {
-            if (!c.isReady(vm)) {
-                return false;
-            }
-        }
         return true;
     }
+
+    @Override
+    public boolean startsWith(Model mo) {
+        Mapping map = mo.getMapping();
+        getVMs().clear();
+        return getVMs().addAll(map.getRunningVMs(getNodes()));
+    }
+
 }

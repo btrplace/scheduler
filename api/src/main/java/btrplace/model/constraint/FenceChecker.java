@@ -15,33 +15,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.model.constraint.checker;
+package btrplace.model.constraint;
 
 import btrplace.model.Mapping;
 import btrplace.model.Model;
 import btrplace.model.VM;
-import btrplace.model.constraint.Killed;
-import btrplace.plan.event.KillVM;
+import btrplace.plan.event.RunningVMPlacement;
 
 /**
- * Checker for the {@link btrplace.model.constraint.Killed} constraint
+ * Checker for the {@link btrplace.model.constraint.Fence} constraint
  *
  * @author Fabien Hermenier
- * @see btrplace.model.constraint.Killed
+ * @see btrplace.model.constraint.Fence
  */
-public class KilledChecker extends DenyMyVMsActions<Killed> {
+public class FenceChecker extends AllowAllConstraintChecker<Fence> {
 
     /**
      * Make a new checker.
      *
-     * @param k the associated constraint
+     * @param f the associated constraint
      */
-    public KilledChecker(Killed k) {
-        super(k);
+    public FenceChecker(Fence f) {
+        super(f);
     }
 
     @Override
-    public boolean start(KillVM a) {
+    public boolean startRunningVMPlacement(RunningVMPlacement r) {
+        if (getVMs().contains(r.getVM())) {
+            return getNodes().contains(r.getDestinationNode());
+        }
         return true;
     }
 
@@ -49,7 +51,7 @@ public class KilledChecker extends DenyMyVMsActions<Killed> {
     public boolean endsWith(Model mo) {
         Mapping c = mo.getMapping();
         for (VM vm : getVMs()) {
-            if (c.getAllVMs().contains(vm)) {
+            if (c.isRunning(vm) && !getNodes().contains(c.getVMLocation(vm))) {
                 return false;
             }
         }

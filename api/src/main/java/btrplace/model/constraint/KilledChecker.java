@@ -15,30 +15,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.model.constraint.checker;
+package btrplace.model.constraint;
 
-import btrplace.model.constraint.Root;
-import btrplace.plan.event.MigrateVM;
+import btrplace.model.Mapping;
+import btrplace.model.Model;
+import btrplace.model.VM;
+import btrplace.plan.event.KillVM;
 
 /**
- * Checker for the {@link btrplace.model.constraint.Root} constraint
+ * Checker for the {@link btrplace.model.constraint.Killed} constraint
  *
  * @author Fabien Hermenier
- * @see btrplace.model.constraint.Root
+ * @see btrplace.model.constraint.Killed
  */
-public class RootChecker extends AllowAllConstraintChecker<Root> {
+public class KilledChecker extends DenyMyVMsActions<Killed> {
 
     /**
      * Make a new checker.
      *
-     * @param r the associated constraint
+     * @param k the associated constraint
      */
-    public RootChecker(Root r) {
-        super(r);
+    public KilledChecker(Killed k) {
+        super(k);
     }
 
     @Override
-    public boolean start(MigrateVM a) {
-        return !getVMs().contains(a.getVM());
+    public boolean start(KillVM a) {
+        return true;
+    }
+
+    @Override
+    public boolean endsWith(Model mo) {
+        Mapping c = mo.getMapping();
+        for (VM vm : getVMs()) {
+            if (c.getAllVMs().contains(vm)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

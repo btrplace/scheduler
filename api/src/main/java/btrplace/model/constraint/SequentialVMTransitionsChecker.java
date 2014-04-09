@@ -15,12 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package btrplace.model.constraint.checker;
+package btrplace.model.constraint;
 
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
-import btrplace.model.constraint.SequentialVMTransitions;
 import btrplace.plan.event.*;
 
 import java.util.ArrayList;

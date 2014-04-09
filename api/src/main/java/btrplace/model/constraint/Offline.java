@@ -19,8 +19,6 @@ package btrplace.model.constraint;
 
 import btrplace.model.Node;
 import btrplace.model.VM;
-import btrplace.model.constraint.checker.OfflineChecker;
-import btrplace.model.constraint.checker.SatConstraintChecker;
 
 import java.util.ArrayList;
 import java.util.Collection;

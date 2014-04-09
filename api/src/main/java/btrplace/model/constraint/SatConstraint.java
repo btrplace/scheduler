@@ -20,7 +20,6 @@ package btrplace.model.constraint;
 import btrplace.model.Model;
 import btrplace.model.Node;
 import btrplace.model.VM;
-import btrplace.model.constraint.checker.SatConstraintChecker;
 import btrplace.plan.ReconfigurationPlan;
 import btrplace.plan.ReconfigurationPlanChecker;
 import btrplace.plan.ReconfigurationPlanCheckerException;
@@ -156,7 +155,7 @@ public abstract class SatConstraint implements Constraint {
     /**
      * Get the validator used to check if a plan satisfies the constraint.
      *
-     * @return a non-null {@link btrplace.model.constraint.checker.SatConstraintChecker}
+     * @return a non-null {@link SatConstraintChecker}
      */
     public SatConstraintChecker getChecker() {
         throw new UnsupportedOperationException();
