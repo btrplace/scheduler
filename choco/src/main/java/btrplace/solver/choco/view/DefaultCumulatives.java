@@ -178,35 +178,31 @@ public class DefaultCumulatives extends AbstractCumulatives implements Cumulativ
                 BoolVar stay = ((KeepRunningVM) a).isStaying();
 
                 Boolean ret = strictlyDecreasingOrUnchanged(vm);
-                if (Boolean.TRUE.equals(ret)) {
+                if (Boolean.TRUE.equals(ret) && !zeroDuration(stay, cSlice)) {
+                    return false;
                     //Else, the resource usage is decreasing, so
                     // we set the cSlice duration to 0 to directly reduces the resource allocation
-                    if (stay.instantiatedTo(1) && !zeroDuration(cSlice)) {
-                        return false;
-                    } else {
-                        rp.getSolver().post(new FastImpliesEq(stay, cSlice.getDuration(), 0));
-                    }
-                } else if (Boolean.FALSE.equals(ret)) {
+                } else if (Boolean.FALSE.equals(ret) && !zeroDuration(stay, dSlice)) {
                     //If the resource usage will be increasing
                     //Then the duration of the dSlice can be set to 0
                     //(the allocation will be performed at the end of the reconfiguration process)
-                    if (stay.instantiatedTo(1) && !zeroDuration(dSlice)) {
-                        return false;
-                    } else {
-                        rp.getSolver().post(new FastImpliesEq(stay, dSlice.getDuration(), 0));
-                    }
+                    return false;
                 }
             }
         }
         return true;
     }
 
-    private boolean zeroDuration(Slice s) {
-        try {
-            s.getDuration().instantiateTo(0, Cause.Null);
-        } catch (ContradictionException ex) {
-            rp.getLogger().info("Unable to set the duration of slice {} to 0", s.getSubject());
-            return false;
+    private boolean zeroDuration(BoolVar stay, Slice s) {
+        if (stay.instantiatedTo(1)) {
+            try {
+                s.getDuration().instantiateTo(0, Cause.Null);
+            } catch (ContradictionException ex) {
+                rp.getLogger().info("Unable to set the duration of slice {} to 0", s.getSubject());
+                return false;
+            }
+        } else {
+            rp.getSolver().post(new FastImpliesEq(stay, s.getDuration(), 0));
         }
         return true;
     }
