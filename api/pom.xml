@@ -21,7 +21,7 @@
     <parent>
         <groupId>btrplace</groupId>
         <artifactId>solver</artifactId>
-        <version>0.37-SNAPSHOT</version>
+        <version>0.37</version>
     </parent>
     <name>solver-api</name>
     <artifactId>solver-api</artifactId>
