@@ -12,7 +12,7 @@ Release notes
     - btrplace.solver.choco.durationEvaluation is now btrplace.solver.choco.duration
 - package model.constraint.checker merged into model.constraint
 - views have been refactored
-  - basic global constraints are now views too
+  - basic global constraints are now views too (issue #39)
   - it is possible to express dependencies between views. These dependencies are
     considered at building time in the solver
 - improve the overall code quality a bit when possible and needed
